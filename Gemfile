@@ -12,9 +12,12 @@ gem 'puma'
 gem 'bootstrap-sass', '~> 3.3.5'
 gem 'devise'
 gem 'rollbar', '~> 1.5.3'
+gem 'activeadmin', '~> 1.0.0.pre1'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
+  gem 'factory_girl_rails'
+
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
 
