@@ -1,0 +1,5 @@
+deployment:
+  staging:
+    branch: staging
+    heroku:
+      appname: boostr-staging
