@@ -11,6 +11,7 @@
 /test/tmp/
 /test/version_tmp/
 /tmp/
+/spring/
 
 ## Specific to RubyMotion:
 .dat*
@@ -52,6 +53,7 @@ capybara-*.html
 **.orig
 rerun.txt
 pickle-email-*.html
+/config/database.yml
 
 ## Environment normalisation:
 /.bundle
