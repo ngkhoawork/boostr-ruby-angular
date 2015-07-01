@@ -13,6 +13,7 @@ gem 'bootstrap-sass', '~> 3.3.5'
 gem 'devise'
 gem 'rollbar', '~> 1.5.3'
 gem 'activeadmin', '~> 1.0.0.pre1'
+gem 'haml-rails', '~> 0.9'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
