@@ -1,0 +1,89 @@
+.cd-box {
+  background: #ffffff;
+  padding: 6px;
+}
+
+.cd-colors ul {
+  list-style: none;
+}
+
+.cd-colors li:nth-of-type(2n) {
+  margin-right: 0;
+}
+
+.cd-colors .cd-color-swatch {
+  position: relative;
+  width: 100%;
+  padding: 50% 0;
+}
+
+.cd-colors .cd-color-swatch::before,
+.cd-colors .cd-color-swatch::after {
+  /* lighter and darker color shades of the same swatch */
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+  height: 20%;
+}
+
+.cd-colors .cd-color-swatch::before {
+  left: 0;
+}
+
+.cd-colors .cd-color-swatch::after {
+  right: 0;
+}
+
+.cd-colors b {
+  display: block;
+  padding: .6em 0;
+}
+
+.cd-colors li:nth-of-type(1) .cd-color-swatch {
+  background: $brand-primary;
+}
+
+.cd-colors li:nth-of-type(1) .cd-color-swatch::before {
+  background: $brand-primary-lighten;
+}
+
+.cd-colors li:nth-of-type(1) .cd-color-swatch::after {
+  background: $brand-primary-darken;
+}
+
+.cd-colors li:nth-of-type(2) .cd-color-swatch {
+  background: $brand-secondary;
+}
+
+.cd-colors li:nth-of-type(2) .cd-color-swatch::before {
+  background: $brand-secondary-lighten;
+}
+
+.cd-colors li:nth-of-type(2) .cd-color-swatch::after {
+  background: $brand-secondary-darken;
+}
+
+.cd-colors li:nth-of-type(3) .cd-color-swatch {
+  background: $brand-tertiary;
+}
+
+.cd-colors li:nth-of-type(3) .cd-color-swatch::before {
+  background: $brand-tertiary-lighten;
+}
+
+.cd-colors li:nth-of-type(3) .cd-color-swatch::after {
+  background: $brand-tertiary-darken;
+}
+
+.cd-typography .cd-box,
+.cd-form .cd-box {
+  padding: 1em;
+}
+
+@media only screen and (min-width: 768px) {
+  .cd-typography .cd-box .cd-box, .cd-form .cd-box .cd-box {
+    padding: 2em;
+  }
+}
+
