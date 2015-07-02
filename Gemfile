@@ -14,8 +14,12 @@ gem 'devise'
 gem 'rollbar', '~> 1.5.3'
 gem 'activeadmin', '~> 1.0.0.pre1'
 gem 'haml-rails', '~> 0.9'
-gem 'bower-rails'
 gem 'angular-rails-templates'
+
+source 'https://rails-assets.org' do
+  gem 'rails-assets-angular'
+  gem 'rails-assets-angular-route'
+end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
