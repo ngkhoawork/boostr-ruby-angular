@@ -1,0 +1,38 @@
+#logo {
+  width: 123px;
+  height: 34px;
+  background-image: image-url("branding/boostr_logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.nav {
+  li {
+    font-size: 18px;
+    a {
+      &:hover {
+        color: $white;
+        &:after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 0;
+          left: 0;
+          bottom: 15px;
+          border-bottom: 3px solid $brand-primary;
+        }
+      }
+    }
+  }
+}
+
+.nav-tabs {
+  li {
+    margin-right: 60px;
+  }
+}
+
+.navbar-default {
+  padding-bottom: 5px;
+  padding-top: 5px;
+}

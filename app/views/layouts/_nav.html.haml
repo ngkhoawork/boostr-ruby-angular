@@ -1,0 +1,29 @@
+.navbar#header.navbar-default
+  .navbar-inner
+    .container
+      .row
+        .navbar-header
+          %a#logo.navbar-brand{:href => root_path}
+        %p.navbar-text.navbar-right
+          - if user_signed_in?
+            = link_to "Sign out", destroy_user_session_path, method: :delete
+          - else
+            = link_to "Sign in", new_user_session_path
+            \/
+            = link_to "Sign up", new_user_registration_path
+      .row
+        %ul.nav.nav-tabs
+          %li
+            = link_to "DASHBOARD", "#"
+          %li
+            = link_to "DEALS", "#"
+          %li
+            = link_to "FORECAST", "#"
+          %li
+            = link_to "BOOKINGS", "#"
+          %li
+            = link_to "CLIENTS", "#"
+          %li
+            = link_to "PEOPLE", "#"
+          %li
+            = link_to "SETTINGS", "#"
