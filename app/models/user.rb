@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
+  belongs_to :company
+
   ROLES = ['user', 'superadmin']
 
   def roles=(roles)
