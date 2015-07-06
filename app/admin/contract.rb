@@ -10,4 +10,15 @@ ActiveAdmin.register Contract do
     column :end_date
     actions
   end
+
+  form do |f|
+    f.inputs do
+      f.input :company
+      f.input :license
+      f.input :start_date, as: :datepicker
+      f.input :end_date, as: :datepicker
+    end
+
+    f.actions
+  end
 end
