@@ -9,12 +9,12 @@
     %base{ href: "/" }
 
   %body{ ng: { app: "Boostr" } }
-    - if user_signed_in?
-      = link_to "Sign out", destroy_user_session_path, method: :delete
-    - else
-      = link_to "Sign in", new_user_session_path
-      \/
-      = link_to "Sign up", new_user_registration_path
+    %header
+      - if content_for? :nav
+        = yield :nav
+      - else
+        = render 'layouts/nav'
     %p.notice= notice
     %p.alert= alert
     = yield
+
