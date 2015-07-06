@@ -483,3 +483,41 @@
             %input{:type => "checkbox"}
               Check me out
         %button.btn.btn-default{:type => "submit"} Submit
+
+  .page-header
+    %h1 Modals
+  %button.btn.btn-primary.btn-lg{"data-target" => "#myModal", "data-toggle" => "modal", :type => "button"}
+    Launch demo modal
+
+  #myModal.modal.fade{"aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+    .modal-dialog{:role => "document"}
+      .modal-content
+        .modal-header
+          %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} ×
+          %h4#myModalLabel.modal-title Modal title
+        .modal-body
+          %form
+            .form-group
+              %label{:for => "exampleInputEmail1"} Email address
+              %input#exampleInputEmail1.form-control{:placeholder => "Email", :type => "email"}
+            .form-group
+              %label{:for => "exampleInputPassword1"} Password
+              %input#exampleInputPassword1.form-control{:placeholder => "Password", :type => "password"}
+            .form-group
+              %label{:for => "exampleInputFile"} File input
+              %input#exampleInputFile{:type => "file"}
+                %p.help-block Example block-level help text here.
+            %select.form-control
+              %option 1
+              %option 2
+              %option 3
+              %option 4
+              %option 5
+            .checkbox
+              %label
+                %input{:type => "checkbox"}
+                  Check me out
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Cancel
+          %button.btn.btn-primary{:type => "submit"} Save changes
