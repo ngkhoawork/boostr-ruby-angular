@@ -19,11 +19,14 @@ gem 'angular-rails-templates'
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
   gem 'rails-assets-angular-route'
+  gem 'rails-assets-angular-bootstrap'
 end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
   gem 'factory_girl_rails'
+  gem 'capybara'
+  gem 'selenium-webdriver'
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

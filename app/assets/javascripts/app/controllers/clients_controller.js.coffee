@@ -1,4 +1,4 @@
-@app.controller 'ClientsController', ['$scope', ($scope, $modal) ->
+@app.controller 'ClientsController', ['$scope', '$modal', ($scope, $modal) ->
   $scope.title = 'Clients'
 
   $scope.showModal = ->
@@ -6,5 +6,5 @@
       templateUrl: 'modals/new_client.html'
       controller: ($scope, $modalInstance) ->
         $scope.ok = -> $modalInstance.close()
-
+        $scope.cancel = -> $modalInstance.close()
 ]

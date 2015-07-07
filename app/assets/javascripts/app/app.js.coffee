@@ -1,6 +1,7 @@
 @app = angular.module('Boostr', [
   'ngRoute'
   'templates'
+  'ui.bootstrap'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
