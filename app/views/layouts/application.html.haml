@@ -14,7 +14,8 @@
         = yield :nav
       - else
         = render 'layouts/nav'
-    %p.notice= notice
-    %p.alert= alert
-    = yield
+    .container
+      %p.notice= notice
+      %p.alert= alert
+      = yield
 
