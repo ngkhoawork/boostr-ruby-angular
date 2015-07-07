@@ -40,19 +40,12 @@ ActiveAdmin.register Company do
       end
     end
 
-    panel "Licenses" do
-      table_for company.contracts do
-        column "name" do |contract|
-          contract.license.name
-        end
-
-        column "start date" do |contract|
-          contract.start_date
-        end
-
-        column "end date" do |contract|
-          contract.end_date
-        end
+    panel "License" do
+      attributes_table_for company do
+        row :quantity
+        row :cost
+        row :start_date
+        row :end_date
       end
     end
   end
@@ -83,16 +76,11 @@ ActiveAdmin.register Company do
       pa.input :zip
     end
 
-    f.inputs "Contracts" do
-      f.has_many :contracts do |c|
-        if !c.object.nil?
-          c.input :_destroy, as: :boolean, label: "Destroy?"
-        end
-
-        c.input :license
-        c.input :start_date, as: :datepicker
-        c.input :end_date, as: :datepicker
-      end
+    f.inputs "License" do
+      f.input :quantity
+      f.input :cost
+      f.input :start_date, as: :datepicker
+      f.input :end_date, as: :datepicker
     end
 
     f.actions
