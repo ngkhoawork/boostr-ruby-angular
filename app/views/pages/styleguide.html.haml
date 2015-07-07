@@ -1,3 +1,5 @@
+= javascript_include_tag 'bootstrap-sprockets'
+
 .container.theme-showcase{:role => "main"}
 
   .page-header
@@ -288,20 +290,23 @@
         %a{:href => "#"} Separated link
   .page-header
     %h1 Navs
-  %ul.nav.nav-tabs{:role => "tablist"}
-    %li.active{:role => "presentation"}
-      %a{:href => "#"} Home
-    %li{:role => "presentation"}
-      %a{:href => "#"} Profile
-    %li{:role => "presentation"}
-      %a{:href => "#"} Messages
-  %ul.nav.nav-pills{:role => "tablist"}
-    %li.active{:role => "presentation"}
-      %a{:href => "#"} Home
-    %li{:role => "presentation"}
-      %a{:href => "#"} Profile
-    %li{:role => "presentation"}
-      %a{:href => "#"} Messages
+  #nav
+    %ul.nav.nav-tabs{role: "tablist"}
+      %li.dropdown{role: "presentation"}
+        %a.dropdown-toggle{ href: "", role: "button", aria: { haspopup: true, expanded: "false" }, data: { toggle: "dropdown" } }
+          Dropdown
+          #span.glyphicon.glyphicon-chevron-down
+        %ul.dropdown-menu
+          %li
+            %a{ href: '' } First item
+          %li
+            %a{ href: '' } Second item
+      %li{:role => "presentation"}
+        %a{:href => "#"} Home
+      %li.pull-right.last{:role => "presentation"}
+        %a{:href => "#"} Profile
+      %li.pull-right{:role => "presentation"}
+        %a{:href => "#"} Messages
   .page-header
     %h1 Navbars
   %nav.navbar.navbar-default

@@ -433,7 +433,7 @@ $navbar-default-link-active-color:         $white !default;
 
 // //=== Shared nav styles
 $nav-link-padding:                          25px 0px !default;
-//$nav-link-hover-bg:                         $brand-tertiary !default;
+$nav-link-hover-bg:                         $brand-primary !default;
 
 // $nav-disabled-link-color:                   $gray-light !default;
 // $nav-disabled-link-hover-color:             $gray-light !default;
@@ -443,8 +443,8 @@ $nav-tabs-border-color:                     transparent !default;
 
 $nav-tabs-link-hover-border-color:          transparent !default;
 
-$nav-tabs-active-link-hover-bg:            $brand-tertiary !default;
-$nav-tabs-active-link-hover-color:          #fff !default;
+$nav-tabs-active-link-hover-bg:             $white !default;
+$nav-tabs-active-link-hover-color:          $white !default;
 $nav-tabs-active-link-hover-border-color:   transparent !default;
 
 // $nav-tabs-justified-link-border-color:            #ddd !default;

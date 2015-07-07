@@ -6,10 +6,14 @@
   background-position: center;
 }
 
-.nav {
+.navbar-nav {
   li {
     font-size: 18px;
+    margin-right: 60px;
+
     a {
+      padding: 25px 0;
+
       &:hover {
         color: $white;
         &:after {
@@ -26,16 +30,46 @@
   }
 }
 
-.navbar-nav {
-  li {
-    margin-right: 60px;
-  }
-}
-
 .navbar-default {
   padding-bottom: 5px;
   padding-top: 5px;
   a {
     color: $brand-secondary;
+  }
+}
+
+#nav {
+  background: $brand-primary;
+
+  .nav-tabs {
+    background: $brand-primary;
+    color: $white;
+
+    li {
+      margin-right: 30px;
+
+      &.last {
+        margin-right: 0;
+      }
+
+      a {
+        color: $white;
+
+
+        &:hover {
+          color: $gray-lighter;
+        }
+      }
+
+      &.dropdown {
+        .dropdown-menu {
+          li {
+            a {
+              color: $brand-primary;
+            }
+          }
+        }
+      }
+    }
   }
 }
