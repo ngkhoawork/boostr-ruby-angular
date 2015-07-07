@@ -4,7 +4,8 @@
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/new_client.html'
-      controller: ($scope, $modalInstance) ->
+      controller: ['$scope', '$modalInstance', ($scope, $modalInstance) ->
         $scope.ok = -> $modalInstance.close()
         $scope.cancel = -> $modalInstance.close()
+      ]
 ]
