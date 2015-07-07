@@ -1,0 +1,10 @@
+#client_modal
+  .modal-header
+    %h2
+      New Client
+  .modal-body
+  .modal-footer
+    %button.btn.btn-danger{ ng: { click: "cancel()" } }
+      Cancel
+    %button.btn.btn-success.pull-right{ ng: { click: "createClient()" } }
+      Create
