@@ -5,9 +5,12 @@
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
   $routeProvider
-    .when '/',
+    .when '/dashboard',
       templateUrl: 'dashboard.html'
       controller: 'DashboardController'
-    .otherwise({ redirectTo: '/' })
+    .when '/clients',
+      templateUrl: 'clients.html'
+      controller: 'ClientsController'
+    .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])

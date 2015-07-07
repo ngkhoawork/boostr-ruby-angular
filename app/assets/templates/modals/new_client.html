@@ -1,0 +1,57 @@
+<div class='modal-header'>
+  <h2>
+    New Client
+  </h2>
+</div>
+<div class='modal-body'>
+  <div class='col-xs-8'>
+    <div class='col-xs-8'>
+      <form>
+        <row>
+          <div class='col-xs-2'>
+            <img class="img-thumbnail" alt="100x100" src='//placehold.it/100x100'>
+          </div>
+          <div class='col-xs-10'>
+            <input ng-model="formData.newClientName" placeholder="Name" type="text">
+            <input ng-model="formData.newClient.primaryContact.city" placeholder="City" type="text">
+            <input ng-model="formData.newClient.primaryContact.state" placeholder="State" type="text">
+          </div>
+        </row>
+        <hr>
+        <row>
+          <div class='col-xs-12'>
+            <label><strong>Mobile</strong></label>
+            <input ng-model="formData.newClient.primaryContact.mobile" placeholder="Mobile Number" type="tel">
+            <label><strong>Office</strong></label>
+            <input ng-model="formData.newClient.primaryContact.office" placeholder="Office Number" type="tel">
+            <label><strong>Email</strong></label>
+            <input ng-model="formData.newClient.primaryContact.email" placeholder="Email" type="email">
+            <label><strong>Website</strong></label>
+            <input ng-model="formData.newClient.primaryContact.website" placeholder="Website" type="url">
+          </div>
+        </row>
+      </form>
+    </div>
+  </div>
+  <div class='col-xs-4'>
+    <row>
+      <h3 class='text-center'>Did you mean...</h3>
+    </row>
+    <hr>
+    <row></row>
+    <hr>
+    <row>
+      <p>Add
+        <b>$99/month</b> and let Boostr keep this client record
+        <b>always</b> up to date.</p>
+    </row>
+    <row>
+      <button class='btn btn-success'>Upgrade</button>
+      <button class='btn btn-info pull-right'>Details</button>
+    </row>
+  </div>
+</div>
+<div class='modal-footer'>
+  <button class='btn btn-danger'>Cancel</button>
+  <button class='btn btn-success pull-right' ng-click="createClient()">Create</button>
+</div>
