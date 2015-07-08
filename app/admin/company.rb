@@ -1,5 +1,8 @@
 ActiveAdmin.register Company do
-  permit_params :name, :primary_contact_id, :billing_contact_id
+  permit_params :name, :primary_contact_id, :billing_contact_id, :quantity,
+  :cost, :start_date, :end_date, billing_address_attributes: [ :street1, :street2, :city,
+  :state, :zip, :website, :phone ], physical_address_attributes: [ :street1, :street2,
+  :city, :state, :zip ]
 
   index do
     selectable_column
