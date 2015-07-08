@@ -1,0 +1,24 @@
+.form-control {
+  box-shadow: 1px 1px 1px $light-gray;
+  border-width: 0px;
+  font-size: 18px;
+  font-weight: bold;
+  &:-moz-placeholder {
+    color: $gray-lighter;
+    opacity: 1;
+  }
+  &:-ms-input-placeholder {
+    color: $gray-lighter;
+  }
+  ::-webkit-input-placeholder {
+    color: $gray-lighter;
+  }
+  ::-moz-placeholder {
+    color: $gray-lighter;
+    opacity: 1;
+  }
+  .control-label {
+    line-height: 55px;
+    font-size: 18px;
+  }
+}
