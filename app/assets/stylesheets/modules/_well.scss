@@ -1,0 +1,10 @@
+.well {
+  -webkit-box-shadow: 1px 1px 1px 1px $gray-light !important;
+  -moz-box-shadow: 1px 1px 1px 1px $gray-light !important;
+  box-shadow: 1px 1px 1px 1px $gray-light !important;
+  color: $brand-secondary;
+
+  strong {
+    color: $gray-dark;
+  }
+}
