@@ -1,4 +1,4 @@
-.navbar#header.navbar-default
+.navbar#header.navbar-default{ ng: { controller: 'NavbarController' } }
   .navbar-inner
     .container
       .row
@@ -13,17 +13,17 @@
             = link_to "Sign up", new_user_registration_path
       .row
         %ul.nav.navbar-nav
-          %li
+          %li{ ng: { class: "{ active: isActive('/dashboard') }" } }
             = link_to "DASHBOARD", "/#dashboard"
-          %li
+          %li{ ng: { class: "{ active: isActive('/deals') }" } }
             = link_to "DEALS", "#"
-          %li
+          %li{ ng: { class: "{ active: isActive('/forecast') }" } }
             = link_to "FORECAST", "#"
-          %li
+          %li{ ng: { class: "{ active: isActive('/bookings') }" } }
             = link_to "BOOKINGS", "#"
-          %li
+          %li{ ng: { class: "{ active: isActive('/clients') }" } }
             = link_to "CLIENTS", "/#clients"
-          %li
+          %li{ ng: { class: "{ active: isActive('/people') }" } }
             = link_to "PEOPLE", "#"
-          %li
+          %li{ ng: { class: "{ active: isActive('/settings') }" } }
             = link_to "SETTINGS", "#"
