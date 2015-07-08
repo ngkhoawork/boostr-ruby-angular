@@ -559,7 +559,8 @@
       .modal-content
         .modal-header.text-center
           %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
-            %span{"aria-hidden" => "true"} ×
+            %span{"aria-hidden" => "true"}
+              = inline_svg 'close.svg'
           %h2#myModalLabel.modal-title
             %strong Modal Title
         .modal-body

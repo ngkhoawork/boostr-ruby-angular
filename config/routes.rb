@@ -1,11 +1,12 @@
 Rails.application.routes.draw do
 
+  mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   ActiveAdmin.routes(self)
   devise_for :users
-
   root 'pages#index'
-
   get 'styleguide' => 'pages#styleguide', as: :styleguide
+
+  resources :clients, only: [:create]
 
   get '*path' => 'pages#index'
 

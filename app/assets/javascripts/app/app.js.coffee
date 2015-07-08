@@ -1,4 +1,5 @@
 @app = angular.module('Boostr', [
+  'services'
   'ngRoute'
   'templates'
   'ui.bootstrap'
@@ -18,3 +19,12 @@
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
+
+@app.config ['$httpProvider', ($httpProvider) ->
+  csrfToken = $('meta[name=csrf-token]').attr('content')
+  $httpProvider.defaults.headers.post['X-CSRF-Token'] = csrfToken
+  $httpProvider.defaults.headers.put['X-CSRF-Token'] = csrfToken
+  $httpProvider.defaults.headers.patch['X-CSRF-Token'] = csrfToken
+]
+
+@service = angular.module 'services', ['ngResource']
