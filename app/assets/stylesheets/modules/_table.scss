@@ -1,0 +1,39 @@
+.table-wrapper {
+  border-radius: 4px;
+  overflow: hidden;
+  .table {
+    strong {
+      color: $gray-dark;
+    }
+    thead {
+      background-color: $brand-primary;
+      color: $white;
+      tr {
+        max-height: 38px !important;
+        height: 38px !important;
+        overflow: hidden;
+        font-size: 14px;
+        th {
+          border-bottom: none;
+          line-height: 38px;
+          &:first-child {
+            padding-left: 25px;
+          }
+        }
+      }
+    }
+    tbody {
+      tr {
+        max-height: 48px !important;
+        height: 48px !important;
+        overflow: hidden;
+        td {
+          line-height: 48px;
+          &:first-child {
+            padding-left: 50px;
+          }
+        }
+      }
+    }
+  }
+}
