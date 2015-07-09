@@ -10,22 +10,8 @@
   li {
     font-size: 18px;
     margin-right: 60px;
-
     a {
       padding: 25px 0;
-
-      &:hover {
-        color: $white;
-        &:after {
-          content: '';
-          position: absolute;
-          width: 100%;
-          height: 0;
-          left: 0;
-          bottom: 15px;
-          border-bottom: 3px solid $brand-primary;
-        }
-      }
     }
   }
 }
@@ -33,6 +19,19 @@
 .navbar-default {
   padding-bottom: 5px;
   padding-top: 5px;
+  .active {
+    a {
+      &:after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 0;
+        left: 0;
+        bottom: 15px;
+        border-bottom: 3px solid $brand-primary;
+      }
+    }
+  }
   a {
     color: $brand-secondary;
   }
@@ -40,27 +39,20 @@
 
 #nav {
   background: $brand-primary;
-
   .nav-tabs {
     background: $brand-primary;
     color: $white;
-
     li {
       margin-right: 30px;
-
       &.last {
         margin-right: 0;
       }
-
       a {
         color: $white;
-
-
         &:hover {
           color: $gray-lighter;
         }
       }
-
       &.dropdown {
         .dropdown-menu {
           li {
