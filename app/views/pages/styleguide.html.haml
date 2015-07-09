@@ -390,33 +390,74 @@
     %h1 List groups
   .row
     .col-sm-4
-      %ul.list-group
-        %li.list-group-item Cras justo odio
-        %li.list-group-item Dapibus ac facilisis in
-        %li.list-group-item Morbi leo risus
-        %li.list-group-item Porta ac consectetur ac
-        %li.list-group-item Vestibulum at eros
+      .list-group.list-sm
+        %a.list-group-item.vertical-center{:href => "#"}
+          .col-xs-5
+          .col-xs-7
+            .row
+              %strong
+                All Open (13)
+            .row
+              $500,000
+        %a.list-group-item.vertical-center.active{:href => "#"}
+          .col-xs-5
+          .col-xs-7
+            .row
+              %strong
+                Prospects (10)
+            .row
+              $100,000
+        %a.list-group-item.vertical-center{:href => "#"}
+          .col-xs-5
+          .col-xs-7
+            .row
+              %strong
+                Need Proposal (3)
+            .row
+              $100,000
+        %a.list-group-item.vertical-center{:href => "#"}
+          .col-xs-5
+          .col-xs-7
+            .row
+              %strong
+                In Negotiations (2)
+            .row
+              $100,000
+        %a.list-group-item.vertical-center{:href => "#"}
+          .col-xs-5
+          .col-xs-7
+            .row
+              %strong
+                Verbal Committment (5)
+            .row
+              $100,000
     / /.col-sm-4
-    .col-sm-4
-      .list-group
-        %a.list-group-item.active{:href => "#"}
-          Cras justo odio
-        %a.list-group-item{:href => "#"} Dapibus ac facilisis in
-        %a.list-group-item{:href => "#"} Morbi leo risus
-        %a.list-group-item{:href => "#"} Porta ac consectetur ac
-        %a.list-group-item{:href => "#"} Vestibulum at eros
-    / /.col-sm-4
-    .col-sm-4
-      .list-group
-        %a.list-group-item.active{:href => "#"}
-          %h4.list-group-item-heading List group item heading
-          %p.list-group-item-text Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
-        %a.list-group-item{:href => "#"}
-          %h4.list-group-item-heading List group item heading
-          %p.list-group-item-text Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
-        %a.list-group-item{:href => "#"}
-          %h4.list-group-item-heading List group item heading
-          %p.list-group-item-text Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
+    .col-sm-8
+      .list-group.list-lg
+        %a.list-group-item.vertical-center{:href => "#"}
+          .col-xs-5
+          .col-xs-7
+            .row
+              %strong
+                Digitas LA
+            .row
+              13 people   3 deals
+        %a.list-group-item.vertical-center.active{:href => "#"}
+          .col-xs-5
+          .col-xs-7
+            .row
+              %strong
+                Digitas NYC
+            .row
+              13 people   3 deals
+        %a.list-group-item.vertical-center{:href => "#"}
+          .col-xs-5
+          .col-xs-7
+            .row
+              %strong
+                Digitas Boston
+            .row
+              13 people   3 deals
     / /.col-sm-4
   .page-header
     %h1 Panels
@@ -483,17 +524,20 @@
     %h1 Form
   .cd-form
     .cd-box
-      %form
+      %form.form-horizontal
         .form-group
-          %label{:for => "exampleInputEmail1"} Email address
-          %input#exampleInputEmail1.form-control{:placeholder => "Email", :type => "email"}
+          %label.col-sm-2.control-label{:for => "exampleInputEmail1"} Email
+          .col-sm-10
+            %input#exampleInputEmail1.form-control{:placeholder => "Email", :type => "email"}
         .form-group
-          %label{:for => "exampleInputPassword1"} Password
-          %input#exampleInputPassword1.form-control{:placeholder => "Password", :type => "password"}
+          %label.col-sm-2.control-label{:for => "inputPassword3"} Password
+          .col-sm-10
+            %input#inputPassword3.form-control{:placeholder => "Password", :type => "password"}
         .form-group
-          %label{:for => "exampleInputFile"} File input
-          %input#exampleInputFile{:type => "file"}
-            %p.help-block Example block-level help text here.
+          %label.col-sm-2.control-label{:for => "exampleInputFile"} File Input
+          .col-sm-10
+            %input#exampleInputFile{:type => "file"}
+              %p.help-block Example block-level help text here.
         %select.form-control
           %option 1
           %option 2
@@ -505,7 +549,6 @@
             %input{:type => "checkbox"}
               Check me out
         %button.btn.btn-default{:type => "submit"} Submit
-
   .page-header
     %h1 Modals
   %button.btn.btn-primary.btn-lg{"data-target" => "#myModal", "data-toggle" => "modal", :type => "button"}
