@@ -19,8 +19,10 @@
     color: $gray-lighter;
     opacity: 1;
   }
+}
+
+.form-group {
   .control-label {
-    line-height: 55px;
-    font-size: 18px;
+    line-height: 42px;
   }
 }

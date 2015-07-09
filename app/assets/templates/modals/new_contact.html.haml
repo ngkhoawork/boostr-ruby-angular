@@ -1,0 +1,10 @@
+#contact_modal
+  .modal-header
+    %h2
+      New Contact
+  .modal-body
+  .modal-footer
+    %button.btn.btn-danger{ ng: { click: "cancel()" } }
+      Cancel
+    %button.btn.btn-success.pull-right{ ng: { click: "createContact()" } }
+      Create
