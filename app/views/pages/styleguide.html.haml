@@ -102,105 +102,49 @@
   .page-header
     %h1 Tables
   .row
-    .col-md-6
-      %table.table
-        %thead
-          %tr
-            %th #
-            %th First Name
-            %th Last Name
-            %th Username
-        %tbody
-          %tr
-            %td 1
-            %td Mark
-            %td Otto
-            %td @mdo
-          %tr
-            %td 2
-            %td Jacob
-            %td Thornton
-            %td @fat
-          %tr
-            %td 3
-            %td Larry
-            %td the Bird
-            %td @twitter
-    .col-md-6
-      %table.table.table-striped
-        %thead
-          %tr
-            %th #
-            %th First Name
-            %th Last Name
-            %th Username
-        %tbody
-          %tr
-            %td 1
-            %td Mark
-            %td Otto
-            %td @mdo
-          %tr
-            %td 2
-            %td Jacob
-            %td Thornton
-            %td @fat
-          %tr
-            %td 3
-            %td Larry
-            %td the Bird
-            %td @twitter
-  .row
-    .col-md-6
-      %table.table.table-bordered
-        %thead
-          %tr
-            %th #
-            %th First Name
-            %th Last Name
-            %th Username
-        %tbody
-          %tr
-            %td{:rowspan => "2"} 1
-            %td Mark
-            %td Otto
-            %td @mdo
-          %tr
-            %td Mark
-            %td Otto
-            %td @TwBootstrap
-          %tr
-            %td 2
-            %td Jacob
-            %td Thornton
-            %td @fat
-          %tr
-            %td 3
-            %td{:colspan => "2"} Larry the Bird
-            %td @twitter
-    .col-md-6
-      %table.table.table-condensed
-        %thead
-          %tr
-            %th #
-            %th First Name
-            %th Last Name
-            %th Username
-        %tbody
-          %tr
-            %td 1
-            %td Mark
-            %td Otto
-            %td @mdo
-          %tr
-            %td 2
-            %td Jacob
-            %td Thornton
-            %td @fat
-          %tr
-            %td 3
-            %td{:colspan => "2"} Larry the Bird
-            %td @twitter
+    .col-md-12
+      .table-wrapper
+        %table.table.table-hover
+          %thead
+            %tr
+              %th OPPORTUNITY
+              %th ADVERTISER
+              %th STAGE
+              %th SPEND
+              %th START DATE
+          %tbody
+            %tr
+              %td
+                %strong
+                  Apple Watch
+              %td Apple, Inc.
+              %td Prospect
+              %td $25,000
+              %td 6/8/2015
+            %tr
+              %td
+                %strong
+                  Shampoo
+              %td P&G
+              %td Prospect
+              %td $10,000
+              %td 6/8/2015
+            %tr
+              %td
+                %strong
+                  Goldleaf Shoe
+              %td Nike
+              %td Needs Proposal
+              %td $100,000
+              %td 6/8/2015
+            %tr
+              %td
+                %strong
+                  Surface 3
+              %td Microsoft
+              %td Needs Proposal
+              %td $300,000
+              %td 6/8/2015
   .page-header
     %h1 Thumbnails
   %img.img-thumbnail{src: '//placehold.it/200x200', alt: "A generic square placeholder image with a white border around it, making it resemble a photograph taken with an old instant camera" }/
