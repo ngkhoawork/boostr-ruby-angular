@@ -21,6 +21,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
   gem 'rails-assets-angular-route'
   gem 'rails-assets-angular-bootstrap'
+  gem 'rails-assets-angular-resource'
 end
 
 group :development, :test do
@@ -28,6 +29,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'capybara'
   gem 'selenium-webdriver'
+  gem 'jasmine-rails'
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -37,5 +39,9 @@ group :development, :test do
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+
+  source 'https://rails-assets.org' do
+    gem 'rails-assets-angular-mocks'
+  end
 end
 
