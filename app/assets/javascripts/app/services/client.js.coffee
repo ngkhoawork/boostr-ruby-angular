@@ -9,7 +9,6 @@
   @all = (callback) ->
     if allClients.length == 0
       resource.query {}, (clients) =>
-        console.log(clients)
         allClients = clients
         if clients.length > 0 && angular.isUndefined(currentClient)
           @set(clients[0])
