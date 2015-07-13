@@ -1,5 +1,10 @@
-class ClientsController < ApplicationController
+class Api::ClientsController < ApplicationController
   respond_to :json
+
+  def index
+    clients = current_user.company.clients.order(:name)
+    render json: clients
+  end
 
   def create
     client = current_user.company.clients.new(client_params)

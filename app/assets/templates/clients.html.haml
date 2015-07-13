@@ -2,8 +2,25 @@
   #nav
     .container
       .row
-        .xs-col-12
+        .col-xs-12
           %ul.nav.nav-tabs
             %li.pull-right.last
               %a{ href: '', ng: { click: 'showModal()' } }
                 New Client
+
+  .row
+    .col-xs-12
+      %br
+  .row
+    .col-xs-5
+      .list-group.list-lg
+        %a.list-group-item.vertical-center{href: '/clients/{{ client.id }}', ng: { repeat: 'client in clients | orderBy: "name"', class: '{ active: client.id == currentClient.id }' } }
+          .col-xs-5.col-xs-offset-7
+            .row
+              %strong
+                {{ client.name }}
+            .row
+              13 people   3 deals
+    .col-xs-7
+      %h2
+        {{ currentClient.name }}
