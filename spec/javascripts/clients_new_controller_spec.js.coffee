@@ -18,6 +18,6 @@ describe "ClientsNewController", ->
         name: 'Proctor'
       }
 
-      @httpBackend.expectPOST('/clients').respond({ name: 'Proctor'})
+      @httpBackend.expectPOST('/api/clients').respond({ name: 'Proctor'})
       expect(@scope.submitForm()).toBeTruthy()
       @httpBackend.flush()

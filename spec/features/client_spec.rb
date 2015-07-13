@@ -10,9 +10,17 @@ feature 'Clients' do
   end
 
   describe 'subnav' do
-    scenario 'pops up a new client modal' do
+    scenario 'pops up a new client modal and creates a new client' do
       click_link('New Client')
       expect(page).to have_css('#client_modal')
+
+      within '#client_modal' do
+        fill_in 'name', with: 'Bobby'
+        click_on 'Create'
+      end
+
+      expect(page).to have_no_css('#client_modal')
     end
   end
+
 end
