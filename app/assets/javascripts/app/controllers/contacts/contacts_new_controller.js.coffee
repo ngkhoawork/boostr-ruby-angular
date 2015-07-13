@@ -5,6 +5,7 @@
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.contact = {}
+  
   Client.all (clients) ->
       $scope.clients = clients
 

@@ -6,5 +6,6 @@ FactoryGirl.define do
     state "ID"
     zip "83340"
     phone "2088675309"
+    mobile "1728726789"
   end
 end

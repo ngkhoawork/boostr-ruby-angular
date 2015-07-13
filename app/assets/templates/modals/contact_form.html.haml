@@ -31,7 +31,11 @@
       .form-group
         %label.col-sm-2.control-label{ for: 'office'} Office
         .col-sm-10
-          %input.form-control{ name: 'office', placeholder: 'Office Number', ng: { model: 'contact.address.office' } }
+          %input.form-control{ name: 'office', placeholder: 'Office Number', ng: { model: 'contact.address.phone' } }
+      .form-group
+        %label.col-sm-2.control-label{ for: 'mobile'} Mobile
+        .col-sm-10
+          %input.form-control{ name: 'mobile', placeholder: 'Mobile Number', ng: { model: 'contact.address.mobile' } }
       .form-group
         %label.col-sm-2.control-label{ for: 'email'} Email
         .col-sm-10

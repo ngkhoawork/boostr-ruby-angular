@@ -12,6 +12,17 @@ RSpec.describe Api::ContactsController, type: :controller do
     sign_in user
   end
 
+  describe "GET #index" do
+    it 'returns a list of contacts' do
+      create_list :contact, 3, company: company, client: client
+
+      get :index, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(3)
+    end
+  end
+
   describe "POST #create" do
     it 'creates a new contact and returns success' do
       expect{

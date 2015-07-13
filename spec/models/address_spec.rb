@@ -9,4 +9,12 @@ RSpec.describe Address, type: :model do
       expect(address.phone).to eq('2088675309')
     end
   end
+
+  context 'mobile number' do
+    it 'is stripped and stored as an integer' do
+      address = Address.create(mobile: '(208) 867-5309')
+
+      expect(address.mobile).to eq('2088675309')
+    end
+  end
 end
