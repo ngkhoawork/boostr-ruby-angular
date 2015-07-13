@@ -20,9 +20,9 @@
     .when '/clients',
       templateUrl: 'clients.html'
       controller: 'ClientsController'
-    .when '/people',
-      templateUrl: 'people.html'
-      controller: 'PeopleController'
+    .when '/contacts',
+      templateUrl: 'contacts.html'
+      controller: 'ContactsController'
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
