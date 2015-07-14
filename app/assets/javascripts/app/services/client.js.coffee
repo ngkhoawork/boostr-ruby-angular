@@ -10,8 +10,6 @@
     if allClients.length == 0
       resource.query {}, (clients) =>
         allClients = clients
-        if clients.length > 0 && angular.isUndefined(currentClient)
-          @set(clients[0])
         callback(clients)
     else
       callback(allClients)
@@ -44,9 +42,10 @@
   @get = () ->
     currentClient
 
-  @set = (client) =>
-    currentClient = client
-    $rootScope.$broadcast 'updated_clients'
+  @set = (client_id) =>
+    currentClient = _.find allClients, (client) ->
+      return parseInt(client_id) == client.id
+    $rootScope.$broadcast 'updated_current_client'
 
   return
 ]

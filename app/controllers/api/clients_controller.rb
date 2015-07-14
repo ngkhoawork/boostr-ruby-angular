@@ -2,7 +2,7 @@ class Api::ClientsController < ApplicationController
   respond_to :json
 
   def index
-    clients = current_user.company.clients.order(:name)
+    clients = current_user.company.clients.order(:name).includes(:address)
     render json: clients
   end
 
@@ -21,6 +21,6 @@ class Api::ClientsController < ApplicationController
 
   def client_params
     params.require(:client).permit(:name, :website, address_attributes: [ :street1,
-    :street2, :city, :state, :zip, :phone])
+    :street2, :city, :state, :zip, :phone, :email])
   end
 end

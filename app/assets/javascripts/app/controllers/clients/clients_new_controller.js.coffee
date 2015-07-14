@@ -8,7 +8,7 @@
 
   $scope.submitForm = () ->
     Client.create(client: $scope.client).then (client) ->
-      Client.set(client)
+      Client.set(client.id)
       $modalInstance.close()
 
   $scope.cancel = ->

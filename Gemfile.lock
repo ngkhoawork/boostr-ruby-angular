@@ -89,6 +89,7 @@ GEM
       execjs
     coffee-script-source (1.9.1.1)
     columnize (0.9.0)
+    database_cleaner (1.4.1)
     debug_inspector (0.0.2)
     devise (3.4.1)
       bcrypt (~> 3.0)
@@ -196,6 +197,7 @@ GEM
       rails-assets-angular (= 1.4.1)
     rails-assets-angular-route (1.4.1)
       rails-assets-angular (= 1.4.1)
+    rails-assets-underscore (1.8.3)
     rails-deprecated_sanitizer (1.0.3)
       activesupport (>= 4.2.0.alpha)
     rails-dom-testing (1.0.6)
@@ -292,6 +294,7 @@ DEPENDENCIES
   byebug
   capybara
   coffee-rails (~> 4.1.0)
+  database_cleaner
   devise
   factory_girl_rails
   haml-rails (~> 0.9)
@@ -307,6 +310,7 @@ DEPENDENCIES
   rails-assets-angular-mocks!
   rails-assets-angular-resource!
   rails-assets-angular-route!
+  rails-assets-underscore!
   rollbar (~> 1.5.3)
   rspec-rails (~> 3.0)
   sass-rails (~> 5.0)

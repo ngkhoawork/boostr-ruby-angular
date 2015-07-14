@@ -3,8 +3,13 @@
   -moz-box-shadow: 1px 1px 1px 1px $gray-light !important;
   box-shadow: 1px 1px 1px 1px $gray-light !important;
   color: $brand-secondary;
+  margin-top: 15px;
 
   strong {
     color: $gray-dark;
+  }
+
+  .row {
+    padding-bottom: 5px;
   }
 }

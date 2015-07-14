@@ -1,5 +1,6 @@
 @app.controller 'NavbarController', ['$scope', '$location', ($scope, $location) ->
 
   $scope.isActive = (viewLocation) ->
-    viewLocation == $location.path()
+    $location.path().indexOf(viewLocation) == 0
+
   ]

@@ -1,11 +1,11 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', 'Client',
-($scope, $rootScope, $modal, Client) ->
+['$scope', '$rootScope', '$modal', '$routeParams', 'Client',
+($scope, $rootScope, $modal, $routeParams, Client) ->
 
   $scope.init = ->
     Client.all (clients) ->
       $scope.clients = clients
-      $scope.currentClient = Client.get()
+      Client.set($routeParams.id || clients[0].id)
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -15,7 +15,10 @@
       backdrop: 'static'
       keyboard: false
 
-  $rootScope.$on 'updated_clients', ->
+  $scope.$on 'updated_current_client', ->
+    $scope.currentClient = Client.get()
+
+  $scope.$on 'updated_clients', ->
     $scope.init()
 
   $scope.init()

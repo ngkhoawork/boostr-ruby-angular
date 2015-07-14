@@ -10,6 +10,9 @@
     .when '/dashboard',
       templateUrl: 'dashboard.html'
       controller: 'DashboardController'
+    .when '/clients/:id',
+      templateUrl: 'clients.html'
+      controller: 'ClientsController'
     .when '/clients',
       templateUrl: 'clients.html'
       controller: 'ClientsController'

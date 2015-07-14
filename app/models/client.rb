@@ -6,4 +6,8 @@ class Client < ActiveRecord::Base
   accepts_nested_attributes_for :address
 
   validates :name, presence: true
+
+  def as_json(options = {})
+    super(options.merge(include: [:address]))
+  end
 end

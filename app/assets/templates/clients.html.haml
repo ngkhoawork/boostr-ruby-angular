@@ -8,19 +8,44 @@
               %a{ href: '', ng: { click: 'showModal()' } }
                 New Client
 
-  .row
-    .col-xs-12
-      %br
-  .row
-    .col-xs-5
-      .list-group.list-lg
-        %a.list-group-item.vertical-center{href: '/clients/{{ client.id }}', ng: { repeat: 'client in clients | orderBy: "name"', class: '{ active: client.id == currentClient.id }' } }
-          .col-xs-5.col-xs-offset-7
-            .row
+  .container
+    .row
+      .col-xs-12
+        %br
+    .row
+      #client-list.col-xs-5
+        .list-group.list-lg
+          %a.list-group-item.vertical-center{href: '/#clients/{{ client.id }}', ng: { repeat: 'client in clients | orderBy: "name"', class: '{ active: client.id == currentClient.id }' } }
+            .col-xs-8.col-xs-offset-4
+              .row
+                %strong
+                  {{ client.name }}
+              .row
+                13 people   3 deals
+      #client-detail.col-xs-7
+        %h3
+          {{ currentClient.name }}
+          %br
+          %small
+            {{ currentClient.address.city }}, {{ currentClient.address.state}}
+
+        .well
+          .row
+            .col-xs-2
               %strong
-                {{ client.name }}
-            .row
-              13 people   3 deals
-    .col-xs-7
-      %h2
-        {{ currentClient.name }}
+                Office
+            .col-xs-10
+              {{ currentClient.address.phone }}
+          .row
+            .col-xs-2
+              %strong
+                Email
+            .col-xs-10
+              {{ currentClient.address.email }}
+
+          .row
+            .col-xs-2
+              %strong
+                Website
+            .col-xs-10
+              {{ currentClient.website }}
