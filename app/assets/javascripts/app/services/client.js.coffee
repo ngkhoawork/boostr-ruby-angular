@@ -2,7 +2,27 @@
 ['$resource', '$rootScope', '$q',
 ($resource, $rootScope, $q) ->
 
-  resource = $resource '/api/clients/:id', { id: '@id' }
+  resource = $resource '/api/clients/:id', { id: '@id' },
+    update: {
+      method: 'PUT'
+      url: '/api/clients/:id'
+      transformRequest: (original, headers) ->
+        send = {}
+        address_attributes =
+          street1: original.client.address.street1
+          street2: original.client.address.street2
+          city: original.client.address.city
+          state: original.client.address.state
+          zip: original.client.address.zip
+          phone: original.client.address.phone
+          email: original.client.address.email
+        send.client =
+          name: original.client.name
+          website: original.client.website
+          address_attributes: address_attributes
+        angular.toJson(send)
+    }
+
   allClients = []
   currentClient = undefined
 

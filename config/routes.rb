@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
-    resources :clients, only: [:index, :create]
+    resources :clients, only: [:index, :create, :update]
   end
 
   get '*path' => 'pages#index'

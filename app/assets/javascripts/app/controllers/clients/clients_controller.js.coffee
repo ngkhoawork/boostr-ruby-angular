@@ -9,9 +9,17 @@
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
-      templateUrl: 'modals/new_client.html'
+      templateUrl: 'modals/client_form.html'
       size: 'lg'
       controller: 'ClientsNewController'
+      backdrop: 'static'
+      keyboard: false
+
+  $scope.showEditModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/client_form.html'
+      size: 'lg'
+      controller: 'ClientsEditController'
       backdrop: 'static'
       keyboard: false
 
