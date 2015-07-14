@@ -22,6 +22,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-route'
   gem 'rails-assets-angular-bootstrap'
   gem 'rails-assets-angular-resource'
+  gem 'rails-assets-underscore'
 end
 
 group :development, :test do
@@ -31,6 +32,7 @@ group :development, :test do
   gem 'selenium-webdriver'
   gem 'jasmine-rails'
   gem 'launchy'
+  gem 'database_cleaner'
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
