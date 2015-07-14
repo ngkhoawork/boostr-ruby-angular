@@ -10,8 +10,16 @@
 
   .container
     .row
-      .col-xs-12
-        %br
+      .col-xs-6
+        .search
+      .col-xs-6
+        .tools.pull-right
+          %a#delete-client{ href: '' }
+            = inline_svg 'trash.svg'
+          %a{ href: '' }
+            = inline_svg 'paper.svg'
+          %a#edit-client{ href: '', ng: { click: 'showEditModal()' } }
+            = inline_svg 'edit.svg'
     .row
       #client-list.col-xs-5
         .list-group.list-lg
