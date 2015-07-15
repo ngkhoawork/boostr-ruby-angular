@@ -8,17 +8,19 @@
 
 .navbar-nav {
   li {
-    font-size: 18px;
-    margin-right: 60px;
+    font-size: 15px;
+    margin-right: 53px;
+
     a {
-      padding: 25px 0;
+      padding: 20px 0;
     }
   }
 }
 
 .navbar-default {
-  padding-bottom: 5px;
+  padding-bottom: 3px;
   padding-top: 5px;
+
   .active {
     a {
       &:after {
@@ -32,8 +34,26 @@
       }
     }
   }
+
   a {
     color: $brand-secondary;
+  }
+
+  .navbar-brand {
+    padding: 22px 15px;
+  }
+
+  .navbar-text {
+    margin-top: 22px;
+    margin-bottom: 20px;
+
+    a {
+      color: #636f7a;
+    }
+
+    &.navbar-right {
+      margin-right: 0;
+    }
   }
 }
 
@@ -42,17 +62,21 @@
   .nav-tabs {
     background: $brand-primary;
     color: $white;
+
     li {
       margin-right: 30px;
+
       &.last {
         margin-right: 0;
       }
+
       a {
         color: $white;
         &:hover {
           color: $gray-lighter;
         }
       }
+
       &.dropdown {
         .dropdown-menu {
           li {

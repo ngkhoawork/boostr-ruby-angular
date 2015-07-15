@@ -6,11 +6,11 @@
           %a#logo.navbar-brand{:href => root_path}
         %p.navbar-text.navbar-right
           - if user_signed_in?
-            = link_to "Sign out", destroy_user_session_path, method: :delete
+            = link_to "Sign out", destroy_user_session_path, method: :delete, class: 'navbar-link'
           - else
-            = link_to "Sign in", new_user_session_path
+            = link_to "Sign in", new_user_session_path, class: 'navbar-link'
             \/
-            = link_to "Sign up", new_user_registration_path
+            = link_to "Sign up", new_user_registration_path, class: 'navbar-link'
       .row
         %ul.nav.navbar-nav
           %li{ ng: { class: "{ active: isActive('/dashboard') }" } }
