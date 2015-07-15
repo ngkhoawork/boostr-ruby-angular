@@ -18,6 +18,9 @@ feature 'Clients' do
 
       within '#client_modal' do
         fill_in 'name', with: 'Bobby'
+        fill_in 'city', with: 'Boise'
+        fill_in 'state', with: 'ID'
+
         click_on 'Create'
       end
 
@@ -28,11 +31,18 @@ feature 'Clients' do
         expect(find('.list-group-item.active strong')).to have_text('Bobby')
       end
 
+      within '#client-detail' do
+        expect(find('h3')).to have_text('Bobby')
+        expect(find('h3')).to have_text('Boise, ID')
+      end
+
       click_link('New Client')
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
         fill_in 'name', with: 'Johnny'
+        fill_in 'city', with: 'Seattle'
+        fill_in 'state', with: 'WA'
         click_on 'Create'
       end
 
@@ -45,6 +55,7 @@ feature 'Clients' do
 
       within '#client-detail' do
         expect(find('h3')).to have_text('Johnny')
+        expect(find('h3')).to have_text('Seattle, WA')
       end
 
     end
@@ -66,6 +77,7 @@ feature 'Clients' do
       within '#client_modal' do
         fill_in 'name', with: 'Bobby'
         fill_in 'city', with: 'Boise'
+        fill_in 'state', with: 'ID'
         click_on 'Update'
       end
 
@@ -78,7 +90,7 @@ feature 'Clients' do
 
       within '#client-detail' do
         expect(find('h3')).to have_text('Bobby')
-        expect(find('h3')).to have_text('Boise')
+        expect(find('h3')).to have_text('Boise, ID')
       end
     end
   end
