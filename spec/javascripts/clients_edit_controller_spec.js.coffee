@@ -1,6 +1,6 @@
 #= require support/spec_helper
 
-describe "ClientsNewController", ->
+describe "ClientsEditController", ->
 
   beforeEach ->
     modalInstance =
@@ -9,11 +9,11 @@ describe "ClientsNewController", ->
       result:
         then: jasmine.createSpy('modalInstance.result.then')
 
-    @controller('ClientsNewController', { $scope: @scope, $modalInstance: modalInstance })
+    @controller('ClientsEditController', { $scope: @scope, $modalInstance: modalInstance })
 
-  describe 'submitting the create form', ->
+  describe 'submitting the update form', ->
 
-    it 'calls save on a Client', ->
+    it 'calls update on a Client', ->
       @scope.client = {
         name: 'Proctor'
         address:
@@ -21,6 +21,6 @@ describe "ClientsNewController", ->
           state: 'ID'
       }
 
-      @httpBackend.expectPOST('/api/clients').respond({ name: 'Proctor'})
+      @httpBackend.expectPUT('/api/clients').respond({ name: 'Proctor'})
       expect(@scope.submitForm()).toBeTruthy()
       @httpBackend.flush()
