@@ -13,47 +13,61 @@
       .col-xs-6
         .search
       .col-xs-6
-        .tools.pull-right
-          %a#delete-client{ href: '' }
-            = inline_svg 'trash.svg'
-          %a{ href: '' }
-            = inline_svg 'paper.svg'
-          %a#edit-client{ href: '', ng: { click: 'showEditModal()' } }
-            = inline_svg 'edit.svg'
+
     .row
       #client-list.col-xs-5
         .list-group.list-lg
           %a.list-group-item.vertical-center{href: '/#clients/{{ client.id }}', ng: { repeat: 'client in clients | orderBy: "name"', class: '{ active: client.id == currentClient.id }' } }
             .col-xs-8.col-xs-offset-4
               .row
-                %strong
+                %h4
                   {{ client.name }}
               .row
                 13 people   3 deals
       #client-detail.col-xs-7
-        %h3
+        .tools.pull-right
+          %a#delete-client{ href: '' }
+            = inline_svg 'trash.svg'
+          %a#edit-client{ href: '', ng: { click: 'showEditModal()' } }
+            = inline_svg 'edit.svg'
+        %h2
           {{ currentClient.name }}
           %br
-          %small
+          .location
             {{ currentClient.address.city }}, {{ currentClient.address.state}}
-
-        .well
-          .row
-            .col-xs-2
-              %strong
-                Office
-            .col-xs-10
-              {{ currentClient.address.phone }}
-          .row
-            .col-xs-2
-              %strong
-                Email
-            .col-xs-10
-              {{ currentClient.address.email }}
-
-          .row
-            .col-xs-2
-              %strong
-                Website
-            .col-xs-10
-              {{ currentClient.website }}
+        #details
+          .well
+            .row
+              .col-xs-2
+                %strong
+                  Mobile
+              .col-xs-10.detail
+                {{ currentClient.address.phone }}
+            .row
+              .col-xs-2
+                %strong
+                  Office
+              .col-xs-10.detail
+                {{ currentClient.address.phone }}
+            .row
+              .col-xs-2
+                %strong
+                  Email
+              .col-xs-10.detail
+                {{ currentClient.address.email }}
+          .well
+            .row
+              .col-xs-2
+                %strong
+                  Address
+              .col-xs-10.detail
+                {{ currentClient.address.street1 }}
+                %br
+                {{ currentClient.address.city }}, {{ currentClient.address.state }}  {{ currentClient.address.zip }}
+          .well
+            .row
+              .col-xs-2
+                %strong
+                  Website
+              .col-xs-10.detail
+                {{ currentClient.website }}

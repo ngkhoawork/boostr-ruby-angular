@@ -9,8 +9,10 @@
     border-style: none solid solid none;
     border-width: 2px;
     opacity: 0.75;
+    color: $text-color;
     &:hover, &:focus {
       opacity: 1;
+      color: $text-color;
     }
   }
 }
@@ -47,11 +49,4 @@
     border-bottom-style: none;
     opacity: 1;
   }
-}
-
-.vertical-center {
-  min-height: 100%;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
 }

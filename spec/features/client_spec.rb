@@ -28,12 +28,12 @@ feature 'Clients' do
 
       within '.list-group' do
         expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active strong')).to have_text('Bobby')
+        expect(find('.list-group-item.active h4')).to have_text('Bobby')
       end
 
       within '#client-detail' do
-        expect(find('h3')).to have_text('Bobby')
-        expect(find('h3')).to have_text('Boise, ID')
+        expect(find('h2')).to have_text('Bobby')
+        expect(find('h2')).to have_text('Boise, ID')
       end
 
       click_link('New Client')
@@ -50,12 +50,12 @@ feature 'Clients' do
 
       within '.list-group' do
         expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active strong')).to have_text('Johnny')
+        expect(find('.list-group-item.active h4')).to have_text('Johnny')
       end
 
       within '#client-detail' do
-        expect(find('h3')).to have_text('Johnny')
-        expect(find('h3')).to have_text('Seattle, WA')
+        expect(find('h2')).to have_text('Johnny')
+        expect(find('h2')).to have_text('Seattle, WA')
       end
 
     end
@@ -85,12 +85,12 @@ feature 'Clients' do
 
       within '.list-group' do
         expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active strong')).to have_text('Bobby')
+        expect(find('.list-group-item.active h4')).to have_text('Bobby')
       end
 
       within '#client-detail' do
-        expect(find('h3')).to have_text('Bobby')
-        expect(find('h3')).to have_text('Boise, ID')
+        expect(find('h2')).to have_text('Bobby')
+        expect(find('h2')).to have_text('Boise, ID')
       end
     end
   end
