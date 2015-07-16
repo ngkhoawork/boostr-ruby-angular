@@ -1,7 +1,4 @@
 .list-group {
-  strong {
-    color: $gray-dark;
-  }
   .active {
     border-right-color: $brand-primary;
     &:hover, &:focus {
@@ -20,7 +17,10 @@
 
 .list-sm {
   .list-group-item {
-    font-size: 14px;
+    h5 {
+      margin: 5px 0px;
+    }
+    font-size: 11px;
     min-height: 76px;
   }
   .active {
@@ -32,7 +32,10 @@
 
 .list-lg {
   .list-group-item {
-    font-size: 18px;
+    h4 {
+      margin: 5px 0px;
+    }
+    font-size: 15px;
     min-height: 136px;
   }
   .active {

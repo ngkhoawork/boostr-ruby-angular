@@ -39,10 +39,10 @@ $brand-tertiary-lighten:        lighten($brand-tertiary, 5%) !default;
 //** Background color for `<body>`.
 $body-bg:                       #F6F6F6;
 //** Global text color on `<body>`.
-// $text-color:                    $gray-dark !default;
+$text-color:                    #838F9A;
 
 //** Global textual link color.
-// $link-color:                    $brand-secondary !default;
+$link-color:                    $brand-primary !default;
 //** Link hover color set via `darken()` function.
 // $link-hover-color:              darken($link-color, 15%) !default;
 //** Link hover decoration.
@@ -76,10 +76,10 @@ $font-size-base:             14px;
 // $line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
 
 // //** By default, this inherits from the `<body>`.
-// $headings-font-family:    inherit !default;
-// $headings-font-weight:    500 !default;
+$headings-font-family:    'Montserrat' !default;
+$headings-font-weight:    700 !default;
 // $headings-line-height:    1.1 !default;
-// $headings-color:          inherit !default;
+$headings-color:          #2B3C49;
 
 
 // //== Iconography
