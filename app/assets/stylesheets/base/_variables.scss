@@ -693,7 +693,7 @@ $list-group-border-radius:      3px !default;
 // //** Background color of single list items on hover
 $list-group-hover-bg:           darken($body-bg, 1%) !default;
 // //** Text color of active list items
-$list-group-active-color:       $brand-secondary !default;
+$list-group-active-color:       $text-color !default;
 // //** Background color of active list items
 $list-group-active-bg:          $white !default;
 // //** Border color of active list elements

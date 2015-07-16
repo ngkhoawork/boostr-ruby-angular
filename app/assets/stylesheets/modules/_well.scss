@@ -2,9 +2,10 @@
   -webkit-box-shadow: 1px 1px 1px 1px $gray-light !important;
   -moz-box-shadow: 1px 1px 1px 1px $gray-light !important;
   box-shadow: 1px 1px 1px 1px $gray-light !important;
-  color: $brand-secondary;
-  margin-top: 15px;
-  padding: 33px;
+  color: $text-color;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 33px 33px 18px 33px;
   strong {
     font-family: $headings-font-family;
     font-size: 15px;

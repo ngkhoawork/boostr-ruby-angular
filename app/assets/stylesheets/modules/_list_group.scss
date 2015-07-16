@@ -9,8 +9,10 @@
     border-style: none solid solid none;
     border-width: 2px;
     opacity: 0.75;
+    color: $text-color;
     &:hover, &:focus {
       opacity: 1;
+      color: $text-color;
     }
   }
 }
