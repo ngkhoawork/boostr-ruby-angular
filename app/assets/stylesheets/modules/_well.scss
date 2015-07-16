@@ -4,12 +4,17 @@
   box-shadow: 1px 1px 1px 1px $gray-light !important;
   color: $brand-secondary;
   margin-top: 15px;
-
+  padding: 33px;
   strong {
-    color: $gray-dark;
+    font-family: $headings-font-family;
+    font-size: 15px;
+    color: $headings-color;
   }
-
   .row {
-    padding-bottom: 5px;
+    padding-bottom: 15px;
+  }
+  .detail {
+    font-size: 16px;
+    padding-left: 33px;
   }
 }
