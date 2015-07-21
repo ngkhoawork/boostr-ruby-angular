@@ -5,24 +5,35 @@
   border-width: 0px;
   font-size: 16px;
   font-weight: bold;
-  &:-moz-placeholder {
-    color: $gray-lighter;
-    opacity: 1;
-  }
-  &:-ms-input-placeholder {
-    color: $gray-lighter;
-  }
-  ::-webkit-input-placeholder {
-    color: $gray-lighter;
-  }
-  ::-moz-placeholder {
-    color: $gray-lighter;
-    opacity: 1;
-  }
 }
 
 .form-group {
   .control-label {
     line-height: 42px;
+  }
+}
+
+.ui-select-match {
+  .btn-default {
+    background: $white;
+    color: $gray-lighter;
+    padding-top: 17px;
+  }
+
+  .ui-select-placeholder {
+    color: $gray-lighter;
+  }
+
+  .ui-select-match-text {
+    color: $brand-tertiary;
+  }
+
+}
+
+.ui-select-bootstrap {
+  .ui-select-choices-row.active {
+    a {
+      background-color: $brand-primary;
+    }
   }
 }
