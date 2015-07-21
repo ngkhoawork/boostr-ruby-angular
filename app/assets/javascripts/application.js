@@ -18,6 +18,8 @@
 //= require angular-resource
 //= require angular-rails-templates
 //= require angular-bootstrap
+//= require angular-ui-select
+//= require angular-sanitize
 //= require_tree .
 //= require_tree ../templates
 

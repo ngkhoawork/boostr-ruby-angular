@@ -197,6 +197,10 @@ GEM
       rails-assets-angular (= 1.4.1)
     rails-assets-angular-route (1.4.1)
       rails-assets-angular (= 1.4.1)
+    rails-assets-angular-sanitize (1.4.1)
+      rails-assets-angular (= 1.4.1)
+    rails-assets-angular-ui-select (0.12.0)
+      rails-assets-angular (>= 1.2.18)
     rails-assets-underscore (1.8.3)
     rails-deprecated_sanitizer (1.0.3)
       activesupport (>= 4.2.0.alpha)
@@ -310,6 +314,8 @@ DEPENDENCIES
   rails-assets-angular-mocks!
   rails-assets-angular-resource!
   rails-assets-angular-route!
+  rails-assets-angular-sanitize!
+  rails-assets-angular-ui-select!
   rails-assets-underscore!
   rollbar (~> 1.5.3)
   rspec-rails (~> 3.0)

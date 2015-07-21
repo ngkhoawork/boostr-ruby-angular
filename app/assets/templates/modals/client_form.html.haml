@@ -15,9 +15,11 @@
         .col-xs-7.col-xs-offset-1
           %input.form-control{ placeholder: 'City', ng: { model: 'client.address.city' }, name: 'city'  }
         .col-xs-4
-          %select.form-control.bo-state-select{ name: 'state', ng: { options: 'state.abbreviation as state.name for state in states', model: 'client.address.state' } }
-            %option.placeholder{ value: '' }
-              State
+          %ui-select.bo-state-select{ name: 'state', ng: { model: 'client.address.state', disabled: true } }
+            %ui-select-match{ placeholder: 'State' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
+              %div{ ng: { bind: { html: 'state.name' } } }
       .form-group
         %label.col-sm-2.control-label{:for => 'office'} Office
         .col-sm-10

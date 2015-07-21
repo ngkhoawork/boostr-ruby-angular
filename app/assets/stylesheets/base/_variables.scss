@@ -218,7 +218,7 @@ $input-border-radius:            5px !default;
 // $input-border-focus:             #66afe9 !default;
 
 // //** Placeholder text color
-// $input-color-placeholder:        #999 !default;
+$input-color-placeholder:        $gray-lighter;
 
 // //** Default `.form-control` height
 $input-height-base:              55px !default;

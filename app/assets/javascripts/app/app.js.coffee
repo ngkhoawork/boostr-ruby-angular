@@ -5,6 +5,8 @@
   'ngRoute'
   'templates'
   'ui.bootstrap'
+  'ui.select'
+  'ngSanitize'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -30,6 +32,10 @@
   $httpProvider.defaults.headers.post['X-CSRF-Token'] = csrfToken
   $httpProvider.defaults.headers.put['X-CSRF-Token'] = csrfToken
   $httpProvider.defaults.headers.patch['X-CSRF-Token'] = csrfToken
+]
+
+@app.config ['uiSelectConfig', (uiSelectConfig) ->
+  uiSelectConfig.theme = 'bootstrap'
 ]
 
 @service = angular.module 'services', ['ngResource']
