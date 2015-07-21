@@ -18,6 +18,7 @@ feature 'Clients' do
 
       within '#client_modal' do
         fill_in 'name', with: 'Bobby'
+        fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Boise'
         ui_select('Idaho')
 
@@ -41,6 +42,7 @@ feature 'Clients' do
 
       within '#client_modal' do
         fill_in 'name', with: 'Johnny'
+        fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Seattle'
         ui_select('Washington')
         click_on 'Create'
@@ -76,6 +78,7 @@ feature 'Clients' do
 
       within '#client_modal' do
         fill_in 'name', with: 'Bobby'
+        fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Boise'
         ui_select('Idaho')
 
