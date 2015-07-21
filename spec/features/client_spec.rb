@@ -19,7 +19,7 @@ feature 'Clients' do
       within '#client_modal' do
         fill_in 'name', with: 'Bobby'
         fill_in 'city', with: 'Boise'
-        fill_in 'state', with: 'ID'
+        select('Idaho', from: 'state')
 
         click_on 'Create'
       end
@@ -42,7 +42,7 @@ feature 'Clients' do
       within '#client_modal' do
         fill_in 'name', with: 'Johnny'
         fill_in 'city', with: 'Seattle'
-        fill_in 'state', with: 'WA'
+        select('Washington', from: 'state')
         click_on 'Create'
       end
 
@@ -77,7 +77,8 @@ feature 'Clients' do
       within '#client_modal' do
         fill_in 'name', with: 'Bobby'
         fill_in 'city', with: 'Boise'
-        fill_in 'state', with: 'ID'
+        select('Idaho', from: 'state')
+
         click_on 'Update'
       end
 
