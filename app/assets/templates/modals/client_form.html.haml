@@ -12,6 +12,9 @@
         .col-xs-11.col-xs-offset-1
           %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }
       .form-group
+        .col-xs-11.col-xs-offset-1
+          %input.form-control{ placeholder: 'Street', ng: { model: 'client.address.street1' }, name: 'street1' }
+      .form-group
         .col-xs-7.col-xs-offset-1
           %input.form-control{ placeholder: 'City', ng: { model: 'client.address.city' }, name: 'city'  }
         .col-xs-4
@@ -23,15 +26,15 @@
       .form-group
         %label.col-sm-2.control-label{:for => 'office'} Office
         .col-sm-10
-          %input#exampleInputEmail1.form-control{:placeholder => 'Office Number', ng: { model: 'client.address.phone' }, name: 'office' }
+          %input.form-control{:placeholder => 'Office Number', ng: { model: 'client.address.phone' }, name: 'office' }
       .form-group
         %label.col-sm-2.control-label{:for => 'email'} Email
         .col-sm-10
-          %input#inputPassword3.form-control{:placeholder => 'Email', ng: { model: 'client.address.email' }, name: 'email' }
+          %input.form-control{:placeholder => 'Email', ng: { model: 'client.address.email' }, name: 'email' }
       .form-group
         %label.col-sm-2.control-label{:for => 'website'} Website
         .col-sm-10
-          %input#inputPassword3.form-control{:placeholder => 'Website', ng: { model: 'client.website' }, name: 'website' }
+          %input.form-control{:placeholder => 'Website', ng: { model: 'client.website' }, name: 'website' }
 
     .modal-footer
       %button.btn.btn-primary.btn-lg{ type: 'submit' } {{ submitText }}
