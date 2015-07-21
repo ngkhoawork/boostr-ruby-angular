@@ -1,5 +1,7 @@
 @app = angular.module('Boostr', [
   'services'
+  'directives'
+  'filters'
   'ngRoute'
   'templates'
   'ui.bootstrap'
@@ -31,3 +33,5 @@
 ]
 
 @service = angular.module 'services', ['ngResource']
+@directives = angular.module 'directives', []
+@filters = angular.module 'filters', []

@@ -5,6 +5,6 @@ FactoryGirl.define do
     city "Ketchum"
     state "ID"
     zip "83340"
-    phone "208-867-5309"
+    phone "2088675309"
   end
 end
