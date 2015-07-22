@@ -16,6 +16,7 @@ gem 'activeadmin', '~> 1.0.0.pre1'
 gem 'haml-rails', '~> 0.9'
 gem 'angular-rails-templates'
 gem 'inline_svg'
+gem 'paranoia', '~> 2.0'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

@@ -26,7 +26,7 @@
                 13 people   3 deals
       #client-detail.col-xs-7
         .tools.pull-right
-          %a#delete-client{ href: '' }
+          %a#delete-client{ href: '', ng: { click: 'delete()' } }
             = inline_svg 'trash.svg'
           %a#edit-client{ href: '', ng: { click: 'showEditModal()' } }
             = inline_svg 'edit.svg'

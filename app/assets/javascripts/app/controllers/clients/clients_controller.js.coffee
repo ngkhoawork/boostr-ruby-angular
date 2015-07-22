@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', 'Client',
-($scope, $rootScope, $modal, $routeParams, Client) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Client',
+($scope, $rootScope, $modal, $routeParams, $location, Client) ->
 
   $scope.init = ->
     Client.all (clients) ->
@@ -22,6 +22,11 @@
       controller: 'ClientsEditController'
       backdrop: 'static'
       keyboard: false
+
+  $scope.delete = ->
+    if confirm('Are you sure you want to delete the client "' +  $scope.currentClient.name + '"?')
+      Client.delete $scope.currentClient, ->
+        $location.path('/clients')
 
   $scope.$on 'updated_current_client', ->
     $scope.currentClient = Client.get()

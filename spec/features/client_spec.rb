@@ -63,6 +63,7 @@ feature 'Clients' do
     end
 
   end
+
   describe 'Editing a client' do
     let!(:clients) { create_list :client, 3, company: company }
 
@@ -96,6 +97,41 @@ feature 'Clients' do
         expect(find('h2')).to have_text('Bobby')
         expect(find('h2')).to have_text('Boise, ID')
       end
+    end
+  end
+
+  describe 'Deleting a client' do
+    let!(:clients) { create_list :client, 3, company: company }
+
+    before do
+      login_as user, scope: :user
+      visit '/clients'
+      expect(page).to have_css('#clients')
+    end
+
+    scenario 'removes the client from the page and navigates to the client index' do
+      within '.list-group' do
+        expect(page).to have_css('.list-group-item', count: 3)
+        find('.list-group-item:last-child').click()
+      end
+
+      within '#client-detail' do
+        expect(find('h2')).to have_text(clients[2].name)
+        find('#delete-client').click()
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.list-group-item', count: 2)
+
+      within '#client-detail' do
+        expect(find('h2')).to have_text(clients[0].name)
+        find('#delete-client').click()
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.list-group-item', count: 1)
     end
   end
 

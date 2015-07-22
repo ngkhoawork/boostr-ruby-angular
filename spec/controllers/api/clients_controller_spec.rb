@@ -53,4 +53,14 @@ RSpec.describe Api::ClientsController, type: :controller do
       expect(response_json['name']).to eq('New Name')
     end
   end
+
+  describe "DELETE #destroy" do
+    let!(:client) { create :client, company: company }
+
+    it 'marks the client as deleted' do
+      delete :destroy, id: client.id, format: :json
+      expect(response).to be_success
+      expect(client.reload.deleted_at).to_not be_nil
+    end
+  end
 end
