@@ -15,6 +15,9 @@ $gray-light:                    #ececec !default;
 $gray-lighter:                  #dfdfdf !default;
 $white:                         #fff;
 
+$placeholder-text:              #bcc6cf;
+$modal-bg:                      #f6f8fa;
+
 $header-gray:                   #505b65;
 
 $brand-primary:                 #ff7e30 !default;
@@ -159,9 +162,9 @@ $table-border-color:            lighten(#F6F6F6,1%) !default;
 
 // $btn-font-weight:                normal !default;
 
-// $btn-default-color:              #333 !default;
-$btn-default-bg:                 #F6F6F6  !default;
-$btn-default-border:             $brand-tertiary !default;
+$btn-default-color:              $placeholder-text;
+$btn-default-bg:                 transparent;
+$btn-default-border:             $placeholder-text;
 
 // $btn-primary-color:              #fff !default;
 // $btn-primary-bg:                 $brand-primary !default;
@@ -187,7 +190,7 @@ $btn-default-border:             $brand-tertiary !default;
 
 // // Allows for customizing button radius independently from global border radius
 // $btn-border-radius-base:         $border-radius-base !default;
-// $btn-border-radius-large:        $border-radius-large !default;
+$btn-border-radius-large:        25px;
 // $btn-border-radius-small:        $border-radius-small !default;
 
 
@@ -196,14 +199,14 @@ $btn-default-border:             $brand-tertiary !default;
 // //##
 
 // //** `<input>` background color
-// $input-bg:                       #fff !default;
+$input-bg:                       $modal-bg;
 // //** `<input disabled>` background color
 // $input-bg-disabled:              $gray-lighter !default;
 
 // //** Text color for `<input>`s
 $input-color:                    $brand-tertiary !default;
 // //** `<input>` border color
-$input-border:                   #ececec !default;
+$input-border:                   #dee6ee;
 
 // // TODO: Rename `$input-border-radius` to `$input-border-radius-base` in v4
 // //** Default `.form-control` border radius
@@ -215,20 +218,20 @@ $input-border-radius:            5px !default;
 // $input-border-radius-small:      $border-radius-small !default;
 
 // //** Border color for inputs on focus
-// $input-border-focus:             #66afe9 !default;
+$input-border-focus:             #d7e4f1;
 
 // //** Placeholder text color
-$input-color-placeholder:        $gray-lighter;
+$input-color-placeholder:        $placeholder-text;
 
 // //** Default `.form-control` height
-$input-height-base:              55px !default;
+$input-height-base:              47px !default;
 // //** Large `.form-control` height
 // $input-height-large:             (ceil($font-size-large * $line-height-large) + ($padding-large-vertical * 2) + 2) !default;
 // //** Small `.form-control` height
 // $input-height-small:             (floor($font-size-small * $line-height-small) + ($padding-small-vertical * 2) + 2) !default;
 
 // //** `.form-group` margin
-// $form-group-margin-bottom:       15px !default;
+$form-group-margin-bottom:       11px;
 
 // $legend-color:                   $gray-dark !default;
 // $legend-border-color:            #e5e5e5 !default;
@@ -249,7 +252,7 @@ $input-height-base:              55px !default;
 // //** Background for the dropdown menu.
 // $dropdown-bg:                    #fff !default;
 // //** Dropdown menu `border-color`.
-// $dropdown-border:                rgba(0,0,0,.15) !default;
+$dropdown-border:                $input-border-focus;
 // //** Dropdown menu `border-color` **for IE8**.
 // $dropdown-fallback-border:       #ccc !default;
 // //** Divider color for between dropdown items.
@@ -603,15 +606,15 @@ $nav-tabs-active-link-hover-border-color:   transparent !default;
 // //##
 
 // //** Padding applied to the modal body
-$modal-inner-padding:         40px !default;
+$modal-inner-padding:         20px 120px;
 
 // //** Padding applied to the modal title
-$modal-title-padding:         40px !default;
+$modal-title-padding:         20px;
 // //** Modal title line-height
-$modal-title-line-height:     18px !default;
+$modal-title-line-height:     24px;
 
 // //** Background color of modal content area
-$modal-content-bg:                             #F6F6F6 !default;
+$modal-content-bg:                             $modal-bg;
 // //** Modal content border color
 // $modal-content-border-color:                   rgba(0,0,0,.2) !default;
 // //** Modal content border color **for IE8**

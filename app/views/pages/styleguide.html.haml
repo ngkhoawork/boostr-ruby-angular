@@ -516,23 +516,22 @@
           %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
             %span{"aria-hidden" => "true"}
               = inline_svg 'close.svg'
-          %h2#myModalLabel.modal-title
+          %h3#myModalLabel.modal-title
             %strong Modal Title
         .modal-body
-          %form.form-horizontal
+          %form
+
+
             .form-group
-              %label.col-sm-2.control-label{:for => "email"} Email
-              .col-sm-10
-                %input#email.form-control{:placeholder => "Email", :type => "email"}
+              %label.control-label{:for => "email"} Email
+              %input#email.form-control{:placeholder => "Email", :type => "email"}
             .form-group
-              %label.col-sm-2.control-label{:for => "password"} Password
-              .col-sm-10
-                %input#password.form-control{:placeholder => "Password", :type => "password"}
+              %label.control-label{:for => "password"} Password
+              %input#password.form-control{:placeholder => "Password", :type => "password"}
             .form-group
-              %label.col-sm-2.control-label{:for => "inputFile"} File Input
-              .col-sm-10
-                %input#inputFile{:type => "file"}
-                  %p.help-block Example block-level help text here.
+              %label.control-label{:for => "inputFile"} File Input
+              %input#inputFile{:type => "file"}
+                %p.help-block Example block-level help text here.
             %select.form-control
               %option 1
               %option 2

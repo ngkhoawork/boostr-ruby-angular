@@ -1,39 +1,46 @@
 .form-control {
-  -webkit-box-shadow: 1px 1px 1px 1px $gray-light !important;
-  -moz-box-shadow: 1px 1px 1px 1px $gray-light !important;
-  box-shadow: 1px 1px 1px $gray-light !important;
-  border-width: 0px;
-  font-size: 16px;
-  font-weight: bold;
+  &:focus {
+    background-color: $white;
+  }
 }
 
 .form-group {
   .control-label {
-    line-height: 42px;
+    font-size: 10px;
+    font-weight: normal;
   }
 }
 
 .ui-select-match {
   .btn-default {
-    background: $white;
-    color: $gray-lighter;
-    padding-top: 17px;
+    background: $modal-bg;
+    color: $placeholder-text;
+    padding-top: 13px;
+    border-color: $input-border;
   }
 
   .ui-select-placeholder {
-    color: $gray-lighter;
+    color: $placeholder-text;
   }
 
   .ui-select-match-text {
-    color: $brand-tertiary;
+    color: $input-color;
   }
 
 }
 
 .ui-select-bootstrap {
-  .ui-select-choices-row.active {
-    a {
-      background-color: $brand-primary;
+  .ui-select-choices-row {
+    &.active {
+      a {
+        background-color: $brand-primary;
+      }
+    }
+  }
+
+  .ui-select-toggle {
+    .caret {
+      right: 15px;
     }
   }
 }

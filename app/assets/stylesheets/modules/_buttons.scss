@@ -1,0 +1,16 @@
+.btn-default {
+  color:
+  border-color
+}
+
+.btn-primary {
+  &:hover {
+    background-color: $brand-primary-lighten;
+    border-color: $brand-primary;
+  }
+}
+
+.btn-lg {
+  font-size: 15px;
+  padding: 10px 48px;
+}
