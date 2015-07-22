@@ -40,12 +40,6 @@
             .row
               .col-xs-2
                 %strong
-                  Mobile
-              .col-xs-10.detail
-                {{ currentClient.address.phone | tel }}
-            .row
-              .col-xs-2
-                %strong
                   Office
               .col-xs-10.detail
                 {{ currentClient.address.phone | tel }}
@@ -70,4 +64,5 @@
                 %strong
                   Website
               .col-xs-10.detail
-                {{ currentClient.website }}
+                %a{ ng: { href: 'http://{{ currentClient.website }}' }, target: '_blank' }
+                  {{ currentClient.website }}
