@@ -1,6 +1,11 @@
 .modal-dialog {
+  .modal-header {
+    min-height: 70px;
+  }
+
   .modal-footer {
     border-top-width: 0px;
     text-align: center;
+    padding-bottom: 20px;
   }
 }

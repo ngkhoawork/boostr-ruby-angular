@@ -68,7 +68,7 @@ $font-size-base:             14px;
 
 // $font-size-h1:            floor(($font-size-base * 2.6)) !default; // ~36px
 // $font-size-h2:            floor(($font-size-base * 2.15)) !default; // ~30px
-// $font-size-h3:            ceil(($font-size-base * 1.7)) !default; // ~24px
+$font-size-h3:            20px;
 // $font-size-h4:            ceil(($font-size-base * 1.25)) !default; // ~18px
 // $font-size-h5:            $font-size-base !default;
 // $font-size-h6:            ceil(($font-size-base * 0.85)) !default; // ~12px
@@ -130,7 +130,7 @@ $headings-color:          #2B3C49;
 // $component-active-bg:       $brand-primary !default;
 
 // //** Width of the `border` for generating carets that indicator dropdowns.
-// $caret-width-base:          4px !default;
+$caret-width-base:          5px;
 // //** Carets increase slightly in size for larger components.
 // $caret-width-large:         5px !default;
 
@@ -606,12 +606,12 @@ $nav-tabs-active-link-hover-border-color:   transparent !default;
 // //##
 
 // //** Padding applied to the modal body
-$modal-inner-padding:         20px 120px;
+$modal-inner-padding:         20px 120px 5px;
 
 // //** Padding applied to the modal title
 $modal-title-padding:         20px;
 // //** Modal title line-height
-$modal-title-line-height:     24px;
+$modal-title-line-height:     28px;
 
 // //** Background color of modal content area
 $modal-content-bg:                             $modal-bg;
@@ -625,7 +625,7 @@ $modal-content-bg:                             $modal-bg;
 // //** Modal backdrop opacity
 // $modal-backdrop-opacity:      .5 !default;
 // //** Modal header border color
-// $modal-header-border-color:   #e5e5e5 !default;
+$modal-header-border-color:   $input-border;
 // //** Modal footer border color
 // $modal-footer-border-color:   $modal-header-border-color !default;
 
@@ -839,7 +839,7 @@ $well-border:                 none;
 // //##
 
 // $close-font-weight:           bold !default;
-// $close-color:                 #000 !default;
+$close-color:                 #293640;
 // $close-text-shadow:           0 1px 0 #fff !default;
 
 
