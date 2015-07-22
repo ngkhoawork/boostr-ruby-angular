@@ -1,6 +1,7 @@
 .btn-default {
-  color:
-  border-color
+  &:hover {
+    color: darken($placeholder-text, 12%)
+  }
 }
 
 .btn-primary {
