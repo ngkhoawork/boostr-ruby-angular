@@ -7,3 +7,59 @@
             %li.pull-right.last
               %a{ href: '', ng: { click: 'showModal()' } }
                 New Person
+  .container
+    .row
+      .col-xs-6
+        .search
+      .col-xs-6
+
+    .row
+      #contact-list.col-xs-5
+        .list-group.list-lg
+          %a.list-group-item.vertical-center{href: '/#people/{{ contact.id }}', ng: { repeat: 'contact in contacts | orderBy: "name"', class: '{ active: contact.id == currentContact.id }' } }
+            .col-xs-8.col-xs-offset-4
+              .row
+                %h4
+                  {{ contact.name }}
+              .row
+                {{ contact.client.name }}, {{ contact.position }}
+      #contact-detail.col-xs-7
+        .tools.pull-right
+          %a#delete-contact{ href: '' }
+            = inline_svg 'trash.svg'
+          %a#edit-contact{ href: '', ng: { click: 'showEditModal()' } }
+            = inline_svg 'edit.svg'
+        %h2
+          {{ currentContact.name }}
+          %br
+          .position
+            {{ currentContact.position }}, {{ currentContact.client.name}}
+        #details
+          .well
+            .row
+              .col-xs-2
+                %strong
+                  Mobile
+              .col-xs-10.detail
+                {{ currentContact.address.mobile }}
+            .row
+              .col-xs-2
+                %strong
+                  Office
+              .col-xs-10.detail
+                {{ currentContact.address.phone }}
+            .row
+              .col-xs-2
+                %strong
+                  Email
+              .col-xs-10.detail
+                {{ currentContact.address.email }}
+          .well
+            .row
+              .col-xs-2
+                %strong
+                  Address
+              .col-xs-10.detail
+                {{ currentContact.address.street1 }}
+                %br
+                {{ currentContact.address.city }}, {{ currentContact.address.state }}  {{ currentContact.address.zip }}

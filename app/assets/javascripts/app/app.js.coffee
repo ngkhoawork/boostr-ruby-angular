@@ -20,6 +20,9 @@
     .when '/clients',
       templateUrl: 'clients.html'
       controller: 'ClientsController'
+    .when '/people/:id',
+      templateUrl: 'contacts.html'
+      controller: 'ContactsController'
     .when '/people',
       templateUrl: 'contacts.html'
       controller: 'ContactsController'

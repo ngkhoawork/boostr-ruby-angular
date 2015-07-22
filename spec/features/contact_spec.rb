@@ -25,13 +25,24 @@ feature 'Contacts' do
         fill_in 'state', with: 'ID'
         fill_in 'zip', with: '12365'
         fill_in 'office', with: '1234567890'
+        fill_in 'mobile', with: '1257763562'
 
         click_on 'Create'
       end
 
       expect(page).to have_no_css('#contact_modal')
 
+      within '.list-group' do
+        expect(page).to have_css('.list-group-item.active')
+        expect(find('.list-group-item.active h4')).to have_text('Bobby')
+      end
+
+      within '#contact-detail' do
+        expect(find('h2')).to have_text('Bobby')
+      end
+
       click_link('New Person')
+
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -43,11 +54,22 @@ feature 'Contacts' do
         fill_in 'state', with: 'WA'
         fill_in 'zip', with: '78512'
         fill_in 'office', with: '(789) 125-8416'
+        fill_in 'mobile', with: '(125) 776-3562'
 
         click_on 'Create'
       end
 
-    end
+      expect(page).to have_no_css('#contact_modal')
 
+      within '.list-group' do
+        expect(page).to have_css('.list-group-item.active')
+        expect(find('.list-group-item.active h4')).to have_text('Johnny')
+      end
+
+      within '#contact-detail' do
+        expect(find('h2')).to have_text('Johnny')
+      end
+
+    end
   end
 end

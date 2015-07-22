@@ -8,7 +8,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :clients, only: [:index, :create, :update]
-    resources :contacts, only: [:create]
+    resources :contacts, only: [:index, :create]
   end
 
   get '*path' => 'pages#index'

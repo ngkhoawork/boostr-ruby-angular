@@ -11,6 +11,7 @@
       state: original.contact.address.state
       zip: original.contact.address.zip
       phone: original.contact.address.phone
+      mobile: original.contact.address.mobile
       email: original.contact.address.email
     send.contact =
       name: original.contact.name
