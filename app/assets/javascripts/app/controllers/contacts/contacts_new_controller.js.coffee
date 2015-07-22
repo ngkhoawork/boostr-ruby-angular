@@ -7,6 +7,7 @@
   $scope.contact = {}
   Client.all (clients) ->
       $scope.clients = clients
+
   $scope.submitForm = () ->
     Contact.create(contact: $scope.contact).then (contact) ->
       Contact.set(contact.id)

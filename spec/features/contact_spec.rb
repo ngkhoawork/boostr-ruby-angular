@@ -8,12 +8,12 @@ feature 'Contacts' do
   describe 'creating a contact' do
     before do
       login_as user, scope: :user
-      visit '/contacts'
+      visit '/people'
       expect(page).to have_css('#contacts')
     end
 
     scenario 'pops up a new contact modal and creates a new contact' do
-      click_link('New Contact')
+      click_link('New Person')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -31,7 +31,7 @@ feature 'Contacts' do
 
       expect(page).to have_no_css('#contact_modal')
 
-      click_link('New Contact')
+      click_link('New Person')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do

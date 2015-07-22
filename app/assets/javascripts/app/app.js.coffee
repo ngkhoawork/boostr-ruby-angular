@@ -20,7 +20,7 @@
     .when '/clients',
       templateUrl: 'clients.html'
       controller: 'ClientsController'
-    .when '/contacts',
+    .when '/people',
       templateUrl: 'contacts.html'
       controller: 'ContactsController'
     .otherwise({ redirectTo: '/dashboard' })
