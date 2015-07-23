@@ -19,7 +19,7 @@ feature 'Contacts' do
       within '#contact_modal' do
         fill_in 'name', with: 'Bobby'
         fill_in 'position', with: 'CEO'
-        select client.name, from: 'client'
+        ui_select('client', client.name)
         fill_in 'street1', with: '123 Any Street'
         fill_in 'city', with: 'Boise'
         fill_in 'state', with: 'ID'
@@ -48,7 +48,7 @@ feature 'Contacts' do
       within '#contact_modal' do
         fill_in 'name', with: 'Johnny'
         fill_in 'position', with: 'CFO'
-        select client.name, from: 'client'
+        ui_select('client', client.name)
         fill_in 'street1', with: '123 Any Road'
         fill_in 'city', with: 'Seattle'
         fill_in 'state', with: 'WA'
