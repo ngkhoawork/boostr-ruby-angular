@@ -36,51 +36,53 @@
           .location
             {{ currentClient.address.city }}, {{ currentClient.address.state}}
         #details
-          .well
-            .row
-              .col-xs-2
-                %strong
-                  Office
-              .col-xs-10.detail
-                {{ currentClient.address.phone | tel }}
-            .row
-              .col-xs-2
-                %strong
-                  Email
-              .col-xs-10.detail
-                {{ currentClient.address.email }}
-          .well
-            .row
-              .col-xs-2
-                %strong
-                  Address
-              .col-xs-10.detail
-                {{ currentClient.address.street1 }}
-                %br
-                {{ currentClient.address.city }}, {{ currentClient.address.state }}  {{ currentClient.address.zip }}
-          .well
-            .row
-              .col-xs-2
-                %strong
-                  Website
-              .col-xs-10.detail
-                %a{ ng: { href: 'http://{{ currentClient.website }}' }, target: '_blank' }
-                  {{ currentClient.website }}
+          .wells-group
+            .well
+              .row
+                .col-xs-2
+                  %strong
+                    Office
+                .col-xs-10.detail
+                  {{ currentClient.address.phone | tel }}
+              .row
+                .col-xs-2
+                  %strong
+                    Email
+                .col-xs-10.detail
+                  {{ currentClient.address.email }}
+            .well
+              .row
+                .col-xs-2
+                  %strong
+                    Address
+                .col-xs-10.detail
+                  {{ currentClient.address.street1 }}
+                  %br
+                  {{ currentClient.address.city }}, {{ currentClient.address.state }}  {{ currentClient.address.zip }}
+            .well
+              .row
+                .col-xs-2
+                  %strong
+                    Website
+                .col-xs-10.detail
+                  %a{ ng: { href: 'http://{{ currentClient.website }}' }, target: '_blank' }
+                    {{ currentClient.website }}
 
         #people
           %h2
             people
 
-          .well{ ng: { repeat: 'contact in currentClient.contacts', click: 'go("/people/" + contact.id)' } }
-            .row
-              .col-xs-10
-                .row
-                  .col-xs-12
-                    %strong
-                      {{ contact.name }}, {{ contact.position }}
-                .row
-                  .col-xs-12
-                    {{ contact.address.email }} {{ contact.address.mobile }}
-              .col-xs-2
-                = inline_svg 'right-caret.svg', class: 'pull-right'
+          .wells-group
+            .well{ ng: { repeat: 'contact in currentClient.contacts', click: 'go("/people/" + contact.id)' } }
+              .row
+                .col-xs-10
+                  .row
+                    .col-xs-12
+                      %strong
+                        {{ contact.name }}, {{ contact.position }}
+                  .row
+                    .col-xs-12
+                      {{ contact.address.email }} {{ contact.address.mobile }}
+                .col-xs-2
+                  = inline_svg 'right-caret.svg', class: 'pull-right'
 
