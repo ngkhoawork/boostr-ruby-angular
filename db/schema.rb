@@ -76,11 +76,11 @@ ActiveRecord::Schema.define(version: 20150722225356) do
     t.string   "name"
     t.string   "position"
     t.integer  "client_id"
-    t.integer  "company_id"
     t.integer  "created_by"
     t.integer  "updated_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "company_id"
   end
 
   create_table "users", force: :cascade do |t|

@@ -41,13 +41,13 @@
                 %strong
                   Mobile
               .col-xs-10.detail
-                {{ currentContact.address.mobile }}
+                {{ currentContact.address.mobile | tel }}
             .row
               .col-xs-2
                 %strong
                   Office
               .col-xs-10.detail
-                {{ currentContact.address.phone }}
+                {{ currentContact.address.phone | tel }}
             .row
               .col-xs-2
                 %strong
