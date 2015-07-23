@@ -67,6 +67,13 @@
                 .col-xs-10.detail
                   %a{ ng: { href: 'http://{{ currentClient.website }}' }, target: '_blank' }
                     {{ currentClient.website }}
+            .well
+              .row
+                .col-xs-2
+                  %strong
+                    Client Type
+                .col-xs-10.detail
+                  {{ currentClient.client_type }}
 
         #people
           %h2
