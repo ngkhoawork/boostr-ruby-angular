@@ -60,9 +60,8 @@
 
   @delete = (deletedClient, callback) ->
     resource.delete id: deletedClient.id, () ->
-      _.each allClients, (client, i) ->
-        if(client.id == deletedClient.id)
-          allClients.splice(i, 1)
+      allClients = _.reject allClients, (client) ->
+        client.id == deletedClient.id
       callback?()
       $rootScope.$broadcast 'updated_clients'
 

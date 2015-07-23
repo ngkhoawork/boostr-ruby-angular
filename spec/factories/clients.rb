@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :client do
-    name "Advertizer"
+    sequence(:name) { |n| "Advertizer-#{n}" }
     website "www.advertizer.com"
   end
 

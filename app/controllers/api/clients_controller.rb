@@ -24,6 +24,11 @@ class Api::ClientsController < ApplicationController
     end
   end
 
+  def destroy
+    client.destroy
+    render nothing: true
+  end
+
   private
 
   def client_params
