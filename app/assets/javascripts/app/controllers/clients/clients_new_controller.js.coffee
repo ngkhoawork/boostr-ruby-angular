@@ -5,6 +5,7 @@
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.client = {}
+  $scope.clientTypes = Client.types()
 
   $scope.submitForm = () ->
     Client.create(client: $scope.client).then (client) ->

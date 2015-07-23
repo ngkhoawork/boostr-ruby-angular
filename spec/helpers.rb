@@ -1,9 +1,12 @@
 module Helpers
-  def ui_select(value)
-    within '.ui-select-match' do
-      find('span.btn').click()
+  def ui_select(name, value)
+    container = find(".ui-select-container[name='#{name}']")
+    within container do
+      within '.ui-select-match' do
+        find('span.btn').click()
+      end
+      find('.ui-select-search').set(value)
+      find('.ui-select-choices-row-inner').click()
     end
-    find('.ui-select-search').set(value)
-    find('.ui-select-choices-row-inner').click()
   end
 end

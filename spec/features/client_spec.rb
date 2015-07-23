@@ -17,10 +17,11 @@ feature 'Clients' do
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
+        ui_select('client-type', 'Agency')
         fill_in 'name', with: 'Bobby'
         fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Boise'
-        ui_select('Idaho')
+        ui_select('state', 'Idaho')
 
         click_on 'Create'
       end
@@ -41,10 +42,11 @@ feature 'Clients' do
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
+        ui_select('client-type', 'Agency')
         fill_in 'name', with: 'Johnny'
         fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Seattle'
-        ui_select('Washington')
+        ui_select('state', 'Washington')
         click_on 'Create'
       end
 
@@ -78,10 +80,11 @@ feature 'Clients' do
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
+        ui_select('client-type', 'Agency')
         fill_in 'name', with: 'Bobby'
         fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Boise'
-        ui_select('Idaho')
+        ui_select('state', 'Idaho')
 
         click_on 'Update'
       end

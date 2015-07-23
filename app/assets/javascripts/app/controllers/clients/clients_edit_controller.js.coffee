@@ -5,6 +5,7 @@
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.client = Client.get()
+  $scope.clientTypes = Client.types()
   if $scope.client && $scope.client.address
     $scope.client.address.phone = $filter('tel')($scope.client.address.phone)
 
