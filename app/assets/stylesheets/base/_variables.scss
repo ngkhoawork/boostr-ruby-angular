@@ -606,12 +606,12 @@ $nav-tabs-active-link-hover-border-color:   transparent !default;
 // //##
 
 // //** Padding applied to the modal body
-$modal-inner-padding:         20px 120px 5px;
+$modal-inner-padding:         20px 120px 0;
 
 // //** Padding applied to the modal title
-$modal-title-padding:         20px;
+$modal-title-padding:         25px;
 // //** Modal title line-height
-$modal-title-line-height:     28px;
+$modal-title-line-height:     20px;
 
 // //** Background color of modal content area
 $modal-content-bg:                             $modal-bg;
@@ -629,7 +629,7 @@ $modal-header-border-color:   $input-border;
 // //** Modal footer border color
 // $modal-footer-border-color:   $modal-header-border-color !default;
 
-// $modal-lg:                    900px !default;
+$modal-lg:                    775px;
 // $modal-md:                    600px !default;
 // $modal-sm:                    300px !default;
 
