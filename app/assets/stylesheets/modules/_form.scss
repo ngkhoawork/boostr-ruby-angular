@@ -13,6 +13,10 @@
 }
 
 .ui-select-match {
+  &:focus {
+    outline: none;
+  }
+
   .btn-default {
     background: $modal-bg;
     color: $placeholder-text;
@@ -31,6 +35,10 @@
 }
 
 .ui-select-bootstrap {
+  &:focus {
+    outline: none;
+  }
+
   .ui-select-choices-row {
     &.active {
       a {
@@ -44,4 +52,10 @@
       right: 15px;
     }
   }
+}
+
+.btn-default-focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
 }
