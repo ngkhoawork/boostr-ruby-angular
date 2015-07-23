@@ -1,11 +1,16 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Client',
-($scope, $rootScope, $modal, $routeParams, $location, Client) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Client', 'Contact',
+($scope, $rootScope, $modal, $routeParams, $location, Client, Contact) ->
 
   $scope.init = ->
     Client.all (clients) ->
       $scope.clients = clients
       Client.set($routeParams.id || clients[0].id)
+
+  $scope.getContacts = (client) ->
+    unless client.contacts
+      Contact.allForClient client.id, (contacts) ->
+        client.contacts = contacts
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -28,8 +33,12 @@
       Client.delete $scope.currentClient, ->
         $location.path('/clients')
 
+  $scope.go = (path) ->
+    $location.path(path)
+
   $scope.$on 'updated_current_client', ->
     $scope.currentClient = Client.get()
+    $scope.getContacts($scope.currentClient)
 
   $scope.$on 'updated_clients', ->
     $scope.init()

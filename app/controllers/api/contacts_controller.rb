@@ -2,7 +2,10 @@ class Api::ContactsController < ApplicationController
   respond_to :json
 
   def index
-    contacts = current_user.company.contacts.order(:name).includes(:address)
+    contacts = current_user.company.contacts
+      .for_client(params[:client_id])
+      .order(:name)
+      .includes(:address)
     render json: contacts
   end
 
