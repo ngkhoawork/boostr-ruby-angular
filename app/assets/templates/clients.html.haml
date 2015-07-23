@@ -30,7 +30,7 @@
             = inline_svg 'trash.svg'
           %a#edit-client{ href: '', ng: { click: 'showEditModal()' } }
             = inline_svg 'edit.svg'
-        %h2
+        %h2.client-name
           {{ currentClient.name }}
           %br
           .location
@@ -66,3 +66,21 @@
               .col-xs-10.detail
                 %a{ ng: { href: 'http://{{ currentClient.website }}' }, target: '_blank' }
                   {{ currentClient.website }}
+
+        #people
+          %h2
+            people
+
+          .well{ ng: { repeat: 'contact in currentClient.contacts', click: 'go("/people/" + contact.id)' } }
+            .row
+              .col-xs-10
+                .row
+                  .col-xs-12
+                    %strong
+                      {{ contact.name }}, {{ contact.position }}
+                .row
+                  .col-xs-12
+                    {{ contact.address.email }} {{ contact.address.mobile }}
+              .col-xs-2
+                = inline_svg 'right-caret.svg', class: 'pull-right'
+

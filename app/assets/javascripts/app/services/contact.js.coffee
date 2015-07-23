@@ -43,6 +43,10 @@
     else
       callback(allContacts)
 
+  @allForClient = (client_id, callback) ->
+    resource.query client_id: client_id, (contacts) ->
+      callback(contacts)
+
   @create = (params) ->
     deferred = $q.defer()
     resource.save params, (contact) ->

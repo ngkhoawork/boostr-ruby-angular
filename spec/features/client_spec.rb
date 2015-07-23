@@ -4,6 +4,27 @@ feature 'Clients' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
 
+  describe 'showing client details' do
+    let!(:client) { create :client, company: company }
+    let!(:contacts) { create_list :contact, 3, client: client, company: company }
+
+    before do
+      login_as user, scope: :user
+      visit "/clients/#{client.id}"
+      expect(page).to have_css('#clients')
+    end
+
+    scenario 'shows client details and people' do
+      within '#client-detail' do
+        expect(find('h2.client-name')).to have_text(client.name)
+
+        within '#people' do
+          expect(page).to have_css('.well', count: 3)
+        end
+      end
+    end
+  end
+
 
   describe 'creating a client' do
     before do
@@ -34,8 +55,8 @@ feature 'Clients' do
       end
 
       within '#client-detail' do
-        expect(find('h2')).to have_text('Bobby')
-        expect(find('h2')).to have_text('Boise, ID')
+        expect(find('h2.client-name')).to have_text('Bobby')
+        expect(find('h2.client-name')).to have_text('Boise, ID')
       end
 
       click_link('New Client')
@@ -58,8 +79,8 @@ feature 'Clients' do
       end
 
       within '#client-detail' do
-        expect(find('h2')).to have_text('Johnny')
-        expect(find('h2')).to have_text('Seattle, WA')
+        expect(find('h2.client-name')).to have_text('Johnny')
+        expect(find('h2.client-name')).to have_text('Seattle, WA')
       end
 
     end
@@ -97,8 +118,8 @@ feature 'Clients' do
       end
 
       within '#client-detail' do
-        expect(find('h2')).to have_text('Bobby')
-        expect(find('h2')).to have_text('Boise, ID')
+        expect(find('h2.client-name')).to have_text('Bobby')
+        expect(find('h2.client-name')).to have_text('Boise, ID')
       end
     end
   end
@@ -119,7 +140,7 @@ feature 'Clients' do
       end
 
       within '#client-detail' do
-        expect(find('h2')).to have_text(clients[2].name)
+        expect(find('h2.client-name')).to have_text(clients[2].name)
         find('#delete-client').click()
       end
 
@@ -128,7 +149,7 @@ feature 'Clients' do
       expect(page).to have_css('.list-group-item', count: 2)
 
       within '#client-detail' do
-        expect(find('h2')).to have_text(clients[0].name)
+        expect(find('h2.client-name')).to have_text(clients[0].name)
         find('#delete-client').click()
       end
 
