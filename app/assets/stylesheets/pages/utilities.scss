@@ -3,13 +3,19 @@
   padding: 8px 10px 2px;
   margin: 15px 0;
   position: relative;
-
   a {
     margin: 0 10px;
-
     svg {
       height: 23px;
     }
   }
 
+  .edit {
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    background: url(pencil.svg) no-repeat center;
+    background-size: 15px;
+    border: 1px solid #BAC1C8;
+  }
 }

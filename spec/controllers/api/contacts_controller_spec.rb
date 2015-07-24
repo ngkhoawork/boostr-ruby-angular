@@ -42,4 +42,16 @@ RSpec.describe Api::ContactsController, type: :controller do
       }.to_not change(Contact, :count)
     end
   end
+
+  describe "PUT #update" do
+    let(:contact) { create :contact, company: company, client: client }
+
+    it 'updates a contact successfully' do
+      put :update, id: contact.id, contact: { name: 'New Name' }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['name']).to eq('New Name')
+    end
+  end
+
 end

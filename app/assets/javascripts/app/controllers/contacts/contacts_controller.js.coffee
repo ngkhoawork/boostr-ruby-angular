@@ -15,6 +15,14 @@
       backdrop: 'static'
       keyboard: false
 
+  $scope.showEditModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_form.html'
+      size: 'lg'
+      controller: 'ContactsEditController'
+      backdrop: 'static'
+      keyboard: false
+
   $scope.$on 'updated_current_contact', ->
     $scope.currentContact = Contact.get()
 
