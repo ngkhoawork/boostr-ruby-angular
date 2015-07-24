@@ -1,42 +1,33 @@
-.wells-group
-{
-    .well
-    {
-        margin: 0;
-        padding: 33px;
+.wells-group {
+  .detail {
+    font-size   : 16px;
+    padding-left: 33px;
+  }
 
-        color: $text-color;
-        border: none;
-        border-bottom-color: $table-border-color;
-        border-radius: 0;
-        strong
-        {
-            font-family: $headings-font-family;
-            font-size: 15px;
-
-            color: $headings-color;
-        }
-
-        &:first-child
-        {
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
-
-        &:last-child
-        {
-            border-bottom-color: transparent;
-            border-bottom-right-radius: 5px;
-            border-bottom-left-radius: 5px;
-        }
+  .well {
+    margin-bottom     : 1px;
+    padding           : 33px;
+    color             : $text-color;
+    border            : none;
+    border-radius     : 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow   : none;
+    box-shadow        : none;
+    strong {
+      font-family: $headings-font-family;
+      font-size  : 15px;
+      color      : $headings-color;
     }
 
-
-
-    .detail
-    {
-        font-size: 16px;
-
-        padding-left: 33px;
+    &:first-child {
+      border-top-left-radius : 5px;
+      border-top-right-radius: 5px;
     }
+
+    &:last-child {
+      border-bottom-color       : transparent;
+      border-bottom-right-radius: 5px;
+      border-bottom-left-radius : 5px;
+    }
+  }
 }
