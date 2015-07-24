@@ -9,7 +9,7 @@ describe "ContactsNewController", ->
       result:
         then: jasmine.createSpy('modalInstance.result.then')
 
-    @controller('ContactsNewController', { $scope: @scope, $modalInstance: modalInstance })
+    @controller('ContactsNewController', { $scope: @scope, $modalInstance: modalInstance, contact: {} })
 
   describe 'submitting the create form', ->
 
