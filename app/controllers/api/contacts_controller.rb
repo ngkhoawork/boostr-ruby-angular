@@ -19,6 +19,14 @@ class Api::ContactsController < ApplicationController
     end
   end
 
+  def update
+    if contact.update_attributes(contact_params)
+      render json: contact, status: :accepted
+    else
+      render json: { errors: contact.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def contact_params
