@@ -6,6 +6,7 @@
     Client.all (clients) ->
       $scope.clients = clients
       Client.set($routeParams.id || clients[0].id)
+    $scope.showContactList = false
 
   $scope.getContacts = (client) ->
     unless client.contacts
@@ -28,6 +29,29 @@
       backdrop: 'static'
       keyboard: false
 
+  $scope.showNewPersonModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_form.html'
+      size: 'lg'
+      controller: 'ContactsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          client_id: $scope.currentClient.id
+
+  $scope.showLinkExistingPerson = ->
+    $scope.showContactList = true
+    Contact.all (contacts) ->
+      $scope.contacts = contacts
+
+  $scope.linkExistingPerson = (item, model) ->
+    $scope.contactToLink = undefined
+    $scope.showContactList = false
+    item.client_id = $scope.currentClient.id
+    Contact.update(id: item.id, contact: item).then (contact) ->
+      $scope.currentClient.contacts.push(contact)
+
   $scope.delete = ->
     if confirm('Are you sure you want to delete the client "' +  $scope.currentClient.name + '"?')
       Client.delete $scope.currentClient, ->
@@ -42,6 +66,10 @@
 
   $scope.$on 'updated_clients', ->
     $scope.init()
+
+  $scope.$on 'updated_current_contact', ->
+    $scope.currentClient.contacts.push(Contact.get())
+
 
   $scope.init()
 ]

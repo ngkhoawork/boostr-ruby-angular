@@ -14,6 +14,9 @@
       controller: 'ContactsNewController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        contact: ->
+          {}
 
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open

@@ -76,6 +76,23 @@
                   {{ currentClient.client_type }}
 
         #people
+          %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+            %a.add-contact{ href: '', dropdown: { toggle: true }}
+              = inline_svg 'add.svg'
+            %ul.dropdown-menu.new-contact-options
+              %li
+                %a.new-person{ href: '', ng: { click: 'showNewPersonModal()' } }
+                  Add New Person
+              %li
+                %a.existing-contact{ href: '', ng: { click: 'showLinkExistingPerson()' } }
+                  Link Existing Person
+              %li.existing-contact-options{ ng: { show: 'showContactList' } }
+                %ui-select{ name: 'contact-list', ng: { model: 'contactToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingPerson($item, $model)' }
+                  %ui-select-match{ placeholder: 'start typing their name here' }
+                    {{ $select.selected.name }}
+                  %ui-select-choices{ repeat: 'contact in contacts | filter: { name: $select.search }' }
+                    %div{ ng: { bind: { html: 'contact.name' } } }
+
           %h2
             people
 

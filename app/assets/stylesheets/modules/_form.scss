@@ -68,6 +68,14 @@
   }
 }
 
+.dropdown-menu {
+  .ui-select-toggle {
+    .caret {
+      display: none;
+    }
+  }
+}
+
 .btn-default-focus {
   outline: none;
   border: none;

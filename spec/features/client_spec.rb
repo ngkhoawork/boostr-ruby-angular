@@ -159,4 +159,65 @@ feature 'Clients' do
     end
   end
 
+  describe 'Adding a contact to a client' do
+    let!(:client) { create :client, company: company }
+    let!(:contact) { create :contact, company: company, address_attributes: attributes_for(:address) }
+
+    before do
+      login_as user, scope: :user
+      visit '/clients'
+      expect(page).to have_css('#clients')
+    end
+
+    scenario 'with a new contact' do
+      find('.add-contact').click()
+
+      expect(page).to have_css('.new-contact-options', visible: true)
+      find('.new-person').click()
+
+      expect(page).to have_css('#contact_modal')
+
+      within '#contact_modal' do
+        fill_in 'name', with: 'Bobby'
+        fill_in 'position', with: 'CEO'
+        fill_in 'street1', with: '123 Any Street'
+        fill_in 'city', with: 'Boise'
+        ui_select('state', 'Idaho')
+        fill_in 'zip', with: '12365'
+        fill_in 'office', with: '1234567890'
+        fill_in 'mobile', with: '1257763562'
+
+        click_on 'Create'
+      end
+
+      expect(page).to have_no_css('#contact_modal')
+
+      within '#people' do
+        expect(page).to have_css('.well', count: 1)
+
+        within '.well:first-child' do
+          expect(page).to have_text('Bobby, CEO')
+        end
+      end
+    end
+
+    scenario 'with an existing contact' do
+      find('.add-contact').click()
+
+      expect(page).to have_css('.new-contact-options', visible: true)
+      find('.existing-contact').click()
+
+      expect(page).to have_css('.existing-contact-options', visible: true)
+      ui_select('contact-list', contact.name)
+
+      within '#people' do
+        expect(page).to have_css('.well', count: 1)
+
+        within '.well:first-child' do
+          expect(page).to have_text(contact.name)
+        end
+      end
+    end
+  end
+
 end

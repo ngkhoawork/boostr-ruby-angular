@@ -1,0 +1,21 @@
+.dropdown-menu {
+  padding: 10px 10px;
+  font-size: 13px;
+
+  li {
+    svg {
+      margin-right: 8px;
+      margin-top: -1px;
+      float: left;
+    }
+
+    a {
+      padding: 10px;
+
+      &:hover, &:focus {
+        background-color: transparent;
+        color: $brand-primary;
+      }
+    }
+  }
+}
