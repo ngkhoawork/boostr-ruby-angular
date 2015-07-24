@@ -1,4 +1,6 @@
 .form-control {
+  box-shadow: none;
+
   &:focus {
     background-color: $white;
     box-shadow: none;
