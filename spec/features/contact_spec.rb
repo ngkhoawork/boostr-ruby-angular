@@ -22,7 +22,7 @@ feature 'Contacts' do
         ui_select('client', client.name)
         fill_in 'street1', with: '123 Any Street'
         fill_in 'city', with: 'Boise'
-        fill_in 'state', with: 'ID'
+        ui_select('state', 'Idaho')
         fill_in 'zip', with: '12365'
         fill_in 'office', with: '1234567890'
         fill_in 'mobile', with: '1257763562'
@@ -51,7 +51,7 @@ feature 'Contacts' do
         ui_select('client', client.name)
         fill_in 'street1', with: '123 Any Road'
         fill_in 'city', with: 'Seattle'
-        fill_in 'state', with: 'WA'
+        ui_select('state', 'Washington')
         fill_in 'zip', with: '78512'
         fill_in 'office', with: '(789) 125-8416'
         fill_in 'mobile', with: '(125) 776-3562'
