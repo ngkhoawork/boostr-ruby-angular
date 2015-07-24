@@ -12,6 +12,10 @@
     font-size: 10px;
     font-weight: normal;
   }
+
+  .fat {
+    padding: 0;
+  }
 }
 
 .ui-select-match {
@@ -41,7 +45,15 @@
     outline: none;
   }
 
+  .ui-select-choices {
+    box-shadow: none;
+  }
+
   .ui-select-choices-row {
+    a {
+      color: $placeholder-text;
+    }
+
     &.active {
       a {
         background-color: $brand-primary;

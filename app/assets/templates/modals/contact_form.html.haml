@@ -31,14 +31,14 @@
           .col-xs-5
             %label.control-label{ for: 'city' } City
             %input.form-control{ name: 'city', placeholder: 'City', ng: { model: 'contact.address.city' }  }
-          .col-xs-5
+          .col-xs-4.fat
             %label.control-label{ for: 'state' } State
             %ui-select.bo-state-select{ name: 'state', ng: { model: 'client.address.state', disabled: true } }
               %ui-select-match{ placeholder: 'State' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'state.name' } } }
-          .col-xs-2
+          .col-xs-3
             %label.control-label{ for: 'zip' } Zip
             %input.form-control{ name: 'zip', placeholder: 'Zip', ng: { model: 'contact.address.zip' }  }
       .form-group
