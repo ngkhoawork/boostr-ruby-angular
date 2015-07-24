@@ -3,6 +3,7 @@ class Client < ActiveRecord::Base
 
   belongs_to :company
   has_many :contacts
+  has_many :revenue
 
   has_one :address, as: :addressable
 

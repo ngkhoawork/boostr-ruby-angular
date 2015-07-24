@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
   belongs_to :company
+  has_many :revenue
 
   ROLES = ['user', 'superadmin']
 
@@ -22,4 +23,10 @@ class User < ActiveRecord::Base
     roles.include?(role.to_s)
   end
 
+  def name
+    name = []
+    name << first_name.chr + '.' if first_name
+    name << last_name if last_name
+    name.join(' ')
+  end
 end

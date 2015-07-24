@@ -1,0 +1,54 @@
+#revenue
+
+  .container
+    .row
+      .col-xs-12
+        %h3
+          Revenue
+
+    .row
+      .col-md-12
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th
+                %th Client ID
+                %th Client Name
+                %th Order #
+                %th Line #
+                %th Ad Server
+                %th Price
+                %th Price Type
+                %th Quantity
+                %th Delivered
+                %th Remaining
+                %th Budget
+                %th Budget Remaining
+                %th Start Date
+                %th End Date
+                %th Sales Rep
+                %th Date Loaded
+                %th Date Updated
+
+            %tbody
+              %tr{ ng: { repeat: 'row in revenue' } }
+                %td
+                  %input{ type: 'checkbox' }
+                %td {{ row.client_id }}
+                %td {{ row.client_name }}
+                %td {{ row.order_number }}
+                %td {{ row.line_number }}
+                %td {{ row.ad_server }}
+                %td {{ row.price | currency:'$':0 }}
+                %td {{ row.price_type }}
+                %td {{ row.quantity | number }}
+                %td {{ row.delivered | number }}
+                %td {{ row.remaining | number }}
+                %td {{ row.budget | currency:'$':0 }}
+                %td {{ row.budget_remaining | currency:'$':0 }}
+                %td {{ row.start_date | date: 'shortDate' }}
+                %td {{ row.end_date | date: 'shortDate' }}
+                %td {{ row.user_name }}
+                %td {{ row.created_at | date: 'shortDate' }}
+                %td {{ row.updated_at | date: 'shortDate' }}

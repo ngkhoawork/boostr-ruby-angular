@@ -1,37 +1,45 @@
 .table-wrapper {
   border-radius: 4px;
-  overflow: hidden;
+  overflow: scroll;
+
   .table {
-    strong {
-      color: $gray-dark;
-    }
     thead {
       background-color: $brand-primary;
       color: $white;
+
+      th {
+        white-space: nowrap;
+      }
+
       tr {
         max-height: 38px !important;
         height: 38px !important;
-        overflow: hidden;
-        font-size: 14px;
         th {
           border-bottom: none;
-          line-height: 38px;
-          &:first-child {
-            padding-left: 25px;
-          }
+          text-transform: uppercase;
         }
       }
     }
+
     tbody {
       tr {
         max-height: 48px !important;
         height: 48px !important;
-        overflow: hidden;
-        td {
-          line-height: 48px;
-          &:first-child {
-            padding-left: 50px;
+
+        &.active, &:hover {
+            border-left: 1px solid $brand-primary;
+            border-right: 1px solid $brand-primary;
+            background-color: transparent;
+
+          td {
+            border-bottom: 1px solid $brand-primary;
+            border-top: 1px solid $brand-primary;
           }
+        }
+
+        td {
+          padding-top: 15px;
+          padding-bottom: 15px;
         }
       }
     }
