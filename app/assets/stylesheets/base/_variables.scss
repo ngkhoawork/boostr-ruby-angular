@@ -687,20 +687,20 @@ $modal-lg:                    775px;
 // //##
 
 // //** Background color on `.list-group-item`
-$list-group-bg:                 #F6F6F6 !default;
+$list-group-bg:                 $body-bg !default;
 // //** `.list-group-item` border color
-$list-group-border:             #e6e6e6 !default;
+$list-group-border:             #DADFE4 !default;
 // //** List group border radius
-$list-group-border-radius:      3px !default;
+$list-group-border-radius:      0px !default;
 
 // //** Background color of single list items on hover
-$list-group-hover-bg:           darken($body-bg, 1%) !default;
+$list-group-hover-bg:           darken($body-bg, 3%) !default;
 // //** Text color of active list items
 $list-group-active-color:       $text-color !default;
 // //** Background color of active list items
 $list-group-active-bg:          $white !default;
 // //** Border color of active list elements
-// $list-group-active-border:      $brand-primary !default;
+$list-group-active-border:      $white !default;
 // //** Text color for content within active list items
 // $list-group-active-text-color:  lighten($list-group-active-bg, 40%) !default;
 

@@ -16,13 +16,15 @@
     .row
       #contact-list.col-xs-5
         .list-group.list-lg
-          %a.list-group-item.vertical-center{href: '/#people/{{ contact.id }}', ng: { repeat: 'contact in contacts | orderBy: "name"', class: '{ active: contact.id == currentContact.id }' } }
-            .col-xs-8.col-xs-offset-4
-              .row
-                %h4
-                  {{ contact.name }}
-              .row
-                {{ contact.client.name }}, {{ contact.position }}
+          %a.list-group-item{href: '/#people/{{ contact.id }}', ng: { repeat: 'contact in contacts | orderBy: "name"', class: '{ active: contact.id == currentContact.id }' } }
+            .row
+              .col-xs-4
+              .col-xs-8
+                .row
+                  %h4
+                    {{ contact.name }}
+                .row
+                  {{ contact.client.name }}, {{ contact.position }}
       #contact-detail.col-xs-7
         .tools.pull-right
           %a#delete-contact{ href: '' }

@@ -1,16 +1,19 @@
 .list-group {
   .active {
     border-right-color: $brand-primary;
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       border-right-color: $brand-primary;
     }
   }
+
   .list-group-item {
-    border-style: none solid solid none;
-    border-width: 2px;
-    opacity: 0.75;
+    border-width: 1px;
+    opacity: 0.30;
     color: $text-color;
-    &:hover, &:focus {
+    padding: 30px;
+    &:hover,
+    &:focus {
       opacity: 1;
       color: $text-color;
     }
@@ -20,11 +23,13 @@
 .list-sm {
   .list-group-item {
     h5 {
-      margin: 5px 0px;
+      margin: 5px 0;
     }
+
     font-size: 11px;
     min-height: 76px;
   }
+
   .active {
     border-right-width: 3px;
     border-bottom-style: none;
@@ -35,15 +40,24 @@
 .list-lg {
   .list-group-item {
     h4 {
-      margin: 5px 0px;
+      margin: 5px 0;
     }
     font-size: 15px;
-    min-height: 136px;
+    min-height: 110px;
+
+    &:first-child {
+      border-top: none;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
+
   .active {
-    -webkit-box-shadow: 6px 0px 0px 0px $brand-primary !important;
-    -moz-box-shadow: 6px 0px 0px 0px $brand-primary !important;
-    box-shadow: 6px 0px 0px $brand-primary !important;
+    -webkit-box-shadow: 6px 0 0 0 $brand-primary !important;
+    -moz-box-shadow: 6px 0 0 0 $brand-primary !important;
+    box-shadow: 6px 0 0 $brand-primary !important;
     border-radius: 2px;
     border-right-color: $brand-primary;
     border-bottom-style: none;
