@@ -110,4 +110,40 @@ feature 'Contacts' do
       end
     end
   end
+
+  describe 'Deleting a contact' do
+    let!(:contacts) { create_list :contact, 3, company: company, client: client }
+
+    before do
+      login_as user, scope: :user
+      visit '/people'
+      expect(page).to have_css('#contacts')
+    end
+
+    scenario 'removes the contact from the page and navigates to the contact index' do
+      within '.list-group' do
+        expect(page).to have_css('.list-group-item', count: 3)
+        find('.list-group-item:last-child').click()
+      end
+
+      within '#contact-detail' do
+        expect(find('h2.contact-name')).to have_text(contacts[2].name)
+        find('#delete-contact').click()
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.list-group-item', count: 2)
+
+      within '#contact-detail' do
+        expect(find('h2.contact-name')).to have_text(contacts[0].name)
+        find('#delete-contact').click()
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.list-group-item', count: 1)
+    end
+  end
+
 end

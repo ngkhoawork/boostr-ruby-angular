@@ -8,7 +8,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :clients, only: [:index, :create, :update, :destroy]
-    resources :contacts, only: [:index, :create, :update]
+    resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index]
   end
 

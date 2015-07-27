@@ -54,4 +54,14 @@ RSpec.describe Api::ContactsController, type: :controller do
     end
   end
 
+  describe "DELETE #destroy" do
+    let!(:contact) { create :contact, company: company, client: client }
+
+    it 'marks the contact as deleted' do
+      delete :destroy, id: contact.id, format: :json
+      expect(response).to be_success
+      expect(contact.reload.deleted_at).to_not be_nil
+    end
+  end
+
 end

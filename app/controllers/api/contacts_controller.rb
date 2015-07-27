@@ -27,6 +27,11 @@ class Api::ContactsController < ApplicationController
     end
   end
 
+  def destroy
+    contact.destroy
+    render nothing: true
+  end
+
   private
 
   def contact_params
