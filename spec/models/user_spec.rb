@@ -20,4 +20,25 @@ RSpec.describe User, type: :model do
       expect(user.is?(:admin)).to be(false)
     end
   end
+
+  context 'name' do
+    it 'returns an empty string if name is nill' do
+      expect(user.name).to eq('')
+    end
+
+    it 'returns the first initial if the first name is present' do
+      user.update_attributes(first_name: 'Bobby')
+      expect(user.name).to eq('B.')
+    end
+
+    it 'returns the last name if the last name is present' do
+      user.update_attributes(last_name: 'Jones')
+      expect(user.name).to eq('Jones')
+    end
+
+    it 'returns the first initial and last name if they are both present' do
+      user.update_attributes(first_name: 'Bobby', last_name: 'Jones')
+      expect(user.name).to eq('B. Jones')
+    end
+  end
 end

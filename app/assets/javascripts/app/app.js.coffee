@@ -26,6 +26,9 @@
     .when '/people',
       templateUrl: 'contacts.html'
       controller: 'ContactsController'
+    .when '/revenue',
+      templateUrl: 'revenue.html'
+      controller: 'RevenueController'
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
