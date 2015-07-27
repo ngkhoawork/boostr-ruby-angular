@@ -1,6 +1,6 @@
 @app.controller 'ContactsController',
-['$scope', '$rootScope', '$modal', '$routeParams', 'Contact',
-($scope, $rootScope, $modal, $routeParams, Contact) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Contact',
+($scope, $rootScope, $modal, $routeParams, $location, Contact) ->
 
   $scope.init = ->
     Contact.all (contacts) ->
@@ -25,6 +25,11 @@
       controller: 'ContactsEditController'
       backdrop: 'static'
       keyboard: false
+
+  $scope.delete = ->
+    if confirm('Are you sure you want to delete "' +  $scope.currentContact.name + '"?')
+      Contact.delete $scope.currentContact, ->
+        $location.path('/people')
 
   $scope.$on 'updated_current_contact', ->
     $scope.currentContact = Contact.get()

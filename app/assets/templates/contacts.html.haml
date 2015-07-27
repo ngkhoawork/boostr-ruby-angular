@@ -27,7 +27,7 @@
                   {{ contact.client.name }}, {{ contact.position }}
       #contact-detail.col-xs-7
         .tools.pull-right
-          %a#delete-contact{ href: '' }
+          %a#delete-contact{ href: '', ng: { click: 'delete()' } }
             = inline_svg 'trash.svg'
           %a#edit-contact{ href: '', ng: { click: 'showEditModal()' } }
             = inline_svg 'edit.svg'
