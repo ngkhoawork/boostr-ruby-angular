@@ -58,11 +58,11 @@
           }
 
           svg {
-            border: #f9985e;
+            border: $brand-primary;
             border-width: 1px;
             border-style: solid;
             border-radius: 50%;
-            background-color: #f9985e;
+            background-color: $brand-primary;
             fill: $white;
             width: 19px;
             height: 19px;
