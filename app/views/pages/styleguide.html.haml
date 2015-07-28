@@ -107,6 +107,7 @@
         %table.table.table-hover.table-striped
           %thead
             %tr
+              %th
               %th OPPORTUNITY
               %th ADVERTISER
               %th STAGE
@@ -115,13 +116,17 @@
           %tbody
             %tr
               %td
+                .empty
+              %td
                 %strong
                   Apple Watch
               %td Apple, Inc.
               %td Prospect
               %td $25,000
               %td 6/8/2015
-            %tr
+            %tr.active
+              %td
+                = inline_svg 'check.svg', class: 'svg'
               %td
                 %strong
                   Shampoo
@@ -131,6 +136,8 @@
               %td 6/8/2015
             %tr
               %td
+                .empty
+              %td
                 %strong
                   Goldleaf Shoe
               %td Nike
@@ -138,6 +145,8 @@
               %td $100,000
               %td 6/8/2015
             %tr
+              %td
+                .empty
               %td
                 %strong
                   Surface 3
