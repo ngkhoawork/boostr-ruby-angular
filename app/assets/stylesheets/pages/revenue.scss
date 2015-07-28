@@ -1,0 +1,25 @@
+#revenue_upload_modal {
+  svg {
+    height: 36px;
+    fill: $brand-primary;
+  }
+
+  .modal-header {
+    border: none;
+  }
+
+  .modal-body {
+    padding: 20px;
+    color: $dark-text-color;
+
+    ol {
+      margin-left: 25px;
+      font-size: 13px;
+
+      li {
+        padding: 10px 20px 10px 0;
+
+      }
+    }
+  }
+}

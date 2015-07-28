@@ -20,6 +20,7 @@
 //= require angular-bootstrap
 //= require angular-ui-select
 //= require angular-sanitize
+//= require ng-file-upload
 //= require_tree .
 //= require_tree ../templates
 

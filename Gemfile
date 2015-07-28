@@ -26,6 +26,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-underscore'
   gem 'rails-assets-angular-ui-select'
   gem 'rails-assets-angular-sanitize'
+  gem 'rails-assets-ng-file-upload'
 end
 
 group :development, :test do

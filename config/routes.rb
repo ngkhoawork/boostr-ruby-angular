@@ -9,7 +9,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :clients, only: [:index, :create, :update, :destroy]
     resources :contacts, only: [:index, :create, :update, :destroy]
-    resources :revenue, only: [:index]
+    resources :revenue, only: [:index, :create]
   end
 
   get '*path' => 'pages#index'
