@@ -1,45 +1,72 @@
 .table-wrapper {
   border-radius: 4px;
-  overflow: scroll;
-
+  overflow-x: auto;
   .table {
     thead {
       background-color: $brand-primary;
       color: $white;
-
       th {
         white-space: nowrap;
       }
 
       tr {
-        max-height: 38px !important;
-        height: 38px !important;
+        max-height: 43px !important;
+        height: 43px !important;
         th {
           border-bottom: none;
           text-transform: uppercase;
+          &:first-child {
+            padding-left: 30px;
+          }
         }
       }
     }
 
     tbody {
+      color: #67747e;
       tr {
-        max-height: 48px !important;
-        height: 48px !important;
-
-        &.active, &:hover {
-            border-left: 1px solid $brand-primary;
-            border-right: 1px solid $brand-primary;
-            background-color: transparent;
-
+        max-height: 75px !important;
+        height: 75px !important;
+        &.active {
+          border-left: 1px solid #f9985e;
+          border-right: 1px solid #f9985e;
           td {
-            border-bottom: 1px solid $brand-primary;
-            border-top: 1px solid $brand-primary;
+            border-bottom: 1px solid #f9985e;
+            border-top: 1px solid #f9985e;
+            background-color: $white;
           }
         }
 
         td {
-          padding-top: 15px;
-          padding-bottom: 15px;
+          vertical-align: middle;
+          &:first-child {
+            padding-top: 14px;
+            padding-left: 30px;
+          }
+
+          &:nth-child(2) {
+            color: #232b31;
+          }
+
+          .empty {
+            border: #67747e;
+            border-width: 1px;
+            border-style: solid;
+            border-radius: 50%;
+            width: 19px;
+            height: 19px;
+          }
+
+          svg {
+            border: #f9985e;
+            border-width: 1px;
+            border-style: solid;
+            border-radius: 50%;
+            background-color: #f9985e;
+            fill: $white;
+            width: 19px;
+            height: 19px;
+          }
         }
       }
     }
