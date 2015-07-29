@@ -1,6 +1,6 @@
 @service.service 'Deal',
-['$resource', '$q',
-($resource, $q) ->
+['$resource', '$q', '$rootScope',
+($resource, $q, $rootScope) ->
 
   resource = $resource '/api/deals/:id', { id: '@id' }
 
