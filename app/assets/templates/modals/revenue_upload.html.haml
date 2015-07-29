@@ -39,6 +39,8 @@
           .progress
             .progress-bar.progress-bar-striped{ aria: { valuemax: "100", valuemin: "0", valuenow: "{{ progressPercentage }}" }, role: "progressbar", style: "width: {{ progressPercentage }}%" }
               %span.sr-only {{ progressPercentage }}% Complete
+              .text{ ng: { show: 'progressPercentage > 0' } }
+                {{ progressPercentage }}%
             .text{ ng: { hide: 'progressPercentage > 0' } }
               CSV File
         .col-xs-3
@@ -50,5 +52,5 @@
         Row {{ error.row }}
       contains errors: {{ error.message.join(', ') }}
 
-    .modal-footer.text-center
+    .modal-footer.text-center{ ng: { hide: 'progressPercentage < 100' } }
       %button.btn.btn-primary.btn-lg{ ng: { click: 'cancel()' } } Done

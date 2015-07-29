@@ -54,7 +54,6 @@ feature 'Revenue' do
       JS
 
       within '#revenue_upload_modal' do
-        expect(page).to have_no_css('.text')
         expect(page).to have_css('.progress-bar', visible: true)
         expect(page).to have_css('.alert.alert-danger')
 
