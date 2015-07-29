@@ -9,7 +9,7 @@ class Api::RevenueController < ApplicationController
     csv_file = IO.read(params[:file].tempfile.path)
     revenues = Revenue.import(csv_file, current_user.company.id)
 
-    render nothing: true
+    render json: revenues
   end
 
 end

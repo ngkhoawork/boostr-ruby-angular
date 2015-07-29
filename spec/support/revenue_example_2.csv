@@ -13,3 +13,4 @@ Order #,Line #,AdServer,Qty,Price,Price Type,Delivered Qty,Remaining Qty,Budget,
 8686,6,Sizmek,100000,6,CPE,50000,50000,"600,000",300000,9/6/2015,1/5/2016,Converse,1445,tjones@buzzfeed.com
 8686,7,Sizmek,100000,7,CPE,50000,50000,"700,000",350000,9/7/2015,1/6/2016,Converse,1445,tjones@buzzfeed.com
 420,9,Buzz,64,.33,CRE,5,5,5,55,9/25/1980,12/31/2000,Adidas,3,tjones@buzzfeed.com
+,,,55,5,CPE,5,5,5,55,1/1/2010,1/1/2010,Adidas,3,tjones@buzzfeed.com

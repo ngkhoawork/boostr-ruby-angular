@@ -3,8 +3,13 @@ class Revenue < ActiveRecord::Base
   belongs_to :client
   belongs_to :user
 
+  validates :company_id, :order_number, :line_number, :ad_server, presence: true
+
   def self.import(file, company_id)
+    errors = []
+    row_number = 0
     CSV.parse(file, headers: true) do |row|
+      row_number += 1
 
       find_params = {
         company_id: company_id,
@@ -28,8 +33,12 @@ class Revenue < ActiveRecord::Base
       }
 
       revenue = Revenue.find_or_initialize_by(find_params)
-      revenue.update_attributes(create_params)
+      unless revenue.update_attributes(create_params)
+        error = { row: row_number, message: revenue.errors.full_messages }
+        errors << error
+      end
     end
+    errors
   end
 
   def client_name

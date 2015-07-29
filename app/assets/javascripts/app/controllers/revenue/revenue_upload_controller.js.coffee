@@ -3,6 +3,7 @@
 ($scope, $rootScope, $modalInstance, $timeout, Revenue, Upload) ->
 
   $scope.progressPercentage = 0
+  $scope.errors = []
 
   $scope.$watch 'files', ->
     $scope.upload($scope.files)
@@ -18,6 +19,8 @@
         ).progress((evt) ->
             $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total)
         ).success (data, status, headers, config) ->
+          $scope.errors = data;
+
           $timeout ->
             $rootScope.$broadcast 'updated_revenues'
         i++
