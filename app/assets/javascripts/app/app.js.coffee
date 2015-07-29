@@ -15,6 +15,9 @@
     .when '/dashboard',
       templateUrl: 'dashboard.html'
       controller: 'DashboardController'
+    .when '/deals',
+      templateUrl: 'deals.html'
+      controller: 'DealsController'
     .when '/clients/:id',
       templateUrl: 'clients.html'
       controller: 'ClientsController'

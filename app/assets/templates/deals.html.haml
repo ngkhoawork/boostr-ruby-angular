@@ -1,0 +1,54 @@
+#deals
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right.last
+              %a.upload{ href: '', ng: { click: 'showModal()' } }
+                = inline_svg 'add.svg'
+                New Deal
+
+  .container
+    .row
+      .col-xs-3
+        .list-group.list-sm
+          %a.list-group-item.vertical-center.active{ href: '' }
+            .col-xs-5
+            .col-xs-7
+              .row
+                %h5
+                  All Open (13)
+              .row
+                $500,000
+          %a.list-group-item.vertical-center{ href: '', ng: { repeat: 'stage in stages' } }
+            .col-xs-5
+            .col-xs-7
+              .row
+                %h5
+                  {{ stage }} (13)
+              .row
+                $500,000
+      .col-xs-9
+        %h3
+          My Open Deals
+
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th
+                %th Opportunity
+                %th Advertiser
+                %th Stage
+                %th Spend
+                %th Start Date
+            %tbody
+              %tr{ ng: { repeat: 'row in deals' } }
+                %td
+                  .empty
+                %td {{ row.name }}
+                %td {{ row.advertiser.name }}
+                %td {{ row.stage }}
+                %td {{ row.budget | currency:'$':0 }}
+                %td {{ row.start_date | date: 'shortDate' }}
