@@ -11,6 +11,18 @@ class Revenue < ActiveRecord::Base
     CSV.parse(file, headers: true) do |row|
       row_number += 1
 
+      unless user_id = User.where(email: row[14]).first
+        error = { row: row_number, message: ['Sales Rep could not be found'] }
+        errors << error
+        next
+      end
+
+      unless client_id = Client.where(id: row[13]).first
+        error = { row: row_number, message: ['Client could not be found'] }
+        errors << error
+        next
+      end
+
       find_params = {
         company_id: company_id,
         order_number: row[0],
@@ -28,8 +40,8 @@ class Revenue < ActiveRecord::Base
         budget_remaining: row[9].to_i,
         start_date: DateTime.strptime(row[10], "%m/%d/%Y"),
         end_date: DateTime.strptime(row[11], "%m/%d/%Y"),
-        client_id: row[13],
-        user_id: User.where(email: row[14]).first
+        client_id: client_id,
+        user_id: user_id
       }
 
       revenue = Revenue.find_or_initialize_by(find_params)
