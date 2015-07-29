@@ -7,6 +7,7 @@
   'ui.bootstrap'
   'ui.select'
   'ngSanitize'
+  'ngFileUpload'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

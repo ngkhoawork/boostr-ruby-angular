@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
   belongs_to :company
-  has_many :revenue
+  has_many :revenues
 
   ROLES = ['user', 'superadmin']
 

@@ -88,4 +88,35 @@
       }
     }
   }
+
+  &.transparent {
+    background: $body-bg;
+    border-bottom: 1px solid $gray-lighter;
+
+    .nav-tabs {
+      background: $body-bg;
+
+      li {
+        a {
+          color: $gray-lighter;
+
+          &:hover {
+            color: $brand-primary;
+            background: transparent;
+
+            svg {
+              fill: $brand-primary
+            }
+          }
+
+          svg {
+            height: 20px;
+            padding-right: 2px;
+            fill: $gray-lighter;
+            float: left;
+          }
+        }
+      }
+    }
+  }
 }

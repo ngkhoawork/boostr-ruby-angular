@@ -1,5 +1,13 @@
 #revenue
-
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right.last
+              %a.upload{ href: '', ng: { click: 'showUploadModal()' } }
+                = inline_svg 'upload.svg'
+                Upload
   .container
     .row
       .col-xs-12
@@ -12,7 +20,6 @@
           %table.table.table-hover.table-striped
             %thead
               %tr
-                %th
                 %th Client ID
                 %th Client Name
                 %th Order #
@@ -33,14 +40,12 @@
 
             %tbody
               %tr{ ng: { repeat: 'row in revenue' } }
-                %td
-                  %input{ type: 'checkbox' }
                 %td {{ row.client_id }}
                 %td {{ row.client_name }}
                 %td {{ row.order_number }}
                 %td {{ row.line_number }}
                 %td {{ row.ad_server }}
-                %td {{ row.price | currency:'$':0 }}
+                %td {{ row.price/100 | currency:'$' }}
                 %td {{ row.price_type }}
                 %td {{ row.quantity | number }}
                 %td {{ row.delivered | number }}

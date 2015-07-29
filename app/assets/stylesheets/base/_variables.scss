@@ -36,6 +36,7 @@ $body-bg: #f6f9fc;
 
 //** Global text color on `<body>`.
 $text-color: #838f9a;
+$dark-text-color: #232b31;
 
 //** Global textual link color.
 $link-color: $brand-primary !default;
@@ -146,9 +147,11 @@ $btn-default-border: $placeholder-text;
 // $btn-success-color:              #fff !default;
 // $btn-success-bg:                 $brand-success !default;
 // $btn-success-border:             darken($btn-success-bg, 5%) !default;
-// $btn-info-color:                 #fff !default;
-// $btn-info-bg:                    $brand-info !default;
-// $btn-info-border:                darken($btn-info-bg, 5%) !default;
+
+$btn-info-color:                 #727f8c;
+$btn-info-bg:                    transparent;
+$btn-info-border:                #727f8c;
+
 // $btn-warning-color:              #fff !default;
 // $btn-warning-bg:                 $brand-warning !default;
 // $btn-warning-border:             darken($btn-warning-bg, 5%) !default;
@@ -542,7 +545,7 @@ $modal-lg: 775px;
 // //
 // //##
 // //** Background color of the whole progress component
-// $progress-bg:                 #f5f5f5 !default;
+$progress-bg:                 #fff;
 // //** Progress bar text color
 // $progress-bar-color:          #fff !default;
 // //** Variable for setting rounded corners on progress bar.

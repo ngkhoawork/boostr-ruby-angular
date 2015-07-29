@@ -3,12 +3,41 @@ class Revenue < ActiveRecord::Base
   belongs_to :client
   belongs_to :user
 
+  def self.import(file, company_id)
+    CSV.parse(file, headers: true) do |row|
+
+      find_params = {
+        company_id: company_id,
+        order_number: row[0],
+        line_number: row[1],
+        ad_server: row[2]
+      }
+
+      create_params = {
+        quantity: row[3].to_i,
+        price: row[4].to_f * 100,
+        price_type: row[5],
+        delivered: row[6].to_i,
+        remaining: row[7].to_i,
+        budget: row[8].to_i,
+        budget_remaining: row[9].to_i,
+        start_date: DateTime.strptime(row[10], "%m/%d/%Y"),
+        end_date: DateTime.strptime(row[11], "%m/%d/%Y"),
+        client_id: row[13],
+        user_id: User.where(email: row[14]).first
+      }
+
+      revenue = Revenue.find_or_initialize_by(find_params)
+      revenue.update_attributes(create_params)
+    end
+  end
+
   def client_name
     client.name if client.present?
   end
 
   def user_name
-    user.name
+    user.name if user.present?
   end
 
   def as_json(options = {})
