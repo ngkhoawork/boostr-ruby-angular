@@ -100,9 +100,10 @@
         a {
           color: $gray-lighter;
 
-          &:hover {
+          &:hover, &:focus {
             color: $brand-primary;
             background: transparent;
+            outline: none;
 
             svg {
               fill: $brand-primary
