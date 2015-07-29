@@ -45,5 +45,10 @@
           #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files' } }
             Browse
 
+    .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
+      %strong
+        Row {{ error.row }}
+      contains errors: {{ error.message.join(', ') }}
+
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ ng: { click: 'cancel()' } } Done
