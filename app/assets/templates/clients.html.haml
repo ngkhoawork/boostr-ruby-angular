@@ -110,3 +110,24 @@
                 .col-xs-2
                   = inline_svg 'right-caret.svg', class: 'pull-right'
 
+
+          #teamsplits
+            %span.pull-right
+              %a.new-member{ href: '', ng: { click: 'showNewMemberModal()' } }
+                = inline_svg 'add.svg'
+
+            %h2
+              Default Team & Split
+
+            .table-wrapper
+              %table.table.table-hover.table-striped
+                %thead
+                  %tr
+                    %th Member
+                    %th Share
+                    %th Role
+                %tbody
+                  %tr{ ng: { repeat: 'client_member in client_members' } }
+                    %td {{ client_member.user.first_name }} {{ client_member.user.last_name }}
+                    %td {{ client_member.share }}%
+                    %td {{ client_member.role }}

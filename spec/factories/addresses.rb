@@ -1,11 +1,11 @@
 FactoryGirl.define do
   factory :address do
-    street1 "123 Main"
-    street2 "Suite 2"
-    city "Ketchum"
-    state "ID"
-    zip "83340"
-    phone "2088675309"
-    mobile "1728726789"
+    street1 { FFaker::AddressUS.street_address }
+    street2 { FFaker::Address.secondary_address }
+    city { FFaker::AddressUS.city }
+    state { FFaker::AddressUS.state_abbr }
+    zip { FFaker::AddressUS.zip_code }
+    phone { FFaker::PhoneNumber.phone_number }
+    mobile { FFaker::PhoneNumber.phone_number }
   end
 end

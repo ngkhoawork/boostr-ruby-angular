@@ -1,8 +1,12 @@
 require 'rails_helper'
 
-RSpec.describe User, type: :model do
+RSpec.describe User, 'association' do
+  it { should have_many(:client_members) }
+  it { should have_many(:clients).through(:client_members) }
+end
 
-  let(:user) { create :user }
+RSpec.describe User, type: :model do
+  let(:user) { create :user, first_name: nil, last_name: nil }
 
   context 'roles' do
     it 'default to user' do
@@ -22,7 +26,7 @@ RSpec.describe User, type: :model do
   end
 
   context 'name' do
-    it 'returns an empty string if name is nill' do
+    it 'returns an empty string if name is nil' do
       expect(user.name).to eq('')
     end
 
