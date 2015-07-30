@@ -25,7 +25,6 @@ feature 'Clients' do
     end
   end
 
-
   describe 'creating a client' do
     before do
       login_as user, scope: :user
@@ -82,9 +81,7 @@ feature 'Clients' do
         expect(find('h2.client-name')).to have_text('Johnny')
         expect(find('h2.client-name')).to have_text('Seattle, WA')
       end
-
     end
-
   end
 
   describe 'Editing a client' do
@@ -128,6 +125,7 @@ feature 'Clients' do
     let!(:clients) { create_list :client, 3, company: company }
 
     before do
+      clients.sort_by!(&:name)
       login_as user, scope: :user
       visit '/clients'
       expect(page).to have_css('#clients')
@@ -136,12 +134,12 @@ feature 'Clients' do
     scenario 'removes the client from the page and navigates to the client index' do
       within '.list-group' do
         expect(page).to have_css('.list-group-item', count: 3)
-        find('.list-group-item:last-child').click()
+        find('.list-group-item:last-child').click
       end
 
       within '#client-detail' do
         expect(find('h2.client-name')).to have_text(clients[2].name)
-        find('#delete-client').click()
+        find('#delete-client').click
       end
 
       page.driver.browser.switch_to.alert.accept
@@ -150,7 +148,7 @@ feature 'Clients' do
 
       within '#client-detail' do
         expect(find('h2.client-name')).to have_text(clients[0].name)
-        find('#delete-client').click()
+        find('#delete-client').click
       end
 
       page.driver.browser.switch_to.alert.accept
@@ -170,10 +168,10 @@ feature 'Clients' do
     end
 
     scenario 'with a new contact' do
-      find('.add-contact').click()
+      find('.add-contact').click
 
       expect(page).to have_css('.new-contact-options', visible: true)
-      find('.new-person').click()
+      find('.new-person').click
 
       expect(page).to have_css('#contact_modal')
 
@@ -202,10 +200,10 @@ feature 'Clients' do
     end
 
     scenario 'with an existing contact' do
-      find('.add-contact').click()
+      find('.add-contact').click
 
       expect(page).to have_css('.new-contact-options', visible: true)
-      find('.existing-contact').click()
+      find('.existing-contact').click
 
       expect(page).to have_css('.existing-contact-options', visible: true)
       ui_select('contact-list', contact.name)
@@ -219,5 +217,4 @@ feature 'Clients' do
       end
     end
   end
-
 end

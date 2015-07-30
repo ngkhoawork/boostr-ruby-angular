@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   ActiveAdmin.routes(self)
   devise_for :users
@@ -7,7 +6,10 @@ Rails.application.routes.draw do
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
-    resources :clients, only: [:index, :create, :update, :destroy]
+    resources :users, only: [:index]
+    resources :clients, only: [:index, :create, :update, :destroy] do
+      resources :client_members, only: [:index, :create]
+    end
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :deals, only: [:index, :create]

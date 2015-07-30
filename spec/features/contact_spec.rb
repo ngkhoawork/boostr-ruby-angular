@@ -69,7 +69,6 @@ feature 'Contacts' do
       within '#contact-detail' do
         expect(find('h2')).to have_text('Johnny')
       end
-
     end
   end
 
@@ -115,6 +114,7 @@ feature 'Contacts' do
     let!(:contacts) { create_list :contact, 3, company: company, client: client }
 
     before do
+      contacts.sort_by!(&:name)
       login_as user, scope: :user
       visit '/people'
       expect(page).to have_css('#contacts')
@@ -123,12 +123,12 @@ feature 'Contacts' do
     scenario 'removes the contact from the page and navigates to the contact index' do
       within '.list-group' do
         expect(page).to have_css('.list-group-item', count: 3)
-        find('.list-group-item:last-child').click()
+        find('.list-group-item:last-child').click
       end
 
       within '#contact-detail' do
         expect(find('h2.contact-name')).to have_text(contacts[2].name)
-        find('#delete-contact').click()
+        find('#delete-contact').click
       end
 
       page.driver.browser.switch_to.alert.accept
@@ -137,7 +137,7 @@ feature 'Contacts' do
 
       within '#contact-detail' do
         expect(find('h2.contact-name')).to have_text(contacts[0].name)
-        find('#delete-contact').click()
+        find('#delete-contact').click
       end
 
       page.driver.browser.switch_to.alert.accept
@@ -145,5 +145,4 @@ feature 'Contacts' do
       expect(page).to have_css('.list-group-item', count: 1)
     end
   end
-
 end

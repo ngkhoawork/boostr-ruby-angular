@@ -47,6 +47,18 @@ ActiveRecord::Schema.define(version: 20150729185256) do
     t.string   "mobile"
   end
 
+  create_table "client_members", force: :cascade do |t|
+    t.integer  "client_id"
+    t.integer  "user_id"
+    t.integer  "share"
+    t.string   "role"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "client_members", ["client_id"], name: "index_client_members_on_client_id", using: :btree
+  add_index "client_members", ["user_id"], name: "index_client_members_on_user_id", using: :btree
+
   create_table "clients", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -77,11 +89,11 @@ ActiveRecord::Schema.define(version: 20150729185256) do
     t.string   "name"
     t.string   "position"
     t.integer  "client_id"
-    t.integer  "company_id"
     t.integer  "created_by"
     t.integer  "updated_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "company_id"
     t.datetime "deleted_at"
   end
 

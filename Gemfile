@@ -29,6 +29,10 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-ng-file-upload'
 end
 
+group :test do
+  gem 'shoulda-matchers', require: false
+end
+
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
   gem 'factory_girl_rails'
@@ -37,6 +41,7 @@ group :development, :test do
   gem 'jasmine-rails'
   gem 'launchy'
   gem 'database_cleaner'
+  gem 'ffaker'
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -51,4 +56,3 @@ group :development, :test do
     gem 'rails-assets-angular-mocks'
   end
 end
-

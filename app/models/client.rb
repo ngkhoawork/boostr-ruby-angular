@@ -2,6 +2,9 @@ class Client < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
+
+  has_many :client_members
+  has_many :users, through: :client_members
   has_many :contacts
   has_many :revenue
 

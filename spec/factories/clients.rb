@@ -1,7 +1,6 @@
 FactoryGirl.define do
   factory :client do
-    sequence(:name) { |n| "Advertizer-#{n}" }
-    website "www.advertizer.com"
+    name { FFaker::Company.name }
+    website { FFaker::Internet.http_url }
   end
-
 end

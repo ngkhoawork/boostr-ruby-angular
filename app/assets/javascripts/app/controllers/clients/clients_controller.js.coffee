@@ -1,12 +1,16 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Client', 'Contact',
-($scope, $rootScope, $modal, $routeParams, $location, Client, Contact) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Client', 'Contact', 'ClientMember',
+($scope, $rootScope, $modal, $routeParams, $location, Client, Contact, ClientMember) ->
 
   $scope.init = ->
     Client.all (clients) ->
       $scope.clients = clients
       Client.set($routeParams.id || clients[0].id)
     $scope.showContactList = false
+
+  $scope.getClientMembers = ->
+    ClientMember.all { client_id: $scope.currentClient.id }, (client_members) ->
+      $scope.client_members = client_members
 
   $scope.getContacts = (client) ->
     unless client.contacts
@@ -40,6 +44,14 @@
         contact: ->
           client_id: $scope.currentClient.id
 
+  $scope.showNewMemberModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/member_form.html'
+      size: 'lg'
+      controller: 'ClientMembersNewController'
+      backdrop: 'static'
+      keyboard: false
+
   $scope.showLinkExistingPerson = ->
     $scope.showContactList = true
     Contact.all (contacts) ->
@@ -63,12 +75,16 @@
   $scope.$on 'updated_current_client', ->
     $scope.currentClient = Client.get()
     $scope.getContacts($scope.currentClient)
+    $scope.getClientMembers()
 
   $scope.$on 'updated_clients', ->
     $scope.init()
 
   $scope.$on 'updated_current_contact', ->
     $scope.currentClient.contacts.push(Contact.get())
+
+  $scope.$on 'updated_client_members', ->
+    $scope.getClientMembers()
 
 
   $scope.init()

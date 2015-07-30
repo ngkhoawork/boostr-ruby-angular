@@ -5,9 +5,12 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
   belongs_to :company
+
+  has_many :client_members
+  has_many :clients, through: :client_members
   has_many :revenues
 
-  ROLES = ['user', 'superadmin']
+  ROLES = %w(user superadmin)
 
   def roles=(roles)
     self.roles_mask = (roles & ROLES).map { |r| 2**ROLES.index(r) }.inject(0, :+)
@@ -28,5 +31,9 @@ class User < ActiveRecord::Base
     name << first_name.chr + '.' if first_name
     name << last_name if last_name
     name.join(' ')
+  end
+
+  def as_json(options = {})
+    super(options.merge(methods: [:name]))
   end
 end

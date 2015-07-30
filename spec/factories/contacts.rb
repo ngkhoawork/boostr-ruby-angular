@@ -1,7 +1,6 @@
 FactoryGirl.define do
   factory :contact do
-    name "Michael Corleone"
-    position "Boss"
+    name { FFaker::Name.name }
+    position { FFaker::Job.title }
   end
-
 end
