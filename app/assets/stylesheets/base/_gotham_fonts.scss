@@ -1,0 +1,17 @@
+@font-face {
+	font-family: 'Gotham-Light-Multi';
+	src: font-url('fonts/Gotham-Light-Multi.eot');
+	src: font-url('fonts/Gotham-Light-Multi.woff') format('woff'), font-url('fonts/Gotham-Light-Multi.ttf') format('truetype'), font-url('fonts/Gotham-Light-Multi.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Gotham Book';
+	src: font-url('Gotham-Book-Multi.eot'); /* IE9 Compat Modes */
+	src: font-url('Gotham-Book-Multi.woff') format('woff'), /* Pretty Modern Browsers */
+  font-url('Gotham-Book-Multi.ttf') format('truetype'), /* Safari, Android, iOS */
+  font-url('Gotham-Book-Multi.svg') format('svg'); /* Legacy iOS */
+	font-weight: normal;
+	font-style: normal;
+}
