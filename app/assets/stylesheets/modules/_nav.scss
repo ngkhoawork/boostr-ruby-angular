@@ -99,6 +99,7 @@
       li {
         a {
           color: $gray-lighter;
+          line-height: 24px;
 
           &:hover, &:focus {
             color: $brand-primary;
@@ -111,7 +112,7 @@
           }
 
           svg {
-            height: 20px;
+            width: 22px;
             padding-right: 2px;
             fill: $gray-lighter;
             float: left;

@@ -3,7 +3,8 @@ require 'rails_helper'
 feature 'Deals' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
-  let!(:client) { create :client, company: company }
+  let!(:advertiser) { create :client, company: company, client_type: 'Advertiser' }
+  let!(:agency) { create :client, company: company, client_type: 'Agency' }
 
   describe 'creating a deal' do
     before do
@@ -21,8 +22,8 @@ feature 'Deals' do
         fill_in 'name', with: 'Apple Watch Launch'
         ui_select('stage', 'Prospect')
         fill_in 'budget', with: '1234'
-        ui_select('advertiser', client.name)
-        ui_select('agency', client.name)
+        ui_select('advertiser', advertiser.name)
+        ui_select('agency', agency.name)
 
         click_on 'Create'
       end

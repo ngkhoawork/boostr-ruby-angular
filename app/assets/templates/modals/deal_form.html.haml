@@ -28,15 +28,15 @@
         %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true } }
           %ui-select-match{ placeholder: 'Advertiser' }
             {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'advertiser.id as advertiser in clients | filter: { name: $select.search }' }
+          %ui-select-choices{ repeat: 'advertiser.id as advertiser in clients | filter: { name: $select.search, client_type: "Advertiser" }' }
             %div{ ng: { bind: { html: 'advertiser.name' } } }
 
       .form-group
         %label.control-label{ for: 'agency' } Agency
         %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true } }
-          %ui-select-match{ placeholder: 'Advertiser' }
+          %ui-select-match{ placeholder: 'Agency' }
             {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'agency.id as agency in clients | filter: { name: $select.search }' }
+          %ui-select-choices{ repeat: 'agency.id as agency in clients | filter: { name: $select.search, client_type: "Agency" }' }
             %div{ ng: { bind: { html: 'agency.name' } } }
 
     .modal-footer.text-center
