@@ -6,13 +6,15 @@
 
   allDeals = []
 
-  @all = (callback) ->
+  @all = ->
+    deferred = $q.defer()
     if allDeals.length == 0
       resource.query {}, (deals) =>
         allDeals = deals
-        callback(deals)
+        deferred.resolve(deals)
     else
-      callback(allDeals)
+      deferred.resolve(allDeals)
+    deferred.promise
 
   @create = (params) ->
     deferred = $q.defer()
@@ -21,17 +23,6 @@
       deferred.resolve(deal)
       $rootScope.$broadcast 'updated_deals'
     deferred.promise
-
-
-  @stages = () ->
-    [
-      'Prospect'
-      'Needs Proposal'
-      'In Negotiations'
-      'Verbal Commitment'
-      'Closed: Won'
-      'Closed: Lost'
-    ]
 
   return
 ]

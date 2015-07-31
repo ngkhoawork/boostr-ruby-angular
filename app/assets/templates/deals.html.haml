@@ -12,21 +12,21 @@
   .container
     .row
       .col-xs-3
-        .list-group.list-sm
-          %a.list-group-item.vertical-center.active{ href: '' }
+        .list-group.list-sm.stages
+          %a.list-group-item.vertical-center{ href: '', ng: { click: 'showStage("open")', class: '{ active: currentStage == "open" }'} }
             .col-xs-5
             .col-xs-7
               .row
                 %h5
-                  All Open (13)
+                  All Open ({{ openStagesCount }})
               .row
                 $500,000
-          %a.list-group-item.vertical-center{ href: '', ng: { repeat: 'stage in stages' } }
+          %a.list-group-item.vertical-center{ href: '', ng: { repeat: 'stage in stages', click: 'showStage(stage)', class: '{ active: currentStage == stage.id }' } }
             .col-xs-5
             .col-xs-7
               .row
                 %h5
-                  {{ stage }} (13)
+                  {{ stage.name }} ({{ stage.deals_count || 0 }})
               .row
                 $500,000
       .col-xs-9
@@ -44,7 +44,7 @@
                 %th Spend
                 %th Start Date
             %tbody
-              %tr{ ng: { repeat: 'row in deals' } }
+              %tr{ ng: { repeat: 'row in filteredDeals' } }
                 %td
                   .empty
                 %td {{ row.name }}

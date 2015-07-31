@@ -3,7 +3,7 @@
 ($scope, $rootScope, $modal, $routeParams, $location, Client, Contact, ClientMember) ->
 
   $scope.init = ->
-    Client.all (clients) ->
+    Client.all().then (clients) ->
       $scope.clients = clients
       Client.set($routeParams.id || clients[0].id)
     $scope.showContactList = false

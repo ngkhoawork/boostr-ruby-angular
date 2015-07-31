@@ -4,6 +4,7 @@ class Company < ActiveRecord::Base
   has_many :contacts, inverse_of: :company
   has_many :revenues
   has_many :deals
+  has_many :stages
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
