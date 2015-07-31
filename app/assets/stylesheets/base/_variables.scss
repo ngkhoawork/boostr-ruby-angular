@@ -116,6 +116,7 @@ $caret-width-base: 5px;
 // //== Tables
 // //
 // //## Customizes the `.table` component with basic values, each used across all table variations.
+$table-headings-font-family: 'Gotham Bold' !default;
 // //** Padding for `<th>`s and `<td>`s.
 // $table-cell-padding:            8px !default;
 // //** Padding for cells in `.table-condensed`.
