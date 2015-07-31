@@ -5,8 +5,7 @@
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.contact = Contact.get()
-  
-  Client.all (clients) ->
+  Client.all().then (clients) ->
     $scope.clients = clients
 
   if $scope.contact && $scope.contact.address

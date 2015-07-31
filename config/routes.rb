@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :deals, only: [:index, :create]
+    resources :stages, only: [:index]
   end
 
   get '*path' => 'pages#index'

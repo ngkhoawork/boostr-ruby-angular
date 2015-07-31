@@ -14,11 +14,11 @@
 
       .form-group
         %label.control-label{ for: 'stage' } Stage
-        %ui-select{ name: 'stage', ng: { model: 'deal.stage', disabled: true } }
+        %ui-select{ name: 'stage', ng: { model: 'deal.stage_id', disabled: true } }
           %ui-select-match{ placeholder: 'Stage' }
-            {{ $select.selected }}
-          %ui-select-choices{ repeat: 'stage in stages | filter: $select.search' }
-            %div{ ng: { bind: { html: 'stage' } } }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'stage.id as stage in stages | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'stage.name' } } }
       .form-group
         %label.control-label{ for: 'budget' } Total Budget
         %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal.budget' }, name: 'budget' }

@@ -3,7 +3,7 @@ FactoryGirl.define do
     start_date "2015-07-29 12:52:56"
     end_date "2015-07-29 12:52:56"
     name "MyString"
-    stage "MyString"
+    stage
     budget 1
   end
 end

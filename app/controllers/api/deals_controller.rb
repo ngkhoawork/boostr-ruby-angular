@@ -17,7 +17,7 @@ class Api::DealsController < ApplicationController
   private
 
   def deal_params
-    params.require(:deal).permit(:name, :stage, :budget, :start_date, :end_date,
+    params.require(:deal).permit(:name, :stage_id, :budget, :start_date, :end_date,
     :advertiser_id, :agency_id)
   end
 end

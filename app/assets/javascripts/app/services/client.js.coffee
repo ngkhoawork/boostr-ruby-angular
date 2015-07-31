@@ -35,12 +35,14 @@
   currentClient = undefined
 
   @all = (callback) ->
+    deferred = $q.defer()
     if allClients.length == 0
       resource.query {}, (clients) =>
         allClients = clients
-        callback(clients)
+        deferred.resolve(clients)
     else
-      callback(allClients)
+      deferred.resolve(allClients)
+    deferred.promise
 
   @create = (params) ->
     deferred = $q.defer()
