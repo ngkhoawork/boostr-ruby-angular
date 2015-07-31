@@ -20,7 +20,6 @@
 .navbar-default {
   padding-bottom: 3px;
   padding-top: 5px;
-
   .active {
     a {
       &:after {
@@ -46,7 +45,6 @@
   .navbar-text {
     margin-top: 22px;
     margin-bottom: 20px;
-
     a {
       color: #636f7a;
     }
@@ -62,18 +60,28 @@
   .nav-tabs {
     background: $brand-primary;
     color: $white;
-
     li {
       margin-right: 30px;
+      svg {
+        width: 22px;
+        padding-right: 2px;
+        fill: $white;
+        float: left;
+      }
 
       &.last {
         margin-right: 0;
       }
 
       a {
+        line-height: 24px;
         color: $white;
-        &:hover {
+        &:hover,
+        &:focus {
           color: $gray-lighter;
+          svg {
+            fill: $gray-lighter;
+          }
         }
       }
 
@@ -89,25 +97,22 @@
     }
   }
 
-  &.transparent {
+&.transparent {
     background: $body-bg;
     border-bottom: 1px solid $gray-lighter;
-
     .nav-tabs {
       background: $body-bg;
-
       li {
         a {
           color: $gray-lighter;
           line-height: 24px;
-
-          &:hover, &:focus {
+          &:hover,
+          &:focus {
             color: $brand-primary;
             background: transparent;
             outline: none;
-
             svg {
-              fill: $brand-primary
+              fill: $brand-primary;
             }
           }
 
