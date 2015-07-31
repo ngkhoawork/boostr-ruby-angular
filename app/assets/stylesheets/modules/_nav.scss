@@ -57,14 +57,16 @@
 
 #nav {
   background: $brand-primary;
+
   .nav-tabs {
     background: $brand-primary;
     color: $white;
+
     li {
       margin-right: 30px;
+
       svg {
-        width: 22px;
-        padding-right: 2px;
+        padding-right: 5px;
         fill: $white;
         float: left;
       }
@@ -74,7 +76,7 @@
       }
 
       a {
-        line-height: 24px;
+        line-height: 26px;
         color: $white;
         &:hover,
         &:focus {
@@ -89,7 +91,7 @@
         .dropdown-menu {
           li {
             a {
-              color: $brand-primary;
+              color: $link-color;
             }
           }
         }
@@ -104,23 +106,21 @@
       background: $body-bg;
       li {
         a {
-          color: $gray-lighter;
-          line-height: 24px;
+          color: $link-color;
+
           &:hover,
           &:focus {
-            color: $brand-primary;
+            color: $link-hover-color;
             background: transparent;
             outline: none;
+
             svg {
-              fill: $brand-primary;
+              fill: $link-hover-color;
             }
           }
 
           svg {
-            height: 24px;
-            padding-right: 2px;
-            fill: $gray-lighter;
-            float: left;
+            fill: $link-color;
           }
         }
       }

@@ -244,22 +244,49 @@
   .page-header
     %h1 Navs
   #nav
-    %ul.nav.nav-tabs{role: "tablist"}
-      %li.dropdown{role: "presentation"}
-        %a.dropdown-toggle{ href: "", role: "button", aria: { haspopup: true, expanded: "false" }, data: { toggle: "dropdown" } }
-          Dropdown
-          #span.glyphicon.glyphicon-chevron-down
-        %ul.dropdown-menu
-          %li
-            %a{ href: '' } First item
-          %li
-            %a{ href: '' } Second item
-      %li{:role => "presentation"}
-        %a{:href => "#"} Home
-      %li.pull-right.last{:role => "presentation"}
-        %a{:href => "#"} Profile
-      %li.pull-right{:role => "presentation"}
-        %a{:href => "#"} Messages
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs{role: "tablist"}
+            %li.dropdown{role: "presentation"}
+              %a.dropdown-toggle{ href: "", role: "button", aria: { haspopup: true, expanded: "false" }, data: { toggle: "dropdown" } }
+                Dropdown
+                #span.glyphicon.glyphicon-chevron-down
+              %ul.dropdown-menu
+                %li
+                  %a{ href: '' } First item
+                %li
+                  %a{ href: '' } Second item
+            %li{:role => "presentation"}
+              %a{:href => "#"} Home
+            %li.pull-right.last{:role => "presentation"}
+              %a{:href => "#"} Profile
+            %li.pull-right{:role => "presentation"}
+              %a{:href => "#"}
+                = inline_svg 'add.svg'
+                Messages
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs{role: "tablist"}
+            %li.dropdown{role: "presentation"}
+              %a.dropdown-toggle{ href: "", role: "button", aria: { haspopup: true, expanded: "false" }, data: { toggle: "dropdown" } }
+                Dropdown
+                #span.glyphicon.glyphicon-chevron-down
+              %ul.dropdown-menu
+                %li
+                  %a{ href: '' } First item
+                %li
+                  %a{ href: '' } Second item
+            %li{:role => "presentation"}
+              %a{:href => "#"} Home
+            %li.pull-right.last{:role => "presentation"}
+              %a{:href => "#"} Profile
+            %li.pull-right{:role => "presentation"}
+              %a{:href => "#"}
+                = inline_svg 'add.svg'
+                Messages
   .page-header
     %h1 Navbars
   %nav.navbar.navbar-default
