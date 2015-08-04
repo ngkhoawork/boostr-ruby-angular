@@ -14,3 +14,27 @@
       .col-xs-12
         %h3
           Users
+
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th
+                %th Name
+                %th Title
+                %th Role
+                %th Teams
+                %th Deals
+            %tbody
+              %tr{ ng: { repeat: 'row in users' } }
+                %td
+                  .empty
+                %td
+                  {{ row.first_name }} {{ row.last_name }}
+                  %br
+                  %small
+                    {{ row.email }}
+                %td
+                %td
+                %td
+                %td
