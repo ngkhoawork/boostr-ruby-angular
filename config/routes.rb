@@ -4,8 +4,8 @@ Rails.application.routes.draw do
 
   devise_for :users, skip: 'invitation'
   devise_scope :user do
-    get "/users/invitation/accept", to: "devise/invitations#edit",   as: 'accept_user_invitation'
-    post "/api/users/invitation", to: "devise/invitations#create", as: nil
+    get "/users/invitation/accept", to: "api/invitations#edit",   as: 'accept_user_invitation'
+    post "/api/users/invitation", to: "api/invitations#create", as: nil
   end
 
   root 'pages#index'
