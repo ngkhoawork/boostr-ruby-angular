@@ -33,6 +33,9 @@
     .when '/revenue',
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
+    .when '/settings/users',
+      templateUrl: 'settings_users.html'
+      controller: 'SettingsUsersController'
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])

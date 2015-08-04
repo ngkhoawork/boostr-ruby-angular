@@ -1,7 +1,13 @@
 Rails.application.routes.draw do
   mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   ActiveAdmin.routes(self)
-  devise_for :users
+
+  devise_for :users, skip: 'invitation'
+  devise_scope :user do
+    get "/users/invitation/accept", to: "devise/invitations#edit",   as: 'accept_user_invitation'
+    post "/api/users/invitation", to: "devise/invitations#create", as: nil
+  end
+
   root 'pages#index'
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 

@@ -25,5 +25,10 @@
             = link_to "CLIENTS", "/#clients"
           %li{ ng: { class: "{ active: isActive('/people') }" } }
             = link_to "PEOPLE", "/#people"
-          %li{ ng: { class: "{ active: isActive('/settings') }" } }
-            = link_to "SETTINGS", "#"
+          %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
+            %a{ href: '', 'dropdown-toggle': true }
+              SETTINGS
+              %span.caret
+            %ul.dropdown-menu
+              %li
+                = link_to "Users", "/#settings/users"
