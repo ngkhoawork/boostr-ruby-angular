@@ -1,0 +1,121 @@
+#deal
+  .container
+    .row.return
+      .col-xs-12
+        %a
+          = inline_svg 'caret.svg', class: 'transform'
+          Back to Deals
+
+  .container
+    .row.campaign
+      .col-xs-9
+        %h3 {{ currentDeal.name }}
+      .col-xs-3.pull-right
+        .panel.current-stage
+          .panel-heading
+            .panel-title current stage
+          .panel-body
+            .col-xs-2
+              .stage{ style: "border-color: {{ currentDeal.stage.color }}; background-color: {{ currentDeal.stage.color }};" }
+            .col-xs-7.details
+              .row.type {{ currentDeal.stage.name }}
+              .row.probability {{ currentDeal.stage.probability }}% probability
+            .col-xs-3
+  .container
+    #nav.transparent
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.active
+              %a
+                campaign
+            %li
+              %a
+                team & split
+            %li
+              %a
+                documents
+            %li
+              %a
+                additional info
+            %li.pull-right.nav-text
+              Updated {{ currentDeal.updated_at | date: 'MMMM d, y' }}
+    .row.header
+      .col-xs-6
+        %h4
+          Campaign
+    .well
+      .row
+        .col-xs-3.campaign-period
+          .row
+            .col-xs-12
+              Campaign Period
+          .row
+            .col-xs-12
+              %h4
+                {{ currentDeal.start_date | date: 'MMM d, y' }} - {{ currentDeal.end_date | date: 'MMM d, y' }}
+        .col-xs-2.campaign-period.text-center
+          .row
+            .col-xs-12
+              Total Amount
+          .row
+            .col-xs-12
+              %h4
+                $500,000
+        .col-xs-2.campaign-period.text-center
+          .row
+            .col-xs-12
+              Forecast Amount
+          .row
+            .col-xs-12
+              %h4
+                $125,000
+    .table-wrapper
+      %table.table.white-table
+        %thead
+          %tr
+            %th Product
+            %th Jan 10
+            %th Feb 10
+            %th Mar 10
+            %th Apr 15
+            %th May 30
+            %th Jun 30
+            %th Jul 30
+            %th Aug 30
+            %th Sep 30
+        %tbody
+          %tr
+            %td Masthead
+            %td $200,000
+            %td $50,000
+            %td $50,000
+            %td $200,000
+            %td $20,000
+            %td $20,000
+            %td $20,000
+            %td $20,000
+            %td $20,000
+          %tr
+            %td Mobile
+            %td $200,000
+            %td $50,000
+            %td $50,000
+            %td $200,000
+            %td $20,000
+            %td $20,000
+            %td $20,000
+            %td $20,000
+            %td $20,000
+          %tr
+            %td Tablet
+            %td $200,000
+            %td $50,000
+            %td $50,000
+            %td $200,000
+            %td $20,000
+            %td $20,000
+            %td $20,000
+            %td $20,000
+            %td $20,000
+    -# .well.dark

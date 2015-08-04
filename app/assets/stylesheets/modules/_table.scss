@@ -1,7 +1,9 @@
 .table-wrapper {
   border-radius: 4px;
   overflow-x: auto;
+
   .table {
+    margin-bottom: 0px;
     thead {
       background-color: $brand-primary;
       color: $white;
@@ -67,6 +69,81 @@
             border-radius: 50%;
             background-color: $brand-primary;
             fill: $white;
+            width: 19px;
+            height: 19px;
+          }
+        }
+      }
+    }
+  }
+  .white-table {
+    border-radius: 0px;
+    thead {
+      background-color: $white;
+      color: $brand-primary;
+      th {
+        font-family: $table-headings-font-family;
+        font-size: 13px;
+        white-space: nowrap;
+        vertical-align: middle;
+      }
+
+      tr {
+        max-height: 43px !important;
+        height: 43px !important;
+        th {
+          border-bottom: none;
+          text-transform: capitalize;
+          &:first-child {
+            font-family: $table-headings-font-family;
+            padding-left: 30px;
+            text-transform: uppercase;
+          }
+        }
+      }
+    }
+
+    tbody {
+      color: #67747e;
+      tr {
+        max-height: 61px !important;
+        height: 61px !important;
+
+        &.active {
+          border-left: 1px solid #f9985e;
+          border-right: 1px solid #f9985e;
+          td {
+            border-bottom: 1px solid #f9985e;
+            border-top: 1px solid #f9985e;
+            background-color: $white;
+
+          }
+        }
+
+        td {
+          vertical-align: middle;
+          border-top: none;
+          border-bottom: 1px solid #dde2e8;
+          font-size: 16px;
+          color: #3c454c;
+          &:first-child {
+            padding-top: 15px;
+            padding-left: 30px;
+            border: none;
+            border-right: 1px solid #dde2e8;
+            font-family: 'Gotham Bold';
+            color: #263841;
+          }
+
+          &:nth-child(2) {
+            color: #3c454c;
+          }
+
+          .empty {
+            border: #67747e;
+            border-width: 1px;
+            border-style: solid;
+            border-radius: 50%;
             width: 19px;
             height: 19px;
           }

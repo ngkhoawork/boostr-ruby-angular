@@ -8,10 +8,13 @@
 // $gray-darker:            lighten($gray-base, 13.5%) !default; // #222
 // $gray-dark:                     lighten($gray-base, 20%) !default;   // #333
 // $gray:                   lighten($gray-base, 33.5%) !default; // #555
-$gray-light: #ececec !default;
-$gray-lighter: #dfdfdf !default;
-$white: #fff;
-$placeholder-text: #bcc6cf;
+$gray-light: #ECECEC !default;
+$gray-lighter: #DFDFDF !default;
+$light-grayish-blue: #DDE2E8;
+$very-light-gray: #DDDDDD;
+$grayish-blue: #A2B0BF;
+$white: #FFFFFF;
+$placeholder-text: #BCC6CF;
 $modal-bg: #f6f8fa;
 $header-gray: #505b65;
 $brand-primary: #ff7e30 !default;
@@ -50,6 +53,9 @@ $link-hover-decoration: none !default;
 //
 //## Font, line-height, and color for body text, headings, and more.
 $font-family-sans-serif: 'Gotham Book', sans-serif !default;
+$font-family-medium: 'Gotham Medium', sans-serif;
+$font-family-bold: 'Gotham Bold', sans-serif;
+$font-family-extra-bold: 'Montserrat';
 
 // $font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
@@ -71,7 +77,7 @@ $font-size-h3: 20px;
 // //** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
 // $line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
 // //** By default, this inherits from the `<body>`.
-$headings-font-family: 'Montserrat' !default;
+$headings-font-family: $font-family-extra-bold;
 $headings-font-weight: 700 !default;
 
 // $headings-line-height:    1.1 !default;
@@ -116,7 +122,7 @@ $caret-width-base: 5px;
 // //== Tables
 // //
 // //## Customizes the `.table` component with basic values, each used across all table variations.
-$table-headings-font-family: 'Gotham Medium' !default;
+$table-headings-font-family: $font-family-medium;
 // //** Padding for `<th>`s and `<td>`s.
 // $table-cell-padding:            8px !default;
 // //** Padding for cells in `.table-condensed`.

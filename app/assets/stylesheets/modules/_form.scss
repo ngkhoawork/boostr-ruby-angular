@@ -1,7 +1,7 @@
 .form-control {
   box-shadow: none;
 
-  &:focus {
+  &:focus, &:hover {
     background-color: $white;
     box-shadow: none;
   }
@@ -19,7 +19,7 @@
 }
 
 .ui-select-match {
-  &:focus {
+  &:focus, &:hover {
     outline: none;
   }
 
@@ -41,7 +41,7 @@
 }
 
 .ui-select-bootstrap {
-  &:focus {
+  &:focus, &:hover {
     outline: none;
   }
 

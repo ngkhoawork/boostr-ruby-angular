@@ -1,0 +1,155 @@
+#deal {
+  .return {
+    padding-top: 34px;
+    padding-bottom: 40px;
+  }
+
+  .transform {
+    transform: rotate(180deg);
+    height: 12px;
+    width: 12px;
+  }
+
+  .panel {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    background-color: transparent;
+    margin-bottom: 0;
+    margin-top: -55px;
+    .panel-heading {
+      border: 1px solid $light-grayish-blue;
+      padding-top: 7px;
+      padding-bottom: 5px;
+      .panel-title {
+        text-transform: uppercase;
+        font-size: 11px;
+      }
+    }
+
+    .panel-body {
+      padding-top: 0;
+      padding-bottom: 0;
+      border-left: 1px;
+      border-right: 1px;
+      border-bottom: 1px;
+      border-top: 0;
+      border-color: $light-grayish-blue;
+      border-style: solid;
+      .stage {
+        border: 1px solid $very-light-gray;
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+        margin-top: 16px;
+        margin-left: -14px;
+      }
+
+      .details {
+        border-right: 1px solid $light-grayish-blue;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        margin-left: -14px;
+        .type {
+          font: normal normal 15px $font-family-sans-serif;
+          text-transform: capitalize;
+        }
+
+        .probability {
+          font: normal normal 11px $font-family-medium;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+
+  .campaign {
+    padding-bottom: 29px;
+    line-height: 22.78px;
+    h3 {
+      font-size: 25px;
+      font-family: $font-family-bold;
+      color: #3c454c;
+    }
+  }
+
+  .proposal {
+    border: transparent;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+  }
+
+  #nav {
+    border-bottom-color: $gray-light;
+    .nav-tabs {
+      .active {
+        a {
+          background-color: transparent;
+          color: $brand-primary;
+          &:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 0;
+            left: 0;
+            bottom: 0;
+            border-bottom: 2px solid $brand-primary;
+          }
+        }
+      }
+
+      .nav-text {
+        color: $grayish-blue;
+        margin-top: 20px;
+        font-size: 12px;
+      }
+
+      li {
+        a {
+          font-size: 13px;
+          font-family: $table-headings-font-family;
+          text-transform: uppercase;
+          color: $grayish-blue;
+          padding-bottom: 0;
+          border-bottom-width: 0;
+          &:hover,
+          &:focus {
+            color: $brand-primary;
+          }
+        }
+      }
+    }
+  }
+
+  .campaign-period {
+    font-family: $font-family-medium;
+    border-right: 1px solid $very-light-gray;
+    font-size: 13px;
+    text-transform: uppercase;
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  .well {
+    border-bottom: 1px solid $light-grayish-blue;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    padding: 37px;
+    margin-bottom: 0;
+    margin-top: 0;
+    &.dark {
+      background-color: $brand-tertiary;
+      border-radius: 0;
+      height: 79px;
+    }
+  }
+
+  .header {
+    padding-top: 30px;
+    padding-bottom: 11px;
+  }
+}
