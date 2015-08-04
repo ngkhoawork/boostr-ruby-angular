@@ -10,6 +10,8 @@ RSpec.describe Revenue, type: :model do
     it 'creates a new revenue object for each row' do
       expect {
         Revenue.import(good_csv_file(client, user), company.id)
+        expect(Revenue.first.user_id).to equal(user.id)
+        expect(Revenue.first.client_id).to equal(client.id)
       }.to change(Revenue, :count).by(1)
     end
 
