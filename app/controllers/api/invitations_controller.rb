@@ -5,7 +5,6 @@ class Api::InvitationsController < Devise::InvitationsController
 
   def create
     self.resource = invite_resource
-    resource.company_id = current_inviter.company_id
     resource_invited = resource.errors.empty?
 
     yield resource if block_given?
@@ -21,6 +20,10 @@ class Api::InvitationsController < Devise::InvitationsController
   end
 
   protected
+
+  def invite_params
+    devise_parameter_sanitizer.sanitize(:invite).merge(company_id: current_inviter.company_id)
+  end
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.for(:accept_invitation).concat [:first_name, :last_name]
