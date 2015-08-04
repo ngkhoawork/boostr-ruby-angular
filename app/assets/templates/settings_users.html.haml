@@ -1,0 +1,16 @@
+#users
+  #nav
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right.last
+              %a.add-user{ href: '', ng: { click: 'showModal()' } }
+                = inline_svg 'add.svg'
+                Add User
+
+  .container
+    .row
+      .col-xs-12
+        %h3
+          Users

@@ -1,8 +1,12 @@
 @service.service 'User',
-['$resource',
-($resource) ->
+['$resource', '$q',
+($resource, $q) ->
 
-  resource = $resource '/api/users/:id', { id: '@id' }
+  resource = $resource '/api/users/:id', { id: '@id' },
+    invite: {
+      method: 'POST'
+      url: '/api/users/invitation'
+    }
 
   allUsers = []
 
@@ -13,6 +17,13 @@
         callback(users)
     else
       callback(allUsers)
+
+  @invite = (params) ->
+    deferred = $q.defer()
+    resource.invite params, (user) ->
+      allUsers.push(user)
+      deferred.resolve(user)
+    deferred.promise
 
   return
 ]
