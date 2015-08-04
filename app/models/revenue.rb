@@ -11,13 +11,13 @@ class Revenue < ActiveRecord::Base
     CSV.parse(file, headers: true) do |row|
       row_number += 1
 
-      unless user = User.where(email: row[14]).first
+      unless user = User.where(email: row[14], company_id: company_id).first
         error = { row: row_number, message: ['Sales Rep could not be found'] }
         errors << error
         next
       end
 
-      unless client = Client.where(id: row[13]).first
+      unless client = Client.where(id: row[13], company_id: company_id).first
         error = { row: row_number, message: ['Client could not be found'] }
         errors << error
         next
