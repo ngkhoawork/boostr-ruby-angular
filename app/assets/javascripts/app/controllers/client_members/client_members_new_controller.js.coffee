@@ -7,7 +7,7 @@
 
   $scope.client_member = { client_id: Client.get().id }
 
-  User.all (users) ->
+  User.all().then (users) ->
     $scope.users = users
 
   $scope.roles = ClientMember.roles()

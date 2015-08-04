@@ -1,6 +1,10 @@
 @app.controller 'SettingsUsersController',
-['$scope', '$modal',
-($scope, $modal) ->
+['$scope', '$modal', 'User',
+($scope, $modal, User) ->
+
+  $scope.init = () ->
+    User.all().then (users) ->
+      $scope.users = users
 
   $scope.showModal = () ->
     $scope.modalInstance = $modal.open
@@ -9,5 +13,7 @@
       controller: 'NewUsersController'
       backdrop: 'static'
       keyboard: false
+
+  $scope.init()
 
 ]

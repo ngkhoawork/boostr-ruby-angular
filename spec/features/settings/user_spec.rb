@@ -26,6 +26,10 @@ feature 'Users' do
       end
 
       expect(page).to have_no_css('#user-modal')
+
+      within '.table-wrapper tbody' do
+        expect(page).to have_css('tr', count: 2)
+      end
     end
   end
 end

@@ -11,12 +11,14 @@
   allUsers = []
 
   @all = (callback) ->
+    deferred = $q.defer()
     if allUsers.length == 0
       resource.query {}, (users) =>
         allUsers = users
-        callback(users)
+        deferred.resolve(users)
     else
-      callback(allUsers)
+      deferred.resolve(allUsers)
+    deferred.promise
 
   @invite = (params) ->
     deferred = $q.defer()
