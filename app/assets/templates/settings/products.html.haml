@@ -1,0 +1,34 @@
+#products
+  #nav
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right.last
+              %a.add-product{ href: '', ng: { click: 'showModal()' } }
+                = inline_svg 'add.svg'
+                Add Product
+
+  .container
+    .row
+      .col-xs-12
+        %h3
+          Products
+
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th
+                %th Name
+                %th Product Line
+                %th Family
+                %th Type
+            %tbody
+              %tr{ ng: { repeat: 'row in products' } }
+                %td
+                  .empty
+                %td {{ row.name }}
+                %td {{ row.product_line }}
+                %td {{ row.family }}
+                %td {{ row.pricing_type }}

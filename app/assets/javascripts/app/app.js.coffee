@@ -36,6 +36,9 @@
     .when '/settings/users',
       templateUrl: 'settings_users.html'
       controller: 'SettingsUsersController'
+    .when '/settings/products',
+      templateUrl: 'settings/products.html'
+      controller: 'SettingsProductsController'
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
