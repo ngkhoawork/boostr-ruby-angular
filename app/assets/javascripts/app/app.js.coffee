@@ -37,7 +37,7 @@
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
     .when '/settings/users',
-      templateUrl: 'settings_users.html'
+      templateUrl: 'settings/users.html'
       controller: 'SettingsUsersController'
     .when '/settings/products',
       templateUrl: 'settings/products.html'

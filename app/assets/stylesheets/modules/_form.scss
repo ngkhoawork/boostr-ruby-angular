@@ -1,9 +1,17 @@
 .form-control {
   box-shadow: none;
-
-  &:focus, &:hover {
+  &:focus,
+  &:hover {
     background-color: $white;
     box-shadow: none;
+  }
+
+  &:disabled {
+    &:focus,
+    &:hover {
+      background-color: $input-bg-disabled;
+      box-shadow: none;
+    }
   }
 }
 
@@ -24,12 +32,10 @@
 
     .btn-default {
       color: $brand-secondary;
-
       &.active {
         background: $btn-primary-bg;
         border: $btn-primary-border;
         color: $btn-primary-color;
-
         .text-info {
           color: $btn-primary-color;
         }
@@ -41,12 +47,12 @@
         outline: none;
       }
     }
-
   }
 }
 
 .ui-select-match {
-  &:focus, &:hover {
+  &:focus,
+  &:hover {
     outline: none;
   }
 
@@ -64,11 +70,11 @@
   .ui-select-match-text {
     color: $input-color;
   }
-
 }
 
 .ui-select-bootstrap {
-  &:focus, &:hover {
+  &:focus,
+  &:hover {
     outline: none;
   }
 

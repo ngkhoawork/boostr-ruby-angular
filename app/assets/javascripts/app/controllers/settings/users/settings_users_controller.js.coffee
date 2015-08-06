@@ -14,6 +14,17 @@
       backdrop: 'static'
       keyboard: false
 
+  $scope.editModal = (user) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/user_form.html'
+      size: 'lg'
+      controller: 'UsersEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        user: ->
+          user
+ 
   $scope.init()
 
 ]
