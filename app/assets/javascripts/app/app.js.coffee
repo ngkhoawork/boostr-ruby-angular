@@ -15,12 +15,12 @@
     .when '/dashboard',
       templateUrl: 'dashboard.html'
       controller: 'DashboardController'
-    .when '/deals',
-      templateUrl: 'deals.html'
-      controller: 'DealsController'
     .when '/deals/:id',
       templateUrl: 'deal.html'
       controller: 'DealController'
+    .when '/deals',
+      templateUrl: 'deals.html'
+      controller: 'DealsController'
     .when '/clients/:id',
       templateUrl: 'clients.html'
       controller: 'ClientsController'
@@ -53,6 +53,11 @@
 
 @app.config ['uiSelectConfig', (uiSelectConfig) ->
   uiSelectConfig.theme = 'bootstrap'
+]
+
+@app.config ['datepickerConfig', 'datepickerPopupConfig', (datepickerConfig, datepickerPopupConfig) ->
+  datepickerConfig.showWeeks = false
+  datepickerPopupConfig.showButtonBar = false
 ]
 
 @service = angular.module 'services', ['ngResource']
