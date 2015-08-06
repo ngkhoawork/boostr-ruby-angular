@@ -32,5 +32,21 @@
       return parseInt(deal_id) == deal.id
     $rootScope.$broadcast 'updated_current_deal'
 
+  @deal_types = () ->
+    [
+      'Test Campaign'
+      'Sponsorship'
+      'Seasonal'
+      'Renewal'
+    ]
+    
+  @source_types = () ->
+    [
+      'Pitch to Client'
+      'Pitch to Agency'
+      'RFP Response to Client'
+      'RFP Response to Agency'
+    ]
+
   return
 ]

@@ -12,6 +12,8 @@ class User < ActiveRecord::Base
 
   ROLES = %w(user superadmin)
 
+  validates :first_name, :last_name, presence: true
+
   def roles=(roles)
     self.roles_mask = (roles & ROLES).map { |r| 2**ROLES.index(r) }.inject(0, :+)
   end

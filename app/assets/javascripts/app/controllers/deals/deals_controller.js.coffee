@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-['$scope', '$modal', '$filter', '$q', 'Deal', 'Stage',
-($scope, $modal, $filter, $q, Deal, Stage) ->
+['$scope', '$modal', '$filter', '$q', '$location', 'Deal', 'Stage',
+($scope, $modal, $filter, $q, $location, Deal, Stage) ->
 
   $scope.init = ->
     $q.all({ deals: Deal.all(), stages: Stage.all() }).then (data) ->
@@ -31,6 +31,9 @@
 
   $scope.$on 'updated_deals', ->
     $scope.init()
+
+  $scope.go = (path) ->
+    $location.path(path)
 
   $scope.init()
 ]

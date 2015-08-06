@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', 'Deal',
-($scope, $routeParams, Deal) ->
+['$scope', '$routeParams', '$modal', 'Deal',
+($scope, $routeParams, $modal, Deal) ->
 
   $scope.init = ->
     $scope.currentDeal = {}
