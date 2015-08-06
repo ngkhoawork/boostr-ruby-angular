@@ -10,7 +10,7 @@
     .modal-body
       .form-group
         %label.control-label{ for: 'name' } Name
-        %input.form-control{ placeholder: 'Name', ng: { model: 'deal.name' }, name: 'name' }
+        %input.form-control{ placeholder: 'Name', ng: { model: 'deal.name', required: true }, name: 'name' }
 
       .form-group
         %label.control-label{ for: 'stage' } Stage
@@ -25,7 +25,7 @@
 
       .form-group
         %label.control-label{ for: 'advertiser' } Advertiser
-        %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true } }
+        %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, required: true } }
           %ui-select-match{ placeholder: 'Advertiser' }
             {{ $select.selected.name }}
           %ui-select-choices{ repeat: 'advertiser.id as advertiser in clients | filter: { name: $select.search, client_type: "Advertiser" }' }
@@ -38,6 +38,16 @@
             {{ $select.selected.name }}
           %ui-select-choices{ repeat: 'agency.id as agency in clients | filter: { name: $select.search, client_type: "Agency" }' }
             %div{ ng: { bind: { html: 'agency.name' } } }
+
+      .form-group
+        .row
+          .col-md-6.bs-datepicker
+            %label.control-label{ for: 'start-date' } Start Date
+            %input.form-control{ name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+
+          .col-md-6.bs-datepicker
+            %label.control-label{ for: 'end-date' } End Date
+            %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
 
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ type: 'submit' } {{ submitText }}

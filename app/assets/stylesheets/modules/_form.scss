@@ -16,6 +16,33 @@
   .fat {
     padding: 0;
   }
+
+  .bs-datepicker {
+    .text-muted {
+      color: $placeholder-text;
+    }
+
+    .btn-default {
+      color: $brand-secondary;
+
+      &.active {
+        background: $btn-primary-bg;
+        border: $btn-primary-border;
+        color: $btn-primary-color;
+
+        .text-info {
+          color: $btn-primary-color;
+        }
+      }
+    }
+
+    table {
+      &:focus {
+        outline: none;
+      }
+    }
+
+  }
 }
 
 .ui-select-match {
