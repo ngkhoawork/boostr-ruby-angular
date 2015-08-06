@@ -7,6 +7,6 @@ class Deal < ActiveRecord::Base
   validates :advertiser_id, presence: true
 
   def as_json(options = {})
-    super(options.merge(include: [:advertiser, :agency]))
+    super(options.merge(include: [:advertiser, :agency, :stage]))
   end
 end

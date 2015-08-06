@@ -49,6 +49,6 @@
                   .empty
                 %td {{ row.name }}
                 %td {{ row.advertiser.name }}
-                %td {{ row.stage }}
+                %td {{ row.stage.name }}
                 %td {{ row.budget | currency:'$':0 }}
                 %td {{ row.start_date | date: 'shortDate' }}

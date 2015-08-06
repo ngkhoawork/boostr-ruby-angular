@@ -3,7 +3,7 @@
 ($resource, $q, $rootScope) ->
 
   resource = $resource '/api/deals/:id', { id: '@id' }
-
+  currentDeal = undefined
   allDeals = []
 
   @all = ->
@@ -23,6 +23,14 @@
       deferred.resolve(deal)
       $rootScope.$broadcast 'updated_deals'
     deferred.promise
+
+  @get = () ->
+    currentDeal
+
+  @set = (deal_id) =>
+    currentDeal = _.find allDeals, (deal) ->
+      return parseInt(deal_id) == deal.id
+    $rootScope.$broadcast 'updated_current_deal'
 
   return
 ]

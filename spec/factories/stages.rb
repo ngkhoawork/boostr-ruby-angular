@@ -4,5 +4,6 @@ FactoryGirl.define do
     probability 10
     open true
     active true
+    color '#ffe630'
   end
 end

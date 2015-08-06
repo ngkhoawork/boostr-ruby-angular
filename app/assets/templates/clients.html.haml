@@ -107,7 +107,7 @@
                         {{ contact.name }}, {{ contact.position }}
                   .row
                     .col-xs-12
-                      {{ contact.address.email }} {{ contact.address.mobile }}
+                      {{ contact.address.email }} {{ contact.address.mobile | tel }}
                 .col-xs-2
                   = inline_svg 'right-caret.svg', class: 'pull-right'
 
@@ -118,10 +118,10 @@
                 = inline_svg 'add.svg'
 
             %h2
-              Default Team & Split
+              default team & split
 
             .table-wrapper
-              %table.table.table-hover.table-striped
+              %table.table.table-striped
                 %thead
                   %tr
                     %th Member
