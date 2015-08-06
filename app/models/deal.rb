@@ -3,10 +3,11 @@ class Deal < ActiveRecord::Base
   belongs_to :advertiser, class_name: 'Client'
   belongs_to :agency, class_name: 'Client'
   belongs_to :stage, counter_cache: true
+  belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
 
   validates :advertiser_id, presence: true
 
   def as_json(options = {})
-    super(options.merge(include: [:advertiser, :agency, :stage]))
+    super(options.merge(include: [:advertiser, :agency, :stage, :creator]))
   end
 end

@@ -10,20 +10,34 @@
 // $gray:                   lighten($gray-base, 33.5%) !default; // #555
 $gray-light: #ECECEC !default;
 $gray-lighter: #DFDFDF !default;
-$light-grayish-blue: #DDE2E8;
+
+$light-grayish-blue-1: #DEE6EE;
+$light-grayish-blue-2: #DDE2E8;
+$light-grayish-blue-3: #F6F9FC;
+$light-grayish-blue-4: #FAFBFD;
+$light-grayish-blue-5: #D7E4F1;
+$light-grayish-blue-6: #DADFE4;
+$very-dark-greyish-blue: #3C454C;
 $very-light-gray: #DDDDDD;
+$dark-grayish-blue-1: #838F9A;
+$dark-grayish-blue-2: #727F8C;
+$dark-grayish-blue-3: #67747E;
 $grayish-blue: #A2B0BF;
+$very-dark-desaturated-blue-1: #2B3C49;
+$very-dark-desaturated-blue-2: #293640;
+$very-dark-desaturated-blue-3: #263841;
 $white: #FFFFFF;
 $placeholder-text: #BCC6CF;
-$modal-bg: #f6f8fa;
-$header-gray: #505b65;
-$brand-primary: #ff7e30 !default;
+$modal-bg: #F6F8FA;
+$header-gray: #505B65;
+$soft-orange: #F9985E;
+$brand-primary: #FF7E30 !default;
 $brand-primary-darken: darken($brand-primary, 5%) !default;
 $brand-primary-lighten: lighten($brand-primary, 5%) !default;
-$brand-secondary: #7b7b7b !default;
+$brand-secondary: #7B7B7B !default;
 $brand-secondary-darken: darken($brand-secondary, 5%) !default;
 $brand-secondary-lighten: lighten($brand-secondary, 5%) !default;
-$brand-tertiary: #232b31 !default;
+$brand-tertiary: #232B31 !default;
 $brand-tertiary-darken: darken($brand-tertiary, 5%) !default;
 $brand-tertiary-lighten: lighten($brand-tertiary, 5%) !default;
 
@@ -35,11 +49,11 @@ $brand-tertiary-lighten: lighten($brand-tertiary, 5%) !default;
 //
 //## Settings for some of the most global styles.
 //** Background color for `<body>`.
-$body-bg: #f6f9fc;
+$body-bg: $light-grayish-blue-3;
 
 //** Global text color on `<body>`.
-$text-color: #838f9a;
-$dark-text-color: #232b31;
+$text-color: $dark-grayish-blue-1;
+$dark-text-color: $brand-tertiary;
 
 //** Global textual link color.
 $link-color: $brand-primary !default;
@@ -81,7 +95,7 @@ $headings-font-family: $font-family-extra-bold;
 $headings-font-weight: 700 !default;
 
 // $headings-line-height:    1.1 !default;
-$headings-color: #2b3c49;
+$headings-color: $very-dark-desaturated-blue-1;
 
 // //== Iconography
 // //
@@ -128,10 +142,10 @@ $table-headings-font-family: $font-family-medium;
 // //** Padding for cells in `.table-condensed`.
 // $table-condensed-cell-padding:  5px !default;
 // //** Default background color used for all tables.
-$table-bg: white !default;
+$table-bg: $white;
 
 // //** Background color used for `.table-striped`.
-$table-bg-accent: #fafbfd !default;
+$table-bg-accent: $light-grayish-blue-4;
 
 // //** Background color used for `.table-hover`.
 $table-bg-hover: darken(#F6F6F6,1%) !default;
@@ -155,9 +169,9 @@ $btn-default-border: $placeholder-text;
 // $btn-success-bg:                 $brand-success !default;
 // $btn-success-border:             darken($btn-success-bg, 5%) !default;
 
-$btn-info-color:                 #727f8c;
+$btn-info-color:                 $dark-grayish-blue-2;
 $btn-info-bg:                    transparent;
-$btn-info-border:                #727f8c;
+$btn-info-border:                $dark-grayish-blue-2;
 
 // $btn-warning-color:              #fff !default;
 // $btn-warning-bg:                 $brand-warning !default;
@@ -183,7 +197,7 @@ $input-bg: $modal-bg;
 $input-color: $brand-tertiary !default;
 
 // //** `<input>` border color
-$input-border: #dee6ee;
+$input-border: $light-grayish-blue-1;
 
 // // TODO: Rename `$input-border-radius` to `$input-border-radius-base` in v4
 // //** Default `.form-control` border radius
@@ -195,7 +209,7 @@ $input-border-radius: 5px !default;
 // //** Small `.form-control` border radius
 // $input-border-radius-small:      $border-radius-small !default;
 // //** Border color for inputs on focus
-$input-border-focus: #d7e4f1;
+$input-border-focus: $light-grayish-blue-5;
 
 // //** Placeholder text color
 $input-color-placeholder: $placeholder-text;
@@ -552,7 +566,7 @@ $modal-lg: 775px;
 // //
 // //##
 // //** Background color of the whole progress component
-$progress-bg:                 #fff;
+$progress-bg:                 $white;
 // //** Progress bar text color
 // $progress-bar-color:          #fff !default;
 // //** Variable for setting rounded corners on progress bar.
@@ -574,7 +588,7 @@ $progress-bg:                 #fff;
 $list-group-bg: $body-bg !default;
 
 // //** `.list-group-item` border color
-$list-group-border: #dadfe4 !default;
+$list-group-border: $light-grayish-blue-6;
 
 // //** List group border radius
 $list-group-border-radius: 0 !default;
@@ -694,7 +708,7 @@ $well-border: transparent;
 // //
 // //##
 // $close-font-weight:           bold !default;
-$close-color: #293640;
+$close-color: $very-dark-desaturated-blue-2;
 
 // $close-text-shadow:           0 1px 0 #fff !default;
 // //== Code

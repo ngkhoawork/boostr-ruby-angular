@@ -6,7 +6,7 @@ RSpec.describe User, 'association' do
 end
 
 RSpec.describe User, type: :model do
-  let(:user) { create :user, first_name: nil, last_name: nil }
+  let(:user) { create :user }
 
   context 'roles' do
     it 'default to user' do
@@ -26,22 +26,9 @@ RSpec.describe User, type: :model do
   end
 
   context 'name' do
-    it 'returns an empty string if name is nil' do
-      expect(user.name).to eq('')
-    end
-
-    it 'returns the first initial if the first name is present' do
-      user.update_attributes(first_name: 'Bobby')
-      expect(user.name).to eq('B.')
-    end
-
-    it 'returns the last name if the last name is present' do
-      user.update_attributes(last_name: 'Jones')
-      expect(user.name).to eq('Jones')
-    end
+    let(:user) { create :user, first_name: 'Bobby', last_name: 'Jones' }
 
     it 'returns the first initial and last name if they are both present' do
-      user.update_attributes(first_name: 'Bobby', last_name: 'Jones')
       expect(user.name).to eq('B. Jones')
     end
   end

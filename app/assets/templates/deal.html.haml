@@ -2,15 +2,15 @@
   .container
     .row.return
       .col-xs-12
-        %a
+        %a{ href:'/deals' }
           = inline_svg 'caret.svg', class: 'transform'
           Back to Deals
 
   .container
-    .row.campaign
+    #deal_overview.row.campaign
       .col-xs-9
-        %h3 {{ currentDeal.name }}
-      .col-xs-3.pull-right
+        %h3.deal-name {{ currentDeal.name }}
+      #stage_overview.col-xs-3.pull-right
         .panel.current-stage
           .panel-heading
             .panel-title current stage
@@ -40,10 +40,8 @@
                 additional info
             %li.pull-right.nav-text
               Updated {{ currentDeal.updated_at | date: 'MMMM d, y' }}
-    .row.header
-      .col-xs-6
-        %h4
-          Campaign
+    %h3.header
+      Campaign
     .well
       .row
         .col-xs-3.campaign-period
@@ -70,7 +68,7 @@
             .col-xs-12
               %h4
                 $125,000
-    .table-wrapper
+    #revenue_schedule.table-wrapper
       %table.table.white-table
         %thead
           %tr
@@ -119,3 +117,39 @@
             %td $20,000
             %td $20,000
     -# .well.dark
+
+    #add_info.col-xs-6.pull-right
+      %h3.header Additional Info
+      .well
+        .row.field
+          .col-xs-10
+            .row
+              .col-xs-4
+                %h4.field-label Type
+            .row
+              .col-xs-9.field-value
+                {{ currentDeal.deal_type }}
+        .row.field
+          .col-xs-10
+            .row
+              .col-xs-4
+                %h4.field-label Source
+            .row
+              .col-xs-9.field-value
+                {{ currentDeal.source_type }}
+        .row.field
+          .col-xs-10
+            .row
+              .col-xs-4
+                %h4.field-label Next Steps
+            .row
+              .col-xs-9.field-value
+                {{ currentDeal.next_steps }}
+        .row.field
+          .col-xs-10
+            .row
+              .col-xs-4
+                %h4.field-label Created
+            .row
+              .col-xs-9.field-value
+                {{ currentDeal.creator.first_name }} {{ currentDeal.creator.last_name }} on {{ currentDeal.created_at | date: 'shortDate' }} @ {{ currentDeal.created_at | date: 'shortTime'}}

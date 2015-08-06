@@ -1,6 +1,6 @@
 @app.controller "ClientMembersNewController",
-['$scope', 'ClientMember', 'Client', 'User', '$modalInstance'
-($scope, ClientMember, Client, User, $modalInstance) ->
+['$scope', '$modalInstance', 'ClientMember', 'Client', 'User',
+($scope, $modalInstance, ClientMember, Client, User) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"

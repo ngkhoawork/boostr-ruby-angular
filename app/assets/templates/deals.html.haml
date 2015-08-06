@@ -44,7 +44,7 @@
                 %th Spend
                 %th Start Date
             %tbody
-              %tr{ ng: { repeat: 'row in filteredDeals' } }
+              %tr{ ng: { repeat: 'row in filteredDeals', click: 'go("/deals/" + row.id)' } }
                 %td
                   .empty
                 %td {{ row.name }}

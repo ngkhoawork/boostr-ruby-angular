@@ -1,6 +1,6 @@
 @app.controller "ContactsNewController",
-['$scope', 'Contact', 'Client', '$modalInstance', 'contact',
-($scope, Contact, Client, $modalInstance, contact) ->
+['$scope', '$modalInstance', 'Contact', 'Client', 'contact',
+($scope, $modalInstance, Contact, Client, contact) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
