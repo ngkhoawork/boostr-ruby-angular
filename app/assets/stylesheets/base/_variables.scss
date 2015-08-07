@@ -10,18 +10,19 @@
 // $gray:                   lighten($gray-base, 33.5%) !default; // #555
 $gray-light: #ECECEC !default;
 $gray-lighter: #DFDFDF !default;
-
 $light-grayish-blue-1: #DEE6EE;
 $light-grayish-blue-2: #DDE2E8;
 $light-grayish-blue-3: #F6F9FC;
 $light-grayish-blue-4: #FAFBFD;
 $light-grayish-blue-5: #D7E4F1;
 $light-grayish-blue-6: #DADFE4;
+$light-grayish-blue-7: #EBF0F4;
 $very-dark-greyish-blue: #3C454C;
 $very-light-gray: #DDDDDD;
 $dark-grayish-blue-1: #838F9A;
 $dark-grayish-blue-2: #727F8C;
 $dark-grayish-blue-3: #67747E;
+$dark-grayish-blue-4: #636f7A;
 $grayish-blue: #A2B0BF;
 $very-dark-desaturated-blue-1: #2B3C49;
 $very-dark-desaturated-blue-2: #293640;
@@ -192,7 +193,7 @@ $btn-border-radius-large: 25px;
 $input-bg: $modal-bg;
 
 // //** `<input disabled>` background color
-// $input-bg-disabled:              $gray-lighter !default;
+$input-bg-disabled:              $gray-lighter !default;
 // //** Text color for `<input>`s
 $input-color: $brand-tertiary !default;
 

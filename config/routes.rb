@@ -4,15 +4,15 @@ Rails.application.routes.draw do
 
   devise_for :users, skip: 'invitation'
   devise_scope :user do
-    get "/users/invitation/accept", to: "api/invitations#edit",   as: 'accept_user_invitation'
-    post "/api/users/invitation", to: "api/invitations#create", as: nil
+    get '/users/invitation/accept', to: 'api/invitations#edit',   as: 'accept_user_invitation'
+    post '/api/users/invitation', to: 'api/invitations#create', as: nil
   end
 
   root 'pages#index'
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
-    resources :users, only: [:index]
+    resources :users, only: [:index, :update]
     resources :clients, only: [:index, :create, :update, :destroy] do
       resources :client_members, only: [:index, :create]
     end
