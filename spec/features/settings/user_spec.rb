@@ -19,6 +19,7 @@ feature 'Users' do
       within '#user-modal' do
         fill_in 'first_name', with: 'Bobby'
         fill_in 'last_name', with: 'Jones'
+        fill_in 'title', with: 'CEO'
         fill_in 'email', with: 'bobby@jones.com'
 
         click_on 'Invite'
@@ -51,16 +52,16 @@ feature 'Users' do
       within '#user-modal' do
         fill_in 'first_name', with: 'Test'
         fill_in 'last_name', with: 'Person'
+        fill_in 'title', with: 'Secretary'
 
         click_on 'Update'
       end
 
       expect(page).to have_no_css('#user-modal')
 
-      within '.table-wrapper' do
-        within(:xpath, './/table/tbody/tr[1]/td[2]') do
-          expect(page).to have_text('Test Person')
-        end
+      within 'table tbody' do
+        expect(find('tr:first-child td:nth-child(2)')).to have_text('Test Person')
+        expect(find('tr:first-child td:nth-child(3)')).to have_text('Secretary')
       end
     end
   end

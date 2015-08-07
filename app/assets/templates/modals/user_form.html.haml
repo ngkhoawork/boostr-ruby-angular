@@ -17,6 +17,10 @@
         %input.form-control{ placeholder: 'Last Name', ng: { model: 'user.last_name' }, name: 'last_name' }
 
       .form-group
+        %label.control-label{ for: 'title' } Title
+        %input.form-control{ placeholder: 'Title', ng: { model: 'user.title' }, name: 'title' }
+
+      .form-group
         %label.control-label{ for: 'email' } Email
         %input.form-control{ placeholder: 'Email', ng: { model: 'user.email', disabled: '{{ hideEmail }}' }, name: 'email' }
 
