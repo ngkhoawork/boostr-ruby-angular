@@ -35,6 +35,7 @@
                 %th Start Date
                 %th End Date
                 %th Sales Rep
+                %th Product
                 %th Date Loaded
                 %th Date Updated
 
@@ -55,5 +56,6 @@
                 %td {{ row.start_date | date: 'shortDate' }}
                 %td {{ row.end_date | date: 'shortDate' }}
                 %td {{ row.user_name }}
+                %td {{ row.product_name }}
                 %td {{ row.created_at | date: 'shortDate' }}
                 %td {{ row.updated_at | date: 'shortDate' }}
