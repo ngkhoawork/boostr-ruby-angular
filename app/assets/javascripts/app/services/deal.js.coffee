@@ -24,13 +24,11 @@
       $rootScope.$broadcast 'updated_deals'
     deferred.promise
 
-  @get = () ->
-    currentDeal
-
-  @set = (deal_id) =>
-    currentDeal = _.find allDeals, (deal) ->
-      return parseInt(deal_id) == deal.id
-    $rootScope.$broadcast 'updated_current_deal'
+  @get = (deal_id) ->
+    deferred = $q.defer()
+    resource.get id: deal_id, (deal) ->
+      deferred.resolve(deal)
+    deferred.promise
 
   @deal_types = () ->
     [
@@ -39,7 +37,7 @@
       'Seasonal'
       'Renewal'
     ]
-    
+
   @source_types = () ->
     [
       'Pitch to Client'

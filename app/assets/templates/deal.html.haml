@@ -38,7 +38,7 @@
             %li
               %a
                 additional info
-            %li.pull-right.nav-text
+            %li.pull-right.nav-text.last
               Updated {{ currentDeal.updated_at | date: 'MMMM d, y' }}
     %h3.header
       Campaign
@@ -73,50 +73,50 @@
         %thead
           %tr
             %th Product
-            %th Jan 10
-            %th Feb 10
-            %th Mar 10
-            %th Apr 15
-            %th May 30
-            %th Jun 30
-            %th Jul 30
-            %th Aug 30
-            %th Sep 30
+            %th{ ng: { repeat: 'month in currentDeal.months' } }
+              {{ month | boDate }}
+
         %tbody
-          %tr
-            %td Masthead
-            %td $200,000
-            %td $50,000
-            %td $50,000
-            %td $200,000
-            %td $20,000
-            %td $20,000
-            %td $20,000
-            %td $20,000
-            %td $20,000
-          %tr
-            %td Mobile
-            %td $200,000
-            %td $50,000
-            %td $50,000
-            %td $200,000
-            %td $20,000
-            %td $20,000
-            %td $20,000
-            %td $20,000
-            %td $20,000
-          %tr
-            %td Tablet
-            %td $200,000
-            %td $50,000
-            %td $50,000
-            %td $200,000
-            %td $20,000
-            %td $20,000
-            %td $20,000
-            %td $20,000
-            %td $20,000
-    -# .well.dark
+          %tr{ ng: { repeat: 'product in currentDeal.products' } }
+            %td
+              {{ product.name }}
+            %td{ ng: { repeat: 'deal_product in product.deal_products' }}
+              {{ deal_product.budget | currency:'$':0 }}
+
+    #new-product.well.dark
+      .row{ ng: { hide: 'showProductForm' } }
+        .col-xs-12
+          %a.add-product{ href: '', ng: { click: 'toggleProductForm()' } }
+            = inline_svg 'add.svg'
+            Add Product
+      .row{ ng: { show: 'showProductForm' } }
+        .col-xs-12
+          %form#product-form{ ng: { submit: 'addProduct()' } }
+            .row
+              .col-xs-2
+                .row.bordered
+                  .col-xs-12
+                    .form-group
+                      %label.control-label{ for: 'product' } Product
+                      %ui-select{ name: 'product', ng: { model: 'deal_product.product_id', disabled: true, required: true } }
+                        %ui-select-match{ placeholder: 'Product' }
+                          {{ $select.selected.name }}
+                        %ui-select-choices{ repeat: 'product.id as product in products | filter: { name: $select.search }' }
+                          %div{ ng: { bind: { html: 'product.name' } } }
+                .row.bordered
+                  .col-xs-12
+                    .form-group
+                      %label.control-label{ for: 'total_budget' } Total Budget
+                      %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal_product.total_budget', required: true }, name: 'total_budget' }
+                .row
+                  .col-xs-12
+                    %button.btn.btn-primary.btn-block{ type: 'submit' } Add Product
+              .col-xs-10
+                .row.months
+                  .col-xs-2{ ng: { repeat: 'month in deal_product.months' } }
+                    .form-group
+                      %label.control-label Month \#{{ $index + 1 }}
+                      %input.form-control{ ng: { model: 'month.value'}, disabled: true }
 
     #add_info.col-xs-6.pull-right
       %h3.header Additional Info

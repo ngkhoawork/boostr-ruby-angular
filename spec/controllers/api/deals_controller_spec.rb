@@ -5,6 +5,7 @@ RSpec.describe Api::DealsController, type: :controller do
   let(:user) { create :user, company: company }
   let(:advertiser) { create :client, company: company }
   let(:deal_params) { attributes_for(:deal, advertiser_id: advertiser.id) }
+  let(:deal) { create :deal, company: company }
 
   before do
     sign_in user
@@ -45,4 +46,12 @@ RSpec.describe Api::DealsController, type: :controller do
       end.to_not change(Deal, :count)
     end
   end
+
+  describe 'GET #show' do
+    it 'returns json for a deal, products and deal_products' do
+      get :show, id: deal.id, format: :json
+      expect(response).to be_success
+    end
+  end
+
 end

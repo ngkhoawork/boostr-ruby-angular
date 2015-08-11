@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :product do
-    name { FFaker::Product.name }
+    name { FFaker::Product.product_name }
   end
 end
