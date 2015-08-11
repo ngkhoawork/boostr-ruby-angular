@@ -4,6 +4,7 @@ FactoryGirl.define do
     end_date '2015-07-29 12:52:56'
     name 'MyString'
     stage
+    next_steps 'Call Somebody'
     budget { rand(100_000..500_000) }
     deal_type ['Test Campaign',
                'Sponsorship',

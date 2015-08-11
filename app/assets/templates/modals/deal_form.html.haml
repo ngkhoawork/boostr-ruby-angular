@@ -19,25 +19,48 @@
             {{ $select.selected.name }}
           %ui-select-choices{ repeat: 'stage.id as stage in stages | filter: { name: $select.search }' }
             %div{ ng: { bind: { html: 'stage.name' } } }
+
       .form-group
         %label.control-label{ for: 'budget' } Total Budget
         %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal.budget' }, name: 'budget' }
 
       .form-group
-        %label.control-label{ for: 'advertiser' } Advertiser
-        %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, required: true } }
-          %ui-select-match{ placeholder: 'Advertiser' }
-            {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'advertiser.id as advertiser in clients | filter: { name: $select.search, client_type: "Advertiser" }' }
-            %div{ ng: { bind: { html: 'advertiser.name' } } }
+        .row
+          .col-xs-6
+            %label.control-label{ for: 'advertiser' } Advertiser
+            %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, required: true } }
+              %ui-select-match{ placeholder: 'Advertiser' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'advertiser.id as advertiser in clients | filter: { name: $select.search, client_type: "Advertiser" }' }
+                %div{ ng: { bind: { html: 'advertiser.name' } } }
+          .col-xs-6
+            %label.control-label{ for: 'agency' } Agency
+            %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true } }
+              %ui-select-match{ placeholder: 'Agency' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'agency.id as agency in clients | filter: { name: $select.search, client_type: "Agency" }' }
+                %div{ ng: { bind: { html: 'agency.name' } } }
 
       .form-group
-        %label.control-label{ for: 'agency' } Agency
-        %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true } }
-          %ui-select-match{ placeholder: 'Agency' }
-            {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'agency.id as agency in clients | filter: { name: $select.search, client_type: "Agency" }' }
-            %div{ ng: { bind: { html: 'agency.name' } } }
+        .row
+          .col-xs-6
+            %label.control-label{ for: 'deal-type' } Type
+            %ui-select{ name: 'deal-type', ng: { model: 'deal.deal_type', disabled: true } }
+              %ui-select-match{ placeholder: 'Type' }
+                {{ $select.selected }}
+              %ui-select-choices{ repeat: 'dealType in dealTypes | filter: $select.search' }
+                %div{ ng: { bind: { html: 'dealType' } } }
+          .col-xs-6
+            %label.control-label{ for: 'source-type' } Source
+            %ui-select{ name: 'source-type', ng: { model: 'deal.source_type', disabled: true } }
+              %ui-select-match{ placeholder: 'Source' }
+                {{ $select.selected }}
+              %ui-select-choices{ repeat: 'sourceType in sourceTypes | filter: $select.search' }
+                %div{ ng: { bind: { html: 'sourceType' } } }
+
+      .form-group
+        %label.control-label{ for: 'next_steps' } Next Steps
+        %input.form-control{ placeholder: 'Next Steps', ng: { model: 'deal.next_steps' }, name: 'next_steps' }
 
       .form-group
         .row

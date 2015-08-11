@@ -5,6 +5,8 @@
   $scope.formType = 'New'
   $scope.submitText = 'Create'
   $scope.deal = {}
+  $scope.dealTypes = Deal.deal_types()
+  $scope.sourceTypes = Deal.source_types()
 
   $scope.init = ->
     $q.all({ clients: Client.all(), stages: Stage.all() }).then (data) ->

@@ -30,6 +30,9 @@ RSpec.describe Api::DealsController, type: :controller do
         expect(response_json['created_by']).to eq(user.id)
         expect(response_json['budget']).to eq(deal_params[:budget])
         expect(response_json['advertiser_id']).to eq(advertiser.id)
+        expect(response_json['deal_type']).to eq(deal_params[:deal_type])
+        expect(response_json['source_type']).to eq(deal_params[:source_type])
+        expect(response_json['next_steps']).to eq(deal_params[:next_steps])
       end.to change(Deal, :count).by(1)
     end
 
@@ -39,7 +42,7 @@ RSpec.describe Api::DealsController, type: :controller do
         expect(response.status).to eq(422)
         response_json = JSON.parse(response.body)
         expect(response_json['errors']['advertiser_id']).to eq(["can't be blank"])
-      end.to_not change(Client, :count)
+      end.to_not change(Deal, :count)
     end
   end
 end
