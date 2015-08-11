@@ -2,7 +2,7 @@ class Api::DealsController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.deals.includes(:advertiser, :agency, :stage)
+    render json: current_user.company.deals.includes(:advertiser, :stage)
   end
 
   def create
@@ -15,9 +15,17 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def show
+    deal
+  end
+
   private
 
   def deal_params
     params.require(:deal).permit(:name, :stage_id, :budget, :start_date, :end_date, :advertiser_id, :agency_id, :deal_type, :source_type, :next_steps)
+  end
+
+  def deal
+    @deal ||= current_user.company.deals.find(params[:id])
   end
 end

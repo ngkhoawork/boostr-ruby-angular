@@ -143,13 +143,49 @@
     border-bottom: 1px solid $light-grayish-blue-2;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    padding: 37px;
-    margin-bottom: 0;
     margin-top: 0;
+
     &.dark {
       background-color: $brand-tertiary;
       border-radius: 0;
-      height: 79px;
+
+      input {
+        background-color: $brand-tertiary-lighten;
+        border-color: transparent;
+        color: $white;
+
+        &:focus {
+          background-color: transparent;
+          border-color: $dark-grayish-blue-1;
+        }
+      }
+
+      .btn-default {
+        background-color: $brand-tertiary-lighten;
+        border-color: $brand-tertiary-lighten;
+      }
+
+      .ui-select-match .ui-select-match-text {
+        color: $white;
+      }
+
+      .bordered {
+        border-right: 1px solid $dark-grayish-blue-1;
+      }
+
+      .btn-block {
+        margin-top: 15px;
+      }
+    }
+  }
+
+  .add-product {
+    color: $brand-secondary;
+    text-transform: uppercase;
+    font-size: 12px;
+
+    svg {
+      margin-bottom: -7px;
     }
   }
 

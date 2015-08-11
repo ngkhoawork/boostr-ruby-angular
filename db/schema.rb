@@ -99,12 +99,21 @@ ActiveRecord::Schema.define(version: 20150810213835) do
 
   add_index "contacts", ["deleted_at"], name: "index_contacts_on_deleted_at", using: :btree
 
+  create_table "deal_products", force: :cascade do |t|
+    t.integer  "deal_id"
+    t.integer  "product_id"
+    t.integer  "budget"
+    t.date     "period"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "deals", force: :cascade do |t|
     t.integer  "advertiser_id"
     t.integer  "agency_id"
     t.integer  "company_id"
-    t.datetime "start_date"
-    t.datetime "end_date"
+    t.date     "start_date"
+    t.date     "end_date"
     t.string   "name"
     t.integer  "budget"
     t.datetime "created_at",    null: false

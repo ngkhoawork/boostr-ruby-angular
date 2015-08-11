@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :deal do
-    start_date '2015-07-29 12:52:56'
-    end_date '2015-07-29 12:52:56'
+    start_date Date.new(2015,7,29)
+    end_date Date.new(2015,7,29)
     name 'MyString'
     stage
     next_steps 'Call Somebody'
@@ -14,5 +14,6 @@ FactoryGirl.define do
                  'Pitch to Agency',
                  'RFP Response to Client',
                  'RFP Response to Agency'].sample
+    advertiser
   end
 end
