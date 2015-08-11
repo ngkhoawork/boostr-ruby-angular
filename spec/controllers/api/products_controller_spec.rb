@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::ProductsController, type: :controller do
-
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let(:product_params) { attributes_for :product }
@@ -10,8 +9,8 @@ RSpec.describe Api::ProductsController, type: :controller do
     sign_in user
   end
 
-  describe "GET #index" do
-    it 'returns a list of stages' do
+  describe 'GET #index' do
+    it 'returns a list of products' do
       create_list :product, 3, company: company
 
       get :index, format: :json
@@ -21,21 +20,35 @@ RSpec.describe Api::ProductsController, type: :controller do
     end
   end
 
-  describe "POST #create" do
+  describe 'POST #create' do
     it 'creates a new product and returns success' do
-      expect{
+      expect do
         post :create, product: product_params, format: :json
         expect(response).to be_success
-      }.to change(Product, :count).by(1)
+      end.to change(Product, :count).by(1)
     end
 
     it 'returns errors if the product is invalid' do
-      expect{
+      expect do
         post :create, product: { blah: 'blah' }, format: :json
         expect(response.status).to eq(422)
         response_json = JSON.parse(response.body)
         expect(response_json['errors']['name']).to eq(["can't be blank"])
-      }.to_not change(Product, :count)
+      end.to_not change(Product, :count)
+    end
+  end
+
+  describe 'PUT #update' do
+    let(:product) { create :product, company: company }
+
+    it 'updates a product successfully' do
+      put :update, id: product.id, product: { name: 'New Name', product_line: 'Phone', family: 'Video', pricing_type: 'CPC' }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['name']).to eq('New Name')
+      expect(response_json['product_line']).to eq('Phone')
+      expect(response_json['family']).to eq('Video')
+      expect(response_json['pricing_type']).to eq('CPC')
     end
   end
 end

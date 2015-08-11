@@ -14,9 +14,21 @@ class Api::ProductsController < ApplicationController
     end
   end
 
+  def update
+    if product.update_attributes(product_params)
+      render json: product, status: :accepted
+    else
+      render json: { errors: product.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def product_params
     params.require(:product).permit(:name, :product_line, :family, :pricing_type)
+  end
+
+  def product
+    @product ||= current_user.company.products.where(id: params[:id]).first
   end
 end

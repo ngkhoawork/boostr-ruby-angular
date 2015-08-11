@@ -25,7 +25,7 @@
                 %th Family
                 %th Type
             %tbody
-              %tr{ ng: { repeat: 'row in products' } }
+              %tr{ ng: { repeat: 'row in products', click: 'editModal(row)' } }
                 %td
                   .empty
                 %td {{ row.name }}

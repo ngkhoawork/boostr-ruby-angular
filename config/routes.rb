@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     resources :revenue, only: [:index, :create]
     resources :deals, only: [:index, :create, :show]
     resources :stages, only: [:index]
-    resources :products, only: [:index, :create]
+    resources :products, only: [:index, :create, :update]
     resources :deal_products, only: [:create]
   end
 

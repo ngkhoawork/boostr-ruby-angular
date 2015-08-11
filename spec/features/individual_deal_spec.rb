@@ -6,7 +6,7 @@ feature 'Individual Deal' do
   let(:stage) { create :stage, company: company, position: 1 }
   let(:product) { create :product }
   let!(:other_product) { create :product, company: company  }
-  let(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016,6,29) }
+  let(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29) }
 
   describe 'showing deal details' do
     before do
