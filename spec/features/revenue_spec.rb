@@ -4,18 +4,18 @@ feature 'Revenue' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let(:client) { create :client, company: company }
+  let(:product) { create :product, company: company }
 
   describe 'uploading a good csv' do
-
     before do
-      File.open("#{Rails.root}/tmp/good.csv", 'w+') {|f| f.write("#{good_csv_file(client, user)}") }
+      File.open("#{Rails.root}/tmp/good.csv", 'w+') { |f| f.write("#{good_csv_file(client, user, product)}") }
       login_as user, scope: :user
-      visit "/revenue"
+      visit '/revenue'
       expect(page).to have_css('#revenue')
     end
 
     scenario 'shows the modal and uploads a csv' do
-      find('.upload').click()
+      find('.upload').click
 
       expect(page).to have_css('#revenue_upload_modal')
 
@@ -41,16 +41,15 @@ feature 'Revenue' do
   end
 
   describe 'uploading a bad csv' do
-
     before do
-      File.open("#{Rails.root}/tmp/missing_required.csv", 'w+') {|f| f.write("#{missing_required_csv(client, user)}") }
+      File.open("#{Rails.root}/tmp/missing_required.csv", 'w+') { |f| f.write("#{missing_required_csv(client, user, product)}") }
       login_as user, scope: :user
-      visit "/revenue"
+      visit '/revenue'
       expect(page).to have_css('#revenue')
     end
 
     scenario 'shows an error message' do
-      find('.upload').click()
+      find('.upload').click
 
       expect(page).to have_css('#revenue_upload_modal')
 
@@ -73,8 +72,6 @@ feature 'Revenue' do
           expect(page).to have_text('Row 1 contains errors: ')
         end
       end
-
     end
   end
-
 end

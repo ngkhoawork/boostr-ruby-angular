@@ -2,6 +2,7 @@ class Revenue < ActiveRecord::Base
   belongs_to :company
   belongs_to :client
   belongs_to :user
+  belongs_to :product
 
   validates :company_id, :order_number, :line_number, :ad_server, presence: true
 
@@ -23,6 +24,12 @@ class Revenue < ActiveRecord::Base
         next
       end
 
+      unless product = Product.where(id: row[15], company_id: company_id).first
+        error = { row: row_number, message: ['Product could not be found'] }
+        errors << error
+        next
+      end
+
       find_params = {
         company_id: company_id,
         order_number: row[0],
@@ -38,10 +45,11 @@ class Revenue < ActiveRecord::Base
         remaining: row[7].to_i,
         budget: row[8].to_i,
         budget_remaining: row[9].to_i,
-        start_date: DateTime.strptime(row[10], "%m/%d/%Y"),
-        end_date: DateTime.strptime(row[11], "%m/%d/%Y"),
+        start_date: DateTime.strptime(row[10], '%m/%d/%Y'),
+        end_date: DateTime.strptime(row[11], '%m/%d/%Y'),
         client_id: client.id,
-        user_id: user.id
+        user_id: user.id,
+        product_id: product.id
       }
 
       revenue = Revenue.find_or_initialize_by(find_params)
@@ -61,7 +69,11 @@ class Revenue < ActiveRecord::Base
     user.name if user.present?
   end
 
+  def product_name
+    product.name if product.present?
+  end
+
   def as_json(options = {})
-    super(options.merge(methods: [:client_name, :user_name]))
+    super(options.merge(methods: [:client_name, :user_name, :product_name]))
   end
 end
