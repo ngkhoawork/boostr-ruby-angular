@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :deal do
-    start_date Date.new(2015,7,29)
-    end_date Date.new(2015,7,29)
+    start_date Date.new(2015, 7, 29)
+    end_date Date.new(2015, 7, 29)
     name 'MyString'
     stage
     next_steps 'Call Somebody'

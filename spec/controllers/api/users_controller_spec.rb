@@ -20,4 +20,17 @@ RSpec.describe Api::UsersController, type: :controller do
       expect(response_json[0]['name']).to_not be_nil
     end
   end
+
+  describe 'PUT #update' do
+    let(:user) { create :user, company: company }
+
+    it 'updates a user successfully' do
+      put :update, id: user.id, user: { first_name: 'New', last_name: 'Name', title: 'Boss' }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['first_name']).to eq('New')
+      expect(response_json['last_name']).to eq('Name')
+      expect(response_json['title']).to eq('Boss')
+    end
+  end
 end
