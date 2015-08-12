@@ -1,6 +1,7 @@
 .row
   #devise-form.col-xs-6.center-block.text-center.center-element
-    .logo.col-xs-6.center-block.center-element
+    .col-xs-6.center-block.center-element
+      = inline_svg 'branding/boostr_logo.svg', class: 'logo'
     .header Forgot your password?
     = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
       = devise_error_messages!

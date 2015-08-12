@@ -1,17 +1,19 @@
-%h2 Log in
-= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
-  .field
-    = f.label :email
-    %br/
-    = f.email_field :email, autofocus: true
-  .field
-    = f.label :password
-    %br/
-    = f.password_field :password, autocomplete: "off"
-  - if devise_mapping.rememberable?
-    .field
-      = f.check_box :remember_me
-      = f.label :remember_me
-  .actions
-    = f.submit "Log in"
-= render "devise/shared/links"
+.row
+  #devise-form.col-xs-6.center-block.text-center.center-element
+    .col-xs-6.center-block.center-element
+      = inline_svg 'branding/boostr_logo.svg', class: 'logo'
+    .header Log in
+    = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+      .row
+        .col-xs-6.center-block.center-element
+          %p
+            = f.email_field :email, autofocus: true, class:'btn btn-lg btn-info btn-block', placeholder: 'email'
+          %p
+            = f.password_field :password, class:'btn btn-lg btn-info btn-block', placeholder: 'password', autocomplete:'off'
+          - if devise_mapping.rememberable?
+            .field
+              = f.check_box :remember_me
+              = f.label :remember_me
+          %p
+            = f.submit 'Log in', class:'btn btn-lg btn-primary btn-block'
+    = render "devise/shared/links"
