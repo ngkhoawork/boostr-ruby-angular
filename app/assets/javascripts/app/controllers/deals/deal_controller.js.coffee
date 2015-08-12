@@ -18,9 +18,9 @@
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
 
   $scope.$watch 'deal_product.total_budget', ->
-    budget = $scope.deal_product.total_budget / $scope.deal_product.months.length
-    for month in $scope.deal_product.months
-      month.value = $filter('currency')(budget, '$', 0)
+    budget = $scope.deal_product.total_budget / $scope.currentDeal.days
+    _.each $scope.deal_product.months, (month, index) ->
+      month.value = $filter('currency')($scope.currentDeal.days_per_month[index] * budget, '$', 0)
 
   $scope.addProduct = ->
     DealProduct.create($scope.deal_product).then (deal) ->
