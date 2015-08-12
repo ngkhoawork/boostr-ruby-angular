@@ -24,10 +24,11 @@ RSpec.describe Deal, type: :model do
     let(:product) { create :product }
 
     it 'creates the correct number of DealProduct objects based on the deal timeline' do
-      expected_budgets = [5000, 31000, 30000, 28000]
+      expected_budgets = [500000, 3100000, 3000000, 2800000]
       expect{
         deal.add_product(product, "94000")
         expect(DealProduct.all.map(&:budget)).to eq(expected_budgets)
+        expect(deal.budget).to eq(9400000)
       }.to change(DealProduct, :count).by(4)
     end
   end
