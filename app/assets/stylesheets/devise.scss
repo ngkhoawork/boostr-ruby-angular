@@ -25,12 +25,12 @@
   margin-bottom: 20px;
 }
 
-#invitation-register {
+#devise-form {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(24, 30, 34, .4);
+  background: rgba(24, 30, 34, .9);
   padding-top: 71px;
   padding-bottom: 71px;
   border-radius: 10px;
@@ -39,7 +39,7 @@
     margin-bottom: 21px;
   }
 
-.btn-info {
+  .btn-info {
     text-align: left;
     border-color: $dark-grayish-blue-3;
     color: $light-grayish-blue-8;
@@ -52,7 +52,8 @@
   }
 }
 
-body {
+html {
   background-image: image-url("skyline.jpg");
+  background-size: cover;
   color: $white;
 }
