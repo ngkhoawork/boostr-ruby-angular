@@ -40,40 +40,40 @@
           .wells-group
             .well
               .row
-                .col-xs-2
+                .col-xs-3
                   %strong
                     Office
-                .col-xs-10.detail
+                .col-xs-9.detail
                   {{ currentClient.address.phone | tel }}
               .row
-                .col-xs-2
+                .col-xs-3
                   %strong
                     Email
-                .col-xs-10.detail
+                .col-xs-9.detail
                   {{ currentClient.address.email }}
             .well
               .row
-                .col-xs-2
+                .col-xs-3
                   %strong
                     Address
-                .col-xs-10.detail
+                .col-xs-9.detail
                   {{ currentClient.address.street1 }}
                   %br
                   {{ currentClient.address.city }}, {{ currentClient.address.state }}  {{ currentClient.address.zip }}
             .well
               .row
-                .col-xs-2
+                .col-xs-3
                   %strong
                     Website
-                .col-xs-10.detail
+                .col-xs-9.detail
                   %a{ ng: { href: 'http://{{ currentClient.website }}' }, target: '_blank' }
                     {{ currentClient.website }}
             .well
               .row
-                .col-xs-2
+                .col-xs-3
                   %strong
                     Client Type
-                .col-xs-10.detail
+                .col-xs-9.detail
                   {{ currentClient.client_type }}
 
         #people
