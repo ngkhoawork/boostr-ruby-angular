@@ -18,8 +18,8 @@ RSpec.describe Api::DealProductsController, type: :controller do
         post :create, deal_id: deal.id, product_id: product.id, total_budget: "1000", format: :json
         expect(response).to be_success
         response_json = JSON.parse(response.body)
-        expect(response_json['products'][0]['deal_products'].length).to eq(1)
-      }.to change(DealProduct, :count).by(1)
+        expect(response_json['products'][0]['deal_products'].length).to eq(2)
+      }.to change(DealProduct, :count).by(2)
     end
   end
 
