@@ -3,7 +3,7 @@
     .row.return
       .col-xs-12
         %a{ href:'/deals' }
-          = inline_svg 'caret.svg', class: 'transform'
+          = inline_svg 'icons/caret.svg', class: 'transform'
           Back to Deals
 
   .container
@@ -88,7 +88,7 @@
       .row{ ng: { hide: 'showProductForm' } }
         .col-xs-12
           %a.add-product{ href: '', ng: { click: 'toggleProductForm()' } }
-            = inline_svg 'add.svg'
+            = inline_svg 'icons/add.svg'
             Add Product
       .row{ ng: { show: 'showProductForm' } }
         .col-xs-12

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   devise_scope :user do
     get '/users/invitation/accept', to: 'api/invitations#edit',   as: 'accept_user_invitation'
     post '/api/users/invitation', to: 'api/invitations#create', as: nil
+    put '/api/users/invitation/accept', to: 'api/invitations#update', as: 'user_invitation'
   end
 
   root 'pages#index'

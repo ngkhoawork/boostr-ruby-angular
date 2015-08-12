@@ -1,0 +1,16 @@
+.container
+  .row
+    #invitation-register.col-xs-6.center-block.text-center.center-element
+      .logo.col-xs-6.center-block.center-element
+      .header= t 'devise.invitations.edit.header'
+      = form_for resource, as: resource_name, url: invitation_path(resource_name), html: { method: :put } do |f|
+        = devise_error_messages!
+        = f.hidden_field :invitation_token
+        .row
+          .col-xs-6.center-block.center-element
+            %p
+              = f.password_field :password, class:'btn btn-lg btn-info btn-block', placeholder: 'PASSWORD'
+            %p
+              = f.password_field :password_confirmation, class:'btn btn-lg btn-info btn-block', placeholder: 'CONFIRM PASSWORD'
+            %p
+              = f.submit t("devise.invitations.edit.submit_button"), class:'btn btn-lg btn-primary btn-block'

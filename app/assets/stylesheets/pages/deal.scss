@@ -107,7 +107,7 @@
       }
 
       .nav-text {
-        color: $grayish-blue;
+        color: $grayish-blue-1;
         margin-top: 20px;
         font-size: 12px;
       }
@@ -117,7 +117,7 @@
           font-size: 13px;
           font-family: $table-headings-font-family;
           text-transform: uppercase;
-          color: $grayish-blue;
+          color: $grayish-blue-1;
           padding-bottom: 0;
           border-bottom-width: 0;
           &:hover,
@@ -201,13 +201,13 @@
       text-transform: uppercase;
       a {
         font-size: 11px;
-        color: $grayish-blue;
+        color: $grayish-blue-1;
         font-family: $font-family-medium;
       }
 
       svg {
         padding-right: 5px;
-        fill: $grayish-blue;
+        fill: $grayish-blue-1;
         float: left;
         margin-top: -4px;
       }
