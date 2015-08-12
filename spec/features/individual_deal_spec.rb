@@ -30,6 +30,8 @@ feature 'Individual Deal' do
         expect(find('h3.header')).to have_text('Additional Info')
       end
 
+      expect(find('#total-amount')).to have_text('$120,000')
+
       within '#revenue_schedule' do
         within 'thead' do
           expect(page).to have_css('th', count: 13)

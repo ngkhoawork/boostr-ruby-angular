@@ -26,8 +26,9 @@ class Deal < ActiveRecord::Base
     daily_budget = total_budget.to_f / days
     months.each_with_index do |month, index|
       monthly_budget = daily_budget * days_per_month[index]
-      deal_products.create(product_id: product.id, period: Date.new(*month), budget: monthly_budget)
+      deal_products.create(product_id: product.id, period: Date.new(*month), budget: monthly_budget * 100)
     end
+    update_total_budget
   end
 
   def days_per_month
@@ -47,5 +48,9 @@ class Deal < ActiveRecord::Base
         array << (end_date - (end_date.beginning_of_month - 1)).to_i
     end
     array
+  end
+
+  def update_total_budget
+    update_attributes(budget: deal_products.sum(:budget))
   end
 end

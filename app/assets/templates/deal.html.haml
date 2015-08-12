@@ -58,8 +58,8 @@
               Total Amount
           .row
             .col-xs-12
-              %h4
-                $500,000
+              %h4#total-amount
+                {{ currentDeal.budget / 100 | currency: '$': 0 }}
         .col-xs-2.campaign-period.text-center
           .row
             .col-xs-12
@@ -81,7 +81,7 @@
             %td
               {{ product.name }}
             %td{ ng: { repeat: 'deal_product in product.deal_products' }}
-              {{ deal_product.budget | currency:'$':0 }}
+              {{ deal_product.budget / 100 | currency:'$':0 }}
 
     #new-product.well.dark
       .row{ ng: { hide: 'showProductForm' } }
