@@ -4,7 +4,7 @@ RSpec.describe Api::DealsController, type: :controller do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let(:advertiser) { create :client, company: company }
-  let(:deal_params) { attributes_for(:deal, advertiser_id: advertiser.id) }
+  let(:deal_params) { attributes_for(:deal, advertiser_id: advertiser.id, budget: "31000") }
   let(:deal) { create :deal, company: company }
 
   before do
@@ -29,7 +29,7 @@ RSpec.describe Api::DealsController, type: :controller do
         expect(response).to be_success
         response_json = JSON.parse(response.body)
         expect(response_json['created_by']).to eq(user.id)
-        expect(response_json['budget']).to eq(deal_params[:budget])
+        expect(response_json['budget']).to eq(3_100_000)
         expect(response_json['advertiser_id']).to eq(advertiser.id)
         expect(response_json['deal_type']).to eq(deal_params[:deal_type])
         expect(response_json['source_type']).to eq(deal_params[:source_type])

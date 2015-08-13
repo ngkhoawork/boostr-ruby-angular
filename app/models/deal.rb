@@ -10,6 +10,12 @@ class Deal < ActiveRecord::Base
 
   validates :advertiser_id, :start_date, :end_date, :name, presence: true
 
+  before_save do
+    if deal_products.empty?
+      self.budget = budget.to_i * 100
+    end
+  end
+
   def as_json(options = {})
     super(options.merge(include: [:advertiser, :stage]))
   end
@@ -19,7 +25,7 @@ class Deal < ActiveRecord::Base
   end
 
   def days
-    (end_date - start_date).to_i
+    (end_date - start_date + 1).to_i
   end
 
   def add_product(product, total_budget)
@@ -38,10 +44,10 @@ class Deal < ActiveRecord::Base
       when 1
         array << days
       when 2
-        array << (start_date.end_of_month - start_date).to_i
+        array << ((start_date.end_of_month + 1) - start_date).to_i
         array << (end_date - (end_date.beginning_of_month - 1)).to_i
       else
-        array << (start_date.end_of_month - start_date).to_i
+        array << ((start_date.end_of_month + 1) - start_date).to_i
         months[1..-2].each do |month|
           array << Time.days_in_month(month[1], month[0])
         end

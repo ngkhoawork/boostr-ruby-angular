@@ -5,7 +5,6 @@ FactoryGirl.define do
     name 'MyString'
     stage
     next_steps 'Call Somebody'
-    budget { rand(100_000..500_000) }
     deal_type ['Test Campaign',
                'Sponsorship',
                'Seasonal',
