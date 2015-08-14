@@ -29,6 +29,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-ui-select'
   gem 'rails-assets-angular-sanitize'
   gem 'rails-assets-ng-file-upload'
+  gem 'rails-assets-angular-xeditable'
 end
 
 group :test do

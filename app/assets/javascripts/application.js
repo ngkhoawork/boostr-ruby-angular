@@ -21,6 +21,7 @@
 //= require angular-ui-select
 //= require angular-sanitize
 //= require ng-file-upload
+//= require angular-xeditable
 //= require_tree .
 //= require_tree ../templates
 

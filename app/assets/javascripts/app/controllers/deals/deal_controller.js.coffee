@@ -33,5 +33,9 @@
       months: []
     }
 
+  $scope.updateDealProduct = (data) ->
+    DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
+      $scope.currentDeal = deal
+
   $scope.init()
 ]

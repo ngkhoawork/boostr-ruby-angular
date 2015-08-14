@@ -8,6 +8,7 @@
   'ui.select'
   'ngSanitize'
   'ngFileUpload'
+  'xeditable'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -59,6 +60,13 @@
 @app.config ['datepickerConfig', 'datepickerPopupConfig', (datepickerConfig, datepickerPopupConfig) ->
   datepickerConfig.showWeeks = false
   datepickerPopupConfig.showButtonBar = false
+]
+
+@app.run ['editableOptions', (editableOptions) ->
+  editableOptions.theme = 'bs3'
+  editableOptions.buttons = 'no'
+  editableOptions.blurElem = 'cancel'
+  editableOptions.blurForm = 'cancel'
 ]
 
 @service = angular.module 'services', ['ngResource']

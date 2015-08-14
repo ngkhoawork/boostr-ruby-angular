@@ -50,5 +50,5 @@
                 %td {{ row.name }}
                 %td {{ row.advertiser.name }}
                 %td {{ row.stage.name }}
-                %td {{ row.budget | currency:'$':0 }}
+                %td {{ row.budget / 100 | currency:'$':0 }}
                 %td {{ row.start_date | date: 'shortDate' }}
