@@ -6,7 +6,7 @@
           %ul.nav.nav-tabs
             %li.pull-right.last
               %a.upload{ href: '', ng: { click: 'showModal()' } }
-                = inline_svg 'add.svg'
+                = inline_svg 'icons/add.svg'
                 New Client
 
   .container
@@ -28,9 +28,9 @@
       #client-detail.col-xs-7
         .tools.pull-right
           %a#delete-client{ href: '', ng: { click: 'delete()' } }
-            = inline_svg 'trash.svg'
+            = inline_svg 'icons/trash.svg'
           %a#edit-client{ href: '', ng: { click: 'showEditModal()' } }
-            = inline_svg 'edit.svg'
+            = inline_svg 'icons/edit.svg'
         %h2.client-name
           {{ currentClient.name }}
           %br
@@ -79,7 +79,7 @@
         #people
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
             %a.add-contact{ href: '', dropdown: { toggle: true }}
-              = inline_svg 'add.svg'
+              = inline_svg 'icons/add.svg'
             %ul.dropdown-menu.new-contact-options
               %li
                 %a.new-person{ href: '', ng: { click: 'showNewPersonModal()' } }
@@ -109,13 +109,13 @@
                     .col-xs-12
                       {{ contact.address.email }} {{ contact.address.mobile | tel }}
                 .col-xs-2
-                  = inline_svg 'right-caret.svg', class: 'pull-right'
+                  = inline_svg 'icons/caret.svg', class: 'pull-right'
 
 
           #teamsplits
             %span.pull-right
               %a.new-member{ href: '', ng: { click: 'showNewMemberModal()' } }
-                = inline_svg 'add.svg'
+                = inline_svg 'icons/add.svg'
 
             %h2
               default team & split

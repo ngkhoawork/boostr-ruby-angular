@@ -1,0 +1,58 @@
+@import "base/style";
+@import "bootstrap-sprockets";
+@import "bootstrap";
+.center-element {
+  float: none;
+}
+
+.header {
+  font-size: 23px;
+  font-family: $font-family-light;
+  line-height: 37.88px;
+  margin-bottom: 32px;
+}
+
+.btn {
+  text-transform: uppercase;
+}
+
+.logo {
+  height: 45px;
+  width: 160px;
+  background-image: image-url("branding/boostr_logo.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 20px;
+}
+
+#invitation-register {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(24, 30, 34, .4);
+  padding-top: 71px;
+  padding-bottom: 71px;
+  border-radius: 10px;
+  input {
+    height: 51px;
+    margin-bottom: 21px;
+  }
+
+.btn-info {
+    text-align: left;
+    border-color: $dark-grayish-blue-3;
+    color: $light-grayish-blue-8;
+    font-size: 15px;
+    &:focus,
+    &:hover {
+      border-color: $grayish-blue-2;
+      outline: none;
+    }
+  }
+}
+
+body {
+  background-image: image-url("skyline.jpg");
+  color: $white;
+}

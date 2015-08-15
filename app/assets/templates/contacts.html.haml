@@ -6,7 +6,7 @@
           %ul.nav.nav-tabs
             %li.pull-right.last
               %a.upload{ href: '', ng: { click: 'showModal()' } }
-                = inline_svg 'add.svg'
+                = inline_svg 'icons/add.svg'
                 New Person
   .container
     .row
@@ -29,9 +29,9 @@
       #contact-detail.col-xs-7
         .tools.pull-right
           %a#delete-contact{ href: '', ng: { click: 'delete()' } }
-            = inline_svg 'trash.svg'
+            = inline_svg 'icons/trash.svg'
           %a#edit-contact{ href: '', ng: { click: 'showEditModal()' } }
-            = inline_svg 'edit.svg'
+            = inline_svg 'icons/edit.svg'
         %h2.contact-name
           {{ currentContact.name }}
           %br
