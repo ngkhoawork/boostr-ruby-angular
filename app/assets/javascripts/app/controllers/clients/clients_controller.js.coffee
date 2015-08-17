@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Client', 'Contact', 'ClientMember',
-($scope, $rootScope, $modal, $routeParams, $location, Client, Contact, ClientMember) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Client', 'ClientMember', 'Contact', 'Deal',
+($scope, $rootScope, $modal, $routeParams, $location, Client, ClientMember, Contact, Deal) ->
 
   $scope.init = ->
     Client.all().then (clients) ->
@@ -16,6 +16,10 @@
     unless client.contacts
       Contact.allForClient client.id, (contacts) ->
         client.contacts = contacts
+
+  $scope.getDeals = (client) ->
+    Deal.allForClient(client.id).then (deals) ->
+      $scope.currentClient.deals = deals
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -43,6 +47,18 @@
       resolve:
         contact: ->
           client_id: $scope.currentClient.id
+
+  $scope.showNewDealModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_form.html'
+      size: 'lg'
+      controller: 'DealsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        deal: ->
+          if $scope.currentClient.client_type is 'Advertiser' then advertiser_id: $scope.currentClient.id
+          else if $scope.currentClient.client_type is 'Agency' then agency_id: $scope.currentClient.id
 
   $scope.showNewMemberModal = ->
     $scope.modalInstance = $modal.open
@@ -75,6 +91,7 @@
   $scope.$on 'updated_current_client', ->
     $scope.currentClient = Client.get()
     $scope.getContacts($scope.currentClient)
+    $scope.getDeals($scope.currentClient)
     $scope.getClientMembers()
 
   $scope.$on 'updated_clients', ->
@@ -83,9 +100,11 @@
   $scope.$on 'updated_current_contact', ->
     $scope.currentClient.contacts.push(Contact.get())
 
+  $scope.$on 'updated_deals', ->
+    $scope.getDeals($scope.currentClient)
+
   $scope.$on 'updated_client_members', ->
     $scope.getClientMembers()
-
 
   $scope.init()
 ]

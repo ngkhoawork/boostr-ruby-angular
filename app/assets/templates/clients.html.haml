@@ -76,7 +76,7 @@
                 .col-xs-9.detail
                   {{ currentClient.client_type }}
 
-        #people
+        #people.section
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
             %a.add-contact{ href: '', dropdown: { toggle: true }}
               = inline_svg 'icons/add.svg'
@@ -100,7 +100,7 @@
           .wells-group
             .well{ ng: { repeat: 'contact in currentClient.contacts', click: 'go("/people/" + contact.id)' } }
               .row
-                .col-xs-10
+                .col-xs-11
                   .row
                     .col-xs-12
                       %strong
@@ -108,27 +108,53 @@
                   .row
                     .col-xs-12
                       {{ contact.address.email }} {{ contact.address.mobile | tel }}
-                .col-xs-2
+                .col-xs-1
                   = inline_svg 'icons/caret.svg', class: 'pull-right'
 
+        #deals.section
+          %span.pull-right
+            %a.new-deal{ href: '', ng: { click: 'showNewDealModal()' } }
+              = inline_svg 'icons/add.svg'
 
-          #teamsplits
-            %span.pull-right
-              %a.new-member{ href: '', ng: { click: 'showNewMemberModal()' } }
-                = inline_svg 'icons/add.svg'
+          %h2
+            deals
 
-            %h2
-              default team & split
+          .wells-group
+            .well{ ng: { repeat: 'deal in currentClient.deals', click: 'go("/deals/" + deal.id)' } }
+              .row
+                .col-xs-11
+                  .row
+                    .col-xs-12
+                      %strong
+                        {{ deal.name }}
+                  .row
+                    .col-xs-12
+                      .col-xs-4.vertical-line
+                        {{ deal.stage.name }}
+                      .col-xs-3.vertical-line
+                        {{ deal.budget / 100 | currency: '$': 0 }}
+                      .col-xs-5.vertical-line
+                        Starting {{ deal.start_date | date: 'shortDate' }}
+                .col-xs-1
+                  = inline_svg 'icons/caret.svg', class: 'pull-right'
 
-            .table-wrapper
-              %table.table.table-striped
-                %thead
-                  %tr
-                    %th Member
-                    %th Share
-                    %th Role
-                %tbody
-                  %tr{ ng: { repeat: 'client_member in client_members' } }
-                    %td {{ client_member.user.first_name }} {{ client_member.user.last_name }}
-                    %td {{ client_member.share }}%
-                    %td {{ client_member.role }}
+        #teamsplits.section
+          %span.pull-right
+            %a.new-member{ href: '', ng: { click: 'showNewMemberModal()' } }
+              = inline_svg 'icons/add.svg'
+
+          %h2
+            default team & split
+
+          .table-wrapper
+            %table.table.table-striped
+              %thead
+                %tr
+                  %th Member
+                  %th Share
+                  %th Role
+              %tbody
+                %tr{ ng: { repeat: 'client_member in client_members' } }
+                  %td {{ client_member.user.first_name }} {{ client_member.user.last_name }}
+                  %td {{ client_member.share }}%
+                  %td {{ client_member.role }}

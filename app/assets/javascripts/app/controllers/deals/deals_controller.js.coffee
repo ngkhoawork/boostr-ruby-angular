@@ -15,6 +15,9 @@
       controller: 'DealsNewController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        deal: ->
+          {}
 
   $scope.showStage = (stage) ->
     if stage == 'open'

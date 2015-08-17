@@ -2,7 +2,7 @@ class Api::DealsController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.deals.includes(:advertiser, :stage)
+    render json: current_user.company.deals.for_client(params[:client_id]).includes(:advertiser, :stage)
   end
 
   def create

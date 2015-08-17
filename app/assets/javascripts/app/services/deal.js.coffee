@@ -30,6 +30,12 @@
       deferred.resolve(deal)
     deferred.promise
 
+  @allForClient = (client_id) ->
+    deferred = $q.defer()
+    resource.query { client_id: client_id}, (deals) ->
+      deferred.resolve(deals)
+    deferred.promise
+
   @deal_types = () ->
     [
       'Test Campaign'

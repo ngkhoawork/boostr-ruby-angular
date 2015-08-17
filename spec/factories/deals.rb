@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :deal do
     start_date Date.new(2015, 7, 29)
     end_date Date.new(2015, 8, 29)
-    name 'MyString'
+    sequence(:name) { |n| "Deal #{n}" }
     stage
     next_steps 'Call Somebody'
     deal_type ['Test Campaign',
@@ -14,5 +14,6 @@ FactoryGirl.define do
                  'RFP Response to Client',
                  'RFP Response to Agency'].sample
     advertiser
+    agency
   end
 end

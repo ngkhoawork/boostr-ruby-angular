@@ -11,17 +11,17 @@ class Deal < ActiveRecord::Base
   validates :advertiser_id, :start_date, :end_date, :name, presence: true
 
   before_save do
-    if deal_products.empty?
-      self.budget = budget.to_i * 100
-    end
+    self.budget = budget.to_i * 100 if deal_products.empty?
   end
+
+  scope :for_client, -> client_id { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
 
   def as_json(options = {})
     super(options.merge(include: [:advertiser, :stage]))
   end
 
   def months
-    (start_date..end_date).map {|d| [d.year, d.month]}.uniq
+    (start_date..end_date).map { |d| [d.year, d.month] }.uniq
   end
 
   def days
@@ -41,17 +41,17 @@ class Deal < ActiveRecord::Base
     array = []
 
     case months.length
-      when 1
-        array << days
-      when 2
-        array << ((start_date.end_of_month + 1) - start_date).to_i
-        array << (end_date - (end_date.beginning_of_month - 1)).to_i
-      else
-        array << ((start_date.end_of_month + 1) - start_date).to_i
-        months[1..-2].each do |month|
-          array << Time.days_in_month(month[1], month[0])
-        end
-        array << (end_date - (end_date.beginning_of_month - 1)).to_i
+    when 1
+      array << days
+    when 2
+      array << ((start_date.end_of_month + 1) - start_date).to_i
+      array << (end_date - (end_date.beginning_of_month - 1)).to_i
+    else
+      array << ((start_date.end_of_month + 1) - start_date).to_i
+      months[1..-2].each do |month|
+        array << Time.days_in_month(month[1], month[0])
+      end
+      array << (end_date - (end_date.beginning_of_month - 1)).to_i
     end
     array
   end
