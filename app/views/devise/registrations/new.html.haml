@@ -1,21 +1,22 @@
-%h2 Sign up
-= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
-  = devise_error_messages!
-  .field
-    = f.label :email
-    %br/
-    = f.email_field :email, autofocus: true
-  .field
-    = f.label :password
-    - if @validatable
-      %em
-        (#{@minimum_password_length} characters minimum)
-    %br/
-    = f.password_field :password, autocomplete: "off"
-  .field
-    = f.label :password_confirmation
-    %br/
-    = f.password_field :password_confirmation, autocomplete: "off"
-  .actions
-    = f.submit "Sign up"
-= render "devise/shared/links"
+.row
+  #devise-form.col-xs-6.center-block.text-center.center-element
+    .col-xs-6.center-block.center-element
+      = inline_svg 'branding/boostr_logo.svg', class: 'logo'
+    .header Sign up
+    = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
+      = devise_error_messages!
+      .row
+        .col-xs-6.center-block.center-element
+          %p
+            = f.email_field :email, autofocus: true, class:'btn btn-lg btn-info btn-block', placeholder: 'email'
+          %p
+            - if @validatable
+              %p
+                %em
+                  (#{@minimum_password_length} characters minimum)
+            = f.password_field :password, class:'btn btn-lg btn-info btn-block', placeholder: 'password', autocomplete:'off'
+          %p
+            = f.password_field :password_confirmation, class:'btn btn-lg btn-info btn-block', placeholder: 'confirm new password', autocomplete:'off'
+          %p
+            = f.submit 'sign up', class:'btn btn-lg btn-primary btn-block'
+    = render "devise/shared/links"

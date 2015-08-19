@@ -17,12 +17,11 @@
 }
 
 .logo {
-  height: 45px;
-  width: 160px;
-  background-image: image-url("branding/boostr_logo.png");
-  background-repeat: no-repeat;
-  background-position: center;
+  height: 52px;
+  width: 178px;
   margin-bottom: 20px;
+  padding-top: 7px;
+  padding-left: 18px;
 }
 
 #devise-form {
@@ -50,9 +49,15 @@
       outline: none;
     }
   }
+
+  .field {
+    label {
+      vertical-align: 18px;
+    }
+  }
 }
 
-html {
+body {
   background-image: image-url("skyline.jpg");
   background-size: cover;
   color: $white;
