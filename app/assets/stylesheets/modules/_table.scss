@@ -24,6 +24,10 @@
           border-bottom: none;
           text-transform: uppercase;
 
+          &.action-column {
+            width: 115px;
+          }
+
           &:first-child {
             padding-left: 30px;
           }
@@ -43,10 +47,12 @@
             &.action-td {
               display: table-cell;
               cursor: pointer;
+              width: 115px;
             }
 
             &.info-td {
               display: none;
+              width: 115px;
             }
           }
         }
@@ -69,6 +75,8 @@
           &:first-child {
             padding-top: 14px;
             padding-left: 30px;
+            color: $brand-tertiary;
+            cursor: pointer;
           }
 
           .empty {

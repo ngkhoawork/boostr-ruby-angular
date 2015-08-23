@@ -18,6 +18,17 @@
         team: ->
           parent_id: $scope.currentTeam.id
 
+  $scope.editModal = (team) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/team_form.html'
+      size: 'lg'
+      controller: 'TeamsEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        team: ->
+          team
+
   $scope.$on 'updated_teams', ->
     $scope.init()
 

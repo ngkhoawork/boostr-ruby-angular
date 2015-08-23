@@ -18,10 +18,18 @@ class Api::TeamsController < ApplicationController
     render json: team
   end
 
+  def update
+    if team.update_attributes(team_params)
+      render json: team
+    else
+      render json: { errors: team.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def team_params
-    params.require(:team).permit(:name, :parent_id, :leader_id, member_ids: [])
+    params.require(:team).permit(:name, :parent_id, :leader_id, :member_ids, member_ids: [])
   end
 
   def team

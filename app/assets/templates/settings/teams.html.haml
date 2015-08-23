@@ -22,8 +22,16 @@
                 %th Team/Members
                 %th Team Lead
                 %th.text-center Members
+                %th.action-column
             %tbody
-              %tr{ ng: { repeat: 'team in teams', click: 'go("settings/teams/" + team.id)' } }
-                %td {{ team.name }}
+              %tr{ ng: { repeat: 'team in teams' } }
+                %td{ ng: { click: 'go("settings/teams/" + team.id)' } }
+                  {{ team.name }}
+                  = inline_svg 'icons/folder.svg', class: 'svg pull-left'
                 %td {{ team.leader_name }}
                 %td.text-center {{ team.members_count }}
+                %td.action-column.info-td
+                  .empty
+                %td.action-td
+                  %a.edit-team{ href: '', ng: { click: 'editModal(team)' } }
+                    = inline_svg 'icons/pencil.svg'
