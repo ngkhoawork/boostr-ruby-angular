@@ -11,7 +11,7 @@ feature 'Users' do
       expect(page).to have_css('#products')
     end
 
-    scenario 'pops up a modal and sends the user an email' do
+    scenario 'creating a product' do
       find('.add-product').click
 
       expect(page).to have_css('#product-modal')

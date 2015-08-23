@@ -1,0 +1,31 @@
+#team
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-left.path
+              %a.path-link{ href: '/settings/teams'} Teams
+              %div.path-link{ ng: { if: 'currentTeam.parent' } }
+                %a{ href: '/settings/teams/{{currentTeam.parent_id}}'} {{currentTeam.parent.name}}
+            %li.pull-right.last
+              %a.add-team{ href: '', ng: { click: 'showModal()' } }
+                = inline_svg 'icons/add.svg'
+                Add Team
+
+  .container
+    .row
+      .col-xs-12
+        %h3 {{ currentTeam.name }}
+
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th
+                %th Team/Members
+            %tbody
+              %tr{ ng: { repeat: 'row in currentTeam.children', click: 'go("settings/teams/" + row.id)' } }
+                %td
+                  .empty
+                %td {{ row.name }}

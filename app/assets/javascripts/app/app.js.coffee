@@ -43,6 +43,12 @@
     .when '/settings/products',
       templateUrl: 'settings/products.html'
       controller: 'SettingsProductsController'
+    .when '/settings/teams',
+      templateUrl: 'settings/teams.html'
+      controller: 'SettingsTeamsController'
+    .when '/settings/teams/:id',
+      templateUrl: 'settings/team.html'
+      controller: 'SettingsTeamController'
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])

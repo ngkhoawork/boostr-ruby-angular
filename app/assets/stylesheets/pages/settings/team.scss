@@ -1,0 +1,26 @@
+#team {
+  #nav {
+    .path {
+      a {
+        color: $text-color;
+      }
+
+      .path-link {
+        display: inline-block;
+
+        .transform {
+          transform: rotate(180deg);
+          height: 12px;
+          width: 12px;
+        }
+
+        a {
+          &:before {
+            content: '>';
+            padding-right: 5px;
+          }
+        }
+      }
+    }
+  }
+}
