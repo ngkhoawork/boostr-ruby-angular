@@ -4,7 +4,7 @@
 
   $scope.formType = 'New'
   $scope.submitText = 'Create'
-  $scope.deal = deal || {}
+  $scope.deal = deal
   Client.all().then (clients) ->
     $scope.clients = clients
   $scope.dealTypes = Deal.deal_types()

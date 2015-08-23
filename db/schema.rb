@@ -185,10 +185,13 @@ ActiveRecord::Schema.define(version: 20150828164706) do
     t.string   "name"
     t.integer  "company_id"
     t.integer  "parent_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "leader_id"
+    t.integer  "members_count", default: 0, null: false
   end
 
+  add_index "teams", ["leader_id"], name: "index_teams_on_leader_id", using: :btree
   add_index "teams", ["parent_id"], name: "index_teams_on_parent_id", using: :btree
 
   create_table "users", force: :cascade do |t|
@@ -221,6 +224,7 @@ ActiveRecord::Schema.define(version: 20150828164706) do
     t.string   "invited_by_type"
     t.integer  "invitations_count",      default: 0
     t.string   "title"
+    t.integer  "team_id"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
@@ -229,5 +233,7 @@ ActiveRecord::Schema.define(version: 20150828164706) do
   add_index "users", ["invitations_count"], name: "index_users_on_invitations_count", using: :btree
   add_index "users", ["invited_by_id"], name: "index_users_on_invited_by_id", using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["team_id"], name: "index_users_on_team_id", using: :btree
 
+  add_foreign_key "users", "teams"
 end

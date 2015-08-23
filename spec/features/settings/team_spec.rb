@@ -18,7 +18,7 @@ feature 'Teams' do
 
       within '#team-modal' do
         fill_in 'name', with: 'Test Team'
-
+        ui_select('leader', user.name)
         click_on 'Create'
       end
 

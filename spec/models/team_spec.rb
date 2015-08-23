@@ -9,7 +9,8 @@ RSpec.describe Team, type: :model do
 
       it 'returns all parentless teams' do
         expect(Team.all.length).to eq(2)
-        expect(Team.roots.length).to eq(1)
+        expect(Team.roots(true).length).to eq(1)
+        expect(Team.roots(false).length).to eq(2)
       end
     end
   end

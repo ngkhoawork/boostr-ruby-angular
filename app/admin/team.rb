@@ -6,6 +6,9 @@ ActiveAdmin.register Team do
     id_column
     column :name
     column :parent
+    column 'Members', sortable: :members_count do |team|
+      team.members_count
+    end
     actions
   end
 end

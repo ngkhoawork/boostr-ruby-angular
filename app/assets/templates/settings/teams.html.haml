@@ -19,10 +19,11 @@
           %table.table.table-hover.table-striped
             %thead
               %tr
-                %th
                 %th Team/Members
+                %th Team Lead
+                %th.text-center Members
             %tbody
-              %tr{ ng: { repeat: 'row in teams', click: 'go("settings/teams/" + row.id)' } }
-                %td
-                  .empty
-                %td {{ row.name }}
+              %tr{ ng: { repeat: 'team in teams', click: 'go("settings/teams/" + team.id)' } }
+                %td {{ team.name }}
+                %td {{ team.leader_name }}
+                %td.text-center {{ team.members_count }}
