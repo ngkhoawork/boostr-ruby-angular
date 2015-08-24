@@ -4,7 +4,7 @@ RSpec.describe Api::DealsController, type: :controller do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let(:advertiser) { create :client, company: company }
-  let(:deal_params) { attributes_for(:deal, advertiser_id: advertiser.id, budget: "31000") }
+  let(:deal_params) { attributes_for(:deal, advertiser_id: advertiser.id, budget: '31000') }
   let(:deal) { create :deal, company: company }
 
   before do
@@ -54,4 +54,13 @@ RSpec.describe Api::DealsController, type: :controller do
     end
   end
 
+  describe 'DELETE #destroy' do
+    let!(:deal) { create :deal, company: company, advertiser: advertiser }
+
+    it 'marks the deal as deleted' do
+      delete :destroy, id: deal.id, format: :json
+      expect(response).to be_success
+      expect(deal.reload.deleted_at).to_not be_nil
+    end
+  end
 end

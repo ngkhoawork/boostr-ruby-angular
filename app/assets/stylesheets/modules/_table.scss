@@ -1,11 +1,14 @@
 .table-wrapper {
   border-radius: 4px;
   overflow-x: auto;
+
   .table {
     margin-bottom: 0;
+
     thead {
       background-color: $brand-primary;
       color: $white;
+
       th {
         font-family: $table-headings-font-family;
         font-size: 11.5px;
@@ -16,9 +19,11 @@
       tr {
         max-height: 43px !important;
         height: 43px !important;
+
         th {
           border-bottom: none;
           text-transform: uppercase;
+
           &:first-child {
             padding-left: 30px;
           }
@@ -28,12 +33,28 @@
 
     tbody {
       color: $dark-grayish-blue-3;
+
       tr {
         max-height: 60px !important;
         height: 60px !important;
+
+        &:hover {
+          td {
+            &.action-td {
+              display: table-cell;
+              cursor: pointer;
+            }
+
+            &.info-td {
+              display: none;
+            }
+          }
+        }
+
         &.active {
           border-left: 1px solid $soft-orange;
           border-right: 1px solid $soft-orange;
+
           td {
             border-bottom: 1px solid $soft-orange;
             border-top: 1px solid $soft-orange;
@@ -43,6 +64,7 @@
 
         td {
           vertical-align: middle;
+
           &:first-child {
             padding-top: 14px;
             padding-left: 30px;
@@ -53,21 +75,15 @@
           }
 
           .empty {
-            border: $dark-grayish-blue-3;
-            border-width: 1px;
-            border-style: solid;
-            border-radius: 50%;
             width: 19px;
             height: 19px;
           }
 
+          &.action-td {
+            display: none;
+          }
+
           svg {
-            border: $brand-primary;
-            border-width: 1px;
-            border-style: solid;
-            border-radius: 50%;
-            background-color: $brand-primary;
-            fill: $white;
             width: 19px;
             height: 19px;
           }
@@ -78,9 +94,11 @@
 
   .white-table {
     border-radius: 0;
+
     thead {
       background-color: $white;
       color: $brand-primary;
+
       th {
         padding-top: 31px;
         font-family: $table-headings-font-family;
@@ -92,9 +110,11 @@
       tr {
         max-height: 43px !important;
         height: 43px !important;
+
         th {
           border-bottom: none;
           text-transform: capitalize;
+
           &:first-child {
             font-family: $table-headings-font-family;
             padding-left: 30px;
@@ -106,9 +126,11 @@
 
     tbody {
       color: $dark-grayish-blue-3;
+
       tr {
         max-height: 61px !important;
         height: 61px !important;
+
         &:last-child {
           td {
             border-bottom: none;
@@ -118,6 +140,7 @@
         &.active {
           border-left: 1px solid $soft-orange;
           border-right: 1px solid $soft-orange;
+
           td {
             border-bottom: 1px solid $soft-orange;
             border-top: 1px solid $soft-orange;
@@ -131,6 +154,7 @@
           border-bottom: 1px solid $light-grayish-blue-2;
           font-size: 16px;
           color: $very-dark-greyish-blue;
+
           &:first-child {
             padding-top: 15px;
             padding-left: 30px;

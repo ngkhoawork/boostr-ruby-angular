@@ -19,6 +19,11 @@ class Api::DealsController < ApplicationController
     deal
   end
 
+  def destroy
+    deal.destroy
+    render nothing: true
+  end
+
   private
 
   def deal_params

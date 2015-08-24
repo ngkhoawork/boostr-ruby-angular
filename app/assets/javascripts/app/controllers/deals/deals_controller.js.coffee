@@ -35,6 +35,11 @@
   $scope.$on 'updated_deals', ->
     $scope.init()
 
+  $scope.delete = (deal) ->
+    if confirm('Are you sure you want to delete "' +  deal.name + '"?')
+      Deal.delete deal, ->
+        $location.path('/deals')
+
   $scope.go = (path) ->
     $location.path(path)
 

@@ -36,6 +36,15 @@
       deferred.resolve(deals)
     deferred.promise
 
+  @delete = (deletedDeal) ->
+    deferred = $q.defer()
+    resource.delete id: deletedDeal.id, () ->
+      allDeals = _.reject allDeals, (deal) ->
+        deal.id == deletedDeal.id
+      deferred.resolve()
+      $rootScope.$broadcast 'updated_deals'
+    deferred.promise
+
   @deal_types = () ->
     [
       'Test Campaign'
