@@ -5,8 +5,9 @@ feature 'Clients' do
   let(:user) { create :user, company: company }
 
   describe 'showing client details' do
-    let!(:client) { create :client, company: company }
-    let!(:contacts) { create_list :contact, 3, client: client, company: company }
+    let!(:client) { create :advertiser, company: company }
+    let!(:contacts) { create_list :contact, 2, client: client, company: company }
+    let!(:deal) { create_list :deal, 2, company: company, advertiser: client }
 
     before do
       login_as user, scope: :user
@@ -14,12 +15,20 @@ feature 'Clients' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'shows client details and people' do
+    scenario 'shows client details, people, deals, team and splits' do
       within '#client-detail' do
         expect(find('h2.client-name')).to have_text(client.name)
 
         within '#people' do
-          expect(page).to have_css('.well', count: 3)
+          expect(page).to have_css('.well', count: 2)
+        end
+
+        within '#deals' do
+          expect(page).to have_css('.well', count: 2)
+        end
+
+        within '#teamsplits' do
+          expect(page).to have_css('.table-wrapper')
         end
       end
     end
@@ -84,8 +93,8 @@ feature 'Clients' do
     end
   end
 
-  describe 'Editing a client' do
-    let!(:clients) { create_list :client, 3, company: company }
+  describe 'editing a client' do
+    let!(:clients) { create_list :advertiser, 3, company: company }
 
     before do
       login_as user, scope: :user
@@ -121,8 +130,8 @@ feature 'Clients' do
     end
   end
 
-  describe 'Deleting a client' do
-    let!(:clients) { create_list :client, 3, company: company }
+  describe 'deleting a client' do
+    let!(:clients) { create_list :advertiser, 3, company: company }
 
     before do
       clients.sort_by!(&:name)
@@ -157,8 +166,8 @@ feature 'Clients' do
     end
   end
 
-  describe 'Adding a contact to a client' do
-    let!(:client) { create :client, company: company }
+  describe 'adding a contact to a client' do
+    let!(:client) { create :advertiser, company: company }
     let!(:contact) { create :contact, company: company, address_attributes: attributes_for(:address) }
 
     before do
@@ -169,10 +178,8 @@ feature 'Clients' do
 
     scenario 'with a new contact' do
       find('.add-contact').click
-
       expect(page).to have_css('.new-contact-options', visible: true)
       find('.new-person').click
-
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -213,6 +220,49 @@ feature 'Clients' do
 
         within '.well:first-child' do
           expect(page).to have_text(contact.name)
+        end
+      end
+    end
+  end
+
+  describe 'adding a deal to a client' do
+    let!(:client) { create :advertiser, company: company }
+    let!(:agency) { create :agency, company: company }
+    let!(:open_stage) { create :stage, company: company, position: 1 }
+
+    before do
+      login_as user, scope: :user
+      visit '/clients'
+      expect(page).to have_css('#clients')
+    end
+
+    scenario 'with a new deal' do
+      find('.new-deal').click
+
+      expect(page).to have_css('#deal_modal')
+
+      within '#deal_modal' do
+        fill_in 'name', with: 'Apple Watch Launch'
+        ui_select('stage', open_stage.name)
+        fill_in 'budget', with: '1234'
+        ui_select('advertiser', client.name)
+        ui_select('agency', agency.name)
+        ui_select('deal-type', 'Sponsorship')
+        ui_select('source-type', 'RFP Response to Agency')
+        fill_in 'next-steps', with: 'Meet with Rep'
+        fill_in 'start-date', with: '1/1/15'
+        fill_in 'end-date', with: '12/31/15'
+
+        click_on 'Create'
+      end
+
+      expect(page).to have_no_css('#deal_modal')
+
+      within '#deals' do
+        expect(page).to have_css('.well', count: 1)
+
+        within '.well:first-child' do
+          expect(page).to have_text('Apple Watch Launch')
         end
       end
     end

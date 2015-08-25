@@ -1,10 +1,12 @@
 @app.controller 'DealsNewController',
-['$scope', '$modalInstance', '$q', 'Deal', 'Client', 'Stage',
-($scope, $modalInstance, $q, Deal, Client, Stage) ->
+['$scope', '$modalInstance', '$q', 'Deal', 'Client', 'Stage', 'deal',
+($scope, $modalInstance, $q, Deal, Client, Stage, deal) ->
 
   $scope.formType = 'New'
   $scope.submitText = 'Create'
-  $scope.deal = {}
+  $scope.deal = deal || {}
+  Client.all().then (clients) ->
+    $scope.clients = clients
   $scope.dealTypes = Deal.deal_types()
   $scope.sourceTypes = Deal.source_types()
 

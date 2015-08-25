@@ -90,6 +90,9 @@ feature 'Deals' do
         fill_in 'budget', with: '1234'
         ui_select('advertiser', advertiser.name)
         ui_select('agency', agency.name)
+        ui_select('deal-type', 'Test Campaign')
+        ui_select('source-type', 'Pitch to Client')
+        fill_in 'next-steps', with: 'Call Rep'
         fill_in 'start-date', with: '1/1/15'
         fill_in 'end-date', with: '12/31/15'
 

@@ -6,6 +6,55 @@
 #client-detail {
   padding-left: 34px;
   padding-top: 15px;
+  .section {
+    margin-top: 60px;
+  }
+
+  #people {
+    .wells-group {
+      margin-top: 18px;
+      .well {
+        border-radius: 5px;
+        margin-bottom: 15px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  #deals {
+    .wells-group {
+      margin-top: 18px;
+      .well {
+        border-radius: 5px;
+        margin-bottom: 15px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .vertical-line {
+        border-right: 1px solid $text-color;
+        padding-left: 30px;
+        padding-right: 30px;
+        &:first-child {
+          padding-left: 0;
+          padding-right: 15px;
+        }
+
+        &:last-child {
+          border: none;
+        }
+      }
+    }
+  }
+
+  #teamsplits {
+    .wells-group {
+      margin-top: 18px;
+    }
+  }
 }
 
 #details {
@@ -14,6 +63,6 @@
 
 .location {
   font-size: 15px;
-  color:$text-color;
+  color: $text-color;
   font-family: $font-family-sans-serif;
 }

@@ -1,6 +1,22 @@
 require 'rails_helper'
 
 RSpec.describe Deal, type: :model do
+  context 'scopes' do
+    context 'for_client' do
+      let!(:company) { create :company }
+      let!(:deal) { create :deal, company: company }
+      let(:agency) { create :agency, company: company }
+      let!(:another_deal) { create :deal, company: company, agency: agency }
+
+      it 'returns all when client_id is nil' do
+        expect(Deal.for_client(nil).count).to eq(2)
+      end
+
+      it 'returns only the contacts that belong to the client_id' do
+        expect(Deal.for_client(agency.id).count).to eq(1)
+      end
+    end
+  end
 
   describe '#days' do
     let(:deal) { create :deal, start_date: Date.new(2015, 1, 1), end_date: Date.new(2015, 1, 31) }
@@ -11,7 +27,7 @@ RSpec.describe Deal, type: :model do
   end
 
   describe '#months' do
-    let(:deal) { create :deal,  start_date: Date.new(2015, 9, 25), end_date: Date.new(2015, 12, 28)}
+    let(:deal) { create :deal,  start_date: Date.new(2015, 9, 25), end_date: Date.new(2015, 12, 28) }
 
     it 'returns an array of parseable month and year data' do
       expected = [[2015, 9], [2015, 10], [2015, 11], [2015, 12]]
@@ -24,23 +40,23 @@ RSpec.describe Deal, type: :model do
 
     it 'creates the correct number of DealProduct objects based on the deal timeline' do
       deal = create :deal, start_date: Date.new(2015, 9, 25), end_date: Date.new(2015, 12, 28)
-      expected_budgets = [600000, 3100000, 3000000, 2800000]
-      expect{
-        deal.add_product(product, "95000")
+      expected_budgets = [600_000, 3_100_000, 3_000_000, 2_800_000]
+      expect do
+        deal.add_product(product, '95000')
         expect(DealProduct.all.map(&:budget)).to eq(expected_budgets)
         expect(deal.budget).to eq(9_500_000)
-      }.to change(DealProduct, :count).by(4)
+      end.to change(DealProduct, :count).by(4)
     end
 
     it 'creates the correct number of DealProduct objects based on the deal timeline' do
       deal = create :deal, start_date: Date.new(2015, 8, 15), end_date: Date.new(2015, 9, 30)
 
-      expected_budgets = [3617021, 6382979]
-      expect{
-        deal.add_product(product, "100000")
+      expected_budgets = [3_617_021, 6_382_979]
+      expect do
+        deal.add_product(product, '100000')
         expect(DealProduct.all.map(&:budget)).to eq(expected_budgets)
         expect(deal.budget).to eq(10_000_000)
-      }.to change(DealProduct, :count).by(2)
+      end.to change(DealProduct, :count).by(2)
     end
   end
 
