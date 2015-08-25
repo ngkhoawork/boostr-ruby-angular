@@ -1,0 +1,28 @@
+#teams
+  #nav
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right.last
+              %a.add-team{ href: '', ng: { click: 'showModal()' } }
+                = inline_svg 'icons/add.svg'
+                Add Team
+
+  .container
+    .row
+      .col-xs-12
+        %h3
+          Teams
+
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th
+                %th Team/Members
+            %tbody
+              %tr{ ng: { repeat: 'row in teams', click: 'go("settings/teams/" + row.id)' } }
+                %td
+                  .empty
+                %td {{ row.name }}

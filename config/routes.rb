@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     resources :stages, only: [:index]
     resources :products, only: [:index, :create, :update]
     resources :deal_products, only: [:create, :update]
+    resources :teams, only: [:index, :create, :show]
   end
 
   get '*path' => 'pages#index'
