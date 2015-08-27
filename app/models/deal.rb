@@ -13,7 +13,13 @@ class Deal < ActiveRecord::Base
   validates :advertiser_id, :start_date, :end_date, :name, presence: true
 
   before_save do
-    self.budget = budget.to_i * 100 if deal_products.empty?
+    if deal_products.empty?
+      self.budget = budget.to_i * 100 if budget_changed?
+    end
+  end
+
+  after_update do
+    reset_products if (start_date_changed? || end_date_changed?)
   end
 
   scope :for_client, -> client_id { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
@@ -30,13 +36,13 @@ class Deal < ActiveRecord::Base
     (end_date - start_date + 1).to_i
   end
 
-  def add_product(product, total_budget)
+  def add_product(product_id, total_budget, update_budget=true)
     daily_budget = total_budget.to_f / days
     months.each_with_index do |month, index|
       monthly_budget = daily_budget * days_per_month[index]
-      deal_products.create(product_id: product.id, period: Date.new(*month), budget: monthly_budget.round(2) * 100)
+      deal_products.create(product_id: product_id, period: Date.new(*month), budget: monthly_budget.round(2) * 100)
     end
-    update_total_budget
+    update_total_budget if update_budget
   end
 
   def days_per_month
@@ -61,4 +67,22 @@ class Deal < ActiveRecord::Base
   def update_total_budget
     update_attributes(budget: deal_products.sum(:budget))
   end
+
+  def reset_products
+    array = []
+
+    products.each do |product|
+      old_deal_products = deal_products.where(product_id: product.id)
+
+      total_budget = old_deal_products.sum(:budget) / 100
+      old_deal_products.destroy_all
+      array << {id: product.id, total_budget: total_budget}
+    end
+
+    array.each do |object|
+      add_product(object[:id], object[:total_budget], false)
+    end
+  end
+
+
 end

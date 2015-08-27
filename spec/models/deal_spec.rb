@@ -42,7 +42,7 @@ RSpec.describe Deal, type: :model do
       deal = create :deal, start_date: Date.new(2015, 9, 25), end_date: Date.new(2015, 12, 28)
       expected_budgets = [600_000, 3_100_000, 3_000_000, 2_800_000]
       expect do
-        deal.add_product(product, '95000')
+        deal.add_product(product.id, '95000')
         expect(DealProduct.all.map(&:budget)).to eq(expected_budgets)
         expect(deal.budget).to eq(9_500_000)
       end.to change(DealProduct, :count).by(4)
@@ -53,7 +53,7 @@ RSpec.describe Deal, type: :model do
 
       expected_budgets = [3_617_021, 6_382_979]
       expect do
-        deal.add_product(product, '100000')
+        deal.add_product(product.id, '100000')
         expect(DealProduct.all.map(&:budget)).to eq(expected_budgets)
         expect(deal.budget).to eq(10_000_000)
       end.to change(DealProduct, :count).by(2)
@@ -79,6 +79,18 @@ RSpec.describe Deal, type: :model do
     it 'creates an array with the months mapped out in their days with a short period' do
       deal = build :deal, start_date: Date.new(2015, 9, 25), end_date: Date.new(2015, 10, 15)
       expect(deal.days_per_month).to eq([6, 15])
+    end
+  end
+
+  describe '#reset_products' do
+    let(:deal) { create :deal }
+    let(:product) { create :product }
+
+    it 'deletes and recreates deal_products based on the start or end date changing' do
+      deal.add_product(product.id, 10000)
+      expect {
+        deal.update_attributes(end_date: Date.new(2015, 9, 29))
+      }.to change(DealProduct, :count).by(1)
     end
   end
 end

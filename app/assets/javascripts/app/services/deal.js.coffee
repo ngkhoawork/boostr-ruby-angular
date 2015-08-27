@@ -2,7 +2,11 @@
 ['$resource', '$q', '$rootScope',
 ($resource, $q, $rootScope) ->
 
-  resource = $resource '/api/deals/:id', { id: '@id' }
+  resource = $resource '/api/deals/:id', { id: '@id' },
+    update: {
+      method: 'PUT'
+      url: '/api/deals/:id'
+    }
   currentDeal = undefined
   allDeals = []
 
@@ -22,6 +26,12 @@
       allDeals.push(deal)
       deferred.resolve(deal)
       $rootScope.$broadcast 'updated_deals'
+    deferred.promise
+
+  @update = (params) ->
+    deferred = $q.defer()
+    resource.update params, (deal) ->
+      deferred.resolve(deal)
     deferred.promise
 
   @get = (deal_id) ->

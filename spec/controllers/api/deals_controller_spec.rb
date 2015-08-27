@@ -54,6 +54,13 @@ RSpec.describe Api::DealsController, type: :controller do
     end
   end
 
+  describe 'PUT #update' do
+    it 'updates the deal and returns success' do
+      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, format: :json
+      expect(response).to be_success
+    end
+  end
+
   describe 'DELETE #destroy' do
     let!(:deal) { create :deal, company: company, advertiser: advertiser }
 
