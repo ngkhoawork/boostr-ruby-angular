@@ -44,14 +44,19 @@
       Campaign
     .well
       .row
-        .col-xs-3.campaign-period
+        .col-xs-4.campaign-period
           .row
             .col-xs-12
               Campaign Period
           .row
             .col-xs-12
-              %h4
-                {{ currentDeal.start_date | date: 'MMM d, y' }} - {{ currentDeal.end_date | date: 'MMM d, y' }}
+              %h4.bs-datepicker
+                %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.start_date', click: 'startOpened = true', class: '{ editing: startOpened }', change: 'updateDeal()' }, 'is-open': 'startOpened' }
+                  {{ currentDeal.start_date | date: 'MMM d, y': '+0000' }}
+                \-
+                %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateDeal()' }, 'is-open': 'endOpened' }
+                  {{ currentDeal.end_date | date: 'MMM d, y': '+0000' }}
+
         .col-xs-2.campaign-period.text-center
           .row
             .col-xs-12

@@ -5,6 +5,10 @@ class Api::DealsController < ApplicationController
     render json: current_user.company.deals.for_client(params[:client_id]).includes(:advertiser, :stage)
   end
 
+  def show
+    deal
+  end
+
   def create
     deal = current_user.company.deals.new(deal_params)
     deal.created_by = current_user.id
@@ -15,8 +19,12 @@ class Api::DealsController < ApplicationController
     end
   end
 
-  def show
-    deal
+  def update
+    if deal.update_attributes(deal_params)
+      render deal
+    else
+      render json: { errors: deal.errors.messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy

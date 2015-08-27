@@ -11,7 +11,7 @@ feature 'Individual Deal' do
   describe 'showing deal details' do
     before do
       login_as user, scope: :user
-      deal.add_product(product, '120000')
+      deal.add_product(product.id, '120000')
       visit "/deals/#{deal.id}"
       expect(page).to have_css('#deal')
     end

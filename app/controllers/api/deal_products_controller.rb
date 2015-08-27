@@ -2,7 +2,7 @@ class Api::DealProductsController < ApplicationController
   respond_to :json
 
   def create
-    deal.add_product(product, params[:total_budget])
+    deal.add_product(product.id, params[:total_budget])
     render deal
   end
 
