@@ -79,7 +79,7 @@ feature 'Deals' do
       expect(page).to have_css('#deals')
     end
 
-    scenario 'pops up a new contact modal and creates a new contact' do
+    scenario 'pops up a new deal modal and creates a new deal' do
       click_link('New Deal')
 
       expect(page).to have_css('#deal_modal')
@@ -105,6 +105,43 @@ feature 'Deals' do
         expect(page).to have_css('tr', count: 1)
         expect(find('tr:first-child')).to have_text('Apple Watch Launch')
       end
+    end
+  end
+
+  describe 'Deleting a deal' do
+    let!(:deals) { create_list :deal, 3, stage: open_stage, company: company, advertiser: advertiser, creator: user }
+
+    before do
+      deals.sort_by!(&:name)
+      login_as user, scope: :user
+      visit '/deals'
+      expect(page).to have_css('#deals')
+    end
+
+    scenario 'removes the deal from the page and navigates to the deals index' do
+      within '.table-wrapper tbody' do
+        expect(page).to have_css('tr', count: 3)
+        find('tr:first-child').hover
+        within 'tr:first-child' do
+          find('.action-td').click
+        end
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.table-wrapper tbody tr', count: 2)
+
+      within '.table-wrapper tbody' do
+        expect(page).to have_css('tr', count: 2)
+        find('tr:first-child').hover
+        within 'tr:first-child' do
+          find('.action-td').click
+        end
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.table-wrapper tbody tr', count: 1)
     end
   end
 end

@@ -37,18 +37,23 @@
           %table.table.table-hover.table-striped
             %thead
               %tr
-                %th
                 %th Opportunity
                 %th Advertiser
                 %th Stage
                 %th Spend
                 %th Start Date
+                %th
+                %th
             %tbody
-              %tr{ ng: { repeat: 'row in filteredDeals', click: 'go("/deals/" + row.id)' } }
-                %td
-                  .empty
+              %tr{ ng: { repeat: 'row in filteredDeals'} }
                 %td {{ row.name }}
                 %td {{ row.advertiser.name }}
                 %td {{ row.stage.name }}
                 %td {{ row.budget / 100 | currency:'$':0 }}
                 %td {{ row.start_date | date: 'shortDate' }}
+                %td{ ng: { click: 'go("/deals/" + row.id)'  } }
+                  = inline_svg 'icons/caret.svg'
+                %td.info-td
+                  .empty
+                %td.action-td{ ng: { click: 'delete(row)' } }
+                  = inline_svg 'icons/trash.svg'

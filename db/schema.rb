@@ -123,7 +123,10 @@ ActiveRecord::Schema.define(version: 20150824202232) do
     t.string   "source_type"
     t.string   "next_steps"
     t.integer  "created_by"
+    t.datetime "deleted_at"
   end
+
+  add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.string   "name"
