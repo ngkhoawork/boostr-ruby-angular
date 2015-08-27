@@ -1,4 +1,4 @@
-json.extract! deal, :id, :name, :budget, :created_at, :updated_at, :deal_type, :source_type, :next_steps
+json.extract! deal, :id, :name, :budget, :created_at, :updated_at, :deal_type, :source_type, :next_steps, :stage_id
 json.start_date deal.start_date.to_datetime
 json.end_date deal.end_date.to_datetime
 json.stage deal.stage, :name, :probability, :color
