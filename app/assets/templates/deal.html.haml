@@ -6,22 +6,10 @@
           = inline_svg 'icons/caret.svg', class: 'transform'
           Back to Deals
 
-  .container
     #deal_overview.row.campaign
       .col-xs-9
         %h3.deal-name {{ currentDeal.name }}
-      #stage_overview.col-xs-3.pull-right
-        .panel.current-stage
-          .panel-heading
-            .panel-title current stage
-          .panel-body
-            .col-xs-2
-              .stage{ style: "border-color: {{ currentDeal.stage.color }}; background-color: {{ currentDeal.stage.color }};" }
-            .col-xs-7.details
-              .row.type {{ currentDeal.stage.name }}
-              .row.probability {{ currentDeal.stage.probability }}% probability
-            .col-xs-3
-  .container
+
     #nav.transparent
       .row
         .col-xs-12
@@ -73,6 +61,17 @@
             .col-xs-12
               %h4
                 $125,000
+        .col-xs-2.campaign-period.text-center
+          .row
+            .col-xs-12
+              Current Stage
+          .row
+            .col-xs-12
+              %h5
+                .stage{ editable: { select: 'currentDeal.stage_id' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDeal()' }
+                  {{ currentDeal.stage.name }}
+                  .small
+                    {{ currentDeal.stage.probability }}% probability
     #revenue_schedule.table-wrapper
       %table.table.white-table
         %thead

@@ -20,11 +20,6 @@ feature 'Individual Deal' do
       first_deal_product = deal.deal_products.where(product_id: product.id).first
       within '#deal_overview' do
         expect(find('h3.deal-name')).to have_text(deal.name)
-
-        within '#stage_overview' do
-          expect(page).to have_css('.details')
-          expect(find('.details .type')).to have_text(stage.name)
-        end
       end
 
       within '#add_info' do
@@ -32,6 +27,8 @@ feature 'Individual Deal' do
       end
 
       expect(find('#total-amount')).to have_text('$120,000')
+
+      expect(find('.stage')).to have_text("PROSPECT 10% PROBABILITY")
 
       within '#revenue_schedule' do
         within 'thead' do

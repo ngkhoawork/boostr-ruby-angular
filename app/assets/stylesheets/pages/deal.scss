@@ -1,7 +1,8 @@
 #deal {
   .return {
-    padding-top: 34px;
-    padding-bottom: 40px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+
     a {
       font-size: 12px;
       color: $brand-tertiary;
@@ -40,14 +41,6 @@
       border-top: 0;
       border-color: $light-grayish-blue-2;
       border-style: solid;
-      .stage {
-        border: 1px solid $very-light-gray;
-        border-radius: 50%;
-        width: 10px;
-        height: 10px;
-        margin-top: 20px;
-        margin-left: -14px;
-      }
 
       .details {
         border-right: 1px solid $light-grayish-blue-2;
@@ -69,8 +62,8 @@
   }
 
   .campaign {
-    padding-bottom: 29px;
     line-height: 22.78px;
+
     h3 {
       font-size: 25px;
       font-family: $font-family-bold;
@@ -140,12 +133,14 @@
   }
 
   .well {
+    padding-bottom: 5px;
     border-bottom: 1px solid $light-grayish-blue-2;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     margin-top: 0;
 
     &.dark {
+      padding-bottom: 19px;
       background-color: $brand-tertiary;
       border-radius: 0;
 
@@ -176,6 +171,10 @@
       .btn-block {
         margin-top: 15px;
       }
+    }
+
+    h5 {
+      margin-top: 5px;
     }
   }
 
@@ -219,6 +218,12 @@
         font-size: 15px;
         font-family: $font-family-medium;
       }
+    }
+  }
+
+  .editable {
+    &.stage {
+      margin-top: -5px;
     }
   }
 }

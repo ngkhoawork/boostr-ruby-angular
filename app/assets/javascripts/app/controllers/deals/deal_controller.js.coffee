@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', 'Deal', 'Product', 'DealProduct',
-($scope, $routeParams, $modal, $filter, Deal, Product, DealProduct) ->
+['$scope', '$routeParams', '$modal', '$filter', 'Deal', 'Product', 'DealProduct', 'Stage',
+($scope, $routeParams, $modal, $filter, Deal, Product, DealProduct, Stage) ->
 
   $scope.init = ->
     $scope.currentDeal = {}
@@ -8,6 +8,9 @@
 
     Deal.get($routeParams.id).then (deal) ->
       $scope.currentDeal = deal
+
+    Stage.all().then (stages) ->
+      $scope.stages = stages
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()
