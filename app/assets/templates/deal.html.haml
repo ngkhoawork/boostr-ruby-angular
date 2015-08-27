@@ -59,8 +59,8 @@
               Forecast Amount
           .row
             .col-xs-12
-              %h4
-                $125,000
+              %h4#forecast
+                {{ currentDeal.budget / 100 * currentDeal.stage.probability / 100 | currency: '$' :0 }}
         .col-xs-2.campaign-period.text-center
           .row
             .col-xs-12

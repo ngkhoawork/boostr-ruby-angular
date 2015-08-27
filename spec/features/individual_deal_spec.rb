@@ -27,7 +27,7 @@ feature 'Individual Deal' do
       end
 
       expect(find('#total-amount')).to have_text('$120,000')
-
+      expect(find('#forecast')).to have_text('$12,000')
       expect(find('.stage')).to have_text("PROSPECT 10% PROBABILITY")
 
       within '#revenue_schedule' do
