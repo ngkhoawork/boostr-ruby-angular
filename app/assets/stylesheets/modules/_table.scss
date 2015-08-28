@@ -90,6 +90,39 @@
         }
       }
     }
+
+    &.black-table {
+      thead {
+        background-color: $white;
+        color: $gray-base;
+
+        th {
+          text-transform: capitalize;
+          font-size: 15px;
+          font-family: $font-family-medium;
+        }
+
+        tr {
+          max-height: 55px !important;
+          height: 55px !important;
+          border-bottom: 1px solid $very-light-gray;
+        }
+      }
+
+      tbody {
+        tr {
+          color: $gray-base;
+          font-family: $font-family-medium;
+          font-size: 13px;
+          max-height: 43px !important;
+          height: 43px !important;
+
+          td {
+            border: none;
+          }
+        }
+      }
+    }
   }
 
   .white-table {
@@ -118,7 +151,7 @@
           &:first-child {
             font-family: $table-headings-font-family;
             padding-left: 30px;
-            text-transform: uppercase;
+            color: $text-color;
           }
         }
       }

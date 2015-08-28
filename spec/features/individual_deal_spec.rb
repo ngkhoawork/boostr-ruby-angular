@@ -2,11 +2,13 @@ require 'rails_helper'
 
 feature 'Individual Deal' do
   let(:company) { create :company }
+  let(:client) { create :client }
+  let!(:client_members) { create_list :client_member, 2, client: client  }
   let(:user) { create :user, company: company }
   let(:stage) { create :stage, company: company, position: 1 }
   let(:product) { create :product }
   let!(:other_product) { create :product, company: company  }
-  let(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29) }
+  let(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client }
 
   describe 'showing deal details' do
     before do
@@ -93,6 +95,10 @@ feature 'Individual Deal' do
       end
 
       expect(find('#total-amount')).to have_text('$359,932')
+
+      within '.black-table tbody' do
+        expect(page).to have_css('tr', count: 2)
+      end
     end
   end
 end

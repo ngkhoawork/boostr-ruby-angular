@@ -9,6 +9,8 @@ class User < ActiveRecord::Base
   has_many :client_members
   has_many :clients, through: :client_members
   has_many :revenues
+  has_many :deal_members
+  has_many :deals, through: :deal_members
 
   ROLES = %w(user superadmin)
 
@@ -33,6 +35,10 @@ class User < ActiveRecord::Base
     name << first_name.chr + '.' if first_name
     name << last_name if last_name
     name.join(' ')
+  end
+
+  def full_name
+    "#{first_name} #{last_name}"
   end
 
   def as_json(options = {})

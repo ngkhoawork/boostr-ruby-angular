@@ -7,4 +7,8 @@ class ClientMember < ActiveRecord::Base
   def as_json(options = {})
     super(options.merge(include: [:client, :user]))
   end
+
+  def defaults
+    { user_id: user_id, share: share, role: role }
+  end
 end

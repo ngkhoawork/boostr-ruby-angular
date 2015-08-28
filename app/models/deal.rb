@@ -9,6 +9,8 @@ class Deal < ActiveRecord::Base
 
   has_many :deal_products
   has_many :products, -> { distinct }, through: :deal_products
+  has_many :deal_members
+  has_many :users, through: :deal_members
 
   validates :advertiser_id, :start_date, :end_date, :name, presence: true
 
@@ -21,6 +23,8 @@ class Deal < ActiveRecord::Base
   after_update do
     reset_products if (start_date_changed? || end_date_changed?)
   end
+
+  after_create :generate_deal_members
 
   scope :for_client, -> client_id { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
 
@@ -84,5 +88,9 @@ class Deal < ActiveRecord::Base
     end
   end
 
-
+  def generate_deal_members
+    advertiser.client_members.each do |client_member|
+      deal_members.create(client_member.defaults)
+    end
+  end
 end
