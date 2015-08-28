@@ -32,4 +32,12 @@ RSpec.describe User, type: :model do
       expect(user.name).to eq('B. Jones')
     end
   end
+
+  context 'full_name' do
+    let(:user) { create :user, first_name: 'Bobby', last_name: 'Jones' }
+
+    it 'returns the first initial and last name if they are both present' do
+      expect(user.full_name).to eq('Bobby Jones')
+    end
+  end
 end
