@@ -31,6 +31,9 @@
   @update = (params) ->
     deferred = $q.defer()
     resource.update params, (deal) ->
+      _.each allDeals, (existingDeal, i) ->
+        if(existingDeal.id == deal.id)
+          allDeals[i] = deal
       deferred.resolve(deal)
     deferred.promise
 
