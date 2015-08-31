@@ -257,14 +257,7 @@ feature 'Clients' do
       end
 
       expect(page).to have_no_css('#deal_modal')
-
-      within '#deals' do
-        expect(page).to have_css('.well', count: 1)
-
-        within '.well:first-child' do
-          expect(page).to have_text('Apple Watch Launch')
-        end
-      end
+      expect(page).to have_css('#deal')
     end
   end
 end

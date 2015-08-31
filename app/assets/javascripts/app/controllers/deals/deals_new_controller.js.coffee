@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modalInstance', '$q', 'Deal', 'Client', 'Stage', 'deal',
-($scope, $modalInstance, $q, Deal, Client, Stage, deal) ->
+['$scope', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'deal',
+($scope, $modalInstance, $q, $location, Deal, Client, Stage, deal) ->
 
   $scope.formType = 'New'
   $scope.submitText = 'Create'
@@ -18,6 +18,7 @@
   $scope.submitForm = () ->
     Deal.create(deal: $scope.deal).then (deal) ->
       $modalInstance.close()
+      $location.path('/deals/' + deal.id)
 
   $scope.cancel = ->
     $modalInstance.close()

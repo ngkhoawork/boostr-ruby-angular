@@ -100,11 +100,7 @@ feature 'Deals' do
       end
 
       expect(page).to have_no_css('#deal_modal')
-
-      within '.table-wrapper tbody' do
-        expect(page).to have_css('tr', count: 1)
-        expect(find('tr:first-child')).to have_text('Apple Watch Launch')
-      end
+      expect(page).to have_css('#deal')
     end
   end
 
