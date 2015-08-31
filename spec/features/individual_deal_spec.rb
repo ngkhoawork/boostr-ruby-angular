@@ -21,7 +21,13 @@ feature 'Individual Deal' do
     scenario 'shows deal details and stage' do
       first_deal_product = deal.deal_products.where(product_id: product.id).first
       within '#deal_overview' do
-        expect(find('h3.deal-name')).to have_text(deal.name)
+        deal_name = find('h3.deal-name')
+        expect(deal_name).to have_text(deal.name)
+        deal_name.click
+        expect(page).to have_css('.editable-input', visible: true)
+        fill_in 'deal-name', with: 'Taco'
+        find('.editable-input').native.send_keys(:return)
+        expect(deal_name).to have_text 'Taco'
       end
 
       within '#add_info' do
