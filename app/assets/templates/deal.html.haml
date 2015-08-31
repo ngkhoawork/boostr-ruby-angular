@@ -8,7 +8,8 @@
 
     #deal_overview.row.campaign
       .col-xs-9
-        %h3.deal-name {{ currentDeal.name }}
+        %h3.deal-name{ editable: { text: 'currentDeal.name' }, onaftersave: 'updateDeal()', 'e-name': 'deal-name' }
+          {{ currentDeal.name }}
 
     #nav.transparent
       .row

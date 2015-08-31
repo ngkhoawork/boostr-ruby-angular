@@ -20,3 +20,9 @@
 .editable-hide {
   display: none;
 }
+
+h3 {
+  &.editable {
+    margin-left: -10px;
+  }
+}
