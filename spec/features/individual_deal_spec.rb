@@ -40,28 +40,29 @@ feature 'Individual Deal' do
 
       within '#revenue_schedule' do
         within 'thead' do
-          expect(page).to have_css('th', count: 13)
+          expect(page).to have_css('th', count: 14)
           expect(find('th:last-child')).to have_text('Jun 2016')
         end
 
         within 'tbody' do
           expect(page).to have_css('tr', count: 1)
-          expect(find('td:nth-child(2)')).to have_text('$1,068') #jul
-          expect(find('td:nth-child(3)')).to have_text('$11,038') #aug
-          expect(find('td:nth-child(4)')).to have_text('$10,682') #sep
-          expect(find('td:nth-child(5)')).to have_text('$11,038') #oct
-          expect(find('td:nth-child(6)')).to have_text('$10,682') #nov
-          expect(find('td:nth-child(7)')).to have_text('$11,038') #dec
-          expect(find('td:nth-child(8)')).to have_text('$11,038') #jan
-          expect(find('td:nth-child(9)')).to have_text('$10,326') #feb(leap year)
-          expect(find('td:nth-child(10)')).to have_text('$11,038') #mar
-          expect(find('td:nth-child(11)')).to have_text('$10,682') #apr
-          expect(find('td:nth-child(12)')).to have_text('$11,038') #may
-          expect(find('td:nth-child(13)')).to have_text('$10,326') #jun
+          expect(find('td:nth-child(2)')).to have_text('$120,000') #jul
+          expect(find('td:nth-child(3)')).to have_text('$1,068') #jul
+          expect(find('td:nth-child(4)')).to have_text('$11,038') #aug
+          expect(find('td:nth-child(5)')).to have_text('$10,682') #sep
+          expect(find('td:nth-child(6)')).to have_text('$11,038') #oct
+          expect(find('td:nth-child(7)')).to have_text('$10,682') #nov
+          expect(find('td:nth-child(8)')).to have_text('$11,038') #dec
+          expect(find('td:nth-child(9)')).to have_text('$11,038') #jan
+          expect(find('td:nth-child(10)')).to have_text('$10,326') #feb(leap year)
+          expect(find('td:nth-child(11)')).to have_text('$11,038') #mar
+          expect(find('td:nth-child(12)')).to have_text('$10,682') #apr
+          expect(find('td:nth-child(13)')).to have_text('$11,038') #may
+          expect(find('td:nth-child(14)')).to have_text('$10,326') #jun
 
-          find('td:nth-child(2) span').click
+          find('td:nth-child(3) span').click
           fill_in "#{first_deal_product.id}", with: '1000'
-          find("td:nth-child(2) input").native.send_keys(:return)
+          find("td:nth-child(3) input").native.send_keys(:return)
         end
       end
 
