@@ -24,3 +24,5 @@ json.members deal.deal_members do |member|
   json.extract! member, :role, :share
   json.name member.name
 end
+
+json.advertiser deal.advertiser, :name
