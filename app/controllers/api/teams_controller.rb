@@ -2,7 +2,7 @@ class Api::TeamsController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.teams.roots
+    render json: current_user.company.teams.roots(params[:root_only]).includes(:members)
   end
 
   def create
@@ -21,7 +21,7 @@ class Api::TeamsController < ApplicationController
   private
 
   def team_params
-    params.require(:team).permit(:name, :parent_id)
+    params.require(:team).permit(:name, :parent_id, :leader_id, member_ids: [])
   end
 
   def team

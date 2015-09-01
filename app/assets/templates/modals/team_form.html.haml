@@ -14,12 +14,30 @@
             %label.control-label{ for: 'name' } Team Name
             %input.form-control{ placeholder: 'Eg. East Coast Sales', ng: { model: 'team.name' }, name: 'name'  }
           .col-xs-6
+            %label.control-label{ for: 'leader' } Team Leader
+            %ui-select{ name: 'leader', ng: { model: 'team.leader_id', disabled: true } }
+              %ui-select-match{ placeholder: 'Eg. John Sellers' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'user.id as user in users | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'user.name' } } }
+      .form-group
+        .row
+          .col-xs-12
             %label.control-label{ for: 'parent' } Team Parent
             %ui-select{ name: 'parent', ng: { model: 'team.parent_id', disabled: true } }
               %ui-select-match{ placeholder: 'Select A Team' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'team.id as team in teams | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'team.name' } } }
+      .form-group
+        .row
+          .col-xs-12
+            %label.control-label{ for: 'members' } Team Members
+            %ui-select{ multiple: true, name: 'members', ng: { model: 'team.member_ids', disabled: true } }
+              %ui-select-match{ placeholder: "Type Name" }
+                {{ $item.first_name }} {{ $item.last_name }}
+              %ui-select-choices{ repeat: 'user.id as user in availableUsers | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'user.name' } } }
 
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ type: 'submit' } {{ submitText }}

@@ -4,9 +4,9 @@
 
   resource = $resource '/api/teams/:id', { id: '@id' }
 
-  @all = ->
+  @all = (params) ->
     deferred = $q.defer()
-    resource.query {}, (teams) ->
+    resource.query params, (teams) ->
       deferred.resolve(teams)
     deferred.promise
 

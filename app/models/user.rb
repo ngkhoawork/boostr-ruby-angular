@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
   belongs_to :company
-
+  belongs_to :team, counter_cache: :members_count
   has_many :client_members
   has_many :clients, through: :client_members
   has_many :revenues

@@ -3,7 +3,7 @@
 ($scope, $modal, $location, Team) ->
 
   $scope.init = () ->
-    Team.all().then (teams) ->
+    Team.all(root_only: true).then (teams) ->
       $scope.teams = teams
 
   $scope.showModal = () ->
@@ -13,6 +13,9 @@
       controller: 'NewTeamsController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        team: ->
+          {}
 
   $scope.$on 'updated_teams', ->
     $scope.init()
