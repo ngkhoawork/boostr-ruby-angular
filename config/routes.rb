@@ -24,6 +24,7 @@ Rails.application.routes.draw do
     resources :products, only: [:index, :create, :update]
     resources :deal_products, only: [:create, :update]
     resources :teams, only: [:index, :create, :show]
+    resources :custom_values, only: [:index]
   end
 
   get '*path' => 'pages#index'

@@ -35,6 +35,7 @@
 .well {
   border: none;
   box-shadow: none;
+  margin-bottom: 10px;
 
   &.transparent {
     background: transparent;
@@ -43,5 +44,21 @@
 
   &.dark {
     background: $light-grayish-blue-7;
+  }
+
+  &.primary {
+    background: $brand-primary;
+    color: $white;
+    text-transform: uppercase;
+  }
+
+  .title {
+    color: $gray-base;
+    font-family: $font-family-medium;
+    padding-right: 15px;
+  }
+
+  .total {
+    padding-left: 15px;
   }
 }

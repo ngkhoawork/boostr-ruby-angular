@@ -1,0 +1,31 @@
+#custom-values
+  .container
+    .row
+      .col-xs-12
+        %h3
+          Custom Values
+
+    .row
+      #objects.col-xs-4
+        .well.primary
+          Object
+        .well{ ng: { repeat: 'object in objects', click: 'setObject(object)' } }
+          %span.title
+            {{ object.name }}
+          |
+          %span.total
+            {{ object.fields.length }} total
+      #fields.col-xs-4
+        .well.primary
+          Field Name
+        .well{ ng: { repeat: 'field in current.object.fields', click: 'setField(field)' } }
+          %span.title
+            {{ field.name }}
+          |
+          %span.total
+            {{ field.values.length }} Values
+      #values.col-xs-4
+        .well.primary
+          Values
+        .well{ ng: { repeat: 'value in current.field.values' } }
+          {{ value.name }}

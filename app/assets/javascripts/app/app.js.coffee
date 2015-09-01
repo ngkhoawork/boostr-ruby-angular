@@ -49,6 +49,9 @@
     .when '/settings/teams/:id',
       templateUrl: 'settings/team.html'
       controller: 'SettingsTeamController'
+    .when '/settings/custom_values',
+      templateUrl: 'settings/custom_values.html'
+      controller: 'SettingsCustomValuesController'
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
