@@ -71,10 +71,6 @@
             padding-left: 30px;
           }
 
-          &:nth-child(2) {
-            color: $brand-tertiary;
-          }
-
           .empty {
             width: 19px;
             height: 19px;
@@ -87,6 +83,10 @@
           svg {
             width: 19px;
             height: 19px;
+          }
+
+          a {
+            color: $dark-grayish-blue-3;
           }
         }
       }
