@@ -119,7 +119,7 @@ feature 'Deals' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
         within 'tr:first-child' do
-          find('.action-td').click
+          find('.delete-deal').click
         end
       end
 
@@ -131,7 +131,7 @@ feature 'Deals' do
         expect(page).to have_css('tr', count: 2)
         find('tr:first-child').hover
         within 'tr:first-child' do
-          find('.action-td').click
+          find('.delete-deal').click
         end
       end
 

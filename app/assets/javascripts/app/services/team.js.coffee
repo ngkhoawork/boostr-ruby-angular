@@ -2,7 +2,11 @@
 ['$resource', '$rootScope', '$q',
 ($resource, $rootScope, $q) ->
 
-  resource = $resource '/api/teams/:id', { id: '@id' }
+  resource = $resource '/api/teams/:id', { id: '@id' },
+    update: {
+      method: 'PUT'
+      url: '/api/teams/:id'
+    }
 
   @all = (params) ->
     deferred = $q.defer()
@@ -21,6 +25,13 @@
     deferred = $q.defer()
     resource.get id: team_id, (team) ->
       deferred.resolve(team)
+    deferred.promise
+
+  @update = (params) ->
+    deferred = $q.defer()
+    resource.update params, (team) ->
+      deferred.resolve(team)
+      $rootScope.$broadcast 'updated_teams'
     deferred.promise
 
   return

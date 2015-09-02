@@ -15,9 +15,9 @@
   allUsers = []
   currentUser = undefined
 
-  @all = (callback) ->
+  @all = (force = false) ->
     deferred = $q.defer()
-    if allUsers.length == 0
+    if allUsers.length == 0 || force
       resource.query {}, (users) =>
         allUsers = users
         deferred.resolve(users)

@@ -41,6 +41,16 @@ RSpec.describe Api::TeamsController, type: :controller do
     end
   end
 
+  describe 'PUT #update' do
+    it 'updates a team successfully' do
+      put :update, id: team.id, team: { name: 'Change Team Name', leader_id: user.id, member_ids: [user.id] }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['name']).to eq('Change Team Name')
+      expect(response_json['leader_id']).to eq(user.id)
+    end
+  end
+
   describe 'GET #show' do
     it 'returns json for a team' do
       get :show, id: team.id, format: :json
