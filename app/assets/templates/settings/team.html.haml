@@ -38,6 +38,8 @@
                 %td.action-td
                   %a.edit-team{ href: '', ng: { click: 'editModal(team)' } }
                     = inline_svg 'icons/pencil.svg'
+                  %a.delete-team{ href: '', ng: { click: 'delete(team)' } }
+                    = inline_svg 'icons/trash.svg'
               %tr{ ng: { repeat: 'member in currentTeam.members' } }
                 %td
                   {{ member.first_name }} {{ member.last_name }}

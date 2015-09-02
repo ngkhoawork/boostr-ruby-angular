@@ -17,6 +17,8 @@
     $scope.team.member_ids = $scope.team.members
     Team.update(id: $scope.team.id, team: $scope.team).then (team) ->
       $modalInstance.close()
+
+  $scope.$on 'updated_teams', ->
     User.all(true).then (users) ->
       $scope.users = users
 

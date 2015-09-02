@@ -14,8 +14,11 @@
       $scope.availableUsers = $filter('availableUsers') $scope.users
 
   $scope.submitForm = () ->
+    $scope.team.member_ids = $scope.team.members
     Team.create(team: $scope.team).then (team) ->
       $modalInstance.close()
+
+  $scope.$on 'updated_teams', ->
     User.all(true).then (users) ->
       $scope.users = users
 

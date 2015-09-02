@@ -1,6 +1,6 @@
 @app.controller 'SettingsTeamController',
-['$scope', '$modal', '$location', '$routeParams', 'Team',
-($scope, $modal, $location, $routeParams, Team) ->
+['$scope', '$modal', '$location', '$routeParams', 'Team', 'User',
+($scope, $modal, $location, $routeParams, Team, User) ->
 
   $scope.init = ->
     $scope.currentTeam = {}
@@ -31,9 +31,15 @@
 
   $scope.$on 'updated_teams', ->
     $scope.init()
+    User.all(true)
 
   $scope.go = (path) ->
     $location.path(path)
+
+  $scope.delete = (team) ->
+    if confirm('Are you sure you want to delete "' +  team.name + '"?')
+      Team.delete team, ->
+        $location.path("/settings/teams/" + $routeParams.id)
 
   $scope.init()
 
