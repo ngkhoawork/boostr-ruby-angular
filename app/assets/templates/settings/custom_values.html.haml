@@ -27,5 +27,6 @@
       #values.col-xs-4
         .well.primary
           Values
-        .well{ ng: { repeat: 'value in current.field.values' } }
-          {{ value.name }}
+        .well{ ng: { repeat: 'value in current.field.values', include: '"settings/custom_values/" + current.field.name.toLowerCase() + ".html"' } }
+
+

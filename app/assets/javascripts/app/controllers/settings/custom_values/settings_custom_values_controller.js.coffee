@@ -1,6 +1,6 @@
 @app.controller 'SettingsCustomValuesController',
-['$scope', 'CustomValue',
-($scope, CustomValue) ->
+['$scope', 'CustomValue', 'Stage',
+($scope, CustomValue, Stage) ->
 
   $scope.current = {}
 
@@ -14,4 +14,9 @@
 
   $scope.setField = (field) ->
     $scope.current.field = field
+
+  $scope.updateStage = (stage) ->
+    if confirm('Are you sure? All existing uses of this stage will be updated.')
+      Stage.update(id: stage.id, stage: stage).then (stage) ->
+        #noop
 ]
