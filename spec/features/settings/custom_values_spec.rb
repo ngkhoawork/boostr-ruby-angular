@@ -21,6 +21,15 @@ feature 'Custom Values' do
 
           within '.well:last-child' do
             expect(page).to have_text(stage.name)
+            find('.title').click
+            fill_in 'stage-name', with: 'Taco'
+            find('.editable-input').native.send_keys(:return)
+          end
+
+          page.driver.browser.switch_to.alert.accept
+
+          within '.well:last-child' do
+            expect(page).to have_text('Taco')
           end
         end
       end

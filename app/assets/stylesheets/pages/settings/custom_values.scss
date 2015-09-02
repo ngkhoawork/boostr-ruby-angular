@@ -2,4 +2,9 @@
   .well:not(.primary) {
     cursor: pointer;
   }
+
+  .editable {
+    padding: 0 10px;
+    cursor: text;
+  }
 }

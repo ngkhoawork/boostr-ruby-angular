@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :deals, only: [:index, :create, :update, :show, :destroy]
-    resources :stages, only: [:index]
+    resources :stages, only: [:index, :update]
     resources :products, only: [:index, :create, :update]
     resources :deal_products, only: [:create, :update]
     resources :teams, only: [:index, :create, :show]
