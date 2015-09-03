@@ -9,7 +9,6 @@
       $scope.currentDeal = deal
     Stage.all().then (stages) ->
       $scope.stages = stages
-    $scope.showUserList = false
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()
@@ -36,15 +35,13 @@
     }
 
   $scope.showLinkExistingUser = ->
-    $scope.showUserList = true
     User.all().then (users) ->
-      $scope.users = users
+      $scope.users = $filter('notIn')(users, $scope.currentDeal.members, 'user_id')
 
   $scope.linkExistingUser = (item) ->
     $scope.userToLink = undefined
-    $scope.showUserList = false
-    DealMember.create(deal_id: $scope.currentDeal.id, user_id: item.id, share: 0).then (deal_member) ->
-      $scope.currentDeal.members.push(deal_member)
+    DealMember.create(deal_id: $scope.currentDeal.id, user_id: item.id, share: 0).then (deal) ->
+      $scope.currentDeal = deal
 
   $scope.updateDeal = ->
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
@@ -54,8 +51,9 @@
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
       $scope.currentDeal = deal
 
-  $scope.$on 'updated_deal_members', ->
-    $scope.updateDeal()
+  $scope.updateDealMember = (data) ->
+    DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
+      $scope.currentDeal = deal
 
   $scope.init()
 ]
