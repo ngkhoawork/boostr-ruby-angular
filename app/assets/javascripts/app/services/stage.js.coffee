@@ -11,8 +11,13 @@
   @all = ->
     deferred = $q.defer()
     resource.query {}, (stages) ->
-      allStages = stages
       deferred.resolve(stages)
+    deferred.promise
+
+  @create = (params) ->
+    deferred = $q.defer()
+    resource.save params, (stage) ->
+      deferred.resolve(stage)
     deferred.promise
 
   @update = (params) ->

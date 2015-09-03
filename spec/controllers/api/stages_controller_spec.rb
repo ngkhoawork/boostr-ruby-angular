@@ -5,6 +5,7 @@ RSpec.describe Api::StagesController, type: :controller do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let(:stage) { create :stage, company: company }
+  let(:stage_params) { attributes_for(:stage, company: company) }
 
   before do
     sign_in user
@@ -21,8 +22,27 @@ RSpec.describe Api::StagesController, type: :controller do
     end
   end
 
+
+  describe 'POST #create' do
+    it 'creates a new stage and returns success' do
+      expect do
+        post :create, stage: stage_params, format: :json
+        expect(response).to be_success
+      end.to change(Stage, :count).by(1)
+    end
+
+    it 'returns errors if the stage is invalid' do
+      expect do
+        post :create, stage: { name: '' }, format: :json
+        expect(response.status).to eq(422)
+        response_json = JSON.parse(response.body)
+        expect(response_json['errors']['name']).to eq(["can't be blank"])
+      end.to_not change(Stage, :count)
+    end
+  end
+
   describe 'PUT #update' do
-    it 'updates the deal and returns success' do
+    it 'updates the stage and returns success' do
       put :update, id: stage.id, stage: { name: 'Stage 2' }, format: :json
       expect(response).to be_success
     end

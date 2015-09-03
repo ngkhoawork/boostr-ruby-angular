@@ -50,6 +50,20 @@
     background: $brand-primary;
     color: $white;
     text-transform: uppercase;
+
+    .pull-right {
+      margin-top: -3px;
+
+      svg {
+        fill: $white;
+        vertical-align: bottom;
+      }
+
+      a {
+        color: $white;
+        font-size: 12px;
+      }
+    }
   }
 
   .title {
