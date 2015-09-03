@@ -5,6 +5,16 @@ class Api::StagesController < ApplicationController
     render json: current_user.company.stages.order(:position)
   end
 
+  def create
+    stage = current_user.company.stages.create(stage_params)
+
+    if stage.persisted?
+      render json: stage
+    else
+      render json: { errors: stage.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   def update
     if stage.update_attributes(stage_params)
       render json: stage

@@ -27,6 +27,10 @@
       #values.col-xs-4
         .well.primary
           Values
+          .pull-right
+            %a{ href: '', ng: { click: 'createNewValue()' } }
+              = inline_svg 'icons/add.svg'
+              Add
         .well{ ng: { repeat: 'value in current.field.values', include: '"settings/custom_values/" + current.field.name.toLowerCase() + ".html"' } }
 
 

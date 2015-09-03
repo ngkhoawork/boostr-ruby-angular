@@ -31,6 +31,14 @@ feature 'Custom Values' do
           within '.well:last-child' do
             expect(page).to have_text('Taco')
           end
+
+          within '.well:first-child' do
+            find('a').click
+          end
+
+          within '.well:nth-child(2)' do
+            expect(page).to have_text('New Stage')
+          end
         end
       end
     end

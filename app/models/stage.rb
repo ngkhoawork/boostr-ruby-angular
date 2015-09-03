@@ -3,4 +3,6 @@ class Stage < ActiveRecord::Base
   has_many :deals
 
   default_scope { order(:position) }
+
+  validates :name, presence: true
 end
