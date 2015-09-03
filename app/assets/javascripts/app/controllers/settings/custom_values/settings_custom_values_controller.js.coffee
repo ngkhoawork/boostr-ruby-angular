@@ -22,6 +22,7 @@
           #noop
     else
       Stage.create(stage: stage).then (new_stage) ->
+        new_stage.is_new = true
         _.each $scope.current.field.values, (stage, i) ->
           if(stage.name == new_stage.name)
             $scope.current.field.values[i] = new_stage
@@ -32,6 +33,12 @@
         $scope.createNewStage()
 
   $scope.createNewStage = () ->
-    new_stage = { name: 'New Stage', probability: 0, is_new: true }
+    new_stage = { name: 'New Stage', probability: 0 }
     $scope.current.field.values.unshift(new_stage)
+
+  $scope.openStageOptions = [
+    { value: true, text: 'Open' }
+    { value: false, text: 'Closed' }
+  ]
+
 ]

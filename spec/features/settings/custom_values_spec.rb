@@ -21,6 +21,7 @@ feature 'Custom Values' do
 
           within '.well:last-child' do
             expect(page).to have_text(stage.name)
+            expect(page).to have_css('.open-button.active')
             find('.title').click
             fill_in 'stage-name', with: 'Taco'
             find('.editable-input').native.send_keys(:return)
@@ -30,6 +31,13 @@ feature 'Custom Values' do
 
           within '.well:last-child' do
             expect(page).to have_text('Taco')
+            find('.close-button').click
+          end
+
+          page.driver.browser.switch_to.alert.accept
+
+          within '.well:last-child' do
+            expect(page).to have_no_css('.open-button.active')
           end
 
           within '.well:first-child' do
