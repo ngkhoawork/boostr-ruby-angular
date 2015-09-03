@@ -23,7 +23,7 @@ Rails.application.routes.draw do
     resources :stages, only: [:index, :update]
     resources :products, only: [:index, :create, :update]
     resources :deal_products, only: [:create, :update]
-    resources :teams, only: [:index, :create, :show, :update]
+    resources :teams, only: [:index, :create, :show, :update, :destroy]
     resources :custom_values, only: [:index]
   end
 

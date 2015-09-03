@@ -1,6 +1,6 @@
 @app.controller 'SettingsTeamsController',
-['$scope', '$modal', '$location', 'Team',
-($scope, $modal, $location, Team) ->
+['$scope', '$modal', '$location', 'Team', 'User',
+($scope, $modal, $location, Team, User) ->
 
   $scope.init = () ->
     Team.all(root_only: true).then (teams) ->
@@ -30,9 +30,15 @@
 
   $scope.$on 'updated_teams', ->
     $scope.init()
+    User.all(true)
 
   $scope.go = (path) ->
     $location.path(path)
+
+  $scope.delete = (team) ->
+    if confirm('Are you sure you want to delete "' +  team.name + '"?')
+      Team.delete team, ->
+        $location.path('/settings/teams')
 
   $scope.init()
 

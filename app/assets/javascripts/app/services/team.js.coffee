@@ -34,5 +34,12 @@
       $rootScope.$broadcast 'updated_teams'
     deferred.promise
 
+  @delete = (deletedTeam) ->
+    deferred = $q.defer()
+    resource.delete id: deletedTeam.id, () ->
+      deferred.resolve()
+      $rootScope.$broadcast 'updated_teams'
+    deferred.promise
+
   return
 ]

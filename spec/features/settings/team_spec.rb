@@ -2,7 +2,7 @@ require 'rails_helper'
 
 feature 'Teams' do
   let(:company) { create :company }
-  let!(:user) { create :user, company: company }
+  let(:user) { create :user, company: company }
 
   describe 'creating a new parent team' do
     before do
@@ -17,7 +17,6 @@ feature 'Teams' do
       expect(page).to have_css('#team-modal')
 
       within '#team-modal' do
-        sleep 15
         fill_in 'name', with: 'Test Team'
         ui_select('leader', user.name)
         click_on 'Create'
@@ -95,6 +94,43 @@ feature 'Teams' do
         expect(find('tr:first-child td:first-child')).to have_text('Test')
         expect(find('tr:first-child td:nth-child(2)')).to have_text(user.full_name)
       end
+    end
+  end
+
+  describe 'deleting a team' do
+    let!(:teams) { create_list :parent_team, 3, company: company }
+
+    before do
+      teams.sort_by!(&:name)
+      login_as user, scope: :user
+      visit '/settings/teams/'
+      expect(page).to have_css('#teams')
+    end
+
+    scenario 'removes the team from the page' do
+      within '.table-wrapper tbody' do
+        expect(page).to have_css('tr', count: 3)
+        find('tr:first-child').hover
+        within 'tr:first-child' do
+          find('.delete-team').click
+        end
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.table-wrapper tbody tr', count: 2)
+
+      within '.table-wrapper tbody' do
+        expect(page).to have_css('tr', count: 2)
+        find('tr:first-child').hover
+        within 'tr:first-child' do
+          find('.delete-team').click
+        end
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.table-wrapper tbody tr', count: 1)
     end
   end
 end

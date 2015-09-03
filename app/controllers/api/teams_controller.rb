@@ -26,6 +26,11 @@ class Api::TeamsController < ApplicationController
     end
   end
 
+  def destroy
+    team.destroy
+    render nothing: true
+  end
+
   private
 
   def team_params
