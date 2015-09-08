@@ -9,6 +9,7 @@ class Company < ActiveRecord::Base
   has_many :stages
   has_many :products
   has_many :teams
+  has_many :time_periods
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'

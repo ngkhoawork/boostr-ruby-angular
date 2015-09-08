@@ -52,6 +52,9 @@
     .when '/settings/custom_values',
       templateUrl: 'settings/custom_values.html'
       controller: 'SettingsCustomValuesController'
+    .when '/settings/time_periods',
+      templateUrl: 'settings/time_periods.html'
+      controller: 'SettingsTimePeriodsController'
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
