@@ -1,0 +1,32 @@
+#time-periods
+  #nav
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right.last
+              %a.add-time-period{ href: '', ng: { click: 'showModal()' } }
+                = inline_svg 'icons/add.svg'
+                Add Time Period
+
+  .container
+    .row
+      .col-xs-12
+        %h3
+          Time Periods
+
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th
+                %th Name
+                %th Start Date
+                %th End Date
+            %tbody
+              %tr{ ng: { repeat: 'row in time_periods | orderBy: "start_date"' } }
+                %td
+                  .empty
+                %td {{ row.name }}
+                %td {{ row.start_date | date: 'shortDate' }}
+                %td {{ row.end_date | date: 'shortDate' }}
