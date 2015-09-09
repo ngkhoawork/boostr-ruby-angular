@@ -128,17 +128,31 @@
 
     .row
       .col-xs-12
+        #members.section
+          %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+            %a.add-member{ href: '', dropdown: { toggle: true }}
+              = inline_svg 'icons/add.svg'
+            %ul.dropdown-menu.new-member-options
+              %li
+                %a.existing-user{ href: '', ng: { click: 'showLinkExistingUser()' } }
+                  Link Existing User
+              %li.existing-user-options{ ng: { show: 'showUserList' } }
+                %ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
+                  %ui-select-match{ placeholder: 'start typing their name here' }
+                    {{ $select.selected.name }}
+                  %ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
+                    %div{ ng: { bind: { html: 'user.name' } } }
+
         %h3.header
           Team & Split
 
-        .table-wrapper
+        #teamsplits.table-wrapper
           %table.table.table-striped.black-table
             %thead
               %tr
                 %th Member
                 %th Role
                 %th Share
-                %th Deal Access
             %tbody
               %tr{ ng: { repeat: 'member in currentDeal.members' } }
                 %td
@@ -147,9 +161,8 @@
                   {{ member.role }}
                 %td
                   {{ member.share }}%
-                %td
 
-    #add_info.col-xs-6.pull-right
+    #info.col-xs-6.pull-right
       %h3.header Additional Info
       .well
         .row.field

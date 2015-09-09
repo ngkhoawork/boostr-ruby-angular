@@ -22,10 +22,12 @@
     background-color: transparent;
     margin-bottom: 0;
     margin-top: -55px;
+
     .panel-heading {
       border: 1px solid $light-grayish-blue-2;
       padding-top: 7px;
       padding-bottom: 5px;
+
       .panel-title {
         text-transform: uppercase;
         font-size: 11px;
@@ -47,6 +49,7 @@
         padding-top: 15px;
         padding-bottom: 15px;
         margin-left: -14px;
+
         .type {
           font-size: 15px;
           font-family: $font-family-sans-serif;
@@ -82,11 +85,13 @@
 
   #nav {
     border-bottom-color: $gray-light;
+
     .nav-tabs {
       .active {
         a {
           background-color: transparent;
           color: $brand-primary;
+
           &:after {
             content: '';
             position: absolute;
@@ -113,6 +118,7 @@
           color: $grayish-blue-1;
           padding-bottom: 0;
           border-bottom-width: 0;
+
           &:hover,
           &:focus {
             color: $brand-primary;
@@ -127,6 +133,7 @@
     border-right: 1px solid $very-light-gray;
     font-size: 13px;
     text-transform: uppercase;
+
     &:last-child {
       border-right: none;
     }
@@ -193,11 +200,20 @@
     padding-bottom: 11px;
   }
 
-  #add_info {
+  #members {
+    span {
+      margin-top: 45px;
+    }
     padding-top: 15px;
+  }
+
+  #info {
+    padding-top: 15px;
+
     .new-field {
       margin-top: -35px;
       text-transform: uppercase;
+
       a {
         font-size: 11px;
         color: $grayish-blue-1;
@@ -214,6 +230,7 @@
 
     .field {
       padding-bottom: 25px;
+
       .field-label {
         font-size: 15px;
         font-family: $font-family-medium;
