@@ -155,7 +155,7 @@
                 %td
                   {{ member.name }}
                 %td
-                  %span{ 'e-name': 'role', editable: { text: 'member.role' }, onaftersave: 'updateDealMember(member)' }
+                  %span{ 'e-name': 'role', editable: { select: 'member.role' }, 'e-ng-options': 'role for role in memberRoles', onaftersave: 'updateDealMember(member)' }
                     {{ member.role }}
                 %td
                   %span{ 'e-name': 'share', editable: { text: 'member.share' }, onaftersave: 'updateDealMember(member)' }
@@ -170,7 +170,7 @@
               .col-xs-4
                 %h4.field-label Type
             .row
-              .col-xs-9.field-value
+              .col-xs-9.field-value{ 'e-name': 'deal-type', editable: { select: 'currentDeal.deal_type' }, 'e-ng-options': 'type for type in dealTypes', onaftersave: 'updateDeal()' }
                 {{ currentDeal.deal_type }}
         .row.field
           .col-xs-10
@@ -178,7 +178,7 @@
               .col-xs-4
                 %h4.field-label Source
             .row
-              .col-xs-9.field-value
+              .col-xs-9.field-value{ 'e-name': 'deal-source', editable: { select: 'currentDeal.source_type' }, 'e-ng-options': 'type for type in sourceTypes', onaftersave: 'updateDeal()' }
                 {{ currentDeal.source_type }}
         .row.field
           .col-xs-10
@@ -186,7 +186,7 @@
               .col-xs-4
                 %h4.field-label Next Steps
             .row
-              .col-xs-9.field-value
+              .col-xs-9.field-value{ 'e-name': 'next-steps', editable: { text: 'currentDeal.next_steps' }, onaftersave: 'updateDeal()' }
                 {{ currentDeal.next_steps }}
         .row.field
           .col-xs-10

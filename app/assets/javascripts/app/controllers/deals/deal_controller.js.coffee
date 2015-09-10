@@ -5,6 +5,10 @@
   $scope.init = ->
     $scope.currentDeal = {}
     $scope.resetDealProduct()
+    $scope.dealTypes = Deal.deal_types()
+    $scope.sourceTypes = Deal.source_types()
+    $scope.memberRoles = DealMember.roles()
+    $scope.memberAccess = DealMember.access()
     Deal.get($routeParams.id).then (deal) ->
       $scope.currentDeal = deal
     Stage.all().then (stages) ->
