@@ -130,13 +130,10 @@
       .col-xs-12
         #members.section
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
-            %a.add-member{ href: '', dropdown: { toggle: true }}
+            %a.add-member{ href: '', dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } }
               = inline_svg 'icons/add.svg'
             %ul.dropdown-menu.new-member-options
-              %li
-                %a.existing-user{ href: '', ng: { click: 'showLinkExistingUser()' } }
-                  Link Existing User
-              %li.existing-user-options{ ng: { show: 'showUserList' } }
+              %li.existing-user-options
                 %ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
                   %ui-select-match{ placeholder: 'start typing their name here' }
                     {{ $select.selected.name }}
@@ -154,13 +151,15 @@
                 %th Role
                 %th Share
             %tbody
-              %tr{ ng: { repeat: 'member in currentDeal.members' } }
+              %tr{ ng: { repeat: "member in currentDeal.members | orderBy: 'name'"} }
                 %td
                   {{ member.name }}
                 %td
-                  {{ member.role }}
+                  %span{ 'e-name': 'role', editable: { text: 'member.role' }, onaftersave: 'updateDealMember(member)' }
+                    {{ member.role }}
                 %td
-                  {{ member.share }}%
+                  %span{ 'e-name': 'share', editable: { text: 'member.share' }, onaftersave: 'updateDealMember(member)' }
+                    {{ member.share }}%
 
     #info.col-xs-6.pull-right
       %h3.header Additional Info

@@ -8,7 +8,15 @@ class Api::DealMembersController < ApplicationController
   def create
     deal_member = deal.deal_members.build(deal_member_params)
     if deal_member.save
-      render json: deal_member, status: :created
+      render deal
+    else
+      render json: { errors: deal_member.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    if deal_member.update_attributes(deal_member_params)
+      render deal
     else
       render json: { errors: deal_member.errors.messages }, status: :unprocessable_entity
     end
@@ -22,5 +30,9 @@ class Api::DealMembersController < ApplicationController
 
   def deal
     @deal ||= current_user.company.deals.find(params[:deal_id])
+  end
+
+  def deal_member
+    @deal_member ||= deal.deal_members.find(params[:id])
   end
 end
