@@ -25,8 +25,9 @@
                 %th.action-column
             %tbody
               %tr{ ng: { repeat: 'team in teams' } }
-                %td{ ng: { click: 'go("settings/teams/" + team.id)' } }
-                  {{ team.name }}
+                %td
+                  %a{ href: '', ng: { click: 'go("settings/teams/" + team.id)'  } }
+                    {{ team.name }}
                   = inline_svg 'icons/folder.svg', class: 'svg pull-left'
                 %td {{ team.leader_name }}
                 %td.text-center {{ team.members_count }}

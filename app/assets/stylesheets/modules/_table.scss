@@ -76,7 +76,16 @@
             padding-top: 14px;
             padding-left: 30px;
             color: $brand-tertiary;
-            cursor: pointer;
+
+            a {
+              cursor: pointer;
+
+              &:hover,
+              &:focus {
+                color: $link-hover-color;
+                outline: none;
+              }
+            }
           }
 
           .empty {

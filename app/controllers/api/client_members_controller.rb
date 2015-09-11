@@ -14,6 +14,14 @@ class Api::ClientMembersController < ApplicationController
     end
   end
 
+  def update
+    if client_member.update_attributes(client_member_params)
+      render json: client_member, status: :accepted
+    else
+      render json: { errors: client_member.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def client_member_params
@@ -22,5 +30,9 @@ class Api::ClientMembersController < ApplicationController
 
   def client
     @client ||= current_user.company.clients.find(params[:client_id])
+  end
+
+  def client_member
+    @client_member ||= client.client_members.find(params[:id])
   end
 end
