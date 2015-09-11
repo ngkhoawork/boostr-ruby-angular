@@ -207,6 +207,20 @@
     padding-top: 15px;
   }
 
+  #teamsplits {
+    table {
+      tbody {
+        tr {
+          td {
+            span {
+              margin-left: -10px;
+            }
+          }
+        }
+      }
+    }
+  }
+
   #info {
     padding-top: 15px;
 
@@ -234,6 +248,14 @@
       .field-label {
         font-size: 15px;
         font-family: $font-family-medium;
+      }
+
+      .editable {
+        margin-left: 5px;
+      }
+
+      .editable-input {
+        margin-left: 5px;
       }
     }
   }

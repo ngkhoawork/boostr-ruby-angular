@@ -32,6 +32,28 @@ feature 'Individual Deal' do
 
       within '#info' do
         expect(find('h3.header')).to have_text('Additional Info')
+
+        deal_type = find('.field:first-child .field-value')
+        expect(deal_type).to have_text(deal.deal_type)
+        deal_type.click
+        expect(page).to have_css('.editable-input', visible: true)
+        select 'Renewal', from: 'deal-type'
+        expect(deal_type).to have_text 'Renewal'
+
+        deal_source = find('.field:nth-child(2) .field-value')
+        expect(deal_source).to have_text(deal.source_type)
+        deal_source.click
+        expect(page).to have_css('.editable-input', visible: true)
+        select 'RFP Response to Agency', from: 'deal-source'
+        expect(deal_source).to have_text 'RFP Response to Agency'
+
+        next_steps = find('.field:nth-child(3) .field-value')
+        expect(next_steps).to have_text(deal.next_steps)
+        next_steps.click
+        expect(page).to have_css('.editable-input', visible: true)
+        fill_in 'next-steps', with: 'Testing'
+        find('.editable-input').native.send_keys(:return)
+        expect(next_steps).to have_text 'Testing'
       end
 
       expect(find('#total-amount')).to have_text('$120,000')
