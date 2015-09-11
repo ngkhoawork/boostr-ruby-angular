@@ -76,6 +76,27 @@
                 .col-xs-9.detail
                   {{ currentClient.client_type }}
 
+        #teamsplits.section
+          %span.pull-right
+            %a.new-member{ href: '', ng: { click: 'showNewMemberModal()' } }
+              = inline_svg 'icons/add.svg'
+
+          %h2
+            default team & split
+
+          .table-wrapper
+            %table.table.table-striped
+              %thead
+                %tr
+                  %th Member
+                  %th Share
+                  %th Role
+              %tbody
+                %tr{ ng: { repeat: 'client_member in client_members' } }
+                  %td {{ client_member.user.first_name }} {{ client_member.user.last_name }}
+                  %td {{ client_member.share }}%
+                  %td {{ client_member.role }}
+                  
         #people.section
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
             %a.add-contact{ href: '', dropdown: { toggle: true }}
@@ -137,24 +158,3 @@
                         Starting {{ deal.start_date | date: 'shortDate' }}
                 .col-xs-1
                   = inline_svg 'icons/caret.svg', class: 'pull-right'
-
-        #teamsplits.section
-          %span.pull-right
-            %a.new-member{ href: '', ng: { click: 'showNewMemberModal()' } }
-              = inline_svg 'icons/add.svg'
-
-          %h2
-            default team & split
-
-          .table-wrapper
-            %table.table.table-striped
-              %thead
-                %tr
-                  %th Member
-                  %th Share
-                  %th Role
-              %tbody
-                %tr{ ng: { repeat: 'client_member in client_members' } }
-                  %td {{ client_member.user.first_name }} {{ client_member.user.last_name }}
-                  %td {{ client_member.share }}%
-                  %td {{ client_member.role }}
