@@ -38,14 +38,16 @@ feature 'Individual Deal' do
         deal_type.click
         expect(page).to have_css('.editable-input', visible: true)
         select 'Renewal', from: 'deal-type'
+        expect(page).to have_no_css('.editable-input')
         expect(deal_type).to have_text 'Renewal'
 
         deal_source = find('.field:nth-child(2) .field-value')
         expect(deal_source).to have_text(deal.source_type)
         deal_source.click
         expect(page).to have_css('.editable-input', visible: true)
-        select 'RFP Response to Agency', from: 'deal-source'
-        expect(deal_source).to have_text 'RFP Response to Agency'
+        select 'RFP Response to Client', from: 'deal-source'
+        expect(page).to have_no_css('.editable-input')
+        expect(deal_source).to have_text 'RFP Response to Client'
 
         next_steps = find('.field:nth-child(3) .field-value')
         expect(next_steps).to have_text(deal.next_steps)

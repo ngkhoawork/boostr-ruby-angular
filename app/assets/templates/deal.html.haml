@@ -170,7 +170,7 @@
               .col-xs-4
                 %h4.field-label Type
             .row
-              .col-xs-9.field-value{ 'e-name': 'deal-type', editable: { select: 'currentDeal.deal_type' }, 'e-ng-options': 'type for type in dealTypes', onaftersave: 'updateDeal()' }
+              .col-xs-9.field-value{ 'e-id': 'deal-type', editable: { select: 'currentDeal.deal_type' }, 'e-ng-options': 'type for type in dealTypes', onaftersave: 'updateDeal()' }
                 {{ currentDeal.deal_type }}
         .row.field
           .col-xs-10
@@ -178,7 +178,7 @@
               .col-xs-4
                 %h4.field-label Source
             .row
-              .col-xs-9.field-value{ 'e-name': 'deal-source', editable: { select: 'currentDeal.source_type' }, 'e-ng-options': 'type for type in sourceTypes', onaftersave: 'updateDeal()' }
+              .col-xs-9.field-value{ 'e-id': 'deal-source', editable: { select: 'currentDeal.source_type' }, 'e-ng-options': 'type for type in sourceTypes', onaftersave: 'updateDeal()' }
                 {{ currentDeal.source_type }}
         .row.field
           .col-xs-10
