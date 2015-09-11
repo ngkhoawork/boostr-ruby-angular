@@ -7,6 +7,7 @@
       $scope.clients = clients
       Client.set($routeParams.id || clients[0].id)
     $scope.showContactList = false
+    $scope.memberRoles = ClientMember.roles()
 
   $scope.getClientMembers = ->
     ClientMember.all { client_id: $scope.currentClient.id }, (client_members) ->
@@ -79,6 +80,9 @@
     item.client_id = $scope.currentClient.id
     Contact.update(id: item.id, contact: item).then (contact) ->
       $scope.currentClient.contacts.push(contact)
+
+  $scope.updateClientMember = (data) ->
+    ClientMember.update(id: data.id, client_id: $scope.currentClient.id, client_member: data)
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the client "' +  $scope.currentClient.name + '"?')

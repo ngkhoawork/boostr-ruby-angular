@@ -40,4 +40,15 @@ RSpec.describe Api::ClientMembersController, type: :controller do
       end.to_not change(ClientMember, :count)
     end
   end
+
+  describe 'PUT #update' do
+    let!(:client_member) { create :client_member, client_id: client.id, user_id: user.id }
+
+    it 'updates a client_member successfully' do
+      put :update, id: client_member.id, client_id: client.id, client_member: { share: '62' }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['share']).to eq(62)
+    end
+  end
 end

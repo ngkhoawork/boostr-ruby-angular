@@ -51,4 +51,32 @@ feature 'ClientMembers' do
       end
     end
   end
+
+  describe 'updating a client_member' do
+    let!(:client_member) { create :client_member, client: client, user: create(:user) }
+    before do
+      login_as user, scope: :user
+      visit '/clients'
+      expect(page).to have_css('#clients')
+    end
+
+    scenario 'update member' do
+      within '#teamsplits tbody tr:first-child' do
+        share = find('td:nth-child(2) span')
+        expect(share).to have_text(client_member.share)
+        share.click
+        expect(page).to have_css('.editable-input', visible: true)
+        fill_in 'share', with: '25'
+        find('.editable-input').native.send_keys(:return)
+        expect(share).to have_text '25%'
+
+        role = find('td:nth-child(3) span')
+        expect(role).to have_text(client_member.role)
+        role.click
+        expect(page).to have_css('.editable-input', visible: true)
+        select 'Can View', from: 'role'
+        expect(role).to have_text 'Can View'
+      end
+    end
+  end
 end
