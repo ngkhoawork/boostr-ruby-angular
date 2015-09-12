@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
   has_many :revenues
   has_many :deal_members
   has_many :deals, through: :deal_members
+  has_many :quotas
 
   ROLES = %w(user superadmin)
 

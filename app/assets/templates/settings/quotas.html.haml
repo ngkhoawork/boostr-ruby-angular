@@ -1,0 +1,35 @@
+#quotas
+  .container
+    .row
+      .col-xs-12
+        %h3
+          Quotas
+
+    .row
+      .col-xs-4.quota-period
+        .row
+          .col-xs-12
+            Quota Period
+        .row
+          .col-xs-12{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true }}
+              {{ currentTimePeriod.name }} ({{ currentTimePeriod.start_date | date: 'shortDate'}} - {{ currentTimePeriod.end_date | date: 'shortDate' }})
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id == currentTimePeriod.id}' } }
+                %a{ href: '', ng: { click: 'updateTimePeriod(timePeriod.id)' } }
+                  {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
+    .row
+      .col-xs-12
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th User
+                %th Total Quota
+            %tbody
+              %tr{ ng: { repeat: 'quota in quotas' } }
+                %td
+                  {{ quota.user_name }}
+                  = inline_svg 'icons/profile.svg', class: 'svg pull-left'
+                %td {{ quota.value || 0 | currency: '$': 0 }}

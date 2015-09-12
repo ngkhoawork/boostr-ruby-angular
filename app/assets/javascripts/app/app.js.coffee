@@ -55,6 +55,9 @@
     .when '/settings/time_periods',
       templateUrl: 'settings/time_periods.html'
       controller: 'SettingsTimePeriodsController'
+    .when '/settings/quotas/:time_period_id?',
+      templateUrl: 'settings/quotas.html'
+      controller: 'SettingsQuotasController'
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
