@@ -32,4 +32,6 @@
                 %td
                   {{ quota.user_name }}
                   = inline_svg 'icons/profile.svg', class: 'svg pull-left'
-                %td {{ quota.value || 0 | currency: '$': 0 }}
+                %td
+                  %span{ editable: { text: 'quota.value' }, onaftersave: 'updateQuota(quota)', 'e-name': 'quota-value' }
+                    {{ quota.value || 0 | currency: '$': 0 }}

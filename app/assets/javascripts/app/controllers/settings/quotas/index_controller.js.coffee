@@ -18,6 +18,9 @@
   $scope.updateTimePeriod = (time_period_id) ->
     $location.path("/settings/quotas/#{time_period_id}")
 
+  $scope.updateQuota = (quota) ->
+    Quota.update({id: quota.id, quota: quota})
+
   $scope.init()
 
 ]
