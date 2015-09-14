@@ -26,4 +26,15 @@ RSpec.describe Api::QuotasController, type: :controller do
       expect(response_json.length).to eq(1)
     end
   end
+
+  describe 'PUT #update' do
+    let(:quota) { create :quota, value: 100, company: company }
+
+    it 'updates the quotas value' do
+      put :update, id: quota.id, quota: { value: 200 }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['value']).to eq(200)
+    end
+  end
 end
