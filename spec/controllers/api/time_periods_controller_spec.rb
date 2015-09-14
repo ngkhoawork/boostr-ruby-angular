@@ -44,10 +44,9 @@ RSpec.describe Api::TimePeriodsController, type: :controller do
     let!(:time_period) { create :time_period, company: company }
 
     it 'deletes the time period' do
-      expect {
-        delete :destroy, id: time_period.id, format: :json
-        expect(response).to be_success
-      }.to change(TimePeriod, :count).by(-1)
+      delete :destroy, id: time_period.id, format: :json
+      expect(response).to be_success
+      expect(time_period.reload.deleted_at).to_not be_nil
     end
   end
 
