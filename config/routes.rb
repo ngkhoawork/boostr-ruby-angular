@@ -28,7 +28,7 @@ Rails.application.routes.draw do
     resources :teams, only: [:index, :create, :show, :update, :destroy]
     resources :custom_values, only: [:index]
     resources :time_periods, only: [:index, :create]
-    resources :quotas, only: [:index, :update]
+    resources :quotas, only: [:index, :create, :update]
   end
 
   get '*path' => 'pages#index'
