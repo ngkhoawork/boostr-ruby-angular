@@ -1,7 +1,8 @@
 .row
   #devise-form.col-xs-4.center-block.text-center.center-element
     .col-xs-6.center-block.center-element
-      = inline_svg 'branding/boostr_logo.svg', class: 'logo'
+      %a{href: '/'}
+        = inline_svg 'branding/boostr_logo.svg', class: 'logo'
     .header Resenf unlock instructions
     = form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f|
       = devise_error_messages!
