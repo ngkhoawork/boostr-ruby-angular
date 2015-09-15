@@ -4,14 +4,14 @@ feature 'TimePeriod' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
 
-  describe 'creating a contact' do
+  describe 'creating a time_period' do
     before do
       login_as user, scope: :user
       visit '/settings/time_periods'
       expect(page).to have_css('#time-periods')
     end
 
-    scenario 'pops up a new contact modal and creates a new contact' do
+    scenario 'pops up a new time_period modal and creates a new time_period' do
       click_link('Add Time Period')
       expect(page).to have_css('#time-period-modal')
 
@@ -30,4 +30,42 @@ feature 'TimePeriod' do
       end
     end
   end
+
+  describe 'deleting a time period' do
+
+    let!(:time_periods) { create_list :time_period, 3, company: company }
+
+    before do
+      login_as user, scope: :user
+      visit '/settings/time_periods/'
+      expect(page).to have_css('#time-periods')
+    end
+
+    scenario 'removes the time_period from the page' do
+      within '.table-wrapper tbody' do
+        expect(page).to have_css('tr', count: 3)
+        find('tr:first-child').hover
+        within 'tr:first-child' do
+          find('.delete-time-period').click
+        end
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.table-wrapper tbody tr', count: 2)
+
+      within '.table-wrapper tbody' do
+        expect(page).to have_css('tr', count: 2)
+        find('tr:first-child').hover
+        within 'tr:first-child' do
+          find('.delete-time-period').click
+        end
+      end
+
+      page.driver.browser.switch_to.alert.accept
+
+      expect(page).to have_css('.table-wrapper tbody tr', count: 1)
+    end
+  end
+
 end

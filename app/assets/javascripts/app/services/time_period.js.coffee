@@ -24,5 +24,15 @@
       $rootScope.$broadcast 'updated_time_periods'
     deferred.promise
 
+  @delete = (deletedTimePeriod) ->
+    deferred = $q.defer()
+    resource.delete id: deletedTimePeriod.id, () ->
+      allTimePeriods = _.reject allTimePeriods, (time_period) ->
+        time_period.id == deletedTimePeriod.id
+      deferred.resolve()
+      $rootScope.$broadcast 'updated_time_periods'
+    deferred.promise
+
+
   return
 ]

@@ -17,6 +17,13 @@
   $scope.$on 'updated_time_periods', ->
     $scope.init()
 
+
+  $scope.delete = (time_period) ->
+    if confirm('Are you sure you want to delete "' +  time_period.name + '"?')
+      TimePeriod.delete time_period, ->
+        $location.path("/settings/time_periods/" + $routeParams.id)
+
+
   $scope.init()
 
 ]
