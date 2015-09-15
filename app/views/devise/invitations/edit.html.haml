@@ -1,7 +1,8 @@
 .row
   #devise-form.col-xs-4.center-block.text-center.center-element
     .col-xs-6.center-block.center-element
-      = inline_svg 'branding/boostr_logo.svg', class: 'logo'
+      %a{href: '/'}
+        = inline_svg 'branding/boostr_logo.svg', class: 'logo'
     .header= t 'devise.invitations.edit.header'
     = form_for resource, as: resource_name, url: invitation_path(resource_name), html: { method: :put } do |f|
       = devise_error_messages!
