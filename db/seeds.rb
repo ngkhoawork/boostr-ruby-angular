@@ -12,24 +12,6 @@ company_user = User.create!(
   password: "password"
 )
 
-team_leader_users = User.create!([
-  {
-    first_name: "Leader",
-    last_name: "User",
-    email: "leader@example.com",
-    password: "password"
-  }
-])
-
-team_member_users = User.create!([
-  {
-    first_name: "Member",
-    last_name: "User",
-    email: "member@example.com",
-    password: "password"
-  }
-])
-
 company = Company.create!(
   name: "Acme Corporation",
   billing_address_attributes: {
@@ -56,17 +38,301 @@ company = Company.create!(
   billing_contact_id: company_user.id
 )
 
-Product.create!([
-  { company: company, name: "Video", product_line: "Phone", family: "Native", pricing_type: "CPM" },
-  { company: company, name: "Native Ad - Mobile", product_line: "Tablet", family: "Banner",  pricing_type: "CPC" },
-  { company: company, name: "Native Ad - Desktop", product_line: "Desktop", family: "Native", pricing_type: "CPC" }
+company_user.company = company
+company_user.save
+
+products = company.products.create!([
+  { name: "Video", product_line: "Phone", family: "Native", pricing_type: "CPM" },
+  { name: "Native Ad - Mobile", product_line: "Tablet", family: "Banner",  pricing_type: "CPC" },
+  { name: "Native Ad - Desktop", product_line: "Desktop", family: "Native", pricing_type: "CPC" }
 ])
 
-# Stages
+stages = company.stages.create!([{
+  name: "Prospecting",
+  probability: 8,
+  open: true,
+  active: true,
+  position: 1,
+  color: "#000000",
+},{
+  name: "Needs Proposal",
+  probability: 20,
+  open: true,
+  active: true,
+  position: 2,
+  color: "#000000",
+},{
+  name: "Proposal",
+  probability: 50,
+  open: true,
+  active: true,
+  position: 3,
+  color: "#000000",
+},{
+  name: "Negotiations",
+  probability: 0,
+  open: true,
+  active: true,
+  position: 4,
+  color: "#000000",
+},{
+  name: "Verbal Commit",
+  probability: 90,
+  open: true,
+  active: true,
+  position: 5,
+  color: "#000000",
+},{
+  name: "Closed Won",
+  probability: 100,
+  open: nil,
+  active: nil,
+  position: 6,
+  color: "#000000",
+},{
+  name: "Closed Lost",
+  probability: 0,
+  open: false,
+  active: nil,
+  position: 7,
+  color: "#000000",
+}])
 
 # Teams
-# Clients
-# Contacts
-# Deals
+team_leader_users = company.users.create!([
+  {
+    first_name: "Leader",
+    last_name: "User",
+    email: "leader@example.com",
+    password: "password"
+  }
+])
+
+sales_team = company.teams.create!({
+  name: "Sales",
+  leader_id: company_user,
+  parent_id: nil,
+})
+
+west_coast_sales_team = company.teams.create!({
+  name: "West Coast Sales",
+  leader_id: team_leader_users[0],
+  parent_id: sales_team,
+})
+
+east_coast_sales_team = company.teams.create!({
+  name: "East Coast Sales",
+  leader_id: team_leader_users[0],
+  parent_id: sales_team,
+})
+
+sharks_team = company.teams.create!({
+  name: "Manhattan Sharks",
+  leader_id: team_leader_users[0],
+  parent_id: east_coast_sales_team,
+})
+
+
+team_member_users = company.users.create!([
+  {
+    first_name: "West Coast Member",
+    last_name: "User",
+    email: "west-coast-member@example.com",
+    password: "password",
+    team: west_coast_sales_team
+  },
+  {
+    first_name: "East Coast Member",
+    last_name: "User",
+    email: "east-coast-member@example.com",
+    password: "password",
+    team: east_coast_sales_team
+  },
+  {
+    first_name: "Shark Member",
+    last_name: "User",
+    email: "shark-member@example.com",
+    password: "password",
+    team: sharks_team
+  }
+])
+
 # Time periods
-# Quotas
+time_periods = company.time_periods.create!([{
+  name: 'Q3-2015',
+  start_date: Time.parse('2015-07-01'),
+  end_date: Time.parse('2015-09-30')
+}, {
+  name: 'Q4-2015',
+  start_date: Time.parse('2015-10-01'),
+  end_date: Time.parse('2015-12-31')
+}, {
+  name: 'Q1-2016',
+  start_date: Time.parse('2016-01-01'),
+  end_date: Time.parse('2016-03-31')
+}, {
+  name: 'Q2-2016',
+  start_date: Time.parse('2016-04-01'),
+  end_date: Time.parse('2016-06-30')
+}, {
+  name: 'Q3-2016',
+  start_date: Time.parse('2016-07-01'),
+  end_date: Time.parse('2016-09-30')
+}])
+
+
+# Set quotas for the initial time period
+company_user.quotas.where(time_period: time_periods[0]).first.update_attributes(value: 100000)
+team_leader_users[0].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 60000)
+team_member_users[0].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 20000)
+team_member_users[1].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 5000)
+team_member_users[2].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 35000)
+
+company_clients = company.clients.create!([{
+  name: "Buzzfeed",
+  created_by: company_user.id,
+  website: "buzzfeed.com",
+  client_type: "Publisher",
+}, {
+  name: "Digitas",
+  created_by: company_user.id,
+  website: "digitas.com",
+  client_type: "Agency",
+}, {
+  name: "DistroScale",
+  created_by: company_user.id,
+  website: "distroscale.com",
+  client_type: "Advertiser"
+}])
+
+company.contacts.create!([{
+  name: "Dan Walsh",
+  position: "Director Sales Strategy",
+  client: company_clients[0],
+  created_by: company_user.id,
+}, {
+  name: "Bobby Jones",
+  position: "CEO",
+  client: company_clients[1],
+  created_by: company_user.id,
+}, {
+  name: "Jillian Jackson",
+  position: "Leader",
+  client: company_clients[2],
+  created_by: company_user.id,
+}, {
+  name: "Brian Bennett",
+  position: "Sales Advisor",
+  client: company_clients[1],
+  created_by: company_user.id,
+}])
+
+# Deals
+closed_deal = company.deals.create!({
+  advertiser: company_clients[2],
+  agency: company_clients[1],
+  start_date: Time.parse('2015-01-01'),
+  end_date: Time.parse('2015-03-31'),
+  name: "Closed Deal",
+  budget: 50000,
+  stage: stages[5],
+  deal_type: "Test Campaign",
+  source_type: "Pitch to Agency",
+  next_steps: "Deal complete.",
+  created_by: company_user.id,
+})
+
+closed_deal.deal_members.create!([{
+  user: team_leader_users[0],
+  share: 10,
+  role: "Leader"
+},{
+  user: team_member_users[2],
+  share: 90,
+  role: "Member"
+}])
+
+closed_deal.deal_products.create!([{
+  product: products[1],
+  budget: 1722200,
+  period: Date.parse("2015-01-01"),
+},{
+  product: products[1],
+  budget: 1555600,
+  period: Date.parse("2015-02-01"),
+},{
+  product: products[1],
+  budget: 1722200,
+  period: Date.parse("2015-03-01"),
+}])
+
+prospecting_deal = company.deals.create!({
+  advertiser: company_clients[2],
+  agency: company_clients[1],
+  start_date: Time.parse('2016-01-01'),
+  end_date: Time.parse('2016-03-31'),
+  name: "Prospecting Deal",
+  budget: 255000,
+  stage: stages[2],
+  deal_type: "Seasonal",
+  source_type: "Pitch to Client",
+  next_steps: "Waiting on approval from finance.",
+  created_by: company_user.id,
+})
+
+prospecting_deal.deal_members.create!([{
+  user: team_leader_users[0],
+  share: 30,
+  role: "Leader"
+},{
+  user: team_member_users[0],
+  share: 70,
+  role: "Member"
+}])
+
+prospecting_deal.deal_products.create!([{
+  product: products[1],
+  budget: 8611111,
+  period: Date.parse("2016-01-01"),
+},{
+  product: products[1],
+  budget: 7777778,
+  period: Date.parse("2016-02-01"),
+},{
+  product: products[1],
+  budget: 8611111,
+  period: Date.parse("2016-03-01"),
+},{
+  product: products[2],
+  budget: 172222,
+  period: Date.parse("2016-01-01"),
+},{
+  product: products[2],
+  budget: 155556,
+  period: Date.parse("2016-02-01"),
+},{
+  product: products[2],
+  budget: 172222,
+  period: Date.parse("2016-03-01"),
+}])
+
+
+# Revenue
+csv =<<-eocsv
+Order #,Line #,AdServer,Qty,Price,Price Type,Delivered Qty,Remaining Qty,Budget,Budget Remaining,Start Date,End Date,Advertiser,Advertiser ID,Sales Rep,Product ID
+1234,1,DoubleClick,"10,000",1.5,CPM,5000,"5,000","15,000",7500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
+1234,2,DoubleClick,"20,000",2,CPM,10000,"10,000","40,000",20000,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
+1234,3,DoubleClick,"10,000",2.5,CPM,5000,"5,000","25,000",12500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
+5656,1,DoubleClick,"10,000",0.3,CPC,5000,"5,000","3,000",1500,6/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
+5656,2,DoubleClick,"20,000",0.25,CPC,10000,"10,000","5,000",2500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
+5656,3,DoubleClick,"50,000",1,CPC,25000,"25,000","50,000",25000,6/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
+8686,1,Sizmek,100000,1,CPE,50000,50000,"100,000",50000,9/1/2015,12/31/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
+8686,2,Sizmek,100000,2,CPE,50000,50000,"200,000",100000,9/2/2015,1/1/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
+8686,3,Sizmek,100000,3,CPE,50000,50000,"300,000",150000,9/3/2015,1/2/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
+8686,4,Sizmek,100000,4,CPE,50000,50000,"400,000",200000,9/4/2015,1/3/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
+8686,5,Sizmek,100000,5,CPE,50000,50000,"500,000",250000,9/5/2015,1/4/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
+8686,6,Sizmek,100000,6,CPE,50000,50000,"600,000",300000,9/6/2015,1/5/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
+8686,7,Sizmek,100000,7,CPE,50000,50000,"700,000",350000,9/7/2015,1/6/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
+eocsv
+
+revenues = Revenue.import(csv, company.id)
