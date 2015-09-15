@@ -6,6 +6,8 @@ class Revenue < ActiveRecord::Base
 
   validates :company_id, :order_number, :line_number, :ad_server, presence: true
 
+  before_save :set_daily_budget
+
   def self.import(file, company_id)
     errors = []
     row_number = 0
@@ -71,6 +73,10 @@ class Revenue < ActiveRecord::Base
 
   def product_name
     product.name if product.present?
+  end
+
+  def set_daily_budget
+    self.daily_budget = budget / (end_date.to_date - start_date.to_date + 1).to_i
   end
 
   def as_json(options = {})

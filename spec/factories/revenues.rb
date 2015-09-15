@@ -1,0 +1,10 @@
+FactoryGirl.define do
+  factory :revenue do
+    budget 30_000
+    start_date "2015-01-01"
+    end_date "2015-01-30"
+    order_number "1"
+    line_number "2"
+    ad_server "Yahoo"
+  end
+end
