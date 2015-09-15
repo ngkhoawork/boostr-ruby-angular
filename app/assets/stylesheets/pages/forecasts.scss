@@ -1,0 +1,30 @@
+#forecasts {
+
+  .well {
+    padding: 36px 72px;
+    margin-bottom: 48px;
+
+    ul {
+      li {
+        border-right: 2px solid $gray-light;
+        padding-left: 48px;
+        padding-right: 48px;
+
+        &:first-child, &:last-child {
+          border: none;
+        }
+
+        h1 {
+          margin-bottom: 0;
+        }
+
+        h5 {
+          text-transform: uppercase;
+          margin-top: 0;
+          color: $dark-grayish-blue-1;
+          font-family: $font-family-light;
+        }
+      }
+    }
+  }
+}
