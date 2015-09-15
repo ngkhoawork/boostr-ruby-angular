@@ -5,6 +5,8 @@ class Quota < ActiveRecord::Base
 
   scope :for_time_period, -> (time_period_id) { where(time_period_id: time_period_id) if time_period_id.present? }
 
+  validates :user_id, :time_period_id, :company_id, presence: true
+
   def as_json(options={})
     super(options.merge(methods: [:user_name]))
   end

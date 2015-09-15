@@ -7,7 +7,7 @@ RSpec.describe Quota, type: :model do
       let(:company) { create :company }
       let!(:user) { create :user, company: company }
       let!(:time_period) { create :time_period, company: company }
-      let!(:quota) { create :quota }
+      let!(:other_time_period) { create :time_period, company: company }
 
       it 'returns all quotas when the time period id is nil' do
         expect(Quota.for_time_period(nil).length).to eq(2)

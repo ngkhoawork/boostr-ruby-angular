@@ -1,4 +1,14 @@
 #quotas
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right.last
+              %a.add-user{ href: '', ng: { click: 'showModal()' } }
+                = inline_svg 'icons/add.svg'
+                Add User
+
   .container
     .row
       .col-xs-12
