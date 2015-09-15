@@ -68,4 +68,17 @@ RSpec.describe Revenue, type: :model do
       end.to_not change(Revenue, :count)
     end
   end
+
+  describe '#daily_budget' do
+    let(:revenue) { create :revenue, company: company }
+
+    it 'returns the daily budget amount based on budget and start and end dates' do
+      expect(revenue.daily_budget).to eq(1000)
+    end
+
+    it 'returns the daily budget across months' do
+      revenue.update_attributes(end_date: "2015-12-31", budget: 365_000)
+      expect(revenue.daily_budget).to eq(1000)
+    end
+  end
 end
