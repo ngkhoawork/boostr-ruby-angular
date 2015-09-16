@@ -152,6 +152,7 @@
                 %th Member
                 %th Role
                 %th Share
+                %th.action-column
             %tbody
               %tr{ ng: { repeat: "member in currentDeal.members | orderBy: 'name'"} }
                 %td
@@ -162,6 +163,11 @@
                 %td
                   %span{ 'e-name': 'share', editable: { text: 'member.share' }, onaftersave: 'updateDealMember(member)' }
                     {{ member.share }}%
+                %td.action-column.info-td
+                  .empty
+                %td.action-td
+                  %a.delete-member{ href: '', ng: { click: 'delete(member)' } }
+                    = inline_svg 'icons/trash.svg'
 
     #info.col-xs-6.pull-right
       %h3.header Additional Info

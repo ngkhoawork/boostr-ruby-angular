@@ -22,6 +22,11 @@ class Api::DealMembersController < ApplicationController
     end
   end
 
+  def destroy
+    deal_member.destroy
+    render deal
+  end
+
   private
 
   def deal_member_params
