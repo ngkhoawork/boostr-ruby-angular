@@ -18,9 +18,8 @@ class TimePeriod < ActiveRecord::Base
 
   # Because we have soft-deletes uniqueness validations must be custom
   def unique_name
-    return true unless company
-
-    scope = company.time_periods.where('name = ?', self.name)
+    return true unless company && name
+    scope = company.time_periods.where('LOWER(name) = ?', self.name.downcase)
     scope = scope.where('id <> ?', self.id) if self.id
 
     errors.add(:name, 'Name has already been taken') if scope.count > 0
