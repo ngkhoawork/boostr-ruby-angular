@@ -24,7 +24,7 @@
                 %h4
                   {{ client.name }}
               .row
-                13 people   3 deals
+                {{ client.contacts_count }} people   {{ client.deals_count }}  deals
       #client-detail.col-xs-7
         .tools.pull-right
           %a#delete-client{ href: '', ng: { click: 'delete()' } }

@@ -35,6 +35,7 @@
         if(existingDeal.id == deal.id)
           allDeals[i] = deal
       deferred.resolve(deal)
+      $rootScope.$broadcast 'updated_deals'
     deferred.promise
 
   @get = (deal_id) ->

@@ -7,6 +7,8 @@ class Client < ActiveRecord::Base
   has_many :users, through: :client_members
   has_many :contacts
   has_many :revenue
+  has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
+  has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
 
   has_one :address, as: :addressable
 
@@ -14,7 +16,11 @@ class Client < ActiveRecord::Base
 
   validates :name, presence: true
 
+  def deals_count
+    advertiser_deals_count + agency_deals_count
+  end
+
   def as_json(options = {})
-    super(options.merge(include: [:address]))
+    super(options.merge(include: [:address], methods: [:deals_count]))
   end
 end

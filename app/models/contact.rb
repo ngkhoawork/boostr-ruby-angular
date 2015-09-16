@@ -1,7 +1,7 @@
 class Contact < ActiveRecord::Base
   acts_as_paranoid
 
-  belongs_to :client
+  belongs_to :client, counter_cache: true
   belongs_to :company
 
   has_one :address, as: :addressable

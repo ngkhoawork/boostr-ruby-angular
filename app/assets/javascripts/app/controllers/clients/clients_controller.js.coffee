@@ -3,9 +3,7 @@
 ($scope, $rootScope, $modal, $routeParams, $location, Client, ClientMember, Contact, Deal) ->
 
   $scope.init = ->
-    Client.all().then (clients) ->
-      $scope.clients = clients
-      Client.set($routeParams.id || clients[0].id)
+    $scope.getClients()
     $scope.showContactList = false
     $scope.memberRoles = ClientMember.roles()
 
@@ -17,6 +15,11 @@
     unless client.contacts
       Contact.allForClient client.id, (contacts) ->
         client.contacts = contacts
+
+  $scope.getClients = ->
+    Client.all().then (clients) ->
+      $scope.clients = clients
+      Client.set($routeParams.id || clients[0].id)
 
   $scope.getDeals = (client) ->
     Deal.allForClient(client.id).then (deals) ->
@@ -106,6 +109,7 @@
 
   $scope.$on 'updated_deals', ->
     $scope.getDeals($scope.currentClient)
+    $scope.getClients()
 
   $scope.$on 'updated_client_members', ->
     $scope.getClientMembers()
