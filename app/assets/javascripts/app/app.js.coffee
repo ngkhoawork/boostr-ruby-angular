@@ -3,6 +3,7 @@
   'directives'
   'filters'
   'ngRoute'
+  'ngMessages'
   'templates'
   'ui.bootstrap'
   'ui.select'
