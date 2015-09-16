@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     resources :custom_values, only: [:index]
     resources :time_periods, only: [:index, :create, :destroy]
     resources :quotas, only: [:index, :create, :update]
+    resources :forecasts, only: [:index, :show]
   end
 
   get '*path' => 'pages#index'
