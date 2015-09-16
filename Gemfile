@@ -25,6 +25,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-route'
   gem 'rails-assets-angular-bootstrap'
   gem 'rails-assets-angular-resource'
+  gem 'rails-assets-angular-messages'
   gem 'rails-assets-underscore'
   gem 'rails-assets-angular-ui-select'
   gem 'rails-assets-angular-sanitize'

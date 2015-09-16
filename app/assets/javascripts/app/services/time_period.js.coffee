@@ -16,12 +16,14 @@
       deferred.resolve(allTimePeriods)
     deferred.promise
 
-  @create = (params) ->
+  @create = (params, errorCallback) ->
     deferred = $q.defer()
-    resource.save params, (time_period) ->
+    resource.save params,
+    (time_period) ->
       allTimePeriods.push(time_period)
       deferred.resolve(time_period)
       $rootScope.$broadcast 'updated_time_periods'
+    , errorCallback
     deferred.promise
 
   @delete = (deletedTimePeriod) ->

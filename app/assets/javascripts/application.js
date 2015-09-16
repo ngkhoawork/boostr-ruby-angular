@@ -18,6 +18,7 @@
 //= require angular-resource
 //= require angular-rails-templates
 //= require angular-bootstrap
+//= require angular-messages
 //= require angular-ui-select
 //= require angular-sanitize
 //= require ng-file-upload
