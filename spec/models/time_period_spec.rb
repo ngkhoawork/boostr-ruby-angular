@@ -10,6 +10,12 @@ RSpec.describe TimePeriod, type: :model do
       expect(time_period).to be_valid
     end
 
+    it "is case insensitive" do
+      time_period
+      another_time_period = build(:time_period, company: company, name: time_period.name.downcase)
+      expect(another_time_period).to be_invalid
+    end
+
     it 'validates the name uniqueness' do
       time_period
       another_time_period = build(:time_period, company: company, name: time_period.name)
