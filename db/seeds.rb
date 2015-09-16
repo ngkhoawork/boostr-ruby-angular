@@ -110,26 +110,26 @@ team_leader_users = company.users.create!([
 
 sales_team = company.teams.create!({
   name: "Sales",
-  leader_id: company_user,
-  parent_id: nil,
+  leader: company_user,
+  parent: nil,
 })
 
 west_coast_sales_team = company.teams.create!({
   name: "West Coast Sales",
-  leader_id: team_leader_users[0],
-  parent_id: sales_team,
+  leader: team_leader_users[0],
+  parent: sales_team,
 })
 
 east_coast_sales_team = company.teams.create!({
   name: "East Coast Sales",
-  leader_id: team_leader_users[0],
-  parent_id: sales_team,
+  leader: team_leader_users[0],
+  parent: sales_team,
 })
 
 sharks_team = company.teams.create!({
   name: "Manhattan Sharks",
-  leader_id: team_leader_users[0],
-  parent_id: east_coast_sales_team,
+  leader: team_leader_users[0],
+  parent: east_coast_sales_team,
 })
 
 
