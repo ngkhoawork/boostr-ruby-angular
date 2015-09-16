@@ -19,6 +19,10 @@ feature 'Individual Deal' do
     end
 
     scenario 'shows deal details and stage' do
+      within '#nav' do
+        first('li a').click
+      end
+
       first_deal_product = deal.deal_products.where(product_id: product.id).first
       within '#deal_overview' do
         deal_name = find('h3.deal-name')
@@ -28,6 +32,10 @@ feature 'Individual Deal' do
         fill_in 'deal-name', with: 'Taco'
         find('.editable-input').native.send_keys(:return)
         expect(deal_name).to have_text 'Taco'
+      end
+
+      within '#nav' do
+        find('li:nth-child(4) a').click
       end
 
       within '#info' do

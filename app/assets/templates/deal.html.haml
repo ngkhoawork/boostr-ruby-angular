@@ -14,119 +14,121 @@
       .row
         .col-xs-12
           %ul.nav.nav-tabs
-            %li.active
-              %a
+            %li{ ng: { class: "{ active: isActive('campaign') }" } }
+              %a{ ng: { click: "scrollTo('campaign')" } }
                 campaign
-            %li
-              %a
+            %li{ ng: { class: "{ active: isActive('teamsplit') }" } }
+              %a{ ng: { click: "scrollTo('teamsplit')" } }
                 team & split
-            %li
-              %a
+            %li{ ng: { class: "{ active: isActive('documents') }" } }
+              %a{ ng: { click: "scrollTo('documents')" } }
                 documents
-            %li
-              %a
+            %li{ ng: { class: "{ active: isActive('info') }" } }
+              %a{ ng: { click: "scrollTo('info')" } }
                 additional info
             %li.pull-right.nav-text.last
               Updated {{ currentDeal.updated_at | date: 'MMMM d, y' }}
-    %h3.header
-      Campaign
-    .well
-      .row
-        .col-xs-4.campaign-period
-          .row
-            .col-xs-12
-              Campaign Period
-          .row
-            .col-xs-12
-              %h4.bs-datepicker
-                %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.start_date', click: 'startOpened = true', class: '{ editing: startOpened }', change: 'updateDeal()' }, 'is-open': 'startOpened' }
-                  {{ currentDeal.start_date | date: 'MMM d, y': '+0000' }}
-                \-
-                %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateDeal()' }, 'is-open': 'endOpened' }
-                  {{ currentDeal.end_date | date: 'MMM d, y': '+0000' }}
 
-        .col-xs-2.campaign-period.text-center
-          .row
-            .col-xs-12
-              Total Amount
-          .row
-            .col-xs-12
-              %h4#total-amount
-                {{ currentDeal.budget / 100 | currency: '$': 0 }}
-        .col-xs-2.campaign-period.text-center
-          .row
-            .col-xs-12
-              Forecast Amount
-          .row
-            .col-xs-12
-              %h4#forecast
-                {{ currentDeal.budget / 100 * currentDeal.stage.probability / 100 | currency: '$' :0 }}
-        .col-xs-2.campaign-period.text-center
-          .row
-            .col-xs-12
-              Current Stage
-          .row
-            .col-xs-12
-              %h5
-                .stage{ editable: { select: 'currentDeal.stage_id' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDeal()' }
-                  {{ currentDeal.stage.name }}
-                  .small
-                    {{ currentDeal.stage.probability }}% probability
-    #revenue_schedule.table-wrapper
-      %table.table.white-table
-        %thead
-          %tr
-            %th Product
-            %th Total Budget
-            %th{ ng: { repeat: 'month in currentDeal.months' } }
-              {{ month | boDate }}
-
-        %tbody
-          %tr{ ng: { repeat: 'product in currentDeal.products' } }
-            %td
-              {{ product.name }}
-            %td
-              {{ product.total_budget / 100 | currency:'$':0  }}
-            %td{ ng: { repeat: 'deal_product in product.deal_products' } }
-              %span{ 'e-name': '{{ deal_product.id }}', editable: { text: 'deal_product.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
-                {{ deal_product.budget | currency:'$':0 }}
-
-    #new-product.well.dark
-      .row{ ng: { hide: 'showProductForm' } }
-        .col-xs-12
-          %a.add-product{ href: '', ng: { click: 'toggleProductForm()' } }
-            = inline_svg 'icons/add.svg'
-            Add Product
-      .row{ ng: { show: 'showProductForm' } }
-        .col-xs-12
-          %form#product-form{ ng: { submit: 'addProduct()' } }
+    #campaign
+      %h3.header
+        Campaign
+      .well
+        .row
+          .col-xs-4.campaign-period
             .row
-              .col-xs-2
-                .row.bordered
-                  .col-xs-12
-                    .form-group
-                      %label.control-label{ for: 'product' } Product
-                      %ui-select{ name: 'product', ng: { model: 'deal_product.product_id', disabled: true, required: true } }
-                        %ui-select-match{ placeholder: 'Product' }
-                          {{ $select.selected.name }}
-                        %ui-select-choices{ repeat: 'product.id as product in products | filter: { name: $select.search }' }
-                          %div{ ng: { bind: { html: 'product.name' } } }
-                .row.bordered
-                  .col-xs-12
-                    .form-group
-                      %label.control-label{ for: 'total_budget' } Total Budget
-                      %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal_product.total_budget', required: true }, name: 'total_budget' }
-                .row
-                  .col-xs-12
-                    %button.btn.btn-primary.btn-block{ type: 'submit' } Add Product
-              .col-xs-10
-                .row.months
-                  .col-xs-2{ ng: { repeat: 'month in deal_product.months' } }
-                    .form-group
-                      %label.control-label Month \#{{ $index + 1 }}
-                      %input.form-control{ ng: { model: 'month.value'}, disabled: true }
+              .col-xs-12
+                Campaign Period
+            .row
+              .col-xs-12
+                %h4.bs-datepicker
+                  %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.start_date', click: 'startOpened = true', class: '{ editing: startOpened }', change: 'updateDeal()' }, 'is-open': 'startOpened' }
+                    {{ currentDeal.start_date | date: 'MMM d, y': '+0000' }}
+                  \-
+                  %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateDeal()' }, 'is-open': 'endOpened' }
+                    {{ currentDeal.end_date | date: 'MMM d, y': '+0000' }}
 
-    .row
+          .col-xs-2.campaign-period.text-center
+            .row
+              .col-xs-12
+                Total Amount
+            .row
+              .col-xs-12
+                %h4#total-amount
+                  {{ currentDeal.budget / 100 | currency: '$': 0 }}
+          .col-xs-2.campaign-period.text-center
+            .row
+              .col-xs-12
+                Forecast Amount
+            .row
+              .col-xs-12
+                %h4#forecast
+                  {{ currentDeal.budget / 100 * currentDeal.stage.probability / 100 | currency: '$' :0 }}
+          .col-xs-2.campaign-period.text-center
+            .row
+              .col-xs-12
+                Current Stage
+            .row
+              .col-xs-12
+                %h5
+                  .stage{ editable: { select: 'currentDeal.stage_id' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDeal()' }
+                    {{ currentDeal.stage.name }}
+                    .small
+                      {{ currentDeal.stage.probability }}% probability
+      #revenue_schedule.table-wrapper
+        %table.table.white-table
+          %thead
+            %tr
+              %th Product
+              %th Total Budget
+              %th{ ng: { repeat: 'month in currentDeal.months' } }
+                {{ month | boDate }}
+
+          %tbody
+            %tr{ ng: { repeat: 'product in currentDeal.products' } }
+              %td
+                {{ product.name }}
+              %td
+                {{ product.total_budget / 100 | currency:'$':0  }}
+              %td{ ng: { repeat: 'deal_product in product.deal_products' } }
+                %span{ 'e-name': '{{ deal_product.id }}', editable: { text: 'deal_product.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
+                  {{ deal_product.budget | currency:'$':0 }}
+
+      #new-product.well.dark
+        .row{ ng: { hide: 'showProductForm' } }
+          .col-xs-12
+            %a.add-product{ href: '', ng: { click: 'toggleProductForm()' } }
+              = inline_svg 'icons/add.svg'
+              Add Product
+        .row{ ng: { show: 'showProductForm' } }
+          .col-xs-12
+            %form#product-form{ ng: { submit: 'addProduct()' } }
+              .row
+                .col-xs-2
+                  .row.bordered
+                    .col-xs-12
+                      .form-group
+                        %label.control-label{ for: 'product' } Product
+                        %ui-select{ name: 'product', ng: { model: 'deal_product.product_id', disabled: true, required: true } }
+                          %ui-select-match{ placeholder: 'Product' }
+                            {{ $select.selected.name }}
+                          %ui-select-choices{ repeat: 'product.id as product in products | filter: { name: $select.search }' }
+                            %div{ ng: { bind: { html: 'product.name' } } }
+                  .row.bordered
+                    .col-xs-12
+                      .form-group
+                        %label.control-label{ for: 'total_budget' } Total Budget
+                        %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal_product.total_budget', required: true }, name: 'total_budget' }
+                  .row
+                    .col-xs-12
+                      %button.btn.btn-primary.btn-block{ type: 'submit' } Add Product
+                .col-xs-10
+                  .row.months
+                    .col-xs-2{ ng: { repeat: 'month in deal_product.months' } }
+                      .form-group
+                        %label.control-label Month \#{{ $index + 1 }}
+                        %input.form-control{ ng: { model: 'month.value'}, disabled: true }
+
+    #teamsplit.row
       .col-xs-12
         #members.section
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }

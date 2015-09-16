@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User',
-($scope, $routeParams, $modal, $filter, Deal, Product, DealProduct, DealMember, Stage, User) ->
+['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User',
+($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User) ->
 
   $scope.init = ->
     $scope.currentDeal = {}
@@ -58,6 +58,13 @@
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.currentDeal = deal
+
+  $scope.isActive = (id) ->
+    $location.hash() == id
+
+  $scope.scrollTo = (id) ->
+    $location.hash id
+    $anchorScroll()
 
   $scope.init()
 ]
