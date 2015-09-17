@@ -43,10 +43,24 @@
                 %th Gap to Quota
 
             %tbody
-              %tr
-                %td To
-                %td Be
-                %td Filled
-                %td Out
-                %td Shortly
-                %td :)
+              %tr{ ng: { repeat: 'row in teams' } }
+                %td
+                  %a{ ng: { href: '/forecast/{{row.id}}' } }
+                    {{ row.name }}
+                %td {{ row.weighted_pipeline | currency: '$': 0 }}
+                %td {{ row.revenue | currency: '$': 0 }}
+                %td {{ row.amount | currency: '$': 0 }}
+                %td {{ row.percent_to_quota | currency: '$': 0 }}
+                %td {{ row.gap_to_quota | currency: '$': 0 }}
+
+              %tr{ ng: { repeat: 'row in members' } }
+                %td
+                  %a{ ng: { href: '' } }
+                    {{ row.full_name }}
+                %td {{ row.weighted_pipeline | currency: '$': 0 }}
+                %td {{ row.revenue | currency: '$': 0 }}
+                %td {{ row.amount | currency: '$': 0 }}
+                %td {{ row.percent_to_quota | currency: '$': 0 }}
+                %td {{ row.gap_to_quota | currency: '$': 0 }}
+
+

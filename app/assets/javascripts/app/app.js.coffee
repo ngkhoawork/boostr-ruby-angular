@@ -59,7 +59,7 @@
     .when '/settings/quotas/:time_period_id?',
       templateUrl: 'settings/quotas.html'
       controller: 'SettingsQuotasController'
-    .when '/forecast',
+    .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
     .otherwise({ redirectTo: '/dashboard' })

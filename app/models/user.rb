@@ -12,6 +12,7 @@ class User < ActiveRecord::Base
   has_many :deal_members
   has_many :deals, through: :deal_members
   has_many :quotas
+  has_many :teams, foreign_key: :leader_id
 
   ROLES = %w(user superadmin)
 
@@ -40,6 +41,10 @@ class User < ActiveRecord::Base
 
   def full_name
     "#{first_name} #{last_name}"
+  end
+
+  def leader?
+    teams.count > 0
   end
 
   def as_json(options = {})
