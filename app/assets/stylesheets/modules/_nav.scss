@@ -20,6 +20,7 @@
 .navbar-default {
   padding-bottom: 3px;
   padding-top: 5px;
+
   .active {
     a {
       &:after {
@@ -45,6 +46,7 @@
   .navbar-text {
     margin-top: 22px;
     margin-bottom: 20px;
+
     a {
       color: $dark-grayish-blue-4;
     }
@@ -78,9 +80,12 @@
       a {
         line-height: 26px;
         color: $white;
+        cursor: pointer;
+
         &:hover,
         &:focus {
           color: $gray-lighter;
+
           svg {
             fill: $gray-lighter;
           }
@@ -98,14 +103,18 @@
       }
     }
   }
+
   &.transparent {
     background: $body-bg;
     border-bottom: 1px solid $gray-lighter;
+
     .nav-tabs {
       background: $body-bg;
+
       li {
         a {
           color: $link-color;
+          cursor: pointer;
 
           &:hover,
           &:focus {

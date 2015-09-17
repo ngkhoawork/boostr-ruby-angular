@@ -13,6 +13,10 @@
       $scope.currentDeal = deal
     Stage.all().then (stages) ->
       $scope.stages = stages
+    $scope.anchors = [{name: 'campaign', id: 'campaign'},
+                      {name: 'team & split', id: 'teamsplit'},
+                      {name: 'documents', id: 'documents'},
+                      {name: 'additional info', id: 'info'}]
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()
@@ -60,11 +64,11 @@
       $scope.currentDeal = deal
 
   $scope.isActive = (id) ->
-    $location.hash() == id
+    $scope.activeAnchor == id
 
   $scope.scrollTo = (id) ->
-    $location.hash id
-    $anchorScroll()
+    $scope.activeAnchor = id
+    $anchorScroll(id)
 
   $scope.init()
 ]

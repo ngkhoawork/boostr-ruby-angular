@@ -14,18 +14,9 @@
       .row
         .col-xs-12
           %ul.nav.nav-tabs
-            %li{ ng: { class: "{ active: isActive('campaign') }" } }
-              %a{ ng: { click: "scrollTo('campaign')" } }
-                campaign
-            %li{ ng: { class: "{ active: isActive('teamsplit') }" } }
-              %a{ ng: { click: "scrollTo('teamsplit')" } }
-                team & split
-            %li{ ng: { class: "{ active: isActive('documents') }" } }
-              %a{ ng: { click: "scrollTo('documents')" } }
-                documents
-            %li{ ng: { class: "{ active: isActive('info') }" } }
-              %a{ ng: { click: "scrollTo('info')" } }
-                additional info
+            %li{ ng: { repeat: 'anchor in anchors', class: '{ active: isActive(anchor.id) }' } }
+              %a{ ng: { click: 'scrollTo(anchor.id)' } }
+                {{ anchor.name }}
             %li.pull-right.nav-text.last
               Updated {{ currentDeal.updated_at | date: 'MMMM d, y' }}
 
