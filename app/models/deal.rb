@@ -2,8 +2,8 @@ class Deal < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
-  belongs_to :advertiser, class_name: 'Client'
-  belongs_to :agency, class_name: 'Client'
+  belongs_to :advertiser, class_name: 'Client', foreign_key: 'advertiser_id', counter_cache: :advertiser_deals_count
+  belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id', counter_cache: :agency_deals_count
   belongs_to :stage, counter_cache: true
   belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
 
@@ -80,7 +80,7 @@ class Deal < ActiveRecord::Base
 
       total_budget = old_deal_products.sum(:budget) / 100
       old_deal_products.destroy_all
-      array << {id: product.id, total_budget: total_budget}
+      array << { id: product.id, total_budget: total_budget }
     end
 
     array.each do |object|

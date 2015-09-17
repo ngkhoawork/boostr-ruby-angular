@@ -6,8 +6,10 @@ feature 'Clients' do
 
   describe 'showing client details' do
     let!(:client) { create :advertiser, company: company }
+    let!(:agency) { create :agency, company: company }
     let!(:contacts) { create_list :contact, 2, client: client, company: company }
     let!(:deal) { create_list :deal, 2, company: company, advertiser: client }
+    let!(:agency_deal) { create :deal, company: company, agency: agency }
 
     before do
       login_as user, scope: :user
@@ -16,6 +18,10 @@ feature 'Clients' do
     end
 
     scenario 'shows client details, people, deals, team and splits' do
+      within '#client-list' do
+        expect(page).to have_css('.list-group-item', count: 2)
+      end
+
       within '#client-detail' do
         expect(find('h2.client-name')).to have_text(client.name)
 
