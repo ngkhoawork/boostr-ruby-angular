@@ -6,6 +6,7 @@ feature 'Forecast' do
   let(:parent) { create :parent_team, company: company, leader: user }
   let!(:child) { create :child_team, company: company, parent: parent }
   let!(:member) { create :user, company: company, team: child }
+  let!(:time_period) { create :time_period, company: company }
 
 
   describe 'showing the root level of teams' do

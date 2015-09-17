@@ -6,6 +6,20 @@
           Forecast
 
     .row
+      .col-xs-4.quota-period
+        .row
+          .col-xs-12
+            Forecast Period
+        .row
+          .col-xs-12{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true }}
+              {{ currentTimePeriod.name }} ({{ currentTimePeriod.start_date | date: 'shortDate'}} - {{ currentTimePeriod.end_date | date: 'shortDate' }})
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id == currentTimePeriod.id}' } }
+                %a{ href: '', ng: { click: 'updateTimePeriod(timePeriod.id)' } }
+                  {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
+    .row
       .col-xs-12
         .well
           %ul.list-inline

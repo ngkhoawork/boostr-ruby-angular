@@ -192,7 +192,7 @@ company_clients = company.clients.create!([{
   name: "Buzzfeed",
   created_by: company_user.id,
   website: "buzzfeed.com",
-  client_type: "Publisher",
+  client_type: "Advertiser",
 }, {
   name: "Digitas",
   created_by: company_user.id,
@@ -203,6 +203,23 @@ company_clients = company.clients.create!([{
   created_by: company_user.id,
   website: "distroscale.com",
   client_type: "Advertiser"
+}])
+
+# These client members will be used as the default for the deal_members when a deal is created
+company_clients[0].client_members.create!([{
+  user: team_member_users[0],
+  share: 100,
+  role: "Member"
+}])
+
+company_clients[2].client_members.create!([{
+  user: team_leader_users[0],
+  share: 10,
+  role: "Leader"
+},{
+  user: team_member_users[2],
+  share: 90,
+  role: "Member"
 }])
 
 company.contacts.create!([{
@@ -241,16 +258,6 @@ closed_deal = company.deals.create!({
   next_steps: "Deal complete.",
   created_by: company_user.id,
 })
-
-closed_deal.deal_members.create!([{
-  user: team_leader_users[0],
-  share: 10,
-  role: "Leader"
-},{
-  user: team_member_users[2],
-  share: 90,
-  role: "Member"
-}])
 
 closed_deal.deal_products.create!([{
   product: products[1],
@@ -320,19 +327,19 @@ prospecting_deal.deal_products.create!([{
 # Revenue
 csv =<<-eocsv
 Order #,Line #,AdServer,Qty,Price,Price Type,Delivered Qty,Remaining Qty,Budget,Budget Remaining,Start Date,End Date,Advertiser,Advertiser ID,Sales Rep,Product ID
-1234,1,DoubleClick,"10,000",1.5,CPM,5000,"5,000","15,000",7500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
-1234,2,DoubleClick,"20,000",2,CPM,10000,"10,000","40,000",20000,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
-1234,3,DoubleClick,"10,000",2.5,CPM,5000,"5,000","25,000",12500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
-5656,1,DoubleClick,"10,000",0.3,CPC,5000,"5,000","3,000",1500,6/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
-5656,2,DoubleClick,"20,000",0.25,CPC,10000,"10,000","5,000",2500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
-5656,3,DoubleClick,"50,000",1,CPC,25000,"25,000","50,000",25000,6/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
-8686,1,Sizmek,100000,1,CPE,50000,50000,"100,000",50000,9/1/2015,12/31/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
-8686,2,Sizmek,100000,2,CPE,50000,50000,"200,000",100000,9/2/2015,1/1/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
-8686,3,Sizmek,100000,3,CPE,50000,50000,"300,000",150000,9/3/2015,1/2/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
-8686,4,Sizmek,100000,4,CPE,50000,50000,"400,000",200000,9/4/2015,1/3/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
-8686,5,Sizmek,100000,5,CPE,50000,50000,"500,000",250000,9/5/2015,1/4/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
-8686,6,Sizmek,100000,6,CPE,50000,50000,"600,000",300000,9/6/2015,1/5/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
-8686,7,Sizmek,100000,7,CPE,50000,50000,"700,000",350000,9/7/2015,1/6/2016,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[1].id}
+1234,1,DoubleClick,"10000",1.5,CPM,5000,"5000","15000",7500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
+1234,2,DoubleClick,"20000",2,CPM,10000,"10000","40000",20000,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
+1234,3,DoubleClick,"10000",2.5,CPM,5000,"5000","25000",12500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
+5656,1,DoubleClick,"10000",0.3,CPC,5000,"5000","3000",1500,6/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
+5656,2,DoubleClick,"20000",0.25,CPC,10000,"10000","5000",2500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
+5656,3,DoubleClick,"50000",1,CPC,25000,"25000","50000",25000,6/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
+8686,1,Sizmek,100000,1,CPE,50000,50000,"100000",50000,9/1/2015,12/31/2015,#{company_clients[0]},#{company_clients[1].id},west-coast-member@example.com,#{products[1].id}
+8686,2,Sizmek,100000,2,CPE,50000,50000,"200000",100000,9/2/2015,1/1/2016,#{company_clients[0]},#{company_clients[0].id},west-coast-member@example.com,#{products[1].id}
+8686,3,Sizmek,100000,3,CPE,50000,50000,"300000",150000,9/3/2015,1/2/2016,#{company_clients[0]},#{company_clients[0].id},west-coast-member@example.com,#{products[1].id}
+8686,4,Sizmek,100000,4,CPE,50000,50000,"400000",200000,9/4/2015,1/3/2016,#{company_clients[0]},#{company_clients[0].id},west-coast-member@example.com,#{products[1].id}
+8686,5,Sizmek,100000,5,CPE,50000,50000,"500000",250000,9/5/2015,1/4/2016,#{company_clients[0]},#{company_clients[0].id},west-coast-member@example.com,#{products[1].id}
+8686,6,Sizmek,100000,6,CPE,50000,50000,"600000",300000,9/6/2015,1/5/2016,#{company_clients[0]},#{company_clients[0].id},west-coast-member@example.com,#{products[1].id}
+8686,7,Sizmek,100000,7,CPE,50000,50000,"700000",350000,9/7/2015,1/6/2016,#{company_clients[0]},#{company_clients[0].id},west-coast-member@example.com,#{products[1].id}
 eocsv
 
 revenues = Revenue.import(csv, company.id)

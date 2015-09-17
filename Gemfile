@@ -46,6 +46,8 @@ group :development, :test do
   gem 'launchy'
   gem 'database_cleaner'
   gem 'ffaker'
+  gem 'guard-rspec', require: false
+  gem 'fuubar'
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
