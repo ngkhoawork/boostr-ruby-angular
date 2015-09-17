@@ -53,4 +53,25 @@ feature 'DealMembers' do
       end
     end
   end
+
+  describe 'deleting a deal_member' do
+    let!(:deal_member) { create_list :deal_member, 3, deal_id: deal.id }
+    before do
+      login_as user, scope: :user
+      visit "/deals/#{deal.id}"
+      expect(page).to have_css('#deal')
+    end
+
+    scenario 'delete member' do
+      within '#teamsplits tbody' do
+        expect(page).to have_css('tr', count: 3)
+        find('tr:first-child').hover
+        within 'tr:first-child' do
+          find('.delete-member').click
+        end
+        page.driver.browser.switch_to.alert.accept
+        expect(page).to have_css('tr', count: 2)
+      end
+    end
+  end
 end

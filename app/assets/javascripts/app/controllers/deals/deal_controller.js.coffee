@@ -70,5 +70,10 @@
     $scope.activeAnchor = id
     $anchorScroll(id)
 
+  $scope.delete = (member) ->
+    if confirm('Are you sure you want to delete "' +  member.name + '"?')
+      DealMember.delete(id: member.id, deal_id: $scope.currentDeal.id).then (deal) ->
+        $scope.currentDeal = deal
+
   $scope.init()
 ]

@@ -8,22 +8,28 @@
       url: '/api/deals/:deal_id/deal_members/:id'
     }
 
-  @all = (params, callback) ->
+  @all = (params) ->
     resource.query params, (deal_member) ->
-      callback(deal_member)
+      deferred = $q.defer()
+      deferred.resolve(deal_member)
+    deferred.promise
 
   @create = (params) ->
     deferred = $q.defer()
     resource.save params, (deal_member) ->
       deferred.resolve(deal_member)
-      $rootScope.$broadcast 'updated_deal_members'
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
     resource.update params, (deal_member) ->
       deferred.resolve(deal_member)
-      $rootScope.$broadcast 'updated_deal_members'
+    deferred.promise
+
+  @delete = (params) ->
+    deferred = $q.defer()
+    resource.delete { deal_id: params.deal_id, id: params.id }, (deal) ->
+      deferred.resolve(deal)
     deferred.promise
 
   @roles = () ->
