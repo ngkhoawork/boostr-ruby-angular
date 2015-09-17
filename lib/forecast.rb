@@ -1,8 +1,9 @@
 class Forecast
-  attr_accessor :rows
+  attr_accessor :rows, :time_period
 
-  def initialize(rows)
+  def initialize(rows, time_period)
     self.rows = rows
+    self.time_period = time_period
   end
 
   def as_json(options={})
@@ -17,7 +18,7 @@ class Forecast
   end
 
   def teams
-    @teams ||= rows.map{ |t| ForecastTeam.new(t) }
+    @teams ||= rows.map{ |t| ForecastTeam.new(t, time_period) }
   end
 
   def weighted_pipeline

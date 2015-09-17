@@ -15,9 +15,9 @@
       deferred.resolve(teams)
     deferred.promise
 
-  @get = (id) ->
+  @get = (params) ->
     deferred = $q.defer()
-    resource.get {id: id}, (team) ->
+    resource.get params, (team) ->
       deferred.resolve(team)
     deferred.promise
 
