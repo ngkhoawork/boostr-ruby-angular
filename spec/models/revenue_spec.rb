@@ -13,6 +13,7 @@ RSpec.describe Revenue, type: :model do
         expect(Revenue.first.user_id).to equal(user.id)
         expect(Revenue.first.client_id).to equal(client.id)
         expect(Revenue.first.product_id).to equal(product.id)
+        expect(Revenue.first.price).to equal(700)
       end.to change(Revenue, :count).by(1)
     end
 
@@ -23,6 +24,11 @@ RSpec.describe Revenue, type: :model do
         Revenue.import(good_csv_file(client, user, product), company.id)
       end.to_not change(Revenue, :count)
     end
+
+    it "strips non numeric characters" do
+      expect(Revenue.numeric("$15,000")).to eq("15000")
+    end
+
 
     it 'returns no errors when the upload is successful' do
       expect(Revenue.import(good_csv_file(client, user, product), company.id)).to eq([])
@@ -67,6 +73,16 @@ RSpec.describe Revenue, type: :model do
         expect(response[0][:message]).to include('Product could not be found')
       end.to_not change(Revenue, :count)
     end
+
+    it 'returns an error when the start date is missing' do
+      expect do
+        response = Revenue.import(missing_date_csv(client, user, product), company.id)
+        expect(response[0][:row]).to eq(1)
+        expect(response[0][:message].length).to eq(1)
+        expect(response[0][:message]).to include('Start date can\'t be blank')
+      end.to_not change(Revenue, :count)
+    end
+
   end
 
   describe '#daily_budget' do

@@ -4,7 +4,9 @@ class Revenue < ActiveRecord::Base
   belongs_to :user
   belongs_to :product
 
-  validates :company_id, :order_number, :line_number, :ad_server, presence: true
+  validates :company_id, :order_number, :line_number, :ad_server, :start_date, :end_date, presence: true
+
+  validate :start_date_is_before_end_date
 
   before_save :set_daily_budget
 
@@ -47,8 +49,8 @@ class Revenue < ActiveRecord::Base
         remaining: numeric(row[7]).to_i,
         budget: numeric(row[8]).to_i,
         budget_remaining: numeric(row[9]).to_i,
-        start_date: DateTime.strptime(row[10], '%m/%d/%Y'),
-        end_date: DateTime.strptime(row[11], '%m/%d/%Y'),
+        start_date: (Time.parse(row[10]) rescue nil),
+        end_date: (Time.parse(row[11]) rescue nil),
         client_id: client.id,
         user_id: user.id,
         product_id: product.id
@@ -63,7 +65,7 @@ class Revenue < ActiveRecord::Base
     errors
   end
 
-  def numeric(value)
+  def self.numeric(value)
     value.gsub(/[^0-9\.\-']/, '')
   end
 
@@ -90,5 +92,11 @@ class Revenue < ActiveRecord::Base
 
   def as_json(options = {})
     super(options.merge(methods: [:client_name, :user_name, :product_name]))
+  end
+
+  def start_date_is_before_end_date
+    return unless start_date && end_date
+
+    errors.add(:start_date, "is after end date") if start_date > end_date
   end
 end

@@ -15,7 +15,7 @@ module Helpers
   end
 
   def good_csv_file(client, user, product)
-    csv_file("1234,8,Taco,100000,7,CPE,50000,50000,700000,350000,9/7/2015,1/6/2016,Converse,#{client.id},#{user.email},#{product.id}")
+    csv_file("1234,8,Taco,100000,\"$7.00\",CPE,50000,50000,700000,350000,9/7/2015,1/6/2016,Converse,#{client.id},#{user.email},#{product.id}")
   end
 
   def missing_required_csv(client, user, product)
@@ -32,5 +32,9 @@ module Helpers
 
   def missing_product_csv(client, user)
     csv_file("1234,8,Taco,100000,7,CPE,50000,50000,700000,350000,9/7/2015,1/6/2016,Converse,#{client.id},#{user.email},")
+  end
+
+  def missing_date_csv(client, user, product)
+    csv_file("1234,8,Taco,100000,\"$7.00\",CPE,50000,50000,700000,350000,,1/6/2016,Converse,#{client.id},#{user.email},#{product.id}")
   end
 end
