@@ -19,6 +19,7 @@ gem 'angular-rails-templates'
 gem 'inline_svg'
 gem 'paranoia', '~> 2.0'
 gem 'jbuilder'
+gem 'chronic'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

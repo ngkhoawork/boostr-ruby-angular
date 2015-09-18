@@ -49,8 +49,8 @@ class Revenue < ActiveRecord::Base
         remaining: numeric(row[7]).to_i,
         budget: numeric(row[8]).to_i,
         budget_remaining: numeric(row[9]).to_i,
-        start_date: (Time.parse(row[10]) rescue nil),
-        end_date: (Time.parse(row[11]) rescue nil),
+        start_date: (Chronic.parse(row[10])),
+        end_date: (Chronic.parse(row[11])),
         client_id: client.id,
         user_id: user.id,
         product_id: product.id
