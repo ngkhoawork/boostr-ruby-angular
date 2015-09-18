@@ -182,11 +182,11 @@ time_periods = company.time_periods.create!([{
 
 
 # Set quotas for the initial time period
-company_user.quotas.where(time_period: time_periods[0]).first.update_attributes(value: 100000)
-team_leader_users[0].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 60000)
-team_member_users[0].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 20000)
-team_member_users[1].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 5000)
-team_member_users[2].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 35000)
+company_user.quotas.where(time_period: time_periods[2]).first.update_attributes(value: 1000000)
+team_leader_users[0].quotas.where(time_period: time_periods[2]).first.update_attributes(value: 600000)
+team_member_users[0].quotas.where(time_period: time_periods[2]).first.update_attributes(value: 200000)
+team_member_users[1].quotas.where(time_period: time_periods[2]).first.update_attributes(value: 50000)
+team_member_users[2].quotas.where(time_period: time_periods[2]).first.update_attributes(value: 350000)
 
 company_clients = company.clients.create!([{
   name: "Buzzfeed",

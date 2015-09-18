@@ -16,7 +16,8 @@ class ForecastTeam
       revenue: revenue,
       amount: amount,
       percent_to_quota: percent_to_quota,
-      gap_to_quota: gap_to_quota
+      gap_to_quota: gap_to_quota,
+      quota: quota
    }
   end
 
@@ -41,12 +42,15 @@ class ForecastTeam
   end
 
   def percent_to_quota
-    teams.sum(&:percent_to_quota) + members.sum(&:percent_to_quota)
+    return 100 unless quota > 0
+    amount / quota * 100
   end
 
   def gap_to_quota
     teams.sum(&:gap_to_quota) + members.sum(&:gap_to_quota)
   end
 
-
+  def quota
+    teams.sum(&:quota) + members.sum(&:quota)
+  end
 end

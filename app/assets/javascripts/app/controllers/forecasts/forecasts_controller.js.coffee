@@ -13,10 +13,11 @@
         $scope.currentTimePeriod = timePeriods[0]
 
       if $routeParams.team_id
-        Forecast.get({ id: $routeParams.team_id, time_period_id: $scope.currentTimePeriod.id }).then (team) ->
-          $scope.team = team
-          $scope.teams = team.teams
-          $scope.members = team.members
+        Forecast.get({ id: $routeParams.team_id, time_period_id: $scope.currentTimePeriod.id }).then (forecast) ->
+          $scope.forecast = forecast
+          $scope.team = forecast
+          $scope.teams = forecast.teams
+          $scope.members = forecast.members
       else
         Forecast.all({ time_period_id: $scope.currentTimePeriod.id }).then (forecast) ->
           $scope.forecast = forecast
