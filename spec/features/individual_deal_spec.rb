@@ -8,6 +8,7 @@ feature 'Individual Deal' do
   let(:stage) { create :stage, company: company, position: 1 }
   let(:product) { create :product }
   let!(:other_product) { create :product, company: company  }
+  let!(:second_product) { create :product, company: company  }
   let(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client, deal_type: 'Seasonal', source_type: 'Pitch to Client' }
 
   describe 'showing deal details' do
@@ -125,6 +126,33 @@ feature 'Individual Deal' do
 
           click_on 'Add Product'
         end
+
+        find('.add-product').click
+
+        expect(page).to have_css '#product-form', visible: true
+
+        within '#product-form' do
+          ui_select('product', second_product.name)
+          fill_in 'total_budget', with: '240000'
+
+          month_fields = all('.months .form-control')
+          expect(month_fields[0].value).to eq('$2,136') # jul
+          expect(month_fields[1].value).to eq('$22,077') # aug
+          expect(month_fields[2].value).to eq('$21,365') # sep
+          expect(month_fields[3].value).to eq('$22,077') # oct
+          expect(month_fields[4].value).to eq('$21,365') # nov
+          expect(month_fields[5].value).to eq('$22,077') # dec
+          expect(month_fields[6].value).to eq('$22,077') # jan
+          expect(month_fields[7].value).to eq('$20,653') # feb (leap year)
+          expect(month_fields[8].value).to eq('$22,077') # mar
+          expect(month_fields[9].value).to eq('$21,365') # apr
+          expect(month_fields[10].value).to eq('$22,077') # may
+          expect(month_fields[11].value).to eq('$20,653') # jun
+
+          click_on 'Cancel'
+        end
+
+        expect(page).to have_no_css '#product-form'
       end
 
       within '#revenue_schedule' do

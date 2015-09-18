@@ -114,6 +114,8 @@
                   .row
                     .col-xs-12
                       %button.btn.btn-primary.btn-block{ type: 'submit' } Add Product
+                    .col-xs-12
+                      %button#cancel.btn.btn-default.btn-block{ng: { click: 'cancelAddProduct()' }, type: 'button' } Cancel
                 .col-xs-10
                   .row.months
                     .col-xs-2{ ng: { repeat: 'month in deal_product.months' } }
