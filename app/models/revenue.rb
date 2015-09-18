@@ -40,13 +40,13 @@ class Revenue < ActiveRecord::Base
       }
 
       create_params = {
-        quantity: row[3].to_i,
-        price: row[4].to_f * 100,
+        quantity: numeric(row[3]).to_i,
+        price: numeric(row[4]).to_f * 100,
         price_type: row[5],
-        delivered: row[6].to_i,
-        remaining: row[7].to_i,
-        budget: row[8].to_i,
-        budget_remaining: row[9].to_i,
+        delivered: numeric(row[6]).to_i,
+        remaining: numeric(row[7]).to_i,
+        budget: numeric(row[8]).to_i,
+        budget_remaining: numeric(row[9]).to_i,
         start_date: DateTime.strptime(row[10], '%m/%d/%Y'),
         end_date: DateTime.strptime(row[11], '%m/%d/%Y'),
         client_id: client.id,
@@ -63,6 +63,11 @@ class Revenue < ActiveRecord::Base
     errors
   end
 
+  def numeric(value)
+    value.gsub(/[^0-9\.\-']/, '')
+  end
+
+
   def client_name
     client.name if client.present?
   end
@@ -76,7 +81,7 @@ class Revenue < ActiveRecord::Base
   end
 
   def set_daily_budget
-    self.daily_budget = budget.to_f / (end_date.to_date - start_date.to_date + 1) * 100
+    self.daily_budget = budget.to_f / (end_date.to_date - start_date.to_date + 1).to_i * 100
   end
 
   def daily_budget
