@@ -76,7 +76,11 @@ class Revenue < ActiveRecord::Base
   end
 
   def set_daily_budget
-    self.daily_budget = budget / (end_date.to_date - start_date.to_date + 1).to_i
+    self.daily_budget = budget.to_f / (end_date.to_date - start_date.to_date + 1) * 100
+  end
+
+  def daily_budget
+    read_attribute(:daily_budget)/100.0
   end
 
   def as_json(options = {})
