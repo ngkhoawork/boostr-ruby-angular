@@ -63,17 +63,22 @@
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.currentDeal = deal
 
+  $scope.deleteMember = (member) ->
+    if confirm('Are you sure you want to delete "' +  member.name + '"?')
+      DealMember.delete(id: member.id, deal_id: $scope.currentDeal.id).then (deal) ->
+        $scope.currentDeal = deal
+
+  $scope.deleteProduct = (product) ->
+    if confirm('Are you sure you want to delete "' +  product.name + '"?')
+      DealProduct.delete(id: product.id, deal_id: $scope.currentDeal.id).then (deal) ->
+        $scope.currentDeal = deal
+
   $scope.isActive = (id) ->
     $scope.activeAnchor == id
 
   $scope.scrollTo = (id) ->
     $scope.activeAnchor = id
     $anchorScroll(id)
-
-  $scope.delete = (member) ->
-    if confirm('Are you sure you want to delete "' +  member.name + '"?')
-      DealMember.delete(id: member.id, deal_id: $scope.currentDeal.id).then (deal) ->
-        $scope.currentDeal = deal
 
   $scope.init()
 ]

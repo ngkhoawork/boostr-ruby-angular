@@ -24,7 +24,7 @@ Rails.application.routes.draw do
     end
     resources :stages, only: [:index, :create, :update]
     resources :products, only: [:index, :create, :update]
-    resources :deal_products, only: [:create, :update]
+    resources :deal_products, only: [:create, :update, :destroy]
     resources :teams, only: [:index, :create, :show, :update, :destroy]
     resources :custom_values, only: [:index]
     resources :time_periods, only: [:index, :create, :destroy]

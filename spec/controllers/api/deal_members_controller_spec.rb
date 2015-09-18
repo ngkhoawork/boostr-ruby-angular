@@ -60,9 +60,11 @@ RSpec.describe Api::DealMembersController, type: :controller do
 
   describe 'DELETE #destroy' do
     let!(:deal_member) { create :deal_member, deal_id: deal.id, user_id: user.id }
-    it 'delete the deal member' do
-      delete :destroy, id: deal_member.id, deal_id: deal.id, format: :json
-      expect(response).to be_success
+    it 'deletes the deal member' do
+      expect do
+        delete :destroy, id: deal_member.id, deal_id: deal.id, format: :json
+        expect(response).to be_success
+      end.to change(DealMember, :count).by(-1)
     end
   end
 end

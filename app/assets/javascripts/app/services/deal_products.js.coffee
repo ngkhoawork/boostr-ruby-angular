@@ -20,5 +20,11 @@
       deferred.resolve(deal)
     deferred.promise
 
+  @delete = (params) ->
+    deferred = $q.defer()
+    resource.delete params, (deal) ->
+      deferred.resolve(deal)
+    deferred.promise
+
   return
 ]

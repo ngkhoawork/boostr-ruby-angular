@@ -15,6 +15,12 @@
     width: 12px;
   }
 
+  .hover-delete {
+    opacity: 0;
+    position: absolute;
+    left: 5px;
+  }
+
   .panel {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
@@ -182,6 +188,30 @@
 
     h5 {
       margin-top: 5px;
+    }
+  }
+
+  #revenue_schedule {
+    table {
+      tbody {
+        tr {
+          td {
+            position: relative;
+
+            svg {
+              width: 14px;
+              height: 14px;
+            }
+          }
+
+          &:hover,
+          &:focus {
+            .hover-delete {
+              opacity: 1;
+            }
+          }
+        }
+      }
     }
   }
 
