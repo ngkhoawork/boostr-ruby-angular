@@ -104,9 +104,9 @@ RSpec.describe Deal, type: :model do
         deal.save
       }.to change(DealMember, :count).by(2)
       expect(DealMember.first.deal_id).to eq(deal.id)
-      expect(DealMember.first.user_id).to eq(client_members[0].user_id)
-      expect(DealMember.first.role).to eq(client_members[0].role)
-      expect(DealMember.first.share).to eq(client_members[0].share)
+      expect(DealMember.order(:id).first.user_id).to eq(client_members[0].user_id)
+      expect(DealMember.order(:id).first.role).to eq(client_members[0].role)
+      expect(DealMember.order(:id).first.share).to eq(client_members[0].share)
     end
 
   end
