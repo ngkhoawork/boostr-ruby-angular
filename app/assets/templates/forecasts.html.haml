@@ -25,22 +25,22 @@
           %ul.list-inline
             %li
               %h1
-                89%
+                {{ forecast.percent_to_quota | number: 0 }}%
               %h5
                 Attainment
             %li
               %h1
-                $450K
+                {{ forecast.quota / 1000 | currency: '$': 0 }}K
               %h5
-                Your Quota: Q3-2105
+                Quota: {{ currentTimePeriod.name }}
             %li
               %h1
-                $500K
+                {{ forecast.amount / 1000 | currency: '$': 0 }}K
               %h5
-                Your Forecast
+                Forecast
             %li
               %h1
-                $250K
+                {{ forecast.gap_to_quota / 1000 | currency: '$': 0 }}K
               %h5
                 Gap to Goal
     .row
@@ -64,7 +64,7 @@
                 %td {{ row.weighted_pipeline | currency: '$': 0 }}
                 %td {{ row.revenue | currency: '$': 0 }}
                 %td {{ row.amount | currency: '$': 0 }}
-                %td {{ row.percent_to_quota | currency: '$': 0 }}
+                %td {{ row.percent_to_quota | number: 0 }}%
                 %td {{ row.gap_to_quota | currency: '$': 0 }}
 
               %tr{ ng: { repeat: 'row in members' } }
@@ -74,7 +74,7 @@
                 %td {{ row.weighted_pipeline | currency: '$': 0 }}
                 %td {{ row.revenue | currency: '$': 0 }}
                 %td {{ row.amount | currency: '$': 0 }}
-                %td {{ row.percent_to_quota | currency: '$': 0 }}
+                %td {{ row.percent_to_quota | number: 0 }}%
                 %td {{ row.gap_to_quota | currency: '$': 0 }}
 
 

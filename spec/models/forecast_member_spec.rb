@@ -69,5 +69,13 @@ RSpec.describe ForecastMember do
         expect(forecast.weighted_pipeline).to eq(50)
       end
     end
+
+    context 'quota' do
+      let!(:quotas) { create_list :quota, 4, user: user, value: 2500, time_period: time_period }
+
+      it 'returns the quota value' do
+        expect(forecast.quota).to eq(10000)
+      end
+    end
   end
 end

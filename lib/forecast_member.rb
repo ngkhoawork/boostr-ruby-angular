@@ -14,17 +14,20 @@ class ForecastMember
       revenue: revenue,
       amount: amount,
       percent_to_quota: percent_to_quota,
-      gap_to_quota: gap_to_quota
+      gap_to_quota: gap_to_quota,
+      quota: quota
     }
   end
 
   def weighted_pipeline
+    return @weighted_pipeline if defined?(@weighted_pipeline)
+
     deal_shares = {}
     member.deal_members.each do |mem|
       deal_shares[mem.deal_id] = mem.share
     end
 
-    open_deals.sum do |deal|
+    @weighted_pipeline = open_deals.sum do |deal|
       deal_total = 0
       deal.deal_products.each do |deal_product|
         if deal_product.start_date < time_period.end_date && deal_product.end_date > time_period.start_date
@@ -38,14 +41,15 @@ class ForecastMember
     end
   end
 
-
   def revenue
+    return @revenue if defined?(@revenue)
+
     client_shares = {}
     member.client_members.each do |mem|
       client_shares[mem.client_id] = mem.share
     end
 
-    revenues.sum do |rev|
+    @revenue = revenues.sum do |rev|
       from = [time_period.start_date, rev.start_date].max
       to = [time_period.end_date, rev.end_date].min
       num_days = (to.to_date - from.to_date) + 1
@@ -54,15 +58,21 @@ class ForecastMember
   end
 
   def amount
-    0
+    weighted_pipeline + revenue
   end
 
+  # attainment
   def percent_to_quota
-    0
+    return 100 unless quota > 0
+    amount / quota * 100
   end
 
   def gap_to_quota
-    0
+    quota - amount
+  end
+
+  def quota
+    @quota ||= member.quotas.for_time_period(time_period).sum(:value)
   end
 
   private
