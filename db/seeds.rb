@@ -287,16 +287,6 @@ prospecting_deal = company.deals.create!({
   created_by: company_user.id,
 })
 
-prospecting_deal.deal_members.create!([{
-  user: team_leader_users[0],
-  share: 30,
-  role: "Leader"
-},{
-  user: team_member_users[0],
-  share: 70,
-  role: "Member"
-}])
-
 prospecting_deal.deal_products.create!([{
   product: products[1],
   budget: 8611111,
