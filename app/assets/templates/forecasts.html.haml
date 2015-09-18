@@ -59,7 +59,7 @@
             %tbody
               %tr{ ng: { repeat: 'row in teams' } }
                 %td
-                  %a{ ng: { href: '/forecast/{{row.id}}' } }
+                  %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}' } }
                     {{ row.name }}
                 %td {{ row.weighted_pipeline | currency: '$': 0 }}
                 %td {{ row.revenue | currency: '$': 0 }}
