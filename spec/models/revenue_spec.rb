@@ -80,5 +80,10 @@ RSpec.describe Revenue, type: :model do
       revenue.update_attributes(end_date: "2015-12-31", budget: 365_000)
       expect(revenue.daily_budget).to eq(1000)
     end
+
+    it 'returns the daily budget without rounding' do
+      revenue.update_attributes(end_date: "2015-2-14")
+      expect(revenue.daily_budget).to eq(666.66)
+    end
   end
 end
