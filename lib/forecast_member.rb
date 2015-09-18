@@ -19,34 +19,38 @@ class ForecastMember
   end
 
   def weighted_pipeline
-    0
+    deal_shares = {}
+    member.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+
+    open_deals.sum do |deal|
+      deal_total = 0
+      deal.deal_products.each do |deal_product|
+        if deal_product.start_date < time_period.end_date && deal_product.end_date > time_period.start_date
+          from = [time_period.start_date, deal_product.start_date].max
+          to = [time_period.end_date, deal_product.end_date].min
+          num_days = (to.to_date - from.to_date) + 1
+          deal_total += deal_product.daily_budget * num_days * (deal_shares[deal.id]/100.0)
+        end
+      end
+      deal_total * (deal.stage.probability / 100.0)
+    end
   end
 
-  # For the time period
-  # Find all of the revenue items where the client id matches a client that the user is a member of
-  # Take the daily budget amount and apply it to the time period limiting by the start and end dates of the revenue
-  # Take only the user's share from that daily budget amount
+
   def revenue
-    client_ids = member.client_members.map(&:client_id)
     client_shares = {}
     member.client_members.each do |mem|
       client_shares[mem.client_id] = mem.share
     end
 
-    # TODO, filter by the start and end date inclusively
-    revenues = member.company.revenues.where(client_id: client_ids).where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date).to_a
-
-    total = 0
-
-    revenues.each do |rev|
-      daily_budget_amount = rev.daily_budget
-      from = (time_period.start_date > rev.start_date) ? time_period.start_date : rev.start_date
-      to = (time_period.end_date < rev.end_date) ? time_period.end_date : rev.end_date
+    revenues.sum do |rev|
+      from = [time_period.start_date, rev.start_date].max
+      to = [time_period.end_date, rev.end_date].min
       num_days = (to.to_date - from.to_date) + 1
-      total += daily_budget_amount * num_days * (client_shares[rev.client_id]/100.0)
+      rev.daily_budget * num_days * (client_shares[rev.client_id]/100.0)
     end
-
-    total
   end
 
   def amount
@@ -59,5 +63,19 @@ class ForecastMember
 
   def gap_to_quota
     0
+  end
+
+  private
+
+  def client_ids
+    @client_ids ||= member.client_members.map(&:client_id)
+  end
+
+  def revenues
+    @revenues ||= member.company.revenues.where(client_id: client_ids).where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date).to_a
+  end
+
+  def open_deals
+    @open_deals ||= member.deals.joins(:stage).where('stages.open IS true').where('deals.start_date <= ? AND deals.end_date >= ?', time_period.end_date, time_period.start_date).includes(:deal_products).to_a
   end
 end
