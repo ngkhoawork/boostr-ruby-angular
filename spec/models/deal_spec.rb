@@ -60,6 +60,18 @@ RSpec.describe Deal, type: :model do
     end
   end
 
+  describe '#remove_product' do
+    let(:deal) { create :deal }
+    let(:product) { create :product }
+    let!(:deal_product) { create :deal_product, deal: deal, product: product }
+
+    it 'deletes a product from a deal' do
+      expect do
+        deal.remove_product(product.id)
+      end.to change(DealProduct, :count).by(-1)
+    end
+  end
+
   describe '#days_per_month' do
     it 'creates an array with the months mapped out in their days' do
       deal = build :deal, start_date: Date.new(2015, 9, 25), end_date: Date.new(2015, 12, 28)
@@ -87,27 +99,26 @@ RSpec.describe Deal, type: :model do
     let(:product) { create :product }
 
     it 'deletes and recreates deal_products based on the start or end date changing' do
-      deal.add_product(product.id, 10000)
-      expect {
+      deal.add_product(product.id, 10_000)
+      expect do
         deal.update_attributes(end_date: Date.new(2015, 9, 29))
-      }.to change(DealProduct, :count).by(1)
+      end.to change(DealProduct, :count).by(1)
     end
   end
 
   describe '#generate_deal_members' do
     let(:client) { create :advertiser }
-    let!(:client_members) { create_list :client_member, 2, client: client}
+    let!(:client_members) { create_list :client_member, 2, client: client }
     let(:deal) { build :deal, advertiser: client }
 
     it 'creates deal_members with defaults when creating a deal' do
-      expect {
+      expect do
         deal.save
-      }.to change(DealMember, :count).by(2)
+      end.to change(DealMember, :count).by(2)
       expect(DealMember.first.deal_id).to eq(deal.id)
       expect(DealMember.order(:id).first.user_id).to eq(client_members[0].user_id)
       expect(DealMember.order(:id).first.role).to eq(client_members[0].role)
       expect(DealMember.order(:id).first.share).to eq(client_members[0].share)
     end
-
   end
 end

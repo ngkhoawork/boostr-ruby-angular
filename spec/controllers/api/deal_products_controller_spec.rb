@@ -15,13 +15,13 @@ RSpec.describe Api::DealProductsController, type: :controller do
     render_views
 
     it 'creates deal_products and returns the newly updated deal json' do
-      expect{
-        post :create, deal_id: deal.id, product_id: product.id, total_budget: "1000", format: :json
+      expect do
+        post :create, deal_id: deal.id, product_id: product.id, total_budget: '1000', format: :json
         expect(response).to be_success
         response_json = JSON.parse(response.body)
         expect(response_json['products'][0]['deal_products'].length).to eq(2)
         expect(response_json['budget']).to eq(100_000)
-      }.to change(DealProduct, :count).by(2)
+      end.to change(DealProduct, :count).by(2)
     end
   end
 
@@ -34,6 +34,16 @@ RSpec.describe Api::DealProductsController, type: :controller do
       response_json = JSON.parse(response.body)
       expect(response_json['products'][0]['deal_products'][0]['budget']).to eq(62_000)
       expect(response_json['budget']).to eq(6_200_000)
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let!(:deal_product) { create :deal_product, deal: deal, product: product }
+    it 'deletes the deal product' do
+      expect do
+        delete :destroy, id: deal_product.id, deal_id: deal.id, format: :json
+        expect(response).to be_success
+      end.to change(DealProduct, :count).by(-1)
     end
   end
 end

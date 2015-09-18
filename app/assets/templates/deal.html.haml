@@ -77,6 +77,8 @@
           %tbody
             %tr{ ng: { repeat: 'product in currentDeal.products' } }
               %td
+                %span.hover-delete{ ng: { click: 'deleteProduct(product)' } }
+                  = inline_svg 'icons/trash.svg'
                 {{ product.name }}
               %td
                 {{ product.total_budget / 100 | currency:'$':0  }}
@@ -157,7 +159,7 @@
                 %td.action-column.info-td
                   .empty
                 %td.action-td
-                  %a.delete-member{ href: '', ng: { click: 'delete(member)' } }
+                  %a.delete-member{ href: '', ng: { click: 'deleteMember(member)' } }
                     = inline_svg 'icons/trash.svg'
 
     #info.col-xs-6.pull-right

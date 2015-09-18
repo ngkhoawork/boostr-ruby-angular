@@ -14,6 +14,11 @@ class Api::DealProductsController < ApplicationController
     end
   end
 
+  def destroy
+    deal.remove_product(params[:id])
+    render deal
+  end
+
   private
 
   def deal
