@@ -22,27 +22,30 @@
     .row
       .col-xs-12
         .well
-          %ul.list-inline
-            %li
-              %h1
-                {{ forecast.percent_to_quota | number: 0 }}%
-              %h5
-                Attainment
-            %li
-              %h1
-                {{ forecast.quota / 1000 | currency: '$': 0 }}K
-              %h5
-                Quota: {{ currentTimePeriod.name }}
-            %li
-              %h1
-                {{ forecast.amount / 1000 | currency: '$': 0 }}K
-              %h5
-                Forecast
-            %li
-              %h1
-                {{ forecast.gap_to_quota / 1000 | currency: '$': 0 }}K
-              %h5
-                Gap to Goal
+          .row
+            .col-xs-12
+              .header
+                %ul.list-inline
+                  %li
+                    %h1
+                      {{ forecast.percent_to_quota | number: 0 }}%
+                    %h5
+                      Attainment
+                  %li
+                    %h1
+                      {{ forecast.quota / 1000 | currency: '$': 0 }}K
+                    %h5
+                      Quota: {{ currentTimePeriod.name }}
+                  %li
+                    %h1
+                      {{ forecast.amount / 1000 | currency: '$': 0 }}K
+                    %h5
+                      Forecast
+                  %li
+                    %h1
+                      {{ forecast.gap_to_quota / 1000 | currency: '$': 0 }}K
+                    %h5
+                      Gap to Goal
     .row
       .col-xs-12
         .table-wrapper
