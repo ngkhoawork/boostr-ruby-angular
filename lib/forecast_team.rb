@@ -26,7 +26,10 @@ class ForecastTeam
   end
 
   def members
-    @members ||= team.members.map{|m| ForecastMember.new(m, time_period) }
+    return @members if defined?(@members)
+    @members = []
+    @members << ForecastMember.new(team.leader, time_period) if team.leader
+    @members = @members.concat(team.members.map{|m| ForecastMember.new(m, time_period) })
   end
 
   def weighted_pipeline

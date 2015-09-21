@@ -11,7 +11,6 @@
     $q.all({ teams: Team.all(), users: User.all()}).then (data) ->
       $scope.teams = data.teams
       $scope.users = data.users
-      $scope.availableUsers = $filter('availableUsers') $scope.users
 
   $scope.submitForm = () ->
     $scope.team.member_ids = $scope.team.members
