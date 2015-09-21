@@ -15,7 +15,7 @@ feature 'Quotas' do
       expect(page).to have_css('#quotas')
     end
 
-    scenario 'can edit a quota value inline and add a user' do
+    scenario 'can edit a quota value inline and add a user', js: true do
       within '.quota-period' do
         expect(page).to have_text 'Q1'
       end
@@ -28,7 +28,7 @@ feature 'Quotas' do
           find('span').click
 
           fill_in 'quota-value', with: '20000'
-          find('input').native.send_keys(:return)
+          find('input').native.send_keys(:Enter)
           expect(page).to have_text '$20,000'
         end
       end

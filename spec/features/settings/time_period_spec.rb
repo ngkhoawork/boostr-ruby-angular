@@ -11,7 +11,7 @@ feature 'TimePeriod' do
       expect(page).to have_css('#time-periods')
     end
 
-    scenario 'pops up a new time_period modal and creates a new time_period' do
+    scenario 'pops up a new time_period modal and creates a new time_period', js: true do
       click_link('Add Time Period')
       expect(page).to have_css('#time-period-modal')
 
@@ -20,7 +20,7 @@ feature 'TimePeriod' do
         fill_in 'start-date', with: '1/1/15'
         fill_in 'end-date', with: '3/31/15'
 
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#time-period-modal')
@@ -41,7 +41,7 @@ feature 'TimePeriod' do
       expect(page).to have_css('#time-periods')
     end
 
-    scenario 'removes the time_period from the page' do
+    scenario 'removes the time_period from the page', js: true do
       within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
@@ -49,8 +49,6 @@ feature 'TimePeriod' do
           find('.delete-time-period').click
         end
       end
-
-      page.driver.browser.switch_to.alert.accept
 
       expect(page).to have_css('.table-wrapper tbody tr', count: 2)
 
@@ -61,8 +59,6 @@ feature 'TimePeriod' do
           find('.delete-time-period').click
         end
       end
-
-      page.driver.browser.switch_to.alert.accept
 
       expect(page).to have_css('.table-wrapper tbody tr', count: 1)
     end

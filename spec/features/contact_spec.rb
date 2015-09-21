@@ -12,7 +12,7 @@ feature 'Contacts' do
       expect(page).to have_css('#contacts')
     end
 
-    scenario 'pops up a new contact modal and creates a new contact' do
+    scenario 'pops up a new contact modal and creates a new contact', js: true do
       click_link('New Person')
       expect(page).to have_css('#contact_modal')
 
@@ -27,7 +27,7 @@ feature 'Contacts' do
         fill_in 'office', with: '1234567890'
         fill_in 'mobile', with: '1257763562'
 
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#contact_modal')
@@ -56,7 +56,7 @@ feature 'Contacts' do
         fill_in 'office', with: '(789) 125-8416'
         fill_in 'mobile', with: '(125) 776-3562'
 
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#contact_modal')
@@ -81,7 +81,7 @@ feature 'Contacts' do
       expect(page).to have_css('#contacts')
     end
 
-    scenario 'pops up an edit contact modal and updates a contact' do
+    scenario 'pops up an edit contact modal and updates a contact', js: true do
       click_link('edit-contact')
       expect(page).to have_css('#contact_modal')
 
@@ -93,7 +93,7 @@ feature 'Contacts' do
         fill_in 'city', with: 'Boise'
         ui_select('state', 'Idaho')
 
-        click_on 'Update'
+        find_button('Update').trigger('click')
       end
 
       expect(page).to have_no_css('#contact_modal')
@@ -120,7 +120,7 @@ feature 'Contacts' do
       expect(page).to have_css('#contacts')
     end
 
-    scenario 'removes the contact from the page and navigates to the contact index' do
+    scenario 'removes the contact from the page and navigates to the contact index', js: true do
       within '.list-group' do
         expect(page).to have_css('.list-group-item', count: 3)
         find('.list-group-item:last-child').click
@@ -131,16 +131,12 @@ feature 'Contacts' do
         find('#delete-contact').click
       end
 
-      page.driver.browser.switch_to.alert.accept
-
       expect(page).to have_css('.list-group-item', count: 2)
 
       within '#contact-detail' do
         expect(find('h2.contact-name')).to have_text(contacts[0].name)
         find('#delete-contact').click
       end
-
-      page.driver.browser.switch_to.alert.accept
 
       expect(page).to have_css('.list-group-item', count: 1)
     end

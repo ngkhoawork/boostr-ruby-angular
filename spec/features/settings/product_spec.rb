@@ -11,8 +11,8 @@ feature 'Users' do
       expect(page).to have_css('#products')
     end
 
-    scenario 'creating a product' do
-      find('.add-product').click
+    scenario 'creating a product', js: true do
+      find('.add-product').trigger('click')
 
       expect(page).to have_css('#product-modal')
 
@@ -22,7 +22,7 @@ feature 'Users' do
         ui_select('family', 'Banner')
         ui_select('pricing-type', 'CPM')
 
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#product-modal')
@@ -32,6 +32,7 @@ feature 'Users' do
       end
     end
   end
+
   describe 'update a product' do
     let!(:products) { create_list :product, 3, company: company }
 
@@ -41,9 +42,9 @@ feature 'Users' do
       expect(page).to have_css('#products')
     end
 
-    scenario 'pops up an edit product modal and updates a product' do
+    scenario 'pops up an edit product modal and updates a product', js: true do
       within 'table tbody' do
-        find('tr:first-child').click
+        find('tr:first-child').trigger('click')
       end
 
       expect(page).to have_css('#product-modal')
@@ -54,7 +55,7 @@ feature 'Users' do
         ui_select('family', 'Banner')
         ui_select('pricing-type', 'CPE')
 
-        click_on 'Update'
+        find_button('Update').trigger('click')
       end
 
       expect(page).to have_no_css('#product-modal')

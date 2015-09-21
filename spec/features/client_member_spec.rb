@@ -14,7 +14,7 @@ feature 'ClientMembers' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'shows client_member details' do
+    scenario 'shows client_member details', js: true do
       within '#teamsplits tbody' do
         expect(page).to have_css('tr', count: 3)
       end
@@ -28,8 +28,8 @@ feature 'ClientMembers' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'pops up a new client modal and creates a new client' do
-      find('.new-member').click
+    scenario 'pops up a new client modal and creates a new client', js: true do
+      find('.new-member').trigger('click')
       expect(page).to have_css('#member_modal')
 
       within '#member_modal' do
@@ -37,7 +37,7 @@ feature 'ClientMembers' do
         fill_in 'share', with: 26
         ui_select('role', 'Owner')
 
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#member_modal')
@@ -60,14 +60,14 @@ feature 'ClientMembers' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'update member' do
+    scenario 'update member', js: true do
       within '#teamsplits tbody tr:first-child' do
         share = find('td:nth-child(2) span')
         expect(share).to have_text(client_member.share)
         share.click
         expect(page).to have_css('.editable-input', visible: true)
         fill_in 'share', with: '25'
-        find('.editable-input').native.send_keys(:return)
+        find('.editable-input').native.send_keys(:Enter)
         expect(share).to have_text '25%'
 
         role = find('td:nth-child(3) span')

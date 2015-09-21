@@ -19,7 +19,7 @@ feature 'Individual Deal' do
       expect(page).to have_css('#deal')
     end
 
-    scenario 'shows deal details and stage' do
+    scenario 'shows deal details and stage', js: true do
       within '#nav' do
         first('li a').click
       end
@@ -31,7 +31,7 @@ feature 'Individual Deal' do
         deal_name.click
         expect(page).to have_css('.editable-input', visible: true)
         fill_in 'deal-name', with: 'Taco'
-        find('.editable-input').native.send_keys(:return)
+        find('.editable-input').native.send_keys(:Enter)
         expect(deal_name).to have_text 'Taco'
       end
 
@@ -63,7 +63,7 @@ feature 'Individual Deal' do
         next_steps.click
         expect(page).to have_css('.editable-input', visible: true)
         fill_in 'next-steps', with: 'Testing'
-        find('.editable-input').native.send_keys(:return)
+        find('.editable-input').native.send_keys(:Enter)
         expect(next_steps).to have_text 'Testing'
       end
 
@@ -95,7 +95,7 @@ feature 'Individual Deal' do
 
           find('td:nth-child(3) span').click
           fill_in "#{first_deal_product.id}", with: '1000'
-          find('td:nth-child(3) input').native.send_keys(:return)
+          find('td:nth-child(3) input').native.send_keys(:Enter)
         end
       end
 
@@ -124,7 +124,7 @@ feature 'Individual Deal' do
           expect(month_fields[10].value).to eq('$22,077') # may
           expect(month_fields[11].value).to eq('$20,653') # jun
 
-          click_on 'Add Product'
+          find_button('Add Product').trigger('click')
         end
 
         find('.add-product').click
@@ -149,7 +149,7 @@ feature 'Individual Deal' do
           expect(month_fields[10].value).to eq('$22,077') # may
           expect(month_fields[11].value).to eq('$20,653') # jun
 
-          click_on 'Cancel'
+          find_button('Cancel').trigger('click')
         end
 
         expect(page).to have_no_css '#product-form'

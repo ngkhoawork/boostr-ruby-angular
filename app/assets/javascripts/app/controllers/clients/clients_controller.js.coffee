@@ -19,7 +19,7 @@
   $scope.getClients = ->
     Client.all().then (clients) ->
       $scope.clients = clients
-      Client.set($routeParams.id || clients[0].id)
+      Client.set($routeParams.id || clients[0].id) if clients.length > 0
 
   $scope.getDeals = (client) ->
     Deal.allForClient(client.id).then (deals) ->
@@ -97,9 +97,10 @@
 
   $scope.$on 'updated_current_client', ->
     $scope.currentClient = Client.get()
-    $scope.getContacts($scope.currentClient)
-    $scope.getDeals($scope.currentClient)
-    $scope.getClientMembers()
+    if $scope.currentClient
+      $scope.getContacts($scope.currentClient)
+      $scope.getDeals($scope.currentClient)
+      $scope.getClientMembers()
 
   $scope.$on 'updated_clients', ->
     $scope.init()

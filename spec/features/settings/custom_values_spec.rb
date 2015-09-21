@@ -12,7 +12,7 @@ feature 'Custom Values' do
       expect(page).to have_css('#custom-values')
     end
 
-    scenario 'shows a list of objects, fields and their values' do
+    scenario 'shows a list of objects, fields and their values', js: true do
       within '#custom-values' do
         expect(page).to have_css('.well.primary', count: 3)
 
@@ -22,26 +22,23 @@ feature 'Custom Values' do
           within '.well:last-child' do
             expect(page).to have_text(stage.name)
             expect(page).to have_css('.open-button.active')
-            find('.title').click
+            find('.title').trigger('click')
             fill_in 'stage-name', with: 'Taco'
-            find('.editable-input').native.send_keys(:return)
+            find('.editable-input').native.send_keys(:Enter)
+            expect(page).to have_no_css('.editable-input')
           end
-
-          page.driver.browser.switch_to.alert.accept
 
           within '.well:last-child' do
             expect(page).to have_text('Taco')
-            find('.close-button').click
+            find('.close-button').trigger('click')
           end
-
-          page.driver.browser.switch_to.alert.accept
 
           within '.well:last-child' do
             expect(page).to have_no_css('.open-button.active')
           end
 
           within '.well:first-child' do
-            find('a').click
+            find('a').trigger('click')
           end
 
           within '.well:nth-child(2)' do

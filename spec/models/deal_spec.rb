@@ -108,17 +108,17 @@ RSpec.describe Deal, type: :model do
 
   describe '#generate_deal_members' do
     let(:client) { create :advertiser }
-    let!(:client_members) { create_list :client_member, 2, client: client }
+    let!(:client_member) { create :client_member, client: client }
     let(:deal) { build :deal, advertiser: client }
 
     it 'creates deal_members with defaults when creating a deal' do
       expect do
         deal.save
-      end.to change(DealMember, :count).by(2)
+      end.to change(DealMember, :count).by(1)
       expect(DealMember.first.deal_id).to eq(deal.id)
-      expect(DealMember.order(:id).first.user_id).to eq(client_members[0].user_id)
-      expect(DealMember.order(:id).first.role).to eq(client_members[0].role)
-      expect(DealMember.order(:id).first.share).to eq(client_members[0].share)
+      expect(DealMember.first.user_id).to eq(client_member.user_id)
+      expect(DealMember.first.role).to eq(client_member.role)
+      expect(DealMember.first.share).to eq(client_member.share)
     end
   end
 end

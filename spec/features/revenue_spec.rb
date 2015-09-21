@@ -14,7 +14,7 @@ feature 'Revenue' do
       expect(page).to have_css('#revenue')
     end
 
-    scenario 'shows the modal and uploads a csv' do
+    scenario 'shows the modal and uploads a csv', js: true do
       find('.upload').click
 
       expect(page).to have_css('#revenue_upload_modal')
@@ -30,7 +30,7 @@ feature 'Revenue' do
         scope.upload([fakeFileInput.get(0).files[0]]);
       JS
 
-      click_button('Done')
+      find_button('Done').trigger('click')
 
       expect(page).to have_no_css('#revenue_upload_modal')
 
@@ -48,7 +48,7 @@ feature 'Revenue' do
       expect(page).to have_css('#revenue')
     end
 
-    scenario 'shows an error message' do
+    scenario 'shows an error message', js: true do
       find('.upload').click
 
       expect(page).to have_css('#revenue_upload_modal')

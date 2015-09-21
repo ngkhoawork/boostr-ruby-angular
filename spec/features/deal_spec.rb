@@ -20,7 +20,7 @@ feature 'Deals' do
       expect(page).to have_css('#deals')
     end
 
-    scenario 'shows all open deals initially, then filters on stage clicks' do
+    scenario 'shows all open deals initially, then filters on stage clicks', js: true do
       within '.list-group.stages' do
         expect(page).to have_css('.list-group-item', count: 4)
       end
@@ -79,8 +79,8 @@ feature 'Deals' do
       expect(page).to have_css('#deals')
     end
 
-    scenario 'pops up a new deal modal and creates a new deal' do
-      click_link('New Deal')
+    scenario 'pops up a new deal modal and creates a new deal', js: true do
+      find_link('New Deal').trigger('click')
 
       expect(page).to have_css('#deal_modal')
 
@@ -96,7 +96,7 @@ feature 'Deals' do
         fill_in 'start-date', with: '1/1/15'
         fill_in 'end-date', with: '12/31/15'
 
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#deal_modal')
@@ -114,7 +114,7 @@ feature 'Deals' do
       expect(page).to have_css('#deals')
     end
 
-    scenario 'removes the deal from the page and navigates to the deals index' do
+    scenario 'removes the deal from the page and navigates to the deals index', js: true do
       within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
@@ -122,8 +122,6 @@ feature 'Deals' do
           find('.delete-deal').click
         end
       end
-
-      page.driver.browser.switch_to.alert.accept
 
       expect(page).to have_css('.table-wrapper tbody tr', count: 2)
 
@@ -134,8 +132,6 @@ feature 'Deals' do
           find('.delete-deal').click
         end
       end
-
-      page.driver.browser.switch_to.alert.accept
 
       expect(page).to have_css('.table-wrapper tbody tr', count: 1)
     end

@@ -11,7 +11,7 @@ feature 'Teams' do
       expect(page).to have_css('#teams')
     end
 
-    scenario 'creating a team' do
+    scenario 'creating a team', js: true do
       find('.add-team').click
 
       expect(page).to have_css('#team-modal')
@@ -19,7 +19,7 @@ feature 'Teams' do
       within '#team-modal' do
         fill_in 'name', with: 'Test Team'
         ui_select('leader', user.name)
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#team-modal')
@@ -41,7 +41,7 @@ feature 'Teams' do
       expect(page).to have_css('#team')
     end
 
-    scenario 'creating a team' do
+    scenario 'creating a team', js: true do
       find('.add-team').click
 
       expect(page).to have_css('#team-modal')
@@ -49,7 +49,7 @@ feature 'Teams' do
       within '#team-modal' do
         fill_in 'name', with: 'Test Child Team'
         ui_select('parent', parent.name)
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#team-modal')
@@ -73,7 +73,7 @@ feature 'Teams' do
       expect(page).to have_css('#teams')
     end
 
-    scenario 'pops up an edit team modal and updates a team' do
+    scenario 'pops up an edit team modal and updates a team', js: true do
       within 'table tbody' do
         find('tr:first-child').hover
         find('.edit-team').click
@@ -85,7 +85,7 @@ feature 'Teams' do
         fill_in 'name', with: 'Test'
         ui_select('leader', user.name)
 
-        click_on 'Update'
+        find_button('Update').trigger('click')
       end
 
       expect(page).to have_no_css('#team-modal')
@@ -107,7 +107,7 @@ feature 'Teams' do
       expect(page).to have_css('#teams')
     end
 
-    scenario 'removes the team from the page' do
+    scenario 'removes the team from the page', js: true do
       within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
@@ -115,8 +115,6 @@ feature 'Teams' do
           find('.delete-team').click
         end
       end
-
-      page.driver.browser.switch_to.alert.accept
 
       expect(page).to have_css('.table-wrapper tbody tr', count: 2)
 
@@ -127,8 +125,6 @@ feature 'Teams' do
           find('.delete-team').click
         end
       end
-
-      page.driver.browser.switch_to.alert.accept
 
       expect(page).to have_css('.table-wrapper tbody tr', count: 1)
     end
