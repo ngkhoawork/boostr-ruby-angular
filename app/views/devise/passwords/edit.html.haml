@@ -1,5 +1,5 @@
 .row
-  #devise-form.col-xs-4.center-block.text-center.center-element
+  #devise-form.col-xs-12.col-md-5.center-block.text-center.center-element
     .col-xs-6.center-block.center-element
       %a{href: '/'}
         = inline_svg 'branding/boostr_logo.svg', class: 'logo'
@@ -8,7 +8,7 @@
       = devise_error_messages!
       = f.hidden_field :reset_password_token
       .row
-        .col-xs-6.center-block.center-element
+        .col-xs-8.center-block.center-element
           %p
             = f.password_field :password, class:'btn btn-lg btn-info btn-block', placeholder: 'new password', autofocus:true, autocomplete:'off'
           %p

@@ -12,7 +12,7 @@
   margin-bottom: 32px;
 }
 
-.btn {
+input[type=button], input[type=submit] {
   text-transform: uppercase;
 }
 
@@ -33,6 +33,7 @@
   padding-top: 71px;
   padding-bottom: 71px;
   border-radius: 10px;
+
   input {
     height: 51px;
     margin-bottom: 21px;
@@ -55,6 +56,11 @@
       vertical-align: 18px;
     }
   }
+
+  ::-webkit-input-placeholder { text-transform: uppercase; }
+  ::-moz-placeholder { text-transform: uppercase; } /* firefox 19+ */
+  :-ms-input-placeholder { text-transform: uppercase; } /* ie */
+  input:-moz-placeholder { text-transform: uppercase; }
 }
 
 body {
