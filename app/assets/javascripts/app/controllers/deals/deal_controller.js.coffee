@@ -80,5 +80,8 @@
     $scope.activeAnchor = id
     $anchorScroll(id)
 
+  $scope.cancelAddProduct = ->
+    $scope.showProductForm = !$scope.showProductForm
+
   $scope.init()
 ]
