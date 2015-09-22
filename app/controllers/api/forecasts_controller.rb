@@ -5,7 +5,7 @@ class Api::ForecastsController < ApplicationController
     if current_user.leader?
       render json: Forecast.new(teams, time_period)
     else
-      render nothing: true
+      render json: ForecastMember.new(current_user, time_period)
     end
   end
 
