@@ -3,8 +3,9 @@ require 'rails_helper'
 RSpec.describe Forecast do
   context 'as_json' do
     let(:company) { create :company }
+    let(:leader) { create :user, company: company }
     let(:parent) { create :parent_team, company: company }
-    let(:child) { create :child_team, company: company, parent: parent }
+    let(:child) { create :child_team, company: company, parent: parent, leader: leader }
     let!(:user) { create :user, company: company, team: child }
     let(:time_period) { create :time_period, company: company }
 
@@ -13,7 +14,7 @@ RSpec.describe Forecast do
 
       expect(json['teams'].length).to eq(1)
       expect(json['teams'][0]['teams'].length).to eq(1)
-      expect(json['teams'][0]['teams'][0]['members'].length).to eq(1)
+      expect(json['teams'][0]['teams'][0]['members'].length).to eq(2)
       expect(json['weighted_pipeline']).to eq(0)
     end
   end

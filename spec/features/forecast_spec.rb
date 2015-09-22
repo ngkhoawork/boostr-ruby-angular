@@ -39,7 +39,7 @@ feature 'Forecast' do
       end
 
       within '.table-wrapper tbody' do
-        expect(page).to have_css('tr', count: 1)
+        expect(page).to have_css('tr', count: 2)
 
         within 'tr:first-child' do
           expect(find('td:first-child')).to have_text child.name
