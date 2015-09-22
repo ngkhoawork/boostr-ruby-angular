@@ -1,5 +1,5 @@
 .row
-  #devise-form.col-xs-4.center-block.text-center.center-element
+  #devise-form.col-xs-12.col-md-5.center-block.text-center.center-element
     .col-xs-6.center-block.center-element
       %a{href: '/'}
         = inline_svg 'branding/boostr_logo.svg', class: 'logo'
@@ -7,7 +7,7 @@
     = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
       = devise_error_messages!
       .row
-        .col-xs-10.center-block.center-element
+        .col-xs-8.center-block.center-element
           %p
             = f.email_field :email, autofocus: true, class:'btn btn-lg btn-info btn-block', placeholder: 'email'
           %p
