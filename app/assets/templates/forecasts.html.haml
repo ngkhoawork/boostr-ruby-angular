@@ -27,23 +27,23 @@
               .header
                 %ul.list-inline
                   %li
-                    %h1
+                    %h2
                       {{ forecast.percent_to_quota | number: 0 }}%
                     %h5
                       Attainment
                   %li
-                    %h1
-                      {{ forecast.quota / 1000 | currency: '$': 0 }}K
+                    %h2
+                      {{ forecast.quota | currency: '$': 0 }}
                     %h5
                       Quota: {{ currentTimePeriod.name }}
                   %li
-                    %h1
-                      {{ forecast.amount / 1000 | currency: '$': 0 }}K
+                    %h2
+                      {{ forecast.amount | currency: '$': 0 }}
                     %h5
                       Forecast
                   %li
-                    %h1
-                      {{ forecast.gap_to_quota / 1000 | currency: '$': 0 }}K
+                    %h2
+                      {{ forecast.gap_to_quota | currency: '$': 0 }}
                     %h5
                       Gap to Goal
     .row
