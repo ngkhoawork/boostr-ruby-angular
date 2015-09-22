@@ -71,13 +71,17 @@
                 %td {{ row.gap_to_quota | currency: '$': 0 }}
 
               %tr{ ng: { repeat: 'row in members' } }
-                %td
-                  %a{ ng: { href: '' } }
-                    {{ row.full_name }}
+                %td {{ row.full_name }}
                 %td {{ row.weighted_pipeline | currency: '$': 0 }}
                 %td {{ row.revenue | currency: '$': 0 }}
                 %td {{ row.amount | currency: '$': 0 }}
                 %td {{ row.percent_to_quota | number: 0 }}%
                 %td {{ row.gap_to_quota | currency: '$': 0 }}
 
-
+              %tr{ ng: { hide: 'teams' } }
+                %td {{ forecast.full_name }}
+                %td {{ forecast.weighted_pipeline | currency: '$': 0 }}
+                %td {{ forecast.revenue | currency: '$': 0 }}
+                %td {{ forecast.amount | currency: '$': 0 }}
+                %td {{ forecast.percent_to_quota | number: 0 }}%
+                %td {{ forecast.gap_to_quota | currency: '$': 0 }}
