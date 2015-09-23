@@ -53,6 +53,7 @@
             %thead
               %tr
                 %th Name
+                %th Quota
                 %th Weighted Pipeline
                 %th Revenue
                 %th Forecast Amount
@@ -64,6 +65,7 @@
                 %td
                   %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}' } }
                     {{ row.name }}
+                %td {{ row.quota | currency: '$': 0 }}
                 %td {{ row.weighted_pipeline | currency: '$': 0 }}
                 %td {{ row.revenue | currency: '$': 0 }}
                 %td {{ row.amount | currency: '$': 0 }}
@@ -72,6 +74,7 @@
 
               %tr{ ng: { repeat: 'row in members' } }
                 %td {{ row.full_name }}
+                %td {{ row.quota | currency: '$': 0 }}
                 %td {{ row.weighted_pipeline | currency: '$': 0 }}
                 %td {{ row.revenue | currency: '$': 0 }}
                 %td {{ row.amount | currency: '$': 0 }}
@@ -80,6 +83,7 @@
 
               %tr{ ng: { hide: 'teams' } }
                 %td {{ forecast.full_name }}
+                %td {{ forecast.quota | currency: '$': 0 }}
                 %td {{ forecast.weighted_pipeline | currency: '$': 0 }}
                 %td {{ forecast.revenue | currency: '$': 0 }}
                 %td {{ forecast.amount | currency: '$': 0 }}
