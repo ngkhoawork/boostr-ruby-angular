@@ -27,9 +27,7 @@ class ForecastTeam
 
   def members
     return @members if defined?(@members)
-    @members = []
-    @members << ForecastMember.new(team.leader, time_period) if team.leader
-    @members = @members.concat(team.members.map{|m| ForecastMember.new(m, time_period) })
+    @members = team.members.map{|m| ForecastMember.new(m, time_period) }
   end
 
   def weighted_pipeline
@@ -54,6 +52,6 @@ class ForecastTeam
   end
 
   def quota
-    teams.sum(&:quota) + members.sum(&:quota)
+    team.leader ? team.leader.quotas.for_time_period(time_period).sum(:value) : 0
   end
 end
