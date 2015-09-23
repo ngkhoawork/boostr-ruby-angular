@@ -6,6 +6,7 @@ require 'rspec/rails'
 require 'shoulda/matchers'
 require 'capybara/rails'
 require 'capybara/rspec'
+require 'capybara/poltergeist'
 require 'helpers'
 
 # Add additional requires below this line. Rails is not loaded until this point!
@@ -28,7 +29,8 @@ require 'helpers'
 # Checks for pending migrations before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
-Capybara.default_driver = :selenium
+Capybara.javascript_driver = :poltergeist
+
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include Devise::TestHelpers, type: :controller

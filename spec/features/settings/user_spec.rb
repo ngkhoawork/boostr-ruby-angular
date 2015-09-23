@@ -11,7 +11,7 @@ feature 'Users' do
       expect(page).to have_css('#users')
     end
 
-    scenario 'pops up a modal and sends the user an email' do
+    scenario 'pops up a modal and sends the user an email', js: true do
       find('.add-user').click
 
       expect(page).to have_css('#user-modal')
@@ -22,7 +22,7 @@ feature 'Users' do
         fill_in 'title', with: 'CEO'
         fill_in 'email', with: 'bobby@jones.com'
 
-        click_on 'Invite'
+        find_button('Invite').trigger('click')
       end
 
       expect(page).to have_no_css('#user-modal')
@@ -42,7 +42,7 @@ feature 'Users' do
       expect(page).to have_css('#users')
     end
 
-    scenario 'pops up an edit user modal and updates a user' do
+    scenario 'pops up an edit user modal and updates a user', js: true do
       within 'table tbody' do
         find('tr:first-child').click
       end
@@ -54,7 +54,7 @@ feature 'Users' do
         fill_in 'last_name', with: 'Person'
         fill_in 'title', with: 'Secretary'
 
-        click_on 'Update'
+        find_button('Update').trigger('click')
       end
 
       expect(page).to have_no_css('#user-modal')

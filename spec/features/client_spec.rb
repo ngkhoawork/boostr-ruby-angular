@@ -17,7 +17,7 @@ feature 'Clients' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'shows client details, people, deals, team and splits' do
+    scenario 'shows client details, people, deals, team and splits', js: true do
       within '#client-list' do
         expect(page).to have_css('.list-group-item', count: 2)
       end
@@ -47,7 +47,7 @@ feature 'Clients' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'pops up a new client modal and creates a new client' do
+    scenario 'pops up a new client modal and creates a new client', js: true do
       click_link('New Client')
       expect(page).to have_css('#client_modal')
 
@@ -58,7 +58,7 @@ feature 'Clients' do
         fill_in 'city', with: 'Boise'
         ui_select('state', 'Idaho')
 
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#client_modal')
@@ -82,7 +82,7 @@ feature 'Clients' do
         fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Seattle'
         ui_select('state', 'Washington')
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#client_modal')
@@ -108,7 +108,7 @@ feature 'Clients' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'pops up an edit client modal and updates a client' do
+    scenario 'pops up an edit client modal and updates a client', js: true do
       click_link('edit-client')
       expect(page).to have_css('#client_modal')
 
@@ -119,7 +119,7 @@ feature 'Clients' do
         fill_in 'city', with: 'Boise'
         ui_select('state', 'Idaho')
 
-        click_on 'Update'
+        find_button('Update').trigger('click')
       end
 
       expect(page).to have_no_css('#client_modal')
@@ -146,7 +146,7 @@ feature 'Clients' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'removes the client from the page and navigates to the client index' do
+    scenario 'removes the client from the page and navigates to the client index', js: true do
       within '.list-group' do
         expect(page).to have_css('.list-group-item', count: 3)
         find('.list-group-item:last-child').click
@@ -154,10 +154,8 @@ feature 'Clients' do
 
       within '#client-detail' do
         expect(find('h2.client-name')).to have_text(clients[2].name)
-        find('#delete-client').click
+        find('#delete-client').trigger('click')
       end
-
-      page.driver.browser.switch_to.alert.accept
 
       expect(page).to have_css('.list-group-item', count: 2)
 
@@ -165,8 +163,6 @@ feature 'Clients' do
         expect(find('h2.client-name')).to have_text(clients[0].name)
         find('#delete-client').click
       end
-
-      page.driver.browser.switch_to.alert.accept
 
       expect(page).to have_css('.list-group-item', count: 1)
     end
@@ -182,8 +178,8 @@ feature 'Clients' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'with a new contact' do
-      find('.add-contact').click
+    scenario 'with a new contact', js: true do
+      find('.add-contact').trigger('click')
       expect(page).to have_css('.new-contact-options', visible: true)
       find('.new-person').click
       expect(page).to have_css('#contact_modal')
@@ -198,7 +194,7 @@ feature 'Clients' do
         fill_in 'office', with: '1234567890'
         fill_in 'mobile', with: '1257763562'
 
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#contact_modal')
@@ -212,8 +208,8 @@ feature 'Clients' do
       end
     end
 
-    scenario 'with an existing contact' do
-      find('.add-contact').click
+    scenario 'with an existing contact', js: true do
+      find('.add-contact').trigger('click')
 
       expect(page).to have_css('.new-contact-options', visible: true)
       find('.existing-contact').click
@@ -242,8 +238,8 @@ feature 'Clients' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'with a new deal' do
-      find('.new-deal').click
+    scenario 'with a new deal', js: true do
+      find('.new-deal').trigger('click')
 
       expect(page).to have_css('#deal_modal')
 
@@ -259,7 +255,7 @@ feature 'Clients' do
         fill_in 'start-date', with: '1/1/15'
         fill_in 'end-date', with: '12/31/15'
 
-        click_on 'Create'
+        find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#deal_modal')

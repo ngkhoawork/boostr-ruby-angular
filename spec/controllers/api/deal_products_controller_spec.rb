@@ -41,7 +41,7 @@ RSpec.describe Api::DealProductsController, type: :controller do
     let!(:deal_product) { create :deal_product, deal: deal, product: product }
     it 'deletes the deal product' do
       expect do
-        delete :destroy, id: deal_product.id, deal_id: deal.id, format: :json
+        delete :destroy, id: product.id, deal_id: deal.id, format: :json
         expect(response).to be_success
       end.to change(DealProduct, :count).by(-1)
     end

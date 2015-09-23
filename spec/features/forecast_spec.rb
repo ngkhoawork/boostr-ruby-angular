@@ -17,7 +17,7 @@ feature 'Forecast' do
       expect(page).to have_css('#forecasts')
     end
 
-    scenario 'shows the parent team name and drills down teams and changes time periods' do
+    scenario 'shows the parent team name and drills down teams and changes time periods', js: true do
       within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 1)
 
@@ -61,7 +61,7 @@ feature 'Forecast' do
       expect(page).to have_css('#forecasts')
     end
 
-    scenario 'shows the current_user\'s forecast data' do
+    scenario 'shows the current_user\'s forecast data', js: true do
       within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 1)
 

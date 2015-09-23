@@ -5,7 +5,7 @@
   $scope.init = ->
     Contact.all (contacts) ->
       $scope.contacts = contacts
-      Contact.set($routeParams.id || contacts[0].id)
+      Contact.set($routeParams.id || contacts[0].id) if contacts.length > 0
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open

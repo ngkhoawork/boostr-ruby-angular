@@ -14,9 +14,9 @@ feature 'DealMembers' do
       expect(page).to have_css('#deal')
     end
 
-    scenario 'add a member from existing users' do
-      find('.add-member').click
-      find('.existing-user-options').click
+    scenario 'add a member from existing users', js: true do
+      find('.add-member').trigger('click')
+      find('.existing-user-options').trigger('click')
       ui_select('user-list', user.name)
 
       within '#teamsplits tbody' do
@@ -34,7 +34,7 @@ feature 'DealMembers' do
       expect(page).to have_css('#deal')
     end
 
-    scenario 'update member' do
+    scenario 'update member', js: true do
       within '#teamsplits tbody tr:first-child' do
         role = find('td:nth-child(2) span')
         expect(role).to have_text(deal_member.role)
@@ -48,7 +48,7 @@ feature 'DealMembers' do
         share.click
         expect(page).to have_css('.editable-input', visible: true)
         fill_in 'share', with: '25'
-        find('.editable-input').native.send_keys(:return)
+        find('.editable-input').native.send_keys(:Enter)
         expect(share).to have_text '25%'
       end
     end
@@ -62,14 +62,13 @@ feature 'DealMembers' do
       expect(page).to have_css('#deal')
     end
 
-    scenario 'delete member' do
+    scenario 'delete member', js: true do
       within '#teamsplits tbody' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
         within 'tr:first-child' do
           find('.delete-member').click
         end
-        page.driver.browser.switch_to.alert.accept
         expect(page).to have_css('tr', count: 2)
       end
     end
