@@ -14,7 +14,7 @@ RSpec.describe Forecast do
 
       expect(json['teams'].length).to eq(1)
       expect(json['teams'][0]['teams'].length).to eq(1)
-      expect(json['teams'][0]['teams'][0]['members'].length).to eq(2)
+      expect(json['teams'][0]['teams'][0]['members'].length).to eq(1)
       expect(json['weighted_pipeline']).to eq(0)
     end
   end
