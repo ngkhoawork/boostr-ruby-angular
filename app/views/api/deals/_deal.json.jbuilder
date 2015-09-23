@@ -13,7 +13,7 @@ json.creator deal.creator, :first_name, :last_name
 json.products deal.products do |product|
   json.id product.id
   json.name product.name
-  json.deal_products product.deal_products.where(deal_id: deal).order(:period) do |deal_product|
+  json.deal_products product.deal_products.where(deal_id: deal).order(:start_date) do |deal_product|
     json.id deal_product.id
     json.budget deal_product.budget / 100
   end

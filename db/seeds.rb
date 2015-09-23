@@ -259,19 +259,7 @@ closed_deal = company.deals.create!({
   created_by: company_user.id,
 })
 
-closed_deal.deal_products.create!([{
-  product: products[1],
-  budget: 1722200,
-  period: Date.parse("2015-01-01"),
-},{
-  product: products[1],
-  budget: 1555600,
-  period: Date.parse("2015-02-01"),
-},{
-  product: products[1],
-  budget: 1722200,
-  period: Date.parse("2015-03-01"),
-}])
+closed_deal.add_product(products[1].id, 50000)
 
 prospecting_deal = company.deals.create!({
   advertiser: company_clients[2],
@@ -287,32 +275,8 @@ prospecting_deal = company.deals.create!({
   created_by: company_user.id,
 })
 
-prospecting_deal.deal_products.create!([{
-  product: products[1],
-  budget: 8611111,
-  period: Date.parse("2016-01-01"),
-},{
-  product: products[1],
-  budget: 7777778,
-  period: Date.parse("2016-02-01"),
-},{
-  product: products[1],
-  budget: 8611111,
-  period: Date.parse("2016-03-01"),
-},{
-  product: products[2],
-  budget: 172222,
-  period: Date.parse("2016-01-01"),
-},{
-  product: products[2],
-  budget: 155556,
-  period: Date.parse("2016-02-01"),
-},{
-  product: products[2],
-  budget: 172222,
-  period: Date.parse("2016-03-01"),
-}])
-
+prospecting_deal.add_product(products[1], 2500000)
+prospecting_deal.add_product(products[2], 5000)
 
 # Revenue
 csv =<<-eocsv

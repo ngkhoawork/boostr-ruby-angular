@@ -1,6 +1,6 @@
 @app.controller 'ForecastsController',
-['$scope', '$routeParams', '$location', 'Forecast', 'TimePeriod',
-($scope, $routeParams, $location, Forecast, TimePeriod) ->
+['$scope', '$routeParams', '$location', 'Forecast', 'TimePeriod', 'WeightedPipeline',
+($scope, $routeParams, $location, Forecast, TimePeriod, WeightedPipeline) ->
 
   $scope.init = () ->
     TimePeriod.all().then (timePeriods) ->
@@ -23,6 +23,16 @@
           $scope.forecast = forecast
           $scope.teams = forecast.teams
 
+
+  $scope.toggleWeightedPipelineDetail = (member_id) ->
+    if $scope.weightedPipelineDetailId == member_id
+      $scope.weightedPipelineDetailId = undefined
+      $scope.weighted_pipeline = []
+    else
+      $scope.weighted_pipeline = []
+      $scope.weightedPipelineDetailId = member_id
+      WeightedPipeline.get({ time_period_id: $scope.currentTimePeriod.id, id: member_id }).then (weighted_pipeline) ->
+        $scope.weighted_pipeline = weighted_pipeline
 
   $scope.updateTimePeriod = (time_period_id) ->
     path = []

@@ -4,8 +4,9 @@ class Revenue < ActiveRecord::Base
   belongs_to :user
   belongs_to :product
 
-  validates :company_id, :order_number, :line_number, :ad_server, :start_date, :end_date, presence: true
+  scope :for_time_period, -> time_period { where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date) if time_period.present? }
 
+  validates :company_id, :order_number, :line_number, :ad_server, :start_date, :end_date, presence: true
   validate :start_date_is_before_end_date
 
   before_save :set_daily_budget

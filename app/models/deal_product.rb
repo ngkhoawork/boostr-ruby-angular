@@ -2,20 +2,16 @@ class DealProduct < ActiveRecord::Base
   belongs_to :deal
   belongs_to :product
 
+  scope :for_time_period, -> time_period { where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date) if time_period.present? }
+
+  validates :start_date, :end_date, presence: true
+
   before_update do
     self.budget = budget * 100 if budget_changed?
   end
 
   after_update do
     deal.update_total_budget
-  end
-
-  def start_date
-    period
-  end
-
-  def end_date
-    period.end_of_month
   end
 
   def daily_budget

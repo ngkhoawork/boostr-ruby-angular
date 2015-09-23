@@ -8,6 +8,10 @@ feature 'Forecast' do
   let!(:another_time_period) { create :time_period, company: company, name: 'Y2' }
   let!(:child) { create :child_team, company: company, parent: parent }
   let!(:member) { create :user, company: company, team: child }
+  let(:stage) { create :stage, probability: 100 }
+  let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
+  let!(:deal_member) { create :deal_member, deal: deal, user: member, share: 100 }
+  let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
   describe 'showing the root level of teams' do
 
@@ -45,6 +49,11 @@ feature 'Forecast' do
           expect(find('td:first-child')).to have_text child.name
           find('td:first-child a').click
           expect(find('td:first-child')).to have_text member.full_name
+          find('td.weighted-pipeline a').click
+        end
+
+        within 'tr.weighted-pipeline-detail table tbody' do
+          expect(page).to have_css 'tr', count: 1
         end
       end
 

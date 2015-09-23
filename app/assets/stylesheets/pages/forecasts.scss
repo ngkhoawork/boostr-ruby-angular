@@ -42,4 +42,49 @@
       }
     }
   }
+
+.weighted-pipeline {
+  position: relative;
+
+  .arrow-up {
+    position: absolute;
+    bottom: -1px;
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+
+    border-bottom: 15px solid $gray-light;
+  }
+}
+
+  tr.weighted-pipeline-detail {
+    background-color: $gray-light;
+
+    h3, h4 {
+      display: inline;
+    }
+
+    .weighted-pipeline-table-wrapper {
+      padding: 30px;
+
+
+      table, thead, tbody {
+        background: none;
+      }
+
+      th {
+        background: none;
+        border-top: 2px solid black;
+        border-bottom: 2px solid black;
+        padding-left: 0;
+      }
+
+      td {
+        background: none;
+        border-bottom: 1px solid $very-dark-greyish-blue;
+        padding-left: 0;
+      }
+    }
+  }
 }

@@ -29,13 +29,11 @@ class ForecastMember
 
     @weighted_pipeline = open_deals.sum do |deal|
       deal_total = 0
-      deal.deal_products.each do |deal_product|
-        if deal_product.start_date < time_period.end_date && deal_product.end_date > time_period.start_date
-          from = [time_period.start_date, deal_product.start_date].max
-          to = [time_period.end_date, deal_product.end_date].min
-          num_days = (to.to_date - from.to_date) + 1
-          deal_total += deal_product.daily_budget * num_days * (deal_shares[deal.id]/100.0)
-        end
+      deal.deal_products.for_time_period(time_period).each do |deal_product|
+        from = [time_period.start_date, deal_product.start_date].max
+        to = [time_period.end_date, deal_product.end_date].min
+        num_days = (to.to_date - from.to_date) + 1
+        deal_total += deal_product.daily_budget * num_days * (deal_shares[deal.id]/100.0)
       end
       deal_total * (deal.stage.probability / 100.0)
     end
@@ -82,10 +80,10 @@ class ForecastMember
   end
 
   def revenues
-    @revenues ||= member.company.revenues.where(client_id: client_ids).where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date).to_a
+    @revenues ||= member.company.revenues.where(client_id: client_ids).for_time_period(time_period).to_a
   end
 
   def open_deals
-    @open_deals ||= member.deals.joins(:stage).where('stages.open IS true').where('deals.start_date <= ? AND deals.end_date >= ?', time_period.end_date, time_period.start_date).includes(:deal_products).to_a
+    @open_deals ||= member.deals.joins(:stage).where('stages.open IS true').for_time_period(time_period).includes(:deal_products).to_a
   end
 end

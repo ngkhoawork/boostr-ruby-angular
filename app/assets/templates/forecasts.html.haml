@@ -72,14 +72,48 @@
                 %td {{ row.percent_to_quota | number: 0 }}%
                 %td {{ row.gap_to_quota | currency: '$': 0 }}
 
-              %tr{ ng: { repeat: 'row in members' } }
+              %tr{ ng: { 'repeat-start': 'row in members' } }
                 %td {{ row.full_name }}
                 %td {{ row.quota | currency: '$': 0 }}
-                %td {{ row.weighted_pipeline | currency: '$': 0 }}
+                %td.weighted-pipeline
+                  %a{ href: '', ng: { click: 'toggleWeightedPipelineDetail(row.id)' } }
+                    {{ row.weighted_pipeline | currency: '$': 0 }}
+                  .arrow-up{ ng: { show: 'row.id == weightedPipelineDetailId' } }
                 %td {{ row.revenue | currency: '$': 0 }}
                 %td {{ row.amount | currency: '$': 0 }}
                 %td {{ row.percent_to_quota | number: 0 }}%
                 %td {{ row.gap_to_quota | currency: '$': 0 }}
+              %tr.weighted-pipeline-detail{ ng: { 'repeat-end': true, if: 'row.id == weightedPipelineDetailId' } }
+                %td.weighted-pipeline-table-wrapper{ colspan: 6 }
+                  .row
+                    .col-xs-12
+                      %h3 Pipeline details
+                      %span
+                        |
+                      %h4
+                        %a{ href: '/deals' }
+                          Manage Pipeline
+                      %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row.id)' } }
+                        %span{'aria-hidden' => 'true'}
+                          = inline_svg 'icons/close.svg'
+
+                  %table.table.black-table.detail
+                    %thead
+                      %tr
+                        %th Deal name
+                        %th Client
+                        %th Probability
+                        %th Total Budget
+                        %th In-period Amount
+                        %th Start Date
+                    %tbody
+                      %tr{ ng: { repeat: 'subrow in weighted_pipeline' } }
+                        %td {{ subrow.name }}
+                        %td {{ subrow.client_name }}
+                        %td {{ subrow.probability }}%
+                        %td {{ subrow.budget / 100 | currency: '$': 0 }}
+                        %td {{ subrow.in_period_amt | currency: '$': 0 }}
+                        %td {{ subrow.start_date | date: 'MMMM d, y' }}
 
               %tr{ ng: { hide: 'teams' } }
                 %td {{ forecast.full_name }}

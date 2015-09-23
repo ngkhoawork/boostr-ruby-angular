@@ -1,9 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Deal, type: :model do
+  let(:company) { create :company }
+
   context 'scopes' do
+
     context 'for_client' do
-      let!(:company) { create :company }
       let!(:deal) { create :deal, company: company }
       let(:agency) { create :agency, company: company }
       let!(:another_deal) { create :deal, company: company, agency: agency }
@@ -15,6 +17,49 @@ RSpec.describe Deal, type: :model do
       it 'returns only the contacts that belong to the client_id' do
         expect(Deal.for_client(agency.id).count).to eq(1)
       end
+    end
+
+    context 'for_time_period' do
+      let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-12-31', company: company }
+      let!(:in_deal) { create :deal, start_date: '2015-02-01', end_date: '2015-2-28'  }
+      let!(:out_deal) { create :deal, start_date: '2016-02-01', end_date: '2016-2-28'  }
+
+      it 'should return all deals when no time period is specified' do
+        expect(Deal.for_time_period(nil).count).to eq(2)
+      end
+
+      it 'should return deals that are completely in the time period' do
+        expect(Deal.for_time_period(time_period).count).to eq(1)
+        expect(Deal.for_time_period(time_period)).to include(in_deal)
+      end
+
+      it 'returns deals that are partially in the time period' do
+        create :deal, start_date: '2015-02-01', end_date: '2016-2-28'
+        create :deal, start_date: '2014-12-01', end_date: '2015-2-28'
+
+        expect(Deal.for_time_period(time_period).count).to eq(3)
+      end
+    end
+  end
+
+  describe '#in_period_amt' do
+    let(:deal) { create :deal }
+    let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-01-31', company: company }
+
+    it 'returns 0 when there are no deal products' do
+      expect(deal.in_period_amt(time_period)).to eq(0)
+    end
+
+    it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
+      create :deal_product, deal: deal, start_date: '2015-01-01', end_date: '2015-01-31', budget: 100000
+
+      expect(deal.in_period_amt(time_period)).to eq(1000)
+    end
+
+    it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
+      create :deal_product, deal: deal, start_date: '2015-01-27', end_date: '2015-02-05', budget: 100000
+
+      expect(deal.in_period_amt(time_period)).to eq(500)
     end
   end
 
@@ -63,7 +108,7 @@ RSpec.describe Deal, type: :model do
   describe '#remove_product' do
     let(:deal) { create :deal }
     let(:product) { create :product }
-    let!(:deal_product) { create :deal_product, deal: deal, product: product }
+    let!(:deal_product) { create :deal_product, deal: deal, product: product, start_date: deal.start_date, end_date: deal.start_date.end_of_month }
 
     it 'deletes a product from a deal' do
       expect do
