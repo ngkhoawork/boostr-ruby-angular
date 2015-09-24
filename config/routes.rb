@@ -30,6 +30,7 @@ Rails.application.routes.draw do
     resources :time_periods, only: [:index, :create, :destroy]
     resources :quotas, only: [:index, :create, :update]
     resources :forecasts, only: [:index, :show]
+    resources :weighted_pipelines, only: [:show]
   end
 
   get '*path' => 'pages#index'

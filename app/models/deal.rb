@@ -27,9 +27,30 @@ class Deal < ActiveRecord::Base
   after_create :generate_deal_members
 
   scope :for_client, -> client_id { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
+  scope :for_time_period, -> time_period { where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date) if time_period.present? }
 
   def as_json(options = {})
     super(options.merge(include: [:advertiser, :stage]))
+  end
+
+  def as_weighted_pipeline(time_period)
+    {
+      name: name,
+      client_name: advertiser.name,
+      probability: stage.probability,
+      budget: budget,
+      in_period_amt: in_period_amt(time_period),
+      start_date: start_date
+    }
+  end
+
+  def in_period_amt(time_period)
+    deal_products.for_time_period(time_period).to_a.sum do |deal_product|
+      from = [time_period.start_date, deal_product.start_date].max
+      to = [time_period.end_date, deal_product.end_date].min
+      num_days = (to.to_date - from.to_date) + 1
+      deal_product.daily_budget * num_days
+    end
   end
 
   def months
@@ -44,7 +65,8 @@ class Deal < ActiveRecord::Base
     daily_budget = total_budget.to_f / days
     months.each_with_index do |month, index|
       monthly_budget = daily_budget * days_per_month[index]
-      deal_products.create(product_id: product_id, period: Date.new(*month), budget: monthly_budget.round(2) * 100)
+      period = Date.new(*month)
+      deal_products.create(product_id: product_id, start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(2) * 100)
     end
     update_total_budget if update_budget
   end

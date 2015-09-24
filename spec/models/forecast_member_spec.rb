@@ -43,7 +43,7 @@ RSpec.describe ForecastMember do
       let(:stage) { create :stage, probability: 100 }
       let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
       let!(:deal_member) { create :deal_member, deal: deal, user: user, share: 100 }
-      let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, period: "2015-01-01" }
+      let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
       it 'sums the weighted_pipeline' do
         expect(forecast.weighted_pipeline).to eq(100)
