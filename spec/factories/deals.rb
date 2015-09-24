@@ -5,14 +5,8 @@ FactoryGirl.define do
     sequence(:name) { |n| "Deal #{n}" }
     stage
     next_steps 'Call Somebody'
-    deal_type ['Test Campaign',
-               'Sponsorship',
-               'Seasonal',
-               'Renewal'].sample
-    source_type ['Pitch to Client',
-                 'Pitch to Agency',
-                 'RFP Response to Client',
-                 'RFP Response to Agency'].sample
+    deal_type 'Seasonal'
+    source_type 'Pitch to Client'
     advertiser
     agency
   end

@@ -15,7 +15,7 @@ feature 'Revenue' do
     end
 
     scenario 'shows the modal and uploads a csv', js: true do
-      find('.upload').click
+      find('.upload').trigger('click')
 
       expect(page).to have_css('#revenue_upload_modal')
 
@@ -49,7 +49,7 @@ feature 'Revenue' do
     end
 
     scenario 'shows an error message', js: true do
-      find('.upload').click
+      find('.upload').trigger('click')
 
       expect(page).to have_css('#revenue_upload_modal')
 

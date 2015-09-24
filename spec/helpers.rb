@@ -6,7 +6,7 @@ module Helpers
         find('span.btn').trigger('click')
       end
       find('.ui-select-search').set(value)
-      find('.ui-select-choices-row-inner').click
+      find('.ui-select-choices-row-inner').trigger('click')
     end
   end
 

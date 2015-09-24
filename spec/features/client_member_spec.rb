@@ -64,7 +64,7 @@ feature 'ClientMembers' do
       within '#teamsplits tbody tr:first-child' do
         share = find('td:nth-child(2) span')
         expect(share).to have_text(client_member.share)
-        share.click
+        share.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         fill_in 'share', with: '25'
         find('.editable-input').native.send_keys(:Enter)
@@ -72,7 +72,7 @@ feature 'ClientMembers' do
 
         role = find('td:nth-child(3) span')
         expect(role).to have_text(client_member.role)
-        role.click
+        role.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         select 'Can View', from: 'role'
         expect(role).to have_text 'Can View'

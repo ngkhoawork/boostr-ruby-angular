@@ -34,7 +34,7 @@ feature 'Users' do
   end
 
   describe 'update a product' do
-    let!(:products) { create_list :product, 3, company: company }
+    let!(:product) { create :product, company: company }
 
     before do
       login_as user, scope: :user
@@ -44,6 +44,7 @@ feature 'Users' do
 
     scenario 'pops up an edit product modal and updates a product', js: true do
       within 'table tbody' do
+        expect(page).to have_css('tr', count: 1)
         find('tr:first-child').trigger('click')
       end
 
@@ -61,6 +62,7 @@ feature 'Users' do
       expect(page).to have_no_css('#product-modal')
 
       within 'table tbody' do
+        expect(page).to have_css('tr', count: 1)
         expect(find('tr:first-child td:nth-child(2)')).to have_text('Test')
         expect(find('tr:first-child td:nth-child(3)')).to have_text('Tablet')
         expect(find('tr:first-child td:nth-child(4)')).to have_text('Banner')

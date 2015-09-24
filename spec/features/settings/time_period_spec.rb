@@ -12,7 +12,7 @@ feature 'TimePeriod' do
     end
 
     scenario 'pops up a new time_period modal and creates a new time_period', js: true do
-      click_link('Add Time Period')
+      find_link('Add Time Period').trigger('click')
       expect(page).to have_css('#time-period-modal')
 
       within '#time-period-modal' do
@@ -46,7 +46,7 @@ feature 'TimePeriod' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
         within 'tr:first-child' do
-          find('.delete-time-period').click
+          find('.delete-time-period').trigger('click')
         end
       end
 
@@ -56,7 +56,7 @@ feature 'TimePeriod' do
         expect(page).to have_css('tr', count: 2)
         find('tr:first-child').hover
         within 'tr:first-child' do
-          find('.delete-time-period').click
+          find('.delete-time-period').trigger('click')
         end
       end
 
