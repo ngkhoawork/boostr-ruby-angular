@@ -84,7 +84,7 @@
                 %td {{ row.percent_to_quota | number: 0 }}%
                 %td {{ row.gap_to_quota | currency: '$': 0 }}
               %tr.weighted-pipeline-detail{ ng: { 'repeat-end': true, if: 'row.id == weightedPipelineDetailId' } }
-                %td.weighted-pipeline-table-wrapper{ colspan: 6 }
+                %td.weighted-pipeline-table-wrapper{ colspan: 7 }
                   .row
                     .col-xs-12
                       %h3 Pipeline details
