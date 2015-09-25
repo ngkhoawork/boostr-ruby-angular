@@ -72,6 +72,18 @@
                 %td {{ row.percent_to_quota | number: 0 }}%
                 %td {{ row.gap_to_quota | currency: '$': 0 }}
 
+              %tr{ ng: { if: 'forecast.leader && (forecast.leader.revenue > 0 || forecast.leader.weighted_pipeline > 0)' } }
+                %td {{ forecast.leader.full_name }}
+                %td {{ forecast.leader.quota | currency: '$': 0 }}
+                %td.weighted-pipeline
+                  %a{ href: '', ng: { click: 'toggleWeightedPipelineDetail(leader.id)' } }
+                    {{ forecast.leader.weighted_pipeline | currency: '$': 0 }}
+                  .arleader.up{ ng: { show: 'leader.id == weightedPipelineDetailId' } }
+                %td {{ forecast.leader.revenue | currency: '$': 0 }}
+                %td {{ forecast.leader.amount | currency: '$': 0 }}
+                %td {{ forecast.leader.percent_to_quota | number: 0 }}%
+                %td {{ forecast.leader.gap_to_quota | currency: '$': 0 }}
+
               %tr{ ng: { 'repeat-start': 'row in members' } }
                 %td {{ row.full_name }}
                 %td {{ row.quota | currency: '$': 0 }}
