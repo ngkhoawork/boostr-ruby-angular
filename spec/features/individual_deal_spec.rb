@@ -21,14 +21,14 @@ feature 'Individual Deal' do
 
     scenario 'shows deal details and stage', js: true do
       within '#nav' do
-        first('li a').click
+        first('li a').trigger('click')
       end
 
       first_deal_product = deal.deal_products.where(product_id: product.id).first
       within '#deal_overview' do
         deal_name = find('h3.deal-name')
         expect(deal_name).to have_text(deal.name)
-        deal_name.click
+        deal_name.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         fill_in 'deal-name', with: 'Taco'
         find('.editable-input').native.send_keys(:Enter)
@@ -36,7 +36,7 @@ feature 'Individual Deal' do
       end
 
       within '#nav' do
-        find('li:nth-child(4) a').click
+        find('li:nth-child(4) a').trigger('click')
       end
 
       within '#info' do
@@ -44,7 +44,7 @@ feature 'Individual Deal' do
 
         deal_type = find('.field:first-child .field-value')
         expect(deal_type).to have_text(deal.deal_type)
-        deal_type.click
+        deal_type.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         select 'Renewal', from: 'deal-type'
         expect(page).to have_no_css('.editable-input')
@@ -52,7 +52,7 @@ feature 'Individual Deal' do
 
         deal_source = find('.field:nth-child(2) .field-value')
         expect(deal_source).to have_text(deal.source_type)
-        deal_source.click
+        deal_source.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         select 'RFP Response to Client', from: 'deal-source'
         expect(page).to have_no_css('.editable-input')
@@ -60,7 +60,7 @@ feature 'Individual Deal' do
 
         next_steps = find('.field:nth-child(3) .field-value')
         expect(next_steps).to have_text(deal.next_steps)
-        next_steps.click
+        next_steps.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         fill_in 'next-steps', with: 'Testing'
         find('.editable-input').native.send_keys(:Enter)
@@ -93,7 +93,7 @@ feature 'Individual Deal' do
           expect(find('td:nth-child(13)')).to have_text('$11,038') # may
           expect(find('td:nth-child(14)')).to have_text('$10,326') # jun
 
-          find('td:nth-child(3) span').click
+          find('td:nth-child(3) span').trigger('click')
           fill_in "#{first_deal_product.id}", with: '1000'
           find('td:nth-child(3) input').native.send_keys(:Enter)
         end
@@ -102,7 +102,7 @@ feature 'Individual Deal' do
       expect(find('#total-amount')).to have_text('$119,932')
 
       within '#new-product' do
-        find('.add-product').click
+        find('.add-product').trigger('click')
 
         expect(page).to have_css '#product-form', visible: true
 
@@ -127,7 +127,7 @@ feature 'Individual Deal' do
           find_button('Add Product').trigger('click')
         end
 
-        find('.add-product').click
+        find('.add-product').trigger('click')
 
         expect(page).to have_css '#product-form', visible: true
 

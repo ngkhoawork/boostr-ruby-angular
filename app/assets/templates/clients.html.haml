@@ -84,7 +84,13 @@
           %h2
             default team & split
 
-          .table-wrapper
+          .well.no-client-members{ ng: { hide: 'client_members.length > 0' } }
+            .row
+              .col-xs-12
+                There are no members yet.
+                %a{ href: '', ng: { click: 'showNewMemberModal()' } }
+                  Add a new member.
+          .table-wrapper{ ng: { show: 'client_members.length > 0' } }
             %table.table.table-striped
               %thead
                 %tr
@@ -123,6 +129,12 @@
           %h2
             people
 
+          .well.no-people{ ng: { hide: 'currentClient.contacts.length > 0' } }
+            .row
+              .col-xs-12
+                There are no people yet.
+                %a{ href: '', ng: { click: 'showNewPersonModal()' } }
+                  Add a new person.
           .wells-group
             .well{ ng: { repeat: 'contact in currentClient.contacts', click: 'go("/people/" + contact.id)' } }
               .row
@@ -145,6 +157,12 @@
           %h2
             deals
 
+          .well.no-deals{ ng: { hide: 'currentClient.deals.length > 0' } }
+            .row
+              .col-xs-12
+                There are no deals yet.
+                %a{ href: '', ng: { click: 'showNewDealModal()' } }
+                  Add deal.
           .wells-group
             .well{ ng: { repeat: 'deal in currentClient.deals', click: 'go("/deals/" + deal.id)' } }
               .row

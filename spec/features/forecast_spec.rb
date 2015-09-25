@@ -27,16 +27,16 @@ feature 'Forecast' do
 
         within 'tr:first-child' do
           expect(find('td:first-child')).to have_text parent.name
-          find('td:first-child a').click
+          find('td:first-child a').trigger('click')
           expect(find('td:first-child')).to have_text child.name
         end
       end
 
       within '.quota-period' do
-        find('a').click
+        find('a').trigger('click')
 
         within('.dropdown-menu') do
-          find('li:last-child a').click
+          find('li:last-child a').trigger('click')
         end
 
         expect(page).to have_text 'Y2'
@@ -47,9 +47,9 @@ feature 'Forecast' do
 
         within 'tr:first-child' do
           expect(find('td:first-child')).to have_text child.name
-          find('td:first-child a').click
+          find('td:first-child a').trigger('click')
           expect(find('td:first-child')).to have_text member.full_name
-          find('td.weighted-pipeline a').click
+          find('td.weighted-pipeline a').trigger('click')
         end
 
         within 'tr.weighted-pipeline-detail table tbody' do

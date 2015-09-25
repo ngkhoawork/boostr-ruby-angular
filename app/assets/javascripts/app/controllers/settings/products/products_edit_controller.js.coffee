@@ -11,6 +11,7 @@
 
   $scope.submitForm = () ->
     Product.update(id: $scope.product.id, product: $scope.product).then (product) ->
+      $scope.product = product
       $modalInstance.close()
 
   $scope.cancel = ->

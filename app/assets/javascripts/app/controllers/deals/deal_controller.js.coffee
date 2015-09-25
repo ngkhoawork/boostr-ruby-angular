@@ -11,12 +11,14 @@
     $scope.memberAccess = DealMember.access()
     Deal.get($routeParams.id).then (deal) ->
       $scope.currentDeal = deal
-    Stage.all().then (stages) ->
-      $scope.stages = stages
     $scope.anchors = [{name: 'campaign', id: 'campaign'},
                       {name: 'team & split', id: 'teamsplit'},
                       {name: 'documents', id: 'documents'},
                       {name: 'additional info', id: 'info'}]
+
+  $scope.getStages = ->
+    Stage.all().then (stages) ->
+      $scope.stages = stages
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()

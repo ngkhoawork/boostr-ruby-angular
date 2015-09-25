@@ -12,7 +12,7 @@ feature 'Users' do
     end
 
     scenario 'pops up a modal and sends the user an email', js: true do
-      find('.add-user').click
+      find('.add-user').trigger('click')
 
       expect(page).to have_css('#user-modal')
 
@@ -44,7 +44,7 @@ feature 'Users' do
 
     scenario 'pops up an edit user modal and updates a user', js: true do
       within 'table tbody' do
-        find('tr:first-child').click
+        find('tr:first-child').trigger('click')
       end
 
       expect(page).to have_css('#user-modal')

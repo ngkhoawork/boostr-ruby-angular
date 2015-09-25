@@ -38,14 +38,14 @@ feature 'DealMembers' do
       within '#teamsplits tbody tr:first-child' do
         role = find('td:nth-child(2) span')
         expect(role).to have_text(deal_member.role)
-        role.click
+        role.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         select 'Leader', from: 'role'
         expect(role).to have_text 'Leader'
 
         share = find('td:nth-child(3) span')
         expect(share).to have_text(deal_member.share)
-        share.click
+        share.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         fill_in 'share', with: '25'
         find('.editable-input').native.send_keys(:Enter)
@@ -67,7 +67,7 @@ feature 'DealMembers' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
         within 'tr:first-child' do
-          find('.delete-member').click
+          find('.delete-member').trigger('click')
         end
         expect(page).to have_css('tr', count: 2)
       end

@@ -13,7 +13,7 @@ feature 'Contacts' do
     end
 
     scenario 'pops up a new contact modal and creates a new contact', js: true do
-      click_link('New Person')
+      find_link('New Person').trigger('click')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -41,7 +41,7 @@ feature 'Contacts' do
         expect(find('h2')).to have_text('Bobby')
       end
 
-      click_link('New Person')
+      find_link('New Person').trigger('click')
 
       expect(page).to have_css('#contact_modal')
 
@@ -82,7 +82,7 @@ feature 'Contacts' do
     end
 
     scenario 'pops up an edit contact modal and updates a contact', js: true do
-      click_link('edit-contact')
+      find_link('edit-contact').trigger('click')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -123,19 +123,19 @@ feature 'Contacts' do
     scenario 'removes the contact from the page and navigates to the contact index', js: true do
       within '.list-group' do
         expect(page).to have_css('.list-group-item', count: 3)
-        find('.list-group-item:last-child').click
+        find('.list-group-item:last-child').trigger('click')
       end
 
       within '#contact-detail' do
         expect(find('h2.contact-name')).to have_text(contacts[2].name)
-        find('#delete-contact').click
+        find('#delete-contact').trigger('click')
       end
 
       expect(page).to have_css('.list-group-item', count: 2)
 
       within '#contact-detail' do
         expect(find('h2.contact-name')).to have_text(contacts[0].name)
-        find('#delete-contact').click
+        find('#delete-contact').trigger('click')
       end
 
       expect(page).to have_css('.list-group-item', count: 1)

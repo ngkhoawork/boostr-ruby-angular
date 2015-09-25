@@ -5,7 +5,7 @@ feature 'Deals' do
   let(:user) { create :user, company: company }
   let!(:advertiser) { create :client, company: company, client_type: 'Advertiser' }
   let!(:agency) { create :client, company: company, client_type: 'Agency' }
-  let!(:open_stage) { create :stage, company: company, position: 1 }
+  let!(:open_stage) { create :stage, company: company, position: 1, name: 'open stage' }
 
   describe 'showing a list of deals filtered by stages' do
     let!(:another_open_stage) { create :stage, company: company, position: 2 }
@@ -30,7 +30,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(2)').click
+        find('.list-group-item:nth-child(2)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -41,7 +41,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(3)').click
+        find('.list-group-item:nth-child(3)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -52,7 +52,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(4)').click
+        find('.list-group-item:nth-child(4)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -63,7 +63,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:first-child').click
+        find('.list-group-item:first-child').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -101,6 +101,10 @@ feature 'Deals' do
 
       expect(page).to have_no_css('#deal_modal')
       expect(page).to have_css('#deal')
+
+      within '#deal_overview h3.deal-name' do
+        expect(page).to have_text('Apple Watch Launch')
+      end
     end
   end
 
@@ -119,7 +123,7 @@ feature 'Deals' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
         within 'tr:first-child' do
-          find('.delete-deal').click
+          find('.delete-deal').trigger('click')
         end
       end
 
@@ -129,7 +133,7 @@ feature 'Deals' do
         expect(page).to have_css('tr', count: 2)
         find('tr:first-child').hover
         within 'tr:first-child' do
-          find('.delete-deal').click
+          find('.delete-deal').trigger('click')
         end
       end
 

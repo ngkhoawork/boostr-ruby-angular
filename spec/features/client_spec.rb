@@ -10,6 +10,7 @@ feature 'Clients' do
     let!(:contacts) { create_list :contact, 2, client: client, company: company }
     let!(:deal) { create_list :deal, 2, company: company, advertiser: client }
     let!(:agency_deal) { create :deal, company: company, agency: agency }
+    let!(:client_member) { create :client_member, client: client, user: user }
 
     before do
       login_as user, scope: :user
@@ -48,7 +49,7 @@ feature 'Clients' do
     end
 
     scenario 'pops up a new client modal and creates a new client', js: true do
-      click_link('New Client')
+      find_link('New Client').trigger('click')
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
@@ -73,7 +74,7 @@ feature 'Clients' do
         expect(find('h2.client-name')).to have_text('Boise, ID')
       end
 
-      click_link('New Client')
+      find_link('New Client').trigger('click')
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
@@ -86,6 +87,9 @@ feature 'Clients' do
       end
 
       expect(page).to have_no_css('#client_modal')
+      expect(page).to have_css('.no-client-members')
+      expect(page).to have_css('.no-people')
+      expect(page).to have_css('.no-deals')
 
       within '.list-group' do
         expect(page).to have_css('.list-group-item.active')
@@ -109,7 +113,7 @@ feature 'Clients' do
     end
 
     scenario 'pops up an edit client modal and updates a client', js: true do
-      click_link('edit-client')
+      find_link('edit-client').trigger('click')
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
@@ -123,6 +127,9 @@ feature 'Clients' do
       end
 
       expect(page).to have_no_css('#client_modal')
+      expect(page).to have_css('.no-client-members')
+      expect(page).to have_css('.no-people')
+      expect(page).to have_css('.no-deals')
 
       within '.list-group' do
         expect(page).to have_css('.list-group-item.active')
@@ -149,7 +156,7 @@ feature 'Clients' do
     scenario 'removes the client from the page and navigates to the client index', js: true do
       within '.list-group' do
         expect(page).to have_css('.list-group-item', count: 3)
-        find('.list-group-item:last-child').click
+        find('.list-group-item:last-child').trigger('click')
       end
 
       within '#client-detail' do
@@ -161,10 +168,14 @@ feature 'Clients' do
 
       within '#client-detail' do
         expect(find('h2.client-name')).to have_text(clients[0].name)
-        find('#delete-client').click
+        find('#delete-client').trigger('click')
       end
 
       expect(page).to have_css('.list-group-item', count: 1)
+
+      expect(page).to have_css('.no-client-members')
+      expect(page).to have_css('.no-people')
+      expect(page).to have_css('.no-deals')
     end
   end
 
@@ -181,7 +192,7 @@ feature 'Clients' do
     scenario 'with a new contact', js: true do
       find('.add-contact').trigger('click')
       expect(page).to have_css('.new-contact-options', visible: true)
-      find('.new-person').click
+      find('.new-person').trigger('click')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -206,13 +217,16 @@ feature 'Clients' do
           expect(page).to have_text('Bobby, CEO')
         end
       end
+
+      expect(page).to have_css('.no-client-members')
+      expect(page).to have_css('.no-deals')
     end
 
     scenario 'with an existing contact', js: true do
       find('.add-contact').trigger('click')
 
       expect(page).to have_css('.new-contact-options', visible: true)
-      find('.existing-contact').click
+      find('.existing-contact').trigger('click')
 
       expect(page).to have_css('.existing-contact-options', visible: true)
       ui_select('contact-list', contact.name)
@@ -224,6 +238,9 @@ feature 'Clients' do
           expect(page).to have_text(contact.name)
         end
       end
+
+      expect(page).to have_css('.no-client-members')
+      expect(page).to have_css('.no-deals')
     end
   end
 

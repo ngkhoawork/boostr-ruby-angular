@@ -12,7 +12,7 @@ feature 'Teams' do
     end
 
     scenario 'creating a team', js: true do
-      find('.add-team').click
+      find('.add-team').trigger('click')
 
       expect(page).to have_css('#team-modal')
 
@@ -42,7 +42,7 @@ feature 'Teams' do
     end
 
     scenario 'creating a team', js: true do
-      find('.add-team').click
+      find('.add-team').trigger('click')
 
       expect(page).to have_css('#team-modal')
 
@@ -76,7 +76,7 @@ feature 'Teams' do
     scenario 'pops up an edit team modal and updates a team', js: true do
       within 'table tbody' do
         find('tr:first-child').hover
-        find('.edit-team').click
+        find('.edit-team').trigger('click')
       end
 
       expect(page).to have_css('#team-modal')
@@ -112,7 +112,7 @@ feature 'Teams' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
         within 'tr:first-child' do
-          find('.delete-team').click
+          find('.delete-team').trigger('click')
         end
       end
 
@@ -122,7 +122,7 @@ feature 'Teams' do
         expect(page).to have_css('tr', count: 2)
         find('tr:first-child').hover
         within 'tr:first-child' do
-          find('.delete-team').click
+          find('.delete-team').trigger('click')
         end
       end
 
