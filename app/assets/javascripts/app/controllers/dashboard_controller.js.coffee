@@ -1,3 +1,7 @@
-@app.controller 'DashboardController', ['$scope', ($scope) ->
-  $scope.title = 'Dashboard'
+@app.controller 'DashboardController',
+['$scope', 'Dashboard',
+($scope, Dashboard) ->
+
+  Dashboard.get().then (dashboard) ->
+    $scope.dashboard = dashboard
 ]

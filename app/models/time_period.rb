@@ -14,6 +14,10 @@ class TimePeriod < ActiveRecord::Base
     end
   end
 
+  def self.now
+    where('start_date <= ? AND end_date >= ?', Time.now, Time.now).first
+  end
+
   protected
 
   # Because we have soft-deletes uniqueness validations must be custom

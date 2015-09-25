@@ -2,12 +2,32 @@ require 'rails_helper'
 
 RSpec.describe TimePeriod, type: :model do
   let(:company) { create :company }
-  let(:time_period) { create :time_period, company: company }
+
+  context 'scopes' do
+    let!(:time_period) { create :time_period, company: company }
+
+    context 'now' do
+      it 'returns the first time period that encompasses the current date' do
+        new_time = Time.local(2015, 1, 2, 0, 0, 0)
+        Timecop.freeze(new_time)
+        expect(TimePeriod.now).to eq(time_period)
+        Timecop.return
+      end
+
+      it 'returns nil when there are no current time_periods' do
+        new_time = Time.local(2015, 9, 25, 0, 0, 0)
+        Timecop.freeze(new_time)
+        expect(TimePeriod.now).to eq(nil)
+        Timecop.return
+      end
+    end
+  end
 
   context 'validating' do
+    let(:time_period) { create :time_period, company: company }
+
     it "ignores itself" do
-      time_period.save
-      expect(time_period).to be_valid
+      expect(build(:time_period, company: company)).to be_valid
     end
 
     it "is case insensitive" do
