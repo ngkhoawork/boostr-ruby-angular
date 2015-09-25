@@ -11,6 +11,7 @@ class ForecastTeam
       id: team.id,
       name: team.name,
       teams: teams,
+      leader: leader,
       members: members,
       weighted_pipeline: weighted_pipeline,
       revenue: revenue,
@@ -25,21 +26,24 @@ class ForecastTeam
     @teams ||= team.children.map{ |t| ForecastTeam.new(t, time_period) }
   end
 
+  def leader
+    @leader ||= ForecastMember.new(team.leader, time_period) if team.leader
+  end
+
   def members
-    return @members if defined?(@members)
-    @members = team.members.map{|m| ForecastMember.new(m, time_period) }
+    @members ||= team.members.map{ |m| ForecastMember.new(m, time_period) }
   end
 
   def weighted_pipeline
-    teams.sum(&:weighted_pipeline) + members.sum(&:weighted_pipeline)
+    teams.sum(&:weighted_pipeline) + members.sum(&:weighted_pipeline) + (leader.try(:weighted_pipeline) || 0)
   end
 
   def revenue
-    teams.sum(&:revenue) + members.sum(&:revenue)
+    teams.sum(&:revenue) + members.sum(&:revenue) + (leader.try(:revenue) || 0)
   end
 
   def amount
-    teams.sum(&:amount) + members.sum(&:amount)
+    teams.sum(&:amount) + members.sum(&:amount) + (leader.try(:weighted_pipeline) || 0) + (leader.try(:revenue) || 0)
   end
 
   def percent_to_quota
@@ -52,6 +56,6 @@ class ForecastTeam
   end
 
   def quota
-    team.leader ? team.leader.quotas.for_time_period(time_period).sum(:value) : 0
+    leader.try(:quota) || 0
   end
 end

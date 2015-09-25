@@ -105,30 +105,42 @@ team_leader_users = company.users.create!([
     last_name: "User",
     email: "leader@example.com",
     password: "password"
+  },
+  {
+    first_name: "West Coast Leader",
+    last_name: "User",
+    email: "west-coast-leader@example.com",
+    password: "password"
+  },
+  {
+    first_name: "Manhattan Leader",
+    last_name: "User",
+    email: "manhattan-leader@example.com",
+    password: "password"
   }
 ])
 
 sales_team = company.teams.create!({
   name: "Sales",
-  leader: company_user,
+  leader: team_leader_users[0],
   parent: nil,
 })
 
 west_coast_sales_team = company.teams.create!({
   name: "West Coast Sales",
-  leader: team_leader_users[0],
+  leader: team_leader_users[1],
   parent: sales_team,
 })
 
 east_coast_sales_team = company.teams.create!({
   name: "East Coast Sales",
-  leader: team_leader_users[0],
+  leader: nil,
   parent: sales_team,
 })
 
 sharks_team = company.teams.create!({
   name: "Manhattan Sharks",
-  leader: team_leader_users[0],
+  leader: team_leader_users[2],
   parent: east_coast_sales_team,
 })
 
@@ -183,7 +195,11 @@ time_periods = company.time_periods.create!([{
 
 # Set quotas for the initial time period
 company_user.quotas.where(time_period: time_periods[2]).first.update_attributes(value: 1000000)
-team_leader_users[0].quotas.where(time_period: time_periods[2]).first.update_attributes(value: 600000)
+team_leader_users[0].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 600000)
+team_leader_users[1].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 600000)
+team_leader_users[2].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 400000)
+team_member_users[2].quotas.where(time_period: time_periods[0]).first.update_attributes(value: 350000)
+
 team_member_users[0].quotas.where(time_period: time_periods[2]).first.update_attributes(value: 200000)
 team_member_users[1].quotas.where(time_period: time_periods[2]).first.update_attributes(value: 50000)
 team_member_users[2].quotas.where(time_period: time_periods[2]).first.update_attributes(value: 350000)
@@ -213,7 +229,7 @@ company_clients[0].client_members.create!([{
 }])
 
 company_clients[2].client_members.create!([{
-  user: team_leader_users[0],
+  user: team_leader_users[2],
   share: 10,
   role: "Leader"
 },{
@@ -284,9 +300,9 @@ Order #,Line #,AdServer,Qty,Price,Price Type,Delivered Qty,Remaining Qty,Budget,
 1234,1,DoubleClick,"10000",1.5,CPM,5000,"5000","15000",7500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
 1234,2,DoubleClick,"20000",2,CPM,10000,"10000","40000",20000,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
 1234,3,DoubleClick,"10000",2.5,CPM,5000,"5000","25000",12500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},shark-member@example.com,#{products[2].id}
-5656,1,DoubleClick,"10000",0.3,CPC,5000,"5000","3000",1500,6/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
-5656,2,DoubleClick,"20000",0.25,CPC,10000,"10000","5000",2500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
-5656,3,DoubleClick,"50000",1,CPC,25000,"25000","50000",25000,6/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},leader@example.com,#{products[2].id}
+5656,1,DoubleClick,"10000",0.3,CPC,5000,"5000","3000",1500,7/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},manhattan-leader@example.com,#{products[2].id}
+5656,2,DoubleClick,"20000",0.25,CPC,10000,"10000","5000",2500,7/1/2015,8/1/2015,#{company_clients[2]},#{company_clients[2].id},manhattan-leader@example.com,#{products[2].id}
+5656,3,DoubleClick,"50000",1,CPC,25000,"25000","50000",25000,7/1/2015,9/1/2015,#{company_clients[2]},#{company_clients[2].id},manhattan-leader@example.com,#{products[2].id}
 8686,1,Sizmek,100000,1,CPE,50000,50000,"100000",50000,9/1/2015,12/31/2015,#{company_clients[0]},#{company_clients[1].id},west-coast-member@example.com,#{products[1].id}
 8686,2,Sizmek,100000,2,CPE,50000,50000,"200000",100000,9/2/2015,1/1/2016,#{company_clients[0]},#{company_clients[0].id},west-coast-member@example.com,#{products[1].id}
 8686,3,Sizmek,100000,3,CPE,50000,50000,"300000",150000,9/3/2015,1/2/2016,#{company_clients[0]},#{company_clients[0].id},west-coast-member@example.com,#{products[1].id}
