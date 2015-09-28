@@ -31,6 +31,8 @@ Rails.application.routes.draw do
     resources :quotas, only: [:index, :create, :update]
     resources :forecasts, only: [:index, :show]
     resources :weighted_pipelines, only: [:show]
+
+    resource :dashboard, only: [:show]
   end
 
   get '*path' => 'pages#index'

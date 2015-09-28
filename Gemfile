@@ -50,6 +50,7 @@ group :development, :test do
   gem 'guard-rspec', require: false
   gem 'fuubar'
   gem 'poltergeist'
+  gem 'timecop'
 
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

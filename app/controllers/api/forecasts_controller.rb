@@ -17,7 +17,11 @@ class Api::ForecastsController < ApplicationController
 
   def time_period
     return @time_period if defined?(@time_period)
-    @time_period = current_user.company.time_periods.find(params[:time_period_id])
+    if params[:time_period_id]
+      @time_period = current_user.company.time_periods.find(params[:time_period_id])
+    else
+      @time_period = current_user.company.time_periods.now
+    end
   end
 
   def teams
