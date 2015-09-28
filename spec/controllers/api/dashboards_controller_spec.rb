@@ -5,6 +5,7 @@ RSpec.describe Api::DashboardsController, type: :controller do
   let(:user) { create :user, company: company }
   let(:parent_team) { create :parent_team, company: company, leader: user }
   let(:time_period) { create :time_period, company: company }
+  let!(:deal_member) { create :deal_member, user: user }
 
   before do
     sign_in user
@@ -17,6 +18,7 @@ RSpec.describe Api::DashboardsController, type: :controller do
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json['forecast']['amount']).to_not be_nil
+      expect(response_json['deals'].length).to eq(1)
     end
 
     it 'returns a nil forecast if there is no current time_period' do

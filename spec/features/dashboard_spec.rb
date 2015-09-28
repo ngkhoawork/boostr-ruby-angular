@@ -22,12 +22,16 @@ feature 'Dashboard' do
       expect(page).to have_css('#dashboard')
     end
 
-    scenario 'shows the stats box', js: true do
+    scenario 'shows the stats box and open deals', js: true do
       within '#stats' do
         expect(find('.attainment')).to have_text '10% ATTAINMENT'
         expect(find('.quota')).to have_text '$20,000 QUOTA'
         expect(find('.forecast')).to have_text '$2,000 FORECAST'
         expect(find('.gap-to-goal')).to have_text '($2,000) GAP TO GOAL'
+      end
+
+      within '#deals' do
+        expect(page).to have_css '.no-deals'
       end
     end
   end
@@ -42,12 +46,20 @@ feature 'Dashboard' do
       expect(page).to have_css('#dashboard')
     end
 
-    scenario 'shows the stats box', js: true do
+    scenario 'shows the stats box and open deals', js: true do
       within '#stats' do
         expect(find('.attainment')).to have_text '10% ATTAINMENT'
         expect(find('.quota')).to have_text '$20,000 QUOTA'
         expect(find('.forecast')).to have_text '$2,000 FORECAST'
         expect(find('.gap-to-goal')).to have_text '$18,000 GAP TO GOAL'
+      end
+
+      within '#deals' do
+        expect(page).to have_css '.table-wrapper'
+
+        within 'table tbody' do
+          expect(page).to have_css 'tr', count: 1
+        end
       end
     end
   end
