@@ -2,7 +2,7 @@ class Api::DashboardsController < ApplicationController
   respond_to :json
 
   def show
-    render json: { forecast: forecast }
+    render json: { forecast: forecast, deals: deals }
   end
 
   protected
@@ -22,5 +22,11 @@ class Api::DashboardsController < ApplicationController
     else
       @forecast = ForecastMember.new(current_user, time_period)
     end
+  end
+
+  def deals
+    return @deals if defined?(@deals)
+
+    @deals = current_user.deals
   end
 end
