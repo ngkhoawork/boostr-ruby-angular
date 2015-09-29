@@ -8,22 +8,16 @@
       url: '/api/deals/:id'
     }
   currentDeal = undefined
-  allDeals = []
 
   @all = ->
     deferred = $q.defer()
-    if allDeals.length == 0
-      resource.query {}, (deals) =>
-        allDeals = deals
-        deferred.resolve(deals)
-    else
-      deferred.resolve(allDeals)
+    resource.query {}, (deals) ->
+      deferred.resolve(deals)
     deferred.promise
 
   @create = (params) ->
     deferred = $q.defer()
     resource.save params, (deal) ->
-      allDeals.push(deal)
       deferred.resolve(deal)
       $rootScope.$broadcast 'updated_deals'
     deferred.promise
@@ -31,9 +25,6 @@
   @update = (params) ->
     deferred = $q.defer()
     resource.update params, (deal) ->
-      _.each allDeals, (existingDeal, i) ->
-        if(existingDeal.id == deal.id)
-          allDeals[i] = deal
       deferred.resolve(deal)
       $rootScope.$broadcast 'updated_deals'
     deferred.promise
@@ -53,8 +44,6 @@
   @delete = (deletedDeal) ->
     deferred = $q.defer()
     resource.delete id: deletedDeal.id, () ->
-      allDeals = _.reject allDeals, (deal) ->
-        deal.id == deletedDeal.id
       deferred.resolve()
       $rootScope.$broadcast 'updated_deals'
     deferred.promise
