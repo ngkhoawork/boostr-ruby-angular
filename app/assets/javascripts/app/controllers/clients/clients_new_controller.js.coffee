@@ -8,6 +8,7 @@
   $scope.clientTypes = Client.types()
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     Client.create(client: $scope.client).then (client) ->
       Client.set(client.id)
       $modalInstance.close()

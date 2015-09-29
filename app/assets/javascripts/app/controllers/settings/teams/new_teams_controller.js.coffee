@@ -13,6 +13,7 @@
       $scope.users = data.users
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     $scope.team.member_ids = $scope.team.members
     Team.create(team: $scope.team).then (team) ->
       $modalInstance.close()

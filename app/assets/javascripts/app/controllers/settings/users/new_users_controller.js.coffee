@@ -7,6 +7,7 @@
   $scope.user = {}
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     User.invite(user: $scope.user).then (user) ->
       $modalInstance.close()
 

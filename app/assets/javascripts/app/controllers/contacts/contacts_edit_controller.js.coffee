@@ -13,6 +13,7 @@
     $scope.contact.address.mobile = $filter('tel')($scope.contact.address.mobile)
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     Contact.update(id: $scope.contact.id, contact: $scope.contact).then (contact) ->
       $modalInstance.close()
 

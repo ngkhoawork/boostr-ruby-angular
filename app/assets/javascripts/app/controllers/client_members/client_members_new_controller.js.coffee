@@ -13,6 +13,7 @@
   $scope.roles = ClientMember.roles()
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     ClientMember.create(client_id: $scope.client_member.client_id, client_member: $scope.client_member).then (client_member) ->
       $modalInstance.close()
 
