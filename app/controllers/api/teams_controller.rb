@@ -2,7 +2,7 @@ class Api::TeamsController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.teams.roots(params[:root_only]).includes(:members)
+    render json: current_user.company.teams.roots(params[:root_only])
   end
 
   def create

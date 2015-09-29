@@ -5,7 +5,8 @@ RSpec.describe Api::DashboardsController, type: :controller do
   let(:user) { create :user, company: company }
   let(:parent_team) { create :parent_team, company: company, leader: user }
   let(:time_period) { create :time_period, company: company }
-  let!(:deal_member) { create :deal_member, user: user }
+  let(:deal) { create :deal, company: company }
+  let!(:deal_member) { create :deal_member, user: user, deal: deal }
 
   before do
     sign_in user

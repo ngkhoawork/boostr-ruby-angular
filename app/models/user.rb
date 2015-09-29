@@ -5,14 +5,14 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable, :confirmable
 
   belongs_to :company
-  belongs_to :team, counter_cache: :members_count
+  belongs_to :team, -> (user) { where(company_id: user.company_id) }, counter_cache: :members_count
   has_many :client_members
-  has_many :clients, through: :client_members
-  has_many :revenues
+  has_many :clients, -> (user) { where(company_id: user.company_id) }, through: :client_members
+  has_many :revenues, -> (user) { where(company_id: user.company_id) }
   has_many :deal_members
-  has_many :deals, through: :deal_members
-  has_many :quotas
-  has_many :teams, foreign_key: :leader_id
+  has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
+  has_many :quotas, -> (user) { where(company_id: user.company_id) }
+  has_many :teams, -> (user) { where(company_id: user.company_id) }, foreign_key: :leader_id
 
   ROLES = %w(user superadmin)
 

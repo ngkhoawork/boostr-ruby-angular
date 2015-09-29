@@ -13,7 +13,7 @@ feature 'Dashboard' do
   let!(:deal_product) { create :deal_product, deal: deal, budget: 200000, start_date: "2015-01-01", end_date: "2015-01-31" }
 
   describe 'as a leader' do
-    let!(:quota) { create :quota, user: user, value: 20000, time_period: time_period }
+    let!(:quota) { create :quota, user: user, value: 20000, time_period: time_period, company: company }
 
     before do
       login_as user, scope: :user
@@ -37,7 +37,7 @@ feature 'Dashboard' do
   end
 
   describe 'as a non-leader (member)' do
-    let!(:quota) { create :quota, user: member, value: 20000, time_period: time_period }
+    let!(:quota) { create :quota, user: member, value: 20000, time_period: time_period, company: company }
 
     before do
       login_as member, scope: :user
