@@ -22,10 +22,10 @@ feature 'Forecast' do
     end
 
     scenario 'shows the parent team name and drills down teams and changes time periods', js: true do
-      within '.table-wrapper tbody' do
-        expect(page).to have_css('tr', count: 1)
+      within '.table-wrapper' do
+        expect(page).to have_css('tr', count: 2)
 
-        within 'tr:first-child' do
+        within '.teams tr:last-child' do
           expect(find('td:first-child')).to have_text parent.name
           find('td:first-child a').trigger('click')
           expect(find('td:first-child')).to have_text child.name
@@ -42,12 +42,15 @@ feature 'Forecast' do
         expect(page).to have_text 'Y2'
       end
 
-      within '.table-wrapper tbody' do
-        expect(page).to have_css('tr', count: 1)
+      within '.table-wrapper' do
+        expect(page).to have_css('tr', count: 2)
 
-        within 'tr:first-child' do
+        within '.teams tr:first-child' do
           expect(find('td:first-child')).to have_text child.name
           find('td:first-child a').trigger('click')
+        end
+
+        within '.members tr:first-child' do
           expect(find('td:first-child')).to have_text member.full_name
           find('td.weighted-pipeline a').trigger('click')
         end
@@ -71,10 +74,10 @@ feature 'Forecast' do
     end
 
     scenario 'shows the current_user\'s forecast data', js: true do
-      within '.table-wrapper tbody' do
-        expect(page).to have_css('tr', count: 1)
+      within '.table-wrapper' do
+        expect(page).to have_css('tr', count: 2)
 
-        within 'tr:first-child' do
+        within '.member tr:last-child' do
           expect(find('td:first-child')).to have_text member.full_name
         end
       end

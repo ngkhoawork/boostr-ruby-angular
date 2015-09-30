@@ -23,7 +23,6 @@
           $scope.forecast = forecast
           $scope.teams = forecast.teams
 
-
   $scope.toggleWeightedPipelineDetail = (member_id) ->
     if $scope.weightedPipelineDetailId == member_id
       $scope.weightedPipelineDetailId = undefined

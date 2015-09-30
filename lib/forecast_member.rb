@@ -59,7 +59,7 @@ class ForecastMember
     return @amount if defined?(@amount)
 
     if member.leader?
-      @amount = member.teams.map {|t| ForecastTeam.new(t, time_period) }.sum(&:amount) if member.leader?
+      @amount = member.teams.map {|t| ForecastTeam.new(t, time_period) }.sum(&:amount)
     else
       @amount = weighted_pipeline + revenue
     end
