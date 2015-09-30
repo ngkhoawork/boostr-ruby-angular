@@ -7,6 +7,7 @@
   $scope.time_period = {}
 
   $scope.submitForm = (form) ->
+    $scope.buttonDisabled = true
     form.submitted = true
 
     if form.$valid
@@ -14,6 +15,7 @@
         angular.forEach response.data.errors, (errors, key) ->
           form[key].$dirty = true
           form[key].$setValidity('server', false)
+          $scope.buttonDisabled = false
       ).then (time_period) ->
         $modalInstance.close()
 

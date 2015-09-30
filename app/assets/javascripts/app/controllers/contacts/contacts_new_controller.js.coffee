@@ -9,6 +9,7 @@
     $scope.clients = clients
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     Contact.create(contact: $scope.contact).then (contact) ->
       Contact.set(contact.id)
       $modalInstance.close()

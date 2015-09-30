@@ -13,6 +13,7 @@
       $scope.stages = data.stages
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     Deal.create(deal: $scope.deal).then (deal) ->
       $modalInstance.close()
       $location.path('/deals/' + deal.id)

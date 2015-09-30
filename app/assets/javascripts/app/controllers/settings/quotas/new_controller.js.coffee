@@ -12,6 +12,7 @@
       $scope.users = $filter('notIn')(results.users, quotas, 'user_id')
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     Quota.create(quota: $scope.quota).then (quota) ->
       $modalInstance.close()
 
