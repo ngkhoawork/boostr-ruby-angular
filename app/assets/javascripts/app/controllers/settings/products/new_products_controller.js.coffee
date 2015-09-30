@@ -11,6 +11,7 @@
   $scope.pricing_types = Product.pricing_types()
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     Product.create(product: $scope.product).then (product) ->
       $modalInstance.close()
 

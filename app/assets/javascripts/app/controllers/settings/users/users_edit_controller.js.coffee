@@ -6,8 +6,9 @@
   $scope.submitText = "Update"
   $scope.hideEmail = true
   $scope.user = user
-  
+
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     User.update(id: $scope.user.id, user: $scope.user).then (user) ->
       $modalInstance.close()
 

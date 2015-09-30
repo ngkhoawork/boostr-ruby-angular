@@ -10,8 +10,8 @@ RSpec.describe ForecastTeam do
     let(:team) { create :parent_team, company: company, leader: leader }
     let(:member) { create :user, company: company, team: team }
     let(:forecast) { ForecastTeam.new(team, time_period) }
-    let!(:leader_quota) { create :quota, user: leader, value: 5000, time_period: time_period }
-    let!(:member_quota) { create :quota, user: member, value: 2000, time_period: time_period }
+    let!(:leader_quota) { create :quota, user: leader, value: 5000, time_period: time_period, company: company }
+    let!(:member_quota) { create :quota, user: member, value: 2000, time_period: time_period, company: company }
 
     it 'returns the revenue for a member that has no revenue' do
       expect(forecast.revenue).to eq(0)

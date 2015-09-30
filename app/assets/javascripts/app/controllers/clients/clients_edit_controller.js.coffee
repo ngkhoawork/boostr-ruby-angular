@@ -10,6 +10,7 @@
     $scope.client.address.phone = $filter('tel')($scope.client.address.phone)
 
   $scope.submitForm = () ->
+    $scope.buttonDisabled = true
     Client.update(id: $scope.client.id, client: $scope.client).then (client) ->
       $modalInstance.close()
 
