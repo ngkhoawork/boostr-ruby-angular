@@ -71,7 +71,7 @@ RSpec.describe ForecastMember do
     end
 
     context 'quota' do
-      let!(:quotas) { create_list :quota, 4, user: user, value: 2500, time_period: time_period }
+      let!(:quotas) { create_list :quota, 4, user: user, value: 2500, time_period: time_period, company: company }
 
       it 'returns the quota value' do
         expect(forecast.quota).to eq(10000)
