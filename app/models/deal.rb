@@ -28,6 +28,7 @@ class Deal < ActiveRecord::Base
 
   scope :for_client, -> client_id { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
   scope :for_time_period, -> time_period { where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date) if time_period.present? }
+  scope :open, -> { joins(:stage).where('stages.open IS true') }
 
   def as_json(options = {})
     super(options.merge(include: [:advertiser, :stage]))
