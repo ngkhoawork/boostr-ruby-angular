@@ -60,28 +60,10 @@
                 %th % to Quota
                 %th Gap to Quota
 
-            %tbody.teams
-              %tr{ ng: { repeat: 'row in teams' } }
-                %td
-                  %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}' } }
-                    {{ row.name }}
-                %td {{ row.quota | currency: '$': 0 }}
-                %td {{ row.weighted_pipeline | currency: '$': 0 }}
-                %td {{ row.revenue | currency: '$': 0 }}
-                %td {{ row.amount | currency: '$': 0 }}
-                %td {{ row.percent_to_quota | number: 0 }}%
-                %td {{ row.gap_to_quota | currency: '$': 0 }}
+            %tbody.teams{ ng: { repeat: 'row in teams', include: "'partials/forecast_rows.html'" } }
 
             %tbody.leader{ ng: { repeat: 'row in [forecast.leader]', include: "'partials/forecast_rows.html'", if: 'forecast.leader && (forecast.leader.revenue > 0 || forecast.leader.weighted_pipeline > 0)' } }
 
             %tbody.members{ ng: { repeat: 'row in members', include: "'partials/forecast_rows.html'" } }
 
-            %tbody.member
-              %tr{ ng: { hide: 'teams' } }
-                %td {{ forecast.full_name }}
-                %td {{ forecast.quota | currency: '$': 0 }}
-                %td {{ forecast.weighted_pipeline | currency: '$': 0 }}
-                %td {{ forecast.revenue | currency: '$': 0 }}
-                %td {{ forecast.amount | currency: '$': 0 }}
-                %td {{ forecast.percent_to_quota | number: 0 }}%
-                %td {{ forecast.gap_to_quota | currency: '$': 0 }}
+            %tbody.member{ ng: { hide: 'teams', repeat: 'row in [forecast]', include: "'partials/forecast_rows.html'" } }

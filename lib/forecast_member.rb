@@ -16,7 +16,8 @@ class ForecastMember
       percent_to_quota: percent_to_quota,
       gap_to_quota: gap_to_quota,
       quota: quota,
-      is_leader: member.leader?
+      is_leader: member.leader?,
+      type: 'member'
     }
   end
 

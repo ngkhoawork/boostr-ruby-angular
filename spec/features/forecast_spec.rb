@@ -29,6 +29,11 @@ feature 'Forecast' do
           expect(find('td:first-child')).to have_text parent.name
           find('td:first-child a').trigger('click')
           expect(find('td:first-child')).to have_text child.name
+          find('td.weighted-pipeline a').trigger('click')
+        end
+
+        within 'tr.weighted-pipeline-detail table tbody' do
+          expect(page).to have_css 'tr', count: 1
         end
       end
 

@@ -6,6 +6,7 @@ class Team < ActiveRecord::Base
   has_many :children, class_name: 'Team', foreign_key: 'parent_id', inverse_of: :parent
   has_many :members, -> (team) { where(company_id: team.company_id) }, class_name: 'User', dependent: :nullify
   belongs_to :leader, class_name: 'User', foreign_key: :leader_id
+  has_many :deals, through: :members
 
   scope :roots, proc {|root_only|
     where(parent_id: nil) if root_only
