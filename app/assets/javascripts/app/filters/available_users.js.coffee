@@ -1,6 +1,4 @@
 @filters.filter 'availableUsers', ->
-  (users, team={}) ->
+  (users) ->
     return users if users && users.length == 0
-    users = _.where(users, {team_id: null})
-    _.reject users, (user) ->
-      user.id == team.leader_id
+    _.where(users, {team_id: null, 'leader?': false})

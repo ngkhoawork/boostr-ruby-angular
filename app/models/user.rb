@@ -48,6 +48,6 @@ class User < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(methods: [:name, :full_name]))
+    super(options.merge(methods: [:name, :full_name, :leader?]))
   end
 end
