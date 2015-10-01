@@ -24,19 +24,23 @@
   %td{ ng: { if: 'row.is_leader'} }
     \--
 %tr.weighted-pipeline-detail{ ng: { if: 'row == weightedPipelineDetail' } }
-  %td.weighted-pipeline-table-wrapper{ colspan: 7 }
-    .row
-      .col-xs-12
-        %h3 Pipeline details
-        %span
-          |
-        %h4
-          %a{ href: '/deals' }
-            Manage Pipeline
-        %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row.id)' } }
-          %span{'aria-hidden' => 'true'}
-            = inline_svg 'icons/close.svg'
-    %table.table.black-table.detail
+  %td.weighted-pipeline-table-wrapper{ colspan: 7, ng: { if: 'weighted_pipeline.length == 0' } }
+    %h5
+      There are no deals for this {{ row.type }} in this time period.
+    %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row.id)' } }
+      %span{'aria-hidden' => 'true'}
+        = inline_svg 'icons/close.svg'
+  %td.weighted-pipeline-table-wrapper{ colspan: 7, ng: { if: 'weighted_pipeline.length > 0' } }
+    %h3 Deal Summary
+    %span
+      |
+    %h4
+      %a{ href: '/deals' }
+        Manage Pipeline
+    %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row.id)' } }
+      %span{'aria-hidden' => 'true'}
+        = inline_svg 'icons/close.svg'
+    %table.table.detail
       %thead
         %tr
           %th Deal name

@@ -3,6 +3,7 @@
 ($scope, $routeParams, $location, Forecast, TimePeriod, WeightedPipeline) ->
 
   $scope.init = () ->
+    $scope.weightedPipelineDetail = {}
     TimePeriod.all().then (timePeriods) ->
       $scope.timePeriods = timePeriods
 
