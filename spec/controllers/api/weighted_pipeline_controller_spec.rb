@@ -18,8 +18,20 @@ RSpec.describe Api::WeightedPipelinesController, type: :controller do
   end
 
   describe 'GET #show' do
+    it 'returns json for a member' do
+      get :show, { member_id: member.id, format: :json, time_period_id: time_period.id }
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(1)
+      expect(response_json[0]['name']).to eq(deal.name)
+      expect(response_json[0]['client_name']).to eq(client.name)
+      expect(response_json[0]['probability']).to eq(stage.probability)
+      expect(response_json[0]['in_period_amt']).to eq(100.0)
+      expect(response_json[0]['start_date']).to eq('2015-01-01')
+    end
+
     it 'returns json for a team' do
-      get :show, { id: member.id, format: :json, time_period_id: time_period.id }
+      get :show, { team_id: child.id, format: :json, time_period_id: time_period.id }
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json.length).to eq(1)

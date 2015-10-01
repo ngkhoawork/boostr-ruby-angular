@@ -12,22 +12,40 @@ class Api::WeightedPipelinesController < ApplicationController
     @time_period = current_user.company.time_periods.find(params[:time_period_id])
   end
 
+  def member_or_team
+    return @member_or_team if defined?(@member_or_team)
+
+    if params[:member_id]
+      @member_or_team = member
+    elsif params[:team_id]
+      @member_or_team = team
+    else
+      raise ActiveRecord::RecordNotFound
+    end
+  end
+
   def member
     return @member if defined?(@member)
 
     if current_user.leader?
-      @member = current_user.company.users.find(params[:id])
-    elsif params[:id] == current_user.id
+      @member = current_user.company.users.find(params[:member_id])
+    elsif params[:member_id] == current_user.id
       @member = current_user
     else
       raise ActiveRecord::RecordNotFound
     end
   end
 
+  def team
+    return @team if defined?(@team)
+
+    @team = current_user.company.teams.find(params[:team_id])
+  end
+
   def deals
     return @deals if defined?(@deals)
 
-    @deals = member.deals.for_time_period(time_period)
+    @deals = member_or_team.deals.for_time_period(time_period)
   end
 
   def weighted_pipeline

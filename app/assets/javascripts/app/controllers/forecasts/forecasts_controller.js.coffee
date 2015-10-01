@@ -23,14 +23,20 @@
           $scope.forecast = forecast
           $scope.teams = forecast.teams
 
-  $scope.toggleWeightedPipelineDetail = (member_id) ->
-    if $scope.weightedPipelineDetailId == member_id
-      $scope.weightedPipelineDetailId = undefined
+  $scope.toggleWeightedPipelineDetail = (row) ->
+    if $scope.weightedPipelineDetail == row
+      $scope.weightedPipelineDetail = {}
       $scope.weighted_pipeline = []
     else
       $scope.weighted_pipeline = []
-      $scope.weightedPipelineDetailId = member_id
-      WeightedPipeline.get({ time_period_id: $scope.currentTimePeriod.id, id: member_id }).then (weighted_pipeline) ->
+      $scope.weightedPipelineDetail = row
+      params = { time_period_id: $scope.currentTimePeriod.id }
+      if row.type == 'member'
+        params = _.extend(params, { member_id: row.id })
+      else if row.type == 'team'
+        params = _.extend(params, { team_id: row.id })
+
+      WeightedPipeline.get(params).then (weighted_pipeline) ->
         $scope.weighted_pipeline = weighted_pipeline
 
   $scope.updateTimePeriod = (time_period_id) ->

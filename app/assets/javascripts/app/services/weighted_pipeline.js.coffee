@@ -2,10 +2,10 @@
 ['$resource', '$q',
 ($resource, $q) ->
 
-  resource = $resource '/api/weighted_pipelines/:id', { id: '@id' },
+  resource = $resource '/api/weighted_pipelines', {},
     get:
       method: 'GET'
-      url: '/api/weighted_pipelines/:id'
+      url: '/api/weighted_pipelines'
       isArray: true
 
   @get = (params) ->

@@ -18,7 +18,8 @@ class ForecastTeam
       amount: amount,
       percent_to_quota: percent_to_quota,
       gap_to_quota: gap_to_quota,
-      quota: quota
+      quota: quota,
+      type: 'team'
    }
   end
 

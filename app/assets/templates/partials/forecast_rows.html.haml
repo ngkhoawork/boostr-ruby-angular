@@ -1,13 +1,17 @@
 %tr
-  %td {{ row.full_name }}
+  %td{ ng: { if: 'row.type == "member"' } }
+    {{ row.full_name }}
+  %td{ ng: { if: 'row.type == "team"' } }
+    %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}' } }
+      {{ row.name }}
   %td{ ng: { if: '!row.is_leader'} }
     {{ row.quota | currency: '$': 0 }}
   %td{ ng: { if: 'row.is_leader'} }
     \--
   %td.weighted-pipeline
-    %a{ href: '', ng: { click: 'toggleWeightedPipelineDetail(row.id)' } }
+    %a{ href: '', ng: { click: 'toggleWeightedPipelineDetail(row)' } }
       {{ row.weighted_pipeline | currency: '$': 0 }}
-    .arrow-up{ ng: { show: 'row.id == weightedPipelineDetailId' } }
+    .arrow-up{ ng: { show: 'row == weightedPipelineDetail' } }
   %td {{ row.revenue | currency: '$': 0 }}
   %td
     {{ row.amount | currency: '$': 0 }}
@@ -19,7 +23,7 @@
     \--
   %td{ ng: { if: 'row.is_leader'} }
     \--
-%tr.weighted-pipeline-detail{ ng: { if: 'row.id == weightedPipelineDetailId' } }
+%tr.weighted-pipeline-detail{ ng: { if: 'row == weightedPipelineDetail' } }
   %td.weighted-pipeline-table-wrapper{ colspan: 7 }
     .row
       .col-xs-12
