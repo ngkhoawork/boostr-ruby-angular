@@ -34,6 +34,10 @@ class ForecastTeam
     @members ||= team.members.map{ |m| ForecastMember.new(m, time_period) }
   end
 
+  def non_leader_members
+    @non_leader_members ||= members.reject{ |m| m.member.leader? }
+  end
+
   def weighted_pipeline
     teams.sum(&:weighted_pipeline) + members.sum(&:weighted_pipeline) + (leader.try(:weighted_pipeline) || 0)
   end
@@ -43,7 +47,7 @@ class ForecastTeam
   end
 
   def amount
-    teams.sum(&:amount) + members.sum(&:amount) + (leader.try(:weighted_pipeline) || 0) + (leader.try(:revenue) || 0)
+    teams.sum(&:amount) + non_leader_members.sum(&:amount) + (leader.try(:weighted_pipeline) || 0) + (leader.try(:revenue) || 0)
   end
 
   def percent_to_quota
