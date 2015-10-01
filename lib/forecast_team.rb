@@ -47,7 +47,7 @@ class ForecastTeam
   end
 
   def amount
-    teams.sum(&:amount) + non_leader_members.sum(&:amount) + (leader.try(:weighted_pipeline) || 0) + (leader.try(:revenue) || 0)
+    teams.sum(&:amount) + non_leader_members.sum(&:amount) + (leader.try(:amount) || 0)
   end
 
   def percent_to_quota
