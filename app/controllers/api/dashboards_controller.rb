@@ -27,6 +27,6 @@ class Api::DashboardsController < ApplicationController
   def deals
     return @deals if defined?(@deals)
 
-    @deals = current_user.deals
+    @deals = current_user.deals.open
   end
 end

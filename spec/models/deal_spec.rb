@@ -40,6 +40,19 @@ RSpec.describe Deal, type: :model do
         expect(Deal.for_time_period(time_period).count).to eq(3)
       end
     end
+
+    context 'open' do
+      let(:closed_stage) { create :stage, open: false }
+      let(:open_stage) { create :stage, open: true }
+      let!(:open_deal) { create :deal, stage: open_stage }
+      let!(:closed_deal) { create :deal, stage: closed_stage }
+
+      it 'returns only deals that have an open stage' do
+        expect(Deal.all.length).to eq(2)
+        expect(Deal.open.length).to eq(1)
+        expect(Deal.open).to include(open_deal)
+      end
+    end
   end
 
   describe '#in_period_amt' do
