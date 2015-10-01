@@ -1,19 +1,20 @@
 %tr
   %td {{ row.full_name }}
-  %td {{ row.quota | currency: '$': 0 }}
+  %td{ ng: { if: '!row.is_leader'} }
+    {{ row.quota | currency: '$': 0 }}
+  %td{ ng: { if: 'row.is_leader'} }
+    \--
   %td.weighted-pipeline
     %a{ href: '', ng: { click: 'toggleWeightedPipelineDetail(row.id)' } }
       {{ row.weighted_pipeline | currency: '$': 0 }}
     .arrow-up{ ng: { show: 'row.id == weightedPipelineDetailId' } }
   %td {{ row.revenue | currency: '$': 0 }}
-  %td{ ng: { if: '!row.is_leader'} }
+  %td
     {{ row.amount | currency: '$': 0 }}
   %td{ ng: { if: '!row.is_leader'} }
     {{ row.percent_to_quota | number: 0 }}%
   %td{ ng: { if: '!row.is_leader'} }
     {{ row.gap_to_quota | currency: '$': 0 }}
-  %td{ ng: { if: 'row.is_leader'} }
-    \--
   %td{ ng: { if: 'row.is_leader'} }
     \--
   %td{ ng: { if: 'row.is_leader'} }
