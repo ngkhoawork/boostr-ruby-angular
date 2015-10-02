@@ -24,7 +24,6 @@
 //= require angular-sanitize
 //= require ng-file-upload
 //= require angular-xeditable
-//= require tc-angular-chartjs
 //= require_tree .
 //= require_tree ../templates
 

@@ -28,7 +28,7 @@
                 %ul.list-inline
                   %li.attainment
                     %canvas{ 'tc-chartjs': true, 'chart-type': 'doughnut', 'chart-data':'chartData', 'chart-options':'chartOptions' }
-                    .legend
+                    .center-text
                       %h2
                         {{ forecast.percent_to_quota | number: 0 }}%
                       %h5

@@ -7,7 +7,7 @@
     segmentShowStroke: true,
     segmentStrokeColor: '#fff',
     segmentStrokeWidth: 2,
-    percentageInnerCutout: 60,
+    percentageInnerCutout: 70,
     animationSteps: 100,
     animationEasing: 'easeOutBounce',
     animateRotate: true,
@@ -31,38 +31,28 @@
           $scope.team = forecast
           $scope.teams = forecast.teams
           $scope.members = forecast.members
-          $scope.chartData = [
-            {
-              value: forecast.percent_to_quota,
-              color:'#FB6C22',
-              highlight: '#FB6C22',
-              label: 'Complete'
-            },
-            {
-              value: 100 - forecast.percent_to_quota,
-              color: '#FEA673',
-              highlight: '#FEA673',
-              label: 'Remaining'
-            }
-          ]
+          $scope.setChartData()
       else
         Forecast.all({ time_period_id: $scope.currentTimePeriod.id }).then (forecast) ->
           $scope.forecast = forecast
           $scope.teams = forecast.teams
-          $scope.chartData = [
-            {
-              value: forecast.percent_to_quota,
-              color:'#FB6C22',
-              highlight: '#FB6C22',
-              label: 'Complete'
-            },
-            {
-              value: 100 - forecast.percent_to_quota,
-              color: '#FEA673',
-              highlight: '#FEA673',
-              label: 'Remaining'
-            }
-          ]
+          $scope.setChartData()
+
+  $scope.setChartData = () ->
+    $scope.chartData = [
+      {
+        value: Math.min($scope.forecast.percent_to_quota, 100),
+        color:'#FB6C22',
+        highlight: '#FB6C22',
+        label: 'Complete'
+      },
+      {
+        value: Math.max(100 - $scope.forecast.percent_to_quota, 0),
+        color: '#FEA673',
+        highlight: '#FEA673',
+        label: 'Remaining'
+      }
+    ]
 
 
   $scope.toggleWeightedPipelineDetail = (row) ->
