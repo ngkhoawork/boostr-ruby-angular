@@ -50,4 +50,8 @@ class User < ActiveRecord::Base
   def as_json(options = {})
     super(options.merge(methods: [:name, :full_name, :leader?]))
   end
+
+  def all_deals_for_time_period(time_period)
+    deals.for_time_period(time_period)
+  end
 end

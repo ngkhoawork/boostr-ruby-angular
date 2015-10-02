@@ -41,4 +41,8 @@ class Team < ActiveRecord::Base
   def leader_name
     leader.full_name if leader.present?
   end
+
+  def all_deals_for_time_period(time_period)
+    deals.for_time_period(time_period) + children.map {|c| c.all_deals_for_time_period(time_period) }
+  end
 end

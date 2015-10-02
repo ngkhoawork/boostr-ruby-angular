@@ -45,7 +45,7 @@ class Api::WeightedPipelinesController < ApplicationController
   def deals
     return @deals if defined?(@deals)
 
-    @deals = member_or_team.deals.for_time_period(time_period)
+    @deals = member_or_team.all_deals_for_time_period(time_period).flatten.uniq
   end
 
   def weighted_pipeline

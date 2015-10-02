@@ -30,7 +30,6 @@
       $scope.weighted_pipeline = []
     else
       $scope.weighted_pipeline = []
-      $scope.weightedPipelineDetail = row
       params = { time_period_id: $scope.currentTimePeriod.id }
       if row.type == 'member'
         params = _.extend(params, { member_id: row.id })
@@ -39,6 +38,7 @@
 
       WeightedPipeline.get(params).then (weighted_pipeline) ->
         $scope.weighted_pipeline = weighted_pipeline
+        $scope.weightedPipelineDetail = row
 
   $scope.updateTimePeriod = (time_period_id) ->
     path = []
