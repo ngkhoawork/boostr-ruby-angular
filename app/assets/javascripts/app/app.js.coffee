@@ -10,6 +10,7 @@
   'ngSanitize'
   'ngFileUpload'
   'xeditable'
+  'tc.chartjs'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

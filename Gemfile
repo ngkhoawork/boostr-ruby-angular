@@ -32,6 +32,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-sanitize'
   gem 'rails-assets-ng-file-upload'
   gem 'rails-assets-angular-xeditable'
+  gem 'rails-assets-chartjs'
 end
 
 group :test do
