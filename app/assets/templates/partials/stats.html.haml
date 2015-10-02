@@ -1,0 +1,29 @@
+#stats.well
+  .row
+    .col-xs-12
+      %h4{ ng: { hide: 'forecast' } }
+        Oops! No quota, no commissions.
+      .header{ ng: { show: 'forecast' } }
+        %ul.list-inline
+          %li.attainment
+            %canvas{ 'tc-chartjs': true, 'chart-type': 'doughnut', 'chart-data':'chartData', 'chart-options':'chartOptions' }
+            .center-text
+              %h2
+                {{ forecast.percent_to_quota | number: 0 }}%
+              %h5
+                Attainment
+          %li.quota
+            %h2
+              {{ forecast.quota | currency: '$': 0 }}
+            %h5
+              Quota: {{ currentTimePeriod.name }}
+          %li.forecast
+            %h2
+              {{ forecast.amount | currency: '$': 0 }}
+            %h5
+              Forecast
+          %li.gap-to-goal
+            %h2
+              {{ forecast.gap_to_quota | currency: '$': 0 }}
+            %h5
+              Gap to Goal

@@ -6,33 +6,8 @@
           My Stats
     .row
       .col-xs-12
-        #stats.well
-          .row
-            .col-xs-12
-              %h4{ ng: { hide: 'dashboard.forecast' } }
-                Oops! No quota, no commissions.
-              .header{ ng: { show: 'dashboard.forecast' } }
-                %ul.list-inline
-                  %li.attainment
-                    %h2
-                      {{ dashboard.forecast.percent_to_quota | number: 0 }}%
-                    %h5
-                      Attainment
-                  %li.quota
-                    %h2
-                      {{ dashboard.forecast.quota | currency: '$': 0 }}
-                    %h5
-                      Quota
-                  %li.forecast
-                    %h2
-                      {{ dashboard.forecast.amount | currency: '$': 0 }}
-                    %h5
-                      Forecast
-                  %li.gap-to-goal
-                    %h2
-                      {{ dashboard.forecast.gap_to_quota | currency: '$': 0 }}
-                    %h5
-                      Gap to Goal
+        %div{ ng: { include: "'partials/stats.html'" } }
+
     .row
       .col-xs-7
         #deals.section

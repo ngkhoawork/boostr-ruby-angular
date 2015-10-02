@@ -21,33 +21,8 @@
                   {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
     .row
       .col-xs-12
-        #stats.well
-          .row
-            .col-xs-12
-              .header
-                %ul.list-inline
-                  %li.attainment
-                    %canvas{ 'tc-chartjs': true, 'chart-type': 'doughnut', 'chart-data':'chartData', 'chart-options':'chartOptions' }
-                    .center-text
-                      %h2
-                        {{ forecast.percent_to_quota | number: 0 }}%
-                      %h5
-                        Attainment
-                  %li
-                    %h2
-                      {{ forecast.quota | currency: '$': 0 }}
-                    %h5
-                      Quota: {{ currentTimePeriod.name }}
-                  %li
-                    %h2
-                      {{ forecast.amount | currency: '$': 0 }}
-                    %h5
-                      Forecast
-                  %li
-                    %h2
-                      {{ forecast.gap_to_quota | currency: '$': 0 }}
-                    %h5
-                      Gap to Goal
+        %div{ ng: { include: "'partials/stats.html'" } }
+
     .row
       .col-xs-12
         .table-wrapper
