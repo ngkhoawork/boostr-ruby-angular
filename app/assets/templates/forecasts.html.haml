@@ -26,11 +26,13 @@
             .col-xs-12
               .header
                 %ul.list-inline
-                  %li
-                    %h2
-                      {{ forecast.percent_to_quota | number: 0 }}%
-                    %h5
-                      Attainment
+                  %li.attainment
+                    %canvas{ 'tc-chartjs': true, 'chart-type': 'doughnut', 'chart-data':'chartData', 'chart-options':'chartOptions' }
+                    .legend
+                      %h2
+                        {{ forecast.percent_to_quota | number: 0 }}%
+                      %h5
+                        Attainment
                   %li
                     %h2
                       {{ forecast.quota | currency: '$': 0 }}
