@@ -125,6 +125,8 @@
         );
       }
 
+      link.$inject = ['$scope', '$elem', '$attrs']
+
       function cleanChartName( type ) {
         var typeLowerCase = type.toLowerCase();
         switch ( typeLowerCase ) {
@@ -172,6 +174,8 @@
         true
       );
     }
+
+    link.$inject = ['$scope', '$elem']
   }
 
 })();
