@@ -33,6 +33,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-ng-file-upload'
   gem 'rails-assets-angular-xeditable'
   gem 'rails-assets-chartjs'
+  gem 'rails-assets-angular-loading-bar'
 end
 
 group :test do

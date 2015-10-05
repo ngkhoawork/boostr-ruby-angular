@@ -24,6 +24,7 @@
 //= require angular-sanitize
 //= require ng-file-upload
 //= require angular-xeditable
+//= require angular-loading-bar
 //= require_tree .
 //= require_tree ../templates
 

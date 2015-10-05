@@ -11,6 +11,7 @@
   'ngFileUpload'
   'xeditable'
   'tc.chartjs'
+  'angular-loading-bar'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
