@@ -16,6 +16,21 @@ class Client < ActiveRecord::Base
 
   validates :name, presence: true
 
+  def self.to_csv
+    attributes = {
+      id: 'Client ID',
+      name: 'Name'
+    }
+
+    CSV.generate(headers: true) do |csv|
+      csv << attributes.values
+
+      all.each do |client|
+        csv << attributes.map{ |key, value| client.send(key) }
+      end
+    end
+  end
+
   def deals_count
     advertiser_deals_count + agency_deals_count
   end

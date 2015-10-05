@@ -5,6 +5,9 @@
         .col-xs-12
           %ul.nav.nav-tabs
             %li.pull-right.last
+              %a.export{ href: '', ng: { click: 'exportClients()' } }
+                Export
+            %li.pull-right
               %a.upload{ href: '', ng: { click: 'showModal()' } }
                 = inline_svg 'icons/add.svg'
                 New Client

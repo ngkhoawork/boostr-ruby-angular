@@ -12,13 +12,21 @@ RSpec.describe Api::ClientsController, type: :controller do
   end
 
   describe "GET #index" do
-    it 'returns a list of clients' do
+    it 'returns a list of clients in json' do
       create_list :client, 3, company: company
 
       get :index, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json.length).to eq(3)
+    end
+
+    it 'returns a list of clients in csv' do
+      create_list :client, 3, company: company
+
+      get :index, format: :csv
+      expect(response).to be_success
+      expect(response.body).to_not be_nil
     end
   end
 
