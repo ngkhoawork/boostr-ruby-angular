@@ -27,7 +27,7 @@
   %td.weighted-pipeline-table-wrapper{ colspan: 7, ng: { if: 'weighted_pipeline.length == 0' } }
     %h5
       There are no deals for this {{ row.type }} in this time period.
-    %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row.id)' } }
+    %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row)' } }
       %span{'aria-hidden' => 'true'}
         = inline_svg 'icons/close.svg'
   %td.weighted-pipeline-table-wrapper{ colspan: 7, ng: { if: 'weighted_pipeline.length > 0' } }
@@ -37,7 +37,7 @@
     %h4
       %a{ href: '/deals' }
         Manage Pipeline
-    %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row.id)' } }
+    %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row)' } }
       %span{'aria-hidden' => 'true'}
         = inline_svg 'icons/close.svg'
     %table.table.detail
@@ -50,7 +50,7 @@
           %th In-period Amount
           %th Start Date
       %tbody
-        %tr{ ng: { repeat: 'subrow in weighted_pipeline' } }
+        %tr{ ng: { repeat: 'subrow in weighted_pipeline | orderBy: "-budget"' } }
           %td {{ subrow.name }}
           %td {{ subrow.client_name }}
           %td {{ subrow.probability }}%
