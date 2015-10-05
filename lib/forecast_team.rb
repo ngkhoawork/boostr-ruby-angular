@@ -11,6 +11,7 @@ class ForecastTeam
       id: team.id,
       name: team.name,
       teams: teams,
+      parents: parents,
       leader: leader,
       members: members,
       weighted_pipeline: weighted_pipeline,
@@ -21,6 +22,18 @@ class ForecastTeam
       quota: quota,
       type: 'team'
    }
+  end
+
+  def parents
+    return @parents if defined?(@parents)
+    @parents = []
+    parent = team.parent
+    loop do
+      break if parent.nil?
+      @parents <<  {id: parent.id, name: parent.name}
+      parent = parent.parent
+    end
+    @parents = @parents.reverse
   end
 
   def teams

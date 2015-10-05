@@ -48,6 +48,21 @@ RSpec.describe ForecastTeam do
     end
   end
 
+  context 'parents' do
+    let(:parent_parent_team) { create :parent_team, company: company }
+    let(:parent_team) { create :parent_team, company: company, parent: parent_parent_team }
+    let(:team) { create :parent_team, company: company, parent: parent_team }
+    let(:forecast) { ForecastTeam.new(team, time_period) }
+
+    it "has parent teams" do
+      expect(forecast.parents).to eq([
+        { id: parent_parent_team.id, name: parent_parent_team.name },
+        { id: parent_team.id, name: parent_team.name }
+      ])
+    end
+  end
+
+
   context 'without a leader' do
     let(:team) { create :parent_team, company: company }
     let(:member) { create :user, company: company, team: team }

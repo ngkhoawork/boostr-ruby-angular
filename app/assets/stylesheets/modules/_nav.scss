@@ -104,6 +104,31 @@
     }
   }
 
+  .path {
+    a {
+      color: $text-color;
+    }
+
+    .path-link {
+      display: inline-block;
+
+      .transform {
+        transform: rotate(180deg);
+        height: 12px;
+        width: 12px;
+      }
+
+      a {
+        margin-right: 2px;
+
+        &:before {
+          content: '>';
+          padding-right: 5px;
+        }
+      }
+    }
+  }
+
   &.transparent {
     background: $body-bg;
     border-bottom: 1px solid $gray-lighter;

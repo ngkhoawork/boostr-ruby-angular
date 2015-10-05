@@ -1,15 +1,25 @@
 #forecasts
-  .container
-    .row
-      .col-xs-12
-        %h3
-          {{ forecast.name || 'Forecast' }}
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-left.path
+              %a.path-link{ ng: { href: '/forecast?time_period_id={{currentTimePeriod.id}}' }} Forecast
+              .path-link{ ng: { repeat: 'parent in forecast.parents' } }
+                %a{ ng: { href: '/forecast/{{parent.id}}?time_period_id={{currentTimePeriod.id}}' }} {{ parent.name }}
+              .path-link
+                %a{ href: '', ng: { if: 'forecast.name' } }
+                  {{ forecast.name }}
 
+  .container
     .row
       .col-xs-4.quota-period
         .row
           .col-xs-12
-            Forecast Period
+            %h3
+              .small
+                Forecast Period
         .row
           .col-xs-12{ dropdown: true }
             %a{ href: '', dropdown: { toggle: true }}
