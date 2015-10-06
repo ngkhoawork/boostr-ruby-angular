@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Client', 'ClientMember', 'Contact', 'Deal',
-($scope, $rootScope, $modal, $routeParams, $location, Client, ClientMember, Contact, Deal) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal',
+($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal) ->
 
   $scope.init = ->
     $scope.getClients()
@@ -94,6 +94,10 @@
 
   $scope.go = (path) ->
     $location.path(path)
+
+  $scope.exportClients = ->
+    $window.open('/api/clients.csv')
+    return true
 
   $scope.$on 'updated_current_client', ->
     $scope.currentClient = Client.get()

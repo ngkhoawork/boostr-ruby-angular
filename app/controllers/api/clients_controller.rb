@@ -1,9 +1,13 @@
 class Api::ClientsController < ApplicationController
-  respond_to :json
+  respond_to :json, :csv
 
   def index
     clients = current_user.company.clients.order(:name).includes(:address)
-    render json: clients
+
+    respond_to do |format|
+      format.json { render json: clients }
+      format.csv { send_data clients.to_csv, filename: "clients-#{Date.today}.csv" }
+    end
   end
 
   def create
