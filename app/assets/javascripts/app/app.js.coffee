@@ -40,6 +40,9 @@
     .when '/revenue',
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
+    .when '/settings/general',
+      templateUrl: 'settings/general.html'
+      controller: 'SettingsGeneralController'
     .when '/settings/users',
       templateUrl: 'settings/users.html'
       controller: 'SettingsUsersController'
