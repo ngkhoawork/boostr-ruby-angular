@@ -1,0 +1,22 @@
+#general
+  .container
+    .row
+      .col-xs-12
+        %h3
+          General Settings
+
+    .row
+      .col-xs-6
+        %h4
+          Week Over Week Snapshot
+          %br
+          %small
+            Set the day of the week to perform the snapshot:
+    .row
+      .col-xs-4
+        %label.control-label{ for: 'day' } Day of the week
+        %ui-select{ name: 'day', ng: { model: 'company.snapshot_day', disabled: true }, 'on-select': 'updateCompany({ snapshot_day: $item })' }
+          %ui-select-match{ placeholder: 'Day' }
+            {{ $select.selected }}
+          %ui-select-choices{ repeat: 'day in days | filter: $select.search' }
+            %div{ ng: { bind: { html: 'day' } } }
