@@ -2,7 +2,7 @@ class DealProduct < ActiveRecord::Base
   belongs_to :deal
   belongs_to :product
 
-  scope :for_time_period, -> time_period { where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date) if time_period.present? }
+  scope :for_time_period, -> (time_period) { where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date) if time_period.present? }
 
   validates :start_date, :end_date, presence: true
 

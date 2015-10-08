@@ -37,11 +37,21 @@ RSpec.describe ForecastMember do
         revenues = create_list :revenue, 10, company: company, client: client, user: user, budget: 1000, start_date: today, end_date: today
         expect(forecast.revenue).to eq(0)
       end
+
+      it 'returns week over week revenue' do
+        client.client_members.create(user: user, share: 100, role: 'Member')
+        create :revenue, company: company, client: client, user: user, budget: 500, start_date: '2015-01-01', end_date: '2015-01-10'
+        create :snapshot, company: company, user: user, time_period: time_period
+        create :revenue, company: company, client: client, user: user, budget: 1000, start_date: '2015-01-11', end_date: '2015-01-20'
+        create :snapshot, company: company, user: user, time_period: time_period
+
+        expect(forecast.wow_revenue).to eq(1000)
+      end
     end
 
     context 'weighted_pipeline' do
       let(:stage) { create :stage, probability: 100 }
-      let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
+      let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-1-31"  }
       let!(:deal_member) { create :deal_member, deal: deal, user: user, share: 100 }
       let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
@@ -67,6 +77,14 @@ RSpec.describe ForecastMember do
       it 'applies the probability to the total' do
         stage.update_attributes(probability: 50)
         expect(forecast.weighted_pipeline).to eq(50)
+      end
+
+      it 'returns week over week weighted_pipeline' do
+        create :snapshot, company: company, user: user, time_period: time_period
+        stage.update_attributes(probability: 50)
+        create :snapshot, company: company, user: user, time_period: time_period
+
+        expect(forecast.wow_weighted_pipeline).to eq(-50)
       end
     end
 

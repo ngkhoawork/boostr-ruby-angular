@@ -1,3 +1,5 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   ActiveAdmin.routes(self)
@@ -35,6 +37,8 @@ Rails.application.routes.draw do
     resource :dashboard, only: [:show]
     resource :company, only: [:show, :update]
   end
+
+  mount Sidekiq::Web => '/sidekiq'
 
   get '*path' => 'pages#index'
 

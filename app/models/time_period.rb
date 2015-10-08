@@ -3,6 +3,7 @@ class TimePeriod < ActiveRecord::Base
 
   belongs_to :company
   has_many :quotas
+  has_many :snapshots
 
   validates :name, :start_date, :end_date, presence: true
 

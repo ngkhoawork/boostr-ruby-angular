@@ -9,11 +9,11 @@ RSpec.describe DealProduct, type: :model do
       let!(:in_deal_product) { create :deal_product, start_date: '2015-02-01', end_date: '2015-2-28'  }
       let!(:out_deal_product) { create :deal_product, start_date: '2016-02-01', end_date: '2016-2-28'  }
 
-      it 'should return all deals when no time period is specified' do
+      it 'returns all deals when no time period is specified' do
         expect(DealProduct.for_time_period(nil).count).to eq(2)
       end
 
-      it 'should return deals that are completely in the time period' do
+      it 'returns deals that are completely in the time period' do
         expect(DealProduct.for_time_period(time_period).count).to eq(1)
         expect(DealProduct.for_time_period(time_period)).to include(in_deal_product)
       end
