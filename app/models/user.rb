@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
   has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
   has_many :quotas, -> (user) { where(company_id: user.company_id) }
   has_many :teams, -> (user) { where(company_id: user.company_id) }, foreign_key: :leader_id
+  has_many :snapshots, -> (user) { where(company_id: user.company_id) }
 
   ROLES = %w(user superadmin)
 

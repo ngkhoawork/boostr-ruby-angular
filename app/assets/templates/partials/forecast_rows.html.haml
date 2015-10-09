@@ -23,6 +23,10 @@
     \--
   %td{ ng: { if: 'row.is_leader'} }
     \--
+  %td
+    {{ row.wow_revenue  | currency: '$': 0 }}
+  %td
+    {{ row.wow_weighted_pipeline  | currency: '$': 0 }}
 %tr.weighted-pipeline-detail{ ng: { if: 'row == weightedPipelineDetail' } }
   %td.weighted-pipeline-table-wrapper{ colspan: 7, ng: { if: 'weighted_pipeline.length == 0' } }
     %h5

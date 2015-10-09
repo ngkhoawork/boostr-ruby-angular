@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151007225309) do
+ActiveRecord::Schema.define(version: 20151009212404) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,13 +80,13 @@ ActiveRecord::Schema.define(version: 20151007225309) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
     t.datetime "end_date"
-    t.string   "snapshot_day",       default: "Sunday"
+    t.integer  "snapshot_day",       default: 0
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -182,6 +182,16 @@ ActiveRecord::Schema.define(version: 20151007225309) do
     t.datetime "updated_at",       null: false
     t.integer  "product_id"
     t.integer  "daily_budget"
+  end
+
+  create_table "snapshots", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "user_id"
+    t.integer  "time_period_id"
+    t.integer  "revenue"
+    t.integer  "weighted_pipeline"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
   create_table "stages", force: :cascade do |t|

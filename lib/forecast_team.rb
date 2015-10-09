@@ -20,6 +20,8 @@ class ForecastTeam
       percent_to_quota: percent_to_quota,
       gap_to_quota: gap_to_quota,
       quota: quota,
+      wow_revenue: wow_revenue,
+      wow_weighted_pipeline: wow_weighted_pipeline,
       type: 'team'
    }
   end
@@ -58,6 +60,14 @@ class ForecastTeam
 
   def revenue
     teams.sum(&:revenue) + members.sum(&:revenue) + (leader.try(:revenue) || 0)
+  end
+
+  def wow_weighted_pipeline
+    teams.sum(&:wow_weighted_pipeline) + members.sum(&:wow_weighted_pipeline) + (leader.try(:wow_weighted_pipeline) || 0)
+  end
+
+  def wow_revenue
+    teams.sum(&:wow_revenue) + members.sum(&:wow_revenue) + (leader.try(:wow_revenue) || 0)
   end
 
   def amount

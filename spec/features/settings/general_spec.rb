@@ -15,7 +15,10 @@ feature 'Custom Values' do
       within '#general' do
         expect(page).to have_text 'Sunday'
         ui_select('day', 'Tuesday')
-        expect(page).to have_text 'Tuesday'
+
+        within '.ui-select-match-text' do
+          expect(page).to have_text 'Tuesday'
+        end
       end
     end
   end

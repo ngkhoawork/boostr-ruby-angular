@@ -20,6 +20,9 @@ gem 'inline_svg'
 gem 'paranoia', '~> 2.0'
 gem 'jbuilder'
 gem 'chronic'
+gem 'sidekiq'
+gem 'sinatra', '>= 1.3.0', require: nil
+gem 'clockwork'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

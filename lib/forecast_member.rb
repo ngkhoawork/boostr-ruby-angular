@@ -16,6 +16,8 @@ class ForecastMember
       percent_to_quota: percent_to_quota,
       gap_to_quota: gap_to_quota,
       quota: quota,
+      wow_revenue: wow_revenue,
+      wow_weighted_pipeline: wow_weighted_pipeline,
       is_leader: member.leader?,
       type: 'member'
     }
@@ -32,10 +34,7 @@ class ForecastMember
     @weighted_pipeline = open_deals.sum do |deal|
       deal_total = 0
       deal.deal_products.for_time_period(time_period).each do |deal_product|
-        from = [time_period.start_date, deal_product.start_date].max
-        to = [time_period.end_date, deal_product.end_date].min
-        num_days = (to.to_date - from.to_date) + 1
-        deal_total += deal_product.daily_budget * num_days * (deal_shares[deal.id]/100.0)
+        deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
       end
       deal_total * (deal.stage.probability / 100.0)
     end
@@ -50,11 +49,16 @@ class ForecastMember
     end
 
     @revenue = revenues.sum do |rev|
-      from = [time_period.start_date, rev.start_date].max
-      to = [time_period.end_date, rev.end_date].min
-      num_days = (to.to_date - from.to_date) + 1
-      rev.daily_budget * num_days * (client_shares[rev.client_id]/100.0)
+      rev.daily_budget * number_of_days(rev) * (client_shares[rev.client_id]/100.0)
     end
+  end
+
+  def wow_weighted_pipeline
+    snapshots.first.weighted_pipeline - snapshots.last.weighted_pipeline rescue 0
+  end
+
+  def wow_revenue
+    snapshots.first.revenue - snapshots.last.revenue rescue 0
   end
 
   def amount
@@ -87,5 +91,15 @@ class ForecastMember
 
   def open_deals
     @open_deals ||= member.deals.joins(:stage).where('stages.open IS true').for_time_period(time_period).includes(:deal_products).to_a
+  end
+
+  def number_of_days(comparer)
+    from = [time_period.start_date, comparer.start_date].max
+    to = [time_period.end_date, comparer.end_date].min
+    (to.to_date - from.to_date) + 1
+  end
+
+  def snapshots
+    @snapshots ||= member.snapshots.two_recent_for_time_period(time_period)
   end
 end

@@ -15,8 +15,8 @@
     .row
       .col-xs-4
         %label.control-label{ for: 'day' } Day of the week
-        %ui-select{ name: 'day', ng: { model: 'company.snapshot_day', disabled: true }, 'on-select': 'updateCompany({ snapshot_day: $item })' }
+        %ui-select{ name: 'day', ng: { model: 'company.snapshot_day', disabled: true }, 'on-select': 'updateCompany({ snapshot_day: $item.id })' }
           %ui-select-match{ placeholder: 'Day' }
-            {{ $select.selected }}
-          %ui-select-choices{ repeat: 'day in days | filter: $select.search' }
-            %div{ ng: { bind: { html: 'day' } } }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'day.id as day in days | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'day.name' } } }
