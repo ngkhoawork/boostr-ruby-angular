@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     resource :weighted_pipelines, only: [:show]
 
     resource :dashboard, only: [:show]
+    resource :company, only: [:show, :update]
   end
 
   get '*path' => 'pages#index'
