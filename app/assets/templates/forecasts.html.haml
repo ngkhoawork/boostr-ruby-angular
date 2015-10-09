@@ -31,7 +31,10 @@
                   {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
     .row
       .col-xs-12
-        %div{ ng: { include: "'partials/stats.html'" } }
+        %div{ ng: { if: 'chartBarData.datasets.length > 0' } }
+          %div
+            %canvas{ 'tc-chartjs': true, 'chart-type': 'stackedbar', 'chart-data':'chartBarData', 'chart-options':'chartBarOptions', 'chart-legend':'legend', style: 'width: 100%; height: 300px;' }
+          %div{ 'tc-chartjs-legend':'true', 'chart-legend':'legend' }
 
     .row
       .col-xs-12

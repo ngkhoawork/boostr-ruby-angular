@@ -16,4 +16,11 @@ RSpec.describe Stage, type: :model do
       end
     end
   end
+
+  context 'colors' do
+    it 'blends a color' do
+      s = build(:stage, probability: 20)
+      expect(s.send(:color_for_probability)).to eq("#ffe5d6")
+    end
+  end
 end

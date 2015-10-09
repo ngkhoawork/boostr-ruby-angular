@@ -14,6 +14,8 @@ class ForecastTeam
       parents: parents,
       leader: leader,
       members: members,
+      stages: stages,
+      weighted_pipeline_by_stage: weighted_pipeline_by_stage,
       weighted_pipeline: weighted_pipeline,
       revenue: revenue,
       amount: amount,
@@ -52,6 +54,36 @@ class ForecastTeam
 
   def non_leader_members
     @non_leader_members ||= members.reject{ |m| m.member.leader? }
+  end
+
+  def stages
+    return @stages if defined?(@stages)
+    ids = weighted_pipeline_by_stage.keys
+    @stages = team.company.stages.where(id: ids).order(:probability).all
+  end
+
+  def weighted_pipeline_by_stage
+    return @weighted_pipeline_by_stage if defined?(@weighted_pipeline_by_stage)
+    @weighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.weighted_pipeline_by_stage.each do |stage_id, total|
+        @weighted_pipeline_by_stage[stage_id] ||= 0
+        @weighted_pipeline_by_stage[stage_id] += total
+      end
+    end
+    members.each do |m|
+      m.weighted_pipeline_by_stage.each do |stage_id, total|
+        @weighted_pipeline_by_stage[stage_id] ||= 0
+        @weighted_pipeline_by_stage[stage_id] += total
+      end
+    end
+    if leader
+      leader.weighted_pipeline_by_stage.each do |stage_id, total|
+        @weighted_pipeline_by_stage[stage_id] ||= 0
+        @weighted_pipeline_by_stage[stage_id] += total
+      end
+    end
+    @weighted_pipeline_by_stage
   end
 
   def weighted_pipeline

@@ -8,7 +8,7 @@ feature 'Forecast' do
   let!(:another_time_period) { create :time_period, company: company, name: 'Y2' }
   let!(:child) { create :child_team, company: company, parent: parent }
   let!(:member) { create :user, company: company, team: child }
-  let(:stage) { create :stage, probability: 100 }
+  let(:stage) { create :stage, company: company, probability: 100 }
   let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
   let!(:deal_member) { create :deal_member, deal: deal, user: member, share: 100 }
   let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }

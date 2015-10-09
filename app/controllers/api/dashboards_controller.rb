@@ -9,7 +9,7 @@ class Api::DashboardsController < ApplicationController
 
   def time_period
     return @time_period if defined?(@time_period)
-    @time_period = current_user.company.time_periods.now
+    @time_period = company.time_periods.now
   end
 
   def forecast
@@ -18,7 +18,7 @@ class Api::DashboardsController < ApplicationController
     return nil unless time_period
 
     if current_user.leader?
-      @forecast = Forecast.new(current_user.teams, time_period)
+      @forecast = Forecast.new(company, current_user.teams, time_period)
     else
       @forecast = ForecastMember.new(current_user, time_period)
     end
@@ -29,4 +29,10 @@ class Api::DashboardsController < ApplicationController
 
     @deals = current_user.deals.open
   end
+
+  def company
+    return @company if defined?(@company)
+    @company = current_user.company
+  end
+
 end

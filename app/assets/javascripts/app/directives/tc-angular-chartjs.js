@@ -5,7 +5,7 @@
  */
 (function() {
     "use strict";
-    angular.module("tc.chartjs", []).directive("tcChartjs", TcChartjs).directive("tcChartjsLine", TcChartjsLine).directive("tcChartjsBar", TcChartjsBar).directive("tcChartjsRadar", TcChartjsRadar).directive("tcChartjsPolararea", TcChartjsPolararea).directive("tcChartjsPie", TcChartjsPie).directive("tcChartjsDoughnut", TcChartjsDoughnut).directive("tcChartjsLegend", TcChartjsLegend).factory("TcChartjsFactory", TcChartjsFactory);
+    angular.module("tc.chartjs", []).directive("tcChartjs", TcChartjs).directive("tcChartjsLine", TcChartjsLine).directive("tcChartjsBar", TcChartjsBar).directive("tcChartjsStackedBar", TcChartjsStackedBar).directive("tcChartjsRadar", TcChartjsRadar).directive("tcChartjsPolararea", TcChartjsPolararea).directive("tcChartjsPie", TcChartjsPie).directive("tcChartjsDoughnut", TcChartjsDoughnut).directive("tcChartjsLegend", TcChartjsLegend).factory("TcChartjsFactory", TcChartjsFactory);
     function TcChartjs(TcChartjsFactory) {
         return new TcChartjsFactory();
     }
@@ -18,6 +18,10 @@
         return new TcChartjsFactory("bar");
     }
     TcChartjsBar.$inject = [ "TcChartjsFactory" ];
+    function TcChartjsStackedBar(TcChartjsFactory) {
+        return new TcChartjsFactory("stackedbar");
+    }
+    TcChartjsStackedBar.$inject = [ "TcChartjsFactory" ];
     function TcChartjsRadar(TcChartjsFactory) {
         return new TcChartjsFactory("radar");
     }
@@ -106,6 +110,9 @@
                   case "bar":
                     return "Bar";
 
+                  case "stackedbar":
+                    return "StackedBar";
+
                   case "radar":
                     return "Radar";
 
@@ -140,4 +147,51 @@
             }, true);
         }
     }
+
+    // This is a weird place to duck-punch... but hey, the ducks don't mind
+
+    Chart.Scale.prototype.calculateX = function(index) {
+      var isRotated = (this.xLabelRotation > 0);
+      var innerWidth = this.width - (this.xScalePaddingLeft + this.xScalePaddingRight);
+      var valueWidth = innerWidth/Math.max((this.valuesCount - ((this.offsetGridLines) ? 0 : 1)), 1);
+      valueWidth = Math.min(valueWidth, 100);
+      var valueOffset = (valueWidth * index) + this.xScalePaddingLeft;
+
+      if (this.offsetGridLines){
+        valueOffset += (valueWidth/2);
+      }
+
+      return Math.round(valueOffset);
+    }
+
+    var stackedBarDraw = Chart.types.StackedBar.prototype.draw;
+    Chart.types.StackedBar.prototype.draw = function(ease) {
+      //call the super draw
+      stackedBarDraw.apply(this, arguments);
+
+      var easingDecimal = ease || 1;
+
+      this.scale.draw(easingDecimal);
+
+      //Draw all the bars for each dataset
+      if (this.data.quotas.length > 0) {
+        Chart.helpers.each(this.data.quotas,function(quota,index){
+          var y = Math.abs(this.scale.calculateY(quota));
+          var x = this.scale.calculateBarX(index);
+          var width = this.scale.calculateBarWidth(this.datasets.length);
+
+          this.chart.ctx.beginPath();
+          this.chart.ctx.moveTo(x - (width/2), y);
+          this.chart.ctx.lineTo(x + (width/2), y);
+          if (this.chart.ctx.setLineDash) this.chart.ctx.setLineDash([4, 4]);
+          this.chart.ctx.lineWidth = 4;
+          this.chart.ctx.strokeStyle = "#7B7B7B";
+          this.chart.ctx.closePath();
+          this.chart.ctx.stroke();
+          if (this.chart.ctx.setLineDash) this.chart.ctx.setLineDash([]);
+
+        },this);
+      }
+    }
+
 })();
