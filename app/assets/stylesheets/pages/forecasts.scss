@@ -1,4 +1,10 @@
 #forecasts {
+  table {
+    th {
+      text-transform: none;
+    }
+  }
+
   .weighted-pipeline {
     position: relative;
 
