@@ -13,26 +13,12 @@ class Stage < ActiveRecord::Base
 
   private
 
-  def brown
-    "#B17F06"
-  end
-
   def orange
     "#FF7E30"
   end
 
   def color_for_probability
     shade_blend((100.0 - probability) / 100.0, orange) if probability
-  end
-
-  # Amount should be a decimal between 0 and 1. Higher means lighter
-  def lighten_color(hex_color, amount)
-    hex_color = hex_color.gsub('#','')
-    rgb = hex_color.scan(/../).map {|color| color.hex}
-    rgb[0] = [(rgb[0].to_f + 255.0 * amount).round, 255].min
-    rgb[1] = [(rgb[1].to_f + 255.0 * amount).round, 255].min
-    rgb[2] = [(rgb[2].to_f + 255.0 * amount).round, 255].min
-    "#%02x%02x%02x" % rgb
   end
 
   def shade_blend(factor,color,blend_color=nil)
