@@ -112,7 +112,7 @@ class ForecastTeam
   end
 
   def gap_to_quota
-    teams.sum(&:gap_to_quota) + members.sum(&:gap_to_quota)
+    quota - amount
   end
 
   def quota

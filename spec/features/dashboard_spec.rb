@@ -27,7 +27,7 @@ feature 'Dashboard' do
         expect(find('.attainment')).to have_text '10% ATTAINMENT'
         expect(find('.quota')).to have_text '$20,000 QUOTA'
         expect(find('.forecast')).to have_text '$2,000 FORECAST'
-        expect(find('.gap-to-goal')).to have_text '($2,000) GAP TO GOAL'
+        expect(find('.gap-to-goal')).to have_text '$18,000 GAP TO GOAL'
       end
 
       within '#deals' do
