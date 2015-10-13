@@ -39,7 +39,7 @@ class Team < ActiveRecord::Base
   end
 
   def leader_name
-    leader.full_name if leader.present?
+    leader.name if leader.present?
   end
 
   def all_deals_for_time_period(time_period)

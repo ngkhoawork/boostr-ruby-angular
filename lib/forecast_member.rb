@@ -9,7 +9,7 @@ class ForecastMember
   def as_json(options={})
     {
       id: member.id,
-      full_name: member.full_name,
+      name: member.name,
       stages: stages,
       weighted_pipeline: weighted_pipeline,
       weighted_pipeline_by_stage: weighted_pipeline_by_stage,

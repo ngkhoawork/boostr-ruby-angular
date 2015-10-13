@@ -5,6 +5,6 @@ class DealMember < ActiveRecord::Base
   validates :share, :user_id, :deal_id, presence: true
 
   def name
-    user.full_name if user.present?
+    user.name if user.present?
   end
 end

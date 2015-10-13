@@ -89,9 +89,9 @@
     _.each $scope.teams, (t) ->
       names.push(t.name)
     if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
-      names.push($scope.forecast.leader.full_name)
+      names.push($scope.forecast.leader.name)
     _.each $scope.members, (m) ->
-      names.push(m.full_name)
+      names.push(m.name)
 
     $scope.chartBarData = {
       labels: names,

@@ -34,13 +34,6 @@ class User < ActiveRecord::Base
   end
 
   def name
-    name = []
-    name << first_name.chr + '.' if first_name
-    name << last_name if last_name
-    name.join(' ')
-  end
-
-  def full_name
     "#{first_name} #{last_name}"
   end
 
@@ -49,7 +42,7 @@ class User < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(methods: [:name, :full_name, :leader?]))
+    super(options.merge(methods: [:name, :leader?]))
   end
 
   def all_deals_for_time_period(time_period)

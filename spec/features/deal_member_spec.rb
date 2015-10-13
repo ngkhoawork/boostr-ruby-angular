@@ -21,7 +21,7 @@ feature 'DealMembers' do
 
       within '#teamsplits tbody' do
         expect(page).to have_css('tr', count: 1)
-        expect(find('tr')).to have_text(user.full_name)
+        expect(find('tr')).to have_text(user.name)
       end
     end
   end

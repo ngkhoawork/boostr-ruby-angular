@@ -56,7 +56,7 @@ feature 'Forecast' do
         end
 
         within '.members tr:first-child' do
-          expect(find('td:first-child')).to have_text member.full_name
+          expect(find('td:first-child')).to have_text member.name
           find('td.weighted-pipeline a').trigger('click')
         end
 
@@ -83,7 +83,7 @@ feature 'Forecast' do
         expect(page).to have_css('tr', count: 2)
 
         within '.member tr:last-child' do
-          expect(find('td:first-child')).to have_text member.full_name
+          expect(find('td:first-child')).to have_text member.name
         end
       end
     end

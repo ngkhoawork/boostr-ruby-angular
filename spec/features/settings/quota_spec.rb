@@ -61,7 +61,7 @@ feature 'Quotas' do
 
       within '#user_quota_modal' do
         ui_select('quota_period', q2.name)
-        ui_select('user', new_user.full_name)
+        ui_select('user', new_user.name)
         fill_in 'value', with: '20000'
 
         find_button('Create').trigger('click')

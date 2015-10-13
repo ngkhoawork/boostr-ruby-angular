@@ -30,7 +30,7 @@ RSpec.describe Api::ForecastsController, type: :controller do
         get :index, { format: :json, time_period_id: time_period.id }
         expect(response).to be_success
         response_json = JSON.parse(response.body)
-        expect(response_json['full_name']).to eq(user.full_name)
+        expect(response_json['name']).to eq(user.name)
       end
     end
   end

@@ -1,6 +1,6 @@
 %tr
   %td{ ng: { if: 'row.type == "member"' } }
-    {{ row.full_name }}
+    {{ row.name }}
   %td{ ng: { if: 'row.type == "team"' } }
     %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}' } }
       {{ row.name }}

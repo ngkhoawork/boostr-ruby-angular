@@ -92,7 +92,7 @@ feature 'Teams' do
 
       within 'table tbody' do
         expect(find('tr:first-child td:first-child')).to have_text('Test')
-        expect(find('tr:first-child td:nth-child(2)')).to have_text(user.full_name)
+        expect(find('tr:first-child td:nth-child(2)')).to have_text(user.name)
       end
     end
   end

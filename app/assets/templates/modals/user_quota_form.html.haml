@@ -24,9 +24,9 @@
             %label.control-label{ for: 'user' } User
             %ui-select{ name: 'user', ng: { model: 'quota.user_id', disabled: true } }
               %ui-select-match{ placeholder: 'Select A User' }
-                {{ $select.selected.full_name }}
-              %ui-select-choices{ repeat: 'user.id as user in users | filter: { full_name: $select.search }' }
-                %div{ ng: { bind: { html: 'user.full_name' } } }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'user.id as user in users | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'user.name' } } }
       .form-group
         %label.control-label{ for: 'value' } Total Quota
         %input.form-control{ name: 'value', placeholder: 'Total Quota', ng: { model: 'quota.value' } }

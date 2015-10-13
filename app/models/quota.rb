@@ -12,6 +12,6 @@ class Quota < ActiveRecord::Base
   end
 
   def user_name
-    user.full_name if user
+    user.name if user
   end
 end
