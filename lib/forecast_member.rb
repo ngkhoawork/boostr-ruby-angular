@@ -10,7 +10,9 @@ class ForecastMember
     {
       id: member.id,
       full_name: member.full_name,
+      stages: stages,
       weighted_pipeline: weighted_pipeline,
+      weighted_pipeline_by_stage: weighted_pipeline_by_stage,
       revenue: revenue,
       amount: amount,
       percent_to_quota: percent_to_quota,
@@ -21,6 +23,12 @@ class ForecastMember
       is_leader: member.leader?,
       type: 'member'
     }
+  end
+
+  def stages
+    return @stages if defined?(@stages)
+    ids = weighted_pipeline_by_stage.keys
+    @stages = member.company.stages.where(id: ids).order(:probability).all.to_a
   end
 
   def weighted_pipeline
@@ -38,6 +46,27 @@ class ForecastMember
       end
       deal_total * (deal.stage.probability / 100.0)
     end
+  end
+
+  def weighted_pipeline_by_stage
+    return @weighted_pipeline_by_stage if defined?(@weighted_pipeline_by_stage)
+
+    deal_shares = {}
+    member.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+
+    @weighted_pipeline_by_stage = {}
+
+    open_deals.each do |deal|
+      deal_total = 0
+      deal.deal_products.for_time_period(time_period).each do |deal_product|
+        deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
+      end
+      @weighted_pipeline_by_stage[deal.stage.id] ||= 0
+      @weighted_pipeline_by_stage[deal.stage.id] += deal_total * (deal.stage.probability / 100.0)
+    end
+    @weighted_pipeline_by_stage
   end
 
   def revenue

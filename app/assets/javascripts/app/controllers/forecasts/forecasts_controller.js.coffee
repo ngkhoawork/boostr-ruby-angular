@@ -2,7 +2,7 @@
 ['$scope', '$routeParams', '$location', 'Forecast', 'TimePeriod', 'WeightedPipeline',
 ($scope, $routeParams, $location, Forecast, TimePeriod, WeightedPipeline) ->
 
-  $scope.chartOptions = {
+  $scope.chartBarOptions = {
     responsive: false,
     segmentShowStroke: true,
     segmentStrokeColor: '#fff',
@@ -12,6 +12,9 @@
     animationEasing: 'easeOutBounce',
     animateRotate: true,
     animateScale: false,
+    scaleLabel: '$<%= value %>',
+    legendTemplate : '<ul class="tc-chart-js-legend"><li class="legend_quota"><span class="swatch"></span>Quota</li><% for (var i=datasets.length-1; i>=0; i--){%><li class="legend_<%= datasets[i].label.replace(\'%\', \'\') %>"><span class="swatch" style="background-color:<%= datasets[i].fillColor %>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
+    multiTooltipTemplate: "$<%= value.toFixed(2) %>",
   }
 
   $scope.init = () ->
@@ -39,20 +42,60 @@
           $scope.setChartData()
 
   $scope.setChartData = () ->
-    $scope.chartData = [
-      {
-        value: Math.min($scope.forecast.percent_to_quota, 100),
-        color:'#FB6C22',
-        highlight: '#FB6C22',
-        label: 'Complete'
-      },
-      {
-        value: Math.max(100 - $scope.forecast.percent_to_quota, 0),
-        color: '#FEA673',
-        highlight: '#FEA673',
-        label: 'Remaining'
-      }
-    ]
+   # There is a dataset for every stage represented in the user data & a dataset for revenue
+    datasets = []
+    _.each $scope.forecast.stages, (s) ->
+      data = []
+      _.each $scope.teams, (t) ->
+        data.push(t.weighted_pipeline_by_stage[s.id] || 0)
+      if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
+        data.push($scope.forecast.leader.weighted_pipeline_by_stage[s.id] || 0)
+      _.each $scope.members, (m) ->
+        data.push(m.weighted_pipeline_by_stage[s.id] || 0)
+      datasets.push({
+        fillColor: s.color,
+        label: s.probability + "%",
+        data: data
+      })
+
+    # Add the revenue dataset last so it appears at the bottom of the stacked bar
+    data = []
+    _.each $scope.teams, (t) ->
+      data.push(t.revenue || 0)
+    if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
+      data.push($scope.forecast.leader.revenue || 0)
+    _.each $scope.members, (m) ->
+      data.push(m.revenue || 0)
+    if data.length > 0
+      datasets.push({
+        fillColor: '#232B31', # '#FF7E30', # #83C846',
+        label: 'Revenue',
+        data: data
+      })
+
+    # All of the quota markers are printed separately
+    quotas = []
+    _.each $scope.teams, (t) ->
+      quotas.push(t.quota || 0)
+    if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
+      quotas.push($scope.forecast.leader.quota || 0)
+    _.each $scope.members, (m) ->
+      quotas.push(m.quota || 0)
+
+    # Add a list of member names as the x-axis labels
+    names = []
+    _.each $scope.teams, (t) ->
+      names.push(t.name)
+    if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
+      names.push($scope.forecast.leader.full_name)
+    _.each $scope.members, (m) ->
+      names.push(m.full_name)
+
+    $scope.chartBarData = {
+      labels: names,
+      datasets: datasets,
+      quotas: quotas
+    }
 
 
   $scope.toggleWeightedPipelineDetail = (row) ->

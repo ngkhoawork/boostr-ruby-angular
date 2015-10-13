@@ -4,6 +4,7 @@ admin_user = User.create!(
   email: "admin@example.com",
   password: "password"
 )
+admin_user.confirm!
 
 company_user = User.create!(
   first_name: "Company",
@@ -11,6 +12,7 @@ company_user = User.create!(
   email: "company@example.com",
   password: "password"
 )
+company_user.confirm!
 
 company = Company.create!(
   name: "Acme Corporation",
@@ -119,6 +121,7 @@ team_leader_users = company.users.create!([
     password: "password"
   }
 ])
+team_leader_users.each(&:confirm!)
 
 sales_team = company.teams.create!({
   name: "Sales",
@@ -168,6 +171,7 @@ team_member_users = company.users.create!([
     team: sharks_team
   }
 ])
+team_member_users.each(&:confirm!)
 
 # Time periods
 time_periods = company.time_periods.create!([{

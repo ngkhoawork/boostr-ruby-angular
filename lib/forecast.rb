@@ -1,7 +1,8 @@
 class Forecast
-  attr_accessor :rows, :time_period
+  attr_accessor :company, :rows, :time_period
 
-  def initialize(rows, time_period)
+  def initialize(company, rows, time_period)
+    self.company = company
     self.rows = rows
     self.time_period = time_period
   end
@@ -9,6 +10,7 @@ class Forecast
   def as_json(options={})
     {
       teams: teams,
+      stages: stages,
       weighted_pipeline: weighted_pipeline,
       revenue: revenue,
       amount: amount,
@@ -20,6 +22,16 @@ class Forecast
 
   def teams
     @teams ||= rows.map{ |t| ForecastTeam.new(t, time_period) }
+  end
+
+  def stages
+    return @stages if defined?(@stages)
+    ids = []
+    teams.each do |team|
+      ids << team.weighted_pipeline_by_stage.keys
+    end
+    ids = ids.flatten.uniq
+    @stages = company.stages.where(id: ids).order(:probability).all
   end
 
   def weighted_pipeline

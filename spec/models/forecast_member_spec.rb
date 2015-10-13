@@ -88,6 +88,29 @@ RSpec.describe ForecastMember do
       end
     end
 
+    context 'weighted_pipeline_by_stage' do
+      let(:stage) { create :stage, company: company, probability: 50 }
+      let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-1-31"  }
+      let!(:deal_member) { create :deal_member, deal: deal, user: user, share: 100 }
+      let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
+      let(:another_stage) { create :stage, company: company, probability: 90 }
+      let(:another_deal) { create :deal, company: company, stage: another_stage, start_date: "2015-01-01", end_date: "2015-1-31"  }
+      let!(:another_deal_member) { create :deal_member, deal: another_deal, user: user, share: 100 }
+      let!(:another_deal_product) { create_list :deal_product, 4, deal: another_deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
+
+      it 'lists the weighted pipeline by stage' do
+        stages = {}
+        stages[stage.id] = 50
+        stages[another_stage.id] = 90
+
+        expect(forecast.weighted_pipeline_by_stage).to eq(stages)
+      end
+
+      it 'lists the stages in the weighted pipeline by stage data' do
+        expect(forecast.stages).to eq([stage, another_stage])
+      end
+    end
+
     context 'quota' do
       let!(:quotas) { create_list :quota, 4, user: user, value: 2500, time_period: time_period, company: company }
 

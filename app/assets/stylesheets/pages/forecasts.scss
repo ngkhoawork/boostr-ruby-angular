@@ -5,6 +5,33 @@
     }
   }
 
+  .tc-chart-js-legend {
+    list-style-type: none;
+    text-align: center;
+    margin-bottom: 36px;
+
+    li {
+      display: inline-block;
+      line-height: 20px;
+      vertical-align: middle;
+    }
+    .swatch {
+      vertical-align: middle;
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin: 0 10px;
+      border: 1px solid $gray-light;
+      background-color: #000;
+    }
+    .legend_quota .swatch {
+      height: 4px;
+      border-top: 4px dotted $brand-secondary;
+      background: none;
+    }
+
+  }
+
   .weighted-pipeline {
     position: relative;
 
