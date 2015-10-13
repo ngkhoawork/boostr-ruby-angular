@@ -12,6 +12,7 @@
     animationEasing: 'easeOutBounce',
     animateRotate: true,
     animateScale: false,
+    showTooltips: false
   }
 
   Dashboard.get().then (dashboard) ->

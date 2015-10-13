@@ -14,7 +14,6 @@
 //= require jquery_ujs
 //= require underscore
 //= require chartjs
-//= require Chart.StackedBar.js
 //= require angular
 //= require angular-route
 //= require angular-resource
