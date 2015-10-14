@@ -47,12 +47,12 @@
     %table.table.detail
       %thead
         %tr
-          %th Deal name
-          %th Client
+          %th.left Deal name
+          %th.left Client
           %th Probability
           %th Total Budget
-          %th In-period Amount
-          %th Start Date
+          %th.right In-period Amount
+          %th.right Start Date
       %tbody
         %tr{ ng: { repeat: 'subrow in weighted_pipeline | orderBy: "-budget"' } }
           %td {{ subrow.name }}
@@ -60,4 +60,4 @@
           %td.right {{ subrow.probability }}%
           %td.right {{ subrow.budget / 100 | currency: '$': 0 }}
           %td.right {{ subrow.in_period_amt | currency: '$': 0 }}
-          %td {{ subrow.start_date | date: 'MMMM d, y' }}
+          %td.right {{ subrow.start_date | date: 'M/dd/yyyy' }}
