@@ -15,7 +15,7 @@ RSpec.describe Company, type: :model do
     describe 'fields' do
       it 'returns a list of fields with their name and values' do
         deals = { name: 'Deals', fields_classes: [stage.class] }
-        expect(company.fields(deals)[0][:name]).to eq('Stages')
+        expect(company.fields(deals)[0][:name]).to eq('Stage')
       end
     end
 
@@ -26,6 +26,14 @@ RSpec.describe Company, type: :model do
         expect(settings[0][:fields].length).to eq(1)
         expect(settings[0][:fields][0][:values].length).to eq(1)
       end
+    end
+  end
+
+  context 'before create' do
+    it 'creates default client types' do
+      expect {
+        create :company
+      }.to change(ClientType, :count).by(2)
     end
   end
 end

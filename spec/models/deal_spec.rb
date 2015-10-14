@@ -7,7 +7,7 @@ RSpec.describe Deal, type: :model do
 
     context 'for_client' do
       let!(:deal) { create :deal, company: company }
-      let(:agency) { create :agency, company: company }
+      let(:agency) { create :client, company: company }
       let!(:another_deal) { create :deal, company: company, agency: agency }
 
       it 'returns all when client_id is nil' do
@@ -165,7 +165,7 @@ RSpec.describe Deal, type: :model do
   end
 
   describe '#generate_deal_members' do
-    let(:client) { create :advertiser }
+    let(:client) { create :client }
     let!(:client_member) { create :client_member, client: client }
     let(:deal) { build :deal, advertiser: client }
 

@@ -2,6 +2,7 @@ class Client < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
+  belongs_to :client_type
 
   has_many :client_members
   has_many :users, through: :client_members
@@ -36,6 +37,6 @@ class Client < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(include: [:address], methods: [:deals_count]))
+    super(options.merge(include: [:address, :client_type], methods: [:deals_count]))
   end
 end

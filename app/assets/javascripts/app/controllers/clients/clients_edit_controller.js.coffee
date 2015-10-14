@@ -1,11 +1,13 @@
 @app.controller "ClientsEditController",
-['$scope', '$modalInstance', '$filter', 'Client',
-($scope, $modalInstance, $filter, Client) ->
+['$scope', '$modalInstance', '$filter', 'Client', 'ClientType',
+($scope, $modalInstance, $filter, Client, ClientType) ->
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.client = Client.get()
-  $scope.clientTypes = Client.types()
+  ClientType.all().then (clientTypes) ->
+    $scope.clientTypes = clientTypes
+
   if $scope.client && $scope.client.address
     $scope.client.address.phone = $filter('tel')($scope.client.address.phone)
 

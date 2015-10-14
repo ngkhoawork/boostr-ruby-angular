@@ -20,7 +20,7 @@
           Field Name
         .well{ ng: { repeat: 'field in current.object.fields', click: 'setField(field)' } }
           %span.title
-            {{ field.name }}
+            {{ field.name }}s
           |
           %span.total
             {{ field.values.length }} Values
@@ -31,6 +31,6 @@
             %a{ href: '', ng: { click: 'createNewValue()' } }
               = inline_svg 'icons/add.svg'
               Add
-        .well{ ng: { repeat: 'value in current.field.values', include: '"settings/custom_values/" + current.field.name.toLowerCase() + ".html"' } }
+        .well{ ng: { repeat: 'value in current.field.values', include: '"settings/custom_values/" + current.field.name.split(" ").join("_").toLowerCase() + ".html"' } }
 
 

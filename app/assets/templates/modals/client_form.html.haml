@@ -12,11 +12,11 @@
         .row
           .col-xs-6
             %label.control-label{ for: 'client-type' } Client Type
-            %ui-select{ name: 'client-type', ng: { model: 'client.client_type', disabled: true } }
+            %ui-select{ name: 'client-type', ng: { model: 'client.client_type_id', disabled: true } }
               %ui-select-match{ placeholder: 'Client Type' }
-                {{ $select.selected }}
-              %ui-select-choices{ repeat: 'clientType in clientTypes | filter: $select.search' }
-                %div{ ng: { bind: { html: 'clientType' } } }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'clientType.id as clientType in clientTypes | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'clientType.name' } } }
       .form-group
         %label.control-label{ for: 'name' } Name
         %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }

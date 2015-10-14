@@ -15,7 +15,7 @@
     send.client =
       name: original.client.name
       website: original.client.website
-      client_type: original.client.client_type
+      client_type_id: original.client.client_type_id
       address_attributes: address_attributes
     angular.toJson(send)
 
@@ -75,15 +75,6 @@
     currentClient = _.find allClients, (client) ->
       return parseInt(client_id) == client.id
     $rootScope.$broadcast 'updated_current_client'
-
-  @types = () ->
-    [
-      'Advertiser'
-      'Agency'
-      'DSP/Network'
-      'Verification'
-      'Publisher'
-    ]
 
   return
 ]

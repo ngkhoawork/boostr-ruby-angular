@@ -61,8 +61,8 @@
       keyboard: false
       resolve:
         deal: ->
-          if $scope.currentClient.client_type is 'Advertiser' then advertiser_id: $scope.currentClient.id
-          else if $scope.currentClient.client_type is 'Agency' then agency_id: $scope.currentClient.id
+          if $scope.currentClient.client_type.name is 'Advertiser' then advertiser_id: $scope.currentClient.id
+          else if $scope.currentClient.client_type.name is 'Agency' then agency_id: $scope.currentClient.id
 
   $scope.showNewMemberModal = ->
     $scope.modalInstance = $modal.open
