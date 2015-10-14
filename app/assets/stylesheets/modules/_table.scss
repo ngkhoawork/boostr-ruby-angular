@@ -29,6 +29,12 @@
         max-height: 43px !important;
         height: 43px !important;
 
+        &.no-case {
+          th {
+            text-transform: none;
+          }
+        }
+
         th {
           border-bottom: none;
           text-transform: uppercase;
@@ -245,6 +251,15 @@
     }
   }
 }
+.table.detail {
+  thead {
+    tr {
+      max-height: 43px !important;
+      height: 43px !important;
+    }
+  }
+}
+
 .table > tbody + tbody {
   border-top: 0;
 }
