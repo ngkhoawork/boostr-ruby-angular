@@ -14,6 +14,7 @@
         font-size: 11.5px;
         white-space: nowrap;
         vertical-align: middle;
+        text-align: center;
 
         &:first-child {
           border-left: 1px solid $brand-primary;
@@ -79,6 +80,10 @@
         td {
           vertical-align: middle;
           line-height: 28px;
+
+          &.right {
+            text-align: right;
+          }
 
           &:first-child {
             padding-top: 8px;

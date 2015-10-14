@@ -46,13 +46,13 @@
                 %td {{ row.order_number }}
                 %td {{ row.line_number }}
                 %td {{ row.ad_server }}
-                %td {{ row.price/100 | currency:'$' }}
+                %td.right {{ row.price/100 | currency:'$' }}
                 %td {{ row.price_type }}
-                %td {{ row.quantity | number }}
-                %td {{ row.delivered | number }}
-                %td {{ row.remaining | number }}
-                %td {{ row.budget | currency:'$':0 }}
-                %td {{ row.budget_remaining | currency:'$':0 }}
+                %td.right {{ row.quantity | number }}
+                %td.right {{ row.delivered | number }}
+                %td.right {{ row.remaining | number }}
+                %td.right {{ row.budget | currency:'$':0 }}
+                %td.right {{ row.budget_remaining | currency:'$':0 }}
                 %td {{ row.start_date | date: 'shortDate' }}
                 %td {{ row.end_date | date: 'shortDate' }}
                 %td {{ row.user_name }}
