@@ -80,7 +80,7 @@
     _.each $scope.teams, (t) ->
       quotas.push(t.quota || 0)
     if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
-      quotas.push($scope.forecast.leader.quota || 0)
+      quotas.push(0)
     _.each $scope.members, (m) ->
       quotas.push(m.quota || 0)
 

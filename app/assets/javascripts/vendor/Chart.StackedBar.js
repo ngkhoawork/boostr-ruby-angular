@@ -567,19 +567,21 @@
       //Draw all the bars for each dataset
       if (this.data.quotas.length > 0) {
         Chart.helpers.each(this.data.quotas,function(quota,index){
-          var y = Math.abs(this.scale.calculateY(quota));
-          var x = this.scale.calculateBarX(index);
-          var width = this.scale.calculateBarWidth(this.datasets.length);
+          if (quota > 0) {
+            var y = Math.abs(this.scale.calculateY(quota));
+            var x = this.scale.calculateBarX(index);
+            var width = this.scale.calculateBarWidth(this.datasets.length);
 
-          this.chart.ctx.beginPath();
-          this.chart.ctx.moveTo(x - (width/2), y);
-          this.chart.ctx.lineTo(x + (width/2), y);
-          if (this.chart.ctx.setLineDash) this.chart.ctx.setLineDash([4, 4]);
-          this.chart.ctx.lineWidth = 4;
-          this.chart.ctx.strokeStyle = "#7B7B7B";
-          this.chart.ctx.closePath();
-          this.chart.ctx.stroke();
-          if (this.chart.ctx.setLineDash) this.chart.ctx.setLineDash([]);
+            this.chart.ctx.beginPath();
+            this.chart.ctx.moveTo(x - (width/2), y);
+            this.chart.ctx.lineTo(x + (width/2), y);
+            if (this.chart.ctx.setLineDash) this.chart.ctx.setLineDash([4, 4]);
+            this.chart.ctx.lineWidth = 4;
+            this.chart.ctx.strokeStyle = "#7B7B7B";
+            this.chart.ctx.closePath();
+            this.chart.ctx.stroke();
+            if (this.chart.ctx.setLineDash) this.chart.ctx.setLineDash([]);
+          };
 
         },this);
       }
