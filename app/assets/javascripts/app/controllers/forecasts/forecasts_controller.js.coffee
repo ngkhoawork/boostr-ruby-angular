@@ -70,7 +70,7 @@
       data.push(m.revenue || 0)
     if data.length > 0
       datasets.push({
-        fillColor: '#12CC65',
+        fillColor: '#74d600',
         label: 'Revenue',
         data: data
       })
