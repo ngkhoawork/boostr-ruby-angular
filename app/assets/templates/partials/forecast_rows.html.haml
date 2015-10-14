@@ -4,37 +4,37 @@
   %td{ ng: { if: 'row.type == "team"' } }
     %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}' } }
       {{ row.name }}
-  %td{ ng: { if: '!row.is_leader'} }
+  %td.right{ ng: { if: '!row.is_leader'} }
     {{ row.quota | currency: '$': 0 }}
-  %td{ ng: { if: 'row.is_leader'} }
+  %td.right{ ng: { if: 'row.is_leader'} }
     \--
-  %td.weighted-pipeline
+  %td.weighted-pipeline.right
     %a{ href: '', ng: { click: 'toggleWeightedPipelineDetail(row)' } }
       {{ row.weighted_pipeline | currency: '$': 0 }}
     .arrow-up{ ng: { show: 'row == weightedPipelineDetail' } }
-  %td {{ row.revenue | currency: '$': 0 }}
-  %td
+  %td.right {{ row.revenue | currency: '$': 0 }}
+  %td.right
     {{ row.amount | currency: '$': 0 }}
-  %td{ ng: { if: '!row.is_leader'} }
+  %td.right{ ng: { if: '!row.is_leader'} }
     {{ row.percent_to_quota | number: 0 }}%
-  %td{ ng: { if: '!row.is_leader'} }
+  %td.right{ ng: { if: '!row.is_leader'} }
     {{ row.gap_to_quota | currency: '$': 0 }}
-  %td{ ng: { if: 'row.is_leader'} }
+  %td.right{ ng: { if: 'row.is_leader'} }
     \--
-  %td{ ng: { if: 'row.is_leader'} }
+  %td.right{ ng: { if: 'row.is_leader'} }
     \--
-  %td
+  %td.right
     {{ row.wow_weighted_pipeline  | currency: '$': 0 }}
-  %td
+  %td.right
     {{ row.wow_revenue  | currency: '$': 0 }}
 %tr.weighted-pipeline-detail{ ng: { if: 'row == weightedPipelineDetail' } }
-  %td.weighted-pipeline-table-wrapper{ colspan: 7, ng: { if: 'weighted_pipeline.length == 0' } }
+  %td.weighted-pipeline-table-wrapper{ colspan: 9, ng: { if: 'weighted_pipeline.length == 0' } }
     %h5
       There are no deals for this {{ row.type }} in this time period.
     %a.close{ ng: { click: 'toggleWeightedPipelineDetail(row)' } }
       %span{'aria-hidden' => 'true'}
         = inline_svg 'icons/close.svg'
-  %td.weighted-pipeline-table-wrapper{ colspan: 7, ng: { if: 'weighted_pipeline.length > 0' } }
+  %td.weighted-pipeline-table-wrapper{ colspan: 9, ng: { if: 'weighted_pipeline.length > 0' } }
     %h3 Deal Summary
     %span
       |
@@ -57,7 +57,7 @@
         %tr{ ng: { repeat: 'subrow in weighted_pipeline | orderBy: "-budget"' } }
           %td {{ subrow.name }}
           %td {{ subrow.client_name }}
-          %td {{ subrow.probability }}%
-          %td {{ subrow.budget / 100 | currency: '$': 0 }}
-          %td {{ subrow.in_period_amt | currency: '$': 0 }}
+          %td.right {{ subrow.probability }}%
+          %td.right {{ subrow.budget / 100 | currency: '$': 0 }}
+          %td.right {{ subrow.in_period_amt | currency: '$': 0 }}
           %td {{ subrow.start_date | date: 'MMMM d, y' }}
