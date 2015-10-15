@@ -4,12 +4,24 @@
 
   $scope.current = {}
   $scope.constants =
-    "Stage": Stage
-    "Client Type": ClientType
+    'Stage': Stage
+    'Client Type': ClientType
+  $scope.kinds =
+    'Stage': 'stage'
+    'Client Type': 'client_type'
 
   CustomValue.all().then (custom_values) ->
     $scope.objects = custom_values
     $scope.setObject($scope.objects[0])
+
+  $scope.sortableOptions =
+    stop: () ->
+      _.each $scope.current.field.values, (value, index) ->
+        value.position = index
+        $scope.updateField(value, false)
+    axis: 'y'
+    opacity: 0.6
+    cursor: 'ns-resize'
 
   $scope.setObject = (object) ->
     $scope.current.object = object
@@ -18,12 +30,13 @@
   $scope.setField = (field) ->
     $scope.current.field = field
 
-  $scope.updateField = (field, kind) ->
+  $scope.updateField = (field, warn=true) ->
+    kind = $scope.kinds[$scope.current.field.name]
     params = {}
     params[kind] = field
 
     if field.id
-      if field.is_new || confirm('Are you sure? All existing uses of this ' + $scope.current.field.name + ' will be updated.')
+      if field.is_new || !warn || confirm('Are you sure? All existing uses of this ' + $scope.current.field.name.toLowerCase() + ' will be updated.')
         params.id = field.id
         $scope.constants[$scope.current.field.name].update(params)
     else

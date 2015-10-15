@@ -17,9 +17,9 @@ feature 'Custom Values' do
         expect(page).to have_css('.well.primary', count: 3)
 
         within '#values' do
-          expect(page).to have_css('.well', count: 2)
+          expect(page).to have_css('li', count: 1)
 
-          within '.well:last-child' do
+          within 'li:last-child' do
             expect(page).to have_text(stage.name)
             expect(page).to have_css('.open-button.active')
             find('.title').trigger('click')
@@ -28,20 +28,20 @@ feature 'Custom Values' do
             expect(page).to have_no_css('.editable-input')
           end
 
-          within '.well:last-child' do
+          within 'li:last-child' do
             expect(page).to have_text('Taco')
             find('.close-button').trigger('click')
           end
 
-          within '.well:last-child' do
+          within 'li:last-child' do
             expect(page).to have_no_css('.open-button.active')
           end
 
-          within '.well:first-child' do
+          within '.well.primary' do
             find('a').trigger('click')
           end
 
-          within '.well:nth-child(2)' do
+          within 'li:nth-child(1)' do
             expect(page).to have_text('New Stage')
           end
         end

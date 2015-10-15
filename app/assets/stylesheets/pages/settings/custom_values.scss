@@ -11,4 +11,19 @@
   .btn-group {
     margin: 3px 0;
   }
+
+  #values {
+    ul {
+      list-style-type: none;
+      padding: 0;
+
+      li {
+        margin-bottom: 10px;
+      }
+    }
+  }
+
+  .ui-sortable-placeholder {
+    border: 4px dotted $gray-light; visibility: visible !important;
+  }
 }

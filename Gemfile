@@ -37,6 +37,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-xeditable'
   gem 'rails-assets-chartjs'
   gem 'rails-assets-angular-loading-bar'
+  gem 'rails-assets-angular-ui-sortable'
 end
 
 group :test do
