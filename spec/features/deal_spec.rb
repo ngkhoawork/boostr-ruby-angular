@@ -3,8 +3,10 @@ require 'rails_helper'
 feature 'Deals' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
-  let!(:advertiser) { create :client, company: company, client_type: 'Advertiser' }
-  let!(:agency) { create :client, company: company, client_type: 'Agency' }
+  let(:advertiser_type) { company.client_types.where(name: 'Advertiser').first }
+  let(:agency_type) { company.client_types.where(name: 'Agency').first }
+  let!(:advertiser) { create :client, company: company, client_type: advertiser_type }
+  let!(:agency) { create :client, company: company, client_type: agency_type }
   let!(:open_stage) { create :stage, company: company, position: 1, name: 'open stage' }
 
   describe 'showing a list of deals filtered by stages' do

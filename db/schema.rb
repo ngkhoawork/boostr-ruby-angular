@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151009212404) do
+ActiveRecord::Schema.define(version: 20151014213810) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,6 +59,17 @@ ActiveRecord::Schema.define(version: 20151009212404) do
   add_index "client_members", ["client_id"], name: "index_client_members_on_client_id", using: :btree
   add_index "client_members", ["user_id"], name: "index_client_members_on_user_id", using: :btree
 
+  create_table "client_types", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "name"
+    t.integer  "position"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "client_types", ["id", "company_id", "position", "deleted_at"], name: "index_client_types_composite", using: :btree
+
   create_table "clients", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -68,12 +79,13 @@ ActiveRecord::Schema.define(version: 20151009212404) do
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
     t.datetime "deleted_at"
-    t.string   "client_type"
     t.integer  "advertiser_deals_count", default: 0, null: false
     t.integer  "agency_deals_count",     default: 0, null: false
     t.integer  "contacts_count",         default: 0, null: false
+    t.integer  "client_type_id"
   end
 
+  add_index "clients", ["client_type_id"], name: "index_clients_on_client_type_id", using: :btree
   add_index "clients", ["deleted_at"], name: "index_clients_on_deleted_at", using: :btree
 
   create_table "companies", force: :cascade do |t|

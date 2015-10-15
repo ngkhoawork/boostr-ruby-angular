@@ -7,7 +7,7 @@ FactoryGirl.define do
     next_steps 'Call Somebody'
     deal_type 'Seasonal'
     source_type 'Pitch to Client'
-    advertiser
-    agency
+    association :advertiser, factory: :client
+    association :agency, factory: :client
   end
 end

@@ -11,6 +11,7 @@ class Company < ActiveRecord::Base
   has_many :teams
   has_many :time_periods
   has_many :quotas
+  has_many :client_types
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -20,4 +21,12 @@ class Company < ActiveRecord::Base
 
   accepts_nested_attributes_for :billing_address
   accepts_nested_attributes_for :physical_address
+
+  before_create :setup_defaults
+
+  protected
+
+  def setup_defaults
+    client_types.build([{name: 'Advertiser'}, {name: 'Agency'}])
+  end
 end

@@ -3,10 +3,12 @@ require 'rails_helper'
 feature 'Clients' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
+  let!(:advertiser_type) { company.client_types.where(name: 'Advertiser').first }
+  let!(:agency_type) { company.client_types.where(name: 'Agency').first }
 
   describe 'showing client details' do
-    let!(:client) { create :advertiser, company: company }
-    let!(:agency) { create :agency, company: company }
+    let!(:client) { create :client, company: company, client_type: advertiser_type }
+    let!(:agency) { create :client, company: company, client_type: agency_type }
     let!(:contacts) { create_list :contact, 2, client: client, company: company }
     let!(:deal) { create_list :deal, 2, company: company, advertiser: client }
     let!(:agency_deal) { create :deal, company: company, agency: agency }
@@ -104,7 +106,7 @@ feature 'Clients' do
   end
 
   describe 'editing a client' do
-    let!(:clients) { create_list :advertiser, 3, company: company }
+    let!(:clients) { create_list :client, 3, company: company }
 
     before do
       login_as user, scope: :user
@@ -144,7 +146,7 @@ feature 'Clients' do
   end
 
   describe 'deleting a client' do
-    let!(:clients) { create_list :advertiser, 3, company: company }
+    let!(:clients) { create_list :client, 3, company: company }
 
     before do
       clients.sort_by!(&:name)
@@ -180,7 +182,7 @@ feature 'Clients' do
   end
 
   describe 'adding a contact to a client' do
-    let!(:client) { create :advertiser, company: company }
+    let!(:client) { create :client, company: company, client_type: advertiser_type }
     let!(:contact) { create :contact, company: company, address_attributes: attributes_for(:address) }
 
     before do
@@ -245,8 +247,8 @@ feature 'Clients' do
   end
 
   describe 'adding a deal to a client' do
-    let!(:client) { create :advertiser, company: company }
-    let!(:agency) { create :agency, company: company }
+    let!(:client) { create :client, company: company, client_type: advertiser_type }
+    let!(:agency) { create :client, company: company, client_type: agency_type }
     let!(:open_stage) { create :stage, company: company, position: 1 }
 
     before do

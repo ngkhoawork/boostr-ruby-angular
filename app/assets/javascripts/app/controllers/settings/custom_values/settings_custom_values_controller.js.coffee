@@ -1,8 +1,11 @@
 @app.controller 'SettingsCustomValuesController',
-['$scope', 'CustomValue', 'Stage',
-($scope, CustomValue, Stage) ->
+['$scope', 'CustomValue', 'Stage', 'ClientType',
+($scope, CustomValue, Stage, ClientType) ->
 
   $scope.current = {}
+  $scope.constants =
+    "Stage": Stage
+    "Client Type": ClientType
 
   CustomValue.all().then (custom_values) ->
     $scope.objects = custom_values
@@ -15,22 +18,27 @@
   $scope.setField = (field) ->
     $scope.current.field = field
 
-  $scope.updateStage = (stage) ->
-    if stage.id
-      if stage.is_new || confirm('Are you sure? All existing uses of this stage will be updated.')
-        Stage.update(id: stage.id, stage: stage).then (stage) ->
-          #noop
+  $scope.updateField = (field, kind) ->
+    params = {}
+    params[kind] = field
+
+    if field.id
+      if field.is_new || confirm('Are you sure? All existing uses of this ' + $scope.current.field.name + ' will be updated.')
+        params.id = field.id
+        $scope.constants[$scope.current.field.name].update(params)
     else
-      Stage.create(stage: stage).then (new_stage) ->
-        new_stage.is_new = true
-        _.each $scope.current.field.values, (stage, i) ->
-          if(stage.name == new_stage.name)
-            $scope.current.field.values[i] = new_stage
+        $scope.constants[$scope.current.field.name].create(params).then (new_field) ->
+          new_field.is_new = true
+          _.each $scope.current.field.values, (field, i) ->
+            if(field.name == new_field.name)
+              $scope.current.field.values[i] = new_field
 
   $scope.createNewValue = () ->
     switch $scope.current.field.name
       when 'Stages'
         $scope.createNewStage()
+      else
+        $scope.current.field.values.unshift({ name: 'New ' + $scope.current.field.name })
 
   $scope.createNewStage = () ->
     new_stage = { name: 'New Stage', probability: 0 }

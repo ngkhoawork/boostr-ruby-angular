@@ -3,7 +3,7 @@ module CustomValues
   def objects
     [
       { name: 'Deals', fields_classes: [Stage]},
-      { name: 'Clients', fields_classes: [] },
+      { name: 'Clients', fields_classes: [ClientType] },
       { name: 'People', fields_classes: [] },
       { name: 'Teams', fields_classes: [] },
       { name: 'Employees', fields_classes: [] }
@@ -14,7 +14,7 @@ module CustomValues
     fields = []
     object[:fields_classes].each do |field|
       fields << {
-        name: field.name.pluralize,
+        name: field.name.titleize,
         values: values(field)
       }
     end

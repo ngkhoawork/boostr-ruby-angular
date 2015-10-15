@@ -1,11 +1,12 @@
 @app.controller "ClientsNewController",
-['$scope', 'Client', '$modalInstance'
-($scope, Client, $modalInstance) ->
+['$scope', '$modalInstance', 'Client', 'ClientType',
+($scope, $modalInstance, Client, ClientType) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.client = {}
-  $scope.clientTypes = Client.types()
+  ClientType.all().then (clientTypes) ->
+    $scope.clientTypes = clientTypes
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true

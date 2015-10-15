@@ -21,6 +21,7 @@ describe "ClientsEditController", ->
           state: 'ID'
       }
 
+      @httpBackend.expectGET('/api/client_types').respond([{ name: 'Advertiser'}])
       @httpBackend.expectPUT('/api/clients').respond({ name: @scope.client.name})
       expect(@scope.submitForm()).toBeTruthy()
       @httpBackend.flush()

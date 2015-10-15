@@ -212,17 +212,17 @@ company_clients = company.clients.create!([{
   name: "Buzzfeed",
   created_by: company_user.id,
   website: "buzzfeed.com",
-  client_type: "Advertiser",
+  client_type: company.client_types.where(name: 'Advertiser').first
 }, {
   name: "Digitas",
   created_by: company_user.id,
   website: "digitas.com",
-  client_type: "Agency",
+  client_type: company.client_types.where(name: 'Agency').first
 }, {
   name: "DistroScale",
   created_by: company_user.id,
   website: "distroscale.com",
-  client_type: "Advertiser"
+  client_type: company.client_types.where(name: 'Advertiser').first
 }])
 
 # These client members will be used as the default for the deal_members when a deal is created
