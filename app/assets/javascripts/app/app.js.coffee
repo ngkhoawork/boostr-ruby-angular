@@ -12,6 +12,7 @@
   'xeditable'
   'tc.chartjs'
   'angular-loading-bar'
+  'ui.sortable'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

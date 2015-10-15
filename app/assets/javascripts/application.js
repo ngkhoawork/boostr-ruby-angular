@@ -12,6 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-ui
 //= require underscore
 //= require chartjs
 //= require angular
@@ -25,6 +26,7 @@
 //= require ng-file-upload
 //= require angular-xeditable
 //= require angular-loading-bar
+//= require angular-ui-sortable
 //= require_tree .
 //= require_tree ../templates
 
