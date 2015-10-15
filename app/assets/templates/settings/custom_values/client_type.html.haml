@@ -1,4 +1,7 @@
 .row
-  .col-xs-6
+  .col-xs-10
     .title{ editable: { text: 'value.name' }, onaftersave: 'updateField(value)', 'e-name': 'name' }
       {{ value.name }}
+
+  %a.delete{ href: '', ng: { click: 'deleteField(value)', if: '!value.locked' } }
+    = inline_svg 'icons/trash.svg'
