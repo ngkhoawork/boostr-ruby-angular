@@ -1,14 +1,8 @@
 @app.controller 'SettingsCustomValuesController',
-['$scope', 'CustomValue', 'Stage', 'ClientType',
-($scope, CustomValue, Stage, ClientType) ->
+['$scope', 'CustomValue', 'Option',
+($scope, CustomValue, Option) ->
 
   $scope.current = {}
-  $scope.constants =
-    'Stage': Stage
-    'Client Type': ClientType
-  $scope.kinds =
-    'Stage': 'stage'
-    'Client Type': 'client_type'
 
   CustomValue.all().then (custom_values) ->
     $scope.objects = custom_values
@@ -16,9 +10,9 @@
 
   $scope.sortableOptions =
     stop: () ->
-      _.each $scope.current.field.values, (value, index) ->
-        value.position = index
-        $scope.updateField(value, false)
+      _.each $scope.current.field.options, (option, index) ->
+        option.position = index
+        $scope.updateOption(option, false)
     axis: 'y'
     opacity: 0.6
     cursor: 'ns-resize'
@@ -30,53 +24,45 @@
   $scope.setField = (field) ->
     $scope.current.field = field
 
-  $scope.updateField = (field, warn=true) ->
-    kind = $scope.kinds[$scope.current.field.name]
-    params = {}
-    params[kind] = field
-
-    if field.id
-      if field.is_new || !warn || confirm('Are you sure? All existing uses of this ' + $scope.current.field.name.toLowerCase() + ' will be updated.')
-        params.id = field.id
-        $scope.constants[$scope.current.field.name].update(params).then () ->
-          field.is_new = false
+  $scope.updateOption = (option, warn=true) ->
+    if option.id
+      if option.is_new || !warn || confirm('Are you sure? All existing uses of this ' + $scope.current.field.name.toLowerCase() + ' will be updated.')
+        Option.update({id: option.id, option: option, field_id: $scope.current.field.id }).then () ->
+          option.is_new = false
     else
-        $scope.constants[$scope.current.field.name].create(params).then (new_field) ->
-          new_field.is_new = true
-          _.each $scope.current.field.values, (field, i) ->
-            if(field.name == new_field.name)
-              $scope.current.field.values[i] = new_field
+        Option.create({ option: option, field_id: $scope.current.field.id }).then (new_option) ->
+          new_option.is_new = true
+          _.each $scope.current.field.options, (option, i) ->
+            if(option.name == new_option.name)
+              $scope.current.field.options[i] = new_option
 
-  $scope.deleteField = (field) ->
-    if field.id
-      kind = $scope.kinds[$scope.current.field.name]
-
-      if !field.used || confirm('Are you sure? This ' + $scope.current.field.name.toLowerCase() + ' is currently being used by a client')
-        $scope.constants[$scope.current.field.name].delete(field).then (deleted_value) ->
-          $scope.removeField(deleted_value)
+  $scope.deleteOption = (option) ->
+    if option.id
+      if !option.used || confirm('Are you sure? This ' + $scope.current.field.name.toLowerCase() + ' is currently being used')
+        Option.delete({ id: option.id, field_id: $scope.current.field.id }).then (deleted_option) ->
+          $scope.removeOption(deleted_option)
     else
-      $scope.removeField(field)
+      $scope.removeOption(option)
 
-  $scope.removeField = (deleted_field) ->
-    $scope.current.field.values = _.reject $scope.current.field.values, (value) ->
-      deleted_field.id == value.id
+  $scope.removeOption = (deleted_option) ->
+    $scope.current.field.options = _.reject $scope.current.field.options, (option) ->
+      deleted_option.id == option.id
 
   $scope.createNewValue = () ->
-    switch $scope.current.field.name
-      when 'Stages'
-        $scope.createNewStage()
-      else
-        $scope.newest = { name: 'New ' + $scope.current.field.name }
-        $scope.current.field.values.push($scope.newest)
+    $scope.newest = { name: 'New ' + $scope.current.field.name }
+    $scope.current.field.options.push($scope.newest)
 
+
+
+ # Stage stuff... goes somewhere else
 
   $scope.createNewStage = () ->
     $scope.newest = { name: 'New Stage', probability: 0 }
-    $scope.current.field.values.push($scope.newest)
+    $scope.current.field.options.push($scope.newest)
 
   $scope.openStageOptions = [
-    { value: true, text: 'Open' }
-    { value: false, text: 'Closed' }
+    { option: true, text: 'Open' }
+    { option: false, text: 'Closed' }
   ]
 
 ]

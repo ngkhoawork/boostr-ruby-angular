@@ -37,4 +37,22 @@ module Helpers
   def missing_date_csv(client, user, product)
     csv_file("1234,8,Taco,100000,\"$7.00\",CPE,50000,50000,700000,350000,,1/6/2016,Converse,#{client.id},#{user.email},#{product.id}")
   end
+
+  def set_client_type(client, company, option_name)
+    field = client_type_field(company)
+    option = field.options.where(name: option_name).first
+    create :value, company: company, field: field, subject: client, option: option
+  end
+
+  def client_type_field(company)
+    company.fields.where(name: 'Client Type').first
+  end
+
+  def deal_type_field(company)
+    company.fields.where(name: 'Deal Type').first
+  end
+
+  def deal_source_field(company)
+    company.fields.where(name: 'Deal Source').first
+  end
 end

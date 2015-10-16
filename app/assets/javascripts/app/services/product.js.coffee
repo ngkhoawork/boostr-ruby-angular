@@ -8,7 +8,7 @@
       url: '/api/products/:id'
     }
 
-  allProducts =[]
+  allProducts = []
   currentProduct = undefined
 
   @all = ->

@@ -23,16 +23,16 @@
             {{ field.name }}s
           |
           %span.total
-            {{ field.values.length }} Values
-      #values.col-xs-4
+            {{ field.options.length }} Options
+      #options.col-xs-4
         .well.primary
-          Values
+          Options
           .pull-right
             %a.add{ href: '', ng: { click: 'createNewValue()' } }
               = inline_svg 'icons/add.svg'
               Add
-        %ul{ 'ui-sortable': 'sortableOptions', ng: { model: 'current.field.values' } }
-          %li{ ng: { repeat: 'value in current.field.values' } }
-            .well{ ng: { include: '"settings/custom_values/" + current.field.name.split(" ").join("_").toLowerCase() + ".html"' }, 'scroll-if': 'value == newest' }
+        %ul{ 'ui-sortable': 'sortableOptions', ng: { model: 'current.field.options' } }
+          %li{ ng: { repeat: 'option in current.field.options' } }
+            .well{ ng: { include: '"settings/custom_values/option.html"' }, 'scroll-if': 'option == newest' }
 
 

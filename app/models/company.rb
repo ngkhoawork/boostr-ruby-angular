@@ -1,6 +1,4 @@
 class Company < ActiveRecord::Base
-  include CustomValues
-
   has_many :users
   has_many :clients
   has_many :contacts, inverse_of: :company
@@ -11,7 +9,7 @@ class Company < ActiveRecord::Base
   has_many :teams
   has_many :time_periods
   has_many :quotas
-  has_many :client_types
+  has_many :fields
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -24,9 +22,26 @@ class Company < ActiveRecord::Base
 
   before_create :setup_defaults
 
+  def setup_defaults
+    client_type = fields.find_or_initialize_by(subject_type: 'Client', name: 'Client Type', value_type: 'Option', locked: true)
+    setup_default_options(client_type, ['Advertiser', 'Agency'])
+
+    fields.find_or_initialize_by(subject_type: 'Deal', name: 'Deal Type', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Deal', name: 'Deal Source', value_type: 'Option', locked: true)
+  end
+
+  def settings
+    [
+      { name: 'Deals', fields: fields.where(subject_type: 'Deal')},
+      { name: 'Clients', fields: fields.where(subject_type: 'Client')}
+    ]
+  end
+
   protected
 
-  def setup_defaults
-    client_types.build([{name: 'Advertiser'}, {name: 'Agency'}])
+  def setup_default_options(field, names)
+    names.each do |name|
+      field.options.find_or_initialize_by(name: name, company: self, locked: true)
+    end
   end
 end

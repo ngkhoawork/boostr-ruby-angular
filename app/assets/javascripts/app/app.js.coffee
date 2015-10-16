@@ -65,6 +65,9 @@
     .when '/settings/quotas/:time_period_id?',
       templateUrl: 'settings/quotas.html'
       controller: 'SettingsQuotasController'
+    .when '/settings/stages',
+      templateUrl: 'settings/stages.html'
+      controller: 'SettingsStagesController'
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'

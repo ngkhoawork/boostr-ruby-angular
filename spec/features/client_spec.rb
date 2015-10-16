@@ -3,18 +3,18 @@ require 'rails_helper'
 feature 'Clients' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
-  let!(:advertiser_type) { company.client_types.where(name: 'Advertiser').first }
-  let!(:agency_type) { company.client_types.where(name: 'Agency').first }
 
   describe 'showing client details' do
-    let!(:client) { create :client, company: company, client_type: advertiser_type }
-    let!(:agency) { create :client, company: company, client_type: agency_type }
+    let!(:client) { create :client, company: company }
+    let!(:agency) { create :client, company: company }
     let!(:contacts) { create_list :contact, 2, client: client, company: company }
     let!(:deal) { create_list :deal, 2, company: company, advertiser: client }
     let!(:agency_deal) { create :deal, company: company, agency: agency }
     let!(:client_member) { create :client_member, client: client, user: user }
 
     before do
+      set_client_type(client, company, 'Advertiser')
+      set_client_type(agency, company, 'Agency')
       login_as user, scope: :user
       visit "/clients/#{client.id}"
       expect(page).to have_css('#clients')
@@ -182,10 +182,11 @@ feature 'Clients' do
   end
 
   describe 'adding a contact to a client' do
-    let!(:client) { create :client, company: company, client_type: advertiser_type }
+    let!(:client) { create :client, company: company }
     let!(:contact) { create :contact, company: company, address_attributes: attributes_for(:address) }
 
     before do
+      set_client_type(client, company, 'Advertiser')
       login_as user, scope: :user
       visit '/clients'
       expect(page).to have_css('#clients')
@@ -247,11 +248,15 @@ feature 'Clients' do
   end
 
   describe 'adding a deal to a client' do
-    let!(:client) { create :client, company: company, client_type: advertiser_type }
-    let!(:agency) { create :client, company: company, client_type: agency_type }
+    let!(:client) { create :client, company: company }
+    let!(:agency) { create :client, company: company }
     let!(:open_stage) { create :stage, company: company, position: 1 }
+    let!(:deal_type_sponsorship_option) { create :option, company: company, field: deal_type_field(company), name: "Sponsorship" }
+    let!(:deal_source_rfp_option) { create :option, company: company, field: deal_source_field(company), name: "RFP Response to Agency" }
 
     before do
+      set_client_type(client, company, 'Advertiser')
+      set_client_type(agency, company, 'Agency')
       login_as user, scope: :user
       visit '/clients'
       expect(page).to have_css('#clients')

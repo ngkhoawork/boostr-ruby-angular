@@ -31,32 +31,32 @@
             %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, required: true } }
               %ui-select-match{ placeholder: 'Advertiser' }
                 {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'advertiser.id as advertiser in clients | filter: { name: $select.search, client_type: { name: "Advertiser" } }' }
+              %ui-select-choices{ repeat: 'advertiser.id as advertiser in clients | filter: { name: $select.search, client_type: { option: { name: "Advertiser" } } }' }
                 %div{ ng: { bind: { html: 'advertiser.name' } } }
           .col-xs-6
             %label.control-label{ for: 'agency' } Agency
             %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true } }
               %ui-select-match{ placeholder: 'Agency' }
                 {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'agency.id as agency in clients | filter: { name: $select.search, client_type: { name: "Agency" } }' }
+              %ui-select-choices{ repeat: 'agency.id as agency in clients | filter: { name: $select.search, client_type: { option: { name: "Agency" } } }' }
                 %div{ ng: { bind: { html: 'agency.name' } } }
 
       .form-group
         .row
           .col-xs-6
             %label.control-label{ for: 'deal-type' } Type
-            %ui-select{ name: 'deal-type', ng: { model: 'deal.deal_type', disabled: true } }
+            %ui-select{ name: 'deal-type', ng: { model: 'deal.deal_type.option_id', disabled: true } }
               %ui-select-match{ placeholder: 'Type' }
-                {{ $select.selected }}
-              %ui-select-choices{ repeat: 'dealType in dealTypes | filter: $select.search' }
-                %div{ ng: { bind: { html: 'dealType' } } }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'option.id as option in deal.deal_type.options | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'option.name' } } }
           .col-xs-6
             %label.control-label{ for: 'source-type' } Source
-            %ui-select{ name: 'source-type', ng: { model: 'deal.source_type', disabled: true } }
+            %ui-select{ name: 'source-type', ng: { model: 'deal.source_type.option_id', disabled: true } }
               %ui-select-match{ placeholder: 'Source' }
                 {{ $select.selected }}
-              %ui-select-choices{ repeat: 'sourceType in sourceTypes | filter: $select.search' }
-                %div{ ng: { bind: { html: 'sourceType' } } }
+              %ui-select-choices{ repeat: 'option.id as option in deal.source_type.options | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'option.name' } } }
 
       .form-group
         %label.control-label{ for: 'next-steps' } Next Steps

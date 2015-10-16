@@ -2,10 +2,12 @@ class Stage < ActiveRecord::Base
   belongs_to :company
   has_many :deals
 
-  default_scope { order(:position) }
+  default_scope { order('active, position') }
   scope :active, -> { where(active: true) }
 
   validates :name, presence: true
+
+  before_create :set_position
 
   def color
     attributes[:color] || color_for_probability
@@ -37,6 +39,10 @@ class Stage < ActiveRecord::Base
     res = res_r + res_g + res_b
 
     "#"+res.to_s(16)
+  end
+
+  def set_position
+    self.position ||= Stage.count
   end
 end
 

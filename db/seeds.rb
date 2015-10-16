@@ -212,17 +212,17 @@ company_clients = company.clients.create!([{
   name: "Buzzfeed",
   created_by: company_user.id,
   website: "buzzfeed.com",
-  client_type: company.client_types.where(name: 'Advertiser').first
+  # client_type: company.client_types.where(name: 'Advertiser').first
 }, {
   name: "Digitas",
   created_by: company_user.id,
   website: "digitas.com",
-  client_type: company.client_types.where(name: 'Agency').first
+  # client_type: company.client_types.where(name: 'Agency').first
 }, {
   name: "DistroScale",
   created_by: company_user.id,
   website: "distroscale.com",
-  client_type: company.client_types.where(name: 'Advertiser').first
+  # client_type: company.client_types.where(name: 'Advertiser').first
 }])
 
 # These client members will be used as the default for the deal_members when a deal is created
@@ -273,8 +273,6 @@ closed_deal = company.deals.create!({
   name: "Closed Deal",
   budget: 50000,
   stage: stages[5],
-  deal_type: "Test Campaign",
-  source_type: "Pitch to Agency",
   next_steps: "Deal complete.",
   created_by: company_user.id,
 })
@@ -289,8 +287,6 @@ prospecting_deal = company.deals.create!({
   name: "Prospecting Deal",
   budget: 255000,
   stage: stages[2],
-  deal_type: "Seasonal",
-  source_type: "Pitch to Client",
   next_steps: "Waiting on approval from finance.",
   created_by: company_user.id,
 })
