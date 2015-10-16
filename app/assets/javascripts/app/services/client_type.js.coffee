@@ -26,5 +26,11 @@
       deferred.resolve(client_type)
     deferred.promise
 
+  @delete = (client_type) ->
+    deferred = $q.defer()
+    resource.delete { id: client_type.id }, ->
+      deferred.resolve(client_type)
+    deferred.promise
+
   return
 ]

@@ -28,11 +28,11 @@
         .well.primary
           Values
           .pull-right
-            %a{ href: '', ng: { click: 'createNewValue()' } }
+            %a.add{ href: '', ng: { click: 'createNewValue()' } }
               = inline_svg 'icons/add.svg'
               Add
         %ul{ 'ui-sortable': 'sortableOptions', ng: { model: 'current.field.values' } }
           %li{ ng: { repeat: 'value in current.field.values' } }
-            .well{ ng: { include: '"settings/custom_values/" + current.field.name.split(" ").join("_").toLowerCase() + ".html"' } }
+            .well{ ng: { include: '"settings/custom_values/" + current.field.name.split(" ").join("_").toLowerCase() + ".html"' }, 'scroll-if': 'value == newest' }
 
 

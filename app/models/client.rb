@@ -2,7 +2,7 @@ class Client < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
-  belongs_to :client_type
+  belongs_to :client_type, -> { with_deleted }
 
   has_many :client_members
   has_many :users, through: :client_members

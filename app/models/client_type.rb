@@ -4,25 +4,24 @@ class ClientType < ActiveRecord::Base
   belongs_to :company
   has_many :clients
 
+  default_scope { order(:position) }
+
   validates :company, :name, presence: true
   validate :unique_name
 
   before_create :set_position
 
-  # 3) Must have advertiser and agency
+  def locked
+    name == 'Agency' || name == 'Advertiser'
+  end
 
-  # 5) Reorders the positions if you change the position
-  # function update_position_values(array) {
-  #   $.each(array, function(index, el){
-  #     id = el.replace("post_", "");
+  def used
+    clients.count > 0
+  end
 
-  #     $.ajax({
-  #       url: '/posts/' + id,
-  #       type: 'PUT',
-  #       data: { post: { position: index } }
-  #     })
-  #   })
-  # }
+  def as_json(options = {})
+    super(options.merge(methods: [:locked, :used]))
+  end
 
   protected
 

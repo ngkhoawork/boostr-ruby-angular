@@ -2,7 +2,7 @@ class Api::ClientTypesController < ApplicationController
   respond_to :json, :csv
 
   def index
-    client_types = current_user.company.client_types.order(:position)
+    client_types = current_user.company.client_types
     render json: client_types
   end
 

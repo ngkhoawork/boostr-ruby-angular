@@ -41,9 +41,39 @@ feature 'Custom Values' do
             find('a').trigger('click')
           end
 
-          within 'li:nth-child(1)' do
-            expect(page).to have_text('New Stage')
+          within 'li:last-child' do
+            expect(page).to have_text('Probability')
           end
+        end
+
+        within '#objects' do
+          find('.well:nth-child(3)').trigger('click')
+        end
+
+        within '#fields' do
+          expect(page).to have_css '.well', count: 2
+
+          within '.well:last-child' do
+            expect(page).to have_text 'Client Types'
+          end
+
+          find('.well:last-child').trigger('click')
+        end
+
+        within '#values' do
+          expect(page).to have_css 'li', count: 2
+
+          expect(find('li:first-child')).to have_no_css '.delete'
+
+          find('.add').trigger('click')
+          expect(page).to have_css 'li', count: 3
+
+          within 'li:last-child' do
+            expect(page).to have_css '.delete', visible: false
+            find('.delete', visible: false).trigger('click')
+          end
+
+          expect(page).to have_css 'li', count: 2
         end
       end
     end
