@@ -141,6 +141,7 @@
           text-transform: capitalize;
           font-size: 15px;
           font-family: $font-family-medium;
+          border: none !important;
         }
 
         tr {
@@ -179,14 +180,15 @@
         font-size: 13px;
         white-space: nowrap;
         vertical-align: middle;
+        border: none !important;
       }
 
       tr {
         max-height: 43px !important;
         height: 43px !important;
+        border-bottom: 1px solid $light-grayish-blue-2;
 
         th {
-          border-bottom: none;
           text-transform: capitalize;
 
           &:first-child {
@@ -255,6 +257,7 @@
     }
   }
 }
+
 .table.detail {
   thead {
     tr {
