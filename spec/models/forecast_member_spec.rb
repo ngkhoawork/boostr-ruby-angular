@@ -16,7 +16,7 @@ RSpec.describe ForecastMember do
 
     context 'with revenue' do
       it 'sums the revenue' do
-        client.client_members.create(user: user, share: 100, role: 'Member')
+        client.client_members.create(user: user, share: 100, values: [create_member_role(company)])
         today = Time.parse("2015-09-17")
         revenues = create_list :revenue, 10, company: company, client: client, user: user, budget: 1000, start_date: today, end_date: today
         expect(forecast.revenue).to eq(10000)
@@ -24,22 +24,22 @@ RSpec.describe ForecastMember do
 
       it 'sums the split revenue' do
         another_user = create(:user, company: company, team: child)
-        client.client_members.create(user: user, share: 50, role: 'Member')
-        client.client_members.create(user: another_user, share: 50, role: 'Member')
+        client.client_members.create(user: user, share: 50, values: [create_member_role(company)])
+        client.client_members.create(user: another_user, share: 50, values: [create_member_role(company, "Member")])
         today = Time.parse("2015-09-17")
         revenues = create_list :revenue, 10, company: company, client: client, user: user, budget: 1000, start_date: today, end_date: today
         expect(forecast.revenue).to eq(5000)
       end
 
       it 'does not sum revenue outside of the time period' do
-        client.client_members.create(user: user, share: 100, role: 'Member')
+        client.client_members.create(user: user, share: 100, values: [create_member_role(company)])
         today = Time.parse("2013-09-17")
         revenues = create_list :revenue, 10, company: company, client: client, user: user, budget: 1000, start_date: today, end_date: today
         expect(forecast.revenue).to eq(0)
       end
 
       it 'returns week over week revenue' do
-        client.client_members.create(user: user, share: 100, role: 'Member')
+        client.client_members.create(user: user, share: 100, values: [create_member_role(company)])
         create :revenue, company: company, client: client, user: user, budget: 500, start_date: '2015-01-01', end_date: '2015-01-10'
         create :snapshot, company: company, user: user, time_period: time_period
         create :revenue, company: company, client: client, user: user, budget: 1000, start_date: '2015-01-11', end_date: '2015-01-20'

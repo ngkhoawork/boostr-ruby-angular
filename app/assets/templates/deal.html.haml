@@ -153,8 +153,8 @@
                 %td
                   {{ member.name }}
                 %td
-                  %span{ 'e-name': 'role', editable: { select: 'member.role' }, 'e-ng-options': 'role for role in memberRoles', onaftersave: 'updateDealMember(member)' }
-                    {{ member.role }}
+                  %span{ 'e-name': 'role', editable: { select: 'member.role.option_id' }, 'e-ng-options': 'option.id as option.name for option in member.role.options', onaftersave: 'updateDealMember(member)' }
+                    {{ member.role.option.name }}
                 %td
                   %span{ 'e-name': 'share', editable: { text: 'member.share' }, onaftersave: 'updateDealMember(member)' }
                     {{ member.share }}%

@@ -4,14 +4,14 @@ RSpec.describe Api::ClientMembersController, type: :controller do
   let(:company) { create :company }
   let(:client) { create :client, company: company }
   let(:user) { create :user, company: company }
-  let(:client_member_params) { attributes_for :client_member, user_id: user.id }
+  let(:client_member_params) { attributes_for :client_member, user_id: user.id, values_attributes: [create_member_role(company).attributes] }
 
   before do
     sign_in user
   end
 
   describe 'GET #index' do
-    let!(:client_member) { create :client_member, client_id: client.id, user_id: user.id }
+    let!(:client_member) { create :client_member, client_id: client.id, user_id: user.id, values: [create_member_role(company)] }
     it 'returns a list of client_members' do
       get :index, client_id: client.id, format: :json
       expect(response).to be_success
@@ -42,7 +42,7 @@ RSpec.describe Api::ClientMembersController, type: :controller do
   end
 
   describe 'PUT #update' do
-    let!(:client_member) { create :client_member, client_id: client.id, user_id: user.id }
+    let!(:client_member) { create :client_member, client_id: client.id, user_id: user.id, values: [create_member_role(company)] }
 
     it 'updates a client_member successfully' do
       put :update, id: client_member.id, client_id: client.id, client_member: { share: '62' }, format: :json

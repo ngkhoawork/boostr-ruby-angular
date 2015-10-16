@@ -30,7 +30,7 @@ class Api::DealMembersController < ApplicationController
   private
 
   def deal_member_params
-    params.require(:deal_member).permit(:role, :share, :user_id, :deal_id, :access)
+    params.require(:deal_member).permit(:share, :user_id, :deal_id, { values_attributes: [:id, :field_id, :option_id, :value] })
   end
 
   def deal

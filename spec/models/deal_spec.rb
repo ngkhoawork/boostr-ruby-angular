@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Deal, type: :model do
   let(:company) { create :company }
+  let(:user) { create :user, company: company }
 
   context 'scopes' do
 
@@ -166,7 +167,9 @@ RSpec.describe Deal, type: :model do
 
   describe '#generate_deal_members' do
     let(:client) { create :client }
-    let!(:client_member) { create :client_member, client: client }
+    let!(:client_role_owner) { create :option, company: company, field: client_role_field(company), name: "Owner" }
+    let(:role) { create :value, field: client_role_field(company), option: client_role_owner }
+    let!(:client_member) { create :client_member, user: user, client: client, values: [role] }
     let(:deal) { build :deal, advertiser: client }
 
     it 'creates deal_members with defaults when creating a deal' do
@@ -175,7 +178,7 @@ RSpec.describe Deal, type: :model do
       end.to change(DealMember, :count).by(1)
       expect(DealMember.first.deal_id).to eq(deal.id)
       expect(DealMember.first.user_id).to eq(client_member.user_id)
-      expect(DealMember.first.role).to eq(client_member.role)
+      expect(DealMember.first.values.first.option_id).to eq(role.option_id)
       expect(DealMember.first.share).to eq(client_member.share)
     end
   end

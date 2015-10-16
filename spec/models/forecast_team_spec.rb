@@ -20,8 +20,8 @@ RSpec.describe ForecastTeam do
     context 'with revenue' do
       it 'sums the split revenue' do
         another_user = create(:user, company: company, team: team)
-        client.client_members.create(user: leader, share: 50, role: 'Member')
-        client.client_members.create(user: another_user, share: 50, role: 'Member')
+        client.client_members.create(user: leader, share: 50, values: [create_member_role(company)])
+        client.client_members.create(user: another_user, share: 50, values: [create_member_role(company, "Member")])
         today = Time.parse("2015-09-17")
         create_list :revenue, 10, company: company, client: client, user: leader, budget: 1000, start_date: today, end_date: today
         expect(forecast.revenue).to eq(10000)
@@ -62,7 +62,6 @@ RSpec.describe ForecastTeam do
     end
   end
 
-
   context 'without a leader' do
     let(:team) { create :parent_team, company: company }
     let(:member) { create :user, company: company, team: team }
@@ -72,8 +71,8 @@ RSpec.describe ForecastTeam do
     context 'with revenue' do
       it 'sums the split revenue' do
         another_user = create(:user, company: company, team: team)
-        client.client_members.create(user: member, share: 50, role: 'Member')
-        client.client_members.create(user: another_user, share: 50, role: 'Member')
+        client.client_members.create(user: member, share: 50, values: [create_member_role(company)])
+        client.client_members.create(user: another_user, share: 50, values: [create_member_role(company, "Member")])
         today = Time.parse("2015-09-17")
         create_list :revenue, 10, company: company, client: client, user: member, budget: 1000, start_date: today, end_date: today
         expect(forecast.revenue).to eq(10000)

@@ -10,7 +10,9 @@ feature 'Clients' do
     let!(:contacts) { create_list :contact, 2, client: client, company: company }
     let!(:deal) { create_list :deal, 2, company: company, advertiser: client }
     let!(:agency_deal) { create :deal, company: company, agency: agency }
-    let!(:client_member) { create :client_member, client: client, user: user }
+    let!(:client_role_owner) { create :option, company: company, field: client_role_field(company), name: "Owner" }
+    let(:role) { create :value, field: client_role_field(company), option: client_role_owner }
+    let!(:client_member) { create :client_member, client: client, user: user, values: [role] }
 
     before do
       set_client_type(client, company, 'Advertiser')

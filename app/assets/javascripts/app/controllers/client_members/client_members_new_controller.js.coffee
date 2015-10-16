@@ -1,6 +1,6 @@
 @app.controller "ClientMembersNewController",
-['$scope', '$modalInstance', 'ClientMember', 'Client', 'User',
-($scope, $modalInstance, ClientMember, Client, User) ->
+['$scope', '$modalInstance', 'ClientMember', 'Client', 'User', 'Field',
+($scope, $modalInstance, ClientMember, Client, User, Field) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -10,7 +10,8 @@
   User.all().then (users) ->
     $scope.users = users
 
-  $scope.roles = ClientMember.roles()
+  Field.defaults($scope.client_member, 'Client').then (fields) ->
+    $scope.client_member.role = Field.field($scope.client_member, 'Member Role')
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
