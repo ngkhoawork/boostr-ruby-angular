@@ -70,8 +70,8 @@
           %thead
             %tr
               %th Product
-              %th Total Budget
-              %th{ ng: { repeat: 'month in currentDeal.months' } }
+              %th.right Total Budget
+              %th.right{ ng: { repeat: 'month in currentDeal.months' } }
                 {{ month | boDate }}
 
           %tbody
@@ -80,9 +80,9 @@
                 %span.hover-delete{ ng: { click: 'deleteProduct(product)' } }
                   = inline_svg 'icons/trash.svg'
                 {{ product.name }}
-              %td
+              %td.right
                 {{ product.total_budget / 100 | currency:'$':0  }}
-              %td{ ng: { repeat: 'deal_product in product.deal_products' } }
+              %td.right{ ng: { repeat: 'deal_product in product.deal_products' } }
                 %span{ 'e-name': '{{ deal_product.id }}', editable: { text: 'deal_product.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
                   {{ deal_product.budget | currency:'$':0 }}
 
@@ -144,9 +144,9 @@
           %table.table.table-striped.black-table
             %thead
               %tr
-                %th Member
-                %th Role
-                %th Share
+                %th.left Member
+                %th.left Role
+                %th.left Share
                 %th.action-column
             %tbody
               %tr{ ng: { repeat: "member in currentDeal.members | orderBy: 'name'"} }
