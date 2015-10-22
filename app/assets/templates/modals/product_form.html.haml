@@ -22,11 +22,11 @@
 
       .form-group
         %label.control-label{ for: 'family' } Family
-        %ui-select{ name: 'family', ng: { model: 'product.family', disabled: true } }
+        %ui-select{ name: 'family', ng: { model: 'product.product_family.option_id', disabled: true } }
           %ui-select-match{ placeholder: 'Family' }
-            {{ $select.selected }}
-          %ui-select-choices{ repeat: 'family in families | filter: $select.search' }
-            %div{ ng: { bind: { html: 'family' } } }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'option.id as option in product.product_family.options | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'option.name' } } }
 
       .form-group
         %label.control-label{ for: 'pricing-type' } Pricing Type

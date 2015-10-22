@@ -63,4 +63,8 @@ module Helpers
   def product_line_field(company)
     company.fields.where(name: 'Product Line').first
   end
+
+  def product_family_field(company)
+    company.fields.where(name: 'Product Family').first
+  end
 end

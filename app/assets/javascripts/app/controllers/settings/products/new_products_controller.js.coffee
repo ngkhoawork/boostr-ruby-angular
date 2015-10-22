@@ -6,10 +6,10 @@
   $scope.submitText = 'Create'
   $scope.product = {}
 
-  $scope.families = Product.families()
   Field.defaults($scope.product, 'Product').then (fields) ->
     $scope.product.pricing_type = Field.field($scope.product, 'Pricing Type')
     $scope.product.product_line = Field.field($scope.product, 'Product Line')
+    $scope.product.product_family = Field.field($scope.product, 'Product Family')
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true

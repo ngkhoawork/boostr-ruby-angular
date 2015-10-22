@@ -4,10 +4,10 @@
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
-  $scope.families = Product.families()
   Field.defaults(product, 'Product').then (fields) ->
     product.pricing_type = Field.field(product, 'Pricing Type')
     product.product_line = Field.field(product, 'Product Line')
+    product.product_family = Field.field(product, 'Product Family')
     $scope.product = product
 
   $scope.submitForm = () ->

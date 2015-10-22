@@ -39,6 +39,8 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-chartjs'
   gem 'rails-assets-angular-loading-bar'
   gem 'rails-assets-angular-ui-sortable'
+  gem 'rails-assets-inflection'
+  gem 'rails-assets-ngInflection'
 end
 
 group :test do

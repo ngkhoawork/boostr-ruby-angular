@@ -7,6 +7,8 @@ feature 'Users' do
   let!(:pricing_type_cpe) { create :option, company: company, field: product_pricing_field(company), name: "CPE" }
   let!(:pricing_line_desktop) { create :option, company: company, field: product_line_field(company), name: "Desktop" }
   let!(:pricing_line_tablet) { create :option, company: company, field: product_line_field(company), name: "Tablet" }
+  let!(:pricing_family_banner) { create :option, company: company, field: product_family_field(company), name: "Banner" }
+  let!(:pricing_video_banner) { create :option, company: company, field: product_family_field(company), name: "Video" }
 
   describe 'creating a new product' do
     before do
@@ -45,7 +47,7 @@ feature 'Users' do
       within '#product-modal' do
         fill_in 'name', with: 'Test'
         ui_select('product-line', 'Tablet')
-        ui_select('family', 'Banner')
+        ui_select('family', 'Video')
         ui_select('pricing-type', 'CPE')
 
         find_button('Update').trigger('click')
@@ -57,7 +59,7 @@ feature 'Users' do
         expect(page).to have_css('tr', count: 1)
         expect(find('tr:first-child td:nth-child(2)')).to have_text('Test')
         expect(find('tr:first-child td:nth-child(3)')).to have_text('Tablet')
-        expect(find('tr:first-child td:nth-child(4)')).to have_text('Banner')
+        expect(find('tr:first-child td:nth-child(4)')).to have_text('Video')
         expect(find('tr:first-child td:nth-child(5)')).to have_text('CPE')
       end
     end

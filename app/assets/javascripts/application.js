@@ -27,6 +27,8 @@
 //= require angular-xeditable
 //= require angular-loading-bar
 //= require angular-ui-sortable
+//= require inflection
+//= require ngInflection
 //= require_tree .
 //= require_tree ../templates
 

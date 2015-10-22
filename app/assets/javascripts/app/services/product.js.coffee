@@ -50,12 +50,5 @@
       return parseInt(product_id) == product.id
     $rootScope.$broadcast 'updated_current_product'
 
-  @families = () ->
-    [
-      'Video'
-      'Native'
-      'Banner'
-    ]
-
   return
 ]
