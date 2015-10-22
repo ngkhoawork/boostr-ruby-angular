@@ -16,7 +16,7 @@ feature 'Custom Values' do
         expect(page).to have_css('.well.primary', count: 3)
 
         within '#objects' do
-          find('.well:last-child').trigger('click')
+          find('.well:nth-child(3)').trigger('click')
         end
 
         within '#fields' do

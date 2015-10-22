@@ -1,6 +1,6 @@
 @app.controller 'NewProductsController',
-['$scope', '$modalInstance', 'Product',
-($scope, $modalInstance, Product) ->
+['$scope', '$modalInstance', 'Product', 'Field',
+($scope, $modalInstance, Product, Field) ->
 
   $scope.formType = 'New'
   $scope.submitText = 'Create'
@@ -8,7 +8,8 @@
 
   $scope.product_lines = Product.product_lines()
   $scope.families = Product.families()
-  $scope.pricing_types = Product.pricing_types()
+  Field.defaults($scope.product, 'Product').then (fields) ->
+    $scope.product.pricing_type = Field.field($scope.product, 'Pricing Type')
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true

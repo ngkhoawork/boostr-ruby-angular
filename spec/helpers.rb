@@ -55,4 +55,8 @@ module Helpers
   def deal_source_field(company)
     company.fields.where(name: 'Deal Source').first
   end
+
+  def product_pricing_field(company)
+    company.fields.where(name: 'Pricing Type').first
+  end
 end

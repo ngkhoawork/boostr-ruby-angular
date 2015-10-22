@@ -3,6 +3,8 @@ require 'rails_helper'
 feature 'Users' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
+  let!(:pricing_type_cpm) { create :option, company: company, field: product_pricing_field(company), name: "CPM" }
+  let!(:pricing_type_cpe) { create :option, company: company, field: product_pricing_field(company), name: "CPE" }
 
   describe 'creating a new product' do
     before do
@@ -30,19 +32,7 @@ feature 'Users' do
       within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 1)
       end
-    end
-  end
 
-  describe 'update a product' do
-    let!(:product) { create :product, company: company }
-
-    before do
-      login_as user, scope: :user
-      visit '/settings/products'
-      expect(page).to have_css('#products')
-    end
-
-    scenario 'pops up an edit product modal and updates a product', js: true do
       within 'table tbody' do
         expect(page).to have_css('tr', count: 1)
         find('tr:first-child').trigger('click')

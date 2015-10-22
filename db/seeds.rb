@@ -44,9 +44,9 @@ company_user.company = company
 company_user.save
 
 products = company.products.create!([
-  { name: "Video", product_line: "Phone", family: "Native", pricing_type: "CPM" },
-  { name: "Native Ad - Mobile", product_line: "Tablet", family: "Banner",  pricing_type: "CPC" },
-  { name: "Native Ad - Desktop", product_line: "Desktop", family: "Native", pricing_type: "CPC" }
+  { name: "Video", product_line: "Phone", family: "Native" },
+  { name: "Native Ad - Mobile", product_line: "Tablet", family: "Banner" },
+  { name: "Native Ad - Desktop", product_line: "Desktop", family: "Native" }
 ])
 
 stages = company.stages.create!([{

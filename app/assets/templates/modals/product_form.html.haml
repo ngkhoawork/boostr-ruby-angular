@@ -30,11 +30,11 @@
 
       .form-group
         %label.control-label{ for: 'pricing-type' } Pricing Type
-        %ui-select{ name: 'pricing-type', ng: { model: 'product.pricing_type', disabled: true } }
+        %ui-select{ name: 'pricing-type', ng: { model: 'product.pricing_type.option_id', disabled: true } }
           %ui-select-match{ placeholder: 'Pricing Type' }
-            {{ $select.selected }}
-          %ui-select-choices{ repeat: 'pricing_type in pricing_types | filter: $select.search' }
-            %div{ ng: { bind: { html: 'pricing_type' } } }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'option.id as option in product.pricing_type.options | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'option.name' } } }
 
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

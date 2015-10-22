@@ -2,10 +2,20 @@
 ['$resource', '$q', '$rootScope',
 ($resource, $q, $rootScope) ->
 
+  transformRequest = (original, headers) ->
+    original.product.values_attributes = original.product.values
+    angular.toJson(original)
+
   resource = $resource '/api/products/:id', { id: '@id' },
+    save: {
+      method: 'POST'
+      url: '/api/products'
+      transformRequest: transformRequest
+    },
     update: {
       method: 'PUT'
       url: '/api/products/:id'
+      transformRequest: transformRequest
     }
 
   allProducts = []
@@ -29,6 +39,7 @@
     deferred = $q.defer()
     resource.update params, (product) ->
       deferred.resolve(product)
+      $rootScope.$broadcast 'updated_products'
     deferred.promise
 
   @get = () ->
@@ -51,13 +62,6 @@
       'Video'
       'Native'
       'Banner'
-    ]
-
-  @pricing_types = () ->
-    [
-      'CPM'
-      'CPC'
-      'CPE'
     ]
 
   return

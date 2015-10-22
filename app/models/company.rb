@@ -28,12 +28,14 @@ class Company < ActiveRecord::Base
 
     fields.find_or_initialize_by(subject_type: 'Deal', name: 'Deal Type', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Deal', name: 'Deal Source', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Product', name: 'Pricing Type', value_type: 'Option', locked: true)
   end
 
   def settings
     [
       { name: 'Deals', fields: fields.where(subject_type: 'Deal')},
-      { name: 'Clients', fields: fields.where(subject_type: 'Client')}
+      { name: 'Clients', fields: fields.where(subject_type: 'Client')},
+      { name: 'Products', fields: fields.where(subject_type: 'Product')}
     ]
   end
 
