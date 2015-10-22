@@ -42,13 +42,11 @@ RSpec.describe Api::ProductsController, type: :controller do
     let(:product) { create :product, company: company }
 
     it 'updates a product successfully' do
-      put :update, id: product.id, product: { name: 'New Name', product_line: 'Phone', family: 'Video' }, format: :json
+      put :update, id: product.id, product: { name: 'New Name', family: 'Video' }, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json['name']).to eq('New Name')
-      expect(response_json['product_line']).to eq('Phone')
       expect(response_json['family']).to eq('Video')
-      expect(response_json['pricing_type']).to eq('CPC')
     end
   end
 end

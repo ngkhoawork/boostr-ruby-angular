@@ -59,4 +59,8 @@ module Helpers
   def product_pricing_field(company)
     company.fields.where(name: 'Pricing Type').first
   end
+
+  def product_line_field(company)
+    company.fields.where(name: 'Product Line').first
+  end
 end

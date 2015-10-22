@@ -50,13 +50,6 @@
       return parseInt(product_id) == product.id
     $rootScope.$broadcast 'updated_current_product'
 
-  @product_lines = () ->
-    [
-      'Desktop'
-      'Phone'
-      'Tablet'
-    ]
-
   @families = () ->
     [
       'Video'

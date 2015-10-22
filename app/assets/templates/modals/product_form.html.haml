@@ -14,11 +14,11 @@
 
       .form-group
         %label.control-label{ for: 'product-line' } Product Line
-        %ui-select{ name: 'product-line', ng: { model: 'product.product_line', disabled: true } }
+        %ui-select{ name: 'product-line', ng: { model: 'product.product_line.option_id', disabled: true } }
           %ui-select-match{ placeholder: 'Product Line' }
-            {{ $select.selected }}
-          %ui-select-choices{ repeat: 'product_line in product_lines | filter: $select.search' }
-            %div{ ng: { bind: { html: 'product_line' } } }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'option.id as option in product.product_line.options | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'option.name' } } }
 
       .form-group
         %label.control-label{ for: 'family' } Family

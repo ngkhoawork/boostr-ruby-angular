@@ -8,6 +8,7 @@
       _.each $scope.products, (product) ->
         Field.defaults(product, 'Product').then (fields) ->
           product.pricing_type = Field.field(product, 'Pricing Type')
+          product.product_line = Field.field(product, 'Product Line')
 
   $scope.showModal = () ->
     $scope.modalInstance = $modal.open

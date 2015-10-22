@@ -5,6 +5,8 @@ feature 'Users' do
   let(:user) { create :user, company: company }
   let!(:pricing_type_cpm) { create :option, company: company, field: product_pricing_field(company), name: "CPM" }
   let!(:pricing_type_cpe) { create :option, company: company, field: product_pricing_field(company), name: "CPE" }
+  let!(:pricing_line_desktop) { create :option, company: company, field: product_line_field(company), name: "Desktop" }
+  let!(:pricing_line_tablet) { create :option, company: company, field: product_line_field(company), name: "Tablet" }
 
   describe 'creating a new product' do
     before do
