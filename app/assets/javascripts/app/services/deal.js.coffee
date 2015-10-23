@@ -2,11 +2,22 @@
 ['$resource', '$q', '$rootScope',
 ($resource, $q, $rootScope) ->
 
+  transformRequest = (original, headers) ->
+    original.deal.values_attributes = original.deal.values
+    angular.toJson(original)
+
   resource = $resource '/api/deals/:id', { id: '@id' },
+    save: {
+      method: 'POST'
+      url: '/api/deals'
+      transformRequest: transformRequest
+    },
     update: {
       method: 'PUT'
       url: '/api/deals/:id'
+      transformRequest: transformRequest
     }
+
   currentDeal = undefined
 
   @all = ->
@@ -47,22 +58,6 @@
       deferred.resolve()
       $rootScope.$broadcast 'updated_deals'
     deferred.promise
-
-  @deal_types = () ->
-    [
-      'Test Campaign'
-      'Sponsorship'
-      'Seasonal'
-      'Renewal'
-    ]
-
-  @source_types = () ->
-    [
-      'Pitch to Client'
-      'Pitch to Agency'
-      'RFP Response to Client'
-      'RFP Response to Agency'
-    ]
 
   return
 ]

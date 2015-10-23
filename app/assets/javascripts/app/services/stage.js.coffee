@@ -1,6 +1,6 @@
 @service.service 'Stage',
-['$resource', '$q',
-($resource, $q) ->
+['$resource', '$q', '$rootScope',
+($resource, $q, $rootScope) ->
 
   resource = $resource '/api/stages/:id', { id: '@id' },
     update: {
@@ -18,6 +18,7 @@
     deferred = $q.defer()
     resource.save params, (stage) ->
       deferred.resolve(stage)
+      $rootScope.$broadcast 'updated_stages'
     deferred.promise
 
   @update = (params) ->

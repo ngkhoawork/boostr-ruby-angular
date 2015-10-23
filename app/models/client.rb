@@ -2,7 +2,6 @@ class Client < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
-  belongs_to :client_type, -> { with_deleted }
 
   has_many :client_members
   has_many :users, through: :client_members
@@ -10,10 +9,11 @@ class Client < ActiveRecord::Base
   has_many :revenue
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
+  has_many :values, as: :subject
 
   has_one :address, as: :addressable
 
-  accepts_nested_attributes_for :address
+  accepts_nested_attributes_for :address, :values
 
   validates :name, presence: true
 
@@ -36,7 +36,11 @@ class Client < ActiveRecord::Base
     advertiser_deals_count + agency_deals_count
   end
 
+  def fields
+    company.fields.where(subject_type: self.class.name)
+  end
+
   def as_json(options = {})
-    super(options.merge(include: [:address, :client_type], methods: [:deals_count]))
+    super(options.merge(include: [:address, values: { include: [:option], methods: [:value] }], methods: [:deals_count, :fields]))
   end
 end

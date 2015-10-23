@@ -6,6 +6,10 @@ feature 'DealMembers' do
   let(:stage) { create :stage, company: company, position: 1 }
   let(:client) { create :client }
   let!(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client }
+  let!(:deal_type_field) { create :field, company: company }
+  let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field, name: "Seasonal" }
+  let!(:deal_type_value) { create :value, company: company, field: deal_type_field, subject: deal, option: deal_type_seasonal_option }
+
 
   describe 'adding a deal_member' do
     before do

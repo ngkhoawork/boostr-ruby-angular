@@ -32,7 +32,8 @@ Rails.application.routes.draw do
     resources :time_periods, only: [:index, :create, :destroy]
     resources :quotas, only: [:index, :create, :update]
     resources :forecasts, only: [:index, :show]
-    resources :client_types, only: [:index, :create, :update, :destroy]
+    resources :fields, only: [:index]
+    resources :options, only: [:create, :update, :destroy]
 
     resource :weighted_pipelines, only: [:show]
     resource :dashboard, only: [:show]

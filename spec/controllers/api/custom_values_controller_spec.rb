@@ -13,7 +13,7 @@ RSpec.describe Api::CustomValuesController, type: :controller do
       get :index, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(5)
+      expect(response_json.length).to eq(2)
     end
   end
 end

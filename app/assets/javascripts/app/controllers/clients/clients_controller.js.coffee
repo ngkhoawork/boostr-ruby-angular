@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal',
-($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field',
+($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field) ->
 
   $scope.init = ->
     $scope.getClients()
@@ -61,9 +61,9 @@
       keyboard: false
       resolve:
         deal: ->
-          if $scope.currentClient.client_type.name is 'Advertiser' then advertiser_id: $scope.currentClient.id
-          else if $scope.currentClient.client_type.name is 'Agency' then agency_id: $scope.currentClient.id
-
+          if $scope.currentClient.client_type.option.name is 'Advertiser' then advertiser_id: $scope.currentClient.id
+          else if $scope.currentClient.client_type.option.name is 'Agency' then agency_id: $scope.currentClient.id
+          else {}
   $scope.showNewMemberModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/member_form.html'
@@ -102,6 +102,8 @@
   $scope.$on 'updated_current_client', ->
     $scope.currentClient = Client.get()
     if $scope.currentClient
+      Field.defaults($scope.currentClient, 'Client').then (fields) ->
+        $scope.currentClient.client_type = Field.field($scope.currentClient, 'Client Type')
       $scope.getContacts($scope.currentClient)
       $scope.getDeals($scope.currentClient)
       $scope.getClientMembers()

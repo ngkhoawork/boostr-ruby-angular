@@ -3,11 +3,11 @@ require 'rails_helper'
 feature 'Deals' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
-  let(:advertiser_type) { company.client_types.where(name: 'Advertiser').first }
-  let(:agency_type) { company.client_types.where(name: 'Agency').first }
-  let!(:advertiser) { create :client, company: company, client_type: advertiser_type }
-  let!(:agency) { create :client, company: company, client_type: agency_type }
+  let!(:advertiser) { create :client, company: company }
+  let!(:agency) { create :client, company: company }
   let!(:open_stage) { create :stage, company: company, position: 1, name: 'open stage' }
+  let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
+  let!(:deal_type_pitch_option) { create :option, company: company, field: deal_source_field(company), name: "Pitch to Client" }
 
   describe 'showing a list of deals filtered by stages' do
     let!(:another_open_stage) { create :stage, company: company, position: 2 }
@@ -17,6 +17,8 @@ feature 'Deals' do
     let!(:closed_deal) { create :deal, stage: closed_stage, company: company, advertiser: advertiser }
 
     before do
+      set_client_type(advertiser, company, 'Advertiser')
+      set_client_type(agency, company, 'Agency')
       login_as user, scope: :user
       visit '/deals'
       expect(page).to have_css('#deals')
@@ -76,6 +78,8 @@ feature 'Deals' do
 
   describe 'creating a deal' do
     before do
+      set_client_type(advertiser, company, 'Advertiser')
+      set_client_type(agency, company, 'Agency')
       login_as user, scope: :user
       visit '/deals'
       expect(page).to have_css('#deals')
@@ -92,7 +96,7 @@ feature 'Deals' do
         fill_in 'budget', with: '1234'
         ui_select('advertiser', advertiser.name)
         ui_select('agency', agency.name)
-        ui_select('deal-type', 'Test Campaign')
+        ui_select('deal-type', 'Seasonal')
         ui_select('source-type', 'Pitch to Client')
         fill_in 'next-steps', with: 'Call Rep'
         fill_in 'start-date', with: '1/1/15'
@@ -101,11 +105,14 @@ feature 'Deals' do
         find_button('Create').trigger('click')
       end
 
-      expect(page).to have_no_css('#deal_modal')
       expect(page).to have_css('#deal')
 
       within '#deal_overview h3.deal-name' do
         expect(page).to have_text('Apple Watch Launch')
+      end
+
+      within '#info .field-value.deal-type' do
+        expect(page).to have_text('Seasonal')
       end
     end
   end

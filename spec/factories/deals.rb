@@ -5,8 +5,6 @@ FactoryGirl.define do
     sequence(:name) { |n| "Deal #{n}" }
     stage
     next_steps 'Call Somebody'
-    deal_type 'Seasonal'
-    source_type 'Pitch to Client'
     association :advertiser, factory: :client
     association :agency, factory: :client
   end

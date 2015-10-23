@@ -1,15 +1,20 @@
 @app.controller 'DealsNewController',
-['$scope', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'deal',
-($scope, $modalInstance, $q, $location, Deal, Client, Stage, deal) ->
+['$scope', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal',
+($scope, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal) ->
 
   $scope.init = ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
-    $scope.deal = deal
-    $scope.dealTypes = Deal.deal_types()
-    $scope.sourceTypes = Deal.source_types()
+    Field.defaults(deal, 'Deal').then (fields) ->
+      deal.deal_type = Field.field(deal, 'Deal Type')
+      deal.source_type = Field.field(deal, 'Deal Source')
+      $scope.deal = deal
     $q.all({ clients: Client.all(), stages: Stage.all() }).then (data) ->
       $scope.clients = data.clients
+      #TODO this should go somewhere else...possibly the service
+      _.each $scope.clients, (client) ->
+        Field.defaults(client, 'Client').then (fields) ->
+          client.client_type = Field.field(client, 'Client Type')
       $scope.stages = data.stages
 
   $scope.submitForm = () ->

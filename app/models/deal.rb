@@ -12,7 +12,11 @@ class Deal < ActiveRecord::Base
   has_many :deal_members
   has_many :users, through: :deal_members
 
+  has_many :values, as: :subject
+
   validates :advertiser_id, :start_date, :end_date, :name, presence: true
+
+  accepts_nested_attributes_for :values
 
   before_save do
     if deal_products.empty?
@@ -30,8 +34,12 @@ class Deal < ActiveRecord::Base
   scope :for_time_period, -> time_period { where('start_date <= ? AND end_date >= ?', time_period.end_date, time_period.start_date) if time_period.present? }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
 
+  def fields
+    company.fields.where(subject_type: self.class.name)
+  end
+
   def as_json(options = {})
-    super(options.merge(include: [:advertiser, :stage]))
+    super(options.merge(include: [:advertiser, :stage, :values]))
   end
 
   def as_weighted_pipeline(time_period)

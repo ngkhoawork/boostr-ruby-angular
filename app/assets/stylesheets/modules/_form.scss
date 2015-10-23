@@ -168,3 +168,12 @@
   border: none;
   box-shadow: none;
 }
+
+.btn-group {
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+
+.ui-sortable-placeholder {
+  border: 4px dotted $gray-light; visibility: visible !important;
+}

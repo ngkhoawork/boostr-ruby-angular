@@ -31,8 +31,6 @@ RSpec.describe Api::DealsController, type: :controller do
         expect(response_json['created_by']).to eq(user.id)
         expect(response_json['budget']).to eq(3_100_000)
         expect(response_json['advertiser_id']).to eq(advertiser.id)
-        expect(response_json['deal_type']).to eq(deal_params[:deal_type])
-        expect(response_json['source_type']).to eq(deal_params[:source_type])
         expect(response_json['next_steps']).to eq(deal_params[:next_steps])
       end.to change(Deal, :count).by(1)
     end

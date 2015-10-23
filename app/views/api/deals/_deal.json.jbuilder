@@ -1,4 +1,4 @@
-json.extract! deal, :id, :name, :budget, :created_at, :updated_at, :deal_type, :source_type, :next_steps, :stage_id
+json.extract! deal, :id, :name, :budget, :created_at, :updated_at, :next_steps, :stage_id
 
 json.start_date deal.start_date.to_datetime
 json.end_date deal.end_date.to_datetime
@@ -27,3 +27,6 @@ json.members deal.deal_members do |member|
 end
 
 json.advertiser deal.advertiser, :name
+
+json.values deal.values
+json.fields deal.fields

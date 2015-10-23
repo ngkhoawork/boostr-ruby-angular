@@ -12,11 +12,13 @@
       zip: original.client.address.zip
       phone: original.client.address.phone
       email: original.client.address.email
+    values_attributes = original.client.values
     send.client =
       name: original.client.name
       website: original.client.website
       client_type_id: original.client.client_type_id
       address_attributes: address_attributes
+      values_attributes: values_attributes
     angular.toJson(send)
 
   resource = $resource '/api/clients/:id', { id: '@id' },
@@ -32,7 +34,7 @@
     }
 
   allClients = []
-  currentClient = undefined
+  currentClient = {}
 
   @all = (callback) ->
     deferred = $q.defer()

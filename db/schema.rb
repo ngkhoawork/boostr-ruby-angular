@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151014213810) do
+ActiveRecord::Schema.define(version: 20151020185047) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,17 +58,6 @@ ActiveRecord::Schema.define(version: 20151014213810) do
 
   add_index "client_members", ["client_id"], name: "index_client_members_on_client_id", using: :btree
   add_index "client_members", ["user_id"], name: "index_client_members_on_user_id", using: :btree
-
-  create_table "client_types", force: :cascade do |t|
-    t.integer  "company_id"
-    t.string   "name"
-    t.integer  "position"
-    t.datetime "deleted_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "client_types", ["id", "company_id", "position", "deleted_at"], name: "index_client_types_composite", using: :btree
 
   create_table "clients", force: :cascade do |t|
     t.string   "name"
@@ -154,6 +143,35 @@ ActiveRecord::Schema.define(version: 20151014213810) do
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
+
+  create_table "fields", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "subject_type"
+    t.string   "value_type"
+    t.string   "value_object_type"
+    t.string   "name"
+    t.datetime "deleted_at"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.boolean  "locked"
+  end
+
+  add_index "fields", ["company_id"], name: "index_fields_on_company_id", using: :btree
+  add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
+  add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
+
+  create_table "options", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "field_id"
+    t.string   "name"
+    t.integer  "position"
+    t.datetime "deleted_at"
+    t.boolean  "locked",     default: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "options", ["company_id", "field_id", "position", "deleted_at"], name: "options_index_composite", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.string   "name"
@@ -286,6 +304,28 @@ ActiveRecord::Schema.define(version: 20151014213810) do
   add_index "users", ["invited_by_id"], name: "index_users_on_invited_by_id", using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["team_id"], name: "index_users_on_team_id", using: :btree
+
+  create_table "values", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "subject_type"
+    t.integer  "subject_id"
+    t.integer  "field_id"
+    t.string   "value_type"
+    t.text     "value_text"
+    t.integer  "value_number"
+    t.float    "value_float"
+    t.datetime "value_datetime"
+    t.integer  "value_object_id"
+    t.string   "value_object_type"
+    t.integer  "option_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "values", ["company_id", "field_id"], name: "index_values_on_company_id_and_field_id", using: :btree
+  add_index "values", ["option_id"], name: "index_values_on_option_id", using: :btree
+  add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
+  add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
   add_foreign_key "users", "teams"
 end

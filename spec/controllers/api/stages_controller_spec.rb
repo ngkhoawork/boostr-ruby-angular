@@ -22,7 +22,6 @@ RSpec.describe Api::StagesController, type: :controller do
     end
   end
 
-
   describe 'POST #create' do
     it 'creates a new stage and returns success' do
       expect do

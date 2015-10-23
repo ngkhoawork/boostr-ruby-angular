@@ -9,7 +9,13 @@ feature 'Individual Deal' do
   let(:product) { create :product }
   let!(:other_product) { create :product, company: company  }
   let!(:second_product) { create :product, company: company  }
-  let(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client, deal_type: 'Seasonal', source_type: 'Pitch to Client' }
+  let(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client }
+  let!(:deal_source_pitch_option) { create :option, company: company, field: deal_source_field(company), name: "Pitch to Client" }
+  let!(:deal_source_rfp_option) { create :option, company: company, field: deal_source_field(company), name: "RFP Response to Client" }
+  let!(:deal_source_value) { create :value, field: deal_source_field(company), subject: deal, option: deal_source_pitch_option }
+  let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
+  let!(:deal_type_renewal_option) { create :option, company: company, field: deal_type_field(company), name: "Renewal" }
+  let!(:deal_type_value) { create :value, field: deal_type_field(company), subject: deal, option: deal_type_seasonal_option }
 
   describe 'showing deal details' do
     before do
@@ -43,7 +49,7 @@ feature 'Individual Deal' do
         expect(find('h3.header')).to have_text('Additional Info')
 
         deal_type = find('.field:first-child .field-value')
-        expect(deal_type).to have_text(deal.deal_type)
+        expect(deal_type).to have_text(deal_type_seasonal_option.name)
         deal_type.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         select 'Renewal', from: 'deal-type'
@@ -51,7 +57,7 @@ feature 'Individual Deal' do
         expect(deal_type).to have_text 'Renewal'
 
         deal_source = find('.field:nth-child(2) .field-value')
-        expect(deal_source).to have_text(deal.source_type)
+        expect(deal_source).to have_text(deal_source_pitch_option.name)
         deal_source.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
         select 'RFP Response to Client', from: 'deal-source'
