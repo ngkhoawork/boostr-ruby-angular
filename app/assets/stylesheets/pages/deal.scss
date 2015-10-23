@@ -201,6 +201,12 @@
 
   #revenue_schedule {
     table {
+      thead {
+        th {
+          padding-right: 20px;
+        }
+      }
+
       tbody {
         tr {
           td {
