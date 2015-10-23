@@ -284,10 +284,14 @@ GEM
     rails-assets-angular-xeditable (0.1.9)
       rails-assets-angular (~> 1.0)
     rails-assets-chartjs (1.0.2)
+    rails-assets-inflection (1.4.2)
     rails-assets-jquery (2.1.4)
     rails-assets-jquery-ui (1.11.4)
       rails-assets-jquery (>= 1.6)
     rails-assets-ng-file-upload (5.0.9)
+    rails-assets-ngInflection (1.1.10)
+      rails-assets-angular (> 1.0.0)
+      rails-assets-inflection (~> 1.4.0)
     rails-assets-underscore (1.8.3)
     rails-deprecated_sanitizer (1.0.3)
       activesupport (>= 4.2.0.alpha)
@@ -449,7 +453,9 @@ DEPENDENCIES
   rails-assets-angular-ui-sortable!
   rails-assets-angular-xeditable!
   rails-assets-chartjs!
+  rails-assets-inflection!
   rails-assets-ng-file-upload!
+  rails-assets-ngInflection!
   rails-assets-underscore!
   rollbar (~> 1.5.3)
   rspec-rails (~> 3.0)

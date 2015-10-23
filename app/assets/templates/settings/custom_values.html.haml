@@ -20,7 +20,7 @@
           Field Name
         .well{ ng: { repeat: 'field in current.object.fields', click: 'setField(field)' } }
           %span.title
-            {{ field.name }}s
+            {{ field.name | pluralize }}
           |
           %span.total
             {{ field.options.length }} Options

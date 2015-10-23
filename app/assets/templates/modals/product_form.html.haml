@@ -14,27 +14,27 @@
 
       .form-group
         %label.control-label{ for: 'product-line' } Product Line
-        %ui-select{ name: 'product-line', ng: { model: 'product.product_line', disabled: true } }
+        %ui-select{ name: 'product-line', ng: { model: 'product.product_line.option_id', disabled: true } }
           %ui-select-match{ placeholder: 'Product Line' }
-            {{ $select.selected }}
-          %ui-select-choices{ repeat: 'product_line in product_lines | filter: $select.search' }
-            %div{ ng: { bind: { html: 'product_line' } } }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'option.id as option in product.product_line.options | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'option.name' } } }
 
       .form-group
         %label.control-label{ for: 'family' } Family
-        %ui-select{ name: 'family', ng: { model: 'product.family', disabled: true } }
+        %ui-select{ name: 'family', ng: { model: 'product.product_family.option_id', disabled: true } }
           %ui-select-match{ placeholder: 'Family' }
-            {{ $select.selected }}
-          %ui-select-choices{ repeat: 'family in families | filter: $select.search' }
-            %div{ ng: { bind: { html: 'family' } } }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'option.id as option in product.product_family.options | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'option.name' } } }
 
       .form-group
         %label.control-label{ for: 'pricing-type' } Pricing Type
-        %ui-select{ name: 'pricing-type', ng: { model: 'product.pricing_type', disabled: true } }
+        %ui-select{ name: 'pricing-type', ng: { model: 'product.pricing_type.option_id', disabled: true } }
           %ui-select-match{ placeholder: 'Pricing Type' }
-            {{ $select.selected }}
-          %ui-select-choices{ repeat: 'pricing_type in pricing_types | filter: $select.search' }
-            %div{ ng: { bind: { html: 'pricing_type' } } }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'option.id as option in product.pricing_type.options | filter: { name: $select.search }' }
+            %div{ ng: { bind: { html: 'option.name' } } }
 
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

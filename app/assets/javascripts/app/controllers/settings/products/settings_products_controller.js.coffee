@@ -1,10 +1,15 @@
 @app.controller 'SettingsProductsController',
-['$scope', '$modal', 'Product',
-($scope, $modal, Product) ->
+['$scope', '$modal', 'Product', 'Field',
+($scope, $modal, Product, Field) ->
 
   $scope.init = () ->
     Product.all().then (products) ->
       $scope.products = products
+      _.each $scope.products, (product) ->
+        Field.defaults(product, 'Product').then (fields) ->
+          product.pricing_type = Field.field(product, 'Pricing Type')
+          product.product_line = Field.field(product, 'Product Line')
+          product.product_family = Field.field(product, 'Product Family')
 
   $scope.showModal = () ->
     $scope.modalInstance = $modal.open

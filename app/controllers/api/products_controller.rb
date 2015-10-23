@@ -25,7 +25,7 @@ class Api::ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :product_line, :family, :pricing_type)
+    params.require(:product).permit(:name, { values_attributes: [:id, :field_id, :option_id, :value] })
   end
 
   def product

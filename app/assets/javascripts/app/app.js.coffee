@@ -13,6 +13,7 @@
   'tc.chartjs'
   'angular-loading-bar'
   'ui.sortable'
+  'ngInflection'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
