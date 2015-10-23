@@ -16,7 +16,7 @@ class Deal < ActiveRecord::Base
 
   validates :advertiser_id, :start_date, :end_date, :name, presence: true
 
-  accepts_nested_attributes_for :values
+  accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
   before_save do
     if deal_products.empty?
@@ -127,7 +127,8 @@ class Deal < ActiveRecord::Base
 
   def generate_deal_members
     advertiser.client_members.each do |client_member|
-      deal_members.create(client_member.defaults)
+      deal_member = deal_members.create(client_member.defaults)
+      deal_member.values.create(client_member.role_value_defaults)
     end
   end
 end

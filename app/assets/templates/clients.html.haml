@@ -108,8 +108,8 @@
                     %span{ 'e-name': 'share', editable: { text: 'client_member.share' }, onaftersave: 'updateClientMember(client_member)' }
                       {{ client_member.share }}%
                   %td
-                    %span{ 'e-name': 'role', editable: { select: 'client_member.role' }, 'e-ng-options': 'role for role in memberRoles', onaftersave: 'updateClientMember(client_member)' }
-                      {{ client_member.role }}
+                    %span{ 'e-name': 'role', editable: { select: 'client_member.role.option_id' }, 'e-ng-options': 'option.id as option.name for option in client_member.role.options', onaftersave: 'updateClientMember(client_member)' }
+                      {{ client_member.role.option.name }}
 
         #people.section
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }

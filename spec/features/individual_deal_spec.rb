@@ -3,8 +3,10 @@ require 'rails_helper'
 feature 'Individual Deal' do
   let(:company) { create :company }
   let(:client) { create :client }
-  let!(:client_members) { create_list :client_member, 2, client: client  }
+  let!(:client_role_owner) { create :option, company: company, field: client_role_field(company), name: "Owner" }
+  let(:role) { create :value, field: client_role_field(company), option: client_role_owner }
   let(:user) { create :user, company: company }
+  let!(:client_member) { create :client_member, user: user, client: client, values: [role] }
   let(:stage) { create :stage, company: company, position: 1 }
   let(:product) { create :product }
   let!(:other_product) { create :product, company: company  }
@@ -170,7 +172,7 @@ feature 'Individual Deal' do
       expect(find('#total-amount')).to have_text('$359,932')
 
       within '.black-table tbody' do
-        expect(page).to have_css('tr', count: 2)
+        expect(page).to have_css('tr', count: 1)
       end
     end
   end

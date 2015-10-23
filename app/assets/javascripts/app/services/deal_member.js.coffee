@@ -2,10 +2,20 @@
 ['$resource', '$rootScope', '$q',
 ($resource, $rootScope, $q) ->
 
+  transformRequest = (original, headers) ->
+    original.deal_member.values_attributes = original.deal_member.values
+    angular.toJson(original)
+
   resource = $resource '/api/deals/:deal_id/deal_members/:id', { deal_id: '@deal_id', id: '@id' },
+    save: {
+      method: 'POST'
+      url: '/api/deals/:deal_id/deal_members'
+      transformRequest: transformRequest
+    },
     update: {
       method: 'PUT'
       url: '/api/deals/:deal_id/deal_members/:id'
+      transformRequest: transformRequest
     }
 
   @all = (params) ->
@@ -32,17 +42,5 @@
       deferred.resolve(deal)
     deferred.promise
 
-  @roles = () ->
-    [
-      'Member'
-      'Leader'
-    ]
-
-  @access = () ->
-    [
-      'Can Edit'
-      'Can View'
-      'Owner'
-    ]
   return
 ]

@@ -25,7 +25,7 @@ class Api::ClientMembersController < ApplicationController
   private
 
   def client_member_params
-    params.require(:client_member).permit(:role, :share, :user_id)
+    params.require(:client_member).permit(:role, :share, :user_id, { values_attributes: [:id, :field_id, :option_id, :value] })
   end
 
   def client

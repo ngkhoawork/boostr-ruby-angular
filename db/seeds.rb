@@ -211,35 +211,42 @@ team_member_users[2].quotas.where(time_period: time_periods[2]).first.update_att
 company_clients = company.clients.create!([{
   name: "Buzzfeed",
   created_by: company_user.id,
-  website: "buzzfeed.com",
-  # client_type: company.client_types.where(name: 'Advertiser').first
+  website: "buzzfeed.com"
 }, {
   name: "Digitas",
   created_by: company_user.id,
-  website: "digitas.com",
-  # client_type: company.client_types.where(name: 'Agency').first
+  website: "digitas.com"
 }, {
   name: "DistroScale",
   created_by: company_user.id,
-  website: "distroscale.com",
-  # client_type: company.client_types.where(name: 'Advertiser').first
+  website: "distroscale.com"
 }])
+
+client_type_field = company.fields.where(name: 'Client Type').first
+advertiser_option = client_type_field.options.where(name: 'Advertiser').first
+
+company_clients.each do |client|
+  Value.create(company: company, field: client_type_field, subject: client, option: advertiser_option)
+end
+
+client_role_field = company.fields.where(name: 'Member Role').first
+client_owner_role_option = client_role_field.options.find_or_initialize_by(name: "Owner", company: company)
 
 # These client members will be used as the default for the deal_members when a deal is created
 company_clients[0].client_members.create!([{
   user: team_member_users[0],
   share: 100,
-  role: "Member"
+  values: [Value.create(company: company, field: client_role_field, option: client_owner_role_option)]
 }])
 
 company_clients[2].client_members.create!([{
   user: team_leader_users[2],
   share: 10,
-  role: "Leader"
+  values: [Value.create(company: company, field: client_role_field, option: client_owner_role_option)]
 },{
   user: team_member_users[2],
   share: 90,
-  role: "Member"
+  values: [Value.create(company: company, field: client_role_field, option: client_owner_role_option)]
 }])
 
 company.contacts.create!([{

@@ -6,10 +6,9 @@ feature 'DealMembers' do
   let(:stage) { create :stage, company: company, position: 1 }
   let(:client) { create :client }
   let!(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client }
-  let!(:deal_type_field) { create :field, company: company }
-  let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field, name: "Seasonal" }
-  let!(:deal_type_value) { create :value, company: company, field: deal_type_field, subject: deal, option: deal_type_seasonal_option }
-
+  let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
+  let!(:deal_type_value) { create :value, company: company, field: deal_type_field(company), subject: deal, option: deal_type_seasonal_option }
+  let!(:client_member_role_option) { create :option, company: company, field: client_role_field(company), name: "Member" }
 
   describe 'adding a deal_member' do
     before do
@@ -31,7 +30,8 @@ feature 'DealMembers' do
   end
 
   describe 'updating a deal_member' do
-    let!(:deal_member) { create :deal_member, deal_id: deal.id, user_id: user.id }
+    let!(:deal_member) { create :deal_member, deal_id: deal.id, user_id: user.id, values:[create_member_role(company)] }
+
     before do
       login_as user, scope: :user
       visit "/deals/#{deal.id}"
@@ -41,11 +41,11 @@ feature 'DealMembers' do
     scenario 'update member', js: true do
       within '#teamsplits tbody tr:first-child' do
         role = find('td:nth-child(2) span')
-        expect(role).to have_text(deal_member.role)
+        expect(role).to have_text('Owner')
         role.trigger('click')
         expect(page).to have_css('.editable-input', visible: true)
-        select 'Leader', from: 'role'
-        expect(role).to have_text 'Leader'
+        select 'Member', from: 'role'
+        expect(role).to have_text 'Member'
 
         share = find('td:nth-child(3) span')
         expect(share).to have_text(deal_member.share)

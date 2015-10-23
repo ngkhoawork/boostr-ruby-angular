@@ -5,11 +5,13 @@
   $scope.init = ->
     $scope.getClients()
     $scope.showContactList = false
-    $scope.memberRoles = ClientMember.roles()
 
   $scope.getClientMembers = ->
     ClientMember.all { client_id: $scope.currentClient.id }, (client_members) ->
       $scope.client_members = client_members
+      _.each $scope.client_members, (client_member) ->
+        Field.defaults(client_member, 'Client').then (fields) ->
+          client_member.role = Field.field(client_member, 'Member Role')
 
   $scope.getContacts = (client) ->
     unless client.contacts
@@ -60,10 +62,17 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        deal: ->
-          if $scope.currentClient.client_type.option.name is 'Advertiser' then advertiser_id: $scope.currentClient.id
-          else if $scope.currentClient.client_type.option.name is 'Agency' then agency_id: $scope.currentClient.id
-          else {}
+        deal: $scope.setupNewDeal
+
+  $scope.setupNewDeal = ->
+    deal = {}
+    if $scope.currentClient.client_type && $scope.currentClient.client_type.option
+      if $scope.currentClient.client_type.option.name == 'Advertiser'
+        deal.advertiser_id = $scope.currentClient.id
+      else if $scope.currentClient.client_type.option.name == 'Agency'
+        deal.agency_id = $scope.currentClient.id
+    deal
+
   $scope.showNewMemberModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/member_form.html'

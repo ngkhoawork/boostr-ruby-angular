@@ -20,13 +20,13 @@ feature 'Custom Values' do
         end
 
         within '#fields' do
-          expect(page).to have_css '.well', count: 2
+          expect(page).to have_css '.well', count: 3
 
-          within '.well:last-child' do
+          within '.well:nth-child(2)' do
             expect(page).to have_text 'Client Types'
           end
 
-          find('.well:last-child').trigger('click')
+          find('.well:nth-child(1)').trigger('click')
         end
 
         within '#options' do
@@ -41,6 +41,7 @@ feature 'Custom Values' do
           expect(page).to have_css 'li', count: 3
 
           within 'li:last-child' do
+            find('.title', visible: false).trigger('click')
             fill_in 'name', with: 'Taco'
             find('.editable-input').native.send_keys(:Enter)
             expect(page).to have_no_css('.editable-input')

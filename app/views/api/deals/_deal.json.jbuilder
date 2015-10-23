@@ -21,9 +21,14 @@ json.products deal.products do |product|
 end
 
 json.members deal.deal_members do |member|
-  json.extract! member, :id, :role, :share
+  json.extract! member, :id, :share
   json.user_id member.user_id
   json.name member.name
+  json.values member.values do |value|
+    json.extract! value, :id, :option_id, :field_id
+    json.option value.option
+    json.value value.value
+  end
 end
 
 json.advertiser deal.advertiser, :name

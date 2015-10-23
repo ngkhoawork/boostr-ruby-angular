@@ -5,8 +5,6 @@
   $scope.init = ->
     $scope.currentDeal = {}
     $scope.resetDealProduct()
-    $scope.memberRoles = DealMember.roles()
-    $scope.memberAccess = DealMember.access()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal)
 
@@ -16,6 +14,9 @@
                       {name: 'additional info', id: 'info'}]
 
   $scope.setCurrentDeal = (deal) ->
+    _.each deal.members, (member) ->
+      Field.defaults(member, 'Client').then (fields) ->
+        member.role = Field.field(member, 'Member Role')
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
@@ -55,7 +56,7 @@
 
   $scope.linkExistingUser = (item) ->
     $scope.userToLink = undefined
-    DealMember.create(deal_id: $scope.currentDeal.id, user_id: item.id, share: 0).then (deal) ->
+    DealMember.create(deal_id: $scope.currentDeal.id, deal_member: { user_id: item.id, share: 0, values: [] }).then (deal) ->
       $scope.setCurrentDeal(deal)
 
   $scope.updateDeal = ->

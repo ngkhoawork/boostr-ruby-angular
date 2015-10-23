@@ -5,7 +5,7 @@ class Product < ActiveRecord::Base
 
   validates :name, presence: true
 
-  accepts_nested_attributes_for :values
+  accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
   def as_json(options = {})
     super(options.merge(include: [values: { include: [:option], methods: [:value] }]))

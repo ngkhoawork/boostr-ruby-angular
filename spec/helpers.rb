@@ -67,4 +67,13 @@ module Helpers
   def product_family_field(company)
     company.fields.where(name: 'Product Family').first
   end
+
+  def client_role_field(company)
+    company.fields.where(name: 'Member Role').first
+  end
+
+  def create_member_role(company, name="Owner")
+    client_owner_role_option = create :option, company: company, field: client_role_field(company), name: name
+    build :value, company: company, field: client_role_field(company), option: client_owner_role_option
+  end
 end

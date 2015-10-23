@@ -6,6 +6,8 @@ class Field < ActiveRecord::Base
   has_many :options
   has_many :values
 
+  default_scope { order(:name) }
+
   VALUE_TYPES = ['Text', 'Number', 'Decimal', 'Percent', 'Money', 'Datetime', 'Option', 'Object']
 
   validates :name, presence: true
