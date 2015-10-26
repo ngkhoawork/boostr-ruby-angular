@@ -49,20 +49,7 @@
       deleted_option.id == option.id
 
   $scope.createNewValue = () ->
-    $scope.newest = { name: 'New ' + $scope.current.field.name }
+    $scope.newest = { name: '' }
     $scope.current.field.options.push($scope.newest)
-
-
-
- # Stage stuff... goes somewhere else
-
-  $scope.createNewStage = () ->
-    $scope.newest = { name: 'New Stage', probability: 0 }
-    $scope.current.field.options.push($scope.newest)
-
-  $scope.openStageOptions = [
-    { option: true, text: 'Open' }
-    { option: false, text: 'Closed' }
-  ]
 
 ]
