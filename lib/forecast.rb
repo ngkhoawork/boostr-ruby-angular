@@ -1,4 +1,8 @@
 class Forecast
+  include ActiveModel::SerializerSupport
+
+  delegate :id, to: :company
+
   attr_accessor :company, :rows, :time_period
 
   def initialize(company, rows, time_period)
@@ -7,17 +11,16 @@ class Forecast
     self.time_period = time_period
   end
 
-  def as_json(options={})
-    {
-      teams: teams,
-      stages: stages,
-      weighted_pipeline: weighted_pipeline,
-      revenue: revenue,
-      amount: amount,
-      percent_to_quota: percent_to_quota,
-      gap_to_quota: gap_to_quota,
-      quota: quota
-    }
+  def cache_key
+    parts = []
+    teams.each do |team|
+      parts << team.cache_key
+    end
+    stages.each do |stage|
+      parts << stage.id
+      parts << stage.updated_at
+    end
+    Digest::MD5.hexdigest(parts.join)
   end
 
   def teams

@@ -8,14 +8,13 @@ RSpec.describe Forecast do
     let(:child) { create :child_team, company: company, parent: parent, leader: leader }
     let!(:user) { create :user, company: company, team: child }
     let(:time_period) { create :time_period, company: company }
+    let(:forecast) { Forecast.new(company, company.teams.roots(true), time_period) }
 
     it 'returns all root teams and nested teams and members' do
-      json = JSON.parse(Forecast.new(company, company.teams.roots(true), time_period).to_json)
-
-      expect(json['teams'].length).to eq(1)
-      expect(json['teams'][0]['teams'].length).to eq(1)
-      expect(json['teams'][0]['teams'][0]['members'].length).to eq(1)
-      expect(json['weighted_pipeline']).to eq(0)
+      expect(forecast.teams.length).to eq(1)
+      expect(forecast.teams[0].teams.length).to eq(1)
+      expect(forecast.teams[0].teams[0].members.length).to eq(1)
+      expect(forecast.weighted_pipeline).to eq(0)
     end
   end
 end

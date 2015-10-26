@@ -1,4 +1,9 @@
 class ForecastMember
+  include ActiveModel::SerializerSupport
+
+  delegate :id, to: :member
+  delegate :name, to: :member
+
   attr_accessor :member, :time_period
 
   def initialize(member, time_period)
@@ -6,23 +11,43 @@ class ForecastMember
     self.time_period = time_period
   end
 
-  def as_json(options={})
-    {
-      id: member.id,
-      name: member.name,
-      stages: stages,
-      weighted_pipeline: weighted_pipeline,
-      weighted_pipeline_by_stage: weighted_pipeline_by_stage,
-      revenue: revenue,
-      amount: amount,
-      percent_to_quota: percent_to_quota,
-      gap_to_quota: gap_to_quota,
-      quota: quota,
-      wow_revenue: wow_revenue,
-      wow_weighted_pipeline: wow_weighted_pipeline,
-      is_leader: member.leader?,
-      type: 'member'
-    }
+  def is_leader
+    member.leader?
+  end
+
+  def type
+    'member'
+  end
+
+  def cache_key
+    parts = []
+    parts << member.id
+    parts << member.updated_at
+    parts << time_period.id
+    parts << time_period.updated_at
+    # Weighted pipeline
+    open_deals.each do |deal|
+      parts << deal.id
+      parts << deal.updated_at
+      parts << deal.stage.id
+      parts << deal.stage.updated_at
+    end
+    # Revenue
+    clients.each do |client|
+      parts << client.id
+      parts << client.updated_at
+    end
+    # Week over week
+    snapshots.each do |snapshot|
+      parts << snapshot.id
+      parts << snapshot.updated_at
+    end
+    # Stages?
+    stages.each do |stage|
+      parts << stage.id
+      parts << stage.updated_at
+    end
+    Digest::MD5.hexdigest(parts.join)
   end
 
   def stages
@@ -94,8 +119,8 @@ class ForecastMember
     @amount ||= weighted_pipeline + revenue
   end
 
-  # attainment
   def percent_to_quota
+    # attainment
     return 100 unless quota > 0
     amount / quota * 100
   end
@@ -118,8 +143,12 @@ class ForecastMember
     @revenues ||= member.company.revenues.where(client_id: client_ids).for_time_period(time_period).to_a
   end
 
+  def clients
+    self.member.clients
+  end
+
   def open_deals
-    @open_deals ||= member.deals.joins(:stage).where('stages.open IS true').for_time_period(time_period).includes(:deal_products).to_a
+    @open_deals ||= member.deals.open.for_time_period(time_period).includes(:deal_products, :stage).to_a
   end
 
   def number_of_days(comparer)
