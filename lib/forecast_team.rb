@@ -1,4 +1,9 @@
 class ForecastTeam
+  include ActiveModel::SerializerSupport
+
+  delegate :id, to: :team
+  delegate :name, to: :team
+
   attr_accessor :team, :time_period
 
   def initialize(team, time_period)
@@ -6,26 +11,32 @@ class ForecastTeam
     self.time_period = time_period
   end
 
-  def as_json(options={})
-    {
-      id: team.id,
-      name: team.name,
-      teams: teams,
-      parents: parents,
-      leader: leader,
-      members: members,
-      stages: stages,
-      weighted_pipeline_by_stage: weighted_pipeline_by_stage,
-      weighted_pipeline: weighted_pipeline,
-      revenue: revenue,
-      amount: amount,
-      percent_to_quota: percent_to_quota,
-      gap_to_quota: gap_to_quota,
-      quota: quota,
-      wow_revenue: wow_revenue,
-      wow_weighted_pipeline: wow_weighted_pipeline,
-      type: 'team'
-   }
+  def type
+    'team'
+  end
+
+  def cache_key
+    parts = []
+    parts << team.id
+    parts << team.updated_at
+    parents.each do |parent|
+      parts << parent[:id]
+      parts << parent[:name]
+    end
+    teams.each do |team|
+      parts << team.cache_key
+    end
+    if leader
+      parts << leader.cache_key
+    end
+    members.each do |member|
+      parts << member.cache_key
+    end
+    stages.each do |stage|
+      parts << stage.id
+      parts << stage.updated_at
+    end
+    Digest::MD5.hexdigest(parts.join)
   end
 
   def parents

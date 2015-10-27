@@ -18,9 +18,9 @@ class Api::DashboardsController < ApplicationController
     return nil unless time_period
 
     if current_user.leader?
-      @forecast = Forecast.new(company, current_user.teams, time_period)
+      @forecast = ForecastSerializer.new(Forecast.new(company, current_user.teams, time_period))
     else
-      @forecast = ForecastMember.new(current_user, time_period)
+      @forecast = ForecastMemberSerializer.new(ForecastMember.new(current_user, time_period))
     end
   end
 

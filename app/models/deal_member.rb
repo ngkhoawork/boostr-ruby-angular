@@ -1,5 +1,5 @@
 class DealMember < ActiveRecord::Base
-  belongs_to :deal
+  belongs_to :deal, touch: true
   belongs_to :user
 
   has_many :values, as: :subject

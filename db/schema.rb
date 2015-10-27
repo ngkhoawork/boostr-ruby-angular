@@ -166,9 +166,9 @@ ActiveRecord::Schema.define(version: 20151020185047) do
     t.string   "name"
     t.integer  "position"
     t.datetime "deleted_at"
-    t.boolean  "locked",     default: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.boolean  "locked"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_index "options", ["company_id", "field_id", "position", "deleted_at"], name: "options_index_composite", using: :btree

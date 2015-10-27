@@ -1,6 +1,6 @@
 class Revenue < ActiveRecord::Base
   belongs_to :company
-  belongs_to :client
+  belongs_to :client, touch: true
   belongs_to :user
   belongs_to :product
 
