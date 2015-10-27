@@ -23,6 +23,7 @@ gem 'chronic'
 gem 'sidekiq'
 gem 'sinatra', '>= 1.3.0', require: nil
 gem 'clockwork'
+gem 'newrelic_rpm'
 gem 'awesome_print'
 
 source 'https://rails-assets.org' do
