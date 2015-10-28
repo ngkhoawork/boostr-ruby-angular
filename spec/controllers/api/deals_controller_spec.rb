@@ -2,7 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Api::DealsController, type: :controller do
   let(:company) { create :company }
-  let(:user) { create :user, company: company }
+  let(:team) { create :parent_team, company: company }
+  let(:user) { create :user, company: company, team: team }
   let(:advertiser) { create :client, company: company }
   let(:deal_params) { attributes_for(:deal, advertiser_id: advertiser.id, budget: '31000') }
   let(:deal) { create :deal, company: company }
@@ -12,10 +13,34 @@ RSpec.describe Api::DealsController, type: :controller do
   end
 
   describe 'GET #index' do
-    it 'returns a list of deals' do
-      create_list :deal, 3, company: company, advertiser: advertiser
+    let!(:leader_deal) { create :deal, company: company, advertiser: advertiser }
 
+    let(:user_deal) { create :deal, company: company, advertiser: advertiser }
+    let!(:deal_member) { create :deal_member, deal: user_deal, user: user  }
+
+    let(:team_deal) { create :deal, company: company, advertiser: advertiser }
+    let(:another_user) { create :user, company: company, team: team }
+    let!(:another_deal_member) { create :deal_member, deal: team_deal, user: another_user  }
+
+    it 'returns a list of deals for the current_user' do
       get :index, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(1)
+      expect(response_json[0]['id']).to eq(user_deal.id)
+    end
+
+    it 'returns a list of the deals for the current_user team' do
+      get :index, filter: 'team', format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(2)
+    end
+
+    it 'returns a list of deals for the current_user company if they are a leader' do
+      team.update_attributes(leader: user)
+
+      get :index, filter: 'company', format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json.length).to eq(3)

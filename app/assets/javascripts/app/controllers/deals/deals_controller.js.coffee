@@ -2,8 +2,16 @@
 ['$scope', '$modal', '$filter', '$q', '$location', 'Deal', 'Stage',
 ($scope, $modal, $filter, $q, $location, Deal, Stage) ->
 
+  $scope.dealFilters = [
+    { name: 'Just Me', param: '' }
+    { name: 'My Team', param: 'team' }
+    { name: 'My Company', param: 'company' }
+  ]
+
+  $scope.dealFilter = $scope.dealFilters[0]
+
   $scope.init = ->
-    $q.all({ deals: Deal.all(), stages: Stage.all() }).then (data) ->
+    $q.all({ deals: Deal.all({filter: $scope.dealFilter.param}), stages: Stage.all() }).then (data) ->
       $scope.deals = data.deals
       $scope.stages = data.stages
       $scope.showStage('open')
@@ -32,8 +40,8 @@
     $scope.openStages = $filter('openDeals') $scope.deals, $scope.stages
     $scope.openStagesCount = $scope.openStages.length
 
-  $scope.$on 'updated_deals', ->
-    $scope.init()
+  $scope.countDealsForStage = (stage) ->
+    $filter('filter')($scope.deals, { stage_id: stage.id }).length
 
   $scope.delete = (deal) ->
     if confirm('Are you sure you want to delete "' +  deal.name + '"?')
@@ -42,6 +50,13 @@
 
   $scope.go = (path) ->
     $location.path(path)
+
+  $scope.filterDeals = (filter) ->
+    $scope.dealFilter = filter
+    $scope.init()
+
+  $scope.$on 'updated_deals', ->
+    $scope.init()
 
   $scope.init()
 ]

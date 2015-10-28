@@ -2,7 +2,7 @@ class Api::DealsController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.deals.for_client(params[:client_id]).includes(:advertiser, :stage)
+    render json: deals.for_client(params[:client_id]).includes(:advertiser, :stage)
   end
 
   def show
@@ -10,7 +10,7 @@ class Api::DealsController < ApplicationController
   end
 
   def create
-    deal = current_user.company.deals.new(deal_params)
+    deal = company.deals.new(deal_params)
     deal.created_by = current_user.id
     if deal.save
       render json: deal, status: :created
@@ -39,6 +39,28 @@ class Api::DealsController < ApplicationController
   end
 
   def deal
-    @deal ||= current_user.company.deals.find(params[:id])
+    @deal ||= company.deals.find(params[:id])
+  end
+
+  def company
+    @company ||= current_user.company
+  end
+
+  def deals
+    if params[:filter] == 'company' && current_user.leader?
+      company.deals
+    elsif params[:filter] == 'team' && team.present?
+      team.deals
+    else
+      current_user.deals
+    end
+  end
+
+  def team
+    if current_user.leader?
+      company.teams.where(leader: current_user).first
+    else
+      current_user.team
+    end
   end
 end
