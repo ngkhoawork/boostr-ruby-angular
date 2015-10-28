@@ -16,7 +16,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :users, only: [:index, :update]
-    resources :clients, only: [:index, :create, :update, :destroy] do
+    resources :clients, only: [:index, :show, :create, :update, :destroy] do
       resources :client_members, only: [:index, :create, :update]
     end
     resources :contacts, only: [:index, :create, :update, :destroy]

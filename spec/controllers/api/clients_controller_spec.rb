@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe Api::ClientsController, type: :controller do
 
   let(:company) { create :company }
-  let(:user) { create :user, company: company }
+  let(:team) { create :parent_team, company: company }
+  let(:user) { create :user, company: company, team: team }
   let(:address_params) { attributes_for :address }
   let(:client_params) { attributes_for(:client, address_attributes: address_params) }
 
@@ -12,21 +13,41 @@ RSpec.describe Api::ClientsController, type: :controller do
   end
 
   describe "GET #index" do
-    it 'returns a list of clients in json' do
-      create_list :client, 3, company: company
+    let!(:leader_client) { create :client, company: company }
 
-      get :index, format: :json
-      expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(3)
-    end
+    let!(:user_client) { create :client, company: company, created_by: user.id }
+
+    let(:another_user) { create :user, company: company, team: team }
+    let!(:team_client) { create :client, company: company, created_by: another_user.id }
 
     it 'returns a list of clients in csv' do
-      create_list :client, 3, company: company
-
       get :index, format: :csv
       expect(response).to be_success
       expect(response.body).to_not be_nil
+    end
+
+    it 'returns a list of clients for the current_user' do
+      get :index, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(1)
+      expect(response_json[0]['id']).to eq(user_client.id)
+    end
+
+    it 'returns a list of the clients for the current_user team' do
+      get :index, filter: 'team', format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(2)
+    end
+
+    it 'returns a list of clients for the current_user company if they are a leader' do
+      team.update_attributes(leader: user)
+
+      get :index, filter: 'company', format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(3)
     end
   end
 
@@ -51,8 +72,17 @@ RSpec.describe Api::ClientsController, type: :controller do
     end
   end
 
+  describe 'GET #show' do
+    let(:client) { create :client, company: company, created_by: user.id }
+
+    it 'returns json for a client' do
+      get :show, id: client.id, format: :json
+      expect(response).to be_success
+    end
+  end
+
   describe "PUT #update" do
-    let(:client) { create :client, company: company }
+    let(:client) { create :client, company: company, created_by: user.id  }
 
     it 'updates a client successfully' do
       put :update, id: client.id, client: { name: 'New Name' }, format: :json
@@ -63,7 +93,7 @@ RSpec.describe Api::ClientsController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    let!(:client) { create :client, company: company }
+    let!(:client) { create :client, company: company, created_by: user.id  }
 
     it 'marks the client as deleted' do
       delete :destroy, id: client.id, format: :json

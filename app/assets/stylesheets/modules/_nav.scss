@@ -95,8 +95,20 @@
       &.dropdown {
         .dropdown-menu {
           li {
+            margin-right: 0;
+
             a {
-              color: $link-color;
+              color: $text-color;
+
+              &:hover {
+                color: $link-color;
+              }
+            }
+
+            &.active {
+              a {
+                color: $white;
+              }
             }
           }
         }

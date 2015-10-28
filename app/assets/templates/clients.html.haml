@@ -4,6 +4,14 @@
       .row
         .col-xs-12
           %ul.nav.nav-tabs
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                {{ clientFilter.name }}
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in clientFilters', class: '{active: filter.name == clientFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                    {{ filter.name }}
             %li.pull-right.last
               %a.export{ href: '', ng: { click: 'exportClients()' } }
                 Export
@@ -12,7 +20,15 @@
                 = inline_svg 'icons/add.svg'
                 New Client
 
-  .container
+  .container{ ng: { hide: 'clients && clients.length > 0 ' } }
+    .row
+      .col-xs-6.col-xs-offset-3
+        .well.text-center
+          %h5
+            There are no clients to display.
+            %a{ href: '', ng: { click: 'showModal()' } }
+              Add a client.
+  .container{ ng: { show: 'clients.length > 0' } }
     .row
       .col-xs-6
         .search

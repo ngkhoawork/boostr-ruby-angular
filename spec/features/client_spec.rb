@@ -5,17 +5,11 @@ feature 'Clients' do
   let(:user) { create :user, company: company }
 
   describe 'showing client details' do
-    let!(:client) { create :client, company: company }
-    let!(:agency) { create :client, company: company }
+    let!(:client) { create :client, company: company, created_by: user.id }
+    let!(:agency) { create :client, company: company, created_by: user.id }
     let!(:contacts) { create_list :contact, 2, client: client, company: company }
     let!(:deal) { create_list :deal, 2, company: company, advertiser: client }
     let!(:agency_deal) { create :deal, company: company, agency: agency }
-    let!(:client_role_owner) { create :option, company: company, field: client_role_field(company), name: "Owner" }
-    let(:role) { create :value, field: client_role_field(company), option: client_role_owner }
-    let!(:client_member) { create :client_member, client: client, user: user, values: [role] }
-    let!(:first_deal_member) { create :deal_member, deal: deal.first, user: user }
-    let!(:second_deal_member) { create :deal_member, deal: deal.last, user: user }
-    let!(:agency_deal_member) { create :deal_member, deal: agency_deal, user: user }
 
     before do
       set_client_type(client, company, 'Advertiser')
@@ -94,7 +88,7 @@ feature 'Clients' do
       end
 
       expect(page).to have_no_css('#client_modal')
-      expect(page).to have_css('.no-client-members')
+      expect(page).to have_no_css('.no-client-members')
       expect(page).to have_css('.no-people')
       expect(page).to have_css('.no-deals')
 
@@ -107,19 +101,7 @@ feature 'Clients' do
         expect(find('h2.client-name')).to have_text('Johnny')
         expect(find('h2.client-name')).to have_text('Seattle, WA')
       end
-    end
-  end
 
-  describe 'editing a client' do
-    let!(:clients) { create_list :client, 3, company: company }
-
-    before do
-      login_as user, scope: :user
-      visit '/clients'
-      expect(page).to have_css('#clients')
-    end
-
-    scenario 'pops up an edit client modal and updates a client', js: true do
       find_link('edit-client').trigger('click')
       expect(page).to have_css('#client_modal')
 
@@ -134,7 +116,7 @@ feature 'Clients' do
       end
 
       expect(page).to have_no_css('#client_modal')
-      expect(page).to have_css('.no-client-members')
+      expect(page).to have_no_css('.no-client-members')
       expect(page).to have_css('.no-people')
       expect(page).to have_css('.no-deals')
 
@@ -151,7 +133,7 @@ feature 'Clients' do
   end
 
   describe 'deleting a client' do
-    let!(:clients) { create_list :client, 3, company: company }
+    let!(:clients) { create_list :client, 3, company: company, created_by: user.id }
 
     before do
       clients.sort_by!(&:name)
@@ -180,14 +162,14 @@ feature 'Clients' do
 
       expect(page).to have_css('.list-group-item', count: 1)
 
-      expect(page).to have_css('.no-client-members')
+      expect(page).to have_no_css('.no-client-members')
       expect(page).to have_css('.no-people')
       expect(page).to have_css('.no-deals')
     end
   end
 
   describe 'adding a contact to a client' do
-    let!(:client) { create :client, company: company }
+    let!(:client) { create :client, company: company, created_by: user.id }
     let!(:contact) { create :contact, company: company, address_attributes: attributes_for(:address) }
 
     before do
@@ -226,7 +208,7 @@ feature 'Clients' do
         end
       end
 
-      expect(page).to have_css('.no-client-members')
+      expect(page).to have_no_css('.no-client-members')
       expect(page).to have_css('.no-deals')
     end
 
@@ -247,14 +229,15 @@ feature 'Clients' do
         end
       end
 
-      expect(page).to have_css('.no-client-members')
+      expect(page).to have_no_css('.no-client-members')
       expect(page).to have_css('.no-deals')
     end
   end
 
   describe 'adding a deal to a client' do
-    let!(:client) { create :client, company: company }
-    let!(:agency) { create :client, company: company }
+    let!(:client) { create :client, company: company, created_by: user.id }
+    let!(:agency) { create :client, company: company, created_by: user.id }
+
     let!(:open_stage) { create :stage, company: company, position: 1 }
     let!(:deal_type_sponsorship_option) { create :option, company: company, field: deal_type_field(company), name: "Sponsorship" }
     let!(:deal_source_rfp_option) { create :option, company: company, field: deal_source_field(company), name: "RFP Response to Agency" }
