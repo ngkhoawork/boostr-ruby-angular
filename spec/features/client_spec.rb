@@ -13,6 +13,9 @@ feature 'Clients' do
     let!(:client_role_owner) { create :option, company: company, field: client_role_field(company), name: "Owner" }
     let(:role) { create :value, field: client_role_field(company), option: client_role_owner }
     let!(:client_member) { create :client_member, client: client, user: user, values: [role] }
+    let!(:first_deal_member) { create :deal_member, deal: deal.first, user: user }
+    let!(:second_deal_member) { create :deal_member, deal: deal.last, user: user }
+    let!(:agency_deal_member) { create :deal_member, deal: agency_deal, user: user }
 
     before do
       set_client_type(client, company, 'Advertiser')

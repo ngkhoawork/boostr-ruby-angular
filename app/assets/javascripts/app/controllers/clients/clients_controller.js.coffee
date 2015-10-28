@@ -24,7 +24,7 @@
       Client.set($routeParams.id || clients[0].id) if clients.length > 0
 
   $scope.getDeals = (client) ->
-    Deal.allForClient(client.id).then (deals) ->
+    Deal.all({client_id: client.id}).then (deals) ->
       $scope.currentClient.deals = deals
 
   $scope.showModal = ->
