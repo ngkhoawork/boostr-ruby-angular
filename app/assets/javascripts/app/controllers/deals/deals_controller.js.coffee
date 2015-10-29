@@ -3,9 +3,9 @@
 ($scope, $modal, $filter, $q, $location, Deal, Stage) ->
 
   $scope.dealFilters = [
-    { name: 'Just Me', param: '' }
-    { name: 'My Team', param: 'team' }
-    { name: 'My Company', param: 'company' }
+    { name: 'My Deals', param: '' }
+    { name: 'My Team\'s Deals', param: 'team' }
+    { name: 'All Deals', param: 'company' }
   ]
 
   $scope.dealFilter = $scope.dealFilters[0]

@@ -14,7 +14,7 @@
       .col-xs-3
         .list-group.list-sm.stages
           .list-group-item.vertical-center.filter{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': true  }
-            .col-xs-7.col-xs-offset-5{ href: '', dropdown: { toggle: true }}
+            .col-xs-8.col-xs-offset-4{ href: '', dropdown: { toggle: true }}
               .row
                 %h5
                   {{ dealFilter.name }}
@@ -24,16 +24,14 @@
                   %a{ href: '', ng: { click: 'filterDeals(filter)' } }
                     {{ filter.name }}
           %a.list-group-item.vertical-center{ href: '', ng: { click: 'showStage("open")', class: '{ active: currentStage == "open" }'} }
-            .col-xs-5
-            .col-xs-7
+            .col-xs-8.col-xs-offset-4
               .row
                 %h5
                   All Open ({{ openStagesCount }})
               .row
                 $500,000
           %a.list-group-item.vertical-center{ href: '', ng: { repeat: 'stage in stages', click: 'showStage(stage)', class: '{ active: currentStage == stage.id }' } }
-            .col-xs-5
-            .col-xs-7
+            .col-xs-8.col-xs-offset-4
               .row
                 %h5
                   {{ stage.name }} ({{ countDealsForStage(stage) }})
