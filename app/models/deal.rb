@@ -128,7 +128,9 @@ class Deal < ActiveRecord::Base
   def generate_deal_members
     advertiser.client_members.each do |client_member|
       deal_member = deal_members.create(client_member.defaults)
-      deal_member.values.create(client_member.role_value_defaults)
+      if client_member.role_value_defaults
+        deal_member.values.create(client_member.role_value_defaults)
+      end
     end
   end
 end

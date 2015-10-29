@@ -3,8 +3,8 @@ require 'rails_helper'
 feature 'Deals' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
-  let!(:advertiser) { create :client, company: company }
-  let!(:agency) { create :client, company: company }
+  let!(:advertiser) { create :client, company: company, created_by: user.id }
+  let!(:agency) { create :client, company: company, created_by: user.id }
   let!(:open_stage) { create :stage, company: company, position: 1, name: 'open stage' }
   let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
   let!(:deal_type_pitch_option) { create :option, company: company, field: deal_source_field(company), name: "Pitch to Client" }
@@ -15,9 +15,6 @@ feature 'Deals' do
     let!(:open_deal) { create :deal, stage: open_stage, company: company, advertiser: advertiser }
     let!(:another_open_deal) { create :deal, stage: another_open_stage, company: company, advertiser: advertiser }
     let!(:closed_deal) { create :deal, stage: closed_stage, company: company, advertiser: advertiser }
-    let!(:open_deal_member) { create :deal_member, deal: open_deal, user: user }
-    let!(:another_open_deal_member) { create :deal_member, deal: another_open_deal, user: user }
-    let!(:closed_deal_member) { create :deal_member, deal: closed_deal, user: user }
 
     before do
       set_client_type(advertiser, company, 'Advertiser')
