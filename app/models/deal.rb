@@ -110,26 +110,33 @@ class Deal < ActiveRecord::Base
   end
 
   def reset_products
-    array = []
+    # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
+    ActiveRecord::Base.no_touching do
+      array = []
 
-    products.each do |product|
-      old_deal_products = deal_products.where(product_id: product.id)
+      products.each do |product|
+        old_deal_products = deal_products.where(product_id: product.id)
 
-      total_budget = old_deal_products.sum(:budget) / 100
-      old_deal_products.destroy_all
-      array << { id: product.id, total_budget: total_budget }
-    end
+        total_budget = old_deal_products.sum(:budget) / 100
+        old_deal_products.destroy_all
+        array << { id: product.id, total_budget: total_budget }
+      end
 
-    array.each do |object|
-      add_product(object[:id], object[:total_budget], false)
+      array.each do |object|
+        add_product(object[:id], object[:total_budget], false)
+      end
     end
   end
 
   def generate_deal_members
-    advertiser.client_members.each do |client_member|
-      deal_member = deal_members.create(client_member.defaults)
-      if client_member.role_value_defaults
-        deal_member.values.create(client_member.role_value_defaults)
+    # This only gets called on create where the Deal has inherently been touched
+    ActiveRecord::Base.no_touching do
+      advertiser.client_members.each do |client_member|
+        deal_member = deal_members.create(client_member.defaults)
+
+        if client_member.role_value_defaults
+          deal_member.values.create(client_member.role_value_defaults)
+        end
       end
     end
   end
