@@ -82,6 +82,14 @@ RSpec.describe Api::DealsController, type: :controller do
       put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, format: :json
       expect(response).to be_success
     end
+
+    it 'doesn\'t call touch over and over' do
+      expect(controller).to receive(:deal).and_return(deal).at_least(:once)
+      expect(deal).to_not receive(:touch)
+
+      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, format: :json
+      expect(response).to be_success
+    end
   end
 
   describe 'DELETE #destroy' do

@@ -10,8 +10,10 @@ class Api::DealsController < ApplicationController
   end
 
   def create
-    deal = company.deals.new(deal_params)
+    @deal = company.deals.new(deal_params)
+
     deal.created_by = current_user.id
+
     if deal.save
       render json: deal, status: :created
     else
@@ -29,6 +31,7 @@ class Api::DealsController < ApplicationController
 
   def destroy
     deal.destroy
+
     render nothing: true
   end
 
