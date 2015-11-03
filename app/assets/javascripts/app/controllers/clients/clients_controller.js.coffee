@@ -3,9 +3,9 @@
 ($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field) ->
 
   $scope.clientFilters = [
-    { name: 'Assigned to Me', param: '' }
-    { name: 'My Team', param: 'team' }
-    { name: 'My Company', param: 'company' }
+    { name: 'My Clients', param: '' }
+    { name: 'My Team\'s Clients', param: 'team' }
+    { name: 'All Clients', param: 'company' }
   ]
 
   $scope.clientFilter = $scope.clientFilters[0]
