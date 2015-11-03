@@ -2,7 +2,7 @@ class Api::DealsController < ApplicationController
   respond_to :json
 
   def index
-    render json: deals.for_client(params[:client_id]).includes(:advertiser, :stage).distinct
+    render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage).distinct , each_serializer: DealIndexSerializer).to_json
   end
 
   def show

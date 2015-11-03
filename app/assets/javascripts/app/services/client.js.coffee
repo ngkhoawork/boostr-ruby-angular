@@ -4,6 +4,7 @@
 
   transformRequest = (original, headers) ->
     send = {}
+    original.client.address = original.client.address || {}
     address_attributes =
       street1: original.client.address.street1
       street2: original.client.address.street2
