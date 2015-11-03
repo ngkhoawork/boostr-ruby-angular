@@ -59,6 +59,12 @@
 
 #nav {
   background: $brand-primary;
+  margin-bottom: 15px;
+
+  .nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
+    background-color: transparent;
+    border-color: transparent;
+  }
 
   .nav-tabs {
     background: $brand-primary;
