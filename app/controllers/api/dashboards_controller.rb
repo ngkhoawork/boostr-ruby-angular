@@ -2,13 +2,14 @@ class Api::DashboardsController < ApplicationController
   respond_to :json
 
   def show
-    render json: { forecast: forecast, deals: deals }
+    render json: { forecast: DashboardForecastSerializer.new(forecast), deals: serialized_deals }
   end
 
   protected
 
   def time_period
     return @time_period if defined?(@time_period)
+
     @time_period = company.time_periods.now
   end
 
@@ -18,9 +19,9 @@ class Api::DashboardsController < ApplicationController
     return nil unless time_period
 
     if current_user.leader?
-      @forecast = ForecastSerializer.new(Forecast.new(company, current_user.teams, time_period))
+      @forecast = Forecast.new(company, current_user.teams, time_period)
     else
-      @forecast = ForecastMemberSerializer.new(ForecastMember.new(current_user, time_period))
+      @forecast = ForecastMember.new(current_user, time_period)
     end
   end
 
@@ -33,6 +34,10 @@ class Api::DashboardsController < ApplicationController
   def company
     return @company if defined?(@company)
     @company = current_user.company
+  end
+
+  def serialized_deals
+    ActiveModel::ArraySerializer.new(deals, each_serializer: DashboardDealSerializer)
   end
 
 end
