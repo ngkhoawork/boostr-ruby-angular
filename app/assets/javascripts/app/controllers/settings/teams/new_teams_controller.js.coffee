@@ -11,6 +11,16 @@
     $q.all({ teams: Team.all(), users: User.all()}).then (data) ->
       $scope.teams = data.teams
       $scope.users = data.users
+      $scope.availableUsers = []
+      if $scope.users
+        _.each $scope.users, (u) ->
+          if u.id == $scope.team.leader_id
+            $scope.leader = u
+            $scope.availableUsers.push($scope.leader)
+        _.each $scope.users, (u) ->
+          if u && !u['leader?']
+            $scope.availableUsers.push(u)
+
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true

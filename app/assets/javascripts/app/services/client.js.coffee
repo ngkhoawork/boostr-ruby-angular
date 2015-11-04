@@ -4,6 +4,7 @@
 
   transformRequest = (original, headers) ->
     send = {}
+    original.client.address = original.client.address || {}
     address_attributes =
       street1: original.client.address.street1
       street2: original.client.address.street2
@@ -36,14 +37,11 @@
   allClients = []
   currentClient = {}
 
-  @all = (callback) ->
+  @all = (params) ->
     deferred = $q.defer()
-    if allClients.length == 0
-      resource.query {}, (clients) =>
-        allClients = clients
-        deferred.resolve(clients)
-    else
-      deferred.resolve(allClients)
+    resource.query params, (clients) =>
+      allClients = clients
+      deferred.resolve(clients)
     deferred.promise
 
   @create = (params) ->

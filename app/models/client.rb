@@ -17,6 +17,8 @@ class Client < ActiveRecord::Base
 
   validates :name, presence: true
 
+  before_create :ensure_client_member
+
   def self.to_csv
     attributes = {
       id: 'Client ID',
@@ -42,5 +44,12 @@ class Client < ActiveRecord::Base
 
   def as_json(options = {})
     super(options.merge(include: [:address, values: { include: [:option], methods: [:value] }], methods: [:deals_count, :fields]))
+  end
+
+  def ensure_client_member
+    return true if created_by.blank?
+    return true if client_members.detect { |member| member.user_id == created_by }
+
+    client_members.build(user_id: created_by, share: 0)
   end
 end

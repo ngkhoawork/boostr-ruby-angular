@@ -2,6 +2,19 @@
 ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field',
 ($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field) ->
 
+  $scope.clientFilters = [
+    { name: 'My Clients', param: '' }
+    { name: 'My Team\'s Clients', param: 'team' }
+    { name: 'All Clients', param: 'company' }
+  ]
+
+  if $routeParams.filter
+    _.each $scope.clientFilters, (filter) ->
+      if filter.param == $routeParams.filter
+        $scope.clientFilter = filter
+  else
+    $scope.clientFilter = $scope.clientFilters[0]
+
   $scope.init = ->
     $scope.getClients()
     $scope.showContactList = false
@@ -19,12 +32,12 @@
         client.contacts = contacts
 
   $scope.getClients = ->
-    Client.all().then (clients) ->
+    Client.all({filter: $scope.clientFilter.param}).then (clients) ->
       $scope.clients = clients
       Client.set($routeParams.id || clients[0].id) if clients.length > 0
 
   $scope.getDeals = (client) ->
-    Deal.allForClient(client.id).then (deals) ->
+    Deal.all({client_id: client.id}).then (deals) ->
       $scope.currentClient.deals = deals
 
   $scope.showModal = ->
@@ -107,6 +120,10 @@
   $scope.exportClients = ->
     $window.open('/api/clients.csv')
     return true
+
+  $scope.filterClients = (filter) ->
+    $scope.clientFilter = filter
+    $scope.init()
 
   $scope.$on 'updated_current_client', ->
     $scope.currentClient = Client.get()

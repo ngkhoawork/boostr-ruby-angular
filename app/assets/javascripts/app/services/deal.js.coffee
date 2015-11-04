@@ -20,9 +20,9 @@
 
   currentDeal = undefined
 
-  @all = ->
+  @all = (params) ->
     deferred = $q.defer()
-    resource.query {}, (deals) ->
+    resource.query params, (deals) ->
       deferred.resolve(deals)
     deferred.promise
 
@@ -44,12 +44,6 @@
     deferred = $q.defer()
     resource.get id: deal_id, (deal) ->
       deferred.resolve(deal)
-    deferred.promise
-
-  @allForClient = (client_id) ->
-    deferred = $q.defer()
-    resource.query { client_id: client_id}, (deals) ->
-      deferred.resolve(deals)
     deferred.promise
 
   @delete = (deletedDeal) ->

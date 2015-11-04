@@ -2,16 +2,20 @@ class Api::ClientsController < ApplicationController
   respond_to :json, :csv
 
   def index
-    clients = current_user.company.clients.order(:name).includes(:address)
+    ordered_clients = clients.order(:name).includes(:address).distinct
 
     respond_to do |format|
-      format.json { render json: clients }
-      format.csv { send_data clients.to_csv, filename: "clients-#{Date.today}.csv" }
+      format.json { render json: ordered_clients }
+      format.csv { send_data ordered_clients.to_csv, filename: "clients-#{Date.today}.csv" }
     end
   end
 
+  def show
+    render json: client
+  end
+
   def create
-    client = current_user.company.clients.new(client_params)
+    client = company.clients.new(client_params)
     client.created_by = current_user.id
     if client.save
       render json: client, status: :created
@@ -41,6 +45,28 @@ class Api::ClientsController < ApplicationController
   end
 
   def client
-    @client ||= current_user.company.clients.where(id: params[:id]).first
+    @client ||= company.clients.where(id: params[:id]).first!
+  end
+
+  def clients
+    if params[:filter] == 'company' && current_user.leader?
+      company.clients
+    elsif params[:filter] == 'team' && team.present?
+      team.clients
+    else
+      current_user.clients
+    end
+  end
+
+  def company
+    @company ||= current_user.company
+  end
+
+  def team
+    if current_user.leader?
+      company.teams.where(leader: current_user).first!
+    else
+      current_user.team
+    end
   end
 end

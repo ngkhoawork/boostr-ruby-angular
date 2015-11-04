@@ -202,8 +202,8 @@
   #revenue_schedule {
     table {
       thead {
-        th {
-          padding-right: 20px;
+        th:not(.no-pad) {
+          padding-right: 19px;
         }
       }
 

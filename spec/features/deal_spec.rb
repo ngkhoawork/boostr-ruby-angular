@@ -3,8 +3,8 @@ require 'rails_helper'
 feature 'Deals' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
-  let!(:advertiser) { create :client, company: company }
-  let!(:agency) { create :client, company: company }
+  let!(:advertiser) { create :client, company: company, created_by: user.id }
+  let!(:agency) { create :client, company: company, created_by: user.id }
   let!(:open_stage) { create :stage, company: company, position: 1, name: 'open stage' }
   let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
   let!(:deal_type_pitch_option) { create :option, company: company, field: deal_source_field(company), name: "Pitch to Client" }
@@ -24,9 +24,9 @@ feature 'Deals' do
       expect(page).to have_css('#deals')
     end
 
-    scenario 'shows all open deals initially, then filters on stage clicks', js: true do
+    scenario 'shows all open deals initially, then filters on stage clicks then deletes a couple', js: true do
       within '.list-group.stages' do
-        expect(page).to have_css('.list-group-item', count: 4)
+        expect(page).to have_css('.list-group-item', count: 5)
       end
 
       within '.table-wrapper tbody' do
@@ -34,7 +34,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(2)').trigger('click')
+        find('.list-group-item:nth-child(3)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -45,7 +45,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(3)').trigger('click')
+        find('.list-group-item:nth-child(4)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -56,7 +56,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(4)').trigger('click')
+        find('.list-group-item:nth-child(5)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -67,12 +67,28 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:first-child').trigger('click')
+        find('.list-group-item:nth-child(2)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 2)
+        find('tr:first-child').hover
+        within 'tr:first-child' do
+          find('.delete-deal').trigger('click')
+        end
       end
+
+      expect(page).to have_css('.table-wrapper tbody tr', count: 1)
+
+      within '.table-wrapper tbody' do
+        expect(page).to have_css('tr', count: 1)
+        find('tr:first-child').hover
+        within 'tr:first-child' do
+          find('.delete-deal').trigger('click')
+        end
+      end
+
+      expect(page).to have_css('.table-wrapper tbody tr', count: 0)
     end
   end
 
@@ -114,39 +130,6 @@ feature 'Deals' do
       within '#info .field-value.deal-type' do
         expect(page).to have_text('Seasonal')
       end
-    end
-  end
-
-  describe 'Deleting a deal' do
-    let!(:deals) { create_list :deal, 3, stage: open_stage, company: company, advertiser: advertiser, creator: user }
-
-    before do
-      deals.sort_by!(&:name)
-      login_as user, scope: :user
-      visit '/deals'
-      expect(page).to have_css('#deals')
-    end
-
-    scenario 'removes the deal from the page and navigates to the deals index', js: true do
-      within '.table-wrapper tbody' do
-        expect(page).to have_css('tr', count: 3)
-        find('tr:first-child').hover
-        within 'tr:first-child' do
-          find('.delete-deal').trigger('click')
-        end
-      end
-
-      expect(page).to have_css('.table-wrapper tbody tr', count: 2)
-
-      within '.table-wrapper tbody' do
-        expect(page).to have_css('tr', count: 2)
-        find('tr:first-child').hover
-        within 'tr:first-child' do
-          find('.delete-deal').trigger('click')
-        end
-      end
-
-      expect(page).to have_css('.table-wrapper tbody tr', count: 1)
     end
   end
 end

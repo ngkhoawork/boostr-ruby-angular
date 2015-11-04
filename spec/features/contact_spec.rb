@@ -4,6 +4,7 @@ feature 'Contacts' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let!(:client) { create :client, company: company }
+  let!(:client_member) { create :client_member, client: client, user: user, values: [create_member_role(company)] }
 
   describe 'creating a contact' do
     before do

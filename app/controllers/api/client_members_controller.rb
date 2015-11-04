@@ -2,7 +2,7 @@ class Api::ClientMembersController < ApplicationController
   respond_to :json
 
   def index
-    render json: client.client_members
+    render json: client.client_members.order('share DESC')
   end
 
   def create

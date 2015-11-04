@@ -1,5 +1,5 @@
 class Quota < ActiveRecord::Base
-  belongs_to :user
+  belongs_to :user, touch: true
   belongs_to :time_period
   belongs_to :company
 

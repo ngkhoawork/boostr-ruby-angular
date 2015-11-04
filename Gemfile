@@ -23,7 +23,10 @@ gem 'chronic'
 gem 'sidekiq'
 gem 'sinatra', '>= 1.3.0', require: nil
 gem 'clockwork'
+gem 'newrelic_rpm'
 gem 'awesome_print'
+gem 'active_model_serializers', '= 0.8.3'
+gem 'dalli'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

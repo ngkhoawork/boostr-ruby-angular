@@ -4,6 +4,14 @@
       .row
         .col-xs-12
           %ul.nav.nav-tabs
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                {{ clientFilter.name }}
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in clientFilters', class: '{active: filter.name == clientFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                    {{ filter.name }}
             %li.pull-right.last
               %a.export{ href: '', ng: { click: 'exportClients()' } }
                 Export
@@ -12,7 +20,15 @@
                 = inline_svg 'icons/add.svg'
                 New Client
 
-  .container
+  .container{ ng: { hide: 'clients && clients.length > 0 ' } }
+    .row
+      .col-xs-6.col-xs-offset-3
+        .well.text-center
+          %h5
+            There are no clients to display.
+            %a{ href: '', ng: { click: 'showModal()' } }
+              Add a client.
+  .container{ ng: { show: 'clients.length > 0' } }
     .row
       .col-xs-6
         .search
@@ -21,7 +37,7 @@
     .row
       #client-list.col-xs-5
         .list-group.list-lg
-          %a.list-group-item.vertical-center{href: '/#clients/{{ client.id }}', ng: { repeat: 'client in clients | orderBy: "name"', class: '{ active: client.id == currentClient.id }' } }
+          %a.list-group-item.vertical-center{href: '/#clients/{{ client.id }}?filter={{ clientFilter.param }}', ng: { repeat: 'client in clients | orderBy: "name"', class: '{ active: client.id == currentClient.id }' } }
             .col-xs-8.col-xs-offset-4
               .row
                 %h4
@@ -97,17 +113,17 @@
             %table.table.table-striped
               %thead
                 %tr
-                  %th Member
-                  %th Share
-                  %th Role
+                  %th.left Member
+                  %th.right.share Share
+                  %th.left.role Role
               %tbody
                 %tr{ ng: { repeat: 'client_member in client_members' } }
-                  %td
+                  %td.left
                     {{ client_member.user.first_name }} {{ client_member.user.last_name }}
-                  %td
+                  %td.right
                     %span{ 'e-name': 'share', editable: { text: 'client_member.share' }, onaftersave: 'updateClientMember(client_member)' }
                       {{ client_member.share }}%
-                  %td
+                  %td.left
                     %span{ 'e-name': 'role', editable: { select: 'client_member.role.option_id' }, 'e-ng-options': 'option.id as option.name for option in client_member.role.options', onaftersave: 'updateClientMember(client_member)' }
                       {{ client_member.role.option.name }}
 

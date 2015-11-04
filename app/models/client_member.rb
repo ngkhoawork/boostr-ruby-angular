@@ -1,12 +1,10 @@
 class ClientMember < ActiveRecord::Base
-  belongs_to :client
+  belongs_to :client, touch: true
   belongs_to :user
 
   has_many :values, as: :subject
 
   validates :share, :user_id, :client_id, presence: true
-  validates_presence_of :values, message: 'Role must be assigned'
-  validates_associated :values
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
@@ -25,6 +23,6 @@ class ClientMember < ActiveRecord::Base
   def role_value_defaults
     role_field = fields.where(name: 'Member Role').first
     value = values.where(field: role_field).first
-    value.dup.attributes
+    value.dup.attributes if value.present?
   end
 end

@@ -59,6 +59,12 @@
 
 #nav {
   background: $brand-primary;
+  margin-bottom: 15px;
+
+  .nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
+    background-color: transparent;
+    border-color: transparent;
+  }
 
   .nav-tabs {
     background: $brand-primary;
@@ -95,8 +101,20 @@
       &.dropdown {
         .dropdown-menu {
           li {
+            margin-right: 0;
+
             a {
-              color: $link-color;
+              color: $text-color;
+
+              &:hover {
+                color: $link-color;
+              }
+            }
+
+            &.active {
+              a {
+                color: $white;
+              }
             }
           }
         }
