@@ -7,6 +7,7 @@
     $scope.submitText = "Update"
 
     $scope.client = Client.get()
+
     Field.defaults($scope.client, 'Client').then (fields) ->
       $scope.client.client_type = Field.field($scope.client, 'Client Type')
 

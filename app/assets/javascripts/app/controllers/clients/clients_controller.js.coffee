@@ -8,7 +8,12 @@
     { name: 'All Clients', param: 'company' }
   ]
 
-  $scope.clientFilter = $scope.clientFilters[0]
+  if $routeParams.filter
+    _.each $scope.clientFilters, (filter) ->
+      if filter.param == $routeParams.filter
+        $scope.clientFilter = filter
+  else
+    $scope.clientFilter = $scope.clientFilters[0]
 
   $scope.init = ->
     $scope.getClients()
