@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-['$scope', '$modal', '$filter', '$q', '$location', 'Deal', 'Stage',
-($scope, $modal, $filter, $q, $location, Deal, Stage) ->
+['$scope', '$modal', '$filter', '$routeParams', '$q', '$location', 'Deal', 'Stage',
+($scope, $modal, $filter, $routeParams, $q, $location, Deal, Stage) ->
 
   $scope.dealFilters = [
     { name: 'My Deals', param: '' }
@@ -8,7 +8,12 @@
     { name: 'All Deals', param: 'company' }
   ]
 
-  $scope.dealFilter = $scope.dealFilters[0]
+  if $routeParams.filter
+    _.each $scope.dealFilters, (filter) ->
+      if filter.param == $routeParams.filter
+        $scope.dealFilter = filter
+  else
+    $scope.dealFilter = $scope.dealFilters[0]
 
   $scope.init = ->
     $q.all({ deals: Deal.all({filter: $scope.dealFilter.param}), stages: Stage.all() }).then (data) ->

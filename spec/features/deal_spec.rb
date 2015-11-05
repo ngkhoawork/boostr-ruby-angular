@@ -26,7 +26,7 @@ feature 'Deals' do
 
     scenario 'shows all open deals initially, then filters on stage clicks then deletes a couple', js: true do
       within '.list-group.stages' do
-        expect(page).to have_css('.list-group-item', count: 5)
+        expect(page).to have_css('.list-group-item', count: 4)
       end
 
       within '.table-wrapper tbody' do
@@ -34,7 +34,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(3)').trigger('click')
+        find('.list-group-item:nth-child(2)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -45,7 +45,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(4)').trigger('click')
+        find('.list-group-item:nth-child(3)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -56,7 +56,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(5)').trigger('click')
+        find('.list-group-item:nth-child(4)').trigger('click')
       end
 
       within '.table-wrapper tbody' do
@@ -67,7 +67,7 @@ feature 'Deals' do
       end
 
       within '.list-group.stages' do
-        find('.list-group-item:nth-child(2)').trigger('click')
+        find('.list-group-item:nth-child(1)').trigger('click')
       end
 
       within '.table-wrapper tbody' do

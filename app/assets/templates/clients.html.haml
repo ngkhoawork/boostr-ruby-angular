@@ -37,7 +37,7 @@
     .row
       #client-list.col-xs-5
         .list-group.list-lg
-          %a.list-group-item.vertical-center{href: '/#clients/{{ client.id }}?filter={{ clientFilter.param }}', ng: { repeat: 'client in clients | orderBy: "name"', class: '{ active: client.id == currentClient.id }' } }
+          %a.list-group-item.vertical-center{href: '', ng: { click: 'showClient(client)', repeat: 'client in clients | orderBy: "name"', class: '{ active: client.id == currentClient.id }' } }
             .col-xs-8.col-xs-offset-4
               .row
                 %h4
