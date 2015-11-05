@@ -9,7 +9,7 @@
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
       $scope.deal = deal
-    $q.all({ clients: Client.all(), stages: Stage.all() }).then (data) ->
+    $q.all({ clients: Client.all({ filter: 'all' }), stages: Stage.all() }).then (data) ->
       $scope.clients = data.clients
       #TODO this should go somewhere else...possibly the service
       _.each $scope.clients, (client) ->

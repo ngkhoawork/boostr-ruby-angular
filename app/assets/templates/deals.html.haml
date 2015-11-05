@@ -1,10 +1,18 @@
 #deals
-  #nav.transparent
+  #nav
     .container
       .row
         .col-xs-12
           %ul.nav.nav-tabs
-            %li.pull-right.last
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                {{ dealFilter.name }}
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in dealFilters', class: '{active: filter.name == dealFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterDeals(filter)' } }
+                    {{ filter.name }}
+            %li.pull-right
               %a.upload{ href: '', ng: { click: 'showModal()' } }
                 = inline_svg 'icons/add.svg'
                 New Deal
@@ -13,16 +21,6 @@
     .row
       .col-xs-3
         .list-group.list-sm.stages
-          .list-group-item.vertical-center.filter{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': true  }
-            .col-xs-8.col-xs-offset-4{ href: '', dropdown: { toggle: true }}
-              .row
-                %h5
-                  {{ dealFilter.name }}
-                  .caret
-              %ul.dropdown-menu.dropdown-menu-right
-                %li{ ng: { repeat: 'filter in dealFilters' } }
-                  %a{ href: '', ng: { click: 'filterDeals(filter)' } }
-                    {{ filter.name }}
           %a.list-group-item.vertical-center{ href: '', ng: { click: 'showStage("open")', class: '{ active: currentStage == "open" }'} }
             .col-xs-8.col-xs-offset-4
               .row
