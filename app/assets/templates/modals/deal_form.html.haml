@@ -54,7 +54,7 @@
             %label.control-label{ for: 'source-type' } Source
             %ui-select{ name: 'source-type', ng: { model: 'deal.source_type.option_id', disabled: true } }
               %ui-select-match{ placeholder: 'Source' }
-                {{ $select.selected }}
+                {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'option.id as option in deal.source_type.options | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'option.name' } } }
 

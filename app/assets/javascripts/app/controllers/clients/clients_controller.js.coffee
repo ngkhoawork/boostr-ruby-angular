@@ -40,6 +40,9 @@
     Deal.all({client_id: client.id}).then (deals) ->
       $scope.currentClient.deals = deals
 
+  $scope.showClient = (client) ->
+    Client.set(client.id) if client
+
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'

@@ -90,6 +90,8 @@ class Deal < ActiveRecord::Base
     array = []
 
     case months.length
+    when 0
+      array
     when 1
       array << days
     when 2
@@ -97,7 +99,7 @@ class Deal < ActiveRecord::Base
       array << (end_date - (end_date.beginning_of_month - 1)).to_i
     else
       array << ((start_date.end_of_month + 1) - start_date).to_i
-      months[1..-2].each do |month|
+      (months[1..-2] || []).each do |month|
         array << Time.days_in_month(month[1], month[0])
       end
       array << (end_date - (end_date.beginning_of_month - 1)).to_i
