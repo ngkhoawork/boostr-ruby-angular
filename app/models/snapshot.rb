@@ -6,7 +6,9 @@ class Snapshot < ActiveRecord::Base
   before_create :snap_weighted_pipeline
   before_create :snap_revenue
 
-  scope :two_recent_for_time_period, -> (time_period) { where(time_period: time_period).order('created_at DESC').limit(2) }
+  before_save :set_dates
+
+  scope :two_recent_for_time_period, -> (start_date, end_date) { where('snapshots.start_date <= ? AND snapshots.end_date >= ?', end_date, start_date).order('created_at DESC').limit(2) }
 
   validates :company, :user, :time_period, presence: true
 
@@ -30,5 +32,10 @@ class Snapshot < ActiveRecord::Base
   def snap_revenue
     forecast = ForecastMember.new(user, time_period)
     self.revenue = forecast.revenue
+  end
+
+  def set_dates
+    self.start_date ||= self.time_period.try(:start_date)
+    self.end_date ||= self.time_period.try(:end_date)
   end
 end

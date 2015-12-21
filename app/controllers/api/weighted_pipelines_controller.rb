@@ -9,6 +9,7 @@ class Api::WeightedPipelinesController < ApplicationController
 
   def time_period
     return @time_period if defined?(@time_period)
+
     @time_period = current_user.company.time_periods.find(params[:time_period_id])
   end
 

@@ -4,7 +4,7 @@ RSpec.describe Api::QuotasController, type: :controller do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let(:time_period) { create :time_period, company: company }
-  let(:other_time_period) { create :time_period, company: company }
+  let(:other_time_period) { create :time_period, company: company, start_date: time_period.end_date + 1.month, end_date: time_period.end_date + 2.months }
 
   before do
     sign_in user

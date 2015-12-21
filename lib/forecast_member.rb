@@ -66,7 +66,7 @@ class ForecastMember
 
     @weighted_pipeline = open_deals.sum do |deal|
       deal_total = 0
-      deal.deal_products.for_time_period(time_period).each do |deal_product|
+      deal.deal_products.for_time_period(time_period.start_date, time_period.end_date).each do |deal_product|
         deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
       end
       deal_total * (deal.stage.probability / 100.0)
@@ -85,7 +85,7 @@ class ForecastMember
 
     open_deals.each do |deal|
       deal_total = 0
-      deal.deal_products.for_time_period(time_period).each do |deal_product|
+      deal.deal_products.for_time_period(time_period.start_date, time_period.end_date).each do |deal_product|
         deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
       end
       @weighted_pipeline_by_stage[deal.stage.id] ||= 0
@@ -130,7 +130,7 @@ class ForecastMember
   end
 
   def quota
-    @quota ||= member.quotas.for_time_period(time_period).sum(:value)
+    @quota ||= member.quotas.for_time_period(time_period.start_date, time_period.end_date).sum(:value)
   end
 
   private
@@ -140,7 +140,7 @@ class ForecastMember
   end
 
   def revenues
-    @revenues ||= member.company.revenues.where(client_id: client_ids).for_time_period(time_period).to_a
+    @revenues ||= member.company.revenues.where(client_id: client_ids).for_time_period(time_period.start_date, time_period.end_date).to_a
   end
 
   def clients
@@ -148,7 +148,7 @@ class ForecastMember
   end
 
   def open_deals
-    @open_deals ||= member.deals.open.for_time_period(time_period).includes(:deal_products, :stage).to_a
+    @open_deals ||= member.deals.open.for_time_period(time_period.start_date, time_period.end_date).includes(:deal_products, :stage).to_a
   end
 
   def number_of_days(comparer)
@@ -158,6 +158,6 @@ class ForecastMember
   end
 
   def snapshots
-    @snapshots ||= member.snapshots.two_recent_for_time_period(time_period)
+    @snapshots ||= member.snapshots.two_recent_for_time_period(time_period.start_date, time_period.end_date)
   end
 end

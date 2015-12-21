@@ -4,7 +4,7 @@ feature 'Quotas' do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let!(:q1) { create :time_period, company: company }
-  let!(:q2) { create :time_period, company: company }
+  let!(:q2) { create :time_period, company: company, start_date: q1.end_date + 1.month, end_date: q1.end_date + 2.months }
   let!(:quota_one) { create :quota, company: company, time_period: q1, user: user }
   let!(:quota_two) { create :quota, company: company, time_period: q2, user: user }
 

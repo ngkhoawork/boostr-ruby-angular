@@ -17,6 +17,7 @@ class Api::ForecastsController < ApplicationController
 
   def time_period
     return @time_period if defined?(@time_period)
+
     if params[:time_period_id]
       @time_period = company.time_periods.find(params[:time_period_id])
     else

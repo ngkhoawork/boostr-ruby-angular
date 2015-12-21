@@ -46,6 +46,6 @@ class User < ActiveRecord::Base
   end
 
   def all_deals_for_time_period(time_period)
-    deals.for_time_period(time_period)
+    deals.for_time_period(time_period.start_date, time_period.end_date)
   end
 end

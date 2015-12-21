@@ -15,9 +15,9 @@ RSpec.describe Snapshot, type: :model do
         allow_any_instance_of(ForecastMember).to receive(:weighted_pipeline).and_return(0)
         allow_any_instance_of(ForecastMember).to receive(:revenue).and_return(0)
         expect(Snapshot.all.length).to eq(3)
-        expect(Snapshot.two_recent_for_time_period(time_period).length).to eq(2)
-        expect(Snapshot.two_recent_for_time_period(time_period)).to include(snapshot_two)
-        expect(Snapshot.two_recent_for_time_period(time_period)).to include(snapshot_three)
+        expect(Snapshot.two_recent_for_time_period(time_period.start_date, time_period.end_date).length).to eq(2)
+        expect(Snapshot.two_recent_for_time_period(time_period.start_date, time_period.end_date)).to include(snapshot_two)
+        expect(Snapshot.two_recent_for_time_period(time_period.start_date, time_period.end_date)).to include(snapshot_three)
       end
     end
   end

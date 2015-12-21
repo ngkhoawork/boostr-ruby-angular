@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151020185047) do
+ActiveRecord::Schema.define(version: 20151221031031) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -166,9 +167,9 @@ ActiveRecord::Schema.define(version: 20151020185047) do
     t.string   "name"
     t.integer  "position"
     t.datetime "deleted_at"
-    t.boolean  "locked"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.boolean  "locked",     default: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   add_index "options", ["company_id", "field_id", "position", "deleted_at"], name: "options_index_composite", using: :btree
@@ -190,7 +191,12 @@ ActiveRecord::Schema.define(version: 20151020185047) do
     t.integer  "company_id"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
+    t.datetime "start_date"
+    t.datetime "end_date"
   end
+
+  add_index "quota", ["end_date"], name: "index_quota_on_end_date", using: :btree
+  add_index "quota", ["start_date"], name: "index_quota_on_start_date", using: :btree
 
   create_table "revenues", force: :cascade do |t|
     t.integer  "order_number"
@@ -222,7 +228,12 @@ ActiveRecord::Schema.define(version: 20151020185047) do
     t.integer  "weighted_pipeline"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
+    t.datetime "start_date"
+    t.datetime "end_date"
   end
+
+  add_index "snapshots", ["end_date"], name: "index_snapshots_on_end_date", using: :btree
+  add_index "snapshots", ["start_date"], name: "index_snapshots_on_start_date", using: :btree
 
   create_table "stages", force: :cascade do |t|
     t.string   "name"

@@ -7,15 +7,11 @@ RSpec.describe Quota, type: :model do
       let(:company) { create :company }
       let!(:user) { create :user, company: company }
       let!(:time_period) { create :time_period, company: company }
-      let!(:other_time_period) { create :time_period, company: company }
-
-      it 'returns all quotas when the time period id is nil' do
-        expect(Quota.for_time_period(nil).length).to eq(2)
-      end
+      let!(:other_time_period) { create :time_period, company: company, start_date: time_period.end_date + 1.month, end_date: time_period.end_date + 2.months }
 
       it 'returns the quotas scoped to the given time period id' do
         expect(Quota.count).to eq(2)
-        expect(Quota.for_time_period(time_period.id).length).to eq(1)
+        expect(Quota.for_time_period(time_period.start_date, time_period.end_date).length).to eq(1)
       end
     end
   end
