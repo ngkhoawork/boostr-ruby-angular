@@ -25,12 +25,12 @@ class Snapshot < ActiveRecord::Base
   end
 
   def snap_weighted_pipeline
-    forecast = ForecastMember.new(user, time_period)
+    forecast = ForecastMember.new(user, time_period.start_date, time_period.end_date)
     self.weighted_pipeline = forecast.weighted_pipeline
   end
 
   def snap_revenue
-    forecast = ForecastMember.new(user, time_period)
+    forecast = ForecastMember.new(user, time_period.start_date, time_period.end_date)
     self.revenue = forecast.revenue
   end
 

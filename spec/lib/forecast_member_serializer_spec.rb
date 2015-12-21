@@ -6,7 +6,7 @@ RSpec.describe ForecastMemberSerializer do
   let(:child) { create :child_team, company: company, parent: parent }
   let(:user) { create :user, company: company, team: child }
   let(:time_period) { create :time_period, company: company, start_date: "2015-01-01", end_date: "2015-12-31" }
-  let(:forecast) { ForecastMember.new(user, time_period) }
+  let(:forecast) { ForecastMember.new(user, time_period.start_date, time_period.end_date) }
   let(:client) { create :client, company: company }
 
   it "serializes something" do

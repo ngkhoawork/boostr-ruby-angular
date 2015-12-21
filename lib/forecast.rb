@@ -3,12 +3,13 @@ class Forecast
 
   delegate :id, to: :company
 
-  attr_accessor :company, :rows, :time_period
+  attr_accessor :company, :rows, :start_date, :end_date
 
-  def initialize(company, rows, time_period)
+  def initialize(company, rows, start_date, end_date)
     self.company = company
     self.rows = rows
-    self.time_period = time_period
+    self.start_date = start_date
+    self.end_date = end_date
   end
 
   def cache_key
@@ -24,7 +25,7 @@ class Forecast
   end
 
   def teams
-    @teams ||= rows.map{ |t| ForecastTeam.new(t, time_period) }
+    @teams ||= rows.map{ |t| ForecastTeam.new(t, start_date, end_date) }
   end
 
   def stages

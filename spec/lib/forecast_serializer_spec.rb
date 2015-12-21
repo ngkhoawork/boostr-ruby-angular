@@ -7,7 +7,7 @@ RSpec.describe ForecastSerializer do
   let(:child) { create :child_team, company: company, parent: parent, leader: leader }
   let!(:user) { create :user, company: company, team: child }
   let(:time_period) { create :time_period, company: company }
-  let(:forecast) { Forecast.new(company, company.teams.roots(true), time_period) }
+  let(:forecast) { Forecast.new(company, company.teams.roots(true), time_period.start_date, time_period.end_date) }
 
   it 'returns all root teams and nested teams and members' do
     json = ForecastSerializer.new(forecast, root: false).to_json

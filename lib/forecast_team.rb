@@ -4,11 +4,12 @@ class ForecastTeam
   delegate :id, to: :team
   delegate :name, to: :team
 
-  attr_accessor :team, :time_period
+  attr_accessor :team, :start_date, :end_date
 
-  def initialize(team, time_period)
+  def initialize(team, start_date, end_date)
     self.team = team
-    self.time_period = time_period
+    self.start_date = start_date
+    self.end_date = end_date
   end
 
   def type
@@ -52,15 +53,15 @@ class ForecastTeam
   end
 
   def teams
-    @teams ||= team.children.map{ |t| ForecastTeam.new(t, time_period) }
+    @teams ||= team.children.map{ |t| ForecastTeam.new(t, start_date, end_date) }
   end
 
   def leader
-    @leader ||= ForecastMember.new(team.leader, time_period) if team.leader
+    @leader ||= ForecastMember.new(team.leader, start_date, end_date) if team.leader
   end
 
   def members
-    @members ||= team.members.map{ |m| ForecastMember.new(m, time_period) }
+    @members ||= team.members.map{ |m| ForecastMember.new(m, start_date, end_date) }
   end
 
   def non_leader_members

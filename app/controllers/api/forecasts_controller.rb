@@ -3,14 +3,14 @@ class Api::ForecastsController < ApplicationController
 
   def index
     if current_user.leader?
-      render json: Forecast.new(company, teams, time_period)
+      render json: Forecast.new(company, teams, time_period.start_date, time_period.end_date)
     else
-      render json: ForecastMember.new(current_user, time_period)
+      render json: ForecastMember.new(current_user, time_period.start_date, time_period.end_date)
     end
   end
 
   def show
-    render json: ForecastTeam.new(team, time_period)
+    render json: ForecastTeam.new(team, time_period.start_date, time_period.end_date)
   end
 
   protected
