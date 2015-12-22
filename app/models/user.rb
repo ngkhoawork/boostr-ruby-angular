@@ -45,7 +45,7 @@ class User < ActiveRecord::Base
     super(options.merge(methods: [:name, :leader?]))
   end
 
-  def all_deals_for_time_period(time_period)
-    deals.for_time_period(time_period.start_date, time_period.end_date)
+  def all_deals_for_time_period(start_date, end_date)
+    deals.for_time_period(start_date, end_date)
   end
 end

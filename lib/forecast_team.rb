@@ -4,7 +4,7 @@ class ForecastTeam
   delegate :id, to: :team
   delegate :name, to: :team
 
-  attr_accessor :team, :start_date, :end_date, :year, :quarter
+  attr_accessor :team, :start_date, :end_date, :quarter, :year
 
   def initialize(team, start_date, end_date, quarter = nil, year = nil)
     self.team = team
@@ -16,14 +16,6 @@ class ForecastTeam
 
   def type
     'team'
-  end
-
-  def name
-    if quarter.present?
-      "#{team.name} Q#{quarter}"
-    else
-      team.name
-    end
   end
 
   def cache_key

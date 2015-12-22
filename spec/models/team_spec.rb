@@ -36,7 +36,7 @@ RSpec.describe Team, type: :model do
     let!(:child_deal_member) { create :deal_member, deal: child_deal, user: child_member }
 
     it 'returns all of the team deals as well as all of the team\'s children\'s deals' do
-      all_deals = parent.all_deals_for_time_period(time_period)
+      all_deals = parent.all_deals_for_time_period(time_period.start_date, time_period.end_date)
       expect(all_deals.flatten.uniq.length).to eq(2)
     end
   end

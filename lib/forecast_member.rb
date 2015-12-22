@@ -2,14 +2,16 @@ class ForecastMember
   include ActiveModel::SerializerSupport
 
   delegate :id, to: :member
+  delegate :name, to: :member
 
-  attr_accessor :member, :start_date, :end_date, :quarter
+  attr_accessor :member, :start_date, :end_date, :quarter, :year
 
-  def initialize(member, start_date, end_date, quarter = nil)
+  def initialize(member, start_date, end_date, quarter = nil, year = nil)
     self.member = member
     self.start_date = start_date
     self.end_date = end_date
     self.quarter = quarter
+    self.year = year
   end
 
   def is_leader
@@ -18,14 +20,6 @@ class ForecastMember
 
   def type
     'member'
-  end
-
-  def name
-    if quarter.present?
-      "#{member.name} Q#{quarter}"
-    else
-      member.name
-    end
   end
 
   def cache_key

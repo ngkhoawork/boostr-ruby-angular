@@ -20,9 +20,14 @@
   }
 
   $scope.init = () ->
+    # TODO: last year, this year, next year OR all years with data?
+    $scope.years = [2015, 2016, 2017]
     $scope.weightedPipelineDetail = {}
     TimePeriod.all().then (timePeriods) ->
       $scope.timePeriods = timePeriods
+
+      if $routeParams.year
+        $scope.year = $routeParams.year
 
       if $routeParams.time_period_id
         $scope.currentTimePeriod = _.find $scope.timePeriods, (timePeriod) ->
@@ -31,14 +36,14 @@
         $scope.currentTimePeriod = timePeriods[0]
 
       if $routeParams.team_id
-        Forecast.get({ id: $routeParams.team_id, time_period_id: $scope.currentTimePeriod.id }).then (forecast) ->
+        Forecast.get({ id: $routeParams.team_id, time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->
           $scope.forecast = forecast
           $scope.team = forecast
           $scope.teams = forecast.teams
           $scope.members = forecast.members
           $scope.setChartData()
       else
-        Forecast.all({ time_period_id: $scope.currentTimePeriod.id }).then (forecast) ->
+        Forecast.all({ time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->
           $scope.forecast = forecast
           $scope.teams = forecast.teams
           $scope.setChartData()
@@ -87,11 +92,17 @@
     # Add a list of member names as the x-axis labels
     names = []
     _.each $scope.teams, (t) ->
-      names.push(t.name)
+      if t.quarter
+        names.push(t.name + ' Q' + t.quarter)
+      else
+        names.push(t.name)
     if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
       names.push($scope.forecast.leader.name)
     _.each $scope.members, (m) ->
-      names.push(m.name)
+      if m.quarter
+        names.push(m.name + ' Q' + m.quarter)
+      else
+        names.push(m.name)
 
     $scope.chartBarData = {
       labels: names,
@@ -106,7 +117,7 @@
       $scope.weighted_pipeline = []
     else
       $scope.weighted_pipeline = []
-      params = { time_period_id: $scope.currentTimePeriod.id }
+      params = { time_period_id: $scope.currentTimePeriod.id, year: $scope.year, quarter: row.quarter  }
       if row.type == 'member'
         params = _.extend(params, { member_id: row.id })
       else if row.type == 'team'
@@ -121,6 +132,13 @@
     path.push "/forecast"
     path.push "/#{$scope.team.id}" if $scope.team
     path.push "?time_period_id=#{time_period_id}" if time_period_id
+    $location.url(path.join(''))
+
+  $scope.updateYear = (year) ->
+    path = []
+    path.push "/forecast"
+    path.push "/#{$scope.team.id}" if $scope.team
+    path.push "?year=#{year}" if year
     $location.url(path.join(''))
 
   $scope.init()

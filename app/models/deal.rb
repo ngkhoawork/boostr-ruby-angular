@@ -42,21 +42,21 @@ class Deal < ActiveRecord::Base
     super(options.merge(include: [:advertiser, :stage, :values]))
   end
 
-  def as_weighted_pipeline(time_period)
+  def as_weighted_pipeline(start_date, end_date)
     {
       name: name,
       client_name: advertiser.name,
       probability: stage.probability,
       budget: budget,
-      in_period_amt: in_period_amt(time_period),
-      start_date: start_date
+      in_period_amt: in_period_amt(start_date, end_date),
+      start_date: self.start_date
     }
   end
 
-  def in_period_amt(time_period)
-    deal_products.for_time_period(time_period.start_date, time_period.end_date).to_a.sum do |deal_product|
-      from = [time_period.start_date, deal_product.start_date].max
-      to = [time_period.end_date, deal_product.end_date].min
+  def in_period_amt(start_date, end_date)
+    deal_products.for_time_period(start_date, end_date).to_a.sum do |deal_product|
+      from = [start_date, deal_product.start_date].max
+      to = [end_date, deal_product.end_date].min
       num_days = (to.to_date - from.to_date) + 1
       deal_product.daily_budget * num_days
     end

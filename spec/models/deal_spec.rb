@@ -57,19 +57,19 @@ RSpec.describe Deal, type: :model do
     let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-01-31', company: company }
 
     it 'returns 0 when there are no deal products' do
-      expect(deal.in_period_amt(time_period)).to eq(0)
+      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(0)
     end
 
     it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
       create :deal_product, deal: deal, start_date: '2015-01-01', end_date: '2015-01-31', budget: 100000
 
-      expect(deal.in_period_amt(time_period)).to eq(1000)
+      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(1000)
     end
 
     it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
       create :deal_product, deal: deal, start_date: '2015-01-27', end_date: '2015-02-05', budget: 100000
 
-      expect(deal.in_period_amt(time_period)).to eq(500)
+      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(500)
     end
   end
 

@@ -39,7 +39,7 @@ feature 'Forecast' do
 
       within '.quota-period' do
         find('a').trigger('click')
-        find('.time-periods li:last-child a').trigger('click')
+        find('.time-periods li:nth-child(2) a').trigger('click')
         expect(page).to have_text 'Y2'
       end
 

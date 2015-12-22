@@ -17,6 +17,8 @@ class ForecastMemberSerializer < ActiveModel::Serializer
     :wow_revenue,
     :wow_weighted_pipeline,
     :is_leader,
+    :year,
+    :quarter,
     :type)
 end
 

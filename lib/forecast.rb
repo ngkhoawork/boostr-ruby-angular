@@ -5,6 +5,7 @@ class Forecast
 
   attr_accessor :company, :rows, :start_date, :end_date, :year
 
+  # If there is a year, the start_date and end_date are ignored
   def initialize(company, rows, start_date, end_date, year = nil)
     self.company = company
     self.rows = rows
