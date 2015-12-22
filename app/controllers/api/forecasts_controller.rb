@@ -15,6 +15,10 @@ class Api::ForecastsController < ApplicationController
 
   protected
 
+  def year
+    params[:year].to_s
+  end
+
   def time_period
     return @time_period if defined?(@time_period)
 
