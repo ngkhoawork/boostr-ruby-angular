@@ -42,6 +42,9 @@ Rails.application.routes.draw do
 
   mount Sidekiq::Web => '/sidekiq'
 
+  # TEMP
+  get '/snapshot' => 'pages#snapshot'
+
   get '*path' => 'pages#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
