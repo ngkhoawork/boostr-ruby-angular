@@ -8,18 +8,26 @@ class Snapshot < ActiveRecord::Base
 
   before_save :set_dates
 
-  scope :two_recent_for_time_period, -> (start_date, end_date) { where('snapshots.start_date <= ? AND snapshots.end_date >= ?', end_date, start_date).order('created_at DESC').limit(2) }
+  # NOTE: if there are two duplicate time periods this will probably break (ideally we would use the time_period_id to group them and grab from a single group)
+  scope :two_recent_for_time_period, -> (start_date, end_date) { where('snapshots.start_date = ? AND snapshots.end_date = ?', start_date, end_date).order('created_at DESC').limit(2) }
+  scope :two_recent_for_year_and_quarter, -> (year, quarter) { where('snapshots.year = ? AND snapshots.quarter = ?', year, quarter).order('created_at DESC').limit(2) }
 
   validates :company, :user, :time_period, presence: true
 
-  def self.generate_snapshot(company, user, time_period)
-    Snapshot.create(company: company, user: user, time_period: time_period)
+  def self.generate_snapshot(company, user, time_period, year = nil, quarter = nil)
+    Snapshot.create(company: company, user: user, time_period: time_period, year: year, quarter: quarter)
   end
 
   def self.generate_snapshots(company)
     company.users.each do |user|
       company.time_periods.each do |time_period|
         Snapshot.generate_snapshot(company, user, time_period)
+      end
+      # TODO: we need better year selection logic
+      [2015, 2016, 2017].each do |year|
+        (1..4).each do |quarter|
+          Snapshot.generate_snapshot(company, user, nil, year, quarter)
+        end
       end
     end
   end

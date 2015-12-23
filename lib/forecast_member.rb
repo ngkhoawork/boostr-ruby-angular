@@ -163,6 +163,10 @@ class ForecastMember
   end
 
   def snapshots
-    @snapshots ||= member.snapshots.two_recent_for_time_period(start_date, end_date)
+    if year
+      @snapshots ||= member.snapshots.two_recent_for_year_and_quarter(year, quarter)
+    else
+      @snapshots ||= member.snapshots.two_recent_for_time_period(start_date, end_date)
+    end
   end
 end

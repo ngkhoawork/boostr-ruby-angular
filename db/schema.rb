@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151221031031) do
+ActiveRecord::Schema.define(version: 20151223071508) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -230,10 +230,13 @@ ActiveRecord::Schema.define(version: 20151221031031) do
     t.datetime "updated_at",        null: false
     t.datetime "start_date"
     t.datetime "end_date"
+    t.integer  "year"
+    t.integer  "quarter"
   end
 
   add_index "snapshots", ["end_date"], name: "index_snapshots_on_end_date", using: :btree
   add_index "snapshots", ["start_date"], name: "index_snapshots_on_start_date", using: :btree
+  add_index "snapshots", ["year", "quarter"], name: "index_snapshots_on_year_and_quarter", using: :btree
 
   create_table "stages", force: :cascade do |t|
     t.string   "name"
