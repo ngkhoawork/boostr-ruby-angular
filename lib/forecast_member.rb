@@ -28,6 +28,8 @@ class ForecastMember
     parts << member.updated_at
     parts << start_date
     parts << end_date
+    parts << year
+    parts << quarter
     # Weighted pipeline
     open_deals.each do |deal|
       parts << deal.id

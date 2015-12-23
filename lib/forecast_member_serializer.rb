@@ -1,5 +1,5 @@
 class ForecastMemberSerializer < ActiveModel::Serializer
-  cached
+  # cached
 
   delegate :cache_key, to: :object
 
