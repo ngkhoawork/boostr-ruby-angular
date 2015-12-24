@@ -2,8 +2,12 @@
   %td{ ng: { if: 'row.type == "member"' } }
     {{ row.name }}
   %td{ ng: { if: 'row.type == "team"' } }
-    %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}' } }
+    %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' } }
       {{ row.name }}
+  %td{ ng: { if: 'row.is_leader && year' } }
+    \--
+  %td{ ng: { if: 'row.quarter' } }
+    Q{{ row.quarter }}
   %td.right{ ng: { if: '!row.is_leader'} }
     {{ row.quota | currency: '$': 0 }}
   %td.right{ ng: { if: 'row.is_leader'} }

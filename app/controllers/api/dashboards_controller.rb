@@ -19,9 +19,9 @@ class Api::DashboardsController < ApplicationController
     return nil unless time_period
 
     if current_user.leader?
-      @forecast = Forecast.new(company, current_user.teams, time_period)
+      @forecast = Forecast.new(company, current_user.teams, time_period.start_date, time_period.end_date)
     else
-      @forecast = ForecastMember.new(current_user, time_period)
+      @forecast = ForecastMember.new(current_user, time_period.start_date, time_period.end_date)
     end
   end
 

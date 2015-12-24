@@ -25,20 +25,16 @@ RSpec.describe Deal, type: :model do
       let!(:in_deal) { create :deal, start_date: '2015-02-01', end_date: '2015-2-28'  }
       let!(:out_deal) { create :deal, start_date: '2016-02-01', end_date: '2016-2-28'  }
 
-      it 'should return all deals when no time period is specified' do
-        expect(Deal.for_time_period(nil).count).to eq(2)
-      end
-
       it 'should return deals that are completely in the time period' do
-        expect(Deal.for_time_period(time_period).count).to eq(1)
-        expect(Deal.for_time_period(time_period)).to include(in_deal)
+        expect(Deal.for_time_period(time_period.start_date, time_period.end_date).count).to eq(1)
+        expect(Deal.for_time_period(time_period.start_date, time_period.end_date)).to include(in_deal)
       end
 
       it 'returns deals that are partially in the time period' do
         create :deal, start_date: '2015-02-01', end_date: '2016-2-28'
         create :deal, start_date: '2014-12-01', end_date: '2015-2-28'
 
-        expect(Deal.for_time_period(time_period).count).to eq(3)
+        expect(Deal.for_time_period(time_period.start_date, time_period.end_date).count).to eq(3)
       end
     end
 
@@ -61,19 +57,19 @@ RSpec.describe Deal, type: :model do
     let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-01-31', company: company }
 
     it 'returns 0 when there are no deal products' do
-      expect(deal.in_period_amt(time_period)).to eq(0)
+      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(0)
     end
 
     it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
       create :deal_product, deal: deal, start_date: '2015-01-01', end_date: '2015-01-31', budget: 100000
 
-      expect(deal.in_period_amt(time_period)).to eq(1000)
+      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(1000)
     end
 
     it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
       create :deal_product, deal: deal, start_date: '2015-01-27', end_date: '2015-02-05', budget: 100000
 
-      expect(deal.in_period_amt(time_period)).to eq(500)
+      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(500)
     end
   end
 

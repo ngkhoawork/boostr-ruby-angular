@@ -4,11 +4,14 @@ class ForecastMember
   delegate :id, to: :member
   delegate :name, to: :member
 
-  attr_accessor :member, :time_period
+  attr_accessor :member, :start_date, :end_date, :quarter, :year
 
-  def initialize(member, time_period)
+  def initialize(member, start_date, end_date, quarter = nil, year = nil)
     self.member = member
-    self.time_period = time_period
+    self.start_date = start_date
+    self.end_date = end_date
+    self.quarter = quarter
+    self.year = year
   end
 
   def is_leader
@@ -23,8 +26,10 @@ class ForecastMember
     parts = []
     parts << member.id
     parts << member.updated_at
-    parts << time_period.id
-    parts << time_period.updated_at
+    parts << start_date
+    parts << end_date
+    parts << year
+    parts << quarter
     # Weighted pipeline
     open_deals.each do |deal|
       parts << deal.id
@@ -66,7 +71,7 @@ class ForecastMember
 
     @weighted_pipeline = open_deals.sum do |deal|
       deal_total = 0
-      deal.deal_products.for_time_period(time_period).each do |deal_product|
+      deal.deal_products.for_time_period(start_date, end_date).each do |deal_product|
         deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
       end
       deal_total * (deal.stage.probability / 100.0)
@@ -85,7 +90,7 @@ class ForecastMember
 
     open_deals.each do |deal|
       deal_total = 0
-      deal.deal_products.for_time_period(time_period).each do |deal_product|
+      deal.deal_products.for_time_period(start_date, end_date).each do |deal_product|
         deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
       end
       @weighted_pipeline_by_stage[deal.stage.id] ||= 0
@@ -130,7 +135,7 @@ class ForecastMember
   end
 
   def quota
-    @quota ||= member.quotas.for_time_period(time_period).sum(:value)
+    @quota ||= member.quotas.for_time_period(start_date, end_date).sum(:value)
   end
 
   private
@@ -140,7 +145,7 @@ class ForecastMember
   end
 
   def revenues
-    @revenues ||= member.company.revenues.where(client_id: client_ids).for_time_period(time_period).to_a
+    @revenues ||= member.company.revenues.where(client_id: client_ids).for_time_period(start_date, end_date).to_a
   end
 
   def clients
@@ -148,16 +153,20 @@ class ForecastMember
   end
 
   def open_deals
-    @open_deals ||= member.deals.open.for_time_period(time_period).includes(:deal_products, :stage).to_a
+    @open_deals ||= member.deals.open.for_time_period(start_date, end_date).includes(:deal_products, :stage).to_a
   end
 
   def number_of_days(comparer)
-    from = [time_period.start_date, comparer.start_date].max
-    to = [time_period.end_date, comparer.end_date].min
+    from = [start_date, comparer.start_date].max
+    to = [end_date, comparer.end_date].min
     (to.to_date - from.to_date) + 1
   end
 
   def snapshots
-    @snapshots ||= member.snapshots.two_recent_for_time_period(time_period)
+    if year
+      @snapshots ||= member.snapshots.two_recent_for_year_and_quarter(year, quarter)
+    else
+      @snapshots ||= member.snapshots.two_recent_for_time_period(start_date, end_date)
+    end
   end
 end

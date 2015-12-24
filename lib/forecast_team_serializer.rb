@@ -20,7 +20,9 @@ class ForecastTeamSerializer < ActiveModel::Serializer
     :type,
     :teams,
     :leader,
-    :members)
+    :members,
+    :year,
+    :quarter)
 
   def teams
     @teams ||= object.teams.map do |team|

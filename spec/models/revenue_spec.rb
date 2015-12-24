@@ -12,20 +12,16 @@ RSpec.describe Revenue, type: :model do
       let!(:in_revenue) { create :revenue, start_date: '2015-02-01', end_date: '2015-2-28', company: company  }
       let!(:out_revenue) { create :revenue, start_date: '2016-02-01', end_date: '2016-2-28', company: company  }
 
-      it 'should return all revenues when no time period is specified' do
-        expect(Revenue.for_time_period(nil).count).to eq(2)
-      end
-
       it 'should return revenues that are completely in the time period' do
-        expect(Revenue.for_time_period(time_period).count).to eq(1)
-        expect(Revenue.for_time_period(time_period)).to include(in_revenue)
+        expect(Revenue.for_time_period(time_period.start_date, time_period.end_date).count).to eq(1)
+        expect(Revenue.for_time_period(time_period.start_date, time_period.end_date)).to include(in_revenue)
       end
 
       it 'returns revenues that are partially in the time period' do
         create :revenue, start_date: '2015-02-01', end_date: '2016-2-28', company: company
         create :revenue, start_date: '2014-12-01', end_date: '2015-2-28', company: company
 
-        expect(Revenue.for_time_period(time_period).count).to eq(3)
+        expect(Revenue.for_time_period(time_period.start_date, time_period.end_date).count).to eq(3)
       end
     end
   end

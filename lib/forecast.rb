@@ -3,12 +3,15 @@ class Forecast
 
   delegate :id, to: :company
 
-  attr_accessor :company, :rows, :time_period
+  attr_accessor :company, :rows, :start_date, :end_date, :year
 
-  def initialize(company, rows, time_period)
+  # If there is a year, the start_date and end_date are ignored
+  def initialize(company, rows, start_date, end_date, year = nil)
     self.company = company
     self.rows = rows
-    self.time_period = time_period
+    self.start_date = start_date
+    self.end_date = end_date
+    self.year = year
   end
 
   def cache_key
@@ -24,7 +27,17 @@ class Forecast
   end
 
   def teams
-    @teams ||= rows.map{ |t| ForecastTeam.new(t, time_period) }
+    return @teams if defined?(@teams)
+
+    if year.present?
+      @teams = rows.map do |t|
+        quarters.map do |dates|
+          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter])
+        end
+      end.flatten
+    else
+      @teams = rows.map{ |t| ForecastTeam.new(t, start_date, end_date) }
+    end
   end
 
   def stages
@@ -60,5 +73,16 @@ class Forecast
 
   def quota
     teams.sum(&:quota)
+  end
+
+  def quarters
+    return @quarters if defined?(@quarters)
+
+    @quarters = []
+    @quarters << { start_date: Time.new(year, 1, 1), end_date: Time.new(year, 3, 31), quarter: 1 }
+    @quarters << { start_date: Time.new(year, 4, 1), end_date: Time.new(year, 6, 30), quarter: 2 }
+    @quarters << { start_date: Time.new(year, 7, 1), end_date: Time.new(year, 9, 30), quarter: 3 }
+    @quarters << { start_date: Time.new(year, 10, 1), end_date: Time.new(year, 12, 31), quarter: 4 }
+    @quarters
   end
 end

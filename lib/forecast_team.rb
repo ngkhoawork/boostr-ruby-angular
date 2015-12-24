@@ -4,11 +4,14 @@ class ForecastTeam
   delegate :id, to: :team
   delegate :name, to: :team
 
-  attr_accessor :team, :time_period
+  attr_accessor :team, :start_date, :end_date, :quarter, :year
 
-  def initialize(team, time_period)
+  def initialize(team, start_date, end_date, quarter = nil, year = nil)
     self.team = team
-    self.time_period = time_period
+    self.start_date = start_date
+    self.end_date = end_date
+    self.quarter = quarter
+    self.year = year
   end
 
   def type
@@ -52,15 +55,46 @@ class ForecastTeam
   end
 
   def teams
-    @teams ||= team.children.map{ |t| ForecastTeam.new(t, time_period) }
+    return @teams if defined?(@teams)
+
+    if year.present?
+      @teams = team.children.map do |t|
+        quarters.map do |dates|
+          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter])
+        end
+      end.flatten
+    else
+      @teams = team.children.map{ |t| ForecastTeam.new(t, start_date, end_date) }
+    end
   end
 
   def leader
-    @leader ||= ForecastMember.new(team.leader, time_period) if team.leader
+    @leader ||= ForecastMember.new(team.leader, start_date, end_date) if team.leader
   end
 
   def members
-    @members ||= team.members.map{ |m| ForecastMember.new(m, time_period) }
+    return @members if defined?(@members)
+
+    if year.present?
+      @members = team.members.map do |m|
+        quarters.map do |dates|
+          ForecastMember.new(m, dates[:start_date], dates[:end_date], dates[:quarter])
+        end
+      end.flatten
+    else
+      @members = team.members.map{ |m| ForecastMember.new(m, start_date, end_date) }
+    end
+  end
+
+  def quarters
+    return @quarters if defined?(@quarters)
+
+    @quarters = []
+    @quarters << { start_date: Time.new(year, 1, 1), end_date: Time.new(year, 3, 31), quarter: 1 }
+    @quarters << { start_date: Time.new(year, 4, 1), end_date: Time.new(year, 6, 30), quarter: 2 }
+    @quarters << { start_date: Time.new(year, 7, 1), end_date: Time.new(year, 9, 30), quarter: 3 }
+    @quarters << { start_date: Time.new(year, 10, 1), end_date: Time.new(year, 12, 31), quarter: 4 }
+    @quarters
   end
 
   def non_leader_members
