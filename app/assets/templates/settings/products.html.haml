@@ -19,16 +19,13 @@
           %table.table.table-hover.table-striped
             %thead
               %tr
-                %th
-                %th Name
-                %th Product Line
-                %th Family
-                %th Type
+                %th.left Name
+                %th.left Product Line
+                %th.left Family
+                %th.left Type
             %tbody
               %tr{ ng: { repeat: 'row in products', click: 'editModal(row)' } }
-                %td
-                  .empty
-                %td {{ row.name }}
-                %td {{ row.product_line.option.name }}
-                %td {{ row.product_family.option.name }}
-                %td {{ row.pricing_type.option.name }}
+                %td.left {{ row.name }}
+                %td.left {{ row.product_line.option.name }}
+                %td.left {{ row.product_family.option.name }}
+                %td.left {{ row.pricing_type.option.name }}

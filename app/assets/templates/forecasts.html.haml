@@ -1,5 +1,5 @@
 #forecasts
-  #nav.transparent
+  #nav
     .container
       .row
         .col-xs-12
@@ -40,17 +40,17 @@
           %table.table.table-striped
             %thead
               %tr.no-case
-                %th NAME
+                %th.left NAME
                 %th{ ng: { if: 'year' } }
                   &nbsp;
-                %th QUOTA
-                %th WEIGHTED PIPELINE
-                %th REVENUE
-                %th FORECAST AMOUNT
-                %th % TO QUOTA
-                %th GAP TO QUOTA
-                %th WoW PIPELINE
-                %th WoW REVENUE
+                %th.right QUOTA
+                %th.right WEIGHTED PIPELINE
+                %th.right REVENUE
+                %th.right FORECAST AMOUNT
+                %th.right % TO QUOTA
+                %th.right GAP TO QUOTA
+                %th.right WoW PIPELINE
+                %th.right WoW REVENUE
 
             %tbody.teams{ ng: { repeat: 'row in teams', include: "'partials/forecast_rows.html'" } }
 

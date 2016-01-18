@@ -19,23 +19,14 @@
           %table.table.table-hover.table-striped
             %thead
               %tr
-                %th
-                %th Name
-                %th Title
-                %th Role
-                %th Teams
-                %th Deals
+                %th.left Name
+                %th.left Title
             %tbody
               %tr{ ng: { repeat: 'row in users', click: 'editModal(row)' } }
-                %td
-                  .empty
-                %td
+                %td.left
                   {{ row.first_name }} {{ row.last_name }}
                   %br
                   %small
                     {{ row.email }}
-                %td
+                %td.left
                   {{ row.title }}
-                %td
-                %td
-                %td
