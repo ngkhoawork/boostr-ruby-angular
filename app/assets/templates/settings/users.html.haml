@@ -19,10 +19,13 @@
           %table.table.table-hover.table-striped
             %thead
               %tr
+                %th
                 %th.left Name
                 %th.left Title
             %tbody
               %tr{ ng: { repeat: 'row in users', click: 'editModal(row)' } }
+                %td
+                  .empty
                 %td.left
                   {{ row.first_name }} {{ row.last_name }}
                   %br
