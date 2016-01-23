@@ -22,9 +22,9 @@
           %table.table.table-hover.table-striped
             %thead
               %tr
-                %th Team/Members
-                %th Team Lead
-                %th.text-center Members
+                %th.left Team/Members
+                %th.left Team Lead
+                %th.right Members
                 %th.action-column
             %tbody
               %tr{ ng: { repeat: 'team in currentTeam.children' } }
@@ -33,7 +33,7 @@
                     {{ team.name }}
                   = inline_svg 'icons/folder.svg', class: 'svg pull-left'
                 %td {{ team.leader_name }}
-                %td.text-center {{ team.members_count }}
+                %td.right {{ team.members_count }}
                 %td.action-column.info-td
                   .empty
                 %td.action-td
@@ -46,7 +46,7 @@
                   {{ member.first_name }} {{ member.last_name }}
                   = inline_svg 'icons/profile.svg', class: 'svg pull-left'
                 %td --
-                %td.text-center --
+                %td.right --
                 %td.action-column.info-td
                   .empty
                 %td.action-td

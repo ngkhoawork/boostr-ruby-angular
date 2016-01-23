@@ -1,5 +1,5 @@
 #clients
-  #nav
+  #nav.transparent
     .container
       .row
         .col-xs-12
@@ -61,24 +61,25 @@
               .row
                 .col-xs-3
                   %strong
-                    Office
+                    Address
+                .col-xs-9.detail
+                  {{ currentClient.address.street1 }}
+                  %br
+                  {{ currentClient.address.city }}, {{ currentClient.address.state }}  {{ currentClient.address.zip }}
+            .well
+              .row
+                .col-xs-3
+                  %strong
+                    Phone
                 .col-xs-9.detail
                   {{ currentClient.address.phone | tel }}
+            .well
               .row
                 .col-xs-3
                   %strong
                     Email
                 .col-xs-9.detail
                   {{ currentClient.address.email }}
-            .well
-              .row
-                .col-xs-3
-                  %strong
-                    Address
-                .col-xs-9.detail
-                  {{ currentClient.address.street1 }}
-                  %br
-                  {{ currentClient.address.city }}, {{ currentClient.address.state }}  {{ currentClient.address.zip }}
             .well
               .row
                 .col-xs-3

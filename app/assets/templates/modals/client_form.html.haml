@@ -36,7 +36,7 @@
               %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'state.name' } } }
       .form-group
-        %label.control-label{ for: 'office' } Office
+        %label.control-label{ for: 'office' } Phone
         %input.form-control{ placeholder: 'Office Number', ng: { model: 'client.address.phone' }, name: 'office' }
       .form-group
         %label.control-label{ for: 'email' } Email
