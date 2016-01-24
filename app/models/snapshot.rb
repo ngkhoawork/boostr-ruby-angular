@@ -14,14 +14,14 @@ class Snapshot < ActiveRecord::Base
 
   validates :company, :user, :time_period, presence: true
 
-  def self.generate_snapshot(company, user, time_period, year = nil, quarter = nil)
+  def self.generate_snapshot(company, user, time_period, year, quarter)
     Snapshot.create(company: company, user: user, time_period: time_period, year: year, quarter: quarter)
   end
 
   def self.generate_snapshots(company)
     company.users.each do |user|
       company.time_periods.each do |time_period|
-        Snapshot.generate_snapshot(company, user, time_period)
+        Snapshot.generate_snapshot(company, user, time_period, nil, nil)
       end
       # TODO: we need better year selection logic
       [2015, 2016, 2017].each do |year|
