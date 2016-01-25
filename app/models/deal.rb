@@ -14,7 +14,7 @@ class Deal < ActiveRecord::Base
 
   has_many :values, as: :subject
 
-  validates :advertiser_id, :start_date, :end_date, :name, presence: true
+  validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 

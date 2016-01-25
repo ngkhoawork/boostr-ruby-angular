@@ -5,7 +5,8 @@ RSpec.describe Api::DealsController, type: :controller do
   let(:team) { create :parent_team, company: company }
   let(:user) { create :user, company: company, team: team }
   let(:advertiser) { create :client, company: company }
-  let(:deal_params) { attributes_for(:deal, advertiser_id: advertiser.id, budget: '31000') }
+  let(:stage) { create :stage, company: company, position: 1 }  
+  let(:deal_params) { attributes_for(:deal, advertiser_id: advertiser.id, budget: '31000', stage_id: stage.id) }
   let(:deal) { create :deal, company: company }
 
   before do
@@ -57,6 +58,7 @@ RSpec.describe Api::DealsController, type: :controller do
         expect(response_json['budget']).to eq(3_100_000)
         expect(response_json['advertiser_id']).to eq(advertiser.id)
         expect(response_json['next_steps']).to eq(deal_params[:next_steps])
+        expect(response_json['stage_id']).to eq(stage.id)
       end.to change(Deal, :count).by(1)
     end
 
@@ -66,6 +68,7 @@ RSpec.describe Api::DealsController, type: :controller do
         expect(response.status).to eq(422)
         response_json = JSON.parse(response.body)
         expect(response_json['errors']['advertiser_id']).to eq(["can't be blank"])
+        expect(response_json['errors']['stage_id']).to eq(["can't be blank"])
       end.to_not change(Deal, :count)
     end
   end
