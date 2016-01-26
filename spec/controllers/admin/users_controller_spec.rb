@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Admin::UsersController, type: :controller do
 
-  let(:superadmin) { create :user, roles_mask: 3 }
+  let(:superadmin) { create :user, roles_mask: 4 }
   let(:user) { create :user }
 
   context 'as a non-superadmin user' do

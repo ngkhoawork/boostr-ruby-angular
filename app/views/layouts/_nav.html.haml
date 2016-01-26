@@ -23,24 +23,25 @@
             = link_to "CLIENTS", "/clients"
           %li{ ng: { class: "{ active: isActive('/people') }" } }
             = link_to "PEOPLE", "/people"
-          %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
-            %a{ href: '', 'dropdown-toggle': true }
-              SETTINGS
-              %span.caret
-            %ul.dropdown-menu
-              %li
-                = link_to "General Settings", "/settings/general"
-              %li
-                = link_to "Products", "/settings/products"
-              %li
-                = link_to "Teams", "/settings/teams"
-              %li
-                = link_to "Users", "/settings/users"
-              %li
-                = link_to "Custom Values", "/settings/custom_values"
-              %li
-                = link_to "Time Periods", "/settings/time_periods"
-              %li
-                = link_to "Quotas", "/settings/quotas"
-              %li
-                = link_to "Stages", "/settings/stages"
+          - if current_user.is?(:admin) || current_user.is?(:superadmin)
+            %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
+              %a{ href: '', 'dropdown-toggle': true }
+                SETTINGS
+                %span.caret
+              %ul.dropdown-menu
+                %li
+                  = link_to "General Settings", "/settings/general"
+                %li
+                  = link_to "Products", "/settings/products"
+                %li
+                  = link_to "Teams", "/settings/teams"
+                %li
+                  = link_to "Users", "/settings/users"
+                %li
+                  = link_to "Custom Values", "/settings/custom_values"
+                %li
+                  = link_to "Time Periods", "/settings/time_periods"
+                %li
+                  = link_to "Quotas", "/settings/quotas"
+                %li
+                  = link_to "Stages", "/settings/stages"

@@ -1,8 +1,9 @@
 admin_user = User.create!(
   first_name: "Admin",
   last_name: "User",
-  email: "admin@example.com",
-  password: "password"
+  email: "admin@boostrcrm.com",
+  password: "password",
+  roles_mask: 4
 )
 admin_user.confirm!
 
@@ -10,7 +11,8 @@ company_user = User.create!(
   first_name: "Company",
   last_name: "User",
   email: "company@example.com",
-  password: "password"
+  password: "password",
+  roles_mask: 2
 )
 company_user.confirm!
 
@@ -154,22 +156,25 @@ team_member_users = company.users.create!([
     last_name: "User",
     email: "west-coast-member@example.com",
     password: "password",
-    team: west_coast_sales_team
+    team: west_coast_sales_team,
+    roles_mask: 1
   },
   {
     first_name: "East Coast Member",
     last_name: "User",
     email: "east-coast-member@example.com",
     password: "password",
-    team: east_coast_sales_team
+    team: east_coast_sales_team,
+    roles_mask: 1
   },
   {
     first_name: "Shark Member",
     last_name: "User",
     email: "shark-member@example.com",
     password: "password",
-    team: sharks_team
-  }
+    team: sharks_team,
+    roles_mask: 1
+ }
 ])
 team_member_users.each(&:confirm!)
 
