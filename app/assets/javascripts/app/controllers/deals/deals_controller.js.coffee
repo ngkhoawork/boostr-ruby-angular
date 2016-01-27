@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-['$scope', '$modal', '$filter', '$routeParams', '$q', '$location', 'Deal', 'Stage',
-($scope, $modal, $filter, $routeParams, $q, $location, Deal, Stage) ->
+['$scope', '$modal', '$filter', '$routeParams', '$q', '$location', '$window', 'Deal', 'Stage',
+($scope, $modal, $filter, $routeParams, $q, $location, $window, Deal, Stage) ->
 
   $scope.dealFilters = [
     { name: 'My Deals', param: '' }
@@ -55,6 +55,10 @@
 
   $scope.go = (path) ->
     $location.path(path)
+
+  $scope.exportDeals = ->
+    $window.open('/api/deals.zip')
+    return true
 
   $scope.filterDeals = (filter) ->
     $scope.dealFilter = filter

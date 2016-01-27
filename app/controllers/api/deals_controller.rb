@@ -1,8 +1,11 @@
 class Api::DealsController < ApplicationController
-  respond_to :json
+  respond_to :json, :zip
 
   def index
-    render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage).distinct , each_serializer: DealIndexSerializer).to_json
+    respond_to do |format|
+      format.json { render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage).distinct , each_serializer: DealIndexSerializer).to_json }
+      format.zip { send_data deals.to_zip, filename: "deals-#{Date.today}.zip" }
+    end
   end
 
   def show

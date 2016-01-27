@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'zip'
+
 class Deal < ActiveRecord::Base
   acts_as_paranoid
 
@@ -142,4 +145,38 @@ class Deal < ActiveRecord::Base
       end
     end
   end
+
+  def self.to_zip
+
+    deals_csv = CSV.generate do |csv|
+      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Start Date", "End Date"]
+      all.each do |deal|
+        agency_name = deal.agency.present? ? deal.agency.name : nil
+        first_member = deal.deal_members.order("created_at").first
+		first_member_name = first_member.present? ? first_member.user.name : nil
+        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, first_member_name , deal.budget, deal.stage.name, deal.stage.probability, deal.start_date, deal.end_date]
+      end
+    end
+
+    products_csv = CSV.generate do |csv|
+      csv << ["Deal ID", "Name", "Product", "Budget", "Period"]
+      all.each do |deal|
+        deal.deal_products.each do |product|
+          product_name = product.product.present? ? product.product.name : nil
+		  csv << [deal.id, deal.name, product_name, product.budget, product.period]
+        end
+      end
+    end
+
+    filestream = Zip::OutputStream.write_buffer do |zio|
+      zio.put_next_entry("deals-#{Date.today}.csv")
+      zio.write deals_csv
+      zio.put_next_entry("products-#{Date.today}.csv")
+      zio.write products_csv
+    end
+    filestream.rewind
+	filestream.read
+
+  end
+
 end
