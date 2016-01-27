@@ -1,6 +1,4 @@
 require 'rails_helper'
-require 'rubygems'
-require 'zip'
 
 RSpec.describe Deal, type: :model do
   let(:company) { create :company }
