@@ -154,7 +154,7 @@ class Deal < ActiveRecord::Base
         agency_name = deal.agency.present? ? deal.agency.name : nil
         first_member = deal.deal_members.order("created_at").first
 		first_member_name = first_member.present? ? first_member.user.name : nil
-        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, first_member_name , deal.budget, deal.stage.name, deal.stage.probability, deal.start_date, deal.end_date]
+        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, first_member_name, deal.budget, deal.stage.name, deal.stage.probability, deal.start_date, deal.end_date]
       end
     end
 

@@ -1,4 +1,6 @@
 require 'rails_helper'
+require 'rubygems'
+require 'zip'
 
 RSpec.describe Deal, type: :model do
   let(:company) { create :company }
@@ -176,6 +178,17 @@ RSpec.describe Deal, type: :model do
       expect(DealMember.first.user_id).to eq(client_member.user_id)
       expect(DealMember.first.values.first.option_id).to eq(role.option_id)
       expect(DealMember.first.share).to eq(client_member.share)
+    end
+  end
+
+  context 'to_zip' do
+    let(:deal) { create :deal, name: 'Bob' }
+    let(:product) { create :product }
+
+    it 'returns the contents of deal zip' do
+      deal.add_product(product.id, 10_000)
+      deal_zip = Deal.to_zip
+      expect(deal_zip).not_to be_nil
     end
   end
 end

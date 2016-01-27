@@ -23,6 +23,12 @@ RSpec.describe Api::DealsController, type: :controller do
     let(:another_user) { create :user, company: company, team: team }
     let!(:another_deal_member) { create :deal_member, deal: team_deal, user: another_user  }
 
+    it 'returns a list of deals and products csv in zip' do
+      get :index, format: :zip
+      expect(response).to be_success
+      expect(response.body).to_not be_nil
+    end
+
     it 'returns a list of deals for the current_user' do
       get :index, format: :json
       expect(response).to be_success
