@@ -163,7 +163,7 @@ class Deal < ActiveRecord::Base
       all.each do |deal|
         deal.deal_products.each do |product|
           product_name = product.product.present? ? product.product.name : nil
-		  csv << [deal.id, deal.name, product_name, product.budget, product.period]
+		  csv << [deal.id, deal.name, product_name, product.budget, product.start_date]
         end
       end
     end
