@@ -4,7 +4,16 @@ class Api::DealsController < ApplicationController
   def index
     respond_to do |format|
       format.json { render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage).distinct , each_serializer: DealIndexSerializer).to_json }
-      format.zip { send_data deals.to_zip, filename: "deals-#{Date.today}.zip" }
+      format.zip {
+        if current_user.leader?
+          deals = company.deals
+        elsif team.present?
+          deals = team.deals
+        else
+          deals = current_user.deals
+        end
+        send_data deals.to_zip, filename: "deals-#{Date.today}.zip"
+      }
     end
   end
 
