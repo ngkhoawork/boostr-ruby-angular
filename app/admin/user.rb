@@ -1,5 +1,5 @@
 ActiveAdmin.register User do
-  permit_params :email, :password, :password_confirmation, :first_name, :last_name, :title, :company_id, roles: []
+  permit_params :email, :password, :first_name, :last_name, :title, :company_id, roles: []
 
   index do
     selectable_column
@@ -24,7 +24,6 @@ ActiveAdmin.register User do
     f.inputs 'User Details' do
       f.input :email
       f.input :password
-      f.input :password_confirmation
       f.input :first_name
       f.input :last_name
       f.input :title
@@ -33,16 +32,4 @@ ActiveAdmin.register User do
     end
     f.actions
   end
-
-  controller do
-    def update
-      if params[:user][:password].blank? && params[:user][:password_confirmation].blank?
-        params[:user].delete("password")
-        params[:user].delete("password_confirmation")
-      end
-      super
-    end
-  end
-
 end
-
