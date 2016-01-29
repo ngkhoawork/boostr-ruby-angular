@@ -44,12 +44,23 @@
           $scope.setChartData()
       else
         Forecast.all({ time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->
+          # If current user is a leader - forecast = whole company
+          # if current user is not a leader - forecast = current_user
+          console.log forecast
           $scope.forecast = forecast
           $scope.teams = forecast.teams
+          if forecast.type && forecast.type == "member"
+            $scope.member = forecast
           $scope.setChartData()
 
   $scope.setChartData = () ->
-   # There is a dataset for every stage represented in the user data & a dataset for revenue
+    members = []
+    if $scope.members
+      members = $scope.members
+    else if $scope.member
+      members.push($scope.member)
+	  
+    # There is a dataset for every stage represented in the user data & a dataset for revenue
     datasets = []
     _.each $scope.forecast.stages, (s) ->
       data = []
@@ -57,8 +68,9 @@
         data.push(t.weighted_pipeline_by_stage[s.id] || 0)
       if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
         data.push($scope.forecast.leader.weighted_pipeline_by_stage[s.id] || 0)
-      _.each $scope.members, (m) ->
-        data.push(m.weighted_pipeline_by_stage[s.id] || 0)
+      _.each members, (m) ->
+        if m.weighted_pipeline_by_stage
+          data.push(m.weighted_pipeline_by_stage[s.id])
       datasets.push({
         fillColor: s.color,
         label: s.probability + "%",
@@ -71,8 +83,8 @@
       data.push(t.revenue || 0)
     if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
       data.push($scope.forecast.leader.revenue || 0)
-    _.each $scope.members, (m) ->
-      data.push(m.revenue || 0)
+    _.each members, (m) ->
+      data.push(m.revenue) if m.revenue > 0
     if data.length > 0
       datasets.push({
         fillColor: '#74d600',
@@ -86,7 +98,7 @@
       quotas.push(t.quota || 0)
     if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
       quotas.push(0)
-    _.each $scope.members, (m) ->
+    _.each members, (m) ->
       quotas.push(m.quota || 0)
 
     # Add a list of member names as the x-axis labels
@@ -98,7 +110,7 @@
         names.push(t.name)
     if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
       names.push($scope.forecast.leader.name)
-    _.each $scope.members, (m) ->
+    _.each members, (m) ->
       if m.quarter
         names.push(m.name + ' Q' + m.quarter)
       else
