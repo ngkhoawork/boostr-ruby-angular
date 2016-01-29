@@ -24,7 +24,7 @@ class Snapshot < ActiveRecord::Base
         Snapshot.generate_snapshot(company, user, time_period, nil, nil)
       end
       # TODO: we need better year selection logic
-      [2015, 2016, 2017].each do |year|
+      [2016, 2017].each do |year|
         (1..4).each do |quarter|
           Snapshot.generate_snapshot(company, user, nil, year, quarter)
         end

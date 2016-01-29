@@ -21,7 +21,7 @@
 
   $scope.init = () ->
     # TODO: last year, this year, next year OR all years with data?
-    $scope.years = [2015, 2016, 2017]
+    $scope.years = [2016, 2017]
     $scope.weightedPipelineDetail = {}
     TimePeriod.all().then (timePeriods) ->
       $scope.timePeriods = timePeriods
