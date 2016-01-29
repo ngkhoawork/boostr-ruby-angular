@@ -154,7 +154,8 @@ class Deal < ActiveRecord::Base
         agency_name = deal.agency.present? ? deal.agency.name : nil
         first_member = deal.deal_members.order("created_at").first
 		first_member_name = first_member.present? ? first_member.user.name : nil
-        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, first_member_name, deal.budget/100.0, deal.stage.name, deal.stage.probability, deal.start_date, deal.end_date]
+        budget = deal.budget.present? ? deal.budget/100.0 : nil
+        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, first_member_name, budget, deal.stage.name, deal.stage.probability, deal.start_date, deal.end_date]
       end
     end
 
@@ -163,7 +164,8 @@ class Deal < ActiveRecord::Base
       all.each do |deal|
         deal.deal_products.each do |product|
           product_name = product.product.present? ? product.product.name : nil
-		  csv << [deal.id, deal.name, product_name, product.budget/100.0, product.start_date.strftime("%B %Y")]
+          budget = product.budget.present? ? product.budget/100.0 : nil
+		  csv << [deal.id, deal.name, product_name, budget, product.start_date.strftime("%B %Y")]
         end
       end
     end
