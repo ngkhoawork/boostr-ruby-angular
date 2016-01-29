@@ -44,9 +44,6 @@
           $scope.setChartData()
       else
         Forecast.all({ time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->
-          # If current user is a leader - forecast = whole company
-          # if current user is not a leader - forecast = current_user
-          console.log forecast
           $scope.forecast = forecast
           $scope.teams = forecast.teams
           if forecast.type && forecast.type == "member"
