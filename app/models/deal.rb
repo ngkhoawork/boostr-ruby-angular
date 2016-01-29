@@ -163,7 +163,10 @@ class Deal < ActiveRecord::Base
       all.each do |deal|
         deal.deal_products.each do |product|
           product_name = product.product.present? ? product.product.name : nil
-		  csv << [deal.id, deal.name, product_name, product.budget, product.start_date]
+#          period = Date.parse(product.start_date).strftime("%B %Y")
+#          period = Date.strptime(product.start_date, '%B %Y')
+           period = product.start_date.strftime("%B %Y")
+		  csv << [deal.id, deal.name, product_name, product.budget/100.0, period]
         end
       end
     end
