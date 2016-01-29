@@ -113,6 +113,18 @@
       else
         names.push(m.name)
 
+    hasRealData = false
+    for dataset in datasets
+      if hasRealData
+        break
+      for value in dataset.data
+        if value > 0 
+          hasRealData = true
+          break
+
+    if !hasRealData
+      datasets = []
+
     $scope.chartBarData = {
       labels: names,
       datasets: datasets,
