@@ -149,23 +149,34 @@ class Deal < ActiveRecord::Base
   def self.to_zip
 
     deals_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Start Date", "End Date"]
+      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date"]
       all.each do |deal|
         agency_name = deal.agency.present? ? deal.agency.name : nil
         first_member = deal.deal_members.order("created_at").first
 		first_member_name = first_member.present? ? first_member.user.name : nil
         budget = deal.budget.present? ? deal.budget/100.0 : nil
-        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, first_member_name, budget, deal.stage.name, deal.stage.probability, deal.start_date, deal.end_date]
+        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, first_member_name, budget, deal.stage.name, deal.stage.probability, deal.deal_type, deal.source_type, deal.next_steps, deal.start_date, deal.end_date, deal.created_at]
       end
     end
 
     products_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Product", "Budget", "Period"]
+      csv << ["Deal ID", "Name", "Product", "Product Line", "Family", "Pricing Type", "Budget", "Period"]
       all.each do |deal|
-        deal.deal_products.each do |product|
-          product_name = product.product.present? ? product.product.name : nil
-          budget = product.budget.present? ? product.budget/100.0 : nil
-		  csv << [deal.id, deal.name, product_name, budget, product.start_date.strftime("%B %Y")]
+        deal.deal_products.each do |deal_product|
+          product = deal_product.product
+          if product.present?
+            product_name =  product.name
+            product_line = product.product_line
+            product_family = product.family	
+            product_pricing = product.pricing_type
+          else
+            product_name = ''
+            product_line = ''
+            product_family = ''	
+            product_pricing = ''
+          end
+          budget = deal_product.budget.present? ? deal_product.budget/100.0 : nil
+		  csv << [deal.id, deal.name, product_name, product_line, product_family, product_pricing, budget, deal_product.start_date.strftime("%B %Y")]
         end
       end
     end
