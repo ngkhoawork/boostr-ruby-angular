@@ -58,4 +58,4 @@
 
             %tbody.members{ ng: { repeat: 'row in members', include: "'partials/forecast_rows.html'" } }
 
-            %tbody.member{ ng: { hide: 'teams', repeat: 'row in [forecast]', include: "'partials/forecast_rows.html'" } }
+            %tbody.member{ ng: { hide: 'teams || members', repeat: 'row in [forecast]', include: "'partials/forecast_rows.html'" } }

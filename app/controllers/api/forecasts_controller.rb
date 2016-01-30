@@ -3,9 +3,9 @@ class Api::ForecastsController < ApplicationController
 
   def index
     if current_user.leader?
-      render json: Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)
+      render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
     else
-      render json: ForecastMember.new(current_user, time_period.start_date, time_period.end_date, year)
+      render json: forecast_member
     end
   end
 
@@ -15,10 +15,31 @@ class Api::ForecastsController < ApplicationController
 
   protected
 
+  def forecast_member
+    if year
+      quarters.map do |dates|
+        ForecastMember.new(current_user, dates[:start_date], dates[:end_date], dates[:quarter], year)
+      end
+    else
+      [ForecastMember.new(current_user, time_period.start_date, time_period.end_date)]
+    end
+  end
+
   def year
     return nil if params[:year].to_i < 2000
 
     params[:year].to_i
+  end
+
+  def quarters
+    return @quarters if defined?(@quarters)
+
+    @quarters = []
+    @quarters << { start_date: Time.new(year, 1, 1), end_date: Time.new(year, 3, 31), quarter: 1 }
+    @quarters << { start_date: Time.new(year, 4, 1), end_date: Time.new(year, 6, 30), quarter: 2 }
+    @quarters << { start_date: Time.new(year, 7, 1), end_date: Time.new(year, 9, 30), quarter: 3 }
+    @quarters << { start_date: Time.new(year, 10, 1), end_date: Time.new(year, 12, 31), quarter: 4 }
+    @quarters
   end
 
   def time_period

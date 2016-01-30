@@ -44,10 +44,14 @@
           $scope.setChartData()
       else
         Forecast.all({ time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->
-          $scope.forecast = forecast
-          $scope.teams = forecast.teams
-          if forecast.type && forecast.type == "member"
-            $scope.member = forecast
+          if forecast.length > 1 # forecast is a quarterly member array
+            $scope.forecast = forecast[0]
+            $scope.members = forecast
+          else # forecast is either a single top-level company or single member object
+            $scope.forecast = forecast[0]
+            $scope.teams = forecast[0].teams
+            if forecast[0].type && forecast[0].type == "member"
+              $scope.member = forecast[0]
           $scope.setChartData()
 
   $scope.setChartData = () ->
@@ -66,8 +70,7 @@
       if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
         data.push($scope.forecast.leader.weighted_pipeline_by_stage[s.id] || 0)
       _.each members, (m) ->
-        if m.weighted_pipeline_by_stage
-          data.push(m.weighted_pipeline_by_stage[s.id])
+        data.push(m.weighted_pipeline_by_stage[s.id] || 0)
       datasets.push({
         fillColor: s.color,
         label: s.probability + "%",
@@ -81,7 +84,7 @@
     if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
       data.push($scope.forecast.leader.revenue || 0)
     _.each members, (m) ->
-      data.push(m.revenue) if m.revenue > 0
+      data.push(m.revenue || 0)
     if data.length > 0
       datasets.push({
         fillColor: '#74d600',

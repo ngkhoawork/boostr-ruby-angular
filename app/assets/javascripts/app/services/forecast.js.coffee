@@ -2,12 +2,7 @@
 ['$resource', '$q',
 ($resource, $q) ->
 
-  resource = $resource '/api/forecasts/:id', { id: '@id' },
-    query: {
-      method: 'GET'
-      url: '/api/forecasts'
-      isArray: false
-    }
+  resource = $resource '/api/forecasts/:id', { id: '@id' }
 
   @all = (params) ->
     deferred = $q.defer()
