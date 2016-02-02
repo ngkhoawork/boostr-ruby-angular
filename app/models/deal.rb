@@ -160,23 +160,24 @@ class Deal < ActiveRecord::Base
     end
 
     products_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Product", "Product Line", "Family", "Pricing Type", "Budget", "Period"]
+      csv << ["Deal ID", "Name", "Product", "Pricing Type", "Product Family", "Product Line", "Budget", "Period"]
       all.each do |deal|
         deal.deal_products.each do |deal_product|
           product = deal_product.product
+		  product_name = ""
+		  pricing_type = ""
+		  product_family = ""
+		  product_line = ""
           if product.present?
             product_name =  product.name
-            product_line = product.product_line
-            product_family = product.family	
-            product_pricing = product.pricing_type
-          else
-            product_name = ''
-            product_line = ''
-            product_family = ''	
-            product_pricing = ''
+            if product.values.present?
+              pricing_type = product.values[0].option.name if product.values[0].present?
+              product_family = product.values[1].option.name if product.values[1].present?
+              product_line = product.values[2].option.name if product.values[2].present?
+            end
           end
           budget = deal_product.budget.present? ? deal_product.budget/100.0 : nil
-		  csv << [deal.id, deal.name, product_name, product_line, product_family, product_pricing, budget, deal_product.start_date.strftime("%B %Y")]
+		  csv << [deal.id, deal.name, product_name, product_line, product_family, pricing_type, budget, deal_product.start_date.strftime("%B %Y")]
         end
       end
     end
