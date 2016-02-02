@@ -152,7 +152,7 @@ class Deal < ActiveRecord::Base
       csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date"]
       all.each do |deal|
         agency_name = deal.agency.present? ? deal.agency.name : nil
-        first_member = deal.deal_members.order("created_at").first
+        first_member = deal.deal_members.order(:created_at).first
 		first_member_name = first_member.present? ? first_member.user.name : nil
         budget = deal.budget.present? ? deal.budget/100.0 : nil
         csv << [deal.id, deal.name, deal.advertiser.name, agency_name, first_member_name, budget, deal.stage.name, deal.stage.probability, deal.deal_type, deal.source_type, deal.next_steps, deal.start_date, deal.end_date, deal.created_at]
@@ -160,24 +160,27 @@ class Deal < ActiveRecord::Base
     end
 
     products_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Product", "Pricing Type", "Product Family", "Product Line", "Budget", "Period"]
+      csv << ["Deal ID", "Name", "Product", "Pricing Type", "Product Line", "Product Family", "Budget", "Period"]
       all.each do |deal|
         deal.deal_products.each do |deal_product|
+          budget = deal_product.budget.present? ? deal_product.budget/100.0 : nil
           product = deal_product.product
-		  product_name = ""
-		  pricing_type = ""
-		  product_family = ""
-		  product_line = ""
+          product_name = ""
+          pricing_type = ""
+          product_family = ""
+          product_line = ""
           if product.present?
-            product_name =  product.name
-            if product.values.present?
-              pricing_type = product.values[0].option.name if product.values[0].present?
-              product_family = product.values[1].option.name if product.values[1].present?
-              product_line = product.values[2].option.name if product.values[2].present?
+            product_name = product.name
+            if product.values.present? && product.fields.present?
+              pricing_type_field = product.fields.find_by_name("Pricing Type")
+              pricing_type = product.values.find_by_field_id(pricing_type_field.id).option.name if pricing_type_field.present?
+              product_line_field = product.fields.find_by_name("Product Line")
+              product_line = product.values.find_by_field_id(product_line_field.id).option.name if product_line_field.present?
+              product_family_field = product.fields.find_by_name("Product Family")
+              product_family = product.values.find_by_field_id(product_family_field.id).option.name if product_family_field.present?
             end
           end
-          budget = deal_product.budget.present? ? deal_product.budget/100.0 : nil
-		  csv << [deal.id, deal.name, product_name, product_line, product_family, pricing_type, budget, deal_product.start_date.strftime("%B %Y")]
+		  csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget, deal_product.start_date.strftime("%B %Y")]
         end
       end
     end
