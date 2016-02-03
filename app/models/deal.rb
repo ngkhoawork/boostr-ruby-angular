@@ -173,11 +173,14 @@ class Deal < ActiveRecord::Base
             product_name = product.name
             if product.values.present? && product.fields.present?
               pricing_type_field = product.fields.find_by_name("Pricing Type")
-              pricing_type = product.values.find_by_field_id(pricing_type_field.id).option.name if pricing_type_field.present?
+              pricing_type_option = product.values.find_by_field_id(pricing_type_field.id).option if pricing_type_field.present?
+              pricing_type = pricing_type_option.name if pricing_type_option.present?
               product_line_field = product.fields.find_by_name("Product Line")
-              product_line = product.values.find_by_field_id(product_line_field.id).option.name if product_line_field.present?
+              product_line_option = product.values.find_by_field_id(product_line_field.id).option if product_line_field.present?
+              product_line = product_line_option.name if product_line_option.present?
               product_family_field = product.fields.find_by_name("Product Family")
-              product_family = product.values.find_by_field_id(product_family_field.id).option.name if product_family_field.present?
+              product_family_option = product.values.find_by_field_id(product_family_field.id).option if product_family_field.present?
+              product_family = product_family_option.name if product_family_option.present?
             end
           end
 		  csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget, deal_product.start_date.strftime("%B %Y")]
