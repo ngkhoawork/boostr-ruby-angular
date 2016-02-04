@@ -32,7 +32,7 @@ class Forecast
     if year.present?
       @teams = rows.map do |t|
         quarters.map do |dates|
-          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter], year)
+          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter])
         end
       end.flatten
     else
