@@ -45,7 +45,7 @@
       else
         Forecast.all({ time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->
           if forecast.length > 1 # forecast is a quarterly member array
-            $scope.forecast = forecast[0]
+            $scope.forecast = forecast
             $scope.members = forecast
           else # forecast is either a single top-level company or single member object
             $scope.forecast = forecast[0]
@@ -60,22 +60,38 @@
       members = $scope.members
     else if $scope.member
       members.push($scope.member)
-	  
+
     # There is a dataset for every stage represented in the user data & a dataset for revenue
     datasets = []
-    _.each $scope.forecast.stages, (s) ->
-      data = []
-      _.each $scope.teams, (t) ->
-        data.push(t.weighted_pipeline_by_stage[s.id] || 0)
-      if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
-        data.push($scope.forecast.leader.weighted_pipeline_by_stage[s.id] || 0)
-      _.each members, (m) ->
-        data.push(m.weighted_pipeline_by_stage[s.id] || 0)
-      datasets.push({
-        fillColor: s.color,
-        label: s.probability + "%",
-        data: data
-      })
+    if $scope.forecast.length > 1
+      _.each $scope.forecast, (f) ->
+        _.each f.stages, (s) ->
+          data = []
+          _.each $scope.teams, (t) ->
+            data.push(t.weighted_pipeline_by_stage[s.id] || 0)
+          if f.leader && (f.leader.revenue > 0 ||  f.leader.weighted_pipeline > 0)
+            data.push(f.leader.weighted_pipeline_by_stage[s.id] || 0)
+          _.each members, (m) ->
+            data.push(m.weighted_pipeline_by_stage[s.id] || 0)
+          datasets.push({
+            fillColor: s.color,
+            label: s.probability + "%",
+            data: data
+          })
+    else
+      _.each $scope.forecast.stages, (s) ->
+        data = []
+        _.each $scope.teams, (t) ->
+          data.push(t.weighted_pipeline_by_stage[s.id] || 0)
+        if $scope.forecast.leader && ($scope.forecast.leader.revenue > 0 ||  $scope.forecast.leader.weighted_pipeline > 0)
+          data.push($scope.forecast.leader.weighted_pipeline_by_stage[s.id] || 0)
+        _.each members, (m) ->
+          data.push(m.weighted_pipeline_by_stage[s.id] || 0)
+        datasets.push({
+          fillColor: s.color,
+          label: s.probability + "%",
+          data: data
+        })
 
     # Add the revenue dataset last so it appears at the bottom of the stacked bar
     data = []
