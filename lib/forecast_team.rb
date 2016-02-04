@@ -60,7 +60,7 @@ class ForecastTeam
     if year.present?
       @teams = team.children.map do |t|
         quarters.map do |dates|
-          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter], year)
+          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter])
         end
       end.flatten
     else
@@ -78,7 +78,7 @@ class ForecastTeam
     if year.present?
       @members = team.members.map do |m|
         quarters.map do |dates|
-          ForecastMember.new(m, dates[:start_date], dates[:end_date], dates[:quarter], year)
+          ForecastMember.new(m, dates[:start_date], dates[:end_date], dates[:quarter])
         end
       end.flatten
     else
