@@ -144,7 +144,7 @@ class Client < ActiveRecord::Base
           next
         end
 
-        option_error = insert_option(current_user, 'ClientMember', user.id, row[12])
+        option_error = insert_option(current_user, 'ClientMember', client_member.id, row[12])
         if option_error.present?
           error = { row: row_number, message: option_error }
           errors << error
@@ -168,7 +168,7 @@ class Client < ActiveRecord::Base
             next
           end
 
-          option_error = insert_option(current_user, 'ClientMember', user1.id, row[15])
+          option_error = insert_option(current_user, 'ClientMember', client_member1.id, row[15])
           if option_error.present?
             error = { row: row_number, message: option_error }
             errors << error
