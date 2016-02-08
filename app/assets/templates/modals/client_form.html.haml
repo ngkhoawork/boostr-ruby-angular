@@ -11,14 +11,14 @@
       .form-group
         .row
           .col-xs-6
-            %label.control-label{ for: 'client-type' } Client Type
+            %label.control-label{ for: 'client-type' } Client Type*
             %ui-select{ name: 'client-type', ng: { model: 'client.client_type.option_id', disabled: true } }
               %ui-select-match{ placeholder: 'Client Type' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'option.id as option in client.client_type.options | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'option.name' } } }
       .form-group
-        %label.control-label{ for: 'name' } Name
+        %label.control-label{ for: 'name' } Name*
         %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }
       .form-group
         %label.control-label{ for: 'street1' } Address

@@ -9,11 +9,11 @@
           {{ formType }} Deal
     .modal-body
       .form-group
-        %label.control-label{ for: 'name' } Name
+        %label.control-label{ for: 'name' } Name*
         %input.form-control{ placeholder: 'Name', ng: { model: 'deal.name', required: true }, name: 'name' }
 
       .form-group
-        %label.control-label{ for: 'stage' } Stage
+        %label.control-label{ for: 'stage' } Stage*
         %ui-select{ name: 'stage', ng: { model: 'deal.stage_id', disabled: true, required: true } }
           %ui-select-match{ placeholder: 'Stage' }
             {{ $select.selected.name }}
@@ -27,7 +27,7 @@
       .form-group
         .row
           .col-xs-6
-            %label.control-label{ for: 'advertiser' } Advertiser
+            %label.control-label{ for: 'advertiser' } Advertiser*
             %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, required: true } }
               %ui-select-match{ placeholder: 'Advertiser' }
                 {{ $select.selected.name }}
@@ -65,11 +65,11 @@
       .form-group
         .row
           .col-md-6.bs-datepicker
-            %label.control-label{ for: 'start-date' } Start Date
+            %label.control-label{ for: 'start-date' } Start Date*
             %input.form-control{ name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
 
           .col-md-6.bs-datepicker
-            %label.control-label{ for: 'end-date' } End Date
+            %label.control-label{ for: 'end-date' } End Date*
             %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
 
     .modal-footer.text-center
