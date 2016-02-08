@@ -64,14 +64,14 @@ class Client < ActiveRecord::Base
       CSV.parse(file, headers: true) do |row|
         row_number += 1
 
-        unless user = User.where(email: row[8], company_id: current_user.company_id).first
+        unless user = User.where(email: row[10], company_id: current_user.company_id).first
           error = { row: row_number, message: ['Sales Rep 1 could not be found'] }
           errors << error
           next
         end
 
-        if row[11].present?
-          unless user1 = User.where(email: row[11], company_id: current_user.company_id).first
+        if row[13].present? && !row[13].blank?
+          unless user1 = User.where(email: row[13], company_id: current_user.company_id).first
             error = { row: row_number, message: ['Sales Rep 2 could not be found'] }
             errors << error
             next
@@ -84,7 +84,7 @@ class Client < ActiveRecord::Base
         }
 
         create_params = {
-          website: row[7]
+          website: row[9]
         }
 
         client = Client.find_or_initialize_by(find_params)
@@ -106,10 +106,12 @@ class Client < ActiveRecord::Base
 
         address_params = {
           street1: row[2],
-          city: row[3],
-          state: row[4],
-          phone: row[5],
-          email: row[6]
+          street2: row[3],
+          city: row[4],
+          state: row[5],
+          zip: row[6],
+          phone: row[7],
+          email: row[8]
         }
 
         address = Address.find_or_initialize_by(find_address_params)      
@@ -132,7 +134,7 @@ class Client < ActiveRecord::Base
         }
 
         client_member_params = {
-          share: row[9]
+          share: row[11]
         }
 
         client_member = ClientMember.find_or_initialize_by(find_client_member_params)
@@ -142,7 +144,7 @@ class Client < ActiveRecord::Base
           next
         end
 
-        option_error = insert_option(current_user, 'ClientMember', user.id, row[10])
+        option_error = insert_option(current_user, 'ClientMember', user.id, row[12])
         if option_error.present?
           error = { row: row_number, message: option_error }
           errors << error
@@ -156,7 +158,7 @@ class Client < ActiveRecord::Base
           }
 
           client_member1_params = {
-            share: row[12]
+            share: row[14]
           }
 
           client_member1 = ClientMember.find_or_initialize_by(find_client_member1_params)
@@ -166,7 +168,7 @@ class Client < ActiveRecord::Base
             next
           end
 
-          option_error = insert_option(current_user, 'ClientMember', user1.id, row[13])
+          option_error = insert_option(current_user, 'ClientMember', user1.id, row[15])
           if option_error.present?
             error = { row: row_number, message: option_error }
             errors << error

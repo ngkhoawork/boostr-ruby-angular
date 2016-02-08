@@ -59,12 +59,13 @@ class Contact < ActiveRecord::Base
 
         address_params = {
           street1: row[3],
-          city: row[4],
-          state: row[5],
-          zip: row[6],
-          phone: row[7],
-          mobile: row[8],
-          email: row[9]
+          street2: row[4],
+          city: row[5],
+          state: row[6],
+          zip: row[7],
+          phone: row[8],
+          mobile: row[9],
+          email: row[10]
         }
 
         address = Address.find_or_initialize_by(find_address_params)      
