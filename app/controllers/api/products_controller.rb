@@ -1,8 +1,12 @@
 class Api::ProductsController < ApplicationController
-  respond_to :json
+  respond_to :json, :csv
 
   def index
-    render json: current_user.company.products
+    products = current_user.company.products
+    respond_to do |format|
+      format.json { render json: products }
+      format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
+    end
   end
 
   def create

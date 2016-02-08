@@ -183,7 +183,7 @@ class Deal < ActiveRecord::Base
               product_family = product_family_value.option.name if product_family_value.present? && product_family_value.option.present?
             end
           end
-		  csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget, deal_product.start_date.strftime("%B %Y")]
+		      csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget, deal_product.start_date.strftime("%B %Y")]
         end
       end
     end
@@ -195,7 +195,7 @@ class Deal < ActiveRecord::Base
       zio.write products_csv
     end
     filestream.rewind
-	filestream.read
+    filestream.read
 
   end
 

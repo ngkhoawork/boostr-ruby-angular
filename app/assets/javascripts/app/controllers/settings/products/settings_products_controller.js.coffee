@@ -1,6 +1,6 @@
 @app.controller 'SettingsProductsController',
-['$scope', '$modal', 'Product', 'Field',
-($scope, $modal, Product, Field) ->
+['$scope', '$modal', '$window', 'Product', 'Field',
+($scope, $modal, $window, Product, Field) ->
 
   $scope.init = () ->
     Product.all().then (products) ->
@@ -32,6 +32,10 @@
 
   $scope.$on 'updated_products', ->
     $scope.init()
+
+  $scope.exportProducts = ->
+    $window.open('/api/products.csv')
+    return true
 
   $scope.init()
 
