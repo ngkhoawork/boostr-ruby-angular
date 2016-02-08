@@ -1,0 +1,20 @@
+#users
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right.last
+              %a.upload{ href: '', ng: { click: 'showUploadClientModal()' } }
+                = inline_svg 'icons/upload.svg'
+                Upload Clients
+            %li.pull-right
+              %a.upload{ href: '', ng: { click: 'showUploadContactModal()' } }
+                = inline_svg 'icons/upload.svg'
+                Upload Contacts
+
+  .container
+    .row
+      .col-xs-12
+        %h3
+          Uploads

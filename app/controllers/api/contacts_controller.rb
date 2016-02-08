@@ -10,12 +10,18 @@ class Api::ContactsController < ApplicationController
   end
 
   def create
-    contact = current_user.company.contacts.new(contact_params)
-    contact.created_by = current_user.id
-    if contact.save
-      render json: contact, status: :created
+    if params[:file].present?
+      csv_file = IO.read(params[:file].tempfile.path)
+      contacts = Contact.import(csv_file, current_user)
+      render json: contacts
     else
-      render json: { errors: contact.errors.messages }, status: :unprocessable_entity
+      contact = current_user.company.contacts.new(contact_params)
+      contact.created_by = current_user.id
+      if contact.save
+        render json: contact, status: :created
+      else
+        render json: { errors: contact.errors.messages }, status: :unprocessable_entity
+      end
     end
   end
 

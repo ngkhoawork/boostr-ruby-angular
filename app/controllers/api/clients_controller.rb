@@ -15,12 +15,18 @@ class Api::ClientsController < ApplicationController
   end
 
   def create
-    client = company.clients.new(client_params)
-    client.created_by = current_user.id
-    if client.save
-      render json: client, status: :created
+    if params[:file].present?
+      csv_file = IO.read(params[:file].tempfile.path)
+      clients = Client.import(csv_file, current_user)
+      render json: clients
     else
-      render json: { errors: client.errors.messages }, status: :unprocessable_entity
+      client = company.clients.new(client_params)
+      client.created_by = current_user.id
+      if client.save
+        render json: client, status: :created
+      else
+        render json: { errors: client.errors.messages }, status: :unprocessable_entity
+      end
     end
   end
 

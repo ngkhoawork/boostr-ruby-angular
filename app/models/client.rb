@@ -52,4 +52,157 @@ class Client < ActiveRecord::Base
 
     client_members.build(user_id: created_by, share: 0)
   end
+
+  def self.import(file, current_user)
+    errors = []
+    
+    if !current_user.is?(:superadmin)
+      error = { message: ['Permission denied'] }
+      errors << error
+    else
+      row_number = 0
+      CSV.parse(file, headers: true) do |row|
+        row_number += 1
+
+        unless user = User.where(email: row[8], company_id: current_user.company_id).first
+          error = { row: row_number, message: ['Sales Rep 1 could not be found'] }
+          errors << error
+          next
+        end
+
+        if row[11].present?
+          unless user1 = User.where(email: row[11], company_id: current_user.company_id).first
+            error = { row: row_number, message: ['Sales Rep 2 could not be found'] }
+            errors << error
+            next
+          end
+        end
+
+        find_params = {
+          company_id: current_user.company_id,
+          name: row[0]
+        }
+
+        create_params = {
+          website: row[7]
+        }
+
+        client = Client.find_or_initialize_by(find_params)
+        unless client.update_attributes(create_params)
+          error = { row: row_number, message: client.errors.full_messages }
+          errors << error
+        end
+
+        update_params = {
+          created_by: current_user.id
+        }
+
+        client.update_attributes(update_params)
+
+        find_address_params = {
+          addressable_id: client.id,
+          addressable_type: 'Client',
+        }
+
+        address_params = {
+          street1: row[2],
+          city: row[3],
+          state: row[4],
+          phone: row[5],
+          email: row[6]
+        }
+
+        address = Address.find_or_initialize_by(find_address_params)      
+        unless address.update_attributes(address_params)      
+          error = { row: row_number, message: address.errors.full_messages }
+          errors << error
+          next
+        end
+
+        option_error = insert_option(current_user, 'Client', client.id, row[1])
+        if option_error.present?
+          error = { row: row_number, message: option_error }
+          errors << error
+          next
+        end
+
+        find_client_member_params = {
+          client_id: client.id,
+          user_id: user.id
+        }
+
+        client_member_params = {
+          share: row[9]
+        }
+
+        client_member = ClientMember.find_or_initialize_by(find_client_member_params)
+        unless client_member.update_attributes(client_member_params)
+          error = { row: row_number, message: client_member.errors.full_messages }
+          errors << error
+          next
+        end
+
+        option_error = insert_option(current_user, 'ClientMember', user.id, row[10])
+        if option_error.present?
+          error = { row: row_number, message: option_error }
+          errors << error
+          next
+        end
+
+        if user1.present?
+          find_client_member1_params = {
+            client_id: client.id,
+          user_id: user1.id
+          }
+
+          client_member1_params = {
+            share: row[12]
+          }
+
+          client_member1 = ClientMember.find_or_initialize_by(find_client_member1_params)
+          unless client_member1.update_attributes(client_member1_params)
+            error = { row: row_number, message: client_member1.errors.full_messages }
+            errors << error
+            next
+          end
+
+          option_error = insert_option(current_user, 'ClientMember', user1.id, row[13])
+          if option_error.present?
+            error = { row: row_number, message: option_error }
+            errors << error
+            next
+          end
+
+        end
+      end
+    end
+    errors
+  end
+
+  def self.insert_option(current_user, type, id, name)
+    option_params = {
+      company_id: current_user.company_id,
+      name: name
+    }
+
+    unless option = Option.find_by(option_params)
+      error = [type+': '+name+' '+'Option could not be found']
+      return error
+    end
+
+    value_params = {
+      company_id: current_user.company_id,
+      subject_type: type,
+      subject_id: id,
+      field_id: option.field_id,
+      value_type: 'Option',
+      option_id: option.id
+    }
+
+    unless value = Value.create(value_params)
+      error = { message: value.errors.full_messages }
+      return error
+    end
+  end
+
 end

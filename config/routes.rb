@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     resources :forecasts, only: [:index, :show]
     resources :fields, only: [:index]
     resources :options, only: [:create, :update, :destroy]
+    resources :tools, only: [:index]
 
     resource :weighted_pipelines, only: [:show]
     resource :dashboard, only: [:show]

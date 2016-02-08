@@ -48,6 +48,9 @@
     .when '/settings/users',
       templateUrl: 'settings/users.html'
       controller: 'SettingsUsersController'
+    .when '/settings/tools',
+      templateUrl: 'settings/tools.html'
+      controller: 'SettingsToolsController'
     .when '/settings/products',
       templateUrl: 'settings/products.html'
       controller: 'SettingsProductsController'
