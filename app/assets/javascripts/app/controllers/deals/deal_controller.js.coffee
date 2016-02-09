@@ -61,7 +61,12 @@
 
   $scope.updateDeal = ->
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
-      $scope.setCurrentDeal(deal)
+      if deal.stage.open
+        deal.closed_at = null
+      else
+        deal.closed_at = new Date()
+      Deal.update(id: deal.id, deal: deal).then (d) ->
+        $scope.setCurrentDeal(d)
 
   $scope.updateDealProduct = (data) ->
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
