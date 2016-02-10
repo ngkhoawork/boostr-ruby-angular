@@ -34,18 +34,7 @@ class Api::DealsController < ApplicationController
   end
 
   def update
-    dp = deal_params
-    if dp[:stage_id].present?
-      stage = company.stages.find(dp[:stage_id])
-      if stage.id != deal.stage.id
-        if !stage.open
-          dp[:closed_at] = DateTime.now
-        elsif !dp[:closed_at].nil?
-          dp[:closed_at] = nil
-        end
-      end
-    end
-    if deal.update_attributes(dp)
+    if deal.update_attributes(deal_params)
       render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity

@@ -27,5 +27,11 @@
       deferred.resolve(stage)
     deferred.promise
 
+  @get = (stage_id) ->
+    deferred = $q.defer()
+    resource.get id: stage_id, (stage) ->
+      deferred.resolve(stage)
+    deferred.promise
+
   return
 ]

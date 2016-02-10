@@ -20,6 +20,7 @@
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
+      deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
 
   $scope.getStages = ->
@@ -63,6 +64,19 @@
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
       $scope.setCurrentDeal(deal)
 
+  $scope.updateDealStage = (currentDeal) ->
+    if currentDeal != null
+      Stage.get(currentDeal.stage_id).then (stage) ->
+        if !stage.open
+          $scope.showModal(currentDeal)
+        else
+          if $scope.currentDeal.closed_at != null
+            $scope.currentDeal.closed_at = null
+          if $scope.currentDeal.close_reason != null && $scope.currentDeal.close_reason.option != null
+            $scope.currentDeal.close_reason.option = null
+          Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
+            $scope.setCurrentDeal(deal)
+
   $scope.updateDealProduct = (data) ->
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
       $scope.setCurrentDeal(deal)
@@ -90,6 +104,20 @@
 
   $scope.cancelAddProduct = ->
     $scope.showProductForm = !$scope.showProductForm
+
+  $scope.showModal = (currentDeal) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_close_form.html'
+      size: 'lg'
+      controller: 'DealsCloseController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        currentDeal: ->
+          currentDeal
+
+  $scope.$on 'updated_deal', ->
+    $scope.init()
 
   $scope.init()
 ]

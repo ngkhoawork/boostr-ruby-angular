@@ -5,6 +5,10 @@ class Api::StagesController < ApplicationController
     render json: current_user.company.stages
   end
 
+  def show
+    render json: stage
+  end
+
   def create
     stage = current_user.company.stages.create(stage_params)
 

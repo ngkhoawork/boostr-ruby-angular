@@ -61,7 +61,7 @@
             .row
               .col-xs-12
                 %h5
-                  .stage{ editable: { select: 'currentDeal.stage_id' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDeal()', onshow: 'getStages()' }
+                  .stage{ editable: { select: 'currentDeal.stage_id' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDealStage(currentDeal)', onshow: 'getStages()' }
                     {{ currentDeal.stage.name }}
                     .small
                       {{ currentDeal.stage.probability }}% probability
@@ -207,3 +207,11 @@
             .row
               .col-xs-9.field-value
                 {{ currentDeal.closed_at | date: 'shortDate' }}
+        .row.field
+          .col-xs-10
+            .row
+              .col-xs-4
+                %h4.field-label Close Reason
+            .row
+              .col-xs-9.field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
+                {{ currentDeal.close_reason.option.name }}
