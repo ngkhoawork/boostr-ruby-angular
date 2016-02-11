@@ -19,7 +19,7 @@ feature 'Clients' do
       expect(page).to have_css('#clients')
     end
 
-    scenario 'shows client details, contacts, deals, team and splits', js: true do
+    scenario 'shows client details, people, deals, team and splits', js: true do
       within '#client-list' do
         expect(page).to have_css('.list-group-item', count: 2)
       end
