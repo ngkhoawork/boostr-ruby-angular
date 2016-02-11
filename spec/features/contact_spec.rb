@@ -14,7 +14,7 @@ feature 'Contacts' do
     end
 
     scenario 'pops up a new contact modal and creates a new contact', js: true do
-      find_link('New Person').trigger('click')
+      find_link('New Contact').trigger('click')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -42,7 +42,7 @@ feature 'Contacts' do
         expect(find('h2')).to have_text('Bobby')
       end
 
-      find_link('New Person').trigger('click')
+      find_link('New Contact').trigger('click')
 
       expect(page).to have_css('#contact_modal')
 

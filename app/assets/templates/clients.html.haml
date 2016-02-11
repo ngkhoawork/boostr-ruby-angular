@@ -43,7 +43,7 @@
                 %h4
                   {{ client.name }}
               .row
-                {{ client.contacts_count }} people   {{ client.deals_count }}  deals
+                {{ client.contacts_count }} contacts   {{ client.deals_count }}  deals
       #client-detail.col-xs-7
         .tools.pull-right
           %a#delete-client{ href: '', ng: { click: 'delete()' } }
@@ -135,10 +135,10 @@
             %ul.dropdown-menu.new-contact-options
               %li
                 %a.new-person{ href: '', ng: { click: 'showNewPersonModal()' } }
-                  Add New Person
+                  Add New Contact
               %li
                 %a.existing-contact{ href: '', ng: { click: 'showLinkExistingPerson()' } }
-                  Link Existing Person
+                  Link Existing Contact
               %li.existing-contact-options{ ng: { show: 'showContactList' } }
                 %ui-select{ name: 'contact-list', ng: { model: 'contactToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingPerson($item, $model)' }
                   %ui-select-match{ placeholder: 'start typing their name here' }
@@ -147,14 +147,14 @@
                     %div{ ng: { bind: { html: 'contact.name' } } }
 
           %h2
-            people
+            Contacts
 
           .well.no-people{ ng: { hide: 'currentClient.contacts.length > 0' } }
             .row
               .col-xs-12
-                There are no people yet.
+                There are no contacts yet.
                 %a{ href: '', ng: { click: 'showNewPersonModal()' } }
-                  Add a new person.
+                  Add a new contact.
           .wells-group
             .well{ ng: { repeat: 'contact in currentClient.contacts', click: 'go("/people/" + contact.id)' } }
               .row
