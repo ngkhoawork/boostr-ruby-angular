@@ -64,14 +64,16 @@ class Client < ActiveRecord::Base
       CSV.parse(file, headers: true) do |row|
         row_number += 1
 
-        unless user = User.where(email: row[10], company_id: current_user.company_id).first
-          error = { row: row_number, message: ['Sales Rep 1 could not be found'] }
-          errors << error
-          next
+        if !row[10].blank?
+          unless user = User.where('lower(email) = ? and company_id = ?', row[10].downcase, current_user.company_id).first
+            error = { row: row_number, message: ['Sales Rep 1 could not be found'] }
+            errors << error
+            next
+          end
         end
 
         if row[13].present? && !row[13].blank?
-          unless user1 = User.where(email: row[13], company_id: current_user.company_id).first
+          unless user1 = User.where('lower(email) = ? and company_id = ?', row[13].downcase, current_user.company_id).first
             error = { row: row_number, message: ['Sales Rep 2 could not be found'] }
             errors << error
             next
@@ -128,27 +130,29 @@ class Client < ActiveRecord::Base
           next
         end
 
-        find_client_member_params = {
-          client_id: client.id,
-          user_id: user.id
-        }
+        if user.present?
+          find_client_member_params = {
+            client_id: client.id,
+            user_id: user.id
+          }
 
-        client_member_params = {
-          share: row[11]
-        }
+          client_member_params = {
+            share: row[11]
+          }
 
-        client_member = ClientMember.find_or_initialize_by(find_client_member_params)
-        unless client_member.update_attributes(client_member_params)
-          error = { row: row_number, message: client_member.errors.full_messages }
-          errors << error
-          next
-        end
+          client_member = ClientMember.find_or_initialize_by(find_client_member_params)
+          unless client_member.update_attributes(client_member_params)
+            error = { row: row_number, message: client_member.errors.full_messages }
+            errors << error
+            next
+          end
 
-        option_error = insert_option(current_user, 'ClientMember', client_member.id, row[12])
-        if option_error.present?
-          error = { row: row_number, message: option_error }
-          errors << error
-          next
+          option_error = insert_option(current_user, 'ClientMember', client_member.id, row[12])
+          if option_error.present?
+            error = { row: row_number, message: option_error }
+            errors << error
+            next
+          end
         end
 
         if user1.present?
