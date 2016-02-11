@@ -180,9 +180,9 @@ RSpec.describe Deal, type: :model do
   end
 
   context 'to_zip' do
-    let(:deal) { create :deal, name: 'Bob' }
-    let(:product) { create :product }
-
+    let(:deal) { create :deal, name: 'Bob', company: company }
+    let(:product) { create :product, company: company }
+ 
     it 'returns the contents of deal zip' do
       deal.add_product(product.id, 10_000)
       deal_zip = Deal.to_zip

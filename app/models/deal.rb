@@ -146,16 +146,26 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  def self.to_zip
+  def self.get_option_value(subject, field_name)
+    if !subject.nil?
+      subject_fields = subject.fields
+      if !subject_fields.nil?
+        field = subject_fields.find_by_name(field_name)
+        value = subject.values.find_by_field_id(field.id) if !field.nil?
+        option = value.option.name if !value.nil? && !value.option.nil?
+      end
+     end
+    return option
+  end
 
+  def self.to_zip
     deals_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date"]
+      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]
       all.each do |deal|
-        agency_name = deal.agency.present? ? deal.agency.name : nil
-        first_member = deal.deal_members.order(:created_at).first
-		first_member_name = first_member.present? ? first_member.user.name : nil
-        budget = deal.budget.present? ? deal.budget/100.0 : nil
-        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, first_member_name, budget, deal.stage.name, deal.stage.probability, deal.deal_type, deal.source_type, deal.next_steps, deal.start_date, deal.end_date, deal.created_at]
+        agency_name = !deal.agency.nil? ? deal.agency.name : nil
+        budget = !deal.budget.nil? ? deal.budget/100.0 : nil
+        member = !deal.creator.nil? ? deal.creator.name : nil
+        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, member, budget, deal.stage.name, deal.stage.probability, deal.deal_type, deal.source_type, deal.next_steps, deal.start_date, deal.end_date, deal.created_at, deal.closed_at, get_option_value(deal, "Close Reason")]
       end
     end
 
@@ -163,25 +173,17 @@ class Deal < ActiveRecord::Base
       csv << ["Deal ID", "Name", "Product", "Pricing Type", "Product Line", "Product Family", "Budget", "Period"]
       all.each do |deal|
         deal.deal_products.each do |deal_product|
-          budget = deal_product.budget.present? ? deal_product.budget/100.0 : nil
+          budget = !deal_product.budget.nil? ? deal_product.budget/100.0 : nil
           product = deal_product.product
           product_name = ""
           pricing_type = ""
           product_family = ""
           product_line = ""
-          if product.present?
+          if !product.nil?
             product_name = product.name
-            if product.values.present? && product.fields.present?
-              pricing_type_field = product.fields.find_by_name("Pricing Type")
-              pricing_type_value = product.values.find_by_field_id(pricing_type_field.id) if pricing_type_field.present?
-              pricing_type = pricing_type_value.option.name if pricing_type_value.present? && pricing_type_value.option.present?
-              product_line_field = product.fields.find_by_name("Product Line")
-              product_line_value = product.values.find_by_field_id(product_line_field.id) if product_line_field.present?
-              product_line = product_line_value.option.name if product_line_value.present? && product_line_value.option.present?
-              product_family_field = product.fields.find_by_name("Product Family")
-              product_family_value = product.values.find_by_field_id(product_family_field.id) if product_family_field.present?
-              product_family = product_family_value.option.name if product_family_value.present? && product_family_value.option.present?
-            end
+            pricing_type = get_option_value(product, "Pricing Type")
+            product_line = get_option_value(product, "Product Line")
+            product_family = get_option_value(product, "Product Family")
           end
 		      csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget, deal_product.start_date.strftime("%B %Y")]
         end
