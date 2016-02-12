@@ -2,11 +2,20 @@ class Api::ClientsController < ApplicationController
   respond_to :json, :csv
 
   def index
-    ordered_clients = clients.order(:name).includes(:address).distinct
-
     respond_to do |format|
-      format.json { render json: ordered_clients }
-      format.csv { send_data ordered_clients.to_csv, filename: "clients-#{Date.today}.csv" }
+      format.json { 
+        render json: clients.order(:name).includes(:address).distinct
+      }
+      format.csv { 
+        if current_user.leader?
+          ordered_clients = company.clients
+        elsif team.present?
+          ordered_clients = team.clients
+        else
+          ordered_clients = current_user.clients
+        end
+        send_data ordered_clients.to_csv, filename: "clients-#{Date.today}.csv" 
+      }
     end
   end
 
