@@ -38,6 +38,7 @@
                 %th.left Product
                 %th.right Date Loaded
                 %th.right Date Updated
+                %th.left Comment
 
             %tbody
               %tr{ ng: { repeat: 'row in revenue' } }
@@ -59,3 +60,4 @@
                 %td.left {{ row.product_name }}
                 %td.right {{ row.created_at | date: 'shortDate' }}
                 %td.right {{ row.updated_at | date: 'shortDate' }}
+                %td.left {{ row.comment }}

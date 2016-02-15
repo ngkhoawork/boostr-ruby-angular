@@ -54,7 +54,8 @@ class Revenue < ActiveRecord::Base
         end_date: (Chronic.parse(row[11])),
         client_id: client.id,
         user_id: user.id,
-        product_id: product.id
+        product_id: product.id,
+        comment: row[16]
       }
 
       revenue = Revenue.find_or_initialize_by(find_params)
