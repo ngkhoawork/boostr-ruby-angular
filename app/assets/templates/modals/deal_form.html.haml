@@ -16,9 +16,9 @@
         %label.control-label{ for: 'stage' } Stage*
         %ui-select{ name: 'stage', ng: { model: 'deal.stage_id', disabled: true, required: true } }
           %ui-select-match{ placeholder: 'Stage' }
-            {{ $select.selected.name }}
+            {{ $select.selected.name+" "+$select.selected.probability+"%" }}
           %ui-select-choices{ repeat: 'stage.id as stage in stages | filter: { name: $select.search }' }
-            %div{ ng: { bind: { html: 'stage.name' } } }
+            %div{ ng: { bind: { html: 'stage.name+" "+stage.probability+"%"' } } }
 
       .form-group
         %label.control-label{ for: 'budget' } Total Budget
