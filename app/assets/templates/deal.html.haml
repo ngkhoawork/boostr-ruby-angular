@@ -211,7 +211,7 @@
           .col-xs-10
             .row
               .col-xs-4
-                %h4.field-label Close Reason
+                %h4.field-label Closed Reason
             .row
               .col-xs-9.field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
                 {{ currentDeal.close_reason.option.name }}
