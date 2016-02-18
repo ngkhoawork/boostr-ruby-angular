@@ -57,6 +57,7 @@
           %th.right Total Budget
           %th.right In-period Amount
           %th.right Start Date
+          %th.right Day in Stage
       %tbody
         %tr{ ng: { repeat: 'subrow in weighted_pipeline | orderBy: "-budget"' } }
           %td {{ subrow.name }}
@@ -65,3 +66,4 @@
           %td.right {{ subrow.budget / 100 | currency: '$': 0 }}
           %td.right {{ subrow.in_period_amt | currency: '$': 0 }}
           %td.right {{ subrow.start_date | date: 'M/dd/yyyy' }}
+          %td.right {{ subrow.wday_in_stage }}

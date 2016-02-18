@@ -9,13 +9,15 @@ class Deal < ActiveRecord::Base
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id', counter_cache: :agency_deals_count
   belongs_to :stage, counter_cache: true
   belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
+  belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
+  belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
 
   has_many :deal_products
   has_many :products, -> { distinct }, through: :deal_products
   has_many :deal_members
   has_many :users, through: :deal_members
-
   has_many :values, as: :subject
+  has_many :deal_stage_logs
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
 
@@ -27,11 +29,31 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  after_update do
-    reset_products if (start_date_changed? || end_date_changed?)
+  before_update do
+    update_stage if stage_id_changed?
   end
 
-  after_create :generate_deal_members
+  after_update do
+    reset_products if (start_date_changed? || end_date_changed?)
+    log_stage('U') if stage_id_changed?
+  end
+
+  before_create do
+    update_stage
+  end
+
+  after_create do
+    generate_deal_members
+    log_stage('I')
+  end
+
+  before_destroy do
+    update_stage
+  end
+
+  after_destroy do
+    log_stage('D')
+  end
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
   scope :for_time_period, -> (start_date, end_date) { where('deals.start_date <= ? AND deals.end_date >= ?', end_date, start_date) }
@@ -52,6 +74,7 @@ class Deal < ActiveRecord::Base
       probability: stage.probability,
       budget: budget,
       in_period_amt: in_period_amt(start_date, end_date),
+      wday_in_stage: wday_in_stage,
       start_date: self.start_date
     }
   end
@@ -201,4 +224,20 @@ class Deal < ActiveRecord::Base
 
   end
 
+  def update_stage
+    self.stage_updated_at = updated_at
+    self.stage_updated_by = updated_by
+  end
+
+  def log_stage(operation)
+    if company.present? && stage_id.present? && stage_updated_by.present? && stage_updated_at.present?
+      deal_stage_logs.create(company_id: company.id, stage_id: stage_id, stage_updated_by: stage_updated_by, stage_updated_at: stage_updated_at, operation: operation)
+    end
+  end
+
+  def wday_in_stage
+    if !stage_updated_at.nil?
+      (stage_updated_at.to_date..Date.today).count {|date| date.wday >= 1 && date.wday <= 5}
+    end
+  end
 end

@@ -25,6 +25,7 @@ class Api::DealsController < ApplicationController
     @deal = company.deals.new(deal_params)
 
     deal.created_by = current_user.id
+    deal.updated_by = current_user.id
 
     if deal.save
       render json: deal, status: :created
@@ -34,6 +35,7 @@ class Api::DealsController < ApplicationController
   end
 
   def update
+    deal.updated_by = current_user.id
     if deal.update_attributes(deal_params)
       render deal
     else

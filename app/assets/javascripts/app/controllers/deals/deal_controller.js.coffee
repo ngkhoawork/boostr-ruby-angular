@@ -70,7 +70,7 @@
         if !stage.open
           $scope.showModal(currentDeal)
         else
-          if $scope.currentDeal.closed_at != null
+          if $scope.currentDeal.closed_at != undefined && $scope.currentDeal.closed_at != null
             $scope.currentDeal.closed_at = null
           if $scope.currentDeal.close_reason != null && $scope.currentDeal.close_reason.option != null
             $scope.currentDeal.close_reason.option = null

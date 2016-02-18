@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160215221823) do
+ActiveRecord::Schema.define(version: 20160218030613) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -125,6 +125,17 @@ ActiveRecord::Schema.define(version: 20160215221823) do
     t.date     "end_date"
   end
 
+  create_table "deal_stage_logs", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "deal_id"
+    t.integer  "stage_id"
+    t.integer  "stage_updated_by"
+    t.datetime "stage_updated_at"
+    t.string   "operation"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+  end
+
   create_table "deals", force: :cascade do |t|
     t.integer  "advertiser_id"
     t.integer  "agency_id"
@@ -133,8 +144,8 @@ ActiveRecord::Schema.define(version: 20160215221823) do
     t.date     "end_date"
     t.string   "name"
     t.integer  "budget"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
     t.integer  "stage_id"
     t.string   "deal_type"
     t.string   "source_type"
@@ -142,6 +153,9 @@ ActiveRecord::Schema.define(version: 20160215221823) do
     t.integer  "created_by"
     t.datetime "deleted_at"
     t.date     "closed_at"
+    t.integer  "stage_updated_by"
+    t.datetime "stage_updated_at"
+    t.integer  "updated_by"
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree

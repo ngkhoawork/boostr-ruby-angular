@@ -3,7 +3,7 @@
 ($scope, $rootScope, $routeParams, $modalInstance, $q, $location, Deal, Client, Stage, Field, currentDeal) ->
 
   $scope.init = ->
-    $scope.formType = "Close Reason"
+    $scope.formType = "Reason Won/Lost"
     $scope.submitText = "Submit"
     $scope.currentDeal = {}
     $scope.resetDealProduct()

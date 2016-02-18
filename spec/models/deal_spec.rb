@@ -189,4 +189,38 @@ RSpec.describe Deal, type: :model do
       expect(deal_zip).not_to be_nil
     end
   end
+
+  context 'after_create' do
+    let(:company) { create :company }
+    let(:user) { create :user, company: company }
+    let(:stage) { create :stage, company: company }
+    let(:deal) { create :deal, stage: stage, company: company, creator: user, updator: user, stage_updator: user, stage_updated_at: Date.new }
+    it 'create deal_steage_log' do
+      expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'I')).not_to be_nil
+    end
+  end
+
+  context 'after_update' do
+    let(:company) { create :company }
+    let(:user) { create :user, company: company }
+    let(:stage) { create :stage, company: company }
+    let(:stage1) { create :stage, company: company }
+    let(:deal) { create :deal, stage: stage, company: company, creator: user, updator: user, stage_updator: user, stage_updated_at: Date.new }
+    it 'create deal_steage_log' do
+      deal.update_attributes(stage: stage1)
+      expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'U')).not_to be_nil
+    end
+  end
+
+  context 'after_destroy' do
+    let(:company) { create :company }
+    let(:user) { create :user, company: company }
+    let(:stage) { create :stage, company: company }
+    let(:deal) { create :deal, stage: stage, company: company, creator: user, updator: user, stage_updator: user, stage_updated_at: Date.new }
+    it 'create deal_steage_log' do
+      deal.destroy
+      expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'D')).not_to be_nil
+    end
+  end
+
 end
