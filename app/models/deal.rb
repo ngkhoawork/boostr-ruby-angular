@@ -35,7 +35,7 @@ class Deal < ActiveRecord::Base
 
   after_update do
     reset_products if (start_date_changed? || end_date_changed?)
-    log_stage('U') if stage_id_changed?
+    log_stage if stage_id_changed?
   end
 
   before_create do
@@ -44,7 +44,6 @@ class Deal < ActiveRecord::Base
 
   after_create do
     generate_deal_members
-    log_stage('I')
   end
 
   before_destroy do
@@ -52,7 +51,7 @@ class Deal < ActiveRecord::Base
   end
 
   after_destroy do
-    log_stage('D')
+    log_stage
   end
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
@@ -213,11 +212,26 @@ class Deal < ActiveRecord::Base
       end
     end
 
+    deal_stage_logs_csv = CSV.generate do |csv|
+      csv << ["Deal ID", "Name", "Stage", "Days in Stage", "Updated Date", "Updated By"]
+      all.each do |deal|
+        deal.deal_stage_logs.each do |deal_stage_log|
+          stage_updator = deal_stage_log.stage_updator.name if !deal_stage_log.stage_updator.nil?
+		      csv << [deal.id, deal.name, deal_stage_log.stage.name, deal_stage_log.active_wday, deal_stage_log.stage_updated_at, stage_updator]
+        end
+        stage_updator1 = deal.stage_updator.name if !deal.stage_updator.nil?
+        active_wday = (deal.stage_updated_at.to_date..Time.current.to_date).count {|date| date.wday >= 1 && date.wday <= 5} if !deal.stage_updated_at.nil?
+        csv << [deal.id, deal.name, deal.stage.name, active_wday, deal.stage_updated_at, stage_updator1]
+      end
+    end
+
     filestream = Zip::OutputStream.write_buffer do |zio|
       zio.put_next_entry("deals-#{Date.today}.csv")
       zio.write deals_csv
       zio.put_next_entry("products-#{Date.today}.csv")
       zio.write products_csv
+      zio.put_next_entry("deal-stages-#{Date.today}.csv")
+      zio.write deal_stage_logs_csv
     end
     filestream.rewind
     filestream.read
@@ -229,15 +243,26 @@ class Deal < ActiveRecord::Base
     self.stage_updated_by = updated_by
   end
 
-  def log_stage(operation)
-    if company.present? && stage_id.present? && stage_updated_by.present? && stage_updated_at.present?
-      deal_stage_logs.create(company_id: company.id, stage_id: stage_id, stage_updated_by: stage_updated_by, stage_updated_at: stage_updated_at, operation: operation)
+  def log_stage
+    if company.present? && stage_id_was.present? && stage_updated_by_was.present? && stage_updated_at_was.present?
+      deal_stage_logs.create(company_id: company.id, stage_id: stage_id_was, stage_updated_by: stage_updated_by_was, stage_updated_at: stage_updated_at_was, active_wday: count_wday(stage_updated_at_was, stage_updated_at))
     end
   end
 
   def wday_in_stage
-    if !stage_updated_at.nil?
-      (stage_updated_at.to_date..Date.today).count {|date| date.wday >= 1 && date.wday <= 5}
+    count_wday(stage_updated_at, Time.current)
+  end
+
+  def count_wday(date1, date2)
+    if !date1.nil?
+      (date1.to_date..date2.to_date).count {|date| date.wday >= 1 && date.wday <= 5}
     end
   end
+
+  def self.count_wday1(date1, date2)
+    if !date1.nil?
+      (date1.to_date..date2.to_date).count {|date| date.wday >= 1 && date.wday <= 5}
+    end
+  end
+
 end
