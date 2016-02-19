@@ -57,9 +57,10 @@
           %th.right Total Budget
           %th.right In-period Amount
           %th.right Start Date
-          %th.right Days in Stage
+          %th.right Days In Stage
+          %th.right Days Since Opened
       %tbody
-        %tr{ ng: { repeat: 'subrow in weighted_pipeline | orderBy: "-budget"' } }
+        %tr{ ng: { repeat: 'subrow in weighted_pipeline | orderBy: "-(budget+1)"' } }
           %td {{ subrow.name }}
           %td {{ subrow.client_name }}
           %td.right {{ subrow.probability }}%
@@ -67,3 +68,4 @@
           %td.right {{ subrow.in_period_amt | currency: '$': 0 }}
           %td.right {{ subrow.start_date | date: 'M/dd/yyyy' }}
           %td.right {{ subrow.wday_in_stage }}
+          %td.right {{ subrow.wday_since_opened }}

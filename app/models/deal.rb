@@ -74,6 +74,7 @@ class Deal < ActiveRecord::Base
       budget: budget,
       in_period_amt: in_period_amt(start_date, end_date),
       wday_in_stage: wday_in_stage,
+      wday_since_opened: wday_since_opened,
       start_date: self.start_date
     }
   end
@@ -251,6 +252,10 @@ class Deal < ActiveRecord::Base
 
   def wday_in_stage
     count_wday(stage_updated_at, Time.current)
+  end
+
+  def wday_since_opened
+    count_wday(created_at, Time.current)
   end
 
   def count_wday(date1, date2)
