@@ -30,7 +30,10 @@ class Deal < ActiveRecord::Base
   end
 
   before_update do
-    update_stage if stage_id_changed?
+    if stage_id_changed?
+      update_stage
+      update_close
+    end
   end
 
   after_update do
@@ -169,7 +172,7 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  def self.get_option_value(subject, field_name)
+  def self.get_option(subject, field_name)
     if !subject.nil?
       subject_fields = subject.fields
       if !subject_fields.nil?
@@ -177,7 +180,7 @@ class Deal < ActiveRecord::Base
         value = subject.values.find_by_field_id(field.id) if !field.nil?
         option = value.option.name if !value.nil? && !value.option.nil?
       end
-     end
+    end
     return option
   end
 
@@ -188,7 +191,7 @@ class Deal < ActiveRecord::Base
         agency_name = !deal.agency.nil? ? deal.agency.name : nil
         budget = !deal.budget.nil? ? deal.budget/100.0 : nil
         member = !deal.creator.nil? ? deal.creator.name : nil
-        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, member, budget, deal.stage.name, deal.stage.probability, deal.deal_type, deal.source_type, deal.next_steps, deal.start_date, deal.end_date, deal.created_at, deal.closed_at, get_option_value(deal, "Close Reason")]
+        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, member, budget, deal.stage.name, deal.stage.probability, deal.deal_type, deal.source_type, deal.next_steps, deal.start_date, deal.end_date, deal.created_at, deal.closed_at, get_option(deal, "Close Reason")]
       end
     end
 
@@ -204,9 +207,9 @@ class Deal < ActiveRecord::Base
           product_line = ""
           if !product.nil?
             product_name = product.name
-            pricing_type = get_option_value(product, "Pricing Type")
-            product_line = get_option_value(product, "Product Line")
-            product_family = get_option_value(product, "Product Family")
+            pricing_type = get_option(product, "Pricing Type")
+            product_line = get_option(product, "Product Line")
+            product_family = get_option(product, "Product Family")
           end
 		      csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget, deal_product.start_date.strftime("%B %Y")]
         end
@@ -247,6 +250,19 @@ class Deal < ActiveRecord::Base
   def log_stage
     if company.present? && stage_id_was.present? && stage_updated_by_was.present? && stage_updated_at_was.present?
       deal_stage_logs.create(company_id: company.id, stage_id: stage_id_was, stage_updated_by: stage_updated_by_was, stage_updated_at: stage_updated_at_was, active_wday: count_wday(stage_updated_at_was, stage_updated_at))
+    end
+  end
+
+  def update_close
+    if !stage.open?
+      self.closed_at = updated_at
+    else
+      self.closed_at = nil if !self.closed_at.nil?
+      if !self.fields.nil? && !self.values.nil? 
+        field = self.fields.find_by_name("Close Reason")
+        close_reason = self.values.find_by_field_id(field.id) if !field.nil?
+        close_reason.destroy if !close_reason.nil?
+      end
     end
   end
 

@@ -44,6 +44,6 @@ class Team < ActiveRecord::Base
   end
 
   def all_deals_for_time_period(start_date, end_date)
-    deals.for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) }
+    deals.open.for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) }
   end
 end

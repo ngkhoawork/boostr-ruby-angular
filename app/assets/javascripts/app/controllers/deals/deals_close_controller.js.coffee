@@ -25,7 +25,6 @@
     }
 
   $scope.submitForm = () ->
-    $scope.currentDeal.closed_at = new Date()
     $scope.currentDeal.stage_id = currentDeal.stage_id
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
       $rootScope.$broadcast 'updated_deal'

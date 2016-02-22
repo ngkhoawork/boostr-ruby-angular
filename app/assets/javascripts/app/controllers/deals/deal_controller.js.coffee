@@ -70,12 +70,11 @@
         if !stage.open
           $scope.showModal(currentDeal)
         else
-          if $scope.currentDeal.closed_at != undefined && $scope.currentDeal.closed_at != null
-            $scope.currentDeal.closed_at = null
-          if $scope.currentDeal.close_reason != null && $scope.currentDeal.close_reason.option != null
-            $scope.currentDeal.close_reason.option = null
           Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
-            $scope.setCurrentDeal(deal)
+            if currentDeal.close_reason.option == undefined
+              $scope.setCurrentDeal(deal)
+            else
+              $scope.init()
 
   $scope.updateDealProduct = (data) ->
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
