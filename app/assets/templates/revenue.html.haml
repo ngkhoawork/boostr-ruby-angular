@@ -5,6 +5,8 @@
         .col-xs-12
           %ul.nav.nav-tabs
             %li.pull-right.last
+              %input.search{ placeholder: 'Search', ng: { model: 'searchText' }, name: 'search' }
+            %li.pull-right
               %a.upload{ href: '', ng: { click: 'showUploadModal()' } }
                 = inline_svg 'icons/upload.svg'
                 Upload
@@ -41,7 +43,7 @@
                 %th.left Comment
 
             %tbody
-              %tr{ ng: { repeat: 'row in revenue' } }
+              %tr{ ng: { repeat: 'row in revenue | filter:searchText' } }
                 %td.left {{ row.client_id }}
                 %td.left {{ row.client_name }}
                 %td.right {{ row.order_number }}
