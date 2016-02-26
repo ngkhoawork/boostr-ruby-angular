@@ -256,6 +256,9 @@ class Deal < ActiveRecord::Base
   def update_close
     if !stage.open?
       self.closed_at = updated_at
+      if stage.probability == 100
+        UserMailer.close_email(company.users.where(notify: true).map(&:email), updator.name, name, advertiser.name).deliver_later
+      end
     else
       self.closed_at = nil if !self.closed_at.nil?
       if !self.fields.nil? && !self.values.nil? 
