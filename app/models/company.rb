@@ -10,6 +10,7 @@ class Company < ActiveRecord::Base
   has_many :time_periods
   has_many :quotas
   has_many :fields
+  has_many :notifications
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -33,6 +34,8 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Product', name: 'Product Line', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Product', name: 'Product Family', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Member Role', value_type: 'Option', locked: true)
+
+    notifications.find_or_initialize_by(name: 'Closed Won', active: true)
   end
 
   def settings

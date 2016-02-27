@@ -1,11 +1,8 @@
 class UserMailer < ApplicationMailer
   default from: 'Boostr <noreply@boostrcrm.com>'
  
-  def close_email(recipients, member, deal, advertiser)
-    @recipients = recipients
-    @member = member
+  def close_email(recipients, subject, deal)
     @deal = deal
-    @advertiser = advertiser
-    mail(to: @recipients, subject: 'Congratulation! A deal was just won!')
+    mail(to: recipients, subject: subject)
   end
 end

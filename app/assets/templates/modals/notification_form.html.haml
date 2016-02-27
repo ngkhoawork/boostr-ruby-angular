@@ -1,0 +1,23 @@
+#notification-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .modal-header.text-center
+      %a.close{ ng: { click: 'cancel()' } }
+        %span{'aria-hidden' => 'true'}
+          = inline_svg 'icons/close.svg'
+      %h3.modal-title
+        %strong
+          {{ formType }} Notification
+    .modal-body
+      .form-group
+        .row
+          .col-xs-12
+            %label.control-label{ for: 'name' } Name
+            %input.form-control{ placeholder: 'Eg. Close Won', ng: { model: 'notification.name' }, name: 'name', disabled: true  }
+      .form-group
+        .row
+          .col-xs-12
+            %label.control-label{ for: 'recipients' } Recipients
+            %input.form-control{ placeholder: 'Eg. admin@example.com,john@example.com', ng: { model: 'notification.recipients' }, name: 'recipients', type: 'text'  }
+    .modal-footer.text-center
+      %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
+      %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel

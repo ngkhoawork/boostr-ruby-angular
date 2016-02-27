@@ -257,9 +257,13 @@ class Deal < ActiveRecord::Base
     if !stage.open?
       self.closed_at = updated_at
       if stage.probability == 100
-        recipients = company.users.where(notify: true).map(&:email)
-        if !recipients.nil? && recipients.length > 0
-          UserMailer.close_email(recipients, updator.name, name, advertiser.name).deliver_later
+        notification = company.notifications.find_by_name('Closed Won')
+        if !notification.nil? && !notification.recipients.nil?
+          recipients = notification.recipients.split(',').map(&:strip)
+          if !recipients.nil? && recipients.length > 0
+            subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency(budget/100, :precision => 0))+' deal for '+advertiser.name+' was just won!'
+            UserMailer.close_email(recipients, subject, self).deliver_later
+          end
         end
       end
     else

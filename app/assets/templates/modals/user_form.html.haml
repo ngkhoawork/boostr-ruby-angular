@@ -21,14 +21,6 @@
         %input.form-control{ placeholder: 'Title', ng: { model: 'user.title' }, name: 'title' }
 
       .form-group
-        %label.control-label{ for: 'notify' } Notification
-        .btn-group
-          %label.btn.btn-primary{ ng: { model: 'user.notify' }, btn: { radio: 'true' } }
-            On
-          %label.btn.btn-primary{ ng: { model: 'user.notify' }, btn: { radio: 'false' } }
-            Off
-
-      .form-group
         %label.control-label{ for: 'email' } Email
         %input.form-control{ placeholder: 'Email', ng: { model: 'user.email', disabled: '{{ hideEmail }}' }, name: 'email' }
 

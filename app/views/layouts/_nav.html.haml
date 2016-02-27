@@ -45,6 +45,8 @@
                   = link_to "Quotas", "/settings/quotas"
                 %li
                   = link_to "Stages", "/settings/stages"
+                %li
+                  = link_to "Notifications", "/settings/notifications"
                 - if current_user.is?(:superadmin)
                   %li
                     = link_to " ", "/settings/tools"
