@@ -11,7 +11,7 @@
       .form-group
         .row
           .col-xs-12
-            %label.control-label{ for: 'recipients' } Subscribers
+            %label.control-label{ for: 'recipients' } Recipients
             %input.form-control{ placeholder: 'Eg. admin@example.com,joe@example.com', ng: { model: 'notification.recipients' }, name: 'recipients', type: 'text'  }
       .messages{ ng: { messages: "notification_form.recipients.$error", if: "notification_form.recipients.$error" }, role: "alert"}
         .required{ ng: { message: "email", if: "notification_form.recipients.$error.email"  }}
