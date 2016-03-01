@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-  default from: 'Boostr <noreply@boostrcrm.com>'
+  default from: 'boostr <noreply@boostrcrm.com>'
  
   def close_email(recipients, subject, deal)
     @deal = deal
