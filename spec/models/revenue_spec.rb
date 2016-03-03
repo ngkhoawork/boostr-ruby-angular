@@ -26,6 +26,22 @@ RSpec.describe Revenue, type: :model do
     end
   end
 
+  describe 'alerts' do
+    let(:company) { create :company, id: 9999999 }
+    let(:user) { create :user, company: company }
+    let(:revenue) { create :revenue, company: company, user: user }
+
+    it 'returns run rate' do
+      expect(revenue.run_rate).to equal((revenue.budget-revenue.budget_remaining)/(DateTime.now.to_date-revenue.start_date.to_date+1).to_i)
+      expect(revenue.remaining_day).to equal((revenue.budget-revenue.budget_remaining)/revenue.run_rate)
+      expect(revenue.balance).to equal((((revenue.end_date.to_date-DateTime.now.to_date+1)-revenue.remaining_day)*revenue.run_rate).to_i)
+      User.set_alerts(company.id)
+      user.reload
+      expect(user.neg_balance.to_i).to equal(1)
+      expect(user.pos_balance.to_i).to equal(0)
+    end
+  end
+
   describe 'uploading a good csv' do
     it 'creates a new revenue object for each row' do
       expect do
