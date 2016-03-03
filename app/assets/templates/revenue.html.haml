@@ -4,6 +4,14 @@
       .row
         .col-xs-12
           %ul.nav.nav-tabs
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                {{ revenueFilter.name }}
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterRevenues(filter)' } }
+                    {{ filter.name }}
             %li.pull-right.last
               %input.search{ placeholder: 'Search', ng: { model: 'searchText' }, name: 'search' }
             %li.pull-right
@@ -40,6 +48,9 @@
                 %th.left Product
                 %th.right Date Loaded
                 %th.right Date Updated
+                %th.right Daily Run Rate
+                %th.right Days til Out of Budget
+                %th.right Amount at Rick/Upsale Needed
                 %th.left Comment
 
             %tbody
@@ -62,4 +73,7 @@
                 %td.left {{ row.product_name }}
                 %td.right {{ row.created_at | date: 'shortDate' }}
                 %td.right {{ row.updated_at | date: 'shortDate' }}
+                %td.right {{ row.run_rate | currency:'$':0 }}
+                %td.right {{ row.remaining_day }}
+                %td.right {{ row.balance | currency:'$':0 }}
                 %td.left {{ row.comment }}

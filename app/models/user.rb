@@ -41,11 +41,33 @@ class User < ActiveRecord::Base
     teams.count > 0
   end
 
+  def lead
+    "leader"
+  end
+
   def as_json(options = {})
     super(options.merge(methods: [:name, :leader?]))
   end
 
   def all_deals_for_time_period(start_date, end_date)
     deals.open.for_time_period(start_date, end_date)
+  end
+
+  def self.set_alerts(company_id)
+    where(company_id: company_id).each do |u|
+      u.pos_balance = u.revenues.where("revenues.balance > 0").count
+      u.neg_balance = u.revenues.where("revenues.balance < 0").count
+      u.last_alert_at = DateTime.now
+      u.save
+    end
+    Team.where(company_id: company_id).where.not(leader_id: nil).each do |t|
+      u = t.leader
+      if !t.members.nil?
+        u.pos_balance += t.sum_pos_balance
+        u.neg_balance += t.sum_neg_balance
+        u.last_alert_at = DateTime.now
+        u.save
+      end
+    end
   end
 end

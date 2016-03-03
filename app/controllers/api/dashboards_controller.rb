@@ -2,7 +2,7 @@ class Api::DashboardsController < ApplicationController
   respond_to :json
 
   def show
-    render json: { forecast: DashboardForecastSerializer.new(forecast), deals: serialized_deals }
+    render json: { forecast: DashboardForecastSerializer.new(forecast), deals: serialized_deals, current_user: current_user }
   end
 
   protected

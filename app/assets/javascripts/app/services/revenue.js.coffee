@@ -1,15 +1,17 @@
 @service.service 'Revenue',
-['$resource',
-($resource) ->
+['$resource', '$q',
+($resource, $q) ->
 
   resource = $resource '/api/revenue/:id', { id: '@id' }
 
   allRevenue = []
 
-  @all = (callback) ->
-    resource.query {}, (revenue) =>
+  @all = (params) ->
+    deferred = $q.defer()
+    resource.query params, (revenue) =>
       allRevenue = revenue
-      callback(revenue)
+      deferred.resolve(revenue)
+    deferred.promise
 
   return
 ]

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160226214116) do
+ActiveRecord::Schema.define(version: 20160302224631) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -246,6 +246,10 @@ ActiveRecord::Schema.define(version: 20160226214116) do
     t.integer  "product_id"
     t.integer  "daily_budget"
     t.text     "comment"
+    t.integer  "run_rate"
+    t.integer  "remaining_day"
+    t.integer  "balance"
+    t.datetime "last_alert_at"
   end
 
   create_table "snapshots", force: :cascade do |t|
@@ -338,6 +342,9 @@ ActiveRecord::Schema.define(version: 20160226214116) do
     t.string   "title"
     t.integer  "team_id"
     t.boolean  "notify",                 default: false
+    t.integer  "neg_balance"
+    t.integer  "pos_balance"
+    t.datetime "last_alert_at"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

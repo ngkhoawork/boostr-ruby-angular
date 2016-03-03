@@ -46,4 +46,20 @@ class Team < ActiveRecord::Base
   def all_deals_for_time_period(start_date, end_date)
     deals.open.for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) }
   end
+
+  def sum_pos_balance
+    pos_balance = members.all.sum(:pos_balance)
+    children.each do |child|
+      pos_balance += child.sum_pos_balance
+    end
+    return pos_balance
+  end
+
+  def sum_neg_balance
+    neg_balance = members.all.sum(:neg_balance)
+    children.each do |child|
+      neg_balance += child.sum_neg_balance
+    end
+    return neg_balance
+  end
 end
