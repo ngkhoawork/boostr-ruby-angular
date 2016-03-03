@@ -33,6 +33,10 @@ feature 'Dashboard' do
       within '#deals' do
         expect(page).to have_css '.no-deals'
       end
+
+      within '#alerts' do
+        expect(page).to have_css '.no-alerts'
+      end
     end
   end
 

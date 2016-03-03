@@ -104,10 +104,12 @@ class Revenue < ActiveRecord::Base
   end
 
   def set_run_rate
-    self.run_rate = (budget-budget_remaining)/(DateTime.now.to_date-start_date.to_date+1)
-    self.remaining_day = budget_remaining/self.run_rate
-    self.balance = ((end_date.to_date-DateTime.now.to_date+1)-self.remaining_day)*self.run_rate
-    self.last_alert_at = DateTime.now
+    if !budget.nil? && !budget_remaining.nil?
+      self.run_rate = (budget-budget_remaining)/(DateTime.now.to_date-start_date.to_date+1)
+      self.remaining_day = budget_remaining/self.run_rate
+      self.balance = ((end_date.to_date-DateTime.now.to_date+1)-self.remaining_day)*self.run_rate
+      self.last_alert_at = DateTime.now
+    end
   end
 
 end
