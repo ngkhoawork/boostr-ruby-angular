@@ -51,12 +51,22 @@
               %thead
                 %tr
                   %th.left Alert
+                  %th.right # Lines
+                  %th.right Est. Amount
               %tbody
-                %tr{ ng: { show: 'dashboard.current_user.pos_balance > 0' }}
+                %tr{ ng: { show: 'dashboard.current_user.pos_balance_cnt > 0' }}
                   %td.left
                     %a{ href: '', ng: { href: '/revenue?filter=upside' } }
-                      Revenue upside total: {{ dashboard.current_user.pos_balance }}
-                %tr{ ng: { show: 'dashboard.current_user.neg_balance > 0' }}
+                      Revenue Upside Potential
+                  %th.right
+                    {{ dashboard.current_user.pos_balance_cnt }}
+                  %th.right 
+                    {{ dashboard.current_user.pos_balance | currency:'$':0 }}
+                %tr{ ng: { show: 'dashboard.current_user.neg_balance_cnt > 0' }}
                   %td.left
                     %a{ href: '', ng: { href: '/revenue?filter=risk' } }
-                      Revenue at risk total: {{ dashboard.current_user.neg_balance }}
+                      Revenue at Risk
+                  %th.right
+                    {{ dashboard.current_user.neg_balance_cnt }}
+                  %th.right
+                    {{ dashboard.current_user.neg_balance | currency:'$':0 }}

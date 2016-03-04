@@ -62,4 +62,20 @@ class Team < ActiveRecord::Base
     end
     return neg_balance
   end
+
+  def sum_pos_balance_cnt
+    pos_balance_cnt = members.all.sum(:pos_balance_cnt)
+    children.each do |child|
+      pos_balance_cnt += child.sum_pos_balance_cnt
+    end
+    return pos_balance_cnt
+  end
+
+  def sum_neg_balance_cnt
+    neg_balance_cnt = members.all.sum(:neg_balance_cnt)
+    children.each do |child|
+      neg_balance_cnt += child.sum_neg_balance_cnt
+    end
+    return neg_balance_cnt
+  end
 end
