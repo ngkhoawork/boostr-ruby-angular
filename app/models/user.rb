@@ -62,7 +62,7 @@ class User < ActiveRecord::Base
     end
     Team.where(company_id: company_id).where.not(leader_id: nil).each do |t|
       u = t.leader
-      if !t.members.nil?
+      if !u.nil? && !t.members.nil?
         u.pos_balance += t.sum_pos_balance
         u.neg_balance += t.sum_neg_balance
         u.last_alert_at = DateTime.now
