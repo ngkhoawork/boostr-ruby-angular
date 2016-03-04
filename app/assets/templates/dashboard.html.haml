@@ -58,15 +58,11 @@
                   %td.left
                     %a{ href: '', ng: { href: '/revenue?filter=upside' } }
                       Revenue Upside Potential
-                  %th.right
-                    {{ dashboard.current_user.pos_balance_cnt }}
-                  %th.right 
-                    {{ dashboard.current_user.pos_balance | currency:'$':0 }}
+                  %td.right {{ dashboard.current_user.pos_balance_cnt }}
+                  %td.right {{ dashboard.current_user.pos_balance | currency:'$':0 }}
                 %tr{ ng: { show: 'dashboard.current_user.neg_balance_cnt > 0' }}
                   %td.left
                     %a{ href: '', ng: { href: '/revenue?filter=risk' } }
                       Revenue at Risk
-                  %th.right
-                    {{ dashboard.current_user.neg_balance_cnt }}
-                  %th.right
-                    {{ dashboard.current_user.neg_balance | currency:'$':0 }}
+                  %td.right {{ dashboard.current_user.neg_balance_cnt }}
+                  %td.right {{ dashboard.current_user.neg_balance | currency:'$':0 }}
