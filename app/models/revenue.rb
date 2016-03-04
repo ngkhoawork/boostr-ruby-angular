@@ -9,7 +9,7 @@ class Revenue < ActiveRecord::Base
   validates :company_id, :order_number, :line_number, :ad_server, :start_date, :end_date, presence: true
   validate :start_date_is_before_end_date
 
-  before_save :set_daily_budget, :set_run_rate
+  before_save :set_daily_budget, :set_alert
 
   def self.import(file, company_id)
     errors = []
@@ -64,6 +64,7 @@ class Revenue < ActiveRecord::Base
         errors << error
       end
     end
+    set_alerts(company_id)
     User.set_alerts(company_id)
     errors
   end
@@ -103,9 +104,9 @@ class Revenue < ActiveRecord::Base
     errors.add(:start_date, "is after end date") if start_date > end_date
   end
 
-  def set_run_rate
+  def set_alert
     if !budget.nil? && !budget_remaining.nil?
-      if budget > 0 && end_date > DateTime.now
+      if budget > 0 && start_date < DateTime.now && DateTime.now < end_date
         self.run_rate = (budget-budget_remaining)/(DateTime.now.to_date-start_date.to_date+1)
         if self.run_rate != 0
           self.remaining_day = budget_remaining/self.run_rate
@@ -120,6 +121,14 @@ class Revenue < ActiveRecord::Base
         self.balance = 0
       end
       self.last_alert_at = DateTime.now
+    end
+  end
+  
+  def self.set_alerts(company_id)
+    where(company_id: company_id).each do |r|
+      if r.last_alert_at.to_date < DateTime.now.to_date
+        r.set_alert
+      end
     end
   end
 
