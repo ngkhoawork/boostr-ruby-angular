@@ -3,9 +3,11 @@
 ($scope, $modal, $filter, $routeParams, $q, Revenue) ->
 
   $scope.revenueFilters = [
-    { name: 'All Revenues', param: '' }
-    { name: 'Revenue Upside', param: 'upside' }
-    { name: 'Revenue at Risk', param: 'risk' }
+    { name: 'My Revenues', param: '' }
+    { name: 'My Team\'s Revenues', param: 'team' }
+    { name: 'All Revenues', param: 'all' }
+    { name: 'Upside Revenues', param: 'upside' }
+    { name: 'At Risk Revenues', param: 'risk' }
   ]
 
   if $routeParams.filter

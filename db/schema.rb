@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160304041318) do
+ActiveRecord::Schema.define(version: 20160310050334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -347,6 +347,12 @@ ActiveRecord::Schema.define(version: 20160304041318) do
     t.datetime "last_alert_at"
     t.integer  "neg_balance_cnt"
     t.integer  "pos_balance_cnt"
+    t.integer  "neg_balance_lcnt"
+    t.integer  "pos_balance_lcnt"
+    t.integer  "neg_balance_l"
+    t.integer  "pos_balance_l"
+    t.integer  "neg_balance_l_cnt"
+    t.integer  "pos_balance_l_cnt"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

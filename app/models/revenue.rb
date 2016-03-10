@@ -65,7 +65,6 @@ class Revenue < ActiveRecord::Base
       end
     end
     set_alerts(company_id)
-    User.set_alerts(company_id)
     errors
   end
 
@@ -125,9 +124,41 @@ class Revenue < ActiveRecord::Base
   end
   
   def self.set_alerts(company_id)
-    where(company_id: company_id).each do |r|
+    User.where(company_id: company_id).update_all(pos_balance_cnt: 0, neg_balance_cnt: 0, pos_balance_lcnt: 0, neg_balance_lcnt: 0, pos_balance: 0, neg_balance: 0, pos_balance_l_cnt: 0, neg_balance_l_cnt: 0, pos_balance_l: 0, neg_balance_l: 0, last_alert_at: DateTime.now)
+    where(company_id: company_id).each do |r|    
       if r.last_alert_at.to_date < DateTime.now.to_date
         r.set_alert
+      end
+      r.client.client_members.each do |cm|
+        if cm.share > 0
+          u = cm.user
+          if r.balance > 0
+            u.pos_balance_cnt += 1
+            u.pos_balance_lcnt += cm.share
+            u.pos_balance += r.balance*cm.share/100
+          elsif r.balance < 0  
+            u.neg_balance_cnt += 1        
+            u.neg_balance_lcnt += cm.share
+            u.neg_balance += r.balance*cm.share/100
+          end
+          u.pos_balance_l_cnt = u.pos_balance_cnt
+          u.pos_balance_l = u.pos_balance
+          u.neg_balance_l_cnt = u.neg_balance_cnt
+          u.neg_balance_l = u.neg_balance
+          u.last_alert_at = DateTime.now
+          u.save
+        end
+      end
+    end
+    Team.where(company_id: company_id).where.not(leader_id: nil).each do |t|
+      u = t.leader
+      if !u.nil? && !t.members.nil?
+        u.pos_balance_l_cnt = t.sum_pos_balance_lcnt/100
+        u.pos_balance_l = t.sum_pos_balance
+        u.neg_balance_l_cnt = t.sum_neg_balance_lcnt/100
+        u.neg_balance_l = t.sum_neg_balance
+        u.last_alert_at = DateTime.now
+        u.save
       end
     end
   end

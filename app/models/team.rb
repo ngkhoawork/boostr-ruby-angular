@@ -47,8 +47,18 @@ class Team < ActiveRecord::Base
     deals.open.for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) }
   end
 
+  def all_members
+    ms = []
+    ms += members.all
+    children.each do |child|
+      ms += child.all_members
+    end
+    return ms
+  end
+
   def sum_pos_balance
-    pos_balance = members.all.sum(:pos_balance)
+    pos_balance = leader.nil? ? 0 : leader.pos_balance
+    pos_balance += members.all.sum(:pos_balance)
     children.each do |child|
       pos_balance += child.sum_pos_balance
     end
@@ -56,26 +66,29 @@ class Team < ActiveRecord::Base
   end
 
   def sum_neg_balance
-    neg_balance = members.all.sum(:neg_balance)
+    neg_balance = leader.nil? ? 0 : leader.neg_balance
+    neg_balance += members.all.sum(:neg_balance)
     children.each do |child|
       neg_balance += child.sum_neg_balance
     end
     return neg_balance
   end
 
-  def sum_pos_balance_cnt
-    pos_balance_cnt = members.all.sum(:pos_balance_cnt)
+  def sum_pos_balance_lcnt
+    pos_balance_lcnt = leader.nil? ? 0 : leader.pos_balance_lcnt
+    pos_balance_lcnt += members.all.sum(:pos_balance_lcnt)
     children.each do |child|
-      pos_balance_cnt += child.sum_pos_balance_cnt
+      pos_balance_lcnt += child.sum_pos_balance_lcnt
     end
-    return pos_balance_cnt
+    return pos_balance_lcnt
   end
 
-  def sum_neg_balance_cnt
-    neg_balance_cnt = members.all.sum(:neg_balance_cnt)
+  def sum_neg_balance_lcnt
+    neg_balance_lcnt = leader.nil? ? 0 : leader.neg_balance_lcnt
+    neg_balance_lcnt += members.all.sum(:neg_balance_lcnt)
     children.each do |child|
-      neg_balance_cnt += child.sum_neg_balance_cnt
+      neg_balance_lcnt += child.sum_neg_balance_lcnt
     end
-    return neg_balance_cnt
+    return neg_balance_lcnt
   end
 end

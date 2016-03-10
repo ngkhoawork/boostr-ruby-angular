@@ -29,18 +29,21 @@ RSpec.describe Revenue, type: :model do
   describe 'alerts' do
     let(:company) { create :company, id: 9999999 }
     let(:user) { create :user, company: company }
-    let(:revenue) { create :revenue, company: company, user: user, start_date: DateTime.now.to_date-15, end_date: DateTime.now.to_date+15, budget: 10000, budget_remaining: 8000 }
+    let(:client) { create :client, company: company }
+    let(:client_member) { create :client_member, client: client, user: user, share: 100 }
+    let(:revenue) { create :revenue, company: company, user: user, client: client, start_date: DateTime.now.to_date-15, end_date: DateTime.now.to_date+15, budget: 10000, budget_remaining: 8000 }
 
     it 'returns run rate' do
+      client.client_members << client_member
       expect(revenue.run_rate).to equal((revenue.budget-revenue.budget_remaining)/(DateTime.now.to_date-revenue.start_date.to_date+1).to_i)
       expect(revenue.remaining_day).to equal(revenue.budget_remaining/revenue.run_rate)
       expect(revenue.balance).to equal((((revenue.end_date.to_date-DateTime.now.to_date+1)-revenue.remaining_day)*revenue.run_rate).to_i)
-      User.set_alerts(company.id)
+      Revenue.set_alerts(company.id)
       user.reload
-      expect(user.neg_balance_cnt.to_i).to equal(1)
-      expect(user.pos_balance_cnt.to_i).to equal(0)
-      expect(user.neg_balance.to_i).to equal((((revenue.end_date.to_date-DateTime.now.to_date+1)-revenue.remaining_day)*revenue.run_rate).to_i)
-      expect(user.pos_balance.to_i).to equal(0)
+      expect(user.neg_balance_l_cnt.to_i).to equal(1)
+      expect(user.pos_balance_l_cnt.to_i).to equal(0)
+      expect(user.neg_balance_l.to_i).to equal((((revenue.end_date.to_date-DateTime.now.to_date+1)-revenue.remaining_day)*revenue.run_rate).to_i)
+      expect(user.pos_balance_l.to_i).to equal(0)
     end
   end
 
