@@ -34,9 +34,6 @@ feature 'Revenue' do
 
       expect(page).to have_no_css('#revenue_upload_modal')
 
-      within 'table tbody' do
-        expect(page).to have_css('tr', count: 1)
-      end
     end
   end
 
