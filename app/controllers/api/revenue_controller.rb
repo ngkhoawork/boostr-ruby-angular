@@ -43,6 +43,15 @@ class Api::RevenueController < ApplicationController
             end
           end
         end
+        current_user.teams.first.all_leaders.each do |m|
+          m.clients.each do |c|
+            if c.client_members.where(user_id: m.id).first.share > 0
+              c.revenues.where("revenues.balance > 0").each do |r|
+                rss += [r] if !rss.include?(r)
+              end
+            end
+          end
+        end
       else
         current_user.clients.each do |c|
           if c.client_members.where(user_id: current_user.id).first.share > 0
@@ -55,6 +64,15 @@ class Api::RevenueController < ApplicationController
     elsif params[:filter] == 'risk'
       if current_user.leader?
         current_user.teams.first.all_members.each do |m|
+          m.clients.each do |c|
+            if c.client_members.where(user_id: m.id).first.share > 0
+              c.revenues.where("revenues.balance < 0").each do |r|
+                rss += [r] if !rss.include?(r)
+              end
+            end
+          end
+        end
+        current_user.teams.first.all_leaders.each do |m|
           m.clients.each do |c|
             if c.client_members.where(user_id: m.id).first.share > 0
               c.revenues.where("revenues.balance < 0").each do |r|

@@ -56,6 +56,14 @@ class Team < ActiveRecord::Base
     return ms
   end
 
+  def all_leaders
+    ls = [leader] if !leader.nil?
+    children.each do |child|
+      ls << child.leader if !child.leader.nil?
+    end
+    return ls
+  end
+
   def sum_pos_balance
     pos_balance = leader.nil? ? 0 : leader.pos_balance
     pos_balance += members.all.sum(:pos_balance)
