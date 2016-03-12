@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
   belongs_to :team, -> (user) { where(company_id: user.company_id) }, counter_cache: :members_count
   has_many :client_members
   has_many :clients, -> (user) { where(company_id: user.company_id) }, through: :client_members
-  has_many :revenues, -> (user) { where(company_id: user.company_id) }
+  has_many :revenues, -> (user) { where(company_id: user.company_id) }, through: :clients
   has_many :deal_members
   has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
   has_many :quotas, -> (user) { where(company_id: user.company_id) }
@@ -51,5 +51,11 @@ class User < ActiveRecord::Base
 
   def all_deals_for_time_period(start_date, end_date)
     deals.open.for_time_period(start_date, end_date)
+  end
+
+  def all_revenues_for_time_period(start_date, end_date)
+    rs = revenues.for_time_period(start_date, end_date)
+    rs.map {|r| r.set_period_budget(start_date, end_date)}
+    return rs
   end
 end

@@ -1,6 +1,6 @@
 @app.controller 'ForecastsController',
-['$scope', '$routeParams', '$location', 'Forecast', 'TimePeriod', 'WeightedPipeline',
-($scope, $routeParams, $location, Forecast, TimePeriod, WeightedPipeline) ->
+['$scope', '$routeParams', '$location', 'Forecast', 'TimePeriod', 'WeightedPipeline', 'Revenue'
+($scope, $routeParams, $location, Forecast, TimePeriod, WeightedPipeline, Revenue) ->
 
   $scope.chartBarOptions = {
     responsive: false,
@@ -156,6 +156,7 @@
       $scope.weightedPipelineDetail = {}
       $scope.weighted_pipeline = []
     else
+      $scope.revenueDetail = {}
       $scope.weighted_pipeline = []
       params = { time_period_id: $scope.currentTimePeriod.id, year: $scope.year, quarter: row.quarter  }
       if row.type == 'member'
@@ -166,6 +167,23 @@
       WeightedPipeline.get(params).then (weighted_pipeline) ->
         $scope.weighted_pipeline = weighted_pipeline
         $scope.weightedPipelineDetail = row
+
+  $scope.toggleRevenueDetail = (row) ->
+    if $scope.revenueDetail == row
+      $scope.revenueDetail = {}
+      $scope.revenues = []
+    else
+      $scope.weightedPipelineDetail = {}
+      $scope.revenues = []
+      params = { time_period_id: $scope.currentTimePeriod.id, year: $scope.year, quarter: row.quarter  }
+      if row.type == 'member'
+        params = _.extend(params, { member_id: row.id })
+      else if row.type == 'team'
+        params = _.extend(params, { team_id: row.id })
+
+      Revenue.get(params).then (revenues) ->
+        $scope.revenues = revenues
+        $scope.revenueDetail = row
 
   $scope.updateTimePeriod = (time_period_id) ->
     path = []

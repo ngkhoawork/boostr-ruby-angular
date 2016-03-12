@@ -72,7 +72,6 @@ class Revenue < ActiveRecord::Base
     value.gsub(/[^0-9\.\-']/, '')
   end
 
-
   def client_name
     client.name if client.present?
   end
@@ -93,8 +92,26 @@ class Revenue < ActiveRecord::Base
     read_attribute(:daily_budget)/100.0
   end
 
+  def period_budget
+    @period_budget
+  end
+
+  def set_period_budget(sd, ed)
+    if self.start_date < sd
+      sdate = sd
+    else
+      sdate = self.start_date
+    end
+    if self.end_date > ed
+      edate = ed
+    else
+      edate = self.end_date
+    end
+    @period_budget = (daily_budget*(edate.to_date-sdate.to_date+1)).round
+  end
+
   def as_json(options = {})
-    super(options.merge(methods: [:client_name, :user_name, :product_name]))
+    super(options.merge(methods: [:client_name, :user_name, :product_name, :period_budget]))
   end
 
   def start_date_is_before_end_date

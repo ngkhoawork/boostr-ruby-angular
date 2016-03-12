@@ -16,7 +16,10 @@
     %a{ href: '', ng: { click: 'toggleWeightedPipelineDetail(row)' } }
       {{ row.weighted_pipeline | currency: '$': 0 }}
     .arrow-up{ ng: { show: 'row == weightedPipelineDetail' } }
-  %td.right {{ row.revenue | currency: '$': 0 }}
+  %td.weighted-pipeline.right
+    %a{ href: '', ng: { click: 'toggleRevenueDetail(row)' } }
+      {{ row.revenue | currency: '$': 0 }}
+    .arrow-up{ ng: { show: 'row == revenueDetail' } }
   %td.right
     {{ row.amount | currency: '$': 0 }}
   %td.right{ ng: { if: '!row.is_leader'} }
@@ -69,3 +72,30 @@
           %td.right {{ subrow.start_date | date: 'M/dd/yyyy' }}
           %td.right {{ subrow.wday_in_stage }}
           %td.right {{ subrow.wday_since_opened }}
+%tr.weighted-pipeline-detail{ ng: { if: 'row == revenueDetail' } }
+  %td.weighted-pipeline-table-wrapper{ colspan: 9, ng: { if: 'revenues.length == 0' } }
+    %h5
+      There are no revenues for this {{ row.type }} in this time period.
+    %a.close{ ng: { click: 'toggleRevenueDetail(row)' } }
+      %span{'aria-hidden' => 'true'}
+        = inline_svg 'icons/close.svg'
+  %td.weighted-pipeline-table-wrapper{ colspan: 9, ng: { if: 'revenues.length > 0' } }
+    %h3 Revenue Summary
+    %a.close{ ng: { click: 'toggleRevenueDetail(row)' } }
+      %span{'aria-hidden' => 'true'}
+        = inline_svg 'icons/close.svg'
+    %table.table.detail
+      %thead
+        %tr
+          %th.left Client
+          %th.right Total Budget
+          %th.right Period Budget
+          %th.right Start Date
+          %th.right End Date
+      %tbody
+        %tr{ ng: { repeat: 'subrow in revenues | orderBy: "-(budget+1)"' } }
+          %td.left {{ subrow.client_name }}
+          %td.right {{ subrow.budget }}
+          %td.right {{ subrow.period_budget }}
+          %td.right {{ subrow.start_date | date: 'M/dd/yyyy' }}
+          %td.right {{ subrow.end_date | date: 'M/dd/yyyy' }}

@@ -8,6 +8,7 @@ class Team < ActiveRecord::Base
   belongs_to :leader, class_name: 'User', foreign_key: :leader_id
   has_many :deals, through: :members
   has_many :clients, through: :members
+  has_many :revenues, through: :clients
 
   scope :roots, proc {|root_only|
     where(parent_id: nil) if root_only
@@ -45,6 +46,12 @@ class Team < ActiveRecord::Base
 
   def all_deals_for_time_period(start_date, end_date)
     deals.open.for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) }
+  end
+
+  def all_revenues_for_time_period(start_date, end_date)
+    rs = revenues.for_time_period(start_date, end_date) + children.map {|c| c.all_revenues_for_time_period(start_date, end_date)}
+    rs.flatten.map {|r| r.set_period_budget(start_date, end_date)}
+    return rs
   end
 
   def all_members
