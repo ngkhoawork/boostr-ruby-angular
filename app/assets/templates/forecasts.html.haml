@@ -1,5 +1,7 @@
 #forecasts
-  #nav.transparent
+  .container.loading{ ng: { hide: 'forecast' } }
+    Loading...
+  #nav.transparent{ ng: { show: 'forecast' } }
     .container
       .row
         .col-xs-12
@@ -34,7 +36,7 @@
             %canvas{ 'tc-chartjs': true, 'chart-type': 'stackedbar', 'chart-data':'chartBarData', 'chart-options':'chartBarOptions', 'chart-legend':'legend', style: 'width: 100%; height: 300px;' }
           %div{ 'tc-chartjs-legend':'true', 'chart-legend':'legend' }
 
-    .row
+    .row{ ng: { show: 'forecast' } }
       .col-xs-12
         .table-wrapper
           %table.table.table-striped
