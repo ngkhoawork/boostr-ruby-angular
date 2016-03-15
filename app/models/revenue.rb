@@ -123,10 +123,10 @@ class Revenue < ActiveRecord::Base
   def set_alert
     if !budget.nil? && !budget_remaining.nil?
       if budget > 0 && start_date < DateTime.now && DateTime.now < end_date
-        self.run_rate = ((budget-budget_remaining)/(DateTime.now.to_date-start_date.to_date+1))*100
+        self.run_rate = ((budget-budget_remaining)/(DateTime.now.to_date-start_date.to_date+1))*100.0
         if self.run_rate != 0
-          self.remaining_day = budget_remaining/(self.run_rate/100)
-          self.balance = ((end_date.to_date-DateTime.now.to_date+1)-self.remaining_day)*self.run_rate/100
+          self.remaining_day = budget_remaining/(self.run_rate/100.0)
+          self.balance = ((end_date.to_date-DateTime.now.to_date+1)-self.remaining_day)*(self.run_rate/100.0)
         else
           self.remaining_day = 0
           self.balance = 0
