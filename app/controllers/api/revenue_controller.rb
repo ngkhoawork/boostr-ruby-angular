@@ -9,10 +9,6 @@ class Api::RevenueController < ApplicationController
     end
   end
 
-  def show
-    render json: forecast_revenues
-  end
-
   def create
     csv_file = IO.read(params[:file].tempfile.path)
     revenues = Revenue.import(csv_file, current_user.company.id)
@@ -185,8 +181,30 @@ class Api::RevenueController < ApplicationController
 
   def crevenues
     return @crevenues if defined?(@crevenues)
-
-    @crevenues = member_or_team.all_revenues_for_time_period(start_date, end_date).flatten.uniq
+    
+    @crevenues = []
+    member_or_team.all_revenues_for_time_period(start_date, end_date).each do |rs|
+      if rs.kind_of?(Array)
+        rs.flatten.each do |r|
+          cr = @crevenues.find{ |i| i.client_id == r.client_id }
+          if cr.present?
+            cr.add_sum_budget(r.budget)
+            cr.add_sum_period_budget(r.period_budget)
+          else
+            @crevenues += [r]
+          end
+        end
+      else
+        cr = @crevenues.find{ |i| i.client_id == rs.client_id }
+        if cr.present?
+          cr.add_sum_budget(rs.budget)
+          cr.add_sum_period_budget(rs.period_budget)
+        else
+          @crevenues += [rs]
+        end
+      end
+    end
+    @crevenues.flatten
   end
 
 end

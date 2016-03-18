@@ -90,12 +90,8 @@
           %th.left Client
           %th.right Total Budget
           %th.right In-Period Amount
-          %th.right Start Date
-          %th.right End Date
       %tbody
         %tr{ ng: { repeat: 'subrow in revenues | orderBy: "-(budget+1)"' } }
           %td.left {{ subrow.client_name }}
-          %td.right {{ subrow.budget | currency: '$': 0 }}
-          %td.right {{ subrow.period_budget | currency: '$': 0 }}
-          %td.right {{ subrow.start_date | date: 'M/dd/yyyy' }}
-          %td.right {{ subrow.end_date | date: 'M/dd/yyyy' }}
+          %td.right {{ subrow.sum_budget | currency: '$': 0 }}
+          %td.right {{ subrow.sum_period_budget | currency: '$': 0 }}

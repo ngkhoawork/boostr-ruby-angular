@@ -92,6 +92,22 @@ class Revenue < ActiveRecord::Base
     read_attribute(:daily_budget)/100.0
   end
 
+  def sum_budget
+    @sum_budget
+  end
+
+  def add_sum_budget(other_budget)
+    @sum_budget += other_budget
+  end
+
+  def sum_period_budget
+    @sum_period_budget
+  end
+
+  def add_sum_period_budget(other_period_budget)
+    @sum_period_budget += other_period_budget
+  end
+
   def period_budget
     @period_budget
   end
@@ -108,10 +124,12 @@ class Revenue < ActiveRecord::Base
       edate = self.end_date
     end
     @period_budget = (daily_budget*(edate.to_date-sdate.to_date+1)).round
+    @sum_period_budget = @period_budget
+    @sum_budget = self.budget
   end
 
   def as_json(options = {})
-    super(options.merge(methods: [:client_name, :user_name, :product_name, :period_budget]))
+    super(options.merge(methods: [:client_name, :user_name, :product_name, :period_budget, :sum_budget, :sum_period_budget]))
   end
 
   def start_date_is_before_end_date
