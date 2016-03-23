@@ -79,7 +79,7 @@
     %a.close{ ng: { click: 'toggleRevenueDetail(row)' } }
       %span{'aria-hidden' => 'true'}
         = inline_svg 'icons/close.svg'
-  %td.weighted-pipeline-table-wrapper{ colspan: 5, ng: { if: 'revenues.length > 0' } }
+  %td.weighted-pipeline-table-wrapper{ colspan: 9, ng: { if: 'revenues.length > 0' } }
     %h3 Revenue Summary
     %a.close{ ng: { click: 'toggleRevenueDetail(row)' } }
       %span{'aria-hidden' => 'true'}
