@@ -90,6 +90,6 @@ class Api::DealsController < ApplicationController
   def suggest_deals
     return @search_deals if defined?(@search_deals)
 
-    @search_deals = company.deals.open.where('deals.name ilike ?', "%#{params[:name]}%").limit(10)
+    @search_deals = company.deals.where('deals.name ilike ?', "%#{params[:name]}%").limit(10)
   end
 end
