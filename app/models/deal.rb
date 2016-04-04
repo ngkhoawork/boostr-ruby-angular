@@ -67,7 +67,7 @@ class Deal < ActiveRecord::Base
   end
 
   def formatted_name
-    name + ', '+ advertiser.name + ', '+ stage.name 
+    name + ', '+ advertiser.name + ', '+ stage.name
   end
 
   def as_json(options = {})

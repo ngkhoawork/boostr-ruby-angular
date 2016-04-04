@@ -51,7 +51,7 @@ class Client < ActiveRecord::Base
       city = ''
       state = ''
     end
-    name + ', '+ city + ', '+ state 
+    name + ', '+ city.to_s + ', '+ state.to_s 
   end
 
   def as_json(options = {})
