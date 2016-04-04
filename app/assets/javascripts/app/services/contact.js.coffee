@@ -43,6 +43,12 @@
     else
       callback(allContacts)
 
+  @all1 = (params) ->
+    deferred = $q.defer()
+    resource.query params, (contacts) =>
+      deferred.resolve(contacts)
+    deferred.promise
+
   @allForClient = (client_id, callback) ->
     resource.query client_id: client_id, (contacts) ->
       callback(contacts)

@@ -1,7 +1,28 @@
 @app.controller 'DashboardController',
-['$scope', '$modal', 'Dashboard',
-($scope, $modal, Dashboard) ->
+['$scope', '$http', '$modal', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity',
+($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity) ->
 
+  $scope.showMeridian = true
+  
+  $scope.types = [
+    {'name':'Phone Call', 'action':'Spoke with'},
+    {'name':'Meeting', 'action':'Met with'},
+    {'name':'Pitch', 'action':'Pitched to'}
+  ]
+
+  $scope.init = ->
+    $scope.activity = {}
+    $scope.activeTab = 'Object'
+    $scope.selectedObj = {}
+    $scope.selectedObj.deal = true
+    $scope.selected = {}
+    now = new Date
+    _.each $scope.types, (type) -> 
+      $scope.selected[type.name] = {}
+      $scope.selected[type.name].date = now
+      $scope.selected[type.name].time = now
+    $scope.activeType = $scope.types[0]
+ 
   $scope.chartOptions = {
     responsive: false,
     segmentShowStroke: true,
@@ -47,5 +68,71 @@
       }
     ]
 
+  $scope.setActiveTab = (tab) ->
+    $scope.activeTab = tab
 
+  $scope.setActiveType = (type) ->
+    $scope.activeType = type
+
+  $scope.$on 'updated_dashboards', ->
+    $scope.init()
+
+  $scope.init()
+
+  $scope.searchObj = (name) ->
+    if $scope.selectedObj.deal
+      Deal.all({name: name}).then (deals) ->
+        deals
+    else
+      Client.all({name: name}).then (clients) ->
+        clients
+
+  $scope.searchContact = (name) ->
+    Contact.all1({name: name}).then (contacts) ->
+      contacts
+
+  $scope.submitForm = (form) ->
+    $scope.buttonDisabled = true
+    if form.$valid
+      if $scope.selectedObj.obj == undefined
+        $scope.buttonDisabled = false
+        return
+      if $scope.selectedObj.deal
+        $scope.activity.deal_id = $scope.selectedObj.obj.id
+      else
+        $scope.activity.client_id = $scope.selectedObj.obj.id
+
+      $scope.activity.activity_type = $scope.activeType.name
+      contact_id = $scope.selected[$scope.activeType.name].contact.id
+      contact_date = $scope.selected[$scope.activeType.name].date
+      contact_time = $scope.selected[$scope.activeType.name].time
+
+      form.submitted = true
+      $scope.activity.contact_id = contact_id
+      date = new Date(contact_date)
+      time = new Date(contact_time)
+      date.setHours(time.getHours(), time.getMinutes(), 0, 0);
+      $scope.activity.happened_at = date
+      Activity.create({ activity: $scope.activity }, (response) ->
+        angular.forEach response.data.errors, (errors, key) ->
+          form[key].$dirty = true
+          form[key].$setValidity('server', false)
+          $scope.buttonDisabled = false
+      ).then (activity) ->
+        $scope.init()
+
+  $scope.showModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_form.html'
+      size: 'lg'
+      controller: 'ContactsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          {}
+
+  $('[data-toggle="tooltip"]').tooltip({
+    placement: 'top'
+  })
 ]

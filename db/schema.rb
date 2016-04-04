@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160310050334) do
+ActiveRecord::Schema.define(version: 20160318081441) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,21 @@ ActiveRecord::Schema.define(version: 20160310050334) do
   add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
   add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
   add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
+
+  create_table "activities", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "user_id"
+    t.integer  "contact_id"
+    t.integer  "deal_id"
+    t.integer  "client_id"
+    t.string   "activity_type"
+    t.datetime "happened_at"
+    t.integer  "updated_by"
+    t.integer  "created_by"
+    t.text     "comment"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
 
   create_table "addresses", force: :cascade do |t|
     t.integer  "addressable_id"
@@ -89,6 +104,13 @@ ActiveRecord::Schema.define(version: 20160310050334) do
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "snapshot_day",       default: 0
+    t.integer  "avg_day"
+    t.integer  "day1"
+    t.integer  "day2"
+    t.integer  "day3"
+    t.string   "color1"
+    t.string   "color2"
+    t.string   "color3"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -281,6 +303,10 @@ ActiveRecord::Schema.define(version: 20160310050334) do
     t.string   "color"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "avg_day"
+    t.integer  "day1"
+    t.integer  "day2"
+    t.integer  "day3"
   end
 
   create_table "teams", force: :cascade do |t|

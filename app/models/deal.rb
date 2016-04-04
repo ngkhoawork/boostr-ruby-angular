@@ -18,6 +18,7 @@ class Deal < ActiveRecord::Base
   has_many :users, through: :deal_members
   has_many :values, as: :subject
   has_many :deal_stage_logs
+  has_many :activities
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
 
@@ -65,8 +66,12 @@ class Deal < ActiveRecord::Base
     company.fields.where(subject_type: self.class.name)
   end
 
+  def formatted_name
+    name + ', '+ advertiser.name + ', '+ stage.name 
+  end
+
   def as_json(options = {})
-    super(options.merge(include: [:advertiser, :stage, :values]))
+    super(options.merge(include: [:advertiser, :stage, :values], methods: [:formatted_name]))
   end
 
   def as_weighted_pipeline(start_date, end_date)

@@ -4,7 +4,11 @@ class Api::ClientsController < ApplicationController
   def index
     respond_to do |format|
       format.json { 
-        render json: clients.order(:name).includes(:address).distinct
+        if params[:name].present?
+          render json: suggest_clients
+        else
+          render json: clients.order(:name).includes(:address).distinct
+        end
       }
       format.csv { 
         if current_user.leader?
@@ -87,4 +91,11 @@ class Api::ClientsController < ApplicationController
       current_user.team
     end
   end
+
+  def suggest_clients
+    return @search_clients if defined?(@search_clients)
+
+    @search_clients = company.clients.where('name ilike ?', "%#{params[:name]}%").limit(10)
+  end
+
 end

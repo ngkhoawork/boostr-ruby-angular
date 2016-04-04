@@ -6,6 +6,8 @@ class Contact < ActiveRecord::Base
 
   has_one :address, as: :addressable
 
+  has_many :activities
+
   accepts_nested_attributes_for :address
 
   validates :name, presence: true

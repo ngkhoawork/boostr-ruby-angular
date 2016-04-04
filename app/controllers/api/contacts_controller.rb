@@ -2,11 +2,15 @@ class Api::ContactsController < ApplicationController
   respond_to :json
 
   def index
-    contacts = current_user.company.contacts
-      .for_client(params[:client_id])
-      .order(:name)
-      .includes(:address)
-    render json: contacts
+    if params[:name].present?
+      render json: suggest_contacts
+    else
+      contacts = current_user.company.contacts
+        .for_client(params[:client_id])
+        .order(:name)
+        .includes(:address)
+      render json: contacts
+    end
   end
 
   def create
@@ -47,5 +51,11 @@ class Api::ContactsController < ApplicationController
 
   def contact
     @contact ||= current_user.company.contacts.where(id: params[:id]).first
+  end
+
+  def suggest_contacts
+    return @search_contacts if defined?(@search_contacts)
+
+    @search_contacts = current_user.company.contacts.where('name ilike ?', "%#{params[:name]}%").limit(10)
   end
 end

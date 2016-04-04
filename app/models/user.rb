@@ -14,6 +14,7 @@ class User < ActiveRecord::Base
   has_many :quotas, -> (user) { where(company_id: user.company_id) }
   has_many :teams, -> (user) { where(company_id: user.company_id) }, foreign_key: :leader_id
   has_many :snapshots, -> (user) { where(company_id: user.company_id) }
+  has_many :activities
 
   ROLES = %w(user admin superadmin)
 

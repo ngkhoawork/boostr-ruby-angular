@@ -5,6 +5,10 @@ class Api::DashboardsController < ApplicationController
     render json: { forecast: DashboardForecastSerializer.new(forecast), deals: serialized_deals, current_user: current_user }
   end
 
+  def typeahead
+    render json: deal_search
+  end
+
   protected
 
   def time_period
@@ -29,6 +33,12 @@ class Api::DashboardsController < ApplicationController
     return @deals if defined?(@deals)
 
     @deals = current_user.deals.open
+  end
+
+  def deal_search
+    return @deal_search if defined?(@deal_search)
+
+    @deal_search = current_user.deals.open.where('name ilike ?', "%#{params[:query]}%")
   end
 
   def company

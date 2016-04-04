@@ -3,7 +3,13 @@ class Api::DealsController < ApplicationController
 
   def index
     respond_to do |format|
-      format.json { render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage).distinct , each_serializer: DealIndexSerializer).to_json }
+      format.json {
+        if params[:name].present?
+          render json: suggest_deals
+        else
+          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage).distinct , each_serializer: DealIndexSerializer).to_json 
+        end
+      }
       format.zip {
         if current_user.leader?
           deals = company.deals
@@ -79,5 +85,11 @@ class Api::DealsController < ApplicationController
     else
       current_user.team
     end
+  end
+
+  def suggest_deals
+    return @search_deals if defined?(@search_deals)
+
+    @search_deals = company.deals.open.where('deals.name ilike ?', "%#{params[:name]}%").limit(10)
   end
 end

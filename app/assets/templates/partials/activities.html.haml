@@ -1,0 +1,53 @@
+#activities
+  %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
+    %h3
+      My Activities
+    %input.box.w1{ placeholder: 'Notes', ng: { model: 'activity.comment' }, 'ng-keypress' => 'searchForm.$submitted=false', name: 'comment' }
+
+    #nav.transparent
+      %ul.nav.nav-tabs
+        %li{ ng: { class: "{ active: activeTab == 'Object' }" } }
+          %a.search{ href: '', ng: { click: 'setActiveTab("Object")' } }
+            Object
+        %li{ ng: { class: "{ active: activeTab == 'Type' }" } }
+          %a.link{ href: '', ng: { click: 'setActiveTab("Type")' } }
+            Type
+        %li.pull-right
+          %button.btn.btn-primary.btn-block{ type: 'submit' } Post Update
+
+    .container{ ng: { show: 'activeTab == "Object"' } }
+      .row
+        .col-xs-6
+          .btn-group
+            %label.open-button.btn.btn-primary{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'true' } }
+              Deals
+            %label.close-button.btn.btn-primary{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'false' } }
+              Clients
+      .row
+        .col-xs-6
+          %input.box.w2{ placeholder: 'Type a name', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
+    .container{ ng: { show: 'activeTab == "Type"' } }
+      .row
+        .col-xs-2
+          .list-group.list-sm.stages
+            %a.list-group-item.vertical-center{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
+              %h5
+                {{ type.name }}
+
+        .col-xs-4
+          .container{ ng: { repeat: 'type in types', show: 'activeType == type' } }
+            .row.type
+              %a#add-contact{ href: '', ng: { click: 'showModal()' }, 'data-toggle' => 'tooltip', :title => 'Add contact' }
+                = inline_svg 'icons/add.svg'
+            .row.type1
+              {{ type.action }}
+              %br
+              %input.box.w3{ name: 'contact', placeholder: 'Type a name', ng: { model: 'selected[type.name].contact' }, type: 'text', typeahead: 'item as item.name for item in searchContact($viewValue)' }
+            .row.type2
+              Date
+              %br
+              %span.bs-datepicker
+                %input.box.w4{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'selected[type.name].date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+            .row.type2
+              Time
+              %timepicker-pop.input-group{"input-time" => "selected[type.name].time", "show-meridian" => "showMeridian"}

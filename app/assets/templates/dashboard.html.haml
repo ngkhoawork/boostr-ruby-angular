@@ -8,8 +8,13 @@
       .col-xs-12
         %div{ ng: { include: "'partials/stats.html'" } }
 
+
+
     .row
       .col-xs-7
+        %div{ ng: { include: "'partials/activities.html'" } }
+
+      .col-xs-5
         #deals.section
           %h3
             My Open Deals
@@ -36,7 +41,8 @@
                   %td.left {{ row.stage.name }}
                   %td.right {{ row.start_date | date: 'shortDate' }}
 
-      .col-xs-5
+
+
         #alerts.section
           %h3
             My I/O Alerts

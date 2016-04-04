@@ -10,6 +10,7 @@ class Client < ActiveRecord::Base
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
   has_many :values, as: :subject
+  has_many :activities
 
   has_one :address, as: :addressable
 
@@ -42,8 +43,19 @@ class Client < ActiveRecord::Base
     company.fields.where(subject_type: self.class.name)
   end
 
+  def formatted_name
+    if !address.nil?
+      city = address.city
+      state = address.state
+    else
+      city = ''
+      state = ''
+    end
+    name + ', '+ city + ', '+ state 
+  end
+
   def as_json(options = {})
-    super(options.merge(include: [:address, values: { include: [:option], methods: [:value] }], methods: [:deals_count, :fields]))
+    super(options.merge(include: [:address, values: { include: [:option], methods: [:value] }], methods: [:deals_count, :fields, :formatted_name]))
   end
 
   def ensure_client_member

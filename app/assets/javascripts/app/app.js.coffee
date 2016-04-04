@@ -14,6 +14,7 @@
   'angular-loading-bar'
   'ui.sortable'
   'ngInflection'
+  'timepickerPop'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -42,6 +43,9 @@
     .when '/revenue',
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
+    .when '/activities',
+      templateUrl: 'activities.html'
+      controller: 'ActivitiesController'
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'
