@@ -37,6 +37,10 @@ feature 'Dashboard' do
       within '#alerts' do
         expect(page).to have_css '.no-alerts'
       end
+
+      within '#activities' do
+        expect(page).to have_text 'My Activities'
+      end
     end
   end
 
