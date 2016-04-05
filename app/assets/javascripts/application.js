@@ -29,7 +29,6 @@
 //= require angular-ui-sortable
 //= require inflection
 //= require ngInflection
-//= require timepickerpop
 //= require_tree .
 //= require_tree ../templates
 
