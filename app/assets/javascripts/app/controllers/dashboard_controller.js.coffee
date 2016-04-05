@@ -3,15 +3,15 @@
 ($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity) ->
 
   $scope.showMeridian = true
-  
+
   $scope.types = [
     {'name':'Initial Meeting', 'action':'Initial meeting with'},
     {'name':'Pitch', 'action':'Pitched to'},
     {'name':'Proposal Sent', 'action':'Sent proposal to'},
-    {'name':'Feedback', 'action':'Feedback from agency/client from'},
+    {'name':'Feedback', 'action':'Agency/Client feedback from'},
     {'name':'Agency Meeting', 'action':'Agency meeting with'},
     {'name':'Client Meeting', 'action':'Client meeting with'},
-    {'name':'Entertainment', 'action':'Had entertainment with'},
+    {'name':'Entertainment', 'action':'Client entertainment with'},
     {'name':'Campaign Review', 'action':'Reviewed campaign with'},
     {'name':'QBR', 'action':'Quarterly Business Review with'}
   ]
@@ -108,6 +108,9 @@
       else
         $scope.activity.client_id = $scope.selectedObj.obj.id
 
+      if $scope.selected[$scope.activeType.name].contact == undefined
+        $scope.buttonDisabled = false
+        return
       $scope.activity.activity_type = $scope.activeType.name
       contact_id = $scope.selected[$scope.activeType.name].contact.id
       contact_date = $scope.selected[$scope.activeType.name].date
@@ -125,6 +128,7 @@
           form[key].$setValidity('server', false)
           $scope.buttonDisabled = false
       ).then (activity) ->
+        $scope.buttonDisabled = false
         $scope.init()
 
   $scope.showModal = ->
