@@ -11,7 +11,7 @@
     {'name':'Feedback', 'action':'Agency/Client feedback from'},
     {'name':'Agency Meeting', 'action':'Agency meeting with'},
     {'name':'Client Meeting', 'action':'Client meeting with'},
-    {'name':'Entertainment', 'action':'Client entertainment with'},
+    {'name':'Client Entertainment', 'action':'Client entertainment with'},
     {'name':'Campaign Review', 'action':'Reviewed campaign with'},
     {'name':'QBR', 'action':'Quarterly Business Review with'}
   ]

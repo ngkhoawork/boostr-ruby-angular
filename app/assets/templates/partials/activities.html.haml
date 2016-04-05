@@ -2,7 +2,7 @@
   %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
     %h3
       My Activities
-    %input.box.w1{ placeholder: 'Type your update here', ng: { model: 'activity.comment' }, 'ng-keypress' => 'searchForm.$submitted=false', name: 'comment' }
+    %input.box.w1{ placeholder: 'Type your update here...', ng: { model: 'activity.comment' }, 'ng-keypress' => 'searchForm.$submitted=false', name: 'comment' }
 
     #nav.transparent
       %ul.nav.nav-tabs
@@ -25,7 +25,7 @@
               Clients
       .row
         .col-xs-6
-          %input.box.w2{ placeholder: 'Type a name', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
+          %input.box.w2{ placeholder: 'Type a name*', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
     .container{ ng: { show: 'activeTab == "Type"' } }
       .row
         .col-xs-2
@@ -40,7 +40,7 @@
               %a#add-contact{ href: '', ng: { click: 'showModal()' } }
                 = inline_svg 'icons/add.svg'
             .row.type1
-              {{ type.action }}
+              {{ type.action }}*
               %br
               %input.box.w3{ placeholder: 'Type a name', ng: { model: 'selected[type.name].contact' }, type: 'text', typeahead: 'item as item.name for item in searchContact($viewValue)' }
             .row.type2
