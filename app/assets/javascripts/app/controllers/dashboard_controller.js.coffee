@@ -104,9 +104,9 @@
         return
       if $scope.selectedObj.deal
         $scope.activity.deal_id = $scope.selectedObj.obj.id
+        $scope.activity.client_id = $scope.selectedObj.obj.advertiser_id
       else
         $scope.activity.client_id = $scope.selectedObj.obj.id
-
       if $scope.selected[$scope.activeType.name].contact == undefined
         $scope.buttonDisabled = false
         return
