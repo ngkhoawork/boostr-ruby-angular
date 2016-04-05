@@ -2,7 +2,7 @@
   %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
     %h3
       My Activities
-    %input.box.w1{ placeholder: 'Type your update here...', ng: { model: 'activity.comment' }, 'ng-keypress' => 'searchForm.$submitted=false', name: 'comment' }
+    %input.box.w1{ placeholder: 'Type your update here', ng: { model: 'activity.comment' }, 'ng-keypress' => 'searchForm.$submitted=false', name: 'comment' }
 
     #nav.transparent
       %ul.nav.nav-tabs

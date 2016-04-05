@@ -26,7 +26,6 @@
     _.each $scope.types, (type) -> 
       $scope.selected[type.name] = {}
       $scope.selected[type.name].date = now
-      $scope.selected[type.name].time = now
     $scope.activeType = $scope.types[0]
  
   $scope.chartOptions = {
@@ -111,17 +110,17 @@
       if $scope.selected[$scope.activeType.name].contact == undefined
         $scope.buttonDisabled = false
         return
+      form.submitted = true
       $scope.activity.activity_type = $scope.activeType.name
       contact_id = $scope.selected[$scope.activeType.name].contact.id
-      contact_date = $scope.selected[$scope.activeType.name].date
-      contact_time = $scope.selected[$scope.activeType.name].time
-
-      form.submitted = true
       $scope.activity.contact_id = contact_id
-      date = new Date(contact_date)
-      time = new Date(contact_time)
-      date.setHours(time.getHours(), time.getMinutes(), 0, 0);
-      $scope.activity.happened_at = date
+      contact_date = new Date($scope.selected[$scope.activeType.name].date)
+      if $scope.selected[$scope.activeType.name].time != undefined
+        contact_time = new Date($scope.selected[$scope.activeType.name].time)
+        contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
+      else
+        contact_date.setHours(-7, 0, 0, 0)
+      $scope.activity.happened_at = contact_date
       Activity.create({ activity: $scope.activity }, (response) ->
         angular.forEach response.data.errors, (errors, key) ->
           form[key].$dirty = true
