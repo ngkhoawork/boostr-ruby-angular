@@ -5,9 +5,15 @@
   $scope.showMeridian = true
   
   $scope.types = [
-    {'name':'Phone Call', 'action':'Spoke with'},
-    {'name':'Meeting', 'action':'Met with'},
-    {'name':'Pitch', 'action':'Pitched to'}
+    {'name':'Initial Meeting', 'action':'Initial meeting with'},
+    {'name':'Pitch', 'action':'Pitched to'},
+    {'name':'Proposal Sent', 'action':'Sent proposal to'},
+    {'name':'Feedback', 'action':'Feedback from agency/client from'},
+    {'name':'Agency Meeting', 'action':'Agency meeting with'},
+    {'name':'Client Meeting', 'action':'Client meeting with'},
+    {'name':'Entertainment', 'action':'Had entertainment with'},
+    {'name':'Campaign Review', 'action':'Reviewed campaign with'},
+    {'name':'QBR', 'action':'Quarterly Business Review with'}
   ]
 
   $scope.init = ->
