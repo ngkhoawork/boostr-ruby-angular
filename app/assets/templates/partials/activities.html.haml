@@ -42,7 +42,7 @@
             .row.type1
               {{ type.action }}
               %br
-              %input.box.w3{ name: 'contact', placeholder: 'Type a name', ng: { model: 'selected[type.name].contact' }, type: 'text', typeahead: 'item as item.name for item in searchContact($viewValue)' }
+              %input.box.w3{ placeholder: 'Type a name', ng: { model: 'selected[type.name].contact' }, type: 'text', typeahead: 'item as item.name for item in searchContact($viewValue)' }
             .row.type2
               Date
               %br
