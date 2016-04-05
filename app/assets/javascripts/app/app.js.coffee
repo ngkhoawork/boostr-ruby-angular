@@ -14,6 +14,7 @@
   'angular-loading-bar'
   'ui.sortable'
   'ngInflection'
+  'timepickerPop'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -108,5 +109,5 @@
 ]
 
 @service = angular.module 'services', ['ngResource']
-@directives = angular.module 'directives', ['timepickerPop']
+@directives = angular.module 'directives', []
 @filters = angular.module 'filters', []
