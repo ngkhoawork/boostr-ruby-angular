@@ -2,7 +2,7 @@
   %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
     %h3
       My Activities
-    %input.box.w1{ placeholder: 'Type your update here', ng: { model: 'activity.comment' }, 'ng-keypress' => 'searchForm.$submitted=false', name: 'comment' }
+    %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'activity.comment' } }
 
     #nav.transparent
       %ul.nav.nav-tabs
@@ -30,10 +30,9 @@
       .row
         .col-xs-2
           .list-group.list-sm.stages
-            %a.list-group-item.vertical-center{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
+            %a.list-group-item.vertical-center.type-menu{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
               %h5
                 {{ type.name }}
-
         .col-xs-4
           .container{ ng: { repeat: 'type in types', show: 'activeType == type' } }
             .row.type
