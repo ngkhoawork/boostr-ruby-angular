@@ -1,5 +1,5 @@
 #activities {
-  padding-bottom: 20px;
+  padding-bottom: 100px;
   #nav {
     border-bottom: 0px;
     margin-top: 18px;
@@ -227,5 +227,9 @@
     color: $brand-primary-lighten;
     background-color: transparent;
     box-shadow:none;
+  }
+
+  .tt1 {
+    margin-bottom: 280px;
   }
 }
