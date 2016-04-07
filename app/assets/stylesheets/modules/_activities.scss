@@ -54,19 +54,55 @@
     padding: 6px;
     border-color: $input-border;
     background-color: transparent;
+    height: 44px;
     &:focus,
     &:hover {
       outline:none;
       background-color: $white;
     }
+  }
+
+  .box1 {
+    border-radius: 4px;
+    border: 1px solid transparent;
+    box-shadow: none;
+    color: $text-color;
+    padding: 6px;
+    border-color: $input-border;
+    background-color: transparent;
     height: 44px;
-    resize: none;
+    width: 290px;
+    &:focus,
+    &:hover {
+      outline:none;
+      background-color: $white;
+    }
+  }
+
+  .box2 {
+    padding: 6px;
+    box-shadow: none;
+    background-color: transparent;
+    outline:none;
+    border: 0px;
+    border-color: transparent;
+    height: 44px;
+    &:focus,
+    &:hover {
+      color: $text-color;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      border-color: $input-border;
+      outline:none;
+      background-color: $white;
+    }
   }
 
   .w1 {
     background-color: $white;
     width: 622px;
     height: 66px;
+    resize: none;
   }
 
   .w2 {
@@ -116,23 +152,6 @@
         margin-bottom: 5px;
       }
     }
-  }
-
-  .box1 {
-    border-radius: 4px;
-    border: 1px solid transparent;
-    box-shadow: none;
-    color: $text-color;
-    padding: 6px;
-    border-color: $input-border;
-    background-color: transparent;
-    &:focus,
-    &:hover {
-      outline:none;
-      background-color: $white;
-    }
-    height: 44px;
-    width: 290px;
   }
 
   #input-group-btn {
