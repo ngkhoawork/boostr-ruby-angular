@@ -1,8 +1,9 @@
 #activities
   %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
-    %h3
-      My Activities
-    %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'activity.comment' } }
+    #note
+      %h3
+        My Activities
+      %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'activity.comment' } }
 
     #nav.transparent
       %ul.nav.nav-tabs
@@ -15,33 +16,32 @@
         %li.pull-right
           %button.btn.btn-primary.btn-block{ type: 'submit' } Post Update
 
-    .container{ ng: { show: 'activeTab == "Object"' } }
+    #contain.tab{ ng: { show: 'activeTab == "Object"' } }
       .row
         .col-xs-6
           .btn-group
-            %label.open-button.btn.btn-primary{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'true' } }
+            %label.open-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'true' } }
               Deals
-            %label.close-button.btn.btn-primary{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'false' } }
+            %label.close-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'false' } }
               Clients
       .row
         .col-xs-6
           %input.box.w2{ placeholder: 'Type a name*', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
-    .container{ ng: { show: 'activeTab == "Type"' } }
+    #contain.tab{ ng: { show: 'activeTab == "Type"' } }
       .row
-        .col-xs-2
+        .col-xs-4
           .list-group.list-sm.stages
-            %a.list-group-item.vertical-center.type-menu{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
+            %a.list-group-item.vertical-center{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
               %h5
                 {{ type.name }}
-        .col-xs-4
-          .container{ ng: { repeat: 'type in types', show: 'activeType == type' } }
-            .row.type
+        .col-xs-6
+          #contain1{ ng: { repeat: 'type in types', show: 'activeType == type' } }
+            .row.type1
               %a#add-contact{ href: '', ng: { click: 'showModal()' } }
                 = inline_svg 'icons/add.svg'
-            .row.type1
               {{ type.action }}*
               %br
-              %input.box.w3{ placeholder: 'Type a name', ng: { model: 'selected[type.name].contact' }, type: 'text', typeahead: 'item as item.name for item in searchContact($viewValue)' }
+              %input.box.w4{ placeholder: 'Type a name', ng: { model: 'selected[type.name].contact' }, type: 'text', typeahead: 'item as item.name for item in searchContact($viewValue)' }
             .row.type2
               Date
               %br
