@@ -59,6 +59,7 @@
       background-color: $white;
     }
     height: 44px;
+    resize: none;    
   }
 
   .w1 {
@@ -173,10 +174,5 @@
     &:hover {
       box-shadow: none;
     }
-  }
-
-  #message {
-    margin-top: 5pt;
-    margin-bottom: -15pt;
   }
 }
