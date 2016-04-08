@@ -140,4 +140,8 @@
       resolve:
         contact: ->
           {}
+
+  $scope.cancel = ->
+    $scope.init()
+
 ]

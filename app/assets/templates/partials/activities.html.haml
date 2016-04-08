@@ -16,8 +16,11 @@
         %li.pull-right
           %button.btn.btn-primary.btn-block{ type: 'submit' } Post Update
 
-    #contain.tab.tt1{ ng: { show: 'activeTab == "Object"' } }
+    #contain.tab{ ng: { show: 'activeTab == "Object"' } }
       .row
+        %a.close{ ng: { click: 'cancel()' } }
+          %span{'aria-hidden' => 'true'}
+            = inline_svg 'icons/close.svg'
         .col-xs-6
           .btn-group
             %label.open-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'true' } }
@@ -28,6 +31,10 @@
         .col-xs-6
           %input.box2.w2{ placeholder: 'Type a name', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
     #contain.tab{ ng: { show: 'activeTab == "Type"' } }
+      .row
+        %a.close{ ng: { click: 'cancel()' } }
+          %span{'aria-hidden' => 'true'}
+            = inline_svg 'icons/close.svg'
       .row
         .col-xs-4
           .list-group.list-sm.stages
