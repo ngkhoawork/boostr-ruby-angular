@@ -26,7 +26,7 @@
               Clients
       .row
         .col-xs-6
-          %input.box2.w2{ ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
+          %input.box2.w2{ placeholder: 'Type a name', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
     #contain.tab{ ng: { show: 'activeTab == "Type"' } }
       .row
         .col-xs-4

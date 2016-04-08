@@ -84,15 +84,13 @@
     box-shadow: none;
     background-color: transparent;
     outline:none;
-    border: 0px;
-    border-color: transparent;
     height: 44px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    border-color: $input-border;
+    color: $text-color;
     &:focus,
     &:hover {
-      color: $text-color;
-      border-radius: 4px;
-      border: 1px solid transparent;
-      border-color: $input-border;
       outline:none;
       background-color: $white;
     }
