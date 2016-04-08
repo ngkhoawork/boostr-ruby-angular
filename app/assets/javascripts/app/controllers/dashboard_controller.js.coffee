@@ -18,7 +18,7 @@
 
   $scope.init = ->
     $scope.activity = {}
-    $scope.activeTab = 'Object'
+    $scope.activeTab = {}
     $scope.selectedObj = {}
     $scope.selectedObj.deal = true
     $scope.selected = {}
@@ -140,5 +140,4 @@
       resolve:
         contact: ->
           {}
-
 ]
