@@ -5,15 +5,15 @@
   $scope.showMeridian = true
 
   $scope.types = [
-    {'name':'Initial Meeting', 'action':'Initial meeting with'},
-    {'name':'Pitch', 'action':'Pitched to'},
-    {'name':'Proposal Sent', 'action':'Sent proposal to'},
-    {'name':'Feedback', 'action':'Agency/Client feedback from'},
-    {'name':'Agency Meeting', 'action':'Agency meeting with'},
-    {'name':'Client Meeting', 'action':'Client meeting with'},
-    {'name':'Client Entertainment', 'action':'Client entertainment with'},
-    {'name':'Campaign Review', 'action':'Reviewed campaign with'},
-    {'name':'QBR', 'action':'Quarterly Business Review with'}
+    {'name':'Initial Meeting', 'action':'Initial meeting with', 'icon':'/assets/icons/meeting.svg'},
+    {'name':'Pitch', 'action':'Pitched to', 'icon':'/assets/icons/pitch.svg'},
+    {'name':'Proposal', 'action':'Sent proposal to', 'icon':'/assets/icons/proposal.svg'},
+    {'name':'Feedback', 'action':'Agency/Client feedback from', 'icon':'/assets/icons/feedback.svg'},
+    {'name':'Agency Meeting', 'action':'Agency meeting with', 'icon':'/assets/icons/meeting.svg'},
+    {'name':'Client Meeting', 'action':'Client meeting with', 'icon':'/assets/icons/meeting.svg'},
+    {'name':'Entertainment', 'action':'Client entertainment with', 'icon':'/assets/icons/entertainment.svg'},
+    {'name':'Campaign', 'action':'Reviewed campaign with', 'icon':'/assets/icons/review.svg'},
+    {'name':'QBR', 'action':'Quarterly Business Review with', 'icon':'/assets/icons/QBR.svg'}
   ]
 
   $scope.init = ->

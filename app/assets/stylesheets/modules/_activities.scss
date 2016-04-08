@@ -2,8 +2,9 @@
   padding-bottom: 100px;
   margin-bottom: 300px;
   #nav {
+    width: 622px;
     border-bottom: 0px;
-    margin-top: 18px;
+    margin-top: 5px;
 
     .nav-tabs {
       .active {
@@ -18,7 +19,9 @@
             height: 0;
             left: 0;
             bottom: 0;
-            border-bottom: 3px solid $brand-primary;
+          }
+          svg {
+            fill: $brand-primary;
           }
         }
       }
@@ -30,6 +33,7 @@
       }
 
       li {
+        margin-right: 0px;
         a {
           font-size: 13px;
           font-family: $table-headings-font-family;
@@ -37,10 +41,17 @@
           color: $grayish-blue-1;
           padding-bottom: 0;
           border-bottom-width: 0;
-
+          padding-top: 20px;
           &:hover,
           &:focus {
             color: $brand-primary;
+            svg {
+              fill: $brand-primary;
+            }
+          }
+          svg {
+            fill: $grayish-blue-1;
+            height: 35px;
           }
         }
       }
@@ -133,8 +144,8 @@
   }
 
   a.list-group-item {
-    padding-top: 12px;
-    padding-bottom: 12px;
+    padding-top: 16px;
+    padding-bottom: 10px;
     min-height: auto;
   }
   
@@ -199,10 +210,10 @@
   
   .tab {
     width: 622px;
-    margin-top: -12pt;
-    padding-top: 15pt;
-    padding-left: 15pt;
-    padding-bottom: 15pt;
+    margin-top: -12px;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-bottom: 15px;
     border-top: 1px solid $gray-darker1;
     border-right: 1px solid $gray-darker1;
     border-left: 1px solid $gray-darker1;
@@ -229,7 +240,23 @@
   }
 
   .close {
-    margin-right: 20pt;
-    margin-top: -7pt;
+    margin-right: 20px;
+    margin-top: -7px;
+  }
+  
+  .search {
+    margin-right: 6px;
+  }
+
+  .type-menu {
+    padding-right: 5px;
+    padding-left: 30px;
+    img.s-img {
+      height: 30px;
+      float: left;
+      margin-top: -3px;
+      margin-right: 5px;
+      margin-left: -20px;
+    }
   }
 }

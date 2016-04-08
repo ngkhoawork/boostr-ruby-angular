@@ -9,10 +9,10 @@
       %ul.nav.nav-tabs
         %li{ ng: { class: "{ active: activeTab == 'Object' }" } }
           %a.search{ href: '', ng: { click: 'setActiveTab("Object")' } }
-            Object
+            = inline_svg 'icons/search.svg'
         %li{ ng: { class: "{ active: activeTab == 'Type' }" } }
           %a.link{ href: '', ng: { click: 'setActiveTab("Type")' } }
-            Type
+            = inline_svg 'icons/message.svg'
         %li.pull-right
           %button.btn.btn-primary.btn-block{ type: 'submit' } Post Update
 
@@ -38,7 +38,8 @@
       .row
         .col-xs-4
           .list-group.list-sm.stages
-            %a.list-group-item.vertical-center{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
+            %a.list-group-item.vertical-center.type-menu{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
+              %img.s-img{:src => "{{ type.icon }}"}/
               %h5
                 {{ type.name }}
         .col-xs-6
