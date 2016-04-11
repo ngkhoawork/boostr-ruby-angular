@@ -21,7 +21,6 @@ describe "ClientsNewController", ->
           state: 'ID'
       }
 
-      @httpBackend.expectGET('/api/fields?subject=Client').respond([])
       @httpBackend.expectPOST('/api/clients').respond({ name: 'Proctor'})
       expect(@scope.submitForm()).toBeTruthy()
       @httpBackend.flush()
