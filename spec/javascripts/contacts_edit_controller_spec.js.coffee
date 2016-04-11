@@ -22,7 +22,7 @@ describe "ContactsEditController", ->
           state: 'ID'
       }
 
-      @httpBackend.expectGET('/api/clients').respond([])
+      @httpBackend.expectGET('/api/clients?filter=all').respond([])
       @httpBackend.expectPUT('/api/contacts').respond({ name: 'Proctor', position: 'CEO'})
       expect(@scope.submitForm()).toBeTruthy()
       @httpBackend.flush()
