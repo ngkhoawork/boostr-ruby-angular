@@ -259,25 +259,33 @@ class Deal < ActiveRecord::Base
   end
 
   def update_close
-    if !stage.open?
-      self.closed_at = updated_at
-      if stage.probability == 100
-        notification = company.notifications.find_by_name('Closed Won')
-        if !notification.nil? && !notification.recipients.nil?
-          recipients = notification.recipients.split(',').map(&:strip)
-          if !recipients.nil? && recipients.length > 0
-            subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency(budget/100, :precision => 0))+' deal for '+advertiser.name+' was just won!'
-            UserMailer.close_email(recipients, subject, self).deliver_later
-          end
+    if !stage.open? && stage.probability == 100
+      notification = company.notifications.find_by_name('Closed Won')
+      if !notification.nil? && !notification.recipients.nil?
+        recipients = notification.recipients.split(',').map(&:strip)
+        if !recipients.nil? && recipients.length > 0
+          subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency(budget/100, :precision => 0))+' deal for '+advertiser.name+' was just won!'
+          UserMailer.close_email(recipients, subject, self).deliver_later
         end
       end
     else
-      self.closed_at = nil if !self.closed_at.nil?
-      if !self.fields.nil? && !self.values.nil? 
-        field = self.fields.find_by_name("Close Reason")
-        close_reason = self.values.find_by_field_id(field.id) if !field.nil?
-        close_reason.destroy if !close_reason.nil?
+      self.closed_at = updated_at if !stage.open?
+      if !self.closed_at.nil?
+        self.closed_at = nil
+        if !self.fields.nil? && !self.values.nil?
+          field = self.fields.find_by_name("Close Reason")
+          close_reason = self.values.find_by_field_id(field.id) if !field.nil?
+          close_reason.destroy if !close_reason.nil?
+        end
       end
+      notification = company.notifications.find_by_name('Stage Changed')
+      if !notification.nil? && !notification.recipients.nil?
+        recipients = notification.recipients.split(',').map(&:strip)
+        if !recipients.nil? && recipients.length > 0
+          subject = self.name + ' changed to ' + stage.name
+          UserMailer.stage_changed_email(recipients, subject, self).deliver_later
+        end
+      end      
     end
   end
 

@@ -1,0 +1,2 @@
+%p
+  This deal for #{@deal.advertiser.name} with budget of #{ @deal.budget.nil? ? '$0' : number_to_currency(@deal.budget/100, :precision => 0) } and flight dates #{@deal.start_date.strftime("%m/%d/%y")} - #{@deal.end_date.strftime("%m/%d/%y")} was changed by #{@deal.updator.name} today.

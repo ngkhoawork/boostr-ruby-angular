@@ -5,4 +5,9 @@ class UserMailer < ApplicationMailer
     @deal = deal
     mail(to: recipients, subject: subject)
   end
+
+  def stage_changed_email(recipients, subject, deal)
+    @deal = deal
+    mail(to: recipients, subject: subject)
+  end
 end
