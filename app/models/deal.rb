@@ -282,7 +282,7 @@ class Deal < ActiveRecord::Base
       if !notification.nil? && !notification.recipients.nil?
         recipients = notification.recipients.split(',').map(&:strip)
         if !recipients.nil? && recipients.length > 0
-          subject = self.name + ' changed to ' + stage.name
+          subject = self.name + ' changed to ' + stage.name + ' - ' + stage.probability.to_s + '%'
           UserMailer.stage_changed_email(recipients, subject, self).deliver_later
         end
       end      
