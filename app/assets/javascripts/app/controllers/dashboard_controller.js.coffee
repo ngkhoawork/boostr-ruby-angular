@@ -27,6 +27,7 @@
       $scope.selected[type.name] = {}
       $scope.selected[type.name].date = now
     $scope.activeType = $scope.types[0]
+    $scope.populateContact = false
  
   $scope.chartOptions = {
     responsive: false,
@@ -131,6 +132,7 @@
         $scope.init()
 
   $scope.showModal = ->
+    $scope.populateContact = true
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
       size: 'lg'
@@ -144,4 +146,8 @@
   $scope.cancel = ->
     $scope.init()
 
+  $scope.$on 'newContact', (event, contact) ->
+    if $scope.populateContact
+      $scope.selected[$scope.activeType.name].contact = contact
+      $scope.populateContact = false
 ]

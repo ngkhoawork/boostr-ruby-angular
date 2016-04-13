@@ -1,6 +1,6 @@
 @app.controller "ContactsNewController",
-['$scope', '$modalInstance', 'Contact', 'Client', 'contact',
-($scope, $modalInstance, Contact, Client, contact) ->
+['$scope', '$rootScope', '$modalInstance', 'Contact', 'Client', 'contact',
+($scope, $rootScope, $modalInstance, Contact, Client, contact) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -12,6 +12,7 @@
     $scope.buttonDisabled = true
     Contact.create(contact: $scope.contact).then (contact) ->
       Contact.set(contact.id)
+      $rootScope.$broadcast 'newContact', contact
       $modalInstance.close()
 
   $scope.cancel = ->
