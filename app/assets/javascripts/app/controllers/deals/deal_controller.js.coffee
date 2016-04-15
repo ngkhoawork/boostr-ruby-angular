@@ -1,6 +1,9 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field',
-($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field) ->
+['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact'
+($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact) ->
+
+  $scope.showMeridian = true
+  $scope.types = Activity.types
 
   $scope.init = ->
     $scope.currentDeal = {}
@@ -9,9 +12,25 @@
       $scope.setCurrentDeal(deal)
 
     $scope.anchors = [{name: 'campaign', id: 'campaign'},
+                      {name: 'activities', id: 'activities'},
                       {name: 'team & split', id: 'teamsplit'},
                       {name: 'documents', id: 'documents'},
                       {name: 'additional info', id: 'info'}]
+
+    $scope.initActivity()
+
+  $scope.initActivity = ->
+    $scope.activity = {}
+    $scope.activeTab = {}
+    $scope.selectedObj = {}
+    $scope.selectedObj.deal = true
+    $scope.selected = {}
+    now = new Date
+    _.each $scope.types, (type) -> 
+      $scope.selected[type.name] = {}
+      $scope.selected[type.name].date = now
+    $scope.activeType = $scope.types[0]
+    $scope.populateContact = false
 
   $scope.setCurrentDeal = (deal) ->
     _.each deal.members, (member) ->
@@ -119,4 +138,73 @@
     $scope.init()
 
   $scope.init()
+
+  $scope.setActiveTab = (tab) ->
+    $scope.activeTab = tab
+
+  $scope.setActiveType = (type) ->
+    $scope.activeType = type
+
+  $scope.searchObj = (name) ->
+    if $scope.selectedObj.deal
+      Deal.all({name: name}).then (deals) ->
+        deals
+    else
+      Client.all({name: name}).then (clients) ->
+        clients
+
+  $scope.searchContact = (name) ->
+    Contact.all1({name: name}).then (contacts) ->
+      contacts
+
+  $scope.submitForm = (form) ->
+    $scope.buttonDisabled = true
+    if form.$valid
+      if $scope.selected[$scope.activeType.name].contact == undefined
+        $scope.buttonDisabled = false
+        return
+      form.submitted = true
+      $scope.activity.deal_id = $scope.currentDeal.id
+      $scope.activity.client_id = $scope.currentDeal.advertiser_id
+      $scope.activity.activity_type = $scope.activeType.name
+      contact_id = $scope.selected[$scope.activeType.name].contact.id
+      $scope.activity.contact_id = contact_id
+      contact_date = new Date($scope.selected[$scope.activeType.name].date)
+      if $scope.selected[$scope.activeType.name].time != undefined
+        contact_time = new Date($scope.selected[$scope.activeType.name].time)
+        contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
+      else
+        contact_date.setHours(-7, 0, 0, 0)
+      $scope.activity.happened_at = contact_date
+      Activity.create({ activity: $scope.activity }, (response) ->
+        angular.forEach response.data.errors, (errors, key) ->
+          form[key].$dirty = true
+          form[key].$setValidity('server', false)
+          $scope.buttonDisabled = false
+      ).then (activity) ->
+        $scope.buttonDisabled = false
+        $scope.initActivity()
+
+  $scope.createNewContactModal = ->
+    $scope.populateContact = true
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_form.html'
+      size: 'lg'
+      controller: 'ContactsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          {}
+
+  $scope.cancelActivity = ->
+    $scope.initActivity()
+
+  $scope.$on 'newContact', (event, contact) ->
+    if $scope.populateContact
+      $scope.selected[$scope.activeType.name].contact = contact
+      $scope.populateContact = false
+
+  $scope.getType = (type) ->
+    _.findWhere($scope.types, name: type)
 ]

@@ -3,18 +3,7 @@
 ($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity) ->
 
   $scope.showMeridian = true
-
-  $scope.types = [
-    {'name':'Initial Meeting', 'action':'Initial meeting with', 'icon':'/assets/icons/meeting.svg'},
-    {'name':'Pitch', 'action':'Pitched to', 'icon':'/assets/icons/pitch.svg'},
-    {'name':'Proposal', 'action':'Sent proposal to', 'icon':'/assets/icons/proposal.svg'},
-    {'name':'Feedback', 'action':'Agency/Client feedback from', 'icon':'/assets/icons/feedback.svg'},
-    {'name':'Agency Meeting', 'action':'Agency meeting with', 'icon':'/assets/icons/meeting.svg'},
-    {'name':'Client Meeting', 'action':'Client meeting with', 'icon':'/assets/icons/meeting.svg'},
-    {'name':'Entertainment', 'action':'Client entertainment with', 'icon':'/assets/icons/entertainment.svg'},
-    {'name':'Campaign', 'action':'Reviewed campaign with', 'icon':'/assets/icons/review.svg'},
-    {'name':'QBR', 'action':'Quarterly Business Review with', 'icon':'/assets/icons/QBR.svg'}
-  ]
+  $scope.types = Activity.types
 
   $scope.init = ->
     $scope.activity = {}
@@ -74,16 +63,16 @@
       }
     ]
 
+  $scope.$on 'updated_dashboards', ->
+    $scope.init()
+
+  $scope.init()
+
   $scope.setActiveTab = (tab) ->
     $scope.activeTab = tab
 
   $scope.setActiveType = (type) ->
     $scope.activeType = type
-
-  $scope.$on 'updated_dashboards', ->
-    $scope.init()
-
-  $scope.init()
 
   $scope.searchObj = (name) ->
     if $scope.selectedObj.deal
@@ -131,7 +120,7 @@
         $scope.buttonDisabled = false
         $scope.init()
 
-  $scope.showModal = ->
+  $scope.createNewContactModal = ->
     $scope.populateContact = true
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
@@ -143,7 +132,7 @@
         contact: ->
           {}
 
-  $scope.cancel = ->
+  $scope.cancelActivity = ->
     $scope.init()
 
   $scope.$on 'newContact', (event, contact) ->

@@ -38,7 +38,7 @@ feature 'Dashboard' do
         expect(page).to have_css '.no-alerts'
       end
 
-      within '#activities' do
+      within '#activities.section' do
         expect(page).to have_text 'My Activities'
       end
     end

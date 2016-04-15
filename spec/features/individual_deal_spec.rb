@@ -28,7 +28,7 @@ feature 'Individual Deal' do
     end
 
     scenario 'shows deal details and stage', js: true do
-      within '#nav' do
+      within '#nav.transparent.sec' do
         first('li a').trigger('click')
       end
 
@@ -43,7 +43,7 @@ feature 'Individual Deal' do
         expect(deal_name).to have_text 'Taco'
       end
 
-      within '#nav' do
+      within '#nav.transparent.sec' do
         find('li:nth-child(4) a').trigger('click')
       end
 
@@ -171,7 +171,7 @@ feature 'Individual Deal' do
 
       expect(find('#total-amount')).to have_text('$359,932')
 
-      within '.black-table tbody' do
+      within '.black-table.sec tbody' do
         expect(page).to have_css('tr', count: 1)
       end
     end

@@ -1,35 +1,16 @@
 #activities
   %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
     #note
-      %h3
-        My Activities
       %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'activity.comment' } }
 
     #nav.transparent
       %ul.nav.nav-tabs
-        %li{ ng: { class: "{ active: activeTab == 'Object' }" } }
-          %a.search{ href: '', ng: { click: 'setActiveTab("Object")' } }
-            = inline_svg 'icons/search.svg'
         %li{ ng: { class: "{ active: activeTab == 'Type' }" } }
           %a.link{ href: '', ng: { click: 'setActiveTab("Type")' } }
             = inline_svg 'icons/message.svg'
         %li.pull-right
           %button.btn.btn-primary.btn-block{ type: 'submit' } Post Update
 
-    #contain.tab{ ng: { show: 'activeTab == "Object"' } }
-      .row
-        %a.close{ ng: { click: 'cancelActivity()' } }
-          %span{'aria-hidden' => 'true'}
-            = inline_svg 'icons/close.svg'
-        .col-xs-6
-          .btn-group
-            %label.open-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'true' } }
-              Deals
-            %label.close-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'false' } }
-              Clients
-      .row
-        .col-xs-6
-          %input.box2.w2{ placeholder: 'Type a name', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
     #contain.tab{ ng: { show: 'activeTab == "Type"' } }
       .row
         %a.close{ ng: { click: 'cancelActivity()' } }

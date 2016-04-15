@@ -2,6 +2,18 @@
 ['$resource', '$rootScope', '$q',
 ($resource, $rootScope, $q) ->
 
+  @types = [
+    {'name':'Initial Meeting', 'action':'had initial meeting with', 'icon':'/assets/icons/meeting.svg'},
+    {'name':'Pitch', 'action':'pitched to', 'icon':'/assets/icons/pitch.svg'},
+    {'name':'Proposal', 'action':'sent proposal to', 'icon':'/assets/icons/proposal.svg'},
+    {'name':'Feedback', 'action':'received agency/Client feedback from', 'icon':'/assets/icons/feedback.svg'},
+    {'name':'Agency Meeting', 'action':'had agency meeting with', 'icon':'/assets/icons/meeting.svg'},
+    {'name':'Client Meeting', 'action':'had client meeting with', 'icon':'/assets/icons/meeting.svg'},
+    {'name':'Entertainment', 'action':'had client entertainment with', 'icon':'/assets/icons/entertainment.svg'},
+    {'name':'Campaign', 'action':'reviewed campaign with', 'icon':'/assets/icons/review.svg'},
+    {'name':'QBR', 'action':'Quarterly Business Review with', 'icon':'/assets/icons/QBR.svg'}
+  ]
+
   resource = $resource '/api/activities/:id', { id: '@id' },
     save: {
       method: 'POST'
@@ -43,6 +55,6 @@
     resource.get id: activity_id, (activity) ->
       deferred.resolve(activity)
     deferred.promise
-
+  
   return
 ]
