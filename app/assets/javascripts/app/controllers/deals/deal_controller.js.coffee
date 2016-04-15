@@ -183,7 +183,7 @@
           $scope.buttonDisabled = false
       ).then (activity) ->
         $scope.buttonDisabled = false
-        $scope.initActivity()
+        $scope.init()
 
   $scope.createNewContactModal = ->
     $scope.populateContact = true
