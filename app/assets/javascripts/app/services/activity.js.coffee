@@ -6,7 +6,7 @@
     {'name':'Initial Meeting', 'action':'had initial meeting with', 'icon':'/assets/icons/meeting.svg'},
     {'name':'Pitch', 'action':'pitched to', 'icon':'/assets/icons/pitch.svg'},
     {'name':'Proposal', 'action':'sent proposal to', 'icon':'/assets/icons/proposal.svg'},
-    {'name':'Feedback', 'action':'received agency/Client feedback from', 'icon':'/assets/icons/feedback.svg'},
+    {'name':'Feedback', 'action':'received feedback from', 'icon':'/assets/icons/feedback.svg'},
     {'name':'Agency Meeting', 'action':'had agency meeting with', 'icon':'/assets/icons/meeting.svg'},
     {'name':'Client Meeting', 'action':'had client meeting with', 'icon':'/assets/icons/meeting.svg'},
     {'name':'Entertainment', 'action':'had client entertainment with', 'icon':'/assets/icons/entertainment.svg'},

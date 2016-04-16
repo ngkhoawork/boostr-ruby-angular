@@ -142,8 +142,6 @@
                     .col-xs-2.pad1
                       .row.act
                         {{ activity.happened_at | date: 'shortDate' }}
-                      .row.act
-                        {{ activity.happened_at | date: 'shortTime' }}
                     .col-xs-1.pad2
                       %img.s-img{:src => "{{ getType(activity.activity_type).icon }}"}/
                     .col-xs-9.pad3
