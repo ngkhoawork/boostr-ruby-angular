@@ -105,6 +105,13 @@ ActiveRecord::Schema.define(version: 20160417021327) do
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "snapshot_day",       default: 0
+    t.integer  "avg_day"
+    t.integer  "day1"
+    t.integer  "day2"
+    t.integer  "day3"
+    t.string   "color1"
+    t.string   "color2"
+    t.string   "color3"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -297,6 +304,10 @@ ActiveRecord::Schema.define(version: 20160417021327) do
     t.string   "color"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "avg_day"
+    t.integer  "day1"
+    t.integer  "day2"
+    t.integer  "day3"
   end
 
   create_table "teams", force: :cascade do |t|

@@ -1,0 +1,22 @@
+#activities-detail.table-wrapper
+  %table.table.table-striped.black-table
+    %thead
+      %tr
+        %th.left.pad4 Deal Updates
+    %tbody
+      %tr{ ng: { repeat: "activity in currentDeal.activities | orderBy: '-happened_at'"} }
+        %td
+          .col-xs-2.pad1
+            .row.act
+              {{ activity.happened_at | date: 'shortDate' }}
+          .col-xs-1.pad2
+            %img.s-img{:src => "{{ getType(activity.activity_type).icon }}"}/
+          .col-xs-9.pad3
+            .row.act
+              %span
+                {{ activity.creator.name }}
+              {{ getType(activity.activity_type).action }}
+              %span
+                {{ activity.contact.name }}
+            .row
+              {{ activity.comment }}
