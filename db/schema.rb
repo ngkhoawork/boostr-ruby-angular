@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160318081441) do
+ActiveRecord::Schema.define(version: 20160417021327) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,7 @@ ActiveRecord::Schema.define(version: 20160318081441) do
     t.text     "comment"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+    t.boolean  "timed"
   end
 
   create_table "addresses", force: :cascade do |t|
@@ -104,13 +105,6 @@ ActiveRecord::Schema.define(version: 20160318081441) do
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "snapshot_day",       default: 0
-    t.integer  "avg_day"
-    t.integer  "day1"
-    t.integer  "day2"
-    t.integer  "day3"
-    t.string   "color1"
-    t.string   "color2"
-    t.string   "color3"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -303,10 +297,6 @@ ActiveRecord::Schema.define(version: 20160318081441) do
     t.string   "color"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
-    t.integer  "avg_day"
-    t.integer  "day1"
-    t.integer  "day2"
-    t.integer  "day3"
   end
 
   create_table "teams", force: :cascade do |t|

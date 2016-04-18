@@ -108,8 +108,7 @@
       if $scope.selected[$scope.activeType.name].time != undefined
         contact_time = new Date($scope.selected[$scope.activeType.name].time)
         contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
-      else
-        contact_date.setHours(-7, 0, 0, 0)
+        $scope.activity.timed = true
       $scope.activity.happened_at = contact_date
       Activity.create({ activity: $scope.activity }, (response) ->
         angular.forEach response.data.errors, (errors, key) ->

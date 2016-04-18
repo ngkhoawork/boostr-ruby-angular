@@ -37,7 +37,7 @@ class Api::ActivitiesController < ApplicationController
   private
 
   def activity_params
-    params.require(:activity).permit(:type, :deal_id, :client_id, :contact_id, :user_id, :comment, :happened_at, :activity_type)
+    params.require(:activity).permit(:type, :deal_id, :client_id, :contact_id, :user_id, :comment, :happened_at, :activity_type, :timed)
   end
 
   def activity
