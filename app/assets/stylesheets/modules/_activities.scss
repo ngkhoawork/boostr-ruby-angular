@@ -1,7 +1,7 @@
 #activities {
   .row {
     margin-left: 0px;
-    margin-right: 0px;
+    margin-right: 1px;
   }
 
   #nav {
@@ -112,7 +112,8 @@
   }
 
   .w2 {
-    width: 580px;
+    width: 566px;
+    margin-left: 10px;
   }
 
   .w3 {
@@ -253,6 +254,16 @@
       margin-top: -3px;
       margin-right: 5px;
       margin-left: -20px;
+    }
+  }
+
+  #activities-content.row {
+    margin-top: 15px;
+    margin-left: 0px;
+    margin-right: 0px;
+    .row {
+      margin-left: 0px;
+      margin-right: 1px;
     }
   }
 }

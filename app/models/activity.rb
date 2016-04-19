@@ -10,4 +10,7 @@ class Activity < ActiveRecord::Base
 
   validates :company_id, presence: true
 
+  def as_json(options = {})
+    super(options.merge(include: [:client, :deal, :contact, :creator]))
+  end
 end

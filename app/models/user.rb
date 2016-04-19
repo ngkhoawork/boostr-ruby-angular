@@ -59,4 +59,20 @@ class User < ActiveRecord::Base
     rs.map {|r| r.set_period_budget(start_date, end_date)}
     return rs
   end
+
+  def all_activities
+    @all_activities = []
+    @all_activities += activities
+    self.deals.each do |as|
+      as.activities.each do |a|
+        @all_activities += [a] if !@all_activities.include?(a)
+      end
+    end
+    self.clients.each do |as|
+      as.activities.each do |a|
+        @all_activities += [a] if !@all_activities.include?(a)
+      end
+    end
+    return @all_activities
+  end
 end

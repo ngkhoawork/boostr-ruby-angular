@@ -3,7 +3,7 @@ class Api::ActivitiesController < ApplicationController
 
   def index
     respond_to do |format|
-      format.json { 
+      format.json {
         render json: activities
       }
     end
@@ -45,11 +45,7 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def activities
-    if current_user.leader?
-      company.activities
-    else
-      current_user.activities
-    end
+    current_user.all_activities
   end
 
   def company

@@ -4,6 +4,7 @@
 
   $scope.showMeridian = true
   $scope.types = Activity.types
+  $scope.feedName = 'Updates'
 
   $scope.init = ->
     $scope.activity = {}
@@ -17,6 +18,8 @@
       $scope.selected[type.name].date = now
     $scope.activeType = $scope.types[0]
     $scope.populateContact = false
+    Activity.all().then (activities) ->
+      $scope.activities = activities
  
   $scope.chartOptions = {
     responsive: false,
@@ -138,4 +141,7 @@
     if $scope.populateContact
       $scope.selected[$scope.activeType.name].contact = contact
       $scope.populateContact = false
+
+  $scope.getType = (type) ->
+    _.findWhere($scope.types, name: type)
 ]

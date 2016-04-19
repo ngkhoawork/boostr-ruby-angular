@@ -1,10 +1,10 @@
-#activities-detail.table-wrapper
+#activities-feed.table-wrapper
   %table.table.table-striped.black-table
     %thead
       %tr
-        %th.left.pad4 Deal Updates
+        %th.left.pad4 {{ feedName }}
     %tbody
-      %tr{ ng: { repeat: "activity in currentDeal.activities | orderBy: '-happened_at'"} }
+      %tr{ ng: { repeat: "activity in activities | orderBy: '-happened_at'"} }
         %td
           .col-xs-2.pad1
             .row.act
@@ -14,7 +14,7 @@
           .col-xs-9.pad3
             .row.act
               %span
-                {{ activity.creator.name }}
+                {{ activity.creator.first_name }} {{ activity.creator.last_name }} 
               {{ getType(activity.activity_type).action }}
               %span
                 {{ activity.contact.name }}

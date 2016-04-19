@@ -4,12 +4,14 @@
 
   $scope.showMeridian = true
   $scope.types = Activity.types
+  $scope.feedName = 'Deal Updates'
 
   $scope.init = ->
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal)
+      $scope.activities = deal.activities
 
     $scope.anchors = [{name: 'campaign', id: 'campaign'},
                       {name: 'activities', id: 'activities'},

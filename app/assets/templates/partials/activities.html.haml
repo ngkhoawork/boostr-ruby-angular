@@ -21,15 +21,13 @@
         %a.close{ ng: { click: 'cancelActivity()' } }
           %span{'aria-hidden' => 'true'}
             = inline_svg 'icons/close.svg'
-        .col-xs-6
-          .btn-group
-            %label.open-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'true' } }
-              Deals
-            %label.close-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'false' } }
-              Clients
+        .btn-group
+          %label.open-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'true' } }
+            Deals
+          %label.close-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'false' } }
+            Clients
       .row
-        .col-xs-6
-          %input.box2.w2{ placeholder: 'Type a name', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
+        %input.box2.w2{ placeholder: 'Type a name', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
     #contain.tab{ ng: { show: 'activeTab == "Type"' } }
       .row
         %a.close{ ng: { click: 'cancelActivity()' } }
