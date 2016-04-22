@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160417021327) do
+ActiveRecord::Schema.define(version: 20160420213103) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -89,6 +89,7 @@ ActiveRecord::Schema.define(version: 20160417021327) do
     t.integer  "agency_deals_count",     default: 0, null: false
     t.integer  "contacts_count",         default: 0, null: false
     t.integer  "client_type_id"
+    t.datetime "activity_updated_at"
   end
 
   add_index "clients", ["client_type_id"], name: "index_clients_on_client_type_id", using: :btree
@@ -105,13 +106,6 @@ ActiveRecord::Schema.define(version: 20160417021327) do
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "snapshot_day",       default: 0
-    t.integer  "avg_day"
-    t.integer  "day1"
-    t.integer  "day2"
-    t.integer  "day3"
-    t.string   "color1"
-    t.string   "color2"
-    t.string   "color3"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -168,8 +162,8 @@ ActiveRecord::Schema.define(version: 20160417021327) do
     t.date     "end_date"
     t.string   "name"
     t.integer  "budget"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.datetime "created_at",          null: false
+    t.datetime "updated_at",          null: false
     t.integer  "stage_id"
     t.string   "deal_type"
     t.string   "source_type"
@@ -180,6 +174,7 @@ ActiveRecord::Schema.define(version: 20160417021327) do
     t.integer  "stage_updated_by"
     t.datetime "stage_updated_at"
     t.integer  "updated_by"
+    t.datetime "activity_updated_at"
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
@@ -304,10 +299,6 @@ ActiveRecord::Schema.define(version: 20160417021327) do
     t.string   "color"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
-    t.integer  "avg_day"
-    t.integer  "day1"
-    t.integer  "day2"
-    t.integer  "day3"
   end
 
   create_table "teams", force: :cascade do |t|

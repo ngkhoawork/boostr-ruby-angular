@@ -6,6 +6,8 @@ class Api::ClientsController < ApplicationController
       format.json { 
         if params[:name].present?
           render json: suggest_clients
+        elsif params[:activity].present?
+          render json: activity_clients
         else
           render json: clients.order(:name).includes(:address).distinct
         end
@@ -98,4 +100,9 @@ class Api::ClientsController < ApplicationController
     @search_clients = company.clients.where('name ilike ?', "%#{params[:name]}%").limit(10)
   end
 
+  def activity_clients
+    return @activity_clients if defined?(@activity_clients)
+
+    @activity_clients = company.clients.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
+  end
 end

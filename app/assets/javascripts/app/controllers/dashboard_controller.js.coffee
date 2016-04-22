@@ -5,8 +5,10 @@
   $scope.showMeridian = true
   $scope.types = Activity.types
   $scope.feedName = 'Updates'
+  $scope.moreSize = 10;
 
   $scope.init = ->
+    $scope.currentPage = 0;
     $scope.activity = {}
     $scope.activeTab = {}
     $scope.selectedObj = {}
@@ -20,7 +22,16 @@
     $scope.populateContact = false
     Activity.all().then (activities) ->
       $scope.activities = activities
- 
+    $scope.activity_objects = []
+    Deal.all({activity: true}).then (deals) ->
+      _.each deals, (object) ->
+        object.currentLimit = $scope.moreSize
+        $scope.activity_objects = $scope.activity_objects.concat object
+    Client.all({activity: true}).then (clients) ->
+      _.each clients, (object) ->
+        object.currentLimit = $scope.moreSize
+        $scope.activity_objects = $scope.activity_objects.concat object
+
   $scope.chartOptions = {
     responsive: false,
     segmentShowStroke: true,
@@ -144,4 +155,14 @@
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
+
+  $scope.getIndex = (object) ->
+    $scope.activity_objects.indexOf(object)
+
+  $scope.toggleActivity = (object) ->
+    i = $scope.getIndex(object)
+    if $scope.activity_objects[i].show == undefined || !$scope.activity_objects[i].show
+      $scope.activity_objects[i].show = true
+    else
+      $scope.activity_objects[i].show = false
 ]

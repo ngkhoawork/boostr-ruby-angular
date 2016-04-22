@@ -147,14 +147,6 @@
   $scope.setActiveType = (type) ->
     $scope.activeType = type
 
-  $scope.searchObj = (name) ->
-    if $scope.selectedObj.deal
-      Deal.all({name: name}).then (deals) ->
-        deals
-    else
-      Client.all({name: name}).then (clients) ->
-        clients
-
   $scope.searchContact = (name) ->
     Contact.all1({name: name}).then (contacts) ->
       contacts

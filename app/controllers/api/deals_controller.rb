@@ -6,8 +6,10 @@ class Api::DealsController < ApplicationController
       format.json {
         if params[:name].present?
           render json: suggest_deals
+        elsif params[:activity].present?
+          render json: activity_deals
         else
-          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage).distinct , each_serializer: DealIndexSerializer).to_json 
+          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage).distinct , each_serializer: DealIndexSerializer).to_json
         end
       }
       format.zip {
@@ -91,5 +93,11 @@ class Api::DealsController < ApplicationController
     return @search_deals if defined?(@search_deals)
 
     @search_deals = company.deals.where('deals.name ilike ?', "%#{params[:name]}%").limit(10)
+  end
+
+  def activity_deals
+    return @activity_deals if defined?(@activity_deals)
+
+    @activity_deals = company.deals.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
   end
 end
