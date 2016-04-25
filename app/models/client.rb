@@ -55,7 +55,18 @@ class Client < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(include: [:address, values: { include: [:option], methods: [:value] }, activities: { include: [:creator, :contact] }], methods: [:deals_count, :fields, :formatted_name]))
+    super(options.merge(
+      include: {
+        address: {},
+        values: {
+          methods: [:value],
+          include: [:option]
+        },
+        activities: {
+          include: [:creator, :contact]
+        }},
+      methods: [:deals_count, :fields, :formatted_name]
+    ))
   end
 
   def ensure_client_member
