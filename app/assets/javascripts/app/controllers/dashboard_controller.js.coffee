@@ -158,11 +158,4 @@
 
   $scope.getIndex = (object) ->
     $scope.activity_objects.indexOf(object)
-
-  $scope.toggleActivity = (object) ->
-    i = $scope.getIndex(object)
-    if $scope.activity_objects[i].show == undefined || !$scope.activity_objects[i].show
-      $scope.activity_objects[i].show = true
-    else
-      $scope.activity_objects[i].show = false
 ]

@@ -10,8 +10,18 @@
             %thead
               %tr
                 %th.left.pad4
-                  %a{ href: '', ng: { click: 'toggleActivity(object)' } }
-                    {{ object.formatted_name }}
+                  .col-xs-10
+                    %a{ href: '', ng: { href: '/deals/{{object.id}}', if: 'object.stage !== undefined' } }
+                      {{ object.formatted_name }}
+                    %a{ href: '', ng: { href: '/clients', if: 'object.stage == undefined' } }
+                      {{ object.formatted_name }}
+                  .col-xs-1.pad6
+                    %a{ href: '', ng: { click: 'object.show = true' } }
+                      +
+                    %span.s1
+                      &nbsp;&#47;&nbsp;
+                    %a{ href: '', ng: { click: 'object.show = false' } }
+                      \-
             %tbody{ ng: { show: 'object.show' } }
               %tr{ ng: { repeat: "activity in object.activities | orderBy: '-happened_at' | limitTo:object.currentLimit"} }
                 %td
