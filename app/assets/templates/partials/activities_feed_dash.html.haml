@@ -4,7 +4,7 @@
       %tr
         %th.left.pad4 {{ feedName }}
     %tbody
-      %tr{ ng: { repeat: "object in activity_objects | orderBy: '-activity_updated_at'"} }
+      %tr.feed-repeat{ ng: { repeat: "object in activity_objects | orderBy: '-activity_updated_at'"} }
         %td
           %table.table.table-striped.black-table
             %thead
