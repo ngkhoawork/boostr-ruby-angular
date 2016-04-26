@@ -44,14 +44,16 @@ class Client < ActiveRecord::Base
   end
 
   def formatted_name
+    f_name = name
     if !address.nil?
-      city = address.city
-      state = address.state
-    else
-      city = ''
-      state = ''
+      if !address.city.nil?
+        f_name = f_name + ', '+ address.city.to_s
+      end
+      if !address.state.nil?
+        f_name = f_name + ', '+ address.state.to_s
+      end
     end
-    name + ', '+ city.to_s + ', '+ state.to_s 
+    f_name
   end
 
   def as_json(options = {})
