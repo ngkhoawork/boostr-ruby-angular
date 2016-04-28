@@ -96,6 +96,13 @@
                 .col-xs-9.detail
                   {{ currentClient.client_type.option.name }}
 
+        #activities.section
+          %h2
+            activities
+          %div{ ng: { include: "'partials/activities_client.html'" } }
+        #activities-feed.section          
+          %div{ ng: { include: "'partials/activities_feed_client.html'" } }
+
         #teamsplits.section
           %span.pull-right
             %a.new-member{ href: '', ng: { click: 'showNewMemberModal()' } }

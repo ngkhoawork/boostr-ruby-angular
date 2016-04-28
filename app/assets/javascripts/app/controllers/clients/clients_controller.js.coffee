@@ -1,6 +1,11 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field',
-($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity',
+($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field, Activity) ->
+
+  $scope.showMeridian = true
+  $scope.types = Activity.types
+  $scope.feedName = 'Updates'
+  $scope.clients = []
 
   $scope.clientFilters = [
     { name: 'My Clients', param: '' }
@@ -35,7 +40,9 @@
     Client.all({filter: $scope.clientFilter.param}).then (clients) ->
       $scope.clients = clients
       Client.set($routeParams.id || clients[0].id) if clients.length > 0
-
+      _.each $scope.clients, (client) ->
+        $scope.initActivity(client)
+ 
   $scope.getDeals = (client) ->
     Deal.all({client_id: client.id}).then (deals) ->
       $scope.currentClient.deals = deals
@@ -151,4 +158,70 @@
     $scope.getClientMembers()
 
   $scope.init()
+
+  $scope.initActivity = (client) ->
+    $scope.activity = {}
+    client.activity = {}
+    client.activeTab = {}
+    client.selected = {}
+    client.activeType = $scope.types[0]
+    client.populateContact = false
+    now = new Date
+    _.each $scope.types, (type) -> 
+      client.selected[type.name] = {}
+      client.selected[type.name].date = now
+
+  $scope.setActiveTab = (client, tab) ->
+    client.activeTab = tab
+
+  $scope.setActiveType = (client, type) ->
+    client.activeType = type
+
+  $scope.searchContact = (name) ->
+    Contact.all1({name: name}).then (contacts) ->
+      contacts
+
+  $scope.submitForm = () ->
+    $scope.buttonDisabled = true
+    if $scope.currentClient.selected[$scope.currentClient.activeType.name].contact == undefined
+      $scope.buttonDisabled = false
+      return
+    $scope.activity.comment = $scope.currentClient.activity.comment
+    $scope.activity.client_id = $scope.currentClient.id
+    $scope.activity.activity_type = $scope.currentClient.activeType.name
+    $scope.activity.contact_id = $scope.currentClient.selected[$scope.currentClient.activeType.name].contact.id
+    contactDate = new Date($scope.currentClient.selected[$scope.currentClient.activeType.name].date)
+    if $scope.currentClient.selected[$scope.currentClient.activeType.name].time != undefined
+      contactTime = new Date($scope.currentClient.selected[$scope.currentClient.activeType.name].time)
+      contactDate.setHours(contactTime.getHours(), contactTime.getMinutes(), 0, 0)
+      $scope.activity.timed = true
+    $scope.activity.happened_at = contactDate
+    Activity.create({ activity: $scope.activity }, (response) ->
+      $scope.buttonDisabled = false
+    ).then (activity) ->
+      $scope.buttonDisabled = false
+      $scope.init()
+
+  $scope.createNewContactModal = ->
+    $scope.populateContact = true
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_form.html'
+      size: 'lg'
+      controller: 'ContactsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          {}
+
+  $scope.cancelActivity = (client) ->
+    $scope.initActivity(client)
+
+  $scope.$on 'newContact', (event, contact) ->
+    if $scope.populateContact
+      $scope.selected[$scope.currentClient.activeType.name].contact = contact
+      $scope.populateContact = false
+
+  $scope.getType = (type) ->
+    _.findWhere($scope.types, name: type)
 ]

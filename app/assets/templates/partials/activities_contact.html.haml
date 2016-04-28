@@ -1,0 +1,37 @@
+#activities
+  %form{ name: 'activityForm', ng: { submit: 'submitForm()' } }
+    #note
+      %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'currentContact.activity.comment' } }
+
+    #nav.transparent
+      %ul.nav.nav-tabs
+        %li{ ng: { class: "{ active: currentContact.activity.activeTab }" } }
+          %a.link{ href: '', ng: { click: 'currentContact.activity.activeTab = true' } }
+            = inline_svg 'icons/message.svg'
+        %li.pull-right
+          %button.btn.btn-primary.btn-block{ type: 'submit' } Post Update
+
+    #contain.tab{ ng: { show: 'currentContact.activity.activeTab' } }
+      .row
+        %a.close{ ng: { click: 'cancelActivity(currentContact)' } }
+          %span{'aria-hidden' => 'true'}
+            = inline_svg 'icons/close.svg'
+      .row
+        .col-xs-4.pad7
+          .list-group.list-sm.stages
+            %a.list-group-item.vertical-center.type-menu{ href: '', ng: { repeat: 'type in types', click: 'currentContact.activeType = type', class: '{ active: currentContact.activeType == type }' } }
+              %img.s-img{:src => "{{ type.icon }}"}/
+              %h5
+                {{ type.name }}
+        .col-xs-6
+          #contain1{ ng: { repeat: 'type in types', show: 'currentContact.activeType == type' } }
+            .row.type1
+              {{ type.action }} {{ currentContact.name }}
+            .row.type2
+              Date
+              %br
+              %span.bs-datepicker
+                %input.box.w4{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentContact.selected[type.name].date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+            .row.type2
+              Time
+              %timepicker-pop.input-group{"input-time" => "currentContact.selected[type.name].time", "show-meridian" => "showMeridian"}

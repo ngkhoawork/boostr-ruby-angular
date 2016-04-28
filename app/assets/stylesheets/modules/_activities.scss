@@ -296,6 +296,12 @@
   width: 490px;
 }
 
+.pad3a {
+  padding-left: 2px;
+  padding-right: 2px;
+  width: 390px;
+}
+
 .pad4 {
   padding-left: 13px;
   a {
@@ -310,6 +316,11 @@
 .pad5a {
   padding-left: 0px;
   padding-right: 30px;
+}
+
+.pad7 {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 #activities-feed {
@@ -371,3 +382,11 @@
   }
 }
 
+.btn-primary {
+  &:focus,
+  &:after,
+  &:active {
+    outline: none;
+    outline-shadow: none;
+  }
+}

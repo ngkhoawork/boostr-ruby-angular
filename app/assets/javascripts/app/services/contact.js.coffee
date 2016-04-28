@@ -36,12 +36,9 @@
   currentContact = undefined
 
   @all = (callback) ->
-    if allContacts.length == 0
-      resource.query {}, (contacts) =>
-        allContacts = contacts
-        callback(contacts)
-    else
-      callback(allContacts)
+    resource.query {}, (contacts) =>
+      allContacts = contacts
+      callback(contacts)
 
   @all1 = (params) ->
     deferred = $q.defer()

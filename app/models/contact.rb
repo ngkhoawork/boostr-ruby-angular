@@ -16,7 +16,7 @@ class Contact < ActiveRecord::Base
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
 
   def as_json(options = {})
-    super(options.merge(include: [:address, :client, :company]))
+    super(options.merge(include: [:address, :client, :company, :activities]))
   end
 
   def self.import(file, current_user)

@@ -14,7 +14,7 @@ class Activity < ActiveRecord::Base
     if !deal_id.nil?
       deal = company.deals.find(deal_id)
       deal.update_attribute(:activity_updated_at, happened_at)
-    else
+    elsif !client_id.nil?
       client = company.clients.find(client_id)
       client.update_attribute(:activity_updated_at, happened_at)
     end

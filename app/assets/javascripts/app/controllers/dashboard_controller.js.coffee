@@ -155,7 +155,4 @@
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
-
-  $scope.getIndex = (object) ->
-    $scope.activity_objects.indexOf(object)
 ]

@@ -10,7 +10,7 @@
     {'name':'Agency Meeting', 'action':'had agency meeting with', 'icon':'/assets/icons/meeting.svg'},
     {'name':'Client Meeting', 'action':'had client meeting with', 'icon':'/assets/icons/meeting.svg'},
     {'name':'Entertainment', 'action':'had client entertainment with', 'icon':'/assets/icons/entertainment.svg'},
-    {'name':'Campaign', 'action':'reviewed campaign with', 'icon':'/assets/icons/review.svg'},
+    {'name':'Campaign Review', 'action':'reviewed campaign with', 'icon':'/assets/icons/review.svg'},
     {'name':'QBR', 'action':'Quarterly Business Review with', 'icon':'/assets/icons/QBR.svg'}
   ]
 

@@ -34,7 +34,7 @@
           %span{'aria-hidden' => 'true'}
             = inline_svg 'icons/close.svg'
       .row
-        .col-xs-4
+        .col-xs-4.pad7
           .list-group.list-sm.stages
             %a.list-group-item.vertical-center.type-menu{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
               %img.s-img{:src => "{{ type.icon }}"}/
