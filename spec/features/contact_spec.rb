@@ -39,7 +39,7 @@ feature 'Contacts' do
       end
 
       within '#contact-detail' do
-        expect(find('h2')).to have_text('Bobby')
+        expect(find('h2.contact-name')).to have_text('Bobby')
       end
 
       find_link('New Person').trigger('click')
@@ -68,7 +68,7 @@ feature 'Contacts' do
       end
 
       within '#contact-detail' do
-        expect(find('h2')).to have_text('Johnny')
+        expect(find('h2.contact-name')).to have_text('Johnny')
       end
     end
   end
