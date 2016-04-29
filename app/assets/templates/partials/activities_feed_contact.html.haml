@@ -11,7 +11,7 @@
               {{ activity.happened_at | date: 'shortDate' }}
           .col-xs-1.pad2
             %img.s-img{:src => "{{ getType(activity.activity_type).icon }}"}/
-          .col-xs-9.pad3a
+          .col-xs-9.pad3
             .row.act
               %span
                 {{ activity.creator.first_name }} {{ activity.creator.last_name }} 
