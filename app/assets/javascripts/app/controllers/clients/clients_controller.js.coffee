@@ -219,7 +219,7 @@
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
-      $scope.selected[$scope.currentClient.activeType.name].contact = contact
+      $scope.currentClient.selected[$scope.currentClient.activeType.name].contact = contact
       $scope.populateContact = false
 
   $scope.getType = (type) ->
