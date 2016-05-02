@@ -13,7 +13,9 @@
                   .col-xs-10
                     %a{ href: '', ng: { href: '/deals/{{object.id}}', if: 'object.stage !== undefined' } }
                       {{ object.formatted_name }}
-                    %a{ href: '', ng: { href: '/clients', if: 'object.stage == undefined' } }
+                    %a{ href: '', ng: { href: '/people/{{object.id}}', if: 'object.position !== undefined' } }
+                      {{ object.formatted_name }}
+                    %a{ href: '', ng: { href: '/clients', if: 'object.stage == undefined && object.position == undefined' } }
                       {{ object.formatted_name }}
                   .col-xs-1.pad6
                     %a{ href: '', ng: { click: 'object.show = true' } }

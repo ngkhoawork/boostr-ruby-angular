@@ -31,6 +31,10 @@
       _.each clients, (object) ->
         object.currentLimit = $scope.moreSize
         $scope.activity_objects = $scope.activity_objects.concat object
+    Contact.all1({activity: true}).then (contacts) ->
+      _.each contacts, (object) ->
+        object.currentLimit = $scope.moreSize
+        $scope.activity_objects = $scope.activity_objects.concat object
 
   $scope.chartOptions = {
     responsive: false,
@@ -103,14 +107,12 @@
   $scope.submitForm = (form) ->
     $scope.buttonDisabled = true
     if form.$valid
-      if $scope.selectedObj.obj == undefined
-        $scope.buttonDisabled = false
-        return
-      if $scope.selectedObj.deal
-        $scope.activity.deal_id = $scope.selectedObj.obj.id
-        $scope.activity.client_id = $scope.selectedObj.obj.advertiser_id
-      else
-        $scope.activity.client_id = $scope.selectedObj.obj.id
+      if $scope.selectedObj.obj != undefined
+        if $scope.selectedObj.deal
+          $scope.activity.deal_id = $scope.selectedObj.obj.id
+          $scope.activity.client_id = $scope.selectedObj.obj.advertiser_id
+        else
+          $scope.activity.client_id = $scope.selectedObj.obj.id
       if $scope.selected[$scope.activeType.name].contact == undefined
         $scope.buttonDisabled = false
         return

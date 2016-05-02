@@ -4,6 +4,8 @@ class Api::ContactsController < ApplicationController
   def index
     if params[:name].present?
       render json: suggest_contacts
+    elsif params[:activity].present?
+      render json: activity_contacts
     else
       contacts = current_user.company.contacts
         .for_client(params[:client_id])
@@ -57,5 +59,11 @@ class Api::ContactsController < ApplicationController
     return @search_contacts if defined?(@search_contacts)
 
     @search_contacts = current_user.company.contacts.where('name ilike ?', "%#{params[:name]}%").limit(10)
+  end
+
+  def activity_contacts
+    return @activity_contacts if defined?(@activity_contacts)
+
+    @activity_contacts = current_user.company.contacts.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
   end
 end

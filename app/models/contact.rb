@@ -22,8 +22,13 @@ class Contact < ActiveRecord::Base
         client: {},
         activities: {
           include: [:creator, :contact]
-        }}
+        }},
+      methods: [:formatted_name]
     ))
+  end
+
+  def formatted_name
+    name
   end
 
   def self.import(file, current_user)

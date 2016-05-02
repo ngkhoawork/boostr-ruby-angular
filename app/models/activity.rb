@@ -18,6 +18,8 @@ class Activity < ActiveRecord::Base
       client = company.clients.find(client_id)
       client.update_attribute(:activity_updated_at, happened_at)
     end
+    contact = company.contacts.find(contact_id)
+    contact.update_attribute(:activity_updated_at, happened_at)
   end
 
   def as_json(options = {})
