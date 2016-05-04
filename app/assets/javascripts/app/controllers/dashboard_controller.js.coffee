@@ -1,11 +1,11 @@
 @app.controller 'DashboardController',
-['$scope', '$http', '$modal', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity',
-($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity) ->
+['$scope', '$http', '$modal', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity', 'ActivityType',
+($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity, ActivityType) ->
 
   $scope.showMeridian = true
-  $scope.types = Activity.types
   $scope.feedName = 'Updates'
   $scope.moreSize = 10;
+  $scope.types = []
 
   $scope.init = ->
     $scope.currentPage = 0;
@@ -14,12 +14,14 @@
     $scope.selectedObj = {}
     $scope.selectedObj.deal = true
     $scope.selected = {}
-    now = new Date
-    _.each $scope.types, (type) -> 
-      $scope.selected[type.name] = {}
-      $scope.selected[type.name].date = now
-    $scope.activeType = $scope.types[0]
     $scope.populateContact = false
+    now = new Date
+    ActivityType.all().then (activityTypes) ->
+      $scope.types = activityTypes
+      $scope.activeType = activityTypes[0]
+      _.each activityTypes, (type) ->
+        $scope.selected[type.name] = {}
+        $scope.selected[type.name].date = now
     Activity.all().then (activities) ->
       $scope.activities = activities
     $scope.activity_objects = []
@@ -117,7 +119,8 @@
         $scope.buttonDisabled = false
         return
       form.submitted = true
-      $scope.activity.activity_type = $scope.activeType.name
+      $scope.activity.activity_type_id = $scope.activeType.id
+      $scope.activity.activity_type_name = $scope.activeType.name
       contact_id = $scope.selected[$scope.activeType.name].contact.id
       $scope.activity.contact_id = contact_id
       contact_date = new Date($scope.selected[$scope.activeType.name].date)

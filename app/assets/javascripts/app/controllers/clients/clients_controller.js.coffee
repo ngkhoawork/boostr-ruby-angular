@@ -1,9 +1,9 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity',
-($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field, Activity) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType',
+($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType) ->
 
   $scope.showMeridian = true
-  $scope.types = Activity.types
+  $scope.types = []
   $scope.feedName = 'Updates'
   $scope.clients = []
 
@@ -37,11 +37,13 @@
         client.contacts = contacts
 
   $scope.getClients = ->
-    Client.all({filter: $scope.clientFilter.param}).then (clients) ->
-      $scope.clients = clients
-      Client.set($routeParams.id || clients[0].id) if clients.length > 0
-      _.each $scope.clients, (client) ->
-        $scope.initActivity(client)
+    ActivityType.all().then (activityTypes) ->
+      $scope.types = activityTypes
+      Client.all({filter: $scope.clientFilter.param}).then (clients) ->
+        $scope.clients = clients
+        Client.set($routeParams.id || clients[0].id) if clients.length > 0
+        _.each $scope.clients, (client) ->
+          $scope.initActivity(client, activityTypes)
  
   $scope.getDeals = (client) ->
     Deal.all({client_id: client.id}).then (deals) ->
@@ -159,15 +161,15 @@
 
   $scope.init()
 
-  $scope.initActivity = (client) ->
+  $scope.initActivity = (client, types) ->
     $scope.activity = {}
     client.activity = {}
     client.activeTab = {}
     client.selected = {}
-    client.activeType = $scope.types[0]
+    client.activeType = types[0]
     client.populateContact = false
     now = new Date
-    _.each $scope.types, (type) -> 
+    _.each types, (type) -> 
       client.selected[type.name] = {}
       client.selected[type.name].date = now
 
@@ -188,7 +190,8 @@
       return
     $scope.activity.comment = $scope.currentClient.activity.comment
     $scope.activity.client_id = $scope.currentClient.id
-    $scope.activity.activity_type = $scope.currentClient.activeType.name
+    $scope.activity.activity_type_id = $scope.currentClient.activeType.id
+    $scope.activity.activity_type_name = $scope.currentClient.activeType.name
     $scope.activity.contact_id = $scope.currentClient.selected[$scope.currentClient.activeType.name].contact.id
     contactDate = new Date($scope.currentClient.selected[$scope.currentClient.activeType.name].date)
     if $scope.currentClient.selected[$scope.currentClient.activeType.name].time != undefined
@@ -215,7 +218,7 @@
           {}
 
   $scope.cancelActivity = (client) ->
-    $scope.initActivity(client)
+    $scope.initActivity(client, $scope.types)
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact

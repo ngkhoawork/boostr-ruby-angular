@@ -46,6 +46,12 @@
     .when '/activities',
       templateUrl: 'activities.html'
       controller: 'ActivitiesController'
+    .when '/activity_types',
+      templateUrl: 'activity_types.html'
+      controller: 'ActivityTypesController'
+    .when '/reports',
+      templateUrl: 'reports.html'
+      controller: 'ReportsController'
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'

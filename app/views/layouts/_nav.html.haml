@@ -23,6 +23,8 @@
             = link_to "CLIENTS", "/clients"
           %li{ ng: { class: "{ active: isActive('/people') }" } }
             = link_to "PEOPLE", "/people"
+          %li{ ng: { class: "{ active: isActive('/reports') }" } }
+            = link_to "REPORT", "/reports"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
             %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }

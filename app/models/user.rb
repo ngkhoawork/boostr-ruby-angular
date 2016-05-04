@@ -15,6 +15,7 @@ class User < ActiveRecord::Base
   has_many :teams, -> (user) { where(company_id: user.company_id) }, foreign_key: :leader_id
   has_many :snapshots, -> (user) { where(company_id: user.company_id) }
   has_many :activities
+  has_many :reports
 
   ROLES = %w(user admin superadmin)
 
@@ -47,7 +48,12 @@ class User < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(methods: [:name, :leader?, :leader]))
+    super(options.merge(
+      include: {
+        reports: {}
+      },
+      methods: [:name, :leader?, :leader]
+    ))
   end
 
   def all_deals_for_time_period(start_date, end_date)

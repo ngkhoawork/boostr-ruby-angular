@@ -17,7 +17,7 @@
     .row
       #contact-list.col-xs-5
         .list-group.list-lg
-          %a.list-group-item{href: '/#people/{{ contact.id }}', ng: { repeat: 'contact in contacts | orderBy: "name"', class: '{ active: contact.id == currentContact.id }' } }
+          %a.list-group-item.vertical-center{href: '', ng: { click: 'showContact(contact)', repeat: 'contact in contacts | orderBy: "name"', class: '{ active: contact.id == currentContact.id }' } }
             .row
               .col-xs-4
               .col-xs-8

@@ -1,10 +1,10 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact'
-($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact) ->
+['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType',
+($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType) ->
 
   $scope.showMeridian = true
-  $scope.types = Activity.types
   $scope.feedName = 'Deal Updates'
+  $scope.types = []
 
   $scope.init = ->
     $scope.currentDeal = {}
@@ -27,12 +27,14 @@
     $scope.selectedObj = {}
     $scope.selectedObj.deal = true
     $scope.selected = {}
-    now = new Date
-    _.each $scope.types, (type) -> 
-      $scope.selected[type.name] = {}
-      $scope.selected[type.name].date = now
-    $scope.activeType = $scope.types[0]
     $scope.populateContact = false
+    now = new Date
+    ActivityType.all().then (activityTypes) ->
+      $scope.types = activityTypes
+      $scope.activeType = activityTypes[0]
+      _.each activityTypes, (type) ->
+        $scope.selected[type.name] = {}
+        $scope.selected[type.name].date = now
 
   $scope.setCurrentDeal = (deal) ->
     _.each deal.members, (member) ->
@@ -160,7 +162,8 @@
       form.submitted = true
       $scope.activity.deal_id = $scope.currentDeal.id
       $scope.activity.client_id = $scope.currentDeal.advertiser_id
-      $scope.activity.activity_type = $scope.activeType.name
+      $scope.activity.activity_type_id = $scope.activeType.id
+      $scope.activity.activity_type_name = $scope.activeType.name
       contact_id = $scope.selected[$scope.activeType.name].contact.id
       $scope.activity.contact_id = contact_id
       contact_date = new Date($scope.selected[$scope.activeType.name].date)

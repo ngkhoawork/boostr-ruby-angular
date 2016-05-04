@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160430033243) do
+ActiveRecord::Schema.define(version: 20160503234809) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,14 +38,26 @@ ActiveRecord::Schema.define(version: 20160430033243) do
     t.integer  "contact_id"
     t.integer  "deal_id"
     t.integer  "client_id"
-    t.string   "activity_type"
+    t.string   "activity_type_name"
     t.datetime "happened_at"
     t.integer  "updated_by"
     t.integer  "created_by"
     t.text     "comment"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
     t.boolean  "timed"
+    t.integer  "activity_type_id"
+  end
+
+  create_table "activity_types", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "name"
+    t.string   "action"
+    t.string   "icon"
+    t.integer  "updated_by"
+    t.integer  "created_by"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "addresses", force: :cascade do |t|
@@ -106,6 +118,13 @@ ActiveRecord::Schema.define(version: 20160430033243) do
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "snapshot_day",       default: 0
+    t.integer  "avg_day"
+    t.integer  "day1"
+    t.integer  "day2"
+    t.integer  "day3"
+    t.string   "color1"
+    t.string   "color2"
+    t.string   "color3"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -244,6 +263,16 @@ ActiveRecord::Schema.define(version: 20160430033243) do
   add_index "quota", ["end_date"], name: "index_quota_on_end_date", using: :btree
   add_index "quota", ["start_date"], name: "index_quota_on_start_date", using: :btree
 
+  create_table "reports", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "user_id"
+    t.integer  "time_period_id"
+    t.string   "name"
+    t.integer  "value"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
   create_table "revenues", force: :cascade do |t|
     t.integer  "order_number"
     t.string   "ad_server"
@@ -300,6 +329,10 @@ ActiveRecord::Schema.define(version: 20160430033243) do
     t.string   "color"
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
+    t.integer  "avg_day"
+    t.integer  "day1"
+    t.integer  "day2"
+    t.integer  "day3"
   end
 
   create_table "teams", force: :cascade do |t|

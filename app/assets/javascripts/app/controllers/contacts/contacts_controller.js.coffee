@@ -1,30 +1,32 @@
 @app.controller 'ContactsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Contact', 'Activity',
-($scope, $rootScope, $modal, $routeParams, $location, Contact, Activity) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Contact', 'Activity',  'ActivityType',
+($scope, $rootScope, $modal, $routeParams, $location, Contact, Activity, ActivityType) ->
 
   $scope.showMeridian = true
-  $scope.types = Activity.types
   $scope.feedName = 'Updates'
   $scope.contacts = []
+  $scope.types = []
 
-  $scope.initActivity = (contact) ->
+  $scope.initActivity = (contact, activityTypes) ->
     $scope.activity = {}
     contact.activity = {}
     contact.activeTab = {}
     contact.selected = {}
-    contact.activeType = $scope.types[0]
     contact.populateContact = false
+    contact.activeType = activityTypes[0]
     now = new Date
-    _.each $scope.types, (type) -> 
+    _.each activityTypes, (type) -> 
       contact.selected[type.name] = {}
       contact.selected[type.name].date = now
 
   $scope.init = ->
-    Contact.all (contacts) ->
-      $scope.contacts = contacts
-      Contact.set($routeParams.id || contacts[0].id) if contacts.length > 0
-      _.each $scope.contacts, (contact) ->
-        $scope.initActivity(contact)
+    ActivityType.all().then (activityTypes) ->
+      $scope.types = activityTypes
+      Contact.all (contacts) ->
+        $scope.contacts = contacts
+        Contact.set($routeParams.id || contacts[0].id) if contacts.length > 0
+        _.each $scope.contacts, (contact) ->
+          $scope.initActivity(contact, activityTypes)
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -50,6 +52,9 @@
       Contact.delete $scope.currentContact, ->
         $location.path('/people')
 
+  $scope.showContact = (contact) ->
+    Contact.set(contact.id) if contact
+
   $scope.$on 'updated_current_contact', ->
     $scope.currentContact = Contact.get()
 
@@ -65,7 +70,8 @@
       return
     $scope.activity.contact_id = $scope.currentContact.id
     $scope.activity.comment = $scope.currentContact.activity.comment
-    $scope.activity.activity_type = $scope.currentContact.activeType.name
+    $scope.activity.activity_type_id = $scope.currentContact.activeType.id
+    $scope.activity.activity_type_name = $scope.currentContact.activeType.name
     contactDate = new Date($scope.currentContact.selected[$scope.currentContact.activeType.name].date)
     if $scope.currentContact.selected[$scope.currentContact.activeType.name].time != undefined
       contactTime = new Date($scope.currentContact.selected[$scope.currentContact.activeType.name].time)
@@ -79,7 +85,7 @@
       $scope.init()
 
   $scope.cancelActivity = (contact) ->
-    $scope.initActivity(contact)
+    $scope.initActivity(contact, $scope.types)
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)

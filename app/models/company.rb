@@ -12,6 +12,8 @@ class Company < ActiveRecord::Base
   has_many :fields
   has_many :notifications
   has_many :activities
+  has_many :activity_types
+  has_many :reports
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -38,6 +40,16 @@ class Company < ActiveRecord::Base
 
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
+
+    activity_types.find_or_initialize_by(name:'Initial Meeting', action:'had initial meeting with', icon:'/assets/icons/meeting.svg')
+    activity_types.find_or_initialize_by(name:'Pitch', action:'pitched to', icon:'/assets/icons/pitch.svg')
+    activity_types.find_or_initialize_by(name:'Proposal', action:'sent proposal to', icon:'/assets/icons/proposal.svg')
+    activity_types.find_or_initialize_by(name:'Feedback', action:'received feedback from', icon:'/assets/icons/feedback.svg')
+    activity_types.find_or_initialize_by(name:'Agency Meeting', action:'had agency meeting with', icon:'/assets/icons/meeting.svg')
+    activity_types.find_or_initialize_by(name:'Client Meeting', action:'had client meeting with', icon:'/assets/icons/meeting.svg')
+    activity_types.find_or_initialize_by(name:'Entertainment', action:'had client entertainment with', icon:'/assets/icons/entertainment.svg')
+    activity_types.find_or_initialize_by(name:'Campaign Review', action:'reviewed campaign with', icon:'/assets/icons/review.svg')
+    activity_types.find_or_initialize_by(name:'QBR', action:'Quarterly Business Review with', icon:'/assets/icons/QBR.svg')
   end
 
   def settings
@@ -46,6 +58,14 @@ class Company < ActiveRecord::Base
       { name: 'Clients', fields: fields.where(subject_type: 'Client')},
       { name: 'Products', fields: fields.where(subject_type: 'Product')}
     ]
+  end
+
+  def as_json(options = {})
+    super(options.merge(
+      include: {
+        reports: {}
+      }
+    ))
   end
 
   protected
