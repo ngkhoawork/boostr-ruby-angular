@@ -44,7 +44,7 @@
                 %th.left Total
 
             %tbody
-              %tr{ ng: { repeat: 'user in users | orderBy: "name"' } }
+              %tr{ ng: { repeat: 'user in users | orderBy: "-currentReportValues[9]"' } }
                 %td.left {{ user.name }}
                 %td.right {{ user.currentReportValues[0] }}
                 %td.right {{ user.currentReportValues[1] }}
