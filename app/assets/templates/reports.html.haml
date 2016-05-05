@@ -18,7 +18,9 @@
                 %li{ ng: { repeat: 'y in years', class: '{active: year == y}' } }
                   %a{ href: '', ng: { click: 'updateYear(y)' } }
                     {{ y }} Quarterly
-
+            %li.pull-right
+              %a.export{ href: '', ng: { click: 'exportReports()' } }
+                Export
   .container
     .row
       .col-xs-12

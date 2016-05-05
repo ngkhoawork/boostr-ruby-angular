@@ -41,6 +41,7 @@
       user.currentReportValues[7] = $scope.getReportValue(user.reports, $scope.types[7].name, $scope.currentTimePeriod.id)
       user.currentReportValues[8] = $scope.getReportValue(user.reports, $scope.types[8].name, $scope.currentTimePeriod.id) 
       user.currentReportValues[9] = $scope.getReportValue(user.reports, 'Total', $scope.currentTimePeriod.id)
+      user.currentReportValues[10] = $scope.getReportValue(user.reports, 'Weekly Average', $scope.currentTimePeriod.id)
       
     $scope.company.currentReportValues = []
     $scope.company.currentReportValues[0] = $scope.getCoReportValue($scope.company.reports, $scope.types[0].name, $scope.currentTimePeriod.id)
@@ -53,6 +54,7 @@
     $scope.company.currentReportValues[7] = $scope.getCoReportValue($scope.company.reports, $scope.types[7].name, $scope.currentTimePeriod.id)
     $scope.company.currentReportValues[8] = $scope.getCoReportValue($scope.company.reports, $scope.types[8].name, $scope.currentTimePeriod.id) 
     $scope.company.currentReportValues[9] = $scope.getCoReportValue($scope.company.reports, 'Total', $scope.currentTimePeriod.id)
+    $scope.company.currentReportValues[10] = $scope.getCoReportValue($scope.company.reports, 'Weekly Average', $scope.currentTimePeriod.id)
 
   $scope.$on 'updated_reports', ->
     $scope.init()
@@ -79,7 +81,7 @@
     path = []
 
   $scope.exportReports = ->
-    $window.open('/api/clients.csv')
+    $window.open('/api/reports.csv')
     return true
 
 ]

@@ -38,6 +38,7 @@ Rails.application.routes.draw do
     resources :notifications, only: [:index, :show, :create, :update, :destroy]
     resources :activities, only: [:index, :create, :show, :update, :destroy]
     resources :activity_types, only: [:index, :create, :show, :update, :destroy]
+    resources :reports, only: [:index, :show]
 
     resource :weighted_pipelines, only: [:show]
     resource :dashboard, only: [:show]
