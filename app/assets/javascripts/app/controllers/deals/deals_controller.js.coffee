@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-['$scope', '$modal', '$filter', '$routeParams', '$q', '$location', '$window', 'Deal', 'Stage',
-($scope, $modal, $filter, $routeParams, $q, $location, $window, Deal, Stage) ->
+['$rootScope', '$scope', '$modal', '$filter', '$routeParams', '$q', '$location', '$window', 'Deal', 'Stage',
+($rootScope, $scope, $modal, $filter, $routeParams, $q, $location, $window, Deal, Stage) ->
 
   $scope.dealFilters = [
     { name: 'My Deals', param: '' }
@@ -12,8 +12,12 @@
     _.each $scope.dealFilters, (filter) ->
       if filter.param == $routeParams.filter
         $scope.dealFilter = filter
+        $rootScope.dealFilter = $scope.dealFilter
   else
-    $scope.dealFilter = $scope.dealFilters[0]
+    if $rootScope.dealFilter != undefined
+      $scope.dealFilter = $rootScope.dealFilter
+    else
+      $scope.dealFilter = $scope.dealFilters[0]
 
   $scope.init = ->
     $q.all({ deals: Deal.all({filter: $scope.dealFilter.param}), stages: Stage.all() }).then (data) ->
@@ -62,6 +66,7 @@
 
   $scope.filterDeals = (filter) ->
     $scope.dealFilter = filter
+    $rootScope.dealFilter = $scope.dealFilter
     $scope.init()
 
   $scope.$on 'updated_deals', ->
