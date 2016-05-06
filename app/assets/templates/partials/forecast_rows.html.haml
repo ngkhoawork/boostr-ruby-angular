@@ -89,9 +89,19 @@
         %tr
           %th.left Client
           %th.right Total Budget
-          %th.right In-Period Amount
+          %th.right InPeriod Amt
+          %th.right Total Budget Split
+          %th.right InPeriod Amt Split
       %tbody
         %tr{ ng: { repeat: 'subrow in revenues | orderBy: "-(budget+1)"' } }
           %td.left {{ subrow.client_name }}
           %td.right {{ subrow.sum_budget | currency: '$': 0 }}
           %td.right {{ subrow.sum_period_budget | currency: '$': 0 }}
+          %td.right{ ng: { if: 'row.type == "member"' } }
+            {{ getSplitAmount(subrow.client.client_members, row.id, subrow.sum_budget) | currency: '$': 0 }}
+          %td.right{ ng: { if: 'row.type == "team"' } }
+            {{ getTeamSplitAmount(subrow.client.client_members, row.all_teammembers, subrow.sum_budget) | currency: '$': 0 }}
+          %td.right{ ng: { if: 'row.type == "member"' } }
+            {{ getSplitAmount(subrow.client.client_members, row.id, subrow.sum_period_budget) | currency: '$': 0 }}
+          %td.right{ ng: { if: 'row.type == "team"' } }
+            {{ getTeamSplitAmount(subrow.client.client_members, row.all_teammembers, subrow.sum_period_budget) | currency: '$': 0 }}

@@ -64,7 +64,7 @@ class Team < ActiveRecord::Base
   end
 
   def all_leaders
-    ls = [leader] if !leader.nil?
+    ls = leader.nil? ? []:[leader]
     children.each do |child|
       ls << child.leader if !child.leader.nil?
     end

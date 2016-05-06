@@ -163,4 +163,8 @@ class ForecastTeam
   def quota
     leader.try(:quota) || 0
   end
+
+  def all_teammembers
+    (team.all_members.nil? ? []:team.all_members) + (team.all_leaders.nil? ? []:team.all_leaders)
+  end
 end

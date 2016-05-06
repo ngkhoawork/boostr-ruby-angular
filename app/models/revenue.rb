@@ -129,7 +129,14 @@ class Revenue < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(methods: [:client_name, :user_name, :product_name, :period_budget, :sum_budget, :sum_period_budget]))
+    super(options.merge(
+      include: {
+        client: {
+          only: [:id],
+          include: [:client_members]
+        }},
+      methods: [:client_name, :user_name, :product_name, :period_budget, :sum_budget, :sum_period_budget]
+    ))
   end
 
   def start_date_is_before_end_date

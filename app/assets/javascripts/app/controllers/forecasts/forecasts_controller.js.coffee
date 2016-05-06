@@ -201,4 +201,14 @@
 
   $scope.init()
 
+  $scope.getSplitAmount = (client_members, member_id, amount) ->
+    amount * _.findWhere(client_members, user_id: member_id).share/100.0
+
+  $scope.getTeamSplitAmount = (client_members, members, amount) ->
+    sum = 0;
+    _.each client_members, (client_member) ->
+      user = _.findWhere(members, id: client_member.user_id)
+      if user != undefined
+        sum += client_member.share*amount/100.0
+    return sum
 ]

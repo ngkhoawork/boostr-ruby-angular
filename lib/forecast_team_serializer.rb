@@ -21,6 +21,7 @@ class ForecastTeamSerializer < ActiveModel::Serializer
     :teams,
     :leader,
     :members,
+    :all_teammembers,
     :year,
     :quarter)
 
