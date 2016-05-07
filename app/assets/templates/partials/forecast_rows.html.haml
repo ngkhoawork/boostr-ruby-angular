@@ -90,8 +90,8 @@
           %th.left Client
           %th.right Total Budget
           %th.right InPeriod Amt
-          %th.right Total Budget Split
-          %th.right InPeriod Amt Split
+          %th.right Split Budget
+          %th.right Split InPeriod Amt
       %tbody
         %tr{ ng: { repeat: 'subrow in revenues | orderBy: "-(budget+1)"' } }
           %td.left {{ subrow.client_name }}

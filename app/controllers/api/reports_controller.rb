@@ -7,7 +7,7 @@ class Api::ReportsController < ApplicationController
         render json: reports
       }
       format.csv { 
-        send_data ordered_reports.to_csv, filename: "reports-#{Date.today}.csv" 
+        send_data ordered_reports.to_csv(company), filename: "reports-#{Date.today}.csv" 
       }
     end
   end
