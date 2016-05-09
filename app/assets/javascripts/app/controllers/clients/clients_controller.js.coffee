@@ -59,6 +59,9 @@
       controller: 'ClientsNewController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        client: ->
+          {}
 
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open

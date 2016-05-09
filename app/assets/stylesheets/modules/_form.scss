@@ -177,3 +177,8 @@
 .ui-sortable-placeholder {
   border: 4px dotted $gray-light; visibility: visible !important;
 }
+
+.input-group-addon.create-new-modal-icon {
+  background-color: transparent;
+  border: 0;
+}
