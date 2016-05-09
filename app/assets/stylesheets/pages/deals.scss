@@ -18,4 +18,14 @@
       }
     }
   }
+  .sort {
+    color: $white;
+    &:hover,
+    &:focus {
+      color: $light-grayish-blue-1;
+    }
+  }
+  .active {
+    color: $light-grayish-blue-1;
+  }
 }

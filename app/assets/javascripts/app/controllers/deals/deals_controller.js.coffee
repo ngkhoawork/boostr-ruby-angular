@@ -8,6 +8,8 @@
     { name: 'All Deals', param: 'company' }
   ]
 
+  $scope.activeSort = {}
+
   if $routeParams.filter
     _.each $scope.dealFilters, (filter) ->
       if filter.param == $routeParams.filter
@@ -24,6 +26,7 @@
       $scope.deals = data.deals
       $scope.stages = data.stages
       $scope.showStage('open')
+      $scope.activeSort = {}
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -44,6 +47,7 @@
     else
       $scope.currentStage = stage.id
       $scope.filteredDeals = $filter('filter') $scope.deals, { stage_id: stage.id }
+    $scope.activeSort = {}
 
   $scope.getOpenStages = ->
     $scope.openStages = $filter('openDeals') $scope.deals, $scope.stages
@@ -71,6 +75,24 @@
 
   $scope.$on 'updated_deals', ->
     $scope.init()
+
+  $scope.sort = (field) ->
+    if field == 'Name'
+      $scope.filteredDeals.sort (a, b) ->
+        a.name.localeCompare(b.name)
+    else if field == 'Advertiser'
+      $scope.filteredDeals.sort (a, b) ->
+        a.advertiser.name.localeCompare(b.advertiser.name)
+    else if field == 'Stage'
+      $scope.filteredDeals.sort (a, b) ->
+        a.stage.name.localeCompare(b.stage.name)
+    else if field == 'Start Date'
+      $scope.filteredDeals.sort (a, b) ->
+        a.start_date.localeCompare(b.start_date)
+    else if field == 'Budget'
+      $scope.filteredDeals.sort (a, b) ->
+        a.budget < b.budget
+    $scope.activeSort = field
 
   $scope.init()
 ]
