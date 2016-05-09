@@ -76,6 +76,7 @@ class Deal < ActiveRecord::Base
 
   def as_weighted_pipeline(start_date, end_date)
     {
+      id: id,
       name: name,
       client_name: advertiser.name,
       probability: stage.probability,
