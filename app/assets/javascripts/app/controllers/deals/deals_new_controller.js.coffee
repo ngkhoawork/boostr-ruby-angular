@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal',
-($scope, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal',
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal) ->
 
   $scope.init = ->
     $scope.formType = 'New'
@@ -24,6 +24,38 @@
 
   $scope.cancel = ->
     $modalInstance.close()
+
+  $scope.createNewClientModal = (option, target) ->
+    $scope.populateClient = true
+    $scope.populateClientTarget = target
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/client_form.html'
+      size: 'lg'
+      controller: 'ClientsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        client: ->
+          {
+            client_type: {
+              option: option
+            }
+          }
+    # This will clear out the populateClient field if the form is dismissed
+    $scope.modalInstance.result.then(
+      null
+      ->
+        $scope.populateClient = false
+        $scope.populateClientTarget = false
+    )
+
+  $scope.$on 'newClient', (event, client) ->
+    if $scope.populateClient and $scope.populateClientTarget
+      Field.defaults(client, 'Client').then (fields) ->
+        client.client_type = Field.field(client, 'Client Type')
+        $scope.deal[$scope.populateClientTarget] = client.id
+        $scope.populateClient = false
+        $scope.populateClientTarget = false
 
   $scope.init()
 ]
