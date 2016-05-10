@@ -35,6 +35,28 @@ class Client < ActiveRecord::Base
     end
   end
 
+  def advertiser?
+    is_advertiser = false
+    values.each do |value|
+      if value.field.name == "Client Type" and value.option.name == "Advertiser"
+        is_advertiser = true
+        break
+      end
+    end
+    is_advertiser
+  end
+
+  def agency?
+    is_agency = false
+    values.each do |value|
+      if value.field.name == "Client Type" and value.option.name == "Agency"
+        is_agency = true
+        break
+      end
+    end
+    is_agency
+  end
+
   def deals_count
     advertiser_deals_count + agency_deals_count
   end
@@ -75,7 +97,11 @@ class Client < ActiveRecord::Base
     return true if created_by.blank?
     return true if client_members.detect { |member| member.user_id == created_by }
 
-    client_members.build(user_id: created_by, share: 0)
+    share = 0
+    if advertiser?
+      share = 100
+    end
+    client_members.build(user_id: created_by, share: share)
   end
 
   def self.import(file, current_user)
