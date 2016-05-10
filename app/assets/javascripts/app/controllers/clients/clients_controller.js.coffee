@@ -6,6 +6,8 @@
   $scope.types = []
   $scope.feedName = 'Updates'
   $scope.clients = []
+  $scope.query = ""
+  $scope.page = 1
 
   $scope.clientFilters = [
     { name: 'My Clients', param: '' }
@@ -37,17 +39,50 @@
         client.contacts = contacts
 
   $scope.getClients = ->
+    $scope.isLoading = true
     ActivityType.all().then (activityTypes) ->
       $scope.types = activityTypes
-      Client.all({filter: $scope.clientFilter.param}).then (clients) ->
-        $scope.clients = clients
-        Client.set($routeParams.id || clients[0].id) if clients.length > 0
+      params = {
+        filter: $scope.clientFilter.param,
+        page: $scope.page
+      }
+      if $scope.query.trim().length
+        params.name = $scope.query.trim()
+      Client.all(params).then (clients) ->
+        if $scope.page > 1
+          $scope.clients = $scope.clients.concat(clients)
+        else
+          $scope.clients = clients
+          if clients.length > 0
+            Client.set($routeParams.id || clients[0].id)
+          else
+            $scope.currentClient = null
+
         _.each $scope.clients, (client) ->
           $scope.initActivity(client, activityTypes)
+        $scope.isLoading = false
  
   $scope.getDeals = (client) ->
     Deal.all({client_id: client.id}).then (deals) ->
       $scope.currentClient.deals = deals
+
+  # Prevent multiple extraneous calls to the server as user inputs search term
+  searchTimeout = null;
+  $scope.searchClients = (query) ->
+    $scope.page = 1
+    if searchTimeout
+      clearTimeout(searchTimeout)
+      searchTimeout = null
+    setTimeout(
+      -> $scope.getClients()
+      250
+    )
+
+  $scope.isLoading = false
+  $scope.loadMoreClients = ->
+    if !$scope.isLoading && $scope.clients && $scope.clients.length < Client.totalCount
+      $scope.page = $scope.page + 1
+      $scope.getClients()
 
   $scope.showClient = (client) ->
     Client.set(client.id) if client

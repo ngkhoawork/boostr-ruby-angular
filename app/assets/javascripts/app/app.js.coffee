@@ -15,6 +15,7 @@
   'ui.sortable'
   'ngInflection'
   'timepickerPop'
+  'infinite-scroll'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

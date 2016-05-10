@@ -3,16 +3,26 @@ class Api::ClientsController < ApplicationController
 
   def index
     respond_to do |format|
-      format.json { 
+      format.json {
         if params[:name].present?
-          render json: suggest_clients
+          results = suggest_clients
         elsif params[:activity].present?
-          render json: activity_clients
+          results = activity_clients
         else
-          render json: clients.order(:name).includes(:address).distinct
+          results = clients.order(:name).includes(:address).distinct
         end
+
+        limit = 10
+        offset = 0
+        if params[:page].present?
+          offset = (params[:page].to_i - 1) * limit
+        end
+        response.headers['X-Total-Count'] = results.count.to_s
+        results = results.limit(limit).offset(offset)
+        render json: results
       }
-      format.csv { 
+
+      format.csv {
         if current_user.leader?
           ordered_clients = company.clients
         elsif team.present?

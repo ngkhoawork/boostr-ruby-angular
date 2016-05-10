@@ -45,6 +45,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-ui-sortable'
   gem 'rails-assets-inflection'
   gem 'rails-assets-ngInflection'
+  gem 'rails-assets-ngInfiniteScroll'
 end
 
 group :test do
