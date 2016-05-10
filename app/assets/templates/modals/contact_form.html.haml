@@ -21,7 +21,10 @@
               %ui-select-choices{ repeat: 'client.id as client in clients | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'client.name' } } }
       .form-group
-        %label.control-label{ for: 'position' } Position*
+        %label.control-label{ for: 'email' } Email*
+        %input#email.form-control{ name: 'email', placeholder: 'Email', ng: { model: 'contact.address.email' } }
+      .form-group
+        %label.control-label{ for: 'position' } Position
         %input.form-control{ name: 'position', placeholder: 'Position', ng: { model: 'contact.position' } }
       .form-group
         %label.control-label{ for: 'street1' } Address
@@ -47,9 +50,6 @@
       .form-group
         %label.control-label{ for: 'mobile' } Mobile
         %input.form-control{ name: 'mobile', placeholder: 'Mobile Number', ng: { model: 'contact.address.mobile' } }
-      .form-group
-        %label.control-label{ for: 'email' } Email*
-        %input#email.form-control{ name: 'email', placeholder: 'Email', ng: { model: 'contact.address.email' } }
 
     .modal-footer
       %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
