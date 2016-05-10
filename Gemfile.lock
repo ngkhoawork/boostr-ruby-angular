@@ -293,6 +293,8 @@ GEM
     rails-assets-jquery-ui (1.11.4)
       rails-assets-jquery (>= 1.6)
     rails-assets-ng-file-upload (5.0.9)
+    rails-assets-ngInfiniteScroll (1.2.2)
+      rails-assets-angular (>= 1.2.0)
     rails-assets-ngInflection (1.1.10)
       rails-assets-angular (> 1.0.0)
       rails-assets-inflection (~> 1.4.0)
@@ -462,6 +464,7 @@ DEPENDENCIES
   rails-assets-chartjs!
   rails-assets-inflection!
   rails-assets-ng-file-upload!
+  rails-assets-ngInfiniteScroll!
   rails-assets-ngInflection!
   rails-assets-underscore!
   rollbar (~> 1.5.3)
@@ -477,5 +480,8 @@ DEPENDENCIES
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
 
+RUBY VERSION
+   ruby 2.2.2p95
+
 BUNDLED WITH
-   1.11.2
+   1.12.3
