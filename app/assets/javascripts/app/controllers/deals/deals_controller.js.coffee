@@ -9,6 +9,7 @@
   ]
 
   $scope.activeSort = {}
+  $scope.sorted = []
 
   if $routeParams.filter
     _.each $scope.dealFilters, (filter) ->
@@ -27,6 +28,7 @@
       $scope.stages = data.stages
       $scope.showStage('open')
       $scope.activeSort = {}
+      $scope.sorted = []
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -48,6 +50,7 @@
       $scope.currentStage = stage.id
       $scope.filteredDeals = $filter('filter') $scope.deals, { stage_id: stage.id }
     $scope.activeSort = {}
+    $scope.sorted = []
 
   $scope.getOpenStages = ->
     $scope.openStages = $filter('openDeals') $scope.deals, $scope.stages
@@ -77,21 +80,52 @@
     $scope.init()
 
   $scope.sort = (field) ->
+    i = $scope.sorted.indexOf(field)
     if field == 'Name'
-      $scope.filteredDeals.sort (a, b) ->
-        a.name.localeCompare(b.name)
+      if i >= 0
+        $scope.filteredDeals.sort (a, b) ->
+          b.name.localeCompare(a.name)
+        $scope.sorted.splice(i, 1)
+      else
+        $scope.filteredDeals.sort (a, b) ->
+          a.name.localeCompare(b.name)
+        $scope.sorted.push(field)
     else if field == 'Advertiser'
-      $scope.filteredDeals.sort (a, b) ->
-        a.advertiser.name.localeCompare(b.advertiser.name)
+      if i >= 0
+        $scope.filteredDeals.sort (a, b) ->
+          b.advertiser.name.localeCompare(a.advertiser.name)
+        $scope.sorted.splice(i, 1)
+      else
+        $scope.filteredDeals.sort (a, b) ->
+          a.advertiser.name.localeCompare(b.advertiser.name)
+        $scope.sorted.push(field)
     else if field == 'Stage'
-      $scope.filteredDeals.sort (a, b) ->
-        a.stage.name.localeCompare(b.stage.name)
+      if i >= 0
+        $scope.filteredDeals.sort (a, b) ->
+          b.stage.name.localeCompare(a.stage.name)
+        $scope.sorted.splice(i, 1)
+      else
+        $scope.filteredDeals.sort (a, b) ->
+          a.stage.name.localeCompare(b.stage.name)
+        $scope.sorted.push(field)
     else if field == 'Start Date'
-      $scope.filteredDeals.sort (a, b) ->
-        a.start_date.localeCompare(b.start_date)
+      if i >= 0
+        $scope.filteredDeals.sort (a, b) ->
+          b.start_date.localeCompare(a.start_date)
+        $scope.sorted.splice(i, 1)
+      else
+        $scope.filteredDeals.sort (a, b) ->
+          a.start_date.localeCompare(b.start_date)
+        $scope.sorted.push(field)
     else if field == 'Budget'
-      $scope.filteredDeals.sort (a, b) ->
-        a.budget < b.budget
+      if i >= 0
+        $scope.filteredDeals.sort (a, b) ->
+          a.budget < b.budget
+        $scope.sorted.splice(i, 1)
+      else
+        $scope.filteredDeals.sort (a, b) ->
+          a.budget > b.budget
+        $scope.sorted.push(field)
     $scope.activeSort = field
 
   $scope.init()
