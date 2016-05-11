@@ -42,17 +42,44 @@
           %table.table.table-striped
             %thead
               %tr.no-case
-                %th.left NAME
+                %th.left
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("name")' } }
+                    NAME
+                    %i{ ng: { class: "{ 'fa': sort.column == 'name', 'fa-sort-asc': sort.column == 'name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'name' && sort.direction == 'desc' }" } }
                 %th{ ng: { if: 'year' } }
                   &nbsp;
-                %th.right QUOTA
-                %th.right WEIGHTED PIPELINE
-                %th.right REVENUE
-                %th.right FORECAST AMOUNT
-                %th.right % TO QUOTA
-                %th.right GAP TO QUOTA
-                %th.right WoW PIPELINE
-                %th.right WoW REVENUE
+                %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("quota")' } }
+                    QUOTA
+                    %i{ ng: { class: "{ 'fa': sort.column == 'quota', 'fa-sort-asc': sort.column == 'quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'quota' && sort.direction == 'desc' }" } }
+                %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("weighted_pipeline")' } }
+                    WEIGHTED PIPELINE
+                    %i{ ng: { class: "{ 'fa': sort.column == 'weighted_pipeline', 'fa-sort-asc': sort.column == 'weighted_pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'weighted_pipeline' && sort.direction == 'desc' }" } }
+                %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("revenue")' } }
+                    REVENUE
+                    %i{ ng: { class: "{ 'fa': sort.column == 'revenue', 'fa-sort-asc': sort.column == 'revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'revenue' && sort.direction == 'desc' }" } }
+                %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("amount")' } }
+                    FORECAST AMOUNT
+                    %i{ ng: { class: "{ 'fa': sort.column == 'amount', 'fa-sort-asc': sort.column == 'amount' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'amount' && sort.direction == 'desc' }" } }
+                %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("percent_to_quota")' } }
+                    \% TO QUOTA
+                    %i{ ng: { class: "{ 'fa': sort.column == 'percent_to_quota', 'fa-sort-asc': sort.column == 'percent_to_quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'percent_to_quota' && sort.direction == 'desc' }" } }
+                %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("gap_to_quota")' } }
+                    GAP TO QUOTA
+                    %i{ ng: { class: "{ 'fa': sort.column == 'gap_to_quota', 'fa-sort-asc': sort.column == 'gap_to_quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'gap_to_quota' && sort.direction == 'desc' }" } }
+                %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("wow_weighted_pipeline")' } }
+                    WoW PIPELINE
+                    %i{ ng: { class: "{ 'fa': sort.column == 'wow_weighted_pipeline', 'fa-sort-asc': sort.column == 'wow_weighted_pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'wow_weighted_pipeline' && sort.direction == 'desc' }" } }
+                %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("wow_revenue")' } }
+                    WoW REVENUE
+                    %i{ ng: { class: "{ 'fa': sort.column == 'wow_revenue', 'fa-sort-asc': sort.column == 'wow_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'wow_revenue' && sort.direction == 'desc' }" } }
 
             %tbody.teams{ ng: { repeat: 'row in teams', include: "'partials/forecast_rows.html'" } }
 

@@ -19,6 +19,66 @@
     tooltipHideZero: true
   }
 
+  class McSort
+    constructor: (opts) ->
+      @column = opts.column
+      @compareFn = opts.compareFn || (-> 0)
+      @dataset = opts.dataset || []
+      @defaults = opts
+      @direction = opts.direction || "asc"
+
+    execute: ->
+      mcSort = @
+      @dataset.sort (a, b) ->
+        mcSort.compareFn(mcSort.column, a, b)
+      @dataset.reverse() if @direction == "desc"
+
+    reset: ->
+      @column = @defaults.column
+      @direction = @defaults.direction || "asc"
+      @execute()
+
+    toggle: (column) ->
+      direction = "asc"
+      direction = "desc" if @column == column and @direction == "asc"
+      @column = column
+      @direction = direction
+
+  $scope.sort =
+    column: "name"
+    direction: "asc"
+    reset: ->
+      @column = "name"
+      @direction = "asc"
+      @execute()
+    execute: ->
+      false
+    toggle: ->
+      false
+    weighted_pipeline:
+      column: "name"
+      direction: "asc"
+      reset: ->
+        @column = "name"
+        @direction = "asc"
+        @execute()
+      execute: ->
+        false
+      toggle: ->
+        false
+    revenues:
+      column: "name"
+      direction: "asc"
+      reset: ->
+        @column = "name"
+        @direction = "asc"
+        @execute()
+      execute: ->
+        false
+      toggle: ->
+        false
+
+
   $scope.init = () ->
     # TODO: last year, this year, next year OR all years with data?
     $scope.years = [2016, 2017]
