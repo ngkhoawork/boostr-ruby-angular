@@ -1,8 +1,8 @@
 @app.controller 'SettingsGeneralController',
-['$scope', 'Company',
-($scope, Company) ->
+['$scope', 'Company', 'Stage'
+($scope, Company, Stage) ->
 
-  Company.get().then (company) ->
+  Company.get().$promise.then (company) ->
     $scope.company = company
 
   $scope.days = [
@@ -15,7 +15,13 @@
     { id: 6, name: 'Saturday' }
   ]
 
-  $scope.updateCompany = (params) ->
-    Company.update(params).then (company) ->
-      $scope.company = company
+  $scope.updateCompany = ->
+    $scope.company.$update()
+
+  $scope.updateStage = (stage) ->
+    stage.$update()
+
+  $scope.stages = []
+  Stage.query().$promise.then (stages) ->
+    $scope.stages = stages
 ]

@@ -11,15 +11,17 @@
     form.submitted = true
 
     if form.$valid
-      Stage.update({ id: $scope.stage.id, stage: $scope.stage }, (response) ->
-        angular.forEach response.data.errors, (errors, key) ->
-          form[key].$dirty = true
-          form[key].$setValidity('server', false)
-          $scope.buttonDisabled = false
-      ).then (stage) ->
-        $rootScope.$broadcast 'updated_stages'
-        $modalInstance.close()
+      $scope.stage.$update(
+        ->
+          $rootScope.$broadcast 'updated_stages'
+          $modalInstance.close()
+        (error) ->
+          angular.forEach response.data.errors, (errors, key) ->
+            form[key].$dirty = true
+            form[key].$setValidity('server', false)
+            $scope.buttonDisabled = false
+      )
 
   $scope.cancel = ->
-    $modalInstance.close()
+    $modalInstance.dismiss()
 ]

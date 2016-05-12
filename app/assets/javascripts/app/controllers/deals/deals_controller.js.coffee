@@ -28,7 +28,7 @@
       $scope.dealFilter = $scope.dealFilters[0]
 
   $scope.init = ->
-    $q.all({ deals: Deal.all({filter: $scope.dealFilter.param}), stages: Stage.all() }).then (data) ->
+    $q.all({ deals: Deal.all({filter: $scope.dealFilter.param}), stages: Stage.query().$promise }).then (data) ->
       $scope.deals = data.deals
       $scope.stages = data.stages
       $scope.showStage('open')

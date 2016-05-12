@@ -3,7 +3,7 @@
 ($scope, $modal, Stage) ->
 
   $scope.init = () ->
-    Stage.all().then (stages) ->
+    Stage.query().$promise.then (stages) ->
       $scope.stages = stages
 
   $scope.sortableOptions =
@@ -16,7 +16,7 @@
     cursor: 'ns-resize'
 
   $scope.updateStage = (stage) ->
-    Stage.update({ id: stage.id, stage: stage })
+    stage.$update()
 
   $scope.showModal = () ->
     $scope.modalInstance = $modal.open
