@@ -15,23 +15,6 @@
 
     thead {
       background-color: $brand-primary;
-      color: $white;
-
-      th {
-        font-family: $table-headings-font-family;
-        font-size: 11.5px;
-        white-space: nowrap;
-        vertical-align: middle;
-        text-align: center;
-
-        &:first-child {
-          border-left: 1px solid $brand-primary;
-        }
-
-        &:last-child {
-          border-right: 1px solid $brand-primary;
-        }
-      }
 
       tr {
         max-height: 43px !important;
@@ -43,9 +26,19 @@
           }
         }
 
+        th, th a {
+          color: $white;
+          font-family: $table-headings-font-family;
+          font-size: 11.5px;
+        }
+
         th {
           border-bottom: none;
           text-transform: uppercase;
+          text-align: center;
+          vertical-align: middle;
+          white-space: nowrap;
+
 
           &.action-column {
             width: 115px;
@@ -53,6 +46,10 @@
 
           &:first-child {
             padding-left: 30px;
+            border-left: 1px solid $brand-primary;
+          }
+          &:last-child {
+            border-right: 1px solid $brand-primary;
           }
         }
       }
@@ -91,6 +88,10 @@
           }
         }
 
+        a {
+          color: $dark-grayish-blue-3;
+        }
+
         td {
           vertical-align: middle;
           line-height: 28px;
@@ -125,9 +126,6 @@
             height: 19px;
           }
 
-          a {
-            color: $dark-grayish-blue-3;
-          }
         }
       }
     }
@@ -269,4 +267,8 @@
 
 .table > tbody + tbody {
   border-top: 0;
+}
+
+.table th a {
+  color: $white;
 }
