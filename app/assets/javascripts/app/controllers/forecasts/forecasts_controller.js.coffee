@@ -19,6 +19,43 @@
     tooltipHideZero: true
   }
 
+  class McSort
+    constructor: (opts) ->
+      @column = opts.column
+      @compareFn = opts.compareFn || (-> 0)
+      @dataset = opts.dataset || []
+      @defaults = opts
+      @direction = opts.direction || "asc"
+      @hasMultipleDatasets = opts.hasMultipleDatasets || false
+      @execute()
+
+    execute: ->
+      mcSort = @
+      if not @hasMultipleDatasets
+        @dataset.sort (a, b) ->
+          mcSort.compareFn(mcSort.column, a, b)
+        @dataset.reverse() if @direction == "desc"
+      else
+        @dataset = @dataset.map (row) ->
+          row.sort (a, b) ->
+            mcSort.compareFn(mcSort.column, a, b)
+          row.reverse() if mcSort.direction == "desc"
+          row
+      @dataset
+
+    reset: ->
+      @column = @defaults.column
+      @direction = @defaults.direction || "asc"
+      @execute()
+
+    toggle: (column) ->
+      direction = "asc"
+      direction = "desc" if @column == column and @direction == "asc"
+      @column = column
+      @direction = direction
+      @execute()
+
+
   $scope.init = () ->
     # TODO: last year, this year, next year OR all years with data?
     $scope.years = [2016, 2017]
@@ -41,6 +78,8 @@
           $scope.team = forecast
           $scope.teams = forecast.teams
           $scope.members = forecast.members
+          $scope.dataset = [$scope.teams || [], $scope.members || []]
+          $scope.setMcSort()
           $scope.setChartData()
       else
         Forecast.all({ time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->
@@ -52,7 +91,22 @@
             $scope.teams = forecast[0].teams
             if forecast[0].type && forecast[0].type == "member"
               $scope.member = forecast[0]
+          $scope.dataset = [$scope.teams || [], $scope.members || []]
+          $scope.setMcSort()
           $scope.setChartData()
+
+  $scope.setMcSort = ->
+    $scope.sort = new McSort({
+      column: "name",
+      compareFn: (column, a, b) ->
+        switch (column)
+          when "name"
+            a[column].localeCompare(b[column])
+          else
+            a[column] - b[column]
+      dataset: $scope.dataset
+      hasMultipleDatasets: true
+    })
 
   $scope.setChartData = () ->
     members = []
@@ -166,6 +220,16 @@
 
       WeightedPipeline.get(params).then (weighted_pipeline) ->
         $scope.weighted_pipeline = weighted_pipeline
+        $scope.sort.weighted_pipeline = new McSort(
+          column: "name",
+          compareFn: (column, a, b) ->
+            switch (column)
+              when "name", "client_name"
+                a[column].localeCompare(b[column])
+              else
+                a[column] - b[column]
+          dataset: $scope.weighted_pipeline
+        )
         $scope.weightedPipelineDetail = row
 
   $scope.toggleRevenueDetail = (row) ->
@@ -183,6 +247,16 @@
 
       Revenue.get(params).then (revenues) ->
         $scope.revenues = revenues
+        $scope.sort.revenues = new McSort(
+          column: "name",
+          compareFn: (column, a, b) ->
+            switch (column)
+              when "name", "client_name"
+                a[column].localeCompare(b[column])
+              else
+                a[column] - b[column]
+          dataset: $scope.revenues
+        )
         $scope.revenueDetail = row
 
   $scope.updateTimePeriod = (time_period_id) ->
