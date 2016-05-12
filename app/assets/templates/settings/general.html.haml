@@ -2,21 +2,65 @@
   .container
     .row
       .col-xs-12
-        %h3
-          General Settings
+        %h3 General Settings
 
     .row
-      .col-xs-6
-        %h4
-          Forecast - Week Over Week Snapshot
-          %br
-          %small
-            Set the day of the week to perform the snapshot:
-    .row
-      .col-xs-4
-        %label.control-label{ for: 'day' } Day of the week
-        %ui-select{ name: 'day', ng: { model: 'company.snapshot_day', disabled: true }, 'on-select': 'updateCompany({ snapshot_day: $item.id })' }
-          %ui-select-match{ placeholder: 'Day' }
-            {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'day.id as day in days | filter: { name: $select.search }' }
-            %div{ ng: { bind: { html: 'day.name' } } }
+      .col-sm-3
+        .panel
+          .panel-body
+            %h4 Forecast
+            %h5 Set the day of the week for the week over week snapshot to begin
+            .form-group
+              %label.control-label{ for: 'day' } Day of the week
+              %ui-select{ name: 'day', ng: { model: 'company.snapshot_day', disabled: true }, 'on-select': 'updateCompany()' }
+                %ui-select-match{ placeholder: 'Day' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'day.id as day in days | filter: { name: $select.search }' }
+                  %div{ ng: { bind: { html: 'day.name' } } }
+
+      .col-sm-9
+        .panel
+          .panel-body
+            %h4 Smart Insights
+
+            %table.table{ style: 'white-space: nowrap' }
+              %thead
+                %tr
+                  %th
+                  %th.text-center Target Avg (days)
+                  %th.text-center Green
+                  %th.text-center Yellow
+                  %th.text-center Red
+              %tbody
+                %tr
+                  %td
+                    Deal Cycle Time
+                  %td
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'number', 'ng-model': 'company.avg_day', placeholder: 0, 'ng-change': 'updateCompany()' }
+                  %td.success
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'number', 'ng-model': 'company.day1', placeholder: 0, 'ng-change': 'updateCompany()' }
+                  %td.warning
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'number', 'ng-model': 'company.day2', placeholder: 0, 'ng-change': 'updateCompany()' }
+                  %td.danger
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'number', 'ng-model': 'company.day3', placeholder: 0, 'ng-change': 'updateCompany()' }
+                %tr{ 'ng-repeat': 'stage in stages | orderBy: "probability"' }
+                  %td
+                    {{ stage.name }} ({{ stage.probability }}%)
+                  %td
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'number', 'ng-model': 'stage.avg_day', placeholder: 0, 'ng-change': 'updateStage(stage)' }
+                  %td.success
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'number', 'ng-model': 'stage.day1', placeholder: 0, 'ng-change': 'updateStage(stage)' }
+                  %td.warning
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'number', 'ng-model': 'stage.day2', placeholder: 0, 'ng-change': 'updateStage(stage)' }
+                  %td.danger
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'number', 'ng-model': 'stage.day3', placeholder: 0, 'ng-change': 'updateStage(stage)' }
+
+

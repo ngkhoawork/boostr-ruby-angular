@@ -6,19 +6,11 @@
     update: {
       method: 'PUT'
       url: '/api/company'
+    },
+    save: {
+      method: 'PUT'
+      url: '/api/company'
     }
 
-  @update = (params) ->
-    deferred = $q.defer()
-    resource.update params, (company) ->
-      deferred.resolve(company)
-    deferred.promise
-
-  @get = () ->
-    deferred = $q.defer()
-    resource.get {}, (company) ->
-      deferred.resolve(company)
-    deferred.promise
-
-  return
+  return resource
 ]
