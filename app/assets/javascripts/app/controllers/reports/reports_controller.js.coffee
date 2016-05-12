@@ -24,7 +24,7 @@
           $scope.currentTimePeriod = timePeriods[0]
         User.all(true).then (users) ->
           $scope.users = users
-          Company.get().then (company) ->
+          Company.get().$promise.then (company) ->
             $scope.company = company
             $scope.initReport()
 

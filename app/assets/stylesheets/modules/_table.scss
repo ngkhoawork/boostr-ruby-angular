@@ -1,255 +1,296 @@
 .table-wrapper {
   border-radius: 4px;
   overflow-x: auto;
+}
 
-  .table {
-    margin-bottom: 0;
+.table {
+  margin-bottom: 0;
 
-    .left {
-      text-align: left;
+  .left {
+    text-align: left;
+  }
+
+  .right {
+    text-align: right;
+  }
+
+  thead {
+    background-color: $brand-primary;
+    color: $white;
+
+    th {
+      font-family: $table-headings-font-family;
+      font-size: 11.5px;
+      white-space: nowrap;
+      vertical-align: middle;
+      text-align: center;
+
+      &:first-child {
+        border-left: 1px solid $brand-primary;
+      }
+
+      &:last-child {
+        border-right: 1px solid $brand-primary;
+      }
     }
 
-    .right {
-      text-align: right;
-    }
+    tr {
+      max-height: 43px !important;
+      height: 43px !important;
 
-    thead {
-      background-color: $brand-primary;
-
-      tr {
-        max-height: 43px !important;
-        height: 43px !important;
-
-        &.no-case {
-          th {
-            text-transform: none;
-          }
-        }
-
-        th, th a {
-          color: $white;
-          font-family: $table-headings-font-family;
-          font-size: 11.5px;
-        }
-
+      &.no-case {
         th {
-          border-bottom: none;
-          text-transform: uppercase;
-          text-align: center;
-          vertical-align: middle;
-          white-space: nowrap;
-
-
-          &.action-column {
-            width: 115px;
-          }
-
-          &:first-child {
-            padding-left: 30px;
-            border-left: 1px solid $brand-primary;
-          }
-          &:last-child {
-            border-right: 1px solid $brand-primary;
-          }
-        }
-      }
-    }
-
-    tbody {
-      color: $dark-grayish-blue-3;
-
-      tr {
-        max-height: 60px !important;
-        height: 60px !important;
-
-        &:hover {
-          td {
-            &.action-td {
-              display: table-cell;
-              cursor: pointer;
-              width: 115px;
-            }
-
-            &.info-td {
-              display: none;
-              width: 115px;
-            }
-          }
-        }
-
-        &.active {
-          border-left: 1px solid $soft-orange;
-          border-right: 1px solid $soft-orange;
-
-          td {
-            border-bottom: 1px solid $soft-orange;
-            border-top: 1px solid $soft-orange;
-            background-color: $white;
-          }
-        }
-
-        a {
-          color: $dark-grayish-blue-3;
-        }
-
-        td {
-          vertical-align: middle;
-          line-height: 28px;
-
-          &:first-child {
-            padding-top: 8px;
-            padding-left: 30px;
-            color: $brand-tertiary;
-
-            a {
-              cursor: pointer;
-
-              &:hover,
-              &:focus {
-                color: $link-hover-color;
-                outline: none;
-              }
-            }
-          }
-
-          .empty {
-            width: 19px;
-            height: 19px;
-          }
-
-          &.action-td {
-            display: none;
-          }
-
-          svg {
-            width: 19px;
-            height: 19px;
-          }
-
-        }
-      }
-    }
-
-    &.black-table {
-      thead {
-        background-color: $white;
-        color: $gray-base;
-
-        th {
-          text-transform: capitalize;
-          font-size: 15px;
-          font-family: $font-family-medium;
-          border: none !important;
-        }
-
-        tr {
-          max-height: 55px !important;
-          height: 55px !important;
-          border-bottom: 1px solid $very-light-gray;
+          text-transform: none;
         }
       }
 
-      tbody {
-        tr {
-          color: $gray-base;
-          font-family: $font-family-medium;
-          font-size: 13px;
-          max-height: 43px !important;
-          height: 43px !important;
+      th, th a {
+        color: $white;
+        font-family: $table-headings-font-family;
+        font-size: 11.5px;
+      }
 
-          td {
-            border: none;
-          }
+      th {
+        border-bottom: none;
+        text-transform: uppercase;
+        text-align: center;
+        vertical-align: middle;
+        white-space: nowrap;
+
+
+        &.action-column {
+          width: 115px;
+        }
+
+        &:first-child {
+          padding-left: 30px;
+          border-left: 1px solid $brand-primary;
+        }
+        &:last-child {
+          border-right: 1px solid $brand-primary;
         }
       }
     }
   }
 
-  .white-table {
-    border-radius: 0;
+  tbody {
+    color: $dark-grayish-blue-3;
 
+    tr {
+      max-height: 60px !important;
+      height: 60px !important;
+
+      &:hover {
+        td {
+          &.action-td {
+            display: table-cell;
+            cursor: pointer;
+            width: 115px;
+          }
+
+          &.info-td {
+            display: none;
+            width: 115px;
+          }
+        }
+      }
+
+      a {
+        color: $dark-grayish-blue-3;
+      }
+
+      td {
+        vertical-align: middle;
+        line-height: 28px;
+
+        &:first-child {
+          padding-top: 8px;
+          padding-left: 30px;
+          color: $brand-tertiary;
+
+          a {
+            cursor: pointer;
+
+            &:hover,
+            &:focus {
+              color: $link-hover-color;
+              outline: none;
+            }
+          }
+        }
+      }
+
+      &.active {
+        border-left: 1px solid $soft-orange;
+        border-right: 1px solid $soft-orange;
+
+        td {
+          border-bottom: 1px solid $soft-orange;
+          border-top: 1px solid $soft-orange;
+          background-color: $white;
+        }
+      }
+
+      td {
+        vertical-align: middle;
+        line-height: 28px;
+
+        &:first-child {
+          padding-top: 8px;
+          padding-left: 30px;
+          color: $brand-tertiary;
+
+          a {
+            cursor: pointer;
+
+            &:hover,
+            &:focus {
+              color: $link-hover-color;
+              outline: none;
+            }
+          }
+        }
+
+        .empty {
+          width: 19px;
+          height: 19px;
+        }
+
+        &.action-td {
+          display: none;
+        }
+
+        svg {
+          width: 19px;
+          height: 19px;
+        }
+
+        a {
+          color: $dark-grayish-blue-3;
+        }
+      }
+    }
+  }
+
+  &.black-table {
     thead {
       background-color: $white;
-      color: $brand-primary;
+      color: $gray-base;
 
       th {
-        padding-top: 31px;
-        font-family: $table-headings-font-family;
-        font-size: 13px;
-        white-space: nowrap;
-        vertical-align: middle;
+        text-transform: capitalize;
+        font-size: 15px;
+        font-family: $font-family-medium;
         border: none !important;
       }
 
       tr {
-        max-height: 43px !important;
-        height: 43px !important;
-        border-bottom: 1px solid $light-grayish-blue-2;
-
-        th {
-          text-transform: capitalize;
-
-          &:first-child {
-            font-family: $table-headings-font-family;
-            padding-left: 30px;
-            color: $text-color;
-          }
-        }
+        max-height: 55px !important;
+        height: 55px !important;
+        border-bottom: 1px solid $very-light-gray;
       }
     }
 
     tbody {
-      color: $dark-grayish-blue-3;
-
       tr {
-        max-height: 61px !important;
-        height: 61px !important;
-
-        &:last-child {
-          td {
-            border-bottom: none;
-          }
-        }
-
-        &.active {
-          border-left: 1px solid $soft-orange;
-          border-right: 1px solid $soft-orange;
-
-          td {
-            border-bottom: 1px solid $soft-orange;
-            border-top: 1px solid $soft-orange;
-            background-color: $white;
-          }
-        }
+        color: $gray-base;
+        font-family: $font-family-medium;
+        font-size: 13px;
+        max-height: 43px !important;
+        height: 43px !important;
 
         td {
-          vertical-align: middle;
-          border-top: none;
-          border-bottom: 1px solid $light-grayish-blue-2;
-          font-size: 16px;
+          border: none;
+        }
+      }
+    }
+  }
+}
+
+.white-table {
+  border-radius: 0;
+
+  thead {
+    background-color: $white;
+    color: $brand-primary;
+
+    th {
+      padding-top: 31px;
+      font-family: $table-headings-font-family;
+      font-size: 13px;
+      white-space: nowrap;
+      vertical-align: middle;
+      border: none !important;
+    }
+
+    tr {
+      max-height: 43px !important;
+      height: 43px !important;
+      border-bottom: 1px solid $light-grayish-blue-2;
+
+      th {
+        text-transform: capitalize;
+
+        &:first-child {
+          font-family: $table-headings-font-family;
+          padding-left: 30px;
+          color: $text-color;
+        }
+      }
+    }
+  }
+
+  tbody {
+    color: $dark-grayish-blue-3;
+
+    tr {
+      max-height: 61px !important;
+      height: 61px !important;
+
+      &:last-child {
+        td {
+          border-bottom: none;
+        }
+      }
+
+      &.active {
+        border-left: 1px solid $soft-orange;
+        border-right: 1px solid $soft-orange;
+
+        td {
+          border-bottom: 1px solid $soft-orange;
+          border-top: 1px solid $soft-orange;
+          background-color: $white;
+        }
+      }
+
+      td {
+        vertical-align: middle;
+        border-top: none;
+        border-bottom: 1px solid $light-grayish-blue-2;
+        font-size: 16px;
+        color: $very-dark-greyish-blue;
+
+        &:first-child {
+          padding-top: 8px;
+          padding-left: 30px;
+          border: none;
+          border-right: 1px solid $light-grayish-blue-2;
+          font-family: 'Gotham Bold';
+          color: $very-dark-desaturated-blue-3;
+        }
+
+        &:nth-child(2) {
           color: $very-dark-greyish-blue;
+        }
 
-          &:first-child {
-            padding-top: 8px;
-            padding-left: 30px;
-            border: none;
-            border-right: 1px solid $light-grayish-blue-2;
-            font-family: 'Gotham Bold';
-            color: $very-dark-desaturated-blue-3;
-          }
-
-          &:nth-child(2) {
-            color: $very-dark-greyish-blue;
-          }
-
-          .empty {
-            border: $dark-grayish-blue-3;
-            border-width: 1px;
-            border-style: solid;
-            border-radius: 50%;
-            width: 19px;
-            height: 19px;
-          }
+        .empty {
+          border: $dark-grayish-blue-3;
+          border-width: 1px;
+          border-style: solid;
+          border-radius: 50%;
+          width: 19px;
+          height: 19px;
         }
       }
     }
