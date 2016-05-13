@@ -159,6 +159,5 @@
       $scope.populateContact = false
 
   $scope.getType = (type) ->
-    console.log(type, $scope.types);
     _.findWhere($scope.types, name: type)
 ]
