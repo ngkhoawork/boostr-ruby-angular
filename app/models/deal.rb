@@ -99,10 +99,12 @@ class Deal < ActiveRecord::Base
       else
         weighted_pipeline[:wday_in_stage_color] = 'green'
       end
+    end
 
-      if stage.red_threshold.present? and opened_diff >= stage.red_threshold
+    if company.avg_day.present?
+      if company.red_threshold.present? and opened_diff >= company.red_threshold
         weighted_pipeline[:wday_since_opened_color] = 'red'
-      elsif stage.yellow_threshold.present? and opened_diff >= stage.yellow_threshold
+      elsif company.yellow_threshold.present? and opened_diff >= company.yellow_threshold
         weighted_pipeline[:wday_since_opened_color] = 'yellow'
       else
         weighted_pipeline[:wday_since_opened_color] = 'green'
