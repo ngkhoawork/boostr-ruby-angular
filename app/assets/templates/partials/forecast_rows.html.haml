@@ -1,17 +1,16 @@
 %tr
-  %td{ ng: { if: 'row.type == "member"' } }
-    {{ row.name }}
-  %td{ ng: { if: 'row.type == "team"' } }
-    %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' } }
+  %td
+    %div{ ng: { if: 'row.type == "member"' } }
       {{ row.name }}
-  %td{ ng: { if: 'row.is_leader && year' } }
-    \--
+    %div{ ng: { if: 'row.type == "team"' } }
+      %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' } }
+        {{ row.name }}
+    %div{ ng: { if: 'row.is_leader && year' } }
+      \--
   %td{ ng: { if: 'row.quarter' } }
     Q{{ row.quarter }}
   %td.right{ ng: { if: '!row.is_leader'} }
-    {{ row.quota | currency: '$': 0 }}
-  %td.right{ ng: { if: 'row.is_leader'} }
-    \--
+    {{ row.is_leader ? '--' : (row.quota | currency: '$': 0) }}
   %td.weighted-pipeline.right
     %a{ href: '', ng: { click: 'toggleWeightedPipelineDetail(row)' } }
       {{ row.weighted_pipeline | currency: '$': 0 }}
@@ -23,17 +22,14 @@
   %td.right
     {{ row.amount | currency: '$': 0 }}
   %td.right{ ng: { if: '!row.is_leader'} }
-    {{ row.percent_to_quota | number: 0 }}%
+    {{ row.is_leader ? '--' : (row.percent_to_quota | number: 0) }}%
   %td.right{ ng: { if: '!row.is_leader'} }
-    {{ row.gap_to_quota | currency: '$': 0 }}
-  %td.right{ ng: { if: 'row.is_leader'} }
-    \--
-  %td.right{ ng: { if: 'row.is_leader'} }
-    \--
+    {{ row.is_leader ? '--' : (row.gap_to_quota | currency: '$': 0) }}
   %td.right
     {{ row.wow_weighted_pipeline  | currency: '$': 0 }}
   %td.right
     {{ row.wow_revenue  | currency: '$': 0 }}
+
 %tr.weighted-pipeline-detail{ ng: { if: 'row == weightedPipelineDetail' } }
   %td.weighted-pipeline-table-wrapper{ colspan: 9, ng: { if: 'weighted_pipeline.length == 0' } }
     %h5
@@ -54,16 +50,40 @@
     %table.table.detail
       %thead
         %tr
-          %th.left Deal name
-          %th.left Client
-          %th.right Probability
-          %th.right Total Budget
-          %th.right In-period Amount
-          %th.right Start Date
-          %th.right Days In Stage
-          %th.right Days Since Opened
+          %th.left
+            %a.sort{ href: '', ng: { click: 'sort.weighted_pipeline.toggle("name")' } }
+              Deal name
+              %i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'name', 'fa-sort-asc': sort.weighted_pipeline.column == 'name' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'name' && sort.weighted_pipeline.direction == 'desc' }" } }
+          %th.left
+            %a.sort{ href: '', ng: { click: 'sort.weighted_pipeline.toggle("client_name")' } }
+              Client
+              %i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'client_name', 'fa-sort-asc': sort.weighted_pipeline.column == 'client_name' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'client_name' && sort.weighted_pipeline.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.weighted_pipeline.toggle("probability")' } }
+              Probability
+              %i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'probability', 'fa-sort-asc': sort.weighted_pipeline.column == 'probability' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'probability' && sort.weighted_pipeline.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.weighted_pipeline.toggle("budget")' } }
+              Total Budget
+              %i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'budget', 'fa-sort-asc': sort.weighted_pipeline.column == 'budget' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'budget' && sort.weighted_pipeline.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.weighted_pipeline.toggle("in_period_amt")' } }
+              In-period Amount
+              %i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'in_period_amt', 'fa-sort-asc': sort.weighted_pipeline.column == 'in_period_amt' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'in_period_amt' && sort.weighted_pipeline.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.weighted_pipeline.toggle("start_date")' } }
+              Start Date
+              %i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'start_date', 'fa-sort-asc': sort.weighted_pipeline.column == 'start_date' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'start_date' && sort.weighted_pipeline.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.weighted_pipeline.toggle("wday_in_stage")' } }
+              Days In Stage
+              %i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'wday_in_stage', 'fa-sort-asc': sort.weighted_pipeline.column == 'wday_in_stage' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'wday_in_stage' && sort.weighted_pipeline.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.weighted_pipeline.toggle("wday_since_opened")' } }
+              Days Since Opened
+              %i{ ng: { class: "{ 'fa': sort.weighted_pipeline.column == 'wday_since_opened', 'fa-sort-asc': sort.weighted_pipeline.column == 'wday_since_opened' && sort.weighted_pipeline.direction == 'asc', 'fa-sort-desc': sort.weighted_pipeline.column == 'wday_since_opened' && sort.weighted_pipeline.direction == 'desc' }" } }
       %tbody
-        %tr{ ng: { repeat: 'subrow in weighted_pipeline | orderBy: "-(budget+1)"' } }
+        %tr{ ng: { repeat: 'subrow in weighted_pipeline' } }
           %td 
             %a{ href: '', ng: { href: '/deals/{{subrow.id}}' } }
               {{ subrow.name }}
@@ -89,13 +109,28 @@
     %table.table.detail
       %thead
         %tr
-          %th.left Client
-          %th.right Total Budget
-          %th.right InPeriod Amt
-          %th.right Split Budget
-          %th.right Split InPeriod Amt
+          %th.left
+            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("client_name")' } }
+              Client
+              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'client_name', 'fa-sort-asc': sort.revenues.column == 'client_name' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'client_name' && sort.revenues.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("sum_budget")' } }
+              Total Budget
+              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'sum_budget', 'fa-sort-asc': sort.revenues.column == 'sum_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'sum_budget' && sort.revenues.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("sum_period_budget")' } }
+              In-Period Amt
+              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'sum_period_budget', 'fa-sort-asc': sort.revenues.column == 'sum_period_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'sum_period_budget' && sort.revenues.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("split_budget")' } }
+              Split Budget
+              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'split_budget', 'fa-sort-asc': sort.revenues.column == 'split_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'split_budget' && sort.revenues.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("split_period_budget")' } }
+              Split In-Period Amt
+              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'split_period_budget', 'fa-sort-asc': sort.revenues.column == 'split_period_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'split_period_budget' && sort.revenues.direction == 'desc' }" } }
       %tbody
-        %tr{ ng: { repeat: 'subrow in revenues | orderBy: "-(budget+1)"' } }
+        %tr{ ng: { repeat: 'subrow in revenues"' } }
           %td.left {{ subrow.client_name }}
           %td.right {{ subrow.sum_budget | currency: '$': 0 }}
           %td.right {{ subrow.sum_period_budget | currency: '$': 0 }}
