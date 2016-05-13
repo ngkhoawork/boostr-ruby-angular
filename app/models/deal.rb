@@ -89,23 +89,22 @@ class Deal < ActiveRecord::Base
     }
 
     if stage.avg_day.present?
-      puts "COMPUTING"
       stage_diff = wday_in_stage - stage.avg_day
       opened_diff = wday_since_opened - stage.avg_day
 
-      if stage.day3.present? and stage_diff >= stage.day3
+      if stage.red_threshold.present? and stage_diff >= stage.red_threshold
         weighted_pipeline[:wday_in_stage_color] = 'red'
-      elsif stage.day2.present? and stage_diff >= stage.day2
+      elsif stage.yellow_threshold.present? and stage_diff >= stage.yellow_threshold
         weighted_pipeline[:wday_in_stage_color] = 'yellow'
-      elsif stage.day1.present? and stage_diff >= stage.day1
+      else
         weighted_pipeline[:wday_in_stage_color] = 'green'
       end
 
-      if stage.day3.present? and opened_diff >= stage.day3
+      if stage.red_threshold.present? and opened_diff >= stage.red_threshold
         weighted_pipeline[:wday_since_opened_color] = 'red'
-      elsif stage.day2.present? and opened_diff >= stage.day2
+      elsif stage.yellow_threshold.present? and opened_diff >= stage.yellow_threshold
         weighted_pipeline[:wday_since_opened_color] = 'yellow'
-      elsif stage.day1.present? and opened_diff >= stage.day1
+      else
         weighted_pipeline[:wday_since_opened_color] = 'green'
       end
     end
