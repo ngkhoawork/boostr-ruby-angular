@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160512184147) do
+ActiveRecord::Schema.define(version: 20160513194415) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,9 +119,8 @@ ActiveRecord::Schema.define(version: 20160512184147) do
     t.datetime "end_date"
     t.integer  "snapshot_day",       default: 0
     t.integer  "avg_day"
-    t.integer  "day1"
-    t.integer  "day2"
-    t.integer  "day3"
+    t.integer  "yellow_threshold"
+    t.integer  "red_threshold"
     t.string   "color1"
     t.string   "color2"
     t.string   "color3"
@@ -327,12 +326,11 @@ ActiveRecord::Schema.define(version: 20160512184147) do
     t.integer  "deals_count"
     t.integer  "position"
     t.string   "color"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
     t.integer  "avg_day"
-    t.integer  "day1"
-    t.integer  "day2"
-    t.integer  "day3"
+    t.integer  "yellow_threshold"
+    t.integer  "red_threshold"
   end
 
   create_table "teams", force: :cascade do |t|
