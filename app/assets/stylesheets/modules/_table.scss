@@ -177,17 +177,21 @@
       background-color: $white;
       color: $gray-base;
 
-      th {
-        text-transform: capitalize;
-        font-size: 15px;
-        font-family: $font-family-medium;
-        border: none !important;
-      }
-
       tr {
         max-height: 55px !important;
         height: 55px !important;
         border-bottom: 1px solid $very-light-gray;
+        th {
+          color: #67747E !important;
+          text-transform: capitalize;
+          font-size: 15px;
+          font-family: $font-family-medium;
+          border: none !important;
+
+          a {
+            color: #67747E !important;
+          }
+        }
       }
     }
 

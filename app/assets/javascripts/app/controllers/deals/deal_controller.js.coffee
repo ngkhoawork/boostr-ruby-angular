@@ -12,6 +12,7 @@
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal)
       $scope.activities = deal.activities
+      console.log($scope.activities);
 
     $scope.anchors = [{name: 'campaign', id: 'campaign'},
                       {name: 'activities', id: 'activities'},

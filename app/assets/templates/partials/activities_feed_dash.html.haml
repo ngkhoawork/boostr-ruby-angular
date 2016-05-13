@@ -8,22 +8,18 @@
         %td
           %table.table.table-striped.black-table
             %thead
-              %tr
+              %tr{ ng: { click: 'object.show = !object.show' } }
                 %th.left.pad4
-                  .col-xs-10
+                  .col-xs-11
                     %a{ href: '', ng: { href: '/deals/{{object.id}}', if: 'object.stage !== undefined' } }
                       {{ object.formatted_name }}
                     %a{ href: '', ng: { href: '/people/{{object.id}}', if: 'object.position !== undefined' } }
                       {{ object.formatted_name }}
                     %a{ href: '', ng: { href: '/clients', if: 'object.stage == undefined && object.position == undefined' } }
                       {{ object.formatted_name }}
-                  .col-xs-1.pad6
-                    %a{ href: '', ng: { click: 'object.show = true' } }
-                      +
-                    %span.s1
-                      &nbsp;&#47;&nbsp;
-                    %a{ href: '', ng: { click: 'object.show = false' } }
-                      \-
+                  .col-xs-1.text-right
+                    %a{ href: '' }
+                      %i.fa{ 'ng-class': '{ "fa-plus": !object.show, "fa-minus": object.show }' }
             %tbody{ ng: { show: 'object.show' } }
               %tr{ ng: { repeat: "activity in object.activities | orderBy: '-happened_at' | limitTo:object.currentLimit"} }
                 %td
@@ -31,12 +27,12 @@
                     .row.act
                       {{ activity.happened_at | date: 'shortDate' }}
                   .col-xs-1.pad2
-                    %img.s-img{:src => "{{ getType(activity.activity_type).icon }}"}/
+                    %img.s-img{:src => "{{ getType(activity.activity_type_name).icon }}"}/
                   .col-xs-9.pad3
                     .row.act
                       %span
                         {{ activity.creator.first_name }} {{ activity.creator.last_name }} 
-                      {{ getType(activity.activity_type).action }}
+                      {{ getType(activity.activity_type_name).action }}
                       %span
                         {{ activity.contact.name }}
                     .row
