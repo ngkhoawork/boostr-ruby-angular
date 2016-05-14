@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160513194415) do
+ActiveRecord::Schema.define(version: 20160514000748) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -118,7 +118,6 @@ ActiveRecord::Schema.define(version: 20160513194415) do
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "snapshot_day",       default: 0
-    t.integer  "avg_day"
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
     t.string   "color1"
@@ -328,7 +327,6 @@ ActiveRecord::Schema.define(version: 20160513194415) do
     t.string   "color"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
-    t.integer  "avg_day"
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
   end

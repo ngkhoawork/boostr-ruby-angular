@@ -5,7 +5,7 @@
         %h3 General Settings
 
     .row
-      .col-sm-3
+      .col-sm-12
         .panel
           .panel-body
             %h4 Forecast
@@ -17,43 +17,4 @@
                   {{ $select.selected.name }}
                 %ui-select-choices{ repeat: 'day.id as day in days | filter: { name: $select.search }' }
                   %div{ ng: { bind: { html: 'day.name' } } }
-
-      .col-sm-9
-        .panel
-          .panel-body
-            %h4 Smart Insights
-
-            %table.table{ style: 'white-space: nowrap' }
-              %thead
-                %tr
-                  %th
-                  %th.text-center Target Avg (days)
-                  %th.text-center Yellow
-                  %th.text-center Red
-              %tbody
-                %tr
-                  %td
-                    Deal Cycle Time
-                  %td
-                    .col-sm-8.col-sm-offset-2
-                      %input.form-control.text-center{ type: 'number', 'ng-model': 'company.avg_day', placeholder: 0, 'ng-change': 'updateCompany()' }
-                  %td.warning
-                    .col-sm-8.col-sm-offset-2
-                      %input.form-control.text-center{ type: 'number', 'ng-model': 'company.yellow_threshold', placeholder: 0, 'ng-change': 'updateCompany()' }
-                  %td.danger
-                    .col-sm-8.col-sm-offset-2
-                      %input.form-control.text-center{ type: 'number', 'ng-model': 'company.red_threshold', placeholder: 0, 'ng-change': 'updateCompany()' }
-                %tr{ 'ng-repeat': 'stage in stages | orderBy: "probability"' }
-                  %td
-                    {{ stage.name }} ({{ stage.probability }}%)
-                  %td
-                    .col-sm-8.col-sm-offset-2
-                      %input.form-control.text-center{ type: 'number', 'ng-model': 'stage.avg_day', placeholder: 0, 'ng-change': 'updateStage(stage)' }
-                  %td.warning
-                    .col-sm-8.col-sm-offset-2
-                      %input.form-control.text-center{ type: 'number', 'ng-model': 'stage.yellow_threshold', placeholder: 0, 'ng-change': 'updateStage(stage)' }
-                  %td.danger
-                    .col-sm-8.col-sm-offset-2
-                      %input.form-control.text-center{ type: 'number', 'ng-model': 'stage.red_threshold', placeholder: 0, 'ng-change': 'updateStage(stage)' }
-
 
