@@ -88,7 +88,6 @@ class Deal < ActiveRecord::Base
       start_date: self.start_date
     }
 
-
     if stage.red_threshold.present? or stage.yellow_threshold.present?
       if stage.red_threshold.present? and wday_in_stage >= stage.red_threshold
         weighted_pipeline[:wday_in_stage_color] = 'red'
@@ -315,11 +314,11 @@ class Deal < ActiveRecord::Base
   end
 
   def wday_in_stage
-    count_wday(stage_updated_at, Time.current)
+    count_wday(stage_updated_at, Time.current) || 0
   end
 
   def wday_since_opened
-    count_wday(created_at, Time.current)
+    count_wday(created_at, Time.current) || 0
   end
 
   def count_wday(date1, date2)
