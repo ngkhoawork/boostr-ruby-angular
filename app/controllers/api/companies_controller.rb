@@ -7,7 +7,7 @@ class Api::CompaniesController < ApplicationController
 
   def update
     if company.update_attributes(company_params)
-      render json: company.to_json
+      render json: company
     else
       render json: { errors: company.errors.messages }, status: :unprocessable_entity
     end
@@ -16,7 +16,7 @@ class Api::CompaniesController < ApplicationController
   protected
 
   def company_params
-    params.require(:company).permit(:snapshot_day)
+    params.require(:company).permit(:snapshot_day, :avg_day, :yellow_threshold, :red_threshold)
   end
 
   def company

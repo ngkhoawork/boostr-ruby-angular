@@ -1,0 +1,35 @@
+#smart_insights
+  .container
+    .row
+      .col-xs-12
+        %h3 Smart Insights
+
+        .panel
+          .panel-body
+            %table.table{ style: 'white-space: nowrap' }
+              %thead
+                %tr
+                  %th
+                  %th.text-center Yellow Threshold (Days)
+                  %th.text-center Red Threshold (Days)
+              %tbody
+                %tr
+                  %td
+                    Deal Cycle Time
+                  %td.warning
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'text', 'ng-model': 'company.yellow_threshold', placeholder: 0, 'ng-change': 'updateCompany()' }
+                  %td.danger
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'text', 'ng-model': 'company.red_threshold', placeholder: 0, 'ng-change': 'updateCompany()' }
+                %tr{ 'ng-repeat': 'stage in stages | orderBy: "probability"' }
+                  %td
+                    {{ stage.name }} ({{ stage.probability }}%)
+                  %td.warning
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'text', 'ng-model': 'stage.yellow_threshold', placeholder: 0, 'ng-change': 'updateStage(stage)' }
+                  %td.danger
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'text', 'ng-model': 'stage.red_threshold', placeholder: 0, 'ng-change': 'updateStage(stage)' }
+
+

@@ -34,6 +34,6 @@ class Api::StagesController < ApplicationController
   end
 
   def stage_params
-    params.require(:stage).permit(:name, :probability, :position, :open, :active)
+    params.require(:stage).permit(:name, :probability, :position, :open, :active, :avg_day, :yellow_threshold, :red_threshold)
   end
 end

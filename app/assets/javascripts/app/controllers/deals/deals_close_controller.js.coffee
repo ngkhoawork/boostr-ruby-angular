@@ -1,6 +1,6 @@
 @app.controller 'DealsCloseController',
-['$scope', '$rootScope', '$routeParams', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'currentDeal',
-($scope, $rootScope, $routeParams, $modalInstance, $q, $location, Deal, Client, Stage, Field, currentDeal) ->
+['$scope', '$rootScope', '$routeParams', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Field', 'currentDeal',
+($scope, $rootScope, $routeParams, $modalInstance, $q, $location, Deal, Client, Field, currentDeal) ->
 
   $scope.init = ->
     $scope.formType = "Closed Reason"

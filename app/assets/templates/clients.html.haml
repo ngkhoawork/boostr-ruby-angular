@@ -20,7 +20,7 @@
                 = inline_svg 'icons/add.svg'
                 New Client
 
-  .container{ ng: { hide: 'clients && clients.length > 0 ' } }
+  .container{ ng: { hide: 'query.length || (clients && clients.length > 0)' } }
     .row
       .col-xs-6.col-xs-offset-3
         .well.text-center
@@ -28,23 +28,22 @@
             There are no clients to display.
             %a{ href: '', ng: { click: 'showModal()' } }
               Add a client.
-  .container{ ng: { show: 'clients.length > 0' } }
+  .container{ ng: { show: 'query.length || clients.length > 0' } }
     .row
-      .col-xs-6
+      #client-list.col-xs-4
         .search
-      .col-xs-6
-
-    .row
-      #client-list.col-xs-5
-        .list-group.list-lg
-          %a.list-group-item.vertical-center{href: '', ng: { click: 'showClient(client)', repeat: 'client in clients | orderBy: "name"', class: '{ active: client.id == currentClient.id }' } }
-            .col-xs-8.col-xs-offset-4
-              .row
-                %h4
-                  {{ client.name }}
-              .row
-                {{ client.contacts_count }} people   {{ client.deals_count }}  deals
-      #client-detail.col-xs-7
+          %form
+            .input-group
+              .input-group-addon
+                %i.glyphicon.glyphicon-search
+              %input.form-control{ ng: { model: 'query', change: 'searchClients(query)' }, placeholder: "Search clients" }
+        .list-group.list-lg{ 'infinite-scroll': 'loadMoreClients()' }
+          %a.list-group-item.vertical-center{href: '', ng: { click: 'showClient(client)', repeat: 'client in clients', class: '{ active: client.id == currentClient.id }' } }
+            %h4
+              {{ client.name }}
+            .subtitle
+              {{ client.contacts_count }} people, {{ client.deals_count }} deals
+      #client-detail.col-xs-8{ ng: { show: 'currentClient' } }
         .tools.pull-right
           %a#delete-client{ href: '', ng: { click: 'delete()' } }
             = inline_svg 'icons/trash.svg'

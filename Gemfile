@@ -28,6 +28,7 @@ gem 'awesome_print'
 gem 'active_model_serializers', '= 0.8.3'
 gem 'dalli'
 gem 'rubyzip'
+gem "font-awesome-rails"
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -45,6 +46,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-ui-sortable'
   gem 'rails-assets-inflection'
   gem 'rails-assets-ngInflection'
+  gem 'rails-assets-ngInfiniteScroll'
 end
 
 group :test do

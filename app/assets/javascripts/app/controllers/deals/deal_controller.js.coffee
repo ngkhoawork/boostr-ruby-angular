@@ -47,7 +47,7 @@
       $scope.currentDeal = deal
 
   $scope.getStages = ->
-    Stage.all().then (stages) ->
+    Stage.query.$promise.then (stages) ->
       $scope.stages = stages
 
   $scope.toggleProductForm = ->
@@ -89,7 +89,7 @@
 
   $scope.updateDealStage = (currentDeal) ->
     if currentDeal != null
-      Stage.get(currentDeal.stage_id).then (stage) ->
+      Stage.get(currentDeal.stage_id).$promise.then (stage) ->
         if !stage.open
           $scope.showModal(currentDeal)
         else

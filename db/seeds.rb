@@ -291,6 +291,25 @@ closed_deal = company.deals.create!({
 
 closed_deal.add_product(products[1].id, 50000)
 
+deals = []
+stages.each do |stage|
+  8.times do |n|
+    deal = company.deals.create!({
+      advertiser: company_clients.sample,
+      agency: company_clients.sample,
+      start_date: Time.parse('2016-01-01'),
+      end_date: Time.parse('2016-03-31'),
+      name: "#{stage.name} Deal #{n}",
+      budget: [5000, 10000, 12500, 25000, 50000, 75000, 125000, 255000].sample,
+      stage: stage,
+      next_steps: ["Follow-up with Bob", "Waiting on approval from finance", "Book flight to Arizona"].sample,
+      created_by: company_user.id
+    })
+    deal.add_product(products.sample, [5000, 100000, 2500000].sample)
+    deals.push(deal)
+  end
+end
+
 prospecting_deal = company.deals.create!({
   advertiser: company_clients[2],
   agency: company_clients[1],

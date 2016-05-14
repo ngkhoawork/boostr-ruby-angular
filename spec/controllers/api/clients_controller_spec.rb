@@ -20,25 +20,32 @@ RSpec.describe Api::ClientsController, type: :controller do
     let(:another_user) { create :user, company: company, team: team }
     let!(:team_client) { create :client, company: company, created_by: another_user.id }
 
+    before do
+      30.times do
+        create :client, company: company, created_by: user.id
+      end
+    end
+
     it 'returns a list of clients in csv' do
       get :index, format: :csv
       expect(response).to be_success
       expect(response.body).to_not be_nil
     end
 
-    it 'returns a list of clients for the current_user' do
+    it 'returns a paginated list of clients for the current_user' do
       get :index, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(1)
-      expect(response_json[0]['id']).to eq(user_client.id)
+      expect(response_json.length).to eq(10)
+      expect(response.headers['X-Total-Count']).to eq("31")
     end
 
     it 'returns a list of the clients for the current_user team' do
       get :index, filter: 'team', format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(2)
+      expect(response_json.length).to eq(10)
+      expect(response.headers['X-Total-Count']).to eq("32")
     end
 
     it 'returns a list of clients for the current_user company if they are a leader' do
@@ -47,7 +54,8 @@ RSpec.describe Api::ClientsController, type: :controller do
       get :index, filter: 'company', format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(3)
+      expect(response_json.length).to eq(10)
+      expect(response.headers['X-Total-Count']).to eq("33")
     end
   end
 

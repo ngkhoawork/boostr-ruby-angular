@@ -1,6 +1,10 @@
 @service.service 'Client',
 ['$resource', '$rootScope', '$q',
 ($resource, $rootScope, $q) ->
+  allClients = []
+  currentClient = {}
+  @totalCount = 0
+  self = @
 
   transformRequest = (original, headers) ->
     send = {}
@@ -23,6 +27,12 @@
     angular.toJson(send)
 
   resource = $resource '/api/clients/:id', { id: '@id' },
+    query: {
+      isArray: true,
+      transformResponse: (data, headers) ->
+        self.totalCount = headers()['x-total-count']
+        angular.fromJson(data)
+    },
     save: {
       method: 'POST'
       url: '/api/clients'
@@ -33,9 +43,6 @@
       url: '/api/clients/:id'
       transformRequest: transformRequest
     }
-
-  allClients = []
-  currentClient = {}
 
   @all = (params) ->
     deferred = $q.defer()

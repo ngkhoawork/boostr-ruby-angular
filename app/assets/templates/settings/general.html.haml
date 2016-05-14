@@ -2,21 +2,19 @@
   .container
     .row
       .col-xs-12
-        %h3
-          General Settings
+        %h3 General Settings
 
     .row
-      .col-xs-6
-        %h4
-          Forecast - Week Over Week Snapshot
-          %br
-          %small
-            Set the day of the week to perform the snapshot:
-    .row
-      .col-xs-4
-        %label.control-label{ for: 'day' } Day of the week
-        %ui-select{ name: 'day', ng: { model: 'company.snapshot_day', disabled: true }, 'on-select': 'updateCompany({ snapshot_day: $item.id })' }
-          %ui-select-match{ placeholder: 'Day' }
-            {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'day.id as day in days | filter: { name: $select.search }' }
-            %div{ ng: { bind: { html: 'day.name' } } }
+      .col-sm-12
+        .panel
+          .panel-body
+            %h4 Forecast
+            %h5 Set the day of the week for the week over week snapshot to begin
+            .form-group
+              %label.control-label{ for: 'day' } Day of the week
+              %ui-select{ name: 'day', ng: { model: 'company.snapshot_day', disabled: true }, 'on-select': 'updateCompany()' }
+                %ui-select-match{ placeholder: 'Day' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'day.id as day in days | filter: { name: $select.search }' }
+                  %div{ ng: { bind: { html: 'day.name' } } }
+

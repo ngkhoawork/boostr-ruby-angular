@@ -15,6 +15,7 @@
   'ui.sortable'
   'ngInflection'
   'timepickerPop'
+  'infinite-scroll'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -55,6 +56,9 @@
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'
+    .when '/settings/smart_insights',
+      templateUrl: 'settings/smart_insights.html'
+      controller: 'SettingsSmartInsightsController'
     .when '/settings/users',
       templateUrl: 'settings/users.html'
       controller: 'SettingsUsersController'

@@ -1,26 +1,30 @@
 @app.controller "SettingsStagesNewController",
-['$scope', 'Stage', '$modalInstance'
-($scope, Stage, $modalInstance) ->
+['$scope', '$rootScope', 'Stage', '$modalInstance'
+($scope, $rootScope, Stage, $modalInstance) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
-  $scope.stage =
+  $scope.stage = new Stage(
     active: true
     open: true
+  )
 
   $scope.submitForm = (form) ->
     $scope.buttonDisabled = true
     form.submitted = true
 
     if form.$valid
-      Stage.create({ stage: $scope.stage }, (response) ->
-        angular.forEach response.data.errors, (errors, key) ->
-          form[key].$dirty = true
-          form[key].$setValidity('server', false)
-          $scope.buttonDisabled = false
-      ).then (stage) ->
-        $modalInstance.close()
+      $scope.stage.$save(
+        ->
+          $rootScope.$broadcast 'updated_stages'
+          $modalInstance.close()
+        (response) ->
+          angular.forEach response.data.errors, (errors, key) ->
+            form[key].$dirty = true
+            form[key].$setValidity('server', false)
+            $scope.buttonDisabled = false
+      )
 
   $scope.cancel = ->
-    $modalInstance.close()
+    $modalInstance.dismiss()
 ]

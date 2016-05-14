@@ -29,6 +29,7 @@
 //= require angular-ui-sortable
 //= require inflection
 //= require ngInflection
+//= require ngInfiniteScroll
 //= require_tree .
 //= require_tree ../templates
 

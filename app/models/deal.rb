@@ -75,17 +75,41 @@ class Deal < ActiveRecord::Base
   end
 
   def as_weighted_pipeline(start_date, end_date)
-    {
+    weighted_pipeline = {
       id: id,
       name: name,
       client_name: advertiser.name,
       probability: stage.probability,
+      stage_id: stage.id,
       budget: budget,
       in_period_amt: in_period_amt(start_date, end_date),
       wday_in_stage: wday_in_stage,
       wday_since_opened: wday_since_opened,
       start_date: self.start_date
     }
+
+
+    if stage.red_threshold.present? or stage.yellow_threshold.present?
+      if stage.red_threshold.present? and wday_in_stage >= stage.red_threshold
+        weighted_pipeline[:wday_in_stage_color] = 'red'
+      elsif stage.yellow_threshold.present? and wday_in_stage >= stage.yellow_threshold
+        weighted_pipeline[:wday_in_stage_color] = 'yellow'
+      else
+        weighted_pipeline[:wday_in_stage_color] = 'green'
+      end
+    end
+
+    if company.red_threshold.present? or company.yellow_threshold.present?
+      if company.red_threshold.present? and wday_since_opened >= company.red_threshold
+        weighted_pipeline[:wday_since_opened_color] = 'red'
+      elsif company.yellow_threshold.present? and wday_since_opened >= company.yellow_threshold
+        weighted_pipeline[:wday_since_opened_color] = 'yellow'
+      else
+        weighted_pipeline[:wday_since_opened_color] = 'green'
+      end
+    end
+
+    weighted_pipeline
   end
 
   def in_period_amt(start_date, end_date)
