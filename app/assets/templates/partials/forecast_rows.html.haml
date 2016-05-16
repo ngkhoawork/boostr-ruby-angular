@@ -130,7 +130,7 @@
               Split In-Period Amt
               %i{ ng: { class: "{ 'fa': sort.revenues.column == 'split_period_budget', 'fa-sort-asc': sort.revenues.column == 'split_period_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'split_period_budget' && sort.revenues.direction == 'desc' }" } }
       %tbody
-        %tr{ ng: { repeat: 'subrow in revenues"' } }
+        %tr{ ng: { repeat: 'subrow in revenues' } }
           %td.left {{ subrow.client_name }}
           %td.right {{ subrow.sum_budget | currency: '$': 0 }}
           %td.right {{ subrow.sum_period_budget | currency: '$': 0 }}
