@@ -1,6 +1,6 @@
 @app.controller "ClientMembersNewController",
-['$scope', '$modalInstance', 'ClientMember', 'Client', 'User', 'Field',
-($scope, $modalInstance, ClientMember, Client, User, Field) ->
+['$scope', '$rootScope', '$modalInstance', 'ClientMember', 'Client', 'User', 'Field',
+($scope, $rootScope, $modalInstance, ClientMember, Client, User, Field) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -16,6 +16,7 @@
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
     $scope.client_member.$save ->
+      $rootScope.$broadcast("new_client_member", { clientMember: $scope.client_member })
       $modalInstance.close()
 
   $scope.cancel = ->

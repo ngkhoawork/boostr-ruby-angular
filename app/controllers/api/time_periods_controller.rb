@@ -3,11 +3,15 @@ class Api::TimePeriodsController < ApplicationController
 
   def index
     now = current_user.company.time_periods.now.as_json
-    time_periods = current_user.company.time_periods.as_json.map do |time_period|
-      if time_period['id'] == now['id']
-        time_period['is_now'] = true
+    time_periods = current_user.company.time_periods.as_json
+
+    if now
+      time_periods = time_periods.map do |time_period|
+        if time_period['id'] == now['id']
+          time_period['is_now'] = true
+        end
+        time_period
       end
-      time_period
     end
     render json: time_periods
   end

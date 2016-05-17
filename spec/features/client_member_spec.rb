@@ -34,10 +34,10 @@ feature 'ClientMembers' do
 
       within '#teamsplits tbody' do
         expect(page).to have_css('tr', count: 2, visible: true)
-        expect(find('tr:first-child')).to have_text(other_user.first_name)
-        expect(find('tr:first-child')).to have_text(other_user.last_name)
-        expect(find('tr:first-child')).to have_text('26')
-        expect(find('tr:first-child')).to have_text('Owner')
+        expect(page).to have_text(other_user.first_name)
+        expect(page).to have_text(other_user.last_name)
+        expect(page).to have_text('26')
+        expect(page).to have_text('Owner')
       end
     end
   end
