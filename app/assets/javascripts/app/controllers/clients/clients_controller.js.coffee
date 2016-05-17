@@ -27,16 +27,26 @@
     $scope.showContactList = false
 
   $scope.getClientMembers = ->
-    ClientMember.all { client_id: $scope.currentClient.id }, (client_members) ->
-      $scope.client_members = client_members
-      _.each $scope.client_members, (client_member) ->
-        Field.defaults(client_member, 'Client').then (fields) ->
-          client_member.role = Field.field(client_member, 'Member Role')
+    ClientMember.query({ client_id: $scope.currentClient.id })
+      .$promise.then (client_members) ->
+        $scope.client_members = client_members
+        _.each $scope.client_members, (client_member) ->
+          Field.defaults(client_member, 'Client').then (fields) ->
+            client_member.role = Field.field(client_member, 'Member Role')
 
   $scope.getContacts = (client) ->
     unless client.contacts
       Contact.allForClient client.id, (contacts) ->
         client.contacts = contacts
+
+  $scope.removeClientMember = (clientMember) ->
+    clientMember.$delete(
+      null,
+      ->
+        $scope.client_members = $scope.client_members.filter (cm) ->
+          cm.id != undefined
+    )
+
 
   $scope.getClients = ->
     $scope.isLoading = true
@@ -156,8 +166,8 @@
     Contact.update(id: item.id, contact: item).then (contact) ->
       $scope.currentClient.contacts.push(contact)
 
-  $scope.updateClientMember = (data) ->
-    ClientMember.update(id: data.id, client_id: $scope.currentClient.id, client_member: data)
+  $scope.updateClientMember = (clientMember) ->
+    clientMember.$update()
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the client "' +  $scope.currentClient.name + '"?')
@@ -193,9 +203,6 @@
   $scope.$on 'updated_deals', ->
     $scope.getDeals($scope.currentClient)
     $scope.getClients()
-
-  $scope.$on 'updated_client_members', ->
-    $scope.getClientMembers()
 
   $scope.init()
 

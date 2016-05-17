@@ -5,7 +5,7 @@
   $scope.formType = "New"
   $scope.submitText = "Create"
 
-  $scope.client_member = { client_id: Client.get().id }
+  $scope.client_member = new ClientMember({ client_id: Client.get().id })
 
   User.all().then (users) ->
     $scope.users = users
@@ -15,9 +15,9 @@
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
-    ClientMember.create(client_id: $scope.client_member.client_id, client_member: $scope.client_member).then (client_member) ->
+    $scope.client_member.$save ->
       $modalInstance.close()
 
   $scope.cancel = ->
-    $modalInstance.close()
+    $modalInstance.dismiss()
 ]

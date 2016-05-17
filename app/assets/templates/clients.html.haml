@@ -123,6 +123,7 @@
                   %th.left Member
                   %th.right.share Share
                   %th.left.role Role
+                  %th
               %tbody
                 %tr{ ng: { repeat: 'client_member in client_members' } }
                   %td.left
@@ -133,8 +134,11 @@
                   %td.left
                     %span{ 'e-name': 'role', editable: { select: 'client_member.role.option_id' }, 'e-ng-options': 'option.id as option.name for option in client_member.role.options', onaftersave: 'updateClientMember(client_member)' }
                       {{ client_member.role.option.name }}
+                  %td.right
+                    %a.trash.remove-contact{ href: '', ng: { click: 'removeClientMember(client_member)' } }
+                      = inline_svg 'icons/trash.svg'
 
-        #people.section
+          #people.section
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
             %a.add-contact{ href: '', dropdown: { toggle: true }}
               = inline_svg 'icons/add.svg'
