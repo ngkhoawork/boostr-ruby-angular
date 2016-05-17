@@ -27,16 +27,28 @@
     $scope.showContactList = false
 
   $scope.getClientMembers = ->
-    ClientMember.all { client_id: $scope.currentClient.id }, (client_members) ->
-      $scope.client_members = client_members
-      _.each $scope.client_members, (client_member) ->
-        Field.defaults(client_member, 'Client').then (fields) ->
-          client_member.role = Field.field(client_member, 'Member Role')
+    ClientMember.query({ client_id: $scope.currentClient.id })
+      .$promise.then (client_members) ->
+        $scope.client_members = []
+        client_members.forEach (client_member, index) ->
+          Field.defaults(client_member, 'Client').then (fields) ->
+            client_member.role = Field.field(client_member, 'Member Role')
+            $scope.client_members.push(client_member)
+
 
   $scope.getContacts = (client) ->
     unless client.contacts
       Contact.allForClient client.id, (contacts) ->
         client.contacts = contacts
+
+  $scope.removeClientMember = (clientMember) ->
+    clientMember.$delete(
+      null,
+      ->
+        $scope.client_members = $scope.client_members.filter (cm) ->
+          cm.id != undefined
+    )
+
 
   $scope.getClients = ->
     $scope.isLoading = true
@@ -154,10 +166,14 @@
     $scope.showContactList = false
     item.client_id = $scope.currentClient.id
     Contact.update(id: item.id, contact: item).then (contact) ->
-      $scope.currentClient.contacts.push(contact)
+      $scope.currentClient.contacts.unshift(contact)
 
-  $scope.updateClientMember = (data) ->
-    ClientMember.update(id: data.id, client_id: $scope.currentClient.id, client_member: data)
+  $scope.updateClientMember = (clientMember) ->
+    clientMember.$update(
+      ->
+        Field.defaults(clientMember, 'Client').then (fields) ->
+          clientMember.role = Field.field(clientMember, 'Member Role')
+    )
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the client "' +  $scope.currentClient.name + '"?')
@@ -194,8 +210,10 @@
     $scope.getDeals($scope.currentClient)
     $scope.getClients()
 
-  $scope.$on 'updated_client_members', ->
-    $scope.getClientMembers()
+  $scope.$on 'new_client_member', (_event, args) ->
+    Field.defaults(args.clientMember, 'Client').then (fields) ->
+      args.clientMember.role = Field.field(args.clientMember, 'Member Role')
+      $scope.client_members.push(args.clientMember)
 
   $scope.init()
 

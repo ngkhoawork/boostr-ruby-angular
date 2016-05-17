@@ -22,6 +22,11 @@ class Api::ClientMembersController < ApplicationController
     end
   end
 
+  def destroy
+    client_member.destroy
+    render json: true
+  end
+
   private
 
   def client_member_params
