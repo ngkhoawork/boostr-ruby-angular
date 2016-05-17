@@ -24,6 +24,12 @@
         %label.control-label{ for: 'email' } Email*
         %input#email.form-control{ name: 'email', placeholder: 'Email', ng: { model: 'contact.address.email' } }
       .form-group
+        %label.control-label{ for: 'mobile' } Mobile
+        %input.form-control{ name: 'mobile', placeholder: 'Mobile Number', ng: { model: 'contact.address.mobile' } }
+      .form-group
+        %label.control-label{ for: 'office' } Office
+        %input.form-control{ name: 'office', placeholder: 'Office Number', ng: { model: 'contact.address.phone' } }
+      .form-group
         %label.control-label{ for: 'position' } Position
         %input.form-control{ name: 'position', placeholder: 'Position', ng: { model: 'contact.position' } }
       .form-group
@@ -44,12 +50,6 @@
           .col-xs-3
             %label.control-label{ for: 'zip' } Zip
             %input.form-control{ name: 'zip', placeholder: 'Zip', ng: { model: 'contact.address.zip' }  }
-      .form-group
-        %label.control-label{ for: 'office' } Office
-        %input.form-control{ name: 'office', placeholder: 'Office Number', ng: { model: 'contact.address.phone' } }
-      .form-group
-        %label.control-label{ for: 'mobile' } Mobile
-        %input.form-control{ name: 'mobile', placeholder: 'Mobile Number', ng: { model: 'contact.address.mobile' } }
 
     .modal-footer
       %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
