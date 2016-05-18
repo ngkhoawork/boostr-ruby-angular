@@ -216,16 +216,6 @@
 
   thead {
     background-color: $white;
-    color: $brand-primary;
-
-    th {
-      padding-top: 31px;
-      font-family: $table-headings-font-family;
-      font-size: 13px;
-      white-space: nowrap;
-      vertical-align: middle;
-      border: none !important;
-    }
 
     tr {
       max-height: 43px !important;
@@ -233,13 +223,14 @@
       border-bottom: 1px solid $light-grayish-blue-2;
 
       th {
+        border: none !important;
+        color: $brand-primary !important;
+        font-family: $table-headings-font-family;
+        font-size: 13px;
+        padding-top: 31px;
         text-transform: capitalize;
-
-        &:first-child {
-          font-family: $table-headings-font-family;
-          padding-left: 30px;
-          color: $text-color;
-        }
+        vertical-align: middle;
+        white-space: nowrap;
       }
     }
   }
