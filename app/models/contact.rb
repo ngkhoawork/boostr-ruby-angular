@@ -11,6 +11,8 @@ class Contact < ActiveRecord::Base
   accepts_nested_attributes_for :address
 
   validates :name, presence: true
+  validates :client, presence: true
+  validate :email_is_present?
 
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
 
@@ -90,5 +92,13 @@ class Contact < ActiveRecord::Base
       end
     end
     errors
+  end
+
+  private
+
+  def email_is_present?
+    unless address and address.email
+      errors.add(:email, "can't be blank")
+    end
   end
 end

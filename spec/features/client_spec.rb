@@ -7,7 +7,7 @@ feature 'Clients' do
   describe 'showing client details' do
     let!(:client) { create :client, company: company, created_by: user.id }
     let!(:agency) { create :client, company: company, created_by: user.id }
-    let!(:contacts) { create_list :contact, 2, client: client, company: company }
+    let!(:contacts) { create_list :contact, 2, client: client, company: company, address_attributes: attributes_for(:address) }
     let!(:deal) { create_list :deal, 2, company: company, advertiser: client }
     let!(:agency_deal) { create :deal, company: company, agency: agency }
 
@@ -187,6 +187,7 @@ feature 'Clients' do
 
       within '#contact_modal' do
         fill_in 'name', with: 'Bobby'
+        fill_in 'email', with: 'bobby123@boostrcrm.com'
         fill_in 'position', with: 'CEO'
         fill_in 'street1', with: '123 Any Street'
         fill_in 'city', with: 'Boise'
