@@ -11,7 +11,7 @@
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
       $scope.deal = deal
-    $q.all({ clients: Client.all({ filter: 'all', per: 50 }), stages: Stage.query().$promise }).then (data) ->
+    $q.all({ clients: Client.all({ filter: 'all', per: 500 }), stages: Stage.query().$promise }).then (data) ->
       $scope.clients = data.clients
       #TODO this should go somewhere else...possibly the service
       _.each $scope.clients, (client) ->
@@ -30,7 +30,7 @@
     $scope.deal.agency_id = model
 
   $scope.loadClients = (query) ->
-    Client.all({ filter: 'all', name: query, per: 50 }).then (clients) ->
+    Client.all({ filter: 'all', name: query, per: 500 }).then (clients) ->
       $scope.advertisers = []
       $scope.agencies = []
       _.each clients, (client) ->
