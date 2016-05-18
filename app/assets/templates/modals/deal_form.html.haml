@@ -29,10 +29,10 @@
           .col-xs-6
             %label.control-label{ for: 'advertiser' } Advertiser*
             .input-group
-              %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, required: true } }
+              %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', required: true }, 'on-select': "advertiserSelected($model)" }
                 %ui-select-match{ placeholder: 'Advertiser' }
                   {{ $select.selected.name }}
-                %ui-select-choices{ repeat: 'advertiser.id as advertiser in clients | filter: { name: $select.search, client_type: { option: { name: "Advertiser" } } }' }
+                %ui-select-choices{ repeat: 'advertiser.id as advertiser in advertisers', refresh: 'loadClients($select.search)' }
                   %div{ ng: { bind: { html: 'advertiser.name' } } }
               .input-group-addon.create-new-modal-icon
                 %a{ ng: { click: 'createNewClientModal("Advertiser", "advertiser_id")' } }
@@ -40,10 +40,10 @@
           .col-xs-6
             %label.control-label{ for: 'agency' } Agency
             .input-group
-              %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true } }
+              %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true }, 'on-select': 'agencySelected($model)' }
                 %ui-select-match{ placeholder: 'Agency' }
                   {{ $select.selected.name }}
-                %ui-select-choices{ repeat: 'agency.id as agency in clients | filter: { name: $select.search, client_type: { option: { name: "Agency" } } }' }
+                %ui-select-choices{ repeat: 'agency.id as agency in agencies', refresh: 'loadClients($select.search)' }
                   %div{ ng: { bind: { html: 'agency.name' } } }
               .input-group-addon.create-new-modal-icon
                 %a{ ng: { click: 'createNewClientModal("Agency", "agency_id")' } }
