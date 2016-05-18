@@ -188,6 +188,7 @@ feature 'Clients' do
       within '#contact_modal' do
         fill_in 'name', with: 'Bobby'
         fill_in 'position', with: 'CEO'
+        find('.add-address-btn').trigger('click')
         fill_in 'street1', with: '123 Any Street'
         fill_in 'city', with: 'Boise'
         ui_select('state', 'Idaho')

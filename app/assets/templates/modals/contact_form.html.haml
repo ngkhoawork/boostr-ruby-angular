@@ -36,7 +36,7 @@
         %label.control-label{ for: 'position' } Position
         %input.form-control{ name: 'position', placeholder: 'Position', ng: { model: 'contact.position' } }
       .form-group.text-center
-        %a.btn.btn-default{ 'ng-click': 'showAddressFields = 1', 'ng-hide': 'showAddressFields' }
+        %a.btn.btn-default.add-address-btn{ 'ng-click': 'showAddressFields = 1', 'ng-hide': 'showAddressFields' }
           %i.fa.fa-plus-circle
           Add Address
       %div{ 'ng-show': 'showAddressFields || contact.address.street1 || contact.address.city || contact.address.state || contact.address.zip' }
