@@ -34,6 +34,7 @@
       transformRequest: transformRequest
     }
 
+  # @TODO: Replace all of this with just returning resource
   allContacts = []
   currentContact = undefined
 
@@ -54,19 +55,30 @@
 
   @create = (params) ->
     deferred = $q.defer()
-    resource.save params, (contact) ->
-      allContacts.push(contact)
-      deferred.resolve(contact)
+    resource.save(
+      params,
+      (contact) ->
+        allContacts.push(contact)
+        deferred.resolve(contact)
+      (resp) ->
+        deferred.reject(resp)
+    )
+
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
-    resource.update params, (contact) ->
-      _.each allContacts, (existingContact, i) ->
-        if(existingContact.id == contact.id)
-          allContacts[i] = contact
-      $rootScope.$broadcast 'updated_contacts'
-      deferred.resolve(contact)
+    resource.update(
+      params
+      (contact) ->
+        _.each allContacts, (existingContact, i) ->
+          if(existingContact.id == contact.id)
+            allContacts[i] = contact
+        $rootScope.$broadcast 'updated_contacts'
+        deferred.resolve(contact)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @delete = (deletedContact, callback) ->
