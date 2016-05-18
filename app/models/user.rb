@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
   has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
   has_many :quotas, -> (user) { where(company_id: user.company_id) }
   has_many :teams, -> (user) { where(company_id: user.company_id) }, foreign_key: :leader_id
+  has_many :team_members, -> (user) { where(company_id: user.company_id) }, through: :teams, source: :members
   has_many :snapshots, -> (user) { where(company_id: user.company_id) }
   has_many :activities
   has_many :reports
@@ -69,16 +70,31 @@ class User < ActiveRecord::Base
   def all_activities
     @all_activities = []
     @all_activities += activities
-    self.deals.each do |as|
+
+    if leader?
+      Deal.joins(:deal_members).includes(:activities).where(:deal_members => { :user_id => self.team_members }).each do |as|
+        as.activities.each do |a|
+          @all_activities += [a] if !@all_activities.include?(a)
+        end
+      end
+      Client.joins(:client_members).includes(:activities).where(:client_members => { :user_id => self.team_members }).each do |as|
+        as.activities.each do |a|
+          @all_activities += [a] if !@all_activities.include?(a)
+        end
+      end
+    end
+
+    self.deals.includes(:activities).each do |as|
       as.activities.each do |a|
         @all_activities += [a] if !@all_activities.include?(a)
       end
     end
-    self.clients.each do |as|
+    self.clients.includes(:activities).each do |as|
       as.activities.each do |a|
         @all_activities += [a] if !@all_activities.include?(a)
       end
     end
+
     return @all_activities
   end
 end
