@@ -5,17 +5,41 @@
   $scope.init = ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
+    $scope.advertisers = []
+    $scope.agencies = []
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
       $scope.deal = deal
-    $q.all({ clients: Client.all({ filter: 'all' }), stages: Stage.query().$promise }).then (data) ->
+    $q.all({ clients: Client.all({ filter: 'all', per: 50 }), stages: Stage.query().$promise }).then (data) ->
       $scope.clients = data.clients
       #TODO this should go somewhere else...possibly the service
       _.each $scope.clients, (client) ->
         Field.defaults(client, 'Client').then (fields) ->
           client.client_type = Field.field(client, 'Client Type')
+          if client.client_type.option.name == 'Advertiser'
+            $scope.advertisers.push(client)
+          if client.client_type.option.name == 'Agency'
+            $scope.agencies.push(client)
       $scope.stages = data.stages
+
+  $scope.advertiserSelected = (model) ->
+    $scope.deal.advertiser_id = model
+
+  $scope.agencySelected = (model) ->
+    $scope.deal.agency_id = model
+
+  $scope.loadClients = (query) ->
+    Client.all({ filter: 'all', name: query, per: 50 }).then (clients) ->
+      $scope.advertisers = []
+      $scope.agencies = []
+      _.each clients, (client) ->
+        Field.defaults(client, 'Client').then (fields) ->
+          client.client_type = Field.field(client, 'Client Type')
+          if client.client_type.option.name == 'Advertiser'
+            $scope.advertisers.push(client)
+          if client.client_type.option.name == 'Agency'
+            $scope.agencies.push(client)
 
   $scope.submitForm = () ->
     Deal.create(deal: $scope.deal).then (deal) ->
