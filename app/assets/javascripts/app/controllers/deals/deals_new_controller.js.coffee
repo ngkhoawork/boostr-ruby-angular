@@ -23,6 +23,12 @@
             $scope.agencies.push(client)
       $scope.stages = data.stages
 
+  $scope.advertiserSelected = (model) ->
+    $scope.deal.advertiser_id = model
+
+  $scope.agencySelected = (model) ->
+    $scope.deal.agency_id = model
+
   $scope.loadClients = (query) ->
     Client.all({ filter: 'all', name: query, per: 50 }).then (clients) ->
       $scope.advertisers = []
