@@ -8,6 +8,12 @@
         %strong
           {{ formType }} Person
     .modal-body
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          <strong style="text-transform: capitalize">{{field}}</strong>
+          {{error}}
+
       .form-group
         %label.control-label{ for: 'name' } Name*
         %input.form-control{ name: 'name', placeholder: 'Name', ng: { model: 'contact.name' } }
