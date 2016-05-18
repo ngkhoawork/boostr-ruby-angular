@@ -5,7 +5,7 @@
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.contact = contact || {}
-  Client.all({filter: 'all'}).then (clients) ->
+  Client.all({filter: 'all', per: 500}).then (clients) ->
     $scope.clients = clients
 
   $scope.submitForm = () ->
