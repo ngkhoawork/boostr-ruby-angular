@@ -20,14 +20,14 @@
       .form-group
         .row
           .col-xs-12
-            %label.control-label{ for: 'client' } Client
+            %label.control-label{ for: 'client' } Client*
             %ui-select{ name: 'client', ng: { model: 'contact.client_id', disabled: true } }
               %ui-select-match{ placeholder: 'Select A Client' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'client.id as client in clients | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'client.name' } } }
       .form-group
-        %label.control-label{ for: 'email' } Email
+        %label.control-label{ for: 'email' } Email*
         %input#email.form-control{ name: 'email', placeholder: 'Email', ng: { model: 'contact.address.email' } }
       .row
         .col-sm-6

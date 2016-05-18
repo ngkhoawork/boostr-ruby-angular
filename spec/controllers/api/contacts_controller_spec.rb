@@ -6,7 +6,7 @@ RSpec.describe Api::ContactsController, type: :controller do
   let(:user) { create :user, company: company }
   let(:client) { create :client, company: company }
   let(:address_params) { attributes_for :address }
-  let(:contact_params) { attributes_for(:contact, address_attributes: address_params) }
+  let(:contact_params) { attributes_for(:contact, client_id: client.id, address_attributes: address_params) }
 
   before do
     sign_in user
