@@ -23,33 +23,41 @@
       .form-group
         %label.control-label{ for: 'email' } Email*
         %input#email.form-control{ name: 'email', placeholder: 'Email', ng: { model: 'contact.address.email' } }
-      .form-group
-        %label.control-label{ for: 'mobile' } Mobile
-        %input.form-control{ name: 'mobile', placeholder: 'Mobile Number', ng: { model: 'contact.address.mobile' } }
-      .form-group
-        %label.control-label{ for: 'office' } Office
-        %input.form-control{ name: 'office', placeholder: 'Office Number', ng: { model: 'contact.address.phone' } }
+      .row
+        .col-sm-6
+          .form-group{ style: 'margin-right: 0' }
+            %label.control-label{ for: 'mobile' } Mobile
+            %input.form-control{ name: 'mobile', placeholder: 'Mobile Number', ng: { model: 'contact.address.mobile' } }
+        .col-sm-6
+          .form-group{ style: 'margin-left: 0' }
+            %label.control-label{ for: 'office' } Office
+            %input.form-control{ name: 'office', placeholder: 'Office Number', ng: { model: 'contact.address.phone' } }
       .form-group
         %label.control-label{ for: 'position' } Position
         %input.form-control{ name: 'position', placeholder: 'Position', ng: { model: 'contact.position' } }
-      .form-group
-        %label.control-label{ for: 'street1' } Address
-        %input.form-control{ name: 'street1', placeholder: 'Address', ng: { model: 'contact.address.street1' } }
-      .form-group
-        .row
-          .col-xs-5
-            %label.control-label{ for: 'city' } City
-            %input.form-control{ name: 'city', placeholder: 'City', ng: { model: 'contact.address.city' }  }
-          .col-xs-4.fat
-            %label.control-label{ for: 'state' } State
-            %ui-select.bo-state-select{ name: 'state', ng: { model: 'contact.address.state', disabled: true } }
-              %ui-select-match{ placeholder: 'State' }
-                {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
-                %div{ ng: { bind: { html: 'state.name' } } }
-          .col-xs-3
-            %label.control-label{ for: 'zip' } Zip
-            %input.form-control{ name: 'zip', placeholder: 'Zip', ng: { model: 'contact.address.zip' }  }
+      .form-group.text-center
+        %a.btn.btn-default{ 'ng-click': 'showAddressFields = 1', 'ng-hide': 'showAddressFields' }
+          %i.fa.fa-plus-circle
+          Add Address
+      %div{ 'ng-show': 'showAddressFields || contact.address.street1 || contact.address.city || contact.address.state || contact.address.zip' }
+        .form-group
+          %label.control-label{ for: 'street1' } Address
+          %input.form-control{ name: 'street1', placeholder: 'Address', ng: { model: 'contact.address.street1' } }
+        .form-group
+          .row
+            .col-xs-5
+              %label.control-label{ for: 'city' } City
+              %input.form-control{ name: 'city', placeholder: 'City', ng: { model: 'contact.address.city' }  }
+            .col-xs-4.fat
+              %label.control-label{ for: 'state' } State
+              %ui-select.bo-state-select{ name: 'state', ng: { model: 'contact.address.state', disabled: true } }
+                %ui-select-match{ placeholder: 'State' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
+                  %div{ ng: { bind: { html: 'state.name' } } }
+            .col-xs-3
+              %label.control-label{ for: 'zip' } Zip
+              %input.form-control{ name: 'zip', placeholder: 'Zip', ng: { model: 'contact.address.zip' }  }
 
     .modal-footer
       %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
