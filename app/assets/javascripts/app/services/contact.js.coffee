@@ -1,6 +1,9 @@
 @service.service 'Contact',
 ['$resource', '$rootScope', '$q',
 ($resource, $rootScope, $q) ->
+  currentContact = {}
+  @totalCount = 0
+  self = @
 
   transformRequest = (original, headers) ->
     send = {}
@@ -23,6 +26,12 @@
     angular.toJson(send)
 
   resource = $resource '/api/contacts/:id', { id: '@id' },
+    query: {
+      isArray: true,
+      transformResponse: (data, headers) ->
+        self.totalCount = headers()['x-total-count']
+        angular.fromJson(data)
+    },
     save: {
       method: 'POST'
       url: '/api/contacts'
@@ -46,6 +55,7 @@
   @all1 = (params) ->
     deferred = $q.defer()
     resource.query params, (contacts) =>
+      allContacts = contacts
       deferred.resolve(contacts)
     deferred.promise
 
@@ -95,5 +105,6 @@
     currentContact = _.find allContacts, (contact) ->
       return parseInt(contact_id) == contact.id
     $rootScope.$broadcast 'updated_current_contact'
+
   return
 ]
