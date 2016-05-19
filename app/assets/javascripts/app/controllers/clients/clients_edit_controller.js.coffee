@@ -16,11 +16,16 @@
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
-    Client.update(id: $scope.client.id, client: $scope.client).then (client) ->
-      $modalInstance.close()
+    Client.update(id: $scope.client.id, client: $scope.client).then(
+      (client) ->
+        $modalInstance.close()
+      (resp) ->
+        $scope.errors = resp.data.errors
+        $scope.buttonDisabled = false
+    )
 
   $scope.cancel = ->
-    $modalInstance.close()
+    $modalInstance.dismiss()
 
   $scope.init()
 ]

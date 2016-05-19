@@ -4,15 +4,17 @@
 
   transformRequest = (original, headers) ->
     send = {}
-    address_attributes =
-      street1: original.contact.address.street1
-      street2: original.contact.address.street2
-      city: original.contact.address.city
-      state: original.contact.address.state
-      zip: original.contact.address.zip
-      phone: original.contact.address.phone
-      mobile: original.contact.address.mobile
-      email: original.contact.address.email
+    address_attributes = {}
+    if original.contact.address
+      address_attributes =
+        street1: original.contact.address.street1
+        street2: original.contact.address.street2
+        city: original.contact.address.city
+        state: original.contact.address.state
+        zip: original.contact.address.zip
+        phone: original.contact.address.phone
+        mobile: original.contact.address.mobile
+        email: original.contact.address.email
     send.contact =
       name: original.contact.name
       position: original.contact.position
@@ -32,6 +34,7 @@
       transformRequest: transformRequest
     }
 
+  # @TODO: Replace all of this with just returning resource
   allContacts = []
   currentContact = undefined
 
@@ -52,19 +55,30 @@
 
   @create = (params) ->
     deferred = $q.defer()
-    resource.save params, (contact) ->
-      allContacts.push(contact)
-      deferred.resolve(contact)
+    resource.save(
+      params,
+      (contact) ->
+        allContacts.push(contact)
+        deferred.resolve(contact)
+      (resp) ->
+        deferred.reject(resp)
+    )
+
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
-    resource.update params, (contact) ->
-      _.each allContacts, (existingContact, i) ->
-        if(existingContact.id == contact.id)
-          allContacts[i] = contact
-      $rootScope.$broadcast 'updated_contacts'
-      deferred.resolve(contact)
+    resource.update(
+      params
+      (contact) ->
+        _.each allContacts, (existingContact, i) ->
+          if(existingContact.id == contact.id)
+            allContacts[i] = contact
+        $rootScope.$broadcast 'updated_contacts'
+        deferred.resolve(contact)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @delete = (deletedContact, callback) ->

@@ -13,6 +13,9 @@ class Api::ClientsController < ApplicationController
         end
 
         limit = 10
+        if params[:per].present?
+          limit = params[:per].to_i
+        end
         offset = 0
         if params[:page].present?
           offset = (params[:page].to_i - 1) * limit

@@ -70,7 +70,13 @@
         $scope.currentTimePeriod = _.find $scope.timePeriods, (timePeriod) ->
           "#{timePeriod.id}" == $routeParams.time_period_id
       else
-        $scope.currentTimePeriod = timePeriods[0]
+        timePeriods.some (timePeriod) ->
+          if timePeriod.is_now
+            $scope.currentTimePeriod = timePeriod
+            return true
+          return false
+        if not $scope.currentTimePeriod
+          $scope.currentTimePeriod = timePeriods[0]
 
       if $routeParams.team_id
         Forecast.get({ id: $routeParams.team_id, time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->

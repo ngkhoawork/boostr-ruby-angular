@@ -6,7 +6,6 @@ class TimePeriod < ActiveRecord::Base
   has_many :snapshots
 
   validates :name, :start_date, :end_date, presence: true
-
   validate :unique_name
 
   after_create do

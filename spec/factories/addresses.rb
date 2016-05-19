@@ -7,5 +7,6 @@ FactoryGirl.define do
     zip { FFaker::AddressUS.zip_code }
     phone { FFaker::PhoneNumber.phone_number }
     mobile { FFaker::PhoneNumber.phone_number }
+    email { FFaker::Internet.email }
   end
 end

@@ -29,7 +29,7 @@
       _.each deals, (object) ->
         object.currentLimit = $scope.moreSize
         $scope.activity_objects = $scope.activity_objects.concat object
-    Client.all({activity: true}).then (clients) ->
+    Client.all({activity: true, per: 500}).then (clients) ->
       _.each clients, (object) ->
         object.currentLimit = $scope.moreSize
         $scope.activity_objects = $scope.activity_objects.concat object

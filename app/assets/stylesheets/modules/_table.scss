@@ -308,3 +308,13 @@
 .table th a {
   color: $white;
 }
+
+.trash {
+  visibility: hidden;
+}
+
+tr:hover {
+  .trash {
+    visibility: visible;
+  }
+}
