@@ -26,27 +26,34 @@
     $scope.activity_objects = {}
     Activity.all().then (activities) ->
       activities.forEach (activity) ->
-        objectId = false
+        objectIds = []
 
-        if activity.client
-          objectId = "c:" + activity.client.id
-          if not $scope.activity_objects.hasOwnProperty("c:" + activity.client.id)
-            $scope.activity_objects[objectId] = activity.client
-            $scope.activity_objects[objectId].activities = []
-            $scope.activity_objects[objectId].isClient = true
-        else if activity.deal
+        if activity.deal
           objectId = "d:" + activity.deal.id
-          if not $scope.activity_objects.hasOwnProperty("d:" + activity.deal.id)
+          if not $scope.activity_objects.hasOwnProperty(objectId)
             $scope.activity_objects[objectId] = activity.deal
             $scope.activity_objects[objectId].isDeal = true
             $scope.activity_objects[objectId].activities = []
-        else if activity.contact
+          objectIds.push(objectId)
+
+        if activity.client
+          objectId = "c:" + activity.client.id
+          if not $scope.activity_objects.hasOwnProperty(objectId)
+            $scope.activity_objects[objectId] = activity.client
+            $scope.activity_objects[objectId].activities = []
+            $scope.activity_objects[objectId].isClient = true
+          objectIds.push(objectId)
+
+        if activity.contact
           objectId = "p:" + activity.contact.id
-          if not $scope.activity_objects.hasOwnProperty("p:" + activity.contact.id)
+          if not $scope.activity_objects.hasOwnProperty(objectId)
             $scope.activity_objects[objectId] = activity.contact
             $scope.activity_objects[objectId].isContact = true
             $scope.activity_objects[objectId].activities = []
-        $scope.activity_objects[objectId].activities.push(activity)
+          objectIds.push(objectId)
+
+        objectIds.forEach (objectId) ->
+          $scope.activity_objects[objectId].activities.push(activity)
 
 
   $scope.chartOptions = {
