@@ -20,7 +20,7 @@ describe "ContactsNewController", ->
         address: {}
       }
 
-      @httpBackend.expectGET('/api/clients?filter=all').respond([])
+      @httpBackend.expectGET('/api/clients?filter=all&per=500').respond([])
       @httpBackend.expectPOST('/api/contacts').respond({ name: 'John Doe'})
       expect(@scope.submitForm()).toBeTruthy()
       @httpBackend.flush()
