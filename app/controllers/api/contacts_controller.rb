@@ -70,7 +70,7 @@ class Api::ContactsController < ApplicationController
   def suggest_contacts
     return @search_contacts if defined?(@search_contacts)
 
-    @search_contacts = current_user.company.contacts.where('name ilike ?', "%#{params[:name]}%").limit(10)
+    @search_contacts = current_user.company.contacts.joins("LEFT JOIN clients ON clients.id = contacts.client_id").where('contacts.name ilike ? OR clients.name ilike ?', "%#{params[:name]}%", "%#{params[:name]}%").limit(10)
   end
 
   def activity_contacts
