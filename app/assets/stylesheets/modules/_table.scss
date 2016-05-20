@@ -3,6 +3,112 @@
   overflow-x: auto;
 }
 
+/**
+ * So a lot of this stuff is just totally chewed up and nasty. The 
+ * activity-table class is an attempt to get away from the complete mess of
+ * conflicting cascading craziness that happens further down in the file.
+ */
+.activity-table > thead > tr > th,
+.activity-table > thead > tr > td,
+.activity-table > tbody > tr > th,
+.activity-table > tbody > tr > td,
+.activity-table > tfoot > tr > th,
+.activity-table > tfoot > tr > td {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #ddd;
+}
+
+.activity-table {
+  background-color: $white;
+  margin-bottom: 0;
+  max-width: 100%;
+  width: 100%;
+
+  .left {
+    text-align: left;
+  }
+
+  .right {
+    text-align: right;
+  }
+
+  .s-img {
+    height: 30px;
+  }
+
+  blockquote {
+    background: $gray-ultralight;
+    font-size: 12px;
+    padding: 10px;
+    quotes: "\201C""\201D""\2018""\2019";
+
+    &:before {
+      color: #ccc;
+      content: open-quote;
+      font-size: 4em;
+      line-height: 0.1em;
+      margin-right: 0.25em;
+      vertical-align: -0.4em;
+    }
+
+    p { display: inline }
+  }
+
+  thead {
+    background-color: $white;
+    color: $gray-base;
+
+    tr {
+      border-bottom: 1px solid $very-light-gray;
+      height: 55px;
+      max-height: 55px;
+
+      th {
+        border: none;
+        color: #67747E;
+        font-family: $font-family-medium;
+        font-size: 12px;
+        text-align: center;
+        text-transform: capitalize;
+        vertical-align: middle;
+        white-space: nowrap;
+
+        a {
+          color: #67747E;
+        }
+      }
+    }
+  }
+
+  tbody {
+    background-color: $gray-light;
+
+    tr {
+      color: $gray-base;
+      font-family: $font-family-medium;
+      font-size: 13px;
+      max-height: 43px;
+      height: 43px;
+
+      td {
+        border: none;
+
+        a {
+          color: $dark-grayish-blue-3;
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * Everything below this line is DEPRECATED.
+ *
+ * HERE THERE BE DRAGONS!
+ */
 .table {
   margin-bottom: 0;
 
