@@ -1,39 +1,47 @@
-#activities-feed.table-wrapper
-  %table.table.table-striped.black-table
-    %thead
-      %tr
-        %th.left.pad4 {{ feedName }}
-    %tbody
-      %tr.feed-repeat{ ng: { repeat: "(key, object) in activity_objects | orderBy: '-activity_updated_at'"} }
-        %td
-          %table.table.table-striped.black-table
-            %thead
-              %tr{ ng: { click: 'object.show = !object.show' } }
-                %th.left.pad4
-                  .col-xs-11
-                    %a{ href: '', ng: { href: '/deals/{{object.id}}', if: 'object.isDeal' } }
-                      {{ object.name }}
-                    %a{ href: '', ng: { href: '/people/{{object.id}}', if: 'object.isContact' } }
-                      {{ object.name }}
-                    %a{ href: '', ng: { href: '/clients', if: 'object.isClient' } }
-                      {{ object.name }}
-                  .col-xs-1.text-right
-                    %a{ href: '' }
-                      %i.fa{ 'ng-class': '{ "fa-plus": !object.show, "fa-minus": object.show }' }
-            %tbody{ ng: { show: 'object.show' } }
-              %tr{ ng: { repeat: "activity in object.activities | orderBy: '-happened_at' | limitTo:object.currentLimit"} }
-                %td
-                  .col-xs-2.pad1
-                    .row.act
-                      {{ activity.happened_at | date: 'shortDate' }}
-                  .col-xs-1.pad2
+.activities-feed.panel
+  .panel-body
+    %h4 {{ feedName }}
+    .row.feed-repeat{ ng: { repeat: "(key, object) in activity_objects | orderBy: '-activity_updated_at'"} }
+      .col-xs-12
+        %table.activity-table
+          %thead
+            %tr{ ng: { click: 'object.show = !object.show' } }
+              %th.left
+                .col-xs-11
+                  .row{ 'ng-if': 'object.isDeal' }
+                    .col-xs-4
+                      %i.fa.fa-money
+                      %a{ href: '', ng: { href: '/deals/{{object.id}}' } }
+                        {{ object.name }}
+                    .col-xs-4.text-center {{ object.advertiser.name }}
+                    .col-xs-4.text-center {{ object.stage.name }}
+                  .row{ 'ng-if': 'object.isClient' }
+                    .col-xs-12
+                      %i.fa.fa-building
+                      %a{ href: '', ng: { href: '/clients' } }
+                        {{ object.name }}
+                  .row{ 'ng-if': 'object.isContact' }
+                    .col-xs-12
+                      %i.fa.fa-user
+                      %a{ href: '', ng: { href: '/people/{{object.id}}' } }
+                        {{ object.name }}
+                .col-xs-1.text-right
+                  %a{ href: '' }
+                    %i.fa{ 'ng-class': '{ "fa-plus": !object.show, "fa-minus": object.show }' }
+          %tbody{ ng: { show: 'object.show' } }
+            %tr{ ng: { repeat: "activity in object.activities | orderBy: '-happened_at' | limitTo:object.currentLimit"} }
+              %td
+                .row
+                  .col-xs-1{ style: 'line-height: 30px' }
+                    {{ activity.happened_at | date: 'shortDate' }}
+                  .col-xs-2.text-right
                     %img.s-img{:src => "{{ getType(activity.activity_type_name).icon }}"}/
-                  .col-xs-9.pad3
-                    .row.act
+                  .col-xs-8
+                    %div{ style: 'margin: 7px 0px;' }
                       %span
                         {{ activity.creator.first_name }} {{ activity.creator.last_name }} 
                       {{ getType(activity.activity_type_name).action }}
                       %span
                         {{ activity.contact.name }}
-                    .row
+                    %blockquote{ 'ng-if': 'activity.comment' }
                       {{ activity.comment }}
