@@ -44,14 +44,6 @@
             $scope.activity_objects[objectId].isClient = true
           objectIds.push(objectId)
 
-        if activity.contact
-          objectId = "p:" + activity.contact.id
-          if not $scope.activity_objects.hasOwnProperty(objectId)
-            $scope.activity_objects[objectId] = activity.contact
-            $scope.activity_objects[objectId].isContact = true
-            $scope.activity_objects[objectId].activities = []
-          objectIds.push(objectId)
-
         objectIds.forEach (objectId) ->
           $scope.activity_objects[objectId].activities.push(activity)
 
