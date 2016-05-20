@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160514000748) do
+ActiveRecord::Schema.define(version: 20160520004338) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -167,9 +167,10 @@ ActiveRecord::Schema.define(version: 20160514000748) do
     t.integer  "stage_updated_by"
     t.datetime "stage_updated_at"
     t.string   "operation"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
     t.integer  "active_wday"
+    t.integer  "previous_stage_id"
   end
 
   create_table "deals", force: :cascade do |t|
@@ -193,6 +194,7 @@ ActiveRecord::Schema.define(version: 20160514000748) do
     t.datetime "stage_updated_at"
     t.integer  "updated_by"
     t.datetime "activity_updated_at"
+    t.integer  "previous_stage_id"
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
