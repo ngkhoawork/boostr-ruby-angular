@@ -67,29 +67,43 @@ class User < ActiveRecord::Base
     return rs
   end
 
+  def team_descendents
+    self.class.team_descendents_for(self)
+  end
+
+  def self.team_descendents_for(instance)
+    where("users.id IN (#{team_descendents_sql(instance)})")
+  end
+
+  def self.team_descendents_sql(instance)
+    sql = <<-SQL
+      WITH RECURSIVE team_tree(id, path) AS (
+          SELECT id, ARRAY[id]
+          FROM users
+          WHERE id = #{instance.id}
+        UNION ALL
+          SELECT users.id, path || users.id
+          FROM team_tree
+          JOIN teams ON teams.leader_id = team_tree.id
+          JOIN users ON users.team_id = teams.id
+          WHERE NOT users.id = ANY(path)
+      )
+      SELECT id FROM team_tree ORDER BY path
+    SQL
+  end
+
   def all_activities
     @all_activities = []
     @all_activities += activities
 
-    if leader?
-      Deal.joins(:deal_members).includes(:activities).where(:deal_members => { :user_id => self.team_members }).each do |as|
-        as.activities.each do |a|
-          @all_activities += [a] if !@all_activities.include?(a)
-        end
-      end
-      Client.joins(:client_members).includes(:activities).where(:client_members => { :user_id => self.team_members }).each do |as|
-        as.activities.each do |a|
-          @all_activities += [a] if !@all_activities.include?(a)
-        end
-      end
-    end
+    members = team_descendents
 
-    self.deals.includes(:activities).each do |as|
+    Deal.joins(:deal_members).includes(:activities).where(:deal_members => { :user_id => members }).each do |as|
       as.activities.each do |a|
         @all_activities += [a] if !@all_activities.include?(a)
       end
     end
-    self.clients.includes(:activities).each do |as|
+    Client.joins(:client_members).includes(:activities).where(:client_members => { :user_id => members }).each do |as|
       as.activities.each do |a|
         @all_activities += [a] if !@all_activities.include?(a)
       end
