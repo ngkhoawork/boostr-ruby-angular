@@ -2,9 +2,11 @@
 ['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Contact', 'Activity',  'ActivityType',
 ($scope, $rootScope, $modal, $routeParams, $location, Contact, Activity, ActivityType) ->
 
-  $scope.showMeridian = true
-  $scope.feedName = 'Updates'
   $scope.contacts = []
+  $scope.feedName = 'Updates'
+  $scope.page = 1
+  $scope.query = ""
+  $scope.showMeridian = true
   $scope.types = []
 
   $scope.initActivity = (contact, activityTypes) ->
@@ -22,11 +24,48 @@
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
       $scope.types = activityTypes
-      Contact.all (contacts) ->
+      $scope.getContacts()
+
+
+  $scope.getContacts = ->
+    $scope.isLoading = true
+    params = {
+      page: $scope.page,
+      per: 10
+    }
+    if $scope.query.trim().length
+      params.name = $scope.query.trim()
+    Contact.all1(params).then (contacts) ->
+      if $scope.page > 1
+        $scope.contacts = $scope.contacts.concat(contacts)
+      else
         $scope.contacts = contacts
-        Contact.set($routeParams.id || contacts[0].id) if contacts.length > 0
-        _.each $scope.contacts, (contact) ->
-          $scope.initActivity(contact, activityTypes)
+        if contacts.length > 0
+          Contact.set($routeParams.id || contacts[0].id)
+        else
+          $scope.currentContact = null
+
+      _.each $scope.contacts, (contact) ->
+        $scope.initActivity(contact, $scope.types)
+      $scope.isLoading = false
+
+  # Prevent multiple extraneous calls to the server as user inputs search term
+  searchTimeout = null;
+  $scope.searchContacts = (query) ->
+    $scope.page = 1
+    if searchTimeout
+      clearTimeout(searchTimeout)
+      searchTimeout = null
+    searchTimeout = setTimeout(
+      -> $scope.getContacts()
+      250
+    )
+
+  $scope.isLoading = false
+  $scope.loadMoreContacts = ->
+    if !$scope.isLoading && $scope.contacts && $scope.contacts.length < Contact.totalCount
+      $scope.page = $scope.page + 1
+      $scope.getContacts()
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open

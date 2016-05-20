@@ -3,16 +3,28 @@ class Api::ContactsController < ApplicationController
 
   def index
     if params[:name].present?
-      render json: suggest_contacts
+      contacts = suggest_contacts
     elsif params[:activity].present?
-      render json: activity_contacts
+      contacts = activity_contacts
     else
       contacts = current_user.company.contacts
         .for_client(params[:client_id])
         .order(:name)
         .includes(:address)
-      render json: contacts
     end
+
+    limit = 500
+    if params[:per].present?
+      limit = params[:per].to_i
+    end
+    offset = 0
+    if params[:page].present?
+      offset = (params[:page].to_i - 1) * limit
+    end
+    response.headers['X-Total-Count'] = contacts.count.to_s
+    contacts = contacts.limit(limit).offset(offset)
+
+    render json: contacts
   end
 
   def create

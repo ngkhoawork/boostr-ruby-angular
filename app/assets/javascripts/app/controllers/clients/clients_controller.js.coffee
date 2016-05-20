@@ -85,7 +85,7 @@
     if searchTimeout
       clearTimeout(searchTimeout)
       searchTimeout = null
-    setTimeout(
+    searchTimeout = setTimeout(
       -> $scope.getClients()
       250
     )
