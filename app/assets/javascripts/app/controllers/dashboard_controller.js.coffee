@@ -3,7 +3,7 @@
 ($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity, ActivityType) ->
 
   $scope.showMeridian = true
-  $scope.feedName = 'Updates'
+  $scope.feedName = 'Activity Updates'
   $scope.moreSize = 10;
   $scope.types = []
 
@@ -109,7 +109,7 @@
       Deal.all({name: name}).then (deals) ->
         deals
     else
-      Client.all({name: name}).then (clients) ->
+      Client.query({name: name}).$promise.then (clients) ->
         clients
 
   $scope.searchContact = (name) ->

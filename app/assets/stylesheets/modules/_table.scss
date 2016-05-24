@@ -8,8 +8,6 @@
  * activity-table class is an attempt to get away from the complete mess of
  * conflicting cascading craziness that happens further down in the file.
  */
-.activity-table > thead > tr > th,
-.activity-table > thead > tr > td,
 .activity-table > tbody > tr > th,
 .activity-table > tbody > tr > td,
 .activity-table > tfoot > tr > th,
@@ -62,6 +60,7 @@
 
     tr {
       border-bottom: 1px solid $very-light-gray;
+      line-height: 55px;
       height: 55px;
       max-height: 55px;
 
@@ -77,6 +76,10 @@
 
         a {
           color: #67747E;
+        }
+
+        .fa {
+          font-size: 16px;
         }
       }
     }

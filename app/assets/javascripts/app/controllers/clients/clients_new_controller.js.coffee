@@ -4,7 +4,7 @@
 
   $scope.formType = "New"
   $scope.submitText = "Create"
-  $scope.client = client || {}
+  $scope.client = new Client(client || {})
   Field.defaults($scope.client, 'Client').then (fields) ->
     if ($scope.client.client_type)
       selectedOption = $scope.client.client_type.option || null
@@ -16,9 +16,8 @@
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
-    Client.create(client: $scope.client).then (client) ->
-      Client.set(client.id)
-      $rootScope.$broadcast 'newClient', client
+    $scope.client.$save ->
+      $rootScope.$broadcast 'newClient', $scope.client
       $modalInstance.close()
 
   $scope.cancel = ->

@@ -23,6 +23,7 @@
     $scope.clientFilter = $scope.clientFilters[0]
 
   $scope.init = ->
+    $scope.getClient($routeParams.id) if $routeParams.id
     $scope.getClients()
     $scope.showContactList = false
 
@@ -49,6 +50,9 @@
           cm.id != undefined
     )
 
+  $scope.getClient = (clientId) ->
+    Client.get({ id: clientId }).$promise.then (client) ->
+      $scope.currentClient = client
 
   $scope.getClients = ->
     $scope.isLoading = true
@@ -60,15 +64,15 @@
       }
       if $scope.query.trim().length
         params.name = $scope.query.trim()
-      Client.all(params).then (clients) ->
+      Client.query(params).$promise.then (clients) ->
         if $scope.page > 1
           $scope.clients = $scope.clients.concat(clients)
         else
           $scope.clients = clients
-          if clients.length > 0
-            Client.set($routeParams.id || clients[0].id)
+          if clients.length > 0 and !$routeParams.id
+            $scope.currentClient = clients[0]
           else
-            $scope.currentClient = null
+            # $scope.currentClient = null
 
         _.each $scope.clients, (client) ->
           $scope.initActivity(client, activityTypes)
@@ -97,7 +101,8 @@
       $scope.getClients()
 
   $scope.showClient = (client) ->
-    Client.set(client.id) if client
+    if client
+      $scope.currentClient = client
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -117,6 +122,9 @@
       controller: 'ClientsEditController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        client: ->
+          $scope.currentClient
 
   $scope.showNewPersonModal = ->
     $scope.modalInstance = $modal.open
@@ -155,6 +163,8 @@
       controller: 'ClientMembersNewController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        client: $scope.currentClient
 
   $scope.showLinkExistingPerson = ->
     $scope.showContactList = true
@@ -177,8 +187,8 @@
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the client "' +  $scope.currentClient.name + '"?')
-      Client.delete $scope.currentClient, ->
-        $location.path('/clients')
+      $scope.currentClient.$delete
+      $location.path('/clients')
 
   $scope.go = (path) ->
     $location.path(path)
@@ -192,7 +202,6 @@
     $scope.init()
 
   $scope.$on 'updated_current_client', ->
-    $scope.currentClient = Client.get()
     if $scope.currentClient
       Field.defaults($scope.currentClient, 'Client').then (fields) ->
         $scope.currentClient.client_type = Field.field($scope.currentClient, 'Client Type')
@@ -280,6 +289,9 @@
     if $scope.populateContact
       $scope.currentClient.selected[$scope.currentClient.activeType.name].contact = contact
       $scope.populateContact = false
+
+  $scope.$on 'newClient', (event, client) ->
+    $scope.currentClient = client
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)

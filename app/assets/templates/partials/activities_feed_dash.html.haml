@@ -18,7 +18,7 @@
                   .row{ 'ng-if': 'object.isClient' }
                     .col-xs-12
                       %i.fa.fa-building
-                      %a{ href: '', ng: { href: '/clients' } }
+                      %a{ href: '', ng: { href: '/clients/{{object.id}}' } }
                         {{ object.name }}
                   .row{ 'ng-if': 'object.isContact' }
                     .col-xs-12
@@ -36,7 +36,7 @@
                     {{ activity.happened_at | date: 'shortDate' }}
                   .col-xs-2.text-right
                     %img.s-img{:src => "{{ getType(activity.activity_type_name).icon }}"}/
-                  .col-xs-8
+                  .col-xs-9
                     %div{ style: 'margin: 7px 0px;' }
                       %span
                         {{ activity.creator.first_name }} {{ activity.creator.last_name }} 
