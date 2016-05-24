@@ -3,7 +3,7 @@
 ($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity, ActivityType) ->
 
   $scope.showMeridian = true
-  $scope.feedName = 'Updates'
+  $scope.feedName = 'Activity Updates'
   $scope.moreSize = 10;
   $scope.types = []
 
