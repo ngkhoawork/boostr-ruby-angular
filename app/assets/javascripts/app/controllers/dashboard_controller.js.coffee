@@ -109,7 +109,7 @@
       Deal.all({name: name}).then (deals) ->
         deals
     else
-      Client.all({name: name}).then (clients) ->
+      Client.query({name: name}).$promise.then (clients) ->
         clients
 
   $scope.searchContact = (name) ->
