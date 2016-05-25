@@ -31,7 +31,7 @@
 
   $scope.$on 'updated_teams', ->
     $scope.init()
-    User.all(true)
+    User.query().$promise
 
   $scope.go = (path) ->
     $location.path(path)

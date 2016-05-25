@@ -1,6 +1,6 @@
 @app.controller "UsersEditController",
-['$scope', '$modalInstance', '$filter', 'User', 'user',
-($scope, $modalInstance, $filter, User, user) ->
+['$scope', '$modalInstance', '$filter', 'user',
+($scope, $modalInstance, $filter, user) ->
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
@@ -9,9 +9,9 @@
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
-    User.update(id: $scope.user.id, user: $scope.user).then (user) ->
+    $scope.user.$update ->
       $modalInstance.close()
 
   $scope.cancel = ->
-    $modalInstance.close()
+    $modalInstance.dismiss()
 ]

@@ -7,7 +7,7 @@
 
   $scope.client_member = new ClientMember({ client_id: client.id })
 
-  User.all().then (users) ->
+  User.query().$promise.then (users) ->
     $scope.users = users
 
   Field.defaults($scope.client_member, 'Client').then (fields) ->

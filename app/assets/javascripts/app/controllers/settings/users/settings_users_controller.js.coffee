@@ -3,7 +3,7 @@
 ($scope, $modal, User) ->
 
   $scope.init = () ->
-    User.all().then (users) ->
+    User.query().$promise.then (users) ->
       $scope.users = users
 
   $scope.showModal = () ->

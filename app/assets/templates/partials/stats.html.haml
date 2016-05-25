@@ -27,3 +27,8 @@
               {{ forecast.gap_to_quota | currency: '$': 0 }}
             %h5
               Gap to Goal
+          %li.new-deals-needed
+            %h2
+              {{ forecast.new_deals_needed || 0 }}
+            %h5
+              New Deals Needed

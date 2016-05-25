@@ -106,4 +106,28 @@ class Team < ActiveRecord::Base
     end
     return neg_balance_lcnt
   end
+
+  def descendents
+    self.class.descendents_for(self)
+  end
+
+  def self.descendents_for(instance)
+    where("teams.id IN (#{descendents_sql(instance)})")
+  end
+
+  def self.descendents_sql(instance)
+    sql = <<-SQL
+      WITH RECURSIVE team_tree(id, path) AS (
+          SELECT teams.id, ARRAY[teams.id]
+          FROM teams
+          WHERE teams.id = #{instance.id}
+        UNION ALL
+          SELECT teams.id, path || teams.id
+          FROM team_tree
+          JOIN teams ON teams.parent_id = team_tree.id
+          WHERE NOT teams.id = ANY(path)
+      )
+      SELECT id FROM team_tree ORDER BY path
+    SQL
+  end
 end

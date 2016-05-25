@@ -7,7 +7,7 @@
     $scope.submitText = "Create"
     $scope.quota =
       time_period_id: timePeriod.id
-    $q.all({time_periods: TimePeriod.all(), users: User.all()}).then (results) ->
+    $q.all({time_periods: TimePeriod.all(), users: User.query().$promise}).then (results) ->
       $scope.time_periods = results.time_periods
       $scope.users = $filter('notIn')(results.users, quotas, 'user_id')
 

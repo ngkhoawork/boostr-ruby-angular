@@ -8,9 +8,9 @@
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
-    User.invite(user: $scope.user).then (user) ->
+    User.invite(user: $scope.user).$promise.then (user) ->
       $modalInstance.close()
 
   $scope.cancel = ->
-    $modalInstance.close()
+    $modalInstance.dismiss()
 ]

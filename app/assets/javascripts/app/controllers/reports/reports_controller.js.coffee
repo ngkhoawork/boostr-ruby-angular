@@ -22,7 +22,7 @@
             "#{timePeriod.id}" == $routeParams.time_period_id
         else
           $scope.currentTimePeriod = timePeriods[0]
-        User.all(true).then (users) ->
+        User.query().$promise.then (users) ->
           $scope.users = users
           Company.get().$promise.then (company) ->
             $scope.company = company

@@ -8,7 +8,7 @@
   $scope.team.members = []
 
   $scope.init = ->
-    $q.all({ teams: Team.all(), users: User.all()}).then (data) ->
+    $q.all({ teams: Team.all(), users: User.query().$promise}).then (data) ->
       $scope.teams = data.teams
       $scope.users = data.users
       $scope.availableUsers = []
@@ -29,7 +29,7 @@
       $modalInstance.close()
 
   $scope.$on 'updated_teams', ->
-    User.all(true).then (users) ->
+    User.query().$promise.then (users) ->
       $scope.users = users
 
   $scope.cancel = ->

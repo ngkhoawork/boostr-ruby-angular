@@ -5,6 +5,7 @@ class ForecastSerializer < ActiveModel::Serializer
 
   attributes(
     :teams,
+    :team_members,
     :stages,
     :weighted_pipeline,
     :revenue,
