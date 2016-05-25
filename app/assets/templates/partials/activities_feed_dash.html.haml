@@ -10,19 +10,21 @@
                 .col-xs-11
                   .row{ 'ng-if': 'object.isDeal' }
                     .col-xs-4
-                      %i.fa.fa-money
+                      %i.fa.fa-money.feed-icon
                       %a{ href: '', ng: { href: '/deals/{{object.id}}' } }
                         {{ object.name }}
-                    .col-xs-4.text-center {{ object.advertiser.name }}
+                    .col-xs-4.text-center
+                      %a{ href: '', ng: { href: '/clients/{{object.advertiser.id}}' } }
+                        {{ object.advertiser.name }}
                     .col-xs-4.text-center {{ object.stage.name }}
                   .row{ 'ng-if': 'object.isClient' }
                     .col-xs-12
-                      %i.fa.fa-building
+                      %i.fa.fa-building.feed-icon
                       %a{ href: '', ng: { href: '/clients/{{object.id}}' } }
                         {{ object.name }}
                   .row{ 'ng-if': 'object.isContact' }
                     .col-xs-12
-                      %i.fa.fa-user
+                      %i.fa.fa-user.feed-icon
                       %a{ href: '', ng: { href: '/people/{{object.id}}' } }
                         {{ object.name }}
                 .col-xs-1.text-right

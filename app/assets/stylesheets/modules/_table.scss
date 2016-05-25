@@ -78,8 +78,13 @@
           color: #67747E;
         }
 
-        .fa {
-          font-size: 16px;
+        .feed-icon {
+          font-size: 20px;
+          position: relative;
+          text-align: center;
+          top: -1px;
+          vertical-align: middle;
+          width: 32px;
         }
       }
     }
