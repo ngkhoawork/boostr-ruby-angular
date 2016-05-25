@@ -68,6 +68,56 @@ class Company < ActiveRecord::Base
     ))
   end
 
+  def teams_tree
+    self.class.teams_tree_for(self)
+  end
+
+  def self.teams_tree_for(instance)
+    Team.where("teams.id IN (#{teams_tree_sql(instance)})")
+  end
+
+  def self.teams_tree_sql(instance)
+    sql = <<-SQL
+      WITH RECURSIVE team_tree(id, path) AS (
+          SELECT teams.id, ARRAY[teams.id]
+          FROM companies
+          JOIN teams ON teams.company_id = companies.id
+          WHERE companies.id = #{instance.id}
+        UNION ALL
+          SELECT teams.id, path || teams.id
+          FROM team_tree
+          JOIN teams ON teams.parent_id = team_tree.id
+          WHERE NOT teams.id = ANY(path)
+      )
+      SELECT id FROM team_tree ORDER BY path
+    SQL
+  end
+
+  def teams_tree_members
+    self.class.teams_tree_members_for(self)
+  end
+
+  def self.teams_tree_members_for(instance)
+    User.where("users.id IN (#{teams_tree_members_sql(instance)})")
+  end
+
+  def self.teams_tree_members_sql(instance)
+    sql = <<-SQL
+      WITH RECURSIVE team_tree(id, path) AS (
+          SELECT users.id, ARRAY[users.id]
+          FROM users
+          WHERE users.company_id = #{instance.id}
+        UNION ALL
+          SELECT users.id, path || users.id
+          FROM team_tree
+          JOIN teams ON teams.leader_id = team_tree.id
+          JOIN users ON users.team_id = teams.id
+          WHERE NOT users.id = ANY(path)
+      )
+      SELECT id FROM team_tree ORDER BY path
+    SQL
+  end
+
   protected
 
   def setup_default_options(field, names)

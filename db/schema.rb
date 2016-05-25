@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160520004338) do
+ActiveRecord::Schema.define(version: 20160524182001) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -403,6 +403,8 @@ ActiveRecord::Schema.define(version: 20160520004338) do
     t.integer  "pos_balance_l"
     t.integer  "neg_balance_l_cnt"
     t.integer  "pos_balance_l_cnt"
+    t.decimal  "win_rate"
+    t.decimal  "average_deal_size"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
