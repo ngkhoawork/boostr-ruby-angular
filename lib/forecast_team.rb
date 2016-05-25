@@ -164,6 +164,50 @@ class ForecastTeam
     leader.try(:quota) || 0
   end
 
+  def win_rate
+    return 0 if members.size == 0
+    members.sum(&:win_rate) / members.size.to_f
+  end
+
+  def average_deal_size
+    return 0 if members.size == 0
+    members.sum(&:average_deal_size) / members.size.to_f
+  end
+
+  def new_deals_needed
+    members_gap_to_quota = 0
+    new_deals = 0
+
+    teams.each do |team|
+      num = team.new_deals_needed
+      members_gap_to_quota += team.gap_to_quota
+      if num != 'N/A'
+        new_deals += num
+      else
+        new_deals = 'N/A'
+        break
+      end
+    end
+    return 'N/A' if new_deals == 'N/A'
+
+    members.each do |member|
+      next if leader and member.member == leader.member
+      members_gap_to_quota += member.gap_to_quota
+      new_deals += member.new_deals_needed
+    end
+
+    leader_gap_to_quota = gap_to_quota - members_gap_to_quota
+
+    if leader_gap_to_quota > 0
+      if leader.win_rate > 0 and leader.average_deal_size > 0
+        new_deals += (leader_gap_to_quota / (leader.win_rate * leader.average_deal_size)).ceil
+      else
+        return 'N/A'
+      end
+    end
+    new_deals
+  end
+
   def all_teammembers
     (team.all_members.nil? ? []:team.all_members) + (team.all_leaders.nil? ? []:team.all_leaders)
   end

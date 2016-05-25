@@ -1,13 +1,11 @@
 @app.controller "ClientMembersNewController",
 ['$scope', '$rootScope', '$modalInstance', 'ClientMember', 'User', 'Field', 'client',
 ($scope, $rootScope, $modalInstance, ClientMember, User, Field, client) ->
-
   $scope.formType = "New"
   $scope.submitText = "Create"
-
   $scope.client_member = new ClientMember({ client_id: client.id })
 
-  User.all().then (users) ->
+  User.query().$promise.then (users) ->
     $scope.users = users
 
   Field.defaults($scope.client_member, 'Client').then (fields) ->

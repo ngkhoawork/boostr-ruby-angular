@@ -138,6 +138,21 @@ class ForecastMember
     @quota ||= member.quotas.for_time_period(start_date, end_date).sum(:value)
   end
 
+  def win_rate
+    member.win_rate || 0
+  end
+
+  def average_deal_size
+    member.average_deal_size || 0
+  end
+
+  def new_deals_needed
+    goal = gap_to_quota
+    return 0 if goal <= 0
+    return 'N/A' if average_deal_size <= 0 or win_rate <= 0
+    (gap_to_quota / (member.win_rate * member.average_deal_size)).ceil
+  end
+
   private
 
   def client_ids

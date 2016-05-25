@@ -67,15 +67,40 @@ class User < ActiveRecord::Base
     return rs
   end
 
-  def team_descendents
-    self.class.team_descendents_for(self)
+  def teams_tree
+    self.class.teams_tree_for(self)
   end
 
-  def self.team_descendents_for(instance)
-    where("users.id IN (#{team_descendents_sql(instance)})")
+  def self.teams_tree_for(instance)
+    Team.where("teams.id IN (#{teams_tree_sql(instance)})")
   end
 
-  def self.team_descendents_sql(instance)
+  def self.teams_tree_sql(instance)
+    sql = <<-SQL
+      WITH RECURSIVE team_tree(id, path) AS (
+          SELECT teams.id, ARRAY[teams.id]
+          FROM users
+          JOIN teams ON teams.leader_id = users.id
+          WHERE users.id = #{instance.id}
+        UNION ALL
+          SELECT teams.id, path || teams.id
+          FROM team_tree
+          JOIN teams ON teams.parent_id = team_tree.id
+          WHERE NOT teams.id = ANY(path)
+      )
+      SELECT id FROM team_tree ORDER BY path
+    SQL
+  end
+
+  def teams_tree_members
+    self.class.teams_tree_members_for(self)
+  end
+
+  def self.teams_tree_members_for(instance)
+    where("users.id IN (#{teams_tree_members_sql(instance)})")
+  end
+
+  def self.teams_tree_members_sql(instance)
     sql = <<-SQL
       WITH RECURSIVE team_tree(id, path) AS (
           SELECT id, ARRAY[id]
@@ -96,7 +121,7 @@ class User < ActiveRecord::Base
     @all_activities = []
     @all_activities += activities
 
-    members = team_descendents
+    members = teams_tree_members
 
     Deal.joins(:deal_members).includes(:activities).where(:deal_members => { :user_id => members }).each do |as|
       as.activities.each do |a|

@@ -30,13 +30,11 @@
         angular.fromJson(data)
     },
     save: {
-      method: 'POST'
-      url: '/api/clients'
+      method: "POST"
       transformRequest: transformRequest
     },
     update: {
-      method: 'PUT'
-      url: '/api/clients/:id'
+      method: "PUT"
       transformRequest: transformRequest
     }
 

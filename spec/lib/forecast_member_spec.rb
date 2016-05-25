@@ -5,10 +5,16 @@ RSpec.describe ForecastMember do
     let(:company) { create :company }
     let(:parent) { create :parent_team, company: company }
     let(:child) { create :child_team, company: company, parent: parent }
-    let(:user) { create :user, company: company, team: child }
+    let(:user) { create :user, company: company, team: child, win_rate: 0.5, average_deal_size: 300 }
     let(:time_period) { create :time_period, company: company, start_date: "2015-01-01", end_date: "2015-12-31" }
     let(:forecast) { ForecastMember.new(user, time_period.start_date, time_period.end_date) }
     let(:client) { create :client, company: company }
+
+    let!(:quotas) { create_list :quota, 5, user: user, value: 2500, time_period: time_period, company: company }
+    let(:stage) { create :stage, probability: 100, company: company }
+    let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-01-31"  }
+    let!(:deal_member) { create :deal_member, deal: deal, user: user, share: 100 }
+    let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
     it 'returns the revenue for a member that has no revenue' do
       expect(forecast.revenue).to eq(0)
@@ -50,11 +56,6 @@ RSpec.describe ForecastMember do
     end
 
     context 'weighted_pipeline' do
-      let(:stage) { create :stage, probability: 100 }
-      let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-1-31"  }
-      let!(:deal_member) { create :deal_member, deal: deal, user: user, share: 100 }
-      let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
-
       it 'sums the weighted_pipeline' do
         expect(forecast.weighted_pipeline).to eq(100)
       end
@@ -89,10 +90,6 @@ RSpec.describe ForecastMember do
     end
 
     context 'weighted_pipeline_by_stage' do
-      let(:stage) { create :stage, company: company, probability: 50 }
-      let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-1-31"  }
-      let!(:deal_member) { create :deal_member, deal: deal, user: user, share: 100 }
-      let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
       let(:another_stage) { create :stage, company: company, probability: 90 }
       let(:another_deal) { create :deal, company: company, stage: another_stage, start_date: "2015-01-01", end_date: "2015-1-31"  }
       let!(:another_deal_member) { create :deal_member, deal: another_deal, user: user, share: 100 }
@@ -100,7 +97,7 @@ RSpec.describe ForecastMember do
 
       it 'lists the weighted pipeline by stage' do
         stages = {}
-        stages[stage.id] = 50
+        stages[stage.id] = 100
         stages[another_stage.id] = 90
 
         expect(forecast.weighted_pipeline_by_stage).to eq(stages)
@@ -116,6 +113,38 @@ RSpec.describe ForecastMember do
 
       it 'returns the quota value' do
         expect(forecast.quota).to eq(10000)
+      end
+    end
+
+    context 'gap_to_quota' do
+      let!(:revenue) { create :revenue, company: company, client: client, user: user, budget: 500, start_date: '2015-01-01', end_date: '2015-01-10' }
+      let!(:client_member) { client.client_members.create(user: user, share: 100, values: [create_member_role(company)]) }
+
+      it 'returns the gap to quota value' do
+        expect(forecast.revenue).to eq(500)
+        expect(forecast.weighted_pipeline).to eq(100)
+        expect(forecast.gap_to_quota).to eq(11900)
+      end
+    end
+
+    context 'win_rate' do
+      it 'returns the user win_rate' do
+        expect(forecast.win_rate).to eq(user.win_rate)
+      end
+    end
+
+    context 'average_deal_size' do
+      it 'returns the user average_deal_size' do
+        expect(forecast.average_deal_size).to eq(user.average_deal_size)
+      end
+    end
+
+    context 'new_deals_needed' do
+      let!(:revenue) { create :revenue, company: company, client: client, user: user, budget: 500, start_date: '2015-01-01', end_date: '2015-01-10' }
+      let!(:client_member) { client.client_members.create(user: user, share: 100, values: [create_member_role(company)]) }
+
+      it 'returns the number of new deals needed to meet the quota' do
+        expect(forecast.new_deals_needed).to eq(80)
       end
     end
   end

@@ -3,7 +3,7 @@
 ($scope, $modal, User) ->
 
   $scope.init = () ->
-    User.all().then (users) ->
+    User.query().$promise.then (users) ->
       $scope.users = users
 
   $scope.showModal = () ->
@@ -13,6 +13,10 @@
       controller: 'NewUsersController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        onInvite: ->
+          (user) ->
+            $scope.users.push(user)
 
   $scope.editModal = (user) ->
     $scope.modalInstance = $modal.open

@@ -39,7 +39,7 @@ feature 'Dashboard' do
       end
 
       within '#activities.section' do
-        expect(page).to have_text 'My Activities'
+        expect(page).to have_text 'Create New Activity'
       end
     end
   end

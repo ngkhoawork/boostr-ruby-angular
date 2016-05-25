@@ -75,7 +75,7 @@
     }
 
   $scope.showLinkExistingUser = ->
-    User.all().then (users) ->
+    User.query().$promise.then (users) ->
       $scope.users = $filter('notIn')(users, $scope.currentDeal.members, 'user_id')
 
   $scope.linkExistingUser = (item) ->
