@@ -20,7 +20,7 @@
                 = inline_svg 'icons/add.svg'
                 New Client
 
-  .container{ ng: { hide: 'query.length || (clients && clients.length > 0)' } }
+  .container{ ng: { hide: 'query.length || (clients && clients.length > 0) || currentClient' } }
     .row
       .col-xs-6.col-xs-offset-3
         .well.text-center
@@ -28,7 +28,7 @@
             There are no clients to display.
             %a{ href: '', ng: { click: 'showModal()' } }
               Add a client.
-  .container{ ng: { show: 'query.length || clients.length > 0' } }
+  .container{ ng: { show: 'query.length || clients.length > 0 || currentClient' } }
     .row
       #client-list.col-xs-4
         %script{ type: 'text/ng-template', id: 'partials/client_list_item.html' }
