@@ -53,6 +53,9 @@
   $scope.getClient = (clientId) ->
     Client.get({ id: clientId }).$promise.then (client) ->
       $scope.currentClient = client
+      $scope.getContacts($scope.currentClient)
+      $scope.getDeals($scope.currentClient)
+      $scope.getClientMembers()
 
   $scope.getClients = ->
     $scope.isLoading = true
@@ -71,8 +74,9 @@
           $scope.clients = clients
           if clients.length > 0 and !$routeParams.id
             $scope.currentClient = clients[0]
-          else
-            # $scope.currentClient = null
+            $scope.getContacts($scope.currentClient)
+            $scope.getDeals($scope.currentClient)
+            $scope.getClientMembers()
 
         _.each $scope.clients, (client) ->
           $scope.initActivity(client, activityTypes)
@@ -103,6 +107,7 @@
   $scope.showClient = (client) ->
     if client
       $scope.currentClient = client
+      $scope.getContacts($scope.currentClient)
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -164,7 +169,8 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        client: $scope.currentClient
+        client: ->
+          $scope.currentClient
 
   $scope.showLinkExistingPerson = ->
     $scope.showContactList = true
@@ -176,6 +182,8 @@
     $scope.showContactList = false
     item.client_id = $scope.currentClient.id
     Contact.update(id: item.id, contact: item).then (contact) ->
+      if !$scope.currentClient.contacts
+        $scope.currentClient.contacts = []
       $scope.currentClient.contacts.unshift(contact)
 
   $scope.updateClientMember = (clientMember) ->
@@ -187,7 +195,14 @@
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the client "' +  $scope.currentClient.name + '"?')
-      $scope.currentClient.$delete
+      $scope.clients = $scope.clients.filter (el) ->
+        el.id != $scope.currentClient.id
+      $scope.currentClient.$delete()
+      if $scope.clients.length
+        $scope.currentClient = $scope.clients[0]
+      else
+        $scope.currentClient = null
+      $scope.$emit('updated_current_client')
       $location.path('/clients')
 
   $scope.go = (path) ->
@@ -292,6 +307,10 @@
 
   $scope.$on 'newClient', (event, client) ->
     $scope.currentClient = client
+    $scope.getContacts($scope.currentClient)
+    $scope.getDeals($scope.currentClient)
+    $scope.getClientMembers()
+    $scope.clients.push(client)
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)

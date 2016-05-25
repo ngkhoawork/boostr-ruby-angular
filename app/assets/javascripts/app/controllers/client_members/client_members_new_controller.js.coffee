@@ -1,10 +1,8 @@
 @app.controller "ClientMembersNewController",
 ['$scope', '$rootScope', '$modalInstance', 'ClientMember', 'User', 'Field', 'client',
 ($scope, $rootScope, $modalInstance, ClientMember, User, Field, client) ->
-
   $scope.formType = "New"
   $scope.submitText = "Create"
-
   $scope.client_member = new ClientMember({ client_id: client.id })
 
   User.query().$promise.then (users) ->

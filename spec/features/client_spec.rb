@@ -64,6 +64,7 @@ feature 'Clients' do
       end
 
       expect(page).to have_no_css('#client_modal')
+      expect(page).to have_css('#client-list')
 
       within '.list-group' do
         expect(page).to have_css('.list-group-item.active')
@@ -107,7 +108,7 @@ feature 'Clients' do
 
       within '#client_modal' do
         ui_select('client-type', 'Agency')
-        fill_in 'name', with: 'Bobby'
+        fill_in 'name', with: 'Bedrock'
         fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Boise'
         ui_select('state', 'Idaho')
@@ -122,11 +123,11 @@ feature 'Clients' do
 
       within '.list-group' do
         expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active h4')).to have_text('Bobby')
+        expect(find('.list-group-item.active h4')).to have_text('Bedrock')
       end
 
       within '#client-detail' do
-        expect(find('h2.client-name')).to have_text('Bobby')
+        expect(find('h2.client-name')).to have_text('Bedrock')
         expect(find('h2.client-name')).to have_text('Boise, ID')
       end
     end

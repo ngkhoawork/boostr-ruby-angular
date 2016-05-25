@@ -13,6 +13,10 @@
       controller: 'NewUsersController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        onInvite: ->
+          (user) ->
+            $scope.users.push(user)
 
   $scope.editModal = (user) ->
     $scope.modalInstance = $modal.open

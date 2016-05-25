@@ -191,7 +191,7 @@ class ForecastTeam
     return 'N/A' if new_deals == 'N/A'
 
     members.each do |member|
-      next if member.member == leader.member
+      next if leader and member.member == leader.member
       members_gap_to_quota += member.gap_to_quota
       new_deals += member.new_deals_needed
     end

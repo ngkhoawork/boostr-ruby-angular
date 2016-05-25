@@ -20,7 +20,7 @@
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
-    $scope.client.$save(
+    $scope.client.$update(
       -> $modalInstance.close(),
       (resp) ->
         $scope.errors = resp.data.errors

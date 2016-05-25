@@ -74,8 +74,13 @@ class Api::ClientsController < ApplicationController
   private
 
   def client_params
-    params.require(:client).permit(:name, :website, :client_type_id, { address_attributes: [ :street1,
-    :street2, :city, :state, :zip, :phone, :email], values_attributes: [:id, :field_id, :option_id, :value] })
+    params.require(:client).permit(
+      :name, :website, :client_type_id,
+      { 
+        address_attributes: [:street1, :street2, :city, :state, :zip, :phone, :email],
+        values_attributes: [:id, :field_id, :option_id, :value]
+      }
+    )
   end
 
   def client

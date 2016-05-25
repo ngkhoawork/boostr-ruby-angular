@@ -1,6 +1,6 @@
 @app.controller 'NewUsersController',
-['$scope', '$modalInstance', 'User',
-($scope, $modalInstance, User) ->
+['$scope', '$modalInstance', 'User', 'onInvite',
+($scope, $modalInstance, User, onInvite) ->
 
   $scope.formType = "New"
   $scope.submitText = "Invite"
@@ -9,6 +9,8 @@
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
     User.invite(user: $scope.user).$promise.then (user) ->
+      if onInvite
+        onInvite(user)
       $modalInstance.close()
 
   $scope.cancel = ->
