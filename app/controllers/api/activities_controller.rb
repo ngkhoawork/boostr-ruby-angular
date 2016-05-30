@@ -37,7 +37,7 @@ class Api::ActivitiesController < ApplicationController
   private
 
   def activity_params
-    params.require(:activity).permit(:type, :deal_id, :client_id, :contact_id, :user_id, :activity_type_id, :activity_type_name, :comment, :happened_at, :activity_type, :timed)
+    params.require(:activity).permit(:type, :deal_id, :client_id, :contact_id, :user_id, :activity_type_id, :activity_type_name, :comment, :happened_at, :activity_type, :timed, :google_event_id)
   end
 
   def activity
@@ -45,7 +45,11 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def activities
-    current_user.all_activities
+    if params[:google_event_id]
+      current_user.activities.where(google_event_id: params[:google_event_id])
+    else
+      current_user.all_activities
+    end
   end
 
   def company

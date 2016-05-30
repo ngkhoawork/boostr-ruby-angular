@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160524182001) do
+ActiveRecord::Schema.define(version: 20160530201107) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 20160524182001) do
     t.datetime "updated_at",         null: false
     t.boolean  "timed"
     t.integer  "activity_type_id"
+    t.string   "google_event_id"
   end
 
   create_table "activity_types", force: :cascade do |t|
