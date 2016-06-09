@@ -175,6 +175,7 @@ class ForecastTeam
   end
 
   def new_deals_needed
+    return 0 if gap_to_quota <= 0
     members_gap_to_quota = 0
     new_deals = 0
 
