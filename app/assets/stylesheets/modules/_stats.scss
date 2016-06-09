@@ -1,12 +1,59 @@
 #stats {
-  padding: 36px 48px 16px;
   margin-bottom: 48px;
+  padding: 16px 48px;
 
-  .header {
-    float: right;
+  .col-xs-fifth {
+    border-right: 2px solid $gray-light;
+    margin-top: 46px;
+    padding: 0 36px;
+    width: 20%;
+
+    &:first-child {
+      border-right: 0;
+      padding-left: 0;
+    }
+
+    &:last-child {
+      border-right: 0;
+      padding-right: 0;
+    }
+
+    h2 {
+      margin-bottom: 0;
+      text-align: center;
+    }
+
+    h5 {
+      text-transform: uppercase;
+      margin-top: 0;
+      color: $dark-grayish-blue-1;
+      font-family: $font-family-light;
+      text-align: center;
+    }
+  }
+
+  .attainment {
+    height: 180px;
+    margin-top: 0px;
     position: relative;
-    left: -50%;
-    text-align: left;
+
+    canvas {
+      height: 180px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 180px;
+    }
+
+    .center-text {
+      display: table-cell;
+      height: 180px;
+      position: relative;
+      text-align: center;
+      top: -5px;
+      width: 180px;
+      vertical-align: middle;
+    }
   }
 
   ul {
@@ -35,38 +82,7 @@
         border-right: 0;
       }
 
-      h2 {
-        margin-bottom: 0;
-        text-align: center;
-      }
-
-      h5 {
-        text-transform: uppercase;
-        margin-top: 0;
-        color: $dark-grayish-blue-1;
-        font-family: $font-family-light;
-        text-align: center;
-      }
     }
 
-    li.attainment {
-      position: relative;
-
-      canvas {
-        width: 180px !important;
-        height: 180px !important;
-        margin-top: -40px;
-      }
-
-      .center-text {
-        display: table-cell;
-        vertical-align: middle;
-        position: absolute;
-        left: -18px;
-        top: 0;
-        width: 100%;
-        text-align: center;
-      }
-    }
   }
 }
