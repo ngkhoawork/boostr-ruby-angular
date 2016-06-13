@@ -214,12 +214,12 @@
                   %td.left
                     {{deal.creator.first_name}} {{deal.creator.last_name}}
                   %td.right
-                    {{ (deal.budget || 0) * deal.stage.probability | humanReadableMoney }}
+                    {{ ((deal.budget || 0) / 100) * deal.stage.probability | humanReadableMoney }}
                   %td.right
                     {{deal.stage.probability}}%
                   %td.left
                     {{deal.next_steps}}
                   %td.right{ 'ng-repeat': 'quarter in deal.quarters track by $index', 'ng-show': 'showQuarterlyDeals' }
-                    {{ (quarter * 100).toFixed(0) }}%
+                    {{ quarter * (deal.budget / 100) | humanReadableMoney }}
                   %td.right{ 'ng-repeat': 'month in deal.months track by $index', 'ng-hide': 'showQuarterlyDeals' }
-                    {{ (month * 100).toFixed(0) }}%
+                    {{ month * (deal.budget / 100) | humanReadableMoney }}
