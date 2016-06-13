@@ -132,7 +132,7 @@ class Revenue < ActiveRecord::Base
     super(options.merge(
       include: {
         client: {
-          only: [:id],
+          only: [:id, :name],
           include: [:client_members]
         }},
       methods: [:client_name, :user_name, :product_name, :period_budget, :sum_budget, :sum_period_budget]

@@ -135,6 +135,30 @@ class ForecastTeam
     teams.sum(&:weighted_pipeline) + members.sum(&:weighted_pipeline) + (leader.try(:weighted_pipeline) || 0)
   end
 
+  def unweighted_pipeline_by_stage
+    return @unweighted_pipeline_by_stage if defined?(@unweighted_pipeline_by_stage)
+    @unweighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.unweighted_pipeline_by_stage.each do |stage_id, total|
+        @unweighted_pipeline_by_stage[stage_id] ||= 0
+        @unweighted_pipeline_by_stage[stage_id] += total
+      end
+    end
+    members.each do |m|
+      m.unweighted_pipeline_by_stage.each do |stage_id, total|
+        @unweighted_pipeline_by_stage[stage_id] ||= 0
+        @unweighted_pipeline_by_stage[stage_id] += total
+      end
+    end
+    if leader
+      leader.unweighted_pipeline_by_stage.each do |stage_id, total|
+        @unweighted_pipeline_by_stage[stage_id] ||= 0
+        @unweighted_pipeline_by_stage[stage_id] += total
+      end
+    end
+    @unweighted_pipeline_by_stage
+  end
+
   def revenue
     teams.sum(&:revenue) + members.sum(&:revenue) + (leader.try(:revenue) || 0)
   end

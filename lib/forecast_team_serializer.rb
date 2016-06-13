@@ -9,6 +9,7 @@ class ForecastTeamSerializer < ActiveModel::Serializer
     :parents,
     :stages,
     :weighted_pipeline_by_stage,
+    :unweighted_pipeline_by_stage,
     :weighted_pipeline,
     :revenue,
     :amount,

@@ -8,6 +8,45 @@ class Api::DealsController < ApplicationController
           render json: suggest_deals
         elsif params[:activity].present?
           render json: activity_deals
+        elsif params[:year].present?
+          response_deals = company.deals
+            .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
+            .as_json
+
+          #deal_sums = company.deals
+          #  .select("advertiser_id, sum(budget) AS budget")
+          #  .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
+          #  .group('deals.advertiser_id')
+          #  .as_json
+          response_deals = response_deals.map do |deal|
+            range = deal['start_date'] .. deal['end_date']
+
+            deal['months'] = []
+            month = Date.parse("#{year-1}1201")
+            while month = month.next_month and month.year == year do
+              month_range = month.at_beginning_of_month..month.at_end_of_month
+              if month_range.overlaps? range
+                overlap = [deal['start_date'], month_range.begin].max..[deal['end_date'], month_range.end].min
+                deal['months'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
+                deal
+              else
+                deal['months'].push 0
+              end
+            end
+
+            deal['quarters'] = []
+            quarters.each do |quarter|
+              if quarter[:range].overlaps? range
+                overlap = [deal['start_date'], quarter[:start_date]].max..[deal['end_date'], quarter[:end_date]].min
+                deal['quarters'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
+                deal
+              else
+                deal['quarters'].push 0
+              end
+            end
+            deal
+          end
+          render json: response_deals
         else
           render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage).distinct , each_serializer: DealIndexSerializer).to_json
         end
@@ -99,5 +138,26 @@ class Api::DealsController < ApplicationController
     return @activity_deals if defined?(@activity_deals)
 
     @activity_deals = company.deals.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
+  end
+
+  def quarters
+    return @quarters if defined?(@quarters)
+
+    @quarters = []
+    @quarters << { start_date: Time.new(year, 1, 1), end_date: Time.new(year, 3, 31), quarter: 1 }
+    @quarters << { start_date: Time.new(year, 4, 1), end_date: Time.new(year, 6, 30), quarter: 2 }
+    @quarters << { start_date: Time.new(year, 7, 1), end_date: Time.new(year, 9, 30), quarter: 3 }
+    @quarters << { start_date: Time.new(year, 10, 1), end_date: Time.new(year, 12, 31), quarter: 4 }
+    @quarters = @quarters.map do |quarter|
+      quarter[:range] = quarter[:start_date] .. quarter[:end_date]
+      quarter
+    end
+    @quarters
+  end
+
+  def year
+    return nil if params[:year].blank?
+
+    params[:year].to_i
   end
 end
