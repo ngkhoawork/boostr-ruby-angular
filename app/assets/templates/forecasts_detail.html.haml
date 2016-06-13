@@ -1,0 +1,73 @@
+%table.table{ 'ng-repeat': '(year, forecast) in forecastsByStage' }
+  %thead
+    %tr
+      %th{colspan: 6}
+        {{year}}
+    %tr.subheading
+      %th
+        Stage Probability
+      %th
+        Q1-{{year}}
+      %th
+        Q2-{{year}}
+      %th
+        Q3-{{year}}
+      %th
+        Q4-{{year}}
+      %th
+        FY-{{year}}
+  %tbody
+    %tr
+      %td
+        100%
+      %td
+        {{ revenuesByQuarter[year][1] | humanReadableMoney }}
+      %td
+        {{ revenuesByQuarter[year][2] | humanReadableMoney }}
+      %td
+        {{ revenuesByQuarter[year][3] | humanReadableMoney }}
+      %td
+        {{ revenuesByQuarter[year][4] | humanReadableMoney }}
+      %td
+        {{ revenuesByQuarter[year][1] + revenuesByQuarter[year][2] + revenuesByQuarter[year][3] + revenuesByQuarter[year][4] | humanReadableMoney }}
+    %tr{ 'ng-repeat': 'stage in forecast.stages | orderHashBy:"probability":true' }
+      %td
+        {{ stagesById[stage.key].probability }}%
+      %td
+        {{ stage[1] | humanReadableMoney }}
+      %td
+        {{ stage[2] | humanReadableMoney }}
+      %td
+        {{ stage[3] | humanReadableMoney }}
+      %td
+        {{ stage[4] | humanReadableMoney }}
+      %td
+        {{ stage[1] + stage[2] + stage[3] + stage[4] | humanReadableMoney }}
+    %tr
+      %td
+        {{year}} Forecast
+      %td{ 'ng-repeat': '(quarter, pipeline) in forecastsByQuarter[year]' }
+        {{ pipeline | humanReadableMoney }}
+      %td
+        {{ forecastsByYear[year] | humanReadableMoney }}
+    %tr
+      %td
+        {{year}} Budget
+      %td{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
+        {{ quota | humanReadableMoney }}
+      %td
+        {{ quotasByYear[year] | humanReadableMoney }}
+    %tr
+      %td
+        Percentage of Annual Budget
+      %td{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
+        {{ quota / quotasByYear[year] | number }}
+      %td
+    %tr
+      %td
+        Gap to Quota
+      %td{ 'ng-repeat': '(quarter, pipeline) in forecastsByQuarter[year]' }
+        {{ (quotasByQuarter[year][quarter] - pipeline) | humanReadableMoney }}
+      %td
+        {{ (quotasByYear[year] - forecastsByYear[year]) | humanReadableMoney }}
+

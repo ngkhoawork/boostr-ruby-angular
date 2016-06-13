@@ -89,6 +89,9 @@
     .when '/settings/stages',
       templateUrl: 'settings/stages.html'
       controller: 'SettingsStagesController'
+    .when '/forecast/detail',
+      templateUrl: 'forecasts_detail.html'
+      controller: 'ForecastsDetailController'
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'

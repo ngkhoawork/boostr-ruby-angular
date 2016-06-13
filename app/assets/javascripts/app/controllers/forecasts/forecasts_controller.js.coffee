@@ -251,7 +251,7 @@
       else if row.type == 'team'
         params = _.extend(params, { team_id: row.id })
 
-      Revenue.get(params).then (revenues) ->
+      Revenue.query(params).$promise.then (revenues) ->
         $scope.revenues = revenues
         $scope.sort.revenues = new McSort(
           column: "client_name",

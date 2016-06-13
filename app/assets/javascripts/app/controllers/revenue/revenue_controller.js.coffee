@@ -18,7 +18,7 @@
     $scope.revenueFilter = $scope.revenueFilters[0]
 
   $scope.init = ->
-    Revenue.all({filter: $scope.revenueFilter.param}).then (revenue) ->
+    Revenue.query({filter: $scope.revenueFilter.param}).$promise.then (revenue) ->
       $scope.revenue = revenue
 
   $scope.showUploadModal = () ->
