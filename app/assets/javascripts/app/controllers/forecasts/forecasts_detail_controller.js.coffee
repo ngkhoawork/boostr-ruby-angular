@@ -74,6 +74,9 @@
           ).forEach (stage) ->
             $scope.stages.push stage
             $scope.stagesById[stage.id] = stage
+
+        next if not team or not team.year or not team.quarter
+
         if not $scope.forecastsByStage[team.year]
           $scope.forecastsByStage[team.year] = {stages: {}}
           $scope.unweightedByStage[team.year] = {stages: {}}
