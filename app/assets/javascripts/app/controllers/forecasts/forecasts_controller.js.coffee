@@ -79,7 +79,7 @@
           $scope.currentTimePeriod = timePeriods[0]
 
       if $routeParams.team_id
-        Forecast.get({ id: $routeParams.team_id, time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).$query.then (forecast) ->
+        Forecast.get({ id: $routeParams.team_id, time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).$promise.then (forecast) ->
           $scope.forecast = forecast
           $scope.team = forecast
           $scope.teams = forecast.teams
