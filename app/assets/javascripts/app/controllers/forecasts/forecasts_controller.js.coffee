@@ -79,7 +79,7 @@
           $scope.currentTimePeriod = timePeriods[0]
 
       if $routeParams.team_id
-        Forecast.get({ id: $routeParams.team_id, time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->
+        Forecast.get({ id: $routeParams.team_id, time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).$query.then (forecast) ->
           $scope.forecast = forecast
           $scope.team = forecast
           $scope.teams = forecast.teams
@@ -88,7 +88,7 @@
           $scope.setMcSort()
           $scope.setChartData()
       else
-        Forecast.all({ time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).then (forecast) ->
+        Forecast.query({ time_period_id: $scope.currentTimePeriod.id, year: $scope.year }).$promise.then (forecast) ->
           if forecast.length > 1 # forecast is a quarterly member array
             $scope.forecast = forecast
             $scope.members = forecast
