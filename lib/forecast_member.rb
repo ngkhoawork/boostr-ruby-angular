@@ -99,6 +99,27 @@ class ForecastMember
     @weighted_pipeline_by_stage
   end
 
+  def unweighted_pipeline_by_stage
+    return @unweighted_pipeline_by_stage if defined?(@unweighted_pipeline_by_stage)
+
+    deal_shares = {}
+    member.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+
+    @unweighted_pipeline_by_stage = {}
+
+    open_deals.each do |deal|
+      deal_total = 0
+      deal.deal_products.for_time_period(start_date, end_date).each do |deal_product|
+        deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
+      end
+      @unweighted_pipeline_by_stage[deal.stage.id] ||= 0
+      @unweighted_pipeline_by_stage[deal.stage.id] += deal_total
+    end
+    @unweighted_pipeline_by_stage
+  end
+
   def revenue
     return @revenue if defined?(@revenue)
 

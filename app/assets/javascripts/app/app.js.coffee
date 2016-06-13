@@ -53,6 +53,9 @@
     .when '/reports',
       templateUrl: 'reports.html'
       controller: 'ReportsController'
+    .when '/reports/forecasts',
+      templateUrl: 'forecasts_detail.html'
+      controller: 'ForecastsDetailController'
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'
@@ -116,6 +119,10 @@
   editableOptions.buttons = 'no'
   editableOptions.blurElem = 'cancel'
   editableOptions.blurForm = 'cancel'
+]
+
+@app.run ['$rootScope', ($rootScope) ->
+  $rootScope.currentUserIsLeader = currentUserIsLeader
 ]
 
 @service = angular.module 'services', ['ngResource']

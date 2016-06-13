@@ -55,3 +55,27 @@
 
   return
 ]
+
+
+@service.service 'DealResource',
+['$resource',
+($resource) ->
+
+  transformRequest = (original, headers) ->
+    original.deal.values_attributes = original.deal.values
+    angular.toJson(original)
+
+  resource = $resource '/api/deals/:id', { id: '@id' },
+    save: {
+      method: 'POST'
+      url: '/api/deals'
+      transformRequest: transformRequest
+    },
+    update: {
+      method: 'PUT'
+      url: '/api/deals/:id'
+      transformRequest: transformRequest
+    }
+
+  resource
+]

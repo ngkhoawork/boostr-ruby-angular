@@ -1,6 +1,6 @@
 @app.controller "RevenueUploadController",
-['$scope', '$rootScope', '$modalInstance', '$timeout', 'Revenue', 'Upload',
-($scope, $rootScope, $modalInstance, $timeout, Revenue, Upload) ->
+['$scope', '$rootScope', '$modalInstance', '$timeout', 'Upload',
+($scope, $rootScope, $modalInstance, $timeout, Upload) ->
 
   $scope.progressPercentage = 0
   $scope.errors = []

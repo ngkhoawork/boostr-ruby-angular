@@ -18,4 +18,9 @@
     // .notice= notice
     // .alert= alert
     = yield
-
+    - if current_user.leader?
+      :javascript
+        currentUserIsLeader = true
+    - else
+      :javascript
+        currentUserIsLeader = false

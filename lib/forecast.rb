@@ -3,23 +3,23 @@ class Forecast
 
   delegate :id, to: :company
 
-  attr_accessor :company, :teams, :team_members, :start_date, :end_date, :year
+  attr_accessor :company, :teams, :team_members, :start_date, :end_date, :year, :time_period
 
   # If there is a year, the start_date and end_date are ignored
   def initialize(company, teams, start_date, end_date, year = nil)
     self.company = company
-    if year.present?
+    self.start_date = start_date
+    self.end_date = end_date
+    self.year = year
+    unless year.nil?
       @teams = teams.map do |t|
         quarters.map do |dates|
-          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter])
+          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter], year)
         end
       end.flatten
     else
       @teams = teams.map{ |t| ForecastTeam.new(t, start_date, end_date) }
     end
-    self.start_date = start_date
-    self.end_date = end_date
-    self.year = year
   end
 
   def cache_key
