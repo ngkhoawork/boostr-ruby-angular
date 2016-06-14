@@ -40,6 +40,7 @@
       4: 0
     }
     $scope.unweightedByYear[year] = 0
+    $scope.forecastsByStage[year] = { stages: {} }
     $scope.forecastsByQuarter[year] = {
       1: 0,
       2: 0,
@@ -75,9 +76,9 @@
             $scope.stages.push stage
             $scope.stagesById[stage.id] = stage
 
-        next if not team or not team.year or not team.quarter
+        return if not team or not team.year or not team.quarter
 
-        if not $scope.forecastsByStage[team.year]
+        if not $scope.forecastsByStage[team.year].stages
           $scope.forecastsByStage[team.year] = {stages: {}}
           $scope.unweightedByStage[team.year] = {stages: {}}
           for stage in $scope.stages
