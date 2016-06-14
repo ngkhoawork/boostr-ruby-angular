@@ -76,7 +76,7 @@
             $scope.stages.push stage
             $scope.stagesById[stage.id] = stage
 
-        continue if not team or not team.year or not team.quarter
+        return if not team or not team.year or not team.quarter
 
         if not $scope.forecastsByStage[team.year].stages
           $scope.forecastsByStage[team.year] = {stages: {}}
