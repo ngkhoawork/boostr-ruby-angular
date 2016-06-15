@@ -1,29 +1,33 @@
 #stats.well
-  .row
+  .row{ 'ng-hide': 'forecast' }
     .col-xs-12
-      %h4{ ng: { hide: 'forecast' } }
+      %h4
         Oops! No quota, no commissions.
-      .header{ ng: { show: 'forecast' } }
-        %ul.list-inline
-          %li.attainment
-            %canvas{ 'tc-chartjs': true, 'chart-type': 'doughnut', 'chart-data':'chartData', 'chart-options':'chartOptions' }
-            .center-text
-              %h2
-                {{ forecast.percent_to_quota | number: 0 }}%
-              %h5
-                Attainment
-          %li.quota
-            %h2
-              {{ forecast.quota | currency: '$': 0 }}
-            %h5
-              Quota
-          %li.forecast
-            %h2
-              {{ forecast.amount | currency: '$': 0 }}
-            %h5
-              Forecast
-          %li.gap-to-goal
-            %h2
-              {{ forecast.gap_to_quota | currency: '$': 0 }}
-            %h5
-              Gap to Goal
+  .row{ 'ng-show': 'forecast' }
+    .col-xs-2.col-xs-fifth.attainment
+      %canvas{ 'tc-chartjs': true, 'chart-type': 'doughnut', 'chart-data':'chartData', 'chart-options':'chartOptions' }
+      .center-text
+        %h2
+          {{ forecast.percent_to_quota | number: 0 }}%
+        %h5
+          Attainment
+    .col-xs-2.col-xs-fifth.quota
+      %h2
+        {{ forecast.quota | humanReadableMoney }}
+      %h5
+        Quota
+    .col-xs-2.col-xs-fifth.forecast
+      %h2
+        {{ forecast.amount | humanReadableMoney }}
+      %h5
+        Forecast
+    .col-xs-2.col-xs-fifth.gap-to-goal
+      %h2
+        {{ forecast.gap_to_quota | humanReadableMoney }}
+      %h5
+        Gap to Goal
+    .col-xs-2.col-xs-fifth.new-deals-needed
+      %h2
+        {{ forecast.new_deals_needed || 0 }}
+      %h5
+        New Deals Needed

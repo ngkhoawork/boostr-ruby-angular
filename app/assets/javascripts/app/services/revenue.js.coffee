@@ -8,20 +8,5 @@
       url: '/api/revenue'
       isArray: true
 
-  allRevenue = []
-
-  @all = (params) ->
-    deferred = $q.defer()
-    resource.query params, (revenue) =>
-      allRevenue = revenue
-      deferred.resolve(revenue)
-    deferred.promise
-
-  @get = (params) ->
-    deferred = $q.defer()
-    resource.get params, (revenue) ->
-      deferred.resolve(revenue)
-    deferred.promise
-
-  return
+  return resource
 ]

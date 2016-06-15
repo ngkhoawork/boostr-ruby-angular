@@ -1,4 +1,4 @@
-json.extract! deal, :id, :name, :budget, :created_at, :updated_at, :next_steps, :stage_id, :closed_at, :advertiser_id
+json.extract! deal, :id, :name, :budget, :created_at, :updated_at, :next_steps, :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id
 
 json.start_date deal.start_date.to_datetime
 json.end_date deal.end_date.to_datetime
@@ -7,6 +7,9 @@ json.months deal.months
 json.days_per_month deal.days_per_month
 
 json.stage deal.stage, :name, :probability, :color, :open
+if deal.previous_stage
+  json.previous_stage deal.previous_stage, :name, :probability, :color, :open
+end
 
 json.creator deal.creator, :first_name, :last_name
 

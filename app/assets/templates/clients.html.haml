@@ -20,7 +20,7 @@
                 = inline_svg 'icons/add.svg'
                 New Client
 
-  .container{ ng: { hide: 'query.length || (clients && clients.length > 0)' } }
+  .container{ ng: { hide: 'query.length || (clients && clients.length > 0) || currentClient' } }
     .row
       .col-xs-6.col-xs-offset-3
         .well.text-center
@@ -28,21 +28,15 @@
             There are no clients to display.
             %a{ href: '', ng: { click: 'showModal()' } }
               Add a client.
-  .container{ ng: { show: 'query.length || clients.length > 0' } }
+  .container{ ng: { show: 'query.length || clients.length > 0 || currentClient' } }
     .row
       #client-list.col-xs-4
-        .search
-          %form
-            .input-group
-              .input-group-addon
-                %i.glyphicon.glyphicon-search
-              %input.form-control{ ng: { model: 'query', change: 'searchClients(query)' }, placeholder: "Search clients" }
-        .list-group.list-lg{ 'infinite-scroll': 'loadMoreClients()' }
-          %a.list-group-item.vertical-center{href: '', ng: { click: 'showClient(client)', repeat: 'client in clients', class: '{ active: client.id == currentClient.id }' } }
-            %h4
-              {{ client.name }}
-            .subtitle
-              {{ client.contacts_count }} people, {{ client.deals_count }} deals
+        %script{ type: 'text/ng-template', id: 'partials/client_list_item.html' }
+          %h4
+            {{ item.name }}
+          .subtitle
+            {{ item.contacts_count }} people, {{ item.deals_count }} deals
+        %div{ 'object-list': true, items: 'clients', query: 'query', 'on-search': 'searchClients', 'on-select': 'showClient', 'on-load-more': 'loadMoreClients', selected: 'currentClient', template: 'partials/client_list_item.html' }
       #client-detail.col-xs-8{ ng: { show: 'currentClient' } }
         .tools.pull-right
           %a#delete-client{ href: '', ng: { click: 'delete()' } }

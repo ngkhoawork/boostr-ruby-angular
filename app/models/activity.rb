@@ -40,6 +40,6 @@ class Activity < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(include: [:client, :deal, :contact, :creator]))
+    super(options.merge(include: { :client => {}, :deal => { :include => [ :stage, :advertiser ] }, :contact => {}, :creator => {} }))
   end
 end

@@ -99,6 +99,27 @@ class ForecastMember
     @weighted_pipeline_by_stage
   end
 
+  def unweighted_pipeline_by_stage
+    return @unweighted_pipeline_by_stage if defined?(@unweighted_pipeline_by_stage)
+
+    deal_shares = {}
+    member.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+
+    @unweighted_pipeline_by_stage = {}
+
+    open_deals.each do |deal|
+      deal_total = 0
+      deal.deal_products.for_time_period(start_date, end_date).each do |deal_product|
+        deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
+      end
+      @unweighted_pipeline_by_stage[deal.stage.id] ||= 0
+      @unweighted_pipeline_by_stage[deal.stage.id] += deal_total
+    end
+    @unweighted_pipeline_by_stage
+  end
+
   def revenue
     return @revenue if defined?(@revenue)
 
@@ -136,6 +157,21 @@ class ForecastMember
 
   def quota
     @quota ||= member.quotas.for_time_period(start_date, end_date).sum(:value)
+  end
+
+  def win_rate
+    member.win_rate || 0
+  end
+
+  def average_deal_size
+    member.average_deal_size || 0
+  end
+
+  def new_deals_needed
+    goal = gap_to_quota
+    return 0 if goal <= 0
+    return 'N/A' if average_deal_size <= 0 or win_rate <= 0
+    (gap_to_quota / (member.win_rate * member.average_deal_size)).ceil
   end
 
   private

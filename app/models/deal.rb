@@ -11,6 +11,7 @@ class Deal < ActiveRecord::Base
   belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
   belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
+  belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
 
   has_many :deal_products
   has_many :products, -> { distinct }, through: :deal_products
@@ -71,7 +72,7 @@ class Deal < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(include: [:advertiser, :stage, :values, activities: { include: [:creator, :contact] }], methods: [:formatted_name]))
+    super(options.merge(include: [:creator, :advertiser, :stage, :values, deal_members: { methods: [:name] }, activities: { include: [:creator, :contact] }], methods: [:formatted_name]))
   end
 
   def as_weighted_pipeline(start_date, end_date)
@@ -246,15 +247,15 @@ class Deal < ActiveRecord::Base
     end
 
     deal_stage_logs_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Stage", "Days in Stage", "Updated Date", "Updated By"]
+      csv << ["Deal ID", "Name", "Stage", "Days in Stage", "Previous Stage", "Updated Date", "Updated By"]
       all.each do |deal|
         deal.deal_stage_logs.each do |deal_stage_log|
           stage_updator = deal_stage_log.stage_updator.name if !deal_stage_log.stage_updator.nil?
-		      csv << [deal.id, deal.name, deal_stage_log.stage.name, deal_stage_log.active_wday, deal_stage_log.stage_updated_at, stage_updator]
+		      csv << [deal.id, deal.name, deal_stage_log.stage.name, deal_stage_log.active_wday, deal_stage_log.previous_stage ? deal_stage_log.previous_stage.name : "n/a", deal_stage_log.stage_updated_at, stage_updator]
         end
         stage_updator1 = deal.stage_updator.name if !deal.stage_updator.nil?
         active_wday = (deal.stage_updated_at.to_date..Time.current.to_date).count {|date| date.wday >= 1 && date.wday <= 5} if !deal.stage_updated_at.nil?
-        csv << [deal.id, deal.name, deal.stage.name, active_wday, deal.stage_updated_at, stage_updator1]
+        csv << [deal.id, deal.name, deal.stage.name, active_wday, deal.previous_stage ? deal.previous_stage.name : "n/a", deal.stage_updated_at, stage_updator1]
       end
     end
 
@@ -272,13 +273,21 @@ class Deal < ActiveRecord::Base
   end
 
   def update_stage
+    self.previous_stage_id = self.stage_id_was
     self.stage_updated_at = updated_at
     self.stage_updated_by = updated_by
   end
 
   def log_stage
     if company.present? && stage_id_was.present? && stage_updated_by_was.present? && stage_updated_at_was.present?
-      deal_stage_logs.create(company_id: company.id, stage_id: stage_id_was, stage_updated_by: stage_updated_by_was, stage_updated_at: stage_updated_at_was, active_wday: count_wday(stage_updated_at_was, stage_updated_at))
+      deal_stage_logs.create(
+        company_id: company.id,
+        stage_id: stage_id_was,
+        previous_stage_id: previous_stage_id_was,
+        stage_updated_by: stage_updated_by_was,
+        stage_updated_at: stage_updated_at_was,
+        active_wday: count_wday(stage_updated_at_was, stage_updated_at)
+      )
     end
   end
 

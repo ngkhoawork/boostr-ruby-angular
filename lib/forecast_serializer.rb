@@ -4,7 +4,9 @@ class ForecastSerializer < ActiveModel::Serializer
   delegate :cache_key, to: :object
 
   attributes(
+    :time_period,
     :teams,
+    :team_members,
     :stages,
     :weighted_pipeline,
     :revenue,

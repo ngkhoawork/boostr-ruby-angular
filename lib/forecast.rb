@@ -3,15 +3,23 @@ class Forecast
 
   delegate :id, to: :company
 
-  attr_accessor :company, :rows, :start_date, :end_date, :year
+  attr_accessor :company, :teams, :team_members, :start_date, :end_date, :year, :time_period
 
   # If there is a year, the start_date and end_date are ignored
-  def initialize(company, rows, start_date, end_date, year = nil)
+  def initialize(company, teams, start_date, end_date, year = nil)
     self.company = company
-    self.rows = rows
     self.start_date = start_date
     self.end_date = end_date
     self.year = year
+    unless year.nil?
+      @teams = teams.map do |t|
+        quarters.map do |dates|
+          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter], year)
+        end
+      end.flatten
+    else
+      @teams = teams.map{ |t| ForecastTeam.new(t, start_date, end_date) }
+    end
   end
 
   def cache_key
@@ -26,17 +34,17 @@ class Forecast
     Digest::MD5.hexdigest(parts.join)
   end
 
-  def teams
-    return @teams if defined?(@teams)
+  def team_members
+    return @team_members if defined?(@team_members)
 
     if year.present?
-      @teams = rows.map do |t|
+      @team_members = company.teams_tree_members.map do |m|
         quarters.map do |dates|
-          ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter])
+          ForecastMember.new(m, dates[:start_date], dates[:end_date], dates[:quarter])
         end
       end.flatten
     else
-      @teams = rows.map{ |t| ForecastTeam.new(t, start_date, end_date) }
+      @team_members = company.teams_tree_members.map{ |m| ForecastMember.new(m, start_date, end_date) }
     end
   end
 
@@ -69,6 +77,20 @@ class Forecast
 
   def gap_to_quota
     teams.sum(&:gap_to_quota)
+  end
+
+  def new_deals_needed
+    sum = 0
+    teams.each do |team|
+      num = team.new_deals_needed
+      if num != 'N/A'
+        sum += num
+      else
+        sum = 'N/A'
+        break
+      end
+    end
+    sum
   end
 
   def quota

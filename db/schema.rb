@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160514000748) do
+ActiveRecord::Schema.define(version: 20160530201107) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 20160514000748) do
     t.datetime "updated_at",         null: false
     t.boolean  "timed"
     t.integer  "activity_type_id"
+    t.string   "google_event_id"
   end
 
   create_table "activity_types", force: :cascade do |t|
@@ -167,9 +168,10 @@ ActiveRecord::Schema.define(version: 20160514000748) do
     t.integer  "stage_updated_by"
     t.datetime "stage_updated_at"
     t.string   "operation"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
     t.integer  "active_wday"
+    t.integer  "previous_stage_id"
   end
 
   create_table "deals", force: :cascade do |t|
@@ -193,6 +195,7 @@ ActiveRecord::Schema.define(version: 20160514000748) do
     t.datetime "stage_updated_at"
     t.integer  "updated_by"
     t.datetime "activity_updated_at"
+    t.integer  "previous_stage_id"
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
@@ -401,6 +404,8 @@ ActiveRecord::Schema.define(version: 20160514000748) do
     t.integer  "pos_balance_l"
     t.integer  "neg_balance_l_cnt"
     t.integer  "pos_balance_l_cnt"
+    t.decimal  "win_rate"
+    t.decimal  "average_deal_size"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

@@ -2,16 +2,21 @@ require 'rails_helper'
 
 RSpec.describe ForecastTeam do
     let(:company) { create :company }
-    let(:leader) { create :user, company: company }
+    let(:leader) { create :user, company: company, win_rate: 0.5, average_deal_size: 100 }
     let(:time_period) { create :time_period, company: company, start_date: "2015-01-01", end_date: "2015-12-31" }
     let(:client) { create :client, company: company }
 
   context 'with a leader' do
     let(:team) { create :parent_team, company: company, leader: leader }
-    let(:member) { create :user, company: company, team: team }
-    let(:forecast) { ForecastTeam.new(team, time_period.start_date, time_period.end_date) }
+    let(:member) { create :user, company: company, team: team, win_rate: 0.5, average_deal_size: 100 }
     let!(:leader_quota) { create :quota, user: leader, value: 5000, time_period: time_period, company: company }
     let!(:member_quota) { create :quota, user: member, value: 2000, time_period: time_period, company: company }
+    let(:stage) { create :stage, probability: 50 }
+    let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
+    let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
+    let!(:deal_member1) { create :deal_member, deal: deal, user: leader, share: 50 }
+    let!(:deal_member2) { create :deal_member, deal: deal, user: member, share: 50 }
+    let(:forecast) { ForecastTeam.new(team, time_period.start_date, time_period.end_date) }
 
     it 'returns the revenue for a member that has no revenue' do
       expect(forecast.revenue).to eq(0)
@@ -29,14 +34,7 @@ RSpec.describe ForecastTeam do
     end
 
     context 'weighted_pipeline' do
-      let(:stage) { create :stage, probability: 50 }
-      let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
-      let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
-
       it 'sums the weighted_pipeline' do
-        create :deal_member, deal: deal, user: leader, share: 50
-        create :deal_member, deal: deal, user: member, share: 50
-
         expect(forecast.weighted_pipeline).to eq(50)
       end
     end
@@ -44,6 +42,21 @@ RSpec.describe ForecastTeam do
     context 'quota' do
       it 'returns the quota value of the team leader' do
         expect(forecast.quota).to eq(5000)
+      end
+    end
+
+    context 'gap_to_quota' do
+      it 'returns the gap to quota value' do
+        expect(forecast.revenue).to eq(0)
+        expect(forecast.weighted_pipeline).to eq(50)
+        expect(forecast.gap_to_quota).to eq(4950)
+      end
+    end
+
+    context 'new_deals_needed' do
+      it 'returns the number of new deals needed to meet the quota' do
+        expect(forecast.gap_to_quota).to eq(4950)
+        expect(forecast.new_deals_needed).to eq(100)
       end
     end
   end

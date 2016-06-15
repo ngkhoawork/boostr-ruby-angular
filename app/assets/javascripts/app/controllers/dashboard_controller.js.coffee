@@ -3,7 +3,7 @@
 ($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity, ActivityType) ->
 
   $scope.showMeridian = true
-  $scope.feedName = 'Updates'
+  $scope.feedName = 'Activity Updates'
   $scope.moreSize = 10;
   $scope.types = []
 
@@ -22,21 +22,31 @@
       _.each activityTypes, (type) ->
         $scope.selected[type.name] = {}
         $scope.selected[type.name].date = now
+
+    $scope.activity_objects = {}
     Activity.all().then (activities) ->
-      $scope.activities = activities
-    $scope.activity_objects = []
-    Deal.all({activity: true}).then (deals) ->
-      _.each deals, (object) ->
-        object.currentLimit = $scope.moreSize
-        $scope.activity_objects = $scope.activity_objects.concat object
-    Client.all({activity: true, per: 500}).then (clients) ->
-      _.each clients, (object) ->
-        object.currentLimit = $scope.moreSize
-        $scope.activity_objects = $scope.activity_objects.concat object
-    Contact.all1({activity: true}).then (contacts) ->
-      _.each contacts, (object) ->
-        object.currentLimit = $scope.moreSize
-        $scope.activity_objects = $scope.activity_objects.concat object
+      activities.forEach (activity) ->
+        objectIds = []
+
+        if activity.deal
+          objectId = "d:" + activity.deal.id
+          if not $scope.activity_objects.hasOwnProperty(objectId)
+            $scope.activity_objects[objectId] = activity.deal
+            $scope.activity_objects[objectId].isDeal = true
+            $scope.activity_objects[objectId].activities = []
+          objectIds.push(objectId)
+
+        if activity.client
+          objectId = "c:" + activity.client.id
+          if not $scope.activity_objects.hasOwnProperty(objectId)
+            $scope.activity_objects[objectId] = activity.client
+            $scope.activity_objects[objectId].activities = []
+            $scope.activity_objects[objectId].isClient = true
+          objectIds.push(objectId)
+
+        objectIds.forEach (objectId) ->
+          $scope.activity_objects[objectId].activities.push(activity)
+
 
   $scope.chartOptions = {
     responsive: false,
@@ -99,7 +109,7 @@
       Deal.all({name: name}).then (deals) ->
         deals
     else
-      Client.all({name: name}).then (clients) ->
+      Client.query({name: name}).$promise.then (clients) ->
         clients
 
   $scope.searchContact = (name) ->

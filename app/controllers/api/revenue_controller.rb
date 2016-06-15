@@ -4,6 +4,8 @@ class Api::RevenueController < ApplicationController
   def index
     if params[:time_period_id].present?
       render json: crevenues
+    elsif params[:year].present?
+      render json: quarterly_revenues
     else
       render json: revenues
     end
@@ -22,6 +24,41 @@ class Api::RevenueController < ApplicationController
     else
       current_user.team
     end
+  end
+
+  def quarterly_revenues
+    revs = current_user.company.revenues
+      .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year)
+      .as_json
+    revs.map do |revenue|
+      revenue[:quarters] = []
+      revenue[:year] = year
+      if revenue['end_date'] == revenue['start_date']
+        revenue['end_date'] += 1.day
+      end
+      revenue_range = revenue['start_date'] .. revenue['end_date']
+      revenue['months'] = []
+      month = Date.parse("#{year-1}1201")
+      while month = month.next_month and month.year == year do
+        month_range = month.at_beginning_of_month..month.at_end_of_month
+        if month_range.overlaps? revenue_range
+          overlap = [revenue['start_date'], month_range.begin].max..[revenue['end_date'], month_range.end].min
+          revenue['months'].push((overlap.end.to_time - overlap.begin.to_time) / (revenue['end_date'].to_time - revenue['start_date'].to_time))
+        else
+          revenue['months'].push 0
+        end
+      end
+
+      quarters.each do |quarter|
+        if quarter[:range].overlaps? revenue_range
+          overlap = [revenue['start_date'], quarter[:start_date]].max..[revenue['end_date'], quarter[:end_date]].min
+          revenue[:quarters].push (overlap.end - overlap.begin)  / (revenue['end_date'] - revenue['start_date'])
+        else
+          revenue[:quarters].push 0
+        end
+      end
+    end
+    revs
   end
 
   def revenues
@@ -130,6 +167,10 @@ class Api::RevenueController < ApplicationController
     @quarters << { start_date: Time.new(year, 4, 1), end_date: Time.new(year, 6, 30), quarter: 2 }
     @quarters << { start_date: Time.new(year, 7, 1), end_date: Time.new(year, 9, 30), quarter: 3 }
     @quarters << { start_date: Time.new(year, 10, 1), end_date: Time.new(year, 12, 31), quarter: 4 }
+    @quarters = @quarters.map do |quarter|
+      quarter[:range] = quarter[:start_date] .. quarter[:end_date]
+      quarter
+    end
     @quarters
   end
 
@@ -181,7 +222,7 @@ class Api::RevenueController < ApplicationController
 
   def crevenues
     return @crevenues if defined?(@crevenues)
-    
+
     @crevenues = []
     member_or_team.all_revenues_for_time_period(start_date, end_date).each do |rs|
       if rs.kind_of?(Array)
