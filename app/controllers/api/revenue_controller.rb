@@ -33,6 +33,9 @@ class Api::RevenueController < ApplicationController
     revs.map do |revenue|
       revenue[:quarters] = []
       revenue[:year] = year
+      if revenue['end_date'] == revenue['start_date']
+        revenue['end_date'] += 1.day
+      end
       revenue_range = revenue['start_date'] .. revenue['end_date']
       revenue['months'] = []
       month = Date.parse("#{year-1}1201")
@@ -41,13 +44,11 @@ class Api::RevenueController < ApplicationController
         if month_range.overlaps? revenue_range
           overlap = [revenue['start_date'], month_range.begin].max..[revenue['end_date'], month_range.end].min
           revenue['months'].push((overlap.end.to_time - overlap.begin.to_time) / (revenue['end_date'].to_time - revenue['start_date'].to_time))
-          revenue
         else
           revenue['months'].push 0
         end
       end
 
-      month = Date.parse("#{year-1}1201")
       quarters.each do |quarter|
         if quarter[:range].overlaps? revenue_range
           overlap = [revenue['start_date'], quarter[:start_date]].max..[revenue['end_date'], quarter[:end_date]].min
