@@ -10,6 +10,7 @@ class Api::DealsController < ApplicationController
           render json: activity_deals
         elsif params[:year].present?
           response_deals = company.deals
+            .includes(:deal_members)
             .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
             .as_json
 
