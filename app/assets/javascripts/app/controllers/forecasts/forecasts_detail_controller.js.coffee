@@ -3,7 +3,6 @@
 ($scope, $q, Forecast, Revenue, DealResource) ->
   $scope.years = [2016, 2017]
   $scope.deals = []
-  $scope.stages = []
   $scope.stagesById = {}
 
   $scope.quotasByQuarter = {}
@@ -86,12 +85,8 @@
   $q.all(forecastRequests).then (responses) ->
     responses.forEach (response) ->
       response[0].teams.forEach (team) ->
-        if not $scope.stages.length
-          team.stages.sort((a, b) ->
-            b.probability - a.probability
-          ).forEach (stage) ->
-            $scope.stages.push stage
-            $scope.stagesById[stage.id] = stage
+        team.stages.forEach (stage) ->
+          if not $scope.stagesById[stage.id]
             $scope.years.forEach (year) ->
               $scope.forecastsByStage[year].stages[stage.id] = {
                 1: 0,
@@ -107,6 +102,7 @@
                 4: 0,
                 probability: stage.probability
               }
+            $scope.stagesById[stage.id] = stage
 
         return if not team or not team.year or not team.quarter
 
