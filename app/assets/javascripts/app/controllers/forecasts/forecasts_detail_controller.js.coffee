@@ -62,7 +62,6 @@
         console.log(revenue)
         if $scope.revenues[revenue.client.id]
           $scope.revenues[revenue.client.id].budget += revenue.budget
-          $scope.revenues[revenue.client.id].delivered += revenue.delivered
         else
           $scope.revenues[revenue.client.id] = revenue
           $scope.revenues[revenue.client.id].month_amounts = []
@@ -73,14 +72,14 @@
             $scope.revenues[revenue.client.id].quarter_amounts[n-1] = 0
 
         for n in [1..12]
-          delivered = revenue.delivered * revenue.months[n-1] / 100
-          $scope.revenues[revenue.client.id].month_amounts[n-1] += delivered
+          budget = revenue.budget * revenue.months[n-1] / 100
+          $scope.revenues[revenue.client.id].month_amounts[n-1] += budget
         for n in [1..4]
-          delivered = revenue.delivered * revenue.quarters[n-1] / 100
-          $scope.revenues[revenue.client.id].quarter_amounts[n-1] += delivered
-          $scope.revenuesByQuarter[revenue.year][n] += delivered
-          $scope.forecastsByQuarter[revenue.year][n] += delivered
-          $scope.forecastsByYear[revenue.year] += delivered
+          budget = revenue.budget * revenue.quarters[n-1] / 100
+          $scope.revenues[revenue.client.id].quarter_amounts[n-1] += budget
+          $scope.revenuesByQuarter[revenue.year][n] += budget
+          $scope.forecastsByQuarter[revenue.year][n] += budget
+          $scope.forecastsByYear[revenue.year] += budget
 
   $q.all(forecastRequests).then (responses) ->
     responses.forEach (response) ->
