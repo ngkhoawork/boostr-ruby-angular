@@ -197,7 +197,7 @@
                   %td.left
                     {{revenue.client.name}}
                   %td.right
-                    {{ revenue.budget / 100 | humanReadableMoney }}
+                    {{ revenue.budget | humanReadableMoney }}
                   %td.right
                     100%
                   %td.right{ 'ng-repeat': 'quarter in revenue.quarter_amounts track by $index', 'ng-show': 'showQuarterlyDeals' }
