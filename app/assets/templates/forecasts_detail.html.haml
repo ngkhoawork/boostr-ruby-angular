@@ -1,13 +1,3 @@
-#nav.transparent
-  .container
-    .row
-      .col-xs-12
-        %ul.nav.nav-tabs
-          %li.pull-left
-            %a{ href: '', 'ng-href': '/reports' }
-              .fa.fa-arrow-left
-              Back to Smart Insights
-
 .container
   .row
     .col-xs-12
@@ -69,17 +59,11 @@
                     {{ forecastsByYear[year] | humanReadableMoney }}
                 %tr
                   %td.text-right
-                    {{year}} Budget
+                    {{year}} Quota
                   %td.text-right{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
                     {{ quota | humanReadableMoney }}
                   %td.text-right
                     {{ quotasByYear[year] | humanReadableMoney }}
-                %tr
-                  %td.text-right
-                    Percentage of Annual Budget
-                  %td.text-right{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
-                    {{ (((quota || 0) / (quotasByYear[year] || 1)) * 100).toFixed(1) }}%
-                  %td.text-right
                 %tr
                   %td.text-right
                     Gap to Quota
@@ -87,6 +71,12 @@
                     {{ (quotasByQuarter[year][quarter] - pipeline) | humanReadableMoney }}
                   %td.text-right
                     {{ (quotasByYear[year] - forecastsByYear[year]) | humanReadableMoney }}
+                %tr
+                  %td.text-right
+                    Percentage of Annual Quota
+                  %td.text-right{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
+                    {{ (((quota || 0) / (quotasByYear[year] || 1)) * 100).toFixed(1) }}%
+                  %td.text-right
 
 
 
@@ -148,14 +138,14 @@
                     {{ unweightedByYear[year] | humanReadableMoney }}
                 %tr
                   %td.text-right
-                    {{year}} Budget
+                    {{year}} Quota
                   %td.text-right{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
                     {{ quota | humanReadableMoney }}
                   %td.text-right
                     {{ quotasByYear[year] | humanReadableMoney }}
                 %tr
                   %td.text-right
-                    Percentage of Annual Budget
+                    Percentage of Annual Quota
                   %td.text-right{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
                     {{ (((quota || 0) / (quotasByYear[year] || 1)) * 100).toFixed(1) }}%
                   %td.text-right
@@ -169,6 +159,51 @@
 
 
 
+      .panel
+        .panel-body
+          .period-toggle.pull-right
+            %select.form-control{ 'ng-model': 'showQuarterlyDeals', 'ng-options': "o.v as o.n for o in [{ n: 'Quarterly', v: true }, { n: 'Monthly', v: false }]" }
+          %h3 Revenue
+
+          .table-wrapper
+            %table.table.table-striped
+              %thead
+                %tr{ 'ng-show': 'showQuarterlyDeals' }
+                  %th.left Client
+                  %th.right Deal Value
+                  %th.right Probability
+                  %th.right Revenue Q1
+                  %th.right Revenue Q2
+                  %th.right Revenue Q3
+                  %th.right Revenue Q4
+                %tr{ 'ng-hide': 'showQuarterlyDeals' }
+                  %th.left Client
+                  %th.right Deal Value
+                  %th.right Probability
+                  %th.right Jan
+                  %th.right Feb
+                  %th.right Mar
+                  %th.right Apr
+                  %th.right May
+                  %th.right Jun
+                  %th.right Jul
+                  %th.right Aug
+                  %th.right Sep
+                  %th.right Oct
+                  %th.right Nov
+                  %th.right Dec
+              %tbody
+                %tr{ 'ng-repeat': 'revenue in revenues' }
+                  %td.left
+                    {{revenue.client.name}}
+                  %td.right
+                    {{ revenue.delivered / 100 | humanReadableMoney }}
+                  %td.right
+                    100%
+                  %td.right{ 'ng-repeat': 'quarter in revenue.quarter_amounts track by $index', 'ng-show': 'showQuarterlyDeals' }
+                    {{ quarter | humanReadableMoney }}
+                  %td.right{ 'ng-repeat': 'month in revenue.month_amounts track by $index', 'ng-hide': 'showQuarterlyDeals' }
+                    {{ month | humanReadableMoney }}
 
       .panel
         .panel-body
@@ -212,9 +247,9 @@
                   %td.left
                     {{deal.advertiser.name}}
                   %td.left
-                    {{deal.creator.first_name}} {{deal.creator.last_name}}
+                    {{deal.deal_members[0].name}}
                   %td.right
-                    {{ ((deal.budget || 0) / 100) * deal.stage.probability | humanReadableMoney }}
+                    {{ ((deal.budget || 0) / 100) | humanReadableMoney }}
                   %td.right
                     {{deal.stage.probability}}%
                   %td.left

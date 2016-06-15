@@ -57,7 +57,11 @@ class ForecastTeam
   def teams
     return @teams if defined?(@teams)
 
-    if year.present?
+    if quarter.present?
+      @teams = team.children.map do |t|
+        ForecastTeam.new(t, start_date, end_date, quarter, year)
+      end.flatten
+    elsif year.present?
       @teams = team.children.map do |t|
         quarters.map do |dates|
           ForecastTeam.new(t, dates[:start_date], dates[:end_date], dates[:quarter])
@@ -75,7 +79,13 @@ class ForecastTeam
   def members
     return @members if defined?(@members)
 
-    if year.present?
+    if quarter.present?
+      @members = team.members.map do |m|
+        quarters.map do |dates|
+          ForecastMember.new(m, start_date, end_date, quarter, year)
+        end
+      end.flatten
+    elsif year.present?
       @members = team.members.map do |m|
         quarters.map do |dates|
           ForecastMember.new(m, dates[:start_date], dates[:end_date], dates[:quarter])

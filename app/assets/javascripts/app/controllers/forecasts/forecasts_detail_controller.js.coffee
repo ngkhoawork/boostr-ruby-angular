@@ -33,6 +33,7 @@
       3: 0,
       4: 0
     }
+    $scope.unweightedByStage[year] = { stages: {} }
     $scope.unweightedByQuarter[year] = {
       1: 0,
       2: 0,
@@ -59,9 +60,25 @@
   $q.all(revenueRequests).then (revenueResponses) ->
     revenueResponses.forEach (revenues) ->
       revenues.forEach (revenue) ->
-        $scope.revenues[revenue.id] = revenue
+        console.log(revenue)
+        if $scope.revenues[revenue.client.id]
+          $scope.revenues[revenue.client.id].budget += revenue.budget
+          $scope.revenues[revenue.client.id].delivered += revenue.delivered
+        else
+          $scope.revenues[revenue.client.id] = revenue
+          $scope.revenues[revenue.client.id].month_amounts = []
+          $scope.revenues[revenue.client.id].quarter_amounts = []
+          for n in [1..12]
+            $scope.revenues[revenue.client.id].month_amounts[n-1] = 0
+          for n in [1..4]
+            $scope.revenues[revenue.client.id].quarter_amounts[n-1] = 0
+
+        for n in [1..12]
+          delivered = revenue.delivered * revenue.months[n-1] / 100
+          $scope.revenues[revenue.client.id].month_amounts[n-1] += delivered
         for n in [1..4]
-          delivered = revenue.delivered * revenue.quarters[n-1]
+          delivered = revenue.delivered * revenue.quarters[n-1] / 100
+          $scope.revenues[revenue.client.id].quarter_amounts[n-1] += delivered
           $scope.revenuesByQuarter[revenue.year][n] += delivered
           $scope.forecastsByQuarter[revenue.year][n] += delivered
           $scope.forecastsByYear[revenue.year] += delivered
@@ -75,40 +92,39 @@
           ).forEach (stage) ->
             $scope.stages.push stage
             $scope.stagesById[stage.id] = stage
+            $scope.years.forEach (year) ->
+              $scope.forecastsByStage[year].stages[stage.id] = {
+                1: 0,
+                2: 0,
+                3: 0,
+                4: 0,
+                probability: stage.probability
+              }
+              $scope.unweightedByStage[year].stages[stage.id] = {
+                1: 0,
+                2: 0,
+                3: 0,
+                4: 0,
+                probability: stage.probability
+              }
 
         return if not team or not team.year or not team.quarter
 
-        if not $scope.forecastsByStage[team.year].stages
-          $scope.forecastsByStage[team.year] = {stages: {}}
-          $scope.unweightedByStage[team.year] = {stages: {}}
-          for stage in $scope.stages
-            $scope.forecastsByStage[team.year].stages[stage.id] = {
-              1: 0,
-              2: 0,
-              3: 0,
-              4: 0,
-              probability: stage.probability
-            }
-            $scope.unweightedByStage[team.year].stages[stage.id] = {
-              1: 0,
-              2: 0,
-              3: 0,
-              4: 0,
-              probability: stage.probability
-            }
         $scope.quotasByQuarter[team.year][team.quarter] += parseFloat(team.quota)
         $scope.quotasByYear[team.year] += parseFloat(team.quota)
         for stageId, pipeline of team.weighted_pipeline_by_stage
-          $scope.forecastsByStage[team.year].stages[stageId][team.quarter] += parseFloat(pipeline)
-          $scope.forecastsByQuarter[team.year][team.quarter] += parseFloat(pipeline)
-          $scope.forecastsByYear[team.year] += parseFloat(pipeline)
+          $scope.forecastsByStage[team.year].stages[stageId][team.quarter] += pipeline
+          $scope.forecastsByQuarter[team.year][team.quarter] += pipeline
+          $scope.forecastsByYear[team.year] += pipeline
         for stageId, pipeline of team.unweighted_pipeline_by_stage
-          $scope.unweightedByStage[team.year].stages[stageId][team.quarter] += parseFloat(pipeline)
-          $scope.unweightedByQuarter[team.year][team.quarter] += parseFloat(pipeline)
-          $scope.unweightedByYear[team.year] += parseFloat(pipeline)
+          $scope.unweightedByStage[team.year].stages[stageId][team.quarter] += pipeline
+          $scope.unweightedByQuarter[team.year][team.quarter] += pipeline
+          $scope.unweightedByYear[team.year] += pipeline
 
   DealResource.query(year: $scope.years[0]).$promise.then (deals) ->
     deals.sort (a, b) ->
       b.stage.probability - a.stage.probability
+    deals = deals.filter (deal) ->
+      deal.stage.probability < 100
     $scope.deals = deals
 ]
