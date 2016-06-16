@@ -228,8 +228,13 @@ class ForecastTeam
     members.each do |member|
       next if leader and member.member == leader.member
       members_gap_to_quota += member.gap_to_quota
+      if member.new_deals_needed == 'N/A'
+        new_deals = 'N/A'
+        break
+      end
       new_deals += member.new_deals_needed
     end
+    return 'N/A' if new_deals == 'N/A'
 
     leader_gap_to_quota = gap_to_quota - members_gap_to_quota
 
