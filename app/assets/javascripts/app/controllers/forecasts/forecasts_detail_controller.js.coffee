@@ -77,7 +77,6 @@
         for n in [1..4]
           budget = revenue.budget * revenue.quarters[n-1]
           $scope.revenues[revenue.client.id].quarter_amounts[n-1] += budget
-          $scope.revenuesByQuarter[revenue.year][n] += budget
           $scope.forecastsByQuarter[revenue.year][n] += budget
           $scope.forecastsByYear[revenue.year] += budget
 
@@ -105,6 +104,7 @@
 
         return if not team or not team.year or not team.quarter
 
+        $scope.revenuesByQuarter[team.year][team.quarter] += team.revenue
         $scope.quotasByQuarter[team.year][team.quarter] += parseFloat(team.quota)
         $scope.quotasByYear[team.year] += parseFloat(team.quota)
         for stageId, pipeline of team.weighted_pipeline_by_stage
