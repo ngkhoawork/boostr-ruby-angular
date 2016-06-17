@@ -81,9 +81,7 @@ class ForecastTeam
 
     if quarter.present?
       @members = team.members.map do |m|
-        quarters.map do |dates|
-          ForecastMember.new(m, start_date, end_date, quarter, year)
-        end
+        ForecastMember.new(m, start_date, end_date, quarter, year)
       end.flatten
     elsif year.present?
       @members = team.members.map do |m|
