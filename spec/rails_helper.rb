@@ -52,6 +52,7 @@ RSpec.configure do |config|
       DatabaseCleaner.strategy = :truncation
     end
     DatabaseCleaner.start
+    FactoryGirl.create(:company)
   end
 
   config.after do

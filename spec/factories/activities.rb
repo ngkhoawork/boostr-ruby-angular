@@ -1,16 +1,22 @@
 FactoryGirl.define do
   factory :activity do
-    company_id 1
-user_id 1
-contact_id 1
-deal_id 1
-client_id 1
-activity_type_id 1
-activity_type_name "Phone Call"
-happened_at "2016-03-11 23:15:03"
-updated_by 1
-created_by 1
-comment "Positive phone call"
-  end
+    activity_type_id 1
+    activity_type_name "Phone Call"
+    happened_at "2016-03-11 23:15:03"
+    comment "Positive phone call"
 
+    client
+    deal
+    user
+    association :updated_by, factory: :user
+    association :created_by, factory: :user
+
+    contacts { build_list :contact, 1 }
+
+    before(:create) do |activity|
+      activity.company = Company.first
+      activity.updated_by = activity.user
+      activity.created_by = activity.user
+    end
+  end
 end

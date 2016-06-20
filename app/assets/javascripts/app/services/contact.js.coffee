@@ -47,6 +47,8 @@
   allContacts = []
   currentContact = undefined
 
+  @$resource = resource
+
   @all = (callback) ->
     resource.query {}, (contacts) =>
       allContacts = contacts

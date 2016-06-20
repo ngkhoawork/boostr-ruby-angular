@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 feature 'Clients' do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
+  let(:company) { Company.first }
+  let(:user) { create :user }
 
   describe 'showing client details' do
-    let!(:client) { create :client, company: company, created_by: user.id }
-    let!(:agency) { create :client, company: company, created_by: user.id }
-    let!(:contacts) { create_list :contact, 2, client: client, company: company, address_attributes: attributes_for(:address) }
-    let!(:deal) { create_list :deal, 2, company: company, advertiser: client }
-    let!(:agency_deal) { create :deal, company: company, agency: agency }
+    let!(:client) { create :client, created_by: user.id }
+    let!(:agency) { create :client, created_by: user.id }
+    let!(:contacts) { create_list :contact, 2, client: client, address_attributes: attributes_for(:address) }
+    let!(:deal) { create_list :deal, 2, advertiser: client }
+    let!(:agency_deal) { create :deal, agency: agency }
 
     before do
       set_client_type(client, company, 'Advertiser')
@@ -134,7 +134,7 @@ feature 'Clients' do
   end
 
   describe 'deleting a client' do
-    let!(:clients) { create_list :client, 3, company: company, created_by: user.id }
+    let!(:clients) { create_list :client, 3, created_by: user.id }
 
     before do
       clients.sort_by!(&:name)
@@ -170,8 +170,8 @@ feature 'Clients' do
   end
 
   describe 'adding a contact to a client' do
-    let!(:client) { create :client, company: company, created_by: user.id }
-    let!(:contact) { create :contact, company: company, address_attributes: attributes_for(:address) }
+    let!(:client) { create :client, created_by: user.id }
+    let!(:contact) { create :contact, address_attributes: attributes_for(:address) }
 
     before do
       set_client_type(client, company, 'Advertiser')
@@ -238,12 +238,12 @@ feature 'Clients' do
   end
 
   describe 'adding a deal to a client' do
-    let!(:client) { create :client, company: company, created_by: user.id }
-    let!(:agency) { create :client, company: company, created_by: user.id }
+    let!(:client) { create :client, created_by: user.id }
+    let!(:agency) { create :client, created_by: user.id }
 
-    let!(:open_stage) { create :stage, company: company, position: 1 }
-    let!(:deal_type_sponsorship_option) { create :option, company: company, field: deal_type_field(company), name: "Sponsorship" }
-    let!(:deal_source_rfp_option) { create :option, company: company, field: deal_source_field(company), name: "RFP Response to Agency" }
+    let!(:open_stage) { create :stage, position: 1 }
+    let!(:deal_type_sponsorship_option) { create :option, field: deal_type_field(company), name: "Sponsorship" }
+    let!(:deal_source_rfp_option) { create :option, field: deal_source_field(company), name: "RFP Response to Agency" }
 
     before do
       set_client_type(client, company, 'Advertiser')

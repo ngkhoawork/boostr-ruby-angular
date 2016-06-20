@@ -6,7 +6,7 @@ class Contact < ActiveRecord::Base
 
   has_one :address, as: :addressable
 
-  has_many :activities
+  has_and_belongs_to_many :activities, after_add: :update_activity_updated_at
 
   accepts_nested_attributes_for :address
 
@@ -22,8 +22,9 @@ class Contact < ActiveRecord::Base
         address: {},
         client: {},
         activities: {
-          include: [:creator, :contact]
-        }},
+          include: [:creator, :contacts]
+        }
+      },
       methods: [:formatted_name]
     ))
   end
@@ -100,5 +101,10 @@ class Contact < ActiveRecord::Base
     unless address and address.email
       errors.add(:email, "can't be blank")
     end
+  end
+
+  def update_activity_updated_at(activity)
+    activity_updated_at = activity.happened_at
+    save
   end
 end

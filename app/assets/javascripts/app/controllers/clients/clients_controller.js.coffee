@@ -6,6 +6,7 @@
   $scope.types = []
   $scope.feedName = 'Updates'
   $scope.clients = []
+  $scope.contacts = []
   $scope.query = ""
   $scope.page = 1
 
@@ -23,6 +24,8 @@
     $scope.clientFilter = $scope.clientFilters[0]
 
   $scope.init = ->
+    ActivityType.all().then (activityTypes) ->
+      $scope.types = activityTypes
     $scope.getClient($routeParams.id) if $routeParams.id
     $scope.getClients()
     $scope.showContactList = false
@@ -36,10 +39,10 @@
             client_member.role = Field.field(client_member, 'Member Role')
             $scope.client_members.push(client_member)
 
-
   $scope.getContacts = (client) ->
     unless client.contacts
       Contact.allForClient client.id, (contacts) ->
+        $scope.contacts = contacts
         client.contacts = contacts
 
   $scope.removeClientMember = (clientMember) ->
@@ -50,38 +53,34 @@
           cm.id != undefined
     )
 
+  $scope.setClient = (client) ->
+    $scope.currentClient = client
+    $scope.initActivity()
+    $scope.getContacts($scope.currentClient)
+    $scope.getDeals($scope.currentClient)
+    $scope.getClientMembers()
+
   $scope.getClient = (clientId) ->
     Client.get({ id: clientId }).$promise.then (client) ->
-      $scope.currentClient = client
-      $scope.getContacts($scope.currentClient)
-      $scope.getDeals($scope.currentClient)
-      $scope.getClientMembers()
+      $scope.setClient(client)
 
   $scope.getClients = ->
     $scope.isLoading = true
-    ActivityType.all().then (activityTypes) ->
-      $scope.types = activityTypes
-      params = {
-        filter: $scope.clientFilter.param,
-        page: $scope.page
-      }
-      if $scope.query.trim().length
-        params.name = $scope.query.trim()
-      Client.query(params).$promise.then (clients) ->
-        if $scope.page > 1
-          $scope.clients = $scope.clients.concat(clients)
-        else
-          $scope.clients = clients
-          if clients.length > 0 and !$routeParams.id
-            $scope.currentClient = clients[0]
-            $scope.getContacts($scope.currentClient)
-            $scope.getDeals($scope.currentClient)
-            $scope.getClientMembers()
+    params = {
+      filter: $scope.clientFilter.param,
+      page: $scope.page
+    }
+    if $scope.query.trim().length
+      params.name = $scope.query.trim()
+    Client.query(params).$promise.then (clients) ->
+      if $scope.page > 1
+        $scope.clients = $scope.clients.concat(clients)
+      else
+        $scope.clients = clients
+        if clients.length > 0 and !$routeParams.id
+          $scope.setClient(clients[0])
+      $scope.isLoading = false
 
-        _.each $scope.clients, (client) ->
-          $scope.initActivity(client, activityTypes)
-        $scope.isLoading = false
- 
   $scope.getDeals = (client) ->
     Deal.all({client_id: client.id}).then (deals) ->
       $scope.currentClient.deals = deals
@@ -106,8 +105,7 @@
 
   $scope.showClient = (client) ->
     if client
-      $scope.currentClient = client
-      $scope.getContacts($scope.currentClient)
+      $scope.setClient(client)
 
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
@@ -199,7 +197,7 @@
         el.id != $scope.currentClient.id
       $scope.currentClient.$delete()
       if $scope.clients.length
-        $scope.currentClient = $scope.clients[0]
+        $scope.setClient $scope.clients[0]
       else
         $scope.currentClient = null
       $scope.$emit('updated_current_client')
@@ -241,17 +239,12 @@
 
   $scope.init()
 
-  $scope.initActivity = (client, types) ->
-    $scope.activity = {}
-    client.activity = {}
-    client.activeTab = {}
-    client.selected = {}
-    client.activeType = types[0]
-    client.populateContact = false
-    now = new Date
-    _.each types, (type) -> 
-      client.selected[type.name] = {}
-      client.selected[type.name].date = now
+  $scope.initActivity = () ->
+    $scope.activity = new Activity.$resource
+    $scope.activity.date = new Date
+    $scope.activity.contacts = []
+    $scope.showExtendedActivityForm = false
+    $scope.populateContact = false
 
   $scope.setActiveTab = (client, tab) ->
     client.activeTab = tab
@@ -259,27 +252,19 @@
   $scope.setActiveType = (client, type) ->
     client.activeType = type
 
-  $scope.searchContact = (name) ->
-    Contact.all1({name: name}).then (contacts) ->
-      contacts
-
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
-    if $scope.currentClient.selected[$scope.currentClient.activeType.name].contact == undefined
+    if $scope.activity.contacts.length == 0
       $scope.buttonDisabled = false
       return
-    $scope.activity.comment = $scope.currentClient.activity.comment
     $scope.activity.client_id = $scope.currentClient.id
-    $scope.activity.activity_type_id = $scope.currentClient.activeType.id
-    $scope.activity.activity_type_name = $scope.currentClient.activeType.name
-    $scope.activity.contact_id = $scope.currentClient.selected[$scope.currentClient.activeType.name].contact.id
-    contactDate = new Date($scope.currentClient.selected[$scope.currentClient.activeType.name].date)
-    if $scope.currentClient.selected[$scope.currentClient.activeType.name].time != undefined
-      contactTime = new Date($scope.currentClient.selected[$scope.currentClient.activeType.name].time)
+    contactDate = new Date($scope.activity.date)
+    if $scope.activity.time != undefined
+      contactTime = new Date($scope.activity.time)
       contactDate.setHours(contactTime.getHours(), contactTime.getMinutes(), 0, 0)
       $scope.activity.timed = true
     $scope.activity.happened_at = contactDate
-    Activity.create({ activity: $scope.activity }, (response) ->
+    Activity.create({ activity: $scope.activity, contacts: $scope.activity.contacts }, (response) ->
       $scope.buttonDisabled = false
     ).then (activity) ->
       $scope.buttonDisabled = false
@@ -298,18 +283,15 @@
           {}
 
   $scope.cancelActivity = (client) ->
-    $scope.initActivity(client, $scope.types)
+    $scope.initActivity()
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
-      $scope.currentClient.selected[$scope.currentClient.activeType.name].contact = contact
+      $scope.currentClient.selected[$scope.currentClient.activeType.name].contacts.push contact
       $scope.populateContact = false
 
   $scope.$on 'newClient', (event, client) ->
-    $scope.currentClient = client
-    $scope.getContacts($scope.currentClient)
-    $scope.getDeals($scope.currentClient)
-    $scope.getClientMembers()
+    $scope.setClient(client)
     $scope.clients.push(client)
 
   $scope.getType = (type) ->

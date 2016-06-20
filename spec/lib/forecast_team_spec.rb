@@ -1,18 +1,18 @@
 require 'rails_helper'
 
 RSpec.describe ForecastTeam do
-    let(:company) { create :company }
-    let(:leader) { create :user, company: company, win_rate: 0.5, average_deal_size: 100 }
-    let(:time_period) { create :time_period, company: company, start_date: "2015-01-01", end_date: "2015-12-31" }
-    let(:client) { create :client, company: company }
+    let(:company) { Company.first }
+    let(:leader) { create :user, win_rate: 0.5, average_deal_size: 100 }
+    let(:time_period) { create :time_period, start_date: "2015-01-01", end_date: "2015-12-31" }
+    let(:client) { create :client }
 
   context 'with a leader' do
-    let(:team) { create :parent_team, company: company, leader: leader }
-    let(:member) { create :user, company: company, team: team, win_rate: 0.5, average_deal_size: 100 }
-    let!(:leader_quota) { create :quota, user: leader, value: 5000, time_period: time_period, company: company }
-    let!(:member_quota) { create :quota, user: member, value: 2000, time_period: time_period, company: company }
+    let(:team) { create :parent_team, leader: leader }
+    let(:member) { create :user, team: team, win_rate: 0.5, average_deal_size: 100 }
+    let!(:leader_quota) { create :quota, user: leader, value: 5000, time_period: time_period }
+    let!(:member_quota) { create :quota, user: member, value: 2000, time_period: time_period }
     let(:stage) { create :stage, probability: 50 }
-    let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
+    let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
     let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
     let!(:deal_member1) { create :deal_member, deal: deal, user: leader, share: 50 }
     let!(:deal_member2) { create :deal_member, deal: deal, user: member, share: 50 }
@@ -24,11 +24,11 @@ RSpec.describe ForecastTeam do
 
     context 'with revenue' do
       it 'sums the split revenue' do
-        another_user = create(:user, company: company, team: team)
+        another_user = create(:user, team: team)
         client.client_members.create(user: leader, share: 50, values: [create_member_role(company)])
         client.client_members.create(user: another_user, share: 50, values: [create_member_role(company, "Member")])
         today = Time.parse("2015-09-17")
-        create_list :revenue, 10, company: company, client: client, user: leader, budget: 1000, start_date: today, end_date: today
+        create_list :revenue, 10, client: client, user: leader, budget: 1000, start_date: today, end_date: today
         expect(forecast.revenue).to eq(10000)
       end
     end
@@ -62,9 +62,9 @@ RSpec.describe ForecastTeam do
   end
 
   context 'parents' do
-    let(:parent_parent_team) { create :parent_team, company: company }
-    let(:parent_team) { create :parent_team, company: company, parent: parent_parent_team }
-    let(:team) { create :parent_team, company: company, parent: parent_team }
+    let(:parent_parent_team) { create :parent_team }
+    let(:parent_team) { create :parent_team, parent: parent_parent_team }
+    let(:team) { create :parent_team, parent: parent_team }
     let(:forecast) { ForecastTeam.new(team, time_period.start_date, time_period.end_date) }
 
     it "has parent teams" do
@@ -76,25 +76,25 @@ RSpec.describe ForecastTeam do
   end
 
   context 'without a leader' do
-    let(:team) { create :parent_team, company: company }
-    let(:member) { create :user, company: company, team: team }
+    let(:team) { create :parent_team }
+    let(:member) { create :user, team: team }
     let(:forecast) { ForecastTeam.new(team, time_period.start_date, time_period.end_date) }
     let!(:member_quota) { create :quota, user: member, value: 2000, time_period: time_period }
 
     context 'with revenue' do
       it 'sums the split revenue' do
-        another_user = create(:user, company: company, team: team)
+        another_user = create(:user, team: team)
         client.client_members.create(user: member, share: 50, values: [create_member_role(company)])
         client.client_members.create(user: another_user, share: 50, values: [create_member_role(company, "Member")])
         today = Time.parse("2015-09-17")
-        create_list :revenue, 10, company: company, client: client, user: member, budget: 1000, start_date: today, end_date: today
+        create_list :revenue, 10, client: client, user: member, budget: 1000, start_date: today, end_date: today
         expect(forecast.revenue).to eq(10000)
       end
     end
 
     context 'weighted_pipeline' do
       let(:stage) { create :stage, probability: 50 }
-      let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
+      let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
       let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
       it 'sums the weighted_pipeline' do

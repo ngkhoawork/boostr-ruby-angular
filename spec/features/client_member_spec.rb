@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 feature 'ClientMembers' do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
-  let!(:other_user) { create :user, company: company }
-  let!(:client) { create :client, company: company, created_by: user.id }
+  let(:company) { Company.first }
+  let(:user) { create :user }
+  let!(:other_user) { create :user }
+  let!(:client) { create :client, created_by: user.id }
   let!(:client_role_manager) { create_member_role(company) }
 
   describe 'showing client_member details' do

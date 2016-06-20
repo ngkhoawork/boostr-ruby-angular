@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::InvitationsController, type: :controller do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
+  let(:company) { Company.first }
+  let(:user) { create :user }
   let(:user_params) { attributes_for :invited_user, first_name: 'Bob', last_name: 'Dawg' }
 
   before do

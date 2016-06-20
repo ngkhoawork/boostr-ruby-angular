@@ -5,6 +5,10 @@ FactoryGirl.define do
     first_name { FFaker::Name.first_name }
     last_name { FFaker::Name.last_name }
     title { FFaker::Job.title }
+
+    before(:create) do |item|
+      item.company = Company.first
+    end
   end
 
   factory :invited_user, class: User do
@@ -12,5 +16,9 @@ FactoryGirl.define do
     first_name { FFaker::Name.first_name }
     last_name { FFaker::Name.last_name }
     title { FFaker::Job.title }
+
+    before(:create) do |item|
+      item.company = Company.first
+    end
   end
 end

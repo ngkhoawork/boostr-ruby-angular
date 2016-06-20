@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 feature 'Forecast' do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
-  let(:parent) { create :parent_team, company: company, leader: user }
-  let!(:time_period) { create :time_period, company: company }
-  let!(:another_time_period) { create :time_period, company: company, name: 'Y2' }
-  let!(:child) { create :child_team, company: company, parent: parent }
-  let!(:member) { create :user, company: company, team: child }
-  let(:stage) { create :stage, company: company, probability: 100 }
-  let(:deal) { create :deal, company: company, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
+  let(:company) { Company.first }
+  let(:user) { create :user }
+  let(:parent) { create :parent_team, leader: user }
+  let!(:time_period) { create :time_period }
+  let!(:another_time_period) { create :time_period, name: 'Y2' }
+  let!(:child) { create :child_team, parent: parent }
+  let!(:member) { create :user, team: child }
+  let(:stage) { create :stage, probability: 100 }
+  let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
   let!(:deal_member) { create :deal_member, deal: deal, user: member, share: 100 }
   let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 

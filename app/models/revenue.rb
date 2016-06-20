@@ -164,10 +164,10 @@ class Revenue < ActiveRecord::Base
       self.last_alert_at = DateTime.now
     end
   end
-  
+
   def self.set_alerts(company_id)
     User.where(company_id: company_id).update_all(pos_balance_cnt: 0, neg_balance_cnt: 0, pos_balance: 0, neg_balance: 0, pos_balance_l_cnt: 0, neg_balance_l_cnt: 0, pos_balance_l: 0, neg_balance_l: 0, last_alert_at: DateTime.now)
-    where(company_id: company_id).each do |r|    
+    where(company_id: company_id).each do |r|
       if r.last_alert_at.nil? || r.last_alert_at.to_date < DateTime.now.to_date
         r.set_alert
       end
@@ -177,8 +177,8 @@ class Revenue < ActiveRecord::Base
           if r.balance > 0
             u.pos_balance_cnt += 1
             u.pos_balance += r.balance*cm.share/100
-          elsif r.balance < 0  
-            u.neg_balance_cnt += 1        
+          elsif r.balance < 0
+            u.neg_balance_cnt += 1
             u.neg_balance += r.balance*cm.share/100
           end
           u.pos_balance_l_cnt = u.pos_balance_cnt

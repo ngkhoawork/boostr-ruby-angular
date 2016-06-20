@@ -1,16 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe Revenue, type: :model do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
-  let(:client) { create :client, company: company }
-  let(:product) { create :product, company: company }
+  let(:company) { Company.first }
+  let(:user) { create :user }
+  let(:client) { create :client }
+  let(:product) { create :product }
 
   describe 'scopes' do
     context 'for_time_period' do
-      let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-12-31', company: company }
-      let!(:in_revenue) { create :revenue, start_date: '2015-02-01', end_date: '2015-2-28', company: company  }
-      let!(:out_revenue) { create :revenue, start_date: '2016-02-01', end_date: '2016-2-28', company: company  }
+      let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-12-31' }
+      let!(:in_revenue) { create :revenue, start_date: '2015-02-01', end_date: '2015-2-28'  }
+      let!(:out_revenue) { create :revenue, start_date: '2016-02-01', end_date: '2016-2-28'  }
 
       it 'should return revenues that are completely in the time period' do
         expect(Revenue.for_time_period(time_period.start_date, time_period.end_date).count).to eq(1)
@@ -18,8 +18,8 @@ RSpec.describe Revenue, type: :model do
       end
 
       it 'returns revenues that are partially in the time period' do
-        create :revenue, start_date: '2015-02-01', end_date: '2016-2-28', company: company
-        create :revenue, start_date: '2014-12-01', end_date: '2015-2-28', company: company
+        create :revenue, start_date: '2015-02-01', end_date: '2016-2-28'
+        create :revenue, start_date: '2014-12-01', end_date: '2015-2-28'
 
         expect(Revenue.for_time_period(time_period.start_date, time_period.end_date).count).to eq(3)
       end
@@ -27,11 +27,10 @@ RSpec.describe Revenue, type: :model do
   end
 
   describe 'alerts' do
-    let(:company) { create :company, id: 9999999 }
-    let(:user) { create :user, company: company }
-    let(:client) { create :client, company: company }
+    let(:user) { create :user }
+    let(:client) { create :client }
     let(:client_member) { create :client_member, client: client, user: user, share: 100 }
-    let(:revenue) { create :revenue, company: company, user: user, client: client, start_date: DateTime.now.to_date-15, end_date: DateTime.now.to_date+15, budget: 10000, budget_remaining: 8000 }
+    let(:revenue) { create :revenue, user: user, client: client, start_date: DateTime.now.to_date-15, end_date: DateTime.now.to_date+15, budget: 10000, budget_remaining: 8000 }
 
     it 'returns run rate' do
       client.client_members << client_member
@@ -127,7 +126,7 @@ RSpec.describe Revenue, type: :model do
   end
 
   describe '#daily_budget' do
-    let(:revenue) { create :revenue, company: company }
+    let(:revenue) { create :revenue }
 
     it 'returns the daily budget amount based on budget and start and end dates' do
       expect(revenue.daily_budget).to eq(1000)

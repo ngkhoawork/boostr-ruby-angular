@@ -10,15 +10,19 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def create
-      @activity = company.activities.new(activity_params)
-      activity.user_id = current_user.id
-      activity.created_by = current_user.id
-      activity.updated_by = current_user.id
-      if activity.save
-        render json: activity, status: :created
-      else
-        render json: { errors: activity.errors.messages }, status: :unprocessable_entity
+    @activity = company.activities.build(activity_params)
+    @activity.user_id = current_user.id
+    @activity.created_by = current_user.id
+    @activity.updated_by = current_user.id
+    if @activity.save
+      contacts = company.contacts.where(id: params[:contacts])
+      contacts.each do |contact|
+        @activity.contacts << contact
       end
+      render json: activity, status: :created
+    else
+      render json: { errors: activity.errors.messages }, status: :unprocessable_entity
+    end
   end
 
   def update
@@ -37,7 +41,19 @@ class Api::ActivitiesController < ApplicationController
   private
 
   def activity_params
-    params.require(:activity).permit(:type, :deal_id, :client_id, :contact_id, :user_id, :activity_type_id, :activity_type_name, :comment, :happened_at, :activity_type, :timed, :google_event_id)
+    params.require(:activity).permit(
+      :type,
+      :deal_id,
+      :client_id,
+      :user_id,
+      :activity_type_id,
+      :activity_type_name,
+      :comment,
+      :happened_at,
+      :activity_type,
+      :timed,
+      :google_event_id
+    )
   end
 
   def activity

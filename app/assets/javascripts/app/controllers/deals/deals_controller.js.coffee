@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-['$rootScope', '$scope', '$modal', '$filter', '$routeParams', '$q', '$location', '$window', 'Deal', 'Stage',
-($rootScope, $scope, $modal, $filter, $routeParams, $q, $location, $window, Deal, Stage) ->
+['$rootScope', '$scope', '$modal', '$filter', '$routeParams', '$q', '$location', '$window', 'Deal', 'Stage', 'Contact',
+($rootScope, $scope, $modal, $filter, $routeParams, $q, $location, $window, Deal, Stage, Contact) ->
 
   $scope.dealFilters = [
     { name: 'My Deals', param: '' }

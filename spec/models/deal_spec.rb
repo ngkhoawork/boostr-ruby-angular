@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Deal, type: :model do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
+  let(:company) { Company.first }
+  let(:user) { create :user }
 
   context 'scopes' do
 
     context 'for_client' do
-      let!(:deal) { create :deal, company: company }
-      let(:agency) { create :client, company: company }
-      let!(:another_deal) { create :deal, company: company, agency: agency }
+      let!(:deal) { create :deal }
+      let(:agency) { create :client }
+      let!(:another_deal) { create :deal, agency: agency }
 
       it 'returns all when client_id is nil' do
         expect(Deal.for_client(nil).count).to eq(2)
@@ -21,7 +21,7 @@ RSpec.describe Deal, type: :model do
     end
 
     context 'for_time_period' do
-      let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-12-31', company: company }
+      let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-12-31' }
       let!(:in_deal) { create :deal, start_date: '2015-02-01', end_date: '2015-2-28'  }
       let!(:out_deal) { create :deal, start_date: '2016-02-01', end_date: '2016-2-28'  }
 
@@ -54,7 +54,7 @@ RSpec.describe Deal, type: :model do
 
   describe '#in_period_amt' do
     let(:deal) { create :deal }
-    let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-01-31', company: company }
+    let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-01-31' }
 
     it 'returns 0 when there are no deal products' do
       expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(0)
@@ -163,7 +163,7 @@ RSpec.describe Deal, type: :model do
 
   describe '#generate_deal_members' do
     let(:client) { create :client }
-    let!(:client_role_owner) { create :option, company: company, field: client_role_field(company), name: "Owner" }
+    let!(:client_role_owner) { create :option, field: client_role_field(company), name: "Owner" }
     let(:role) { create :value, field: client_role_field(company), option: client_role_owner }
     let!(:client_member) { create :client_member, user: user, client: client, values: [role] }
     let(:deal) { build :deal, advertiser: client }
@@ -180,8 +180,8 @@ RSpec.describe Deal, type: :model do
   end
 
   context 'to_zip' do
-    let(:deal) { create :deal, name: 'Bob', company: company }
-    let(:product) { create :product, company: company }
+    let(:deal) { create :deal, name: 'Bob' }
+    let(:product) { create :product }
  
     it 'returns the contents of deal zip' do
       deal.add_product(product.id, 10_000)
@@ -191,11 +191,10 @@ RSpec.describe Deal, type: :model do
   end
 
   context 'after_update' do
-    let(:company) { create :company }
-    let(:user) { create :user, company: company }
-    let(:stage) { create :stage, company: company }
-    let(:stage1) { create :stage, company: company }
-    let(:deal) { create :deal, stage: stage, company: company, creator: user, updator: user, stage_updator: user, stage_updated_at: Date.new }
+    let(:user) { create :user }
+    let(:stage) { create :stage }
+    let(:stage1) { create :stage }
+    let(:deal) { create :deal, stage: stage, creator: user, updator: user, stage_updator: user, stage_updated_at: Date.new }
     it 'create deal_steage_log' do
       deal.update_attributes(stage: stage1)
       expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'U')).not_to be_nil
@@ -203,10 +202,9 @@ RSpec.describe Deal, type: :model do
   end
 
   context 'after_destroy' do
-    let(:company) { create :company }
-    let(:user) { create :user, company: company }
-    let(:stage) { create :stage, company: company }
-    let(:deal) { create :deal, stage: stage, company: company, creator: user, updator: user, stage_updator: user, stage_updated_at: Date.new }
+    let(:user) { create :user }
+    let(:stage) { create :stage }
+    let(:deal) { create :deal, stage: stage, creator: user, updator: user, stage_updator: user, stage_updated_at: Date.new }
     it 'create deal_steage_log' do
       deal.destroy
       expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'D')).not_to be_nil
