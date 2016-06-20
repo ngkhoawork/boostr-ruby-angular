@@ -1,14 +1,14 @@
 require 'rails_helper'
 
 feature 'DealMembers' do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
-  let(:stage) { create :stage, company: company, position: 1 }
+  let(:company) { Company.first }
+  let(:user) { create :user }
+  let(:stage) { create :stage, position: 1 }
   let(:client) { create :client }
-  let!(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client }
-  let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
-  let!(:deal_type_value) { create :value, company: company, field: deal_type_field(company), subject: deal, option: deal_type_seasonal_option }
-  let!(:client_member_role_option) { create :option, company: company, field: client_role_field(company), name: "Member" }
+  let!(:deal) { create :deal, stage: stage, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client }
+  let!(:deal_type_seasonal_option) { create :option, field: deal_type_field(company), name: "Seasonal" }
+  let!(:deal_type_value) { create :value, field: deal_type_field(company), subject: deal, option: deal_type_seasonal_option }
+  let!(:client_member_role_option) { create :option, field: client_role_field(company), name: "Member" }
 
   describe 'adding a deal_member' do
     before do

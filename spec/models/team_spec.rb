@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Team, type: :model do
-  let(:company) { create :company }
-  let(:parent) { create :parent_team, company: company }
-  let!(:child) { create :child_team, company: company, parent: parent }
+  let(:company) { Company.first }
+  let(:parent) { create :parent_team }
+  let!(:child) { create :child_team, parent: parent }
   let(:user) { create :user, team: parent }
 
   context 'scopes' do
@@ -16,22 +16,17 @@ RSpec.describe Team, type: :model do
       end
 
       it 'has many members that only belong to the company' do
-        user.update_attributes(company_id: company.id)
         expect(parent.reload.members).to include(user)
-      end
-
-      it 'has no members because they do not belong to the company' do
-        expect(parent.reload.members).to_not include(user)
       end
     end
   end
 
   context '#all_deals_for_time_period' do
-    let(:time_period) { create :time_period, company: company }
-    let(:parent_member) { create :user, company: company, team: parent }
-    let(:child_member) { create :user, company: company, team: child }
-    let(:parent_deal) { create :deal, company: company, start_date: time_period.start_date, end_date: time_period.end_date }
-    let(:child_deal) { create :deal, company: company, start_date: time_period.start_date, end_date: time_period.end_date }
+    let(:time_period) { create :time_period }
+    let(:parent_member) { create :user, team: parent }
+    let(:child_member) { create :user, team: child }
+    let(:parent_deal) { create :deal, start_date: time_period.start_date, end_date: time_period.end_date }
+    let(:child_deal) { create :deal, start_date: time_period.start_date, end_date: time_period.end_date }
     let!(:parent_deal_member) { create :deal_member, deal: parent_deal, user: parent_member }
     let!(:child_deal_member) { create :deal_member, deal: child_deal, user: child_member }
 

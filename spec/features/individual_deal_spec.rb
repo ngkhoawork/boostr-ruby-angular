@@ -1,22 +1,22 @@
 require 'rails_helper'
 
 feature 'Individual Deal' do
-  let(:company) { create :company }
+  let(:company) { Company.first }
   let(:client) { create :client }
-  let!(:client_role_owner) { create :option, company: company, field: client_role_field(company), name: "Owner" }
+  let!(:client_role_owner) { create :option, field: client_role_field(company), name: "Owner" }
   let(:role) { create :value, field: client_role_field(company), option: client_role_owner }
-  let(:user) { create :user, company: company }
+  let(:user) { create :user }
   let!(:client_member) { create :client_member, user: user, client: client, values: [role] }
-  let(:stage) { create :stage, company: company, position: 1 }
+  let(:stage) { create :stage, position: 1 }
   let(:product) { create :product }
-  let!(:other_product) { create :product, company: company  }
-  let!(:second_product) { create :product, company: company  }
-  let(:deal) { create :deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client }
-  let!(:deal_source_pitch_option) { create :option, company: company, field: deal_source_field(company), name: "Pitch to Client" }
-  let!(:deal_source_rfp_option) { create :option, company: company, field: deal_source_field(company), name: "RFP Response to Client" }
+  let!(:other_product) { create :product  }
+  let!(:second_product) { create :product  }
+  let(:deal) { create :deal, stage: stage, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client }
+  let!(:deal_source_pitch_option) { create :option, field: deal_source_field(company), name: "Pitch to Client" }
+  let!(:deal_source_rfp_option) { create :option, field: deal_source_field(company), name: "RFP Response to Client" }
   let!(:deal_source_value) { create :value, field: deal_source_field(company), subject: deal, option: deal_source_pitch_option }
-  let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
-  let!(:deal_type_renewal_option) { create :option, company: company, field: deal_type_field(company), name: "Renewal" }
+  let!(:deal_type_seasonal_option) { create :option, field: deal_type_field(company), name: "Seasonal" }
+  let!(:deal_type_renewal_option) { create :option, field: deal_type_field(company), name: "Renewal" }
   let!(:deal_type_value) { create :value, field: deal_type_field(company), subject: deal, option: deal_type_seasonal_option }
 
   describe 'showing deal details' do

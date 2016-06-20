@@ -1,10 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe TimePeriod, type: :model do
-  let(:company) { create :company }
-
   context 'scopes' do
-    let!(:time_period) { create :time_period, company: company }
+    let!(:time_period) { create :time_period }
 
     context 'now' do
       it 'returns the first time period that encompasses the current date' do
@@ -24,21 +22,21 @@ RSpec.describe TimePeriod, type: :model do
   end
 
   context 'validating' do
-    let(:time_period) { create :time_period, company: company }
+    let(:time_period) { create :time_period }
 
     it "ignores itself" do
-      expect(build(:time_period, company: company)).to be_valid
+      expect(build(:time_period)).to be_valid
     end
 
     it "is case insensitive" do
       time_period
-      another_time_period = build(:time_period, company: company, name: time_period.name.downcase)
+      another_time_period = build(:time_period, name: time_period.name.downcase)
       expect(another_time_period).to be_invalid
     end
 
     it 'validates the name uniqueness' do
       time_period
-      another_time_period = build(:time_period, company: company, name: time_period.name)
+      another_time_period = build(:time_period, name: time_period.name)
       expect(another_time_period).to_not be_valid
       expect(another_time_period.errors[:name]).to be_present
     end
@@ -52,16 +50,16 @@ RSpec.describe TimePeriod, type: :model do
 
     it 'ignores deleted time periods' do
       time_period.destroy
-      another_time_period = build(:time_period, company: company, name: time_period.name)
+      another_time_period = build(:time_period, name: time_period.name)
       expect(another_time_period).to be_valid
      end
   end
 
   context 'quotas' do
     it 'should create a quota for each user of the company' do
-      create_list :user, 2, company: company
+      create_list :user, 2
       expect {
-        create :time_period, company: company
+        create :time_period
       }.to change(Quota, :count).by(2)
     end
   end

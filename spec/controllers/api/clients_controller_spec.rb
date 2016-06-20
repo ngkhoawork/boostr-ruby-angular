@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.describe Api::ClientsController, type: :controller do
 
-  let(:company) { create :company }
-  let(:team) { create :parent_team, company: company }
-  let(:user) { create :user, company: company, team: team }
+  let(:company) { Company.first }
+  let(:team) { create :parent_team }
+  let(:user) { create :user, team: team }
   let(:address_params) { attributes_for :address }
   let(:client_params) { attributes_for(:client, address_attributes: address_params) }
 
@@ -13,16 +13,16 @@ RSpec.describe Api::ClientsController, type: :controller do
   end
 
   describe "GET #index" do
-    let!(:leader_client) { create :client, company: company }
+    let!(:leader_client) { create :client }
 
-    let!(:user_client) { create :client, company: company, created_by: user.id }
+    let!(:user_client) { create :client, created_by: user.id }
 
-    let(:another_user) { create :user, company: company, team: team }
-    let!(:team_client) { create :client, company: company, created_by: another_user.id }
+    let(:another_user) { create :user, team: team }
+    let!(:team_client) { create :client, created_by: another_user.id }
 
     before do
       30.times do
-        create :client, company: company, created_by: user.id
+        create :client, created_by: user.id
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Api::ClientsController, type: :controller do
   end
 
   describe 'GET #show' do
-    let(:client) { create :client, company: company, created_by: user.id }
+    let(:client) { create :client, created_by: user.id }
 
     it 'returns json for a client' do
       get :show, id: client.id, format: :json
@@ -90,7 +90,7 @@ RSpec.describe Api::ClientsController, type: :controller do
   end
 
   describe "PUT #update" do
-    let(:client) { create :client, company: company, created_by: user.id  }
+    let(:client) { create :client, created_by: user.id  }
 
     it 'updates a client successfully' do
       put :update, id: client.id, client: { name: 'New Name' }, format: :json
@@ -101,7 +101,7 @@ RSpec.describe Api::ClientsController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    let!(:client) { create :client, company: company, created_by: user.id  }
+    let!(:client) { create :client, created_by: user.id  }
 
     it 'marks the client as deleted' do
       delete :destroy, id: client.id, format: :json

@@ -5,8 +5,8 @@ FactoryGirl.define do
     client
     address
 
-    factory :contact_with_activities do
-      activity
+    before(:create) do |item|
+      item.company = Company.first
     end
   end
 end

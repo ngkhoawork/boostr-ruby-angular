@@ -6,30 +6,20 @@ RSpec.describe User, 'association' do
 end
 
 RSpec.describe User, type: :model do
+  let(:company) { Company.first }
   let(:user) { create :user }
 
   context 'scopes' do
-    let(:company) { create :company }
-    let(:deal) { create :deal, company: company }
+    let(:deal) { create :deal }
     let!(:deal_member) { create :deal_member, user: user, deal: deal }
-    let(:team) { create :parent_team, company: company, leader: user }
+    let(:team) { create :parent_team, leader: user }
 
     it 'has many deals that only belong to the company' do
-      user.update_attributes(company_id: company.id)
       expect(user.reload.deals).to include(deal)
     end
 
-    it 'has no deals because they do not belong to the company' do
-      expect(user.reload.deals).to_not include(deal)
-    end
-
     it 'has many teams that only belong to the company' do
-      user.update_attributes(company_id: company.id)
       expect(user.reload.teams).to include(team)
-    end
-
-    it 'has no teams because they do not belong to the company' do
-      expect(user.reload.teams).to_not include(team)
     end
   end
 

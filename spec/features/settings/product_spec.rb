@@ -1,14 +1,14 @@
 require 'rails_helper'
 
 feature 'Users' do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
-  let!(:pricing_type_cpm) { create :option, company: company, field: product_pricing_field(company), name: "CPM" }
-  let!(:pricing_type_cpe) { create :option, company: company, field: product_pricing_field(company), name: "CPE" }
-  let!(:pricing_line_desktop) { create :option, company: company, field: product_line_field(company), name: "Desktop" }
-  let!(:pricing_line_tablet) { create :option, company: company, field: product_line_field(company), name: "Tablet" }
-  let!(:pricing_family_banner) { create :option, company: company, field: product_family_field(company), name: "Banner" }
-  let!(:pricing_video_banner) { create :option, company: company, field: product_family_field(company), name: "Video" }
+  let(:company) { Company.first }
+  let(:user) { create :user }
+  let!(:pricing_type_cpm) { create :option, field: product_pricing_field(company), name: "CPM" }
+  let!(:pricing_type_cpe) { create :option, field: product_pricing_field(company), name: "CPE" }
+  let!(:pricing_line_desktop) { create :option, field: product_line_field(company), name: "Desktop" }
+  let!(:pricing_line_tablet) { create :option, field: product_line_field(company), name: "Tablet" }
+  let!(:pricing_family_banner) { create :option, field: product_family_field(company), name: "Banner" }
+  let!(:pricing_video_banner) { create :option, field: product_family_field(company), name: "Video" }
 
   describe 'creating a new product' do
     before do
