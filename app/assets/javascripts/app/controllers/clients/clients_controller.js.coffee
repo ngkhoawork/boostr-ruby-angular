@@ -26,12 +26,6 @@
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
       $scope.types = activityTypes
-      params = {
-        filter: $scope.clientFilter.param,
-        page: $scope.page
-      }
-      if $scope.query.trim().length
-        params.name = $scope.query.trim()
     $scope.getClient($routeParams.id) if $routeParams.id
     $scope.getClients()
     $scope.showContactList = false
@@ -72,6 +66,12 @@
 
   $scope.getClients = ->
     $scope.isLoading = true
+    params = {
+      filter: $scope.clientFilter.param,
+      page: $scope.page
+    }
+    if $scope.query.trim().length
+      params.name = $scope.query.trim()
     Client.query(params).$promise.then (clients) ->
       if $scope.page > 1
         $scope.clients = $scope.clients.concat(clients)
