@@ -59,8 +59,21 @@ class Api::ContactsController < ApplicationController
   private
 
   def contact_params
-    params.require(:contact).permit(:name, :position, :client_id, address_attributes: [:street1,
-    :street2, :city, :state, :zip, :phone, :mobile, :email])
+    params.require(:contact).permit(
+      :name,
+      :position,
+      :client_id,
+      address_attributes: [
+        :street1,
+        :street2,
+        :city,
+        :state,
+        :zip,
+        :phone,
+        :mobile,
+        :email
+      ]
+    )
   end
 
   def contact

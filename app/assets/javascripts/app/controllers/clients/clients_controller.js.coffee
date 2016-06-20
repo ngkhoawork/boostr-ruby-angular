@@ -252,6 +252,7 @@
     _.each types, (type) -> 
       client.selected[type.name] = {}
       client.selected[type.name].date = now
+      client.selected[type.name].contacts = []
 
   $scope.setActiveTab = (client, tab) ->
     client.activeTab = tab
@@ -259,27 +260,23 @@
   $scope.setActiveType = (client, type) ->
     client.activeType = type
 
-  $scope.searchContact = (name) ->
-    Contact.all1({name: name}).then (contacts) ->
-      contacts
-
   $scope.submitForm = () ->
+    data = $scope.currentClient.selected[$scope.currentClient.activeType.name]
     $scope.buttonDisabled = true
-    if $scope.currentClient.selected[$scope.currentClient.activeType.name].contact == undefined
+    if data.contacts.length == 0
       $scope.buttonDisabled = false
       return
     $scope.activity.comment = $scope.currentClient.activity.comment
     $scope.activity.client_id = $scope.currentClient.id
     $scope.activity.activity_type_id = $scope.currentClient.activeType.id
     $scope.activity.activity_type_name = $scope.currentClient.activeType.name
-    $scope.activity.contact_id = $scope.currentClient.selected[$scope.currentClient.activeType.name].contact.id
-    contactDate = new Date($scope.currentClient.selected[$scope.currentClient.activeType.name].date)
-    if $scope.currentClient.selected[$scope.currentClient.activeType.name].time != undefined
-      contactTime = new Date($scope.currentClient.selected[$scope.currentClient.activeType.name].time)
+    contactDate = new Date(data.date)
+    if data.time != undefined
+      contactTime = new Date(data.time)
       contactDate.setHours(contactTime.getHours(), contactTime.getMinutes(), 0, 0)
       $scope.activity.timed = true
     $scope.activity.happened_at = contactDate
-    Activity.create({ activity: $scope.activity }, (response) ->
+    Activity.create({ activity: $scope.activity, contacts: data.contacts }, (response) ->
       $scope.buttonDisabled = false
     ).then (activity) ->
       $scope.buttonDisabled = false
@@ -302,7 +299,7 @@
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
-      $scope.currentClient.selected[$scope.currentClient.activeType.name].contact = contact
+      $scope.currentClient.selected[$scope.currentClient.activeType.name].contacts.push contact
       $scope.populateContact = false
 
   $scope.$on 'newClient', (event, client) ->

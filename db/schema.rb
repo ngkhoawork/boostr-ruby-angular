@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160530201107) do
+ActiveRecord::Schema.define(version: 20160619195703) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,7 +35,6 @@ ActiveRecord::Schema.define(version: 20160530201107) do
   create_table "activities", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "user_id"
-    t.integer  "contact_id"
     t.integer  "deal_id"
     t.integer  "client_id"
     t.string   "activity_type_name"
@@ -49,6 +48,14 @@ ActiveRecord::Schema.define(version: 20160530201107) do
     t.integer  "activity_type_id"
     t.string   "google_event_id"
   end
+
+  create_table "activities_contacts", force: :cascade do |t|
+    t.integer "activity_id"
+    t.integer "contact_id"
+  end
+
+  add_index "activities_contacts", ["activity_id"], name: "index_activities_contacts_on_activity_id", using: :btree
+  add_index "activities_contacts", ["contact_id"], name: "index_activities_contacts_on_contact_id", using: :btree
 
   create_table "activity_types", force: :cascade do |t|
     t.integer  "company_id"

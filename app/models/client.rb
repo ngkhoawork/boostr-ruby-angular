@@ -87,7 +87,7 @@ class Client < ActiveRecord::Base
           include: [:option]
         },
         activities: {
-          include: [:creator, :contact]
+          include: [:creator, :contacts]
         }},
       methods: [:deals_count, :fields, :formatted_name]
     ))

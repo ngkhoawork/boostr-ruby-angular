@@ -30,7 +30,11 @@
                 = inline_svg 'icons/add.svg'
               {{ type.action }}*
               %br
-              %input.box.w4{ placeholder: 'Type a name', ng: { model: 'currentClient.selected[type.name].contact' }, type: 'text', typeahead: 'item as item.name for item in searchContact($viewValue)' }
+              %ui-select{ multiple: true, name: 'contacts', ng: { model: 'currentClient.selected[type.name].contacts', disabled: true } }
+                %ui-select-match{ placeholder: "Type a name" }
+                  {{ $item.name }}
+                %ui-select-choices{ repeat: 'contact.id as contact in currentClient.contacts | filter: { name: $select.search }' }
+                  %div{ ng: { bind: { html: 'contact.name' } } }
             .row.type2
               Date
               %br
