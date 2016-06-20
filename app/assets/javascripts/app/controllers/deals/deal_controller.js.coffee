@@ -5,6 +5,7 @@
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
   $scope.types = []
+  $scope.contacts = []
 
   $scope.init = ->
     $scope.currentDeal = {}
@@ -45,6 +46,8 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
+    Contact.allForClient deal.advertiser_id, (contacts) ->
+      $scope.contacts = contacts
 
   $scope.getStages = ->
     Stage.query().$promise.then (stages) ->

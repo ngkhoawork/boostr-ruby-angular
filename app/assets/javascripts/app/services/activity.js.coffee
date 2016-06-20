@@ -24,6 +24,8 @@
       url: '/api/activities/:id'
     }
 
+  @$resource = resource
+
   @all = (params) ->
     deferred = $q.defer()
     resource.query params, (activities) ->

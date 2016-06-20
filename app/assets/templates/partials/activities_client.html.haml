@@ -1,45 +1,45 @@
 #activities
   %form{ name: 'activityForm', ng: { submit: 'submitForm()' } }
     #note
-      %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'currentClient.activity.comment' } }
+      %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'activity.comment' } }
 
     #nav.transparent
       %ul.nav.nav-tabs
-        %li{ ng: { class: "{ active: currentClient.activity.activeTab }" } }
-          %a.link{ href: '', ng: { click: 'currentClient.activity.activeTab = true' } }
+        %li{ ng: { class: "{ active: showExtendedActivityForm }" } }
+          %a.link{ href: '', ng: { click: 'showExtendedActivityForm = true' } }
             = inline_svg 'icons/message.svg'
         %li.pull-right
           %button.btn.btn-primary.btn-block{ type: 'submit' } Post Update
 
-    #contain.tab{ ng: { show: 'currentClient.activity.activeTab' } }
+    #contain.tab{ ng: { show: 'showExtendedActivityForm' } }
       .row
-        %a.close{ ng: { click: 'cancelActivity(currentClient)' } }
+        %a.close{ ng: { click: 'cancelActivity()' } }
           %span{'aria-hidden' => 'true'}
             = inline_svg 'icons/close.svg'
       .row
         .col-xs-4
           .list-group.list-sm.stages
-            %a.list-group-item.vertical-center.type-menu{ href: '', ng: { repeat: 'type in types', click: 'currentClient.activeType = type', class: '{ active: currentClient.activeType == type }' } }
+            %a.list-group-item.vertical-center.type-menu{ href: '', ng: { repeat: 'type in types', click: 'activity.activity_type_id = type.id; activity.activity_type_name = type.name', class: '{ active: activity.activity_type_id == type.id }' } }
               %img.s-img{:src => "{{ type.icon }}"}/
               %h5
                 {{ type.name }}
         .col-xs-6
-          #contain1{ ng: { repeat: 'type in types', show: 'currentClient.activeType == type' } }
+          #contain1{ ng: { repeat: 'type in types', show: 'activity.activity_type_id == type.id' } }
             .row.type1
               %a#add-contact{ href: '', ng: { click: 'createNewContactModal()' } }
                 = inline_svg 'icons/add.svg'
               {{ type.action }}*
               %br
-              %ui-select{ multiple: true, name: 'contacts', ng: { model: 'currentClient.selected[type.name].contacts', disabled: true } }
+              %ui-select{ multiple: true, name: 'contacts', ng: { model: 'activity.contacts', disabled: true } }
                 %ui-select-match{ placeholder: "Type a name" }
                   {{ $item.name }}
-                %ui-select-choices{ repeat: 'contact.id as contact in currentClient.contacts | filter: { name: $select.search }' }
-                  %div{ ng: { bind: { html: 'contact.name' } } }
+                %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }
+                  %div{ 'ng-bind-html': 'contact.name' } } }
             .row.type2
               Date
               %br
               %span.bs-datepicker
-                %input.box.w4{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentClient.selected[type.name].date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+                %input.box.w4{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'activity.date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
             .row.type2
               Time
-              %timepicker-pop.input-group{"input-time" => "currentClient.selected[type.name].time", "show-meridian" => "showMeridian"}
+              %timepicker-pop.input-group{"input-time" => "activity.time", "show-meridian" => "showMeridian"}
