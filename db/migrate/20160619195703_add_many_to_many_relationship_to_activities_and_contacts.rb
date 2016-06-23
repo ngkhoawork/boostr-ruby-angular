@@ -9,6 +9,7 @@ class AddManyToManyRelationshipToActivitiesAndContacts < ActiveRecord::Migration
     activities.each do |activity|
       if not activity['contact_id']
         activity['contact_id'] = 'NULL'
+      end
       insert("INSERT INTO activities_contacts (activity_id, contact_id) VALUES (#{activity['id']}, #{activity['contact_id']})")
     end
 
@@ -22,6 +23,7 @@ class AddManyToManyRelationshipToActivitiesAndContacts < ActiveRecord::Migration
     associations.each do |assoc|
       if not assoc['contact_id']
         assoc['contact_id'] = 'NULL'
+      end
       update("UPDATE activities SET contact_id = #{assoc['contact_id']} WHERE id = #{assoc['activity_id']}")
     end
 
