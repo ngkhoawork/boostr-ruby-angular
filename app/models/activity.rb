@@ -3,6 +3,7 @@ class Activity < ActiveRecord::Base
   belongs_to :company
   belongs_to :user
   belongs_to :client
+  belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
   belongs_to :deal
   belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
   belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
@@ -42,6 +43,7 @@ class Activity < ActiveRecord::Base
     super(options.merge(
       include: {
         :client => {},
+        :agency => {},
         :deal => {
           :include => [
             :stage,

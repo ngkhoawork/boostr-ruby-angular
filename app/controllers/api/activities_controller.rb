@@ -45,6 +45,7 @@ class Api::ActivitiesController < ApplicationController
       :type,
       :deal_id,
       :client_id,
+      :agency_id,
       :user_id,
       :activity_type_id,
       :activity_type_name,

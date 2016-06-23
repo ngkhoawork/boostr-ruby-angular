@@ -11,7 +11,6 @@ class Contact < ActiveRecord::Base
   accepts_nested_attributes_for :address
 
   validates :name, presence: true
-  validates :client, presence: true
   validate :email_is_present?
 
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
