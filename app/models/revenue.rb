@@ -69,7 +69,11 @@ class Revenue < ActiveRecord::Base
   end
 
   def self.numeric(value)
-    value.gsub(/[^0-9\.\-']/, '')
+    if value.nil?
+      0
+    else
+      value.gsub(/[^0-9\.\-']/, '')
+    end
   end
 
   def client_name
