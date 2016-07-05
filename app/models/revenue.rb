@@ -17,19 +17,24 @@ class Revenue < ActiveRecord::Base
     CSV.parse(file, headers: true) do |row|
       row_number += 1
 
-      unless user = User.where(email: row[14], company_id: company_id).first
-        error = { row: row_number, message: ['Sales Rep could not be found'] }
+      order_number, line_number, ad_server = row[0..2]
+      quantity, price, price_type, delivered, remaining, budget, budget_remaining, start_date, end_date = row[3..11]
+      client_id, user_id, product_id = row[13..15]
+      comment = row[16]
+
+      unless user = User.where(email: user_id, company_id: company_id).first
+        error = { row: row_number, message: ["Sales Rep could not be found for email address #{user_id}"] }
         errors << error
         next
       end
 
-      unless client = Client.where(id: row[13], company_id: company_id).first
-        error = { row: row_number, message: ['Client could not be found'] }
+      unless client = Client.where(id: client_id, company_id: company_id).first
+        error = { row: row_number, message: ["Client could not be found for ID #{client_id}"] }
         errors << error
         next
       end
 
-      unless product = Product.where(id: row[15], company_id: company_id).first
+      unless product = Product.where(id: product_id, company_id: company_id).first
         error = { row: row_number, message: ['Product could not be found'] }
         errors << error
         next
@@ -37,25 +42,25 @@ class Revenue < ActiveRecord::Base
 
       find_params = {
         company_id: company_id,
-        order_number: row[0],
-        line_number: row[1],
-        ad_server: row[2]
+        order_number: order_number,
+        line_number: line_number,
+        ad_server: ad_server
       }
 
       create_params = {
-        quantity: numeric(row[3]).to_i,
-        price: numeric(row[4]).to_f * 100,
-        price_type: row[5],
-        delivered: numeric(row[6]).to_i,
-        remaining: numeric(row[7]).to_i,
-        budget: numeric(row[8]).to_i,
-        budget_remaining: numeric(row[9]).to_i,
-        start_date: (Chronic.parse(row[10])),
-        end_date: (Chronic.parse(row[11])),
+        quantity: numeric(quantity).to_i,
+        price: numeric(price).to_f * 100,
+        price_type: price_type,
+        delivered: numeric(delivered).to_i,
+        remaining: numeric(remaining).to_i,
+        budget: numeric(budget).to_i,
+        budget_remaining: numeric(budget_remaining).to_i,
+        start_date: (Chronic.parse(start_date)),
+        end_date: (Chronic.parse(end_date)),
         client_id: client.id,
         user_id: user.id,
         product_id: product.id,
-        comment: row[16]
+        comment: comment
       }
 
       revenue = Revenue.find_or_initialize_by(find_params)
