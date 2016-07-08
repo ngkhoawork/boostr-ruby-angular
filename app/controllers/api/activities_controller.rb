@@ -53,7 +53,8 @@ class Api::ActivitiesController < ApplicationController
       :happened_at,
       :activity_type,
       :timed,
-      :google_event_id
+      :google_event_id,
+      :uuid
     )
   end
 
