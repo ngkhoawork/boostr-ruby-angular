@@ -8,6 +8,7 @@
   $scope.query = ""
   $scope.showMeridian = true
   $scope.types = []
+  $scope.errors = {}
 
   $scope.initActivity = (contact, activityTypes) ->
     $scope.activity = {}
@@ -103,9 +104,15 @@
   $scope.init()
 
   $scope.submitForm = () ->
+    $scope.errors = {}
     $scope.buttonDisabled = true
+    if !$scope.currentContact.activity.comment
+      $scope.buttonDisabled = false
+      $scope.errors['Comment'] = ["can't be blank."]
     if !$scope.currentContact.activity.activeTab
       $scope.buttonDisabled = false
+      $scope.errors['Activity Type'] = ["can't be blank."]
+    if !$scope.buttonDisabled
       return
     $scope.activity.contact_id = $scope.currentContact.id
     $scope.activity.comment = $scope.currentContact.activity.comment

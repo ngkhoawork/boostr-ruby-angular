@@ -9,6 +9,7 @@
   $scope.contacts = []
   $scope.query = ""
   $scope.page = 1
+  $scope.errors = {}
 
   $scope.clientFilters = [
     { name: 'My Clients', param: '' }
@@ -253,10 +254,21 @@
     client.activeType = type
 
   $scope.submitForm = () ->
+    $scope.errors = {}
     $scope.buttonDisabled = true
+
+    if !$scope.activity.comment
+      $scope.buttonDisabled = false
+      $scope.errors['Comment'] = ["can't be blank."]
+    if !($scope.activity && $scope.activity.activity_type_id)
+      $scope.buttonDisabled = false
+      $scope.errors['Activity Type'] = ["can't be blank."]
     if $scope.activity.contacts.length == 0
       $scope.buttonDisabled = false
-      return
+      $scope.errors['Contacts'] = ["can't be blank."]
+    if !$scope.buttonDisabled
+        return
+
     $scope.activity.client_id = $scope.currentClient.id
     contactDate = new Date($scope.activity.date)
     if $scope.activity.time != undefined

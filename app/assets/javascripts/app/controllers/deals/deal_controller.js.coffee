@@ -6,6 +6,7 @@
   $scope.feedName = 'Deal Updates'
   $scope.types = []
   $scope.contacts = []
+  $scope.errors = {}
 
   $scope.init = ->
     $scope.currentDeal = {}
@@ -153,11 +154,20 @@
     $scope.activeType = type
 
   $scope.submitForm = (form) ->
+    $scope.errors = {}
     $scope.buttonDisabled = true
     if form.$valid
-      data = $scope.selected[$scope.activeType.name]
-      if data.contacts.length == 0
+      if !$scope.activity.comment
         $scope.buttonDisabled = false
+        $scope.errors['Comment'] = ["can't be blank."]
+      if !($scope.activeType && $scope.activeType.id)
+        $scope.buttonDisabled = false
+        $scope.errors['Activity Type'] = ["can't be blank."]
+      data = $scope.selected[$scope.activeType.name]
+      if !data.contacts || data.contacts.length == 0
+        $scope.buttonDisabled = false
+        $scope.errors['Contacts'] = ["can't be blank."]
+      if !$scope.buttonDisabled
         return
       form.submitted = true
       $scope.activity.deal_id = $scope.currentDeal.id

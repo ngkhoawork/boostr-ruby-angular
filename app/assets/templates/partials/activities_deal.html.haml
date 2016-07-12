@@ -1,8 +1,12 @@
 #activities
   %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
+    .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+      .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+        %i.fa.fa-warning
+        <strong style="text-transform: capitalize">{{field}}</strong>
+        {{error}}
     #note
       %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'activity.comment' } }
-
     #nav.transparent
       %ul.nav.nav-tabs
         %li{ ng: { class: "{ active: activeTab == 'Type' }" } }

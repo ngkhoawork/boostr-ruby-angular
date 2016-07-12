@@ -3,8 +3,12 @@
     #note
       %h3
         Create New Activity
-      %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'activity.comment' } }
-
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          <strong style="text-transform: capitalize">{{field}}</strong>
+          {{error}}
+      %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here *', ng: { model: 'activity.comment' } }
     #nav.transparent
       %ul.nav.nav-tabs
         %li{ ng: { class: "{ active: activeTab == 'Object' }" } }
@@ -27,7 +31,7 @@
           %label.close-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'false' } }
             Clients
       .row
-        %input.box2.w2{ placeholder: 'Type a name', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
+        %input.box2.w2{ placeholder: 'Type a name *', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
     #contain.tab{ ng: { show: 'activeTab == "Type"' } }
       .row
         %a.close{ ng: { click: 'cancelActivity()' } }
@@ -48,7 +52,7 @@
               {{ type.action }}*
               %br
               %ui-select{ multiple: true, name: 'contacts', ng: { model: 'selected[type.name].contacts', disabled: true } }
-                %ui-select-match{ placeholder: "Type a name" }
+                %ui-select-match{ placeholder: "Type a name *" }
                   {{ $item.name }}
                 %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }
                   %div{ ng: { bind: { html: 'contact.name' } } }

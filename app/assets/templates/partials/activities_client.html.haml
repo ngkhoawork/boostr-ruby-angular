@@ -1,8 +1,12 @@
 #activities
   %form{ name: 'activityForm', ng: { submit: 'submitForm()' } }
+    .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+      .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+        %i.fa.fa-warning
+        <strong style="text-transform: capitalize">{{field}}</strong>
+        {{error}}
     #note
-      %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'activity.comment' } }
-
+      %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here *', ng: { model: 'activity.comment' } }
     #nav.transparent
       %ul.nav.nav-tabs
         %li{ ng: { class: "{ active: showExtendedActivityForm }" } }
@@ -31,7 +35,7 @@
               {{ type.action }}*
               %br
               %ui-select{ multiple: true, name: 'contacts', ng: { model: 'activity.contacts', disabled: true } }
-                %ui-select-match{ placeholder: "Type a name" }
+                %ui-select-match{ placeholder: "Type a name *" }
                   {{ $item.name }}
                 %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }
                   %div{ 'ng-bind-html': 'contact.name' } } }
