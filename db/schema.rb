@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(version: 20160705175941) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -130,9 +129,6 @@ ActiveRecord::Schema.define(version: 20160705175941) do
     t.integer  "snapshot_day",       default: 0
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
-    t.string   "color1"
-    t.string   "color2"
-    t.string   "color3"
   end
 
   create_table "contacts", force: :cascade do |t|

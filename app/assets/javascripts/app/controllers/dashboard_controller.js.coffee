@@ -16,6 +16,7 @@
     $scope.selected = {}
     $scope.populateContact = false
     $scope.contacts = []
+    $scope.errors = {}
 
     now = new Date
     ActivityType.all().then (activityTypes) ->
@@ -118,16 +119,29 @@
         clients
 
   $scope.submitForm = (form) ->
+    $scope.errors = {}
     $scope.buttonDisabled = true
+
     if form.$valid
+      if !$scope.activity.comment
+        $scope.buttonDisabled = false
+        $scope.errors['Comment'] = ["can't be blank."]
       if $scope.selectedObj.obj != undefined
         if $scope.selectedObj.deal
           $scope.activity.deal_id = $scope.selectedObj.obj.id
           $scope.activity.client_id = $scope.selectedObj.obj.advertiser_id
         else
           $scope.activity.client_id = $scope.selectedObj.obj.id
+      else
+        $scope.buttonDisabled = false
+        $scope.errors['Deal or Client'] = ["should be present."]
+      if !($scope.activeType && $scope.activeType.id)
+        $scope.buttonDisabled = false
+        $scope.errors['Activity Type'] = ["can't be blank."]
       if $scope.selected[$scope.activeType.name].contacts.length == 0
         $scope.buttonDisabled = false
+        $scope.errors['Contacts'] = ["can't be blank."]
+      if !$scope.buttonDisabled
         return
       form.submitted = true
       $scope.activity.activity_type_id = $scope.activeType.id
