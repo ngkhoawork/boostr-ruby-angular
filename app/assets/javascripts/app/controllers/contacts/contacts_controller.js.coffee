@@ -114,7 +114,7 @@
       $scope.errors['Activity Type'] = ["can't be blank."]
     if !$scope.buttonDisabled
       return
-    $scope.activity.contact_id = $scope.currentContact.id
+    $scope.activity.client_id = $scope.currentContact.client_id
     $scope.activity.comment = $scope.currentContact.activity.comment
     $scope.activity.activity_type_id = $scope.currentContact.activeType.id
     $scope.activity.activity_type_name = $scope.currentContact.activeType.name
@@ -124,7 +124,7 @@
       contactDate.setHours(contactTime.getHours(), contactTime.getMinutes(), 0, 0)
       $scope.activity.timed = true
     $scope.activity.happened_at = contactDate
-    Activity.create({ activity: $scope.activity }, (response) ->
+    Activity.create({ activity: $scope.activity, contacts: [$scope.currentContact.id] }, (response) ->
       $scope.buttonDisabled = false
     ).then (activity) ->
       $scope.buttonDisabled = false
