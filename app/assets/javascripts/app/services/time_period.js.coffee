@@ -2,7 +2,22 @@
 ['$resource', '$rootScope', '$q',
 ($resource, $rootScope, $q) ->
 
-  resource = $resource '/api/time_periods/:id', { id: '@id' }
+  transformRequest = (original, headers) ->
+    original.time_period.values_attributes = original.time_period.values
+    angular.toJson(original)
+#  resource = $resource '/api/time_periods/:id', { id: '@id' }
+
+  resource = $resource '/api/time_periods/:id', { id: '@id' },
+    save: {
+      method: 'POST'
+      url: '/api/time_periods'
+      transformRequest: transformRequest
+    },
+    update: {
+      method: 'PUT'
+      url: '/api/time_periods/:id'
+      transformRequest: transformRequest
+    }
 
   allTimePeriods = []
 
@@ -24,6 +39,13 @@
       deferred.resolve(time_period)
       $rootScope.$broadcast 'updated_time_periods'
     , errorCallback
+    deferred.promise
+
+  @update = (params) ->
+    deferred = $q.defer()
+    resource.update params, (time_period) ->
+      deferred.resolve(time_period)
+      $rootScope.$broadcast 'updated_time_periods'
     deferred.promise
 
   @delete = (deletedTimePeriod) ->
