@@ -25,6 +25,14 @@ class Api::TimePeriodsController < ApplicationController
     end
   end
 
+  def update
+    if time_period.update_attributes(time_period_params)
+      render json: time_period, status: :accepted
+    else
+      render json: { errors: time_period.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   def destroy
     time_period.destroy
     render nothing: true

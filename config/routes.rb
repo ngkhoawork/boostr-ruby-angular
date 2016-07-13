@@ -29,7 +29,7 @@ Rails.application.routes.draw do
     resources :deal_products, only: [:create, :update, :destroy]
     resources :teams, only: [:index, :create, :show, :update, :destroy]
     resources :custom_values, only: [:index]
-    resources :time_periods, only: [:index, :create, :destroy]
+    resources :time_periods, only: [:index, :create, :update, :destroy]
     resources :quotas, only: [:index, :create, :update]
     resources :forecasts, only: [:index, :show]
     resources :fields, only: [:index]
