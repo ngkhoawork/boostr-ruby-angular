@@ -2,11 +2,11 @@ require 'rails_helper'
 
 RSpec.describe Api::OptionsController, type: :controller do
 
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
+  let(:company) { Company.first }
+  let(:user) { create :user }
   let(:option_params) { attributes_for :option }
   let(:field) { client_type_field(company) }
-  let(:option) { create :option, field: field, company: company }
+  let(:option) { create :option, field: field }
 
   before do
     sign_in user

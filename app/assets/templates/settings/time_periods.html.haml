@@ -24,13 +24,15 @@
                 %th.right End Date
                 %th.action-column
             %tbody
-              %tr{ ng: { repeat: 'row in time_periods | orderBy: "start_date"' } }
+              %tr{ ng: { repeat: 'row in time_periods | orderBy: "start_date"', click: 'editModal(row)'  } }
                 %td.left {{ row.name }}
                 %td.right {{ row.start_date | date: 'shortDate' }}
                 %td.right {{ row.end_date | date: 'shortDate' }}
                 %td.action-column.info-td
                   .empty
                 %td.action-td
+                  %a.edit-time-period{ href: '', ng: { click: 'editModal(row)' } }
+                    = inline_svg 'icons/pencil.svg'
                   %a.delete-time-period{ href: '', ng: { click: 'delete(row)' } }
                     = inline_svg 'icons/trash.svg'
 

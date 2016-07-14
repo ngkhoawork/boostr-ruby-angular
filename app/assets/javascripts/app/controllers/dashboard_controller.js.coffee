@@ -15,6 +15,9 @@
     $scope.selectedObj.deal = true
     $scope.selected = {}
     $scope.populateContact = false
+    $scope.contacts = []
+    $scope.errors = {}
+
     now = new Date
     ActivityType.all().then (activityTypes) ->
       $scope.types = activityTypes
@@ -22,6 +25,7 @@
       _.each activityTypes, (type) ->
         $scope.selected[type.name] = {}
         $scope.selected[type.name].date = now
+        $scope.selected[type.name].contacts = []
 
     $scope.activity_objects = {}
     Activity.all().then (activities) ->
@@ -47,6 +51,8 @@
         objectIds.forEach (objectId) ->
           $scope.activity_objects[objectId].activities.push(activity)
 
+    Contact.$resource.query().$promise.then (contacts) ->
+      $scope.contacts = contacts
 
   $scope.chartOptions = {
     responsive: false,
@@ -112,34 +118,41 @@
       Client.query({name: name}).$promise.then (clients) ->
         clients
 
-  $scope.searchContact = (name) ->
-    Contact.all1({name: name}).then (contacts) ->
-      contacts
-
   $scope.submitForm = (form) ->
+    $scope.errors = {}
     $scope.buttonDisabled = true
+
     if form.$valid
+      if !$scope.activity.comment
+        $scope.buttonDisabled = false
+        $scope.errors['Comment'] = ["can't be blank."]
       if $scope.selectedObj.obj != undefined
         if $scope.selectedObj.deal
           $scope.activity.deal_id = $scope.selectedObj.obj.id
           $scope.activity.client_id = $scope.selectedObj.obj.advertiser_id
         else
           $scope.activity.client_id = $scope.selectedObj.obj.id
-      if $scope.selected[$scope.activeType.name].contact == undefined
+      else
         $scope.buttonDisabled = false
+        $scope.errors['Deal or Client'] = ["should be present."]
+      if !($scope.activeType && $scope.activeType.id)
+        $scope.buttonDisabled = false
+        $scope.errors['Activity Type'] = ["can't be blank."]
+      if $scope.selected[$scope.activeType.name].contacts.length == 0
+        $scope.buttonDisabled = false
+        $scope.errors['Contacts'] = ["can't be blank."]
+      if !$scope.buttonDisabled
         return
       form.submitted = true
       $scope.activity.activity_type_id = $scope.activeType.id
       $scope.activity.activity_type_name = $scope.activeType.name
-      contact_id = $scope.selected[$scope.activeType.name].contact.id
-      $scope.activity.contact_id = contact_id
       contact_date = new Date($scope.selected[$scope.activeType.name].date)
       if $scope.selected[$scope.activeType.name].time != undefined
         contact_time = new Date($scope.selected[$scope.activeType.name].time)
         contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
         $scope.activity.timed = true
       $scope.activity.happened_at = contact_date
-      Activity.create({ activity: $scope.activity }, (response) ->
+      Activity.create({ activity: $scope.activity, contacts: $scope.selected[$scope.activeType.name].contacts }, (response) ->
         angular.forEach response.data.errors, (errors, key) ->
           form[key].$dirty = true
           form[key].$setValidity('server', false)
@@ -165,7 +178,7 @@
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
-      $scope.selected[$scope.activeType.name].contact = contact
+      $scope.selected[$scope.activeType.name].contacts.push(contact.id)
       $scope.populateContact = false
 
   $scope.getType = (type) ->

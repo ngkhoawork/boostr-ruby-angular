@@ -17,19 +17,24 @@ class Revenue < ActiveRecord::Base
     CSV.parse(file, headers: true) do |row|
       row_number += 1
 
-      unless user = User.where(email: row[14], company_id: company_id).first
-        error = { row: row_number, message: ['Sales Rep could not be found'] }
+      order_number, line_number, ad_server = row[0..2]
+      quantity, price, price_type, delivered, remaining, budget, budget_remaining, start_date, end_date = row[3..11]
+      client_id, user_id, product_id = row[13..15]
+      comment = row[16]
+
+      unless user = User.where(email: user_id, company_id: company_id).first
+        error = { row: row_number, message: ["Sales Rep could not be found for email address #{user_id}"] }
         errors << error
         next
       end
 
-      unless client = Client.where(id: row[13], company_id: company_id).first
-        error = { row: row_number, message: ['Client could not be found'] }
+      unless client = Client.where(id: client_id, company_id: company_id).first
+        error = { row: row_number, message: ["Client could not be found for ID #{client_id}"] }
         errors << error
         next
       end
 
-      unless product = Product.where(id: row[15], company_id: company_id).first
+      unless product = Product.where(id: product_id, company_id: company_id).first
         error = { row: row_number, message: ['Product could not be found'] }
         errors << error
         next
@@ -37,25 +42,25 @@ class Revenue < ActiveRecord::Base
 
       find_params = {
         company_id: company_id,
-        order_number: row[0],
-        line_number: row[1],
-        ad_server: row[2]
+        order_number: order_number,
+        line_number: line_number,
+        ad_server: ad_server
       }
 
       create_params = {
-        quantity: numeric(row[3]).to_i,
-        price: numeric(row[4]).to_f * 100,
-        price_type: row[5],
-        delivered: numeric(row[6]).to_i,
-        remaining: numeric(row[7]).to_i,
-        budget: numeric(row[8]).to_i,
-        budget_remaining: numeric(row[9]).to_i,
-        start_date: (Chronic.parse(row[10])),
-        end_date: (Chronic.parse(row[11])),
+        quantity: numeric(quantity).to_i,
+        price: numeric(price).to_f * 100,
+        price_type: price_type,
+        delivered: numeric(delivered).to_i,
+        remaining: numeric(remaining).to_i,
+        budget: numeric(budget).to_i,
+        budget_remaining: numeric(budget_remaining).to_i,
+        start_date: (Chronic.parse(start_date)),
+        end_date: (Chronic.parse(end_date)),
         client_id: client.id,
         user_id: user.id,
         product_id: product.id,
-        comment: row[16]
+        comment: comment
       }
 
       revenue = Revenue.find_or_initialize_by(find_params)
@@ -69,7 +74,11 @@ class Revenue < ActiveRecord::Base
   end
 
   def self.numeric(value)
-    value.gsub(/[^0-9\.\-']/, '')
+    if value.nil?
+      0
+    else
+      value.gsub(/[^0-9\.\-']/, '')
+    end
   end
 
   def client_name
@@ -164,10 +173,10 @@ class Revenue < ActiveRecord::Base
       self.last_alert_at = DateTime.now
     end
   end
-  
+
   def self.set_alerts(company_id)
     User.where(company_id: company_id).update_all(pos_balance_cnt: 0, neg_balance_cnt: 0, pos_balance: 0, neg_balance: 0, pos_balance_l_cnt: 0, neg_balance_l_cnt: 0, pos_balance_l: 0, neg_balance_l: 0, last_alert_at: DateTime.now)
-    where(company_id: company_id).each do |r|    
+    where(company_id: company_id).each do |r|
       if r.last_alert_at.nil? || r.last_alert_at.to_date < DateTime.now.to_date
         r.set_alert
       end
@@ -177,8 +186,8 @@ class Revenue < ActiveRecord::Base
           if r.balance > 0
             u.pos_balance_cnt += 1
             u.pos_balance += r.balance*cm.share/100
-          elsif r.balance < 0  
-            u.neg_balance_cnt += 1        
+          elsif r.balance < 0
+            u.neg_balance_cnt += 1
             u.neg_balance += r.balance*cm.share/100
           end
           u.pos_balance_l_cnt = u.pos_balance_cnt

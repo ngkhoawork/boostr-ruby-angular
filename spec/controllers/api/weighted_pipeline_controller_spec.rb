@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Api::WeightedPipelinesController, type: :controller do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
-  let(:parent) { create :parent_team, company: company }
-  let(:child) { create :child_team, company: company, parent: parent, leader: user }
-  let(:time_period) { create :time_period, company: company, start_date: "2015-01-01", end_date: "2015-12-31" }
-  let(:client) { create :client, company: company }
+  let(:company) { Company.first }
+  let(:user) { create :user }
+  let(:parent) { create :parent_team }
+  let(:child) { create :child_team, parent: parent, leader: user }
+  let(:time_period) { create :time_period, start_date: "2015-01-01", end_date: "2015-12-31" }
+  let(:client) { create :client }
   let(:stage) { create :stage, probability: 100 }
-  let(:member) { create :user, company: company, team: child }
-  let(:deal) { create :deal, company: company, stage: stage, advertiser: client, start_date: "2015-01-01", end_date: "2015-12-31"  }
+  let(:member) { create :user, team: child }
+  let(:deal) { create :deal, stage: stage, advertiser: client, start_date: "2015-01-01", end_date: "2015-12-31"  }
   let!(:deal_member) { create :deal_member, deal: deal, user: member, share: 100 }
   let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 

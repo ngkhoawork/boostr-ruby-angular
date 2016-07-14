@@ -5,6 +5,8 @@
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
   $scope.types = []
+  $scope.contacts = []
+  $scope.errors = {}
 
   $scope.init = ->
     $scope.currentDeal = {}
@@ -45,6 +47,8 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
+    Contact.allForClient deal.advertiser_id, (contacts) ->
+      $scope.contacts = contacts
 
   $scope.getStages = ->
     Stage.query().$promise.then (stages) ->
@@ -149,30 +153,34 @@
   $scope.setActiveType = (type) ->
     $scope.activeType = type
 
-  $scope.searchContact = (name) ->
-    Contact.all1({name: name}).then (contacts) ->
-      contacts
-
   $scope.submitForm = (form) ->
+    $scope.errors = {}
     $scope.buttonDisabled = true
     if form.$valid
-      if $scope.selected[$scope.activeType.name].contact == undefined
+      if !$scope.activity.comment
         $scope.buttonDisabled = false
+        $scope.errors['Comment'] = ["can't be blank."]
+      if !($scope.activeType && $scope.activeType.id)
+        $scope.buttonDisabled = false
+        $scope.errors['Activity Type'] = ["can't be blank."]
+      data = $scope.selected[$scope.activeType.name]
+      if !data.contacts || data.contacts.length == 0
+        $scope.buttonDisabled = false
+        $scope.errors['Contacts'] = ["can't be blank."]
+      if !$scope.buttonDisabled
         return
       form.submitted = true
       $scope.activity.deal_id = $scope.currentDeal.id
       $scope.activity.client_id = $scope.currentDeal.advertiser_id
       $scope.activity.activity_type_id = $scope.activeType.id
       $scope.activity.activity_type_name = $scope.activeType.name
-      contact_id = $scope.selected[$scope.activeType.name].contact.id
-      $scope.activity.contact_id = contact_id
-      contact_date = new Date($scope.selected[$scope.activeType.name].date)
-      if $scope.selected[$scope.activeType.name].time != undefined
-        contact_time = new Date($scope.selected[$scope.activeType.name].time)
+      contact_date = new Date(data.date)
+      if data.time != undefined
+        contact_time = new Date(data.time)
         contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
         $scope.activity.timed = true
       $scope.activity.happened_at = contact_date
-      Activity.create({ activity: $scope.activity }, (response) ->
+      Activity.create({ activity: $scope.activity, contacts: data.contacts }, (response) ->
         angular.forEach response.data.errors, (errors, key) ->
           form[key].$dirty = true
           form[key].$setValidity('server', false)
@@ -198,7 +206,7 @@
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
-      $scope.selected[$scope.activeType.name].contact = contact
+      $scope.selected[$scope.activeType.name].contacts.push contact
       $scope.populateContact = false
 
   $scope.getType = (type) ->

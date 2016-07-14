@@ -23,6 +23,16 @@
       TimePeriod.delete time_period, ->
         $location.path("/settings/time_periods/" + $routeParams.id)
 
+  $scope.editModal = (time_period) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/time_period_form.html'
+      size: 'lg'
+      controller: 'SettingsTimePeriodsEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        time_period: ->
+          time_period
 
   $scope.init()
 

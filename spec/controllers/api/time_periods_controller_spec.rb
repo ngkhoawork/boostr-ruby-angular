@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Api::TimePeriodsController, type: :controller do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
+  let(:company) { Company.first }
+  let(:user) { create :user }
   let(:time_period_params) { attributes_for(:time_period) }
 
   before do
@@ -11,7 +11,7 @@ RSpec.describe Api::TimePeriodsController, type: :controller do
 
   describe 'GET #index' do
     it 'returns a list of time periods' do
-      create_list :time_period, 2, company: company
+      create_list :time_period, 2
 
       get :index, format: :json
       expect(response).to be_success
@@ -41,7 +41,7 @@ RSpec.describe Api::TimePeriodsController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
-    let!(:time_period) { create :time_period, company: company }
+    let!(:time_period) { create :time_period }
 
     it 'deletes the time period' do
       delete :destroy, id: time_period.id, format: :json

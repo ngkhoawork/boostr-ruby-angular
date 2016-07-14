@@ -16,7 +16,7 @@
               %span
                 {{ activity.creator.first_name }} {{ activity.creator.last_name }} 
               {{ activity.activity_type.action }}
-              %span
-                {{ activity.contact.name }}
+              %span{ 'ng-repeat': 'contact in activity.contacts' }
+                {{ $first ? '' : $last ? '& ' : ''}}{{ contact.name }}{{ $last ? '' : ', ' }}
             .row
               {{ activity.comment }}

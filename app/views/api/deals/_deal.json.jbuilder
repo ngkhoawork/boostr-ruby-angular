@@ -44,5 +44,5 @@ json.activities deal.activities do |activity|
   json.creator activity.creator
   json.deal activity.deal
   json.client activity.client
-  json.contact activity.contact
+  json.contacts activity.contacts
 end

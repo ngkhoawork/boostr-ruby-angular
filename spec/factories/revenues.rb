@@ -7,5 +7,9 @@ FactoryGirl.define do
     order_number "1"
     line_number "2"
     ad_server "Yahoo"
+
+    before(:create) do |revenue|
+      revenue.company = Company.first
+    end
   end
 end

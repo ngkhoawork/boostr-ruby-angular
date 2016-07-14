@@ -1,20 +1,20 @@
 require 'rails_helper'
 
 feature 'Deals' do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
-  let!(:advertiser) { create :client, company: company, created_by: user.id }
-  let!(:agency) { create :client, company: company, created_by: user.id }
-  let!(:open_stage) { create :stage, company: company, position: 1, name: 'open stage' }
-  let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
-  let!(:deal_type_pitch_option) { create :option, company: company, field: deal_source_field(company), name: "Pitch to Client" }
+  let(:company) { Company.first }
+  let(:user) { create :user }
+  let!(:advertiser) { create :client, created_by: user.id }
+  let!(:agency) { create :client, created_by: user.id }
+  let!(:open_stage) { create :stage, position: 1, name: 'open stage' }
+  let!(:deal_type_seasonal_option) { create :option, field: deal_type_field(company), name: "Seasonal" }
+  let!(:deal_type_pitch_option) { create :option, field: deal_source_field(company), name: "Pitch to Client" }
 
   describe 'showing a list of deals filtered by stages' do
-    let!(:another_open_stage) { create :stage, company: company, position: 2 }
-    let!(:closed_stage) { create :stage, company: company, open: false, position: 3 }
-    let!(:open_deal) { create :deal, stage: open_stage, company: company, advertiser: advertiser }
-    let!(:another_open_deal) { create :deal, stage: another_open_stage, company: company, advertiser: advertiser }
-    let!(:closed_deal) { create :deal, stage: closed_stage, company: company, advertiser: advertiser }
+    let!(:another_open_stage) { create :stage, position: 2 }
+    let!(:closed_stage) { create :stage, open: false, position: 3 }
+    let!(:open_deal) { create :deal, stage: open_stage, advertiser: advertiser }
+    let!(:another_open_deal) { create :deal, stage: another_open_stage, advertiser: advertiser }
+    let!(:closed_deal) { create :deal, stage: closed_stage, advertiser: advertiser }
 
     before do
       set_client_type(advertiser, company, 'Advertiser')

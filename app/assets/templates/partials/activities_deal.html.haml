@@ -1,8 +1,12 @@
 #activities
   %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
+    .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+      .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+        %i.fa.fa-warning
+        <strong style="text-transform: capitalize">{{field}}</strong>
+        {{error}}
     #note
       %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here', ng: { model: 'activity.comment' } }
-
     #nav.transparent
       %ul.nav.nav-tabs
         %li{ ng: { class: "{ active: activeTab == 'Type' }" } }
@@ -30,7 +34,11 @@
                 = inline_svg 'icons/add.svg'
               {{ type.action }}*
               %br
-              %input.box.w4{ placeholder: 'Type a name', ng: { model: 'selected[type.name].contact' }, type: 'text', typeahead: 'item as item.name for item in searchContact($viewValue)' }
+              %ui-select{ multiple: true, name: 'contacts', ng: { model: 'selected[type.name].contacts', disabled: true } }
+                %ui-select-match{ placeholder: "Type a name" }
+                  {{ $item.name }}
+                %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }
+                  %div{ ng: { bind: { html: 'contact.name' } } }
             .row.type2
               Date
               %br

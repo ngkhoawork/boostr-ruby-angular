@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 feature 'TimePeriod' do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
+  let(:company) { Company.first }
+  let(:user) { create :user }
 
   describe 'creating a time_period' do
     before do
@@ -33,7 +33,7 @@ feature 'TimePeriod' do
 
   describe 'deleting a time period' do
 
-    let!(:time_periods) { create_list :time_period, 3, company: company }
+    let!(:time_periods) { create_list :time_period, 3 }
 
     before do
       login_as user, scope: :user
