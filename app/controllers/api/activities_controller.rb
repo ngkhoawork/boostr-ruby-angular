@@ -27,7 +27,12 @@ class Api::ActivitiesController < ApplicationController
 
   def update
     if activity.update_attributes(activity_params)
-      render json: client, status: :accepted
+      contacts = company.contacts.where(id: params[:contacts])
+      activity.contacts = []
+      contacts.each do |contact|
+        activity.contacts << contact
+      end
+      render json: activity, status: :accepted
     else
       render json: { errors: client.errors.messages }, status: :unprocessable_entity
     end

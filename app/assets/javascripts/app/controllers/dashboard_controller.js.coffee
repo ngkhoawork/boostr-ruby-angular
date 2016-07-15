@@ -83,6 +83,23 @@
         deal: ->
           {}
 
+  $scope.showActivityEditModal = (activity) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_form.html'
+      size: 'lg'
+      controller: 'ActivitiesEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          activity
+        types: ->
+          $scope.types
+        contacts: ->
+          $scope.contacts
+        types: ->
+          $scope.types
+
   $scope.setChartData = () ->
     $scope.chartData = [
       {
@@ -100,6 +117,9 @@
     ]
 
   $scope.$on 'updated_dashboards', ->
+    $scope.init()
+
+  $scope.$on 'updated_activities', ->
     $scope.init()
 
   $scope.init()
@@ -178,8 +198,14 @@
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
+      $scope.contacts.push(contact)
       $scope.selected[$scope.activeType.name].contacts.push(contact.id)
       $scope.populateContact = false
+
+  $scope.deleteActivity = (activity) ->
+    if confirm('Are you sure you want to delete the activity?')
+      Activity.delete activity, ->
+        $scope.$emit('updated_activities')
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)

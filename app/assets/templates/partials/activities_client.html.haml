@@ -38,7 +38,7 @@
                 %ui-select-match{ placeholder: "Type a name *" }
                   {{ $item.name }}
                 %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }
-                  %div{ 'ng-bind-html': 'contact.name' } } }
+                  %div{ 'ng-bind-html': 'contact.name + " - " + contact.client.name' } } }
             .row.type2
               Date
               %br

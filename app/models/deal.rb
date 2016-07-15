@@ -72,7 +72,25 @@ class Deal < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(include: [:creator, :advertiser, :stage, :values, deal_members: { methods: [:name] }, activities: { include: [:creator, :contact] }], methods: [:formatted_name]))
+    super(options.merge(
+              include: [
+                  :creator,
+                  :advertiser,
+                  :stage,
+                  :values,
+                  deal_members: {
+                      methods: [:name]
+                  },
+                  activities: {
+                      include:
+                          [:creator, :contact]
+                  }
+              ],
+              methods: [
+                  :formatted_name
+              ]
+          )
+    )
   end
 
   def as_weighted_pipeline(start_date, end_date)

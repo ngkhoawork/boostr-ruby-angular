@@ -11,7 +11,7 @@
               {{ activity.happened_at | date: 'shortDate' }}
           .col-xs-1.pad2
             %img.s-img{:src => "{{ getType(activity.activity_type_name).icon }}"}/
-          .col-xs-9.pad3a
+          .col-xs-8.pad3a
             .row.act
               %span
                 {{ activity.creator.first_name }} {{ activity.creator.last_name }} 
@@ -20,3 +20,9 @@
                 {{ $first ? '' : $last ? '& ' : ''}}{{ contact.name }}{{ $last ? '' : ', ' }}
             .row
               {{ activity.comment }}
+          .col-xs-1
+            %a#edit-contact{ href: '', ng: { click: 'showActivityEditModal(activity)' } }
+              = inline_svg 'icons/edit.svg'
+            %br
+            %a.delete-team{ href: '', ng: { click: 'deleteActivity(activity)' } }
+              = inline_svg 'icons/trash.svg'
