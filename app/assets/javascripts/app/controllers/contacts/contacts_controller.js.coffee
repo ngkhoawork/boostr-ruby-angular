@@ -87,10 +87,32 @@
       backdrop: 'static'
       keyboard: false
 
+  $scope.showActivityEditModal = (activity) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_form.html'
+      size: 'lg'
+      controller: 'ActivitiesEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          activity
+        types: ->
+          $scope.types
+        contacts: ->
+          $scope.contacts
+        types: ->
+          $scope.types
+
   $scope.delete = ->
     if confirm('Are you sure you want to delete "' +  $scope.currentContact.name + '"?')
       Contact.delete $scope.currentContact, ->
         $location.path('/people')
+
+  $scope.deleteActivity = (activity) ->
+    if confirm('Are you sure you want to delete the activity?')
+      Activity.delete activity, ->
+        $scope.$emit('updated_current_contact')
 
   $scope.showContact = (contact) ->
     Contact.set(contact.id) if contact
@@ -99,6 +121,9 @@
     $scope.currentContact = Contact.get()
 
   $scope.$on 'updated_contacts', ->
+    $scope.init()
+
+  $scope.$on 'updated_activities', ->
     $scope.init()
 
   $scope.init()

@@ -37,6 +37,7 @@
       _.each activityTypes, (type) ->
         $scope.selected[type.name] = {}
         $scope.selected[type.name].date = now
+        $scope.selected[type.name].contacts = []
 
   $scope.setCurrentDeal = (deal) ->
     _.each deal.members, (member) ->
@@ -47,8 +48,10 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
-    Contact.allForClient deal.advertiser_id, (contacts) ->
+    Contact.$resource.query().$promise.then (contacts) ->
       $scope.contacts = contacts
+#    Contact.allForClient deal.advertiser_id, (contacts) ->
+#      $scope.contacts = contacts
 
   $scope.getStages = ->
     Stage.query().$promise.then (stages) ->
@@ -145,6 +148,9 @@
   $scope.$on 'updated_deal', ->
     $scope.init()
 
+  $scope.$on 'updated_activities', ->
+    $scope.init()
+
   $scope.init()
 
   $scope.setActiveTab = (tab) ->
@@ -201,14 +207,36 @@
         contact: ->
           {}
 
+  $scope.showActivityEditModal = (activity) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_form.html'
+      size: 'lg'
+      controller: 'ActivitiesEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          activity
+        types: ->
+          $scope.types
+        contacts: ->
+          $scope.contacts
+        types: ->
+          $scope.types
+
   $scope.cancelActivity = ->
     $scope.initActivity()
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
+#      $scope.contacts.push contact
       $scope.selected[$scope.activeType.name].contacts.push contact
       $scope.populateContact = false
 
+  $scope.deleteActivity = (activity) ->
+    if confirm('Are you sure you want to delete the activity?')
+      Activity.delete activity, ->
+        $scope.$emit('updated_activities')
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
 ]

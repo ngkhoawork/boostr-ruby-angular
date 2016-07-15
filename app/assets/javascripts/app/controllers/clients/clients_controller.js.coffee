@@ -40,11 +40,14 @@
             client_member.role = Field.field(client_member, 'Member Role')
             $scope.client_members.push(client_member)
 
+
   $scope.getContacts = (client) ->
-    unless client.contacts
-      Contact.allForClient client.id, (contacts) ->
-        $scope.contacts = contacts
-        client.contacts = contacts
+    Contact.$resource.query().$promise.then (contacts) ->
+      $scope.contacts = contacts
+#    unless client.contacts
+#      Contact.allForClient client.id, (contacts) ->
+#        $scope.contacts = contacts
+#        client.contacts = contacts
 
   $scope.removeClientMember = (clientMember) ->
     clientMember.$delete(
@@ -130,6 +133,23 @@
         client: ->
           $scope.currentClient
 
+  $scope.showActivityEditModal = (activity) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_form.html'
+      size: 'lg'
+      controller: 'ActivitiesEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          activity
+        types: ->
+          $scope.types
+        contacts: ->
+          $scope.contacts
+        types: ->
+          $scope.types
+
   $scope.showNewPersonModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
@@ -204,6 +224,11 @@
       $scope.$emit('updated_current_client')
       $location.path('/clients')
 
+  $scope.deleteActivity = (activity) ->
+    if confirm('Are you sure you want to delete the activity?')
+      Activity.delete activity, ->
+        $scope.$emit('updated_activities')
+
   $scope.go = (path) ->
     $location.path(path)
 
@@ -224,6 +249,9 @@
       $scope.getClientMembers()
 
   $scope.$on 'updated_clients', ->
+    $scope.init()
+
+  $scope.$on 'updated_activities', ->
     $scope.init()
 
   $scope.$on 'updated_current_contact', ->
@@ -295,11 +323,12 @@
           {}
 
   $scope.cancelActivity = (client) ->
+
     $scope.initActivity()
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
-      $scope.currentClient.selected[$scope.currentClient.activeType.name].contacts.push contact
+      $scope.activity.contacts.push contact.id
       $scope.populateContact = false
 
   $scope.$on 'newClient', (event, client) ->
