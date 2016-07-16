@@ -42,7 +42,10 @@
       else
         $scope.contacts = contacts
         if contacts.length > 0
-          Contact.set($routeParams.id || contacts[0].id)
+          if $scope.currentContact
+            Contact.set($scope.currentContact.id || contacts[0].id)
+          else
+            Contact.set(contacts[0].id)
         else
           $scope.currentContact = null
 
