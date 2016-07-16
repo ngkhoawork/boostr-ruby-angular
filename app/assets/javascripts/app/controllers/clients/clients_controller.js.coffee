@@ -27,7 +27,7 @@
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
       $scope.types = activityTypes
-    $scope.getClient($routeParams.id) if $routeParams.id
+    $scope.getClient($scope.currentClient.id) if $scope.currentClient
     $scope.getClients()
     $scope.showContactList = false
 
@@ -81,7 +81,7 @@
         $scope.clients = $scope.clients.concat(clients)
       else
         $scope.clients = clients
-        if clients.length > 0 and !$routeParams.id
+        if clients.length > 0 and !$scope.currentClient
           $scope.setClient(clients[0])
       $scope.isLoading = false
 
@@ -272,7 +272,9 @@
     $scope.activity = new Activity.$resource
     $scope.activity.date = new Date
     $scope.activity.contacts = []
-    $scope.showExtendedActivityForm = false
+    $scope.activity.activity_type_id = $scope.types[0].id
+    $scope.activity.activity_type_name = $scope.types[0].name
+    $scope.currentClient.showExtendedActivityForm = false
     $scope.populateContact = false
 
   $scope.setActiveTab = (client, tab) ->
@@ -322,8 +324,7 @@
         contact: ->
           {}
 
-  $scope.cancelActivity = (client) ->
-
+  $scope.cancelActivity = () ->
     $scope.initActivity()
 
   $scope.$on 'newContact', (event, contact) ->
