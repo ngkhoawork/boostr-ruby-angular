@@ -17,9 +17,21 @@ class Revenue < ActiveRecord::Base
     CSV.parse(file, headers: true) do |row|
       row_number += 1
 
-      order_number, line_number, ad_server = row[0..2]
-      quantity, price, price_type, delivered, remaining, budget, budget_remaining, start_date, end_date = row[3..11]
-      client_id, user_id, product_id = row[13..15]
+      order_number = row[0]
+      line_number = row[1]
+      ad_server = row[2]
+      quantity = row[3]
+      price = row[4]
+      price_type = row[5]
+      delivered = row[6]
+      remaining = row[7]
+      budget = row[8]
+      budget_remaining = row[9]
+      start_date = row[10]
+      end_date = row[11]
+      client_id = row[13]
+      user_id = row[14]
+      product_id = row[15]
       comment = row[16]
 
       unless user = User.where(email: user_id, company_id: company_id).first
