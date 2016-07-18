@@ -40,7 +40,7 @@ json.values deal.values
 json.fields deal.fields
 
 json.activities deal.activities do |activity|
-  json.extract! activity, :happened_at, :comment, :activity_type
+  json.extract! activity, :id, :happened_at, :comment, :activity_type
   json.creator activity.creator
   json.deal activity.deal
   json.client activity.client

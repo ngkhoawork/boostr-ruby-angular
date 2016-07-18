@@ -9,13 +9,13 @@
       %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here *', ng: { model: 'activity.comment' } }
     #nav.transparent
       %ul.nav.nav-tabs
-        %li{ ng: { class: "{ active: showExtendedActivityForm }" } }
-          %a.link{ href: '', ng: { click: 'showExtendedActivityForm = true' } }
+        %li{ ng: { class: "{ active: currentClient.showExtendedActivityForm }" } }
+          %a.link{ href: '', ng: { click: 'currentClient.showExtendedActivityForm = true' } }
             = inline_svg 'icons/message.svg'
         %li.pull-right
           %button.btn.btn-primary.btn-block{ type: 'submit' } Post Update
 
-    #contain.tab{ ng: { show: 'showExtendedActivityForm' } }
+    #contain.tab{ ng: { show: 'currentClient.showExtendedActivityForm' } }
       .row
         %a.close{ ng: { click: 'cancelActivity()' } }
           %span{'aria-hidden' => 'true'}
@@ -38,7 +38,7 @@
                 %ui-select-match{ placeholder: "Type a name *" }
                   {{ $item.name }}
                 %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }
-                  %div{ 'ng-bind-html': 'contact.name' } } }
+                  %div{ 'ng-bind-html': 'contact.name + " - " + contact.client.name' } } }
             .row.type2
               Date
               %br

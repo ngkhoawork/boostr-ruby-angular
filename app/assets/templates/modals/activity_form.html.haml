@@ -1,0 +1,57 @@
+#product-modal
+  %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
+    .modal-header.text-center
+      %a.close{ ng: { click: 'cancel()' } }
+        %span{'aria-hidden' => 'true'}
+          = inline_svg 'icons/close.svg'
+      %h3.modal-title
+        %strong
+          {{ formType }} Activity
+    .modal-body
+      #activities
+        #note
+          .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+            .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+              %i.fa.fa-warning
+              <strong style="text-transform: capitalize">{{field}}</strong>
+              {{error}}
+          %textarea.box.w1{:cols => "30", :name => "reply", :rows => '2', placeholder: 'Type your update here *', ng: { model: 'activity.comment' } }
+        #nav.transparent
+          %ul.nav.nav-tabs
+            %li{ ng: { class: "{ active: activeTab == 'Type' }" } }
+              %a.link{ href: '', ng: { click: 'setActiveTab("Type")' } }
+                = inline_svg 'icons/message.svg'
+
+        #contain.tab
+          .row
+            .col-xs-4.pad7
+              .list-group.list-sm.stages
+                %a.list-group-item.vertical-center.type-menu{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
+                  %img.s-img{:src => "{{ type.icon }}"}/
+                  %h5
+                    {{ type.name }}
+            .col-xs-6
+              #contain1
+                .row.type1
+                  %a#add-contact{ href: '', ng: { click: 'createNewContactModal()' } }
+                    = inline_svg 'icons/add.svg'
+                  {{ activeType.action }}*
+                  %br
+                  %ui-select{ multiple: true, name: 'contacts', ng: { model: 'selected.contacts', disabled: true } }
+                    %ui-select-match{ placeholder: "Type a name *" }
+                      {{ $item.name }}
+                    %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }
+                      %div{ ng: { bind: { html: 'contact.name + " - " + contact.client.name' } } }
+                .row.type2
+                  Date
+                  %br
+                  %span.bs-datepicker
+                    %input.box.w4{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'selected.date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+                .row.type2
+                  Time
+                  %timepicker-pop.input-group{"input-time" => "selected.time", "show-meridian" => "showMeridian"}
+
+
+    .modal-footer.text-center
+      %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
+      %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel

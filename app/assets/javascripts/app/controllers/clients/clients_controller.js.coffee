@@ -27,7 +27,7 @@
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
       $scope.types = activityTypes
-    $scope.getClient($routeParams.id) if $routeParams.id
+    $scope.getClient($scope.currentClient.id) if $scope.currentClient
     $scope.getClients()
     $scope.showContactList = false
 
@@ -40,11 +40,14 @@
             client_member.role = Field.field(client_member, 'Member Role')
             $scope.client_members.push(client_member)
 
+
   $scope.getContacts = (client) ->
-    unless client.contacts
-      Contact.allForClient client.id, (contacts) ->
-        $scope.contacts = contacts
-        client.contacts = contacts
+    Contact.$resource.query().$promise.then (contacts) ->
+      $scope.contacts = contacts
+#    unless client.contacts
+#      Contact.allForClient client.id, (contacts) ->
+#        $scope.contacts = contacts
+#        client.contacts = contacts
 
   $scope.removeClientMember = (clientMember) ->
     clientMember.$delete(
@@ -78,7 +81,7 @@
         $scope.clients = $scope.clients.concat(clients)
       else
         $scope.clients = clients
-        if clients.length > 0 and !$routeParams.id
+        if clients.length > 0 and !$scope.currentClient
           $scope.setClient(clients[0])
       $scope.isLoading = false
 
@@ -129,6 +132,23 @@
       resolve:
         client: ->
           $scope.currentClient
+
+  $scope.showActivityEditModal = (activity) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_form.html'
+      size: 'lg'
+      controller: 'ActivitiesEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          activity
+        types: ->
+          $scope.types
+        contacts: ->
+          $scope.contacts
+        types: ->
+          $scope.types
 
   $scope.showNewPersonModal = ->
     $scope.modalInstance = $modal.open
@@ -204,6 +224,11 @@
       $scope.$emit('updated_current_client')
       $location.path('/clients')
 
+  $scope.deleteActivity = (activity) ->
+    if confirm('Are you sure you want to delete the activity?')
+      Activity.delete activity, ->
+        $scope.$emit('updated_activities')
+
   $scope.go = (path) ->
     $location.path(path)
 
@@ -226,6 +251,9 @@
   $scope.$on 'updated_clients', ->
     $scope.init()
 
+  $scope.$on 'updated_activities', ->
+    $scope.init()
+
   $scope.$on 'updated_current_contact', ->
     $scope.currentClient.contacts.push(Contact.get())
 
@@ -244,7 +272,9 @@
     $scope.activity = new Activity.$resource
     $scope.activity.date = new Date
     $scope.activity.contacts = []
-    $scope.showExtendedActivityForm = false
+    $scope.activity.activity_type_id = $scope.types[0].id
+    $scope.activity.activity_type_name = $scope.types[0].name
+    $scope.currentClient.showExtendedActivityForm = false
     $scope.populateContact = false
 
   $scope.setActiveTab = (client, tab) ->
@@ -294,12 +324,12 @@
         contact: ->
           {}
 
-  $scope.cancelActivity = (client) ->
+  $scope.cancelActivity = () ->
     $scope.initActivity()
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
-      $scope.currentClient.selected[$scope.currentClient.activeType.name].contacts.push contact
+      $scope.activity.contacts.push contact.id
       $scope.populateContact = false
 
   $scope.$on 'newClient', (event, client) ->
