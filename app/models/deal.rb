@@ -324,7 +324,6 @@ class Deal < ActiveRecord::Base
     else
       self.closed_at = updated_at if !stage.open?
       if !self.closed_at.nil?
-        self.closed_at = nil
         if !self.fields.nil? && !self.values.nil?
           field = self.fields.find_by_name("Close Reason")
           close_reason = self.values.find_by_field_id(field.id) if !field.nil?
