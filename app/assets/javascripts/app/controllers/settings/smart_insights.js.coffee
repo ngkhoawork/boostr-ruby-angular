@@ -1,6 +1,13 @@
 @app.controller 'SettingsSmartInsightsController',
 ['$scope', 'Company', 'Stage', 'User', 'KPI',
 ($scope, Company, Stage, User, KPI) ->
+
+  $scope.init = ->
+    User.query().$promise.then (users) ->
+      $scope.users = users
+
+  $scope.init()
+  
   Company.get().$promise.then (company) ->
     $scope.company = company
 
@@ -23,14 +30,17 @@
     )
 
   $scope.calculateKPIs = ->
-    KPI.all().then (users) ->
-      $scope.users = users
+    KPI.all().then (status) ->
+      $scope.$emit('updated_users')
 
   $scope.stages = []
   Stage.query().$promise.then (stages) ->
     $scope.stages = stages
 
   $scope.users = []
-  User.query().$promise.then (users) ->
-    $scope.users = users
+
+  $scope.$on 'updated_users', ->
+    $scope.init()
+
+
 ]

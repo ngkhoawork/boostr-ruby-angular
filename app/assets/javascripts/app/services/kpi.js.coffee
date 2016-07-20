@@ -3,11 +3,10 @@
 ($resource, $q) ->
 
   resource = $resource '/api/kpis/'
-
   @all = ->
     deferred = $q.defer()
-    resource.query {}, (users) ->
-      deferred.resolve(users)
+    resource.query {}, (status) ->
+      deferred.resolve(status)
     deferred.promise
 
   return

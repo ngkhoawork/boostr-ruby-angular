@@ -6,8 +6,8 @@ class Api::KpisController < ApplicationController
     end_date = Time.now
     start_date = end_date - 90.days
     users.each do |user|
-      complete_deals = user.deals.closed.for_time_period(start_date, end_date).at_percent(100)
-      incomplete_deals = user.deals.closed.for_time_period(start_date, end_date).at_percent(0)
+      complete_deals = user.deals.closed.closed_in(90).at_percent(100)
+      incomplete_deals = user.deals.closed.closed_in(90).at_percent(0)
       complete_deals_count = complete_deals.count
       incomplete_deals_count = incomplete_deals.count
 
@@ -23,10 +23,10 @@ class Api::KpisController < ApplicationController
       cycle_time = cycle_time_arr.sum.to_f / cycle_time_arr.count if cycle_time_arr.count > 0
 
       user.win_rate = win_rate.round(2) if win_rate > 0
-      user.average_deal_size = average_deal_size.round(2) if average_deal_size > 0
+      user.average_deal_size = average_deal_size.round(2) if average_deal_size.present? && average_deal_size > 0
       user.cycle_time = cycle_time.round(2) if cycle_time > 0
       user.save!
     end
-    render json: current_user.company.users.to_json()
+    render nothing: true
   end
 end
