@@ -19,7 +19,7 @@ class Api::KpisController < ApplicationController
 
       average_deal_size = complete_deals.average(:budget) if complete_deals_count > 0
 
-      cycle_time_arr = complete_deals.collect{|deal| DateTime.parse(deal.closed_at.to_s)  - DateTime.parse(deal.created_at.to_s)}
+      cycle_time_arr = complete_deals.collect{|deal| Date.parse(deal.closed_at.to_s)  - Date.parse(deal.created_at.to_s)}
       cycle_time = cycle_time_arr.sum.to_f / cycle_time_arr.count if cycle_time_arr.count > 0
 
       user.win_rate = win_rate.round(2) if win_rate > 0
