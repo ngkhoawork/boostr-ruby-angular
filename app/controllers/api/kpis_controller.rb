@@ -3,8 +3,6 @@ class Api::KpisController < ApplicationController
 
   def index
     users = current_user.company.users
-    end_date = Time.now
-    start_date = end_date - 90.days
     users.each do |user|
       complete_deals = user.deals.closed.closed_in(90).at_percent(100)
       incomplete_deals = user.deals.closed.closed_in(90).at_percent(0)
@@ -19,7 +17,7 @@ class Api::KpisController < ApplicationController
 
       average_deal_size = complete_deals.average(:budget) if complete_deals_count > 0
 
-      cycle_time_arr = complete_deals.collect{|deal| Date.parse(deal.closed_at.to_s)  - Date.parse(deal.created_at.to_s)}
+      cycle_time_arr = complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s)  - Date.parse(deal.created_at.utc.to_s)}
       cycle_time = cycle_time_arr.sum.to_f / cycle_time_arr.count if cycle_time_arr.count > 0
 
       user.win_rate = win_rate.round(2) if win_rate > 0
