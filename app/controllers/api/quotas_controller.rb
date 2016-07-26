@@ -31,7 +31,7 @@ class Api::QuotasController < ApplicationController
 
   def quotas
     if params[:time_period_id].present?
-      current_user.company.quotas.for_time_period(time_period.start_date, time_period.end_date)
+      current_user.company.quotas.where(time_period_id: params[:time_period_id])
     else
       current_user.company.quotas
     end

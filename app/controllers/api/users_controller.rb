@@ -16,7 +16,7 @@ class Api::UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:first_name, :last_name, :title, :email, :notify, :win_rate, :average_deal_size)
+    params.require(:user).permit(:first_name, :last_name, :title, :email, :notify, :win_rate, :average_deal_size, :cycle_time)
   end
 
   def user

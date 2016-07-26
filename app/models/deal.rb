@@ -61,7 +61,10 @@ class Deal < ActiveRecord::Base
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
   scope :for_time_period, -> (start_date, end_date) { where('deals.start_date <= ? AND deals.end_date >= ?', end_date, start_date) }
+  scope :closed_in, -> (duration_in_days) { where('deals.closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
+  scope :closed, -> { joins(:stage).where('stages.open IS false') }
+  scope :at_percent, -> (percentage) { joins(:stage).where('stages.probability = ?', percentage) }
 
   def fields
     company.fields.where(subject_type: self.class.name)
@@ -310,6 +313,7 @@ class Deal < ActiveRecord::Base
   end
 
   def update_close
+    self.closed_at = updated_at if !stage.open?
     if !stage.open? && stage.probability == 100
       notification = company.notifications.find_by_name('Closed Won')
       if !notification.nil? && !notification.recipients.nil?
@@ -320,8 +324,7 @@ class Deal < ActiveRecord::Base
         end
       end
     else
-      self.closed_at = updated_at if !stage.open?
-      if !self.closed_at.nil?
+      if !self.closed_at.nil? && stage.open?
         self.closed_at = nil
         if !self.fields.nil? && !self.values.nil?
           field = self.fields.find_by_name("Close Reason")
