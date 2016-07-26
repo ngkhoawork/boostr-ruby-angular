@@ -33,7 +33,7 @@ class Api::QuotasController < ApplicationController
     if params[:time_period_id].present?
       start_date = Time.parse(time_period.start_date.to_s).utc.beginning_of_day
       end_date = Time.parse(time_period.end_date.to_s).utc.end_of_day
-      current_user.company.quotas.for_time_period(start_date, start_date)
+      current_user.company.quotas.for_time_period(start_date, end_date)
     else
       current_user.company.quotas
     end
