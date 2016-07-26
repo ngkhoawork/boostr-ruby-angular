@@ -3,7 +3,7 @@ class Quota < ActiveRecord::Base
   belongs_to :time_period
   belongs_to :company
 
-  scope :for_time_period, -> (start_date, end_date) { where('quota.start_date <= ? AND quota.end_date >= ?', end_date, start_date) }
+  scope :for_time_period, -> (time_period_id) { where('quota.time_period_id = ?', time_period_id) }
 
   before_save :set_dates
 
