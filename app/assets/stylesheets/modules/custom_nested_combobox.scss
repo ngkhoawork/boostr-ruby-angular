@@ -1,0 +1,62 @@
+.custom-select {
+
+  height: 47px;
+  //border: 1px solid transparent;
+  padding: 6px 12px;
+  border-radius: 4px;
+  margin-top: auto;
+  margin-bottom: auto;
+
+  input {
+    margin-top:7px;
+  }
+
+  span {
+    position: absolute;
+    height: 10px;
+    top: 50%;
+    right: 10px;
+    margin-top: -2px;
+
+    .icon-sort-down {
+      display: inline-block;
+      width: 0;
+      //height: 0;
+      margin-left: 2px;
+      vertical-align: middle;
+      border-top: 5px dashed;
+      border-top: 5px solid \9;
+      border-right: 5px solid transparent;
+      border-left: 5px solid transparent;
+      background: none;
+    }
+  }
+
+  .list {
+    top: 45px;
+    ul {
+      li {
+        &:hover > a:before {
+          background: rgba(255, 96, 0, 0.1);
+        }
+        a {
+          span {
+            position: inherit;
+          }
+        }
+        &.active {
+          > a:before {
+            background: rgba(255, 96, 0, 0.3);
+            color: #ffffff;
+            span {
+              position: inherit;
+              color: #ffffff;
+            }
+
+          }
+        }
+
+      }
+    }
+  }
+}

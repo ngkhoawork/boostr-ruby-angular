@@ -1,0 +1,60 @@
+#revenue
+  #nav.transparent
+    .container
+      .row.filter-section
+        .col-xs-4
+          <nested-combo-box control-class="ui-select" control-disabled="isDisabled" change-event="changeTeam" ng-model="activeItem.id" collection="teams" options="{childrenParam: 'children'}"/>
+        .col-xs-4
+          %ui-select{ name: 'team', ng: { model: 'selectedMember', disabled: true, required: true }, "on-select": "changeMember($item)" }
+            %ui-select-match{ placeholder: 'Select Member' }
+              {{ $select.selected.name }}
+            %ui-select-choices{ repeat: 'member.id as member in selectedTeam.members | filter: { name: $select.search }' }
+              %div{ ng: { bind: { html: 'member.name' } } }
+
+  .container-fluid
+    .row
+      .col-md-4.col-md-offset-4
+        .table-wrapper
+          %h3
+            KPIs
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Win Rate
+                %th.left Deal Size
+                %th.right Cycle Time
+
+
+            %tbody
+              %tr
+                %td.left {{minWinRate}}%/{{maxWinRate}}% ({{averageWinRate}}%)
+                %td.left ${{minDealSize}}k/${{maxDealSize}}k (${{averageDealSize}}k)
+                %td.right {{minCycleTime}}d/{{maxCycleTime}}d ({{averageCycleTime}}d)
+        .table-wrapper
+          %h3
+            Largest Deal Open
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Client
+                %th.left Budget
+                %th.left %
+                %th.left Start Date
+                %th.right Next Step
+
+
+            %tbody
+              %tr{ 'ng-repeat': 'deal in topDeals' }
+                %td.left {{ deal.advertiser.name }}
+                %td.left ${{deal.budget}}
+                %td.left {{deal.stage.probability}}
+                %td.left {{deal.start_date}}
+                %td.right {{deal.next_step}}
+        .table-wrapper
+          %h3
+            Weekly Pipeline Movement
+          %div{ ng: { if: 'chartWeekPipeMovement.datasets.length > 0' } }
+            %div
+              %canvas{ 'tc-chartjs': true, 'chart-type': 'bar', 'chart-data':'chartWeekPipeMovement', "chart-options":"chartWeekPipeMovementOptions" , style: 'width: 100%; height: 300px;' }
+
+

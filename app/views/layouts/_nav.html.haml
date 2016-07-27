@@ -33,6 +33,8 @@
                   = link_to "Sellers Activities", "/reports"
                 %li
                   = link_to "Forecast Detail - Annual", "/reports/forecasts"
+                %li
+                  = link_to "Sales Execution Dashboard", "/reports/sales_execution_dashboard"
           - else
             %li{ ng: { class: "{ active: isActive('/reports') }" } }
               = link_to "SMART INSIGHTS", "/reports"

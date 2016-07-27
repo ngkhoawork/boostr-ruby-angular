@@ -1,6 +1,7 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
+
   mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   ActiveAdmin.routes(self)
 
@@ -27,7 +28,9 @@ Rails.application.routes.draw do
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
     resources :deal_products, only: [:create, :update, :destroy]
-    resources :teams, only: [:index, :create, :show, :update, :destroy]
+    resources :teams, only: [:index, :create, :show, :update, :destroy] do
+      get :all_members
+    end
     resources :custom_values, only: [:index]
     resources :time_periods, only: [:index, :create, :update, :destroy]
     resources :quotas, only: [:index, :create, :update]
@@ -39,6 +42,7 @@ Rails.application.routes.draw do
     resources :activities, only: [:index, :create, :show, :update, :destroy]
     resources :activity_types, only: [:index, :create, :show, :update, :destroy]
     resources :reports, only: [:index, :show]
+    resources :sales_execution_dashboard, only: [:index]
     resources :kpis, only: [:index]
 
     resource :weighted_pipelines, only: [:show]

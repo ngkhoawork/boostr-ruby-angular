@@ -16,6 +16,7 @@
   'ngInflection'
   'timepickerPop'
   'infinite-scroll'
+  'ui.nested.combobox'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -56,6 +57,9 @@
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
+    .when '/reports/sales_execution_dashboard',
+      templateUrl: 'sales_execution_dashboard.html'
+      controller: 'SalesExecutionDashboardController'
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'
