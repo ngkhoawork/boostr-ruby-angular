@@ -105,8 +105,6 @@
             item.styles = {'width': item.value / maxValue * 100 + "%", 'background-color': item.color}
             return item
 
-          console.log($scope)
-
       calculateKPIsForTeam = () =>
         if $scope.selectedTeam.members.length > 0
           $scope.minWinRate = (if ($scope.selectedTeam.members[0].win_rate > 0) then $scope.selectedTeam.members[0].win_rate else 0)
