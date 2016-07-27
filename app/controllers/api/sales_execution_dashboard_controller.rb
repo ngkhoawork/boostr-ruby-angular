@@ -11,8 +11,13 @@ class Api::SalesExecutionDashboardController < ApplicationController
     pipeline_lost = Deal.where('deals.id in (?)', deal_member_ids).closed.closed_at(start_date, end_date).at_percent(0).sum(:budget)
     pipeline_added = Deal.where('deals.id in (?)', deal_member_ids).stated_at(start_date, end_date).sum(:budget)
 
+    week_pipeline_data = [
+        {name: 'Added', value: pipeline_added, color:'#f8cbad'},
+        {name: 'Won', value: pipeline_won, color:'#a9d18e'},
+        {name: 'Lost', value: pipeline_lost, color:'#bfbfbf'}
+    ]
 
-    render json: [{top_deals: top_deals, week_pipeline_data: {pipeline_added: pipeline_added, pipeline_won: pipeline_won, pipeline_lost: pipeline_lost}}]
+    render json: [{top_deals: top_deals, week_pipeline_data: week_pipeline_data}]
   end
 
   def team

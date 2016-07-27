@@ -21,6 +21,61 @@
             id: 0
           }
 
+          $scope.chartProductPipe = {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: [
+              {
+                label: "My First dataset",
+                fillColor: "rgba(220,220,220,0.5)",
+                strokeColor: "rgba(220,220,220,0.8)",
+                highlightFill: "rgba(220,220,220,0.75)",
+                highlightStroke: "rgba(220,220,220,1)",
+                data: [65, 59, 80, 81, 56, 55, 40]
+              },
+              {
+                label: "My Second dataset",
+                fillColor: "rgba(151,187,205,0.5)",
+                strokeColor: "rgba(151,187,205,0.8)",
+                highlightFill: "rgba(151,187,205,0.75)",
+                highlightStroke: "rgba(151,187,205,1)",
+                data: [28, 48, 40, 19, 86, 27, 90]
+              }
+            ]
+          }
+
+          $scope.chartBarOptions = {
+            responsive: false,
+            segmentShowStroke: true,
+            segmentStrokeColor: '#fff',
+            segmentStrokeWidth: 2,
+            percentageInnerCutout: 70,
+            animationSteps: 100,
+            animationEasing: 'easeOutBounce',
+            animateRotate: true,
+            animateScale: false,
+            scaleLabel: '<%= parseFloat(value).formatMoney() %>',
+            legendTemplate : '<ul class="tc-chart-js-legend"><li class="legend_quota"><span class="swatch"></span>Quota</li><% for (var i=datasets.length-1; i>=0; i--){%><li class="legend_<%= datasets[i].label.replace(\'%\', \'\') %>"><span class="swatch" style="background-color:<%= datasets[i].fillColor %>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
+            multiTooltipTemplate: '<%= value.formatMoney() %>',
+            tooltipTemplate: '<%= label %>: <%= value.formatMoney() %>',
+            tooltipHideZero: true
+          }
+
+          $scope.chartProductPipeOption = {
+            scaleBeginAtZero : true,
+            scaleShowGridLines : true,
+            scaleGridLineColor : "rgba(0,0,0,0.05)",
+            scaleGridLineWidth : 1,
+            animationSteps: 100,
+            animationEasing: 'easeOutBounce',
+            animateRotate: true,
+            animateScale: false,
+            barShowStroke : true,
+            barStrokeWidth : 2,
+            barValueSpacing : 5,
+            relativeBars : false,
+            tooltipHideZero: false
+          }
+
       calculateKPIs = () =>
         $scope.averageWinRate = 0
         $scope.averageCycleTime = 0
@@ -40,55 +95,17 @@
 
         SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList).then (data) ->
           $scope.topDeals = data[0].top_deals
-          $scope.chartWeekPipeMovement = {
-            labels: ["Pipeline Added", "Pipeline Won", "Pipeline Lost"],
-            datasets: [
-              {
-                label: "My First dataset",
-                backgroundColor: [
-                  'rgba(255, 99, 132, 0.2)',
-                  'rgba(54, 162, 235, 0.2)',
-                  'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                  'rgba(255,99,132,1)',
-                  'rgba(54, 162, 235, 1)',
-                  'rgba(255, 159, 64, 1)'
-                ],
-                fillColor: 'rgba(151,187,205,0.5)',
-                strokeColor: 'rgba(151,187,205,0.8)',
-                highlightFill: 'rgba(151,187,205,0.75)',
-                highlightStroke: 'rgba(151,187,205,1)',
-                borderWidth: 1,
-                data: [data[0].week_pipeline_data.pipeline_added, data[0].week_pipeline_data.pipeline_won, data[0].week_pipeline_data.pipeline_lost],
-              }
-            ]
-          }
+          maxValue = data[0].week_pipeline_data
+          maxValue = _.max(_.map data[0].week_pipeline_data, (item) =>
+            return item.value
+          )
 
-          $scope.chartWeekPipeMovementOptions = {
-            scales: {
-              xAxes: [{
-                stacked: true
-              }],
-              yAxes: [{
-                stacked: true
-              }]
-            }
-          }
-#
-#          {
-#            responsive: true,
-#            scaleBeginAtZero : true,
-#            scaleShowGridLines : true,
-#            scaleGridLineColor : "rgba(0,0,0,.05)",
-#            scaleGridLineWidth : 1,
-#            barShowStroke : true,
-#            barStrokeWidth : 2,
-#            barValueSpacing : 5,
-#            barDatasetSpacing : 1
-#          };
+
+          $scope.chartWeekPipeMovement = _.map data[0].week_pipeline_data, (item) =>
+            item.styles = {'width': item.value / maxValue * 100 + "%", 'background-color': item.color}
+            return item
+
           console.log($scope)
-
 
       calculateKPIsForTeam = () =>
         if $scope.selectedTeam.members.length > 0
