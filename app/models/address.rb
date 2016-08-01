@@ -3,7 +3,6 @@ class Address < ActiveRecord::Base
 
   validates :phone, numericality: { only_integer: true, allow_blank: true }
   validates :mobile, numericality: { only_integer: true, allow_blank: true }
-  validates :email, uniqueness: true
 
   before_validation do
     self.phone = phone.gsub(/[^0-9]/, '') if attribute_present?('phone')
