@@ -11,7 +11,7 @@
           margin: {
             top: 30,
             right: 0,
-            bottom: 30,
+            bottom: 40,
             left: 120
           },
           height: 200,
@@ -33,6 +33,7 @@
               return if d.length > 14 then d.substr(0, 14) + '...' else d + '   '
           },
           yAxis: {
+            tickPadding: 8,
             showMaxMin: false,
             tickFormat: (d) =>
               return if d > 10000 then '$' + d3.format(',.0f')(d/1000) + "k" else '$' + d3.format(',')(d)
