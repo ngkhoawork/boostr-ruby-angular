@@ -7,7 +7,7 @@ feature 'Clients' do
   describe 'showing client details' do
     let!(:client) { create :client, created_by: user.id }
     let!(:agency) { create :client, created_by: user.id }
-    let!(:contacts) { create_list :contact, 2, client: client, address_attributes: attributes_for(:address) }
+    let!(:contacts) { create_list :contact, 2, client: client }
     let!(:deal) { create_list :deal, 2, advertiser: client }
     let!(:agency_deal) { create :deal, agency: agency }
 

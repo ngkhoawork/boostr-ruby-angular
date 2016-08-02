@@ -4,7 +4,7 @@ class Contact < ActiveRecord::Base
   belongs_to :client, counter_cache: true
   belongs_to :company
 
-  has_one :address, as: :addressable
+  has_one :address, as: :addressable, dependent: :destroy
 
   has_and_belongs_to_many :activities, after_add: :update_activity_updated_at
 
@@ -12,6 +12,7 @@ class Contact < ActiveRecord::Base
 
   validates :name, presence: true
   validate :email_is_present?
+  validate :email_uniqueness
 
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
 
@@ -99,6 +100,12 @@ class Contact < ActiveRecord::Base
   def email_is_present?
     unless address and address.email
       errors.add(:email, "can't be blank")
+    end
+  end
+
+  def email_uniqueness
+    if address && Address.where(email: address.email).where.not(addressable_id: id).any?
+      errors.add :email, 'has already been taken'
     end
   end
 
