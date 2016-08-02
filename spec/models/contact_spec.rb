@@ -22,13 +22,4 @@ RSpec.describe Contact, type: :model do
     end
   end
 
-  context 'validation' do
-    let!(:contact) { create :contact, client: client, address: address }
-
-    it 'validates email uniqueness' do
-      duplicate = build(:contact, address: contact.address)
-      expect(duplicate).not_to be_valid
-      expect(duplicate.errors["email"]).to eq(['has already been taken'])
-    end
-  end
 end
