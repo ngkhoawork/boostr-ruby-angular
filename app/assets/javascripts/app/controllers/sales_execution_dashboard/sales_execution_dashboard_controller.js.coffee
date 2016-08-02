@@ -201,7 +201,7 @@
           )
 
           $scope.chartWeekPipeMovement = _.map data[0].week_pipeline_data, (item) =>
-            item.styles = {'width': item.value / maxValue * 100 + "%", 'background-color': item.color}
+            item.styles = {'width': ( if maxValue > 0 then item.value / maxValue * 100 else 0) + "%", 'background-color': item.color}
             return item
 
           $scope.productPipelineData = data[0].product_pipeline_data
