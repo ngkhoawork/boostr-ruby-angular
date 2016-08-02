@@ -30,7 +30,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     product_pipeline_data_unweighted = []
 
     probabilities.each do |probability|
-      data = Deal.joins(:products).open.at_percent(probability).where("products.company_id = ? and deals.id in (?)", current_user.company.id, deal_ids).group("products.id").order("products.id asc").select("products.name, sum(deal_products.budget / 100) as total_budget").collect {|deal| {label: deal.name, value: deal.total_budget}}
+      data = Deal.joins(:products).open.at_percent(probability).where("products.company_id = ? and deals.id in (?)", current_user.company.id, deal_ids).group("products.id").order("products.id asc").select("products.name, (sum(deal_products.budget) / 100) as total_budget").collect {|deal| {label: deal.name, value: deal.total_budget}}
       final_data_weighted = []
       final_data_unweighted = []
       product_names.each do |product_name|
