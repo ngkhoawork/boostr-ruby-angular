@@ -104,7 +104,7 @@ class Contact < ActiveRecord::Base
   end
 
   def email_uniqueness
-    if Address.where(email: address.email).where.not(addressable_id: id).any?
+    if address && Address.where(email: address.email).where.not(addressable_id: id).any?
       errors.add :email, 'has already been taken'
     end
   end
