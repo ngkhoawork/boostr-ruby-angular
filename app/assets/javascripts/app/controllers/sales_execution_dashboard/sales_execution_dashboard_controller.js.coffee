@@ -9,9 +9,9 @@
         chart: {
           type: 'multiBarHorizontalChart',
           margin: {
-            top: 30,
+            top: 10,
             right: 0,
-            bottom: 40,
+            bottom: 70,
             left: 120
           },
           height: 200,
