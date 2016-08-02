@@ -40,6 +40,28 @@ class Team < ActiveRecord::Base
     ))
   end
 
+  def all_children
+    temp_children = Team.where(parent_id: self.id)
+    children = []
+    temp_children.each do |child|
+      temp_child = child.as_json
+      temp_child[:children] = child.all_children
+      temp_child[:members] = child.all_members
+      temp_child[:members_count] = temp_child[:members].count
+      children << temp_child
+    end
+    children
+  end
+
+  # def all_members(children_array = [])
+  #   children = Team.where(parent_id: self.id)
+  #   children_array += self.members
+  #   children.each do |child|
+  #     child.all_members(children_array)
+  #   end
+  #   children_array
+  # end
+
   def leader_name
     leader.name if leader.present?
   end

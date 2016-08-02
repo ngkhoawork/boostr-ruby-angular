@@ -14,6 +14,7 @@ class Deal < ActiveRecord::Base
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
 
   has_many :deal_products
+  has_many :deal_logs
   has_many :products, -> { distinct }, through: :deal_products
   has_many :deal_members
   has_many :users, through: :deal_members
@@ -62,9 +63,12 @@ class Deal < ActiveRecord::Base
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
   scope :for_time_period, -> (start_date, end_date) { where('deals.start_date <= ? AND deals.end_date >= ?', end_date, start_date) }
   scope :closed_in, -> (duration_in_days) { where('deals.closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
+  scope :closed_at, -> (start_date, end_date) { where('deals.closed_at >= ? and deals.closed_at <= ?', start_date, end_date) }
+  scope :started_at, -> (start_date, end_date) { where('deals.created_at >= ? and deals.created_at <= ?', start_date, end_date) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
   scope :closed, -> { joins(:stage).where('stages.open IS false') }
   scope :at_percent, -> (percentage) { joins(:stage).where('stages.probability = ?', percentage) }
+  scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
 
   def fields
     company.fields.where(subject_type: self.class.name)
@@ -188,6 +192,12 @@ class Deal < ActiveRecord::Base
   end
 
   def update_total_budget
+    current_budget = self.budget
+    new_budget = deal_products.sum(:budget)
+    deal_log = DealLog.new
+    deal_log.deal_id = self.id
+    deal_log.budget_change = new_budget - current_budget
+    deal_log.save
     update_attributes(budget: deal_products.sum(:budget))
   end
 

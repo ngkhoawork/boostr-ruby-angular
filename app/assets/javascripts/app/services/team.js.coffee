@@ -7,6 +7,10 @@
       method: 'PUT'
       url: '/api/teams/:id'
     }
+    all_members: {
+      method: 'GET'
+      url: '/api/teams/:id/all_members'
+    }
 
   @all = (params) ->
     deferred = $q.defer()
@@ -19,6 +23,12 @@
     resource.save params, (team) ->
       deferred.resolve(team)
       $rootScope.$broadcast 'updated_teams'
+    deferred.promise
+
+  @all_members = (team_id) ->
+    deferred = $q.defer()
+    resource.all_members id: team_id, (members) ->
+      deferred.resolve(members)
     deferred.promise
 
   @get = (team_id) ->
