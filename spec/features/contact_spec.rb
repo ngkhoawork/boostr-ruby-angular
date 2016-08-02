@@ -19,7 +19,7 @@ feature 'Contacts' do
 
       within '#contact_modal' do
         fill_in 'name', with: 'Bobby'
-        fill_in 'email', with: 'abc123@boostrcrm.com'
+        fill_in 'email', with: 'abc12345@boostrcrm.com'
         fill_in 'position', with: 'CEO'
         ui_select('client', client.name)
         find('.add-address-btn').trigger('click')
@@ -118,8 +118,7 @@ feature 'Contacts' do
   end
 
   describe 'Deleting a contact' do
-    let!(:address) { create :address, email: 'abc123@boostrcrm.com' }
-    let!(:contacts) { create_list :contact, 3, company: company, client: client, address: address }
+    let!(:contacts) { create_list :contact, 3, company: company, client: client }
 
     before do
       contacts.sort_by!(&:name)
