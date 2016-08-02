@@ -12,7 +12,7 @@ class Contact < ActiveRecord::Base
 
   validates :name, presence: true
   validate :email_is_present?
-  validate :email_uniqueness
+  validate :email_unique?
 
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
 
@@ -103,9 +103,10 @@ class Contact < ActiveRecord::Base
     end
   end
 
-  def email_uniqueness
-    if address && Address.where(email: address.email).where.not(addressable_id: id).any?
-      errors.add :email, 'has already been taken'
+  def email_unique?
+    contacts = Contact.where(company_id: company_id)
+    if contacts.find { |c| c.address && c.address.email == address.email }
+      errors.add(:email, "has already been taken")
     end
   end
 
