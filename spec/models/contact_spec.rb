@@ -22,4 +22,19 @@ RSpec.describe Contact, type: :model do
     end
   end
 
+  context 'validation' do
+    let!(:contact) { create :contact, client: client, address: address }
+
+    it 'allows to create contacts with same email across companies' do
+      duplicate = build(:contact, address: contact.address)
+      expect(duplicate).to be_valid
+    end
+
+    it 'validates email uniqueness within a company' do
+      duplicate = build(:contact, address: contact.address)
+      duplicate.company_id = contact.company_id
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors["email"]).to eq(['has already been taken'])
+    end
+  end
 end
