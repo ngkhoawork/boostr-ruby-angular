@@ -16,7 +16,9 @@
   'ngInflection'
   'timepickerPop'
   'infinite-scroll'
-  'ui.nested.combobox'
+  'tree.dropdown'
+  'd3'
+  'nvd3'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

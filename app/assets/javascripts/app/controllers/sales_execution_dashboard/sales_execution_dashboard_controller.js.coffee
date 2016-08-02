@@ -2,7 +2,43 @@
   ['$scope', '$q', 'Team', 'SalesExecutionDashboard',
     ($scope, $q, Team, SalesExecutionDashboard) ->
 
-      $scope.isDisabled = false;
+      $scope.isDisabled = false
+      $scope.selectedMember = null
+      $scope.productPipelineChoice = 'weighted'
+      $scope.optionsProductPipeline = {
+        chart: {
+          type: 'multiBarHorizontalChart',
+          margin: {
+            top: 30,
+            right: 0,
+            bottom: 30,
+            left: 120
+          },
+          height: 200,
+          x: (d) =>
+            return d.label
+          ,
+          y: (d) =>
+            return d.value
+          ,
+
+          #yErr: function(d){ return [-Math.abs(d.value * Math.random() * 0.3), Math.abs(d.value * Math.random() * 0.3)] },
+          showControls: false,
+          stacked: true,
+          showValues: true,
+          duration: 500,
+          xAxis: {
+            showMaxMin: false
+            tickFormat: (d) =>
+              return if d.length > 14 then d.substr(0, 14) + '...' else d + '   '
+          },
+          yAxis: {
+            showMaxMin: false,
+            tickFormat: (d) =>
+              return if d > 10000 then '$' + d3.format(',.0f')(d/1000) + "k" else '$' + d3.format(',')(d)
+          }
+        }
+      }
 
       $scope.init = () =>
         Team.all(all_teams: true).then (teams) ->
@@ -17,9 +53,13 @@
             members: all_members,
             members_count: all_members.length
           }]
-          $scope.activeItem = {
-            id: 0
-          }
+
+          data = calculateKPIsForTeam($scope.teams[0])
+          $scope.allAverageWinRate = data.averageWinRate
+          $scope.allAverageCycleTime = data.averageCycleTime
+          $scope.allAverageDealSize = data.averageDealSize
+
+          $scope.selectedTeam = $scope.teams[0]
 
           $scope.chartProductPipe = {
             labels: ["January", "February", "March", "April", "May", "June", "July"],
@@ -76,20 +116,79 @@
             tooltipHideZero: false
           }
 
+          $scope.options = {
+            chart: {
+              type: 'historicalBarChart',
+              height: 450,
+              margin : {
+                top: 20,
+                right: 20,
+                bottom: 65,
+                left: 50
+              },
+              x: (d) =>
+                return d[0]
+              ,
+              y: (d) =>
+                return d[1]/100000
+              ,
+              showValues: true,
+              valueFormat: (d) =>
+                return d3.format(',.1f')(d);
+              ,
+              duration: 100,
+              xAxis: {
+                axisLabel: 'X Axis',
+                tickFormat: (d) =>
+                  return d3.time.format('%x')(new Date(d))
+              },
+              rotateLabels: 30,
+              showMaxMin: false
+            },
+            yAxis: {
+              axisLabel: 'Y Axis',
+              axisLabelDistance: -10,
+              tickFormat: (d) =>
+                return d3.format(',.1f')(d)
+            },
+            tooltip: {
+              keyFormatter: (d) =>
+                return d3.time.format('%x')(new Date(d))
+            },
+            zoom: {
+              enabled: true,
+              scaleExtent: [1, 10],
+              useFixedDomain: false,
+              useNiceScale: false,
+              horizontalOff: false,
+              verticalOff: true,
+              unzoomEventType: 'dblclick.zoom'
+            }
+          }
+
+          $scope.data = [
+            {
+              "key" : "Quantity" ,
+              "bar": true,
+              "values" : [ [ 1136005200000 , 1271000.0] , [ 1138683600000 , 1271000.0] , [ 1141102800000 , 1271000.0] , [ 1143781200000 , 0] , [ 1146369600000 , 0] , [ 1149048000000 , 0] , [ 1151640000000 , 0] , [ 1154318400000 , 0] , [ 1156996800000 , 0] , [ 1159588800000 , 3899486.0] , [ 1162270800000 , 3899486.0] , [ 1164862800000 , 3899486.0] , [ 1167541200000 , 3564700.0] , [ 1170219600000 , 3564700.0] , [ 1172638800000 , 3564700.0] , [ 1175313600000 , 2648493.0] , [ 1177905600000 , 2648493.0] , [ 1180584000000 , 2648493.0] , [ 1183176000000 , 2522993.0] , [ 1185854400000 , 2522993.0] , [ 1188532800000 , 2522993.0] , [ 1191124800000 , 2906501.0] , [ 1193803200000 , 2906501.0] , [ 1196398800000 , 2906501.0] , [ 1199077200000 , 2206761.0] , [ 1201755600000 , 2206761.0] , [ 1204261200000 , 2206761.0] , [ 1206936000000 , 2287726.0] , [ 1209528000000 , 2287726.0] , [ 1212206400000 , 2287726.0] , [ 1214798400000 , 2732646.0] , [ 1217476800000 , 2732646.0] , [ 1220155200000 , 2732646.0] , [ 1222747200000 , 2599196.0] , [ 1225425600000 , 2599196.0] , [ 1228021200000 , 2599196.0] , [ 1230699600000 , 1924387.0] , [ 1233378000000 , 1924387.0] , [ 1235797200000 , 1924387.0] , [ 1238472000000 , 1756311.0] , [ 1241064000000 , 1756311.0] , [ 1243742400000 , 1756311.0] , [ 1246334400000 , 1743470.0] , [ 1249012800000 , 1743470.0] , [ 1251691200000 , 1743470.0] , [ 1254283200000 , 1519010.0] , [ 1256961600000 , 1519010.0] , [ 1259557200000 , 1519010.0] , [ 1262235600000 , 1591444.0] , [ 1264914000000 , 1591444.0] , [ 1267333200000 , 1591444.0] , [ 1270008000000 , 1543784.0] , [ 1272600000000 , 1543784.0] , [ 1275278400000 , 1543784.0] , [ 1277870400000 , 1309915.0] , [ 1280548800000 , 1309915.0] , [ 1283227200000 , 1309915.0] , [ 1285819200000 , 1331875.0] , [ 1288497600000 , 1331875.0] , [ 1291093200000 , 1331875.0] , [ 1293771600000 , 1331875.0] , [ 1296450000000 , 1154695.0] , [ 1298869200000 , 1154695.0] , [ 1301544000000 , 1194025.0] , [ 1304136000000 , 1194025.0] , [ 1306814400000 , 1194025.0] , [ 1309406400000 , 1194025.0] , [ 1312084800000 , 1194025.0] , [ 1314763200000 , 1244525.0] , [ 1317355200000 , 475000.0] , [ 1320033600000 , 475000.0] , [ 1322629200000 , 475000.0] , [ 1325307600000 , 690033.0] , [ 1327986000000 , 690033.0] , [ 1330491600000 , 690033.0] , [ 1333166400000 , 514733.0] , [ 1335758400000 , 514733.0]]
+            }]
+
+      updateProductPipelineData = () =>
+        if ($scope.productPipelineChoice == "weighted")
+          $scope.dataProductPipeline = $scope.productPipelineData.weighted
+        else
+          $scope.dataProductPipeline = $scope.productPipelineData.unweighted
+
       calculateKPIs = () =>
         $scope.averageWinRate = 0
         $scope.averageCycleTime = 0
         $scope.averageDealSize = 0
 
-        $scope.minWinRate = 0
-        $scope.minCycleTime = 0
-        $scope.minDealSize = 0
-
-        $scope.maxWinRate = 0
-        $scope.maxCycleTime = 0
-        $scope.maxDealSize = 0
-        if ($scope.selectedMember == null && $scope.selectedTeam)
-          calculateKPIsForTeam()
+        if ($scope.selectedMember == null && $scope.selectedTeam && $scope.selectedTeam.members.length > 0)
+          data = calculateKPIsForTeam($scope.selectedTeam)
+          $scope.averageWinRate = data.averageWinRate
+          $scope.averageCycleTime = data.averageCycleTime
+          $scope.averageDealSize = data.averageDealSize
         else if ($scope.selectedMember)
           calculateKPIsForMember()
 
@@ -100,85 +199,66 @@
             return item.value
           )
 
-
           $scope.chartWeekPipeMovement = _.map data[0].week_pipeline_data, (item) =>
             item.styles = {'width': item.value / maxValue * 100 + "%", 'background-color': item.color}
             return item
 
-      calculateKPIsForTeam = () =>
-        if $scope.selectedTeam.members.length > 0
-          $scope.minWinRate = (if ($scope.selectedTeam.members[0].win_rate > 0) then $scope.selectedTeam.members[0].win_rate else 0)
-          $scope.minCycleTime = (if ($scope.selectedTeam.members[0].cycle_time > 0) then $scope.selectedTeam.members[0].cycle_time else 0)
-          $scope.minDealSize = (if ($scope.selectedTeam.members[0].average_deal_size > 0) then $scope.selectedTeam.members[0].average_deal_size else 0)
+          $scope.productPipelineData = data[0].product_pipeline_data
+          updateProductPipelineData()
 
-          $scope.maxWinRate = (if ($scope.selectedTeam.members[0].win_rate > 0) then $scope.selectedTeam.members[0].win_rate else 0)
-          $scope.maxCycleTime = (if ($scope.selectedTeam.members[0].cycle_time > 0) then $scope.selectedTeam.members[0].cycle_time else 0)
-          $scope.maxDealSize = (if ($scope.selectedTeam.members[0].average_deal_size > 0) then $scope.selectedTeam.members[0].average_deal_size else 0)
+      calculateKPIsForTeam = (team) =>
+        if team.members.length > 0
+          win_rate_count = 0
+          cycle_time_count = 0
+          deal_size_count = 0
+          averageWinRate = 0
+          averageCycleTime = 0
+          averageDealSize = 0
 
-          _.each $scope.selectedTeam.members, (item) =>
-            $scope.averageWinRate += (if (item.win_rate > 0) then parseFloat(item.win_rate) else 0)
-            $scope.averageCycleTime += (if (item.cycle_time > 0) then parseFloat(item.cycle_time) else 0)
-            $scope.averageDealSize += (if (item.average_deal_size > 0) then parseFloat(item.average_deal_size) else 0)
-
+          _.each team.members, (item) =>
             if (item.win_rate > 0)
-              if (item.win_rate < $scope.minWinRate)
-                $scope.minWinRate = item.win_rate
-              if (item.win_rate > $scope.maxWinRate)
-                $scope.maxWinRate = item.win_rate
+              averageWinRate = averageWinRate + parseFloat(item.win_rate)
+              win_rate_count = win_rate_count + 1
 
             if (item.cycle_time > 0)
-              if (item.cycle_time < $scope.minCycleTime)
-                $scope.minCycleTime = item.cycle_time
-              if (item.cycle_time > $scope.maxCycleTime)
-                $scope.maxCycleTime = item.cycle_time
+              averageCycleTime = averageCycleTime + parseFloat(item.cycle_time)
+              cycle_time_count = cycle_time_count + 1
 
             if (item.average_deal_size > 0)
-              if (item.average_deal_size < $scope.minDealSize)
-                $scope.minDealSize = item.average_deal_size
-              if (item.average_deal_size > $scope.maxDealSize)
-                $scope.maxDealSize = item.average_deal_size
+              averageDealSize = averageDealSize + parseFloat(item.average_deal_size)
+              deal_size_count = deal_size_count + 1
 
-          if $scope.selectedTeam.members.length > 0
-            $scope.averageWinRate = Number(($scope.averageWinRate / $scope.selectedTeam.members.length * 100).toFixed(0))
-            $scope.averageCycleTime = Number(($scope.averageCycleTime / $scope.selectedTeam.members.length).toFixed(0))
-            $scope.averageDealSize = Number(($scope.averageCycleTime / $scope.selectedTeam.members.length / 1000).toFixed(0))
+          if win_rate_count > 0
+            averageWinRate = Number((averageWinRate / win_rate_count * 100).toFixed(0))
+          if cycle_time_count > 0
+            averageCycleTime = Number((averageCycleTime / cycle_time_count).toFixed(0))
+          if deal_size_count > 0
+            averageDealSize = Number((averageDealSize / deal_size_count / 1000).toFixed(0))
 
-            $scope.maxWinRate = Number(($scope.maxWinRate * 100).toFixed(0))
-            $scope.maxCycleTime = Number(($scope.maxCycleTime).toFixed(0))
-            $scope.maxDealSize = Number(($scope.maxDealSize / 1000).toFixed(0))
-
-            $scope.minWinRate = Number(($scope.minWinRate).toFixed(0))
-            $scope.minCycleTime = Number(($scope.minCycleTime).toFixed(0))
-            $scope.minDealSize = Number(($scope.minDealSize / 1000).toFixed(0))
-#          console.log($scope)
+          return {averageWinRate: averageWinRate, averageCycleTime: averageCycleTime, averageDealSize: averageDealSize}
 
       calculateKPIsForMember = () =>
         if $scope.selectedMember
-          $scope.minWinRate = (if ($scope.selectedMember.win_rate > 0) then Number(($scope.selectedMember.win_rate * 100).toFixed(0)) else 0)
-          $scope.minCycleTime = (if ($scope.selectedMember.cycle_time > 0) then Number(($scope.selectedMember.cycle_time).toFixed(0)) else 0)
-          $scope.minDealSize = (if ($scope.selectedMember.average_deal_size > 0) then Number(($scope.selectedMember.average_deal_size / 1000).toFixed(0)) else 0)
-
-          $scope.maxWinRate = (if ($scope.selectedMember.win_rate > 0) then Number(($scope.selectedMember.win_rate * 100).toFixed(0)) else 0)
-          $scope.maxCycleTime = (if ($scope.selectedMember.cycle_time > 0) then Number(($scope.selectedMember.cycle_time).toFixed(0)) else 0)
-          $scope.maxDealSize = (if ($scope.selectedMember.average_deal_size > 0) then Number(($scope.selectedMember.average_deal_size / 1000).toFixed(0)) else 0)
-
           $scope.averageWinRate = (if ($scope.selectedMember.win_rate > 0) then Number(($scope.selectedMember.win_rate * 100).toFixed(0)) else 0)
           $scope.averageCycleTime = (if ($scope.selectedMember.cycle_time > 0) then Number(($scope.selectedMember.cycle_time).toFixed(0)) else 0)
           $scope.averageDealSize = (if ($scope.selectedMember.average_deal_size > 0) then Number(($scope.selectedMember.average_deal_size / 1000).toFixed(0)) else 0)
 
-      $scope.changeTeam=(value) =>
-        if (value)
-          $scope.selectedTeam = value
+      $scope.$watch('selectedTeam', () =>
+        if ($scope.selectedTeam)
           $scope.selectedMember = null
           $scope.selectedMemberList = _.map $scope.selectedTeam.members, (item) =>
             return item.id
           calculateKPIs()
-
-
+      , true);
 
       $scope.changeMember=(value) =>
         $scope.selectedMember = value
-        $scope.selectedMemberList = [value.id]
+        $scope.selectedMemberList = [$scope.selectedMember.id]
         calculateKPIs()
+
+      $scope.changeProductPipelineChoice=(value) =>
+        $scope.productPipelineChoice = value
+        updateProductPipelineData()
+
       $scope.init()
   ]

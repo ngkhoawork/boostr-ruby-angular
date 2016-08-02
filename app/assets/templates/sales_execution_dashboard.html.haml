@@ -2,14 +2,18 @@
   #nav.transparent
     .container
       .row.filter-section
+        .col-xs-4.col-xs-offset-2
+          %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
         .col-xs-4
-          <nested-combo-box control-class="ui-select" control-disabled="isDisabled" change-event="changeTeam" ng-model="activeItem.id" collection="teams" options="{childrenParam: 'children'}"/>
-        .col-xs-4
-          %ui-select{ name: 'team', ng: { model: 'selectedMember', disabled: true, required: true }, "on-select": "changeMember($item)" }
-            %ui-select-match{ placeholder: 'Select Member' }
-              {{ $select.selected.name }}
-            %ui-select-choices{ repeat: 'member.id as member in selectedTeam.members | filter: { name: $select.search }' }
-              %div{ ng: { bind: { html: 'member.name' } } }
+          %div.member-list{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              %p{ class: "select" }
+                {{ selectedMember.name ? selectedMember.name : "Select Member" }}
+            %ul.dropdown-menu.members
+              %li{ ng: { repeat: 'member in selectedTeam.members', class: '{active: member.id == selectedMember.id}' } }
+                %a{ href: '', ng: { click: 'changeMember(member)' } }
+                  {{ member.name }}
+
 
   .container-fluid
     .row
@@ -20,19 +24,19 @@
           %table.table.table-hover.table-striped
             %thead
               %tr
-                %th.left Win Rate
-                %th.left Deal Size
-                %th.right Cycle Time
+                %th.center Win Rate
+                %th.center Deal Size
+                %th.center Cycle Time
 
 
             %tbody
               %tr
-                %td.left {{minWinRate}}%/{{maxWinRate}}% ({{averageWinRate}}%)
-                %td.left ${{minDealSize}}k/${{maxDealSize}}k (${{averageDealSize}}k)
-                %td.right {{minCycleTime}}d/{{maxCycleTime}}d ({{averageCycleTime}}d)
+                %td.center {{averageWinRate}}% / {{allAverageWinRate}}% (ave)
+                %td.center {{averageDealSize | currency: '$' : 0}}k / {{allAverageDealSize | currency: '$' : 0}}k (ave)
+                %td.center {{averageCycleTime}}d / {{allAverageCycleTime}}d (ave)
         .table-wrapper
           %h3
-            Largest Deal Open
+            Largest Open Deals
           %table.table.table-hover.table-striped
             %thead
               %tr
@@ -46,10 +50,10 @@
             %tbody
               %tr{ 'ng-repeat': 'deal in topDeals' }
                 %td.left {{ deal.advertiser.name }}
-                %td.left ${{deal.budget}}
+                %td.left {{deal.budget/100 | currency: '$' : 0}}
                 %td.left {{deal.stage.probability}}
-                %td.left {{deal.start_date}}
-                %td.right {{deal.next_step}}
+                %td.left {{deal.start_date | date:'MM-dd-yyyy'}}
+                %td.right {{deal.next_steps}}
         .table-wrapper
           %h3
             Weekly Pipeline Movement
@@ -61,13 +65,20 @@
                 %td.bar-section
                   %div.bar{ng: { style: 'item.styles'}}
                     %span
-                      ${{item.value}}
+                      {{item.value | currency: '$' : 0}}
                 %td.right
 
         .table-wrapper
           %h3
-            Weekly Pipeline Movement
-          %div{ ng: { if: 'chartProductPipe.datasets.length > 0' } }
-            %div
-              %canvas{ 'tc-chartjs': true, 'chart-type': 'stackedbar', 'chart-data':'chartProductPipe', "chart-options":"chartProductPipeOptions" , style: 'width: 100%; height: 300px;' }
-
+            Product Pipeline Movement
+          -#%div{ 'd3-horizon-stacked-bars':true, class: 'product-pipeline-chart', data: 'd3Data', ng: { if: "d3Data.dataset"} }
+          -#  %div.hidden{ id:"tooltip"}
+          -#    %p
+          -#      %span{ id: 'value'}
+          -#        100
+          %nvd3{ options:'optionsProductPipeline', data: 'dataProductPipeline', class: '.product-pipeline-chart', ng: {if: 'dataProductPipeline'}}
+          %div{ class: "product-pipeline-choice" }
+            %div{ ng: {class: '{active: productPipelineChoice == "weighted"}', click: 'changeProductPipelineChoice("weighted")'} }
+              Weighted
+            %div{ ng: {class: '{active: productPipelineChoice == "unweighted"}', click: 'changeProductPipelineChoice("unweighted")' } }
+              Unweighted

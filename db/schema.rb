@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160721065744) do
+ActiveRecord::Schema.define(version: 20160731223825) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -146,6 +146,15 @@ ActiveRecord::Schema.define(version: 20160721065744) do
   end
 
   add_index "contacts", ["deleted_at"], name: "index_contacts_on_deleted_at", using: :btree
+
+  create_table "deal_logs", force: :cascade do |t|
+    t.integer  "deal_id"
+    t.integer  "budget_change"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "deal_logs", ["deal_id"], name: "index_deal_logs_on_deal_id", using: :btree
 
   create_table "deal_members", force: :cascade do |t|
     t.integer  "deal_id"
@@ -445,5 +454,6 @@ ActiveRecord::Schema.define(version: 20160721065744) do
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
+  add_foreign_key "deal_logs", "deals"
   add_foreign_key "users", "teams"
 end
