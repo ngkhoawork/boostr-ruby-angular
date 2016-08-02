@@ -105,7 +105,7 @@ class Contact < ActiveRecord::Base
 
   def email_unique?
     contacts = Contact.where(company_id: company_id)
-    if contacts.find { |c| c.address && c.address.email == address.email }
+    if contacts.find { |c| c.address && c.address.email == address.email && c.id != id }
       errors.add(:email, "has already been taken")
     end
   end
