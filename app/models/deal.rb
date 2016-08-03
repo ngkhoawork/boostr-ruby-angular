@@ -192,7 +192,7 @@ class Deal < ActiveRecord::Base
   end
 
   def update_total_budget
-    current_budget = self.budget
+    current_budget = self.budget.nil? ? 0 : self.budget
     new_budget = deal_products.sum(:budget)
     deal_log = DealLog.new
     deal_log.deal_id = self.id
