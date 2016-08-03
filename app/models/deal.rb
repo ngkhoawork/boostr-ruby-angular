@@ -329,7 +329,7 @@ class Deal < ActiveRecord::Base
       if !notification.nil? && !notification.recipients.nil?
         recipients = notification.recipients.split(',').map(&:strip)
         if !recipients.nil? && recipients.length > 0
-          subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency((budget/100).round, :precision => 0))+' deal for '+advertiser.name+' was just won!'
+          subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency((budget/100.0).round, :precision => 0))+' deal for '+advertiser.name+' was just won!'
           UserMailer.close_email(recipients, subject, self).deliver_later
         end
       end
