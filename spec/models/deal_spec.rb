@@ -211,4 +211,24 @@ RSpec.describe Deal, type: :model do
     end
   end
 
+  context 'deal with a reminder' do
+    let(:reminder) { build :reminder }
+    let(:deal) { create :deal, reminder: reminder }
+
+    it 'has a one to one relation' do
+      expect(deal).to have_one(:reminder).dependent(:destroy)
+    end
+
+    it 'creates a reminder' do
+      expect(deal.reminder.name).to eq(reminder.name)
+    end
+
+    it 'sets the reminder type' do
+      expect(deal.reminder.remindable_type).to eq("Deal")
+    end
+
+    it 'allows to retrieve deal from reminder instance' do
+      expect(deal.reminder.remindable).to eq(deal)
+    end
+  end
 end
