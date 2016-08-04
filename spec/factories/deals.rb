@@ -7,7 +7,6 @@ FactoryGirl.define do
     next_steps 'Call Somebody'
     association :advertiser, factory: :client
     association :agency, factory: :client
-    reminder
 
     before(:create) do |item|
       item.company = Company.first
