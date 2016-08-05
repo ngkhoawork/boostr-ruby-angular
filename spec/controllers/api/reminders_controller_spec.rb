@@ -5,9 +5,17 @@ RSpec.describe Api::RemindersController, type: :controller do
   let(:team) { create :parent_team, company: company }
   let(:user) { create :user, company: company, team: team }
   let(:reminder_params) { attributes_for(:reminder, remindable_id: 130) }
+  let(:reminder) { create(:reminder, remindable_id: 130, user_id: user.id) }
 
   before do
     sign_in user
+  end
+
+  describe 'GET #show' do
+    it 'returns json for a reminder' do
+      get :show, id: reminder.remindable_id, format: :json
+      expect(response).to be_success
+    end
   end
 
   describe 'POST #create' do
@@ -33,6 +41,25 @@ RSpec.describe Api::RemindersController, type: :controller do
         expect(response_json['errors']['remind_on']).to eq(["can't be blank"])
         expect(response_json['errors']['remindable_id']).to eq(["can't be blank"])
       end.not_to change(Reminder, :count)
+    end
+  end
+
+  describe 'PUT #update' do
+    let(:new_time) { Time.zone.now + 10.hours }
+
+    it 'returns success' do
+      put :update, id: reminder.remindable_id, reminder: { remind_on: new_time }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+    end
+
+    it 'updates the reminder' do
+      put :update, id: reminder.remindable_id, reminder: { remind_on: new_time }, format: :json
+      response_json = JSON.parse(response.body)
+      expect(response_json['remind_on']).to eq(new_time.as_json)
+    end
+
+    xit 'returns an error if the reminder is invalid' do
     end
   end
 end
