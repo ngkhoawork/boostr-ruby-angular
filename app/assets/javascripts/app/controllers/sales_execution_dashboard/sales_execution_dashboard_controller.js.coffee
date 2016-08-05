@@ -1,45 +1,13 @@
 @app.controller 'SalesExecutionDashboardController',
-  ['$scope', '$q', 'Team', 'SalesExecutionDashboard',
-    ($scope, $q, Team, SalesExecutionDashboard) ->
+  ['$rootScope', '$scope', '$q', 'Team', 'SalesExecutionDashboard', 'SalesExecutionDashboardDataStore'
+    ($rootScope, $scope, $q, Team, SalesExecutionDashboard, SalesExecutionDashboardDataStore) ->
 
       $scope.isDisabled = false
       $scope.selectedMember = null
+      $scope.selectedTeamId = null
+      $scope.selectedMemberId = null
       $scope.productPipelineChoice = 'weighted'
-      $scope.optionsProductPipeline = {
-        chart: {
-          type: 'multiBarHorizontalChart',
-          margin: {
-            top: 10,
-            right: 0,
-            bottom: 70,
-            left: 120
-          },
-          height: 200,
-          x: (d) =>
-            return d.label
-          ,
-          y: (d) =>
-            return d.value
-          ,
-
-          #yErr: function(d){ return [-Math.abs(d.value * Math.random() * 0.3), Math.abs(d.value * Math.random() * 0.3)] },
-          showControls: false,
-          stacked: true,
-          showValues: true,
-          duration: 500,
-          xAxis: {
-            showMaxMin: false
-            tickFormat: (d) =>
-              return if d.length > 14 then d.substr(0, 14) + '...' else d + '   '
-          },
-          yAxis: {
-            tickPadding: 8,
-            showMaxMin: false,
-            tickFormat: (d) =>
-              return if d > 10000 then '$' + d3.format(',.0f')(d/1000) + "k" else '$' + d3.format(',')(d)
-          }
-        }
-      }
+      $scope.optionsProductPipeline = SalesExecutionDashboardDataStore.getOptionsProductPipeline()
 
       $scope.init = () =>
         Team.all(all_teams: true).then (teams) ->
@@ -54,125 +22,15 @@
             members: all_members,
             members_count: all_members.length
           }]
+          $scope.selectedTeam = $scope.teams[0]
+          $scope.selectedTeamId = $scope.selectedTeam.id
 
           data = calculateKPIsForTeam($scope.teams[0])
           $scope.allAverageWinRate = data.averageWinRate
           $scope.allAverageCycleTime = data.averageCycleTime
           $scope.allAverageDealSize = data.averageDealSize
 
-          $scope.selectedTeam = $scope.teams[0]
 
-          $scope.chartProductPipe = {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
-            datasets: [
-              {
-                label: "My First dataset",
-                fillColor: "rgba(220,220,220,0.5)",
-                strokeColor: "rgba(220,220,220,0.8)",
-                highlightFill: "rgba(220,220,220,0.75)",
-                highlightStroke: "rgba(220,220,220,1)",
-                data: [65, 59, 80, 81, 56, 55, 40]
-              },
-              {
-                label: "My Second dataset",
-                fillColor: "rgba(151,187,205,0.5)",
-                strokeColor: "rgba(151,187,205,0.8)",
-                highlightFill: "rgba(151,187,205,0.75)",
-                highlightStroke: "rgba(151,187,205,1)",
-                data: [28, 48, 40, 19, 86, 27, 90]
-              }
-            ]
-          }
-
-          $scope.chartBarOptions = {
-            responsive: false,
-            segmentShowStroke: true,
-            segmentStrokeColor: '#fff',
-            segmentStrokeWidth: 2,
-            percentageInnerCutout: 70,
-            animationSteps: 100,
-            animationEasing: 'easeOutBounce',
-            animateRotate: true,
-            animateScale: false,
-            scaleLabel: '<%= parseFloat(value).formatMoney() %>',
-            legendTemplate : '<ul class="tc-chart-js-legend"><li class="legend_quota"><span class="swatch"></span>Quota</li><% for (var i=datasets.length-1; i>=0; i--){%><li class="legend_<%= datasets[i].label.replace(\'%\', \'\') %>"><span class="swatch" style="background-color:<%= datasets[i].fillColor %>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
-            multiTooltipTemplate: '<%= value.formatMoney() %>',
-            tooltipTemplate: '<%= label %>: <%= value.formatMoney() %>',
-            tooltipHideZero: true
-          }
-
-          $scope.chartProductPipeOption = {
-            scaleBeginAtZero : true,
-            scaleShowGridLines : true,
-            scaleGridLineColor : "rgba(0,0,0,0.05)",
-            scaleGridLineWidth : 1,
-            animationSteps: 100,
-            animationEasing: 'easeOutBounce',
-            animateRotate: true,
-            animateScale: false,
-            barShowStroke : true,
-            barStrokeWidth : 2,
-            barValueSpacing : 5,
-            relativeBars : false,
-            tooltipHideZero: false
-          }
-
-          $scope.options = {
-            chart: {
-              type: 'historicalBarChart',
-              height: 450,
-              margin : {
-                top: 20,
-                right: 20,
-                bottom: 65,
-                left: 50
-              },
-              x: (d) =>
-                return d[0]
-              ,
-              y: (d) =>
-                return d[1]/100000
-              ,
-              showValues: true,
-              valueFormat: (d) =>
-                return d3.format(',.1f')(d);
-              ,
-              duration: 100,
-              xAxis: {
-                axisLabel: 'X Axis',
-                tickFormat: (d) =>
-                  return d3.time.format('%x')(new Date(d))
-              },
-              rotateLabels: 30,
-              showMaxMin: false
-            },
-            yAxis: {
-              axisLabel: 'Y Axis',
-              axisLabelDistance: -10,
-              tickFormat: (d) =>
-                return d3.format(',.1f')(d)
-            },
-            tooltip: {
-              keyFormatter: (d) =>
-                return d3.time.format('%x')(new Date(d))
-            },
-            zoom: {
-              enabled: true,
-              scaleExtent: [1, 10],
-              useFixedDomain: false,
-              useNiceScale: false,
-              horizontalOff: false,
-              verticalOff: true,
-              unzoomEventType: 'dblclick.zoom'
-            }
-          }
-
-          $scope.data = [
-            {
-              "key" : "Quantity" ,
-              "bar": true,
-              "values" : [ [ 1136005200000 , 1271000.0] , [ 1138683600000 , 1271000.0] , [ 1141102800000 , 1271000.0] , [ 1143781200000 , 0] , [ 1146369600000 , 0] , [ 1149048000000 , 0] , [ 1151640000000 , 0] , [ 1154318400000 , 0] , [ 1156996800000 , 0] , [ 1159588800000 , 3899486.0] , [ 1162270800000 , 3899486.0] , [ 1164862800000 , 3899486.0] , [ 1167541200000 , 3564700.0] , [ 1170219600000 , 3564700.0] , [ 1172638800000 , 3564700.0] , [ 1175313600000 , 2648493.0] , [ 1177905600000 , 2648493.0] , [ 1180584000000 , 2648493.0] , [ 1183176000000 , 2522993.0] , [ 1185854400000 , 2522993.0] , [ 1188532800000 , 2522993.0] , [ 1191124800000 , 2906501.0] , [ 1193803200000 , 2906501.0] , [ 1196398800000 , 2906501.0] , [ 1199077200000 , 2206761.0] , [ 1201755600000 , 2206761.0] , [ 1204261200000 , 2206761.0] , [ 1206936000000 , 2287726.0] , [ 1209528000000 , 2287726.0] , [ 1212206400000 , 2287726.0] , [ 1214798400000 , 2732646.0] , [ 1217476800000 , 2732646.0] , [ 1220155200000 , 2732646.0] , [ 1222747200000 , 2599196.0] , [ 1225425600000 , 2599196.0] , [ 1228021200000 , 2599196.0] , [ 1230699600000 , 1924387.0] , [ 1233378000000 , 1924387.0] , [ 1235797200000 , 1924387.0] , [ 1238472000000 , 1756311.0] , [ 1241064000000 , 1756311.0] , [ 1243742400000 , 1756311.0] , [ 1246334400000 , 1743470.0] , [ 1249012800000 , 1743470.0] , [ 1251691200000 , 1743470.0] , [ 1254283200000 , 1519010.0] , [ 1256961600000 , 1519010.0] , [ 1259557200000 , 1519010.0] , [ 1262235600000 , 1591444.0] , [ 1264914000000 , 1591444.0] , [ 1267333200000 , 1591444.0] , [ 1270008000000 , 1543784.0] , [ 1272600000000 , 1543784.0] , [ 1275278400000 , 1543784.0] , [ 1277870400000 , 1309915.0] , [ 1280548800000 , 1309915.0] , [ 1283227200000 , 1309915.0] , [ 1285819200000 , 1331875.0] , [ 1288497600000 , 1331875.0] , [ 1291093200000 , 1331875.0] , [ 1293771600000 , 1331875.0] , [ 1296450000000 , 1154695.0] , [ 1298869200000 , 1154695.0] , [ 1301544000000 , 1194025.0] , [ 1304136000000 , 1194025.0] , [ 1306814400000 , 1194025.0] , [ 1309406400000 , 1194025.0] , [ 1312084800000 , 1194025.0] , [ 1314763200000 , 1244525.0] , [ 1317355200000 , 475000.0] , [ 1320033600000 , 475000.0] , [ 1322629200000 , 475000.0] , [ 1325307600000 , 690033.0] , [ 1327986000000 , 690033.0] , [ 1330491600000 , 690033.0] , [ 1333166400000 , 514733.0] , [ 1335758400000 , 514733.0]]
-            }]
 
       updateProductPipelineData = () =>
         if ($scope.productPipelineChoice == "weighted")
@@ -193,7 +51,7 @@
         else if ($scope.selectedMember)
           calculateKPIsForMember()
 
-        SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList).then (data) ->
+        SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList, team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
           $scope.topDeals = data[0].top_deals
           maxValue = data[0].week_pipeline_data
           maxValue = _.max(_.map data[0].week_pipeline_data, (item) =>
@@ -206,6 +64,11 @@
 
           $scope.productPipelineData = data[0].product_pipeline_data
           updateProductPipelineData()
+        SalesExecutionDashboard.forecast(team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
+          SalesExecutionDashboardDataStore.setDataQuarterForecast(data);
+          $scope.dataQuaterForecast =  SalesExecutionDashboardDataStore.getGraphDataQuarterForecast()
+          $scope.optionsQuarterForecast = SalesExecutionDashboardDataStore.getOptionsQuarterForecast()
+
 
       calculateKPIsForTeam = (team) =>
         if team.members.length > 0
@@ -246,7 +109,9 @@
 
       $scope.$watch('selectedTeam', () =>
         if ($scope.selectedTeam)
+          $scope.selectedTeamId = $scope.selectedTeam.id
           $scope.selectedMember = null
+          $scope.selectedMemberId = null
           $scope.selectedMemberList = _.map $scope.selectedTeam.members, (item) =>
             return item.id
           calculateKPIs()
@@ -254,12 +119,69 @@
 
       $scope.changeMember=(value) =>
         $scope.selectedMember = value
+        $scope.selectedMemberId = $scope.selectedMember.id
         $scope.selectedMemberList = [$scope.selectedMember.id]
         calculateKPIs()
 
       $scope.changeProductPipelineChoice=(value) =>
         $scope.productPipelineChoice = value
         updateProductPipelineData()
+
+      $rootScope.$on 'quarterForecastRendered1', (index) ->
+        container = d3.select(".quarter-forecast-chart1")
+        svg = container.select("svg")
+        nvGroups = svg.selectAll("g.nv-groups")
+        rects = nvGroups.selectAll("rect.nv-bar")
+        width = rects[0][0].width.baseVal.value
+
+        defRect = svg.selectAll("defs").selectAll("rect")
+        y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[0].maxValue - $scope.dataQuaterForecast[0].quota) / $scope.dataQuaterForecast[0].maxValue
+
+        newGroup = nvGroups.selectAll('g.nv-series-6')
+
+        if newGroup.length > 0
+          newGroup.remove()
+        newGroup = nvGroups.append('g')
+          .attr('class', 'nv-group nv-series-6')
+          .style('stroke-opacity', 1)
+
+        newGroup.append("line")
+          .attr("x1", 0)
+          .attr("y1", y)
+          .attr("x2", width)
+          .attr("y2", y)
+          .attr("stroke-width", 3)
+          .style("stroke-dasharray", ("3, 3"))
+          .attr("transform", 'translate(' + width + ', 0)')
+          .attr("stroke", "#666b80")
+      $rootScope.$on 'quarterForecastRendered2', (index) ->
+        container = d3.select(".quarter-forecast-chart2")
+        svg = container.select("svg")
+        nvGroups = svg.selectAll("g.nv-groups")
+        rects = nvGroups.selectAll("rect.nv-bar")
+        width = rects[0][0].width.baseVal.value
+
+        defRect = svg.selectAll("defs").selectAll("rect")
+        y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[1].maxValue - $scope.dataQuaterForecast[1].quota) / $scope.dataQuaterForecast[1].maxValue
+
+        newGroup = nvGroups.selectAll('g.nv-series-6')
+
+        if newGroup.length > 0
+          newGroup.remove()
+        newGroup = nvGroups.append('g')
+        .attr('class', 'nv-group nv-series-6')
+        .style('stroke-opacity', 1)
+
+        newGroup.append("line")
+        .attr("x1", 0)
+        .attr("y1", y)
+        .attr("x2", width)
+        .attr("y2", y)
+        .attr("stroke-width", 3)
+        .style("stroke-dasharray", ("3, 3"))
+        .attr("transform", 'translate(' + width + ', 0)')
+        .attr("stroke", "#666b80")
+
 
       $scope.init()
   ]

@@ -13,7 +13,8 @@ class ForecastSerializer < ActiveModel::Serializer
     :amount,
     :percent_to_quota,
     :gap_to_quota,
-    :quota
+    :quota,
+    :new_deals_needed
   )
 
   def teams

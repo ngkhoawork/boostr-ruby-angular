@@ -20,6 +20,7 @@ class ForecastMemberSerializer < ActiveModel::Serializer
     :is_leader,
     :year,
     :quarter,
+    :new_deals_needed,
     :type)
 end
 
