@@ -21,7 +21,7 @@
         .table-wrapper
           %h3
             This Quarter - {{dataQuaterForecast[0].new_deals_needed}} Deals Needed
-          %nvd3{ options:'optionsQuarterForecast[0]', data: 'dataQuaterForecast[0].graphData', callback:"initLabels()", class: 'quarter-forecast-chart1', ng: {if: 'dataQuaterForecast[0]'}}
+          %nvd3{ options:'optionsQuarterForecast[0]', data: 'dataQuaterForecast[0].graphData', callback:"initLabels()", class: 'quarter-forecast-chart quarter-forecast-chart1', ng: {if: 'dataQuaterForecast[0]'}}
         .table-wrapper
           %table.table.table-hover.table-striped
             %thead
@@ -94,7 +94,7 @@
         .table-wrapper
           %h3
             Pipeline by Product
-          %nvd3{ options:'optionsProductPipeline', data: 'dataProductPipeline', class: '.product-pipeline-chart', ng: {if: 'dataProductPipeline'}}
+          %nvd3{ options:'optionsProductPipeline', data: 'dataProductPipeline', class: 'product-pipeline-chart', ng: {if: 'dataProductPipeline'}}
           %div{ class: "product-pipeline-choice" }
             %div{ ng: {class: '{active: productPipelineChoice == "weighted"}', click: 'changeProductPipelineChoice("weighted")'} }
               Weighted
@@ -104,7 +104,7 @@
         .table-wrapper
           %h3
             Next Quarter - {{dataQuaterForecast[1].new_deals_needed}} Deals Needed
-          %nvd3{ options:'optionsQuarterForecast[1]', data: 'dataQuaterForecast[1].graphData', callback:"initLabels()", class: 'quarter-forecast-chart2', ng: {if: 'dataQuaterForecast[1]'}}
+          %nvd3{ options:'optionsQuarterForecast[1]', data: 'dataQuaterForecast[1].graphData', callback:"initLabels()", class: 'quarter-forecast-chart quarter-forecast-chart2', ng: {if: 'dataQuaterForecast[1]'}}
         .table-wrapper
           %table.table.table-hover.table-striped
             %thead

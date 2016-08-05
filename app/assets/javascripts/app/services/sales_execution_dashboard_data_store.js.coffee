@@ -7,7 +7,7 @@
       chart: {
         type: 'multiBarHorizontalChart',
         margin: {
-          top: 10,
+          top: 0,
           right: 0,
           bottom: 70,
           left: 120
@@ -49,7 +49,7 @@
               $rootScope.$emit('quarterForecastRendered1');
           },
           margin: {
-            top: 20,
+            top: 0,
             right: 20,
             bottom: 60,
             left: 70
@@ -92,7 +92,7 @@
               $rootScope.$emit('quarterForecastRendered2');
           },
           margin: {
-            top: 20,
+            top: 0,
             right: 20,
             bottom: 60,
             left: 70
@@ -161,19 +161,24 @@
           stage = _.find row.stages, (o) ->
             return o.probability == parseInt(probability)
           if stage && row.weighted_pipeline_by_stage
-            value = if row.weighted_pipeline_by_stage[stage.id] > 0 then row.weighted_pipeline_by_stage[stage.id] else 0
+            weighted_value = if row.weighted_pipeline_by_stage[stage.id] > 0 then row.weighted_pipeline_by_stage[stage.id] else 0
           else
-            value = 0
+            weighted_value = 0
+
+          if stage && row.unweighted_pipeline_by_stage
+            unweighted_value = if row.unweighted_pipeline_by_stage[stage.id] > 0 then row.unweighted_pipeline_by_stage[stage.id] else 0
+          else
+            unweighted_value = 0
           graphData.push ({
             key: probability + '%',
             values: [
-              {label: "weighted", value: (value * probability / 100.0), series: series},
-              {label: "un-weighted", value: value, series: series},
+              {label: "weighted", value: weighted_value, series: series},
+              {label: "un-weighted", value: unweighted_value, series: series},
             ],
             color: color
           })
-          total_weighted += value * probability / 100.0
-          total_unweighted += value
+          total_weighted += weighted_value
+          total_unweighted += unweighted_value
           series = series + 1
 
 

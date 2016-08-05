@@ -58,6 +58,30 @@ class Forecast
     @stages = company.stages.where(id: ids).order(:probability).all
   end
 
+  def weighted_pipeline_by_stage
+    return @weighted_pipeline_by_stage if defined?(@weighted_pipeline_by_stage)
+    @weighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.weighted_pipeline_by_stage.each do |stage_id, total|
+        @weighted_pipeline_by_stage[stage_id] ||= 0
+        @weighted_pipeline_by_stage[stage_id] += total
+      end
+    end
+    @weighted_pipeline_by_stage
+  end
+
+  def unweighted_pipeline_by_stage
+    return @unweighted_pipeline_by_stage if defined?(@unweighted_pipeline_by_stage)
+    @unweighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.unweighted_pipeline_by_stage.each do |stage_id, total|
+        @unweighted_pipeline_by_stage[stage_id] ||= 0
+        @unweighted_pipeline_by_stage[stage_id] += total
+      end
+    end
+    @unweighted_pipeline_by_stage
+  end
+
   def weighted_pipeline
     teams.sum(&:weighted_pipeline)
   end

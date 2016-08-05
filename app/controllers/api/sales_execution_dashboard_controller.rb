@@ -55,11 +55,6 @@ class Api::SalesExecutionDashboardController < ApplicationController
     end_date1 = Time.now.utc.end_of_quarter.beginning_of_day
     start_date2 = (Time.now.utc + 3.months).beginning_of_quarter
     end_date2 = (Time.now.utc + 3.months).end_of_quarter.beginning_of_day
-    puts "================"
-    puts start_date1
-    puts end_date1
-    puts start_date2
-    puts end_date2
     if member.present?
       render json: [ForecastMember.new(member, start_date1, end_date1), ForecastMember.new(member, start_date2, end_date2)]
     elsif team.present?
