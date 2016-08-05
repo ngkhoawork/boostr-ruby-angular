@@ -48,6 +48,7 @@ Rails.application.routes.draw do
     resources :reports, only: [:index, :show]
     resources :sales_execution_dashboard, only: [:index]
     resources :kpis, only: [:index]
+    resources :reminders, only: [:index, :show, :create, :update, :destroy]
 
     resource :weighted_pipelines, only: [:show]
     resource :dashboard, only: [:show]
