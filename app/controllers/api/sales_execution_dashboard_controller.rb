@@ -46,7 +46,27 @@ class Api::SalesExecutionDashboardController < ApplicationController
       product_pipeline_data_unweighted << {key: probability.to_s + '%', color: probability_colors[probability], values: final_data_unweighted}
       product_pipeline_data_weighted << {key: probability.to_s + '%', color: probability_colors[probability], values: final_data_weighted}
     end
+
     render json: [{top_deals: top_deals, week_pipeline_data: week_pipeline_data, product_pipeline_data: {weighted: product_pipeline_data_weighted, unweighted: product_pipeline_data_unweighted}}]
+  end
+
+  def forecast
+    start_date1 = Time.now.utc.beginning_of_quarter
+    end_date1 = Time.now.utc.end_of_quarter.beginning_of_day
+    start_date2 = (Time.now.utc + 3.months).beginning_of_quarter
+    end_date2 = (Time.now.utc + 3.months).end_of_quarter.beginning_of_day
+    puts "================"
+    puts start_date1
+    puts end_date1
+    puts start_date2
+    puts end_date2
+    if member.present?
+      render json: [ForecastMember.new(member, start_date1, end_date1), ForecastMember.new(member, start_date2, end_date2)]
+    elsif team.present?
+      render json: [ForecastTeam.new(team, start_date1, end_date1, nil, nil), ForecastTeam.new(team, start_date2, end_date2, nil, nil)]
+    else
+      render json: [Forecast.new(company, teams, start_date1, end_date1, nil), Forecast.new(company, teams, start_date2, end_date2, nil)]
+    end
   end
 
   def team
@@ -59,5 +79,13 @@ class Api::SalesExecutionDashboardController < ApplicationController
 
   def products
     @products ||= current_user.company.products
+  end
+
+  def teams
+    @teams ||= company.teams.roots(true)
+  end
+
+  def company
+    @company ||= current_user.company
   end
 end

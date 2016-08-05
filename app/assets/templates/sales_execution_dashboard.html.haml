@@ -1,4 +1,4 @@
-#revenue
+#revenue.sales-execution-dashboard
   #nav.transparent
     .container
       .row.filter-section
@@ -17,7 +17,30 @@
 
   .container-fluid
     .row
-      .col-md-4.col-md-offset-4
+      .col-md-4
+        .table-wrapper
+          %h3
+            This Quarter - {{dataQuaterForecast[0].new_deals_needed}} Deals Needed
+          %nvd3{ options:'optionsQuarterForecast[0]', data: 'dataQuaterForecast[0].graphData', callback:"initLabels()", class: 'quarter-forecast-chart1', ng: {if: 'dataQuaterForecast[0]'}}
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.center Quota
+                %th.center Weighted Pipe
+                %th.center Revenue
+                %th.center Forecast
+                %th.center % Quota
+                %th.center # Deals Needed
+            %tbody{ng: {if: "dataQuaterForecast[0]"}}
+              %tr
+                %td.center {{dataQuaterForecast[0].quota | currency: '$' : 0}}
+                %td.center {{dataQuaterForecast[0].weighted_pipeline | currency: '$' : 0}}
+                %td.center {{dataQuaterForecast[0].revenue | currency: '$' : 0}}
+                %td.center {{(dataQuaterForecast[0].weighted_pipeline + dataQuaterForecast[0].revenue) | currency: '$' : 0}}
+                %td.center {{dataQuaterForecast[0].percent_to_quota.toFixed(0)}}%
+                %td.center {{dataQuaterForecast[0].new_deals_needed}}
+      .col-md-4
         .table-wrapper
           %h3
             KPIs
@@ -71,14 +94,32 @@
         .table-wrapper
           %h3
             Pipeline by Product
-          -#%div{ 'd3-horizon-stacked-bars':true, class: 'product-pipeline-chart', data: 'd3Data', ng: { if: "d3Data.dataset"} }
-          -#  %div.hidden{ id:"tooltip"}
-          -#    %p
-          -#      %span{ id: 'value'}
-          -#        100
           %nvd3{ options:'optionsProductPipeline', data: 'dataProductPipeline', class: '.product-pipeline-chart', ng: {if: 'dataProductPipeline'}}
           %div{ class: "product-pipeline-choice" }
             %div{ ng: {class: '{active: productPipelineChoice == "weighted"}', click: 'changeProductPipelineChoice("weighted")'} }
               Weighted
             %div{ ng: {class: '{active: productPipelineChoice == "unweighted"}', click: 'changeProductPipelineChoice("unweighted")' } }
               Unweighted
+      .col-md-4
+        .table-wrapper
+          %h3
+            Next Quarter - {{dataQuaterForecast[1].new_deals_needed}} Deals Needed
+          %nvd3{ options:'optionsQuarterForecast[1]', data: 'dataQuaterForecast[1].graphData', callback:"initLabels()", class: 'quarter-forecast-chart2', ng: {if: 'dataQuaterForecast[1]'}}
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.center Quota
+                %th.center Weighted Pipe
+                %th.center Revenue
+                %th.center Forecast
+                %th.center % Quota
+                %th.center # Deals Needed
+            %tbody{ng: {if: "dataQuaterForecast[1]"}}
+              %tr
+                %td.center {{dataQuaterForecast[1].quota | currency: '$' : 0}}
+                %td.center {{dataQuaterForecast[1].weighted_pipeline | currency: '$' : 0}}
+                %td.center {{dataQuaterForecast[1].revenue | currency: '$' : 0}}
+                %td.center {{(dataQuaterForecast[1].weighted_pipeline + dataQuaterForecast[1].revenue) | currency: '$' : 0}}
+                %td.center {{dataQuaterForecast[1].percent_to_quota.toFixed(0)}}%
+                %td.center {{dataQuaterForecast[1].new_deals_needed}}

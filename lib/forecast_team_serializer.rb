@@ -24,6 +24,7 @@ class ForecastTeamSerializer < ActiveModel::Serializer
     :members,
     :all_teammembers,
     :year,
+    :new_deals_needed,
     :quarter)
 
   def teams
