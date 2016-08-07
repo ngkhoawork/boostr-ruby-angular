@@ -91,11 +91,6 @@
           $scope.dataDealLossStages = DealLossStagesDataStore.getData()
           $scope.optionsDealLossStages = DealLossStagesDataStore.getOptions()
 
-        SalesExecutionDashboard.forecast(team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
-          SalesExecutionDashboardDataStore.setDataQuarterForecast(data);
-          $scope.dataQuaterForecast =  SalesExecutionDashboardDataStore.getGraphDataQuarterForecast()
-          $scope.optionsQuarterForecast = SalesExecutionDashboardDataStore.getOptionsQuarterForecast()
-
         SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList, team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
           $scope.topDeals = data[0].top_deals
           maxValue = data[0].week_pipeline_data
@@ -110,6 +105,11 @@
 
           $scope.productPipelineData = data[0].product_pipeline_data
           updateProductPipelineData()
+
+        SalesExecutionDashboard.forecast(team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
+          SalesExecutionDashboardDataStore.setDataQuarterForecast(data);
+          $scope.dataQuaterForecast =  SalesExecutionDashboardDataStore.getGraphDataQuarterForecast()
+          $scope.optionsQuarterForecast = SalesExecutionDashboardDataStore.getOptionsQuarterForecast()
 
       calculateKPIsForTeam = (team) =>
         if team.members.length > 0
