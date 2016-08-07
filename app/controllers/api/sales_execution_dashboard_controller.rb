@@ -7,7 +7,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
             top_deals: top_deals,
             week_pipeline_data: week_pipeline_data,
             product_pipeline_data: product_pipeline_data,
-            top_activities: activities
+            top_activities: top_activities
         }
     ]
   end
@@ -48,6 +48,26 @@ class Api::SalesExecutionDashboardController < ApplicationController
     .collect { |deal| {reason: deal.name, total_budget: deal.total_budget} }
 
     render json: deal_loss_data
+  end
+
+  def activity_summary
+    case params[:time_period]
+      when "last_week"
+        start_date = Time.now.utc.beginning_of_week - 7.days
+        end_date = Time.now.utc.beginning_of_week - 1.seconds
+      when "this_week"
+        start_date = Time.now.utc.beginning_of_week
+        end_date = Time.now.utc
+      when "qtd"
+        start_date = Time.now.utc.beginning_of_quarter
+        end_date = Time.now.utc
+    end
+    activities = Activity.where("user_id in (?) and happened_at >= ? and happened_at <= ?", params[:member_ids], start_date, end_date)
+    .select("activities.activity_type_name, count(activities.id) as count")
+    .group("activities.activity_type_name")
+    .collect { |activity| {activity: activity.activity_type_name, count: activity.count} }
+
+    render json: activities
   end
 
 
@@ -148,8 +168,8 @@ class Api::SalesExecutionDashboardController < ApplicationController
     @products ||= current_user.company.products
   end
 
-  def activities
-    @activities ||= Activity.where("user_id in (?) and happened_at >= ?", params[:member_ids], Time.now.utc).limit(10)
+  def top_activities
+    @top_activities ||= Activity.where("user_id in (?) and happened_at >= ?", params[:member_ids], Time.now.utc).limit(10)
   end
 
   def teams

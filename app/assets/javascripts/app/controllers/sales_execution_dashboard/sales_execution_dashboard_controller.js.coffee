@@ -1,15 +1,38 @@
 @app.controller 'SalesExecutionDashboardController',
-  ['$rootScope', '$scope', '$q', 'Team', 'SalesExecutionDashboard', 'SalesExecutionDashboardDataStore', 'DealLossSummaryDataStore', 'DealLossStagesDataStore'
-    ($rootScope, $scope, $q, Team, SalesExecutionDashboard, SalesExecutionDashboardDataStore, DealLossSummaryDataStore, DealLossStagesDataStore) ->
+  ['$rootScope',
+   '$scope',
+   '$q',
+   'Team',
+   'SalesExecutionDashboard',
+   'SalesExecutionDashboardDataStore',
+   'DealLossSummaryDataStore',
+   'DealLossStagesDataStore',
+   'ActivitySummaryDataStore'
+    ($rootScope,
+     $scope,
+     $q,
+     Team,
+     SalesExecutionDashboard,
+     SalesExecutionDashboardDataStore,
+     DealLossSummaryDataStore,
+     DealLossStagesDataStore,
+     ActivitySummaryDataStore) ->
 
       $scope.isDisabled = false
       $scope.selectedMember = null
       $scope.selectedTeamId = null
       $scope.selectedMemberId = null
+
       $scope.productPipelineChoice = 'weighted'
       $scope.optionsProductPipeline = SalesExecutionDashboardDataStore.getOptionsProductPipeline()
+
       $scope.dealLossSummaryChoice = "qtd"
+      $scope.optionsDealLossSummary = DealLossSummaryDataStore.getOptions()
+
       $scope.dealLossStagesChoice = "qtd"
+
+      $scope.activitySummaryChoice = "qtd"
+      $scope.optionsActivitySummary = ActivitySummaryDataStore.getOptions()
 
       $scope.init = () =>
         Team.all(all_teams: true).then (teams) ->
@@ -53,20 +76,10 @@
         else if ($scope.selectedMember)
           calculateKPIsForMember()
 
-        SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList, team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
-          $scope.topDeals = data[0].top_deals
-          maxValue = data[0].week_pipeline_data
-          maxValue = _.max(_.map data[0].week_pipeline_data, (item) =>
-            return item.value
-          )
-
-          $scope.chartWeekPipeMovement = _.map data[0].week_pipeline_data, (item) =>
-            item.styles = {'width': ( if maxValue > 0 then item.value / maxValue * 100 else 0) + "%", 'background-color': item.color}
-            return item
-          $scope.topActivities = data[0].top_activities
-
-          $scope.productPipelineData = data[0].product_pipeline_data
-          updateProductPipelineData()
+        SalesExecutionDashboard.activity_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.activitySummaryChoice).then (data) ->
+          ActivitySummaryDataStore.setData(data)
+          $scope.dataActivitySummary = ActivitySummaryDataStore.getData()
+          $scope.optionsActivitySummary = ActivitySummaryDataStore.getOptions()
 
         SalesExecutionDashboard.deal_loss_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.dealLossSummaryChoice).then (data) ->
           DealLossSummaryDataStore.setData(data)
@@ -83,6 +96,20 @@
           $scope.dataQuaterForecast =  SalesExecutionDashboardDataStore.getGraphDataQuarterForecast()
           $scope.optionsQuarterForecast = SalesExecutionDashboardDataStore.getOptionsQuarterForecast()
 
+        SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList, team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
+          $scope.topDeals = data[0].top_deals
+          maxValue = data[0].week_pipeline_data
+          maxValue = _.max(_.map data[0].week_pipeline_data, (item) =>
+              return item.value
+          )
+
+          $scope.chartWeekPipeMovement = _.map data[0].week_pipeline_data, (item) =>
+            item.styles = {'width': ( if maxValue > 0 then item.value / maxValue * 100 else 0) + "%", 'background-color': item.color}
+            return item
+          $scope.topActivities = data[0].top_activities
+
+          $scope.productPipelineData = data[0].product_pipeline_data
+          updateProductPipelineData()
 
       calculateKPIsForTeam = (team) =>
         if team.members.length > 0
@@ -137,12 +164,17 @@
         $scope.selectedMemberList = [$scope.selectedMember.id]
         calculateKPIs()
 
+      $scope.changeActivitySummaryChoice=(value) =>
+        $scope.activitySummaryChoice = value
+        SalesExecutionDashboard.activity_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.activitySummaryChoice).then (data) ->
+          ActivitySummaryDataStore.setData(data)
+          $scope.dataActivitySummary = ActivitySummaryDataStore.getData()
+
       $scope.changeDealLossSummaryChoice=(value) =>
         $scope.dealLossSummaryChoice = value
         SalesExecutionDashboard.deal_loss_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.dealLossSummaryChoice).then (data) ->
           DealLossSummaryDataStore.setData(data)
           $scope.dataDealLossSummary = DealLossSummaryDataStore.getData()
-          $scope.optionsDealLossSummary = DealLossSummaryDataStore.getOptions()
 
       $scope.changeDealLossStagesChoice=(value) =>
         $scope.dealLossStagesChoice = value
