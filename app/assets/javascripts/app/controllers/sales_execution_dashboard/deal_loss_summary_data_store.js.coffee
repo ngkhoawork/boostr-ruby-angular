@@ -14,7 +14,7 @@
           margin: {
             top: 20,
             right: 20,
-            bottom: 100,
+            bottom: 120,
             left: 70
           },
           showLegend: false,
@@ -36,9 +36,10 @@
             axisLabel: "",
             ticks: 4,
             showMaxMin: false,
-            rotateLabels: -40,
+            rotateLabels: -60,
             tickFormat: (d) =>
-              return if d.length > 18 then d.substr(0, 15) + "..." else d
+              value = d.replace("Lost - ", "")
+              return if value.length > 14 then value.substr(0, 14) + "..." else value
           },
           yAxis: {
             axisLabel: "",

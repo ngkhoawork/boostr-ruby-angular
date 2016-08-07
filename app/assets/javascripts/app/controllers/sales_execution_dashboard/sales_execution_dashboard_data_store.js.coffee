@@ -12,7 +12,7 @@
           bottom: 70,
           left: 120
         },
-        height: 200,
+        height: 250,
         x: (d) =>
           return d.label
         ,
@@ -20,7 +20,7 @@
           return d.value
         ,
 
-      #yErr: function(d){ return [-Math.abs(d.value * Math.random() * 0.3), Math.abs(d.value * Math.random() * 0.3)] },
+        groupSpacing: 0.2,
         showControls: false,
         stacked: true,
         showValues: true,

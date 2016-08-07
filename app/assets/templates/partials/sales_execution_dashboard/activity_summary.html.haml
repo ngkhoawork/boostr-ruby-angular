@@ -1,0 +1,10 @@
+%h3
+  Deal Loss Summary
+%nvd3{ options:'optionsDealLossSummary', data: 'dataDealLossSummary', class: 'deal-loss-summary-chart', ng: {if: 'dataDealLossSummary'}}
+%div{ class: "chart-choice" }
+  %div{ ng: {class: '{active: dealLossSummaryChoice == "last_week"}', click: 'changeDealLossSummaryChoice("last_week")'} }
+    Last Week
+  %div{ ng: {class: '{active: dealLossSummaryChoice == "this_week"}', click: 'changeDealLossSummaryChoice("this_week")' } }
+    This Week
+  %div{ ng: {class: '{active: dealLossSummaryChoice == "qtd"}', click: 'changeDealLossSummaryChoice("qtd")' } }
+    QTD

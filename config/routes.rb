@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   get '/api/sales_execution_dashboard/forecast', to: 'api/sales_execution_dashboard#forecast',   as: 'sales_execution_dashboard_forecast'
   get '/api/sales_execution_dashboard/deal_loss_summary', to: 'api/sales_execution_dashboard#deal_loss_summary',   as: 'sales_execution_dashboard_deal_loss_summary'
+  get '/api/sales_execution_dashboard/deal_loss_stages', to: 'api/sales_execution_dashboard#deal_loss_stages',   as: 'sales_execution_dashboard_deal_loss_stages'
   namespace :api do
     resources :users, only: [:index, :update]
     resources :clients, only: [:index, :show, :create, :update, :destroy] do

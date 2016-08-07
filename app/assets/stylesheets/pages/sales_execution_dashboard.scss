@@ -201,17 +201,16 @@
       color: #FFFFFF;
     }
   }
+  .nvd3 {
+    text {
 
-  .product-pipeline-chart {
-    .nv-legend{ transform: translate(-70px, 165px); }
-    .nvd3 {
-      text {
-
-        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-        font-size: 14px !important;
-        white-space: pre-wrap;
-      }
+      font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+      font-size: 14px !important;
+      white-space: pre-wrap;
     }
+  }
+  .product-pipeline-chart {
+    .nv-legend{ transform: translate(-70px, 215px); }
   }
   .quarter-forecast-chart {
     //  .nv-bar {
