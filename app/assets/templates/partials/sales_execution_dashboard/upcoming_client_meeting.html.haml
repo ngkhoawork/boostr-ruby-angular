@@ -1,0 +1,23 @@
+%h3
+  Upcoming Client Meetings
+%table.table.table-hover.table-striped
+  %thead
+    %tr
+      %th.center{ width: '100' }
+        Date
+      %th.center Client
+      %th.center Deal
+      %th.center Type
+      %th.center Attendees
+      %th.center Notes
+  %tbody
+    %tr{ 'ng-repeat': 'activity in topActivities' }
+      %td.center{ width: '100' }
+        {{activity.happened_at | date:'MM-dd-yyyy'}}
+      %td.center {{activity.client.name}}
+      %td.lecenterft {{activity.deal.name}}
+      %td.center {{activity.activity_type_name}}
+      %td.center
+        %div{'ng-repeat': 'contact in activity.contacts'}
+          {{contact.name}}
+      %td.center {{activity.comment}}
