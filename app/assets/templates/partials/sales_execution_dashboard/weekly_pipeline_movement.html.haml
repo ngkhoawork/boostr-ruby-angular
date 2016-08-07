@@ -1,0 +1,12 @@
+%h3
+  Weekly Pipeline Movement
+%table.table-bar-charts
+  %tbody
+    %tr{ 'ng-repeat': 'item in chartWeekPipeMovement'}
+      %td.left
+        {{item.name}}
+      %td.bar-section
+        %div.bar{ng: { style: 'item.styles'}}
+          %span
+            {{item.value | currency: '$' : 0}}
+      %td.right

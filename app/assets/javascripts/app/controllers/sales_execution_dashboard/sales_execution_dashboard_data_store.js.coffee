@@ -7,7 +7,7 @@
       chart: {
         type: 'multiBarHorizontalChart',
         margin: {
-          top: 0,
+          top: 20,
           right: 0,
           bottom: 70,
           left: 120
@@ -49,7 +49,7 @@
               $rootScope.$emit('quarterForecastRendered1');
           },
           margin: {
-            top: 0,
+            top: 20,
             right: 20,
             bottom: 60,
             left: 70
@@ -92,7 +92,7 @@
               $rootScope.$emit('quarterForecastRendered2');
           },
           margin: {
-            top: 0,
+            top: 20,
             right: 20,
             bottom: 60,
             left: 70

@@ -1,6 +1,6 @@
 @app.controller 'SalesExecutionDashboardController',
-  ['$rootScope', '$scope', '$q', 'Team', 'SalesExecutionDashboard', 'SalesExecutionDashboardDataStore'
-    ($rootScope, $scope, $q, Team, SalesExecutionDashboard, SalesExecutionDashboardDataStore) ->
+  ['$rootScope', '$scope', '$q', 'Team', 'SalesExecutionDashboard', 'SalesExecutionDashboardDataStore', 'DealLossSummaryDataStore'
+    ($rootScope, $scope, $q, Team, SalesExecutionDashboard, SalesExecutionDashboardDataStore, DealLossSummaryDataStore) ->
 
       $scope.isDisabled = false
       $scope.selectedMember = null
@@ -8,6 +8,7 @@
       $scope.selectedMemberId = null
       $scope.productPipelineChoice = 'weighted'
       $scope.optionsProductPipeline = SalesExecutionDashboardDataStore.getOptionsProductPipeline()
+      $scope.dealLossSummaryChoice = "last_week"
 
       $scope.init = () =>
         Team.all(all_teams: true).then (teams) ->
@@ -61,9 +62,15 @@
           $scope.chartWeekPipeMovement = _.map data[0].week_pipeline_data, (item) =>
             item.styles = {'width': ( if maxValue > 0 then item.value / maxValue * 100 else 0) + "%", 'background-color': item.color}
             return item
+          $scope.topActivities = data[0].top_activities
 
           $scope.productPipelineData = data[0].product_pipeline_data
           updateProductPipelineData()
+        SalesExecutionDashboard.deal_loss_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.dealLossSummaryChoice).then (data) ->
+          DealLossSummaryDataStore.setData(data)
+          $scope.dataDealLossSummary = DealLossSummaryDataStore.getData()
+          $scope.optionsDealLossSummary = DealLossSummaryDataStore.getOptions()
+
         SalesExecutionDashboard.forecast(team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
           SalesExecutionDashboardDataStore.setDataQuarterForecast(data);
           $scope.dataQuaterForecast =  SalesExecutionDashboardDataStore.getGraphDataQuarterForecast()
@@ -123,6 +130,13 @@
         $scope.selectedMemberList = [$scope.selectedMember.id]
         calculateKPIs()
 
+      $scope.changeDealLossSummaryChoice=(value) =>
+        $scope.dealLossSummaryChoice = value
+        SalesExecutionDashboard.deal_loss_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.dealLossSummaryChoice).then (data) ->
+          DealLossSummaryDataStore.setData(data)
+          $scope.dataDealLossSummary = DealLossSummaryDataStore.getData()
+          $scope.optionsDealLossSummary = DealLossSummaryDataStore.getOptions()
+
       $scope.changeProductPipelineChoice=(value) =>
         $scope.productPipelineChoice = value
         updateProductPipelineData()
@@ -154,6 +168,7 @@
           .style("stroke-dasharray", ("3, 3"))
           .attr("transform", 'translate(' + width + ', 0)')
           .attr("stroke", "#666b80")
+
       $rootScope.$on 'quarterForecastRendered2', (index) ->
         container = d3.select(".quarter-forecast-chart2")
         svg = container.select("svg")

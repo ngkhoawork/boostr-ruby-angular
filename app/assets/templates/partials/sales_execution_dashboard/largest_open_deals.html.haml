@@ -1,0 +1,19 @@
+%h3
+  Largest Open Deals
+%table.table.table-hover.table-striped
+  %thead
+    %tr
+      %th.left Client
+      %th.left Budget
+      %th.left %
+      %th.left Start Date
+      %th.right Next Step
+
+
+  %tbody
+    %tr{ 'ng-repeat': 'deal in topDeals' }
+      %td.left {{ deal.advertiser.name }}
+      %td.left {{deal.budget/100 | currency: '$' : 0}}
+      %td.left {{deal.stage.probability}}
+      %td.left {{deal.start_date | date:'MM-dd-yyyy'}}
+      %td.right {{deal.next_steps}}

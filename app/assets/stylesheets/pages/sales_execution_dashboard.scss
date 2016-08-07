@@ -2,6 +2,9 @@
   padding: 8px;
 }
 .sales-execution-dashboard {
+  .table-wrapper {
+    margin-top:20px;
+  }
   .table {
     tr {
       td {
@@ -179,7 +182,7 @@
 
 
 
-  .product-pipeline-choice {
+  .chart-choice {
     text-align: center;
     div {
       padding: 5px;
@@ -197,10 +200,6 @@
       background-color: #838F9A;
       color: #FFFFFF;
     }
-
-
-
-
   }
 
   .product-pipeline-chart {
