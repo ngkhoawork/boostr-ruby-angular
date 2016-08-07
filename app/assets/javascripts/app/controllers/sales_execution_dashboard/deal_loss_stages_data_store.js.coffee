@@ -66,6 +66,6 @@
             y1: value
           }
         DataStore.data = [{key: "Deal Loss", color:"#70ad47", values: values}]
-        DataStore.options.chart.height = DataStore.options.chart.margin.top + DataStore.options.chart.margin.bottom + 30 * values.length
+        DataStore.options.chart.height = DataStore.options.chart.margin.top + DataStore.options.chart.margin.bottom + 30 * Math.max(values.length, 1)
       return DataStore
   ]

@@ -1,42 +1,48 @@
-@app.factory 'DealLossStagesDataStore',
+@app.factory 'ActivitySummaryDataStore',
   ['$rootScope',
     ($rootScope) ->
       DataStore = {}
 
       DataStore.options = {
         chart: {
-          type: 'multiBarHorizontalChart',
+          type: 'multiBarChart',
+          height: 300,
           margin: {
             top: 20,
-            right: 0,
-            bottom: 70,
-            left: 150
+            right: 20,
+            bottom: 120,
+            left: 40
           },
-          height: 200,
+          showLegend: false,
+          showControls: false,
           x: (d) =>
             return d.label
           ,
           y: (d) =>
             return d.value
           ,
-          groupSpacing: 0.3,
-          showLegend: false,
-          showControls: false,
-          stacked: false,
-          showValues: true,
-          valueFormat: (d) =>
-            return d3.format(',.0f')(d) + "%"
+          average: (d) ->
+            return d.mean/100
+          ,
           duration: 500,
+          stacked: true,
+          showValues: true,
+          groupSpacing: 0.7,
+          reduceXTicks: false,
           xAxis: {
+            axisLabel: "",
             showMaxMin: false,
+            rotateLabels: -45,
             tickFormat: (d) =>
-              return if d.length > 18 then d.substr(0, 18) + '...' else d + '   '
+              value = d.replace("Lost - ", "")
+              return if value.length > 15 then value.substr(0, 15) + "..." else value
           },
           yAxis: {
+            axisLabel: "#",
+            showMaxMin: true,
             ticks: 4,
-            showMaxMin: false,
             tickFormat: (d) =>
-              return d3.format(',.0f')(d) + "%"
+              return d3.format(',.0f')(d)
           }
         }
       }
@@ -50,22 +56,17 @@
         return DataStore.data
 
       DataStore.setData = (data) ->
-        total_count = 0
-        _.each data, (row) ->
-          total_count = total_count + row.count
         values = _.map data, (row, index) ->
-          value = row.count / total_count * 100
           return {
-            key: "Deal Loss",
-            label: row.stage,
-            series: 0,
-            size: value,
-            value: value,
-            y: value,
-            y0: 0,
-            y1: value
+          key: "Activity Count",
+          label: row.activity,
+          series: 0,
+          size: row.count,
+          value: row.count,
+          y: row.count,
+          y0: 0,
+          y1: row.count
           }
-        DataStore.data = [{key: "Deal Loss", color:"#70ad47", values: values}]
-        DataStore.options.chart.height = DataStore.options.chart.margin.top + DataStore.options.chart.margin.bottom + 30 * values.length
+        DataStore.data = [{key: "Activity Count", color:"#70ad47", values: values}]
       return DataStore
   ]
