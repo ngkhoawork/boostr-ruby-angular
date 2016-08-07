@@ -1,6 +1,6 @@
 @app.controller 'SalesExecutionDashboardController',
-  ['$rootScope', '$scope', '$q', 'Team', 'SalesExecutionDashboard', 'SalesExecutionDashboardDataStore', 'DealLossSummaryDataStore'
-    ($rootScope, $scope, $q, Team, SalesExecutionDashboard, SalesExecutionDashboardDataStore, DealLossSummaryDataStore) ->
+  ['$rootScope', '$scope', '$q', 'Team', 'SalesExecutionDashboard', 'SalesExecutionDashboardDataStore', 'DealLossSummaryDataStore', 'DealLossStagesDataStore'
+    ($rootScope, $scope, $q, Team, SalesExecutionDashboard, SalesExecutionDashboardDataStore, DealLossSummaryDataStore, DealLossStagesDataStore) ->
 
       $scope.isDisabled = false
       $scope.selectedMember = null
@@ -8,7 +8,8 @@
       $scope.selectedMemberId = null
       $scope.productPipelineChoice = 'weighted'
       $scope.optionsProductPipeline = SalesExecutionDashboardDataStore.getOptionsProductPipeline()
-      $scope.dealLossSummaryChoice = "last_week"
+      $scope.dealLossSummaryChoice = "qtd"
+      $scope.dealLossStagesChoice = "qtd"
 
       $scope.init = () =>
         Team.all(all_teams: true).then (teams) ->
@@ -66,10 +67,16 @@
 
           $scope.productPipelineData = data[0].product_pipeline_data
           updateProductPipelineData()
+
         SalesExecutionDashboard.deal_loss_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.dealLossSummaryChoice).then (data) ->
           DealLossSummaryDataStore.setData(data)
           $scope.dataDealLossSummary = DealLossSummaryDataStore.getData()
           $scope.optionsDealLossSummary = DealLossSummaryDataStore.getOptions()
+
+        SalesExecutionDashboard.deal_loss_stages("member_ids[]": $scope.selectedMemberList, time_period: $scope.dealLossSummaryChoice).then (data) ->
+          DealLossStagesDataStore.setData(data)
+          $scope.dataDealLossStages = DealLossStagesDataStore.getData()
+          $scope.optionsDealLossStages = DealLossStagesDataStore.getOptions()
 
         SalesExecutionDashboard.forecast(team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
           SalesExecutionDashboardDataStore.setDataQuarterForecast(data);
@@ -136,6 +143,13 @@
           DealLossSummaryDataStore.setData(data)
           $scope.dataDealLossSummary = DealLossSummaryDataStore.getData()
           $scope.optionsDealLossSummary = DealLossSummaryDataStore.getOptions()
+
+      $scope.changeDealLossStagesChoice=(value) =>
+        $scope.dealLossStagesChoice = value
+        SalesExecutionDashboard.deal_loss_stages("member_ids[]": $scope.selectedMemberList, time_period: $scope.dealLossStagesChoice).then (data) ->
+          DealLossStagesDataStore.setData(data)
+          $scope.dataDealLossStages = DealLossStagesDataStore.getData()
+          $scope.optionsDealLossStages = DealLossStagesDataStore.getOptions()
 
       $scope.changeProductPipelineChoice=(value) =>
         $scope.productPipelineChoice = value

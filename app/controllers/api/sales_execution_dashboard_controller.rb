@@ -50,6 +50,29 @@ class Api::SalesExecutionDashboardController < ApplicationController
     render json: deal_loss_data
   end
 
+
+  def deal_loss_stages
+    case params[:time_period]
+      when "last_week"
+        start_date = Time.now.utc.beginning_of_week - 7.days
+        end_date = Time.now.utc.beginning_of_week - 1.seconds
+      when "this_week"
+        start_date = Time.now.utc.beginning_of_week
+        end_date = Time.now.utc
+      when "qtd"
+        start_date = Time.now.utc.beginning_of_quarter
+        end_date = Time.now.utc
+    end
+    deal_loss_data = Deal.joins("left join stages as prev_stages on prev_stages.id=deals.previous_stage_id")
+    .where("deals.id in (?) and deals.budget > 0", deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
+    .select("prev_stages.name as name, count(deals.id) as count")
+    .group("prev_stages.id")
+    .order("count desc")
+    .collect { |deal| {stage: deal.name, count: deal.count} }
+
+    render json: deal_loss_data
+  end
+
   protected
 
   def product_pipeline_data
