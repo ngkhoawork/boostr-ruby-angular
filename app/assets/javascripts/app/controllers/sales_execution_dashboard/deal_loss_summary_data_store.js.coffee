@@ -7,10 +7,6 @@
         chart: {
           type: 'multiBarChart',
           height: 300,
-          dispatch: {
-            renderEnd: (e) ->
-              $rootScope.$emit('dealLossSummaryRendered');
-          },
           margin: {
             top: 20,
             right: 20,
@@ -32,19 +28,19 @@
           stacked: true,
           showValues: true,
           groupSpacing: 0.7,
+          reduceXTicks: false,
           xAxis: {
             axisLabel: "",
-            ticks: 4,
             showMaxMin: false,
-            rotateLabels: -60,
+            rotateLabels: -45,
             tickFormat: (d) =>
               value = d.replace("Lost - ", "")
-              return if value.length > 14 then value.substr(0, 14) + "..." else value
+              return if value.length > 15 then value.substr(0, 15) + "..." else value
           },
           yAxis: {
             axisLabel: "",
             showMaxMin: true,
-            ticks: 8,
+            ticks: 6,
             tickFormat: (d) =>
               return if d > 10000 then '$' + d3.format(',.0f')(d/1000) + "k" else '$' + d3.format(',')(d)
           }
