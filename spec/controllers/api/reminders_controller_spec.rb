@@ -46,6 +46,11 @@ RSpec.describe Api::RemindersController, type: :controller do
 
   describe 'PUT #update' do
     let(:new_time) { Time.zone.now + 10.hours }
+    let(:invalid_reminder) { attributes_for(:reminder, remindable_id: nil, name: nil, remind_on: nil) }
+
+    before do
+      reminder
+    end
 
     it 'returns success' do
       put :update, id: reminder.remindable_id, reminder: { remind_on: new_time }, format: :json
@@ -59,7 +64,15 @@ RSpec.describe Api::RemindersController, type: :controller do
       expect(response_json['remind_on']).to eq(new_time.as_json)
     end
 
-    xit 'returns an error if the reminder is invalid' do
+    it 'returns an error if the reminder is invalid' do
+      expect do
+        put :update, id: reminder.remindable_id, reminder: invalid_reminder, format: :json
+        expect(response.status).to eq(422)
+        response_json = JSON.parse(response.body)
+        expect(response_json['errors']['name']).to eq(["can't be blank"])
+        expect(response_json['errors']['remind_on']).to eq(["can't be blank"])
+        expect(response_json['errors']['remindable_id']).to eq(["can't be blank"])
+      end.not_to change(Reminder, :count)
     end
   end
 end
