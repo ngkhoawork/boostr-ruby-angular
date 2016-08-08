@@ -210,31 +210,4 @@ RSpec.describe Deal, type: :model do
       expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'D')).not_to be_nil
     end
   end
-
-  context 'deal with a reminder' do
-    let(:reminder) { build :reminder }
-    let(:deal) { create :deal, reminder: reminder }
-    let(:deal_without_reminder) { create(:deal) }
-
-    it 'has a one to one relation' do
-      expect(deal).to have_one(:reminder).dependent(:destroy)
-    end
-
-    it 'creates a reminder' do
-      expect(deal.reminder.name).to eq(reminder.name)
-    end
-
-    it 'sets the reminder type' do
-      expect(deal.reminder.remindable_type).to eq("Deal")
-    end
-
-    it 'allows to retrieve deal from reminder instance' do
-      expect(deal.reminder.remindable).to eq(deal)
-    end
-
-    it 'allows to create a deal without a reminder' do
-      expect(deal_without_reminder.reminder).to be nil
-      expect(deal_without_reminder).to be_valid
-    end
-  end
 end
