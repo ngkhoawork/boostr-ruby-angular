@@ -1,0 +1,20 @@
+%h3
+  Next Quarter - {{dataQuaterForecast[1].new_deals_needed}} Deals Needed
+%nvd3{ options:'optionsQuarterForecast[1]', data: 'dataQuaterForecast[1].graphData', callback:"initLabels()", class: 'quarter-forecast-chart quarter-forecast-chart2', ng: {if: 'dataQuaterForecast[1]'}}
+%table.table.table-hover.table-striped
+  %thead
+    %tr
+      %th.left Quota
+      %th.left Weighted Pipe
+      %th.left Revenue
+      %th.left Forecast
+      %th.left % Quota
+      %th.right # Deals Needed
+  %tbody{ng: {if: "dataQuaterForecast[1]"}}
+    %tr
+      %td.left {{dataQuaterForecast[1].quota | currency: '$' : 0}}
+      %td.left {{dataQuaterForecast[1].weighted_pipeline | currency: '$' : 0}}
+      %td.left {{dataQuaterForecast[1].revenue | currency: '$' : 0}}
+      %td.left {{(dataQuaterForecast[1].weighted_pipeline + dataQuaterForecast[1].revenue) | currency: '$' : 0}}
+      %td.left {{dataQuaterForecast[1].percent_to_quota.toFixed(0)}}%
+      %td.right {{dataQuaterForecast[1].new_deals_needed}}
