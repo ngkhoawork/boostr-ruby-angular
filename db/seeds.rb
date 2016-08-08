@@ -259,21 +259,25 @@ company.contacts.create!([{
   position: "Director Sales Strategy",
   client: company_clients[0],
   created_by: company_user.id,
+  address: Address.create(email: "dan.walsh@example.com"),
 }, {
   name: "Bobby Jones",
   position: "CEO",
   client: company_clients[1],
   created_by: company_user.id,
+  address: Address.create(email: "bobby.jones@example.com"),
 }, {
   name: "Jillian Jackson",
   position: "Leader",
   client: company_clients[2],
   created_by: company_user.id,
+  address: Address.create(email: "jillian.jackson@example.com"),
 }, {
   name: "Brian Bennett",
   position: "Sales Advisor",
   client: company_clients[1],
   created_by: company_user.id,
+  address: Address.create(email: "brian.bennett@example.com"),
 }])
 
 # Deals
