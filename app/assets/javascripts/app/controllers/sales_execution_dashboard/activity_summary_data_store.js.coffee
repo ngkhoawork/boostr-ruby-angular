@@ -40,9 +40,9 @@
           yAxis: {
             axisLabel: "#",
             showMaxMin: true,
-            ticks: 4,
+            axisLabelDistance: -30,
             tickFormat: (d) =>
-              return d3.format(',.0f')(d)
+              return if d3.format(',.0f')(d) > d then "" else d3.format(',.0f')(d)
           }
         }
       }

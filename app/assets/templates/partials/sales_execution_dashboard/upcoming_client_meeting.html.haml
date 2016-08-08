@@ -5,19 +5,19 @@
     %tr
       %th.center{ width: '100' }
         Date
-      %th.center Client
-      %th.center Deal
-      %th.center Type
-      %th.center Attendees
-      %th.center Notes
+      %th.left Client
+      %th.left Deal
+      %th.left Type
+      %th.left Attendees
+      %th.right Notes
   %tbody
     %tr{ 'ng-repeat': 'activity in topActivities' }
-      %td.center{ width: '100' }
+      %td.left{ width: '100' }
         {{activity.happened_at | date:'MM-dd-yyyy'}}
-      %td.center {{activity.client.name}}
-      %td.lecenterft {{activity.deal.name}}
-      %td.center {{activity.activity_type_name}}
-      %td.center
+      %td.left {{activity.client.name}}
+      %td.left {{activity.deal.name}}
+      %td.left {{activity.activity_type_name}}
+      %td.left
         %div{'ng-repeat': 'contact in activity.contacts'}
           {{contact.name}}
-      %td.center {{activity.comment}}
+      %td.right {{activity.comment}}

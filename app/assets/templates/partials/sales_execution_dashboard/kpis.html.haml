@@ -3,11 +3,11 @@
 %table.table.table-hover.table-striped
   %thead
     %tr
-      %th.center Win Rate
-      %th.center Deal Size
-      %th.center Cycle Time
+      %th.left Win Rate
+      %th.left Deal Size
+      %th.right Cycle Time
   %tbody
     %tr
-      %td.center {{averageWinRate}}% / {{allAverageWinRate}}% (ave)
-      %td.center {{averageDealSize | currency: '$' : 0}}k / {{allAverageDealSize | currency: '$' : 0}}k (ave)
-      %td.center {{averageCycleTime}}d / {{allAverageCycleTime}}d (ave)
+      %td.left {{averageWinRate}}% / {{allAverageWinRate}}% (ave)
+      %td.left {{averageDealSize | currency: '$' : 0}}k / {{allAverageDealSize | currency: '$' : 0}}k (ave)
+      %td.right {{averageCycleTime}}d / {{allAverageCycleTime}}d (ave)
