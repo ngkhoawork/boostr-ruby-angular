@@ -65,6 +65,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     activities = Activity.where("user_id in (?) and happened_at >= ? and happened_at <= ?", params[:member_ids], start_date, end_date)
     .select("activities.activity_type_name, count(activities.id) as count")
     .group("activities.activity_type_name")
+    .order("activities.count desc")
     .collect { |activity| {activity: activity.activity_type_name, count: activity.count} }
 
     render json: activities
@@ -133,16 +134,16 @@ class Api::SalesExecutionDashboardController < ApplicationController
   def week_pipeline_data
     start_date = Time.now.utc.beginning_of_week - 7.days
     end_date = Time.now.utc.beginning_of_week - 1.seconds
-    pipeline_won = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(100).sum(:budget) / 100
-    pipeline_lost = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(0).sum(:budget) / 100
-    pipeline_added = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).started_at(start_date, end_date).sum(:budget) / 100
-    pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date).sum(:budget_change) / 100
+    pipeline_won = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(100).sum(:budget) / 100.0
+    pipeline_lost = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(0).sum(:budget) / 100.0
+    pipeline_added = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).started_at(start_date, end_date).sum(:budget) / 100.0
+    pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date).sum(:budget_change) / 100.0
 
     @week_pipeline_data = [
-        {name: 'Added', value: pipeline_added, color:'#f8cbad'},
-        {name: 'Advanced', value: pipeline_advanced, color:'#f4b183'},
-        {name: 'Won', value: pipeline_won, color:'#a9d18e'},
-        {name: 'Lost', value: pipeline_lost, color:'#bfbfbf'}
+        {name: 'Added', value: pipeline_added.round, color:'#f8cbad'},
+        {name: 'Advanced', value: pipeline_advanced.round, color:'#f4b183'},
+        {name: 'Won', value: pipeline_won.round, color:'#a9d18e'},
+        {name: 'Lost', value: pipeline_lost.round, color:'#bfbfbf'}
     ]
 
     @week_pipeline_data
