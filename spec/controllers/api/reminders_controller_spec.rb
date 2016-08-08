@@ -11,6 +11,16 @@ RSpec.describe Api::RemindersController, type: :controller do
     sign_in user
   end
 
+  describe 'GET #index' do
+    it 'returns json for all user\'s reminders' do
+      get :index, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq 1
+      expect(response_json.first['user_id']).to eq(user.id)
+    end
+  end
+
   describe 'GET #show' do
     it 'returns json for a reminder' do
       get :show, id: reminder.remindable_id, format: :json
