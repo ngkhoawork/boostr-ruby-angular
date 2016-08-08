@@ -5,7 +5,7 @@ RSpec.describe Api::RemindersController, type: :controller do
   let(:team) { create :parent_team, company: company }
   let(:user) { create :user, company: company, team: team }
   let(:reminder_params) { attributes_for(:reminder, remindable_id: 130) }
-  let(:reminder) { create(:reminder, remindable_id: 130, user_id: user.id) }
+  let!(:reminder) { create(:reminder, remindable_id: 130, user_id: user.id) }
 
   before do
     sign_in user
@@ -48,10 +48,6 @@ RSpec.describe Api::RemindersController, type: :controller do
     let(:new_time) { Time.zone.now + 10.hours }
     let(:invalid_reminder) { attributes_for(:reminder, remindable_id: nil, name: nil, remind_on: nil) }
 
-    before do
-      reminder
-    end
-
     it 'returns success' do
       put :update, id: reminder.remindable_id, reminder: { remind_on: new_time }, format: :json
       expect(response).to be_success
@@ -73,6 +69,16 @@ RSpec.describe Api::RemindersController, type: :controller do
         expect(response_json['errors']['remind_on']).to eq(["can't be blank"])
         expect(response_json['errors']['remindable_id']).to eq(["can't be blank"])
       end.not_to change(Reminder, :count)
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let!(:reminder) { create(:reminder, remindable_id: 160, user_id: user.id) }
+
+    it 'marks the deal as deleted' do
+      delete :destroy, id: reminder.remindable_id, format: :json
+      expect(response).to be_success
+      expect(reminder.reload.deleted_at).not_to be_nil
     end
   end
 end
