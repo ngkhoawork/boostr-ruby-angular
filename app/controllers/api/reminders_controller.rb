@@ -1,6 +1,10 @@
 class Api::RemindersController < ApplicationController
   respond_to :json
 
+  def index
+    render json: user_reminders
+  end
+
   def show
     render json: reminder
   end
@@ -36,7 +40,7 @@ class Api::RemindersController < ApplicationController
   private
 
   def reminder_params
-    params.require(:reminder).permit(:name, :comment, :remindable_id, :remind_on, :remindable_type)
+    params.require(:reminder).permit(:id, :name, :comment, :remindable_id, :remind_on, :remindable_type)
   end
 
   def reminder_by_remindable
@@ -45,5 +49,9 @@ class Api::RemindersController < ApplicationController
 
   def reminder
     @reminder ||= Reminder.by_id(params[:id], current_user.id).last
+  end
+
+  def user_reminders
+    @reminder ||= Reminder.user_reminders(current_user.id)
   end
 end
