@@ -234,15 +234,15 @@ class ForecastTeam
     end
     return 'N/A' if new_deals == 'N/A'
 
-    leader_gap_to_quota = gap_to_quota - members_gap_to_quota
-
-    if leader_gap_to_quota > 0
-      if leader.win_rate > 0 and leader.average_deal_size > 0
-        new_deals += (leader_gap_to_quota / (leader.win_rate * leader.average_deal_size)).ceil
-      else
-        return 'N/A'
-      end
-    end
+    # leader_gap_to_quota = gap_to_quota - members_gap_to_quota
+    #
+    # if leader_gap_to_quota > 0
+    #   if leader.win_rate > 0 and leader.average_deal_size > 0
+    #     new_deals += (leader_gap_to_quota / (leader.win_rate * leader.average_deal_size)).ceil
+    #   else
+    #     return 'N/A'
+    #   end
+    # end
     new_deals
   end
 
