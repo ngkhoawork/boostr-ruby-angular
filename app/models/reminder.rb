@@ -5,4 +5,12 @@ class Reminder < ActiveRecord::Base
   belongs_to :remindable, polymorphic: true
 
   validates :remindable_id, :remind_on, :name, presence: true
+
+  scope :by_id, -> (id, user_id) do
+    where(id: id, user_id: user_id)
+  end
+
+  scope :by_remindable, -> (user_id, remindable_id, type) do
+    where(user_id: user_id, remindable_id: remindable_id, remindable_type: type)
+  end
 end
