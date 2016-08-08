@@ -11,6 +11,8 @@ class Activity < ActiveRecord::Base
 
   has_and_belongs_to_many :contacts
 
+  has_many :reminders, as: :remindable, dependent: :destroy
+
   validates :company_id, presence: true
 
   after_create do
