@@ -1,0 +1,25 @@
+#reminder_modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .modal-header.text-center
+      %a.close{ ng: { click: 'cancel()' } }
+        %span{'aria-hidden' => 'true'}
+          = inline_svg 'icons/close.svg'
+    .modal-body
+      .form-group
+        %label.control-label{ for: 'name' } Reminder name*
+        %input.form-control{ placeholder: '', ng: { model: 'reminder.name', required: true }, name: 'name' }
+
+      .form-group
+        %label.control-label{ for: 'date' } Remind on date*
+        %span.bs-datepicker
+          %input.box.w4{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder.date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+      .form-group
+        %label.control-label{ for: 'stage' } Remind on time*
+        %timepicker-pop.input-group{"input-time" => "reminder.time", "show-meridian" => "showMeridian"}
+
+      .form-group
+        %label.control-label{ for: 'note' } Reminder note
+        %textarea.form-control{ placeholder: '', ng: { model: 'reminder.note' }, name: 'note' }
+
+    .modal-footer.text-center
+      %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

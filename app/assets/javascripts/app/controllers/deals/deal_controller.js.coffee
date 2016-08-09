@@ -7,6 +7,8 @@
   $scope.types = []
   $scope.contacts = []
   $scope.errors = {}
+  $scope.itemId = $routeParams.id
+  $scope.itemType = 'deal'
 
   $scope.init = ->
     $scope.currentDeal = {}
@@ -239,4 +241,17 @@
         $scope.$emit('updated_activities')
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
+
+  $scope.reminderModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/reminder_form.html'
+      size: 'lg'
+      controller: 'ReminderEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        itemId: ->
+          $scope.itemId
+        itemType: ->
+          $scope.itemType
 ]
