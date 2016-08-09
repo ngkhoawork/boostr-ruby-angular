@@ -62,11 +62,12 @@ class Api::SalesExecutionDashboardController < ApplicationController
         start_date = Time.now.utc.beginning_of_quarter
         end_date = Time.now.utc
     end
-    activities = Activity.where("user_id in (?) and happened_at >= ? and happened_at <= ?", params[:member_ids], start_date, end_date)
-    .select("activities.activity_type_name, count(activities.id) as count")
-    .group("activities.activity_type_name")
+    activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
+    .where("user_id in (?) and happened_at >= ? and happened_at <= ?", params[:member_ids], start_date, end_date)
+    .select("activity_types.name, count(activities.id) as count")
+    .group("activity_types.name")
     .order("activities.count desc")
-    .collect { |activity| {activity: activity.activity_type_name, count: activity.count} }
+    .collect { |activity| {activity: activity.name, count: activity.count} }
 
     render json: activities
   end
