@@ -4,7 +4,7 @@ RSpec.describe Api::RemindersController, type: :controller do
   let(:company) { create :company }
   let(:team) { create :parent_team, company: company }
   let(:user) { create :user, company: company, team: team }
-  let(:reminder_params) { attributes_for(:reminder, remindable_id: 130) }
+  let(:reminder_params) { attributes_for(:reminder, remindable_id: 130, remindable_type: "Deal") }
   let!(:reminder) { create(:reminder, remindable_id: 130, remindable_type: "Deal", user_id: user.id) }
 
   before do
@@ -90,7 +90,7 @@ RSpec.describe Api::RemindersController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
-    let!(:reminder) { create(:reminder, remindable_id: 160, user_id: user.id) }
+    let!(:reminder) { create(:reminder, remindable_id: 160, remindable_type: "Deal", user_id: user.id) }
 
     it 'marks the deal as deleted' do
       delete :destroy, id: reminder.id, format: :json
