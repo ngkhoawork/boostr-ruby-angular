@@ -11,7 +11,7 @@
         %h3.deal-name{ editable: { text: 'currentDeal.name' }, onaftersave: 'updateDeal()', 'e-name': 'deal-name' }
           {{ currentDeal.name }}
         %span.clock{ ng: { click: 'reminderModal()' } }
-          Clock (here should be a svg icon)
+          = inline_svg 'icons/reminder-icon-clock.svg'
 
     #nav.transparent.sec
       .row
