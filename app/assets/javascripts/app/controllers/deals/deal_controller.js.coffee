@@ -8,7 +8,7 @@
   $scope.contacts = []
   $scope.errors = {}
   $scope.itemId = $routeParams.id
-  $scope.itemType = 'deal'
+  $scope.itemType = 'Deal'
 
   $scope.init = ->
     $scope.currentDeal = {}
