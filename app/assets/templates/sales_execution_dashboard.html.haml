@@ -15,18 +15,19 @@
                   {{ member.name }}
 
 
-  .container-fluid
+  .container
     .row
-      .col-md-4
+      .col-md-6
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/this_quarter.html'" } }
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/upcoming_client_meeting.html'" } }
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/activity_summary.html'" } }
-      .col-md-4
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/kpis.html'" } }
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/largest_open_deals.html'" } }
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/weekly_pipeline_movement.html'" } }
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/pipeline_by_product.html'" } }
-      .col-md-4
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/next_quarter.html'" } }
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/deal_loss_summary.html'" } }
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/deal_loss_stages.html'" } }
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/activity_summary.html'" } }
+      .col-md-6
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/kpis.html'" } }
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/largest_open_deals.html'" } }
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/upcoming_client_meeting.html'" } }
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/weekly_pipeline_movement.html'" } }
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/pipeline_by_product.html'" } }
+
+

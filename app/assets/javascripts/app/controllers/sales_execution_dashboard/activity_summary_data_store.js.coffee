@@ -67,6 +67,6 @@
           y0: 0,
           y1: row.count
           }
-        DataStore.data = [{key: "Activity Count", color:"#70ad47", values: values}]
+        DataStore.data = [{key: "Activity Count", color:"#8ec536", values: values}]
       return DataStore
   ]

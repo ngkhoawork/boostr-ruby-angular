@@ -140,7 +140,7 @@
       return DataStore.dataQuaterForecast
 
     DataStore.setDataQuarterForecast = (data) ->
-      probability_colors = [ { probability: "90", color: "#ca6a28"}, { probability: "75" , color: "#e2772e" }, { probability: "50" , color: "#ef9164" }, { probability: "25" , color: "#f3b29a" }, { probability: "10" , color: "#f6ccbe" }]
+      probability_colors = [ { probability: "90", color: "#3996db"}, { probability: "75" , color: "#52a1e2" }, { probability: "50" , color: "#7ab9e9" }, { probability: "25" , color: "#a4d0f0" }, { probability: "10" , color: "#d2e8f8" }]
       DataStore.dataQuaterForecast = _.map data, (row, index) ->
         graphData = []
         series = 1
@@ -150,7 +150,7 @@
             {label: "weighted", value: row.revenue, series: series },
             {label: "un-weighted", value: row.revenue, series: series },
           ],
-          color: "#92d050"
+          color: "#9aca48"
         })
         total_weighted = row.revenue
         total_unweighted = row.revenue

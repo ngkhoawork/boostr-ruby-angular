@@ -6,8 +6,9 @@
       %th.left Client
       %th.left Budget
       %th.left %
-      %th.left Start Date
-      %th.right Next Step
+      %th.left{width: "100"}
+        Start Date
+      %th.left Next Step
 
 
   %tbody
@@ -16,4 +17,4 @@
       %td.left {{deal.budget/100 | currency: '$' : 0}}
       %td.left {{deal.stage.probability}}
       %td.left {{deal.start_date | date:'MM-dd-yyyy'}}
-      %td.right {{deal.next_steps}}
+      %td.left {{deal.next_steps}}
