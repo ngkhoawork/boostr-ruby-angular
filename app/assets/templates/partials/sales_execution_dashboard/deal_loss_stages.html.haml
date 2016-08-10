@@ -7,4 +7,6 @@
     This Week
   %div{ ng: {class: '{active: dealLossStagesChoice == "qtd"}', click: 'changeDealLossStagesChoice("qtd")' } }
     QTD
+.clearBox
+%hr{width: '100%'}
 %nvd3{ options:'optionsDealLossStages', data: 'dataDealLossStages', class: 'deal-loss-stages-chart', ng: {if: 'dataDealLossStages'}}

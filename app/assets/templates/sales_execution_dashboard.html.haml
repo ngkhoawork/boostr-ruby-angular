@@ -2,7 +2,10 @@
   #nav.transparent
     .container
       .row.filter-section
-        .col-xs-4.col-xs-offset-2
+        .col-xs-4
+          %h3
+            Sales Execution Dashboard
+        .col-xs-4
           %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
         .col-xs-4
           %div.member-list{ dropdown: true }
@@ -15,19 +18,19 @@
                   {{ member.name }}
 
 
-  .container
+  .container-fluid
     .row
-      .col-md-6
+      .col-md-4
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/this_quarter.html'" } }
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/next_quarter.html'" } }
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/deal_loss_summary.html'" } }
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/deal_loss_stages.html'" } }
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/activity_summary.html'" } }
-      .col-md-6
+
+      .col-md-4
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/kpis.html'" } }
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/largest_open_deals.html'" } }
-        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/upcoming_client_meeting.html'" } }
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/weekly_pipeline_movement.html'" } }
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/largest_open_deals.html'" } }
+      .col-md-4
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/next_quarter.html'" } }
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/upcoming_client_meeting.html'" } }
+        .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/activity_summary.html'" } }
         .table-wrapper{ ng: { include: "'partials/sales_execution_dashboard/pipeline_by_product.html'" } }
-
-
