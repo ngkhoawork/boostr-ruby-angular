@@ -7,11 +7,11 @@
           Back to Deals
 
     #deal_overview.row.campaign
-      .col-xs-9
+      .col-xs-9.icon-show-popup-wrapper
         %h3.deal-name{ editable: { text: 'currentDeal.name' }, onaftersave: 'updateDeal()', 'e-name': 'deal-name' }
           {{ currentDeal.name }}
-          %span.clock.show-create-remainders-popup{ ng: { click: 'reminderModal()' } }
-            = inline_svg 'icons/reminder-icon-clock.svg'
+        %span.clock.show-create-remainders-popup{ ng: { click: 'reminderModal()' } }
+          = inline_svg 'icons/reminder-icon-clock.svg'
 
     #nav.transparent.sec
       .row
