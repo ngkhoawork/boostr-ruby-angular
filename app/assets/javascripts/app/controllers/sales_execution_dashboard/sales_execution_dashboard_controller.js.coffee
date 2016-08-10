@@ -195,7 +195,10 @@
         width = rects[0][0].width.baseVal.value
 
         defRect = svg.selectAll("defs").selectAll("rect")
-        y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[0].maxValue - $scope.dataQuaterForecast[0].quota) / $scope.dataQuaterForecast[0].maxValue
+        if ($scope.dataQuaterForecast[0].maxValue == 0)
+          y = defRect[0][0].height.baseVal.value
+        else
+          y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[0].maxValue - $scope.dataQuaterForecast[0].quota) / $scope.dataQuaterForecast[0].maxValue
 
         newGroup = nvGroups.selectAll('g.nv-series-6')
 
@@ -223,7 +226,11 @@
         width = rects[0][0].width.baseVal.value
 
         defRect = svg.selectAll("defs").selectAll("rect")
-        y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[1].maxValue - $scope.dataQuaterForecast[1].quota) / $scope.dataQuaterForecast[1].maxValue
+        if ($scope.dataQuaterForecast[1].maxValue == 0)
+          y = defRect[0][0].height.baseVal.value
+        else
+          y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[1].maxValue - $scope.dataQuaterForecast[1].quota) / $scope.dataQuaterForecast[1].maxValue
+
 
         newGroup = nvGroups.selectAll('g.nv-series-6')
 
