@@ -29,16 +29,22 @@
 
   @create = (params) ->
     deferred = $q.defer()
-    resource.save params, (reminder) ->
-      deferred.resolve(reminder)
-      $rootScope.$broadcast 'updated_reminders'
+    resource.save params,
+      (reminder) ->
+        deferred.resolve(reminder)
+        $rootScope.$broadcast 'updated_reminders'
+      , (err) ->
+          deferred.reject(err)
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
-    resource.update params, (reminder) ->
-      deferred.resolve(reminder)
-      $rootScope.$broadcast 'updated_reminders'
+    resource.update params,
+      (reminder) ->
+        deferred.resolve(reminder)
+        $rootScope.$broadcast 'updated_reminders'
+      , (err) ->
+          deferred.reject(err)
     deferred.promise
 
   @get = (remindable_id, remindable_type) ->

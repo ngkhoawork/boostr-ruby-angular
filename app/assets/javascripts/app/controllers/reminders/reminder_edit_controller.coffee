@@ -8,9 +8,9 @@
         comment: '',
         remind_on: '',
         remindable_id: 0,
-        remindable_type: '' # 'Deal'
-        _date: '',
-        _time: ''
+        remindable_type: '' # "Activity", "Client", "Contact", "Deal"
+        _date: new Date(),
+        _time: new Date()
       }
       editMode = false;
       $scope.errors = {}
@@ -44,24 +44,28 @@
         $scope.reminder.remindable_id = itemId
         $scope.reminder.remindable_type = itemType
         if (editMode)
-          Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder).then (reminder) ->
-            console.log('Reminder update', reminder)
-            $scope.buttonDisabled = false
-            $scope.reminder = reminder
-            $scope.reminder._date = new Date($scope.reminder.remind_on)
-            $scope.reminder._time = new Date($scope.reminder.remind_on)
-            $modalInstance.close()
-            $location.path('/deals/' + $scope.itemId)
+          Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
+          .then (reminder) ->
+                 console.log('Reminder update', reminder)
+                 $scope.buttonDisabled = false
+#                 $scope.reminder = reminder
+#                 $scope.reminder._date = new Date($scope.reminder.remind_on)
+#                 $scope.reminder._time = new Date($scope.reminder.remind_on)
+                 $modalInstance.close()
+              , (err) ->
+                console.log('err', err)
+                $scope.buttonDisabled = false
         else
           Reminder.create(reminder: $scope.reminder).then (reminder) ->
             console.log('Reminder create', reminder)
             $scope.buttonDisabled = false
-            $scope.reminder = reminder
-            $scope.reminder._date = new Date($scope.reminder.remind_on)
-            $scope.reminder._time = new Date($scope.reminder.remind_on)
+#            $scope.reminder = reminder
+#            $scope.reminder._date = new Date($scope.reminder.remind_on)
+#            $scope.reminder._time = new Date($scope.reminder.remind_on)
             $modalInstance.close()
-            $location.path('/deals/' + $scope.itemId)
-
+          , (err) ->
+            console.log('err', err)
+            $scope.buttonDisabled = false
       $scope.cancel = ->
         $modalInstance.close()
 

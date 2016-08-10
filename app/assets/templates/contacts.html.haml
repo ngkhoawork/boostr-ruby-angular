@@ -44,6 +44,8 @@
             = inline_svg 'icons/edit.svg'
         %h2.contact-name
           {{ currentContact.name }}
+          %span.clock.show-create-remainders-popup{ ng: { click: 'reminderModal()' } }
+            = inline_svg 'icons/reminder-icon-clock.svg'
           %br
           .position
             {{ currentContact.position }}, {{ currentContact.client.name}}

@@ -9,6 +9,7 @@
   $scope.showMeridian = true
   $scope.types = []
   $scope.errors = {}
+  $scope.itemType = 'Contact'
 
   $scope.initActivity = (contact, activityTypes) ->
     $scope.activity = {}
@@ -163,4 +164,17 @@
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
+
+  $scope.reminderModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/reminder_form.html'
+      size: 'lg'
+      controller: 'ReminderEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        itemId: ->
+          $scope.currentContact.id
+        itemType: ->
+          $scope.itemType
 ]

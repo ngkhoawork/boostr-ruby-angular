@@ -10,6 +10,7 @@
   $scope.query = ""
   $scope.page = 1
   $scope.errors = {}
+  $scope.itemType = 'Client'
 
   $scope.clientFilters = [
     { name: 'My Clients', param: '' }
@@ -338,4 +339,17 @@
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
+
+  $scope.reminderModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/reminder_form.html'
+      size: 'lg'
+      controller: 'ReminderEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        itemId: ->
+          $scope.currentClient.id
+        itemType: ->
+          $scope.itemType
 ]
