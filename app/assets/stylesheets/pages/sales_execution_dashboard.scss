@@ -3,9 +3,21 @@
 }
 .sales-execution-dashboard {
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  h3 {
+    margin-top: 12px;
+  }
+  hr {
+    margin-top: 10px;
+  }
+  .clearBox {
+    clear: both;
+  }
+
   .table-wrapper {
+    width: 100%;
     margin-top:20px;
     h3 {
+      margin-top: 20px;
       text-align: left;
       font-weight: normal;
       color: #45545f;
@@ -13,11 +25,11 @@
     .table {
       margin-top: 10px;
       thead {
-        background: none;
+        background: #f4f7fa;
         color: #959fa9;
         tr {
           th {
-            font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+            font-family: "Gotham Medium", sans-serif !important;
             font-weight: normal;
             color: #959fa9 !important;
             text-transform: none;
@@ -39,11 +51,12 @@
       }
       tbody{
         tr {
+          background-color: #ffffff !important;
           td {
             color: #67747E !important;
             border-top: none;
             font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-            font-size: 11.5px;
+            font-size: 12px;
             font-weight: normal;
           }
           td:first-child {
@@ -81,7 +94,7 @@
             }
             div.small {
               color: #959fa9 !important;
-              font-size: 11.5px;
+              font-size: 12px;
               line-height: 12px;
 
             }
@@ -295,12 +308,14 @@
       color: #FFFFFF;
     }
   }
-
+  .nvd3-svg {
+    background-color: #ffffff;
+  }
   .nvd3 {
     text {
       fill: #959fa9;
       font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-      font-size: 11.5px !important;
+      font-size: 12px !important;
       white-space: pre-wrap;
     }
   }

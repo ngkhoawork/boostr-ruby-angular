@@ -7,4 +7,6 @@
     This Week
   %div{ ng: {class: '{active: activitySummaryChoice == "qtd"}', click: 'changeActivitySummaryChoice("qtd")' } }
     QTD
+.clearBox
+%hr{width: '100%'}
 %nvd3{ options:'optionsActivitySummary', data: 'dataActivitySummary', class: 'deal-loss-summary-chart', ng: {if: 'dataActivitySummary'}}

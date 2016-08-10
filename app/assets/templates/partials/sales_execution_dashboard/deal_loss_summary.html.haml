@@ -7,4 +7,6 @@
     This Week
   %div{ ng: {class: '{active: dealLossSummaryChoice == "qtd"}', click: 'changeDealLossSummaryChoice("qtd")' } }
     QTD
+.clearBox
+%hr{width: '100%'}
 %nvd3{ options:'optionsDealLossSummary', data: 'dataDealLossSummary', class: 'deal-loss-summary-chart', ng: {if: 'dataDealLossSummary'}}
