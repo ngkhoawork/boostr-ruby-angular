@@ -322,10 +322,12 @@
 
 /*popup create remainder styles*/
 
+/*
 .modal-dialog.modal-lg {
   margin: 200px auto 0;
   width: 20%;
 }
+*/
 
 #reminder_modal{
 
@@ -380,5 +382,58 @@
 
   .form-control.reminder-name {
     height: 36px;
+  }
+}
+
+.icon-show-popup-wrapper .deal-name {
+  display: block;
+  float: left;
+}
+
+.show-create-remainders-popup {
+  display: table;
+  float: left;
+}
+
+.icon-show-popup-wrapper .deal-name {
+  float: left;
+}
+
+.show-create-remainders-popup {
+  cursor: pointer;
+  display: block;
+  float: left;
+  height: inherit;
+  margin-left: 5px;
+  margin-top: 28px;
+}
+
+div.modal-footer.text-center {
+  padding: 10px 0 20px 0;
+}
+
+#reminder_modal .btn.btn-add-remainder {
+  border-radius: 5px;
+  margin: 0 auto;
+  padding: 10px 24px;
+}
+
+
+/*contacts*/
+#contact-detail{
+  .contact-name-text {
+    float: left;
+  }
+
+  .show-create-remainders-popup {
+    cursor: pointer;
+    display: table;
+    float: left;
+    margin-left: 10px;
+  }
+
+  .clock.show-create-remainders-popup svg {
+    display: table-cell;
+    vertical-align: middle;
   }
 }

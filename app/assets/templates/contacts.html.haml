@@ -42,8 +42,11 @@
             = inline_svg 'icons/trash.svg'
           %a#edit-contact{ href: '', ng: { click: 'showEditModal()' } }
             = inline_svg 'icons/edit.svg'
-        %h2.contact-name
-          {{ currentContact.name }}
+        %h2.contact-name.icon-show-popup-wrapper
+          %span.contact-name-text
+            {{ currentContact.name }}
+          %span.clock.show-create-remainders-popup{ ng: { click: 'reminderModal()' } }
+            = inline_svg 'icons/reminder-icon-clock.svg'
           %br
           .position
             {{ currentContact.position }}, {{ currentContact.client.name}}
