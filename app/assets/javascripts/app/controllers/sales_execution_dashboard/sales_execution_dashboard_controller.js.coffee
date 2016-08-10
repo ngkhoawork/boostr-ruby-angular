@@ -210,10 +210,10 @@
           .attr("y1", y)
           .attr("x2", width)
           .attr("y2", y)
-          .attr("stroke-width", 3)
+          .attr("stroke-width", 1)
           .style("stroke-dasharray", ("3, 3"))
           .attr("transform", 'translate(' + width + ', 0)')
-          .attr("stroke", "#666b80")
+          .attr("stroke", "#000000")
 
       $rootScope.$on 'quarterForecastRendered2', (index) ->
         container = d3.select(".quarter-forecast-chart2")
@@ -238,10 +238,10 @@
         .attr("y1", y)
         .attr("x2", width)
         .attr("y2", y)
-        .attr("stroke-width", 3)
+        .attr("stroke-width", 1)
         .style("stroke-dasharray", ("3, 3"))
         .attr("transform", 'translate(' + width + ', 0)')
-        .attr("stroke", "#666b80")
+        .attr("stroke", "#000000")
 
 
       $scope.init()
