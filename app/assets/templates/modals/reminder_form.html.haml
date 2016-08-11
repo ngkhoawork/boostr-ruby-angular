@@ -1,9 +1,5 @@
 #reminder_modal
   %form{ ng: { submit: 'submitForm()' } }
-    .modal-header.text-center
-      %a.close{ ng: { click: 'cancel()' } }
-        %span{'aria-hidden' => 'true'}
-          = inline_svg 'icons/close.svg'
     .modal-body
       .form-group.reminder-name-wrap
         %label.control-label{ for: 'name' } Reminder name*
