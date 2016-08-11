@@ -1,8 +1,10 @@
-%h3
+%h3{ class: 'float-left'}
   Pipeline by Product
-%nvd3{ options:'optionsProductPipeline', data: 'dataProductPipeline', class: 'product-pipeline-chart', ng: {if: 'dataProductPipeline'}}
-%div{ class: "chart-choice" }
+%div{ class: "pull-right chart-choice" }
   %div{ ng: {class: '{active: productPipelineChoice == "weighted"}', click: 'changeProductPipelineChoice("weighted")'} }
     Weighted
   %div{ ng: {class: '{active: productPipelineChoice == "unweighted"}', click: 'changeProductPipelineChoice("unweighted")' } }
     Unweighted
+.clearBox
+%hr{width: '100%'}
+%nvd3{ options:'optionsProductPipeline', data: 'dataProductPipeline', class: 'product-pipeline-chart', ng: {if: 'dataProductPipeline'}}
