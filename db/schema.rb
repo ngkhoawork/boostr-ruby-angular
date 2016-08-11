@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808104151) do
+ActiveRecord::Schema.define(version: 20160811125658) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -289,6 +289,7 @@ ActiveRecord::Schema.define(version: 20160808104151) do
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
     t.datetime "deleted_at"
+    t.boolean  "completed"
   end
 
   add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
