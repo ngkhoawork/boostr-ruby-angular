@@ -98,7 +98,15 @@ class Api::SalesExecutionDashboardController < ApplicationController
   protected
 
   def product_pipeline_data
-    probability_colors = { 90=> "#496a32", 75 => "#538233", 50 => "#62993e", 25 => "#70ad47", 10 => "#a1c490", 5 => "#c3d8bb"}
+    probability_colors = {
+        90 => "#86c129",
+        75 => "#a0ce56",
+        50 => "#b3da76",
+        25 => "#c3e78b",
+        10 => "#d4f1a3",
+        5 => "#e4ffb9"
+    }
+    # { 90=> "#3996db", 75 => "#52a1e2", 50 => "#7ab9e9", 25 => "#a4d0f0", 10 => "#d2e8f8", 5 => "#d2e8f8"}
     probabilities = current_user.company.distinct_stages.where("stages.probability > 0 and stages.probability < 100").order("stages.probability desc").collect { |stage| stage.probability }
     probabilities.reverse!
     product_names = current_user.company.products.collect {|product| product.name}
@@ -141,10 +149,10 @@ class Api::SalesExecutionDashboardController < ApplicationController
     pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date).sum(:budget_change) / 100.0
 
     @week_pipeline_data = [
-        {name: 'Added', value: pipeline_added.round, color:'#f8cbad'},
-        {name: 'Advanced', value: pipeline_advanced.round, color:'#f4b183'},
-        {name: 'Won', value: pipeline_won.round, color:'#a9d18e'},
-        {name: 'Lost', value: pipeline_lost.round, color:'#bfbfbf'}
+        {name: 'Added', value: pipeline_added.round, color:'#a4d0f0'},
+        {name: 'Advanced', value: pipeline_advanced.round, color:'#52a1e2'},
+        {name: 'Won', value: pipeline_won.round, color:'#8ec536'},
+        {name: 'Lost', value: pipeline_lost.round, color:'#d2e8f8'}
     ]
 
     @week_pipeline_data

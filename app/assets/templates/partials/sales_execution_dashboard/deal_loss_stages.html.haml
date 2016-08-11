@@ -1,10 +1,12 @@
-%h3
+%h3{ class: 'float-left'}
   Deal Loss Stages
-%nvd3{ options:'optionsDealLossStages', data: 'dataDealLossStages', class: 'deal-loss-stages-chart', ng: {if: 'dataDealLossStages'}}
-%div{ class: "chart-choice" }
+%div{ class: "pull-right chart-choice" }
   %div{ ng: {class: '{active: dealLossStagesChoice == "last_week"}', click: 'changeDealLossStagesChoice("last_week")'} }
     Last Week
   %div{ ng: {class: '{active: dealLossStagesChoice == "this_week"}', click: 'changeDealLossStagesChoice("this_week")' } }
     This Week
   %div{ ng: {class: '{active: dealLossStagesChoice == "qtd"}', click: 'changeDealLossStagesChoice("qtd")' } }
     QTD
+.clearBox
+%hr{width: '100%'}
+%nvd3{ options:'optionsDealLossStages', data: 'dataDealLossStages', class: 'deal-loss-stages-chart', ng: {if: 'dataDealLossStages'}}
