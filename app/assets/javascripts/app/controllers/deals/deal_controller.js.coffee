@@ -9,6 +9,7 @@
   $scope.errors = {}
   $scope.itemId = $routeParams.id
   $scope.itemType = 'Deal'
+  $scope.showReminder = false;
 
   $scope.init = ->
     $scope.currentDeal = {}
