@@ -7,7 +7,6 @@
       $scope.errors = {}
       $scope.buttonDisabled = false
       $scope.reminders = []
-      $scope.collapsed = true
 
       $scope.init = ->
         $http.get('/api/reminders')

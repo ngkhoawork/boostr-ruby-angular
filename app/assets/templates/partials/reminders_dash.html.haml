@@ -1,8 +1,9 @@
-#reminders-list.panel-group{"aria-multiselectable" => "true", :role => "tablist", ng: { controller: 'RemindersDashController as rsdc'}}
+#reminders-list.panel-group{ng: { controller: 'RemindersDashController as rsdc'}}
 
   -# размножать .item-reminders , обрати внимание - collapseOne они должны быть уникальны
   .panel.panel-default.item-reminders{ng: { repeat: 'reminder in reminders' } }
-    .panel-heading{:role => "tab"}
+
+    .panel-heading
       .checkbox-wrapper
         %input{ type: 'checkbox'}
       .text-wrap
@@ -22,10 +23,13 @@
       .btn-wrap
         %a.collapsed.show-reminders-details
           = inline_svg 'icons/show-details.svg'
+        %label.clock.show-create-remainders-popup{ 'for': 'show-form-create-reminders'}
+          = inline_svg 'icons/reminder-icon-clock.svg'
+          %input#show-form-create-reminders{ type: 'checkbox', ng: { model: 'reminder.collapsed' } }
     -# скрыть детали иконка  = inline_svg 'icons/hide-details.svg'
 
-    .panel-collapse.collapse.in{"aria-labelledby" => "headingOne", :role => "tabpanel"}
-      .panel-body.details{ ng: {hide: 'collapsed'} }
+    .panel-collapse.collapse.in
+      .panel-body.details{ ng: {show: 'reminder.collapsed'} }
         %div
           %p.due
             due:
