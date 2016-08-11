@@ -442,11 +442,6 @@ div.modal-footer.text-center {
   padding: 0 10px 20px;
 }
 
-/*TODO remove it*/
-#reminder_modal .modal-footer .btn.btn-primary::before {
-  content: "Set Remainder";
-}
-
 #reminder_modal .btn.btn-add-remainder {
   border-radius: 5px;
   display: block;

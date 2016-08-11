@@ -294,6 +294,7 @@
       reminder_time = new Date($scope.reminder._time)
       reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
     $scope.reminder.remind_on = reminder_date
+    $scope.reminder.completed = false
     if ($scope.reminderOptions.editMode)
       Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
       .then (reminder) ->

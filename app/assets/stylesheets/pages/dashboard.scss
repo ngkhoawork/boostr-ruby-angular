@@ -273,6 +273,20 @@
   .completed-reminder .completed-name {
     text-decoration: line-through;
   }
+
+  input.show-reminder {
+    -webkit-appearance: none;
+    width: 1em;
+    height: 1em;
+    &:after {
+      content: '▹';
+    }
+    &.open {
+      &:after {
+        content: '▿';
+      }
+    }
+  }
 }
 
 

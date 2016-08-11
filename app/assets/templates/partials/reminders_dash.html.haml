@@ -21,15 +21,11 @@
         %input.name.short-description{type:'text', name:'edit-short-description', value:'Call Sem '}
 
       .btn-wrap
-        %a.collapsed.show-reminders-details
-          = inline_svg 'icons/show-details.svg'
-        %label.clock.show-create-remainders-popup{ 'for': 'show-form-create-reminders'}
-          = inline_svg 'icons/reminder-icon-clock.svg'
-          %input#show-form-create-reminders{ type: 'checkbox', ng: { model: 'reminder.collapsed' } }
+        %input.show-reminder{ type: 'checkbox', ng: { model: 'collapsed', class: '{open:collapsed}' } }
     -# скрыть детали иконка  = inline_svg 'icons/hide-details.svg'
 
     .panel-collapse.collapse.in
-      .panel-body.details{ ng: {show: 'reminder.collapsed'} }
+      .panel-body.details{ ng: {show: 'collapsed'} }
         %div
           %p.due
             due:
@@ -47,10 +43,10 @@
           %p.description
             {{ reminder.comment }}
         %div.edit-delete-wrap
-          %a.btn.edit-reminder edit
+          %a.btn.edit-reminder{ng: { click: 'editShow=true' } } edit
           -# тут на клик нужно будет скрыть блок .panel-body.details, а показать блок - .panel-body.details.details-edit
           %a.btn.delete-reminder delete
-      .panel-body.details.details-edit{ ng: {show: 'reminder.editMode'}}
+      .panel-body.details.details-edit{ ng: {show: 'editShow'}}
         %div
           %div
             %p.due
@@ -71,7 +67,7 @@
               note:
             %textarea.description{ name:'edit-description', ng: { model: 'reminder.comment' } }
           %div.action-wrap
-            %a.btn.cancel-edited-reminder cancel
+            %a.btn.cancel-edited-reminder{ng: { click: 'editShow=false' } } cancel
             %a.btn.save-edited-reminder save
 
 
