@@ -2,24 +2,25 @@
   KPIs
 %hr{width: '100%'}
 %table.table.table-hover.table-striped.table-large
-  %thead
-    %tr
-      %th.center Win Rate
-      %th.center Deal Size
-      %th.center Cycle Time
   %tbody
     %tr
       %td.center
+        %div.label
+          Win Rate
         %div
           {{averageWinRate}}% / {{allAverageWinRate}}%
         %div.small
           (ave)
       %td.center
+        %div.label
+          Win Rate
         %div
           {{averageDealSize | currency: '$' : 0}}k / {{allAverageDealSize | currency: '$' : 0}}k
         %div.small
           (ave)
       %td.center
+        %div.label
+          Win Rate
         %div
           {{averageCycleTime}}d / {{allAverageCycleTime}}d
         %div.small

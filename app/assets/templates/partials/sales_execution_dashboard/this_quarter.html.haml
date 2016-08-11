@@ -2,25 +2,32 @@
   This Quarter - {{dataQuaterForecast[0].new_deals_needed}} Deals Needed
 %hr{width: '100%'}
 %nvd3{ options:'optionsQuarterForecast[0]', data: 'dataQuaterForecast[0].graphData', callback:"initLabels()", class: 'quarter-forecast-chart quarter-forecast-chart1', ng: {if: 'dataQuaterForecast[0]'}}
+%hr{width: '100%'}
 %table.table.table-hover.table-striped.table-large
-  %thead
-    %tr
-      %th.center Quota
-      %th.center Weighted Pipe
-      %th.center Revenue
-  %tbody{ng: {if: "dataQuaterForecast[0]"}}
-    %tr
-      %td.center {{dataQuaterForecast[0].quota | currency: '$' : 0}}
-      %td.center {{dataQuaterForecast[0].weighted_pipeline | currency: '$' : 0}}
-      %td.center {{dataQuaterForecast[0].revenue | currency: '$' : 0}}
-%table.table.table-hover.table-striped.table-large
-  %thead
-    %tr
-      %th.center Forecast
-      %th.center % Quota
-      %th.center # Deals Needed
-  %tbody{ng: {if: "dataQuaterForecast[0]"}}
-    %tr
-      %td.center {{(dataQuaterForecast[0].weighted_pipeline + dataQuaterForecast[0].revenue) | currency: '$' : 0}}
-      %td.center {{dataQuaterForecast[0].percent_to_quota.toFixed(0)}}%
-      %td.center {{dataQuaterForecast[0].new_deals_needed}}
+  %tbody
+    %tr{ng: {if: "dataQuaterForecast[0]"}}
+      %td.center
+        %div.label Quota
+        %div
+          {{dataQuaterForecast[0].quota | currency: '$' : 0}}
+      %td.center
+        %div.label Weighted Pipe
+        %div
+          {{dataQuaterForecast[0].weighted_pipeline | currency: '$' : 0}}
+      %td.center
+        %div.label Revenue
+        %div
+          {{dataQuaterForecast[0].revenue | currency: '$' : 0}}
+    %tr{ng: {if: "dataQuaterForecast[0]"}}
+      %td.center
+        %div.label Forecast
+        %div
+          {{(dataQuaterForecast[0].weighted_pipeline + dataQuaterForecast[0].revenue) | currency: '$' : 0}}
+      %td.center
+        %div.label % Quota
+        %div
+          {{dataQuaterForecast[0].percent_to_quota.toFixed(0)}}%
+      %td.center
+        %div.label # Deals Needed
+        %div
+          {{dataQuaterForecast[0].new_deals_needed}}
