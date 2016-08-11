@@ -36,8 +36,15 @@
                 %li
                   = link_to "Sales Execution Dashboard", "/reports/sales_execution_dashboard"
           - else
-            %li{ ng: { class: "{ active: isActive('/reports') }" } }
-              = link_to "SMART INSIGHTS", "/reports"
+            %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
+              %a{ href: '', 'dropdown-toggle': true }
+                SMART INSIGHTS
+                %span.caret
+              %ul.dropdown-menu
+                %li
+                  = link_to "Sellers Activities", "/reports"
+                %li
+                  = link_to "Sales Execution Dashboard", "/reports/sales_execution_dashboard"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
             %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
