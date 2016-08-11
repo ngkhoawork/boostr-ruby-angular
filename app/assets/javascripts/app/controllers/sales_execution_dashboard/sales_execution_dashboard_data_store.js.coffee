@@ -43,7 +43,7 @@
       {
         chart: {
           type: 'multiBarChart',
-          height: 300,
+          height: 350,
           dispatch: {
             renderEnd: (e) ->
               $rootScope.$emit('quarterForecastRendered1');
@@ -51,7 +51,7 @@
           margin: {
             top: 20,
             right: 20,
-            bottom: 60,
+            bottom: 80,
             left: 70
           },
           showControls: false,
@@ -77,7 +77,7 @@
           yAxis: {
             axisLabel: "",
             showMaxMin: true,
-            ticks: 8,
+            ticks: 4,
             tickFormat: (d) =>
               return if d > 10000 then '$' + d3.format(',.0f')(d/1000) + "k" else '$' + d3.format(',')(d)
           }
@@ -86,7 +86,7 @@
       {
         chart: {
           type: 'multiBarChart',
-          height: 300,
+          height: 350,
           dispatch: {
             renderEnd: (e) ->
               $rootScope.$emit('quarterForecastRendered2');
@@ -94,7 +94,7 @@
           margin: {
             top: 20,
             right: 20,
-            bottom: 60,
+            bottom: 80,
             left: 70
           },
           showControls: false,
@@ -120,7 +120,7 @@
           yAxis: {
             axisLabel: "",
             showMaxMin: true,
-            ticks: 8,
+            ticks: 4,
             tickFormat: (d) =>
               return if d > 10000 then '$' + d3.format(',.0f')(d/1000) + "k" else '$' + d3.format(',')(d)
           }
