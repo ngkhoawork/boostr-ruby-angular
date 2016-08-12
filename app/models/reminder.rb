@@ -7,6 +7,8 @@ class Reminder < ActiveRecord::Base
   validates :remindable_id, :remindable_type, :remind_on, :name, presence: true
   validates :completed, inclusion: { in: [ true, false ] }
 
+  default_scope -> { order(remind_on: :asc) }
+
   scope :by_id, -> (id, user_id) do
     where(id: id, user_id: user_id)
   end
