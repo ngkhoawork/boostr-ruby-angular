@@ -6,3 +6,288 @@
     width: 490px;
   }
 }
+
+#reminders{
+  margin-bottom: 20px;
+  background-color:#fff;
+  border-radius: 5px 5px 0 0;
+  padding: 0;
+}
+
+#reminders {
+
+  .hide-completed-reminders,
+  .show-details,
+  .text-wrap.edit,
+  .toggle-hide {
+    display: none;
+  }
+
+  h3 {
+    background: #fff none repeat scroll 0 0;
+    height: 60px;
+    line-height: 60px;
+    margin: 0;
+    padding: 0 10px 10px;
+    border-radius: 5px 5px 0 0;
+  }
+
+  .add-reminder {
+    display: table;
+    float: right;
+    outline: none;
+  }
+
+  .add-reminder svg {
+    display: table-cell;
+    fill: #ff7e30;
+    height: 32px;
+    vertical-align: middle;
+    width: 32px;
+    cursor: pointer;
+  }
+
+  .add-reminder svg:hover {
+    fill: #e35500;
+  }
+
+  .checkbox-wrapper {
+    float: left;
+  }
+
+  .panel-heading {
+    height: 70px;
+  }
+
+  .panel.panel-default.item-reminders {
+    border: medium none;
+  }
+
+  .item-reminders .panel-heading {
+    border-radius: 0;
+    border-top: 1px solid #ddd;
+    margin: 0 14px;
+    padding: 0;
+    background-color: #fff;
+  }
+
+  .panel-collapse.collapse.in {
+    background: #f9fafa none repeat scroll 0 0;
+  }
+
+  .panel-group .panel + .panel{
+    margin-top: 0;
+  }
+
+  .show-reminders-details {
+    display: table-cell;
+    vertical-align: middle;
+    outline: medium none;
+  }
+
+  .btn-wrap {
+    display: table;
+    float: right;
+    height: 100%;
+  }
+
+  .text-wrap {
+    float: left;
+    padding: 5px 5px 5px 10px;
+  }
+
+  .red {
+    color: #f04d44;
+  }
+
+  .yellow {
+    color: #fbb361;
+  }
+
+  .silver {
+    color: #a6b0b7;
+  }
+
+
+  .checkbox-wrapper {
+    float: left;
+    height: 70px;
+    line-height: 70px;
+  }
+
+  .checkbox-wrapper > label {
+    margin: 0;
+    padding: 0;
+  }
+
+  .checkbox-wrapper input {
+    margin: 0;
+    padding: 0;
+  }
+
+  .text-wrap > p {
+    margin: 0;
+  }
+
+  .panel-body.details > div > p:first-child {
+    float: left;
+    width: 13%;
+  }
+
+  .edit-delete-wrap {
+    margin-left: 13%;
+  }
+
+  .panel-body.details {
+    padding-bottom: 5px;
+  }
+
+  .panel {
+    box-shadow: none;
+  }
+
+  .panel.panel-default.item-reminders:last-child .panel-heading {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .completed-reminders {
+    height: 60px;
+    line-height: 60px;
+  }
+
+  .completed-reminders > span {
+    margin: 0;
+    text-transform: uppercase;
+    clear: both;
+    display: block;
+    text-align: center;
+    height: 60px;
+    line-height: 60px;
+  }
+
+  .panel-group {
+    margin-bottom: 0;
+  }
+
+  .name {
+    font-weight: bold;
+  }
+
+  /*completed reminders*/
+  .completed-reminders.hide-completed-reminders {
+    width: 100%;
+  }
+  .completed-date {
+    float: right;
+  }
+
+  .main-wrap {
+    border-top: 1px solid #ddd;
+    margin: 0 14px;
+    clear: both;
+  }
+
+  .completed-reminder input {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .completed-reminder > label {
+    display: table;
+    float: left;
+    margin: 0;
+  }
+
+  .completed-date {
+    display: block;
+    float: right;
+    height: 60px;
+    line-height: 60px;
+  }
+
+  .completed-name {
+    display: block;
+    float: left;
+    height: 60px;
+    line-height: 60px;
+    margin-left: 10px;
+  }
+
+  .details.details-edit > div > div p:first-child {
+    float: left;
+    width: 13%;
+  }
+
+  .bs-datepicker.date-edit {
+    float: left;
+    height: 100%;
+    width: 84%;
+  }
+
+  .bs-datepicker.date-edit .edit {
+    display: block;
+    float: left;
+    margin: 0;
+    width: 100%;
+  }
+
+  .details-edit .name {
+    padding-left: 10px;
+  }
+
+  .date-edit .edit,
+  .details-edit .name,
+  .details-edit .description {
+    width: 84%;
+    height: 36px;
+    background-color: #f4f7f9;
+    border: 1px solid #d7e1eb;
+    border-radius: 3px;
+  }
+
+  .details-edit .description {
+    width: 84%;
+    height:80px;
+    padding: 5px;
+    resize: none;
+  }
+
+  .btn.save-edited-reminder {
+    background: transparent none repeat scroll 0 0;
+    border-radius: 15px;
+    color: #ff6e17;
+    height: 30px;
+    text-transform: uppercase;
+    width: 83px;
+    border: 1px solid;
+  }
+
+  .details-edit .action-wrap {
+    margin-left: 13%;
+  }
+
+  .edit-description-wrap {
+    margin: 10px 0 20px;
+  }
+
+  .completed-reminder .completed-name {
+    text-decoration: line-through;
+  }
+
+  input.show-reminder {
+    -webkit-appearance: none;
+    width: 1em;
+    height: 1em;
+    &:after {
+      content: '▹';
+    }
+    &.open {
+      &:after {
+        content: '▿';
+      }
+    }
+  }
+}
+
+
+

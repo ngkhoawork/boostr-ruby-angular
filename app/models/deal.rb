@@ -21,6 +21,7 @@ class Deal < ActiveRecord::Base
   has_many :values, as: :subject
   has_many :deal_stage_logs
   has_many :activities
+  has_many :reminders, as: :remindable, dependent: :destroy
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
 

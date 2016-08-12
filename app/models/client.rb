@@ -11,6 +11,7 @@ class Client < ActiveRecord::Base
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
   has_many :values, as: :subject
   has_many :activities
+  has_many :reminders, as: :remindable, dependent: :destroy
 
   has_one :address, as: :addressable
 

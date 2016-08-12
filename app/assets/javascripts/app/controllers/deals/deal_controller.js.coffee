@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType',
-($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType) ->
+['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder'
+($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -22,6 +22,40 @@
                       {name: 'additional info', id: 'info'}]
 
     $scope.initActivity()
+
+  $scope.initReminder = ->
+    $scope.showReminder = false;
+
+    $scope.reminder = {
+      name: '',
+      comment: '',
+      completed: false,
+      remind_on: '',
+      remindable_id: $routeParams.id,
+      remindable_type: 'Deal' # "Activity", "Client", "Contact", "Deal"
+      _date: new Date(),
+      _time: new Date()
+    }
+
+    $scope.reminderOptions = {
+      editMode: false,
+      errors: {},
+      buttonDisabled: false,
+      showMeridian: true
+    }
+
+    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
+      console.log('Reminder', reminder)
+      if (reminder && reminder.id)
+        $scope.reminder.id = reminder.id
+        $scope.reminder.name = reminder.name
+        $scope.reminder.comment = reminder.comment
+        $scope.reminder.completed = reminder.completed
+        $scope.reminder._date = new Date(reminder.remind_on)
+        $scope.reminder._time = new Date(reminder.remind_on)
+        $scope.reminderOptions.editMode = true
+
+  $scope.initReminder()
 
   $scope.initActivity = ->
     $scope.activity = {}
@@ -239,4 +273,51 @@
         $scope.$emit('updated_activities')
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
+
+#  $scope.reminderModal = ->
+#    $scope.modalInstance = $modal.open
+#      templateUrl: 'modals/reminder_form.html'
+#      size: 'lg'
+#      controller: 'ReminderEditController'
+#      backdrop: 'static'
+#      keyboard: false
+#      resolve:
+#        itemId: ->
+#          $scope.itemId
+#        itemType: ->
+#          $scope.itemType
+
+  $scope.submitReminderForm = () ->
+    console.log('I am a reminder submit')
+    $scope.reminderOptions.errors = {}
+    $scope.reminderOptions.buttonDisabled = true
+    reminder_date = new Date($scope.reminder._date)
+    if $scope.reminder._time != undefined
+      reminder_time = new Date($scope.reminder._time)
+      reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+    $scope.reminder.remind_on = reminder_date
+    if ($scope.reminderOptions.editMode)
+      Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
+      .then (reminder) ->
+        console.log('Reminder update', reminder)
+        $scope.reminderOptions.buttonDisabled = false
+        $scope.showReminder = false;
+        $scope.reminder = reminder
+        $scope.reminder._date = new Date($scope.reminder.remind_on)
+        $scope.reminder._time = new Date($scope.reminder.remind_on)
+      , (err) ->
+        console.log('err', err)
+        $scope.reminderOptions.buttonDisabled = false
+    else
+      Reminder.create(reminder: $scope.reminder).then (reminder) ->
+        console.log('Reminder create', reminder)
+        $scope.reminderOptions.buttonDisabled = false
+        $scope.showReminder = false;
+        $scope.reminder = reminder
+        $scope.reminder._date = new Date($scope.reminder.remind_on)
+        $scope.reminder._time = new Date($scope.reminder.remind_on)
+      , (err) ->
+        console.log('err', err)
+        $scope.reminderOptions.buttonDisabled = false
+
 ]

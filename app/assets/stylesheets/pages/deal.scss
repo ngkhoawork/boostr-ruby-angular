@@ -318,3 +318,153 @@
     padding: 15px 0 0 0;
   }
 }
+
+
+/*popup create remainder styles*/
+
+/*
+.modal-dialog.modal-lg {
+  margin: 200px auto 0;
+  width: 20%;
+}
+*/
+
+#reminder_modal{
+
+  .form-group > label {
+    clear: both;
+    display: block;
+  }
+
+  .reminder-name,
+  .reminder-date,
+  .reminder-on-time input,
+  .reminder-note {
+    background-color: $silver-background;
+    border: 1px solid $silver-border;
+    border-radius: 4px;
+    height: 36px;
+  }
+
+  div.modal-body {
+    padding: 20px;
+  }
+
+  .btn.btn-add-remainder{
+    border-radius: 5px;
+  }
+
+  span.bs-datepicker input {
+    display: block;
+    height: 36px;
+    width: 100%;
+  }
+
+  .reminder-on-time-wrap timepicker-pop {
+    width: 100%;
+  }
+
+  .input-group.reminder-on-time {
+    width: 100%;
+  }
+
+  .box1.ng-pristine {
+    display: block;
+    height: 36px;
+    width: 100%;
+  }
+
+  .form-control.reminder-note {
+    display: block;
+    height: 80px;
+    resize: none;
+  }
+
+  .form-control.reminder-name {
+    height: 36px;
+  }
+}
+
+.icon-show-popup-wrapper .deal-name {
+  display: block;
+  float: left;
+}
+
+.show-create-remainders-popup {
+  display: table;
+  float: left;
+}
+
+.icon-show-popup-wrapper .deal-name {
+  float: left;
+}
+
+.show-create-remainders-popup {
+  cursor: pointer;
+  display: block;
+  float: left;
+  height: inherit;
+  margin-left: 5px;
+  margin-top: 28px;
+  position:relative;
+}
+
+#show-form-create-reminders {
+  display: none;
+}
+
+.show-create-remainders-popup .wrap-form::before {
+  content: "";
+  display: block;
+  position: absolute;
+  border-color: rgba(0,0,0,0);
+  border-bottom-color: #fff;
+  border-width: 0px 9px 9px;
+  top: -8px;
+  left: 149px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.show-create-remainders-popup .wrap-form {
+  background: #fff none repeat scroll 0 0;
+  border-radius: 5px;
+  box-shadow: 0 5px 15px #9591a9;
+  left: -149px;
+  position: absolute;
+  width: 316px;
+  z-index: 10;
+}
+
+div.modal-footer.text-center {
+  border-top: medium none;
+  padding: 0 10px 20px;
+}
+
+#reminder_modal .btn.btn-add-remainder {
+  border-radius: 5px;
+  display: block;
+  margin: 0 auto;
+  padding: 10px 24px;
+}
+
+
+/*contacts*/
+#contact-detail{
+  .contact-name-text {
+    float: left;
+  }
+
+  .show-create-remainders-popup {
+    cursor: pointer;
+    display: table;
+    float: left;
+    margin-left: 10px;
+  }
+
+  .clock.show-create-remainders-popup svg {
+    display: table-cell;
+    vertical-align: middle;
+  }
+}

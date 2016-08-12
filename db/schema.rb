@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160731223825) do
+ActiveRecord::Schema.define(version: 20160811125658) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -278,6 +278,21 @@ ActiveRecord::Schema.define(version: 20160731223825) do
 
   add_index "quota", ["end_date"], name: "index_quota_on_end_date", using: :btree
   add_index "quota", ["start_date"], name: "index_quota_on_start_date", using: :btree
+
+  create_table "reminders", force: :cascade do |t|
+    t.string   "name"
+    t.text     "comment"
+    t.integer  "user_id"
+    t.integer  "remindable_id"
+    t.string   "remindable_type"
+    t.datetime "remind_on"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.datetime "deleted_at"
+    t.boolean  "completed"
+  end
+
+  add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
 
   create_table "reports", force: :cascade do |t|
     t.integer  "company_id"
