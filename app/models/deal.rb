@@ -35,11 +35,13 @@ class Deal < ActiveRecord::Base
   before_update do
     if stage_id_changed?
       update_stage
-      update_close
     end
   end
 
   after_update do
+    if stage_id_changed?
+      update_close
+    end
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
   end
