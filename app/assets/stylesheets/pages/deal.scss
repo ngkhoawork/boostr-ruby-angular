@@ -409,8 +409,16 @@
   position:relative;
 }
 
-#show-form-create-reminders {
+.show-form-create-reminders {
   display: none;
+}
+
+.panel-default > .panel-heading + .panel-collapse > .panel-body {
+  border-top-color: transparent;
+}
+
+.panel-body.details {
+  border-bottom: 1px solid #ddd;
 }
 
 .show-create-remainders-popup .wrap-form::before {

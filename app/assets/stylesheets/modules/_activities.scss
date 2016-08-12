@@ -78,7 +78,7 @@
     border-color: $input-border;
     background-color: transparent;
     height: 44px;
-    width: 290px;
+    width: 100%;
     &:focus,
     &:hover {
       outline:none;
@@ -120,7 +120,30 @@
   }
   
   .w4 {
-    width: 290px;
+    width: 100%;
+  }
+
+  .add-remainder-form-wrap {
+    padding-right: 0;
+  }
+
+  .add-remainder-form-wrap > #contain1 .type1 {
+    margin-bottom: 0;
+  }
+
+  .input-group.reminder-on-time,
+  .wrap-select-time {
+    width:100%;
+  }
+
+  .checkbox-wrapper {
+    float: left;
+    height: 70px;
+    line-height: 70px;
+  }
+
+  .form-control.reminder-note {
+    resize: none;
   }
 
   .type {
@@ -396,8 +419,8 @@
 
 .show-hide-remainder-form {
   clear: both;
-  height: 30px;
-  line-height: 30px;
+  height: 26px;
+  line-height: 26px;
   margin: 15px 0;
   width: 100%;
 }
