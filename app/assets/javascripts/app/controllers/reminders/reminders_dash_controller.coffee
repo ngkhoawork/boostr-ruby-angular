@@ -6,18 +6,19 @@
       editMode = false;
       $scope.errors = {}
       $scope.buttonDisabled = false
-      $scope.reminders = []
 
       $scope.init = ->
+        $scope.reminders = []
         $http.get('/api/reminders')
         .then (respond) ->
                 console.log('respond', respond)
                 if (respond && respond.data && respond.data.length)
                   _.each respond.data, (curReminder) ->
-                    curReminder.editMode = false
-                    curReminder.collapsed = true
+#                    curReminder.editMode = false
+#                    curReminder.collapsed = true
+                    curReminder._date = new Date(curReminder.remind_on)
+                    curReminder._time = new Date(curReminder.remind_on)
                     $scope.reminders.push(curReminder)
-
                 console.log('$scope.reminders', $scope.reminders)
             , (err) ->
                 console.log('err', err)
@@ -31,48 +32,51 @@
 #            $scope.reminder._date = new Date(reminder.remind_on)
 #            $scope.reminder._time = new Date(reminder.remind_on)
 #            editMode = true
-#
-#
-#      $scope.submitForm = () ->
-#        console.log('I am a submit')
-#        $scope.errors = {}
+
+      $scope.save = (curReminder) ->
+        console.log('I am a save')
+        $scope.errors = {}
 #        $scope.buttonDisabled = true
-#        reminder_date = new Date($scope.reminder._date)
-#        if $scope.reminder._time != undefined
-#          reminder_time = new Date($scope.reminder._time)
-#          reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
-#        $scope.reminder.remind_on = reminder_date
-#        $scope.reminder.remindable_id = itemId
-#        $scope.reminder.remindable_type = itemType
-#        if (editMode)
-#          Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
-#          .then (reminder) ->
-#                 console.log('Reminder update', reminder)
+        reminder_date = new Date(curReminder._date)
+        if curReminder._time != undefined
+          reminder_time = new Date(curReminder._time)
+          reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+        curReminder.remind_on = reminder_date
+        Reminder.update(id: curReminder.id, reminder: curReminder)
+        .then (reminder) ->
+               console.log('Reminder update', reminder)
+               $scope.init()
 #                 $scope.buttonDisabled = false
-##                 $scope.reminder = reminder
-##                 $scope.reminder._date = new Date($scope.reminder.remind_on)
-##                 $scope.reminder._time = new Date($scope.reminder.remind_on)
-#              , (err) ->
-#                console.log('err', err)
+#                 $scope.reminder = reminder
+#                 $scope.reminder._date = new Date($scope.reminder.remind_on)
+#                 $scope.reminder._time = new Date($scope.reminder.remind_on)
+            , (err) ->
+              console.log('err', err)
 #                $scope.buttonDisabled = false
-#        else
-#          Reminder.create(reminder: $scope.reminder).then (reminder) ->
-#            console.log('Reminder create', reminder)
-#            $scope.buttonDisabled = false
-##            $scope.reminder = reminder
-##            $scope.reminder._date = new Date($scope.reminder.remind_on)
-##            $scope.reminder._time = new Date($scope.reminder.remind_on)
-#          , (err) ->
-#            console.log('err', err)
-#            $scope.buttonDisabled = false
+
+      $scope.delete = (curReminder) ->
+        console.log('I am a delete')
+        $scope.errors = {}
+        #        $scope.buttonDisabled = true
+        Reminder.delete(curReminder.id)
+        .then (reminder) ->
+          console.log('Reminder delete', reminder)
+          $scope.init()
+#                 $scope.buttonDisabled = false
+#                 $scope.reminder = reminder
+#                 $scope.reminder._date = new Date($scope.reminder.remind_on)
+#                 $scope.reminder._time = new Date($scope.reminder.remind_on)
+        , (err) ->
+          console.log('err', err)
+      #                $scope.buttonDisabled = false
 
       $scope.init()
 
-      $scope.switchDetailsVisibility = (curReminder) ->
-        console.log(curReminder)
-        if (curReminder.collapsed)
-          curReminder.collapsed = false
-        if (!curReminder.collapsed)
-          curReminder.collapsed = true
-        $scope.$$phase || $scope.$apply();
+#      $scope.switchDetailsVisibility = (curReminder) ->
+#        console.log(curReminder)
+#        if (curReminder.collapsed)
+#          curReminder.collapsed = false
+#        if (!curReminder.collapsed)
+#          curReminder.collapsed = true
+#        $scope.$$phase || $scope.$apply();
   ]

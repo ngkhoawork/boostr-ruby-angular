@@ -5,11 +5,12 @@
 
     .panel-heading
       .checkbox-wrapper
-        %input{ type: 'checkbox'}
+        %input{ type: 'checkbox', ng: { model: 'reminder.completed' } }
       .text-wrap
+        %br{ ng: {show: 'collapsed'} }
         %p {{ reminder.remindable_type }}
-        %p.name {{ reminder.name }}
-        %p.yellow {{ reminder.remind_on | date:'medium' }}
+        %p.name{ ng: {hide: 'collapsed'} } {{ reminder.name }}
+        %p.yellow{ ng: {hide: 'collapsed'} } {{ reminder.remind_on | date:'medium' }}
       -# в зависимости от даты, нужно красить в разный цвет - сегодня .red  - завтра .yellow - после завтра и дальше - .silver
 
       -#на раскрытие деталей напоминалки нужно изменить верхний блок на этот
@@ -45,7 +46,7 @@
         %div.edit-delete-wrap
           %a.btn.edit-reminder{ng: { click: 'editShow=true' } } edit
           -# тут на клик нужно будет скрыть блок .panel-body.details, а показать блок - .panel-body.details.details-edit
-          %a.btn.delete-reminder delete
+          %a.btn.delete-reminder{ng: { click: 'delete(reminder)' } } delete
       .panel-body.details.details-edit{ ng: {show: 'editShow'}}
         %div
           %div
@@ -68,7 +69,7 @@
             %textarea.description{ name:'edit-description', ng: { model: 'reminder.comment' } }
           %div.action-wrap
             %a.btn.cancel-edited-reminder{ng: { click: 'editShow=false' } } cancel
-            %a.btn.save-edited-reminder save
+            %a.btn.save-edited-reminder{ng: { click: 'save(reminder)' } } save
 
 
   -#.panel.panel-default.item-reminders

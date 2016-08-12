@@ -17,6 +17,10 @@
       method: 'PUT'
       url: '/api/reminders/:id'
       transformRequest: transformRequest
+    },
+    delete: {
+      method: 'DELETE'
+      url: '/api/reminders/:id'
     }
 
   currentReminder = undefined
@@ -53,9 +57,9 @@
       deferred.resolve(reminder)
     deferred.promise
 
-  @delete = (deletedReminder) ->
+  @delete = (id) ->
     deferred = $q.defer()
-    resource.delete id: deletedReminder.id, () ->
+    resource.delete id: id, () ->
       deferred.resolve()
       $rootScope.$broadcast 'updated_reminders'
     deferred.promise

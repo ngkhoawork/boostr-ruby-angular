@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType',
-($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder'
+($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -10,7 +10,6 @@
   $scope.query = ""
   $scope.page = 1
   $scope.errors = {}
-  $scope.itemType = 'Client'
 
   $scope.clientFilters = [
     { name: 'My Clients', param: '' }
@@ -64,6 +63,7 @@
     $scope.getContacts($scope.currentClient)
     $scope.getDeals($scope.currentClient)
     $scope.getClientMembers()
+    $scope.initReminder()
 
   $scope.getClient = (clientId) ->
     Client.get({ id: clientId }).$promise.then (client) ->
@@ -340,16 +340,70 @@
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
 
-  $scope.reminderModal = ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/reminder_form.html'
-      size: 'lg'
-      controller: 'ReminderEditController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        itemId: ->
-          $scope.currentClient.id
-        itemType: ->
-          $scope.itemType
+  $scope.initReminder = ->
+    $scope.showReminder = false;
+
+    if ($scope.currentClient && $scope.currentClient.id)
+
+      $scope.reminder = {
+        name: '',
+        comment: '',
+        completed: false,
+        remind_on: '',
+        remindable_id: $scope.currentClient.id,
+        remindable_type: 'Client' # "Activity", "Client", "Contact", "Deal"
+        _date: new Date(),
+        _time: new Date()
+      }
+
+      $scope.reminderOptions = {
+        editMode: false,
+        errors: {},
+        buttonDisabled: false,
+        showMeridian: true
+      }
+
+      Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
+        console.log('Reminder', reminder)
+        if (reminder && reminder.id)
+          $scope.reminder.id = reminder.id
+          $scope.reminder.name = reminder.name
+          $scope.reminder.comment = reminder.comment
+          $scope.reminder._date = new Date(reminder.remind_on)
+          $scope.reminder._time = new Date(reminder.remind_on)
+          $scope.reminderOptions.editMode = true
+
+  $scope.submitReminderForm = () ->
+    console.log('I am a reminder submit')
+    $scope.reminderOptions.errors = {}
+    $scope.reminderOptions.buttonDisabled = true
+    reminder_date = new Date($scope.reminder._date)
+    if $scope.reminder._time != undefined
+      reminder_time = new Date($scope.reminder._time)
+      reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+    $scope.reminder.remind_on = reminder_date
+    if ($scope.reminderOptions.editMode)
+      Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
+      .then (reminder) ->
+        console.log('Reminder update', reminder)
+        $scope.reminderOptions.buttonDisabled = false
+        $scope.showReminder = false;
+        $scope.reminder = reminder
+        $scope.reminder._date = new Date($scope.reminder.remind_on)
+        $scope.reminder._time = new Date($scope.reminder.remind_on)
+      , (err) ->
+        console.log('err', err)
+        $scope.reminderOptions.buttonDisabled = false
+    else
+      Reminder.create(reminder: $scope.reminder).then (reminder) ->
+        console.log('Reminder create', reminder)
+        $scope.reminderOptions.buttonDisabled = false
+        $scope.showReminder = false;
+        $scope.reminder = reminder
+        $scope.reminder._date = new Date($scope.reminder.remind_on)
+        $scope.reminder._time = new Date($scope.reminder.remind_on)
+      , (err) ->
+        console.log('err', err)
+        $scope.reminderOptions.buttonDisabled = false
+
 ]
