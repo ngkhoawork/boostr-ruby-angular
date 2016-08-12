@@ -10,11 +10,15 @@
       .col-xs-9.icon-show-popup-wrapper
         %h3.deal-name{ editable: { text: 'currentDeal.name' }, onaftersave: 'updateDeal()', 'e-name': 'deal-name' }
           {{ currentDeal.name }}
-        %label.clock.show-create-remainders-popup{ 'for': 'show-form-create-reminders'}
-          = inline_svg 'icons/reminder-icon-clock.svg'
-          %input#show-form-create-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
+        .clock.show-create-remainders-popup
+          %label{ 'for': 'deal-reminders'}
+            = inline_svg 'icons/reminder-icon-clock.svg'
+          %input.show-form-create-reminders#deal-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
           %div.wrap-form{ ng: { show: 'showReminder' } }
             #reminder_modal
+              .modal-header.text-center
+                %label{'aria-hidden' => 'true', 'for' => 'deal-reminders',  ng: { click: 'cancel()' }}
+                  = inline_svg 'icons/close.svg'
               %form{ ng: { submit: 'submitReminderForm()' } }
                 .modal-body
                   .form-group.reminder-name-wrap

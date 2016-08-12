@@ -204,7 +204,6 @@
       }
 
       Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
-        console.log('Reminder', reminder)
         if (reminder && reminder.id)
           $scope.reminder.id = reminder.id
           $scope.reminder.name = reminder.name
@@ -215,7 +214,6 @@
           $scope.reminderOptions.editMode = true
 
   $scope.submitReminderForm = () ->
-    console.log('I am a reminder submit')
     $scope.reminderOptions.errors = {}
     $scope.reminderOptions.buttonDisabled = true
     reminder_date = new Date($scope.reminder._date)
@@ -226,25 +224,21 @@
     if ($scope.reminderOptions.editMode)
       Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
       .then (reminder) ->
-        console.log('Reminder update', reminder)
         $scope.reminderOptions.buttonDisabled = false
         $scope.showReminder = false;
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
       , (err) ->
-        console.log('err', err)
         $scope.reminderOptions.buttonDisabled = false
     else
       Reminder.create(reminder: $scope.reminder).then (reminder) ->
-        console.log('Reminder create', reminder)
         $scope.reminderOptions.buttonDisabled = false
         $scope.showReminder = false;
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
       , (err) ->
-        console.log('err', err)
         $scope.reminderOptions.buttonDisabled = false
 
 ]

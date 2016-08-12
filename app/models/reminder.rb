@@ -7,6 +7,8 @@ class Reminder < ActiveRecord::Base
   validates :remindable_id, :remindable_type, :remind_on, :name, presence: true
   validates :completed, inclusion: { in: [ true, false ] }
 
+  default_scope -> { order(remind_on: :asc) }
+
   scope :by_id, -> (id, user_id) do
     where(id: id, user_id: user_id)
   end
@@ -17,5 +19,9 @@ class Reminder < ActiveRecord::Base
 
   scope :by_remindable, -> (user_id, remindable_id, type) do
     where(user_id: user_id, remindable_id: remindable_id, remindable_type: type)
+  end
+
+  def as_json(options = {})
+    super(options.merge(include: :remindable))
   end
 end

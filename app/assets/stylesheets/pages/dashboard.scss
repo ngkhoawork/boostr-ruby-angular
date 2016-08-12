@@ -14,6 +14,10 @@
   padding: 0;
 }
 
+#reminders #reminders-list .item-reminders:nth-of-type(1){
+  border-top: 1px solid #ddd;
+}
+
 #reminders {
 
   .hide-completed-reminders,
@@ -38,13 +42,18 @@
     outline: none;
   }
 
+  .btn-wrap .trigger-click {
+    display: table-cell;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+
   .add-reminder svg {
     display: table-cell;
     fill: #ff7e30;
     height: 32px;
     vertical-align: middle;
     width: 32px;
-    cursor: pointer;
   }
 
   .add-reminder svg:hover {
@@ -65,7 +74,7 @@
 
   .item-reminders .panel-heading {
     border-radius: 0;
-    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
     margin: 0 14px;
     padding: 0;
     background-color: #fff;
@@ -107,17 +116,19 @@
   .silver {
     color: #a6b0b7;
   }
+  .text-wrap.show-detailse-wrap .name{
+    line-height: 60px;
+  }
 
+  .checkbox-wrapper > input {
+    display: table-cell;
+    vertical-align: middle;
+  }
 
   .checkbox-wrapper {
     float: left;
     height: 70px;
     line-height: 70px;
-  }
-
-  .checkbox-wrapper > label {
-    margin: 0;
-    padding: 0;
   }
 
   .checkbox-wrapper input {

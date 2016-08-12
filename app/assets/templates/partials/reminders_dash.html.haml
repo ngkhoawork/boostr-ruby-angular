@@ -1,38 +1,32 @@
 #reminders-list.panel-group{ng: { controller: 'RemindersDashController as rsdc'}}
 
-  -# размножать .item-reminders , обрати внимание - collapseOne они должны быть уникальны
   .panel.panel-default.item-reminders{ng: { repeat: 'reminder in reminders' } }
 
-    .panel-heading
+    .panel-heading.hide-detailse-wrap
       .checkbox-wrapper
         %input{ type: 'checkbox', ng: { model: 'reminder.completed', click: 'save(reminder)' } }
-      .text-wrap
+      .text-wrap{"ng-show" => "!reminder.isCollapsed"}
         %br{ ng: {show: 'collapsed'} }
         %p {{ reminder.remindable_type }}
         %p.name{ ng: {hide: 'collapsed'} } {{ reminder.name }}
         %p{ ng: {hide: 'collapsed', class: 'reminder.dateColorClass'} } {{ reminder.remind_on | date:'medium' }}
-      -# в зависимости от даты, нужно красить в разный цвет - сегодня .red  - завтра .yellow - после завтра и дальше - .silver
 
-      -#на раскрытие деталей напоминалки нужно изменить верхний блок на этот
-      .text-wrap
-        %p.name.show-details Call Sem
-
-      -# на редактирование
-      .text-wrap.edit
-        %input.name.short-description{type:'text', name:'edit-short-description', value:'Call Sem '}
+      .text-wrap.show-detailse-wrap{"ng-show" => "reminder.isCollapsed"}
+        %p.name{ ng: {hide: 'collapsed'} } {{ reminder.name }}
 
       .btn-wrap
-        %input.show-reminder{ type: 'checkbox', ng: { model: 'collapsed', class: '{open:collapsed}' } }
-    -# скрыть детали иконка  = inline_svg 'icons/hide-details.svg'
+        %label.trigger-click{"ng-click" => "reminder.isCollapsed = !reminder.isCollapsed", "ng-show" => "!reminder.isCollapsed"}
+          = inline_svg 'icons/show-details.svg'
+        %label.trigger-click{"ng-click" => "reminder.isCollapsed = !reminder.isCollapsed", "ng-show" => "reminder.isCollapsed"}
+          = inline_svg 'icons/hide-details.svg'
 
-    .panel-collapse.collapse.in
-      .panel-body.details{ ng: {show: 'collapsed'} }
+    .show-details-wrap.panel-collapse.collapse.in
+      .panel-body.details{"ng-show" => "reminder.isCollapsed"}
         %div
           %p.due
             due:
           %p.date{ ng: { class: 'reminder.dateColorClass' } }
             {{ reminder.remind_on | date:'medium' }}
-        -# в зависимости от даты, нужно красить в разный цвет - сегодня .red  - завтра .yellow - после завтра и дальше - .silver
         %div
           %p.person
             Name:
@@ -45,9 +39,9 @@
             {{ reminder.comment }}
         %div.edit-delete-wrap
           %a.btn.edit-reminder{ng: { click: 'editShow=true' } } edit
-          -# тут на клик нужно будет скрыть блок .panel-body.details, а показать блок - .panel-body.details.details-edit
           %a.btn.delete-reminder{ng: { click: 'delete(reminder)' } } delete
-      .panel-body.details.details-edit{ ng: {show: 'editShow'}}
+
+      .edit-details-wrap.panel-body.details.details-edit{ ng: {show: 'editShow'}}
         %div
           %div
             %p.due
@@ -74,10 +68,8 @@
   %div.completed-reminders{ng: { click: 'showCompleted=!showCompleted' } }
     %span
       View Completed
-    -# %span  Hide Completed  на клик нужно будет показать то что ниже, сменив текст в спане (скрыв спан что выше)
 
     .completed-reminders.completed-reminders{ng: { show: 'showCompleted', repeat: 'completedReminder in completedReminders' } }
-      -# в таблице собственно выполненые таски, в цикле создаются .main-wrap
       %div.main-wrap
         %div.completed-reminder
           %label
