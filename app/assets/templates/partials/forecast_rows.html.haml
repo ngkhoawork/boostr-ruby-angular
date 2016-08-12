@@ -9,7 +9,7 @@
       \--
   %td{ ng: { if: 'row.quarter' } }
     Q{{ row.quarter }}
-  %td.right{ ng: { if: '!row.is_leader'} }
+  %td.right
     {{ row.is_leader ? '--' : (row.quota | currency: '$': 0) }}
   %td.weighted-pipeline.right
     %a{ href: '', ng: { click: 'toggleWeightedPipelineDetail(row)' } }
