@@ -18,4 +18,8 @@ class Reminder < ActiveRecord::Base
   scope :by_remindable, -> (user_id, remindable_id, type) do
     where(user_id: user_id, remindable_id: remindable_id, remindable_type: type)
   end
+
+  def as_json(options = {})
+    super(options.merge(include: :remindable))
+  end
 end
