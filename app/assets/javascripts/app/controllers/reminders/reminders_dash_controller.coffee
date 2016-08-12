@@ -9,6 +9,7 @@
 
       $scope.init = ->
         $scope.reminders = []
+        $scope.completedReminders = []
         $http.get('/api/reminders')
         .then (respond) ->
                 console.log('respond', respond)
@@ -18,7 +19,11 @@
 #                    curReminder.collapsed = true
                     curReminder._date = new Date(curReminder.remind_on)
                     curReminder._time = new Date(curReminder.remind_on)
-                    $scope.reminders.push(curReminder)
+                    if (curReminder.completed)
+                      $scope.completedReminders.push(curReminder)
+                    else
+                      $scope.reminders.push(curReminder)
+
                 console.log('$scope.reminders', $scope.reminders)
             , (err) ->
                 console.log('err', err)

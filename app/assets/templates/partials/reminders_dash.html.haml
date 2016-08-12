@@ -5,7 +5,7 @@
 
     .panel-heading
       .checkbox-wrapper
-        %input{ type: 'checkbox', ng: { model: 'reminder.completed' } }
+        %input{ type: 'checkbox', ng: { model: 'reminder.completed', click: 'save(reminder)' } }
       .text-wrap
         %br{ ng: {show: 'collapsed'} }
         %p {{ reminder.remindable_type }}
@@ -71,100 +71,19 @@
             %a.btn.cancel-edited-reminder{ng: { click: 'editShow=false' } } cancel
             %a.btn.save-edited-reminder{ng: { click: 'save(reminder)' } } save
 
-
-  -#.panel.panel-default.item-reminders
-  -#  #headingTwo.panel-heading{:role => "tab"}
-  -#    .checkbox-wrapper
-  -#      %label{ for: 'this.id'}
-  -#        %input{ type: 'checkbox', id: 'this.id' }
-  -#    .text-wrap
-  -#      %p Zazmic inc
-  -#      %p.name Call Max
-  -#      %p.silver After tomorrow, Sun, August, 11 at 4:00 PM
-  -#    .btn-wrap
-  -#      %a.collapsed.show-reminders-details{"aria-controls" => "collapseTwo", "aria-expanded" => "true", "data-parent" => "#reminders-list", "data-toggle" => "collapse", :href => "#collapseTwo", :role => "button"}
-  -#        = inline_svg 'icons/show-details.svg'
-  -#  -# скрыть детали иконка  = inline_svg 'icons/hide-details.svg'
-  -#
-  -#  #collapseTwo.panel-collapse.collapse{"aria-labelledby" => "headingTwo", :role => "tabpanel"}
-  -#    .panel-body.details
-  -#      %div
-  -#        %p.due
-  -#          due:
-  -#        %p.date.red
-  -#          Today, Sun, Julu, 24 at 09:00 AM
-  -#      %div
-  -#        %p.person
-  -#          person:
-  -#        %p.name
-  -#          Tigger
-  -#      %div
-  -#        %p.note
-  -#          note:
-  -#        %p.description
-  -#          Научить тигера играть в футбол, читать на китайском, и пить настой расторопши
-  -#      %div.edit-delete-wrap
-  -#        %a.btn.edit-reminder edit
-  -#        %a.btn.delete-reminder delete
-  -#
-  -#.panel.panel-default.item-reminders
-  -#  #headingThree.panel-heading{:role => "tab"}
-  -#    %h4.panel-title
-  -#      .checkbox-wrapper
-  -#        %label{ for: 'this.id'}
-  -#          %input{ type: 'checkbox', id: 'this.id' }
-  -#    .text-wrap
-  -#      %p Zazmic inc
-  -#      %p.name Call Sem
-  -#      %p.yellow Tomorrow, Sun, Julu, 24 at 09:00 AM
-  -#    .btn-wrap
-  -#      %a.collapsed.show-reminders-details{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-parent" => "#reminders-list", "data-toggle" => "collapse", :href => "#collapseThree", :role => "button"}
-  -#        = inline_svg 'icons/show-details.svg'
-  -#  -# скрыть детали иконка  = inline_svg 'icons/hide-details.svg'
-  -#
-  -#  #collapseThree.panel-collapse.collapse{"aria-labelledby" => "headingThree", :role => "tabpanel"}
-  -#    .panel-body.details
-  -#      %div
-  -#        %p.due
-  -#          due:
-  -#        %p.date.red
-  -#          Today, Sun, Julu, 24 at 09:00 AM
-  -#      %div
-  -#        %p.person
-  -#          person:
-  -#        %p.name
-  -#          Wild White Tiger
-  -#      %div
-  -#        %p.note
-  -#          note:
-  -#        %p.description
-  -#          Научить тигера играть в баскетбол, читать на английском, и пить водку
-  -#      %div.edit-delete-wrap
-  -#        %a.btn.edit-reminder edit
-  -#        %a.btn.delete-reminder delete
-
-  %div.completed-reminders
+  %div.completed-reminders{ng: { click: 'showCompleted=!showCompleted' } }
     %span
       View Completed
     -# %span  Hide Completed  на клик нужно будет показать то что ниже, сменив текст в спане (скрыв спан что выше)
 
-    .completed-reminders.hide-completed-reminders
+    .completed-reminders.completed-reminders{ng: { show: 'showCompleted', repeat: 'completedReminder in completedReminders' } }
       -# в таблице собственно выполненые таски, в цикле создаются .main-wrap
       %div.main-wrap
         %div.completed-reminder
           %label
-            %input{ type: 'checkbox', checked: 'checked' }
+            %input{ type: 'checkbox', ng: { model: 'completedReminder.completed', click: 'save(completedReminder)' } }
           %span.completed-name.left
-            Samuel Colt
+            {{ completedReminder.name }}
           %span.completed-date
             -# обрати внимание, дата в коротком виде
-            Fri, March 25
-      %div.main-wrap
-        %div.completed-reminder
-          %label
-            %input{ type: 'checkbox', checked: 'checked' }
-          %span.completed-name.left
-            Anton Colt
-          %span.completed-date
-            -# обрати внимание, дата в коротком виде
-            Fri, July 30
+            {{ completedReminder.remind_on | date:'medium' }}
