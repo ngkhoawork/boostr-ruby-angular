@@ -319,17 +319,18 @@
   }
 }
 
+#deal_overview .icon-show-popup-wrapper {
+  width: 100%;
+}
 
 /*popup create remainder styles*/
-
-/*
-.modal-dialog.modal-lg {
-  margin: 200px auto 0;
-  width: 20%;
-}
-*/
-
 #reminder_modal{
+
+  .wrap-form .modal-header.text-center {
+    border: medium none;
+    min-height: 20px;
+    padding: 10px;
+  }
 
   .form-group > label {
     clear: both;
@@ -401,14 +402,39 @@
   float: left;
 }
 
-.show-create-remainders-popup {
+.show-create-remainders-popup > label > svg {
   cursor: pointer;
+}
+
+.show-create-remainders-popup {
   display: block;
-  float: left;
+  float: right;
   height: inherit;
-  margin-left: 5px;
+  margin-right: 5px;
   margin-top: 28px;
   position:relative;
+}
+
+.wrap-form .modal-header.text-center > label {
+  cursor: pointer;
+  float: right;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 11;
+  opacity: 0.5;
+}
+
+.wrap-form .modal-header.text-center > label:hover {
+  opacity: 1;
+}
+
+.wrap-form .modal-header.text-center {
+  border-bottom: medium none;
+  height: 16px;
+  min-height: 20px;
+  padding: 0;
+  position: relative;
 }
 
 .show-form-create-reminders {
