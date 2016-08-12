@@ -369,6 +369,7 @@
           $scope.reminder.id = reminder.id
           $scope.reminder.name = reminder.name
           $scope.reminder.comment = reminder.comment
+          $scope.reminder.completed = reminder.completed
           $scope.reminder._date = new Date(reminder.remind_on)
           $scope.reminder._time = new Date(reminder.remind_on)
           $scope.reminderOptions.editMode = true

@@ -19,6 +19,16 @@
 #                    curReminder.collapsed = true
                     curReminder._date = new Date(curReminder.remind_on)
                     curReminder._time = new Date(curReminder.remind_on)
+                    now = new Date();
+                    timeDiff = curReminder._date.getTime() - now.getTime();
+                    diffDays = timeDiff / (1000 * 3600 * 24);
+                    if (diffDays <= 1 )
+                      curReminder.dateColorClass = 'red';
+                    if (diffDays > 1  && diffDays < 2)
+                      curReminder.dateColorClass = 'yellow';
+                    if (diffDays >= 2 )
+                      curReminder.dateColorClass = 'silver';
+                    curReminder.completed = !!curReminder.completed
                     if (curReminder.completed)
                       $scope.completedReminders.push(curReminder)
                     else
@@ -47,6 +57,12 @@
           reminder_time = new Date(curReminder._time)
           reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
         curReminder.remind_on = reminder_date
+#        delete curReminder._date
+#        delete curReminder._time
+#        delete curReminder.created_at
+#        delete curReminder.updated_at
+#        delete curReminder.deleted_at
+        console.log('reminder to update', curReminder)
         Reminder.update(id: curReminder.id, reminder: curReminder)
         .then (reminder) ->
                console.log('Reminder update', reminder)

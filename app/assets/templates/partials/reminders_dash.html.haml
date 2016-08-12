@@ -10,7 +10,7 @@
         %br{ ng: {show: 'collapsed'} }
         %p {{ reminder.remindable_type }}
         %p.name{ ng: {hide: 'collapsed'} } {{ reminder.name }}
-        %p.yellow{ ng: {hide: 'collapsed'} } {{ reminder.remind_on | date:'medium' }}
+        %p{ ng: {hide: 'collapsed', class: 'reminder.dateColorClass'} } {{ reminder.remind_on | date:'medium' }}
       -# в зависимости от даты, нужно красить в разный цвет - сегодня .red  - завтра .yellow - после завтра и дальше - .silver
 
       -#на раскрытие деталей напоминалки нужно изменить верхний блок на этот
@@ -30,7 +30,7 @@
         %div
           %p.due
             due:
-          %p.date.yellow
+          %p.date{ ng: { class: 'reminder.dateColorClass' } }
             {{ reminder.remind_on | date:'medium' }}
         -# в зависимости от даты, нужно красить в разный цвет - сегодня .red  - завтра .yellow - после завтра и дальше - .silver
         %div
@@ -53,11 +53,11 @@
             %p.due
               Due:
             %p.bs-datepicker.date-edit
-              %input.edit{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder.remind_on', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+              %input.edit{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
           %div
             %p.due
               Time:
-            %timepicker-pop.edit{"input-time" => "reminder.remind_on", "show-meridian" => "showMeridian"}
+            %timepicker-pop.edit{"input-time" => "reminder._time", "show-meridian" => "showMeridian"}
           %div
             %p.person
               Name:
