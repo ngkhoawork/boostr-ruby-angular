@@ -21,9 +21,9 @@
     .arrow-up{ ng: { show: 'row == revenueDetail' } }
   %td.right
     {{ row.amount | currency: '$': 0 }}
-  %td.right{ ng: { if: '!row.is_leader'} }
+  %td.right
     {{ row.is_leader ? '--' : (row.percent_to_quota | number: 0) }}%
-  %td.right{ ng: { if: '!row.is_leader'} }
+  %td.right
     {{ row.is_leader ? '--' : (row.gap_to_quota | currency: '$': 0) }}
   %td.right
     {{ row.wow_weighted_pipeline  | currency: '$': 0 }}
