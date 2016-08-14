@@ -357,7 +357,7 @@ class Deal < ActiveRecord::Base
         recipients = notification.recipients.split(',').map(&:strip)
         if !recipients.nil? && recipients.length > 0
           subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency((budget/100.0).round, :precision => 0))+' deal for '+advertiser.name+' was just won!'
-          UserMailer.close_email(recipients, subject, self).deliver_later
+          UserMailer.close_email(recipients, subject, self).deliver_later(wait: 10.minutes)
         end
       end
     else
@@ -374,7 +374,7 @@ class Deal < ActiveRecord::Base
         recipients = notification.recipients.split(',').map(&:strip)
         if !recipients.nil? && recipients.length > 0
           subject = self.name + ' changed to ' + stage.name + ' - ' + stage.probability.to_s + '%'
-          UserMailer.stage_changed_email(recipients, subject, self).deliver_later
+          UserMailer.stage_changed_email(recipients, subject, self.id).deliver_later(wait: 10.minutes)
         end
       end      
     end
