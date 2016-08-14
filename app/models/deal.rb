@@ -158,12 +158,36 @@ class Deal < ActiveRecord::Base
 
   def add_product(product_id, total_budget, update_budget = true)
     daily_budget = total_budget.to_f / days
+    last_index = months.count - 1
+    total = 0
     months.each_with_index do |month, index|
-      monthly_budget = daily_budget * days_per_month[index]
+      if last_index == index
+        monthly_budget = total_budget.to_f - total
+      else
+        monthly_budget = daily_budget * days_per_month[index]
+        total = total + monthly_budget
+      end
+      # monthly_budget = daily_budget * days_per_month[index]
       period = Date.new(*month)
       deal_products.create(product_id: product_id, start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(2) * 100)
     end
     update_total_budget if update_budget
+  end
+
+  def update_product_budget(product_id, total_budget)
+    daily_budget = total_budget.to_f / days
+
+    last_index = deal_products.count - 1
+    total = 0
+    deal_products.each_with_index do |deal_product, index|
+      if last_index == index
+        deal_product_budget = total_budget.to_f - total
+      else
+        deal_product_budget = (daily_budget * days_per_month[index]).round(0)
+        total = total + deal_product_budget
+      end
+      deal_product.update(budget: deal_product_budget)
+    end
   end
 
   def remove_product(product_id, update_budget = true)
