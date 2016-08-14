@@ -1,6 +1,6 @@
 @app.controller 'DashboardController',
-['$scope', '$http', '$modal', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity', 'ActivityType', 'Reminder',
-($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity, ActivityType, Reminder) ->
+['$scope', '$http', '$modal', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage',
+($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity, ActivityType, Reminder, Stage) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Activity Updates'
@@ -17,6 +17,7 @@
     $scope.populateContact = false
     $scope.contacts = []
     $scope.errors = {}
+    $scope.getStages()
 
     $scope.actRemColl = false;
 
@@ -71,6 +72,10 @@
 
     Contact.$resource.query().$promise.then (contacts) ->
       $scope.contacts = contacts
+    Dashboard.get().then (dashboard) ->
+      $scope.dashboard = dashboard
+      $scope.forecast = dashboard.forecast
+      $scope.setChartData()
 
   $scope.chartOptions = {
     responsive: false,
@@ -85,10 +90,7 @@
     showTooltips: false
   }
 
-  Dashboard.get().then (dashboard) ->
-    $scope.dashboard = dashboard
-    $scope.forecast = dashboard.forecast
-    $scope.setChartData()
+
 
   $scope.showNewDealModal = ->
     $scope.modalInstance = $modal.open
@@ -133,6 +135,9 @@
         label: 'Remaining'
       }
     ]
+  $scope.getStages = ->
+    Stage.query().$promise.then (stages) ->
+      $scope.stages = stages
 
   $scope.$on 'updated_dashboards', ->
     $scope.init()
@@ -233,6 +238,28 @@
   $scope.cancelActivity = ->
     $scope.init()
 
+  $scope.updateDealStage = (currentDeal) ->
+    if currentDeal != null
+      Stage.get(id: currentDeal.stage_id).$promise.then (stage) ->
+        if !stage.open
+          $scope.showModal(currentDeal)
+        else
+          Deal.update(id: currentDeal.id, deal: currentDeal).then (deal) ->
+            $scope.init()
+
+  $scope.showModal = (currentDeal) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_close_form.html'
+      size: 'lg'
+      controller: 'DealsCloseController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        currentDeal: ->
+          currentDeal
+
+  $scope.$on 'updated_deal', ->
+    $scope.init()
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
       $scope.contacts.push(contact)
