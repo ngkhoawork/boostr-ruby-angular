@@ -19,6 +19,11 @@ class Api::DealProductsController < ApplicationController
     render deal
   end
 
+  def update_total_budget
+    deal.update_product_budget(params[:product_id], params[:total_budget])
+    render deal
+  end
+
   private
 
   def deal
