@@ -7,7 +7,7 @@
         %input{ type: 'checkbox', ng: { model: 'reminder.completed', click: 'saveCurReminder(reminder)' } }
       .text-wrap
         %br{ ng: {show: 'collapsed'} }
-        %p {{ reminder.remindable_type }}
+        %p {{ reminder.remindable_type }} - {{ reminder.remindable.name }}
         %p.name{ ng: {hide: 'collapsed'} } {{ reminder.name }}
         %p{ ng: {hide: 'collapsed', class: 'reminder.dateColorClass'} } {{ reminder.remind_on | date:'medium' }}
 
