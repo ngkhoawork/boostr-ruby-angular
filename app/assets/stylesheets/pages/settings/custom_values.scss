@@ -13,6 +13,10 @@
   }
 
   #options, #suboptions {
+    a[disabled] {
+      cursor: no-drop;
+    }
+
     ul {
       list-style-type: none;
       padding: 0;
