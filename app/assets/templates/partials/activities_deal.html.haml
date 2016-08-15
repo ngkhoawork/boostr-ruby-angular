@@ -27,7 +27,7 @@
               %img.s-img{:src => "{{ type.icon }}"}/
               %h5
                 {{ type.name }}
-        .col-xs-6
+        .col-xs-6.add-remainder-form-wrap
           #contain1{ ng: { repeat: 'type in types', show: 'activeType == type' } }
             .row.type1
               %a#add-contact{ href: '', ng: { click: 'createNewContactModal()' } }

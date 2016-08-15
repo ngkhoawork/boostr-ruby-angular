@@ -10,10 +10,12 @@
       .col-xs-9.icon-show-popup-wrapper
         %h3.deal-name{ editable: { text: 'currentDeal.name' }, onaftersave: 'updateDeal()', 'e-name': 'deal-name' }
           {{ currentDeal.name }}
+
         .clock.show-create-remainders-popup
           %label{ 'for': 'deal-reminders'}
             = inline_svg 'icons/reminder-icon-clock.svg'
           %input.show-form-create-reminders#deal-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
+
           %div.wrap-form{ ng: { show: 'showReminder' } }
             #reminder_modal
               .modal-header.text-center
