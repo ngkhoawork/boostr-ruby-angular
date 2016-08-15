@@ -13,9 +13,9 @@
 
       .btn-wrap
         %label.trigger-click{"ng-click" => "editShow = !editShow", "ng-show" => "!editShow"}
-          = inline_svg 'icons/show-details.svg'
-        %label.trigger-click{"ng-click" => "editShow = !editShow", "ng-show" => "editShow"}
           = inline_svg 'icons/hide-details.svg'
+        %label.trigger-click{"ng-click" => "editShow = !editShow", "ng-show" => "editShow"}
+          = inline_svg 'icons/show-details.svg'
 
     .panel-collapse.collapse.in
       -#.panel-body.details{ ng: {show: 'collapsed'} }
@@ -40,16 +40,18 @@
       -#    -# тут на клик нужно будет скрыть блок .panel-body.details, а показать блок - .panel-body.details.details-edit
       -#    %a.btn.delete-reminder{ng: { click: 'deleteCurReminder(reminder)' } } delete
       .panel-body.details.details-edit{ ng: {show: 'editShow'}}
-        %div
+        %div.edit-section-wrapper
           %div
             %p.due
               Due:
             %p.bs-datepicker.date-edit
               %input.edit{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+
           %div
             %p.due
               Time:
-            %timepicker-pop.edit{"input-time" => "reminder._time", "show-meridian" => "showMeridian"}
+            %timepicker-pop.time-edit{"input-time" => "reminder._time", "show-meridian" => "showMeridian"}
+
           %div
             %p.person
               Name:
@@ -59,6 +61,7 @@
             %p.note
               note:
             %textarea.description{ name:'edit-description', ng: { model: 'reminder.comment' } }
+
           %div.action-wrap
             -#%a.btn.cancel-edited-reminder{ng: { click: 'editShow=false' } } cancel
             %a.btn.cancel-edited-reminder{ng: { click: 'deleteCurReminder(reminder)' } } delete
