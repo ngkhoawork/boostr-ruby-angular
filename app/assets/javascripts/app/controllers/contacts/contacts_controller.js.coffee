@@ -11,6 +11,23 @@
   $scope.errors = {}
   $scope.itemType = 'Contact'
 
+  $scope.activityReminderInit = ->
+    $scope.activityReminder = {
+      name: '',
+      comment: '',
+      completed: false,
+      remind_on: '',
+      remindable_id: 0,
+      remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
+      _date: new Date(),
+      _time: new Date()
+    }
+
+    $scope.activityReminderOptions = {
+      errors: {},
+      showMeridian: true
+    }
+
   $scope.initActivity = (contact, activityTypes) ->
     $scope.activity = {}
     contact.activity = {}
@@ -22,6 +39,8 @@
     _.each activityTypes, (type) -> 
       contact.selected[type.name] = {}
       contact.selected[type.name].date = now
+
+    $scope.activityReminderInit()
 
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
@@ -158,6 +177,21 @@
     Activity.create({ activity: $scope.activity, contacts: [$scope.currentContact.id] }, (response) ->
       $scope.buttonDisabled = false
     ).then (activity) ->
+      console.log('activity', activity)
+      console.log('activity.id', activity.id)
+      console.log($scope.actRemColl)
+      if (activity && activity.id && $scope.actRemColl)
+        console.log('reminder should be created')
+        reminder_date = new Date($scope.activityReminder._date)
+        $scope.activityReminder.remindable_id = activity.id
+        if $scope.activityReminder._time != undefined
+          reminder_time = new Date($scope.activityReminder._time)
+          reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+        $scope.activityReminder.remind_on = reminder_date
+        Reminder.create(reminder: $scope.activityReminder).then (reminder) ->
+          console.log('reminder', reminder)
+        , (err) ->
+
       $scope.buttonDisabled = false
       $scope.init()
 
