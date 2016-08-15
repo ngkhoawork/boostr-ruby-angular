@@ -39,7 +39,7 @@
         .well.primary
           Sub-Options
           .pull-right
-            %a.add{ href: '', ng: { click: 'createNewSubOption()' } }
+            %a.add{ href: '', ng: { click: '!current.option || createNewSubOption()', disabled: '!current.option' } }
               = inline_svg 'icons/add.svg'
               Add
         %ul{ 'ui-sortable': 'sortableSuboptions', ng: { model: 'current.option.suboptions' } }
