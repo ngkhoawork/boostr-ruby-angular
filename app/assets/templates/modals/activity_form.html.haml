@@ -49,7 +49,7 @@
                     %input.box.w4{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'selected.date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
                 .row.type2
                   Time
-                  %timepicker-pop.input-group{"input-time" => "selected.time", "show-meridian" => "showMeridian"}
+                  %timepicker-pop.wrap-select-time.input-group{"input-time" => "selected.time", "show-meridian" => "showMeridian"}
 
 
     .modal-footer.text-center

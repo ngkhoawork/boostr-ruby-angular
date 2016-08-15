@@ -45,31 +45,33 @@
         %h2.contact-name.icon-show-popup-wrapper
           %span.contact-name-text
             {{ currentContact.name }}
-        %label.clock.show-create-remainders-popup{ 'for': 'show-form-create-reminders'}
-          = inline_svg 'icons/reminder-icon-clock.svg'
-          %input#show-form-create-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
-          %div.wrap-form{ ng: { show: 'showReminder' } }
-            #reminder_modal
-              %form{ ng: { submit: 'submitReminderForm()' } }
-                .modal-body
-                  .form-group.reminder-name-wrap
-                    %label.control-label{ for: 'name' } Reminder name*
-                    %input.form-control.reminder-name{ placeholder: '', ng: { model: 'reminder.name', required: true }, name: 'name' }
+          .show-create-remainders-popup
+            %label.clock{ 'for': 'reminders-contacts'}
+              = inline_svg 'icons/reminder-icon-clock.svg'
+            %input#reminders-contacts.show-form-create-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
 
-                  .form-group.reminder-date-wrap
-                    %label.control-label{ for: 'date' } Remind on date*
-                    %span.bs-datepicker
-                      %input.box.w4.reminder-date{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
-                  .form-group.reminder-on-time-wrap
-                    %label.control-label{ for: 'stage' } Remind on time*
-                    %timepicker-pop.input-group.reminder-on-time{"input-time" => "reminder._time", "show-meridian" => "reminderOptions.showMeridian"}
+            %div.wrap-form{ ng: { show: 'showReminder' } }
+              #reminder_modal
+                %form{ ng: { submit: 'submitReminderForm()' } }
+                  .modal-body
+                    .form-group.reminder-name-wrap
+                      %label.control-label{ for: 'name' } Reminder name*
+                      %input.form-control.reminder-name{ placeholder: '', ng: { model: 'reminder.name', required: true }, name: 'name' }
 
-                  .form-group.reminder-note-wrap
-                    %label.control-label{ for: 'comment' } Reminder note
-                    %textarea.form-control.reminder-note{ placeholder: '', ng: { model: 'reminder.comment' }, name: 'comment' }
+                    .form-group.reminder-date-wrap
+                      %label.control-label{ for: 'date' } Remind on date*
+                      %span.bs-datepicker
+                        %input.box.w4.reminder-date{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+                    .form-group.reminder-on-time-wrap
+                      %label.control-label{ for: 'stage' } Remind on time*
+                      %timepicker-pop.input-group.reminder-on-time{"input-time" => "reminder._time", "show-meridian" => "reminderOptions.showMeridian"}
 
-                .modal-footer.text-center
-                  %button.btn.btn-primary.btn-lg.btn-add-remainder{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } } Set Reminder
+                    .form-group.reminder-note-wrap
+                      %label.control-label{ for: 'comment' } Reminder note
+                      %textarea.form-control.reminder-note{ placeholder: '', ng: { model: 'reminder.comment' }, name: 'comment' }
+
+                  .modal-footer.text-center
+                    %button.btn.btn-primary.btn-lg.btn-add-remainder{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } } Set Reminder
 
           %br
           .position
