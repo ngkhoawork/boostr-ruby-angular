@@ -17,6 +17,15 @@
     opacity: 0.6
     cursor: 'ns-resize'
 
+  $scope.sortableSuboptions =
+    stop: () ->
+      _.each $scope.current.option.suboptions, (suboption, index) ->
+        suboption.position = index
+        $scope.updateSubOption(suboption, false)
+    axis: 'y'
+    opacity: 0.6
+    cursor: 'ns-resize'
+
   $scope.setObject = (object) ->
     $scope.current.object = object
     $scope.setField(object.fields[0])
@@ -39,6 +48,7 @@
         _.each $scope.current.field.options, (option, i) ->
           if(option.name == new_option.name)
             $scope.current.field.options[i] = new_option
+            $scope.setOption(new_option)
 
   $scope.updateSubOption = (suboption, warn=true) ->
     if suboption.id

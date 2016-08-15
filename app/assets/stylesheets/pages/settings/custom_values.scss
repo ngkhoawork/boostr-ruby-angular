@@ -37,6 +37,13 @@
     }
   }
 
+  .list-group {
+    .active {
+      border-right: 3px solid $brand-primary;
+      border-radius: 2px;
+    }
+  }
+
   .ui-sortable-placeholder {
     border: 4px dotted $gray-light; visibility: visible !important;
   }
