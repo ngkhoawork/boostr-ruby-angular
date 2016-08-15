@@ -16,6 +16,6 @@ class Field < ActiveRecord::Base
   validates :value_type, inclusion: VALUE_TYPES, presence: true
 
   def as_json(opts = {})
-    super(opts.merge(include: [:options]))
+    super(opts.merge(include: [options: {include: [:suboptions]}]))
   end
 end

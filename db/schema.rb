@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160811185022) do
+ActiveRecord::Schema.define(version: 20160812112652) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -251,9 +251,11 @@ ActiveRecord::Schema.define(version: 20160811185022) do
     t.boolean  "locked",     default: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+    t.integer  "option_id"
   end
 
   add_index "options", ["company_id", "field_id", "position", "deleted_at"], name: "options_index_composite", using: :btree
+  add_index "options", ["option_id"], name: "index_options_on_option_id", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.string   "name"

@@ -2,7 +2,7 @@
 ['$resource', '$q',
 ($resource, $q) ->
 
-  resource = $resource '/api/options/:id', { id: '@id', field_id: '@field_id' },
+  resource = $resource '/api/options/:id', { id: '@id', field_id: '@field_id', option_id: '@option_id' },
     update: {
       method: 'PUT'
       url: '/api/options/:id'

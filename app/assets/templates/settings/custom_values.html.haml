@@ -6,7 +6,7 @@
           Custom Values
 
     .row
-      #objects.col-xs-4
+      #objects.col-xs-3
         .well.primary
           Object
         .well{ ng: { repeat: 'object in objects', click: 'setObject(object)' } }
@@ -15,7 +15,7 @@
           |
           %span.total
             {{ object.fields.length }} total
-      #fields.col-xs-4
+      #fields.col-xs-3
         .well.primary
           Field Name
         .well{ ng: { repeat: 'field in current.object.fields', click: 'setField(field)' } }
@@ -24,7 +24,7 @@
           |
           %span.total
             {{ field.options.length }} Options
-      #options.col-xs-4
+      #options.col-xs-3
         .well.primary
           Options
           .pull-right
@@ -32,7 +32,17 @@
               = inline_svg 'icons/add.svg'
               Add
         %ul{ 'ui-sortable': 'sortableOptions', ng: { model: 'current.field.options' } }
-          %li{ ng: { repeat: 'option in current.field.options' } }
+          %li{ ng: { repeat: 'option in current.field.options', click: 'setOption(option)' } }
             .well{ ng: { include: '"settings/custom_values/option.html"' }, 'scroll-if': 'option == newest' }
 
-
+      #suboptions.col-xs-3
+        .list-group.list-sm
+          .well.primary
+            Sub-Options
+            .pull-right
+              %a.add{ href: '', ng: { click: 'createNewSubOption()' } }
+                = inline_svg 'icons/add.svg'
+                Add
+          %ul{ 'ui-sortable': 'sortableOptions', ng: { model: 'current.option.suboptions' } }
+            %li{ ng: { repeat: 'suboption in current.option.suboptions', class: 'active' } }
+              .well{ ng: { include: '"settings/custom_values/suboption.html"' }, 'scroll-if': 'suboption == newest' }
