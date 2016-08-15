@@ -58,22 +58,21 @@
   $scope.initReminder()
 
   $scope.activityReminderInit = ->
+    $scope.activityReminder = {
+      name: '',
+      comment: '',
+      completed: false,
+      remind_on: '',
+      remindable_id: 0,
+      remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
+      _date: new Date(),
+      _time: new Date()
+    }
 
-  $scope.activityReminder = {
-    name: '',
-    comment: '',
-    completed: false,
-    remind_on: '',
-    remindable_id: 0,
-    remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
-    _date: new Date(),
-    _time: new Date()
-  }
-
-  $scope.activityReminderOptions = {
-    errors: {},
-    showMeridian: true
-  }
+    $scope.activityReminderOptions = {
+      errors: {},
+      showMeridian: true
+    }
 
   $scope.initActivity = ->
     $scope.activity = {}
