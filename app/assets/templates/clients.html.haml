@@ -56,26 +56,31 @@
                 .modal-header.text-center
                   %label{'aria-hidden' => 'true', 'for' => 'clients-reminders',  ng: { click: 'cancel()' }}
                     = inline_svg 'icons/close.svg'
-                %form{ ng: { submit: 'submitReminderForm()' } }
+                %form{ name: 'clientReminderForm', ng: { submit: 'submitReminderForm()' } }
                   .modal-body
                     .form-group.reminder-name-wrap
                       %label.control-label{ for: 'name' } Reminder name*
-                      %input.form-control.reminder-name{ placeholder: '', ng: { model: 'reminder.name', required: true }, name: 'name' }
+                      %input.form-control.reminder-name{ placeholder: '', ng: { model: 'reminder.name' }, name: 'name', required: true }
+                      %span.error{ ng: { show: 'clientReminderForm.name.$error.required' } } Name should be presented
+                      %span.error{ ng: { show: 'reminderOptions.errors.Name' } } Name {{reminderOptions.errors.Name }}
 
                     .form-group.reminder-date-wrap
                       %label.control-label{ for: 'date' } Remind on date*
                       %span.bs-datepicker
                         %input.box.w4.reminder-date{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+                      %span.error{ ng: { show: 'reminderOptions.errors.Date' } } Date {{reminderOptions.errors.Date }}
+
                     .form-group.reminder-on-time-wrap
                       %label.control-label{ for: 'stage' } Remind on time*
                       %timepicker-pop.input-group.reminder-on-time{"input-time" => "reminder._time", "show-meridian" => "reminderOptions.showMeridian"}
+                      %span.error{ ng: { show: 'reminderOptions.errors.Time' } } Time {{reminderOptions.errors.Time }}
 
                     .form-group.reminder-note-wrap
                       %label.control-label{ for: 'comment' } Reminder note
                       %textarea.form-control.reminder-note{ placeholder: '', ng: { model: 'reminder.comment' }, name: 'comment' }
 
                   .modal-footer.text-center
-                    %button.btn.btn-primary.btn-lg.btn-add-remainder{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } } Set Reminder
+                    %button.btn.btn-primary.btn-lg.btn-add-remainder{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled || clientReminderForm.name.$error.required' } } Set Reminder
 
           %br
           .location

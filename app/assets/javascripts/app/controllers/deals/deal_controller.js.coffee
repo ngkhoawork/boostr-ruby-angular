@@ -230,7 +230,19 @@
       if !data.contacts || data.contacts.length == 0
         $scope.buttonDisabled = false
         $scope.errors['Contacts'] = ["can't be blank."]
-      if !$scope.buttonDisabled
+#      if !$scope.buttonDisabled
+#        return
+      if $scope.actRemColl
+        if !($scope.activityReminder && $scope.activityReminder.name)
+          $scope.buttonDisabled = false
+          $scope.errors['Activity Reminder Name'] = ["can't be blank."]
+        if !($scope.activityReminder && $scope.activityReminder._date)
+          $scope.buttonDisabled = false
+          $scope.errors['Activity Reminder Date'] = ["can't be blank."]
+        if !($scope.activityReminder && $scope.activityReminder._time)
+          $scope.buttonDisabled = false
+          $scope.errors['Activity Reminder Time'] = ["can't be blank."]
+      if $scope.errors
         return
       form.submitted = true
       $scope.activity.deal_id = $scope.currentDeal.id
@@ -326,6 +338,17 @@
 #          $scope.itemType
 
   $scope.submitReminderForm = () ->
+    if !($scope.reminder && $scope.reminder.name)
+      $scope.reminderOptions.buttonDisabled = false
+      $scope.reminderOptions.errors['Name'] = "can't be blank."
+    if !($scope.reminder && $scope.reminder._date)
+      $scope.reminderOptions.buttonDisabled = false
+      $scope.reminderOptions.errors['Date'] = "can't be blank."
+    if !($scope.reminder && $scope.reminder._time)
+      $scope.reminderOptions.buttonDisabled = false
+      $scope.reminderOptions.errors['Time'] = "can't be blank."
+    if $scope.reminderOptions.errors
+      return
     $scope.reminderOptions.errors = {}
     $scope.reminderOptions.buttonDisabled = true
     reminder_date = new Date($scope.reminder._date)
