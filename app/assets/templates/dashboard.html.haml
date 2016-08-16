@@ -25,25 +25,6 @@
       #deals.section.col-xs-5
         %h3
           My Open Deals
-          .table-wrapper{ ng: { show: 'dashboard.deals.length > 0' } }
-            %table.table.table-hover.table-striped
-              %thead
-                %tr
-                  %th.left Deal
-                  %th.left Stage
-                  %th.right Start Date
-              %tbody
-                %tr{ ng: { repeat: 'row in dashboard.deals'} }
-                  %td.left
-                    %a{ href: '', ng: { href: '/deals/{{row.id}}' } }
-                      {{ row.name }}
-                  %td.left
-                    .stage{ editable: { select: 'row.stage_id' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDealStage(row)' }
-                      {{ row.stage.name }}
-                      .small
-                        {{ row.stage.probability }}% probability
-                  %td.right {{ row.start_date | date: 'shortDate' }}
-
         .well.no-deals{ ng: { hide: 'dashboard.deals.length > 0' } }
           .row
             .col-xs-12
@@ -63,7 +44,11 @@
                 %td.left
                   %a{ href: '', ng: { href: '/deals/{{row.id}}' } }
                     {{ row.name }}
-                %td.left {{ row.stage.name }}
+                %td.left
+                  .stage{ editable: { select: 'row.stage_id' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDealStage(row)' }
+                    {{ row.stage.name }}
+                    .small
+                      {{ row.stage.probability }}% probability
                 %td.right {{ row.start_date | date: 'shortDate' }}
 
         #alerts.section
