@@ -14,7 +14,7 @@
             {{ object.name }}
           |
           %span.total
-            {{ object.fields.length }} total
+            {{ object.fields.length }}-Fields
       #fields.col-xs-3.list-group
         .well.primary
           Field Name
@@ -23,7 +23,7 @@
             {{ field.name | pluralize }}
           |
           %span.total
-            {{ field.options.length }} Options
+            {{ field.options.length }}-Opt
       #options.col-xs-4.list-group
         .well.primary
           Options
