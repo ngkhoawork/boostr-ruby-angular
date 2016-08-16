@@ -1,5 +1,5 @@
 #product-modal
-  %form{ name: 'activity_form', ng: { submit: 'submitForm(activity_form)' } }
+  %form{ name: 'activity_form_modal', ng: { submit: 'submitForm(activity_form_modal)' } }
     .modal-header.text-center
       %a.close{ ng: { click: 'cancel()' } }
         %span{'aria-hidden' => 'true'}
@@ -55,8 +55,8 @@
                 .show-hide-remainder-form
                   %span.title-remainder Reminder
                   .switch-remainder-form
-                    %input#cmn-toggle-5.cmn-toggle.cmn-toggle-round-flat{:type => "checkbox", ng: { model: 'editActRemColl' } }/
-                    %label{:for => "cmn-toggle-5"}
+                    %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{:type => "checkbox", ng: { model: 'editActRemColl' } }/
+                    %label{:for => "rem-act-modal-toggle"}
                       %span
                 %div{ ng: { show: 'editActRemColl' } }
                   .form-group.reminder-name-wrap

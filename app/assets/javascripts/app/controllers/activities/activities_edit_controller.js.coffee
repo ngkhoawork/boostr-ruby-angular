@@ -84,7 +84,19 @@
           if $scope.selected.contacts.length == 0
             $scope.buttonDisabled = false
             $scope.errors['Contacts'] = ["can't be blank."]
-          if !$scope.buttonDisabled
+#      if !$scope.buttonDisabled
+#        return
+          if $scope.editActRemColl
+            if !($scope.editActivityReminder && $scope.editActivityReminder.name)
+              $scope.buttonDisabled = false
+              $scope.errors['Edit Activity Reminder Name'] = ["can't be blank."]
+            if !($scope.editActivityReminder && $scope.editActivityReminder._date)
+              $scope.buttonDisabled = false
+              $scope.errors['Edit Activity Reminder Date'] = ["can't be blank."]
+            if !($scope.editActivityReminder && $scope.editActivityReminder._time)
+              $scope.buttonDisabled = false
+              $scope.errors['Edit Activity Reminder Time'] = ["can't be blank."]
+          if $scope.errors
             return
           form.submitted = true
 
