@@ -93,4 +93,8 @@
   $scope.createNewSubOption = () ->
     $scope.newest = { name: '' }
     $scope.current.option.suboptions.push($scope.newest)
+
+  $scope.isFieldCategory = () ->
+    return false if !$scope.current.field
+    $scope.current.field.name == 'Category'
 ]
