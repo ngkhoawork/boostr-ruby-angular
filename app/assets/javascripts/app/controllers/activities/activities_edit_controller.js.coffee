@@ -29,6 +29,8 @@
               $scope.editActivityReminder.id = reminder.id
               $scope.editActivityReminder.name = reminder.name
               $scope.editActivityReminder.comment = reminder.comment
+              $scope.editActivityReminder.remindable_id = reminder.remindable_id
+              $scope.editActivityReminder.remind_on = new Date(reminder.remind_on)
               $scope.editActivityReminder._date = new Date(reminder.remind_on)
               $scope.editActivityReminder._time = new Date(reminder.remind_on)
         #          editMode = true
@@ -99,7 +101,7 @@
           if !$scope.buttonDisabled
             return
           form.submitted = true
-
+          console.log('form', form)
           activity_data = {}
           activity_data.activity_type_id = $scope.activeType.id
           activity_data.activity_type_name = $scope.activeType.name
@@ -118,6 +120,12 @@
           ).then (activity) ->
             console.log($scope.editActRemColl)
             if (activity && activity.id && $scope.editActRemColl)
+#              $scope.editActivityReminder.remindable_id = activity.id
+              editActivityReminder_date = new Date($scope.editActivityReminder._date)
+              if $scope.editActivityReminder._time != undefined
+                editActivityReminder_time = new Date($scope.editActivityReminder._time)
+                editActivityReminder_date.setHours(editActivityReminder_time.getHours(), editActivityReminder_time.getMinutes(), 0, 0)
+              $scope.editActivityReminder.remind_on = editActivityReminder_date
               Reminder.update(id: $scope.editActivityReminder.id, reminder: $scope.editActivityReminder)
               .then (reminder) ->
                 $scope.buttonDisabled = false
