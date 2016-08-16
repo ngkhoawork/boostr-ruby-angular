@@ -53,6 +53,9 @@
             %input#clients-reminders.show-form-create-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
             %div.wrap-form{ ng: { show: 'showReminder' } }
               #reminder_modal
+                .modal-header.text-center
+                  %label{'aria-hidden' => 'true', 'for' => 'clients-reminders',  ng: { click: 'cancel()' }}
+                    = inline_svg 'icons/close.svg'
                 %form{ name: 'clientReminderForm', ng: { submit: 'submitReminderForm()' } }
                   .modal-body
                     .form-group.reminder-name-wrap

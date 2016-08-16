@@ -71,4 +71,26 @@ feature 'Dashboard' do
       end
     end
   end
+
+  describe 'reminder list' do
+    let!(:quota) { create :quota, user: user, value: 20000, time_period: time_period }
+    let(:client) { create :client, created_by: user.id }
+    let(:contact) { create :contact, company: company, client: client }
+    let!(:deal_reminder) { create(:reminder, user_id: user.id, remindable_id: deal.id, remindable_type: 'Deal') }
+    let!(:client_reminder) { create(:reminder, user_id: user.id, remindable_id: client.id, remindable_type: 'Client') }
+    let!(:contact_reminder) { create(:reminder, user_id: user.id, remindable_id: contact.id, remindable_type: 'Contact') }
+
+    before do
+      login_as user, scope: :user
+      allow_any_instance_of(Api::DashboardsController).to receive(:time_period).and_return(time_period)
+      visit '/dashboard'
+      expect(page).to have_css('#dashboard')
+    end
+
+    scenario 'lists the reminders', js: true do
+      within '#reminders-list' do
+        expect(page).to have_css('.item-reminders', count: 3)
+      end
+    end
+  end
 end

@@ -19,6 +19,8 @@ feature 'Deals' do
     before do
       set_client_type(advertiser, company, 'Advertiser')
       set_client_type(agency, company, 'Agency')
+      open_deal.created_by = user.id
+      open_deal.updated_by = user.id
       login_as user, scope: :user
       visit '/deals'
       expect(page).to have_css('#deals')
@@ -89,6 +91,42 @@ feature 'Deals' do
       end
 
       expect(page).to have_css('.table-wrapper tbody tr', count: 0)
+    end
+
+    scenario 'creates reminder and edits it', js: true do
+      within '.table-wrapper' do
+        click_link open_deal.name
+
+        within '#deal_overview' do
+          expect(page).to have_text(open_deal.name)
+          expect(page).to have_css('.clock.show-create-remainders-popup')
+
+          find('.clock.show-create-remainders-popup').trigger('click')
+          expect(page).to have_text("Reminder name*")
+
+          within '#reminder_modal' do
+            fill_in 'name', with: 'RemindMe!'
+            fill_in 'comment', with: 'Deal Reminder'
+
+            find_button('Set Reminder').trigger('click')
+          end
+
+          expect(page).not_to have_css('#reminder_modal')
+
+          find('.clock.show-create-remainders-popup').trigger('click')
+          expect(page).to have_text("RemindMe!")
+
+          within '#reminder_modal' do
+            fill_in 'name', with: 'Reminder update!'
+            find_button('Set Reminder').trigger('click')
+          end
+
+          expect(page).not_to have_css('#reminder_modal')
+
+          find('.clock.show-create-remainders-popup').trigger('click')
+          expect(page).to have_text("Reminder update!")
+        end
+      end
     end
   end
 
