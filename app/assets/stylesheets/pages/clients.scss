@@ -65,12 +65,18 @@
   }
 
   /*------------remainder popup-----------------------------*/
+  .wrap-form .modal-header.text-center {
+    border: medium none;
+    min-height: 20px;
+    padding: 10px;
+  }
+
   .location.ng-binding {
     clear: both;
     text-align: left;
   }
 
-  .show-form-create-reminders{
+  .show-form-create-reminders {
     display: none;
   }
 
@@ -85,7 +91,7 @@
   .show-create-remainders-popup {
     cursor: pointer;
     display: block;
-    float: left;
+    float: right;
     height: inherit;
     margin-left: 5px;
     position: relative;
@@ -96,7 +102,7 @@
     content: "";
     display: block;
     position: absolute;
-    border-color: rgba(0,0,0,0);
+    border-color: rgba(0, 0, 0, 0);
     border-bottom-color: #fff;
     border-width: 0px 9px 9px;
     top: -8px;
@@ -143,6 +149,30 @@
     font-size: 14px;
     font-weight: normal;
     padding-left: 5px;
+    color: $dark-grayish-blue-1;
+  }
+
+  #reminder_modal .reminder-name:hover,
+  #reminder_modal .reminder-date:hover,
+  #reminder_modal .reminder-on-time input:hover,
+  #reminder_modal .reminder-note:hover,
+  #reminder_modal .reminder-name:focus,
+  #reminder_modal .reminder-date:focus,
+  #reminder_modal .reminder-on-time input:focus,
+  #reminder_modal .reminder-note:focus{
+    background-color: #fff;
+  }
+
+  #reminder_modal .reminder-name-wrap {
+    .reminder-name,
+    .reminder-note {
+      font-weight: bold;
+    }
+
+  }
+
+  #reminder_modal .modal-body {
+    color: $dark-grayish-blue-1;
   }
   /*-------------------------------------------------------*/
 }

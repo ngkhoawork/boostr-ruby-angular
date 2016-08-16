@@ -18,6 +18,10 @@
   border-top: 1px solid #ddd;
 }
 
+a#add-contact {
+  outline: medium none;
+}
+
 #reminders {
 
   .hide-completed-reminders,
@@ -227,6 +231,8 @@
   .details.details-edit > div > div p:first-child {
     float: left;
     width: 13%;
+    margin-top: 7px;
+    text-transform: lowercase;
   }
 
   .bs-datepicker.date-edit {
@@ -242,28 +248,42 @@
     width: 100%;
   }
 
-  .details-edit .name {
-    padding-left: 10px;
-  }
-
   .date-edit .edit,
   .details-edit .name,
-  .details-edit .description {
+  .details-edit .description,
+  .details-edit .time-edit > input  {
     width: 84%;
     height: 36px;
     background-color: #f4f7f9;
     border: 1px solid #d7e1eb;
     border-radius: 3px;
+    padding-left: 10px;
+  }
+
+  .details-edit .name:focus,
+  .details-edit .date-edit .edit:focus,
+  .details-edit .description:focus,
+  .details-edit .time-edit > input:focus,
+  .details-edit .name:hover,
+  .details-edit .date-edit .edit:hover,
+  .details-edit .description:hover,
+  .details-edit .time-edit > input:hover{
+    background-color: #FFFFFF;
   }
 
   .details-edit .description {
     width: 84%;
     height:80px;
-    padding: 5px;
+    padding: 5px 10px;
     resize: none;
   }
 
-  .btn.save-edited-reminder {
+  .panel-body.details.details-edit div.edit-section-wrapper > div {
+    margin: 10px 0;
+    min-height: 36px;
+  }
+
+  .save-edited-reminder {
     background: transparent none repeat scroll 0 0;
     border-radius: 15px;
     color: #ff6e17;
@@ -271,6 +291,10 @@
     text-transform: uppercase;
     width: 83px;
     border: 1px solid;
+  }
+
+  .save-edited-reminder:hover{
+    color:$placeholder-text;
   }
 
   .details-edit .action-wrap {

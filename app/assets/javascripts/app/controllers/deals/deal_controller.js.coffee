@@ -9,6 +9,7 @@
   $scope.errors = {}
 
   $scope.init = ->
+    $scope.actRemColl = false;
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
@@ -56,6 +57,23 @@
 
   $scope.initReminder()
 
+  $scope.activityReminderInit = ->
+    $scope.activityReminder = {
+      name: '',
+      comment: '',
+      completed: false,
+      remind_on: '',
+      remindable_id: 0,
+      remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
+      _date: new Date(),
+      _time: new Date()
+    }
+
+    $scope.activityReminderOptions = {
+      errors: {},
+      showMeridian: true
+    }
+
   $scope.initActivity = ->
     $scope.activity = {}
     $scope.activeTab = {}
@@ -71,6 +89,8 @@
         $scope.selected[type.name] = {}
         $scope.selected[type.name].date = now
         $scope.selected[type.name].contacts = []
+
+    $scope.activityReminderInit()
 
   $scope.setCurrentDeal = (deal) ->
     _.each deal.members, (member) ->
@@ -225,6 +245,21 @@
           form[key].$setValidity('server', false)
           $scope.buttonDisabled = false
       ).then (activity) ->
+        console.log('activity', activity)
+        console.log('activity.id', activity.id)
+        console.log($scope.actRemColl)
+        if (activity && activity.id && $scope.actRemColl)
+          console.log('reminder should be created')
+          reminder_date = new Date($scope.activityReminder._date)
+          $scope.activityReminder.remindable_id = activity.id
+          if $scope.activityReminder._time != undefined
+            reminder_time = new Date($scope.activityReminder._time)
+            reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+          $scope.activityReminder.remind_on = reminder_date
+          Reminder.create(reminder: $scope.activityReminder).then (reminder) ->
+            console.log('reminder', reminder)
+          , (err) ->
+
         $scope.buttonDisabled = false
         $scope.init()
 

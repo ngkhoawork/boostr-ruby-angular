@@ -1,57 +1,57 @@
-#reminders-list.panel-group{ng: { controller: 'RemindersDashController as rsdc'}}
+#reminders-list.panel-group
 
   .panel.panel-default.item-reminders{ng: { repeat: 'reminder in reminders' } }
 
     .panel-heading.hide-detailse-wrap
       .checkbox-wrapper
-        %input{ type: 'checkbox', ng: { model: 'reminder.completed', click: 'save(reminder)' } }
-      .text-wrap{"ng-show" => "!reminder.isCollapsed"}
+        %input{ type: 'checkbox', ng: { model: 'reminder.completed', click: 'saveCurReminder(reminder)' } }
+      .text-wrap
         %br{ ng: {show: 'collapsed'} }
-        %p {{ reminder.remindable_type }}
+        %p {{ reminder.remindable_type }} - {{ reminder.remindable.name }}
         %p.name{ ng: {hide: 'collapsed'} } {{ reminder.name }}
         %p{ ng: {hide: 'collapsed', class: 'reminder.dateColorClass'} } {{ reminder.remind_on | date:'medium' }}
 
-      .text-wrap.show-detailse-wrap{"ng-show" => "reminder.isCollapsed"}
-        %p.name{ ng: {hide: 'collapsed'} } {{ reminder.name }}
-
       .btn-wrap
-        %label.trigger-click{"ng-click" => "reminder.isCollapsed = !reminder.isCollapsed", "ng-show" => "!reminder.isCollapsed"}
-          = inline_svg 'icons/show-details.svg'
-        %label.trigger-click{"ng-click" => "reminder.isCollapsed = !reminder.isCollapsed", "ng-show" => "reminder.isCollapsed"}
+        %label.trigger-click{"ng-click" => "editShow = !editShow", "ng-show" => "!editShow"}
           = inline_svg 'icons/hide-details.svg'
+        %label.trigger-click{"ng-click" => "editShow = !editShow", "ng-show" => "editShow"}
+          = inline_svg 'icons/show-details.svg'
 
-    .show-details-wrap.panel-collapse.collapse.in
-      .panel-body.details{"ng-show" => "reminder.isCollapsed"}
-        %div
-          %p.due
-            due:
-          %p.date{ ng: { class: 'reminder.dateColorClass' } }
-            {{ reminder.remind_on | date:'medium' }}
-        %div
-          %p.person
-            Name:
-          %p.name
-            {{ reminder.name }}
-        %div
-          %p.note
-            Note:
-          %p.description
-            {{ reminder.comment }}
-        %div.edit-delete-wrap
-          %a.btn.edit-reminder{ng: { click: 'editShow=true' } } edit
-          %a.btn.delete-reminder{ng: { click: 'delete(reminder)' } } delete
-
-      .edit-details-wrap.panel-body.details.details-edit{ ng: {show: 'editShow'}}
-        %div
+    .panel-collapse.collapse.in
+      -#.panel-body.details{ ng: {show: 'collapsed'} }
+      -#  %div
+      -#    %p.due
+      -#      due:
+      -#    %p.date{ ng: { class: 'reminder.dateColorClass' } }
+      -#      {{ reminder.remind_on | date:'medium' }}
+      -#  -# в зависимости от даты, нужно красить в разный цвет - сегодня .red  - завтра .yellow - после завтра и дальше - .silver
+      -#  %div
+      -#    %p.person
+      -#      Name:
+      -#    %p.name
+      -#      {{ reminder.name }}
+      -#  %div
+      -#    %p.note
+      -#      Note:
+      -#    %p.description
+      -#      {{ reminder.comment }}
+      -#  %div.edit-delete-wrap
+      -#    %a.btn.edit-reminder{ng: { click: 'editShow=true' } } edit
+      -#    -# тут на клик нужно будет скрыть блок .panel-body.details, а показать блок - .panel-body.details.details-edit
+      -#    %a.btn.delete-reminder{ng: { click: 'deleteCurReminder(reminder)' } } delete
+      .panel-body.details.details-edit{ ng: {show: 'editShow'}}
+        %div.edit-section-wrapper
           %div
             %p.due
               Due:
             %p.bs-datepicker.date-edit
               %input.edit{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened' }
+
           %div
             %p.due
               Time:
-            %timepicker-pop.edit{"input-time" => "reminder._time", "show-meridian" => "showMeridian"}
+            %timepicker-pop.time-edit{"input-time" => "reminder._time", "show-meridian" => "showMeridian"}
+
           %div
             %p.person
               Name:
@@ -61,9 +61,11 @@
             %p.note
               note:
             %textarea.description{ name:'edit-description', ng: { model: 'reminder.comment' } }
+
           %div.action-wrap
-            %a.btn.cancel-edited-reminder{ng: { click: 'editShow=false' } } cancel
-            %a.btn.save-edited-reminder{ng: { click: 'save(reminder)' } } save
+            -#%a.btn.cancel-edited-reminder{ng: { click: 'editShow=false' } } cancel
+            %a.btn.cancel-edited-reminder{ng: { click: 'deleteCurReminder(reminder)' } } delete
+            %a.btn.save-edited-reminder{ng: { click: 'saveCurReminder(reminder)' } } save
 
   %div.completed-reminders{ng: { click: 'showCompleted=!showCompleted' } }
     %span
@@ -73,7 +75,7 @@
       %div.main-wrap
         %div.completed-reminder
           %label
-            %input{ type: 'checkbox', ng: { model: 'completedReminder.completed', click: 'save(completedReminder)' } }
+            %input{ type: 'checkbox', ng: { model: 'completedReminder.completed', click: 'saveCurReminder(completedReminder)' } }
           %span.completed-name.left
             {{ completedReminder.name }}
           %span.completed-date

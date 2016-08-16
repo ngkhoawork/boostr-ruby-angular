@@ -52,6 +52,9 @@
 
             %div.wrap-form{ ng: { show: 'showReminder' } }
               #reminder_modal
+                .modal-header.text-center
+                  %label{'aria-hidden' => 'true', 'for' => 'reminders-contacts',  ng: { click: 'cancel()' }}
+                    = inline_svg 'icons/close.svg'
                 %form{ ng: { submit: 'submitReminderForm()' } }
                   .modal-body
                     .form-group.reminder-name-wrap
