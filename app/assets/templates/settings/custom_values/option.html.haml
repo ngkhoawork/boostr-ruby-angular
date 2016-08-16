@@ -4,6 +4,6 @@
       {{ option.name }}
     |
     %span.total
-      {{ option.suboptions.length }} Suboptions
+      {{ option.suboptions.length }}-Sub
   %a.delete{ href: '', ng: { click: 'deleteOption(option)', if: '!option.locked' } }
     = inline_svg 'icons/trash.svg'

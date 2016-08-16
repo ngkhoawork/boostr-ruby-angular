@@ -3,6 +3,15 @@
     cursor: pointer;
   }
 
+  .well {
+    .title {
+      padding-right: 7px;
+    }
+    .total {
+      padding-left: 7px;
+    }
+  }
+
   .editable {
     padding: 0 10px;
     cursor: text;
