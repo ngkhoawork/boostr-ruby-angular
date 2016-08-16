@@ -162,8 +162,6 @@
     if !$scope.currentContact.activity.activeTab
       $scope.buttonDisabled = false
       $scope.errors['Activity Type'] = ["can't be blank."]
-#      if !$scope.buttonDisabled
-#        return
     if $scope.actRemColl
       if !($scope.activityReminder && $scope.activityReminder.name)
         $scope.buttonDisabled = false
@@ -174,7 +172,7 @@
       if !($scope.activityReminder && $scope.activityReminder._time)
         $scope.buttonDisabled = false
         $scope.errors['Activity Reminder Time'] = ["can't be blank."]
-    if $scope.errors
+    if !$scope.buttonDisabled
       return
     $scope.activity.client_id = $scope.currentContact.client_id
     $scope.activity.comment = $scope.currentContact.activity.comment

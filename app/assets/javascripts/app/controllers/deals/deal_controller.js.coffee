@@ -230,8 +230,6 @@
       if !data.contacts || data.contacts.length == 0
         $scope.buttonDisabled = false
         $scope.errors['Contacts'] = ["can't be blank."]
-#      if !$scope.buttonDisabled
-#        return
       if $scope.actRemColl
         if !($scope.activityReminder && $scope.activityReminder.name)
           $scope.buttonDisabled = false
@@ -242,7 +240,7 @@
         if !($scope.activityReminder && $scope.activityReminder._time)
           $scope.buttonDisabled = false
           $scope.errors['Activity Reminder Time'] = ["can't be blank."]
-      if $scope.errors
+      if !$scope.buttonDisabled
         return
       form.submitted = true
       $scope.activity.deal_id = $scope.currentDeal.id

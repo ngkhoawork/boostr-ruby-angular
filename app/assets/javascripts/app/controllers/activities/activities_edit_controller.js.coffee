@@ -5,11 +5,40 @@
       $scope.selectedContacts = []
       $scope.editActRemColl = true;
 
+      $scope.editActivityReminderInit = ->
+
+        $scope.editActivityReminder = {
+          name: '',
+          comment: '',
+          completed: false,
+          remind_on: '',
+          remindable_id: 0,
+          remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
+          _date: new Date(),
+          _time: new Date()
+        }
+
+        $scope.editActivityReminderOptions = {
+          errors: {},
+          showMeridian: true
+        }
+
+        if ($scope.activity && $scope.activity.id)
+          Reminder.get($scope.activity.id, 'Activity').then (reminder) ->
+            if (reminder && reminder.id)
+              $scope.editActivityReminder.id = reminder.id
+              $scope.editActivityReminder.name = reminder.name
+              $scope.editActivityReminder.comment = reminder.comment
+              $scope.editActivityReminder._date = new Date(reminder.remind_on)
+              $scope.editActivityReminder._time = new Date(reminder.remind_on)
+        #          editMode = true
+
       $scope.init = () ->
         $scope.populateContact = false
         $scope.formType = "Edit"
         $scope.submitText = "Update"
         $scope.activity = angular.copy(activity)
+        $scope.editActivityReminderInit()
         if (activity.activity_type)
           $scope.activity.activity_type_id = activity.activity_type.id
           $scope.activity.activity_type_name = activity.activity_type.name
@@ -37,33 +66,6 @@
         $scope.selected.contacts = _.map $scope.activity.contacts, (contact) ->
           return contact.id
 
-      $scope.editActivityReminderInit = ->
-
-        $scope.editActivityReminder = {
-          name: '',
-          comment: '',
-          completed: false,
-          remind_on: '',
-          remindable_id: 0,
-          remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
-          _date: new Date(),
-          _time: new Date()
-        }
-
-        $scope.editActivityReminderOptions = {
-          errors: {},
-          showMeridian: true
-        }
-
-        Reminder.get($scope.activity.id, 'Activity').then (reminder) ->
-        if (reminder && reminder.id)
-          $scope.editActivityReminder.id = reminder.id
-          $scope.editActivityReminder.name = reminder.name
-          $scope.editActivityReminder.comment = reminder.comment
-          $scope.editActivityReminder._date = new Date(reminder.remind_on)
-          $scope.editActivityReminder._time = new Date(reminder.remind_on)
-#          editMode = true
-
       $scope.setActiveTab = (tab) ->
         $scope.activeTab = tab
 
@@ -84,8 +86,6 @@
           if $scope.selected.contacts.length == 0
             $scope.buttonDisabled = false
             $scope.errors['Contacts'] = ["can't be blank."]
-#      if !$scope.buttonDisabled
-#        return
           if $scope.editActRemColl
             if !($scope.editActivityReminder && $scope.editActivityReminder.name)
               $scope.buttonDisabled = false
@@ -96,7 +96,7 @@
             if !($scope.editActivityReminder && $scope.editActivityReminder._time)
               $scope.buttonDisabled = false
               $scope.errors['Edit Activity Reminder Time'] = ["can't be blank."]
-          if $scope.errors
+          if !$scope.buttonDisabled
             return
           form.submitted = true
 
