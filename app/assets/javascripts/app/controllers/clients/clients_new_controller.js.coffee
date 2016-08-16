@@ -22,4 +22,8 @@
 
   $scope.cancel = ->
     $modalInstance.dismiss()
+
+  $scope.setCategory = (category) ->
+    $scope.client.client_subcategory = undefined
+    $scope.client.category = category
 ]

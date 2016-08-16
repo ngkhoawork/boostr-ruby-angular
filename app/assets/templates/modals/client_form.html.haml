@@ -17,6 +17,22 @@
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'option.id as option in client.client_type.options | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'option.name' } } }
+      .form-group{ ng: {if: 'client.client_type.option_id === 1'} }
+        .row
+          .col-xs-6
+            %label.control-label{ for: 'client-category' } Advertiser Category
+            %ui-select{ category: 'client-category', ng: { model: 'client.client_category.category_id', disabled: true, change: 'setCategory($select.selected)' } }
+              %ui-select-match{ placeholder: 'Advertiser Category' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'category.id as category in client.fields[0].options | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'category.name' } } }
+          .col-xs-6
+            %label.control-label{ for: 'client-subcategory' } Advertiser Subcategory
+            %ui-select{ subcategory: 'client-subcategory', ng: { model: 'client.client_subcategory.subcategory_id', disabled: true } }
+              %ui-select-match{ placeholder: 'Advertiser Subcategory' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'subcategory.id as subcategory in client.category.suboptions | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'subcategory.name' } } }
       .form-group
         %label.control-label{ for: 'name' } Name*
         %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }
