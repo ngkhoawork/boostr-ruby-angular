@@ -206,18 +206,13 @@
         contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
         $scope.activity.timed = true
       $scope.activity.happened_at = contact_date
-      console.log($scope.actRemColl)
       Activity.create({ activity: $scope.activity, contacts: $scope.selected[$scope.activeType.name].contacts }, (response) ->
         angular.forEach response.data.errors, (errors, key) ->
           form[key].$dirty = true
           form[key].$setValidity('server', false)
           $scope.buttonDisabled = false
       ).then (activity) ->
-        console.log('activity', activity)
-        console.log('activity.id', activity.id)
-        console.log($scope.actRemColl)
         if (activity && activity.id && $scope.actRemColl)
-          console.log('reminder should be created')
           reminder_date = new Date($scope.reminder._date)
           $scope.reminder.remindable_id = activity.id
           if $scope.reminder._time != undefined

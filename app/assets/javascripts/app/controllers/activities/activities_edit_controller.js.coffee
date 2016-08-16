@@ -101,7 +101,6 @@
           if !$scope.buttonDisabled
             return
           form.submitted = true
-          console.log('form', form)
           activity_data = {}
           activity_data.activity_type_id = $scope.activeType.id
           activity_data.activity_type_name = $scope.activeType.name
@@ -118,7 +117,6 @@
           Activity.update(id: $scope.activity.id, activity: activity_data, contacts: $scope.selected.contacts, (response) ->
             $scope.buttonDisabled = false
           ).then (activity) ->
-            console.log($scope.editActRemColl)
             if (activity && activity.id && $scope.editActRemColl)
 #              $scope.editActivityReminder.remindable_id = activity.id
               editActivityReminder_date = new Date($scope.editActivityReminder._date)

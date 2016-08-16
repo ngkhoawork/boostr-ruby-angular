@@ -259,11 +259,7 @@
           form[key].$setValidity('server', false)
           $scope.buttonDisabled = false
       ).then (activity) ->
-        console.log('activity', activity)
-        console.log('activity.id', activity.id)
-        console.log($scope.actRemColl)
         if (activity && activity.id && $scope.actRemColl)
-          console.log('reminder should be created')
           reminder_date = new Date($scope.activityReminder._date)
           $scope.activityReminder.remindable_id = activity.id
           if $scope.activityReminder._time != undefined
@@ -271,7 +267,6 @@
             reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
           $scope.activityReminder.remind_on = reminder_date
           Reminder.create(reminder: $scope.activityReminder).then (reminder) ->
-            console.log('reminder', reminder)
           , (err) ->
 
         $scope.buttonDisabled = false
