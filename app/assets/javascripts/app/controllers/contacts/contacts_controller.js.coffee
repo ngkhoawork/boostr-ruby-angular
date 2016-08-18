@@ -254,6 +254,8 @@
           $scope.reminderOptions.editMode = true
 
   $scope.submitReminderForm = () ->
+    $scope.reminderOptions.errors = {}
+    $scope.reminderOptions.buttonDisabled = true
     if !($scope.reminder && $scope.reminder.name)
       $scope.reminderOptions.buttonDisabled = false
       $scope.reminderOptions.errors['Name'] = "can't be blank."
@@ -263,10 +265,9 @@
     if !($scope.reminder && $scope.reminder._time)
       $scope.reminderOptions.buttonDisabled = false
       $scope.reminderOptions.errors['Time'] = "can't be blank."
-    if $scope.reminderOptions.errors
+    if !$scope.reminderOptions.buttonDisabled
       return
-    $scope.reminderOptions.errors = {}
-    $scope.reminderOptions.buttonDisabled = true
+
     reminder_date = new Date($scope.reminder._date)
     if $scope.reminder._time != undefined
       reminder_time = new Date($scope.reminder._time)
