@@ -15,10 +15,6 @@ Rails.application.routes.draw do
   root 'pages#index'
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
-  get '/api/sales_execution_dashboard/forecast', to: 'api/sales_execution_dashboard#forecast',   as: 'sales_execution_dashboard_forecast'
-  get '/api/sales_execution_dashboard/deal_loss_summary', to: 'api/sales_execution_dashboard#deal_loss_summary',   as: 'sales_execution_dashboard_deal_loss_summary'
-  get '/api/sales_execution_dashboard/deal_loss_stages', to: 'api/sales_execution_dashboard#deal_loss_stages',   as: 'sales_execution_dashboard_deal_loss_stages'
-  get '/api/sales_execution_dashboard/activity_summary', to: 'api/sales_execution_dashboard#activity_summary',   as: 'sales_execution_dashboard_activity_summary'
   namespace :api do
     resources :users, only: [:index, :update]
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
@@ -31,7 +27,11 @@ Rails.application.routes.draw do
     end
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
-    resources :deal_products, only: [:create, :update, :destroy]
+    resources :deal_products, only: [:create, :update, :destroy] do
+      collection do
+        put :update_total_budget
+      end
+    end
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       get :all_members
     end
@@ -46,7 +46,14 @@ Rails.application.routes.draw do
     resources :activities, only: [:index, :create, :show, :update, :destroy]
     resources :activity_types, only: [:index, :create, :show, :update, :destroy]
     resources :reports, only: [:index, :show]
-    resources :sales_execution_dashboard, only: [:index]
+    resources :sales_execution_dashboard, only: [:index] do
+      collection do
+        get :forecast
+        get :deal_loss_summary
+        get :deal_loss_stages
+        get :activity_summary
+      end
+    end
     resources :kpis, only: [:index]
 
     resource :weighted_pipelines, only: [:show]

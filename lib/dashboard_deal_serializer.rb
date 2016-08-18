@@ -5,6 +5,7 @@ class DashboardDealSerializer < ActiveModel::Serializer
     :id,
     :start_date,
     :name,
+    :stage_id,
     :stage)
 
 

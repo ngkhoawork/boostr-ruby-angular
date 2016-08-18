@@ -32,7 +32,7 @@ class Api::DashboardsController < ApplicationController
   def deals
     return @deals if defined?(@deals)
 
-    @deals = current_user.deals.open
+    @deals = current_user.deals.open.order("start_date asc")
   end
 
   def deal_search
