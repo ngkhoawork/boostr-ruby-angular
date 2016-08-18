@@ -29,6 +29,8 @@ gem 'active_model_serializers', '= 0.8.3'
 gem 'dalli'
 gem 'rubyzip'
 gem "font-awesome-rails"
+gem 'griddler'
+gem 'griddler-sendgrid'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
