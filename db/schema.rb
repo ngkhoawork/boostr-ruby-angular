@@ -112,8 +112,12 @@ ActiveRecord::Schema.define(version: 20160817210734) do
     t.integer  "contacts_count",         default: 0, null: false
     t.integer  "client_type_id"
     t.datetime "activity_updated_at"
+    t.integer  "client_category_id"
+    t.integer  "client_subcategory_id"
   end
 
+  add_index "clients", ["client_category_id"], name: "index_clients_on_client_category_id", using: :btree
+  add_index "clients", ["client_subcategory_id"], name: "index_clients_on_client_subcategory_id", using: :btree
   add_index "clients", ["client_type_id"], name: "index_clients_on_client_type_id", using: :btree
   add_index "clients", ["deleted_at"], name: "index_clients_on_deleted_at", using: :btree
 

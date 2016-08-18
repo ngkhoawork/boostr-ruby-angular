@@ -20,6 +20,10 @@
       $rootScope.$broadcast 'newClient', $scope.client
       $modalInstance.close()
 
+  $scope.updateCategory = (category) ->
+    $scope.client.client_subcategory_id = undefined
+    $scope.current_category = category
+
   $scope.cancel = ->
     $modalInstance.dismiss()
 ]

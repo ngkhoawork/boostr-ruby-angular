@@ -18,6 +18,8 @@
       name: original.name
       website: original.website
       client_type_id: original.client_type_id
+      client_category_id: original.client_category_id if original.client_type.option_id == 1
+      client_subcategory_id: original.client_subcategory_id if original.client_type.option_id == 1
       address_attributes: address_attributes
       values_attributes: values_attributes
     angular.toJson(send)
