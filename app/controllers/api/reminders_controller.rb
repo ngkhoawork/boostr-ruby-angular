@@ -44,7 +44,7 @@ class Api::RemindersController < ApplicationController
   end
 
   def reminder_by_remindable
-    @reminder ||= Reminder.by_remindable(current_user.id, params[:remindable_id], params[:remindable_type]).last
+    @reminder ||= Reminder.by_remindable(current_user.id, params[:remindable_id], params[:remindable_type])
   end
 
   def reminder
