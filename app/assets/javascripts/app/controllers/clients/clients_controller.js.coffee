@@ -346,8 +346,9 @@
           reminder_time = new Date($scope.activityReminder._time)
           reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
         $scope.activityReminder.remind_on = reminder_date
-        Reminder.create(reminder: $scope.activityReminder).then (reminder) ->
-        , (err) ->
+        Reminder.create(reminder: $scope.activityReminder)
+#        .then (reminder) ->
+#        , (err) ->
 
       $scope.buttonDisabled = false
       $scope.init()
