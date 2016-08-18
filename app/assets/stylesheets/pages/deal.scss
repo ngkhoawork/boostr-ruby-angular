@@ -317,6 +317,12 @@
   .pad4 {
     padding: 15px 0 0 0;
   }
+
+  #reminder_modal .modal-body div.form-group.error .error,
+  #reminder_modal .modal-body div.form-group.error .error input {
+    border-color: red;
+  }
+
 }
 
 #deal_overview .icon-show-popup-wrapper {
@@ -337,10 +343,10 @@
     display: block;
   }
 
-  .reminder-name,
+/*  .reminder-name,
   .reminder-note {
     font-weight: bold;
-  }
+  }*/
 
   .reminder-name,
   .reminder-date,
@@ -401,10 +407,10 @@
     color: $dark-grayish-blue-1;
   }
 
-  .form-group .reminder-note,
+/*  .form-group .reminder-note,
   .form-group.reminder-name-wrap input {
     font-weight: bold;
-  }
+  }*/
 }
 
   .icon-show-popup-wrapper .deal-name {

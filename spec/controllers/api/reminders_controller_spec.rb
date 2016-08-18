@@ -32,6 +32,8 @@ RSpec.describe Api::RemindersController, type: :controller do
     it 'returns json for a reminder' do
       get :remindable, remindable_id: reminder.remindable_id, remindable_type: reminder.remindable_type, format: :json
       expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(1)
     end
   end
 

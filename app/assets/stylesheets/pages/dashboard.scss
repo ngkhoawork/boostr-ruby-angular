@@ -5,6 +5,18 @@
   .pad3 {
     width: 490px;
   }
+
+  .trigger-click.icon-show-activities-detail,
+  .trigger-click.icon-hide-activities-detail {
+    display: table;
+  }
+
+  .icon-show-activities-detail svg,
+  .icon-hide-activities-detail svg {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
 }
 
 #reminders{
@@ -24,6 +36,42 @@ a#add-contact {
 
 #reminders {
 
+  /*styled input*/
+  .checkbox, .radio {
+    display: none;
+  }
+
+  .checkbox:checked + .checkbox-custom::before, .radio:checked + .radio-custom::before {
+    /*
+    background: #413548 none repeat scroll 0 0;
+    border-radius: 2px;
+    bottom: 2px;
+    content: "";
+    display: block;
+    left: 2px;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    */
+    color: #ff8e4a;
+    left: 1px;
+    line-height: 18px;
+    position: absolute;
+  }
+
+  .checkbox-custom, .radio-custom, .label {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .checkbox-custom, .radio-custom {
+    border: 2px solid #ccc;
+    border-radius: 3px;
+    height: 20px;
+    position: relative;
+    width: 20px;
+  }
+
   .hide-completed-reminders,
   .show-details,
   .text-wrap.edit,
@@ -32,7 +80,7 @@ a#add-contact {
   }
 
   h3 {
-    background: #fff none repeat scroll 0 0;
+    background-color: #f6f9fc;
     height: 60px;
     line-height: 60px;
     margin: 0;
@@ -184,7 +232,7 @@ a#add-contact {
     margin-bottom: 0;
   }
 
-  .name {
+  .text-wrap .name {
     font-weight: bold;
   }
 
@@ -202,10 +250,10 @@ a#add-contact {
     clear: both;
   }
 
-  .completed-reminder input {
+/*  .completed-reminder input {
     display: table-cell;
     vertical-align: middle;
-  }
+  }*/
 
   .completed-reminder > label {
     display: table;

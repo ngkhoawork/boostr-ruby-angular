@@ -71,6 +71,12 @@
     padding: 10px;
   }
 
+  //.reminder-name-wrap .error {
+  //  color: red;
+  //  font-size: 13px;
+  //  margin: 2px 0 10px;
+  //}
+
   .location.ng-binding {
     clear: both;
     text-align: left;
@@ -95,7 +101,7 @@
     height: inherit;
     margin-left: 5px;
     position: relative;
-    margin-top: 2px;
+    margin-top: 0px;
   }
 
   .show-create-remainders-popup .wrap-form::before {
@@ -106,7 +112,7 @@
     border-bottom-color: #fff;
     border-width: 0px 9px 9px;
     top: -8px;
-    left: 149px;
+    left: 249px;
     width: 0;
     height: 0;
     border-style: solid;
@@ -116,7 +122,8 @@
     background: #fff none repeat scroll 0 0;
     border-radius: 5px;
     box-shadow: 0 5px 15px #9591a9;
-    left: -149px;
+/*    left: -149px;*/
+    left: -249px;
     position: absolute;
     width: 316px;
     z-index: 10;
@@ -163,13 +170,12 @@
     background-color: #fff;
   }
 
-  #reminder_modal .reminder-name-wrap {
+/*  #reminder_modal .reminder-name-wrap {
     .reminder-name,
     .reminder-note {
       font-weight: bold;
     }
-
-  }
+  }*/
 
   #reminder_modal .modal-body {
     color: $dark-grayish-blue-1;
@@ -189,4 +195,11 @@
 
 #activities-feed.section {
   margin-top: 20px;
+}
+
+#clients {
+  #reminder_modal .modal-body div.form-group.error .error,
+  #reminder_modal .modal-body div.form-group.error .error input {
+    border-color: red;
+  }
 }

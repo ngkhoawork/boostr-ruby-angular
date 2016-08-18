@@ -184,8 +184,19 @@
       if $scope.selected[$scope.activeType.name].contacts.length == 0
         $scope.buttonDisabled = false
         $scope.errors['Contacts'] = ["can't be blank."]
+      if $scope.actRemColl
+        if !($scope.reminder && $scope.reminder.name)
+          $scope.buttonDisabled = false
+          $scope.errors['Reminder Name'] = ["can't be blank."]
+        if !($scope.reminder && $scope.reminder._date)
+          $scope.buttonDisabled = false
+          $scope.errors['Reminder Date'] = ["can't be blank."]
+        if !($scope.reminder && $scope.reminder._time)
+          $scope.buttonDisabled = false
+          $scope.errors['Reminder Time'] = ["can't be blank."]
       if !$scope.buttonDisabled
         return
+
       form.submitted = true
       $scope.activity.activity_type_id = $scope.activeType.id
       $scope.activity.activity_type_name = $scope.activeType.name
@@ -195,18 +206,13 @@
         contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
         $scope.activity.timed = true
       $scope.activity.happened_at = contact_date
-      console.log($scope.actRemColl)
       Activity.create({ activity: $scope.activity, contacts: $scope.selected[$scope.activeType.name].contacts }, (response) ->
         angular.forEach response.data.errors, (errors, key) ->
           form[key].$dirty = true
           form[key].$setValidity('server', false)
           $scope.buttonDisabled = false
       ).then (activity) ->
-        console.log('activity', activity)
-        console.log('activity.id', activity.id)
-        console.log($scope.actRemColl)
         if (activity && activity.id && $scope.actRemColl)
-          console.log('reminder should be created')
           reminder_date = new Date($scope.reminder._date)
           $scope.reminder.remindable_id = activity.id
           if $scope.reminder._time != undefined

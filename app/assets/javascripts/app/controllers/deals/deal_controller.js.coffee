@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder'
-($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder) ->
+['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http'
+($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -45,15 +45,21 @@
       showMeridian: true
     }
 
-    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
-      if (reminder && reminder.id)
-        $scope.reminder.id = reminder.id
-        $scope.reminder.name = reminder.name
-        $scope.reminder.comment = reminder.comment
-        $scope.reminder.completed = reminder.completed
-        $scope.reminder._date = new Date(reminder.remind_on)
-        $scope.reminder._time = new Date(reminder.remind_on)
-        $scope.reminderOptions.editMode = true
+
+
+#    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
+    $http.get('/api/remindable/'+ $scope.reminder.remindable_id + '/' + $scope.reminder.remindable_type)
+    .then (respond) ->
+      if (respond && respond.data && respond.data.length)
+        _.each respond.data, (reminder) ->
+          if (reminder && reminder.id && reminder && reminder.id && !reminder.completed && !reminder.deleted_at)
+            $scope.reminder.id = reminder.id
+            $scope.reminder.name = reminder.name
+            $scope.reminder.comment = reminder.comment
+            $scope.reminder.completed = reminder.completed
+            $scope.reminder._date = new Date(reminder.remind_on)
+            $scope.reminder._time = new Date(reminder.remind_on)
+            $scope.reminderOptions.editMode = true
 
   $scope.initReminder()
 
@@ -230,6 +236,16 @@
       if !data.contacts || data.contacts.length == 0
         $scope.buttonDisabled = false
         $scope.errors['Contacts'] = ["can't be blank."]
+      if $scope.actRemColl
+        if !($scope.activityReminder && $scope.activityReminder.name)
+          $scope.buttonDisabled = false
+          $scope.errors['Activity Reminder Name'] = ["can't be blank."]
+        if !($scope.activityReminder && $scope.activityReminder._date)
+          $scope.buttonDisabled = false
+          $scope.errors['Activity Reminder Date'] = ["can't be blank."]
+        if !($scope.activityReminder && $scope.activityReminder._time)
+          $scope.buttonDisabled = false
+          $scope.errors['Activity Reminder Time'] = ["can't be blank."]
       if !$scope.buttonDisabled
         return
       form.submitted = true
@@ -249,20 +265,16 @@
           form[key].$setValidity('server', false)
           $scope.buttonDisabled = false
       ).then (activity) ->
-        console.log('activity', activity)
-        console.log('activity.id', activity.id)
-        console.log($scope.actRemColl)
         if (activity && activity.id && $scope.actRemColl)
-          console.log('reminder should be created')
           reminder_date = new Date($scope.activityReminder._date)
           $scope.activityReminder.remindable_id = activity.id
           if $scope.activityReminder._time != undefined
             reminder_time = new Date($scope.activityReminder._time)
             reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
           $scope.activityReminder.remind_on = reminder_date
-          Reminder.create(reminder: $scope.activityReminder).then (reminder) ->
-            console.log('reminder', reminder)
-          , (err) ->
+          Reminder.create(reminder: $scope.activityReminder)
+#          .then (reminder) ->
+#          , (err) ->
 
         $scope.buttonDisabled = false
         $scope.init()
@@ -328,6 +340,18 @@
   $scope.submitReminderForm = () ->
     $scope.reminderOptions.errors = {}
     $scope.reminderOptions.buttonDisabled = true
+    if !($scope.reminder && $scope.reminder.name)
+      $scope.reminderOptions.buttonDisabled = false
+      $scope.reminderOptions.errors['Name'] = "can't be blank."
+    if !($scope.reminder && $scope.reminder._date)
+      $scope.reminderOptions.buttonDisabled = false
+      $scope.reminderOptions.errors['Date'] = "can't be blank."
+    if !($scope.reminder && $scope.reminder._time)
+      $scope.reminderOptions.buttonDisabled = false
+      $scope.reminderOptions.errors['Time'] = "can't be blank."
+    if !$scope.reminderOptions.buttonDisabled
+      return
+
     reminder_date = new Date($scope.reminder._date)
     if $scope.reminder._time != undefined
       reminder_time = new Date($scope.reminder._time)
