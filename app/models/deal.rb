@@ -177,12 +177,14 @@ class Deal < ActiveRecord::Base
   def update_product_budget(product_id, total_budget)
     daily_budget = total_budget.to_f / days
 
-    last_index = deal_products.count - 1
+    deal_product_list = deal_products.where(product_id: product_id)
+    last_index = deal_product_list.count - 1
     total = 0
-    deal_products.each_with_index do |deal_product, index|
+    deal_product_list.each_with_index do |deal_product, index|
       if last_index == index
         deal_product_budget = total_budget.to_f - total
       else
+
         deal_product_budget = (daily_budget * days_per_month[index]).round(0)
         total = total + deal_product_budget
       end
