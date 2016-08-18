@@ -20,7 +20,7 @@
       .form-group
         %label.control-label{ for: 'name' } Name*
         %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }
-      .form-group{ ng: {if: 'client.client_type.option_id === 1'} }
+      .form-group{ ng: {if: 'client.client_type.option_id === Advertiser'} }
         .row
           .col-xs-6
             %label.control-label{ for: 'client-category' } Advertiser Category
