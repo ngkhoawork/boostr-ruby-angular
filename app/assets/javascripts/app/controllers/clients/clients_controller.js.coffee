@@ -408,7 +408,7 @@
     .then (respond) ->
       if (respond && respond.data && respond.data.length)
         _.each respond.data, (reminder) ->
-          if (!reminder.completed && !reminder.deleted_at)
+          if (reminder && reminder.id && !reminder.completed && !reminder.deleted_at)
             $scope.reminder.id = reminder.id
             $scope.reminder.name = reminder.name
             $scope.reminder.comment = reminder.comment

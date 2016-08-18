@@ -1,6 +1,6 @@
 @app.controller "ActivitiesEditController",
-  ['$scope', '$modalInstance', '$modal', '$filter', 'Activity', 'ActivityType', 'Field', 'activity', 'types', 'contacts', 'Reminder'
-    ($scope, $modalInstance, $modal, $filter, Activity, ActivityType, Field, activity, types, contacts, Reminder) ->
+  ['$scope', '$modalInstance', '$modal', '$filter', 'Activity', 'ActivityType', 'Field', 'activity', 'types', 'contacts', 'Reminder', '$http'
+    ($scope, $modalInstance, $modal, $filter, Activity, ActivityType, Field, activity, types, contacts, Reminder, $http) ->
       $scope.showMeridian = true
       $scope.selectedContacts = []
       $scope.editActRemColl = true;
@@ -24,19 +24,20 @@
         }
 
         if ($scope.activity && $scope.activity.id)
-      #    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
-          $http.get('/api/remindable/'+ $scope.reminder.remindable_id + '/' + $scope.reminder.remindable_type)
+      #    Reminder.get($scope.editActivityReminder.remindable_id, $scope.editActivityReminder.remindable_type).then (reminder) ->
+          $http.get('/api/remindable/'+ $scope.editActivityReminder.remindable_id + '/' + $scope.editActivityReminder.remindable_type)
           .then (respond) ->
             if (respond && respond.data && respond.data.length)
               _.each respond.data, (reminder) ->
-                if (!reminder.completed && !reminder.deleted_at)
-                  $scope.reminder.id = reminder.id
-                  $scope.reminder.name = reminder.name
-                  $scope.reminder.comment = reminder.comment
-                  $scope.reminder.completed = reminder.completed
-                  $scope.reminder._date = new Date(reminder.remind_on)
-                  $scope.reminder._time = new Date(reminder.remind_on)
-                  $scope.reminderOptions.editMode = true
+                if (reminder && reminder.id && !reminder.completed && !reminder.deleted_at)
+                  $scope.editActivityReminder.id = reminder.id
+                  $scope.editActivityReminder.name = reminder.name
+                  $scope.editActivityReminder.comment = reminder.comment
+                  $scope.editActivityReminder.remindable_id = reminder.remindable_id
+                  $scope.editActivityReminder.remind_on = new Date(reminder.remind_on)
+                  $scope.editActivityReminder.completed = reminder.completed
+                  $scope.editActivityReminder._date = new Date(reminder.remind_on)
+                  $scope.editActivityReminder._time = new Date(reminder.remind_on)
 
       $scope.init = () ->
         $scope.populateContact = false
