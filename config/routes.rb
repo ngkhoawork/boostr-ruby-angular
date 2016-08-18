@@ -67,6 +67,7 @@ Rails.application.routes.draw do
 
   mount Sidekiq::Web => '/sidekiq'
 
+  mount_griddler
   # TEMP
   get '/snapshot' => 'pages#snapshot'
 

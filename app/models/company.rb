@@ -52,6 +52,7 @@ class Company < ActiveRecord::Base
     activity_types.find_or_initialize_by(name:'Entertainment', action:'had client entertainment with', icon:'/assets/icons/entertainment.svg')
     activity_types.find_or_initialize_by(name:'Campaign Review', action:'reviewed campaign with', icon:'/assets/icons/review.svg')
     activity_types.find_or_initialize_by(name:'QBR', action:'Quarterly Business Review with', icon:'/assets/icons/QBR.svg')
+    activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.svg')
   end
 
   def settings
