@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder'
-($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder) ->
+['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http'
+($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -45,15 +45,19 @@
       showMeridian: true
     }
 
-    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
-      if (reminder && reminder.id)
-        $scope.reminder.id = reminder.id
-        $scope.reminder.name = reminder.name
-        $scope.reminder.comment = reminder.comment
-        $scope.reminder.completed = reminder.completed
-        $scope.reminder._date = new Date(reminder.remind_on)
-        $scope.reminder._time = new Date(reminder.remind_on)
-        $scope.reminderOptions.editMode = true
+#    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
+    $http.get('/api/remindable/'+ $scope.reminder.remindable_id + '/' + $scope.reminder.remindable_type)
+    .then (respond) ->
+      if (respond && respond.data && respond.data.length)
+        _.each respond.data, (reminder) ->
+          if (!reminder.completed && !reminder.deleted_at)
+            $scope.reminder.id = reminder.id
+            $scope.reminder.name = reminder.name
+            $scope.reminder.comment = reminder.comment
+            $scope.reminder.completed = reminder.completed
+            $scope.reminder._date = new Date(reminder.remind_on)
+            $scope.reminder._time = new Date(reminder.remind_on)
+            $scope.reminderOptions.editMode = true
 
   $scope.initReminder()
 
@@ -343,7 +347,6 @@
     if !($scope.reminder && $scope.reminder._time)
       $scope.reminderOptions.buttonDisabled = false
       $scope.reminderOptions.errors['Time'] = "can't be blank."
-    if !$scope.reminderOptions.buttonDisabled
       return
 
     reminder_date = new Date($scope.reminder._date)

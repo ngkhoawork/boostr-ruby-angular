@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder'
-($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http'
+($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -403,15 +403,19 @@
         showMeridian: true
       }
 
-      Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
-        if (reminder && reminder.id)
-          $scope.reminder.id = reminder.id
-          $scope.reminder.name = reminder.name
-          $scope.reminder.comment = reminder.comment
-          $scope.reminder.completed = reminder.completed
-          $scope.reminder._date = new Date(reminder.remind_on)
-          $scope.reminder._time = new Date(reminder.remind_on)
-          $scope.reminderOptions.editMode = true
+    #    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
+    $http.get('/api/remindable/'+ $scope.reminder.remindable_id + '/' + $scope.reminder.remindable_type)
+    .then (respond) ->
+      if (respond && respond.data && respond.data.length)
+        _.each respond.data, (reminder) ->
+          if (!reminder.completed && !reminder.deleted_at)
+            $scope.reminder.id = reminder.id
+            $scope.reminder.name = reminder.name
+            $scope.reminder.comment = reminder.comment
+            $scope.reminder.completed = reminder.completed
+            $scope.reminder._date = new Date(reminder.remind_on)
+            $scope.reminder._time = new Date(reminder.remind_on)
+            $scope.reminderOptions.editMode = true
 
   $scope.submitReminderForm = () ->
     $scope.reminderOptions.errors = {}
