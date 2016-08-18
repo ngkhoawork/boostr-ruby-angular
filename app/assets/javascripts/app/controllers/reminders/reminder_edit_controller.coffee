@@ -21,14 +21,20 @@
         $scope.submitText = 'Set Reminder'
         $scope.itemId = itemId
         $scope.itemType = itemType
-        Reminder.get($scope.itemId, $scope.itemType).then (reminder) ->
-          if (reminder && reminder.id)
-            $scope.reminder.id = reminder.id
-            $scope.reminder.name = reminder.name
-            $scope.reminder.comment = reminder.comment
-            $scope.reminder._date = new Date(reminder.remind_on)
-            $scope.reminder._time = new Date(reminder.remind_on)
-            editMode = true
+        #    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
+        $http.get('/api/remindable/'+ $scope.reminder.remindable_id + '/' + $scope.reminder.remindable_type)
+        .then (respond) ->
+          if (respond && respond.data && respond.data.length)
+            _.each respond.data, (reminder) ->
+              if (!reminder.completed && !reminder.deleted_at)
+                $scope.reminder.id = reminder.id
+                $scope.reminder.name = reminder.name
+                $scope.reminder.comment = reminder.comment
+                $scope.reminder.completed = reminder.completed
+                $scope.reminder._date = new Date(reminder.remind_on)
+                $scope.reminder._time = new Date(reminder.remind_on)
+                $scope.reminderOptions.editMode = true
+                editMode = true
 
 
       $scope.submitForm = () ->

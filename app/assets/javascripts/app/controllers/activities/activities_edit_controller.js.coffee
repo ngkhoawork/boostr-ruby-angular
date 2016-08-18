@@ -24,16 +24,19 @@
         }
 
         if ($scope.activity && $scope.activity.id)
-          Reminder.get($scope.activity.id, 'Activity').then (reminder) ->
-            if (reminder && reminder.id)
-              $scope.editActivityReminder.id = reminder.id
-              $scope.editActivityReminder.name = reminder.name
-              $scope.editActivityReminder.comment = reminder.comment
-              $scope.editActivityReminder.remindable_id = reminder.remindable_id
-              $scope.editActivityReminder.remind_on = new Date(reminder.remind_on)
-              $scope.editActivityReminder._date = new Date(reminder.remind_on)
-              $scope.editActivityReminder._time = new Date(reminder.remind_on)
-        #          editMode = true
+      #    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
+          $http.get('/api/remindable/'+ $scope.reminder.remindable_id + '/' + $scope.reminder.remindable_type)
+          .then (respond) ->
+            if (respond && respond.data && respond.data.length)
+              _.each respond.data, (reminder) ->
+                if (!reminder.completed && !reminder.deleted_at)
+                  $scope.reminder.id = reminder.id
+                  $scope.reminder.name = reminder.name
+                  $scope.reminder.comment = reminder.comment
+                  $scope.reminder.completed = reminder.completed
+                  $scope.reminder._date = new Date(reminder.remind_on)
+                  $scope.reminder._time = new Date(reminder.remind_on)
+                  $scope.reminderOptions.editMode = true
 
       $scope.init = () ->
         $scope.populateContact = false
