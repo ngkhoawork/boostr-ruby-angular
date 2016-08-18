@@ -5,7 +5,8 @@ class EmailProcessor
 
   def process
 
-    user = User.find_by_email('support@boostrcrm.com')
+    user = User.find_by_email(@email.from[:email])
+    # user = User.find_by_email('support@boostrcrm.com')
     if user.present?
       user_id = user.id
       company_id = user.company_id
