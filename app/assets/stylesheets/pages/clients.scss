@@ -71,11 +71,11 @@
     padding: 10px;
   }
 
-  .reminder-name-wrap .error {
-    color: red;
-    font-size: 13px;
-    margin: 2px 0 10px;
-  }
+  //.reminder-name-wrap .error {
+  //  color: red;
+  //  font-size: 13px;
+  //  margin: 2px 0 10px;
+  //}
 
   .location.ng-binding {
     clear: both;
@@ -195,4 +195,11 @@
 
 #activities-feed.section {
   margin-top: 20px;
+}
+
+#clients {
+  #reminder_modal .modal-body div.form-group.error .error,
+  #reminder_modal .modal-body div.form-group.error .error input {
+    border-color: red;
+  }
 }
