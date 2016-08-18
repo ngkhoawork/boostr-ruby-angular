@@ -141,4 +141,10 @@
   #reminder_modal .modal-body {
     color: $dark-grayish-blue-1;
   }
+
+  #reminder_modal .modal-body div.form-group.error .error,
+  #reminder_modal .modal-body div.form-group.error .error input {
+    border-color: red;
+  }
+
 }/*-------------------------------------------------------*/

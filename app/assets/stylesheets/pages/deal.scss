@@ -317,6 +317,12 @@
   .pad4 {
     padding: 15px 0 0 0;
   }
+
+  #reminder_modal .modal-body div.form-group.error .error,
+  #reminder_modal .modal-body div.form-group.error .error input {
+    border-color: red;
+  }
+
 }
 
 #deal_overview .icon-show-popup-wrapper {
