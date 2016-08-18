@@ -4,7 +4,11 @@
 
     .panel-heading.hide-detailse-wrap
       .checkbox-wrapper
-        %input{ type: 'checkbox', ng: { model: 'reminder.completed', click: 'saveCurReminder(reminder)' } }
+        //%input{ type: 'checkbox', ng: { model: 'reminder.completed', click: 'saveCurReminder(reminder)' } }
+        %label
+          %input.checkbox{:checked => "checked", :name => "checkbox-test", :type => "checkbox", ng: { model: 'reminder.completed', click: 'saveCurReminder(reminder)' }}/
+          %span.checkbox-custom
+          %span.label
       .text-wrap
         %br{ ng: {show: 'collapsed'} }
         %p {{ reminder.remindable_type }} - {{ reminder.remindable.name }}
@@ -75,7 +79,10 @@
       %div.main-wrap
         %div.completed-reminder
           %label
-            %input{ type: 'checkbox', ng: { model: 'completedReminder.completed', click: 'saveCurReminder(completedReminder)' } }
+            -#%input{ type: 'checkbox', ng: { model: 'completedReminder.completed', click: 'saveCurReminder(completedReminder)' } }
+            %input.checkbox{:checked => "checked", :name => "checkbox-test", :type => "checkbox", ng: { model: 'completedReminder.completed', click: 'saveCurReminder(completedReminder)' }}/
+            %span.checkbox-custom.glyphicon.glyphicon-ok
+            %span.label
           %span.completed-name.left
             {{ completedReminder.name }}
           %span.completed-date

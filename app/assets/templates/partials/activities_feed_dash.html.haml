@@ -28,8 +28,10 @@
                       %a{ href: '', ng: { href: '/people/{{object.id}}' } }
                         {{ object.name }}
                 .col-xs-1.text-right
-                  %a{ href: '' }
-                    %i.fa{ 'ng-class': '{ "fa-plus": !object.show, "fa-minus": object.show }' }
+                  %label.trigger-click.icon-show-activities-detail{"ng-show" => "!object.show"}
+                    = inline_svg 'icons/hide-details.svg'
+                  %label.trigger-click.icon-hide-activities-detail{"ng-show" => "object.show"}
+                    = inline_svg 'icons/show-details.svg'
           %tbody{ ng: { show: 'object.show' } }
             %tr{ ng: { repeat: "activity in object.activities | orderBy: '-happened_at' | limitTo:object.currentLimit"} }
               %td
