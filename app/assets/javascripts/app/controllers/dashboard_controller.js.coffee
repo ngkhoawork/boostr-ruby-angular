@@ -272,14 +272,34 @@
           curReminder._date = new Date(curReminder.remind_on)
           curReminder._time = new Date(curReminder.remind_on)
           now = new Date();
-          timeDiff = curReminder._date.getTime() - now.getTime();
-          diffDays = timeDiff / (1000 * 3600 * 24);
-          if (diffDays <= 1 )
-            curReminder.dateColorClass = 'red';
-          if (diffDays > 1  && diffDays < 2)
-            curReminder.dateColorClass = 'yellow';
-          if (diffDays >= 2 )
-            curReminder.dateColorClass = 'silver';
+#          // сравнить год потом месяц, затем день
+          yearDiff = curReminder._date.getFullYear() - now.getFullYear()
+          monthDiff = curReminder._date.getMonth() - now.getMonth()
+          dayDiff = curReminder._date.getDate() - now.getDate()
+          if yearDiff > 0
+            curReminder.dateColorClass = 'silver'
+          else if yearDiff < 0
+            curReminder.dateColorClass = 'red'
+          else
+            if monthDiff > 0
+              curReminder.dateColorClass = 'silver'
+            else if monthDiff < 0
+              curReminder.dateColorClass = 'red'
+            else
+              if dayDiff > 1
+                curReminder.dateColorClass = 'silver'
+              else if dayDiff == 1
+                curReminder.dateColorClass = 'yellow'
+              else
+                curReminder.dateColorClass = 'red'
+#          timeDiff = curReminder._date.getTime() - now.getTime();
+#          diffDays = timeDiff / (1000 * 3600 * 24);
+#          if (diffDays <= 1 )
+#            curReminder.dateColorClass = 'red';
+#          if (diffDays > 1  && diffDays < 2)
+#            curReminder.dateColorClass = 'yellow';
+#          if (diffDays >= 2 )
+#            curReminder.dateColorClass = 'silver';
           curReminder.completed = !!curReminder.completed
           if (curReminder.completed)
             $scope.completedReminders.push(curReminder)
