@@ -20,7 +20,7 @@ json.products deal.products do |product|
     json.id deal_product.id
     json.budget deal_product.budget / 100
   end
-  json.total_budget product.deal_products.where(deal_id: deal).sum(:budget)
+  json.total_budget product.deal_products.where(deal_id: deal).sum(:budget) / 100
 end
 
 json.members deal.deal_members do |member|

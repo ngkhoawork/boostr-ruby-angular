@@ -109,9 +109,6 @@ class Forecast
       num = team.new_deals_needed
       if num != 'N/A'
         sum += num
-      else
-        sum = 'N/A'
-        break
       end
     end
     sum

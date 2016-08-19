@@ -7,7 +7,7 @@
     $scope.submitText = "Submit"
     $scope.currentDeal = {}
     $scope.resetDealProduct()
-    Deal.get($routeParams.id).then (deal) ->
+    Deal.get(currentDeal.id).then (deal) ->
       $scope.setCurrentDeal(deal)
 
   $scope.setCurrentDeal = (deal) ->

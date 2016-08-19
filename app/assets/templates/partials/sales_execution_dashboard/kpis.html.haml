@@ -1,13 +1,27 @@
 %h3
   KPIs
-%table.table.table-hover.table-striped
-  %thead
-    %tr
-      %th.center Win Rate
-      %th.center Deal Size
-      %th.center Cycle Time
+%hr{width: '100%'}
+%table.table.table-hover.table-striped.table-large
   %tbody
     %tr
-      %td.center {{averageWinRate}}% / {{allAverageWinRate}}% (ave)
-      %td.center {{averageDealSize | currency: '$' : 0}}k / {{allAverageDealSize | currency: '$' : 0}}k (ave)
-      %td.center {{averageCycleTime}}d / {{allAverageCycleTime}}d (ave)
+      %td.center
+        %div.label
+          Win Rate
+        %div
+          {{averageWinRate}}% / {{allAverageWinRate}}%
+        %div.small
+          (ave)
+      %td.center
+        %div.label
+          Deal Size
+        %div
+          {{averageDealSize | currency: '$' : 0}}k / {{allAverageDealSize | currency: '$' : 0}}k
+        %div.small
+          (ave)
+      %td.center
+        %div.label
+          Cycle Time
+        %div
+          {{averageCycleTime}}d / {{allAverageCycleTime}}d
+        %div.small
+          (ave)

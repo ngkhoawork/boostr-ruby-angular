@@ -9,14 +9,20 @@ class Api::EmailsController < ApplicationController
     @subject = params[:subject]
 
     case @fn
-    when "aef"
-      parse_activity_email_followup
-    when "event"
-      parse_new_event_id
+      when "aef"
+        parse_activity_email_followup
+      when "event"
+        parse_new_event_id
+      else
+        create_new_activity
     end
   end
 
   protected
+
+  def create_new_activity
+    puts params
+  end
 
   def parse_activity_email_followup
     activity_uuid = @token

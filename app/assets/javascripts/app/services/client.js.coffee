@@ -18,6 +18,8 @@
       name: original.name
       website: original.website
       client_type_id: original.client_type_id
+      client_category_id: original.client_category_id
+      client_subcategory_id: original.client_subcategory_id
       address_attributes: address_attributes
       values_attributes: values_attributes
     angular.toJson(send)

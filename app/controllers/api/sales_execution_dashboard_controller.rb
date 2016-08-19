@@ -62,10 +62,12 @@ class Api::SalesExecutionDashboardController < ApplicationController
         start_date = Time.now.utc.beginning_of_quarter
         end_date = Time.now.utc
     end
-    activities = Activity.where("user_id in (?) and happened_at >= ? and happened_at <= ?", params[:member_ids], start_date, end_date)
-    .select("activities.activity_type_name, count(activities.id) as count")
-    .group("activities.activity_type_name")
-    .collect { |activity| {activity: activity.activity_type_name, count: activity.count} }
+    activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
+    .where("user_id in (?) and happened_at >= ? and happened_at <= ?", params[:member_ids], start_date, end_date)
+    .select("activity_types.name, count(activities.id) as count")
+    .group("activity_types.name")
+    .order("activities.count desc")
+    .collect { |activity| {activity: activity.name, count: activity.count} }
 
     render json: activities
   end
@@ -96,7 +98,15 @@ class Api::SalesExecutionDashboardController < ApplicationController
   protected
 
   def product_pipeline_data
-    probability_colors = { 90=> "#496a32", 75 => "#538233", 50 => "#62993e", 25 => "#70ad47", 10 => "#a1c490", 5 => "#c3d8bb"}
+    probability_colors = {
+        90 => "#86c129",
+        75 => "#a0ce56",
+        50 => "#b3da76",
+        25 => "#c3e78b",
+        10 => "#d4f1a3",
+        5 => "#e4ffb9"
+    }
+    # { 90=> "#3996db", 75 => "#52a1e2", 50 => "#7ab9e9", 25 => "#a4d0f0", 10 => "#d2e8f8", 5 => "#d2e8f8"}
     probabilities = current_user.company.distinct_stages.where("stages.probability > 0 and stages.probability < 100").order("stages.probability desc").collect { |stage| stage.probability }
     probabilities.reverse!
     product_names = current_user.company.products.collect {|product| product.name}
@@ -133,16 +143,16 @@ class Api::SalesExecutionDashboardController < ApplicationController
   def week_pipeline_data
     start_date = Time.now.utc.beginning_of_week - 7.days
     end_date = Time.now.utc.beginning_of_week - 1.seconds
-    pipeline_won = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(100).sum(:budget) / 100
-    pipeline_lost = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(0).sum(:budget) / 100
-    pipeline_added = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).started_at(start_date, end_date).sum(:budget) / 100
-    pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date).sum(:budget_change) / 100
+    pipeline_won = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(100).sum(:budget) / 100.0
+    pipeline_lost = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(0).sum(:budget) / 100.0
+    pipeline_added = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).started_at(start_date, end_date).sum(:budget) / 100.0
+    pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date).sum(:budget_change) / 100.0
 
     @week_pipeline_data = [
-        {name: 'Added', value: pipeline_added, color:'#f8cbad'},
-        {name: 'Advanced', value: pipeline_advanced, color:'#f4b183'},
-        {name: 'Won', value: pipeline_won, color:'#a9d18e'},
-        {name: 'Lost', value: pipeline_lost, color:'#bfbfbf'}
+        {name: 'Added', value: pipeline_added.round, color:'#a4d0f0'},
+        {name: 'Advanced', value: pipeline_advanced.round, color:'#52a1e2'},
+        {name: 'Won', value: pipeline_won.round, color:'#8ec536'},
+        {name: 'Lost', value: pipeline_lost.round, color:'#d2e8f8'}
     ]
 
     @week_pipeline_data

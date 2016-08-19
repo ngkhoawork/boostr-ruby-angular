@@ -169,6 +169,10 @@
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
       $scope.setCurrentDeal(deal)
 
+  $scope.updateDealProductTotalBudget = (product_id, total_budget) ->
+    DealProduct.update_total_budget(deal_id: $scope.currentDeal.id, product_id: product_id, total_budget: total_budget).then (deal) ->
+      $scope.setCurrentDeal(deal)
+
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.setCurrentDeal(deal)

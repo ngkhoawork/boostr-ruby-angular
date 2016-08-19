@@ -216,9 +216,6 @@ class ForecastTeam
       members_gap_to_quota += team.gap_to_quota
       if num != 'N/A'
         new_deals += num
-      else
-        new_deals = 'N/A'
-        break
       end
     end
     return 'N/A' if new_deals == 'N/A'
@@ -226,23 +223,22 @@ class ForecastTeam
     members.each do |member|
       next if leader and member.member == leader.member
       members_gap_to_quota += member.gap_to_quota
-      if member.new_deals_needed == 'N/A'
-        new_deals = 'N/A'
-        break
+      if member.new_deals_needed != 'N/A'
+        new_deals += member.new_deals_needed
       end
-      new_deals += member.new_deals_needed
+
     end
     return 'N/A' if new_deals == 'N/A'
 
-    leader_gap_to_quota = gap_to_quota - members_gap_to_quota
-
-    if leader_gap_to_quota > 0
-      if leader.win_rate > 0 and leader.average_deal_size > 0
-        new_deals += (leader_gap_to_quota / (leader.win_rate * leader.average_deal_size)).ceil
-      else
-        return 'N/A'
-      end
-    end
+    # leader_gap_to_quota = gap_to_quota - members_gap_to_quota
+    #
+    # if leader_gap_to_quota > 0
+    #   if leader.win_rate > 0 and leader.average_deal_size > 0
+    #     new_deals += (leader_gap_to_quota / (leader.win_rate * leader.average_deal_size)).ceil
+    #   else
+    #     return 'N/A'
+    #   end
+    # end
     new_deals
   end
 

@@ -3,10 +3,17 @@ class Option < ActiveRecord::Base
 
   belongs_to :company
   belongs_to :field
+  belongs_to :option, class_name: "Option"
+  has_many   :suboptions,
+             class_name: "Option",
+             dependent: :destroy
 
   has_many :values
 
-  validates :name, :company, :field, presence: true
+  validates :name, :company, presence: true
+  validates :field, presence: true, unless: ->(option){option.option.present?}
+  validates :option, presence: true, unless: ->(option){option.field.present?}
+
   validate :unique_name
 
   before_create :set_position
@@ -16,7 +23,7 @@ class Option < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(methods: [:used]))
+    super(options.merge(include: :suboptions, methods: [:used]))
   end
 
   protected
@@ -24,10 +31,18 @@ class Option < ActiveRecord::Base
   # Because we have soft-deletes uniqueness validations must be custom
   def unique_name
     return true unless company && name
-    scope = field.options.where('LOWER(name) = ?', self.name.downcase)
+    scope = neighbour_options.where('LOWER(name) = ?', self.name.downcase)
     scope = scope.where('id <> ?', self.id) if self.id
 
     errors.add(:name, 'Name has already been taken') if scope.count > 0
+  end
+
+  def neighbour_options
+    if field
+      field.options
+    elsif option
+      option.suboptions
+    end
   end
 
   def set_position

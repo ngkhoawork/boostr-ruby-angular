@@ -10,7 +10,7 @@
           margin: {
             top: 20,
             right: 20,
-            bottom: 120,
+            bottom: 100,
             left: 70
           },
           showLegend: false,
@@ -35,7 +35,7 @@
             rotateLabels: -45,
             tickFormat: (d) =>
               value = d.replace("Lost - ", "")
-              return if value.length > 15 then value.substr(0, 15) + "..." else value
+              return if value.length > 18 then value.substr(0, 18) + "..." else value
           },
           yAxis: {
             axisLabel: "",
@@ -67,6 +67,6 @@
             y0: 0,
             y1: row.total_budget
           }
-        DataStore.data = [{key: "Deal Loss", color:"#70ad47", values: values}]
+        DataStore.data = [{key: "Deal Loss", color:"#8ec536", values: values}]
       return DataStore
   ]

@@ -5,6 +5,8 @@
 ### Ruby ###
 *.gem
 *.rbc
+.DS_Store
+dump.rdb
 /.config
 /coverage/
 /InstalledFiles

@@ -29,6 +29,8 @@ gem 'active_model_serializers', '= 0.8.3'
 gem 'dalli'
 gem 'rubyzip'
 gem "font-awesome-rails"
+gem 'griddler'
+gem 'griddler-sendgrid'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -67,8 +69,8 @@ group :development, :test do
   gem 'poltergeist'
   gem 'timecop'
 
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug'
+  # Call 'binding.pry' anywhere in the code to stop execution and get a debugger console
+  gem 'pry-rails'
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'

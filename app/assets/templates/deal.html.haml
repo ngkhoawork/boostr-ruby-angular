@@ -113,7 +113,8 @@
                   = inline_svg 'icons/trash.svg'
                 {{ product.name }}
               %td.right
-                {{ product.total_budget / 100 | currency:'$':0  }}
+                %span{ 'e-name': '{{ product.id }}', editable: { text: 'product.total_budget' }, onaftersave: 'updateDealProductTotalBudget(deal_product.product_id, product.total_budget)' }
+                  {{ product.total_budget | currency:'$':0  }}
               %td.right{ ng: { repeat: 'deal_product in product.deal_products' } }
                 %span{ 'e-name': '{{ deal_product.id }}', editable: { text: 'deal_product.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
                   {{ deal_product.budget | currency:'$':0 }}

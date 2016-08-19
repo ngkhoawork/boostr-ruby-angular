@@ -195,7 +195,10 @@
         width = rects[0][0].width.baseVal.value
 
         defRect = svg.selectAll("defs").selectAll("rect")
-        y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[0].maxValue - $scope.dataQuaterForecast[0].quota) / $scope.dataQuaterForecast[0].maxValue
+        if ($scope.dataQuaterForecast[0].maxValue == 0)
+          y = defRect[0][0].height.baseVal.value
+        else
+          y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[0].maxValue - $scope.dataQuaterForecast[0].quota) / $scope.dataQuaterForecast[0].maxValue
 
         newGroup = nvGroups.selectAll('g.nv-series-6')
 
@@ -210,10 +213,10 @@
           .attr("y1", y)
           .attr("x2", width)
           .attr("y2", y)
-          .attr("stroke-width", 3)
+          .attr("stroke-width", 1)
           .style("stroke-dasharray", ("3, 3"))
           .attr("transform", 'translate(' + width + ', 0)')
-          .attr("stroke", "#666b80")
+          .attr("stroke", "#000000")
 
       $rootScope.$on 'quarterForecastRendered2', (index) ->
         container = d3.select(".quarter-forecast-chart2")
@@ -223,7 +226,11 @@
         width = rects[0][0].width.baseVal.value
 
         defRect = svg.selectAll("defs").selectAll("rect")
-        y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[1].maxValue - $scope.dataQuaterForecast[1].quota) / $scope.dataQuaterForecast[1].maxValue
+        if ($scope.dataQuaterForecast[1].maxValue == 0)
+          y = defRect[0][0].height.baseVal.value
+        else
+          y = defRect[0][0].height.baseVal.value * ($scope.dataQuaterForecast[1].maxValue - $scope.dataQuaterForecast[1].quota) / $scope.dataQuaterForecast[1].maxValue
+
 
         newGroup = nvGroups.selectAll('g.nv-series-6')
 
@@ -238,10 +245,10 @@
         .attr("y1", y)
         .attr("x2", width)
         .attr("y2", y)
-        .attr("stroke-width", 3)
+        .attr("stroke-width", 1)
         .style("stroke-dasharray", ("3, 3"))
         .attr("transform", 'translate(' + width + ', 0)')
-        .attr("stroke", "#666b80")
+        .attr("stroke", "#000000")
 
 
       $scope.init()

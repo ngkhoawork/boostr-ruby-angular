@@ -7,7 +7,11 @@
         method: 'PUT'
         url: '/api/deal_products/:id'
       }
-
+  resource_collection = $resource '/api/deal_products/', {  },
+    update: {
+      method: 'PUT'
+      url: '/api/deal_products/update_total_budget'
+    }
   @create = (params) ->
     deferred = $q.defer()
     resource.save params, (deal) ->
@@ -17,6 +21,12 @@
   @update = (params) ->
     deferred = $q.defer()
     resource.update params, (deal) ->
+      deferred.resolve(deal)
+    deferred.promise
+
+  @update_total_budget = (params) ->
+    deferred = $q.defer()
+    resource_collection.update params, (deal) ->
       deferred.resolve(deal)
     deferred.promise
 

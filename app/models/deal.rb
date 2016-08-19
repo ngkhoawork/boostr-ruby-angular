@@ -36,11 +36,13 @@ class Deal < ActiveRecord::Base
   before_update do
     if stage_id_changed?
       update_stage
-      update_close
     end
   end
 
   after_update do
+    if stage_id_changed?
+      update_close
+    end
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
   end
@@ -157,12 +159,36 @@ class Deal < ActiveRecord::Base
 
   def add_product(product_id, total_budget, update_budget = true)
     daily_budget = total_budget.to_f / days
+    last_index = months.count - 1
+    total = 0
     months.each_with_index do |month, index|
-      monthly_budget = daily_budget * days_per_month[index]
+      if last_index == index
+        monthly_budget = total_budget.to_f - total
+      else
+        monthly_budget = daily_budget * days_per_month[index]
+        total = total + monthly_budget
+      end
+      # monthly_budget = daily_budget * days_per_month[index]
       period = Date.new(*month)
       deal_products.create(product_id: product_id, start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(2) * 100)
     end
     update_total_budget if update_budget
+  end
+
+  def update_product_budget(product_id, total_budget)
+    daily_budget = total_budget.to_f / days
+
+    last_index = deal_products.count - 1
+    total = 0
+    deal_products.each_with_index do |deal_product, index|
+      if last_index == index
+        deal_product_budget = total_budget.to_f - total
+      else
+        deal_product_budget = (daily_budget * days_per_month[index]).round(0)
+        total = total + deal_product_budget
+      end
+      deal_product.update(budget: deal_product_budget)
+    end
   end
 
   def remove_product(product_id, update_budget = true)
@@ -331,7 +357,7 @@ class Deal < ActiveRecord::Base
         recipients = notification.recipients.split(',').map(&:strip)
         if !recipients.nil? && recipients.length > 0
           subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency((budget/100.0).round, :precision => 0))+' deal for '+advertiser.name+' was just won!'
-          UserMailer.close_email(recipients, subject, self).deliver_later
+          UserMailer.close_email(recipients, subject, self).deliver_later(wait: 10.minutes, queue: "default")
         end
       end
     else
@@ -348,7 +374,7 @@ class Deal < ActiveRecord::Base
         recipients = notification.recipients.split(',').map(&:strip)
         if !recipients.nil? && recipients.length > 0
           subject = self.name + ' changed to ' + stage.name + ' - ' + stage.probability.to_s + '%'
-          UserMailer.stage_changed_email(recipients, subject, self).deliver_later
+          UserMailer.stage_changed_email(recipients, subject, self.id).deliver_later(wait: 10.minutes, queue: "default")
         end
       end      
     end
