@@ -1,6 +1,6 @@
 @app.controller 'ContactsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', 'Contact', 'Activity',  'ActivityType', 'Reminder', '$http'
-($scope, $rootScope, $modal, $routeParams, $location, Contact, Activity, ActivityType, Reminder, $http) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$sce', 'Contact', 'Activity',  'ActivityType', 'Reminder', '$http'
+($scope, $rootScope, $modal, $routeParams, $location, $sce, Contact, Activity, ActivityType, Reminder, $http) ->
 
   $scope.contacts = []
   $scope.feedName = 'Updates'
@@ -47,6 +47,8 @@
       $scope.types = activityTypes
       $scope.getContacts()
 
+  $scope.getHtml = (html) ->
+    return $sce.trustAsHtml(html)
 
   $scope.getContacts = ->
     $scope.isLoading = true

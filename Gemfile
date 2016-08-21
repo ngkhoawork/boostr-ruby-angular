@@ -31,6 +31,7 @@ gem 'rubyzip'
 gem "font-awesome-rails"
 gem 'griddler'
 gem 'griddler-sendgrid'
+gem 'aws-sdk'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

@@ -195,6 +195,7 @@
 
 #activities-feed.section {
   margin-top: 20px;
+
 }
 
 #clients {
@@ -206,3 +207,18 @@
 a#edit-contact svg {
   margin-bottom: -3px;
 }
+
+.activities-feed {
+  .long-text {
+    height: 100px;
+    overflow: auto;
+  }
+
+  .attachments {
+    padding-top:10px;
+    a {
+      color: #FF7E30;
+    }
+  }
+}
+

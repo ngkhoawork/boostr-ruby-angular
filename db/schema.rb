@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160817210734) do
+ActiveRecord::Schema.define(version: 20160821181337) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -84,6 +84,17 @@ ActiveRecord::Schema.define(version: 20160817210734) do
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
     t.string   "mobile"
+  end
+
+  create_table "assets", force: :cascade do |t|
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.string   "asset_file_name"
+    t.string   "asset_file_size"
+    t.string   "asset_content_type"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.string   "original_file_name"
   end
 
   create_table "client_members", force: :cascade do |t|

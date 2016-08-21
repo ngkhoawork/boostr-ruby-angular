@@ -92,8 +92,15 @@ class Deal < ActiveRecord::Base
                       methods: [:name]
                   },
                   activities: {
-                      include:
-                          [:creator, :contact]
+                      include: {
+                          creator: {},
+                          contacts: {},
+                          assets: {
+                              methods: [
+                                  :presigned_url
+                              ]
+                          }
+                      }
                   }
               ],
               methods: [

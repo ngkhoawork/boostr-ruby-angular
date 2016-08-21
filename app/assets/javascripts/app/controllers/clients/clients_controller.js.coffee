@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http'
-($scope, $rootScope, $modal, $routeParams, $location, $window, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http'
+($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -457,4 +457,6 @@
       , (err) ->
         $scope.reminderOptions.buttonDisabled = false
 
+  $scope.getHtml = (html) ->
+    return $sce.trustAsHtml(html)
 ]
