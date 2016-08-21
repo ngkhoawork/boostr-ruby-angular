@@ -8,7 +8,7 @@ class Asset < ActiveRecord::Base
     if obj.nil?
       return ""
     end
-    return obj.presigned_url(:get, expires_in: 3600)
+    return obj.presigned_url(:get)
   end
 
   def as_json(options = {})
