@@ -1,6 +1,6 @@
 @app.controller 'DashboardController',
-['$scope', '$http', '$modal', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage',
-($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity, ActivityType, Reminder, Stage) ->
+['$scope', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage',
+($scope, $http, $modal, $sce, Dashboard, Deal, Client, Contact, Activity, ActivityType, Reminder, Stage) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Activity Updates'
@@ -364,4 +364,6 @@
 
   $scope.remindersInit()
 
+  $scope.getHtml = (html) ->
+    return $sce.trustAsHtml(html)
 ]

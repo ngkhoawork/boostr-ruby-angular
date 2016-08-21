@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http'
-($scope, $routeParams, $modal, $filter, $location, $anchorScroll, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http) ->
+['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http'
+($scope, $routeParams, $modal, $filter, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -377,4 +377,6 @@
       , (err) ->
         $scope.reminderOptions.buttonDisabled = false
 
+  $scope.getHtml = (html) ->
+    return $sce.trustAsHtml(html)
 ]

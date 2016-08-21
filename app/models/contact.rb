@@ -23,7 +23,15 @@ class Contact < ActiveRecord::Base
         address: {},
         client: {},
         activities: {
-          include: [:creator, :contacts]
+          include: {
+            creator: {},
+            contacts: {},
+            assets: {
+              methods: [
+                :presigned_url
+              ]
+            }
+          }
         }
       },
       methods: [:formatted_name]

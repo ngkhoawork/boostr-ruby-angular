@@ -404,6 +404,18 @@
     margin-left: 0px;
     margin-right: 1px;
   }
+
+  .long-text {
+    height: 100px;
+    overflow: auto;
+  }
+
+  .attachments {
+    padding-top:10px;
+    a {
+      color: #FF7E30;
+    }
+  }
 }
 
 .btn-primary {

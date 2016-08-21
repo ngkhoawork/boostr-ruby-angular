@@ -1,7 +1,26 @@
 #dashboard {
-  #activities-feed.section {
-    margin-top: 20px;
+  #activities-feed {
+    .section {
+
+      margin-top: 20px;
+    }
   }
+
+  .activities-feed {
+    .long-text {
+      height: 100px;
+      overflow: auto;
+    }
+
+    .attachments {
+      padding-top:10px;
+      a {
+        color: #FF7E30;
+      }
+    }
+  }
+
+
   .pad3 {
     width: 490px;
   }
