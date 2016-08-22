@@ -398,6 +398,98 @@ a#add-contact {
     }
   }
 
+span {
+  display: inline-block;
+}
+
+.details-edit .edit-section-wrapper{
+  .bs-datepicker {
+    cursor: text;
+    float: left;
+    line-height: 36px;
+    min-height: 36px;
+    padding-left: 10px;
+    width: 87%;
+  }
+
+  .time-edit.spec > input {
+    background-color: #f9fafa;
+    border: medium none;
+    border-radius: 3px;
+    float: left;
+    height: 36px;
+    margin: 0;
+    padding: 0 0 0 10px;
+    width: 87%;
+  }
+
+  .bs-datepicker:hover{
+    border:1px solid #ff8e4a;
+    border-radius: 4px;
+  }
+
+  .person + span {
+    float: left;
+    width: 87%;
+  }
+
+  .note + span {
+    min-height: 36px;
+    width: 87%;
+  }
+
+  .btn.cancel-edited-reminder {
+    margin-left: 12%;
+  }
+
+  .form-inline.editable-wrap {
+    float: left;
+    width: 87%;
+  }
+
+  .edit-description-wrap .form-inline .form-group {
+    width: 100%;
+  }
+
+  .editable-controls.form-group {
+    width: 100%;
+  }
+
+  .editable-input.form-control.ng-pristine.ng-valid.ng-touched {
+    height: 36px;
+    padding: 0 0 0 10px;
+    width: 100% !important;
+  }
+
+  textarea.editable-input.form-control.ng-pristine.ng-valid.ng-touched {
+    height: 36px;
+    padding: 0 0 0 10px;
+    width: 100% !important;
+  }
+
+  .edit-section-wrapper .bs-datepicker{}
+
+  .editable-input{
+    color: $dark-grayish-blue-1;
+  }
+
+  .editable-input, .editable-input:focus {
+    width:100%!important;
+  }
+
+  textarea.editable-input.form-control.ng-pristine.ng-valid.ng-touched {
+    height: 70px;
+    padding: 0 0 0 10px;
+    width: 100%;
+    resize: none;
+    color: $dark-grayish-blue-1;
+  }
+  .btn.cancel-edited-reminder {
+    margin-left: 12%;
+  }
+
+}
+
 
 
 
