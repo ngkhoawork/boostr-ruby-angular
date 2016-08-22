@@ -86,6 +86,7 @@ class Deal < ActiveRecord::Base
               include: [
                   :creator,
                   :advertiser,
+                  :agency,
                   :stage,
                   :values,
                   deal_members: {

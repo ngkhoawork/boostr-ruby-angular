@@ -5,7 +5,10 @@
         %a{ href:'/deals' }
           = inline_svg 'icons/caret.svg', class: 'transform'
           Back to Deals
-
+    #deal_overview.row.campaign
+      .col-xs-9
+        %h3.deal-name
+          {{ currentDeal.advertiser.name + (currentDeal.agency ? " - " + currentDeal.agency.name : "") }}
     #deal_overview.row.campaign
       .col-xs-9.icon-show-popup-wrapper
         %h3.deal-name{ editable: { text: 'currentDeal.name' }, onaftersave: 'updateDeal()', 'e-name': 'deal-name' }
