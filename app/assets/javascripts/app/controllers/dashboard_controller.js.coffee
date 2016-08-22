@@ -7,6 +7,10 @@
   $scope.moreSize = 10;
   $scope.types = []
 
+  $scope.showSpinners = (reminder) ->
+    reminder.showSpinners = true
+    console.log('reminder', reminder)
+
   $scope.init = ->
     $scope.currentPage = 0;
     $scope.activity = {}
@@ -29,7 +33,8 @@
       remindable_id: 0,
       remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
       _date: new Date(),
-      _time: new Date()
+      _time: new Date(),
+      showSpinners: false
     }
 
     $scope.reminderOptions = {
@@ -298,8 +303,8 @@
 #                    curReminder.collapsed = true
           curReminder._date = new Date(curReminder.remind_on)
           curReminder._time = new Date(curReminder.remind_on)
+          curReminder.showSpinners = false
           now = new Date();
-#          // сравнить год потом месяц, затем день
           yearDiff = curReminder._date.getFullYear() - now.getFullYear()
           monthDiff = curReminder._date.getMonth() - now.getMonth()
           dayDiff = curReminder._date.getDate() - now.getDate()
@@ -335,6 +340,24 @@
     , (err) ->
 
   $scope.saveCurReminder = (curReminder) ->
+    $scope.errors = {}
+#        $scope.buttonDisabled = true
+    reminder_date = new Date(curReminder._date)
+    if curReminder._time != undefined
+      reminder_time = new Date(curReminder._time)
+      reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+    curReminder.remind_on = reminder_date
+#        delete curReminder._date
+#        delete curReminder._time
+#        delete curReminder.created_at
+#        delete curReminder.updated_at
+#        delete curReminder.deleted_at
+    Reminder.update(id: curReminder.id, reminder: curReminder)
+#    .then (reminder) ->
+#
+#    , (err) ->
+
+  $scope.saveReminder = (curReminder) ->
     $scope.errors = {}
 #        $scope.buttonDisabled = true
     reminder_date = new Date(curReminder._date)

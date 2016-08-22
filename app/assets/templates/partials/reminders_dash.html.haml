@@ -6,7 +6,7 @@
       .checkbox-wrapper
         //%input{ type: 'checkbox', ng: { model: 'reminder.completed', click: 'saveCurReminder(reminder)' } }
         %label
-          %input.checkbox{:checked => "checked", :name => "checkbox-test", :type => "checkbox", ng: { model: 'reminder.completed', click: 'saveCurReminder(reminder)' }}/
+          %input.checkbox{:checked => "checked", :name => "checkbox-test", :type => "checkbox", ng: { model: 'reminder.completed', click: 'saveReminder(reminder)' }}/
           %span.checkbox-custom
           %span.label
       .text-wrap
@@ -48,24 +48,30 @@
           %div
             %p.due
               Due:
-            %p.bs-datepicker.date-edit
-              %input.edit{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'callDateOpened = true' }, 'is-open': 'callDateOpened', 'enter-press': 'saveCurReminder(reminder)' }
-
+            %p.bs-datepicker
+              %span{ datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'callDateOpened = true', class: '{ editing: callDateOpened }', change: 'saveCurReminder(reminder)' }, 'is-open': 'callDateOpened' }
+                {{ reminder._date | date: 'MMM d, y' }}
           %div
             %p.due
               Time:
-            %timepicker-pop.time-edit{"input-time" => "reminder._time", "show-meridian" => "showMeridian", 'enter-press': 'saveCurReminder(reminder)' }
-
+            %timepicker-pop.time-edit.spec{"input-time" => "reminder._time", "show-meridian" => "showMeridian", 'enter-press': 'saveCurReminder(reminder)' }
+          -#%div
+          -#  %p.due
+          -#    Time again:
+          -#  %p
+          -#    %span{ "timepicker" => "", "show-spinners": "reminder.showSpinners", ng: { model: 'reminder._time', click: 'showSpinners(reminder)', required: true, change: 'saveCurReminder(reminder)' } }
+          -#    %span
+          -#      {{ reminder._time | date: 'hh:mm' }}
           %div
             %p.person
               Name:
-            %input.name{type:'text', name:'edit-name', ng: { model: 'reminder.name' }, 'enter-press': 'saveCurReminder(reminder)' }
-
+            %span{type:'text', name:'edit-name', editable: { text: 'reminder.name' }, onaftersave: 'saveCurReminder(reminder)' }
+              {{ reminder.name }}
           %div.edit-description-wrap
             %p.note
               note:
-            %textarea.description{ name:'edit-description', ng: { model: 'reminder.comment' }, 'enter-press': 'saveCurReminder(reminder)'  }
-
+            %span{ name:'edit-description', editable: { textarea: 'reminder.comment' }, onaftersave: 'saveCurReminder(reminder)' }
+              {{ reminder.comment }}
           %div.action-wrap
             -#%a.btn.cancel-edited-reminder{ng: { click: 'editShow=false' } } cancel
             %a.btn.cancel-edited-reminder{ng: { click: 'deleteCurReminder(reminder)' } } delete
@@ -80,7 +86,7 @@
         %div.completed-reminder
           %label
             -#%input{ type: 'checkbox', ng: { model: 'completedReminder.completed', click: 'saveCurReminder(completedReminder)' } }
-            %input.checkbox{:checked => "checked", :name => "checkbox-test", :type => "checkbox", ng: { model: 'completedReminder.completed', click: 'saveCurReminder(completedReminder)' }}/
+            %input.checkbox{:checked => "checked", :name => "checkbox-test", :type => "checkbox", ng: { model: 'completedReminder.completed', click: 'saveReminder(completedReminder)' }}/
             %span.checkbox-custom.glyphicon.glyphicon-ok
             %span.label
           %span.completed-name.left
