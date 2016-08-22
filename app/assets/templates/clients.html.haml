@@ -121,6 +121,20 @@
                     Client Type
                 .col-xs-9.detail
                   {{ currentClient.client_type.option.name }}
+            .well{ ng: {if: 'currentClient.client_category_id'} }
+              .row
+                .col-xs-3
+                  %strong
+                    Client Category
+                .col-xs-9.detail
+                  {{ currentClient.client_category.name }}
+            .well{ ng: {if: 'currentClient.client_subcategory_id'} }
+              .row
+                .col-xs-3
+                  %strong
+                    Client Subcategory
+                .col-xs-9.detail
+                  {{ currentClient.client_subcategory.name }}
 
         #activities.section
           %h2

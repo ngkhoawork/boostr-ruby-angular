@@ -64,6 +64,7 @@
     $scope.getDeals($scope.currentClient)
     $scope.getClientMembers()
     $scope.initReminder()
+    $scope.$emit('updated_current_client')
 
   $scope.getClient = (clientId) ->
     Client.get({ id: clientId }).$promise.then (client) ->
@@ -222,7 +223,6 @@
         $scope.setClient $scope.clients[0]
       else
         $scope.currentClient = null
-      $scope.$emit('updated_current_client')
       $location.path('/clients')
 
   $scope.deleteActivity = (activity) ->
@@ -245,6 +245,8 @@
     if $scope.currentClient
       Field.defaults($scope.currentClient, 'Client').then (fields) ->
         $scope.currentClient.client_type = Field.field($scope.currentClient, 'Client Type')
+        $scope.currentClient.client_category = Field.getOption($scope.currentClient, 'Category', $scope.currentClient.client_category_id)
+        $scope.currentClient.client_subcategory = Field.getSuboption($scope.currentClient, $scope.currentClient.client_category, $scope.currentClient.client_subcategory_id)
       $scope.getContacts($scope.currentClient)
       $scope.getDeals($scope.currentClient)
       $scope.getClientMembers()

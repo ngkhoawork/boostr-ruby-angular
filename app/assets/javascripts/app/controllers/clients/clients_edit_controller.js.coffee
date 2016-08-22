@@ -26,8 +26,11 @@
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
+    $scope.removeCategoriesFromAgency()
     $scope.client.$update(
-      -> $modalInstance.close(),
+      ->
+        $modalInstance.close()
+        $scope.$parent.$broadcast 'updated_current_client',
       (resp) ->
         $scope.errors = resp.data.errors
         $scope.buttonDisabled = false
@@ -43,6 +46,11 @@
   $scope.setClientTypes = () ->
     $scope.client.client_type.options.forEach (option) ->
       $scope[option.name] = option.id
+
+  $scope.removeCategoriesFromAgency = () ->
+    if $scope.client.client_type.option.name == 'Agency'
+      $scope.client.client_category_id = null
+      $scope.client.client_subcategory_id = null
 
   $scope.updateCategory = (category) ->
     $scope.client.client_subcategory_id = undefined
