@@ -35,6 +35,7 @@ json.members deal.deal_members do |member|
 end
 
 json.advertiser deal.advertiser, :name
+json.agency deal.agency, :name
 
 json.values deal.values
 json.fields deal.fields
