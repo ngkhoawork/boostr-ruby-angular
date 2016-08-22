@@ -16,6 +16,10 @@ class Team < ActiveRecord::Base
 
   validates :name, presence: true
 
+  before_destroy do
+    remove_team_leader
+  end
+
   def as_json(options = {})
     super(options.merge(
       only: [:id, :members_count, :name, :parent_id, :leader_id],
@@ -53,6 +57,9 @@ class Team < ActiveRecord::Base
     children
   end
 
+  def remove_team_leader
+    self.update(leader_id: nil)
+  end
   # def all_members(children_array = [])
   #   children = Team.where(parent_id: self.id)
   #   children_array += self.members
