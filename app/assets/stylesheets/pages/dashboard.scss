@@ -38,23 +38,20 @@
 
 }
 
-#reminders{
-  margin-bottom: 20px;
-  background-color:#fff;
-  border-radius: 5px 5px 0 0;
-  padding: 0;
-  margin-top: 12px;
-}
-
-#reminders #reminders-list .item-reminders:nth-of-type(1){
-  border-top: 1px solid #ddd;
-}
-
 a#add-contact {
   outline: medium none;
 }
 
 #reminders {
+  margin-bottom: 20px;
+  background-color:#fff;
+  padding: 0;
+  margin-top: 27px;
+}
+
+  #reminders-list .item-reminders:nth-of-type(1){
+    border-top: 1px solid #ddd;
+  }
 
   /*styled input*/
   .checkbox, .radio {
@@ -62,17 +59,6 @@ a#add-contact {
   }
 
   .checkbox:checked + .checkbox-custom::before, .radio:checked + .radio-custom::before {
-    /*
-    background: #413548 none repeat scroll 0 0;
-    border-radius: 2px;
-    bottom: 2px;
-    content: "";
-    display: block;
-    left: 2px;
-    position: absolute;
-    right: 2px;
-    top: 2px;
-    */
     color: #ff8e4a;
     left: 1px;
     line-height: 18px;
@@ -101,11 +87,11 @@ a#add-contact {
 
   h3 {
     background-color: #f6f9fc;
-    height: 60px;
-    line-height: 60px;
-    margin: 0;
-    padding: 0 10px 10px;
     border-radius: 5px 5px 0 0;
+    height: 45px;
+    line-height: 45px;
+    margin: 0;
+    padding: 0 3px;
   }
 
   .add-reminder {
@@ -328,6 +314,27 @@ a#add-contact {
     padding-left: 10px;
   }
 
+  .details-edit .time-edit {
+    &.spec > input  {
+      width: 50%;
+      height: 36px;
+      background-color: rgb(249, 250, 250);
+      border: none;
+      border-radius: 3px;
+
+      &:hover {
+        border: 1px solid #ff6e17;
+        background-color: rgb(249, 250, 250);
+      }
+
+      &:focus {
+        border: 2px solid #ff6e17;
+        background-color: white;
+        outline: none;
+      }
+    }
+  }
+
   .details-edit .name:focus,
   .details-edit .date-edit .edit:focus,
   .details-edit .description:focus,
@@ -390,7 +397,7 @@ a#add-contact {
       }
     }
   }
-}
+
 
 
 
