@@ -48,7 +48,11 @@
                       %span{ 'ng-repeat': 'contact in activity.contacts' }
                         {{ $first ? '' : $last ? '& ' : ''}}{{ contact.name }}{{ $last ? '' : ', ' }}
                     %blockquote{ 'ng-if': 'activity.comment' }
-                      {{ activity.comment }}
+                      %div.long-text{ 'ng-bind-html': "getHtml(activity.comment)"}
+                    %div.attachments
+                      %div{'ng-repeat': "asset in activity.assets"}
+                        %a{href: "{{asset.presigned_url}}", target: "_blank"}
+                          {{asset.original_file_name}}
                   .col-xs-1
                     %a#edit-contact{ href: '', ng: { click: 'showActivityEditModal(activity)' } }
                       = inline_svg 'icons/edit.svg'

@@ -17,6 +17,7 @@
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
+    $scope.removeCategoriesFromAgency()
     $scope.client.$save ->
       $rootScope.$broadcast 'newClient', $scope.client
       $modalInstance.close()
@@ -28,6 +29,11 @@
   $scope.setClientTypes = () ->
     $scope.client.client_type.options.forEach (option) ->
       $scope[option.name] = option.id
+
+  $scope.removeCategoriesFromAgency = () ->
+    if $scope.client.client_type.option_id == $scope.Agency
+      $scope.client.client_category_id = null
+      $scope.client.client_subcategory_id = null
 
   $scope.cancel = ->
     $modalInstance.dismiss()

@@ -12,6 +12,7 @@ class Activity < ActiveRecord::Base
   has_and_belongs_to_many :contacts
 
   has_many :reminders, as: :remindable, dependent: :destroy
+  has_many :assets, as: :attachable
 
   validates :company_id, presence: true
 
@@ -51,6 +52,11 @@ class Activity < ActiveRecord::Base
             :stage,
             :advertiser
           ]
+        },
+        :assets => {
+            methods: [
+                :presigned_url
+            ]
         },
         :contacts => {},
         :creator => {}

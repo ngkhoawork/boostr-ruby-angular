@@ -74,6 +74,7 @@ feature 'Clients' do
       within '#client-detail' do
         expect(find('h2.client-name')).to have_text('Bobby')
         expect(find('h2.client-name')).to have_text('Boise, ID')
+        expect(find('#details')).to have_text('Agency')
       end
 
       find_link('New Client').trigger('click')

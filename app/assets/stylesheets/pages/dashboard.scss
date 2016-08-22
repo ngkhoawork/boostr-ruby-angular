@@ -1,7 +1,26 @@
 #dashboard {
-  #activities-feed.section {
-    margin-top: 20px;
+  #activities-feed {
+    .section {
+
+      margin-top: 20px;
+    }
   }
+
+  .activities-feed {
+    .long-text {
+      height: 100px;
+      overflow: auto;
+    }
+
+    .attachments {
+      padding-top:10px;
+      a {
+        color: #FF7E30;
+      }
+    }
+  }
+
+
   .pad3 {
     width: 490px;
   }
@@ -24,12 +43,11 @@ a#add-contact {
 }
 
 #reminders {
-
   margin-bottom: 20px;
   background-color:#fff;
-  border-radius: 5px 5px 0 0;
   padding: 0;
-  margin-top: 12px;
+  margin-top: 40px;
+}
 
   #reminders-list .item-reminders:nth-of-type(1){
     border-top: 1px solid #ddd;
@@ -41,17 +59,6 @@ a#add-contact {
   }
 
   .checkbox:checked + .checkbox-custom::before, .radio:checked + .radio-custom::before {
-    /*
-    background: #413548 none repeat scroll 0 0;
-    border-radius: 2px;
-    bottom: 2px;
-    content: "";
-    display: block;
-    left: 2px;
-    position: absolute;
-    right: 2px;
-    top: 2px;
-    */
     color: #ff8e4a;
     left: 1px;
     line-height: 18px;
@@ -80,11 +87,11 @@ a#add-contact {
 
   h3 {
     background-color: #f6f9fc;
-    height: 60px;
-    line-height: 60px;
-    margin: 0;
-    padding: 0 10px 10px;
     border-radius: 5px 5px 0 0;
+    height: 45px;
+    line-height: 45px;
+    margin: 0;
+    padding: 0 3px;
   }
 
   .add-reminder {
@@ -390,7 +397,98 @@ a#add-contact {
       }
     }
   }
+
+span {
+  display: inline-block;
 }
+
+.details-edit .edit-section-wrapper{
+  .bs-datepicker {
+    cursor: text;
+    float: left;
+    line-height: 36px;
+    min-height: 36px;
+    padding-left: 10px;
+    width: 87%;
+  }
+
+  .time-edit.spec > input {
+    background-color: #f9fafa;
+    border-radius: 3px;
+    float: left;
+    height: 36px;
+    margin: 0;
+    padding: 0 0 0 10px;
+    width: 87%;
+  }
+
+  .bs-datepicker:hover{
+    border:1px solid #ff8e4a;
+    border-radius: 4px;
+  }
+
+  .person + span {
+    float: left;
+    width: 87%;
+  }
+
+  .note + span {
+    min-height: 36px;
+    width: 87%;
+  }
+
+  .btn.cancel-edited-reminder {
+    margin-left: 12%;
+  }
+
+  .form-inline.editable-wrap {
+    float: left;
+    width: 87%;
+  }
+
+  .edit-description-wrap .form-inline .form-group {
+    width: 100%;
+  }
+
+  .editable-controls.form-group {
+    width: 100%;
+  }
+
+  .editable-input.form-control.ng-pristine.ng-valid.ng-touched {
+    height: 36px;
+    padding: 0 0 0 10px;
+    width: 100% !important;
+  }
+
+  textarea.editable-input.form-control.ng-pristine.ng-valid.ng-touched {
+    height: 36px;
+    padding: 0 0 0 10px;
+    width: 100% !important;
+  }
+
+  .edit-section-wrapper .bs-datepicker{}
+
+  .editable-input{
+    color: $dark-grayish-blue-1;
+  }
+
+  .editable-input, .editable-input:focus {
+    width:100%!important;
+  }
+
+  textarea.editable-input.form-control.ng-pristine.ng-valid.ng-touched {
+    height: 70px;
+    padding: 0 0 0 10px;
+    width: 100%;
+    resize: none;
+    color: $dark-grayish-blue-1;
+  }
+  .btn.cancel-edited-reminder {
+    margin-left: 12%;
+  }
+
+}
+
 
 
 

@@ -50,5 +50,15 @@
       if subject_field
         $filter('filter')(subject.values, { field_id: subject_field.id })[0]
 
+  @getOption = (subject, field_name, option_id) ->
+    if subject.fields && subject.fields.length > 0
+      subject_field = $filter('filter')(subject.fields, { name: field_name })[0]
+      if subject_field
+        $filter('filter')(subject_field.options, { id: option_id })[0]
+
+  @getSuboption = (subject, option, suboption_id) ->
+    if option.suboptions && option.suboptions.length > 0
+      suboption = $filter('filter')(option.suboptions, { id: suboption_id })[0]
+
   return
 ]

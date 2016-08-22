@@ -86,9 +86,8 @@
     display: none;
   }
 
-  .client-name span {
-    float: left;
-  }
+
+
 
   .show-create-remainders-popup > label {
     cursor: pointer;
@@ -157,6 +156,7 @@
     font-weight: normal;
     padding-left: 5px;
     color: $dark-grayish-blue-1;
+    outline: none;
   }
 
   #reminder_modal .reminder-name:hover,
@@ -168,6 +168,18 @@
   #reminder_modal .reminder-on-time input:focus,
   #reminder_modal .reminder-note:focus{
     background-color: #fff;
+  }
+
+  #reminder_modal .reminder-name:active,
+  #reminder_modal .reminder-date:active,
+  #reminder_modal .reminder-on-time input:active,
+  #reminder_modal .reminder-note:active,
+  #reminder_modal .reminder-name:focus,
+  #reminder_modal .reminder-date:focus,
+  #reminder_modal .reminder-on-time input:focus,
+  #reminder_modal .reminder-note:focus{
+    border: 1px solid $brand-primary;
+    outline: none;
   }
 
 /*  #reminder_modal .reminder-name-wrap {
@@ -195,6 +207,7 @@
 
 #activities-feed.section {
   margin-top: 20px;
+
 }
 
 #clients {
@@ -206,3 +219,18 @@
 a#edit-contact svg {
   margin-bottom: -3px;
 }
+
+.activities-feed {
+  .long-text {
+    height: 100px;
+    overflow: auto;
+  }
+
+  .attachments {
+    padding-top:10px;
+    a {
+      color: #FF7E30;
+    }
+  }
+}
+

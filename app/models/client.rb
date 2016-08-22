@@ -88,7 +88,15 @@ class Client < ActiveRecord::Base
           include: [:option]
         },
         activities: {
-          include: [:creator, :contacts]
+            include: {
+                creator: {},
+                contacts: {},
+                assets: {
+                    methods: [
+                        :presigned_url
+                    ]
+                }
+            }
         }},
       methods: [:deals_count, :fields, :formatted_name]
     ))
