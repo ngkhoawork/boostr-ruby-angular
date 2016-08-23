@@ -57,7 +57,7 @@
         $filter('filter')(subject_field.options, { id: option_id })[0]
 
   @getSuboption = (subject, option, suboption_id) ->
-    if option.suboptions && option.suboptions.length > 0
+    if option && option.suboptions && option.suboptions.length > 0
       suboption = $filter('filter')(option.suboptions, { id: suboption_id })[0]
 
   return

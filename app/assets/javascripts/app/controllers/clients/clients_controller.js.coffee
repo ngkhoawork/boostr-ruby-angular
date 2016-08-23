@@ -62,7 +62,6 @@
     $scope.initActivity()
     $scope.getContacts($scope.currentClient)
     $scope.getDeals($scope.currentClient)
-    $scope.getClientMembers()
     $scope.initReminder()
     $scope.$emit('updated_current_client')
 
