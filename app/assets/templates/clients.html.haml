@@ -135,6 +135,13 @@
                     Client Subcategory
                 .col-xs-9.detail
                   {{ currentClient.client_subcategory.name }}
+            .well
+              .row
+                .col-xs-3
+                  %strong
+                    Global Parent
+                .col-xs-9.detail
+                  {{ currentClient.parent_client.name }}
 
         #activities.section
           %h2
