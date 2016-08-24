@@ -27,7 +27,7 @@
               {{ client.client_type.option_id === Agency ? 'Holding Company' : 'Global Parent' }}
             %ui-select{ parent_client: 'parent-client', ng: { model: 'client.parent_client_id', disabled: 'client.client_type.option_id === undefined', keyup: 'searchClients($select.search)'} }
               %ui-select-match{ placeholder: 'Parent Object', "allow-clear": 'true' }
-                {{ $select.selected.name }}
+                {{ $select.selected.name || client.parent_client.name }}
               %ui-select-choices{ repeat: 'parent.id as parent in clients | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'parent.name' } } }
       .form-group{ ng: {if: 'client.client_type.option_id === Advertiser'} }
