@@ -139,7 +139,7 @@
               .row
                 .col-xs-3
                   %strong
-                    Global Parent
+                    {{ currentClient.client_type.option.name === 'Advertiser' ? 'Global Parent' : 'Holding Company' }}
                 .col-xs-9.detail
                   {{ currentClient.parent_client.name }}
 

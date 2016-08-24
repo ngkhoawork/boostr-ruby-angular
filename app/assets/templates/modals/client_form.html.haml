@@ -20,6 +20,16 @@
       .form-group
         %label.control-label{ for: 'name' } Name*
         %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }
+      .form-group
+        .row
+          .col-xs-6
+            %label.control-label{ for: 'parent-client' }
+              {{ client.client_type.option_id === Agency ? 'Holding Company' : 'Global Parent' }}
+            %ui-select{ parent_client: 'parent-client', ng: { model: 'client.parent_client_id', disabled: 'client.client_type.option_id === undefined', keyup: 'searchClients($select.search)'} }
+              %ui-select-match{ placeholder: 'Parent Object' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'parent.id as parent in clients | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'parent.name' } } }
       .form-group{ ng: {if: 'client.client_type.option_id === Advertiser'} }
         .row
           .col-xs-6
