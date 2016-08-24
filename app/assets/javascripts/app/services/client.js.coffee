@@ -20,7 +20,7 @@
       client_type_id: original.client_type_id
       client_category_id: original.client_category_id
       client_subcategory_id: original.client_subcategory_id
-      parent_client_id: original.parent_client_id
+      parent_client_id: original.parent_client_id || null
       address_attributes: address_attributes
       values_attributes: values_attributes
     angular.toJson(send)
