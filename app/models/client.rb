@@ -2,7 +2,9 @@ class Client < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
+  belongs_to :parent_client, class_name: "Client"
 
+  has_many :child_clients, class_name: "Client", foreign_key: :parent_client_id
   has_many :client_members
   has_many :users, through: :client_members
   has_many :contacts
@@ -83,6 +85,7 @@ class Client < ActiveRecord::Base
     super(options.merge(
       include: {
         address: {},
+        parent_client: {},
         values: {
           methods: [:value],
           include: [:option]
