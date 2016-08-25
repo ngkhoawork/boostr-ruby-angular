@@ -17,7 +17,6 @@
         if option.name == selectedOption
           $scope.client.client_type.option_id = option.id
     $scope.setClientTypes()
-    $scope.getClients()
 
   $scope.getClients = (query) ->
     $scope.isLoading = true
