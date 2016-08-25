@@ -17,7 +17,7 @@
     send.client =
       name: original.name
       website: original.website
-      client_type_id: original.client_type_id
+      client_type_id: original.client_type.option_id
       client_category_id: original.client_category_id
       client_subcategory_id: original.client_subcategory_id
       parent_client_id: original.parent_client_id || null

@@ -23,6 +23,8 @@ class Client < ActiveRecord::Base
 
   before_create :ensure_client_member
 
+  scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
+
   def self.to_csv
     attributes = {
       id: 'Client ID',
