@@ -43,6 +43,8 @@
     $scope.isLoading = true
     params = {
       page: $scope.page
+      client_type_id: $scope.client.client_type.option_id
+      filter: "all"
     }
     if $scope.query.trim().length
       params.name = $scope.query.trim()

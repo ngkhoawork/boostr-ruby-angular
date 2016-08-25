@@ -57,6 +57,28 @@ RSpec.describe Api::ClientsController, type: :controller do
       expect(response_json.length).to eq(10)
       expect(response.headers['X-Total-Count']).to eq("33")
     end
+
+    context 'client_type_id is specified' do
+      before do
+        create :client, created_by: user.id, client_type_id: 1, name: 'Boostr'
+      end
+
+      it 'returns a paginated list of clients by type if client_type_id is specified' do
+        get :index, client_type_id: 1, format: :json
+        expect(response).to be_success
+        response_json = JSON.parse(response.body)
+        expect(response_json.length).to eq(1)
+        expect(response.headers['X-Total-Count']).to eq("1")
+      end
+
+      it 'searches clients and filters by type id' do
+        get :index, client_type_id: 1, name: 'Boos', format: :json
+        expect(response).to be_success
+        response_json = JSON.parse(response.body)
+        expect(response_json.length).to eq(1)
+        expect(response.headers['X-Total-Count']).to eq("1")
+      end
+    end
   end
 
   describe "POST #create" do
