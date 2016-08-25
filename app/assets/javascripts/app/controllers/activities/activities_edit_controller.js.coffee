@@ -143,6 +143,8 @@
                   $modalInstance.dismiss()
                 , (err) ->
                   $scope.buttonDisabled = false
+            $scope.buttonDisabled = false
+            $modalInstance.dismiss()
 
       $scope.createNewContactModal = ->
         $scope.populateContact = true
