@@ -16,6 +16,7 @@ class Contact < ActiveRecord::Base
   validate :email_unique?
 
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
+  scope :unassigned, -> user_id { where(client_id: nil, created_by: user_id) }
 
   def as_json(options = {})
     super(options.merge(

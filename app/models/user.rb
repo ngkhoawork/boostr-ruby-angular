@@ -18,6 +18,7 @@ class User < ActiveRecord::Base
   has_many :activities
   has_many :reports
   has_many :reminders
+  has_many :contacts, through: :activities
 
   ROLES = %w(user admin superadmin)
 

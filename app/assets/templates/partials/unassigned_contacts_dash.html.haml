@@ -1,0 +1,27 @@
+.contact-list
+  .contact-info{ 'ng-repeat': "contact in unassignedContacts" }
+    .info
+      %p.email
+        {{contact.address.email}}
+        %span.datetime
+          {{contact.created_at | date:"MMMM dd 'at' hh:mm a" }}
+      %p.name
+        %span{type:'text', name:'edit-name', editable: { text: 'contact.name' }, onaftersave: 'saveCurrentContact(contact)' }
+          %strong
+            {{ contact.name }}
+      %p.notification{ 'ng-if': "contactNotification[contact.id]" }
+        {{contactNotification[contact.id]}}
+      %p.warning{ 'ng-if': "contact.name==contact.address.email" }
+        Name cannot match email address
+    .action
+      %button{ class: "btn btn-primary btn-block", 'ng-click': "showAssignContactModal(contact)"}
+        Assign
+  .contact-log{ 'ng-if': "contactActionLog.length > 0" }
+    .log{ 'ng-repeat': "log in contactActionLog" }
+      %strong
+        {{log.previousContact.name}}
+      {{log.message ? " assigned to " : "unassigned"}}
+      %strong
+        {{log.message}}
+      %a{ href:"javascript:void(0)", 'ng-click': "undoAssignContact(log.previousContact)" }
+        Undo
