@@ -15,7 +15,7 @@
           {{error}}
 
       .form-group
-        %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText' } }
+        %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj(searchText)' } }
       .form-group
         .row
           .col-xs-12
