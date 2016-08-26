@@ -329,6 +329,26 @@
   width: 100%;
 }
 
+#deal_overview .show-create-remainders-popup {
+  display: table;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+}
+
+#deal_overview .show-create-remainders-popup > label {
+  display: table-cell;
+  margin: 0;
+  vertical-align: middle;
+  line-height: 0;
+}
+
+#activities h3{
+  height:auto;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  line-height: 1.1;
+}
 /*popup create remainder styles*/
 #reminder_modal{
 
@@ -342,11 +362,6 @@
     clear: both;
     display: block;
   }
-
-/*  .reminder-name,
-  .reminder-note {
-    font-weight: bold;
-  }*/
 
   .reminder-name,
   .reminder-date,
@@ -406,15 +421,9 @@
   .form-group.reminder-name-wrap input{
     color: $dark-grayish-blue-1;
   }
-
-/*  .form-group .reminder-note,
-  .form-group.reminder-name-wrap input {
-    font-weight: bold;
-  }*/
 }
 
   .icon-show-popup-wrapper .deal-name {
-    display: block;
     float: left;
   }
 
