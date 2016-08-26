@@ -239,10 +239,12 @@
     }
   }
 
-/*  .header {
+  .header {
     padding-top: 30px;
     padding-bottom: 11px;
-  }*/
+    line-height: 1;
+    height: auto;
+  }
 
   #members {
     span {
