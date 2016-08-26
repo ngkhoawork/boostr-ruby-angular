@@ -82,9 +82,6 @@
       _.each $scope.unassignedContacts, (contact) ->
         $scope.contactNotification[contact.id] = ""
 
-    Client.query(filter: 'all', per: 500).$promise.then (clients) ->
-      $scope.clients = clients
-
     Contact.$resource.query().$promise.then (contacts) ->
       $scope.contacts = contacts
     Dashboard.get().then (dashboard) ->
@@ -145,8 +142,6 @@
       resolve:
         contact: ->
           contact
-        clients: ->
-          $scope.clients
     .result.then (updated_contact) ->
       $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
         if (item.id == updated_contact.id)
