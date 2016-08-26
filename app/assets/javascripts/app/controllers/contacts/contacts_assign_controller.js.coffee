@@ -15,8 +15,12 @@
     $scope.contact.address.mobile = $filter('tel')($scope.contact.address.mobile)
 
   $scope.searchObj = (name) ->
-    Client.query({name: name}).$promise.then (clients) ->
-      $scope.clients = clients
+    if name == ""
+      Client.query(filter: 'all').$promise.then (clients) ->
+        $scope.clients = clients
+    else
+      Client.query({name: name}).$promise.then (clients) ->
+        $scope.clients = clients
   $scope.assignClient = (client) ->
     contact = angular.copy($scope.contact)
     contact.client_id = client.id
