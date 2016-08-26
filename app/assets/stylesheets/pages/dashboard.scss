@@ -105,6 +105,14 @@ a#add-contact {
   background-color:#fff;
   padding: 0;
   margin-top: 40px;
+  h3 {
+    background-color: #f6f9fc;
+    border-radius: 5px 5px 0 0;
+    height: 45px;
+    line-height: 45px;
+    margin: 0;
+    padding: 0 3px;
+  }
 }
 
   #reminders-list .item-reminders:nth-of-type(1){
@@ -141,15 +149,6 @@ a#add-contact {
   .text-wrap.edit,
   .toggle-hide {
     display: none;
-  }
-
-  h3 {
-    background-color: #f6f9fc;
-    border-radius: 5px 5px 0 0;
-    height: 45px;
-    line-height: 45px;
-    margin: 0;
-    padding: 0 3px;
   }
 
   .add-reminder {
