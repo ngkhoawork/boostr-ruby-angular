@@ -1,4 +1,62 @@
 #dashboard {
+
+  #unassigned-contacts {
+    .contact-list {
+      border-top: 1px solid #ddd;
+      .contact-log {
+        padding: 30px 40px 30px 10px;
+        border-bottom: 1px solid #ddd;
+        .log {
+          a {
+            color: #75b4e2;
+          }
+        }
+      }
+      .contact-info {
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+        .info {
+          display: inline-block;
+          vertical-align: middle;
+          width: calc(100% - 80px);
+          p {
+            padding: 2px 0px 2px 0px;
+            margin: 0px;
+          }
+
+          p.email {
+            padding-left:10px;
+            span.datetime {
+              color: #c4c9cf;
+            }
+          }
+
+          p.notification {
+            padding-left:10px;
+            color: #c4c9cf;
+          }
+
+          p.warning {
+            padding-left:10px;
+            color: #f04d44;
+          }
+        }
+
+        .action {
+          width: 68px;
+          vertical-align: middle;
+          display: none;
+        }
+      }
+      .contact-info:hover {
+        .action {
+          display: inline-block;
+        }
+      }
+    }
+  }
+
+
   #activities-feed {
     .section {
 

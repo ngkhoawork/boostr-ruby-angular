@@ -6,6 +6,7 @@
   $scope.feedName = 'Activity Updates'
   $scope.moreSize = 10;
   $scope.types = []
+  $scope.contactActionLog = []
 
   $scope.showSpinners = (reminder) ->
     reminder.showSpinners = true
@@ -75,6 +76,15 @@
         objectIds.forEach (objectId) ->
           $scope.activity_objects[objectId].activities.push(activity)
 
+    Contact.all1(unassigned: "yes").then (contacts) ->
+      $scope.unassignedContacts = contacts
+      $scope.contactNotification = {}
+      _.each $scope.unassignedContacts, (contact) ->
+        $scope.contactNotification[contact.id] = ""
+
+    Client.query(filter: 'all', per: 500).$promise.then (clients) ->
+      $scope.clients = clients
+
     Contact.$resource.query().$promise.then (contacts) ->
       $scope.contacts = contacts
     Dashboard.get().then (dashboard) ->
@@ -124,6 +134,61 @@
           $scope.contacts
         types: ->
           $scope.types
+
+  $scope.showAssignContactModal = (contact) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_assign_form.html'
+      size: 'md'
+      controller: 'ContactsAssignController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          contact
+        clients: ->
+          $scope.clients
+    .result.then (updated_contact) ->
+      $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
+        if (item.id == updated_contact.id)
+          return updated_contact
+        else
+          return item
+      $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+      $scope.contactActionLog.push({
+        previousContact: contact,
+        message: updated_contact.client.name
+      })
+
+  $scope.saveCurrentContact = (contact) ->
+    Contact.update(id: contact.id, contact: contact).then (updated_contact) ->
+      $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
+        if (item.id == updated_contact.id)
+          return updated_contact
+        else
+          return item
+  $scope.undoAssignContact = (contact) ->
+    previousContact = _.find $scope.unassignedContacts, (item) ->
+      return item.id == contact.id
+    Contact.update(id: contact.id, contact: contact).then (updated_contact) ->
+      $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
+        if (item.id == updated_contact.id)
+          return updated_contact
+        else
+          return item
+
+
+      if updated_contact.client
+        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+        $scope.contactActionLog.push({
+          previousContact: previousContact,
+          message: updated_contact.client.name
+        })
+      else
+        $scope.contactNotification[updated_contact.id] = "Unassigned"
+        $scope.contactActionLog.push({
+          previousContact: previousContact,
+          message: ""
+        })
 
   $scope.setChartData = () ->
     $scope.chartData = [
