@@ -6,13 +6,8 @@
   $scope.submitText = "Update"
   $scope.contact = contact
   $scope.searchText = ""
-  console.log($scope.contact)
   Client.query(filter: 'all').$promise.then (clients) ->
     $scope.clients = clients
-
-  if $scope.contact && $scope.contact.address
-    $scope.contact.address.phone = $filter('tel')($scope.contact.address.phone)
-    $scope.contact.address.mobile = $filter('tel')($scope.contact.address.mobile)
 
   $scope.searchObj = (name) ->
     if name == ""
