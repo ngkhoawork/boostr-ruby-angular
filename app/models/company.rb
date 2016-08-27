@@ -38,6 +38,7 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Product', name: 'Product Line', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Product', name: 'Product Family', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Member Role', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Client', name: 'Category', value_type: 'Option', locked: true)
 
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
@@ -51,6 +52,7 @@ class Company < ActiveRecord::Base
     activity_types.find_or_initialize_by(name:'Entertainment', action:'had client entertainment with', icon:'/assets/icons/entertainment.svg')
     activity_types.find_or_initialize_by(name:'Campaign Review', action:'reviewed campaign with', icon:'/assets/icons/review.svg')
     activity_types.find_or_initialize_by(name:'QBR', action:'Quarterly Business Review with', icon:'/assets/icons/QBR.svg')
+    activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.svg')
   end
 
   def settings

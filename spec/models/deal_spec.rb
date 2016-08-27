@@ -210,5 +210,4 @@ RSpec.describe Deal, type: :model do
       expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'D')).not_to be_nil
     end
   end
-
 end

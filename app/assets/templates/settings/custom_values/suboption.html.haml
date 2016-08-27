@@ -1,0 +1,7 @@
+.row
+  .col-xs-10
+    .title{ editable: { text: 'suboption.name' }, onaftersave: 'updateSubOption(suboption)', 'e-name': 'name' }
+      {{ suboption.name }}
+
+  %a.delete{ href: '', ng: { click: 'deleteSubOption(suboption)', if: '!suboption.locked' } }
+    = inline_svg 'icons/trash.svg'

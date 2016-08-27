@@ -21,3 +21,180 @@
 .section {
   margin-top: 40px;
 }
+
+#contacts {
+  /*------------remainder popup-----------------------------*/
+  .wrap-form .modal-header.text-center {
+    border: medium none;
+    min-height: 20px;
+    padding: 10px;
+  }
+
+  .location.ng-binding {
+    clear: both;
+    text-align: left;
+  }
+
+  .show-form-create-reminders {
+    display: none;
+  }
+
+  .client-name span {
+    float: left;
+  }
+
+  .show-create-remainders-popup > label {
+    cursor: pointer;
+    display: table-cell;
+  }
+
+  .show-create-remainders-popup {
+    cursor: pointer;
+    height: inherit;
+    margin-left: 10px;
+    position: relative;
+    margin-top: 0;
+    display: table;
+    float: right;
+  }
+
+  .clock.show-create-remainders-popup svg {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .show-create-remainders-popup .wrap-form::before {
+    content: "";
+    display: block;
+    position: absolute;
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: #fff;
+    border-width: 0 9px 9px;
+    top: -8px;
+    left: 249px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+
+  .show-create-remainders-popup .wrap-form {
+    background: #fff none repeat scroll 0 0;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px #9591a9;
+    left: -249px;
+    position: absolute;
+    width: 316px;
+    z-index: 10;
+    top: 36px;
+  }
+
+  div.modal-footer.text-center {
+    border-top: medium none;
+    padding: 0 10px 20px;
+  }
+
+  #reminder_modal .btn.btn-add-remainder {
+    border-radius: 5px;
+    display: block;
+    margin: 0 auto;
+    padding: 10px 24px;
+  }
+
+  #reminder_modal .form-control.reminder-name {
+    height: 36px;
+  }
+
+  #reminder_modal .reminder-name,
+  #reminder_modal .reminder-date,
+  #reminder_modal .reminder-on-time input,
+  #reminder_modal .reminder-note {
+    background-color: #f4f7f9;
+    border: 1px solid #d7e1eb;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: normal;
+    padding-left: 5px;
+    color: $dark-grayish-blue-1;
+    outline: none;
+  }
+
+  #reminder_modal .reminder-name:hover,
+  #reminder_modal .reminder-date:hover,
+  #reminder_modal .reminder-on-time input:hover,
+  #reminder_modal .reminder-note:hover,
+  #reminder_modal .reminder-name:focus,
+  #reminder_modal .reminder-date:focus,
+  #reminder_modal .reminder-on-time input:focus,
+  #reminder_modal .reminder-note:focus{
+    background-color: #fff;
+  }
+
+  #reminder_modal .reminder-name:active,
+  #reminder_modal .reminder-date:active,
+  #reminder_modal .reminder-on-time input:active,
+  #reminder_modal .reminder-note:active,
+  #reminder_modal .reminder-name:focus,
+  #reminder_modal .reminder-date:focus,
+  #reminder_modal .reminder-on-time input:focus,
+  #reminder_modal .reminder-note:focus{
+    border: 1px solid $brand-primary;
+    outline: none;
+  }
+
+  .contact-name-text {
+    float: left;
+  }
+  #reminder_modal .modal-body {
+    color: $dark-grayish-blue-1;
+  }
+
+  #reminder_modal .modal-body div.form-group.error .error,
+  #reminder_modal .modal-body div.form-group.error .error input {
+    border-color: red;
+  }
+
+}/*-------------------------------------------------------*/
+
+#contact_assign_modal {
+  .modal-body {
+    padding: 20px 50px;
+    .client-list {
+
+      overflow: auto;
+      height: 400px;
+
+      .client-info {
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+        height: 40px;
+        .name {
+          float: left;
+          line-height: 20px;
+          font-weight: bold;
+          font-size: 16px;
+        }
+        .type {
+          padding-left: 15px;
+          float: left;
+          line-height: 20px;
+          font-size: 12px;
+          color: #c4c9cf;
+        }
+        .action {
+          float: right;
+          height: 20px;
+          line-height: 20px;
+          padding-right: 20px;
+          font-size: 12px;
+          display: none;
+        }
+      }
+      .client-info:hover {
+        .action {
+          cursor: pointer;
+          display: block;
+        }
+      }
+    }
+  }
+}

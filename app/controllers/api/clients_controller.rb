@@ -9,7 +9,11 @@ class Api::ClientsController < ApplicationController
         elsif params[:activity].present?
           results = activity_clients
         else
-          results = clients.order(:name).includes(:address).distinct
+          results = clients
+                      .by_type_id(params[:client_type_id])
+                      .order(:name)
+                      .includes(:address)
+                      .distinct
         end
 
         limit = 10
@@ -75,7 +79,7 @@ class Api::ClientsController < ApplicationController
 
   def client_params
     params.require(:client).permit(
-      :name, :website, :client_type_id,
+      :name, :website, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id,
       { 
         address_attributes: [:street1, :street2, :city, :state, :zip, :phone, :email],
         values_attributes: [:id, :field_id, :option_id, :value]
@@ -115,7 +119,10 @@ class Api::ClientsController < ApplicationController
   def suggest_clients
     return @search_clients if defined?(@search_clients)
 
-    @search_clients = company.clients.where('name ilike ?', "%#{params[:name]}%").limit(10)
+    @search_clients = company.clients
+                        .where('name ilike ?', "%#{params[:name]}%")
+                        .by_type_id(params[:client_type_id])
+                        .limit(10)
   end
 
   def activity_clients
