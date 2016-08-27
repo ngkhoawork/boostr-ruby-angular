@@ -59,7 +59,6 @@
   $q.all(revenueRequests).then (revenueResponses) ->
     revenueResponses.forEach (revenues) ->
       revenues.forEach (revenue) ->
-        console.log(revenue)
         if $scope.revenues[revenue.client.id]
           $scope.revenues[revenue.client.id].budget += revenue.budget
         else

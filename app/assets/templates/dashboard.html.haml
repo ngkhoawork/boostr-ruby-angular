@@ -16,12 +16,15 @@
           %div{ ng: { include: "'partials/activities_dash.html'" } }
         .section
           %div{ ng: { include: "'partials/activities_feed_dash.html'" } }
-
       .col-xs-5
+        #reminders.section
+          %h3
+            My Reminders
+          %div{ ng: { include: "'partials/reminders_dash.html'" } }
+
         #deals.section
           %h3
             My Open Deals
-
           .well.no-deals{ ng: { hide: 'dashboard.deals.length > 0' } }
             .row
               .col-xs-12
@@ -48,34 +51,38 @@
                         {{ row.stage.probability }}% probability
                   %td.right {{ row.start_date | date: 'shortDate' }}
 
+          #alerts.section
+            %h3
+              My Pacing Alerts
 
+            .well.no-alerts{ ng: { hide: 'dashboard.current_user.pos_balance_l_cnt > 0 || dashboard.current_user.neg_balance_l_cnt > 0' } }
+              .row
+                .col-xs-12
+                  There are no alerts.
 
-        #alerts.section
-          %h3
-            My Pacing Alerts
+            .table-wrapper{ ng: { show: 'dashboard.current_user.pos_balance_l_cnt > 0 || dashboard.current_user.neg_balance_l_cnt > 0' } }
+              %table.table.table-hover.table-striped
+                %thead
+                  %tr
+                    %th.left Alert
+                    %th.right # Lines
+                    %th.right Est. Amount
+                %tbody
+                  %tr{ ng: { show: 'dashboard.current_user.pos_balance_l_cnt > 0' }}
+                    %td.left
+                      %a{ href: '', ng: { href: '/revenue?filter=upside' } }
+                        Revenue Upside Potential
+                    %td.right {{ dashboard.current_user.pos_balance_l_cnt }}
+                    %td.right {{ dashboard.current_user.pos_balance_l | currency:'$':0 }}
+                  %tr{ ng: { show: 'dashboard.current_user.neg_balance_l_cnt > 0' }}
+                    %td.left
+                      %a{ href: '', ng: { href: '/revenue?filter=risk' } }
+                        Revenue at Risk
+                    %td.right {{ dashboard.current_user.neg_balance_l_cnt }}
+                    %td.right {{ dashboard.current_user.neg_balance_l | currency:'$':0 }}
 
-          .well.no-alerts{ ng: { hide: 'dashboard.current_user.pos_balance_l_cnt > 0 || dashboard.current_user.neg_balance_l_cnt > 0' } }
-            .row
-              .col-xs-12
-                There are no alerts.
-
-          .table-wrapper{ ng: { show: 'dashboard.current_user.pos_balance_l_cnt > 0 || dashboard.current_user.neg_balance_l_cnt > 0' } }
-            %table.table.table-hover.table-striped
-              %thead
-                %tr
-                  %th.left Alert
-                  %th.right # Lines
-                  %th.right Est. Amount
-              %tbody
-                %tr{ ng: { show: 'dashboard.current_user.pos_balance_l_cnt > 0' }}
-                  %td.left
-                    %a{ href: '', ng: { href: '/revenue?filter=upside' } }
-                      Revenue Upside Potential
-                  %td.right {{ dashboard.current_user.pos_balance_l_cnt }}
-                  %td.right {{ dashboard.current_user.pos_balance_l | currency:'$':0 }}
-                %tr{ ng: { show: 'dashboard.current_user.neg_balance_l_cnt > 0' }}
-                  %td.left
-                    %a{ href: '', ng: { href: '/revenue?filter=risk' } }
-                      Revenue at Risk
-                  %td.right {{ dashboard.current_user.neg_balance_l_cnt }}
-                  %td.right {{ dashboard.current_user.neg_balance_l | currency:'$':0 }}
+        .section
+          #unassigned-contacts
+            %h3
+              Unassigned Contacts
+            %div{ ng: { include: "'partials/unassigned_contacts_dash.html'" } }

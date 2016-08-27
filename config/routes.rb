@@ -55,6 +55,10 @@ Rails.application.routes.draw do
       end
     end
     resources :kpis, only: [:index]
+    resources :reminders, only: [:index, :show, :create, :update, :destroy]
+    resources :remindable, only: [] do
+      get '/:remindable_type', to: 'reminders#remindable'
+    end
 
     resource :weighted_pipelines, only: [:show]
     resource :dashboard, only: [:show]
@@ -63,6 +67,7 @@ Rails.application.routes.draw do
 
   mount Sidekiq::Web => '/sidekiq'
 
+  mount_griddler
   # TEMP
   get '/snapshot' => 'pages#snapshot'
 

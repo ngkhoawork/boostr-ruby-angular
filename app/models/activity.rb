@@ -11,7 +11,11 @@ class Activity < ActiveRecord::Base
 
   has_and_belongs_to_many :contacts
 
+  has_many :reminders, as: :remindable, dependent: :destroy
+  has_many :assets, as: :attachable
+
   validates :company_id, presence: true
+  # validates_uniqueness_of :google_event_id
 
   after_create do
     if !deal_id.nil?
@@ -49,6 +53,11 @@ class Activity < ActiveRecord::Base
             :stage,
             :advertiser
           ]
+        },
+        :assets => {
+            methods: [
+                :presigned_url
+            ]
         },
         :contacts => {},
         :creator => {}

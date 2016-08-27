@@ -1,0 +1,175 @@
+/*------------remainder popup-----------------------------*/
+.show-create-remainders-popup {
+  cursor: pointer;
+  display: block;
+  float: right;
+  height: inherit;
+  margin-left: 5px;
+  position: relative;
+  margin-top: -1px;
+}
+
+#reminder_modal {
+  .wrap-form .modal-header.text-center {
+    border: medium none;
+    min-height: 20px;
+    padding: 10px;
+  }
+
+  div.modal-body {
+    padding: 20px;
+  }
+
+  .modal-body .form-group {
+    margin: 0 0 10px;
+  }
+
+  .modal-body div.form-group.error .error,
+  .modal-body div.form-group.error .error input {
+    border-color: red;
+  }
+
+  .location.ng-binding {
+    clear: both;
+    text-align: left;
+  }
+
+  .show-form-create-reminders {
+    display: none;
+  }
+
+  .client-name span {
+    float: left;
+  }
+
+  .show-create-remainders-popup > label {
+    cursor: pointer;
+  }
+
+  .show-create-remainders-popup > label > svg {
+    cursor: pointer;
+    height: 22px;
+    width: 22px;
+  }
+
+  .wrap-form .modal-header.text-center > label {
+    cursor: pointer;
+    float: right;
+    opacity: 0.5;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 11;
+  }
+
+  .show-create-remainders-popup .wrap-form::before {
+    content: "";
+    display: block;
+    position: absolute;
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: #fff;
+    border-width: 0 9px 9px;
+    top: -8px;
+    left: 249px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+
+  .show-create-remainders-popup .wrap-form {
+    background: #fff none repeat scroll 0 0;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px #9591a9;
+    left: -249px;
+    position: absolute;
+    width: 316px;
+    z-index: 10;
+    top: 36px;
+  }
+
+  div.modal-footer.text-center {
+    border-top: medium none;
+    padding: 0 10px 20px;
+  }
+
+  .btn.btn-add-remainder {
+    border-radius: 5px;
+    display: block;
+    margin: 0 auto;
+    padding: 10px 24px;
+  }
+
+  .form-control.reminder-name {
+    height: 36px;
+  }
+
+  span.bs-datepicker input,
+  .box1.ng-pristine {
+    display: block;
+    height: 36px;
+    width: 100%;
+  }
+
+  #reminder_modal .reminder-name,
+  #reminder_modal .reminder-date,
+  #reminder_modal .reminder-on-time input,
+  #reminder_modal .reminder-note {
+    background-color: #f4f7f9;
+    border: 1px solid #d7e1eb;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: normal;
+    padding-left: 5px;
+    color: $dark-grayish-blue-1;
+    outline: none;
+  }
+
+  #reminder_modal .reminder-name:hover,
+  #reminder_modal .reminder-date:hover,
+  #reminder_modal .reminder-on-time input:hover,
+  #reminder_modal .reminder-note:hover,
+  #reminder_modal .reminder-name:focus,
+  #reminder_modal .reminder-date:focus,
+  #reminder_modal .reminder-on-time input:focus,
+  #reminder_modal .reminder-note:focus {
+    background-color: #fff;
+  }
+
+  #reminder_modal .reminder-name:active,
+  #reminder_modal .reminder-date:active,
+  #reminder_modal .reminder-on-time input:active,
+  #reminder_modal .reminder-note:active,
+  #reminder_modal .reminder-name:focus,
+  #reminder_modal .reminder-date:focus,
+  #reminder_modal .reminder-on-time input:focus,
+  #reminder_modal .reminder-note:focus{
+    border: 1px solid $brand-primary;
+    outline: none;
+  }
+
+  .bs-datepicker,
+  .reminder-on-time-wrap timepicker-pop,
+  .input-group.reminder-on-time,
+  .input-group.reminder-on-time input,
+  .input-group.reminder-on-time {
+    width: 100%;
+    height: 36px;
+  }
+
+  .modal-body {
+    color: $dark-grayish-blue-1;
+    font-size: 14px;
+    font-weight: normal;
+  }
+
+  .form-control.reminder-note {
+    display: block;
+    height: 80px;
+    resize: none;
+  }
+}
+
+.tools.pull-right > a#edit-contact svg {
+  margin-bottom: -3px;
+}
+/*-------------------------------------------------------*/

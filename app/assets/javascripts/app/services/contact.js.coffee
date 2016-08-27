@@ -18,6 +18,7 @@
         phone: original.contact.address.phone
         mobile: original.contact.address.mobile
         email: original.contact.address.email
+        id: original.contact.address.id
     send.contact =
       name: original.contact.name
       position: original.contact.position

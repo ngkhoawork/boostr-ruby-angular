@@ -4,6 +4,7 @@ class Contact < ActiveRecord::Base
   belongs_to :client, counter_cache: true
   belongs_to :company
 
+  has_many :reminders, as: :remindable, dependent: :destroy
   has_one :address, as: :addressable
 
   has_and_belongs_to_many :activities, after_add: :update_activity_updated_at
@@ -15,6 +16,7 @@ class Contact < ActiveRecord::Base
   validate :email_unique?
 
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
+  scope :unassigned, -> user_id { where(client_id: nil, created_by: user_id) }
 
   def as_json(options = {})
     super(options.merge(
@@ -22,7 +24,15 @@ class Contact < ActiveRecord::Base
         address: {},
         client: {},
         activities: {
-          include: [:creator, :contacts]
+          include: {
+            creator: {},
+            contacts: {},
+            assets: {
+              methods: [
+                :presigned_url
+              ]
+            }
+          }
         }
       },
       methods: [:formatted_name]

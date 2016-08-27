@@ -34,7 +34,13 @@ json.members deal.deal_members do |member|
   end
 end
 
-json.advertiser deal.advertiser, :name
+if deal.advertiser
+  json.advertiser deal.advertiser, :name
+end
+
+if deal.agency
+  json.agency deal.agency, :name
+end
 
 json.values deal.values
 json.fields deal.fields

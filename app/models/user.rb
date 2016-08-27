@@ -17,6 +17,8 @@ class User < ActiveRecord::Base
   has_many :snapshots, -> (user) { where(company_id: user.company_id) }
   has_many :activities
   has_many :reports
+  has_many :reminders
+  has_many :contacts, through: :activities
 
   ROLES = %w(user admin superadmin)
 
