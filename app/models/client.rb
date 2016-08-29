@@ -2,7 +2,9 @@ class Client < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
+  belongs_to :parent_client, class_name: "Client"
 
+  has_many :child_clients, class_name: "Client", foreign_key: :parent_client_id
   has_many :client_members
   has_many :users, through: :client_members
   has_many :contacts
@@ -11,6 +13,7 @@ class Client < ActiveRecord::Base
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
   has_many :values, as: :subject
   has_many :activities
+  has_many :reminders, as: :remindable, dependent: :destroy
 
   has_one :address, as: :addressable
 
@@ -19,6 +22,8 @@ class Client < ActiveRecord::Base
   validates :name, presence: true
 
   before_create :ensure_client_member
+
+  scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
 
   def self.to_csv
     attributes = {
@@ -82,12 +87,22 @@ class Client < ActiveRecord::Base
     super(options.merge(
       include: {
         address: {},
+        parent_client: {},
+        contacts: {},
         values: {
           methods: [:value],
           include: [:option]
         },
         activities: {
-          include: [:creator, :contacts]
+            include: {
+                creator: {},
+                contacts: {},
+                assets: {
+                    methods: [
+                        :presigned_url
+                    ]
+                }
+            }
         }},
       methods: [:deals_count, :fields, :formatted_name]
     ))

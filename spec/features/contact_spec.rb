@@ -148,4 +148,45 @@ feature 'Contacts' do
       expect(page).to have_css('.list-group-item', count: 1)
     end
   end
+
+  describe 'adding a reminder to a contact' do
+    let!(:contacts) { create_list :contact, 3, company: company, client: client }
+
+    before do
+      login_as user, scope: :user
+      visit '/people'
+      expect(page).to have_css('#contacts')
+    end
+
+    scenario 'creates reminder and edits it', js: true do
+      within '.contact-name' do
+        expect(page).to have_css('.show-create-remainders-popup')
+
+        find('.show-create-remainders-popup > label').trigger('click')
+        expect(page).to have_text("Reminder name*")
+
+        within '#reminder_modal' do
+          fill_in 'name', with: 'Reminder!'
+          fill_in 'comment', with: 'Client Reminder'
+
+          find_button('Set Reminder').trigger('click')
+        end
+
+        expect(page).not_to have_css('#reminder_modal')
+
+        find('.show-create-remainders-popup > label').trigger('click')
+        expect(find("input[name='name']").value).to eq('Reminder!')
+
+        within '#reminder_modal' do
+          fill_in 'name', with: 'Reminder update!'
+          find_button('Set Reminder').trigger('click')
+        end
+
+        expect(page).not_to have_css('#reminder_modal')
+
+        find('.show-create-remainders-popup > label').trigger('click')
+        expect(find("input[name='name']").value).to eq("Reminder update!")
+      end
+    end
+  end
 end

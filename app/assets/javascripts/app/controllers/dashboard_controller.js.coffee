@@ -1,11 +1,16 @@
 @app.controller 'DashboardController',
-['$scope', '$http', '$modal', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity', 'ActivityType', 'Stage',
-($scope, $http, $modal, Dashboard, Deal, Client, Contact, Activity, ActivityType, Stage) ->
+['$scope', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage',
+($scope, $http, $modal, $sce, Dashboard, Deal, Client, Contact, Activity, ActivityType, Reminder, Stage) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Activity Updates'
   $scope.moreSize = 10;
   $scope.types = []
+  $scope.contactActionLog = []
+
+  $scope.showSpinners = (reminder) ->
+    reminder.showSpinners = true
+    console.log('reminder', reminder)
 
   $scope.init = ->
     $scope.currentPage = 0;
@@ -18,6 +23,25 @@
     $scope.contacts = []
     $scope.errors = {}
     $scope.getStages()
+
+    $scope.actRemColl = false;
+
+    $scope.reminder = {
+      name: '',
+      comment: '',
+      completed: false,
+      remind_on: '',
+      remindable_id: 0,
+      remindable_type: 'Activity' # "Activity", "Client", "Contact", "Deal"
+      _date: new Date(),
+      _time: new Date(),
+      showSpinners: false
+    }
+
+    $scope.reminderOptions = {
+      errors: {},
+      showMeridian: true
+    }
 
     now = new Date
     ActivityType.all().then (activityTypes) ->
@@ -51,6 +75,12 @@
 
         objectIds.forEach (objectId) ->
           $scope.activity_objects[objectId].activities.push(activity)
+
+    Contact.all1(unassigned: "yes").then (contacts) ->
+      $scope.unassignedContacts = contacts
+      $scope.contactNotification = {}
+      _.each $scope.unassignedContacts, (contact) ->
+        $scope.contactNotification[contact.id] = ""
 
     Contact.$resource.query().$promise.then (contacts) ->
       $scope.contacts = contacts
@@ -101,6 +131,59 @@
           $scope.contacts
         types: ->
           $scope.types
+
+  $scope.showAssignContactModal = (contact) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_assign_form.html'
+      size: 'md'
+      controller: 'ContactsAssignController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          contact
+    .result.then (updated_contact) ->
+      $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
+        if (item.id == updated_contact.id)
+          return updated_contact
+        else
+          return item
+      $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+      $scope.contactActionLog.push({
+        previousContact: contact,
+        message: updated_contact.client.name
+      })
+
+  $scope.saveCurrentContact = (contact) ->
+    Contact.update(id: contact.id, contact: contact).then (updated_contact) ->
+      $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
+        if (item.id == updated_contact.id)
+          return updated_contact
+        else
+          return item
+  $scope.undoAssignContact = (contact) ->
+    previousContact = _.find $scope.unassignedContacts, (item) ->
+      return item.id == contact.id
+    Contact.update(id: contact.id, contact: contact).then (updated_contact) ->
+      $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
+        if (item.id == updated_contact.id)
+          return updated_contact
+        else
+          return item
+
+
+      if updated_contact.client
+        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+        $scope.contactActionLog.push({
+          previousContact: previousContact,
+          message: updated_contact.client.name
+        })
+      else
+        $scope.contactNotification[updated_contact.id] = "Unassigned"
+        $scope.contactActionLog.push({
+          previousContact: previousContact,
+          message: ""
+        })
 
   $scope.setChartData = () ->
     $scope.chartData = [
@@ -166,8 +249,19 @@
       if $scope.selected[$scope.activeType.name].contacts.length == 0
         $scope.buttonDisabled = false
         $scope.errors['Contacts'] = ["can't be blank."]
+      if $scope.actRemColl
+        if !($scope.reminder && $scope.reminder.name)
+          $scope.buttonDisabled = false
+          $scope.errors['Reminder Name'] = ["can't be blank."]
+        if !($scope.reminder && $scope.reminder._date)
+          $scope.buttonDisabled = false
+          $scope.errors['Reminder Date'] = ["can't be blank."]
+        if !($scope.reminder && $scope.reminder._time)
+          $scope.buttonDisabled = false
+          $scope.errors['Reminder Time'] = ["can't be blank."]
       if !$scope.buttonDisabled
         return
+
       form.submitted = true
       $scope.activity.activity_type_id = $scope.activeType.id
       $scope.activity.activity_type_name = $scope.activeType.name
@@ -183,8 +277,22 @@
           form[key].$setValidity('server', false)
           $scope.buttonDisabled = false
       ).then (activity) ->
+        if (activity && activity.id && $scope.actRemColl)
+          reminder_date = new Date($scope.reminder._date)
+          $scope.reminder.remindable_id = activity.id
+          if $scope.reminder._time != undefined
+            reminder_time = new Date($scope.reminder._time)
+            reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+          $scope.reminder.remind_on = reminder_date
+          Reminder.create(reminder: $scope.reminder).then (reminder) ->
+            $scope.reminder = reminder
+            $scope.reminder._date = new Date($scope.reminder.remind_on)
+            $scope.reminder._time = new Date($scope.reminder.remind_on)
+          , (err) ->
+
         $scope.buttonDisabled = false
         $scope.init()
+        $scope.remindersInit()
 
   $scope.createNewContactModal = ->
     $scope.populateContact = true
@@ -236,4 +344,109 @@
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
+
+  $scope.remindersInit = ->
+    $scope.remindersOptions = {
+      errors: {},
+      showMeridian: true,
+      editMode: false,
+      buttonDisabled: false
+    }
+
+    $scope.reminders = []
+    $scope.completedReminders = []
+    $http.get('/api/reminders')
+    .then (respond) ->
+      if (respond && respond.data && respond.data.length)
+        _.each respond.data, (curReminder) ->
+#                    curReminder.editMode = false
+#                    curReminder.collapsed = true
+          curReminder._date = new Date(curReminder.remind_on)
+          curReminder._time = new Date(curReminder.remind_on)
+          curReminder.showSpinners = false
+          now = new Date();
+          yearDiff = curReminder._date.getFullYear() - now.getFullYear()
+          monthDiff = curReminder._date.getMonth() - now.getMonth()
+          dayDiff = curReminder._date.getDate() - now.getDate()
+          if yearDiff > 0
+            curReminder.dateColorClass = 'silver'
+          else if yearDiff < 0
+            curReminder.dateColorClass = 'red'
+          else
+            if monthDiff > 0
+              curReminder.dateColorClass = 'silver'
+            else if monthDiff < 0
+              curReminder.dateColorClass = 'red'
+            else
+              if dayDiff > 1
+                curReminder.dateColorClass = 'silver'
+              else if dayDiff == 1
+                curReminder.dateColorClass = 'yellow'
+              else
+                curReminder.dateColorClass = 'red'
+#          timeDiff = curReminder._date.getTime() - now.getTime();
+#          diffDays = timeDiff / (1000 * 3600 * 24);
+#          if (diffDays <= 1 )
+#            curReminder.dateColorClass = 'red';
+#          if (diffDays > 1  && diffDays < 2)
+#            curReminder.dateColorClass = 'yellow';
+#          if (diffDays >= 2 )
+#            curReminder.dateColorClass = 'silver';
+          curReminder.completed = !!curReminder.completed
+          if (curReminder.completed)
+            $scope.completedReminders.push(curReminder)
+          else
+            $scope.reminders.push(curReminder)
+    , (err) ->
+
+  $scope.saveCurReminder = (curReminder) ->
+    $scope.errors = {}
+#        $scope.buttonDisabled = true
+    reminder_date = new Date(curReminder._date)
+    if curReminder._time != undefined
+      reminder_time = new Date(curReminder._time)
+      reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+    curReminder.remind_on = reminder_date
+#        delete curReminder._date
+#        delete curReminder._time
+#        delete curReminder.created_at
+#        delete curReminder.updated_at
+#        delete curReminder.deleted_at
+    Reminder.update(id: curReminder.id, reminder: curReminder)
+#    .then (reminder) ->
+#
+#    , (err) ->
+
+  $scope.saveReminder = (curReminder) ->
+    $scope.errors = {}
+#        $scope.buttonDisabled = true
+    reminder_date = new Date(curReminder._date)
+    if curReminder._time != undefined
+      reminder_time = new Date(curReminder._time)
+      reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+    curReminder.remind_on = reminder_date
+#        delete curReminder._date
+#        delete curReminder._time
+#        delete curReminder.created_at
+#        delete curReminder.updated_at
+#        delete curReminder.deleted_at
+    Reminder.update(id: curReminder.id, reminder: curReminder)
+    .then (reminder) ->
+      $scope.remindersInit()
+    , (err) ->
+#                $scope.buttonDisabled = false
+
+  $scope.deleteCurReminder = (curReminder) ->
+    $scope.errors = {}
+    #        $scope.buttonDisabled = true
+    Reminder.delete(curReminder.id)
+    .then (reminder) ->
+      $scope.remindersInit()
+    , (err) ->
+#                $scope.buttonDisabled = false
+
+  $scope.remindersInit()
+
+  $scope.getHtml = (html) ->
+    return $sce.trustAsHtml(html)
 ]

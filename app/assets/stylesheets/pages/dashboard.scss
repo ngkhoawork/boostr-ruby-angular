@@ -1,8 +1,552 @@
 #dashboard {
-  #activities-feed.section {
-    margin-top: 20px;
+
+  #unassigned-contacts {
+    .contact-list {
+      border-top: 1px solid #ddd;
+      .contact-log {
+        padding: 30px 40px 30px 10px;
+        border-bottom: 1px solid #ddd;
+        .log {
+          a {
+            color: #75b4e2;
+          }
+        }
+      }
+      .contact-info {
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+        background-color: #ffffff;
+        .info {
+          display: inline-block;
+          vertical-align: middle;
+          width: calc(100% - 80px);
+          p {
+            padding: 2px 0px 2px 0px;
+            margin: 0px;
+          }
+
+          p.email {
+            padding-left:10px;
+            span.datetime {
+              color: #c4c9cf;
+            }
+          }
+
+          p.notification {
+            padding-left:10px;
+            color: #c4c9cf;
+          }
+
+          p.warning {
+            padding-left:10px;
+            color: #f04d44;
+          }
+        }
+
+        .action {
+          width: 68px;
+          vertical-align: middle;
+          display: none;
+        }
+      }
+      .contact-info:hover {
+        .action {
+          display: inline-block;
+        }
+      }
+    }
   }
+
+
+  #activities-feed {
+    .section {
+
+      margin-top: 20px;
+    }
+  }
+
+  .activities-feed {
+    .long-text {
+      height: 100px;
+      overflow: auto;
+    }
+
+    .attachments {
+      padding-top:10px;
+      a {
+        color: #FF7E30;
+      }
+    }
+  }
+
+
   .pad3 {
     width: 490px;
   }
+
+  .trigger-click.icon-show-activities-detail,
+  .trigger-click.icon-hide-activities-detail {
+    display: table;
+  }
+
+  .icon-show-activities-detail svg,
+  .icon-hide-activities-detail svg {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
 }
+
+a#add-contact {
+  outline: medium none;
+}
+
+#reminders {
+  margin-bottom: 20px;
+  background-color:#fff;
+  padding: 0;
+  margin-top: 40px;
+  h3 {
+    background-color: #f6f9fc;
+    border-radius: 5px 5px 0 0;
+    height: 32px;
+    line-height: 1.1;
+    margin: 0;
+    padding: 0 3px;
+  }
+}
+
+  #reminders-list .item-reminders:nth-of-type(1){
+    border-top: 1px solid #ddd;
+  }
+
+  /*styled input*/
+  .checkbox, .radio {
+    display: none;
+  }
+
+  .checkbox:checked + .checkbox-custom::before, .radio:checked + .radio-custom::before {
+    color: #ff8e4a;
+    left: 1px;
+    line-height: 18px;
+    position: absolute;
+  }
+
+  .checkbox-custom, .radio-custom, .label {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .checkbox-custom, .radio-custom {
+    border: 2px solid #ccc;
+    border-radius: 3px;
+    height: 20px;
+    position: relative;
+    width: 20px;
+  }
+
+  .hide-completed-reminders,
+  .show-details,
+  .text-wrap.edit,
+  .toggle-hide {
+    display: none;
+  }
+
+  .add-reminder {
+    display: table;
+    float: right;
+    outline: none;
+  }
+
+  .btn-wrap .trigger-click {
+    display: table-cell;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+
+  .add-reminder svg {
+    display: table-cell;
+    fill: #ff7e30;
+    height: 32px;
+    vertical-align: middle;
+    width: 32px;
+  }
+
+  .add-reminder svg:hover {
+    fill: #e35500;
+  }
+
+  .checkbox-wrapper {
+    float: left;
+  }
+
+  .panel-heading {
+    height: 70px;
+  }
+
+  .panel.panel-default.item-reminders {
+    border: medium none;
+  }
+
+  .item-reminders .panel-heading {
+    border-radius: 0;
+    border-bottom: 1px solid #ddd;
+    margin: 0 14px;
+    padding: 0;
+    background-color: #fff;
+  }
+
+  .panel-collapse.collapse.in {
+    background: #f9fafa none repeat scroll 0 0;
+  }
+
+  .panel-group .panel + .panel{
+    margin-top: 0;
+  }
+
+  .show-reminders-details {
+    display: table-cell;
+    vertical-align: middle;
+    outline: medium none;
+  }
+
+  .btn-wrap {
+    display: table;
+    float: right;
+    height: 100%;
+  }
+
+  .text-wrap {
+    float: left;
+    padding: 5px 5px 5px 10px;
+  }
+
+  .red {
+    color: #f04d44;
+  }
+
+  .yellow {
+    color: #fbb361;
+  }
+
+  .silver {
+    color: #a6b0b7;
+  }
+  .text-wrap.show-detailse-wrap .name{
+    line-height: 60px;
+  }
+
+  .checkbox-wrapper > input {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .checkbox-wrapper {
+    float: left;
+    height: 70px;
+    line-height: 70px;
+  }
+
+  .checkbox-wrapper input {
+    margin: 0;
+    padding: 0;
+  }
+
+  .text-wrap > p {
+    margin: 0;
+  }
+
+  .panel-body.details > div > p:first-child {
+    float: left;
+    width: 13%;
+  }
+
+  .edit-delete-wrap {
+    margin-left: 13%;
+  }
+
+  .panel-body.details {
+    padding-bottom: 5px;
+  }
+
+  .panel {
+    box-shadow: none;
+  }
+
+  .panel.panel-default.item-reminders:last-child .panel-heading {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .completed-reminders {
+    height: 60px;
+    line-height: 60px;
+  }
+
+  .completed-reminders-section > span {
+    margin: 0;
+    text-transform: uppercase;
+    clear: both;
+    display: block;
+    text-align: center;
+    height: 60px;
+    line-height: 60px;
+  }
+
+  .panel-group {
+    margin-bottom: 0;
+  }
+
+  .text-wrap .name {
+    font-weight: bold;
+  }
+
+  /*completed reminders*/
+  .completed-reminders.hide-completed-reminders {
+    width: 100%;
+  }
+  .completed-date {
+    float: right;
+  }
+
+  .main-wrap {
+    border-top: 1px solid #ddd;
+    margin: 0 14px;
+    clear: both;
+  }
+
+/*  .completed-reminder input {
+    display: table-cell;
+    vertical-align: middle;
+  }*/
+
+  .completed-reminder > label {
+    display: table;
+    float: left;
+    margin: 0;
+  }
+
+  .completed-date {
+    display: block;
+    float: right;
+    height: 60px;
+    line-height: 60px;
+  }
+
+  .completed-name {
+    display: block;
+    float: left;
+    height: 60px;
+    line-height: 60px;
+    margin-left: 10px;
+  }
+
+  .details.details-edit > div > div p:first-child {
+    float: left;
+    width: 13%;
+    margin-top: 7px;
+    text-transform: lowercase;
+  }
+
+  .bs-datepicker.date-edit {
+    float: left;
+    height: 100%;
+    width: 84%;
+  }
+
+  .bs-datepicker.date-edit .edit {
+    display: block;
+    float: left;
+    margin: 0;
+    width: 100%;
+  }
+
+  .date-edit .edit,
+  .details-edit .name,
+  .details-edit .description,
+  .details-edit .time-edit > input  {
+    width: 84%;
+    height: 36px;
+    background-color: #f4f7f9;
+    border: 1px solid #d7e1eb;
+    border-radius: 3px;
+    padding-left: 10px;
+  }
+
+  .details-edit .time-edit {
+    &.spec > input  {
+      width: 50%;
+      height: 36px;
+      background-color: rgb(249, 250, 250);
+      border: none;
+      border-radius: 3px;
+
+      &:hover {
+        border: 1px solid #ff6e17;
+        background-color: rgb(249, 250, 250);
+      }
+
+      &:focus {
+        border: 2px solid #ff6e17;
+        background-color: white;
+        outline: none;
+      }
+    }
+  }
+
+  .details-edit .name:focus,
+  .details-edit .date-edit .edit:focus,
+  .details-edit .description:focus,
+  .details-edit .time-edit > input:focus,
+  .details-edit .name:hover,
+  .details-edit .date-edit .edit:hover,
+  .details-edit .description:hover,
+  .details-edit .time-edit > input:hover{
+    background-color: #FFFFFF;
+  }
+
+  .details-edit .description {
+    width: 84%;
+    height:80px;
+    padding: 5px 10px;
+    resize: none;
+  }
+
+  .panel-body.details.details-edit div.edit-section-wrapper > div {
+    margin: 10px 0;
+    min-height: 36px;
+  }
+
+  .save-edited-reminder {
+    background: transparent none repeat scroll 0 0;
+    border-radius: 15px;
+    color: #ff6e17;
+    height: 30px;
+    text-transform: uppercase;
+    width: 83px;
+    border: 1px solid;
+  }
+
+  .save-edited-reminder:hover{
+    color:$placeholder-text;
+  }
+
+  .details-edit .action-wrap {
+    margin-left: 13%;
+  }
+
+  .edit-description-wrap {
+    margin: 10px 0 20px;
+  }
+
+  .completed-reminder .completed-name {
+    text-decoration: line-through;
+  }
+
+  input.show-reminder {
+    -webkit-appearance: none;
+    width: 1em;
+    height: 1em;
+    &:after {
+      content: '▹';
+    }
+    &.open {
+      &:after {
+        content: '▿';
+      }
+    }
+  }
+
+span {
+  display: inline-block;
+}
+
+.details-edit .edit-section-wrapper{
+  .bs-datepicker {
+    cursor: text;
+    float: left;
+    line-height: 36px;
+    min-height: 36px;
+    padding-left: 10px;
+    width: 87%;
+  }
+
+  .time-edit.spec > input {
+    background-color: #f9fafa;
+    border-radius: 3px;
+    float: left;
+    height: 36px;
+    margin: 0;
+    padding: 0 0 0 10px;
+    width: 87%;
+  }
+
+  .bs-datepicker:hover{
+    border:1px solid #ff8e4a;
+    border-radius: 4px;
+  }
+
+  .person + span {
+    float: left;
+    width: 87%;
+  }
+
+  .note + span {
+    min-height: 36px;
+    width: 87%;
+  }
+
+  .btn.cancel-edited-reminder {
+    margin-left: 12%;
+  }
+
+  .form-inline.editable-wrap {
+    float: left;
+    width: 87%;
+  }
+
+  .edit-description-wrap .form-inline .form-group {
+    width: 100%;
+  }
+
+  .editable-controls.form-group {
+    width: 100%;
+  }
+
+  .editable-input.form-control.ng-pristine.ng-valid.ng-touched {
+    height: 36px;
+    padding: 0 0 0 10px;
+    width: 100% !important;
+  }
+
+  textarea.editable-input.form-control.ng-pristine.ng-valid.ng-touched {
+    height: 36px;
+    padding: 0 0 0 10px;
+    width: 100% !important;
+  }
+
+  .edit-section-wrapper .bs-datepicker{}
+
+  .editable-input{
+    color: $dark-grayish-blue-1;
+  }
+
+  .editable-input, .editable-input:focus {
+    width:100%!important;
+  }
+
+  textarea.editable-input.form-control.ng-pristine.ng-valid.ng-touched {
+    height: 70px;
+    padding: 0 0 0 10px;
+    width: 100%;
+    resize: none;
+    color: $dark-grayish-blue-1;
+  }
+  .btn.cancel-edited-reminder {
+    margin-left: 12%;
+  }
+
+}
+
+
+
+

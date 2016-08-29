@@ -242,6 +242,8 @@
   .header {
     padding-top: 30px;
     padding-bottom: 11px;
+    line-height: 1;
+    height: auto;
   }
 
   #members {
@@ -317,4 +319,221 @@
   .pad4 {
     padding: 15px 0 0 0;
   }
+
+  #reminder_modal .modal-body div.form-group.error .error,
+  #reminder_modal .modal-body div.form-group.error .error input {
+    border-color: red;
+  }
+
 }
+
+#deal_overview .icon-show-popup-wrapper {
+  width: 100%;
+}
+
+#deal_overview .show-create-remainders-popup {
+  display: table;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  top: 20px;
+}
+
+#deal_overview .show-create-remainders-popup > label {
+  display: table-cell;
+  margin: 0;
+  vertical-align: middle;
+  line-height: 0;
+}
+
+#activities h3{
+  height:auto;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  line-height: 1.1;
+}
+/*popup create remainder styles*/
+#reminder_modal{
+
+  .wrap-form .modal-header.text-center {
+    border: medium none;
+    min-height: 20px;
+    padding: 10px;
+  }
+
+  .form-group > label {
+    clear: both;
+    display: block;
+  }
+
+  .reminder-name,
+  .reminder-date,
+  .reminder-on-time input,
+  .reminder-note {
+    background-color: $silver-background;
+    border: 1px solid $silver-border;
+    border-radius: 4px;
+    height: 36px;
+    color: $dark-grayish-blue-1;
+    padding-left: 5px;
+  }
+
+  div.modal-body {
+    padding: 20px;
+  }
+
+  .btn.btn-add-remainder{
+    border-radius: 5px;
+  }
+
+  span.bs-datepicker input {
+    display: block;
+    height: 36px;
+    width: 100%;
+  }
+
+  .reminder-on-time-wrap timepicker-pop {
+    width: 100%;
+  }
+
+  .input-group.reminder-on-time {
+    width: 100%;
+  }
+
+  .box1.ng-pristine {
+    display: block;
+    height: 36px;
+    width: 100%;
+  }
+
+  .form-control.reminder-note {
+    display: block;
+    height: 80px;
+    resize: none;
+  }
+
+  .form-control.reminder-name {
+    height: 36px;
+  }
+}
+
+.show-hide-remainder-form-wrap {
+  .form-group .reminder-note,
+  .form-group .reminder-on-time-wrap .reminder-on-time-wrap input,
+  .form-group .reminder-date span input,
+  .form-group.reminder-name-wrap input{
+    color: $dark-grayish-blue-1;
+  }
+}
+
+  .icon-show-popup-wrapper .deal-name {
+    float: left;
+  }
+
+  .show-create-remainders-popup {
+    display: table;
+    float: left;
+  }
+
+  .icon-show-popup-wrapper .deal-name {
+    float: left;
+  }
+
+  .show-create-remainders-popup > label > svg {
+    cursor: pointer;
+  }
+
+  .show-create-remainders-popup {
+    display: block;
+    float: right;
+    height: inherit;
+    margin-right: 5px;
+    margin-top: 28px;
+    position:relative;
+  }
+
+  .wrap-form .modal-header.text-center > label {
+    cursor: pointer;
+    float: right;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 11;
+    opacity: 0.5;
+  }
+
+  .wrap-form .modal-header.text-center > label:hover {
+    opacity: 1;
+  }
+
+  .wrap-form .modal-header.text-center {
+    border-bottom: medium none;
+    height: 16px;
+    min-height: 20px;
+    padding: 0;
+    position: relative;
+  }
+
+  .show-form-create-reminders {
+    display: none;
+  }
+
+  .panel-default > .panel-heading + .panel-collapse > .panel-body {
+    border-top-color: transparent;
+  }
+
+  .panel-body.details {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .show-create-remainders-popup .wrap-form::before {
+    content: "";
+    display: block;
+    position: absolute;
+    border-color: rgba(0,0,0,0);
+    border-bottom-color: #fff;
+    border-width: 0px 9px 9px;
+    top: -8px;
+    left: 249px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+  }
+
+  .show-create-remainders-popup .wrap-form {
+    background: #fff none repeat scroll 0 0;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px #9591a9;
+    left: -249px;
+    position: absolute;
+    width: 316px;
+    z-index: 10;
+    top: 40px;
+  }
+
+  div.modal-footer.text-center {
+    border-top: medium none;
+    padding: 0 10px 20px;
+  }
+
+  #reminder_modal .btn.btn-add-remainder {
+    border-radius: 5px;
+    display: block;
+    margin: 0 auto;
+    padding: 10px 24px;
+  }
+
+  #reminder_modal .modal-body {
+    color: $dark-grayish-blue-1;
+  }
+
+  #reminder_modal .reminder-name:hover,
+  #reminder_modal .reminder-date:hover,
+  #reminder_modal .reminder-on-time input:hover,
+  #reminder_modal .reminder-note:hover,
+  #reminder_modal .reminder-name:focus,
+  #reminder_modal .reminder-date:focus,
+  #reminder_modal .reminder-on-time input:focus,
+  #reminder_modal .reminder-note:focus{
+    background-color: #fff;
+  }

@@ -3,6 +3,15 @@
     cursor: pointer;
   }
 
+  .well {
+    .title {
+      padding-right: 7px;
+    }
+    .total {
+      padding-left: 7px;
+    }
+  }
+
   .editable {
     padding: 0 10px;
     cursor: text;
@@ -12,7 +21,11 @@
     margin: 3px 0;
   }
 
-  #options {
+  #options, #suboptions {
+    a[disabled] {
+      cursor: no-drop;
+    }
+
     ul {
       list-style-type: none;
       padding: 0;
@@ -34,6 +47,13 @@
           display:block;
         }
       }
+    }
+  }
+
+  .list-group {
+    .active {
+      border-right: 3px solid $brand-primary;
+      border-radius: 2px;
     }
   }
 

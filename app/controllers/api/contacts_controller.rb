@@ -2,7 +2,9 @@ class Api::ContactsController < ApplicationController
   respond_to :json
 
   def index
-    if params[:name].present?
+    if params[:unassigned] == "yes"
+      contacts = current_user.company.contacts.unassigned(current_user.id)
+    elsif params[:name].present?
       contacts = suggest_contacts
     elsif params[:activity].present?
       contacts = activity_contacts
@@ -64,6 +66,7 @@ class Api::ContactsController < ApplicationController
       :position,
       :client_id,
       address_attributes: [
+        :id,
         :street1,
         :street2,
         :city,

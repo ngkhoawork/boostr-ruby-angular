@@ -74,6 +74,7 @@ feature 'Clients' do
       within '#client-detail' do
         expect(find('h2.client-name')).to have_text('Bobby')
         expect(find('h2.client-name')).to have_text('Boise, ID')
+        expect(find('#details')).to have_text('Agency')
       end
 
       find_link('New Client').trigger('click')
@@ -275,6 +276,48 @@ feature 'Clients' do
 
       expect(page).to have_no_css('#deal_modal')
       expect(page).to have_css('#deal')
+    end
+  end
+
+  describe 'adding a reminder to a client' do
+    let!(:clients) { create_list :client, 3, created_by: user.id }
+
+    before do
+      clients.sort_by!(&:name)
+      login_as user, scope: :user
+      visit '/clients'
+      expect(page).to have_css('#clients')
+    end
+
+    scenario 'creates reminder and edits it', js: true do
+      within '.client-name' do
+        expect(page).to have_css('.show-create-remainders-popup')
+
+        find('.show-create-remainders-popup > label').trigger('click')
+        expect(page).to have_text("Reminder name*")
+
+        within '#reminder_modal' do
+          fill_in 'name', with: 'Reminder!'
+          fill_in 'comment', with: 'Client Reminder'
+
+          find_button('Set Reminder').trigger('click')
+        end
+
+        expect(page).not_to have_css('#reminder_modal')
+
+        find('.show-create-remainders-popup > label').trigger('click')
+        expect(find("input[name='name']").value).to eq('Reminder!')
+
+        within '#reminder_modal' do
+          fill_in 'name', with: 'Reminder update!'
+          find_button('Set Reminder').trigger('click')
+        end
+
+        expect(page).not_to have_css('#reminder_modal')
+
+        find('.show-create-remainders-popup > label').trigger('click')
+        expect(find("input[name='name']").value).to eq("Reminder update!")
+      end
     end
   end
 end

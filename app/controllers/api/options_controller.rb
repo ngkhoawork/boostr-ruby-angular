@@ -2,7 +2,12 @@ class Api::OptionsController < ApplicationController
   respond_to :json
 
   def create
-    @option = field.options.create(option_params)
+    if params[:field_id]
+      @option = field.options.create(option_params)
+    elsif params[:option_id]
+      @option = parent_option.suboptions.create(option_params)
+    end
+
     if option.persisted?
       render json: option, status: :created
     else
@@ -29,12 +34,16 @@ class Api::OptionsController < ApplicationController
     @company ||= current_user.company
   end
 
+  def parent_option
+    Option.where(id: params[:option_id], company_id: company.id).first
+  end
+
   def field
     @field ||= company.fields.where(id: params[:field_id]).first!
   end
 
   def option
-    @option ||= field.options.where(id: params[:id]).first!
+    @option ||= Option.where(id: params[:id], company_id: company.id).first
   end
 
   def option_params

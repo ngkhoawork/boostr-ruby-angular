@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160731223825) do
+ActiveRecord::Schema.define(version: 20160826204919) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,6 +86,17 @@ ActiveRecord::Schema.define(version: 20160731223825) do
     t.string   "mobile"
   end
 
+  create_table "assets", force: :cascade do |t|
+    t.integer  "attachable_id"
+    t.string   "attachable_type"
+    t.string   "asset_file_name"
+    t.string   "asset_file_size"
+    t.string   "asset_content_type"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.string   "original_file_name"
+  end
+
   create_table "client_members", force: :cascade do |t|
     t.integer  "client_id"
     t.integer  "user_id"
@@ -112,8 +123,13 @@ ActiveRecord::Schema.define(version: 20160731223825) do
     t.integer  "contacts_count",         default: 0, null: false
     t.integer  "client_type_id"
     t.datetime "activity_updated_at"
+    t.integer  "client_category_id"
+    t.integer  "client_subcategory_id"
+    t.integer  "parent_client_id"
   end
 
+  add_index "clients", ["client_category_id"], name: "index_clients_on_client_category_id", using: :btree
+  add_index "clients", ["client_subcategory_id"], name: "index_clients_on_client_subcategory_id", using: :btree
   add_index "clients", ["client_type_id"], name: "index_clients_on_client_type_id", using: :btree
   add_index "clients", ["deleted_at"], name: "index_clients_on_deleted_at", using: :btree
 
@@ -251,9 +267,11 @@ ActiveRecord::Schema.define(version: 20160731223825) do
     t.boolean  "locked",     default: false
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+    t.integer  "option_id"
   end
 
   add_index "options", ["company_id", "field_id", "position", "deleted_at"], name: "options_index_composite", using: :btree
+  add_index "options", ["option_id"], name: "index_options_on_option_id", using: :btree
 
   create_table "products", force: :cascade do |t|
     t.string   "name"
@@ -278,6 +296,21 @@ ActiveRecord::Schema.define(version: 20160731223825) do
 
   add_index "quota", ["end_date"], name: "index_quota_on_end_date", using: :btree
   add_index "quota", ["start_date"], name: "index_quota_on_start_date", using: :btree
+
+  create_table "reminders", force: :cascade do |t|
+    t.string   "name"
+    t.text     "comment"
+    t.integer  "user_id"
+    t.integer  "remindable_id"
+    t.string   "remindable_type"
+    t.datetime "remind_on"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.datetime "deleted_at"
+    t.boolean  "completed"
+  end
+
+  add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
 
   create_table "reports", force: :cascade do |t|
     t.integer  "company_id"
@@ -454,6 +487,7 @@ ActiveRecord::Schema.define(version: 20160731223825) do
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
+  add_foreign_key "clients", "clients", column: "parent_client_id"
   add_foreign_key "deal_logs", "deals"
   add_foreign_key "users", "teams"
 end
