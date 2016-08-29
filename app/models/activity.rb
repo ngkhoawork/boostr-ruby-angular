@@ -15,7 +15,7 @@ class Activity < ActiveRecord::Base
   has_many :assets, as: :attachable
 
   validates :company_id, presence: true
-  # validates_uniqueness_of :google_event_id
+  validates_uniqueness_of :google_event_id, allow_nil: true, allow_blank: true
 
   after_create do
     if !deal_id.nil?
