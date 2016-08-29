@@ -1,7 +1,8 @@
 class Contact < ActiveRecord::Base
   acts_as_paranoid
 
-  belongs_to :client, counter_cache: true
+  has_many :clients, -> { uniq }, through: :client_contacts
+  has_many :client_contacts
   belongs_to :company
 
   has_many :reminders, as: :remindable, dependent: :destroy
