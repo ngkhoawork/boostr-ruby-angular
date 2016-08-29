@@ -37,6 +37,10 @@
           .subtitle
             {{ item.contacts_count }} people, {{ item.deals_count }} deals
         %div{ 'object-list': true, items: 'clients', query: 'query', 'on-search': 'searchClients', 'on-select': 'showClient', 'on-load-more': 'loadMoreClients', selected: 'currentClient', template: 'partials/client_list_item.html' }
+        -#%div.btn-wrap-add-client
+        -#  %a#add-client{ href: '', ng: { click: 'showModal()' } }
+        -#    %b +
+        -#    New Client
       #client-detail.col-xs-8{ ng: { show: 'currentClient' } }
         .tools.pull-right
           %a#delete-client{ href: '', ng: { click: 'delete()' } }
@@ -97,21 +101,21 @@
                 .col-xs-3
                   %strong
                     Phone
-                .col-xs-9.detail
+                .col-xs-9.detail.orange
                   {{ currentClient.address.phone | tel }}
             .well
               .row
                 .col-xs-3
                   %strong
                     Email
-                .col-xs-9.detail
+                .col-xs-9.detail.orange
                   {{ currentClient.address.email }}
             .well
               .row
                 .col-xs-3
                   %strong
                     Website
-                .col-xs-9.detail
+                .col-xs-9.detail.orange
                   %a{ ng: { href: 'http://{{ currentClient.website }}' }, target: '_blank' }
                     {{ currentClient.website }}
             .well
@@ -125,7 +129,7 @@
               .row
                 .col-xs-3
                   %strong
-                    Client Category
+                    Client Type
                 .col-xs-9.detail
                   {{ currentClient.client_category.name }}
             .well{ ng: {if: 'currentClient.client_subcategory_id'} }
@@ -143,10 +147,34 @@
                 .col-xs-9.detail
                   {{ currentClient.parent_client.name }}
 
+            .well
+              .row
+                .col-xs-3
+                  %strong
+                    Holding Company
+                .col-xs-9.detail.orange.bold
+                  Publicis
+            .well
+              .row
+                .col-xs-3
+                  %strong
+                    Holding Company
+                .col-xs-9.detail.orange.bold
+                  ZenitOptiMedia
+
         #activities.section
           %h2
             activities
           %div{ ng: { include: "'partials/activities_client.html'" } }
+
+          %h2.advertisers-wrap-title-section
+            %span.sub-title-text
+              Related Advertisers & People
+            %a#add-app-advertisers-people{ href: '', ng: { click: 'showModal()' } }
+              = inline_svg 'icons/add.svg'
+
+          %div{ ng: { include: "'partials/activities_related_advertisers_and_people.html'" } }
+
         #activities-feed.section          
           %div{ ng: { include: "'partials/activities_feed_client.html'" } }
 

@@ -3,6 +3,145 @@
   padding-top: 33px;
 }
 
+#client-list {
+  /*search group*/
+  form .input-group {
+    border: 1px solid $silver-border;
+    border-radius: 5px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .input-group-addon {
+    display: none;
+  }
+
+  input.form-control{
+    border: medium none;
+  }
+
+
+  .list-lg .active {
+    border-radius: 0;
+    box-shadow: -3px 0 0 #ff7e30 inset !important;
+    outline:none;
+    opacity: 1;
+    border-top: 1px solid $silver-border;
+    border-bottom: 1px solid $silver-border;
+  }
+
+  .list-group .list-group-item {
+    opacity: 1;
+    padding: 20px 30px;
+    outline:none;
+  }
+
+  .list-group {
+    border: 1px solid $silver-border;
+  }
+
+}
+#activities {
+    #add-app-advertisers-people {
+      border-radius: 20px;
+      cursor: pointer;
+      display: block;
+      float: right;
+      line-height: 100%;
+      margin-top: 5px;
+      outline: medium none;
+    }
+
+    #add-app-advertisers-people > svg {
+       fill: #ff7e30;
+       height: 100%;
+       width: 100%;
+    }
+  .item-advertisers {
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+  .panel-heading.hide-detail-wrap {
+    border-bottom: 1px solid $silver-border;
+    border-top: 1px solid $silver-border;
+    border-radius: 0;
+    height: 60px;
+  }
+  .item-advertisers .hide-detail-wrap:first-child {
+    border-top: 0 none;
+  }
+
+  .user-data {
+    margin-left: 7%;
+  }
+
+  .panel-heading.hide-detail-wrap {
+    background: #fff none repeat scroll 0 0;
+    border-bottom: 1px solid $silver-border;
+    border-radius: 0;
+  }
+  .panel-body.details {
+    background: #fbfcfd none repeat scroll 0 0;
+    padding:0;
+  }
+
+  .data-section-wrapper .user-data:last-child span {
+    border: medium none;
+  }
+
+  .user-data span {
+    border-bottom: 1px solid $silver-border;
+    display: block;
+    float: left;
+    height: 28px;
+    line-height: 28px;
+    width: 25%;
+  }
+
+  .user-data .name {
+    color: #333;
+  }
+  
+  #activities .user-data {
+    display: table;
+    padding-left: 6%;
+    width: 100%;
+  }
+
+  .show-people {
+    display: block;
+    float: left;
+    height: 100%;
+    margin-right: 5px;
+  }
+
+  .show-people .trigger-click {
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 0;
+  }
+
+  .show-people .trigger-click > svg {
+    display: table-cell;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+
+  .text-wrap .company-name {
+    color: #2a3b48;
+    font-weight: bold;
+  }
+
+  .text-wrap > span {
+    margin: 0 0 0 5px;
+  }
+
+}
+
+#clients h2 {
+  text-transform: capitalize;
+}
+
 #client-detail {
   padding-left: 34px;
   padding-top: 15px;
@@ -50,6 +189,32 @@
     }
   }
 
+  #details{
+    .well .orange {
+      color: $brand-primary;
+    }
+    .well .bold {
+      font-weight:bold;
+    }
+
+    .wells-group {
+      padding: 10px 10px 20px;
+    }
+
+    .wells-group .well {
+      padding: 20px;
+    }
+
+    .well strong {
+      font-size: 14px;
+      font-weight: normal;
+      color: #838f9a;
+    }
+    .wells-group .detail {
+      font-size: 13px;
+    }
+  }
+
   #teamsplits {
     .wells-group {
       margin-top: 18px;
@@ -64,18 +229,28 @@
     }
   }
 
+  .btn-wrap-add-client {
+    width: 100%;
+  }
+
+  .btn-wrap-add-client > a {
+    border: 1px solid $brand-primary;
+    border-radius: 20px;
+    display: block;
+    font-size: 13px;
+    height: 35px;
+    line-height: 33px;
+    margin: 0 auto;
+    text-align: center;
+    width: 34%;
+    outline:none;
+  }
   /*------------remainder popup-----------------------------*/
   .wrap-form .modal-header.text-center {
     border: medium none;
     min-height: 20px;
     padding: 10px;
   }
-
-  //.reminder-name-wrap .error {
-  //  color: red;
-  //  font-size: 13px;
-  //  margin: 2px 0 10px;
-  //}
 
   .location.ng-binding {
     clear: both;
@@ -85,9 +260,6 @@
   .show-form-create-reminders {
     display: none;
   }
-
-
-
 
   .show-create-remainders-popup > label {
     cursor: pointer;
@@ -121,7 +293,6 @@
     background: #fff none repeat scroll 0 0;
     border-radius: 5px;
     box-shadow: 0 5px 15px #9591a9;
-/*    left: -149px;*/
     left: -249px;
     position: absolute;
     width: 316px;
@@ -166,7 +337,7 @@
   #reminder_modal .reminder-name:focus,
   #reminder_modal .reminder-date:focus,
   #reminder_modal .reminder-on-time input:focus,
-  #reminder_modal .reminder-note:focus{
+  #reminder_modal .reminder-note:focus {
     background-color: #fff;
   }
 
@@ -177,17 +348,10 @@
   #reminder_modal .reminder-name:focus,
   #reminder_modal .reminder-date:focus,
   #reminder_modal .reminder-on-time input:focus,
-  #reminder_modal .reminder-note:focus{
+  #reminder_modal .reminder-note:focus {
     border: 1px solid $brand-primary;
     outline: none;
   }
-
-/*  #reminder_modal .reminder-name-wrap {
-    .reminder-name,
-    .reminder-note {
-      font-weight: bold;
-    }
-  }*/
 
   #reminder_modal .modal-body {
     color: $dark-grayish-blue-1;
@@ -207,7 +371,6 @@
 
 #activities-feed.section {
   margin-top: 20px;
-
 }
 
 #clients {
@@ -216,6 +379,7 @@
     border-color: red;
   }
 }
+
 a#edit-contact svg {
   margin-bottom: -3px;
 }
@@ -227,7 +391,7 @@ a#edit-contact svg {
   }
 
   .attachments {
-    padding-top:10px;
+    padding-top: 10px;
     a {
       color: #FF7E30;
     }
