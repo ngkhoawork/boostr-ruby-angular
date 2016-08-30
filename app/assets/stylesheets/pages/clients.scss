@@ -16,15 +16,14 @@
     display: none;
   }
 
-  input.form-control{
+  input.form-control {
     border: medium none;
   }
-
 
   .list-lg .active {
     border-radius: 0;
     box-shadow: -3px 0 0 #ff7e30 inset !important;
-    outline:none;
+    outline: none;
     opacity: 1;
     border-top: 1px solid $silver-border;
     border-bottom: 1px solid $silver-border;
@@ -33,7 +32,7 @@
   .list-group .list-group-item {
     opacity: 1;
     padding: 20px 30px;
-    outline:none;
+    outline: none;
   }
 
   .list-group {
@@ -41,22 +40,17 @@
   }
 
 }
-#activities {
-    #add-app-advertisers-people {
-      border-radius: 20px;
-      cursor: pointer;
-      display: block;
-      float: right;
-      line-height: 100%;
-      margin-top: 5px;
-      outline: medium none;
-    }
 
-    #add-app-advertisers-people > svg {
-       fill: #ff7e30;
-       height: 100%;
-       width: 100%;
-    }
+#activities {
+  #add-app-advertisers-people {
+    border-radius: 20px;
+    cursor: pointer;
+    display: block;
+    float: right;
+    margin-top: 0;
+    outline: medium none;
+  }
+
   .item-advertisers {
     border-radius: 0;
     margin-bottom: 0;
@@ -73,6 +67,7 @@
 
   .user-data {
     margin-left: 7%;
+    clear: both;
   }
 
   .panel-heading.hide-detail-wrap {
@@ -82,7 +77,7 @@
   }
   .panel-body.details {
     background: #fbfcfd none repeat scroll 0 0;
-    padding:0;
+    padding: 0;
   }
 
   .data-section-wrapper .user-data:last-child span {
@@ -101,7 +96,7 @@
   .user-data .name {
     color: #333;
   }
-  
+
   #activities .user-data {
     display: table;
     padding-left: 6%;
@@ -189,12 +184,12 @@
     }
   }
 
-  #details{
+  #details {
     .well .orange {
       color: $brand-primary;
     }
     .well .bold {
-      font-weight:bold;
+      font-weight: bold;
     }
 
     .wells-group {
@@ -243,7 +238,7 @@
     margin: 0 auto;
     text-align: center;
     width: 34%;
-    outline:none;
+    outline: none;
   }
   /*------------remainder popup-----------------------------*/
   .wrap-form .modal-header.text-center {
