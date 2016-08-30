@@ -41,6 +41,51 @@
 
 }
 
+#client_modal {
+  .radio-btn-styled-wrap {
+    display: table;
+    width: 100%;
+    margin: 18px 0 8px;
+  }
+
+  .modal-body {
+    padding: 20px 80px 0;
+  }
+
+  .radio-btn-wrap {
+    float: left;
+    margin-right: 35px;
+  }
+
+  .radio-btn:first-child > label{
+    margin-left: 0;
+  }
+
+  .radio-btn-wrap > label {
+    margin: 0 10px;
+  }
+
+  .radio-btn-styled label .radio-btn-custom {
+    border-radius: 15px;
+    height: 15px;
+    width: 15px;
+  }
+
+  .radio-custom {
+    border-radius: 20px;
+  }
+
+  label input:checked + span .radio-central-part {
+    background: #FF7E30 none repeat scroll 0 0;
+    border-radius: 15px;
+    display: block;
+    height: 12px;
+    margin: 2px;
+    width: 12px;
+  }
+
+}
+
 #activities {
   #add-app-advertisers-people {
     border-radius: 20px;
