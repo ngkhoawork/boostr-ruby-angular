@@ -4,10 +4,6 @@ FactoryGirl.define do
     position { FFaker::Job.title }
     address
 
-    transient do
-      clients_count 1
-    end
-
     before(:create) do |item|
       item.company = Company.first
     end
