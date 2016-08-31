@@ -10,7 +10,6 @@ class Api::ContactsController < ApplicationController
       contacts = activity_contacts
     else
       contacts = current_user.company.contacts
-        .for_client(params[:client_id])
         .order(:name)
         .includes(:address)
     end

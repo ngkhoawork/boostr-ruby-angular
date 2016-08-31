@@ -14,7 +14,7 @@ RSpec.describe Api::ContactsController, type: :controller do
 
   describe "GET #index" do
     it 'returns a list of contacts' do
-      create_list :contact, 3, company: company, client: client
+      create_list :contact, 3, company: company, clients: [client]
 
       get :index, format: :json
       expect(response).to be_success
@@ -44,7 +44,7 @@ RSpec.describe Api::ContactsController, type: :controller do
   end
 
   describe "PUT #update" do
-    let(:contact) { create :contact, company: company, client: client }
+    let(:contact) { create :contact, company: company, clients: [client] }
 
     it 'updates a contact successfully' do
       put :update, id: contact.id, contact: { name: 'New Name' }, format: :json
@@ -55,7 +55,7 @@ RSpec.describe Api::ContactsController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    let!(:contact) { create :contact, company: company, client: client }
+    let!(:contact) { create :contact, company: company, clients: [client] }
 
     it 'marks the contact as deleted' do
       delete :destroy, id: contact.id, format: :json

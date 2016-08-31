@@ -75,7 +75,7 @@ feature 'Dashboard' do
   describe 'reminder list' do
     let!(:quota) { create :quota, user: user, value: 20000, time_period: time_period }
     let(:client) { create :client, created_by: user.id }
-    let(:contact) { create :contact, company: company, client: client }
+    let(:contact) { create :contact, company: company, clients: [client] }
     let!(:deal_reminder) { create(:reminder, user_id: user.id, remindable_id: deal.id, remindable_type: 'Deal') }
     let!(:client_reminder) { create(:reminder, user_id: user.id, remindable_id: client.id, remindable_type: 'Client') }
     let!(:contact_reminder) { create(:reminder, user_id: user.id, remindable_id: contact.id, remindable_type: 'Contact') }
