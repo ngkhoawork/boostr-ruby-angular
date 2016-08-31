@@ -41,8 +41,6 @@ class Api::ClientContactsController < ApplicationController
     @client_member ||= client.client_contacts.find(params[:id])
   end
 
-  private
-
   def related_clients_through_contacts
     @client ||= current_user.company.clients.find(params[:client_id])
 
