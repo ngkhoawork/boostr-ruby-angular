@@ -15,7 +15,7 @@ class EmailProcessor
       contact_emails_added = []
       contacts = []
       contact_emails.each do |contact_email|
-        if contact_email=="email@postman.boostrcrm.com" || contact_email=="email@postman.staging.boostrcrm.com" || contact_email=="email@postman.testing.boostrcrm.com"
+        if contact_email=="email@mail.boostrcrm.com" || contact_email=="email@postman.boostrcrm.com" || contact_email=="email@postman.staging.boostrcrm.com" || contact_email=="email@postman.testing.boostrcrm.com"
           next
         end
         addresses = Address.where(addressable_type: "Contact", email: contact_email)
