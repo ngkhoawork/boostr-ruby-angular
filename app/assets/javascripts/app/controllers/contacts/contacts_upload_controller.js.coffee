@@ -1,6 +1,6 @@
 @app.controller "ContactsUploadController",
 ['$scope', '$rootScope', '$modalInstance', '$timeout', 'Contact', 'Upload',
-($scope, $rootScope, $modalInstance, $timeout, Contactt, Upload) ->
+($scope, $rootScope, $modalInstance, $timeout, Contact, Upload) ->
 
   $scope.progressPercentage = 0
   $scope.errors = []

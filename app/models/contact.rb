@@ -46,62 +46,60 @@ class Contact < ActiveRecord::Base
   def self.import(file, current_user)
     errors = []
 
-    if !current_user.is?(:superadmin)
-      error = { message: ['Permission denied'] }
-      errors << error
-    else
-      row_number = 0
-      CSV.parse(file, headers: true) do |row|
-        row_number += 1
+    # if !current_user.is?(:superadmin)
+    #   error = { message: ['Permission denied'] }
+    #   errors << error
+    # else
+    row_number = 0
+    CSV.parse(file, headers: true) do |row|
+      row_number += 1
+      unless client = Client.where(company_id: current_user.company_id, name: row[1]).first
+        error = { row: row_number, message: ['Client could not be found'] }
+        errors << error
+        next
+      end
 
-        unless client = Client.where(company_id: current_user.company_id, name: row[1]).first
-          error = { row: row_number, message: ['Client could not be found'] }
-          errors << error
-          next
-        end
+      find_params = {
+        company_id: current_user.company_id,
+        addresses: {
+          email: row[3]
+        }
+      }
 
-        find_params = {
+      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").find_by(find_params)
+
+      address_params = {
+        email: row[3],
+        street1: row[4],
+        street2: row[5],
+        city: row[6],
+        state: row[7],
+        zip: row[8],
+        phone: row[9],
+        mobile: row[10],
+      }
+      contact_params = {
           name: row[0],
-          position: row[2],
           client_id: client.id,
-          company_id: current_user.company_id
-        }
-
-        create_params = {
+          position: row[2],
           created_by: current_user.id
-        }
+      }
+      if contact.present?
+        address_params[:id] = contact.address.id
+        contact_params[:id] = contact.id
+      else
+        contact = Contact.new({company_id: current_user.company_id})
+      end
+      contact_params[:address_attributes] = address_params
 
-        contact = Contact.find_or_initialize_by(find_params)
-        unless contact.update_attributes(create_params)
-          error = { row: row_number, message: contact.errors.full_messages }
-          errors << error
-          next
-        end
 
-        find_address_params = {
-          addressable_id: contact.id,
-          addressable_type: 'Contact',
-        }
-
-        address_params = {
-          street1: row[3],
-          street2: row[4],
-          city: row[5],
-          state: row[6],
-          zip: row[7],
-          phone: row[8],
-          mobile: row[9],
-          email: row[10]
-        }
-
-        address = Address.find_or_initialize_by(find_address_params)      
-        unless address.update_attributes(address_params)      
-          error = { row: row_number, message: address.errors.full_messages }
-          errors << error
-          next
-        end
+      unless contact.update_attributes(contact_params)
+        error = { row: row_number, message: contact.errors.full_messages }
+        errors << error
+        next
       end
     end
+    # end
     errors
   end
 
