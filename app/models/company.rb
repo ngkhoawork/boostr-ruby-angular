@@ -40,6 +40,8 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Member Role', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Category', value_type: 'Option', locked: true)
 
+    fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Attachment Type', value_type: 'Option', locked: true)
+
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
 
@@ -59,7 +61,8 @@ class Company < ActiveRecord::Base
     [
       { name: 'Deals', fields: fields.where(subject_type: 'Deal')},
       { name: 'Clients', fields: fields.where(subject_type: 'Client')},
-      { name: 'Products', fields: fields.where(subject_type: 'Product')}
+      { name: 'Products', fields: fields.where(subject_type: 'Product')},
+      { name: 'Multiple', fields: fields.where(subject_type: 'Multiple')}
     ]
   end
 
