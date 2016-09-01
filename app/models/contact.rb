@@ -88,7 +88,7 @@ class Contact < ActiveRecord::Base
         address_params[:id] = contact.address.id
         contact_params[:id] = contact.id
       else
-        contact = Contact.new({company_id: current_user.company_id})
+        contact = Contact.create({company_id: current_user.company_id, address_attributes: {email: row[3]}})
       end
       contact_params[:address_attributes] = address_params
 
