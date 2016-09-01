@@ -113,7 +113,8 @@ class Contact < ActiveRecord::Base
   end
 
   def email_unique?
-    contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").find_by({company_id: company_id, addresses: {email: address.email}})
+    # contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").find_by({company_id: company_id, addresses: {email: address.email}})
+    contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
     if contact.present?
       errors.add(:email, "has already been taken")
     end
