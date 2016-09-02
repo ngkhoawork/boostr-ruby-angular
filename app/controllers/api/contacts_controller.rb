@@ -31,7 +31,8 @@ class Api::ContactsController < ApplicationController
 
   def create
     if params[:file].present?
-      csv_file = IO.read(params[:file].tempfile.path)
+      # csv_file = IO.read(params[:file].tempfile.path)
+      csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
       contacts = Contact.import(csv_file, current_user)
       render json: contacts
     else
