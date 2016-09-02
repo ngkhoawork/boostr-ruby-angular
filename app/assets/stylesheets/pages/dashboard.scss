@@ -476,24 +476,28 @@ a#add-contact {
     }
   }
 
-/*span {
-  display: inline-block;
-}*/
-
 .dropdown-menu td > .btn.btn-default {
   display: block;
   height: 47px;
   margin-left: 3px;
   outline: medium none;
 }
+
 .bs-datepicker .dropdown-menu table tr th .btn.pull-left,
 .bs-datepicker .dropdown-menu table tr th .btn.pull-right {
   outline: medium none;
 }
-.bs-datepicker .dropdown-menu table tr th .btn.btn-sm:not(.pull-right):not(.pull-left):focus,
+
+.bs-datepicker .dropdown-menu table tr th .btn.pull-left:active, .bs-datepicker .dropdown-menu table tr th .btn.pull-right:active,
+.bs-datepicker .dropdown-menu table tr th .btn.pull-left:focus, .bs-datepicker .dropdown-menu table tr th .btn.pull-right:focus,
+.bs-datepicker .dropdown-menu table tr th .btn.btn-sm:not(.pull-right):not(.pull-left):active,
+.dropdown-menu td > .btn.btn-default:active,
+.dropdown-menu table td.form-group > input.form-control:active
+.bs-datepicker .dropdown-menu table tr th .btn.btn-sm:not(.pull-right):not(.pull-left):active,
 .dropdown-menu td > .btn.btn-default:focus,
 .dropdown-menu table td.form-group > input.form-control:focus {
   border-color: #ff6e17;
+  outline:1px solid #ff6e17;
 }
 
 .details-edit .edit-section-wrapper{
