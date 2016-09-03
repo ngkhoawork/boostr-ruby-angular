@@ -19,6 +19,7 @@
   $scope.showQuarterlyDeals = true
 
   $scope.years.forEach (year) ->
+    $scope.revenues[year] = {}
     $scope.quotasByQuarter[year] = {
       1: 0,
       2: 0,
@@ -59,23 +60,23 @@
   $q.all(revenueRequests).then (revenueResponses) ->
     revenueResponses.forEach (revenues) ->
       revenues.forEach (revenue) ->
-        if $scope.revenues[revenue.client.id]
-          $scope.revenues[revenue.client.id].budget += revenue.budget
+        if $scope.revenues[revenue.year] && $scope.revenues[revenue.year][revenue.client.id]
+          $scope.revenues[revenue.year][revenue.client.id].budget += revenue.budget
         else
-          $scope.revenues[revenue.client.id] = revenue
-          $scope.revenues[revenue.client.id].month_amounts = []
-          $scope.revenues[revenue.client.id].quarter_amounts = []
+          $scope.revenues[revenue.year][revenue.client.id] = revenue
+          $scope.revenues[revenue.year][revenue.client.id].month_amounts = []
+          $scope.revenues[revenue.year][revenue.client.id].quarter_amounts = []
           for n in [1..12]
-            $scope.revenues[revenue.client.id].month_amounts[n-1] = 0
+            $scope.revenues[revenue.year][revenue.client.id].month_amounts[n-1] = 0
           for n in [1..4]
-            $scope.revenues[revenue.client.id].quarter_amounts[n-1] = 0
+            $scope.revenues[revenue.year][revenue.client.id].quarter_amounts[n-1] = 0
 
         for n in [1..12]
           budget = revenue.budget * revenue.months[n-1]
-          $scope.revenues[revenue.client.id].month_amounts[n-1] += budget
+          $scope.revenues[revenue.year][revenue.client.id].month_amounts[n-1] += budget
         for n in [1..4]
           budget = revenue.budget * revenue.quarters[n-1]
-          $scope.revenues[revenue.client.id].quarter_amounts[n-1] += budget
+          $scope.revenues[revenue.year][revenue.client.id].quarter_amounts[n-1] += budget
           $scope.forecastsByQuarter[revenue.year][n] += budget
           $scope.forecastsByYear[revenue.year] += budget
 
