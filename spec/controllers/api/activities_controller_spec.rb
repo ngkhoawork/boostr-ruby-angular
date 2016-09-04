@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::ActivitiesController, type: :controller do
+  let(:new_company) { create :company }
   let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
   let(:client) { create :client }
@@ -85,6 +86,39 @@ RSpec.describe Api::ActivitiesController, type: :controller do
           expect(new_contacts.length).to eq 2
           expect(new_contacts.map {|c| c['created_by']}).to eq [user.id, user.id]
         }.to change(Activity, :count).by(1)
+      end
+
+      context 'when there are contacts with same email in other companies' do
+        it 'does not return contacts from different companies' do
+          duplicate_contact = new_company.contacts.create(
+            name: 'New Duplicate',
+            address_attributes: { email: 'new_duplicate@example.org' }
+          )
+          existing_contacts << {
+            name: duplicate_contact.name,
+            address: { email: duplicate_contact.address.email }
+          }
+
+          expect {
+            post :create, {
+              activity: activity_params,
+              raw_contact_data: existing_contacts
+            }, format: :json
+            expect(response).to be_success
+            response_json = JSON.parse(response.body)
+            expect(response_json['contacts'].length).to eq 11
+            new_contact = response_json['contacts'].find {|c| c["name"] == duplicate_contact.name}
+            expect(new_contact['name']).to eq duplicate_contact.name
+            expect(new_contact['created_by']).to eq user.id
+          }.to change(Activity, :count).by(1)
+        end
+
+        it 'creates new company contacts when email is already added in other companies' do
+          new_company.contacts.create(
+            name: contacts[0].name,
+            address_attributes: { email: contacts[0].address.email }
+          )
+        end
       end
     end
   end

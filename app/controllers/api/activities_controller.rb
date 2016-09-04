@@ -43,28 +43,29 @@ class Api::ActivitiesController < ApplicationController
 
   def process_raw_contact_data
     addresses = params[:raw_contact_data].map { |c| c[:address][:email] }
-    existing_contacts = Address.contacts_by_email(addresses)
-    existing_contact_ids = existing_contacts.map(&:addressable_id)
+    existing_contact_ids = Address.contacts_by_email(addresses).map(&:addressable_id)
+    existing_company_contacts = Contact.where(id: existing_contact_ids, company_id: current_user.company_id)
+    new_contacts = []
 
-    if existing_contact_ids.length < params[:raw_contact_data].length
-      existing_emails = existing_contacts.map(&:email)
-      new_contacts = params[:raw_contact_data].reject do |raw_contact|
+    if existing_company_contacts.length < params[:raw_contact_data].length
+      existing_emails = existing_company_contacts.map(&:address).map(&:email)
+      new_incoming_contacts = params[:raw_contact_data].reject do |raw_contact|
         existing_emails.include?(raw_contact[:address][:email])
       end
 
-      new_contacts.each do |new_contact_data|
+      new_incoming_contacts.each do |new_contact_data|
         contact = current_user.company.contacts.new(
-          name: new_contact_data[:name],
-          address_attributes: { email: new_contact_data[:address][:email] },
+          name: new_contact_data['name'],
+          address_attributes: { email: new_contact_data['address']['email'] },
           created_by: current_user.id
         )
         if contact.save
-          existing_contact_ids << contact.id
+          new_contacts << contact
         end
       end
     end
 
-    Contact.where(id: existing_contact_ids).where.not(id: params[:contacts])
+    existing_company_contacts.where.not(id: params[:contacts]) + new_contacts
   end
 
   def activity_params
