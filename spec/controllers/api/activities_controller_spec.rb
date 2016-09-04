@@ -1,16 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Api::ActivitiesController, type: :controller do
-  let(:company) { create :company }
-  let(:team) { create :parent_team, company: company }
-  let(:user) { create :user, company: company, team: team }
-  let(:client) { create :client, company: company }
-  let(:deal) { create :deal, advertiser: client, company: company }
-  let(:contacts) { create_list :contact, 10, company: company, client: client }
+  let(:team) { create :parent_team }
+  let(:user) { create :user, team: team }
+  let(:client) { create :client }
+  let(:deal) { create :deal, advertiser: client }
+  let(:contacts) { create_list :contact, 10, client: client }
   let(:activity_params) {
     attributes_for(:activity)
   }
-  let(:existing_activity) { create :activity, company: company }
+  let(:existing_activity) { create :activity }
 
   before do
     sign_in user
@@ -84,6 +83,7 @@ RSpec.describe Api::ActivitiesController, type: :controller do
             contact["name"] == 'Peggy M. Castle' || contact["name"] == 'William Bernard'
           end
           expect(new_contacts.length).to eq 2
+          expect(new_contacts.map {|c| c['created_by']}).to eq [user.id, user.id]
         }.to change(Activity, :count).by(1)
       end
     end
