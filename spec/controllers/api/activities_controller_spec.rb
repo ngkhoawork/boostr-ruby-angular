@@ -25,8 +25,67 @@ RSpec.describe Api::ActivitiesController, type: :controller do
         }, format: :json
         expect(response).to be_success
         response_json = JSON.parse(response.body)
-        expect(response_json['contacts'].length).to be 10
+        expect(response_json['contacts'].length).to eq 10
       }.to change(Activity, :count).by(1)
+    end
+
+    context 'when contacts are sent as objects' do
+      let(:existing_contacts) { [] }
+      let(:new_contacts) {
+        [
+          { name: 'Peggy M. Castle', address: { email: 'PeggyMCastle@rhyta.com' } },
+          { name: 'William Bernard', address: { email: 'WilliamBBernard@jourrapide.com' } }
+        ]
+      }
+
+      before(:each) do
+        contacts.each do |contact|
+          existing_contacts << {name: contact.name, address: {email: contact.address.email}}
+        end
+      end
+
+      it 'finds existing contacts based on email address' do
+        expect {
+          post :create, {
+            activity: activity_params,
+            raw_contact_data: existing_contacts
+          }, format: :json
+          expect(response).to be_success
+          response_json = JSON.parse(response.body)
+          expect(response_json['contacts'].length).to eq 10
+        }.to change(Activity, :count).by(1)
+      end
+
+      it 'does not add duplicates to the activity' do
+        expect {
+          post :create, {
+            activity: activity_params,
+            contacts: contacts.map(&:id),
+            raw_contact_data: existing_contacts
+          }, format: :json
+          expect(response).to be_success
+          response_json = JSON.parse(response.body)
+          expect(response_json['contacts'].length).to eq 10
+        }.to change(Activity, :count).by(1)
+      end
+
+      it 'creates new contacts out of raw data' do
+        existing_contacts.concat new_contacts
+        expect {
+          post :create, {
+            activity: activity_params,
+            contacts: contacts.map(&:id),
+            raw_contact_data: existing_contacts
+          }, format: :json
+          expect(response).to be_success
+          response_json = JSON.parse(response.body)
+          expect(response_json['contacts'].length).to eq 12
+          new_contacts = response_json['contacts'].select do |contact|
+            contact["name"] == 'Peggy M. Castle' || contact["name"] == 'William Bernard'
+          end
+          expect(new_contacts.length).to eq 2
+        }.to change(Activity, :count).by(1)
+      end
     end
   end
 
@@ -39,7 +98,7 @@ RSpec.describe Api::ActivitiesController, type: :controller do
       }, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
-      expect(response_json['contacts'].length).to be 10
+      expect(response_json['contacts'].length).to eq 10
     end
   end
 end
