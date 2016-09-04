@@ -16,9 +16,7 @@ class Api::ActivitiesController < ApplicationController
     @activity.updated_by = current_user.id
     if @activity.save
       contacts = company.contacts.where(id: params[:contacts])
-      contacts.each do |contact|
-        @activity.contacts << contact
-      end
+      @activity.contacts = contacts
       render json: activity, status: :created
     else
       render json: { errors: activity.errors.messages }, status: :unprocessable_entity
@@ -28,10 +26,7 @@ class Api::ActivitiesController < ApplicationController
   def update
     if activity.update_attributes(activity_params)
       contacts = company.contacts.where(id: params[:contacts])
-      activity.contacts = []
-      contacts.each do |contact|
-        activity.contacts << contact
-      end
+      activity.contacts = contacts
       render json: activity, status: :accepted
     else
       render json: { errors: client.errors.messages }, status: :unprocessable_entity
