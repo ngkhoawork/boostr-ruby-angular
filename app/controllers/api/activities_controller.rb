@@ -55,9 +55,9 @@ class Api::ActivitiesController < ApplicationController
       new_contacts.each do |new_contact_data|
         contact = current_user.company.contacts.new(
           name: new_contact_data[:name],
-          address_attributes: { email: new_contact_data[:address][:email] }
+          address_attributes: { email: new_contact_data[:address][:email] },
+          created_by: current_user.id
         )
-        contact.created_by = current_user.id
         if contact.save
           existing_contact_ids << contact.id
         end
