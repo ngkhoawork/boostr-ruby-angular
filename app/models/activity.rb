@@ -59,7 +59,9 @@ class Activity < ActiveRecord::Base
                 :presigned_url
             ]
         },
-        :contacts => {},
+        :contacts => {
+          include: { address: {} }
+          },
         :creator => {}
       }
     ))
