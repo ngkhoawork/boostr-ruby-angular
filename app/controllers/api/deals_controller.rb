@@ -23,7 +23,7 @@ class Api::DealsController < ApplicationController
             range = deal['start_date'] .. deal['end_date']
 
             deal['month_amounts'] = []
-            monthly_revenues = DealProduct.select("date_part('month', start_date) as month, (sum(budget)/100.0) as revenue").where(deal_id: deal['id']).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue}}
+            monthly_revenues = DealProduct.select("date_part('month', start_date) as month, (sum(budget)/100.0) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue}}
             index = 0
             monthly_revenues.each do |monthly_revenue|
               for i in index..(monthly_revenue[:month]-2)
@@ -50,7 +50,7 @@ class Api::DealsController < ApplicationController
             end
 
             deal['quarter_amounts'] = []
-            quarterly_revenues = DealProduct.select("date_part('quarter', start_date) as quarter, (sum(budget)/100.0) as revenue").where(deal_id: deal['id']).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue}}
+            quarterly_revenues = DealProduct.select("date_part('quarter', start_date) as quarter, (sum(budget)/100.0) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue}}
             index = 0
             quarterly_revenues.each do |quarterly_revenue|
               for i in index..(quarterly_revenue[:quarter]-2)
