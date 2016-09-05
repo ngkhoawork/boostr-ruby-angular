@@ -53,7 +53,8 @@ class Contact < ActiveRecord::Base
     row_number = 0
     CSV.parse(file, headers: true) do |row|
       row_number += 1
-      unless client = Client.where(company_id: current_user.company_id, name: row[1]).first
+      # unless client = Client.where(company_id: current_user.company_id, name: row[1]).first
+      unless client = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, row[1].strip.downcase).first
         error = { row: row_number, message: ['Client could not be found'] }
         errors << error
         next
@@ -66,22 +67,27 @@ class Contact < ActiveRecord::Base
         }
       }
 
-      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").find_by(find_params)
-
+      # contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").find_by(find_params)
+      contacts = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and lower(addresses.email)=?", current_user.company_id, row[3].strip.downcase)
+      if (contacts.length > 0)
+        contact = contacts.first
+      else
+        contact = nil
+      end
       address_params = {
-        email: row[3],
-        street1: row[4],
-        street2: row[5],
-        city: row[6],
-        state: row[7],
-        zip: row[8],
-        phone: row[9],
-        mobile: row[10],
+        email: row[3].nil? ? nil : row[3].strip,
+        street1: row[4].nil? ? nil : row[4].strip,
+        street2: row[5].nil? ? nil : row[5].strip,
+        city: row[6].nil? ? nil : row[6].strip,
+        state: row[7].nil? ? nil : row[7].strip,
+        zip: row[8].nil? ? nil : row[8].strip,
+        phone: row[9].nil? ? nil : row[9].strip,
+        mobile: row[10].nil? ? nil : row[10].strip,
       }
       contact_params = {
-          name: row[0],
+          name: row[0].nil? ? nil : row[0].strip,
           client_id: client.id,
-          position: row[2],
+          position: row[2].nil? ? nil : row[2].strip,
           created_by: current_user.id
       }
       if contact.present?

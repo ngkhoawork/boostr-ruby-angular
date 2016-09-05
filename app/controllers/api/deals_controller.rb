@@ -22,6 +22,20 @@ class Api::DealsController < ApplicationController
           response_deals = response_deals.map do |deal|
             range = deal['start_date'] .. deal['end_date']
 
+            deal['month_amounts'] = []
+            monthly_revenues = DealProduct.select("date_part('month', start_date) as month, (sum(budget)/100.0) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue}}
+            index = 0
+            monthly_revenues.each do |monthly_revenue|
+              for i in index..(monthly_revenue[:month]-2)
+                deal['month_amounts'].push 0
+              end
+              deal['month_amounts'].push monthly_revenue[:revenue]
+              index = monthly_revenue[:month]
+            end
+            for i in index..11
+              deal['month_amounts'].push 0
+            end
+
             deal['months'] = []
             month = Date.parse("#{year-1}1201")
             while month = month.next_month and month.year == year do
@@ -33,6 +47,20 @@ class Api::DealsController < ApplicationController
               else
                 deal['months'].push 0
               end
+            end
+
+            deal['quarter_amounts'] = []
+            quarterly_revenues = DealProduct.select("date_part('quarter', start_date) as quarter, (sum(budget)/100.0) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue}}
+            index = 0
+            quarterly_revenues.each do |quarterly_revenue|
+              for i in index..(quarterly_revenue[:quarter]-2)
+                deal['quarter_amounts'].push 0
+              end
+              deal['quarter_amounts'].push quarterly_revenue[:revenue]
+              index = quarterly_revenue[:quarter]
+            end
+            for i in index..3
+              deal['quarter_amounts'].push 0
             end
 
             deal['quarters'] = []
