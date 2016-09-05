@@ -16,7 +16,7 @@ class Api::ActivitiesController < ApplicationController
     @activity.updated_by = current_user.id
     if @activity.save
       contacts = company.contacts.where(id: params[:contacts])
-      contacts.concat process_raw_contact_data if params[:raw_contact_data]
+      contacts.concat process_raw_contact_data if params[:guests]
       @activity.contacts = contacts
       render json: activity, status: :created
     else
@@ -27,6 +27,7 @@ class Api::ActivitiesController < ApplicationController
   def update
     if activity.update_attributes(activity_params)
       contacts = company.contacts.where(id: params[:contacts])
+      contacts.concat process_raw_contact_data if params[:guests]
       activity.contacts = contacts
       render json: activity, status: :accepted
     else
@@ -42,14 +43,14 @@ class Api::ActivitiesController < ApplicationController
   private
 
   def process_raw_contact_data
-    addresses = params[:raw_contact_data].map { |c| c[:address][:email] }
+    addresses = params[:guests].map { |c| c[:address][:email] }
     existing_contact_ids = Address.contacts_by_email(addresses).map(&:addressable_id)
     existing_company_contacts = Contact.where(id: existing_contact_ids, company_id: current_user.company_id)
     new_contacts = []
 
-    if existing_company_contacts.length < params[:raw_contact_data].length
+    if existing_company_contacts.length < params[:guests].length
       existing_emails = existing_company_contacts.map(&:address).map(&:email)
-      new_incoming_contacts = params[:raw_contact_data].reject do |raw_contact|
+      new_incoming_contacts = params[:guests].reject do |raw_contact|
         existing_emails.include?(raw_contact[:address][:email])
       end
 
