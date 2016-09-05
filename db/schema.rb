@@ -100,8 +100,9 @@ ActiveRecord::Schema.define(version: 20160907125631) do
   create_table "client_contacts", force: :cascade do |t|
     t.integer  "client_id"
     t.integer  "contact_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.boolean  "primary",    default: false, null: false
   end
 
   add_index "client_contacts", ["client_id", "contact_id"], name: "index_client_contacts_on_client_id_and_contact_id", using: :btree
