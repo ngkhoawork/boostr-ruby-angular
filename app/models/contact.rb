@@ -22,6 +22,16 @@ class Contact < ActiveRecord::Base
     Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email=? and contacts.company_id=?", email, company_id)
   }
 
+  after_save do
+    if client_id_changed? && !client_id.nil?
+      relation = ClientContact.find_or_initialize_by(contact_id: id, client_id: client_id)
+      relation.primary = true if client_id_was.nil?
+      relation.save
+    elsif client_id_changed? && client_id.nil?
+      self.clients = []
+    end
+  end
+
   def as_json(options = {})
     super(options.merge(
       include: {

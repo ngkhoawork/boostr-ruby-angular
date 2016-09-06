@@ -144,10 +144,10 @@
           return updated_contact
         else
           return item
-      $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+      $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
       $scope.contactActionLog.push({
         previousContact: contact,
-        message: updated_contact.client.name
+        message: updated_contact.clients[0].name
       })
 
   $scope.saveCurrentContact = (contact) ->
