@@ -87,8 +87,25 @@ class Contact < ActiveRecord::Base
       end
 
       unless client = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, row[1].strip.downcase).first
-        error = { row: row_number, message: ['Client could not be found'] }
+        error = { row: row_number, message: ['Client ' + row[1].to_s + ' could not be found'] }
         errors << error
+        next
+      end
+
+      agency_list = row[11].split(";")
+      agency_data_list = []
+      agency_list_error = false
+      agency_list.each do |agency_name|
+        if agency = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, agency_name.strip.downcase).first
+          agency_data_list << agency
+        else
+          error = { row: row_number, message: ['Client ' + agency_name.to_s + ' could not be found'] }
+          errors << error
+          agency_list_error = true
+          break
+        end
+      end
+      if agency_list_error
         next
       end
 
@@ -131,8 +148,19 @@ class Contact < ActiveRecord::Base
       end
       contact_params[:address_attributes] = address_params
 
-
-      unless contact.update_attributes(contact_params)
+      if contact.update_attributes(contact_params)
+        primary_client_contact = ClientContact.find_by({contact_id: contact.id, primary: true})
+        if primary_client_contact.nil?
+          contact.client_contacts.create({client_id: client.id, primary: true})
+        else
+          primary_client_contact.update({client_id: client.id, primary: true})
+        end
+        agency_data_list.each do |agency|
+          unless client_contact = ClientContact.find_by({contact_id: contact.id, client_id: agency.id})
+            contact.client_contacts.create({client_id: agency.id, primary: false})
+          end
+        end
+      else
         error = { row: row_number, message: contact.errors.full_messages }
         errors << error
         next
@@ -151,8 +179,12 @@ class Contact < ActiveRecord::Base
   end
 
   def email_unique?
-    # contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").find_by({company_id: company_id, addresses: {email: address.email}})
-    contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
+    if id
+      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
+    else
+      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=?", company_id, address.email)
+    end
+
     if contact.present?
       errors.add(:email, "has already been taken")
     end
