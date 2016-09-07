@@ -17,6 +17,9 @@ class Contact < ActiveRecord::Base
 
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
   scope :unassigned, -> user_id { where(client_id: nil, created_by: user_id) }
+  scope :by_email, -> email, company_id {
+    Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email=? and contacts.company_id=?", email, company_id)
+  }
 
   def as_json(options = {})
     super(options.merge(

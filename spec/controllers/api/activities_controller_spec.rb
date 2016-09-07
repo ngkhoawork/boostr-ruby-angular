@@ -11,6 +11,7 @@ RSpec.describe Api::ActivitiesController, type: :controller do
     attributes_for(:activity)
   }
   let(:existing_activity) { create :activity }
+  let(:user_contact) { create :contact, address_attributes: { email: user.email } }
 
   before do
     sign_in user
@@ -27,6 +28,16 @@ RSpec.describe Api::ActivitiesController, type: :controller do
         response_json = JSON.parse(response.body)
         expect(response_json['contacts'].length).to eq 10
       }.to change(Activity, :count).by(1)
+    end
+
+    it 'filters out current user from contacts' do
+      post :create, {
+        activity: activity_params,
+        contacts: contacts.map(&:id) + [user_contact.id]
+      }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['contacts'].length).to eq 10
     end
 
     context 'when contacts are sent as objects' do
@@ -88,6 +99,17 @@ RSpec.describe Api::ActivitiesController, type: :controller do
         }.to change(Activity, :count).by(1)
       end
 
+      it 'filters out current user from contacts' do
+        existing_contacts << {name: user_contact.name, address: {email: user_contact.address.email}}
+        post :create, {
+          activity: activity_params,
+          guests: existing_contacts
+        }, format: :json
+        expect(response).to be_success
+        response_json = JSON.parse(response.body)
+        expect(response_json['contacts'].length).to eq 10
+      end
+
       context 'when there are contacts with same email in other companies' do
         it 'does not return contacts from different companies' do
           duplicate_contact = new_company.contacts.create(
@@ -139,6 +161,17 @@ RSpec.describe Api::ActivitiesController, type: :controller do
         id: existing_activity.id,
         activity: activity_params,
         contacts: contacts.map(&:id)
+      }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['contacts'].length).to eq 10
+    end
+
+    it 'filters out current user from contacts' do
+      put :update, {
+        id: existing_activity.id,
+        activity: activity_params,
+        contacts: contacts.map(&:id) + [user_contact.id]
       }, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
@@ -199,6 +232,19 @@ RSpec.describe Api::ActivitiesController, type: :controller do
         end
         expect(new_contacts.length).to eq 2
         expect(new_contacts.map {|c| c['created_by']}).to eq [user.id, user.id]
+      end
+
+      it 'filters out current user from contacts' do
+        existing_contacts << {name: user_contact.name, address: {email: user_contact.address.email}}
+
+        put :update, {
+          id: existing_activity.id,
+          activity: activity_params,
+          guests: existing_contacts
+        }, format: :json
+        expect(response).to be_success
+        response_json = JSON.parse(response.body)
+        expect(response_json['contacts'].length).to eq 10
       end
 
       context 'when there are contacts with same email in other companies' do

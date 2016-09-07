@@ -14,9 +14,15 @@ class Api::ActivitiesController < ApplicationController
     @activity.user_id = current_user.id
     @activity.created_by = current_user.id
     @activity.updated_by = current_user.id
+
     if @activity.save
-      contacts = company.contacts.where(id: params[:contacts])
-      contacts.concat process_raw_contact_data if params[:guests]
+      current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+
+      activity_contacts = []
+      activity_contacts += params[:contacts] if params[:contacts]
+      activity_contacts += process_raw_contact_data if params[:guests]
+
+      contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
       @activity.contacts = contacts
       render json: activity, status: :created
     else
@@ -26,8 +32,13 @@ class Api::ActivitiesController < ApplicationController
 
   def update
     if activity.update_attributes(activity_params)
-      contacts = company.contacts.where(id: params[:contacts])
-      contacts.concat process_raw_contact_data if params[:guests]
+      current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+
+      activity_contacts = []
+      activity_contacts += params[:contacts] if params[:contacts]
+      activity_contacts += process_raw_contact_data if params[:guests]
+
+      contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
       activity.contacts = contacts
       render json: activity, status: :accepted
     else
@@ -66,7 +77,7 @@ class Api::ActivitiesController < ApplicationController
       end
     end
 
-    existing_company_contacts.where.not(id: params[:contacts]) + new_contacts
+    existing_company_contacts.ids + new_contacts.map(&:id)
   end
 
   def activity_params
