@@ -2,10 +2,10 @@
 
   #unassigned-contacts {
     .contact-list {
-      border-top: 1px solid #ddd;
+      border-top: 1px solid $very-light-gray;
       .contact-log {
         padding: 30px 40px 30px 10px;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid $very-light-gray;
         .log {
           a {
             color: #75b4e2;
@@ -14,8 +14,8 @@
       }
       .contact-info {
         padding: 10px 0;
-        border-bottom: 1px solid #ddd;
-        background-color: #ffffff;
+        border-bottom: 1px solid $very-light-gray;
+        background-color: $white;
         .info {
           display: inline-block;
           vertical-align: middle;
@@ -140,7 +140,7 @@ a#add-contact {
 }
 
 #reminders-list .item-reminders:nth-of-type(1) {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid $very-light-gray;
 }
 
 /*styled input*/
@@ -213,10 +213,10 @@ a#add-contact {
 
 .item-reminders .panel-heading {
   border-radius: 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid $very-light-gray;
   margin: 0 14px;
   padding: 0;
-  background-color: #fff;
+  background-color: $white;
 }
 
 .panel-collapse.collapse.in {
@@ -298,7 +298,7 @@ a#add-contact {
 }
 
 .panel.panel-default.item-reminders:last-child .panel-heading {
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid $very-light-gray;
 }
 
 .completed-reminders {
@@ -407,7 +407,7 @@ a#add-contact {
 
     &:focus {
       border: 1px solid $brand-primary;
-      background-color: white;
+      background-color: $white;
       outline: none;
     }
   }
