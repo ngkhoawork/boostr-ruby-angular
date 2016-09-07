@@ -40,15 +40,6 @@
             client_member.role = Field.field(client_member, 'Member Role')
             $scope.client_members.push(client_member)
 
-
-  $scope.getContacts = (client) ->
-    Contact.$resource.query().$promise.then (contacts) ->
-      $scope.contacts = contacts
-#    unless client.contacts
-#      Contact.allForClient client.id, (contacts) ->
-#        $scope.contacts = contacts
-#        client.contacts = contacts
-
   $scope.removeClientMember = (clientMember) ->
     clientMember.$delete(
       null,
@@ -60,7 +51,6 @@
   $scope.setClient = (client) ->
     $scope.currentClient = client
     $scope.initActivity()
-    $scope.getContacts($scope.currentClient)
     $scope.getDeals($scope.currentClient)
     $scope.initReminder()
     $scope.$emit('updated_current_client')
@@ -246,7 +236,6 @@
         $scope.currentClient.client_type = Field.field($scope.currentClient, 'Client Type')
         $scope.currentClient.client_category = Field.getOption($scope.currentClient, 'Category', $scope.currentClient.client_category_id)
         $scope.currentClient.client_subcategory = Field.getSuboption($scope.currentClient, $scope.currentClient.client_category, $scope.currentClient.client_subcategory_id)
-      $scope.getContacts($scope.currentClient)
       $scope.getDeals($scope.currentClient)
       $scope.getClientMembers()
 

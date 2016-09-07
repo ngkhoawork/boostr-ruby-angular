@@ -36,7 +36,6 @@ class Contact < ActiveRecord::Base
     super(options.merge(
       include: {
         address: {},
-        clients: {},
         activities: {
           include: {
             creator: {},
