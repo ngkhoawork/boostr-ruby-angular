@@ -78,7 +78,7 @@ feature 'Contacts' do
   end
 
   describe 'Editing a contact' do
-    let!(:contacts) { create_list :contact, 3, company: company, client: client }
+    let!(:contacts) { create_list :contact, 3, company: company, clients: [client] }
 
     before do
       login_as user, scope: :user
@@ -118,7 +118,7 @@ feature 'Contacts' do
   end
 
   describe 'Deleting a contact' do
-    let!(:contacts) { create_list :contact, 3, company: company, client: client }
+    let!(:contacts) { create_list :contact, 3, company: company, clients: [client] }
 
     before do
       contacts.sort_by!(&:name)
