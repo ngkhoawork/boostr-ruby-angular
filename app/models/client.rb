@@ -9,7 +9,7 @@ class Client < ActiveRecord::Base
   has_many :users, through: :client_members
   # has_many :contacts
   has_many :contacts, -> { uniq }, through: :client_contacts
-  has_many :client_contacts
+  has_many :client_contacts, dependent: :destroy
   has_many :revenues
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
