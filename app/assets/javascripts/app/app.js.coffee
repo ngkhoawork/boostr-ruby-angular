@@ -62,6 +62,9 @@
     .when '/reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
       controller: 'SalesExecutionDashboardController'
+    .when '/reports/deal_reports',
+      templateUrl: 'deal_reports.html'
+      controller: 'DealReportsController'
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'

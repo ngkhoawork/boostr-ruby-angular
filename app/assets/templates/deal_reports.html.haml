@@ -1,0 +1,62 @@
+#reports
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right
+              %a.export{ href: '', ng: { click: 'exportReports()' } }
+                Export
+  .container
+    .row
+      .col-xs-12
+        %h3
+          Pipeline by User Report
+
+    .row
+      .col-md-12
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Deal ID
+                %th.left Name
+                %th.left Advertiser
+                %th.left Agency
+                %th.left Team Member
+                %th.left Stage
+                %th.left %
+                %th.left Budget
+                %th.left{ ng: { repeat: 'productTime in productRange' } }
+                  {{ productTime | date: 'yyyy-MM' }}
+                %th.left Next Steps
+                %th.left Type
+                %th.left Source
+                %th.left Start Date
+                %th.left End Date
+                %th.left Created Date
+                %th.left Closed Date
+                %th.left Close Reason
+
+            %tbody
+              %tr{ ng: { repeat: 'deal in deals' } }
+                %td.left {{ deal.id }}
+                %td.right {{ deal.name }}
+                %td.right {{ deal.advertiser.name }}
+                %td.right {{ deal.agency.name }}
+                %td.right
+                  %div{ ng: { repeat: 'user in deal.users' } }
+                    ${{ user.first_name + " " + user.last_name }}
+                %td.right {{ deal.stage.name }}
+                %td.right {{ deal.stage.probability }}
+                %td.right {{ deal.budget / 100 | number : 0}}
+                %td.right{ ng: { repeat: 'productTime in productRange' } }
+                  ${{ findDealProductBudget(deal.deal_products, productTime) / 100 | number : 0 }}
+                %td.right {{ deal.next_steps.substr(0, 30) }}
+                %td.right {{ deal.deal_type }}
+                %td.right {{ deal.source_type }}
+                %td.right {{ deal.start_date }}
+                %td.right {{ deal.end_date }}
+                %td.right {{ deal.created_at | date: 'yyyy-MM-dd' }}
+                %td.right {{ deal.closed_at }}
+                %td.right {{ deal.close_reason }}

@@ -23,6 +23,9 @@ Rails.application.routes.draw do
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
+      collection do
+        get :pipeline_report
+      end
       resources :deal_members, only: [:index, :create, :update, :destroy]
     end
     resources :stages, only: [:index, :create, :show, :update]

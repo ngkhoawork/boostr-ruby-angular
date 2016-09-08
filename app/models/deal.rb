@@ -283,6 +283,65 @@ class Deal < ActiveRecord::Base
     return option
   end
 
+  def self.to_pipeline_report_csv(company)
+    CSV.generate do |csv|
+      deals = company.deals
+      deal_ids = deals.collect{|deal| deal.id}
+      range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
+      header = []
+      header << "Deal ID"
+      header << "Name"
+      header << "Advertiser"
+      header << "Agency"
+      header << "Team Member"
+      header << "Stage"
+      header << "%"
+      header << "Budget"
+      range.each do |product_time|
+        header << product_time.strftime("%Y-%m")
+      end
+      header << "Next Steps"
+      header << "Type"
+      header << "Source"
+      header << "Start Date"
+      header << "End Date"
+      header << "Created Date"
+      header << "Closed Date"
+      header << "Close Reason"
+      csv << header
+      deals.each do |deal|
+        line = [
+            deal.id,
+            deal.name,
+            deal.advertiser ? deal.advertiser.name : nil,
+            deal.agency ? deal.agency.name : nil,
+            deal.users.collect {|user| user.first_name + " " + user.last_name}.join(";"),
+            deal.stage.name,
+            deal.stage.probability,
+            "$" + (deal.budget / 100).round.to_s
+        ]
+        deal_products = deal.deal_products.collect{|deal_product| }
+        range.each do |product_time|
+          deal_product = deal.deal_products.find_by({start_date: product_time})
+          if deal_product.nil?
+            line << "$0"
+          else
+            line << "$" + (deal_product.budget / 100).round.to_s
+          end
+        end
+        line << deal.next_steps
+        line << deal.deal_type
+        line << deal.source_type
+        line << deal.start_date
+        line << deal.end_date
+        line << deal.created_at.strftime("%Y-%m-%d")
+        line << deal.closed_at
+        line << Deal.get_option(deal, "Close Reason")
+        csv << line
+      end
+    end
+  end
+
   def self.to_zip
     deals_csv = CSV.generate do |csv|
       csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]
