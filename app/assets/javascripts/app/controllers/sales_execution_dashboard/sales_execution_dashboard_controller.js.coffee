@@ -30,9 +30,12 @@
       $scope.optionsDealLossSummary = DealLossSummaryDataStore.getOptions()
 
       $scope.dealLossStagesChoice = "qtd"
+      $scope.kpisChoice = "qtd"
 
       $scope.activitySummaryChoice = "qtd"
       $scope.optionsActivitySummary = ActivitySummaryDataStore.getOptions()
+
+      $scope.allMemberId = []
 
       $scope.init = () =>
         Team.all(all_teams: true).then (teams) ->
@@ -47,14 +50,13 @@
             members: all_members,
             members_count: all_members.length
           }]
+          $scope.allMemberId = _.map $scope.teams[0].members, (member) ->
+            return member.id
           $scope.selectedTeam = $scope.teams[0]
           $scope.selectedTeamId = $scope.selectedTeam.id
 
-          data = calculateKPIsForTeam($scope.teams[0])
-          $scope.allAverageWinRate = data.averageWinRate
-          $scope.allAverageCycleTime = data.averageCycleTime
-          $scope.allAverageDealSize = data.averageDealSize
-
+          SalesExecutionDashboard.kpis("member_ids[]": $scope.allMemberId, time_period: $scope.kpisChoice).then (data) ->
+            $scope.allKPIs = data[0]
 
 
       updateProductPipelineData = () =>
@@ -64,17 +66,6 @@
           $scope.dataProductPipeline = $scope.productPipelineData.unweighted
 
       calculateKPIs = () =>
-        $scope.averageWinRate = 0
-        $scope.averageCycleTime = 0
-        $scope.averageDealSize = 0
-
-        if ($scope.selectedMember == null && $scope.selectedTeam && $scope.selectedTeam.members.length > 0)
-          data = calculateKPIsForTeam($scope.selectedTeam)
-          $scope.averageWinRate = data.averageWinRate
-          $scope.averageCycleTime = data.averageCycleTime
-          $scope.averageDealSize = data.averageDealSize
-        else if ($scope.selectedMember)
-          calculateKPIsForMember()
 
         SalesExecutionDashboard.activity_summary("member_ids[]": $scope.selectedMemberList, time_period: $scope.activitySummaryChoice).then (data) ->
           ActivitySummaryDataStore.setData(data)
@@ -90,6 +81,9 @@
           DealLossStagesDataStore.setData(data)
           $scope.dataDealLossStages = DealLossStagesDataStore.getData()
           $scope.optionsDealLossStages = DealLossStagesDataStore.getOptions()
+
+        SalesExecutionDashboard.kpis("member_ids[]": $scope.selectedMemberList, time_period: $scope.kpisChoice).then (data) ->
+          $scope.kpis = data[0]
 
         SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList, team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
           $scope.topDeals = data[0].top_deals
@@ -110,43 +104,6 @@
           SalesExecutionDashboardDataStore.setDataQuarterForecast(data);
           $scope.dataQuaterForecast =  SalesExecutionDashboardDataStore.getGraphDataQuarterForecast()
           $scope.optionsQuarterForecast = SalesExecutionDashboardDataStore.getOptionsQuarterForecast()
-
-      calculateKPIsForTeam = (team) =>
-        if team.members.length > 0
-          win_rate_count = 0
-          cycle_time_count = 0
-          deal_size_count = 0
-          averageWinRate = 0
-          averageCycleTime = 0
-          averageDealSize = 0
-
-          _.each team.members, (item) =>
-            if (item.win_rate > 0)
-              averageWinRate = averageWinRate + parseFloat(item.win_rate)
-              win_rate_count = win_rate_count + 1
-
-            if (item.cycle_time > 0)
-              averageCycleTime = averageCycleTime + parseFloat(item.cycle_time)
-              cycle_time_count = cycle_time_count + 1
-
-            if (item.average_deal_size > 0)
-              averageDealSize = averageDealSize + parseFloat(item.average_deal_size)
-              deal_size_count = deal_size_count + 1
-
-          if win_rate_count > 0
-            averageWinRate = Number((averageWinRate / win_rate_count * 100).toFixed(0))
-          if cycle_time_count > 0
-            averageCycleTime = Number((averageCycleTime / cycle_time_count).toFixed(0))
-          if deal_size_count > 0
-            averageDealSize = Number((averageDealSize / deal_size_count / 1000).toFixed(0))
-
-          return {averageWinRate: averageWinRate, averageCycleTime: averageCycleTime, averageDealSize: averageDealSize}
-
-      calculateKPIsForMember = () =>
-        if $scope.selectedMember
-          $scope.averageWinRate = (if ($scope.selectedMember.win_rate > 0) then Number(($scope.selectedMember.win_rate * 100).toFixed(0)) else 0)
-          $scope.averageCycleTime = (if ($scope.selectedMember.cycle_time > 0) then Number(($scope.selectedMember.cycle_time).toFixed(0)) else 0)
-          $scope.averageDealSize = (if ($scope.selectedMember.average_deal_size > 0) then Number(($scope.selectedMember.average_deal_size / 1000).toFixed(0)) else 0)
 
       $scope.$watch('selectedTeam', () =>
         if ($scope.selectedTeam)
@@ -182,6 +139,13 @@
           DealLossStagesDataStore.setData(data)
           $scope.dataDealLossStages = DealLossStagesDataStore.getData()
           $scope.optionsDealLossStages = DealLossStagesDataStore.getOptions()
+
+      $scope.changeKPIsChoice=(value) =>
+        $scope.kpisChoice = value
+        SalesExecutionDashboard.kpis("member_ids[]": $scope.selectedMemberList, time_period: $scope.kpisChoice).then (data) ->
+          $scope.kpis = data[0]
+        SalesExecutionDashboard.kpis("member_ids[]": $scope.allMemberId, time_period: $scope.kpisChoice).then (data) ->
+          $scope.allKPIs = data[0]
 
       $scope.changeProductPipelineChoice=(value) =>
         $scope.productPipelineChoice = value

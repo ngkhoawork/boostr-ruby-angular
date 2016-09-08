@@ -1,5 +1,13 @@
-%h3
+%h3{ class: 'float-left'}
   KPIs
+%div{ class: "pull-right chart-choice" }
+  %div{ ng: {class: '{active: kpisChoice == "all_time"}', click: 'changeKPIsChoice("all_time")'} }
+    All Time
+  %div{ ng: {class: '{active: kpisChoice == "last_qtr"}', click: 'changeKPIsChoice("last_qtr")' } }
+    Last QTR
+  %div{ ng: {class: '{active: kpisChoice == "qtd"}', click: 'changeKPIsChoice("qtd")' } }
+    QTD
+.clearBox
 %hr{width: '100%'}
 %table.table.table-hover.table-striped.table-large
   %tbody
@@ -8,20 +16,20 @@
         %div.label
           Win Rate
         %div
-          {{averageWinRate}}% / {{allAverageWinRate}}%
+          {{kpis.win_rate}}% / {{allKPIs.win_rate}}%
         %div.small
           (ave)
       %td.center
         %div.label
           Deal Size
         %div
-          {{averageDealSize | currency: '$' : 0}}k / {{allAverageDealSize | currency: '$' : 0}}k
+          {{kpis.average_deal_size | currency: '$' : 0}}k / {{allKPIs.average_deal_size | currency: '$' : 0}}k
         %div.small
           (ave)
       %td.center
         %div.label
           Cycle Time
         %div
-          {{averageCycleTime}}d / {{allAverageCycleTime}}d
+          {{kpis.cycle_time}}d / {{allKPIs.cycle_time}}d
         %div.small
           (ave)

@@ -10,6 +10,8 @@
 
   deal_loss_stages_resource = $resource '/api/sales_execution_dashboard/deal_loss_stages'
 
+  kpis_resource = $resource '/api/sales_execution_dashboard/kpis'
+
   activity_summary_resource = $resource '/api/sales_execution_dashboard/activity_summary'
 
   @all = (params) ->
@@ -27,6 +29,12 @@
   @deal_loss_summary = (params) ->
     deferred = $q.defer()
     deal_loss_summary_resource.query params, (response) ->
+      deferred.resolve(response)
+    deferred.promise
+
+  @kpis = (params) ->
+    deferred = $q.defer()
+    kpis_resource.query params, (response) ->
       deferred.resolve(response)
     deferred.promise
 

@@ -26,6 +26,46 @@ class Api::SalesExecutionDashboardController < ApplicationController
     end
   end
 
+  def kpis
+    case params[:time_period]
+      when "all_time"
+        end_date = Time.now.utc
+        start_date = DateTime.parse("2014-01-01")
+      when "last_qtr"
+        end_date = Time.now.utc.beginning_of_quarter - 1.seconds
+        start_date = end_date.beginning_of_quarter
+      when "qtd"
+        start_date = Time.now.utc.beginning_of_quarter
+        end_date = Time.now.utc
+    end
+
+    complete_deals = Deal.where("deals.id in (?)", deal_ids).closed_at(start_date, end_date).at_percent(100)
+    incomplete_deals = Deal.where("deals.id in (?)", deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
+
+    win_rate = 0.0
+    average_deal_size = 0
+    cycle_time = 0.0
+
+    win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(2) if (incomplete_deals.count + complete_deals.count) > 0
+    average_deal_size = (complete_deals.average(:budget) / 100000).round(2) if complete_deals.count > 0
+    cycle_time_arr = complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s)  - Date.parse(deal.created_at.utc.to_s)}
+    cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(2) if cycle_time_arr.count > 0
+    #
+    # team_complete_deals = Deal.where("deals.id in (?)", team_deal_ids).closed_at(start_date, end_date).at_percent(100)
+    # team_incomplete_deals = Deal.where("deals.id in (?)", team_deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
+    #
+    # team_win_rate = 0.0
+    # team_average_deal_size = 0
+    # team_cycle_time = 0.0
+    #
+    # team_win_rate = (team_complete_deals.count.to_f / (team_complete_deals.count.to_f + team_incomplete_deals.count.to_f) * 100).round(2) if (team_incomplete_deals.count + team_complete_deals.count) > 0
+    # team_average_deal_size = (team_complete_deals.average(:budget) / 100000).round(2) if team_complete_deals.count > 0
+    # team_cycle_time_arr = team_complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s)  - Date.parse(deal.created_at.utc.to_s)}
+    # team_cycle_time = (team_cycle_time_arr.sum.to_f / team_cycle_time_arr.count + 1).round(2) if team_cycle_time_arr.count > 0
+
+    render json: [{win_rate: win_rate, average_deal_size: average_deal_size, cycle_time: cycle_time}]
+  end
+
   def deal_loss_summary
     case params[:time_period]
       when "last_week"
