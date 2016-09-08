@@ -453,10 +453,10 @@
 
   $scope.initRelatedContacts = () ->
     if ($scope.currentClient && $scope.currentClient.id)
-      if ($scope.currentClient.client_type && $scope.currentClient.client_type.option && $scope.currentClient.client_type.option.name == 'Agency')
+#      if ($scope.currentClient.client_type && $scope.currentClient.client_type.option && $scope.currentClient.client_type.option.name == 'Agency')
 #        /api/clients/:client_id/client_contacts
-        ClientContacts.list($scope.currentClient.id)
-        .then (respond) ->
-          if (respond && respond.data && respond.data.length)
-            $scope.currentClient.relatedContacts = respond.data
+      ClientContacts.list($scope.currentClient.id)
+      .then (respond) ->
+        if (respond && respond.data && respond.data.length)
+          $scope.currentClient.relatedContacts = respond.data
 ]

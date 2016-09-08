@@ -152,13 +152,13 @@
             activities
           %div{ ng: { include: "'partials/activities_client.html'" } }
 
-          %h2.advertisers-wrap-title-section
+          %h2.advertisers-wrap-title-section{ ng: { show: "currentClient.client_type.option.name == 'Agency'" } }
             %span.sub-title-text
               Related Advertisers & People
             %a#add-app-advertisers-people{ href: '', ng: { click: 'showModal()' } }
               = inline_svg 'icons/add.svg'
 
-          %div{ ng: { include: "'partials/activities_related_advertisers_and_people.html'" } }
+          %div{ ng: { include: "'partials/activities_related_advertisers_and_people.html'", show: "currentClient.client_type.option.name == 'Agency'" } }
 
         #activities-feed.section          
           %div{ ng: { include: "'partials/activities_feed_client.html'" } }
