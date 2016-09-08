@@ -7,6 +7,8 @@
          $scope.deals = data.dealData[0].deals
          $scope.productRange = data.dealData[0].range
 
+      $scope.init()
+
       $scope.findDealProductBudget = (dealProducts, productTime) ->
         result =  _.find dealProducts, (dealProduct) ->
           if (dealProduct.start_date == productTime)
