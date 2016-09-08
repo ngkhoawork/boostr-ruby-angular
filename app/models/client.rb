@@ -92,7 +92,9 @@ class Client < ActiveRecord::Base
       include: {
         address: {},
         parent_client: {},
-        contacts: {},
+        contacts: {
+          include: :address
+        },
         values: {
           methods: [:value],
           include: [:option]
