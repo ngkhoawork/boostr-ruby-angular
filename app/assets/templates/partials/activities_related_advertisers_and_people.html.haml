@@ -1,6 +1,5 @@
 #advertisers-list
-  .panel.item-advertisers
-    -#{ng: { repeat: 'reminder in reminders' } }
+  .panel.item-advertisers{ng: { repeat: 'client in currentClient.relatedContacts' } }
     .panel-heading.hide-detail-wrap
       .show-people
         %label.trigger-click{"ng-click" => "editShow = !editShow", "ng-show" => "!editShow"}
@@ -11,151 +10,21 @@
       .text-wrap
 
         %span.company-name
-          Nike inc.
+          {{ client.name }}
         %span.city
-          New York
-          -#{{ reminder.remindable_type }} - {{ reminder.remindable.name }}
+          {{ client.formatted_name }}
         %br
         %span.count-of-people
-          4 people
-          -#{ ng: {hide: 'collapsed'} } {{ reminder.name }}
+          {{ client.contacts.length }} people
 
     .panel-body.details{ ng: {show: 'editShow'}}
       %div.data-section-wrapper
-        %div.user-data
+        %div.user-data{ng: { repeat: 'contact in client.contacts' } }
           %span.name
-            John Doe
+            {{ contact.name }}
           %span.city
-            New York
+            {{ contact.address }}
           %span.email
-            mail@mail.com
+            {{ contact.address.email }}
           %span.phone-number
-            (001) 456-7890
-        %div.user-data
-          %span.name
-            John Doe
-          %span.city
-            New York
-          %span.email
-            mail@mail.com
-          %span.phone-number
-            (002) 456-7890
-        %div.user-data
-          %span.name
-            John Doe
-          %span.city
-            New York
-          %span.email
-            mail@mail.com
-          %span.phone-number
-            (003) 456-7890
-        %div.user-data
-          %span.name
-            Tiger Woods
-          %span.city
-            New York
-          %span.email
-            mail@mail.com
-          %span.phone-number
-            (004) 456-7890
-
-  .panel.item-advertisers
-    -#{ng: { repeat: 'reminder in reminders' } }
-
-    .panel-heading.hide-detail-wrap
-      .show-people
-        %label.trigger-click{"ng-click" => "editShow2 = !editShow2", "ng-show" => "!editShow2"}
-          = inline_svg 'icons/hide-details.svg'
-        %label.trigger-click{"ng-click" => "editShow2 = !editShow2", "ng-show" => "editShow2"}
-          = inline_svg 'icons/show-details.svg'
-
-      .text-wrap
-        %span.company-name
-          Zazmic inc.
-        %span.city
-          New York
-        -#{{ reminder.remindable_type }} - {{ reminder.remindable.name }}
-        %br
-        %span.count-of-people
-          999 999 999 people
-    -#{ ng: {hide: 'collapsed'} } {{ reminder.name }}
-
-    .panel-body.details{ ng: {show: 'editShow2'}}
-      %div.data-section-wrapper
-        %div.user-data
-          %span.name
-            John Doe
-          %span.city
-            New York
-          %span.email
-            mail@mail.com
-          %span.phone-number
-            (021) 456-7890
-        %div.user-data
-          %span.name
-            John Doe
-          %span.city
-            New York
-          %span.email
-            mail@mail.com
-          %span.phone-number
-            (022) 456-7890
-        %div.user-data
-          %span.name
-            John Doe
-          %span.city
-            New York
-          %span.email
-            mail@mail.com
-          %span.phone-number
-            (023) 456-7890
-
-    .panel.item-advertisers
-      -#{ng: { repeat: 'reminder in reminders' } }
-
-      .panel-heading.hide-detail-wrap
-        .show-people
-          %label.trigger-click{"ng-click" => "editShow3 = !editShow3", "ng-show" => "!editShow3"}
-            = inline_svg 'icons/hide-details.svg'
-          %label.trigger-click{"ng-click" => "editShow3 = !editShow3", "ng-show" => "editShow3"}
-            = inline_svg 'icons/show-details.svg'
-
-        .text-wrap
-          %span.company-name
-            Zazmic&co inc.
-          %span.city
-            Yalta
-          -#{{ reminder.remindable_type }} - {{ reminder.remindable.name }}
-          %br
-          %span.count-of-people
-            9 people
-
-      .panel-body.details{ ng: {show: 'editShow3'}}
-        %div.data-section-wrapper
-          %div.user-data
-            %span.name
-              Vin Diesel
-            %span.city
-              Slav Zazmic
-            %span.email
-              mail@mail.com
-            %span.phone-number
-              (021) 456-7890
-          %div.user-data
-            %span.name
-              John Doe
-            %span.city
-              Darth Vader
-            %span.email
-              mail@mail.com
-            %span.phone-number
-              (022) 456-7890
-          %div.user-data
-            %span.name
-              Dart Weider
-            %span.city
-              New York
-            %span.email
-              mail@gmail.com
-            %span.phone-number
-              (023) 456-7890
+            {{ contact.address.emailice }}

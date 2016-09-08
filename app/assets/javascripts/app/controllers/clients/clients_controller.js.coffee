@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http'
-($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts',
+($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -53,6 +53,7 @@
     $scope.initActivity()
     $scope.getDeals($scope.currentClient)
     $scope.initReminder()
+    $scope.initRelatedContacts()
     $scope.$emit('updated_current_client')
 
   $scope.getClient = (clientId) ->
@@ -449,4 +450,13 @@
 
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
+
+  $scope.initRelatedContacts = () ->
+    if ($scope.currentClient && $scope.currentClient.id)
+      if ($scope.currentClient.client_type && $scope.currentClient.client_type.option && $scope.currentClient.client_type.option.name == 'Agency')
+#        /api/clients/:client_id/client_contacts
+        ClientContacts.list($scope.currentClient.id)
+        .then (respond) ->
+          if (respond && respond.data && respond.data.length)
+            $scope.currentClient.relatedContacts = respond.data
 ]
