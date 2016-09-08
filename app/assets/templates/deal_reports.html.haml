@@ -46,10 +46,10 @@
                 %td.right {{ deal.agency.name }}
                 %td.right
                   %div{ ng: { repeat: 'user in deal.users' } }
-                    ${{ user.first_name + " " + user.last_name }}
+                    {{ user.first_name + " " + user.last_name }}
                 %td.right {{ deal.stage.name }}
                 %td.right {{ deal.stage.probability }}
-                %td.right {{ deal.budget / 100 | number : 0}}
+                %td.right ${{ deal.budget / 100 | number : 0}}
                 %td.right{ ng: { repeat: 'productTime in productRange' } }
                   ${{ findDealProductBudget(deal.deal_products, productTime) / 100 | number : 0 }}
                 %td.right {{ deal.next_steps.substr(0, 30) }}
