@@ -7,6 +7,24 @@
   $scope.moreSize = 10;
   $scope.types = []
   $scope.contactActionLog = []
+  $scope.loadMoreActivitiesText = "Load More"
+  $scope.loadingMoreActivities = false
+
+  $scope.activityFilters = [
+    { name: 'All', param: '' }
+    { name: 'Team Leaders', param: 'team' }
+    { name: 'Individuals', param: 'client' }
+  ]
+
+  $scope.filterActivities = (filter) ->
+    $scope.activityFilter = filter
+    Activity.all({page: 1, filter: $scope.activityFilter.param}).then (activities) ->
+      $scope.activities = activities
+      if activities.length == 10
+        $scope.hasMoreActivities = true
+      $scope.nextActivitiesPage = 2
+
+  $scope.activityFilter = $scope.activityFilters[0]
 
   $scope.showSpinners = (reminder) ->
     reminder.showSpinners = true
@@ -53,28 +71,12 @@
         $scope.selected[type.name].contacts = []
 
     $scope.activity_objects = {}
-    Activity.all().then (activities) ->
-      activities.forEach (activity) ->
-        objectIds = []
+    Activity.all({page: 1, filter: $scope.activityFilter.param}).then (activities) ->
+      $scope.activities = activities
+      if activities.length == 10
+        $scope.hasMoreActivities = true
+      $scope.nextActivitiesPage = 2
 
-        if activity.deal
-          objectId = "d:" + activity.deal.id
-          if not $scope.activity_objects.hasOwnProperty(objectId)
-            $scope.activity_objects[objectId] = activity.deal
-            $scope.activity_objects[objectId].isDeal = true
-            $scope.activity_objects[objectId].activities = []
-          objectIds.push(objectId)
-
-        if activity.client
-          objectId = "c:" + activity.client.id
-          if not $scope.activity_objects.hasOwnProperty(objectId)
-            $scope.activity_objects[objectId] = activity.client
-            $scope.activity_objects[objectId].activities = []
-            $scope.activity_objects[objectId].isClient = true
-          objectIds.push(objectId)
-
-        objectIds.forEach (objectId) ->
-          $scope.activity_objects[objectId].activities.push(activity)
 
     Contact.all1(unassigned: "yes").then (contacts) ->
       $scope.unassignedContacts = contacts
@@ -102,7 +104,17 @@
     showTooltips: false
   }
 
-
+  $scope.loadMoreActivities = ->
+    if $scope.loadingMoreActivities == false
+      $scope.loadingMoreActivities = true
+      $scope.loadMoreActivitiesText = "Loading ..."
+      Activity.all({page: $scope.nextActivitiesPage, filter: $scope.activityFilter.param}).then (activities) ->
+        $scope.activities = $scope.activities.concat(activities)
+        if activities.length == 10
+          $scope.hasMoreActivities = true
+        $scope.nextActivitiesPage = $scope.nextActivitiesPage + 1
+        $scope.loadingMoreActivities = false
+        $scope.loadMoreActivitiesText = "Load More"
 
   $scope.showNewDealModal = ->
     $scope.modalInstance = $modal.open

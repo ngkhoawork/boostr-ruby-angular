@@ -1,61 +1,51 @@
-.activities-feed.panel
-  .panel-body
-    %h4 {{ feedName }}
-    .row.feed-repeat{ ng: { repeat: "(key, object) in activity_objects | orderBy: '-activity_updated_at'"} }
-      .col-xs-12
-        %table.activity-table
-          %thead
-            %tr{ ng: { click: 'object.show = !object.show' } }
-              %th.left
-                .col-xs-11
-                  .row{ 'ng-if': 'object.isDeal' }
-                    .col-xs-4
-                      %i.fa.fa-money.feed-icon
-                      %a{ href: '', ng: { href: '/deals/{{object.id}}' } }
-                        {{ object.name }}
-                    .col-xs-4.text-center
-                      %a{ href: '', ng: { href: '/clients/{{object.advertiser.id}}' } }
-                        {{ object.advertiser.name }}
-                    .col-xs-4.text-center {{ object.stage.name }}
-                  .row{ 'ng-if': 'object.isClient' }
-                    .col-xs-12
-                      %i.fa.fa-building.feed-icon
-                      %a{ href: '', ng: { href: '/clients/{{object.id}}' } }
-                        {{ object.name }}
-                  .row{ 'ng-if': 'object.isContact' }
-                    .col-xs-12
-                      %i.fa.fa-user.feed-icon
-                      %a{ href: '', ng: { href: '/people/{{object.id}}' } }
-                        {{ object.name }}
-                .col-xs-1.text-right
-                  %label.trigger-click.icon-show-activities-detail{"ng-show" => "!object.show"}
-                    = inline_svg 'icons/hide-details.svg'
-                  %label.trigger-click.icon-hide-activities-detail{"ng-show" => "object.show"}
-                    = inline_svg 'icons/show-details.svg'
-          %tbody{ ng: { show: 'object.show' } }
-            %tr{ ng: { repeat: "activity in object.activities | orderBy: '-happened_at' | limitTo:object.currentLimit"} }
-              %td
-                .row
-                  .col-xs-1{ style: 'line-height: 30px' }
-                    {{ activity.happened_at | date: 'shortDate' }}
-                  .col-xs-2.text-right
-                    %img.s-img{:src => "{{ getType(activity.activity_type_name).icon }}"}/
-                  .col-xs-8
-                    %div{ style: 'margin: 7px 0px;' }
-                      %span
-                        {{ activity.creator.first_name }} {{ activity.creator.last_name }} 
-                      {{ getType(activity.activity_type_name).action }}
-                      %span{ 'ng-repeat': 'contact in activity.contacts' }
-                        {{ $first ? '' : $last ? '& ' : ''}}{{ contact.name }}{{ $last ? '' : ', ' }}
-                    %blockquote{ 'ng-if': 'activity.comment' }
-                      %div.long-text{ 'ng-bind-html': "getHtml(activity.comment)"}
-                    %div.attachments
-                      %div{'ng-repeat': "asset in activity.assets"}
-                        %a{href: "{{asset.presigned_url}}", target: "_blank"}
-                          {{asset.original_file_name}}
-                  .col-xs-1
-                    %a#edit-contact{ href: '', ng: { click: 'showActivityEditModal(activity)' } }
-                      = inline_svg 'icons/edit.svg'
-                    %br
-                    %a.delete-team{ href: '', ng: { click: 'deleteActivity(activity)' } }
-                      = inline_svg 'icons/trash.svg'
+#activities-feed.table-wrapper
+  -#%div.pull-left
+  %h4.pull-left
+    {{ feedName }}
+  %div{ class: "pull-right activity-filter" }
+    %div{ ng: { repeat: 'filter in activityFilters', class: '{active: filter.name == activityFilter.name}', click: 'filterActivities(filter)' } }
+      {{ filter.name }}
+
+  %table.table.table-striped.black-table
+    %tbody
+      %tr{ ng: { repeat: "activity in activities | orderBy: '-happened_at'"} }
+        %td
+          .col-xs-2.pad1
+            .row.act
+              {{ activity.happened_at | date: 'shortDate' }}
+          .col-xs-1.pad2
+            %img.s-img{:src => "{{ getType(activity.activity_type_name).icon }}"}/
+          .col-xs-8.pad3b
+            .row.act
+              %span
+                {{ activity.creator.first_name }} {{ activity.creator.last_name }}
+              {{ getType(activity.activity_type_name).action }}
+              %span{ 'ng-repeat': 'contact in activity.contacts' }
+                {{ $first ? '' : $last ? '& ' : ''}}{{ contact.name }}{{ $last ? '' : ', ' }}
+            .row{ 'ng-if': "activity.client || activity.deal" }
+              %span{ 'ng-if': "activity.client" }
+                Client:
+                %a{ href: '', ng: { href: '/clients/{{activity.client.id}}' } }
+                  {{activity.client.name}}
+              %span{ 'ng-if': "activity.deal" }
+                Deal:
+                %a{ href: '', ng: { href: '/clients/{{activity.deal.id}}' } }
+                  {{activity.deal.name}}
+            .row
+              %div.long-text{ 'ng-bind-html': "getHtml(activity.comment)"}
+            .row.attachments
+              %div{'ng-repeat': "asset in activity.assets"}
+                %a{href: "{{asset.presigned_url}}", target: "_blank"}
+                  {{asset.original_file_name}}
+          .col-xs-1
+            %a#edit-contact{ href: '', ng: { click: 'showActivityEditModal(activity)' } }
+              = inline_svg 'icons/edit.svg'
+            %br
+            %a.delete-team{ href: '', ng: { click: 'deleteActivity(activity)' } }
+              = inline_svg 'icons/trash.svg'
+
+%div.pull-right{'ng-if': "hasMoreActivities"}
+  %a{ href: "javascript:void(0);", 'ng-click': "loadMoreActivities()" }
+    {{loadMoreActivitiesText}}
+%br
+%br

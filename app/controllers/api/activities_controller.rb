@@ -71,7 +71,22 @@ class Api::ActivitiesController < ApplicationController
     if params[:google_event_id]
       current_user.activities.where(google_event_id: params[:google_event_id])
     else
-      current_user.all_activities
+      if params[:page]
+        offset = (params[:page].to_i - 1) * 10
+        if params[:filter] == "team"
+          team_members = current_user.team_members.collect{|member| member.id}
+          company.activities.where("user_id in (?)", team_members).order("happened_at desc").limit(10).offset(offset)
+        elsif params[:filter] == "client"
+          clients = current_user.clients.collect{|member| member.id}
+          company.activities.where("client_id in (?)", clients).order("happened_at desc").limit(10).offset(offset)
+        else
+          current_user.activities.order("happened_at desc").limit(10).offset(offset)
+        end
+
+
+      else
+        current_user.all_activities
+      end
     end
   end
 
