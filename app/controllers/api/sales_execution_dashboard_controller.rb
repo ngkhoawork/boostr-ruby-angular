@@ -46,10 +46,10 @@ class Api::SalesExecutionDashboardController < ApplicationController
     average_deal_size = 0
     cycle_time = 0.0
 
-    win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(2) if (incomplete_deals.count + complete_deals.count) > 0
-    average_deal_size = (complete_deals.average(:budget) / 100000).round(2) if complete_deals.count > 0
+    win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
+    average_deal_size = (complete_deals.average(:budget) / 100000).round(0) if complete_deals.count > 0
     cycle_time_arr = complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s)  - Date.parse(deal.created_at.utc.to_s)}
-    cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(2) if cycle_time_arr.count > 0
+    cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(0) if cycle_time_arr.count > 0
     #
     # team_complete_deals = Deal.where("deals.id in (?)", team_deal_ids).closed_at(start_date, end_date).at_percent(100)
     # team_incomplete_deals = Deal.where("deals.id in (?)", team_deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
