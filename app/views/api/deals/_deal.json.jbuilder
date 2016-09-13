@@ -1,4 +1,4 @@
-json.extract! deal, :id, :name, :budget, :created_at, :updated_at, :next_steps, :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id, :agency_id
+json.extract! deal, :id, :name, :budget, :created_at, :contacts, :updated_at, :next_steps, :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id, :agency_id
 
 json.start_date deal.start_date.to_datetime
 json.end_date deal.end_date.to_datetime
@@ -12,6 +12,8 @@ if deal.previous_stage
 end
 
 json.creator deal.creator, :first_name, :last_name
+
+json.contacts deal.contacts, :id, :name, :address
 
 json.products deal.products do |product|
   json.id product.id
