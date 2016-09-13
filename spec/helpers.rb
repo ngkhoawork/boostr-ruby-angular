@@ -48,6 +48,14 @@ module Helpers
     company.fields.where(name: 'Client Type').first
   end
 
+  def agency_type_id(company)
+    client_type_field(company).options.where(name: "Agency").first.id
+  end
+
+  def advertiser_type_id(company)
+    client_type_field(company).options.where(name: "Advertiser").first.id
+  end
+
   def deal_type_field(company)
     company.fields.where(name: 'Deal Type').first
   end

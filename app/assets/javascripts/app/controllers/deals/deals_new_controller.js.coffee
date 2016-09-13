@@ -11,17 +11,19 @@
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
       $scope.deal = deal
-    $q.all({ clients: Client.query({ filter: 'all', per: 500 }).$promise, stages: Stage.query().$promise }).then (data) ->
-      $scope.clients = data.clients
-      #TODO this should go somewhere else...possibly the service
-      _.each $scope.clients, (client) ->
-        Field.defaults(client, 'Client').then (fields) ->
-          client.client_type = Field.field(client, 'Client Type')
-          if client.client_type.option.name == 'Advertiser'
-            $scope.advertisers.push(client)
-          if client.client_type.option.name == 'Agency'
-            $scope.agencies.push(client)
-      $scope.stages = data.stages
+
+    Field.defaults({}, 'Client').then (fields) ->
+      client_types = Field.findClientTypes(fields)
+      $scope.setClientTypes(client_types)
+      $scope.loadClients('', $scope.Advertiser)
+      $scope.loadClients('', $scope.Agency)
+
+    Stage.query().$promise.then (stages) ->
+      $scope.stages = stages
+
+  $scope.setClientTypes = (client_types) ->
+    client_types.options.forEach (option) ->
+      $scope[option.name] = option.id
 
   $scope.advertiserSelected = (model) ->
     $scope.deal.advertiser_id = model
@@ -29,17 +31,22 @@
   $scope.agencySelected = (model) ->
     $scope.deal.agency_id = model
 
-  $scope.loadClients = (query) ->
-    Client.query({ filter: 'all', name: query, per: 500 }).$promise.then (clients) ->
-      $scope.advertisers = []
-      $scope.agencies = []
-      _.each clients, (client) ->
-        Field.defaults(client, 'Client').then (fields) ->
-          client.client_type = Field.field(client, 'Client Type')
-          if client.client_type.option.name == 'Advertiser'
-            $scope.advertisers.push(client)
-          if client.client_type.option.name == 'Agency'
-            $scope.agencies.push(client)
+  searchTimeout = null;
+  $scope.searchClients = (query, type_id) ->
+    if searchTimeout
+      clearTimeout(searchTimeout)
+      searchTimeout = null
+    searchTimeout = setTimeout(
+      -> $scope.loadClients(query, type_id)
+      300
+    )
+
+  $scope.loadClients = (query, type_id) ->
+    Client.query({ filter: 'all', name: query, per: 10, client_type_id: type_id }).$promise.then (clients) ->
+      if type_id == $scope.Advertiser
+        $scope.advertisers = clients
+      if type_id == $scope.Agency
+        $scope.agencies = clients
 
   $scope.submitForm = () ->
     Deal.create(deal: $scope.deal).then (deal) ->

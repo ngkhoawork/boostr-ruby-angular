@@ -3,8 +3,8 @@ require 'rails_helper'
 feature 'Deals' do
   let(:company) { Company.first }
   let(:user) { create :user }
-  let!(:advertiser) { create :client, created_by: user.id }
-  let!(:agency) { create :client, created_by: user.id }
+  let!(:advertiser) { create :client, created_by: user.id, client_type_id: advertiser_type_id(company) }
+  let!(:agency) { create :client, created_by: user.id, client_type_id: agency_type_id(company) }
   let!(:open_stage) { create :stage, position: 1, name: 'open stage' }
   let!(:deal_type_seasonal_option) { create :option, field: deal_type_field(company), name: "Seasonal" }
   let!(:deal_type_pitch_option) { create :option, field: deal_source_field(company), name: "Pitch to Client" }
@@ -147,7 +147,6 @@ feature 'Deals' do
       within '#deal_modal' do
         fill_in 'name', with: 'Apple Watch Launch'
         ui_select('stage', open_stage.name)
-        fill_in 'budget', with: '1234'
         ui_select('advertiser', advertiser.name)
         ui_select('agency', agency.name)
         ui_select('deal-type', 'Seasonal')
@@ -161,7 +160,7 @@ feature 'Deals' do
 
       expect(page).to have_css('#deal')
 
-      within '#deal_overview h3.deal-name' do
+      within '#deal_overview h3.deal-name.editable' do
         expect(page).to have_text('Apple Watch Launch')
       end
 
