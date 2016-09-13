@@ -50,6 +50,11 @@ RSpec.describe Contact, type: :model do
     end
   end
 
+  context 'associations' do
+    it { should have_many(:deals).through(:deal_contacts) }
+    it { should have_many(:deal_contacts) }
+  end
+
   context 'scopes' do
     context 'unassigned' do
       let!(:contact) { create :contact, clients: [client], address: address }

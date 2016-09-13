@@ -5,6 +5,8 @@ class Contact < ActiveRecord::Base
   has_many :client_contacts, dependent: :destroy
   belongs_to :company
 
+  has_many :deals, -> { uniq }, through: :deal_contacts
+  has_many :deal_contacts, dependent: :destroy
   has_many :reminders, as: :remindable, dependent: :destroy
   has_one :address, as: :addressable
 
