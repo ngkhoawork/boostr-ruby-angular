@@ -48,12 +48,19 @@ class Contact < ActiveRecord::Base
           }
         }
       },
-      methods: [:formatted_name]
+      methods: [:formatted_name, :primary_client]
     ))
   end
 
   def formatted_name
     name
+  end
+
+  def primary_client
+    primary_client_contact = client_contacts.where(primary: true).first
+    if primary_client_contact
+      primary_client_contact.client
+    end
   end
 
   def self.import(file, current_user)

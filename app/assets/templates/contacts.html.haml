@@ -28,11 +28,11 @@
         %script{ type: 'text/ng-template', id: 'partials/contact_list_item.html' }
           %h4
             {{ item.name }}
-          .subtitle{ 'ng-show': 'item.client && item.position' }
-            {{ item.client.name }}, {{ item.position }}
-          .subtitle{ 'ng-show': 'item.client && !item.position' }
-            {{ item.client.name }}
-          .subtitle{ 'ng-show': '!item.client && item.position' }
+          .subtitle{ 'ng-show': 'item.primary_client && item.position' }
+            {{ item.primary_client.name }}, {{ item.position }}
+          .subtitle{ 'ng-show': 'item.primary_client && !item.position' }
+            {{ item.primary_client.name }}
+          .subtitle{ 'ng-show': '!item.primary_client && item.position' }
             {{ item.position }}
         %div{ 'object-list': true, items: 'contacts', query: 'query', 'on-search': 'searchContacts', 'on-select': 'showContact', 'on-load-more': 'loadMoreContacts', selected: 'currentContact', template: 'partials/contact_list_item.html' }
 
@@ -83,7 +83,7 @@
 
           %br
           .position
-            {{ currentContact.position }}, {{ currentContact.client.name}}
+            {{ currentContact.position }}, {{ currentContact.primary_client.name}}
         #details
         .wells-group
           .well

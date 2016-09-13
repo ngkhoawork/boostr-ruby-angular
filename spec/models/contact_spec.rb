@@ -88,4 +88,12 @@ RSpec.describe Contact, type: :model do
       expect(duplicate.errors["email"]).to eq(['has already been taken'])
     end
   end
+
+  describe 'primary_client' do
+    let!(:contact) { create :contact, client_id: client.id }
+
+    it 'returns the primary client' do
+      expect(contact.primary_client).to eq(client)
+    end
+  end
 end
