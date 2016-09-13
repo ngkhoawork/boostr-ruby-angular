@@ -33,7 +33,7 @@ class Contact < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
+    super(options.deep_merge(
       include: {
         address: {},
         activities: {
