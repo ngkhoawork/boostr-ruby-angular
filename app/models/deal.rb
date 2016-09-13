@@ -318,9 +318,8 @@ class Deal < ActiveRecord::Base
             deal.users.collect {|user| user.first_name + " " + user.last_name}.join(";"),
             deal.stage.name,
             deal.stage.probability,
-            "$" + (deal.budget / 100).round.to_s
+            "$" + ((deal.budget.nil? ? 0 : deal.budget) / 100).round.to_s
         ]
-        deal_products = deal.deal_products.collect{|deal_product| }
         range.each do |product_time|
           deal_product = deal.deal_products.find_by({start_date: product_time})
           if deal_product.nil?
