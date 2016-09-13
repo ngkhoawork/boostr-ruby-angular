@@ -82,8 +82,12 @@
                     %button.btn.btn-primary.btn-lg.btn-add-remainder{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } } Set Reminder
 
           %br
-          .position
-            {{ currentContact.position }}, {{ currentContact.primary_client.name}}
+          .position{ 'ng-show': 'currentContact.primary_client && currentContact.position' }
+            {{ currentContact.position }}, {{ currentContact.primary_client.name }}
+          .position{ 'ng-show': 'currentContact.primary_client && !currentContact.position' }
+            {{ currentContact.primary_client.name }}
+          .position{ 'ng-show': '!currentContact.primary_client && currentContact.position' }
+            {{ currentContact.position }}
         #details
         .wells-group
           .well
