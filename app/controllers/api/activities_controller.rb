@@ -74,8 +74,9 @@ class Api::ActivitiesController < ApplicationController
       if params[:page]
         offset = (params[:page].to_i - 1) * 10
         if params[:filter] == "team"
-          team_members = current_user.team_members.collect{|member| member.id}
-          company.activities.where("user_id in (?)", team_members).order("happened_at desc").limit(10).offset(offset)
+          team_members = current_user.all_team_members.collect{|member| member.id}
+          clients = ClientMember.where("user_id in (?)", team_members).collect{|member| member.client_id}
+          company.activities.where("client_id in (?)", clients).order("happened_at desc").limit(10).offset(offset)
         elsif params[:filter] == "client"
           clients = current_user.clients.collect{|member| member.id}
           company.activities.where("client_id in (?)", clients).order("happened_at desc").limit(10).offset(offset)

@@ -119,6 +119,18 @@ class User < ActiveRecord::Base
     SQL
   end
 
+  def all_team_members
+    all_team_members = []
+    if self.leader?
+      self.teams.each do |team_item|
+        all_team_members += team_item.all_members
+      end
+    elsif self.team.present?
+      all_team_members += self.team.all_members
+    end
+    all_team_members
+  end
+
   def all_activities
     @all_activities = []
     @all_activities += activities
