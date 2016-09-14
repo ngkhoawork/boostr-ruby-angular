@@ -12,7 +12,7 @@
         %span.company-name
           {{ client.name }}
         %span.city
-          {{ client.formatted_name }}
+          {{ client.address.city }}
         %br
         %span.count-of-people
           {{ client.contacts.length }} people
@@ -22,9 +22,7 @@
         %div.user-data{ng: { repeat: 'contact in client.contacts' } }
           %span.name
             {{ contact.name }}
-          %span.city
-            {{ contact.address.city }}
+          %span.contact-position
+            {{ contact.position }}
           %span.email
             {{ contact.address.email }}
-          %span.phone-number
-            {{ contact.address.phone }}

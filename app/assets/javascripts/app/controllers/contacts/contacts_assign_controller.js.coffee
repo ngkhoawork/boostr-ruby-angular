@@ -1,7 +1,6 @@
 @app.controller "ContactsAssignController",
 ['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'contact', 'typeId'
 ($scope, $modalInstance, $filter, Contact, Client, contact, typeId) ->
-  console.log('typeId', typeId)
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.contact = contact

@@ -3,240 +3,77 @@
   padding-top: 33px;
 }
 
-/*--------------- search group ------------------*/
-/*#client-list {
-  form .input-group {
-    border: 1px solid $silver-border;
-    border-radius: 5px;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .input-group-addon {
-    display: none;
-  }
-
-  input.form-control {
-    border: medium none;
-  }
-
-  .list-lg .active {
-    border-radius: 0;
-    box-shadow: -3px 0 0 #ff7e30 inset !important;
-    outline: none;
-    opacity: 1;
-    border-top: 1px solid $silver-border;
-    border-bottom: 1px solid $silver-border;
-  }
-
-  .list-group .list-group-item {
-    opacity: 1;
-    padding: 20px 30px;
-    outline: none;
-  }
-
-  .list-group {
-    border: 1px solid $silver-border;
-  }
-
-}
-
-#client_modal {
-  .radio-btn-styled-wrap {
-    display: table;
-    width: 100%;
-    margin: 18px 0 8px;
-  }
-
-  .modal-body {
-    padding: 20px 80px 0;
-  }
-
-  .radio-btn-wrap {
-    float: left;
-    margin-right: 35px;
-  }
-
-  .radio-btn:first-child > label {
-    margin-left: 0;
-  }
-
-  .radio-btn-wrap > label {
-    margin: 0 10px;
-  }
-
-  .radio-btn-styled label .radio-btn-custom {
-    border-radius: 15px;
-    height: 15px;
-    width: 15px;
-  }
-
-  .radio-custom {
-    border-radius: 20px;
-  }
-
-  label input:checked + span .radio-central-part {
-    background: #FF7E30 none repeat scroll 0 0;
-    border-radius: 15px;
-    display: block;
-    height: 12px;
-    margin: 2px;
-    width: 12px;
-  }
-
-}
-*/
-#activities {
-  #add-app-advertisers-people {
-    border-radius: 20px;
-    cursor: pointer;
-    display: block;
-    float: right;
-    margin-top: 0;
-    outline: medium none;
-  }
-}
-/*
-#activities {
-  .item-advertisers {
-    border-radius: 0;
-    margin-bottom: 0;
-  }
-
-  .panel-heading.hide-detail-wrap {
-    border-bottom: 1px solid $silver-border;
-    border-top: 1px solid $silver-border;
-    border-radius: 0;
-    height: 60px;
-  }
-
-  .item-advertisers .hide-detail-wrap:first-child {
-    border-top: 0 none;
-  }
-
-  .btn-wrap-add-client {
-    width: 100%;
-  }
-
-  .btn-wrap-add-client > a {
-    border: 1px solid $brand-primary;
-    border-radius: 20px;
-    display: block;
-    font-size: 13px;
-    height: 35px;
-    line-height: 33px;
-    margin: 0 auto;
-    text-align: center;
-    width: 34%;
-    outline: none;
-  }
-
-  #details {
-    .well .orange {
-      color: $brand-primary;
-    }
-    .well .bold {
-      font-weight: bold;
-    }
-
-    .wells-group {
-      padding: 10px 10px 20px;
-    }
-
-    .wells-group .well {
-      padding: 20px;
-    }
-
-    .well strong {
-      font-size: 14px;
-      font-weight: normal;
-      color: #838f9a;
-    }
-    .wells-group .detail {
-      font-size: 13px;
-    }
-  }
-}
-
-#clients h2 {
-  text-transform: capitalize;
-}
-*/
-  /*-----------------------------------------------------*/
-
-#activities {
-  .user-data {
-    margin-left: 7%;
-    clear: both;
-  }
-
-  .panel-heading.hide-detail-wrap {
-    background: #fff none repeat scroll 0 0;
-    border-bottom: 1px solid $silver-border;
-    border-radius: 0;
-  }
-  .panel-body.details {
-    background: #fbfcfd none repeat scroll 0 0;
-    padding: 0;
-  }
-
-  .data-section-wrapper .user-data:last-child span {
-    border: medium none;
-  }
-
-  .user-data span {
-    border-bottom: 1px solid $silver-border;
-    display: block;
-    float: left;
-    height: 28px;
-    line-height: 28px;
-    width: 25%;
-  }
-
-  .user-data .name {
-    color: #333;
-  }
-
-  #activities .user-data {
-    display: table;
-    padding-left: 6%;
-    width: 100%;
-  }
-
-  .show-people {
-    display: block;
-    float: left;
-    height: 100%;
-    margin-right: 5px;
-  }
-
-  .show-people .trigger-click {
-    height: 40px;
-    line-height: 40px;
-    margin-bottom: 0;
-  }
-
-  .show-people .trigger-click > svg {
-    display: table-cell;
-    vertical-align: middle;
-    cursor: pointer;
-  }
-
-  .text-wrap .company-name {
-    color: #2a3b48;
-    font-weight: bold;
-  }
-
-  .text-wrap > span {
-    margin: 0 0 0 5px;
-  }
-}
-
 #client-detail {
   padding-left: 34px;
   padding-top: 15px;
   .section {
     margin-top: 60px;
+  }
+
+  #advertisers-people {
+    .panel-heading.hide-detail-wrap {
+      background: #fff none repeat scroll 0 0;
+      border-bottom: 1px solid $silver-border;
+      border-radius: 0;
+    }
+
+    .panel.item-advertisers {
+      margin-bottom: 0;
+    }
+
+    .show-people {
+      display: block;
+      float: left;
+      height: 100%;
+      margin-right: 5px;
+    }
+
+    .show-people .trigger-click {
+      height: 40px;
+      line-height: 40px;
+      margin-bottom: 0;
+    }
+
+    .show-people .trigger-click > svg {
+      display: table-cell;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+
+    .text-wrap .company-name {
+      color: #2a3b48;
+      font-weight: bold;
+    }
+
+    .text-wrap > span {
+      margin: 0 0 0 5px;
+    }
+
+    .panel-body.details {
+      background: #fbfcfd none repeat scroll 0 0;
+      padding: 0;
+    }
+
+    .user-data {
+      margin-left: 7%;
+      clear: both;
+    }
+    .data-section-wrapper .user-data:last-child span {
+      border: medium none;
+    }
+
+    .user-data span {
+      border-bottom: 1px solid $silver-border;
+      display: block;
+      float: left;
+      height: 28px;
+      line-height: 28px;
+      width: 33.3333%;
+    }
+
+    .user-data .name {
+      color: #333;
+    }
   }
 
   #people {

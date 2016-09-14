@@ -461,19 +461,12 @@
           $scope.currentClient.relatedContacts = respond.data
 
   $scope.showAssignContactModal = (contact) ->
-#    console.log('contact', contact)
-#    console.log('$scope.currentClient', $scope.currentClient)
-#    console.log('$scope.currentClient.client_type.option_id', $scope.currentClient.client_type_id)
-#    console.log('$scope.currentClient.client_type.name', $scope.currentClient.name)
     advertiserTypeId = 0
     ClientsTypes.list().then (clientDefaultTypes) ->
-#      console.log('clientDefaultTypes', clientDefaultTypes)
-#      console.log('clientDefaultTypes.types.length', clientDefaultTypes.types.length)
       if clientDefaultTypes && clientDefaultTypes.types && clientDefaultTypes.types.length
         _.each clientDefaultTypes.types, (typeObject) ->
           if typeObject.name == 'Advertiser'
             advertiserTypeId = typeObject.typeId
-  #    console.log('curClientTypeId', curClientTypeId)
       $scope.modalInstance = $modal.open
         templateUrl: 'modals/contact_assign_form_copy_for_clients.html'
         size: 'md'
