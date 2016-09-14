@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts',
-($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes'
+($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -459,4 +459,42 @@
       .then (respond) ->
         if (respond && respond.data && respond.data.length)
           $scope.currentClient.relatedContacts = respond.data
+
+  $scope.showAssignContactModal = (contact) ->
+#    console.log('contact', contact)
+#    console.log('$scope.currentClient', $scope.currentClient)
+#    console.log('$scope.currentClient.client_type.option_id', $scope.currentClient.client_type_id)
+#    console.log('$scope.currentClient.client_type.name', $scope.currentClient.name)
+    advertiserTypeId = 0
+    ClientsTypes.list().then (clientDefaultTypes) ->
+#      console.log('clientDefaultTypes', clientDefaultTypes)
+#      console.log('clientDefaultTypes.types.length', clientDefaultTypes.types.length)
+      if clientDefaultTypes && clientDefaultTypes.types && clientDefaultTypes.types.length
+        _.each clientDefaultTypes.types, (typeObject) ->
+          if typeObject.name == 'Advertiser'
+            advertiserTypeId = typeObject.typeId
+  #    console.log('curClientTypeId', curClientTypeId)
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/contact_assign_form_copy_for_clients.html'
+        size: 'md'
+        controller: 'ContactsAssignController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          contact: ->
+            contact
+          typeId: ->
+            advertiserTypeId
+      .result.then (updated_contact) ->
+        $scope.initRelatedContacts()
+        $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
+          if (item.id == updated_contact.id)
+            return updated_contact
+          else
+            return item
+        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
+        $scope.contactActionLog.push({
+          previousContact: contact,
+          message: updated_contact.clients[0].name
+        })
 ]

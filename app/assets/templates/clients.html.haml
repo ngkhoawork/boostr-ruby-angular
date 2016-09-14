@@ -227,9 +227,9 @@
                 %a{ href: '', ng: { click: 'showNewPersonModal()' } }
                   Add a new person.
           .wells-group
-            .well{ ng: { repeat: 'contact in currentClient.contacts', click: 'go("/people/" + contact.id)' } }
+            .well.contact-info{ ng: { repeat: 'contact in currentClient.contacts' } }
               .row
-                .col-xs-11
+                .col-xs-9
                   .row
                     .col-xs-12
                       %strong
@@ -238,6 +238,11 @@
                     .col-xs-12
                       {{ contact.address.email }} {{ contact.address.mobile | tel }}
                 .col-xs-1
+                  .action
+                    %button{ class: "btn btn-primary btn-block", ng: { show: "currentClient.client_type.option.name == 'Agency'", click: "showAssignContactModal(contact)" } }
+                      Assign
+                .col-xs-1
+                .col-xs-1{ ng: { click: 'go("/people/" + contact.id)' } }
                   = inline_svg 'icons/caret.svg', class: 'pull-right'
 
         #deals.section

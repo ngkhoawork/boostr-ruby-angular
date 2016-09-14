@@ -428,6 +428,18 @@
   #reminder_modal .modal-body div.form-group.error .error input {
     border-color: red;
   }
+  .contact-info {
+    .action {
+      width: 68px;
+      vertical-align: middle;
+      display: none;
+    }
+    &:hover {
+      .action {
+        display: inline-block;
+      }
+    }
+  }
 }
 
 a#edit-contact svg {
