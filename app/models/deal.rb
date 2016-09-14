@@ -283,13 +283,31 @@ class Deal < ActiveRecord::Base
     return option
   end
 
+  def latest_activity
+    activities = self.activities.order("happened_at desc")
+    if activities && activities.count > 0
+      last_activity = activities.first
+      data = ""
+      if last_activity.happened_at
+        data = data + "Date: " + last_activity.happened_at.strftime("%m-%d-%Y %H:%M:%S") + "\n"
+      end
+      if last_activity.activity_type_name
+        data = data + "Type: " + last_activity.activity_type_name + "\n"
+      end
+      if last_activity.comment
+        data = data + "Note: " + last_activity.comment
+      end
+      data
+    else
+      ""
+    end
+  end
   def self.to_pipeline_report_csv(company)
     CSV.generate do |csv|
       deals = company.deals
       deal_ids = deals.collect{|deal| deal.id}
       range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
       header = []
-      header << "Deal ID"
       header << "Name"
       header << "Advertiser"
       header << "Agency"
@@ -297,9 +315,7 @@ class Deal < ActiveRecord::Base
       header << "Stage"
       header << "%"
       header << "Budget"
-      range.each do |product_time|
-        header << product_time.strftime("%Y-%m")
-      end
+      header << "Latest Activity"
       header << "Next Steps"
       header << "Type"
       header << "Source"
@@ -308,10 +324,13 @@ class Deal < ActiveRecord::Base
       header << "Created Date"
       header << "Closed Date"
       header << "Close Reason"
+      range.each do |product_time|
+        header << product_time.strftime("%Y-%m")
+      end
+
       csv << header
       deals.each do |deal|
         line = [
-            deal.id,
             deal.name,
             deal.advertiser ? deal.advertiser.name : nil,
             deal.agency ? deal.agency.name : nil,
@@ -320,14 +339,7 @@ class Deal < ActiveRecord::Base
             deal.stage.probability,
             "$" + ((deal.budget.nil? ? 0 : deal.budget) / 100).round.to_s
         ]
-        range.each do |product_time|
-          deal_product = deal.deal_products.find_by({start_date: product_time})
-          if deal_product.nil?
-            line << "$0"
-          else
-            line << "$" + (deal_product.budget / 100).round.to_s
-          end
-        end
+        line << deal.latest_activity
         line << deal.next_steps
         line << deal.deal_type
         line << deal.source_type
@@ -336,6 +348,15 @@ class Deal < ActiveRecord::Base
         line << deal.created_at.strftime("%Y-%m-%d")
         line << deal.closed_at
         line << Deal.get_option(deal, "Close Reason")
+        range.each do |product_time|
+          deal_product = deal.deal_products.find_by({start_date: product_time})
+          if deal_product.nil?
+            line << "$0"
+          else
+            line << "$" + (deal_product.budget / 100).round.to_s
+          end
+        end
+
         csv << line
       end
     end

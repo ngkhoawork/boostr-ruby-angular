@@ -7,56 +7,91 @@
             %li.pull-right
               %a.export{ href: '', ng: { click: 'exportReports()' } }
                 Export
-  .container
+  .container-fluid.table-report
     .row
       .col-xs-12
-        %h3
+        %h3.float-left
           Pipeline by User Report
-
+        .float-right.report-filter
+          %div{ ng: {click: 'changeFilter(true)', class: '{active: filterOpen == true}'} }
+            Open Deals
+          %div{ ng: {click: 'changeFilter(false)', class: '{active: filterOpen == false}'} }
+            Closed Deals
     .row
       .col-md-12
         .table-wrapper
-          %table.table.table-hover.table-striped
+          %table.table
             %thead
               %tr
-                %th.left Deal ID
-                %th.left Name
-                %th.left Advertiser
-                %th.left Agency
-                %th.left Team Member
-                %th.left Stage
-                %th.left %
-                %th.left Budget
-                %th.left{ ng: { repeat: 'productTime in productRange' } }
-                  {{ productTime | date: 'yyyy-MM' }}
-                %th.left Next Steps
-                %th.left Type
-                %th.left Source
-                %th.left Start Date
-                %th.left End Date
-                %th.left Created Date
-                %th.left Closed Date
-                %th.left Close Reason
-
+                %th.left{ width: "250" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("name")'}
+                    Name
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("advertiser.name")'}
+                    Advertiser
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("agency.name")'}
+                    Agency
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("users[0].first_name")'}
+                    Team Member
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("stage.name")'}
+                    Stage
+                %th.left{ width: "50" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("stage.probability")'} %
+                %th.left{ width: "100" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget")'}
+                    Budget
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("next_steps")'}
+                    Next Steps
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("latest_activity")'}
+                    Latest Activity
+                %th.left{ width: "100" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_type")'}
+                    Type
+                %th.left{ width: "100" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("source_type")'}
+                    Source
+                %th.left{ width: "100" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("start_date")'}
+                    Start Date
+                %th.left{ width: "100" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("end_date")'}
+                    End Date
+                %th.left{ width: "100" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("created_at")'}
+                    Created Date
+                %th.left{ width: "100" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("closed_at")'}
+                    Closed Date
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("close_reason")'}
+                    Close Reason
+                %th.left{ width: "80", ng: { repeat: 'productTime in productRange track by $index' } }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("products["+$index+"]")'}
+                    {{ productTime | date: 'MMM-yy' }}
             %tbody
-              %tr{ ng: { repeat: 'deal in deals' } }
-                %td.left {{ deal.id }}
-                %td.right {{ deal.name }}
-                %td.right {{ deal.advertiser.name }}
-                %td.right {{ deal.agency.name }}
-                %td.right
+              %tr{ ng: { repeat: 'deal in deals | orderBy:sortType:sortReverse | filter:isOpen' } }
+                %td.left {{ deal.name }}
+                %td.left {{ deal.advertiser.name }}
+                %td.left {{ deal.agency.name }}
+                %td.left
                   %div{ ng: { repeat: 'user in deal.users' } }
                     {{ user.first_name + " " + user.last_name }}
-                %td.right {{ deal.stage.name }}
-                %td.right {{ deal.stage.probability }}
+                %td.left {{ deal.stage.name }}
+                %td.right {{ deal.stage.probability }}%
                 %td.right ${{ deal.budget / 100 | number : 0}}
-                %td.right{ ng: { repeat: 'productTime in productRange' } }
-                  ${{ findDealProductBudget(deal.deal_products, productTime) / 100 | number : 0 }}
-                %td.right {{ deal.next_steps.substr(0, 30) }}
-                %td.right {{ deal.deal_type }}
-                %td.right {{ deal.source_type }}
-                %td.right {{ deal.start_date }}
-                %td.right {{ deal.end_date }}
-                %td.right {{ deal.created_at | date: 'yyyy-MM-dd' }}
-                %td.right {{ deal.closed_at }}
-                %td.right {{ deal.close_reason }}
+                %td.left {{ deal.next_steps.substr(0, 30) }}
+                %td.left{ 'ng-bind-html': "getHtml(deal.latest_activity)"}
+                %td.left {{ deal.deal_type }}
+                %td.left {{ deal.source_type }}
+                %td.left {{ deal.start_date }}
+                %td.left {{ deal.end_date }}
+                %td.left {{ deal.created_at | date: 'yyyy-MM-dd' }}
+                %td.left {{ deal.closed_at }}
+                %td.left {{ deal.close_reason }}
+                %td.right{ ng: { repeat: 'productTime in productRange track by $index' } }
+                  ${{ deal.products[$index] | number : 0 }}

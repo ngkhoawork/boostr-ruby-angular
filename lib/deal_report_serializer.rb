@@ -23,11 +23,12 @@ class DealReportSerializer < ActiveModel::Serializer
     :agency,
     :deal_products,
     :users,
+    :latest_activity,
     :close_reason
   )
 
   def stage
-    object.stage.serializable_hash(only: [:id, :name, :probability]) rescue nil
+    object.stage.serializable_hash(only: [:id, :name, :probability, :open]) rescue nil
   end
 
   def advertiser
@@ -40,6 +41,26 @@ class DealReportSerializer < ActiveModel::Serializer
 
   def users
     object.users.map {|user| user.serializable_hash(only: [:id, :first_name, :last_name]) rescue nil}
+  end
+
+  def latest_activity
+    activities = object.activities.order("happened_at desc")
+    if activities && activities.count > 0
+      last_activity = activities.first
+      data = ""
+      if last_activity.happened_at
+        data = data + "Date: " + last_activity.happened_at.strftime("%m-%d-%Y %H:%M:%S") + "<br/>"
+      end
+      if last_activity.activity_type_name
+        data = data + "Type: " + last_activity.activity_type_name + "<br/>"
+      end
+      if last_activity.comment
+        data = data + "Note: " + last_activity.comment
+      end
+      data
+    else
+      ""
+    end
   end
 
   def deal_products
