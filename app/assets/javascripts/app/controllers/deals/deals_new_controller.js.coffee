@@ -15,8 +15,6 @@
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
-      $scope.loadClients('', $scope.Advertiser)
-      $scope.loadClients('', $scope.Agency)
 
     Stage.query().$promise.then (stages) ->
       $scope.stages = stages
@@ -38,7 +36,7 @@
       searchTimeout = null
     searchTimeout = setTimeout(
       -> $scope.loadClients(query, type_id)
-      300
+      400
     )
 
   $scope.loadClients = (query, type_id) ->
