@@ -5,7 +5,6 @@
   $scope.submitText = "Update"
   $scope.contact = contact
   $scope.searchText = ""
-
   if typeId
     Client.query({client_type_id: typeId}).$promise.then (clients) ->
       $scope.clients = clients

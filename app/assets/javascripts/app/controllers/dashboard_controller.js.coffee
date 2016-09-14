@@ -129,6 +129,7 @@
           $scope.types
 
   $scope.showAssignContactModal = (contact) ->
+    advertiserTypeId = null
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_assign_form.html'
       size: 'md'
@@ -138,6 +139,8 @@
       resolve:
         contact: ->
           contact
+        typeId: ->
+          advertiserTypeId
     .result.then (updated_contact) ->
       $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
         if (item.id == updated_contact.id)
