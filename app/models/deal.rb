@@ -304,7 +304,7 @@ class Deal < ActiveRecord::Base
   end
   def self.to_pipeline_report_csv(company)
     CSV.generate do |csv|
-      deals = company.deals
+      deals = company.deals.open
       deal_ids = deals.collect{|deal| deal.id}
       range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
       header = []
@@ -317,13 +317,8 @@ class Deal < ActiveRecord::Base
       header << "Budget"
       header << "Latest Activity"
       header << "Next Steps"
-      header << "Type"
-      header << "Source"
       header << "Start Date"
       header << "End Date"
-      header << "Created Date"
-      header << "Closed Date"
-      header << "Close Reason"
       range.each do |product_time|
         header << product_time.strftime("%Y-%m")
       end
@@ -336,24 +331,20 @@ class Deal < ActiveRecord::Base
             deal.agency ? deal.agency.name : nil,
             deal.users.collect {|user| user.first_name + " " + user.last_name}.join(";"),
             deal.stage.name,
-            deal.stage.probability,
+            deal.stage.probability.nil? ? "" : deal.stage.probability.to_s + "%",
             "$" + ((deal.budget.nil? ? 0 : deal.budget) / 100).round.to_s
         ]
         line << deal.latest_activity
         line << deal.next_steps
-        line << deal.deal_type
-        line << deal.source_type
         line << deal.start_date
         line << deal.end_date
-        line << deal.created_at.strftime("%Y-%m-%d")
-        line << deal.closed_at
-        line << Deal.get_option(deal, "Close Reason")
         range.each do |product_time|
-          deal_product = deal.deal_products.find_by({start_date: product_time})
-          if deal_product.nil?
-            line << "$0"
+          deal_products = deal.deal_products.where({start_date: product_time}).select("sum(budget) as total_budget").collect{|deal_product| deal_product.total_budget}
+
+          if deal_products && deal_products[0]
+            line << "$" + (deal_products[0] / 100).round.to_s
           else
-            line << "$" + (deal_product.budget / 100).round.to_s
+            line << "$0"
           end
         end
 

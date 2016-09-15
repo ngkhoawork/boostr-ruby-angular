@@ -10,13 +10,8 @@ class DealReportSerializer < ActiveModel::Serializer
     :end_date,
     :name,
     :budget,
-    :deal_type,
-    :source_type,
     :next_steps,
     :created_by,
-    :created_at,
-    :deleted_at,
-    :closed_at,
     :advertiser,
     :stage_id,
     :stage,
@@ -24,7 +19,6 @@ class DealReportSerializer < ActiveModel::Serializer
     :deal_products,
     :users,
     :latest_activity,
-    :close_reason
   )
 
   def stage
@@ -64,7 +58,8 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def deal_products
-    object.deal_products.map {|deal_product| deal_product.serializable_hash(only: [:id, :budget, :start_date, :end_date]) rescue nil}
+    object.deal_products.group("start_date").select("sum(budget) as budget, start_date").collect{|product| product.serializable_hash(only: [:budget, :start_date])}
+    # object.deal_products.map {|deal_product| deal_product.serializable_hash(only: [:id, :budget, :start_date, :end_date]) rescue nil}
   end
 
   def close_reason
