@@ -267,6 +267,45 @@
     }
   }
 
+  #contact {
+    #add-contact {
+      span {
+        margin-top: 45px;
+      }
+      padding-top: 15px;
+    }
+    .add-contact {
+      color: $link-color;
+
+      &:hover,
+      &:focus {
+        color: $link-hover-color;
+        background: transparent;
+        outline: none;
+
+        svg {
+          fill: $link-hover-color;
+        }
+      }
+
+      svg {
+        fill: $link-color;
+      }
+    }
+
+    .table.table-striped {
+      thead > tr {
+        &:first-child {
+          height: 15px!important;
+          border-bottom: 0;
+        }
+        &:nth-child(2) {
+          background-color: $body-bg;
+        }
+      }
+    }
+  }
+
   #info {
     padding-top: 15px;
 
