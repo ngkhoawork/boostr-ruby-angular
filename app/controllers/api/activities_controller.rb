@@ -59,21 +59,19 @@ class Api::ActivitiesController < ApplicationController
     existing_company_contacts = Contact.where(id: existing_contact_ids, company_id: current_user.company_id)
     new_contacts = []
 
-    if existing_company_contacts.length < params[:guests].length
-      existing_emails = existing_company_contacts.map(&:address).map(&:email)
-      new_incoming_contacts = params[:guests].reject do |raw_contact|
-        existing_emails.include?(raw_contact[:address][:email])
-      end
+    existing_emails = existing_company_contacts.map(&:address).map(&:email)
+    new_incoming_contacts = params[:guests].reject do |raw_contact|
+      existing_emails.include?(raw_contact[:address][:email])
+    end
 
-      new_incoming_contacts.each do |new_contact_data|
-        contact = current_user.company.contacts.new(
-          name: new_contact_data['name'],
-          address_attributes: { email: new_contact_data['address']['email'] },
-          created_by: current_user.id
-        )
-        if contact.save
-          new_contacts << contact
-        end
+    new_incoming_contacts.each do |new_contact_data|
+      contact = current_user.company.contacts.new(
+        name: new_contact_data['name'],
+        address_attributes: { email: new_contact_data['address']['email'] },
+        created_by: current_user.id
+      )
+      if contact.save
+        new_contacts << contact
       end
     end
 
