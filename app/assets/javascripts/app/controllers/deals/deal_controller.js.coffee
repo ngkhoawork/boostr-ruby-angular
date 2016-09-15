@@ -108,7 +108,7 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
-    Contact.all1(page: 1, per:10).then (contacts) ->
+    Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
 #    Contact.allForClient deal.advertiser_id, (contacts) ->
 #      $scope.contacts = contacts
@@ -198,16 +198,28 @@
   $scope.cancelAddProduct = ->
     $scope.showProductForm = !$scope.showProductForm
 
-  $scope.showModal = (currentDeal) ->
+  $scope.addContact = ->
     $scope.modalInstance = $modal.open
-      templateUrl: 'modals/deal_close_form.html'
-      size: 'lg'
-      controller: 'DealsCloseController'
+      templateUrl: 'modals/contact_add_form.html'
+      size: 'md'
+      controller: 'ContactsAddController'
       backdrop: 'static'
       keyboard: false
-      resolve:
-        currentDeal: ->
-          currentDeal
+      # resolve:
+      #   contact: ->
+      #     contact
+    .result.then (updated_contact) ->
+      console.log updated_contact
+      # $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
+      #   if (item.id == updated_contact.id)
+      #     return updated_contact
+      #   else
+      #     return item
+      # $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+      # $scope.contactActionLog.push({
+      #   previousContact: contact,
+      #   message: updated_contact.client.name
+      # })
 
   $scope.$on 'updated_deal', ->
     $scope.init()

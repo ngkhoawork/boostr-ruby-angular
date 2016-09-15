@@ -50,25 +50,25 @@
   allContacts = []
   currentContact = undefined
 
-  @$resource = resource
+  # @$resource = resource
 
-  @all = (callback) ->
+  resource.all = (callback) ->
     resource.query {}, (contacts) =>
       allContacts = contacts
       callback(contacts)
 
-  @all1 = (params) ->
+  resource.all1 = (params) ->
     deferred = $q.defer()
     resource.query params, (contacts) =>
       allContacts = contacts
       deferred.resolve(contacts)
     deferred.promise
 
-  @allForClient = (client_id, callback) ->
+  resource.allForClient = (client_id, callback) ->
     resource.query client_id: client_id, (contacts) ->
       callback(contacts)
 
-  @create = (params) ->
+  resource.create = (params) ->
     deferred = $q.defer()
     resource.save(
       params,
@@ -81,8 +81,9 @@
 
     deferred.promise
 
-  @update = (params) ->
+  resource._update = (params) ->
     deferred = $q.defer()
+    console.log 'UPDATE'
     resource.update(
       params
       (contact) ->
@@ -96,20 +97,20 @@
     )
     deferred.promise
 
-  @delete = (deletedContact, callback) ->
+  resource.delete = (deletedContact, callback) ->
     resource.delete id: deletedContact.id, () ->
       allContacts = _.reject allContacts, (contact) ->
         contact.id == deletedContact.id
       callback?()
       $rootScope.$broadcast 'updated_contacts'
 
-  @get = () ->
+  resource.get = () ->
     currentContact
 
-  @set = (contact_id) =>
+  resource.set = (contact_id) =>
     currentContact = _.find allContacts, (contact) ->
       return parseInt(contact_id) == contact.id
     $rootScope.$broadcast 'updated_current_contact'
 
-  return
+  return resource
 ]

@@ -71,7 +71,7 @@
       _.each $scope.unassignedContacts, (contact) ->
         $scope.contactNotification[contact.id] = ""
 
-    Contact.all1(page: 1, per:10).then (contacts) ->
+    Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
 
     Dashboard.get().then (dashboard) ->
@@ -162,7 +162,7 @@
       })
 
   $scope.saveCurrentContact = (contact) ->
-    Contact.update(id: contact.id, contact: contact).then (updated_contact) ->
+    Contact._update(id: contact.id, contact: contact).then (updated_contact) ->
       $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
         if (item.id == updated_contact.id)
           return updated_contact
@@ -171,7 +171,7 @@
   $scope.undoAssignContact = (contact) ->
     previousContact = _.find $scope.unassignedContacts, (item) ->
       return item.id == contact.id
-    Contact.update(id: contact.id, contact: contact).then (updated_contact) ->
+    Contact._update(id: contact.id, contact: contact).then (updated_contact) ->
       $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
         if (item.id == updated_contact.id)
           return updated_contact

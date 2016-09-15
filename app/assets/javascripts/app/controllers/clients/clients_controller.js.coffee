@@ -216,7 +216,7 @@
     $scope.contactToLink = undefined
     $scope.showContactList = false
     item.client_id = $scope.currentClient.id
-    Contact.update(id: item.id, contact: item).then (contact) ->
+    Contact._update(id: item.id, contact: item).then (contact) ->
       if !$scope.currentClient.contacts
         $scope.currentClient.contacts = []
       $scope.currentClient.contacts.unshift(contact)
