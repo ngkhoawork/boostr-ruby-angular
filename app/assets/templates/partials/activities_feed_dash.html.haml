@@ -1,10 +1,6 @@
 #activities-feed.table-wrapper
-  -#%div.pull-left
-  %h4.pull-left
+  %h4
     {{ feedName }}
-  %div{ class: "pull-right activity-filter" }
-    %div{ ng: { repeat: 'filter in activityFilters', class: '{active: filter.name == activityFilter.name}', click: 'filterActivities(filter)' } }
-      {{ filter.name }}
 
   %table.table.table-striped.black-table
     %tbody

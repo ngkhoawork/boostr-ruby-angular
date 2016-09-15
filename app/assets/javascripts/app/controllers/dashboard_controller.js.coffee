@@ -10,22 +10,6 @@
   $scope.loadMoreActivitiesText = "Load More"
   $scope.loadingMoreActivities = false
 
-  $scope.activityFilters = [
-    { name: 'All', param: '' }
-    { name: 'Team Leaders', param: 'team' }
-    { name: 'Individuals', param: 'client' }
-  ]
-
-  $scope.filterActivities = (filter) ->
-    $scope.activityFilter = filter
-    Activity.all({page: 1, filter: $scope.activityFilter.param}).then (activities) ->
-      $scope.activities = activities
-      if activities.length == 10
-        $scope.hasMoreActivities = true
-      $scope.nextActivitiesPage = 2
-
-  $scope.activityFilter = $scope.activityFilters[0]
-
   $scope.showSpinners = (reminder) ->
     reminder.showSpinners = true
     console.log('reminder', reminder)
@@ -71,7 +55,7 @@
         $scope.selected[type.name].contacts = []
 
     $scope.activity_objects = {}
-    Activity.all({page: 1, filter: $scope.activityFilter.param}).then (activities) ->
+    Activity.all({page: 1, filter: "client"}).then (activities) ->
       $scope.activities = activities
       if activities.length == 10
         $scope.hasMoreActivities = true
@@ -108,7 +92,7 @@
     if $scope.loadingMoreActivities == false
       $scope.loadingMoreActivities = true
       $scope.loadMoreActivitiesText = "Loading ..."
-      Activity.all({page: $scope.nextActivitiesPage, filter: $scope.activityFilter.param}).then (activities) ->
+      Activity.all({page: $scope.nextActivitiesPage, filter: "client"}).then (activities) ->
         $scope.activities = $scope.activities.concat(activities)
         if activities.length == 10
           $scope.hasMoreActivities = true
