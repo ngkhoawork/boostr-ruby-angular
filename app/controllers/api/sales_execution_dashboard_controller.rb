@@ -39,8 +39,8 @@ class Api::SalesExecutionDashboardController < ApplicationController
         end_date = Time.now.utc
     end
 
-    complete_deals = Deal.where("deals.id in (?)", deal_ids).closed_at(start_date, end_date).at_percent(100)
-    incomplete_deals = Deal.where("deals.id in (?)", deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
+    complete_deals = Deal.where("deals.id in (?)", deal_ids).active.closed_at(start_date, end_date).at_percent(100)
+    incomplete_deals = Deal.where("deals.id in (?)", deal_ids).active.closed.closed_at(start_date, end_date).at_percent(0)
 
     win_rate = 0.0
     average_deal_size = 0

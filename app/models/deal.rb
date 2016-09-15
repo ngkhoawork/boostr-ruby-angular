@@ -71,6 +71,7 @@ class Deal < ActiveRecord::Base
   scope :started_at, -> (start_date, end_date) { where('deals.created_at >= ? and deals.created_at <= ?', start_date, end_date) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
   scope :closed, -> { joins(:stage).where('stages.open IS false') }
+  scope :active, -> { where('deals.deleted_at is NULL') }
   scope :at_percent, -> (percentage) { joins(:stage).where('stages.probability = ?', percentage) }
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
 

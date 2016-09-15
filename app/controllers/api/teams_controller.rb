@@ -9,6 +9,7 @@ class Api::TeamsController < ApplicationController
         temp_team = current_team.as_json
         temp_team[:children] = current_team.all_children
         temp_team[:members] = current_team.all_members
+        temp_team[:leaders] = current_team.all_leaders
         temp_team[:members_count] = temp_team[:members].count
         all_teams << temp_team
       end

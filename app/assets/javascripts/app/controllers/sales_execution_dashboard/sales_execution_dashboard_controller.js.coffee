@@ -36,26 +36,32 @@
       $scope.optionsActivitySummary = ActivitySummaryDataStore.getOptions()
 
       $scope.allMemberId = []
+      $scope.allLeaderId = []
 
       $scope.init = () =>
         Team.all(all_teams: true).then (teams) ->
           all_members = []
+          all_leaders = []
           _.each teams, (team) ->
             all_members = all_members.concat(team.members)
+            all_leaders = all_leaders.concat(team.leaders)
 #          $scope.teams = teams
           $scope.teams = [{
             id: 0,
             name:'All Teams',
             children: teams,
             members: all_members,
+            leaders: all_leaders,
             members_count: all_members.length
           }]
           $scope.allMemberId = _.map $scope.teams[0].members, (member) ->
             return member.id
+          $scope.allLeaderId = _.map $scope.teams[0].leaders, (member) ->
+            return member.id
           $scope.selectedTeam = $scope.teams[0]
           $scope.selectedTeamId = $scope.selectedTeam.id
 
-          SalesExecutionDashboard.kpis("member_ids[]": $scope.allMemberId, time_period: $scope.kpisChoice).then (data) ->
+          SalesExecutionDashboard.kpis("member_ids[]": $scope.allMemberId.concat($scope.allLeaderId), time_period: $scope.kpisChoice).then (data) ->
             $scope.allKPIs = data[0]
 
 
@@ -82,7 +88,7 @@
           $scope.dataDealLossStages = DealLossStagesDataStore.getData()
           $scope.optionsDealLossStages = DealLossStagesDataStore.getOptions()
 
-        SalesExecutionDashboard.kpis("member_ids[]": $scope.selectedMemberList, time_period: $scope.kpisChoice).then (data) ->
+        SalesExecutionDashboard.kpis("member_ids[]": $scope.selectedMemberList.concat($scope.selectedLeaderList), time_period: $scope.kpisChoice).then (data) ->
           $scope.kpis = data[0]
 
         SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList, team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
@@ -112,6 +118,8 @@
           $scope.selectedMemberId = null
           $scope.selectedMemberList = _.map $scope.selectedTeam.members, (item) =>
             return item.id
+          $scope.selectedLeaderList = _.map $scope.selectedTeam.leaders, (item) =>
+            return item.id
           calculateKPIs()
       , true);
 
@@ -119,6 +127,7 @@
         $scope.selectedMember = value
         $scope.selectedMemberId = $scope.selectedMember.id
         $scope.selectedMemberList = [$scope.selectedMember.id]
+        $scope.selectedLeaderList = []
         calculateKPIs()
 
       $scope.changeActivitySummaryChoice=(value) =>
@@ -142,9 +151,9 @@
 
       $scope.changeKPIsChoice=(value) =>
         $scope.kpisChoice = value
-        SalesExecutionDashboard.kpis("member_ids[]": $scope.selectedMemberList, time_period: $scope.kpisChoice).then (data) ->
+        SalesExecutionDashboard.kpis("member_ids[]": $scope.selectedMemberList.concat($scope.selectedLeaderList), time_period: $scope.kpisChoice).then (data) ->
           $scope.kpis = data[0]
-        SalesExecutionDashboard.kpis("member_ids[]": $scope.allMemberId, time_period: $scope.kpisChoice).then (data) ->
+        SalesExecutionDashboard.kpis("member_ids[]": $scope.allMemberId.concat($scope.allLeaderId), time_period: $scope.kpisChoice).then (data) ->
           $scope.allKPIs = data[0]
 
       $scope.changeProductPipelineChoice=(value) =>
