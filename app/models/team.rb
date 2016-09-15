@@ -51,6 +51,7 @@ class Team < ActiveRecord::Base
       temp_child = child.as_json
       temp_child[:children] = child.all_children
       temp_child[:members] = child.all_members
+      temp_child[:leaders] = child.all_leaders
       temp_child[:members_count] = temp_child[:members].count
       children << temp_child
     end
@@ -91,6 +92,7 @@ class Team < ActiveRecord::Base
     end
     return ms
   end
+
 
   def all_leaders
     ls = leader.nil? ? []:[leader]
