@@ -313,8 +313,8 @@
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
-#      $scope.contacts.push contact
-      $scope.selected[$scope.activeType.name].contacts.push contact
+      $scope.contacts.push contact
+      $scope.selected[$scope.activeType.name].contacts.push(contact.id)
       $scope.populateContact = false
 
   $scope.deleteActivity = (activity) ->
