@@ -284,6 +284,76 @@ class Deal < ActiveRecord::Base
     return option
   end
 
+  def latest_activity
+    activities = self.activities.order("happened_at desc")
+    if activities && activities.count > 0
+      last_activity = activities.first
+      data = ""
+      if last_activity.happened_at
+        data = data + "Date: " + last_activity.happened_at.strftime("%m-%d-%Y %H:%M:%S") + "\n"
+      end
+      if last_activity.activity_type_name
+        data = data + "Type: " + last_activity.activity_type_name + "\n"
+      end
+      if last_activity.comment
+        data = data + "Note: " + last_activity.comment
+      end
+      data
+    else
+      ""
+    end
+  end
+  def self.to_pipeline_report_csv(company)
+    CSV.generate do |csv|
+      deals = company.deals.open
+      deal_ids = deals.collect{|deal| deal.id}
+      range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
+      header = []
+      header << "Name"
+      header << "Advertiser"
+      header << "Agency"
+      header << "Team Member"
+      header << "Stage"
+      header << "%"
+      header << "Budget"
+      header << "Latest Activity"
+      header << "Next Steps"
+      header << "Start Date"
+      header << "End Date"
+      range.each do |product_time|
+        header << product_time.strftime("%Y-%m")
+      end
+
+      csv << header
+      deals.each do |deal|
+        line = [
+            deal.name,
+            deal.advertiser ? deal.advertiser.name : nil,
+            deal.agency ? deal.agency.name : nil,
+            deal.users.collect {|user| user.first_name + " " + user.last_name}.join(";"),
+            deal.stage.name,
+            deal.stage.probability.nil? ? "" : deal.stage.probability.to_s + "%",
+            "$" + ((deal.budget.nil? ? 0 : deal.budget) / 100).round.to_s
+        ]
+        line << deal.latest_activity
+        line << deal.next_steps
+        line << deal.start_date
+        line << deal.end_date
+        range.each do |product_time|
+          deal_products = deal.deal_products.where({start_date: product_time}).select("sum(budget) as total_budget").collect{|deal_product| deal_product.total_budget}
+
+          if deal_products && deal_products[0]
+            line << "$" + (deal_products[0] / 100).round.to_s
+          else
+            line << "$0"
+          end
+        end
+
+        csv << line
+      end
+    end
+  end
+
   def self.to_zip
     deals_csv = CSV.generate do |csv|
       csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]

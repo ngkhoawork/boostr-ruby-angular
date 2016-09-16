@@ -35,6 +35,8 @@
                   = link_to "Forecast Detail - Annual", "/reports/forecasts"
                 %li
                   = link_to "Sales Execution Dashboard", "/reports/sales_execution_dashboard"
+                %li
+                  = link_to "Pipeline by User Report", "/reports/deal_reports"
           - else
             %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -45,6 +47,8 @@
                   = link_to "Sellers Activities", "/reports"
                 %li
                   = link_to "Sales Execution Dashboard", "/reports/sales_execution_dashboard"
+                %li
+                  = link_to "Pipeline by User Report", "/reports/deal_reports"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
             %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
