@@ -7,6 +7,8 @@
   $scope.moreSize = 10;
   $scope.types = []
   $scope.contactActionLog = []
+  $scope.loadMoreActivitiesText = "Load More"
+  $scope.loadingMoreActivities = false
 
   $scope.showSpinners = (reminder) ->
     reminder.showSpinners = true
@@ -53,28 +55,12 @@
         $scope.selected[type.name].contacts = []
 
     $scope.activity_objects = {}
-    Activity.all().then (activities) ->
-      activities.forEach (activity) ->
-        objectIds = []
+    Activity.all({page: 1, filter: "client"}).then (activities) ->
+      $scope.activities = activities
+      if activities.length == 10
+        $scope.hasMoreActivities = true
+      $scope.nextActivitiesPage = 2
 
-        if activity.deal
-          objectId = "d:" + activity.deal.id
-          if not $scope.activity_objects.hasOwnProperty(objectId)
-            $scope.activity_objects[objectId] = activity.deal
-            $scope.activity_objects[objectId].isDeal = true
-            $scope.activity_objects[objectId].activities = []
-          objectIds.push(objectId)
-
-        if activity.client
-          objectId = "c:" + activity.client.id
-          if not $scope.activity_objects.hasOwnProperty(objectId)
-            $scope.activity_objects[objectId] = activity.client
-            $scope.activity_objects[objectId].activities = []
-            $scope.activity_objects[objectId].isClient = true
-          objectIds.push(objectId)
-
-        objectIds.forEach (objectId) ->
-          $scope.activity_objects[objectId].activities.push(activity)
 
     Contact.all1(unassigned: "yes").then (contacts) ->
       $scope.unassignedContacts = contacts
@@ -102,7 +88,17 @@
     showTooltips: false
   }
 
-
+  $scope.loadMoreActivities = ->
+    if $scope.loadingMoreActivities == false
+      $scope.loadingMoreActivities = true
+      $scope.loadMoreActivitiesText = "Loading ..."
+      Activity.all({page: $scope.nextActivitiesPage, filter: "client"}).then (activities) ->
+        $scope.activities = $scope.activities.concat(activities)
+        if activities.length == 10
+          $scope.hasMoreActivities = true
+        $scope.nextActivitiesPage = $scope.nextActivitiesPage + 1
+        $scope.loadingMoreActivities = false
+        $scope.loadMoreActivitiesText = "Load More"
 
   $scope.showNewDealModal = ->
     $scope.modalInstance = $modal.open
@@ -133,6 +129,7 @@
           $scope.types
 
   $scope.showAssignContactModal = (contact) ->
+    advertiserTypeId = null
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_assign_form.html'
       size: 'md'
@@ -142,16 +139,18 @@
       resolve:
         contact: ->
           contact
+        typeId: ->
+          advertiserTypeId
     .result.then (updated_contact) ->
       $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
         if (item.id == updated_contact.id)
           return updated_contact
         else
           return item
-      $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+      $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
       $scope.contactActionLog.push({
         previousContact: contact,
-        message: updated_contact.client.name
+        message: updated_contact.clients[0].name
       })
 
   $scope.saveCurrentContact = (contact) ->
@@ -172,11 +171,11 @@
           return item
 
 
-      if updated_contact.client
-        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+      if updated_contact.clients.length > 0
+        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
         $scope.contactActionLog.push({
           previousContact: previousContact,
-          message: updated_contact.client.name
+          message: updated_contact.clients[0].name
         })
       else
         $scope.contactNotification[updated_contact.id] = "Unassigned"

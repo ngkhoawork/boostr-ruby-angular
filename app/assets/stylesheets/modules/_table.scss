@@ -444,3 +444,74 @@ tr:hover {
     visibility: visible;
   }
 }
+
+.table-report {
+  padding: 0px 30px;
+  table {
+    table-layout: fixed;
+    margin-top: 30px;
+    thead{
+      background-color: #f4f7fa;
+      color: #97a2ac;
+      tr {
+        th{
+          color: #97a2ac !important;
+          text-transform: capitalize;
+          font-weight: normal;
+          font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+          font-size: 13px;
+          border-bottom: 2px solid #d9dde0;
+          a {
+            color: #97a2ac !important;
+          }
+        }
+        th:first-child {
+          border-left: none;
+        }
+        th:last-child {
+          border-right: none;
+        }
+      }
+    }
+
+    tbody {
+      background-color: #ffffff;
+      tr {
+        height: auto !important;
+        max-height: auto !important;
+        td {
+          padding: 10px 8px;
+          line-height: 16px;
+          font-size: 12px;
+        }
+        td:first-child {
+          padding-top: 10px;
+          padding-bottom: 10px;
+        }
+      }
+    }
+  }
+  .float-left {
+    float: left;
+  }
+  .float-right {
+    float: right;
+  }
+  .report-filter {
+    padding-top: 15px;
+    div {
+      color: #959fa9;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 4px;
+      display: inline-block;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    div.active {
+      background-color: #3996db;
+      color: #FFFFFF;
+    }
+  }
+}

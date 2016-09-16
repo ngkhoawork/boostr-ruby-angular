@@ -19,10 +19,14 @@ Rails.application.routes.draw do
     resources :users, only: [:index, :update]
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
       resources :client_members, only: [:index, :create, :update, :destroy]
+      resources :client_contacts, only: [:index, :create, :update]
     end
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
+      collection do
+        get :pipeline_report
+      end
       resources :deal_members, only: [:index, :create, :update, :destroy]
     end
     resources :stages, only: [:index, :create, :show, :update]
@@ -49,6 +53,7 @@ Rails.application.routes.draw do
     resources :sales_execution_dashboard, only: [:index] do
       collection do
         get :forecast
+        get :kpis
         get :deal_loss_summary
         get :deal_loss_stages
         get :activity_summary

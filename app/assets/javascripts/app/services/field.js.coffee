@@ -60,5 +60,8 @@
     if option && option.suboptions && option.suboptions.length > 0
       suboption = $filter('filter')(option.suboptions, { id: suboption_id })[0]
 
+  @findClientTypes = (fields) ->
+    $filter('filter')(fields, { name: 'Client Type' })[0]
+
   return
 ]

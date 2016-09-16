@@ -1,0 +1,28 @@
+#advertisers-list
+  .panel.item-advertisers{ng: { repeat: 'client in currentClient.relatedContacts' } }
+    .panel-heading.hide-detail-wrap
+      .show-people
+        %label.trigger-click{"ng-click" => "editShow = !editShow", "ng-show" => "!editShow"}
+          = inline_svg 'icons/hide-details.svg'
+        %label.trigger-click{"ng-click" => "editShow = !editShow", "ng-show" => "editShow"}
+          = inline_svg 'icons/show-details.svg'
+
+      .text-wrap
+
+        %span.company-name
+          {{ client.name }}
+        %span.city
+          {{ client.address.city }}
+        %br
+        %span.count-of-people
+          {{ client.contacts.length }} people
+
+    .panel-body.details{ ng: {show: 'editShow'}}
+      %div.data-section-wrapper
+        %div.user-data{ng: { repeat: 'contact in client.contacts' } }
+          %span.name
+            {{ contact.name }}
+          %span.contact-position
+            {{ contact.position }}
+          %span.email
+            {{ contact.address.email }}

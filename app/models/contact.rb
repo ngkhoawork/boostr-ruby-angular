@@ -1,7 +1,8 @@
 class Contact < ActiveRecord::Base
   acts_as_paranoid
 
-  belongs_to :client, counter_cache: true
+  has_many :clients, -> { uniq }, through: :client_contacts
+  has_many :client_contacts, dependent: :destroy
   belongs_to :company
 
   has_many :reminders, as: :remindable, dependent: :destroy
@@ -16,13 +17,25 @@ class Contact < ActiveRecord::Base
   validate :email_unique?
 
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
-  scope :unassigned, -> user_id { where(client_id: nil, created_by: user_id) }
+  scope :unassigned, -> user_id { where(created_by: user_id).where('id NOT IN (SELECT DISTINCT(contact_id) from client_contacts)') }
+  scope :by_email, -> email, company_id {
+    Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email=? and contacts.company_id=?", email, company_id)
+  }
+
+  after_save do
+    if client_id_changed? && !client_id.nil?
+      relation = ClientContact.find_or_initialize_by(contact_id: id, client_id: client_id)
+      relation.primary = true if client_id_was.nil?
+      relation.save
+    elsif client_id_changed? && client_id.nil?
+      self.clients = []
+    end
+  end
 
   def as_json(options = {})
-    super(options.merge(
+    super(options.deep_merge(
       include: {
         address: {},
-        client: {},
         activities: {
           include: {
             creator: {},
@@ -35,12 +48,24 @@ class Contact < ActiveRecord::Base
           }
         }
       },
-      methods: [:formatted_name]
+      methods: [:formatted_name, :primary_client]
     ))
   end
 
   def formatted_name
     name
+  end
+
+  def primary_client
+    primary_client_contact = client_contacts.where(primary: true).first
+    if primary_client_contact
+      primary_client_contact.client
+    end
+  end
+
+  def update_primary_client
+    client_contacts.where(primary: true).update_all(primary: false)
+    client_contacts.where(client_id: self.client_id).update_all(primary: true)
   end
 
   def self.import(file, current_user)
@@ -54,11 +79,50 @@ class Contact < ActiveRecord::Base
     CSV.parse(file, headers: true) do |row|
       row_number += 1
       # unless client = Client.where(company_id: current_user.company_id, name: row[1]).first
-      unless client = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, row[1].strip.downcase).first
-        error = { row: row_number, message: ['Client could not be found'] }
+      if row[3].nil? || row[3].blank?
+        error = { row: row_number, message: ['Email is empty'] }
         errors << error
         next
       end
+
+      if row[1].nil? || row[1].blank?
+        error = { row: row_number, message: ['Client is empty'] }
+        errors << error
+        next
+      end
+
+      if row[0].nil? || row[0].blank?
+        error = { row: row_number, message: ['Name is empty'] }
+        errors << error
+        next
+      end
+
+      unless client = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, row[1].strip.downcase).first
+        error = { row: row_number, message: ['Client ' + row[1].to_s + ' could not be found'] }
+        errors << error
+        next
+      end
+      agency_data_list = []
+
+      if row[11].present?
+        agency_list = row[11].split(";")
+
+        agency_list_error = false
+        agency_list.each do |agency_name|
+          if agency = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, agency_name.strip.downcase).first
+            agency_data_list << agency
+          else
+            error = { row: row_number, message: ['Client ' + agency_name.to_s + ' could not be found'] }
+            errors << error
+            agency_list_error = true
+            break
+          end
+        end
+        if agency_list_error
+          next
+        end
+      end
+
 
       find_params = {
         company_id: current_user.company_id,
@@ -99,8 +163,21 @@ class Contact < ActiveRecord::Base
       end
       contact_params[:address_attributes] = address_params
 
-
-      unless contact.update_attributes(contact_params)
+      if contact.update_attributes(contact_params)
+        ClientContact.delete_all(client_id: client.id, contact_id: contact.id, primary: false)
+        primary_client_contact = ClientContact.find_by({contact_id: contact.id, primary: true})
+        if primary_client_contact.nil?
+          contact.client_contacts.create({client_id: client.id, primary: true})
+        else
+          primary_client_contact.client_id = client.id
+          primary_client_contact.save!
+        end
+        agency_data_list.each do |agency|
+          unless client_contact = ClientContact.find_by({contact_id: contact.id, client_id: agency.id})
+            contact.client_contacts.create({client_id: agency.id, primary: false})
+          end
+        end
+      else
         error = { row: row_number, message: contact.errors.full_messages }
         errors << error
         next
@@ -119,8 +196,12 @@ class Contact < ActiveRecord::Base
   end
 
   def email_unique?
-    # contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").find_by({company_id: company_id, addresses: {email: address.email}})
-    contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
+    if id
+      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
+    else
+      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=?", company_id, address.email)
+    end
+
     if contact.present?
       errors.add(:email, "has already been taken")
     end

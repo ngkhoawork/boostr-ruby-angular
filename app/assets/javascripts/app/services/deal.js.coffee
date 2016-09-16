@@ -18,12 +18,20 @@
       transformRequest: transformRequest
     }
 
+  pipeline_report_resource = $resource '/api/deals/pipeline_report'
+
   currentDeal = undefined
 
   @all = (params) ->
     deferred = $q.defer()
     resource.query params, (deals) ->
       deferred.resolve(deals)
+    deferred.promise
+
+  @pipeline_report = (params) ->
+    deferred = $q.defer()
+    pipeline_report_resource.query params, (response) ->
+      deferred.resolve(response)
     deferred.promise
 
   @create = (params) ->

@@ -1,6 +1,6 @@
 @app.controller 'ClientsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http'
-($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes'
+($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -30,6 +30,8 @@
     $scope.getClient($scope.currentClient.id) if $scope.currentClient
     $scope.getClients()
     $scope.showContactList = false
+    Contact.$resource.query().$promise.then (contacts) ->
+      $scope.contacts = contacts
 
   $scope.getClientMembers = ->
     ClientMember.query({ client_id: $scope.currentClient.id })
@@ -39,15 +41,6 @@
           Field.defaults(client_member, 'Client').then (fields) ->
             client_member.role = Field.field(client_member, 'Member Role')
             $scope.client_members.push(client_member)
-
-
-  $scope.getContacts = (client) ->
-    Contact.$resource.query().$promise.then (contacts) ->
-      $scope.contacts = contacts
-#    unless client.contacts
-#      Contact.allForClient client.id, (contacts) ->
-#        $scope.contacts = contacts
-#        client.contacts = contacts
 
   $scope.removeClientMember = (clientMember) ->
     clientMember.$delete(
@@ -60,9 +53,9 @@
   $scope.setClient = (client) ->
     $scope.currentClient = client
     $scope.initActivity()
-    $scope.getContacts($scope.currentClient)
     $scope.getDeals($scope.currentClient)
     $scope.initReminder()
+    $scope.initRelatedContacts()
     $scope.$emit('updated_current_client')
 
   $scope.getClient = (clientId) ->
@@ -246,7 +239,6 @@
         $scope.currentClient.client_type = Field.field($scope.currentClient, 'Client Type')
         $scope.currentClient.client_category = Field.getOption($scope.currentClient, 'Category', $scope.currentClient.client_category_id)
         $scope.currentClient.client_subcategory = Field.getSuboption($scope.currentClient, $scope.currentClient.client_category, $scope.currentClient.client_subcategory_id)
-      $scope.getContacts($scope.currentClient)
       $scope.getDeals($scope.currentClient)
       $scope.getClientMembers()
 
@@ -371,6 +363,7 @@
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
+      $scope.contacts.push contact
       $scope.activity.contacts.push contact.id
       $scope.populateContact = false
 
@@ -460,4 +453,44 @@
 
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
+
+  $scope.initRelatedContacts = () ->
+    if ($scope.currentClient && $scope.currentClient.id)
+#      if ($scope.currentClient.client_type && $scope.currentClient.client_type.option && $scope.currentClient.client_type.option.name == 'Agency')
+#        /api/clients/:client_id/client_contacts
+      ClientContacts.list($scope.currentClient.id)
+      .then (respond) ->
+        if (respond && respond.data && respond.data.length)
+          $scope.currentClient.relatedContacts = respond.data
+
+  $scope.showAssignContactModal = (contact) ->
+    advertiserTypeId = 0
+    ClientsTypes.list().then (clientDefaultTypes) ->
+      if clientDefaultTypes && clientDefaultTypes.types && clientDefaultTypes.types.length
+        _.each clientDefaultTypes.types, (typeObject) ->
+          if typeObject.name == 'Advertiser'
+            advertiserTypeId = typeObject.typeId
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/contact_assign_form_copy_for_clients.html'
+        size: 'md'
+        controller: 'ContactsAssignController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          contact: ->
+            contact
+          typeId: ->
+            advertiserTypeId
+      .result.then (updated_contact) ->
+        $scope.initRelatedContacts()
+        $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
+          if (item.id == updated_contact.id)
+            return updated_contact
+          else
+            return item
+        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
+        $scope.contactActionLog.push({
+          previousContact: contact,
+          message: updated_contact.clients[0].name
+        })
 ]
