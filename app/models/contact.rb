@@ -63,6 +63,11 @@ class Contact < ActiveRecord::Base
     end
   end
 
+  def update_primary_client
+    client_contacts.where(primary: true).update_all(primary: false)
+    client_contacts.where(client_id: self.client_id).update_all(primary: true)
+  end
+
   def self.import(file, current_user)
     errors = []
 
