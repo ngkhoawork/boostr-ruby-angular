@@ -14,11 +14,16 @@ class Api::ActivitiesController < ApplicationController
     @activity.user_id = current_user.id
     @activity.created_by = current_user.id
     @activity.updated_by = current_user.id
+
     if @activity.save
-      contacts = company.contacts.where(id: params[:contacts])
-      contacts.each do |contact|
-        @activity.contacts << contact
-      end
+      current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+
+      activity_contacts = []
+      activity_contacts += params[:contacts] if params[:contacts]
+      activity_contacts += process_raw_contact_data if params[:guests]
+
+      contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
+      @activity.contacts = contacts
       render json: activity, status: :created
     else
       render json: { errors: activity.errors.messages }, status: :unprocessable_entity
@@ -27,11 +32,14 @@ class Api::ActivitiesController < ApplicationController
 
   def update
     if activity.update_attributes(activity_params)
-      contacts = company.contacts.where(id: params[:contacts])
-      activity.contacts = []
-      contacts.each do |contact|
-        activity.contacts << contact
-      end
+      current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+
+      activity_contacts = []
+      activity_contacts += params[:contacts] if params[:contacts]
+      activity_contacts += process_raw_contact_data if params[:guests]
+
+      contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
+      activity.contacts = contacts
       render json: activity, status: :accepted
     else
       render json: { errors: client.errors.messages }, status: :unprocessable_entity
@@ -44,6 +52,31 @@ class Api::ActivitiesController < ApplicationController
   end
 
   private
+
+  def process_raw_contact_data
+    addresses = params[:guests].map { |c| c[:address][:email] }
+    existing_contact_ids = Address.contacts_by_email(addresses).map(&:addressable_id)
+    existing_company_contacts = Contact.where(id: existing_contact_ids, company_id: current_user.company_id)
+    new_contacts = []
+
+    existing_emails = existing_company_contacts.map(&:address).map(&:email)
+    new_incoming_contacts = params[:guests].reject do |raw_contact|
+      existing_emails.include?(raw_contact[:address][:email])
+    end
+
+    new_incoming_contacts.each do |new_contact_data|
+      contact = current_user.company.contacts.new(
+        name: new_contact_data['name'],
+        address_attributes: { email: new_contact_data['address']['email'] },
+        created_by: current_user.id
+      )
+      if contact.save
+        new_contacts << contact
+      end
+    end
+
+    existing_company_contacts.ids + new_contacts.map(&:id)
+  end
 
   def activity_params
     params.require(:activity).permit(

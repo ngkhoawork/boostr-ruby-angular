@@ -8,4 +8,6 @@ class Address < ActiveRecord::Base
     self.phone = phone.gsub(/[^0-9]/, '') if attribute_present?('phone')
     self.mobile = mobile.gsub(/[^0-9]/, '') if attribute_present?('mobile')
   end
+
+  scope :contacts_by_email, -> email { where(email: email, addressable_type: "Contact") }
 end

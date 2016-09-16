@@ -20,6 +20,17 @@ RSpec.describe Contact, type: :model do
         expect(Contact.for_client(client.id).count).to eq(1)
       end
     end
+
+    context 'by_email' do
+      let!(:user_contact) { create :contact, name: 'user contact', address_attributes: { email: user.email } }
+
+      it 'returns a contact based on email address' do
+        contact_array = Contact.by_email(user.email, user.company_id)
+        expect(contact_array.length).to eq(1)
+        expect(contact_array.first.name).to eq(user_contact.name)
+        expect(contact_array.first.address.email).to eq(user_contact.address.email)
+      end
+    end
   end
 
   context 'validation' do
