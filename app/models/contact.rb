@@ -102,23 +102,27 @@ class Contact < ActiveRecord::Base
         errors << error
         next
       end
-
-      agency_list = row[11].split(";")
       agency_data_list = []
-      agency_list_error = false
-      agency_list.each do |agency_name|
-        if agency = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, agency_name.strip.downcase).first
-          agency_data_list << agency
-        else
-          error = { row: row_number, message: ['Client ' + agency_name.to_s + ' could not be found'] }
-          errors << error
-          agency_list_error = true
-          break
+
+      if row[11].present?
+        agency_list = row[11].split(";")
+
+        agency_list_error = false
+        agency_list.each do |agency_name|
+          if agency = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, agency_name.strip.downcase).first
+            agency_data_list << agency
+          else
+            error = { row: row_number, message: ['Client ' + agency_name.to_s + ' could not be found'] }
+            errors << error
+            agency_list_error = true
+            break
+          end
+        end
+        if agency_list_error
+          next
         end
       end
-      if agency_list_error
-        next
-      end
+
 
       find_params = {
         company_id: current_user.company_id,
@@ -164,7 +168,8 @@ class Contact < ActiveRecord::Base
         if primary_client_contact.nil?
           contact.client_contacts.create({client_id: client.id, primary: true})
         else
-          primary_client_contact.update({client_id: client.id, primary: true})
+          primary_client_contact.client_id = client.id
+          primary_client_contact.save
         end
         agency_data_list.each do |agency|
           unless client_contact = ClientContact.find_by({contact_id: contact.id, client_id: agency.id})
