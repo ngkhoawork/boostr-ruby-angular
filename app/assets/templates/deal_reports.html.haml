@@ -66,7 +66,7 @@
                 %td.right ${{ deal.budget / 100 | number : 0}}
                 %td.left {{ deal.next_steps.substr(0, 30) }}
                 %td.left{ 'ng-bind-html': "getHtml(deal.latest_activity)"}
-                %td.left {{ deal.start_date }}
-                %td.left {{ deal.end_date }}
+                %td.left {{ deal.start_date | date: 'MM-dd-yyyy' }}
+                %td.left {{ deal.end_date | date: 'MM-dd-yyyy' }}
                 %td.right{ ng: { repeat: 'productTime in productRange track by $index' } }
                   ${{ deal.products[$index] | number : 0 }}
