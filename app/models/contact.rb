@@ -57,6 +57,24 @@ class Contact < ActiveRecord::Base
     CSV.parse(file, headers: true) do |row|
       row_number += 1
       # unless client = Client.where(company_id: current_user.company_id, name: row[1]).first
+      if row[3].nil? || row[3].blank?
+        error = { row: row_number, message: ['Email is empty'] }
+        errors << error
+        next
+      end
+
+      if row[1].nil? || row[1].blank?
+        error = { row: row_number, message: ['Client is empty'] }
+        errors << error
+        next
+      end
+
+      if row[0].nil? || row[0].blank?
+        error = { row: row_number, message: ['Name is empty'] }
+        errors << error
+        next
+      end
+
       unless client = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, row[1].strip.downcase).first
         error = { row: row_number, message: ['Client could not be found'] }
         errors << error
