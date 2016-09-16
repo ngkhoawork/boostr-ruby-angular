@@ -1,21 +1,33 @@
 @app.controller "ContactsAssignController",
-['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'contact',
-($scope, $modalInstance, $filter, Contact, Client, contact) ->
-
+['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'contact', 'typeId'
+($scope, $modalInstance, $filter, Contact, Client, contact, typeId) ->
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.contact = contact
   $scope.searchText = ""
-  Client.query(filter: 'all').$promise.then (clients) ->
-    $scope.clients = clients
+  if typeId
+    Client.query({client_type_id: typeId}).$promise.then (clients) ->
+      $scope.clients = clients
+  else
+    Client.query(filter: 'all').$promise.then (clients) ->
+      $scope.clients = clients
 
   $scope.searchObj = (name) ->
-    if name == ""
-      Client.query(filter: 'all').$promise.then (clients) ->
-        $scope.clients = clients
+    if typeId
+      if name == ""
+        Client.query({client_type_id: typeId}).$promise.then (clients) ->
+          $scope.clients = clients
+      else
+        Client.query({name: name, client_type_id: typeId}).$promise.then (clients) ->
+          $scope.clients = clients
     else
-      Client.query({name: name}).$promise.then (clients) ->
-        $scope.clients = clients
+      if name == ""
+        Client.query(filter: 'all').$promise.then (clients) ->
+          $scope.clients = clients
+      else
+        Client.query({name: name}).$promise.then (clients) ->
+          $scope.clients = clients
+
   $scope.assignClient = (client) ->
     contact = angular.copy($scope.contact)
     contact.client_id = client.id

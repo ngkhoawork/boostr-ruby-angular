@@ -7,17 +7,57 @@ RSpec.describe Contact, type: :model do
   let(:address) { create :address, email: 'abc123@boostrcrm.com' }
   let(:address2) { create :address, email: 'abc1234@boostrcrm.com' }
 
+  context 'after_save' do
+    let(:contact) { build :contact, client_id: client.id }
+
+    it 'creates a relation with primary flag when contact is created' do
+      expect {
+        contact.save
+      }.to change(ClientContact, :count).by(1)
+      relation = ClientContact.last
+      expect(relation.contact_id).to eq contact.id
+      expect(relation.client_id).to eq contact.client_id
+      expect(relation.primary).to eq true
+    end
+
+    it 'creates a relation without primary flag on contact update' do
+      contact.save
+      contact.client_id = client2.id
+      expect {
+        contact.save
+      }.to change(ClientContact, :count).by(1)
+      relation = ClientContact.last
+      expect(relation.contact_id).to eq contact.id
+      expect(relation.client_id).to eq contact.client_id
+      expect(relation.primary).to eq false
+    end
+
+    it 'does not modify primary flag to false for primary clients' do
+      contact.save
+      contact.client_id = client2.id
+      contact.save
+      contact.client_id = client.id
+      contact.save
+      relation = ClientContact.where(contact_id: contact.id, client_id: client.id).first
+      expect(relation.primary).to eq true
+    end
+
+    it 'resets client contact relation if client_id is set to nil' do
+      contact.save
+      contact.client_id = nil
+      contact.save
+      expect(contact.clients.length).to eq 0
+    end
+  end
+
   context 'scopes' do
-    context 'for_client' do
-      let!(:contact) { create :contact, client: client, address: address }
-      let!(:another_contact) { create :contact, address: address2, client: client2 }
+    context 'unassigned' do
+      let!(:contact) { create :contact, clients: [client], address: address }
+      let!(:another_contact) { create :contact, clients: [client2] }
+      let!(:unassigned_contact) { create :contact, clients: [] }
 
-      it 'returns all when client_id is nil' do
-        expect(Contact.for_client(nil).count).to eq(2)
-      end
-
-      it 'returns only the contacts that belong to the client_id' do
-        expect(Contact.for_client(client.id).count).to eq(1)
+      it 'returns unassigned contact' do
+        expect(Contact.unassigned(nil).count).to eq(1)
       end
     end
 
@@ -34,7 +74,7 @@ RSpec.describe Contact, type: :model do
   end
 
   context 'validation' do
-    let!(:contact) { create :contact, client: client, address: address }
+    let!(:contact) { create :contact, clients: [client], address: address }
 
     it 'allows to create contacts with same email across companies' do
       duplicate = build(:contact, address: contact.address)

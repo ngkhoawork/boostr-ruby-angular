@@ -129,6 +129,7 @@
           $scope.types
 
   $scope.showAssignContactModal = (contact) ->
+    advertiserTypeId = null
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_assign_form.html'
       size: 'md'
@@ -138,16 +139,18 @@
       resolve:
         contact: ->
           contact
+        typeId: ->
+          advertiserTypeId
     .result.then (updated_contact) ->
       $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
         if (item.id == updated_contact.id)
           return updated_contact
         else
           return item
-      $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+      $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
       $scope.contactActionLog.push({
         previousContact: contact,
-        message: updated_contact.client.name
+        message: updated_contact.clients[0].name
       })
 
   $scope.saveCurrentContact = (contact) ->

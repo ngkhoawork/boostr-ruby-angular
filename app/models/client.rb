@@ -7,7 +7,9 @@ class Client < ActiveRecord::Base
   has_many :child_clients, class_name: "Client", foreign_key: :parent_client_id
   has_many :client_members
   has_many :users, through: :client_members
-  has_many :contacts
+  # has_many :contacts
+  has_many :contacts, -> { uniq }, through: :client_contacts
+  has_many :client_contacts, dependent: :destroy
   has_many :revenues
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
@@ -24,6 +26,8 @@ class Client < ActiveRecord::Base
   before_create :ensure_client_member
 
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
+  scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
+  scope :exclude_ids, -> ids { where.not(id: ids) }
 
   def self.to_csv
     attributes = {
@@ -88,7 +92,9 @@ class Client < ActiveRecord::Base
       include: {
         address: {},
         parent_client: {},
-        contacts: {},
+        contacts: {
+          include: :address
+        },
         values: {
           methods: [:value],
           include: [:option]
