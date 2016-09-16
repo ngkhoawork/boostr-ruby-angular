@@ -164,12 +164,13 @@ class Contact < ActiveRecord::Base
       contact_params[:address_attributes] = address_params
 
       if contact.update_attributes(contact_params)
+        ClientContact.delete_all(client_id: client.id, contact_id: contact.id, primary: false)
         primary_client_contact = ClientContact.find_by({contact_id: contact.id, primary: true})
         if primary_client_contact.nil?
           contact.client_contacts.create({client_id: client.id, primary: true})
         else
           primary_client_contact.client_id = client.id
-          primary_client_contact.save
+          primary_client_contact.save!
         end
         agency_data_list.each do |agency|
           unless client_contact = ClientContact.find_by({contact_id: contact.id, client_id: agency.id})
