@@ -30,6 +30,8 @@
     $scope.getClient($scope.currentClient.id) if $scope.currentClient
     $scope.getClients()
     $scope.showContactList = false
+    Contact.$resource.query().$promise.then (contacts) ->
+      $scope.contacts = contacts
 
   $scope.getClientMembers = ->
     ClientMember.query({ client_id: $scope.currentClient.id })
@@ -361,6 +363,7 @@
 
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
+      $scope.contacts.push contact
       $scope.activity.contacts.push contact.id
       $scope.populateContact = false
 
