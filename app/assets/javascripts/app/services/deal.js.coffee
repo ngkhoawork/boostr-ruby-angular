@@ -6,6 +6,11 @@
     original.deal.values_attributes = original.deal.values
     angular.toJson(original)
 
+  transformAddContactRequest = (original, headers) ->
+    # original.deal.values_attributes = original.deal.values
+    console.log 'original:', original
+    angular.toJson(original.params)
+
   resource = $resource '/api/deals/:id', { id: '@id' },
     save: {
       method: 'POST'
@@ -16,7 +21,11 @@
       method: 'PUT'
       url: '/api/deals/:id'
       transformRequest: transformRequest
-    }
+    },
+    updateContacts:
+      method: 'PUT'
+      url: 'api/deals/:id'
+      transformRequest: transformAddContactRequest
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
 
@@ -45,6 +54,13 @@
     deferred = $q.defer()
     resource.update params, (deal) ->
       deferred.resolve(deal)
+      $rootScope.$broadcast 'updated_deals'
+    deferred.promise
+
+  @updateContacts = (id, params) ->
+    deferred = do $q.defer
+    resource.updateContacts id: id, params: params, (deal) ->
+      deferred.resolve deal
       $rootScope.$broadcast 'updated_deals'
     deferred.promise
 

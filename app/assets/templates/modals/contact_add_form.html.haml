@@ -25,7 +25,7 @@
                 .type
                   {{contact.agency_deals_count > 0 ? " Agency" : " Advertiser"}}
                 .action
-                  %a{ href: "javascript:void(0)", 'ng-click': "assignClient(contact)" }
+                  %a{ href: "javascript:void(0)", 'ng-click': "addContact(contact)", 'ng-show': "checkContact(contact)" }
                     Add
 
     .modal-footer

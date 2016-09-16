@@ -205,21 +205,11 @@
       controller: 'ContactsAddController'
       backdrop: 'static'
       keyboard: false
-      # resolve:
-      #   contact: ->
-      #     contact
-    .result.then (updated_contact) ->
-      console.log updated_contact
-      # $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
-      #   if (item.id == updated_contact.id)
-      #     return updated_contact
-      #   else
-      #     return item
-      # $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
-      # $scope.contactActionLog.push({
-      #   previousContact: contact,
-      #   message: updated_contact.client.name
-      # })
+      resolve:
+        deal: ->
+          $scope.currentDeal
+    .result.then (updatedContact) ->
+      $scope.currentDeal.contacts = angular.copy updatedContact
 
   $scope.$on 'updated_deal', ->
     $scope.init()
