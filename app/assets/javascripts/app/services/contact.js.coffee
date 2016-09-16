@@ -24,6 +24,7 @@
       position: original.contact.position
       address_attributes: address_attributes
       client_id: original.contact.client_id
+      set_primary_client: !!(original.contact.set_primary_client)
     angular.toJson(send)
 
   resource = $resource '/api/contacts/:id', { id: '@id' },

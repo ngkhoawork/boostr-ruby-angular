@@ -171,11 +171,11 @@
           return item
 
 
-      if updated_contact.client
-        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.client.name
+      if updated_contact.clients.length > 0
+        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
         $scope.contactActionLog.push({
           previousContact: previousContact,
-          message: updated_contact.client.name
+          message: updated_contact.clients[0].name
         })
       else
         $scope.contactNotification[updated_contact.id] = "Unassigned"

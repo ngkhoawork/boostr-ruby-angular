@@ -14,6 +14,7 @@
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
+    $scope.contact.set_primary_client = true
     Contact.update(id: $scope.contact.id, contact: $scope.contact).then (contact) ->
       $modalInstance.close()
 

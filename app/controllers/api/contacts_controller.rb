@@ -47,7 +47,8 @@ class Api::ContactsController < ApplicationController
 
   def update
     if contact.update_attributes(contact_params)
-      render json: contact, status: :accepted
+      contact.update_primary_client if params[:contact][:set_primary_client]
+      render json: contact.as_json(include: {clients: {}}), status: :accepted
     else
       render json: { errors: contact.errors.messages }, status: :unprocessable_entity
     end

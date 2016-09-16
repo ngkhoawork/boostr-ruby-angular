@@ -5,6 +5,7 @@ RSpec.describe Api::ContactsController, type: :controller do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let(:client) { create :client, company: company }
+  let(:client2) { create :client }
   let(:address_params) { attributes_for :address }
   let(:contact_params) { attributes_for(:contact, client_id: client.id, address_attributes: address_params) }
 
@@ -51,6 +52,25 @@ RSpec.describe Api::ContactsController, type: :controller do
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json['name']).to eq('New Name')
+    end
+
+    it 'sets the primary contact' do
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['primary_client']['name']).to eq(client.name)
+    end
+
+    it 'updates the primary contact' do
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['primary_client']['name']).to eq(client.name)
+
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client2.id, set_primary_client: true }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['primary_client']['name']).to eq(client2.name)
     end
   end
 
