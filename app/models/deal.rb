@@ -361,7 +361,7 @@ class Deal < ActiveRecord::Base
         agency_name = !deal.agency.nil? ? deal.agency.name : nil
         budget = !deal.budget.nil? ? deal.budget/100.0 : nil
         member = deal.users.collect{|user| user.name}.join(";")
-        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, member, budget, deal.stage.name, deal.stage.probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at, deal.closed_at, get_option(deal, "Close Reason")]
+        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, member, budget, deal.stage.name, deal.stage.probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
       end
     end
 
