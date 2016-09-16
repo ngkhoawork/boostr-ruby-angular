@@ -63,6 +63,30 @@
 
       margin-top: 20px;
     }
+
+    .activity-filter {
+      text-align: center;
+      margin-top: 6px;
+      margin-right: 50px;
+      div {
+        color: #959fa9;
+        padding: 8px 10px;
+        border: none;
+        border-radius: 4px;
+        display: inline-block;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      div.active {
+        background-color: #FF7E30;
+        color: #FFFFFF;
+      }
+      div:hover {
+        background-color: $brand-primary-lighten;
+        color: #FFFFFF;
+      }
+    }
+
   }
 
   .activities-feed {
