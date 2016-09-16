@@ -7,12 +7,12 @@
   $scope.submitText = "Update"
   $scope.contact = contact
   $scope.searchText = ""
-  Contact.query(filter: 'all').$promise.then (contacts) ->
+  Contact.query(filter: 'all', per: '10').$promise.then (contacts) ->
     $scope.contacts = contacts
 
   $scope.searchObj = (name) ->
     if name == ""
-      Contact.query(filter: 'all').$promise.then (contacts) ->
+      Contact.query(filter: 'all', per: '10').$promise.then (contacts) ->
         $scope.contacts = contacts
     else
       Contact.query({name: name}).$promise.then (contacts) ->

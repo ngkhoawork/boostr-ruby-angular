@@ -24,7 +24,7 @@
     },
     updateContacts:
       method: 'PUT'
-      url: 'api/deals/:id?per=10'
+      url: 'api/deals/:id'
       transformRequest: transformAddContactRequest
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
