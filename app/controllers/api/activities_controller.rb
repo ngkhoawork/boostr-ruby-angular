@@ -103,6 +103,13 @@ class Api::ActivitiesController < ApplicationController
   def activities
     if params[:google_event_id]
       current_user.activities.where(google_event_id: params[:google_event_id])
+    elsif params[:contact_id]
+      contact = Contact.find(params[:contact_id])
+      if contact.present?
+        contact.activities
+      else
+        []
+      end
     else
       if params[:page] && params[:filter] == "client"
         offset = (params[:page].to_i - 1) * 10

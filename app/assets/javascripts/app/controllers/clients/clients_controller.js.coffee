@@ -10,6 +10,7 @@
   $scope.query = ""
   $scope.page = 1
   $scope.errors = {}
+  $scope.contactSearchText = ""
 
   $scope.clientFilters = [
     { name: 'My Clients', param: '' }
@@ -30,7 +31,7 @@
     $scope.getClient($scope.currentClient.id) if $scope.currentClient
     $scope.getClients()
     $scope.showContactList = false
-    Contact.$resource.query().$promise.then (contacts) ->
+    Contact.all1(page: 1, per:10).then (contacts) ->
       $scope.contacts = contacts
 
   $scope.getClientMembers = ->
@@ -139,11 +140,17 @@
           activity
         types: ->
           $scope.types
-        contacts: ->
-          $scope.contacts
-        types: ->
-          $scope.types
 
+  $scope.searchContact = (searchText) ->
+    if ($scope.contactSearchText != searchText)
+      $scope.contactSearchText = searchText
+      if $scope.contactSearchText
+        Contact.all1(contact_name: $scope.contactSearchText, per: 10, page: 1).then (contacts) ->
+          $scope.contacts = contacts
+      else
+        Contact.all1(per: 10, page: 1).then (contacts) ->
+          $scope.contacts = contacts
+    return searchText
   $scope.showNewPersonModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'

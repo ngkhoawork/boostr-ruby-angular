@@ -35,18 +35,7 @@ class Contact < ActiveRecord::Base
   def as_json(options = {})
     super(options.deep_merge(
       include: {
-        address: {},
-        activities: {
-          include: {
-            creator: {},
-            contacts: {},
-            assets: {
-              methods: [
-                :presigned_url
-              ]
-            }
-          }
-        }
+        address: {}
       },
       methods: [:formatted_name, :primary_client]
     ))

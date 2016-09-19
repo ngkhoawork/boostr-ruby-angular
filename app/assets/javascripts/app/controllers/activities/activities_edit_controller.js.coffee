@@ -1,9 +1,10 @@
 @app.controller "ActivitiesEditController",
-  ['$scope', '$modalInstance', '$modal', '$filter', 'Activity', 'ActivityType', 'Field', 'activity', 'types', 'contacts', 'Reminder', '$http'
-    ($scope, $modalInstance, $modal, $filter, Activity, ActivityType, Field, activity, types, contacts, Reminder, $http) ->
+  ['$scope', '$modalInstance', '$modal', '$filter', 'Activity', 'ActivityType', 'Field', 'activity', 'types', 'Contact', 'Reminder', '$http'
+    ($scope, $modalInstance, $modal, $filter, Activity, ActivityType, Field, activity, types, Contact, Reminder, $http) ->
       $scope.showMeridian = true
       $scope.selectedContacts = []
-      $scope.editActRemColl = false;
+      $scope.editActRemColl = false
+      $scope.searchText = ""
 
       $scope.editActivityReminderInit = ->
 
@@ -41,6 +42,7 @@
                   $scope.editActivityReminder._time = new Date(reminder.remind_on)
 
       $scope.init = () ->
+
         $scope.populateContact = false
         $scope.formType = "Edit"
         $scope.submitText = "Update"
@@ -55,7 +57,7 @@
           $scope.activity.deal_id = activity.deal.id
 
         $scope.types = types
-        $scope.contacts = contacts
+
         $scope.activeTab ='Type'
 
         $scope.activeType = _.find types, (type) ->
@@ -73,11 +75,25 @@
         $scope.selected.contacts = _.map $scope.activity.contacts, (contact) ->
           return contact.id
 
+        Contact.all1(page: 1, per:10).then (contacts) ->
+          $scope.contacts = contacts.concat($scope.activity.contacts)
+
       $scope.setActiveTab = (tab) ->
         $scope.activeTab = tab
 
       $scope.setActiveType = (type) ->
         $scope.activeType = type
+
+      $scope.searchObj = (searchText) ->
+        if ($scope.searchText != searchText)
+          $scope.searchText = searchText
+          if $scope.searchText
+            Contact.all1(contact_name: searchText, per: 10, page: 1).then (contacts) ->
+              $scope.contacts = contacts
+          else
+            Contact.all1(per: 10, page: 1).then (contacts) ->
+              $scope.contacts = contacts
+        return searchText
 
       $scope.submitForm = (form) ->
         $scope.errors = {}
