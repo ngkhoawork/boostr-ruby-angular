@@ -88,7 +88,7 @@
         if ($scope.searchText != searchText)
           $scope.searchText = searchText
           if $scope.searchText
-            Contact.all1(name: searchText, per: 10, page: 1).then (contacts) ->
+            Contact.all1(contact_name: searchText, per: 10, page: 1).then (contacts) ->
               $scope.contacts = contacts
           else
             Contact.all1(per: 10, page: 1).then (contacts) ->
