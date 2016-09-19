@@ -154,8 +154,14 @@
     Contact.set(contact.id) if contact
     $scope.initReminder()
 
+  $scope.loadActivities = (contact_id) ->
+    Activity.all(contact_id: contact_id).then (activities) ->
+      $scope.currentActivities = activities
+
   $scope.$on 'updated_current_contact', ->
     $scope.currentContact = Contact.get()
+    if $scope.currentContact && $scope.currentContact.id
+      $scope.loadActivities($scope.currentContact.id)
 
   $scope.$on 'updated_contacts', ->
     $scope.init()
