@@ -81,14 +81,22 @@ class Api::DealsController < ApplicationController
         end
       }
       format.zip {
-        if current_user.leader?
-          deals = company.deals
-        elsif team.present?
-          deals = team.deals
-        else
-          deals = current_user.deals
+        require 'timeout'
+        begin
+          status = Timeout::timeout(60) {
+            # Something that should be interrupted if it takes too much time...
+            if current_user.leader?
+              deals = company.deals
+            elsif team.present?
+              deals = team.deals
+            else
+              deals = current_user.deals
+            end
+            send_data deals.to_zip, filename: "deals-#{Date.today}.zip"
+          }
+        rescue Timeout::Error
+          return
         end
-        send_data deals.to_zip, filename: "deals-#{Date.today}.zip"
       }
     end
   end
