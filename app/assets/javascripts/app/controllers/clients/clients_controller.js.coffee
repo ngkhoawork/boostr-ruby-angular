@@ -31,7 +31,7 @@
     $scope.getClient($scope.currentClient.id) if $scope.currentClient
     $scope.getClients()
     $scope.showContactList = false
-    Contact.all1(page: 1, per:10).then (contacts) ->
+    Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
