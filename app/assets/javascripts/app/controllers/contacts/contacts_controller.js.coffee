@@ -135,10 +135,6 @@
           activity
         types: ->
           $scope.types
-        contacts: ->
-          $scope.contacts
-        types: ->
-          $scope.types
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete "' +  $scope.currentContact.name + '"?')

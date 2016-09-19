@@ -9,6 +9,7 @@
   $scope.contactActionLog = []
   $scope.loadMoreActivitiesText = "Load More"
   $scope.loadingMoreActivities = false
+  $scope.contactSearch = ""
 
   $scope.showSpinners = (reminder) ->
     reminder.showSpinners = true
@@ -68,8 +69,9 @@
       _.each $scope.unassignedContacts, (contact) ->
         $scope.contactNotification[contact.id] = ""
 
-    Contact.$resource.query().$promise.then (contacts) ->
+    Contact.all1(page: 1, per:10).then (contacts) ->
       $scope.contacts = contacts
+
     Dashboard.get().then (dashboard) ->
       $scope.dashboard = dashboard
       $scope.forecast = dashboard.forecast
@@ -121,10 +123,6 @@
       resolve:
         activity: ->
           activity
-        types: ->
-          $scope.types
-        contacts: ->
-          $scope.contacts
         types: ->
           $scope.types
 
@@ -224,6 +222,17 @@
     else
       Client.query({name: name}).$promise.then (clients) ->
         clients
+
+  $scope.searchContact = (searchText) ->
+    if ($scope.contactSearchText != searchText)
+      $scope.contactSearchText = searchText
+      if $scope.contactSearchText
+        Contact.all1(name: $scope.contactSearchText, per: 10, page: 1).then (contacts) ->
+          $scope.contacts = contacts
+      else
+        Contact.all1(per: 10, page: 1).then (contacts) ->
+          $scope.contacts = contacts
+    return searchText
 
   $scope.submitForm = (form) ->
     $scope.errors = {}
