@@ -11,9 +11,9 @@
   $scope.errors = {}
   $scope.itemType = 'Contact'
   $scope.contactFilters = [
-      { name: 'My Clients', param: 'my_contacts' }
-      { name: 'My Team\'s Clients', param: 'team' }
-      { name: 'All Clients', param: '' }
+      { name: 'My Contacts', param: 'my_contacts' }
+      { name: 'My Team\'s Contacts', param: 'team' }
+      { name: 'All Contacts', param: '' }
     ]
 
   $scope.contactFilter = $scope.contactFilters[0]
