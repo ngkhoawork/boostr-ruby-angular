@@ -26,7 +26,7 @@
   %td.right
     {{ row.is_leader ? '--' : (row.percent_booked | number: 0) }}%
   %td.right
-    {{ row.new_deals_needed }}
+    {{ row.is_leader ? '--' : row.new_deals_needed }}
   %td.right
     {{ row.is_leader ? '--' : (row.gap_to_quota | currency: '$': 0) }}
   %td.right
