@@ -42,15 +42,12 @@ class Api::ClientContactsController < ApplicationController
   end
 
   def related_clients_through_contacts
-    @client ||= current_user.company.clients.find(params[:client_id])
+    client = current_user.company.clients.find(params[:client_id])
+    client_contact_ids = client.contacts.ids
+    result = Client.by_contact_ids(client_contact_ids).opposite_type_id(client.client_type_id)
 
-    related_clients = []
-    @client.contacts.each do |contact|
-      related_clients.concat contact.clients.opposite_type_id(@client.client_type_id).exclude_ids(related_clients.map(&:id))
-    end
-
-    related_clients.as_json.each do |client|
-      client['contacts'].delete_if { |contact| !(@client.contacts.ids.include?(contact["id"])) }
+    result.as_json.each do |client|
+      client['contacts'].delete_if { |contact| !(client_contact_ids.include?(contact["id"])) }
     end
   end
 end

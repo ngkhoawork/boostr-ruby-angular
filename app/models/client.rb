@@ -29,6 +29,7 @@ class Client < ActiveRecord::Base
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
   scope :exclude_ids, -> ids { where.not(id: ids) }
+  scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
 
   def self.to_csv
     attributes = {
@@ -92,10 +93,7 @@ class Client < ActiveRecord::Base
     super(options.merge(
       include: {
         address: {},
-        parent_client: {},
-        contacts: {
-          include: :address
-        },
+        parent_client: { only: [:id, :name] },
         values: {
           methods: [:value],
           include: [:option]
