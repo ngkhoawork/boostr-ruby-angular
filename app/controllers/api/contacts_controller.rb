@@ -77,7 +77,7 @@ class Api::ContactsController < ApplicationController
     if params[:filter] == 'my_contacts'
       Contact.by_client_ids(limit, offset, current_user.clients.ids)
     elsif params[:filter] == 'team' && team
-      Contact.by_client_ids(limit, offset, current_user.team.clients.ids)
+      Contact.by_client_ids(limit, offset, team.clients.ids)
     else
       current_user.company.contacts
         .order(:name)
@@ -96,7 +96,7 @@ class Api::ContactsController < ApplicationController
 
   def team
     if current_user.leader?
-      company.teams.where(leader: current_user).first!
+      current_user.company.teams.where(leader: current_user).first!
     else
       current_user.team
     end
