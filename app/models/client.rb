@@ -90,39 +90,42 @@ class Client < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
-      include: {
-        address: {},
-        parent_client: { only: [:id, :name] },
-        values: {
-          methods: [:value],
-          include: [:option]
-        },
-        activities: {
-            include: {
-                creator: {},
-                contacts: {},
-                assets: {
-                    methods: [
-                        :presigned_url
-                    ]
-                }
-            }
-        },
-        agency_activities: {
-            include: {
-                creator: {},
-                contacts: {},
-                assets: {
-                    methods: [
-                        :presigned_url
-                    ]
-                }
-            }
-        }
-      },
-      methods: [:deals_count, :fields, :formatted_name]
-    ))
+    if options[:override]
+      super(options)
+    else
+      super(options.deep_merge(
+        include: {
+          address: {},
+          parent_client: { only: [:id, :name] },
+          values: {
+            methods: [:value],
+            include: [:option]
+          },
+          activities: {
+              include: {
+                  creator: {},
+                  contacts: {},
+                  assets: {
+                      methods: [
+                          :presigned_url
+                      ]
+                  }
+              }
+          },
+          agency_activities: {
+              include: {
+                  creator: {},
+                  contacts: {},
+                  assets: {
+                      methods: [
+                          :presigned_url
+                      ]
+                  }
+              }
+          }},
+        methods: [:deals_count, :fields, :formatted_name]
+      ).except(:override))
+    end
   end
 
   def ensure_client_member
