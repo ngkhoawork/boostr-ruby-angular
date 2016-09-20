@@ -80,6 +80,16 @@ RSpec.describe Contact, type: :model do
         expect(contacts.total_count).to eq(some_contacts.count.to_s)
       end
     end
+
+    context 'by_client_ids' do
+      let!(:some_contacts) { create_list :contact, 3 }
+      let!(:client_contacts) { create_list :contact, 3, clients: [client, client2] }
+
+      it 'returns contacts that have given clients ids assigned as clients' do
+        contacts = Contact.by_client_ids(10, 0, [client.id, client2.id])
+        expect(contacts.length).to eq(client_contacts.count)
+      end
+    end
   end
 
   context 'validation' do

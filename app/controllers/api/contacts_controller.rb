@@ -75,16 +75,9 @@ class Api::ContactsController < ApplicationController
 
   def contacts
     if params[:filter] == 'my_contacts'
-      Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: current_user.clients.ids})
-        .order(:name)
-        .limit(limit)
-        .offset(offset)
-
+      Contact.by_client_ids(limit, offset, current_user.clients.ids)
     elsif params[:filter] == 'team' && team
-      Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: current_user.team.clients.ids})
-        .order(:name)
-        .limit(limit)
-        .offset(offset)
+      Contact.by_client_ids(limit, offset, current_user.team.clients.ids)
     else
       current_user.company.contacts
         .order(:name)
