@@ -6,6 +6,8 @@ class Api::ContactsController < ApplicationController
       contacts = current_user.company.contacts.unassigned(current_user.id)
     elsif params[:name].present?
       contacts = suggest_contacts
+    elsif params[:contact_name].present?
+      contacts = suggest_contacts(true)
     elsif params[:activity].present?
       contacts = activity_contacts
     else
@@ -84,10 +86,14 @@ class Api::ContactsController < ApplicationController
     @contact ||= current_user.company.contacts.where(id: params[:id]).first
   end
 
-  def suggest_contacts
+  def suggest_contacts(contacts_only = false)
     return @search_contacts if defined?(@search_contacts)
 
-    @search_contacts = current_user.company.contacts.joins("LEFT JOIN clients ON clients.id = contacts.client_id").where('contacts.name ilike ? OR clients.name ilike ?', "%#{params[:name]}%", "%#{params[:name]}%").limit(10)
+    if contacts_only
+      @search_contacts = current_user.company.contacts.where('contacts.name ilike ?', "%#{params[:contact_name]}%").limit(10)
+    else
+      @search_contacts = current_user.company.contacts.joins("LEFT JOIN clients ON clients.id = contacts.client_id").where('contacts.name ilike ? OR clients.name ilike ?', "%#{params[:name]}%", "%#{params[:name]}%").limit(10)
+    end
   end
 
   def activity_contacts

@@ -54,7 +54,7 @@
               %ui-select{ multiple: true, name: 'contacts', ng: { model: 'selected[type.name].contacts', disabled: true } }
                 %ui-select-match{ placeholder: "Type a name *" }
                   {{ $item.name }}
-                %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }
+                %ui-select-choices{ repeat: 'contact.id as contact in contacts', refresh: "searchContact($select.search)", 'refresh-delay': "0" }
                   %div{ ng: { bind: { html: 'contact.name + " - " + contact.client.name' } } }
             .row.type2
               Date

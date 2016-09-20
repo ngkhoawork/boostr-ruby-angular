@@ -7,6 +7,7 @@
   $scope.types = []
   $scope.contacts = []
   $scope.errors = {}
+  $scope.contactSearchText = ""
 
   $scope.init = ->
     $scope.actRemColl = false;
@@ -107,7 +108,7 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
-    Contact.$resource.query().$promise.then (contacts) ->
+    Contact.all1(page: 1, per:10).then (contacts) ->
       $scope.contacts = contacts
 #    Contact.allForClient deal.advertiser_id, (contacts) ->
 #      $scope.contacts = contacts
@@ -303,10 +304,17 @@
           activity
         types: ->
           $scope.types
-        contacts: ->
-          $scope.contacts
-        types: ->
-          $scope.types
+
+  $scope.searchContact = (searchText) ->
+    if ($scope.contactSearchText != searchText)
+      $scope.contactSearchText = searchText
+      if $scope.contactSearchText
+        Contact.all1(contact_name: $scope.contactSearchText, per: 10, page: 1).then (contacts) ->
+          $scope.contacts = contacts
+      else
+        Contact.all1(per: 10, page: 1).then (contacts) ->
+          $scope.contacts = contacts
+    return searchText
 
   $scope.cancelActivity = ->
     $scope.initActivity()
