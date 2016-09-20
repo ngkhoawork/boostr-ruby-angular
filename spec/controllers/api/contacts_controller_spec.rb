@@ -1,11 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Api::ContactsController, type: :controller do
-
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
-  let(:client) { create :client, company: company }
+  let(:team) { create :parent_team }
+  let(:user) { create :user, team: team }
+  let(:team_user) { create :user, team: team }
+  let(:client) { create :client, created_by: user.id }
   let(:client2) { create :client }
+  let(:team_client) { create :client, created_by: team_user.id }
   let(:address_params) { attributes_for :address }
   let(:contact_params) { attributes_for(:contact, client_id: client.id, address_attributes: address_params) }
 
@@ -14,13 +15,53 @@ RSpec.describe Api::ContactsController, type: :controller do
   end
 
   describe "GET #index" do
-    it 'returns a list of contacts' do
-      create_list :contact, 3, company: company, clients: [client]
+    let!(:contacts) { create_list :contact, 15, company: user.company }
+    let!(:client_contacts) { create_list :contact, 5, company: user.company, clients: [client] }
+    let!(:team_contacts) { create_list :contact, 7, company: user.company, clients: [team_client] }
 
+    it 'returns a list of contacts' do
       get :index, format: :json
       expect(response).to be_success
+      expect(response.headers['X-Total-Count']).to eq(user.company.contacts.count.to_s)
       response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(3)
+      expect(response_json.length).to eq(user.company.contacts.count)
+    end
+
+    it 'accepts limit parameter' do
+      limit = 10
+      get :index, per: limit, format: :json
+      expect(response).to be_success
+      expect(response.headers['X-Total-Count']).to eq(user.company.contacts.count.to_s)
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(limit)
+    end
+
+    it 'accepts page parameter' do
+      limit = 10
+      get :index, per: limit, page: 2, format: :json
+      expect(response).to be_success
+      expect(response.headers['X-Total-Count']).to eq(user.company.contacts.count.to_s)
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(limit)
+    end
+
+    context 'filters' do
+      it 'returns contacts assigned to client where user is on client\'s team' do
+        get :index, filter: 'my_contacts', format: :json
+        expect(response).to be_success
+        expect(response.headers['X-Total-Count']).to eq(client_contacts.count.to_s)
+        response_json = JSON.parse(response.body)
+        expect(response_json.length).to eq(client_contacts.count)
+      end
+
+      it 'returns contacts assigned to clients where user\'s team members are on client\'s team' do
+        get :index, filter: 'team', format: :json
+        expect(response).to be_success
+        team_contacts_count = team_contacts.count + client.contacts.count
+        expect(response.headers['X-Total-Count']).to eq(team_contacts_count.to_s)
+        response_json = JSON.parse(response.body)
+        expect(response_json.length).to eq(team_contacts_count)
+      end
     end
   end
 
@@ -45,7 +86,7 @@ RSpec.describe Api::ContactsController, type: :controller do
   end
 
   describe "PUT #update" do
-    let(:contact) { create :contact, company: company, clients: [client] }
+    let(:contact) { create :contact, clients: [client] }
 
     it 'updates a contact successfully' do
       put :update, id: contact.id, contact: { name: 'New Name' }, format: :json
@@ -75,7 +116,7 @@ RSpec.describe Api::ContactsController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    let!(:contact) { create :contact, company: company, clients: [client] }
+    let!(:contact) { create :contact, clients: [client] }
 
     it 'marks the contact as deleted' do
       delete :destroy, id: contact.id, format: :json

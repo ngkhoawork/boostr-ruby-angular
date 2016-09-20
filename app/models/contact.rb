@@ -185,14 +185,16 @@ class Contact < ActiveRecord::Base
   end
 
   def email_unique?
-    if id
-      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
-    else
-      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=?", company_id, address.email)
-    end
+    if address && address.email
+      if id
+        contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
+      else
+        contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=?", company_id, address.email)
+      end
 
-    if contact.present?
-      errors.add(:email, "has already been taken")
+      if contact.present?
+        errors.add(:email, "has already been taken")
+      end
     end
   end
 

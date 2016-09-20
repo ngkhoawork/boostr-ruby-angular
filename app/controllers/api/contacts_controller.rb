@@ -3,31 +3,18 @@ class Api::ContactsController < ApplicationController
 
   def index
     if params[:unassigned] == "yes"
-      contacts = current_user.company.contacts.unassigned(current_user.id)
+      results = current_user.company.contacts.unassigned(current_user.id)
     elsif params[:name].present?
-      contacts = suggest_contacts
+      results = suggest_contacts
     elsif params[:contact_name].present?
-      contacts = suggest_contacts(true)
+      results = suggest_contacts(true)
     elsif params[:activity].present?
-      contacts = activity_contacts
+      results = activity_contacts
     else
-      contacts = current_user.company.contacts
-        .order(:name)
-        .includes(:address)
+      results = contacts
     end
 
-    limit = 500
-    if params[:per].present?
-      limit = params[:per].to_i
-    end
-    offset = 0
-    if params[:page].present?
-      offset = (params[:page].to_i - 1) * limit
-    end
-    response.headers['X-Total-Count'] = contacts.count.to_s
-    contacts = contacts.limit(limit).offset(offset)
-
-    render json: contacts
+    render json: results
   end
 
   def create
@@ -84,6 +71,48 @@ class Api::ContactsController < ApplicationController
 
   def contact
     @contact ||= current_user.company.contacts.where(id: params[:id]).first
+  end
+
+  def contacts
+    if params[:filter] == 'my_contacts'
+      results = Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: current_user.clients.ids})
+        .order(:name)
+        .limit(limit)
+        .offset(offset)
+      response.headers['X-Total-Count'] = results.except(:order, :limit, :offset).count.to_s
+      results
+
+    elsif params[:filter] == 'team' && team
+      results = Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: current_user.team.clients.ids})
+        .order(:name)
+        .limit(limit)
+        .offset(offset)
+      response.headers['X-Total-Count'] = results.except(:order, :limit, :offset).count.to_s
+      results
+    else
+      results = current_user.company.contacts
+        .order(:name)
+        .limit(limit)
+        .offset(offset)
+      response.headers['X-Total-Count'] = results.except(:order, :limit, :offset).count.to_s
+      results
+    end
+  end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 500
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
+  end
+
+  def team
+    if current_user.leader?
+      company.teams.where(leader: current_user).first!
+    else
+      current_user.team
+    end
   end
 
   def suggest_contacts(contacts_only = false)
