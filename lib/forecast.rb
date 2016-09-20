@@ -94,6 +94,11 @@ class Forecast
     teams.sum(&:amount)
   end
 
+  def percent_booked
+    return 100 unless quota > 0
+    revenue / quota * 100
+  end
+
   def percent_to_quota
     return 100 unless quota > 0
     amount / quota * 100

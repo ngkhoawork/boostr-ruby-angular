@@ -188,6 +188,11 @@ class ForecastTeam
     amount / quota * 100
   end
 
+  def percent_booked
+    return 100 unless quota > 0
+    revenue / quota * 100
+  end
+
   def gap_to_quota
     quota - amount
   end

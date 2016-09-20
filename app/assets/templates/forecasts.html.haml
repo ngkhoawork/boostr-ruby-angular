@@ -69,6 +69,14 @@
                     \% TO QUOTA
                     %i{ ng: { class: "{ 'fa': sort.column == 'percent_to_quota', 'fa-sort-asc': sort.column == 'percent_to_quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'percent_to_quota' && sort.direction == 'desc' }" } }
                 %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("percent_booked")' } }
+                    \% BOOKED
+                    %i{ ng: { class: "{ 'fa': sort.column == 'percent_booked', 'fa-sort-asc': sort.column == 'percent_booked' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'percent_booked' && sort.direction == 'desc' }" } }
+                %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("new_deals_needed")' } }
+                    \# DEALS NEEDED
+                    %i{ ng: { class: "{ 'fa': sort.column == 'new_deals_needed', 'fa-sort-asc': sort.column == 'new_deals_needed' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'new_deals_needed' && sort.direction == 'desc' }" } }
+                %th.right
                   %a.sort{ href: '', ng: { click: 'sort.toggle("gap_to_quota")' } }
                     GAP TO QUOTA
                     %i{ ng: { class: "{ 'fa': sort.column == 'gap_to_quota', 'fa-sort-asc': sort.column == 'gap_to_quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'gap_to_quota' && sort.direction == 'desc' }" } }
