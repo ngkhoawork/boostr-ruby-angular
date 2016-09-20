@@ -185,10 +185,6 @@ class ForecastMember
     goal = gap_to_quota
     return 0 if goal <= 0
     return 'N/A' if average_deal_size <= 0 or win_rate <= 0
-    puts "=================gap_to_quota"
-    puts gap_to_quota
-    puts win_rate
-    puts average_deal_size
     (gap_to_quota / (win_rate * average_deal_size)).ceil
   end
 
