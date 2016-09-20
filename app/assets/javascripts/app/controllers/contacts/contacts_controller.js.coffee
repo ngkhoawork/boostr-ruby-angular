@@ -10,6 +10,13 @@
   $scope.types = []
   $scope.errors = {}
   $scope.itemType = 'Contact'
+  $scope.contactFilters = [
+      { name: 'My Clients', param: 'my_contacts' }
+      { name: 'My Team\'s Clients', param: 'team' }
+      { name: 'All Clients', param: '' }
+    ]
+
+  $scope.contactFilter = $scope.contactFilters[0]
 
   $scope.activityReminderInit = ->
     $scope.activityReminder = {
@@ -36,7 +43,7 @@
     contact.populateContact = false
     contact.activeType = activityTypes[0]
     now = new Date
-    _.each activityTypes, (type) -> 
+    _.each activityTypes, (type) ->
       contact.selected[type.name] = {}
       contact.selected[type.name].date = now
 
@@ -54,6 +61,7 @@
     $scope.isLoading = true
     params = {
       page: $scope.page,
+      filter: $scope.contactFilter.param,
       per: 10
     }
     if $scope.query.trim().length
@@ -153,6 +161,10 @@
   $scope.loadActivities = (contact_id) ->
     Activity.all(contact_id: contact_id).then (activities) ->
       $scope.currentActivities = activities
+
+  $scope.filterContacts = (filter) ->
+    $scope.contactFilter = filter;
+    $scope.init();
 
   $scope.$on 'updated_current_contact', ->
     $scope.currentContact = Contact.get()
