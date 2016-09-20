@@ -65,6 +65,10 @@
                     FORECAST AMOUNT
                     %i{ ng: { class: "{ 'fa': sort.column == 'amount', 'fa-sort-asc': sort.column == 'amount' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'amount' && sort.direction == 'desc' }" } }
                 %th.right
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("gap_to_quota")' } }
+                    GAP TO QUOTA
+                    %i{ ng: { class: "{ 'fa': sort.column == 'gap_to_quota', 'fa-sort-asc': sort.column == 'gap_to_quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'gap_to_quota' && sort.direction == 'desc' }" } }
+                %th.right
                   %a.sort{ href: '', ng: { click: 'sort.toggle("percent_to_quota")' } }
                     \% TO QUOTA
                     %i{ ng: { class: "{ 'fa': sort.column == 'percent_to_quota', 'fa-sort-asc': sort.column == 'percent_to_quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'percent_to_quota' && sort.direction == 'desc' }" } }
@@ -76,10 +80,6 @@
                   %a.sort{ href: '', ng: { click: 'sort.toggle("new_deals_needed")' } }
                     \# DEALS NEEDED
                     %i{ ng: { class: "{ 'fa': sort.column == 'new_deals_needed', 'fa-sort-asc': sort.column == 'new_deals_needed' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'new_deals_needed' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("gap_to_quota")' } }
-                    GAP TO QUOTA
-                    %i{ ng: { class: "{ 'fa': sort.column == 'gap_to_quota', 'fa-sort-asc': sort.column == 'gap_to_quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'gap_to_quota' && sort.direction == 'desc' }" } }
                 %th.right
                   %a.sort{ href: '', ng: { click: 'sort.toggle("wow_weighted_pipeline")' } }
                     WoW PIPELINE
