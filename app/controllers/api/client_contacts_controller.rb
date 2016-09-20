@@ -2,43 +2,17 @@ class Api::ClientContactsController < ApplicationController
   respond_to :json
 
   def index
+    render json: client.contacts.order(:name).includes(:address)
+  end
+
+  def related_clients
     render json: related_clients_through_contacts
-  end
-
-  def create
-    client_contact = client.client_contacts.build(client_contact_params)
-    if client_contact.save
-      render json: client_contact, status: :created
-    else
-      render json: { errors: client_contact.errors.messages }, status: :unprocessable_entity
-    end
-  end
-
-  def update
-    if client_contact.update_attributes(client_contact_params)
-      render json: client_contact, status: :accepted
-    else
-      render json: { errors: client_contact.errors.messages }, status: :unprocessable_entity
-    end
-  end
-
-  def destroy
-    client_contact.destroy
-    render json: true
   end
 
   private
 
-  def client_contact_params
-    params.require(:client_contact).permit(:client_id, :contact_id)
-  end
-
   def client
     @client ||= current_user.company.clients.find(params[:client_id])
-  end
-
-  def client_contact
-    @client_member ||= client.client_contacts.find(params[:id])
   end
 
   def related_clients_through_contacts
