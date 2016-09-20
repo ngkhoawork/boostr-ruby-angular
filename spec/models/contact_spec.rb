@@ -71,6 +71,15 @@ RSpec.describe Contact, type: :model do
         expect(contact_array.first.address.email).to eq(user_contact.address.email)
       end
     end
+
+    context 'total_count' do
+      let!(:some_contacts) { create_list :contact, 15 }
+
+      it 'ignores limit and offset and returns a total count' do
+        contacts = Contact.all.limit(3).offset(5)
+        expect(contacts.total_count).to eq(some_contacts.count.to_s)
+      end
+    end
   end
 
   context 'validation' do

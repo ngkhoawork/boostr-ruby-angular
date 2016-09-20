@@ -12,8 +12,8 @@ class Api::ContactsController < ApplicationController
       results = activity_contacts
     else
       results = contacts
+      response.headers['X-Total-Count'] = results.total_count
     end
-
     render json: results
   end
 
@@ -75,27 +75,21 @@ class Api::ContactsController < ApplicationController
 
   def contacts
     if params[:filter] == 'my_contacts'
-      results = Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: current_user.clients.ids})
+      Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: current_user.clients.ids})
         .order(:name)
         .limit(limit)
         .offset(offset)
-      response.headers['X-Total-Count'] = results.except(:order, :limit, :offset).count.to_s
-      results
 
     elsif params[:filter] == 'team' && team
-      results = Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: current_user.team.clients.ids})
+      Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: current_user.team.clients.ids})
         .order(:name)
         .limit(limit)
         .offset(offset)
-      response.headers['X-Total-Count'] = results.except(:order, :limit, :offset).count.to_s
-      results
     else
-      results = current_user.company.contacts
+      current_user.company.contacts
         .order(:name)
         .limit(limit)
         .offset(offset)
-      response.headers['X-Total-Count'] = results.except(:order, :limit, :offset).count.to_s
-      results
     end
   end
 

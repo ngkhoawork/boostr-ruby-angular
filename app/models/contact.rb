@@ -21,6 +21,7 @@ class Contact < ActiveRecord::Base
   scope :by_email, -> email, company_id {
     Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email=? and contacts.company_id=?", email, company_id)
   }
+  scope :total_count, -> { except(:order, :limit, :offset).count.to_s }
 
   after_save do
     if client_id_changed? && !client_id.nil?
