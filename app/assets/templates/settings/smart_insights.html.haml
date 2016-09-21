@@ -32,3 +32,22 @@
                     .col-sm-8.col-sm-offset-2
                       %input.form-control.text-center{ type: 'text', 'ng-model': 'stage.red_threshold', placeholder: 0, 'ng-blur': 'updateStage(stage)' }
 
+#smart_insights
+  .container
+    .row
+      .col-xs-12
+        %h3 Deals Needed
+        .panel
+          .panel-body
+            %table.table{ style: 'white-space: nowrap' }
+              %thead
+                %tr
+                  %th
+                  %th.text-center Days
+              %tbody
+                %tr
+                  %td
+                    Deals Needed Calculation Duration
+                  %td.warning
+                    .col-sm-8.col-sm-offset-2
+                      %input.form-control.text-center{ type: 'text', 'ng-model': 'company.deals_needed_calculation_duration', placeholder: 0, 'ng-blur': 'updateCompany()' }
