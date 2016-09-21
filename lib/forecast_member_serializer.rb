@@ -13,6 +13,7 @@ class ForecastMemberSerializer < ActiveModel::Serializer
     :revenue,
     :amount,
     :percent_to_quota,
+    :percent_booked,
     :gap_to_quota,
     :quota,
     :wow_revenue,

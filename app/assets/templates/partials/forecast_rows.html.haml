@@ -22,9 +22,13 @@
   %td.right
     {{ row.amount | currency: '$': 0 }}
   %td.right
+    {{ row.is_leader ? '--' : (row.gap_to_quota | currency: '$': 0) }}
+  %td.right
     {{ row.is_leader ? '--' : (row.percent_to_quota | number: 0) }}%
   %td.right
-    {{ row.is_leader ? '--' : (row.gap_to_quota | currency: '$': 0) }}
+    {{ row.is_leader ? '--' : (row.percent_booked | number: 0) }}%
+  %td.right
+    {{ row.is_leader ? '--' : row.new_deals_needed }}
   %td.right
     {{ row.wow_weighted_pipeline  | currency: '$': 0 }}
   %td.right

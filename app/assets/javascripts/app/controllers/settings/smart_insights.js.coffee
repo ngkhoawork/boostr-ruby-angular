@@ -29,10 +29,6 @@
       250
     )
 
-  $scope.calculateKPIs = ->
-    KPI.all().then (status) ->
-      $scope.$emit('updated_users')
-
   $scope.stages = []
   Stage.query().$promise.then (stages) ->
     $scope.stages = stages

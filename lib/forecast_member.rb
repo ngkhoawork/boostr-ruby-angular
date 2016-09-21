@@ -151,6 +151,12 @@ class ForecastMember
     amount / quota * 100
   end
 
+  def percent_booked
+    # attainment
+    return 100 unless quota > 0
+    revenue / quota * 100
+  end
+
   def gap_to_quota
     quota - amount
   end
@@ -160,18 +166,26 @@ class ForecastMember
   end
 
   def win_rate
-    member.win_rate || 0
+    if (incomplete_deals.count + complete_deals.count) > 0
+      @win_rate ||= (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
+    else
+      @win_rate ||= 0.0
+    end
   end
 
   def average_deal_size
-    member.average_deal_size || 0
+    if complete_deals.count > 0
+      @average_deal_size ||= (complete_deals.average(:budget) / 100).round(0)
+    else
+      @average_deal_size ||= 0
+    end
   end
 
   def new_deals_needed
     goal = gap_to_quota
     return 0 if goal <= 0
     return 'N/A' if average_deal_size <= 0 or win_rate <= 0
-    (gap_to_quota / (member.win_rate * member.average_deal_size)).ceil
+    (gap_to_quota / (win_rate * average_deal_size)).ceil
   end
 
   private
@@ -190,6 +204,14 @@ class ForecastMember
 
   def open_deals
     @open_deals ||= member.deals.open.for_time_period(start_date, end_date).includes(:deal_products, :stage).to_a
+  end
+
+  def complete_deals
+    @complete_deals ||= member.deals.active.at_percent(100).closed_in(member.company.deals_needed_calculation_duration)
+  end
+
+  def incomplete_deals
+    @incomplete_deals ||= member.deals.active.closed.at_percent(0).closed_in(member.company.deals_needed_calculation_duration)
   end
 
   def number_of_days(comparer)
