@@ -54,7 +54,7 @@
                     %i{ ng: { class: "{ 'fa': sort.column == 'quota', 'fa-sort-asc': sort.column == 'quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'quota' && sort.direction == 'desc' }" } }
                 %th.right
                   %a.sort{ href: '', ng: { click: 'sort.toggle("weighted_pipeline")' } }
-                    WEIGHTED PIPELINE
+                    PIPELINE (W)
                     %i{ ng: { class: "{ 'fa': sort.column == 'weighted_pipeline', 'fa-sort-asc': sort.column == 'weighted_pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'weighted_pipeline' && sort.direction == 'desc' }" } }
                 %th.right
                   %a.sort{ href: '', ng: { click: 'sort.toggle("revenue")' } }
@@ -62,7 +62,7 @@
                     %i{ ng: { class: "{ 'fa': sort.column == 'revenue', 'fa-sort-asc': sort.column == 'revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'revenue' && sort.direction == 'desc' }" } }
                 %th.right
                   %a.sort{ href: '', ng: { click: 'sort.toggle("amount")' } }
-                    FORECAST AMOUNT
+                    FORECAST AMT
                     %i{ ng: { class: "{ 'fa': sort.column == 'amount', 'fa-sort-asc': sort.column == 'amount' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'amount' && sort.direction == 'desc' }" } }
                 %th.right
                   %a.sort{ href: '', ng: { click: 'sort.toggle("gap_to_quota")' } }
