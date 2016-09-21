@@ -108,17 +108,6 @@ class Forecast
     teams.sum(&:gap_to_quota)
   end
 
-  def new_deals_needed
-    sum = 0
-    teams.each do |team|
-      num = team.new_deals_needed
-      if num != 'N/A'
-        sum += num
-      end
-    end
-    sum
-  end
-
   def quota
     teams.sum(&:quota)
   end
@@ -132,5 +121,45 @@ class Forecast
     @quarters << { start_date: Time.new(year, 7, 1), end_date: Time.new(year, 9, 30), quarter: 3 }
     @quarters << { start_date: Time.new(year, 10, 1), end_date: Time.new(year, 12, 31), quarter: 4 }
     @quarters
+  end
+
+  def win_rate
+    if (incomplete_deals.count + complete_deals.count) > 0
+      @win_rate ||= (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
+    else
+      @win_rate ||= 0.0
+    end
+  end
+
+  def average_deal_size
+    if complete_deals.count > 0
+      @average_deal_size ||= (complete_deals.average(:budget) / 100).round(0)
+    else
+      @average_deal_size ||= 0
+    end
+  end
+
+  def new_deals_needed
+    goal = gap_to_quota
+    return 0 if goal <= 0
+    return 'N/A' if average_deal_size <= 0 or win_rate <= 0
+    (gap_to_quota / (win_rate * average_deal_size)).ceil
+  end
+
+  def complete_deals
+    @complete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_members.map{|member| member.id}).active.at_percent(100).closed_at(start_date, end_date)
+  end
+
+  def incomplete_deals
+    @incomplete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_members.map{|member| member.id}).active.closed.at_percent(0).closed_at(start_date, end_date)
+  end
+
+  def all_members
+    return @all_members if defined?(@all_members)
+    @all_members = []
+    teams.each do |team|
+      @all_members = @all_members + (team.team.all_members.nil? ? []:team.all_members)
+    end
+    @all_members
   end
 end

@@ -258,14 +258,18 @@ class ForecastTeam
   end
 
   def complete_deals
-    @complete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", team.all_members.map{|member| member.id}).active.at_percent(100).closed_at(start_date, end_date)
+    @complete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_members.map{|member| member.id}).active.at_percent(100).closed_at(start_date, end_date)
   end
 
   def incomplete_deals
-    @incomplete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", team.all_members.map{|member| member.id}).active.closed.at_percent(0).closed_at(start_date, end_date)
+    @incomplete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_members.map{|member| member.id}).active.closed.at_percent(0).closed_at(start_date, end_date)
   end
 
   def all_teammembers
     (team.all_members.nil? ? []:team.all_members) + (team.all_leaders.nil? ? []:team.all_leaders)
+  end
+
+  def all_members
+    (team.all_members.nil? ? []:team.all_members)
   end
 end
