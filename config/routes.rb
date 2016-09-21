@@ -39,6 +39,7 @@ Rails.application.routes.draw do
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create, :destroy]
+      resources :deal_assets, only: [:index, :update, :create, :destroy]
     end
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
