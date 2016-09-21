@@ -22,6 +22,7 @@
     send.contact =
       name: original.contact.name
       position: original.contact.position
+      note: original.contact.note
       address_attributes: address_attributes
       client_id: original.contact.client_id
       set_primary_client: !!(original.contact.set_primary_client)

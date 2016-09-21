@@ -188,6 +188,11 @@ class ForecastTeam
     amount / quota * 100
   end
 
+  def percent_booked
+    return 100 unless quota > 0
+    revenue / quota * 100
+  end
+
   def gap_to_quota
     quota - amount
   end
@@ -197,38 +202,48 @@ class ForecastTeam
   end
 
   def win_rate
-    return 0 if members.size == 0
-    members.sum(&:win_rate) / members.size.to_f
+    if (incomplete_deals.count + complete_deals.count) > 0
+      @win_rate ||= (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
+    else
+      @win_rate ||= 0.0
+    end
   end
 
   def average_deal_size
-    return 0 if members.size == 0
-    members.sum(&:average_deal_size) / members.size.to_f
+    if complete_deals.count > 0
+      @average_deal_size ||= (complete_deals.average(:budget) / 100).round(0)
+    else
+      @average_deal_size ||= 0
+    end
   end
 
   def new_deals_needed
-    return 0 if gap_to_quota <= 0
-    members_gap_to_quota = 0
-    new_deals = 0
-
-    teams.each do |team|
-      num = team.new_deals_needed
-      members_gap_to_quota += team.gap_to_quota
-      if num != 'N/A'
-        new_deals += num
-      end
-    end
-    return 'N/A' if new_deals == 'N/A'
-
-    members.each do |member|
-      next if leader and member.member == leader.member
-      members_gap_to_quota += member.gap_to_quota
-      if member.new_deals_needed != 'N/A'
-        new_deals += member.new_deals_needed
-      end
-
-    end
-    return 'N/A' if new_deals == 'N/A'
+    goal = gap_to_quota
+    return 0 if goal <= 0
+    return 'N/A' if average_deal_size <= 0 or win_rate <= 0
+    (gap_to_quota / (win_rate * average_deal_size)).ceil
+    # return 0 if gap_to_quota <= 0
+    # members_gap_to_quota = 0
+    # new_deals = 0
+    #
+    # teams.each do |team|
+    #   num = team.new_deals_needed
+    #   members_gap_to_quota += team.gap_to_quota
+    #   if num != 'N/A'
+    #     new_deals += num
+    #   end
+    # end
+    # return 'N/A' if new_deals == 'N/A'
+    #
+    # members.each do |member|
+    #   next if leader and member.member == leader.member
+    #   members_gap_to_quota += member.gap_to_quota
+    #   if member.new_deals_needed != 'N/A'
+    #     new_deals += member.new_deals_needed
+    #   end
+    #
+    # end
+    # return 'N/A' if new_deals == 'N/A'
 
     # leader_gap_to_quota = gap_to_quota - members_gap_to_quota
     #
@@ -239,10 +254,22 @@ class ForecastTeam
     #     return 'N/A'
     #   end
     # end
-    new_deals
+    # new_deals
+  end
+
+  def complete_deals
+    @complete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_members.map{|member| member.id}).active.at_percent(100).closed_in(team.company.deals_needed_calculation_duration)
+  end
+
+  def incomplete_deals
+    @incomplete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_members.map{|member| member.id}).active.closed.at_percent(0).closed_in(team.company.deals_needed_calculation_duration)
   end
 
   def all_teammembers
     (team.all_members.nil? ? []:team.all_members) + (team.all_leaders.nil? ? []:team.all_leaders)
+  end
+
+  def all_members
+    (team.all_members.nil? ? []:team.all_members)
   end
 end

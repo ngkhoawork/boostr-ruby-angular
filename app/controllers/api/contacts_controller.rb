@@ -67,6 +67,7 @@ class Api::ContactsController < ApplicationController
     params.require(:contact).permit(
       :name,
       :position,
+      :note,
       :client_id,
       address_attributes: [
         :id,
