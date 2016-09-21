@@ -207,11 +207,11 @@ class ForecastMember
   end
 
   def complete_deals
-    @complete_deals ||= member.deals.active.at_percent(100).closed_at(start_date, end_date)
+    @complete_deals ||= member.deals.active.at_percent(100).closed_in(90)
   end
 
   def incomplete_deals
-    @incomplete_deals ||= member.deals.active.closed.at_percent(0).closed_at(start_date, end_date)
+    @incomplete_deals ||= member.deals.active.closed.at_percent(0).closed_in(90)
   end
 
   def number_of_days(comparer)
