@@ -295,3 +295,24 @@
             .row
               .col-xs-9.field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
                 {{ currentDeal.close_reason.option.name }}
+
+    #files.col-xs-6.pull-left
+      %h3.header Files
+      .col-xs-12.drop-file-area
+        Drag and drop a file to upload or click to browse
+        %br
+        %br
+      .col-xs-12
+        %input{ type: 'file', 'file-model':'fileToUpload' }
+          %br
+        %button{ type: 'button', ng: { click: 'upload(fileToUpload)' } } Upload!
+      .col-xs-12
+        %br
+        %progressbar{:max => "progressBarMax", :value => "progressBarCur", ng: { show: 'progressBarMax' } }
+          %span{:style => "color:white; white-space:nowrap;"} {{progressBarCur}} / {{progressBarMax}}
+        %ul
+          %li{ ng: { repeat: 'file in files'} }
+            {{file.name}}
+            {{file.size}}
+            {{file.status}}
+            %a{ ng: { click: '' } } Delete

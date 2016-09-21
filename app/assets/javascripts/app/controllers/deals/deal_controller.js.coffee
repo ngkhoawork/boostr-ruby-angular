@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http'
-($scope, $routeParams, $modal, $filter, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http) ->
+['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit',
+($scope, $routeParams, $modal, $filter, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -8,6 +8,47 @@
   $scope.contacts = []
   $scope.errors = {}
   $scope.contactSearchText = ""
+#  $scope.fileToUpload = null
+  $scope.progressBarMax = 0
+  $scope.progressBarCur = 0
+
+  $scope.upload = (file) ->
+    console.log(file)
+#    file = element.files[0]
+    Transloadit.upload(file, {
+      params: {
+        auth: {
+          key: 'a49408107c0e11e68f21fda8b5e9bb0a'
+        },
+
+        template_id: '689738007e6b11e693c6c33c0cd97f1d'
+      },
+
+      signature: (callback) ->
+#       ideally you would be generating this on the fly somewhere
+        callback('here-is-my-signature')
+      ,
+
+      progress: (loaded, total) ->
+        console.log(loaded + 'bytes loaded')
+        console.log(total + ' bytes total')
+        $scope.progressBarMax = total
+        $scope.progressBarCur = loaded
+        $scope.$$phase || $scope.$apply();
+      ,
+
+      processing: () ->
+        console.log('done uploading, started processing')
+      ,
+
+      uploaded: (assemblyJson) ->
+        console.log('uploaded', assemblyJson)
+      ,
+
+      error: (error) ->
+        console.log('error', error)
+
+    })
 
   $scope.init = ->
     $scope.actRemColl = false;

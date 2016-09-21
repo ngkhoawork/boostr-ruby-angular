@@ -19,6 +19,7 @@
   'tree.dropdown'
   'd3'
   'nvd3'
+  'ngTransloadit'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
