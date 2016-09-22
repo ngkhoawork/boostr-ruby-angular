@@ -37,7 +37,7 @@ class Contact < ActiveRecord::Base
       include: {
         address: {}
       },
-      methods: [:formatted_name, :primary_client]
+      methods: [:formatted_name, :primary_client_json]
     ))
   end
 
@@ -48,6 +48,10 @@ class Contact < ActiveRecord::Base
   def primary_client
     Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id")
           .where("client_contacts.contact_id = ?", self.id).first
+  end
+
+  def primary_client_json
+    primary_client.as_json(override: true, only: [:id, :name])
   end
 
   def update_primary_client
