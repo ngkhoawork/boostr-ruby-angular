@@ -46,15 +46,15 @@ class Contact < ActiveRecord::Base
   end
 
   def primary_client
-    primary_client_contact = client_contacts.where(primary: true).first
-    if primary_client_contact
-      primary_client_contact.client
-    end
+    Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id")
+          .where("client_contacts.contact_id = ?", self.id).first
   end
 
   def update_primary_client
-    client_contacts.where(primary: true).update_all(primary: false)
-    client_contacts.where(client_id: self.client_id).update_all(primary: true)
+    if primary_client && primary_client.id != self.client_id
+      client_contacts.where(primary: true).destroy_all
+      client_contacts.where(client_id: self.client_id).update_all(primary: true)
+    end
   end
 
   def self.import(file, current_user)
