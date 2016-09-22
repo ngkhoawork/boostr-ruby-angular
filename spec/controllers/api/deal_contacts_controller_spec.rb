@@ -28,4 +28,17 @@ RSpec.describe Api::DealContactsController, type: :controller do
       expect(response_json[0]).to eq(JSON.parse(agency_contact.to_json))
     end
   end
+
+  describe 'POST #create' do
+    let(:new_contact) { create :contact }
+
+    it 'creates new deal contact' do
+      expect do
+        post :create, deal_id: deal.id, deal_contact: { contact_id: new_contact.id } , format: :json
+        expect(response).to be_success
+        response_json = JSON.parse(response.body)
+        expect(response_json['contact_id']).to eq(new_contact.id)
+      end.to change(DealContact, :count).by(1)
+    end
+  end
 end

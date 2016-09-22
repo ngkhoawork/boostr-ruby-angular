@@ -5,7 +5,20 @@ class Api::DealContactsController < ApplicationController
     render json: client_contacts
   end
 
+  def create
+    deal_contact = deal.deal_contacts.build(deal_contact_params)
+    if deal_contact.save
+      render json: deal_contact, status: :created
+    else
+      render json: { errors: deal_contact.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   private
+
+  def deal_contact_params
+    params.require(:deal_contact).permit(:contact_id)
+  end
 
   def client_contacts
     deal_clients_ids = []

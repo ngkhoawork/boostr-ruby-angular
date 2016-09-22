@@ -32,7 +32,7 @@ Rails.application.routes.draw do
         get :pipeline_report
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
-      resources :deal_contacts, only: [:index]
+      resources :deal_contacts, only: [:index, :create]
     end
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
