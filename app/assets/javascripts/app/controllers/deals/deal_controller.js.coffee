@@ -13,6 +13,14 @@
   ###*
    * FileUpload
   ###
+  # TODO:
+  ###*
+   * @TODO
+   * - cancel upload
+   * - get list from server
+   * - post new file on server
+  ###
+
 #  $scope.fileToUpload = null
   $scope.progressBarMax = 0
   $scope.progressBarCur = 0
