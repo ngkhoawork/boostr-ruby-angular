@@ -15,7 +15,16 @@ class Api::DealAssetsController < ApplicationController
     end
   end
 
+  def destroy
+    asset.destroy
+    render nothing: true
+  end
+
   private
+
+  def asset
+    deal.assets.find(params[:id])
+  end
 
   def asset_params
     params.require(:asset).permit(:asset_file_name, :asset_file_size, :asset_content_type, :original_file_name)

@@ -32,4 +32,15 @@ RSpec.describe Api::DealAssetsController, type: :controller do
       }.to change(Asset, :count).by(1)
     end
   end
+
+  describe 'DELETE #destroy' do
+    let!(:deal_asset) { create :asset, attachable: deal }
+
+    it 'deletes the deal member' do
+      expect {
+        delete :destroy, id: deal_asset.id, deal_id: deal.id, format: :json
+        expect(response).to be_success
+      }.to change(Asset, :count).by(-1)
+    end
+  end
 end
