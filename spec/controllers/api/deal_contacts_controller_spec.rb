@@ -1,0 +1,31 @@
+require 'rails_helper'
+
+RSpec.describe Api::DealContactsController, type: :controller do
+  let!(:user) { create :user }
+  let!(:agency) { create :client }
+  let!(:advertiser) { create :client }
+  let!(:agency_contact) { create :contact, clients: [agency] }
+  let!(:advertiser_contacts) { create_list :contact, 9, clients: [advertiser] }
+  let!(:deal) { create :deal, advertiser: advertiser, agency: agency }
+
+  before do
+    sign_in user
+  end
+
+  describe 'GET #index' do
+    it 'returns a list of possible contacts' do
+      get :index, deal_id: deal.id, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(10)
+    end
+
+    it 'accepts name attribute' do
+      get :index, deal_id: deal.id, name: agency_contact.name, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq(1)
+      expect(response_json[0]).to eq(JSON.parse(agency_contact.to_json))
+    end
+  end
+end

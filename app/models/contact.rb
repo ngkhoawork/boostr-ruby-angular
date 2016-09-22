@@ -25,6 +25,7 @@ class Contact < ActiveRecord::Base
   }
   scope :total_count, -> { except(:order, :limit, :offset).count.to_s }
   scope :by_client_ids, -> limit, offset, ids { Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).limit(limit).offset(offset).distinct }
+  scope :by_name, -> name { where('contacts.name ilike ?', "%#{name}%") if name.present? }
 
   after_save do
     if client_id_changed? && !client_id.nil?
