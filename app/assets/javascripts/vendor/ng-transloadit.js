@@ -92,6 +92,7 @@ angular.module('ngTransloadit', []).factory('Transloadit', ['$http', '$rootScope
         cancel: function() {
           cancelled = true;
           xhr.abort();
+          options.cancel()
         }
       };
     },
@@ -125,6 +126,7 @@ angular.module('ngTransloadit', []).factory('Transloadit', ['$http', '$rootScope
       // optional fields
       options.processing = options.processing || function() {};
       options.progress = options.progress || function() {};
+      options.cancel = options.cancel || function() {};
       options.error = options.error || function() {};
     },
 

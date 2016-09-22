@@ -24,6 +24,14 @@
 #  $scope.fileToUpload = null
   $scope.progressBarMax = 0
   $scope.progressBarCur = 0
+  $scope.dealFiles = []
+
+  $scope.getDealFiles = () ->
+    $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
+    .then (respond) ->
+      console.log('get files', respond)
+      $scope.dealFiles = respond.data
+
   $scope.uploadFile =
     name: null
     size: null
@@ -48,7 +56,7 @@
     $scope.uploadFile.name = file.name
     $scope.uploadFile.size = file.size
 
-    Transloadit.upload(file, {
+    $scope.uploading = Transloadit.upload(file, {
       params: {
         auth: {
           key: 'a49408107c0e11e68f21fda8b5e9bb0a'
@@ -73,11 +81,27 @@
       ,
 
       uploaded: (assemblyJson) ->
+        if (assemblyJson && assemblyJson.results && assemblyJson.results[':original'] && assemblyJson.results[':original'].length)
+          console.log(assemblyJson.results[':original'][0])
+          folder =  assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
+          fullFileName = folder + asset_file_name: assemblyJson.results[':original'][0].name
+        $http.post('/api/deals/'+ $routeParams.id + '/deal_assets',
+          {
+            asset: {
+              asset_file_name: fullFileName,
+              asset_file_size: assemblyJson.results[':original'][0].size,
+              asset_content_type: assemblyJson.results[':original'][0].mime,
+              original_file_name: assemblyJson.results[':original'][0].name
+            }
+          })
         $scope.uploadFile.status = 'SUCCESS'
         console.log "$scope.uploadFile.status", $scope.uploadFile.status
         console.log('uploaded', assemblyJson)
         $scope.$$phase || $scope.$apply()
       ,
+
+      cancel: () ->
+        console.log('upload canceled by user')
 
       error: (error) ->
         $scope.uploadFile.status = 'ERROR'
@@ -106,6 +130,7 @@
                       {name: 'documents', id: 'documents'},
                       {name: 'additional info', id: 'info'}]
 
+    $scope.getDealFiles()
     $scope.initActivity()
 
   $scope.initReminder = ->
