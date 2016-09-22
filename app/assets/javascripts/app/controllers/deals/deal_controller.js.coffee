@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit',
-($scope, $routeParams, $modal, $filter, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit',
+($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -8,13 +8,38 @@
   $scope.contacts = []
   $scope.errors = {}
   $scope.contactSearchText = ""
+
+
+  ###*
+   * FileUpload
+  ###
 #  $scope.fileToUpload = null
   $scope.progressBarMax = 0
   $scope.progressBarCur = 0
+  $scope.uploadFile =
+    name: null
+    size: null
+    status: 'LOADING' # ERROR, SUCCESS
+
+  $scope.callUpload = (event) ->
+    $timeout ->
+      document.getElementById('file-uploader').click();
+      do event.preventDefault
+    , 0
+
+  $scope.changeFile = (element) ->
+    $scope.$apply((scope) ->
+      scope.upload element.files[0]
+    );
 
   $scope.upload = (file) ->
-    console.log(file)
-#    file = element.files[0]
+    if not file or 'name' not of file
+      return
+
+    # console.log 'file', file
+    $scope.uploadFile.name = file.name
+    $scope.uploadFile.size = file.size
+
     Transloadit.upload(file, {
       params: {
         auth: {
@@ -30,9 +55,7 @@
       ,
 
       progress: (loaded, total) ->
-        console.log(loaded + 'bytes loaded')
-        console.log(total + ' bytes total')
-        $scope.progressBarMax = total
+        $scope.uploadFile.size = total
         $scope.progressBarCur = loaded
         $scope.$$phase || $scope.$apply();
       ,
@@ -42,13 +65,21 @@
       ,
 
       uploaded: (assemblyJson) ->
+        $scope.uploadFile.status = 'SUCCESS'
+        console.log "$scope.uploadFile.status", $scope.uploadFile.status
         console.log('uploaded', assemblyJson)
+        $scope.$$phase || $scope.$apply()
       ,
 
       error: (error) ->
+        $scope.uploadFile.status = 'ERROR'
         console.log('error', error)
+        $scope.$$phase || $scope.$apply()
 
     })
+  ###*
+   * END FileUpload
+  ###
 
   $scope.init = ->
     $scope.actRemColl = false;

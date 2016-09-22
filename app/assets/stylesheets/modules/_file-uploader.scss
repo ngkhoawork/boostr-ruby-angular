@@ -1,0 +1,94 @@
+.files-uploader {
+    // Extend bootstrap class
+    @extend .well;
+    padding: 0;
+    background-color: #fff;
+
+    &__drop-area {
+        padding: 19px;
+        text-align: center;
+        border-bottom: 1px solid $light-grayish-blue-2;
+        transition: box-shadow 300ms;
+
+        &.active {
+            box-shadow: inset 0px 0px 15px #9ccdff;
+        }
+    }
+
+    &__describe {
+        &:before {
+            @extend .glyphicon;
+            content: "\e198";
+            position: relative;
+            top: 1.4rem;
+            right: 20px;
+            font-size: 2rem;
+            color: $brand-primary;
+        }
+        a {
+            color: inherit;
+            text-decoration: underline;
+
+            &:hover, &:focus {
+                color: inherit;
+            }
+        }
+    }
+
+    &__file-input[type="file"] {
+        display: none;
+    }
+    &__uploading-elem {
+        &__header {
+            padding: 10px 15px;
+            display: flex;
+        }
+        &__file-name {
+            width: 11rem;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        &__file-size {
+            margin-left: 10px;
+        }
+        &__progress {
+            margin-left: auto;
+        }
+        &__cancel {
+            .btn-link {
+                color: inherit;
+                margin-left: 20px;
+                cursor: pointer;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+        .progress {
+            height: 4px;
+            border-radius: none;
+            background-color: $progress-bar-background;
+
+            .progress-bar {
+                background-color: $progress-bar-success;
+            }
+        }
+        &.success {
+            .files-uploader__uploading-elem__progress {
+                color: $progress-bar-success;
+            }
+        }
+        &.error {
+            .progress {
+                .progress-bar {
+                    background-color: $progress-bar-error;
+                }
+            }
+            .files-uploader__uploading-elem__progress {
+                color: $progress-bar-error;
+            }
+        }
+    }
+}

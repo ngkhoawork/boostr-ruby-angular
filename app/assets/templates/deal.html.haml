@@ -241,10 +241,42 @@
                   %button.btn-link{ ng: { click: 'deleteContact(contact)' } }
                     = inline_svg 'icons/trash.svg'
 
+    #files.col-xs-6
+      %h3.header Files
+      .files-uploader
+        .files-uploader__drop-area{ :"am-dnd" => true, :"file-hanlder" => "upload" }
+          %span.files-uploader__describe
+            Drag and drop a file to upload
+            %br
+            or <a href="#" ng-click="callUpload($event)"> click to browse</a>
+          %input#file-uploader.files-uploader__file-input{ type: 'file', 'onchange': 'angular.element(this).scope().changeFile(this)', 'file-model':'fileToUpload' }
+        .files-uploader__list
+          %figure.files-uploader__uploading-elem{ng: { show: 'progressBarCur', class: "{'error': uploadFile.status == 'ERROR', 'success': uploadFile.status == 'SUCCESS'}" }}
+            %header.files-uploader__uploading-elem__header
+              %span.files-uploader__uploading-elem__file-name
+                {{ uploadFile.name }}
+              %span.files-uploader__uploading-elem__file-size
+                {{ uploadFile.size | bytes }}
+              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'LOADING'"}}
+                Loading {{ (progressBarCur / uploadFile.size) * 100 | number:0 }}% {{ progressBarCur < uploadFile.size ? '...' : '' }}
+              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'SUCCESS'"}}
+                Uploaded successfully
+              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ERROR'"}}
+                Connection lost
+              %span.files-uploader__uploading-elem__cancel{ng: { show: 'progressBarCur < uploadFile.size' }}
+                %btn.btn-link
+                  Cancel
+            %progressbar{:max => "progressBarMax", :value => "progressBarCur" }
+              / %span{:style => "color:white; white-space:nowrap;"} {{progressBarCur}} / {{progressBarMax}}
+          %ul
+            %li{ ng: { repeat: 'file in files'} }
+              {{file.name}}
+              {{file.size}}
+              {{file.status}}
+              %a{ ng: { click: '' } } Delete
 
 
-
-    #info.col-xs-6.pull-right
+    #info.col-xs-6
       %h3.header Additional Info
       .well
         .row.field
@@ -295,24 +327,3 @@
             .row
               .col-xs-9.field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
                 {{ currentDeal.close_reason.option.name }}
-
-    #files.col-xs-6.pull-left
-      %h3.header Files
-      .col-xs-12.drop-file-area
-        Drag and drop a file to upload or click to browse
-        %br
-        %br
-      .col-xs-12
-        %input{ type: 'file', 'file-model':'fileToUpload' }
-          %br
-        %button{ type: 'button', ng: { click: 'upload(fileToUpload)' } } Upload!
-      .col-xs-12
-        %br
-        %progressbar{:max => "progressBarMax", :value => "progressBarCur", ng: { show: 'progressBarMax' } }
-          %span{:style => "color:white; white-space:nowrap;"} {{progressBarCur}} / {{progressBarMax}}
-        %ul
-          %li{ ng: { repeat: 'file in files'} }
-            {{file.name}}
-            {{file.size}}
-            {{file.status}}
-            %a{ ng: { click: '' } } Delete

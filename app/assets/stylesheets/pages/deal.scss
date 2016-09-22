@@ -266,6 +266,12 @@
       }
     }
   }
+  #files {
+    padding-top: 15px;
+    .file-uploader__drop-area {
+      padding-bottom: 5px;
+    }
+  }
 
   #contact {
     #add-contact {
