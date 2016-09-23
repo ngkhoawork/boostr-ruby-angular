@@ -224,15 +224,16 @@
           %table.table.table-striped.black-table.sec
             %thead
               %tr
-                %th.empty{ colspan: 3 }
-              %tr
                 %th.left Name
+                %th.left Position
                 %th.left Email
                 %th.left Client Name
             %tbody
               %tr{ ng: { repeat: "contact in currentDeal.contacts"} }
                 %td
                   {{ contact.name }}
+                %td
+                  {{ contact.position }}
                 %td
                   {{ contact.address.email }}
                 %td

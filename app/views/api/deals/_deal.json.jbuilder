@@ -13,7 +13,7 @@ end
 
 json.creator deal.creator, :first_name, :last_name
 
-json.contacts deal.contacts, :id, :name, :address, :primary_client
+json.contacts deal.contacts, :id, :name, :position, :address, :primary_client
 
 json.products deal.products do |product|
   json.id product.id
