@@ -47,7 +47,8 @@ class Contact < ActiveRecord::Base
 
   def primary_client
     Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id")
-          .where("client_contacts.contact_id = ?", self.id).first
+          .where("client_contacts.contact_id = ?", self.id)
+          .where("client_contacts.primary = 't'").first
   end
 
   def primary_client_json
@@ -55,8 +56,9 @@ class Contact < ActiveRecord::Base
   end
 
   def update_primary_client
-    if primary_client && primary_client.id != self.client_id
-      client_contacts.where(primary: true).destroy_all
+    primary = self.primary_client
+    if primary && primary.id != self.client_id
+      self.clients.delete(primary.id)
       client_contacts.where(client_id: self.client_id).update_all(primary: true)
     end
   end
