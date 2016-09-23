@@ -10,7 +10,6 @@
   Deal.dealContacts $routeParams.id
     .then (contacts) ->
       $scope.contacts = contacts
-      console.log 'contacts', $scope.contacts
 
   $scope.searchObj = (name) ->
     if name == ""
