@@ -37,10 +37,14 @@ class Client < ActiveRecord::Base
     }
 
     CSV.generate(headers: true) do |csv|
-      csv << attributes.values
+      header = attributes.values
+      header << 'Parent'
+      csv << header
 
       all.each do |client|
-        csv << attributes.map{ |key, value| client.send(key) }
+        line = attributes.map{ |key, value| client.send(key) }
+        line << (client.parent_client_id.nil? ? nil : client.parent_client.name)
+        csv << line
       end
     end
   end
