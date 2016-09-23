@@ -12,16 +12,18 @@
     angular.toJson(original.params)
 
   resource = $resource '/api/deals/:id', { id: '@id' },
-    save: {
+    save:
       method: 'POST'
       url: '/api/deals'
       transformRequest: transformRequest
-    },
-    update: {
+    update:
       method: 'PUT'
       url: '/api/deals/:id'
       transformRequest: transformRequest
-    },
+    dealContacts:
+      method: 'GET',
+      isArray: true
+      url: 'api/deals/:id/deal_contacts'
     updateContacts:
       method: 'PUT'
       url: 'api/deals/:id'
@@ -75,6 +77,12 @@
     resource.delete id: deletedDeal.id, () ->
       deferred.resolve()
       $rootScope.$broadcast 'updated_deals'
+    deferred.promise
+
+  @dealContacts = (id, params) ->
+    deferred = $q.defer()
+    resource.dealContacts id: id, params: params, (contacts) ->
+      deferred.resolve(contacts)
     deferred.promise
 
   return

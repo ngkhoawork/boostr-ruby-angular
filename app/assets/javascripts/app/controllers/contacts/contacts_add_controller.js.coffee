@@ -7,16 +7,20 @@
   $scope.submitText = "Update"
   $scope.contact = contact
   $scope.searchText = ""
-  Contact.query(filter: 'all', per: '10').$promise.then (contacts) ->
-    $scope.contacts = contacts
+  Deal.dealContacts $routeParams.id
+    .then (contacts) ->
+      $scope.contacts = contacts
+      console.log 'contacts', $scope.contacts
 
   $scope.searchObj = (name) ->
     if name == ""
-      Contact.query(filter: 'all', per: '10').$promise.then (contacts) ->
-        $scope.contacts = contacts
+      Deal.dealContacts $routeParams.id
+        .then (contacts) ->
+          $scope.contacts = contacts
     else
-      Contact.query({name: name}).$promise.then (contacts) ->
-        $scope.contacts = contacts
+      Deal.dealContacts $routeParams.id, name
+        .then (contacts) ->
+          $scope.contacts = contacts
 
   $scope.checkContact = (contact) ->
     fliteredContact = $scope.curentDealContacts.filter (dealContact) ->
@@ -24,7 +28,7 @@
     fliteredContact.length == 0;
 
   $scope.addContact = (contact) ->
-    $scope.curentDealContacts.push id: contact.id, address: contact.address, name: contact.name
+    $scope.curentDealContacts.push contact
 
     putData = $scope.curentDealContacts.map (contact) ->
       contact.id

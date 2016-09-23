@@ -228,7 +228,7 @@
               %tr
                 %th.left Name
                 %th.left Email
-                %th.left Phone
+                %th.left Client Name
             %tbody
               %tr{ ng: { repeat: "contact in currentDeal.contacts"} }
                 %td
@@ -236,7 +236,7 @@
                 %td
                   {{ contact.address.email }}
                 %td
-                  {{ contact.address.phone }}
+                  {{ contact.primary_client.name }}
 
 
 

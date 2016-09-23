@@ -275,21 +275,21 @@
       padding-top: 15px;
     }
     .add-contact {
-      color: $link-color;
+      // color: $link-color;
 
       &:hover,
       &:focus {
-        color: $link-hover-color;
+        // color: $link-hover-color;
         background: transparent;
         outline: none;
 
         svg {
-          fill: $link-hover-color;
+          // fill: $link-hover-color;
         }
       }
 
       svg {
-        fill: $link-color;
+        // fill: $link-color;
       }
     }
 
