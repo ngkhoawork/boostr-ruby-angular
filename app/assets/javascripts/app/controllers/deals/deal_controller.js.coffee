@@ -54,6 +54,8 @@
       $http.delete('/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id)
       .then (respond) ->
         console.log('del file', respond)
+        $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
+          return dealFile.id != file.id
 
   $scope.upload = (file) ->
     if not file or 'name' not of file
@@ -104,11 +106,16 @@
           })
           .then (response) ->
             console.log(response.data)
-            $scope.uploadedFiles.push response.data
+#            $scope.uploadedFiles.push response.data
+            $scope.dealFiles.push response.data
 
         $scope.uploadFile.status = 'SUCCESS'
         # console.log "$scope.uploadFile.status", $scope.uploadFile.status
         # console.log('uploaded', assemblyJson)
+        $timeout (->
+          $scope.progressBarCur = 0
+          return
+        ), 2000
         $scope.$$phase || $scope.$apply()
       ,
 
