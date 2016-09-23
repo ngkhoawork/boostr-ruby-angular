@@ -51,6 +51,10 @@
                   %a.sort{ href: '', ng: { click: 'sort.toggle("advertiser")' } }
                     Advertiser
                     %i{ ng: { class: "{ 'fa': sort.column == 'advertiser', 'fa-sort-asc': sort.column == 'advertiser' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'advertiser' && sort.direction == 'desc' }" } }
+                %th.left
+                  %a.sort{ href: '', ng: { click: 'sort.toggle("agency")' } }
+                    Agency
+                    %i{ ng: { class: "{ 'fa': sort.column == 'agency', 'fa-sort-asc': sort.column == 'agency' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'agency' && sort.direction == 'desc' }" } }
                 %th.left 
                   %a.sort{ href: '', ng: { click: 'sort.toggle("stage")' } }
                     Stage
@@ -70,6 +74,7 @@
                   %a{ href: '', ng: { click: 'go("/deals/" + row.id)'  } }
                     {{ row.name }}
                 %td {{ row.advertiser.name }}
+                %td {{ row.agency.name }}
                 %td {{ row.stage.name }}
                 %td.right {{ row.budget / 100 | currency:'$':0 }}
                 %td.right {{ row.start_date | date: 'shortDate' }}
