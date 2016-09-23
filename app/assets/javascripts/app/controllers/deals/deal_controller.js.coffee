@@ -16,14 +16,15 @@
   # TODO:
   ###*
    * @TODO
-   * - cancel upload
-   * - get list from server
-   * - post new file on server
+   * - make delete query
+   * - bring server queries to Deal service
+   * - maybe bring upload functional into directive or service
   ###
 
 #  $scope.fileToUpload = null
-  $scope.progressBarMax = 0
+  # $scope.progressBarMax = 0
   $scope.progressBarCur = 0
+  $scope.uploadedFiles = []
   $scope.dealFiles = []
 
   $scope.getDealFiles = () ->
@@ -35,24 +36,26 @@
   $scope.uploadFile =
     name: null
     size: null
-    status: 'LOADING' # ERROR, SUCCESS
+    status: 'LOADING' # ERROR, SUCCESS, ABORT
 
   $scope.callUpload = (event) ->
     $timeout ->
-      document.getElementById('file-uploader').click();
+      document.getElementById 'file-uploader'
+        .click();
       do event.preventDefault
     , 0
 
   $scope.changeFile = (element) ->
-    $scope.$apply((scope) ->
+    $scope.$apply (scope) ->
       scope.upload element.files[0]
-    );
 
   $scope.upload = (file) ->
     if not file or 'name' not of file
       return
 
     # console.log 'file', file
+    $scope.progressBarCur = 0
+    $scope.uploadFile.status = 'LOADING'
     $scope.uploadFile.name = file.name
     $scope.uploadFile.size = file.size
 
@@ -67,41 +70,44 @@
 
       signature: (callback) ->
 #       ideally you would be generating this on the fly somewhere
-        callback('here-is-my-signature')
+        callback 'here-is-my-signature'
       ,
 
       progress: (loaded, total) ->
         $scope.uploadFile.size = total
         $scope.progressBarCur = loaded
-        $scope.$$phase || $scope.$apply();
+        $scope.$$phase || do $scope.$apply;
       ,
 
       processing: () ->
-        console.log('done uploading, started processing')
+        console.info 'done uploading, started processing'
       ,
 
       uploaded: (assemblyJson) ->
         if (assemblyJson && assemblyJson.results && assemblyJson.results[':original'] && assemblyJson.results[':original'].length)
-          console.log(assemblyJson.results[':original'][0])
-          folder =  assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
-          fullFileName = folder + asset_file_name: assemblyJson.results[':original'][0].name
+          # console.log assemblyJson.results[':original'][0]
+          folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
+          fullFileName = folder + assemblyJson.results[':original'][0].name
         $http.post('/api/deals/'+ $routeParams.id + '/deal_assets',
           {
-            asset: {
-              asset_file_name: fullFileName,
-              asset_file_size: assemblyJson.results[':original'][0].size,
-              asset_content_type: assemblyJson.results[':original'][0].mime,
+            asset:
+              asset_file_name: fullFileName
+              asset_file_size: assemblyJson.results[':original'][0].size
+              asset_content_type: assemblyJson.results[':original'][0].mime
               original_file_name: assemblyJson.results[':original'][0].name
-            }
           })
+          .then (response) ->
+            $scope.uploadedFiles.push response.data
+
         $scope.uploadFile.status = 'SUCCESS'
-        console.log "$scope.uploadFile.status", $scope.uploadFile.status
-        console.log('uploaded', assemblyJson)
+        # console.log "$scope.uploadFile.status", $scope.uploadFile.status
+        # console.log('uploaded', assemblyJson)
         $scope.$$phase || $scope.$apply()
       ,
 
       cancel: () ->
-        console.log('upload canceled by user')
+        console.info 'upload canceled by user'
+        $scope.uploadFile.status = 'ABORT'
 
       error: (error) ->
         $scope.uploadFile.status = 'ERROR'
@@ -109,6 +115,7 @@
         $scope.$$phase || $scope.$apply()
 
     })
+    console.log '$scope.uploading', $scope.uploading
   ###*
    * END FileUpload
   ###

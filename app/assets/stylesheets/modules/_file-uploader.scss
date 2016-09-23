@@ -1,3 +1,26 @@
+/*==============================
+=            Common            =
+==============================*/
+.ident-border {
+    border-bottom: 1px solid $light-grayish-blue-2;
+}
+.list-elem-wrapper {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+}
+.file-name {
+    width: 11rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.file-size {
+    margin-left: 10px;
+}
+
+/*=====  End of Common  ======*/
+
+
 .files-uploader {
     // Extend bootstrap class
     @extend .well;
@@ -5,9 +28,9 @@
     background-color: #fff;
 
     &__drop-area {
+        @extend .ident-border;
         padding: 19px;
         text-align: center;
-        border-bottom: 1px solid $light-grayish-blue-2;
         transition: box-shadow 300ms;
 
         &.active {
@@ -38,34 +61,31 @@
     &__file-input[type="file"] {
         display: none;
     }
+    &__content {
+        .btn-link {
+            color: inherit;
+            margin-left: 20px;
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
     &__uploading-elem {
         &__header {
-            padding: 10px 15px;
-            display: flex;
+            @extend .list-elem-wrapper;
         }
         &__file-name {
-            width: 11rem;
-            text-overflow: ellipsis;
-            overflow: hidden;
+            @extend .file-name;
         }
-
         &__file-size {
-            margin-left: 10px;
+            @extend .file-size;
         }
         &__progress {
             margin-left: auto;
         }
-        &__cancel {
-            .btn-link {
-                color: inherit;
-                margin-left: 20px;
-                cursor: pointer;
 
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
-        }
         .progress {
             height: 4px;
             border-radius: none;
@@ -88,6 +108,44 @@
             }
             .files-uploader__uploading-elem__progress {
                 color: $progress-bar-error;
+            }
+        }
+    }
+    &__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        &-elem {
+            @extend .list-elem-wrapper;
+            @extend .ident-border;
+
+            &:last-child {
+                border: none;
+            }
+
+            &__file-name {
+                @extend .file-name;
+            }
+            &__file-size {
+                @extend .file-size;
+            }
+            &__delete {
+                margin-left: auto;
+                opacity: 0;
+                transition: opacity 200ms;
+
+                .bnt-link {
+                    display: inline-block;
+
+                    svg {
+                        display: block;
+                    }
+                }
+            }
+
+            &:hover &__delete {
+                opacity: 1;
             }
         }
     }
