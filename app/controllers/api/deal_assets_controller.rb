@@ -16,6 +16,7 @@ class Api::DealAssetsController < ApplicationController
   end
 
   def destroy
+    asset.delete_from_s3
     asset.destroy
     render nothing: true
   end

@@ -4,7 +4,8 @@ class Asset < ActiveRecord::Base
   attr_accessor :presigned_url
 
   def presigned_url
-    obj = S3_BUCKET.object(self.asset_file_name)
+    # TODO Check other cases of URL transformation
+    obj = S3_BUCKET.object(self.asset_file_name.gsub(" ", "-"))
     if obj.nil?
       return ""
     end
@@ -18,5 +19,10 @@ class Asset < ActiveRecord::Base
               ]
           )
     )
+  end
+
+  def delete_from_s3
+    obj = S3_BUCKET.object(self.asset_file_name)
+    obj.delete if obj
   end
 end
