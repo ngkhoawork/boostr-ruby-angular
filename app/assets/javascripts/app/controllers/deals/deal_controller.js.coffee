@@ -49,6 +49,12 @@
     $scope.$apply (scope) ->
       scope.upload element.files[0]
 
+  $scope.deleteFile = (file) ->
+    if (file && file.id)
+      $http.delete('/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id)
+      .then (respond) ->
+        console.log('del file', respond)
+
   $scope.upload = (file) ->
     if not file or 'name' not of file
       return
@@ -97,6 +103,7 @@
               original_file_name: assemblyJson.results[':original'][0].name
           })
           .then (response) ->
+            console.log(response.data)
             $scope.uploadedFiles.push response.data
 
         $scope.uploadFile.status = 'SUCCESS'

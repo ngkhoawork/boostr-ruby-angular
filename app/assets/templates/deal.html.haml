@@ -273,20 +273,20 @@
           %ul.files-uploader__list
             %li.files-uploader__list-elem{ ng: { repeat: 'file in uploadedFiles | orderBy: "-created_at"'} }
               %span.files-uploader__list-elem__file-name
-                {{file.original_file_name}}
+                %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
               %span.files-uploader__list-elem__file-size
                 {{file.asset_file_size | bytes }}
               %span.files-uploader__list-elem__delete
-                %btn.btn-link{ ng: { click: '' } }
+                %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
                   = inline_svg 'icons/trash.svg'
 
             %li.files-uploader__list-elem{ ng: { repeat: 'file in dealFiles | orderBy: "-created_at"'} }
               %span.files-uploader__list-elem__file-name
-                {{file.original_file_name}}
+                %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
               %span.files-uploader__list-elem__file-size
                 {{file.asset_file_size | bytes }}
               %span.files-uploader__list-elem__delete
-                %btn.btn-link{ ng: { click: '' } }
+                %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
                   = inline_svg 'icons/trash.svg'
 
 
