@@ -1,6 +1,6 @@
 @app.controller 'ContactsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$sce', 'Contact', 'Activity',  'ActivityType', 'Reminder', '$http'
-($scope, $rootScope, $modal, $routeParams, $location, $sce, Contact, Activity, ActivityType, Reminder, $http) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$sce', 'Contact', 'Field', 'Activity',  'ActivityType', 'Reminder', '$http'
+($scope, $rootScope, $modal, $routeParams, $location, $sce, Contact, Field, Activity, ActivityType, Reminder, $http) ->
 
   $scope.contacts = []
   $scope.feedName = 'Updates'
@@ -46,6 +46,13 @@
     ActivityType.all().then (activityTypes) ->
       $scope.types = activityTypes
       $scope.getContacts()
+    Field.defaults({}, 'Client').then (fields) ->
+      client_types = Field.findClientTypes(fields)
+      $scope.setClientTypes(client_types)
+
+  $scope.setClientTypes = (client_types) ->
+    client_types.options.forEach (option) ->
+      $scope[option.name] = option.id
 
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
@@ -188,7 +195,14 @@
         $scope.errors['Activity Reminder Time'] = ["can't be blank."]
     if !$scope.buttonDisabled
       return
-    $scope.activity.client_id = $scope.currentContact.client_id
+
+    if $scope.currentContact.primary_client.client_type_id == $scope.Advertiser
+      $scope.activity.client_id = $scope.currentContact.client_id
+      $scope.activity.agency_id = null
+    else
+      $scope.activity.client_id = null
+      $scope.activity.agency_id = $scope.currentContact.client_id
+
     $scope.activity.comment = $scope.currentContact.activity.comment
     $scope.activity.activity_type_id = $scope.currentContact.activeType.id
     $scope.activity.activity_type_name = $scope.currentContact.activeType.name

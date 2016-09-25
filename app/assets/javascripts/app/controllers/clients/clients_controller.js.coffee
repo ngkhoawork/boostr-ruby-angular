@@ -342,7 +342,7 @@
     else
       $scope.activity.client_id = null
       $scope.activity.agency_id = $scope.currentClient.id
-    console.log($scope.activity)
+
     contactDate = new Date($scope.activity.date)
     if $scope.activity.time != undefined
       contactTime = new Date($scope.activity.time)
