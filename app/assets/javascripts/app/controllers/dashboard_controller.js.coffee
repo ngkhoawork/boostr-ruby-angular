@@ -87,15 +87,6 @@
     client_types.options.forEach (option) ->
       $scope[option.name] = option.id
 
-  $scope.selectObj = (objType) ->
-    switch objType
-      when 1
-        $scope.selectedObj.showAgencySelector = false
-      when 2
-        $scope.selectedObj.showAgencySelector = true
-      when 3
-        $scope.selectedObj.showAgencySelector = true
-
   $scope.chartOptions = {
     responsive: false,
     segmentShowStroke: true,
