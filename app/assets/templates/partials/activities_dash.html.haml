@@ -26,12 +26,16 @@
           %span{'aria-hidden' => 'true'}
             = inline_svg 'icons/close.svg'
         .btn-group
-          %label.open-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'true' } }
+          %label.open-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal', click: 'selectObj(1)' }, btn: { radio: '1' } }
             Deals
-          %label.close-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal' }, btn: { radio: 'false' } }
-            Clients
+          %label.close-button.btn.btn-primary1{ ng: { model: 'selectedObj.deal', click: 'selectObj(2)' }, btn: { radio: '2' } }
+            Advertisers
+          %label.close-button.btn.btn-primary1{ ng: { show: 'selectedObj.showAgencySelector', model: 'selectedObj.deal', click: 'selectObj(3)' }, btn: { radio: '3' } }
+            Agencies
       .row
-        %input.box2.w2{ placeholder: 'Type a name *', ng: { model: 'selectedObj.obj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
+        %input.box2.w2{ placeholder: 'Type a name *', ng: { show: 'selectedObj.deal == 1', model: 'selectedObj.dealObj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
+        %input.box2.w2{ placeholder: 'Type a name *', ng: { show: 'selectedObj.deal == 2', model: 'selectedObj.advertiserObj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
+        %input.box2.w2{ placeholder: 'Type a name *', ng: { show: 'selectedObj.deal == 3', model: 'selectedObj.agencyObj' }, type: 'text', typeahead: 'item as item.formatted_name for item in searchObj($viewValue)' }
     #contain.tab{ ng: { show: 'activeTab == "Type"' } }
       .row
         %a.close{ ng: { click: 'cancelActivity()' } }
