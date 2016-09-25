@@ -33,6 +33,13 @@
     $scope.showContactList = false
     Contact.all1(page: 1, per:10).then (contacts) ->
       $scope.contacts = contacts
+    Field.defaults({}, 'Client').then (fields) ->
+      client_types = Field.findClientTypes(fields)
+      $scope.setClientTypes(client_types)
+
+  $scope.setClientTypes = (client_types) ->
+    client_types.options.forEach (option) ->
+      $scope[option.name] = option.id
 
   $scope.getClientMembers = ->
     ClientMember.query({ client_id: $scope.currentClient.id })
@@ -329,7 +336,13 @@
     if !$scope.buttonDisabled
       return
 
-    $scope.activity.client_id = $scope.currentClient.id
+    if $scope.currentClient.client_type_id == $scope.Advertiser
+      $scope.activity.client_id = $scope.currentClient.id
+      $scope.activity.agency_id = null
+    else
+      $scope.activity.client_id = null
+      $scope.activity.agency_id = $scope.currentClient.id
+    console.log($scope.activity)
     contactDate = new Date($scope.activity.date)
     if $scope.activity.time != undefined
       contactTime = new Date($scope.activity.time)
