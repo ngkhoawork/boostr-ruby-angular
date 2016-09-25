@@ -81,5 +81,7 @@
                 %td.action-column.info-td
                   .empty
                 %td.action-td
+                  %a.edit-deal{ href: '', ng: { click: 'showDealEditModal(row)' } }
+                    = inline_svg 'icons/pencil.svg'
                   %a.delete-deal{ href: '', ng: { click: 'delete(row)' } }
                     = inline_svg 'icons/trash.svg'

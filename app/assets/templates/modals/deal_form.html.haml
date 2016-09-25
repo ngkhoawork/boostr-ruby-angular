@@ -25,7 +25,7 @@
           .col-xs-6
             %label.control-label{ for: 'advertiser' } Advertiser*
             .input-group
-              %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', required: true, keyup: 'searchClients($select.search, Advertiser)' }, 'on-select': "advertiserSelected($model)" }
+              %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, keyup: 'searchClients($select.search, Advertiser)' }, 'on-select': "advertiserSelected($model)" }
                 %ui-select-match{ placeholder: 'Advertiser' }
                   {{ $select.selected.name }}
                 %ui-select-choices{ repeat: 'advertiser.id as advertiser in advertisers' }
@@ -44,7 +44,7 @@
               .input-group-addon.create-new-modal-icon
                 %a{ ng: { click: 'createNewClientModal("Agency", "agency_id")' } }
                   = inline_svg 'icons/add.svg'
-      .form-group
+      .form-group{ ng: {if: "formType == 'New'"}}
         .row
           .col-xs-6
             %label.control-label{ for: 'deal-type' } Type
@@ -65,7 +65,7 @@
         %label.control-label{ for: 'next-steps' } Next Steps
         %input.form-control{ placeholder: 'Next Steps', ng: { model: 'deal.next_steps' }, name: 'next-steps' }
 
-      .form-group
+      .form-group{ ng: {if: "formType == 'New'"}}
         .row
           .col-md-6.bs-datepicker
             %label.control-label{ for: 'start-date' } Start Date*
