@@ -208,7 +208,7 @@
     if !$scope.buttonDisabled
       return
 
-    if $scope.currentContact.primary_client.client_type_id == $scope.Advertiser
+    if $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
       $scope.activity.client_id = $scope.currentContact.client_id
       $scope.activity.agency_id = null
     else

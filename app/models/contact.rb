@@ -54,7 +54,7 @@ class Contact < ActiveRecord::Base
   end
 
   def primary_client_json
-    primary_client.as_json(override: true, only: [:id, :name])
+    primary_client.as_json(override: true, only: [:id, :name, :client_type_id])
   end
 
   def update_primary_client
