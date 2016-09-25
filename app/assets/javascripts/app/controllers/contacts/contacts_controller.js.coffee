@@ -139,7 +139,7 @@
   $scope.delete = ->
     if confirm('Are you sure you want to delete "' +  $scope.currentContact.name + '"?')
       Contact.delete $scope.currentContact, ->
-        $location.path('/people')
+        $location.path('/contacts')
 
   $scope.deleteActivity = (activity) ->
     if confirm('Are you sure you want to delete the activity?')
