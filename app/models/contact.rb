@@ -5,6 +5,8 @@ class Contact < ActiveRecord::Base
   has_many :client_contacts, dependent: :destroy
   belongs_to :company
 
+  has_many :deals, -> { uniq }, through: :deal_contacts
+  has_many :deal_contacts, dependent: :destroy
   has_many :reminders, as: :remindable, dependent: :destroy
   has_one :address, as: :addressable
 
@@ -23,6 +25,7 @@ class Contact < ActiveRecord::Base
   }
   scope :total_count, -> { except(:order, :limit, :offset).count.to_s }
   scope :by_client_ids, -> limit, offset, ids { Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).limit(limit).offset(offset).distinct }
+  scope :by_name, -> name { where('contacts.name ilike ?', "%#{name}%") if name.present? }
 
   after_save do
     if client_id_changed? && !client_id.nil?

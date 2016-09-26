@@ -136,6 +136,8 @@ class Api::DealsController < ApplicationController
   def update
     deal.updated_by = current_user.id
     if deal.update_attributes(deal_params)
+      contacts = company.contacts.where(id: params[:contacts])
+      deal.contacts = contacts
       render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
