@@ -243,51 +243,52 @@
 
     #files.col-xs-6
       %h3.header Files
-      .files-uploader
-        .files-uploader__drop-area{ :"am-dnd" => true, :"file-hanlder" => "upload" }
-          %span.files-uploader__describe
-            Drag and drop a file to upload
-            %br
-            or <a href="#" ng-click="callUpload($event)"> click to browse</a>
-          %input#file-uploader.files-uploader__file-input{ type: 'file', 'onchange': 'angular.element(this).scope().changeFile(this)', 'file-model':'fileToUpload' }
-        .files-uploader__content
-          %figure.files-uploader__uploading-elem{ng: { show: 'progressBarCur', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
-            %header.files-uploader__uploading-elem__header
-              %span.files-uploader__uploading-elem__file-name{ :title => "{{uploadFile.name}}" }
-                {{ uploadFile.name }}
-              %span.files-uploader__uploading-elem__file-size
-                {{ uploadFile.size | bytes }}
-              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'LOADING'"}}
-                Loading {{ (progressBarCur / uploadFile.size) * 100 | number:0 }}% {{ progressBarCur < uploadFile.size ? '...' : '' }}
-              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'SUCCESS'"}}
-                Uploaded successfully
-              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ERROR'"}}
-                Connection lost
-              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ABORT'"}}
-                Upload canceled by user
-              %span.files-uploader__uploading-elem__cancel{ng: { show: 'progressBarCur < uploadFile.size && uploadFile.status != "ERROR" && uploadFile.status != "ABORT"' }}
-                %btn.btn-link{ ng: {click: 'uploading.cancel()'} }
-                  Cancel
-            %progressbar{:max => "uploadFile.size", :value => "progressBarCur" }
-              / %span{:style => "color:white; white-space:nowrap;"} {{progressBarCur}} / {{progressBarMax}}
-          %ul.files-uploader__list
-            %li.files-uploader__list-elem{ ng: { repeat: 'file in uploadedFiles | orderBy: "-created_at"'} }
-              %span.files-uploader__list-elem__file-name
-                %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
-              %span.files-uploader__list-elem__file-size
-                {{file.asset_file_size | bytes }}
-              %span.files-uploader__list-elem__delete
-                %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
-                  = inline_svg 'icons/trash.svg'
+      <upload-file deal-files="dealFiles"></upload-file>
+      / .files-uploader
+      /   .files-uploader__drop-area{ :"am-dnd" => true, :"file-hanlder" => "upload" }
+      /     %span.files-uploader__describe
+      /       Drag and drop a file to upload
+      /       %br
+      /       or <a href="#" ng-click="callUpload($event)"> click to browse</a>
+      /     %input#file-uploader.files-uploader__file-input{ type: 'file', 'onchange': 'angular.element(this).scope().changeFile(this)', 'file-model':'fileToUpload' }
+      /   .files-uploader__content
+      /     %figure.files-uploader__uploading-elem{ng: { show: 'progressBarCur', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
+      /       %header.files-uploader__uploading-elem__header
+      /         %span.files-uploader__uploading-elem__file-name{ :title => "{{uploadFile.name}}" }
+      /           {{ uploadFile.name }}
+      /         %span.files-uploader__uploading-elem__file-size
+      /           {{ uploadFile.size | bytes }}
+      /         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'LOADING'"}}
+      /           Loading {{ (progressBarCur / uploadFile.size) * 100 | number:0 }}% {{ progressBarCur < uploadFile.size ? '...' : '' }}
+      /         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'SUCCESS'"}}
+      /           Uploaded successfully
+      /         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ERROR'"}}
+      /           Connection lost
+      /         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ABORT'"}}
+      /           Upload canceled by user
+      /         %span.files-uploader__uploading-elem__cancel{ng: { show: 'progressBarCur < uploadFile.size && uploadFile.status != "ERROR" && uploadFile.status != "ABORT"' }}
+      /           %btn.btn-link{ ng: {click: 'uploading.cancel()'} }
+      /             Cancel
+      /       %progressbar{:max => "uploadFile.size", :value => "progressBarCur" }
+      /         / %span{:style => "color:white; white-space:nowrap;"} {{progressBarCur}} / {{progressBarMax}}
+      /     %ul.files-uploader__list
+      /       %li.files-uploader__list-elem{ ng: { repeat: 'file in uploadedFiles | orderBy: "-created_at"'} }
+      /         %span.files-uploader__list-elem__file-name
+      /           %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
+      /         %span.files-uploader__list-elem__file-size
+      /           {{file.asset_file_size | bytes }}
+      /         %span.files-uploader__list-elem__delete
+      /           %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
+      /             = inline_svg 'icons/trash.svg'
 
-            %li.files-uploader__list-elem{ ng: { repeat: 'file in dealFiles | orderBy: "-created_at"'} }
-              %span.files-uploader__list-elem__file-name
-                %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
-              %span.files-uploader__list-elem__file-size
-                {{file.asset_file_size | bytes }}
-              %span.files-uploader__list-elem__delete
-                %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
-                  = inline_svg 'icons/trash.svg'
+      /       %li.files-uploader__list-elem{ ng: { repeat: 'file in dealFiles | orderBy: "-created_at"'} }
+      /         %span.files-uploader__list-elem__file-name
+      /           %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
+      /         %span.files-uploader__list-elem__file-size
+      /           {{file.asset_file_size | bytes }}
+      /         %span.files-uploader__list-elem__delete
+      /           %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
+      /             = inline_svg 'icons/trash.svg'
 
 
     #info.col-xs-6

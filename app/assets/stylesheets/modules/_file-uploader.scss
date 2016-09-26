@@ -31,10 +31,25 @@
         @extend .ident-border;
         padding: 19px;
         text-align: center;
-        transition: box-shadow 300ms;
+        transition: box-shadow 300ms, color 300ms;
 
         &.active {
             box-shadow: inset 0px 0px 15px #9ccdff;
+        }
+
+        &[disabled] {
+            background-color: $gray-lighter;
+            cursor: not-allowed;
+
+            .files-uploader__describe {
+                &:before {
+                    color: inherit;
+                }
+
+                a {
+                    cursor: not-allowed;
+                }
+            }
         }
     }
 
