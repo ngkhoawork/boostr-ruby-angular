@@ -3,31 +3,18 @@ class Api::ContactsController < ApplicationController
 
   def index
     if params[:unassigned] == "yes"
-      contacts = current_user.company.contacts.unassigned(current_user.id)
+      results = current_user.company.contacts.unassigned(current_user.id)
     elsif params[:name].present?
-      contacts = suggest_contacts
+      results = suggest_contacts
     elsif params[:contact_name].present?
-      contacts = suggest_contacts(true)
+      results = suggest_contacts(true)
     elsif params[:activity].present?
-      contacts = activity_contacts
+      results = activity_contacts
     else
-      contacts = current_user.company.contacts
-        .order(:name)
-        .includes(:address)
+      results = contacts
+      response.headers['X-Total-Count'] = results.total_count
     end
-
-    limit = 500
-    if params[:per].present?
-      limit = params[:per].to_i
-    end
-    offset = 0
-    if params[:page].present?
-      offset = (params[:page].to_i - 1) * limit
-    end
-    response.headers['X-Total-Count'] = contacts.count.to_s
-    contacts = contacts.limit(limit).offset(offset)
-
-    render json: contacts
+    render json: results
   end
 
   def create
@@ -85,6 +72,35 @@ class Api::ContactsController < ApplicationController
 
   def contact
     @contact ||= current_user.company.contacts.where(id: params[:id]).first
+  end
+
+  def contacts
+    if params[:filter] == 'my_contacts'
+      Contact.by_client_ids(limit, offset, current_user.clients.ids)
+    elsif params[:filter] == 'team' && team
+      Contact.by_client_ids(limit, offset, team.clients.ids)
+    else
+      current_user.company.contacts
+        .order(:name)
+        .limit(limit)
+        .offset(offset)
+    end
+  end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 500
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
+  end
+
+  def team
+    if current_user.leader?
+      current_user.company.teams.where(leader: current_user).first!
+    else
+      current_user.team
+    end
   end
 
   def suggest_contacts(contacts_only = false)

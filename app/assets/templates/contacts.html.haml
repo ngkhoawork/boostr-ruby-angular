@@ -4,6 +4,14 @@
       .row
         .col-xs-12
           %ul.nav.nav-tabs
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                {{ contactFilter.name }}
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in contactFilters', class: '{active: filter.name == contactFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterContacts(filter)' } }
+                    {{ filter.name }}
             %li.pull-right.last
               %a.upload{ href: '', ng: { click: 'showUploadModal()' } }
                 = inline_svg 'icons/upload.svg'
@@ -130,5 +138,5 @@
           %h2
             activities
           %div{ ng: { include: "'partials/activities_contact.html'" } }
-        #activities-feed.section          
+        #activities-feed.section
           %div{ ng: { include: "'partials/activities_feed_contact.html'" } }
