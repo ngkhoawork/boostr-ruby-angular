@@ -32,7 +32,7 @@
     query: {
       isArray: true,
       transformResponse: (data, headers) ->
-        self.totalCount = headers()['x-total-count']
+        resource.totalCount = headers()['x-total-count']
         angular.fromJson(data)
     },
     save: {
