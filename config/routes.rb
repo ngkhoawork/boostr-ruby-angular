@@ -19,7 +19,11 @@ Rails.application.routes.draw do
     resources :users, only: [:index, :update]
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
       resources :client_members, only: [:index, :create, :update, :destroy]
-      resources :client_contacts, only: [:index, :create, :update]
+      resources :client_contacts, only: [:index] do
+        collection do
+          get :related_clients
+        end
+      end
     end
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]

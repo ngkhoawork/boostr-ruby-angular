@@ -54,10 +54,18 @@
   $scope.setClient = (client) ->
     $scope.currentClient = client
     $scope.initActivity()
+    $scope.getContacts()
     $scope.getDeals($scope.currentClient)
     $scope.initReminder()
     $scope.initRelatedContacts()
     $scope.$emit('updated_current_client')
+
+  $scope.getContacts = (clientId) ->
+    if ($scope.currentClient && $scope.currentClient.id)
+      ClientContacts.list($scope.currentClient.id)
+      .then (response) ->
+        if (response && response.data && response.data.length)
+          $scope.currentClient.contacts = response.data
 
   $scope.getClient = (clientId) ->
     Client.get({ id: clientId }).$promise.then (client) ->
@@ -465,7 +473,7 @@
     if ($scope.currentClient && $scope.currentClient.id)
 #      if ($scope.currentClient.client_type && $scope.currentClient.client_type.option && $scope.currentClient.client_type.option.name == 'Agency')
 #        /api/clients/:client_id/client_contacts
-      ClientContacts.list($scope.currentClient.id)
+      ClientContacts.related_clients($scope.currentClient.id)
       .then (respond) ->
         if (respond && respond.data && respond.data.length)
           $scope.currentClient.relatedContacts = respond.data
