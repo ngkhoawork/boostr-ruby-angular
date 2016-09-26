@@ -22,9 +22,11 @@
             .col-xs-4.pad7
               .list-group.list-sm.stages
                 %a.list-group-item.vertical-center.type-menu{ href: '', ng: { repeat: 'type in types', click: 'setActiveType(type)', class: '{ active: activeType == type }' } }
-                  %img.s-img{:src => "{{ type.icon }}"}/
-                  %h5
-                    {{ type.name }}
+                  %span
+                    %img.s-img{:src => "{{ type.icon }}"}/
+                  %span
+                    %h5
+                      {{ type.name }}
             .col-xs-6
               #contain1
                 .row.type1
