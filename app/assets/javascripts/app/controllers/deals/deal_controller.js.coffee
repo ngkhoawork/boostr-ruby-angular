@@ -251,7 +251,9 @@
         return
       form.submitted = true
       $scope.activity.deal_id = $scope.currentDeal.id
+
       $scope.activity.client_id = $scope.currentDeal.advertiser_id
+      $scope.activity.agency_id = $scope.currentDeal.agency_id
       $scope.activity.activity_type_id = $scope.activeType.id
       $scope.activity.activity_type_name = $scope.activeType.name
       contact_date = new Date(data.date)
