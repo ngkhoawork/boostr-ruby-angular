@@ -37,7 +37,7 @@ class Contact < ActiveRecord::Base
       include: {
         address: {}
       },
-      methods: [:formatted_name, :primary_client]
+      methods: [:formatted_name, :primary_client_json]
     ))
   end
 
@@ -46,15 +46,21 @@ class Contact < ActiveRecord::Base
   end
 
   def primary_client
-    primary_client_contact = client_contacts.where(primary: true).first
-    if primary_client_contact
-      primary_client_contact.client
-    end
+    Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id")
+          .where("client_contacts.contact_id = ?", self.id)
+          .where("client_contacts.primary = 't'").first
+  end
+
+  def primary_client_json
+    primary_client.as_json(override: true, only: [:id, :name])
   end
 
   def update_primary_client
-    client_contacts.where(primary: true).update_all(primary: false)
-    client_contacts.where(client_id: self.client_id).update_all(primary: true)
+    primary = self.primary_client
+    if primary && primary.id != self.client_id
+      self.clients.delete(primary.id)
+      client_contacts.where(client_id: self.client_id).update_all(primary: true)
+    end
   end
 
   def self.import(file, current_user)

@@ -28,11 +28,11 @@
         %script{ type: 'text/ng-template', id: 'partials/contact_list_item.html' }
           %h4
             {{ item.name }}
-          .subtitle{ 'ng-show': 'item.primary_client && item.position' }
-            {{ item.primary_client.name }}, {{ item.position }}
-          .subtitle{ 'ng-show': 'item.primary_client && !item.position' }
-            {{ item.primary_client.name }}
-          .subtitle{ 'ng-show': '!item.primary_client && item.position' }
+          .subtitle{ 'ng-show': 'item.primary_client_json && item.position' }
+            {{ item.primary_client_json.name }}, {{ item.position }}
+          .subtitle{ 'ng-show': 'item.primary_client_json && !item.position' }
+            {{ item.primary_client_json.name }}
+          .subtitle{ 'ng-show': '!item.primary_client_json && item.position' }
             {{ item.position }}
         %div{ 'object-list': true, items: 'contacts', query: 'query', 'on-search': 'searchContacts', 'on-select': 'showContact', 'on-load-more': 'loadMoreContacts', selected: 'currentContact', template: 'partials/contact_list_item.html' }
 
@@ -82,11 +82,11 @@
                     %button.btn.btn-primary.btn-lg.btn-add-remainder{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } } Set Reminder
 
           %br
-          .position{ 'ng-show': 'currentContact.primary_client && currentContact.position' }
-            {{ currentContact.position }}, {{ currentContact.primary_client.name }}
-          .position{ 'ng-show': 'currentContact.primary_client && !currentContact.position' }
-            {{ currentContact.primary_client.name }}
-          .position{ 'ng-show': '!currentContact.primary_client && currentContact.position' }
+          .position{ 'ng-show': 'currentContact.primary_client_json && currentContact.position' }
+            {{ currentContact.position }}, {{ currentContact.primary_client_json.name }}
+          .position{ 'ng-show': 'currentContact.primary_client_json && !currentContact.position' }
+            {{ currentContact.primary_client_json.name }}
+          .position{ 'ng-show': '!currentContact.primary_client_json && currentContact.position' }
             {{ currentContact.position }}
         #details
         .wells-group

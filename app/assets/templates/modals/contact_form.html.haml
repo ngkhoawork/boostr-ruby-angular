@@ -20,7 +20,7 @@
       .form-group
         .row
           .col-xs-12
-            %label.control-label{ for: 'client' } Client*
+            %label.control-label{ for: 'client' } Primary Client*
             %ui-select{ name: 'client', ng: { model: 'contact.client_id', disabled: true } }
               %ui-select-match{ placeholder: 'Select A Client' }
                 {{ $select.selected.name }}

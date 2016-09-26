@@ -100,12 +100,13 @@ RSpec.describe Contact, type: :model do
   describe 'update_primary_client' do
     let!(:contact) { create :contact, client_id: client.id }
 
-    it 'updates the primary client' do
+    it 'updates the primary client and removes previous relation' do
       expect(contact.primary_client).to eq(client)
       contact.client_id = client2.id
       contact.save
       contact.update_primary_client
       expect(contact.primary_client).to eq(client2)
+      expect(contact.clients).to eq([client2])
     end
   end
 end
