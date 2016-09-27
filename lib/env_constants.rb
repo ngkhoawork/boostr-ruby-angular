@@ -1,0 +1,9 @@
+# Application Constants
+
+# User Types
+SELLER = 1
+SALES_MANAGER = 2
+ACCOUNT_MANAGER = 3
+MANAGER_ACCOUNT_MANAGER = 4
+ADMIN = 5
+EXEC = 6

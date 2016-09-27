@@ -20,7 +20,7 @@ class Api::UsersController < ApplicationController
   private
 
   def user_params
-    user_params = params.require(:user).permit(:first_name, :last_name, :title, :email, :notify, :win_rate, :average_deal_size, :cycle_time, :is_active)
+    user_params = params.require(:user).permit(:first_name, :last_name, :title, :email, :notify, :win_rate, :average_deal_size, :cycle_time, :starting_page, :user_type, :is_active)
     if !user_params[:is_active].nil? && current_user.id == user.id
       user_params[:is_active] = true
     end
