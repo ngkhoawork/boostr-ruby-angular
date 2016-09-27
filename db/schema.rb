@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160921213327) do
+ActiveRecord::Schema.define(version: 20160927085705) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -476,6 +475,7 @@ ActiveRecord::Schema.define(version: 20160921213327) do
     t.decimal  "win_rate"
     t.decimal  "average_deal_size"
     t.float    "cycle_time"
+    t.boolean  "is_active",              default: true
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
