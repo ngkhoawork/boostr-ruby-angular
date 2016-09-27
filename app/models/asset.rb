@@ -3,13 +3,15 @@ class Asset < ActiveRecord::Base
 
   attr_accessor :presigned_url
 
+  ONE_HOUR = 60 * 60
+
   def presigned_url
     # TODO Check other cases of URL transformation
     obj = S3_BUCKET.object(self.asset_file_name.gsub(" ", "-"))
     if obj.nil?
       return ""
     end
-    return obj.presigned_url(:get)
+    return obj.presigned_url(:get, expires_in: ONE_HOUR)
   end
 
   def as_json(options = {})
