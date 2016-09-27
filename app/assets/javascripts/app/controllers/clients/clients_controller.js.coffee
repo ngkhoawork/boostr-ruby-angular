@@ -31,8 +31,15 @@
     $scope.getClient($scope.currentClient.id) if $scope.currentClient
     $scope.getClients()
     $scope.showContactList = false
-    Contact.all1(page: 1, per:10).then (contacts) ->
+    Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
+    Field.defaults({}, 'Client').then (fields) ->
+      client_types = Field.findClientTypes(fields)
+      $scope.setClientTypes(client_types)
+
+  $scope.setClientTypes = (client_types) ->
+    client_types.options.forEach (option) ->
+      $scope[option.name] = option.id
 
   $scope.getClientMembers = ->
     ClientMember.query({ client_id: $scope.currentClient.id })
@@ -54,10 +61,18 @@
   $scope.setClient = (client) ->
     $scope.currentClient = client
     $scope.initActivity()
+    $scope.getContacts()
     $scope.getDeals($scope.currentClient)
     $scope.initReminder()
     $scope.initRelatedContacts()
     $scope.$emit('updated_current_client')
+
+  $scope.getContacts = (clientId) ->
+    if ($scope.currentClient && $scope.currentClient.id)
+      ClientContacts.list($scope.currentClient.id)
+      .then (response) ->
+        if (response && response.data && response.data.length)
+          $scope.currentClient.contacts = response.data
 
   $scope.getClient = (clientId) ->
     Client.get({ id: clientId }).$promise.then (client) ->
@@ -201,7 +216,7 @@
     $scope.contactToLink = undefined
     $scope.showContactList = false
     item.client_id = $scope.currentClient.id
-    Contact.update(id: item.id, contact: item).then (contact) ->
+    Contact._update(id: item.id, contact: item).then (contact) ->
       if !$scope.currentClient.contacts
         $scope.currentClient.contacts = []
       $scope.currentClient.contacts.unshift(contact)
@@ -329,7 +344,13 @@
     if !$scope.buttonDisabled
       return
 
-    $scope.activity.client_id = $scope.currentClient.id
+    if $scope.currentClient.client_type_id == $scope.Advertiser
+      $scope.activity.client_id = $scope.currentClient.id
+      $scope.activity.agency_id = null
+    else
+      $scope.activity.client_id = null
+      $scope.activity.agency_id = $scope.currentClient.id
+
     contactDate = new Date($scope.activity.date)
     if $scope.activity.time != undefined
       contactTime = new Date($scope.activity.time)
@@ -465,7 +486,7 @@
     if ($scope.currentClient && $scope.currentClient.id)
 #      if ($scope.currentClient.client_type && $scope.currentClient.client_type.option && $scope.currentClient.client_type.option.name == 'Agency')
 #        /api/clients/:client_id/client_contacts
-      ClientContacts.list($scope.currentClient.id)
+      ClientContacts.related_clients($scope.currentClient.id)
       .then (respond) ->
         if (respond && respond.data && respond.data.length)
           $scope.currentClient.relatedContacts = respond.data

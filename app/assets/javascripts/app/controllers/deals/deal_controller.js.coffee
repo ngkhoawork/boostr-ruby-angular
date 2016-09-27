@@ -108,7 +108,7 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
-    Contact.all1(page: 1, per:10).then (contacts) ->
+    Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
 #    Contact.allForClient deal.advertiser_id, (contacts) ->
 #      $scope.contacts = contacts
@@ -198,16 +198,18 @@
   $scope.cancelAddProduct = ->
     $scope.showProductForm = !$scope.showProductForm
 
-  $scope.showModal = (currentDeal) ->
+  $scope.addContact = ->
     $scope.modalInstance = $modal.open
-      templateUrl: 'modals/deal_close_form.html'
-      size: 'lg'
-      controller: 'DealsCloseController'
+      templateUrl: 'modals/contact_add_form.html'
+      size: 'md'
+      controller: 'ContactsAddController'
       backdrop: 'static'
       keyboard: false
       resolve:
-        currentDeal: ->
-          currentDeal
+        deal: ->
+          $scope.currentDeal
+    .result.then (updatedContact) ->
+      $scope.currentDeal.contacts = angular.copy updatedContact
 
   $scope.$on 'updated_deal', ->
     $scope.init()
@@ -251,7 +253,9 @@
         return
       form.submitted = true
       $scope.activity.deal_id = $scope.currentDeal.id
+
       $scope.activity.client_id = $scope.currentDeal.advertiser_id
+      $scope.activity.agency_id = $scope.currentDeal.agency_id
       $scope.activity.activity_type_id = $scope.activeType.id
       $scope.activity.activity_type_name = $scope.activeType.name
       contact_date = new Date(data.date)

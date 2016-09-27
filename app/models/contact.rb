@@ -5,6 +5,8 @@ class Contact < ActiveRecord::Base
   has_many :client_contacts, dependent: :destroy
   belongs_to :company
 
+  has_many :deals, -> { uniq }, through: :deal_contacts
+  has_many :deal_contacts, dependent: :destroy
   has_many :reminders, as: :remindable, dependent: :destroy
   has_one :address, as: :addressable
 
@@ -21,6 +23,9 @@ class Contact < ActiveRecord::Base
   scope :by_email, -> email, company_id {
     Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email=? and contacts.company_id=?", email, company_id)
   }
+  scope :total_count, -> { except(:order, :limit, :offset).count.to_s }
+  scope :by_client_ids, -> limit, offset, ids { Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).limit(limit).offset(offset).distinct }
+  scope :by_name, -> name { where('contacts.name ilike ?', "%#{name}%") if name.present? }
 
   after_save do
     if client_id_changed? && !client_id.nil?
@@ -37,7 +42,7 @@ class Contact < ActiveRecord::Base
       include: {
         address: {}
       },
-      methods: [:formatted_name, :primary_client]
+      methods: [:formatted_name, :primary_client_json]
     ))
   end
 
@@ -46,15 +51,21 @@ class Contact < ActiveRecord::Base
   end
 
   def primary_client
-    primary_client_contact = client_contacts.where(primary: true).first
-    if primary_client_contact
-      primary_client_contact.client
-    end
+    Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id")
+          .where("client_contacts.contact_id = ?", self.id)
+          .where("client_contacts.primary = 't'").first
+  end
+
+  def primary_client_json
+    primary_client.as_json(override: true, only: [:id, :name, :client_type_id])
   end
 
   def update_primary_client
-    client_contacts.where(primary: true).update_all(primary: false)
-    client_contacts.where(client_id: self.client_id).update_all(primary: true)
+    primary = self.primary_client
+    if primary && primary.id != self.client_id
+      self.clients.delete(primary.id)
+      client_contacts.where(client_id: self.client_id).update_all(primary: true)
+    end
   end
 
   def self.import(file, current_user)
@@ -185,14 +196,16 @@ class Contact < ActiveRecord::Base
   end
 
   def email_unique?
-    if id
-      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
-    else
-      contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=?", company_id, address.email)
-    end
+    if address && address.email
+      if id
+        contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
+      else
+        contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=?", company_id, address.email)
+      end
 
-    if contact.present?
-      errors.add(:email, "has already been taken")
+      if contact.present?
+        errors.add(:email, "has already been taken")
+      end
     end
   end
 

@@ -31,7 +31,7 @@
   $scope.assignClient = (client) ->
     contact = angular.copy($scope.contact)
     contact.client_id = client.id
-    Contact.update(id: $scope.contact.id, contact: contact).then (contact) ->
+    Contact._update(id: $scope.contact.id, contact: contact).then (contact) ->
       $modalInstance.close(contact)
 
   $scope.cancel = ->

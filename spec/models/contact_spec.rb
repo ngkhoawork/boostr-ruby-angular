@@ -50,6 +50,11 @@ RSpec.describe Contact, type: :model do
     end
   end
 
+  context 'associations' do
+    it { should have_many(:deals).through(:deal_contacts) }
+    it { should have_many(:deal_contacts) }
+  end
+
   context 'scopes' do
     context 'unassigned' do
       let!(:contact) { create :contact, clients: [client], address: address }
@@ -69,6 +74,25 @@ RSpec.describe Contact, type: :model do
         expect(contact_array.length).to eq(1)
         expect(contact_array.first.name).to eq(user_contact.name)
         expect(contact_array.first.address.email).to eq(user_contact.address.email)
+      end
+    end
+
+    context 'total_count' do
+      let!(:some_contacts) { create_list :contact, 15 }
+
+      it 'ignores limit and offset and returns a total count' do
+        contacts = Contact.all.limit(3).offset(5)
+        expect(contacts.total_count).to eq(some_contacts.count.to_s)
+      end
+    end
+
+    context 'by_client_ids' do
+      let!(:some_contacts) { create_list :contact, 3 }
+      let!(:client_contacts) { create_list :contact, 3, clients: [client, client2] }
+
+      it 'returns contacts that have given clients ids assigned as clients' do
+        contacts = Contact.by_client_ids(10, 0, [client.id, client2.id])
+        expect(contacts.length).to eq(client_contacts.count)
       end
     end
   end
@@ -100,12 +124,13 @@ RSpec.describe Contact, type: :model do
   describe 'update_primary_client' do
     let!(:contact) { create :contact, client_id: client.id }
 
-    it 'updates the primary client' do
+    it 'updates the primary client and removes previous relation' do
       expect(contact.primary_client).to eq(client)
       contact.client_id = client2.id
       contact.save
       contact.update_primary_client
       expect(contact.primary_client).to eq(client2)
+      expect(contact.clients).to eq([client2])
     end
   end
 end

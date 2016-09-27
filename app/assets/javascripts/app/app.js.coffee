@@ -38,10 +38,10 @@
     .when '/clients',
       templateUrl: 'clients.html'
       controller: 'ClientsController'
-    .when '/people/:id',
+    .when '/contacts/:id',
       templateUrl: 'contacts.html'
       controller: 'ContactsController'
-    .when '/people',
+    .when '/contacts',
       templateUrl: 'contacts.html'
       controller: 'ContactsController'
     .when '/revenue',

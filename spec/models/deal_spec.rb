@@ -4,6 +4,11 @@ RSpec.describe Deal, type: :model do
   let(:company) { Company.first }
   let(:user) { create :user }
 
+  context 'associations' do
+    it { should have_many(:contacts).through(:deal_contacts) }
+    it { should have_many(:deal_contacts) }
+  end
+
   context 'scopes' do
 
     context 'for_client' do

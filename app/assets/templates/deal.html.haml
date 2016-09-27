@@ -210,6 +210,38 @@
                   %a.delete-member{ href: '', ng: { click: 'deleteMember(member)' } }
                     = inline_svg 'icons/trash.svg'
 
+    #contact.row
+      .col-xs-12
+        #add-contact.section
+          %span.pull-right
+            %a.add-contact{ href: '', ng: { click: 'addContact()' } }
+              = inline_svg 'icons/add.svg'
+
+        %h3.header
+          Contacts
+
+        #contacts.table-wrapper
+          %table.table.table-striped.black-table.sec
+            %thead
+              %tr
+                %th.left Name
+                %th.left Position
+                %th.left Email
+                %th.left Client Name
+            %tbody
+              %tr{ ng: { repeat: "contact in currentDeal.contacts"} }
+                %td
+                  {{ contact.name }}
+                %td
+                  {{ contact.position }}
+                %td
+                  {{ contact.address.email }}
+                %td
+                  {{ contact.primary_client_json.name }}
+
+
+
+
     #info.col-xs-6.pull-right
       %h3.header Additional Info
       .well

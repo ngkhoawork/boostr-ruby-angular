@@ -166,6 +166,15 @@
     padding-top: 16px;
     padding-bottom: 10px;
     min-height: auto;
+    display: table;
+    span {
+      display: table-cell;
+      vertical-align: middle;
+
+      h5 {
+        width: 105px;
+      }
+    }
   }
   
   .add {
@@ -216,7 +225,7 @@
   }
 
   #note {
-    padding-bottom: 10px;
+    padding-bottom: 20px;
     border-bottom: 1px solid $gray-darker1;
   }
 

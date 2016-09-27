@@ -1,6 +1,6 @@
 @app.controller 'ContactsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$sce', 'Contact', 'Activity',  'ActivityType', 'Reminder', '$http'
-($scope, $rootScope, $modal, $routeParams, $location, $sce, Contact, Activity, ActivityType, Reminder, $http) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$sce', 'Contact', 'Field', 'Activity',  'ActivityType', 'Reminder', '$http'
+($scope, $rootScope, $modal, $routeParams, $location, $sce, Contact, Field, Activity, ActivityType, Reminder, $http) ->
 
   $scope.contacts = []
   $scope.feedName = 'Updates'
@@ -10,6 +10,13 @@
   $scope.types = []
   $scope.errors = {}
   $scope.itemType = 'Contact'
+  $scope.contactFilters = [
+      { name: 'My Contacts', param: 'my_contacts' }
+      { name: 'My Team\'s Contacts', param: 'team' }
+      { name: 'All Contacts', param: '' }
+    ]
+
+  $scope.contactFilter = $scope.contactFilters[0]
 
   $scope.activityReminderInit = ->
     $scope.activityReminder = {
@@ -36,7 +43,7 @@
     contact.populateContact = false
     contact.activeType = activityTypes[0]
     now = new Date
-    _.each activityTypes, (type) -> 
+    _.each activityTypes, (type) ->
       contact.selected[type.name] = {}
       contact.selected[type.name].date = now
 
@@ -46,6 +53,13 @@
     ActivityType.all().then (activityTypes) ->
       $scope.types = activityTypes
       $scope.getContacts()
+    Field.defaults({}, 'Client').then (fields) ->
+      client_types = Field.findClientTypes(fields)
+      $scope.setClientTypes(client_types)
+
+  $scope.setClientTypes = (client_types) ->
+    client_types.options.forEach (option) ->
+      $scope[option.name] = option.id
 
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
@@ -54,6 +68,7 @@
     $scope.isLoading = true
     params = {
       page: $scope.page,
+      filter: $scope.contactFilter.param,
       per: 10
     }
     if $scope.query.trim().length
@@ -139,7 +154,7 @@
   $scope.delete = ->
     if confirm('Are you sure you want to delete "' +  $scope.currentContact.name + '"?')
       Contact.delete $scope.currentContact, ->
-        $location.path('/people')
+        $location.path('/contacts')
 
   $scope.deleteActivity = (activity) ->
     if confirm('Are you sure you want to delete the activity?')
@@ -153,6 +168,10 @@
   $scope.loadActivities = (contact_id) ->
     Activity.all(contact_id: contact_id).then (activities) ->
       $scope.currentActivities = activities
+
+  $scope.filterContacts = (filter) ->
+    $scope.contactFilter = filter;
+    $scope.init();
 
   $scope.$on 'updated_current_contact', ->
     $scope.currentContact = Contact.get()
@@ -188,7 +207,14 @@
         $scope.errors['Activity Reminder Time'] = ["can't be blank."]
     if !$scope.buttonDisabled
       return
-    $scope.activity.client_id = $scope.currentContact.client_id
+
+    if $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
+      $scope.activity.client_id = $scope.currentContact.client_id
+      $scope.activity.agency_id = null
+    else
+      $scope.activity.client_id = null
+      $scope.activity.agency_id = $scope.currentContact.client_id
+
     $scope.activity.comment = $scope.currentContact.activity.comment
     $scope.activity.activity_type_id = $scope.currentContact.activeType.id
     $scope.activity.activity_type_name = $scope.currentContact.activeType.name

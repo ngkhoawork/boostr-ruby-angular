@@ -267,6 +267,41 @@
     }
   }
 
+  #contact {
+    #add-contact {
+      span {
+        margin-top: 45px;
+      }
+      padding-top: 15px;
+    }
+    .add-contact {
+      // color: $link-color;
+
+      &:hover,
+      &:focus {
+        // color: $link-hover-color;
+        background: transparent;
+        outline: none;
+
+        svg {
+          // fill: $link-hover-color;
+        }
+      }
+
+      svg {
+        // fill: $link-color;
+      }
+    }
+
+    .table.table-striped {
+      thead > tr {
+        &:nth-child(2) {
+          background-color: $body-bg;
+        }
+      }
+    }
+  }
+
   #info {
     padding-top: 15px;
 
@@ -513,7 +548,7 @@
 
   div.modal-footer.text-center {
     border-top: medium none;
-    padding: 0 10px 20px;
+    padding: 10px 10px 20px;
   }
 
   #reminder_modal .btn.btn-add-remainder {

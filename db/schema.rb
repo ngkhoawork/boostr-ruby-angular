@@ -175,6 +175,15 @@ ActiveRecord::Schema.define(version: 20160921213327) do
 
   add_index "contacts", ["deleted_at"], name: "index_contacts_on_deleted_at", using: :btree
 
+  create_table "deal_contacts", force: :cascade do |t|
+    t.integer  "deal_id"
+    t.integer  "contact_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "deal_contacts", ["deal_id", "contact_id"], name: "index_deal_contacts_on_deal_id_and_contact_id", using: :btree
+
   create_table "deal_logs", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "budget_change"

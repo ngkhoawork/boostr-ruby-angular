@@ -1,6 +1,6 @@
 @app.controller 'DashboardController',
-['$scope', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage',
-($scope, $http, $modal, $sce, Dashboard, Deal, Client, Contact, Activity, ActivityType, Reminder, Stage) ->
+['$scope', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage',
+($scope, $http, $modal, $sce, Dashboard, Deal, Client, Field, Contact, Activity, ActivityType, Reminder, Stage) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Activity Updates'
@@ -20,7 +20,9 @@
     $scope.activity = {}
     $scope.activeTab = {}
     $scope.selectedObj = {}
-    $scope.selectedObj.deal = true
+    $scope.selectedObj.deal = 1
+    $scope.selectedObj.showAgency = false
+    $scope.selectedObj.showAgencySelector = false
     $scope.selected = {}
     $scope.populateContact = false
     $scope.contacts = []
@@ -69,13 +71,21 @@
       _.each $scope.unassignedContacts, (contact) ->
         $scope.contactNotification[contact.id] = ""
 
-    Contact.all1(page: 1, per:10).then (contacts) ->
+    Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
 
     Dashboard.get().then (dashboard) ->
       $scope.dashboard = dashboard
       $scope.forecast = dashboard.forecast
       $scope.setChartData()
+
+    Field.defaults({}, 'Client').then (fields) ->
+      client_types = Field.findClientTypes(fields)
+      $scope.setClientTypes(client_types)
+
+  $scope.setClientTypes = (client_types) ->
+    client_types.options.forEach (option) ->
+      $scope[option.name] = option.id
 
   $scope.chartOptions = {
     responsive: false,
@@ -152,7 +162,7 @@
       })
 
   $scope.saveCurrentContact = (contact) ->
-    Contact.update(id: contact.id, contact: contact).then (updated_contact) ->
+    Contact._update(id: contact.id, contact: contact).then (updated_contact) ->
       $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
         if (item.id == updated_contact.id)
           return updated_contact
@@ -161,7 +171,7 @@
   $scope.undoAssignContact = (contact) ->
     previousContact = _.find $scope.unassignedContacts, (item) ->
       return item.id == contact.id
-    Contact.update(id: contact.id, contact: contact).then (updated_contact) ->
+    Contact._update(id: contact.id, contact: contact).then (updated_contact) ->
       $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
         if (item.id == updated_contact.id)
           return updated_contact
@@ -216,11 +226,14 @@
     $scope.activeType = type
 
   $scope.searchObj = (name) ->
-    if $scope.selectedObj.deal
+    if $scope.selectedObj.deal == 1
       Deal.all({name: name}).then (deals) ->
         deals
-    else
-      Client.query({name: name}).$promise.then (clients) ->
+    else if $scope.selectedObj.deal == 2
+      Client.query({name: name, client_type_id: $scope.Advertiser}).$promise.then (clients) ->
+        clients
+    else if $scope.selectedObj.deal == 3
+      Client.query({name: name, client_type_id: $scope.Agency}).$promise.then (clients) ->
         clients
 
   $scope.searchContact = (searchText) ->
@@ -242,15 +255,17 @@
       if !$scope.activity.comment
         $scope.buttonDisabled = false
         $scope.errors['Comment'] = ["can't be blank."]
-      if $scope.selectedObj.obj != undefined
-        if $scope.selectedObj.deal
-          $scope.activity.deal_id = $scope.selectedObj.obj.id
-          $scope.activity.client_id = $scope.selectedObj.obj.advertiser_id
-        else
-          $scope.activity.client_id = $scope.selectedObj.obj.id
+
+      if $scope.selectedObj.deal == 1 && $scope.selectedObj.dealObj!= undefined
+        $scope.activity.deal_id = $scope.selectedObj.dealObj.id
+        $scope.activity.client_id = $scope.selectedObj.dealObj.advertiser_id
+        $scope.activity.agency_id = $scope.selectedObj.dealObj.agency_id
+      else if $scope.selectedObj.deal != 1 && ($scope.selectedObj.advertiserObj!= undefined || $scope.selectedObj.agencyObj!= undefined)
+        $scope.activity.client_id = if $scope.selectedObj.advertiserObj != undefined then $scope.selectedObj.advertiserObj.id else null
+        $scope.activity.agency_id = if $scope.selectedObj.agencyObj != undefined then $scope.selectedObj.agencyObj.id else null
       else
         $scope.buttonDisabled = false
-        $scope.errors['Deal or Client'] = ["should be present."]
+        $scope.errors['Deal, Advertiser or Agency '] = ["should be present."]
       if !($scope.activeType && $scope.activeType.id)
         $scope.buttonDisabled = false
         $scope.errors['Activity Type'] = ["can't be blank."]

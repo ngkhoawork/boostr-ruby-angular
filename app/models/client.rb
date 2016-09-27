@@ -18,6 +18,8 @@ class Client < ActiveRecord::Base
   has_many :agency_activities, class_name: 'Activity', foreign_key: 'agency_id'
   has_many :reminders, as: :remindable, dependent: :destroy
 
+  belongs_to :client_category, class_name: 'Option', foreign_key: 'client_category_id'
+  belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
   has_one :address, as: :addressable
 
   accepts_nested_attributes_for :address, :values
@@ -29,6 +31,7 @@ class Client < ActiveRecord::Base
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
   scope :exclude_ids, -> ids { where.not(id: ids) }
+  scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
 
   def self.to_csv
     attributes = {
@@ -37,10 +40,18 @@ class Client < ActiveRecord::Base
     }
 
     CSV.generate(headers: true) do |csv|
-      csv << attributes.values
+      header = attributes.values
+      header << 'Parent'
+      header << 'Category'
+      header << 'Subcategory'
+      csv << header
 
       all.each do |client|
-        csv << attributes.map{ |key, value| client.send(key) }
+        line = attributes.map{ |key, value| client.send(key) }
+        line << (client.parent_client_id.nil? ? nil : client.parent_client.name)
+        line << (client.client_category_id.nil? ? nil : client.client_category.name)
+        line << (client.client_subcategory_id.nil? ? nil : client.client_subcategory.name)
+        csv << line
       end
     end
   end
@@ -89,42 +100,42 @@ class Client < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
-      include: {
-        address: {},
-        parent_client: {},
-        contacts: {
-          include: :address
-        },
-        values: {
-          methods: [:value],
-          include: [:option]
-        },
-        activities: {
-            include: {
-                creator: {},
-                contacts: {},
-                assets: {
-                    methods: [
-                        :presigned_url
-                    ]
-                }
-            }
-        },
-        agency_activities: {
-            include: {
-                creator: {},
-                contacts: {},
-                assets: {
-                    methods: [
-                        :presigned_url
-                    ]
-                }
-            }
-        }
-      },
-      methods: [:deals_count, :fields, :formatted_name]
-    ))
+    if options[:override]
+      super(options)
+    else
+      super(options.deep_merge(
+        include: {
+          address: {},
+          parent_client: { only: [:id, :name] },
+          values: {
+            methods: [:value],
+            include: [:option]
+          },
+          activities: {
+              include: {
+                  creator: {},
+                  contacts: {},
+                  assets: {
+                      methods: [
+                          :presigned_url
+                      ]
+                  }
+              }
+          },
+          agency_activities: {
+              include: {
+                  creator: {},
+                  contacts: {},
+                  assets: {
+                      methods: [
+                          :presigned_url
+                      ]
+                  }
+              }
+          }},
+        methods: [:deals_count, :fields, :formatted_name]
+      ).except(:override))
+    end
   end
 
   def ensure_client_member

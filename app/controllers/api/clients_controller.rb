@@ -16,17 +16,11 @@ class Api::ClientsController < ApplicationController
                       .distinct
         end
 
-        limit = 10
-        if params[:per].present?
-          limit = params[:per].to_i
-        end
-        offset = 0
-        if params[:page].present?
-          offset = (params[:page].to_i - 1) * limit
-        end
         response.headers['X-Total-Count'] = results.count.to_s
         results = results.limit(limit).offset(offset)
-        render json: results
+        render json: results.as_json(
+          methods: [:deals_count, :fields]
+        )
       }
 
       format.csv {
@@ -76,6 +70,14 @@ class Api::ClientsController < ApplicationController
   end
 
   private
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 10
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
+  end
 
   def client_params
     params.require(:client).permit(

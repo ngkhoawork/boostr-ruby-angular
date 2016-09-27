@@ -13,6 +13,8 @@ class Deal < ActiveRecord::Base
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
 
+  has_many :contacts, -> { uniq }, through: :deal_contacts
+  has_many :deal_contacts, dependent: :destroy
   has_many :deal_products
   has_many :deal_logs
   has_many :products, -> { distinct }, through: :deal_products

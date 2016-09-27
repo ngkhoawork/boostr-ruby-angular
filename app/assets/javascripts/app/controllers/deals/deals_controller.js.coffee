@@ -66,6 +66,17 @@
       Deal.delete deal, ->
         $location.path('/deals')
 
+  $scope.showDealEditModal = (deal) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_form.html'
+      size: 'lg'
+      controller: 'DealsEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        deal: ->
+          deal
+
   $scope.go = (path) ->
     $location.path(path)
 
