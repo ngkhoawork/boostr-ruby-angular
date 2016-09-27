@@ -41,4 +41,15 @@ RSpec.describe Api::DealContactsController, type: :controller do
       end.to change(DealContact, :count).by(1)
     end
   end
+
+  describe 'DELETE #destroy' do
+    let!(:deal) { create :deal_with_contacts }
+
+    it 'removes contacts from a deal' do
+      expect do
+        delete :destroy, id: deal.contacts.first.id, deal_id: deal.id, format: :json
+        expect(response).to be_success
+      end.to change(DealContact, :count).by(-1)
+    end
+  end
 end
