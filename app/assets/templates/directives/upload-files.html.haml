@@ -6,7 +6,7 @@
       or <a href="#" ng-click="callUpload($event)"> click to browse</a>
     %input#file-uploader.files-uploader__file-input{ type: 'file', 'onchange': 'angular.element(this).scope().changeFile(this)', 'file-model':'fileToUpload' }
   .files-uploader__content
-    %figure.files-uploader__uploading-elem{ng: { show: 'progressBarCur', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
+    %figure.files-uploader__uploading-elem{ng: { show: 'uploadShow', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
       %header.files-uploader__uploading-elem__header
         %span.files-uploader__uploading-elem__file-name{ :title => "{{uploadFile.name}}" }
           {{ uploadFile.name }}
@@ -17,13 +17,13 @@
         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'SUCCESS'"}}
           Uploaded successfully
         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ERROR'"}}
-          Connection lost
+          {{uploadError}}
         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ABORT'"}}
           Upload canceled by user
         %span.files-uploader__uploading-elem__cancel{ng: { show: 'progressBarCur < uploadFile.size && uploadFile.status != "ERROR" && uploadFile.status != "ABORT"' }}
           %btn.btn-link{ ng: {click: 'uploading.cancel()'} }
             Cancel
-      %progressbar{:max => "uploadFile.size", :value => "progressBarCur" }
+      %progressbar{:"ng-show" => "progressBarCur", :max => "uploadFile.size", :value => "progressBarCur" }
         / %span{:style => "color:white; white-space:nowrap;"} {{progressBarCur}} / {{progressBarMax}}
     %ul.files-uploader__list
       %li.files-uploader__list-elem{ ng: { repeat: 'file in uploadedFiles | orderBy: "-created_at"'} }

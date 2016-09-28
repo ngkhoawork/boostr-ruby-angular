@@ -1,5 +1,5 @@
-@directives.directive 'uploadFile', ['$timeout', '$http', 'Transloadit'
-  ($timeout, $http, Transloadit) ->
+@directives.directive 'uploadFile', ['$timeout', '$http', 'Transloadit', '$filter'
+  ($timeout, $http, Transloadit, $filter) ->
     restrict: 'E'
     templateUrl: 'directives/upload-files.html'
     scope:
@@ -8,6 +8,8 @@
       $scope.progressBarCur = 0
       $scope.uploadedFiles = []
       $scope.dealFiles = []
+      $scope.uploadError = 'Connection lost'
+      $scope.uploadShow = false;
 
       $scope.uploadFile =
         name: null
@@ -38,13 +40,25 @@
 
         $scope.upload = (file) ->
           if not file or 'name' not of file
+            alert 'Wrong file'
             return
 
-          # console.log 'file', file
-          $scope.progressBarCur = 0
-          $scope.uploadFile.status = 'LOADING'
           $scope.uploadFile.name = file.name
           $scope.uploadFile.size = file.size
+          $scope.uploadShow = true;
+
+          if not isValidFileName file
+            $scope.uploadFile.status = 'ERROR'
+            $scope.uploadError = 'Unable to upload a file: This file type is not supported'
+            return
+
+          if not isValidFileSize file
+            $scope.uploadFile.status = 'ERROR'
+            $scope.uploadError = 'Unable to upload a file: This file is too large to upload'
+            return
+
+          $scope.progressBarCur = 0
+          $scope.uploadFile.status = 'LOADING'
 
           $scope.uploading = Transloadit.upload(file, {
             params: {
@@ -109,6 +123,16 @@
 
           })
           console.log '$scope.uploading', $scope.uploading
+
+        isValidFileName = (file) ->
+          name = file.name.toLowerCase() # (/\.(gif|jpg|jpeg|tiff|png)$/i).test(filename)
+          return !(/\.(exe|bat|msi|msc|cmd|js|jse|reg)$/i).test(name)
+
+        isValidFileSize = (file) ->
+          mb = file.size # 1000000 * 100 <- 100 MB
+          return mb < 100000000
+
     link: (scope, element, attrs) ->
       scope.dealFiles = element.dealFiles
+
 ]
