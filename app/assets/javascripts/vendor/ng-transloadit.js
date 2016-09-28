@@ -50,7 +50,17 @@ angular.module('ngTransloadit', []).factory('Transloadit', ['$http', '$rootScope
             //   }
             // }).error(options.error);
           var xhr02 = new XMLHttpRequest();
+
           xhr02.open('GET', assemblyUrl, true);
+
+          xhr02.onerror = function (response) {
+            options.error(response);
+          };
+
+          xhr02.ontimeout = function (response) {
+            options.error(response);
+          };
+
           xhr02.onload = function(response) {
             var results = angular.fromJson(this.response);
             if (results.ok === 'ASSEMBLY_COMPLETED') {
@@ -70,7 +80,13 @@ angular.module('ngTransloadit', []).factory('Transloadit', ['$http', '$rootScope
         formData.append('params', paramsValue);
         // formData.append('signature', signatureValue);
         formData.append(file.name, file);
+        xhr.upload.onerror = function (response) {
+          options.error(response);
+        };
 
+        xhr.upload.ontimeout = function (response) {
+          options.error(response);
+        };
         xhr.open('POST', TRANSLOADIT_API, true);
         xhr.onload = function(response) {
           var results = angular.fromJson(this.response);
@@ -78,6 +94,8 @@ angular.module('ngTransloadit', []).factory('Transloadit', ['$http', '$rootScope
 
           check(results.assembly_ssl_url);
         };
+
+
 
         xhr.upload.onprogress = function(e) {
           if (e.lengthComputable) {
@@ -92,7 +110,7 @@ angular.module('ngTransloadit', []).factory('Transloadit', ['$http', '$rootScope
         cancel: function() {
           cancelled = true;
           xhr.abort();
-          options.cancel()
+          options.cancel();
         }
       };
     },
