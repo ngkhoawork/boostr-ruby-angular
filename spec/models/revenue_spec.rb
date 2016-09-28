@@ -92,7 +92,7 @@ RSpec.describe Revenue, type: :model do
         response = Revenue.import(missing_user_csv(client, product), company.id)
         expect(response[0][:row]).to eq(1)
         expect(response[0][:message].length).to eq(1)
-        expect(response[0][:message]).to include('Sales Rep could not be found')
+        expect(response[0][:message][0]).to include('Sales Rep could not be found')
       end.to_not change(Revenue, :count)
     end
 
@@ -101,7 +101,7 @@ RSpec.describe Revenue, type: :model do
         response = Revenue.import(missing_client_csv(user, product), company.id)
         expect(response[0][:row]).to eq(1)
         expect(response[0][:message].length).to eq(1)
-        expect(response[0][:message]).to include('Client could not be found')
+        expect(response[0][:message][0]).to include('Client could not be found')
       end.to_not change(Revenue, :count)
     end
 

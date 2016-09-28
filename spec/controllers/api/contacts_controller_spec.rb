@@ -99,19 +99,19 @@ RSpec.describe Api::ContactsController, type: :controller do
       put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
-      expect(response_json['primary_client']['name']).to eq(client.name)
+      expect(response_json['primary_client_json']['name']).to eq(client.name)
     end
 
     it 'updates the primary contact' do
       put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
-      expect(response_json['primary_client']['name']).to eq(client.name)
+      expect(response_json['primary_client_json']['name']).to eq(client.name)
 
       put :update, id: contact.id, contact: { name: 'New Name', client_id: client2.id, set_primary_client: true }, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
-      expect(response_json['primary_client']['name']).to eq(client2.name)
+      expect(response_json['primary_client_json']['name']).to eq(client2.name)
     end
   end
 
