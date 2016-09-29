@@ -61,14 +61,6 @@
 
   $scope.init()
 
-  $scope.setStartPage = () ->
-    post = starting_path: $location.$$path
-
-    console.log '$routeParams', $routeParams
-    console.log '$location', $location
-
-    # User.update post
-
   $scope.getReportValue = (reports, name, timePeriodId) ->
     report = _.findWhere(reports, name: name, time_period_id: timePeriodId)
     if (report == undefined) || report.nil?

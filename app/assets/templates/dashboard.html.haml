@@ -1,9 +1,10 @@
 #dashboard
   .container
     .row
-      .col-xs-12
+      .col-xs-12.dashboard-title
         %h3
           My Stats
+        %starting-page
     .row
       .col-xs-12
         %div{ ng: { include: "'partials/stats.html'" } }
@@ -46,7 +47,7 @@
                       {{ row.name }}
                   %td.left
                     .stage{ editable: { select: 'row.stage_id' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDealStage(row)' }
-                      {{ row.stage.name }} - 
+                      {{ row.stage.name }} -
                       %span.small
                         {{ row.stage.probability }}%
                   %td.right {{ row.start_date | date: 'shortDate' }}

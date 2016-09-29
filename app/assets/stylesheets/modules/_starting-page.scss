@@ -1,0 +1,30 @@
+.starting-wrapper {
+    display: flex;
+    align-items: baseline;
+
+    &_nav {
+      starting-page {
+        float: left;
+        padding: 11px 0;
+
+        .set-starting {
+          margin-left: 0;
+        }
+      }
+    }
+}
+
+.set-starting {
+    @extend .btn;
+    @extend .btn-link;
+    margin-left: 20px;
+
+    &__description {
+        transition: opacity 200ms;
+        opacity: 0;
+    }
+
+    &:hover &__description {
+        opacity: 1;
+    }
+}

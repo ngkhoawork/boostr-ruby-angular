@@ -1,4 +1,9 @@
 #deals {
+  #nav {
+    .nav {
+      @extend .starting-wrapper_nav;
+    }
+  }
   .stages {
     a.list-group-item {
       padding-top: 12px;

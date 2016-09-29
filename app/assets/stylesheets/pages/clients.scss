@@ -261,6 +261,12 @@
 }
 
 #clients {
+  #nav {
+    .nav {
+      @extend .starting-wrapper_nav;
+    }
+  }
+
   #reminder_modal .modal-body div.form-group.error .error,
   #reminder_modal .modal-body div.form-group.error .error input {
     border-color: red;

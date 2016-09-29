@@ -1,4 +1,7 @@
 #dashboard {
+  .dashboard-title {
+    @extend .starting-wrapper;
+  }
 
   #unassigned-contacts {
     .contact-list {

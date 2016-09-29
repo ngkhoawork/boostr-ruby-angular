@@ -26,6 +26,11 @@
 }
 
 #contacts {
+  #nav {
+    .nav {
+      @extend .starting-wrapper_nav;
+    }
+  }
   /*------------remainder popup-----------------------------*/
   .wrap-form .modal-header.text-center {
     border: medium none;

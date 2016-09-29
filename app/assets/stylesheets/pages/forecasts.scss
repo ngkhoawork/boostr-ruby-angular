@@ -1,4 +1,10 @@
 #forecasts {
+  #nav {
+    .nav {
+      @extend .starting-wrapper_nav;
+    }
+  }
+
   .tc-chart-js-legend {
     list-style-type: none;
     text-align: center;
@@ -72,7 +78,7 @@
       }
     }
   }
-  
+
   .loading {
     margin-top: 20px;
     margin-left: 70pt;
