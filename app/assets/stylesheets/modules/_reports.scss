@@ -1,0 +1,16 @@
+.report-title {
+    display: flex;
+    padding: 15px;
+    align-items: center;
+
+    h3 {
+        margin: 0;
+    }
+
+    &__set-starting {
+        @extend .btn;
+        @extend .btn-link;
+        margin-left: 35px;
+    }
+
+}
