@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :users, only: [:index, :update] do
       collection do
+        post 'starting_page'
         get :signed_in_user
       end
     end

@@ -13,6 +13,14 @@ class Api::UsersController < ApplicationController
     end
   end
 
+  def starting_page
+    if current_user.update_attributes(starting_page_params)
+      render json: current_user, status: :accepted
+    else
+      render json: { errors: current_user.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   def signed_in_user
     render json: current_user
   end
@@ -25,6 +33,10 @@ class Api::UsersController < ApplicationController
       user_params[:is_active] = true
     end
     user_params
+  end
+
+  def starting_page_params
+    params.require(:user).permit(:starting_page)
   end
 
   def user
