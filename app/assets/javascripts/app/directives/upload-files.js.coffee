@@ -5,6 +5,7 @@
     scope:
       dealFiles: '='
     controller: ($scope, $routeParams) ->
+      $scope.fileToUpload = null
       $scope.progressBarCur = 0
       $scope.uploadedFiles = []
       $scope.dealFiles = []
@@ -15,6 +16,9 @@
         name: null
         size: null
         status: 'EMPTY' # LOADING ERROR, SUCCESS, ABORT
+
+      $scope.retry = () ->
+        $scope.upload($scope.fileToUpload)
 
       $scope.callUpload = (event) ->
         if $scope.uploadFile.status == 'LOADING'
@@ -44,6 +48,7 @@
           alert 'Wrong file'
           return
 
+        $scope.fileToUpload = file
         $scope.uploadFile.name = file.name
         $scope.uploadFile.size = file.size
         $scope.uploadShow = true;

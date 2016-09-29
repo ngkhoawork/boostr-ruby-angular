@@ -18,6 +18,7 @@
           Uploaded successfully
         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ERROR'"}}
           {{uploadError}}
+          %btn.btn-link{ ng: {click: 'retry()'} } Retry
         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ABORT'"}}
           Upload canceled by user
         %span.files-uploader__uploading-elem__cancel{ng: { show: 'progressBarCur < uploadFile.size && uploadFile.status != "ERROR" && uploadFile.status != "ABORT"' }}
