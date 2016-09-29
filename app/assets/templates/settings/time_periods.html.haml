@@ -28,8 +28,8 @@
                 %td.left {{ row.name }}
                 %td.right {{ row.start_date | date: 'shortDate' }}
                 %td.right {{ row.end_date | date: 'shortDate' }}
-                %td.action-column.info-td
-                  .empty
+                / %td.action-column.info-td
+                /   .empty
                 %td.action-td
                   %a.edit-time-period{ href: '', ng: { click: 'editModal(row)' } }
                     = inline_svg 'icons/pencil.svg'

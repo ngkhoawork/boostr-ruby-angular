@@ -43,11 +43,11 @@
           %table.table.table-hover.table-striped
             %thead
               %tr
-                %th.left 
+                %th.left
                   %a.sort{ href: '', ng: { click: 'sort.toggle("name")' } }
                     Name
                     %i{ ng: { class: "{ 'fa': sort.column == 'name', 'fa-sort-asc': sort.column == 'name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'name' && sort.direction == 'desc' }" } }
-                %th.left 
+                %th.left
                   %a.sort{ href: '', ng: { click: 'sort.toggle("advertiser")' } }
                     Advertiser
                     %i{ ng: { class: "{ 'fa': sort.column == 'advertiser', 'fa-sort-asc': sort.column == 'advertiser' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'advertiser' && sort.direction == 'desc' }" } }
@@ -55,7 +55,7 @@
                   %a.sort{ href: '', ng: { click: 'sort.toggle("agency")' } }
                     Agency
                     %i{ ng: { class: "{ 'fa': sort.column == 'agency', 'fa-sort-asc': sort.column == 'agency' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'agency' && sort.direction == 'desc' }" } }
-                %th.left 
+                %th.left
                   %a.sort{ href: '', ng: { click: 'sort.toggle("stage")' } }
                     Stage
                     %i{ ng: { class: "{ 'fa': sort.column == 'stage', 'fa-sort-asc': sort.column == 'stage' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'stage' && sort.direction == 'desc' }" } }
@@ -63,7 +63,7 @@
                   %a.sort{ href: '', ng: { click: 'sort.toggle("budget")' } }
                     Budget
                     %i{ ng: { class: "{ 'fa': sort.column == 'budget', 'fa-sort-asc': sort.column == 'budget' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'budget' && sort.direction == 'desc' }" } }
-                %th.right 
+                %th.right
                   %a.sort{ href: '', ng: { click: 'sort.toggle("start_date")' } }
                     Start Date
                     %i{ ng: { class: "{ 'fa': sort.column == 'start_date', 'fa-sort-asc': sort.column == 'start_date' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'start_date' && sort.direction == 'desc' }" } }
@@ -78,8 +78,8 @@
                 %td {{ row.stage.name }}
                 %td.right {{ row.budget / 100 | currency:'$':0 }}
                 %td.right {{ row.start_date | date: 'shortDate' }}
-                %td.action-column.info-td
-                  .empty
+                / %td.action-column.info-td
+                /   .empty
                 %td.action-td
                   %a.edit-deal{ href: '', ng: { click: 'showDealEditModal(row)' } }
                     = inline_svg 'icons/pencil.svg'

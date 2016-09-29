@@ -97,12 +97,15 @@
     )
     deferred.promise
 
-  resource.delete = (deletedContact, callback) ->
+  resource._delete = (deletedContact) ->
+    deferred = $q.defer()
     resource.delete id: deletedContact.id, () ->
-      allContacts = _.reject allContacts, (contact) ->
-        contact.id == deletedContact.id
-      callback?()
-      $rootScope.$broadcast 'updated_contacts'
+      # console.log 'allContacts', allContacts
+      # allContacts = _.reject allContacts, (contact) ->
+      #   contact.id == deletedContact.id
+      # callback?()
+      # $rootScope.$broadcast 'updated_contacts'
+    deferred.promise
 
   resource.get = () ->
     currentContact
