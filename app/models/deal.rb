@@ -359,7 +359,7 @@ class Deal < ActiveRecord::Base
 
   def self.to_pipeline_summary_report_csv(company)
     CSV.generate do |csv|
-      deals = company.deals.greater_than(50)
+      deals = company.deals.active.greater_than(50)
       data = {
         'Summary' => {
           'Booked' => nil,
