@@ -75,6 +75,7 @@ class Deal < ActiveRecord::Base
   scope :closed, -> { joins(:stage).where('stages.open IS false') }
   scope :active, -> { where('deals.deleted_at is NULL') }
   scope :at_percent, -> (percentage) { joins(:stage).where('stages.probability = ?', percentage) }
+  scope :greater_than, -> (percentage) { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
 
   def fields
@@ -352,6 +353,174 @@ class Deal < ActiveRecord::Base
         end
 
         csv << line
+      end
+    end
+  end
+
+  def self.to_pipeline_summary_report_csv(company)
+    CSV.generate do |csv|
+      deals = company.deals.greater_than(50)
+      data = {
+        'Summary' => {
+          'Booked' => nil,
+          '50% Prospects' => nil,
+          '75% Prospects' => nil,
+          '90% Prospects' => nil,
+          'Total' => nil
+        },
+        'Booked' => nil,
+        '50% Prospects' => nil,
+        '75% Prospects' => nil,
+        '90% Prospects' => nil
+      }
+
+      deals.each do |deal|
+        if deal.stage.probability == 100
+          percent_key = "Booked"
+        else
+          percent_key = deal.stage.probability.to_s + "% Prospects"
+        end
+        if (!data['Summary']['Total'])
+          data['Summary']['Total'] = {}
+          for i in 1..12
+            data['Summary']['Total'][i.to_s] = 0
+          end
+          for i in 1..4
+            data['Summary']['Total']['Q' + i.to_s] = 0
+            data['Summary']['Total']['FY'] = 0
+          end
+
+        end
+        if (!data['Summary'][percent_key])
+          data['Summary'][percent_key] = {}
+          for i in 1..12
+            data['Summary'][percent_key][i.to_s] = 0
+          end
+          for i in 1..4
+            data['Summary'][percent_key]['Q' + i.to_s] = 0
+            data['Summary'][percent_key]['FY'] = 0
+          end
+        end
+        if (!data[percent_key])
+          data[percent_key] = {}
+        end
+
+        deal.deal_products.each do |deal_product|
+          month = deal_product.start_date.month
+          data['Summary'][percent_key]['FY'] += deal_product.budget
+          data['Summary'][percent_key][month.to_s] += deal_product.budget
+          data['Summary'][percent_key]['Q' + ((month / 3.0).ceil.to_s)] += deal_product.budget
+          data['Summary']['Total']['FY'] += deal_product.budget
+          data['Summary']['Total'][month.to_s] += deal_product.budget
+          data['Summary']['Total']['Q' + ((month / 3.0).ceil.to_s)] += deal_product.budget
+
+          deal.deal_members.each do |deal_member|
+            user = deal_member.user
+            user_key = user.first_name + ' ' + user.last_name
+
+            if (!data[percent_key][user_key])
+              data[percent_key][user_key] = {}
+              for i in 1 .. 12
+                data[percent_key][user_key][i.to_s] = 0
+              end
+              for i in 1 .. 4
+                data[percent_key][user_key]['Q' + i.to_s] = 0
+                data[percent_key][user_key]['FY'] = 0
+              end
+            end
+
+            if (!data[percent_key]['Total'])
+              data[percent_key]['Total'] = {}
+              for i in 1 .. 12
+                data[percent_key]['Total'][i.to_s] = 0
+              end
+              for i in 1 .. 4
+                data[percent_key]['Total']['Q' + i.to_s] = 0
+                data[percent_key]['Total']['FY'] = 0
+              end
+            end
+            user_product_budget = deal_product.budget * deal_member.share / 100
+            data[percent_key][user_key]['FY'] += user_product_budget
+            data[percent_key][user_key][month.to_s] += user_product_budget
+            data[percent_key][user_key]['Q' + ((month / 3.0).ceil.to_s)] += user_product_budget
+            data[percent_key]['Total']['FY'] += user_product_budget
+            data[percent_key]['Total'][month.to_s] += user_product_budget
+            data[percent_key]['Total']['Q' + ((month / 3.0).ceil.to_s)] += user_product_budget
+          end
+        end
+      end
+
+      data.each do |title, data_obj|
+        header = [
+            title,
+            "Jan",
+            "Feb",
+            "Mar",
+            "Q1 Total",
+            "Apr",
+            "May",
+            "Jun",
+            "Q2 Total",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Q3 Total",
+            "Oct",
+            "Nov",
+            "Dec",
+            "Q4 Total",
+            "FY Total",
+        ]
+        csv << header
+        data_obj.each do |key,row|
+
+          if key == "Total"
+            next
+          end
+          line = [
+            key,
+            "$" + (row['1'] / 100).round.to_s,
+            "$" + (row['2'] / 100).round.to_s,
+            "$" + (row['3'] / 100).round.to_s,
+            "$" + (row['Q1'] / 100).round.to_s,
+            "$" + (row['4'] / 100).round.to_s,
+            "$" + (row['5'] / 100).round.to_s,
+            "$" + (row['6'] / 100).round.to_s,
+            "$" + (row['Q2'] / 100).round.to_s,
+            "$" + (row['7'] / 100).round.to_s,
+            "$" + (row['8'] / 100).round.to_s,
+            "$" + (row['9'] / 100).round.to_s,
+            "$" + (row['Q3'] / 100).round.to_s,
+            "$" + (row['10'] / 100).round.to_s,
+            "$" + (row['11'] / 100).round.to_s,
+            "$" + (row['12'] / 100).round.to_s,
+            "$" + (row['Q4'] / 100).round.to_s,
+            "$" + (row['FY'] / 100).round.to_s
+          ]
+          csv << line
+        end
+        line = [
+            "Total",
+            "$" + (data_obj['Total']['1'] / 100).round.to_s,
+            "$" + (data_obj['Total']['2'] / 100).round.to_s,
+            "$" + (data_obj['Total']['3'] / 100).round.to_s,
+            "$" + (data_obj['Total']['Q1'] / 100).round.to_s,
+            "$" + (data_obj['Total']['4'] / 100).round.to_s,
+            "$" + (data_obj['Total']['5'] / 100).round.to_s,
+            "$" + (data_obj['Total']['6'] / 100).round.to_s,
+            "$" + (data_obj['Total']['Q2'] / 100).round.to_s,
+            "$" + (data_obj['Total']['7'] / 100).round.to_s,
+            "$" + (data_obj['Total']['8'] / 100).round.to_s,
+            "$" + (data_obj['Total']['9'] / 100).round.to_s,
+            "$" + (data_obj['Total']['Q3'] / 100).round.to_s,
+            "$" + (data_obj['Total']['10'] / 100).round.to_s,
+            "$" + (data_obj['Total']['11'] / 100).round.to_s,
+            "$" + (data_obj['Total']['12'] / 100).round.to_s,
+            "$" + (data_obj['Total']['Q4'] / 100).round.to_s,
+            "$" + (data_obj['Total']['FY'] / 100).round.to_s
+        ]
+        csv << line
+        csv << []
       end
     end
   end

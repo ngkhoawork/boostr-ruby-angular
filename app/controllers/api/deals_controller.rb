@@ -105,7 +105,8 @@ class Api::DealsController < ApplicationController
     respond_to do |format|
       format.json {
         deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_products).distinct , each_serializer: DealReportSerializer)
-        deal_ids = deals.collect{|deal| deal.id}
+
+        deal_ids = deals.open.collect{|deal| deal.id}
         range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
         render json: [{deals: deal_list, range: range}].to_json
       }
@@ -113,7 +114,21 @@ class Api::DealsController < ApplicationController
         send_data Deal.to_pipeline_report_csv(company), filename: "pipeline-report-#{Date.today}.csv"
       }
     end
+  end
 
+  def pipeline_summary_report
+    respond_to do |format|
+      format.json {
+        deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_products).distinct , each_serializer: DealReportSerializer)
+
+        deal_ids = deals.open.collect{|deal| deal.id}
+        range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
+        render json: [{deals: deal_list, range: range}].to_json
+      }
+      format.csv {
+        send_data Deal.to_pipeline_summary_report_csv(company), filename: "pipeline-summary-report-#{Date.today}.csv"
+      }
+    end
   end
 
   def show

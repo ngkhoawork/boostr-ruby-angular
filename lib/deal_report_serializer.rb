@@ -34,7 +34,14 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def users
-    object.users.map {|user| user.serializable_hash(only: [:id, :first_name, :last_name]) rescue nil}
+    users = []
+    object.users.each do |user|
+      deal_member = object.deal_members.where(user_id: user.id).first
+      data = user.serializable_hash(only: [:id, :first_name, :last_name])
+      data[:share] = deal_member.share
+      users << data
+    end
+    users
   end
 
   def latest_activity
