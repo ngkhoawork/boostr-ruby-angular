@@ -18,6 +18,9 @@
           (user) ->
             $scope.users.push(user)
 
+  $scope.submitUser = (user) ->
+    user.$update()
+
   $scope.editModal = (user) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/user_form.html'

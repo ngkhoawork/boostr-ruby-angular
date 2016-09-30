@@ -22,6 +22,7 @@
                 %th
                 %th.left Name
                 %th.left Title
+                %th.left Is Active?
             %tbody
               %tr{ ng: { repeat: 'row in users', click: 'editModal(row)' } }
                 %td
@@ -33,3 +34,7 @@
                     {{ row.email }}
                 %td.left
                   {{ row.title }}
+                %td.left{ ng: { click: '$event.stopPropagation()' } }
+                  .checkbox
+                    %label
+                      %input{ ng: { model: 'row.is_active', change: 'submitUser(row)' }, type: 'checkbox'}
