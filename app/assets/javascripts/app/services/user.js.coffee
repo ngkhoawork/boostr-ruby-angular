@@ -12,10 +12,20 @@
       url: '/api/users/:id'
     }
 
-  resource.user_statuses_list = [
-    { name: 'Active', value: true }
-    { name: 'InActive', value: false }
-  ]
+ resource.user_types_list = [
+   { name: 'Default', id: 0 }
+   { name: 'Seller', id: 1 }
+   { name: 'Sales Manager', id: 2 }
+   { name: 'Account Manager', id: 3 }
+   { name: 'Manager Account Manager', id: 4 }
+   { name: 'Admin', id: 5 }
+   { name: 'Exec', id: 6 }
+ ]
+
+ resource.user_statuses_list = [
+   { name: 'Active', value: true }
+   { name: 'InActive', value: false }
+ ]
 
   return resource
 ]
