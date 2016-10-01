@@ -181,11 +181,11 @@ class Api::DealsController < ApplicationController
 
   def deals
     if params[:filter] == 'company' && current_user.leader?
-      company.deals
+      company.deals.active
     elsif params[:filter] == 'team' && team.present?
-      team.deals
+      team.deals.active
     else
-      current_user.deals
+      current_user.deals.active
     end
   end
 
