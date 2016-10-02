@@ -312,10 +312,10 @@ class Deal < ActiveRecord::Base
       deal_ids = deals.collect{|deal| deal.id}
       range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
       header = []
-      header << "Name"
-      header << "Advertiser"
-      header << "Agency"
       header << "Team Member"
+      header << "Advertiser"
+      header << "Name"
+      header << "Agency"
       header << "Stage"
       header << "%"
       header << "Budget"
@@ -329,11 +329,12 @@ class Deal < ActiveRecord::Base
 
       csv << header
       deals.each do |deal|
+
         line = [
-            deal.name,
+            deal.deal_members.collect {|deal_member| deal_member.user.first_name + " " + deal_member.user.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
             deal.advertiser ? deal.advertiser.name : nil,
+            deal.name,
             deal.agency ? deal.agency.name : nil,
-            deal.users.collect {|user| user.first_name + " " + user.last_name}.join(";"),
             deal.stage.name,
             deal.stage.probability.nil? ? "" : deal.stage.probability.to_s + "%",
             "$" + ((deal.budget.nil? ? 0 : deal.budget) / 100).round.to_s

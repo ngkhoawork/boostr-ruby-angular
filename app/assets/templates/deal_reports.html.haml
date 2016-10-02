@@ -2,7 +2,9 @@
   #nav.transparent
     .container
       .row
-        .col-xs-12
+        .col-xs-4.reports-header
+          %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
+        .col-xs-8
           %ul.nav.nav-tabs
             %li.pull-right
               %a.export{ href: '', ng: { click: 'exportReports()' } }
@@ -18,18 +20,18 @@
           %table.table
             %thead
               %tr
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("users[0].first_name")'}
+                    Team Member
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("advertiser.name")'}
+                    Advertiser
                 %th.left{ width: "250" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("name")'}
                     Name
                 %th.left{ width: "150" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("advertiser.name")'}
-                    Advertiser
-                %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("agency.name")'}
                     Agency
-                %th.left{ width: "150" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("users[0].first_name")'}
-                    Team Member
                 %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("stage.name")'}
                     Stage
@@ -55,12 +57,14 @@
                     {{ productTime | date: 'MMM-yy' }}
             %tbody
               %tr{ ng: { repeat: 'deal in deals | orderBy:sortType:sortReverse | filter:isOpen' } }
-                %td.left {{ deal.name }}
-                %td.left {{ deal.advertiser.name }}
-                %td.left {{ deal.agency.name }}
                 %td.left
                   %div{ ng: { repeat: 'user in deal.users' } }
-                    {{ user.first_name + " " + user.last_name }}
+                    {{ user.first_name + " " + user.last_name + " (" + user.share + "%)"}}
+                %td.left {{ deal.advertiser.name }}
+                %td.left
+                  %a{ href: '', ng: { click: 'go("/deals/" + deal.id)'  } }
+                    {{ deal.name }}
+                %td.left {{ deal.agency.name }}
                 %td.left {{ deal.stage.name }}
                 %td.right {{ deal.stage.probability }}%
                 %td.right ${{ deal.budget / 100 | number : 0}}
