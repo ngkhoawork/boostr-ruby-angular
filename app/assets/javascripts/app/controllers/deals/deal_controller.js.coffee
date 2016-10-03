@@ -198,6 +198,16 @@
   $scope.cancelAddProduct = ->
     $scope.showProductForm = !$scope.showProductForm
 
+  $scope.showModal = (currentDeal) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_close_form.html'
+      size: 'lg'
+      controller: 'DealsCloseController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        currentDeal: ->
+          currentDeal
   $scope.addContact = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_add_form.html'
