@@ -104,9 +104,9 @@
         %table.table.white-table
           %thead
             %tr
-              %th.left Product
-              %th.right.no-pad Total Budget
-              %th.right{ ng: { repeat: 'month in currentDeal.months' } }
+              %th.text-center Product
+              %th.text-center.no-pad Total Budget
+              %th.text-center{ ng: { repeat: 'month in currentDeal.months' } }
                 {{ month | boDate }}
 
           %tbody
@@ -115,12 +115,35 @@
                 %span.hover-delete{ ng: { click: 'deleteDealProduct(deal_product)' } }
                   = inline_svg 'icons/trash.svg'
                 {{ deal_product.name }}
-              %td.right
-                %span{ 'e-name': '{{ deal_product.id }}', editable: { text: 'deal_product.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
-                  {{ deal_product.budget | currency:'$':0  }}
-              %td.right{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
-                %span{ 'e-name': '{{ deal_product_budget.id }}', editable: { text: 'deal_product_budget.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
-                  {{ deal_product_budget.budget | currency:'$':0 }}
+              %td.text-center.currency-table
+                %div
+                  %span{ 'e-name': '{{ deal_product.id }}', editable: { text: 'deal_product.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
+                    {{ deal_product.budget | currency:'$':0  }}
+                  %span.small.total-budget__percent{ 'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
+                    {{deal_product.total_budget_percent + '%'}}
+              %td.text-center.currency-table{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
+                %div{'ng-if': '!deal_product_budget.editMode'}
+                  %span.editable{ 'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "moneyOnFocus", "saveCopyProduct")' }
+                    {{ deal_product_budget.budget | currency:'$':0 }}
+                  %div
+                    %span.small.editable{'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "percentOnFocus", "saveCopyProduct")'}
+                      {{ deal_product_budget.budget_percent+ '%'}}
+                %div{'ng-if': 'deal_product_budget.editMode'}
+                  %input.currency-table__money{ 'ng-model': 'deal_product_budget.budget',
+                    'ng-change': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "moneyOnFocus")',
+                    'ng-keypress': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "moneyOnFocus")',
+                    'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "moneyOnFocus")',
+                    id:'{{"deal_product_budget-" + deal_product_budget.id}}',
+                    'ng-blur':'disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)',
+                    'numbers-only':'' }
+                  %span.glyphicon.glyphicon-link
+                  %input.currency-table__percent{ 'ng-model': 'deal_product_budget.budget_percent',
+                    'ng-change': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "percentOnFocus")',
+                    'ng-keypress': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "percentOnFocus")',
+                    'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "percentOnFocus")',
+                    id:'{{"deal_product_budget-percent-" + deal_product_budget.id}}',
+                    'ng-blur':'disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)',
+                    'numbers-only':'' }
 
       #new-product.well.dark
         .row{ ng: { hide: 'showProductForm' } }
