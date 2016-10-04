@@ -6,26 +6,18 @@
         fileHanlder: '='
         filesHanlder: '='
       link: (scope, element, attrs) ->
-        element.attr 'draggable', 'true'
-
-        element[0].addEventListener 'dragover', (event) ->
-          do event.preventDefault
-          do event.stopPropagation
-          element[0].classList.add('active');
-        , false
-
-        element[0].addEventListener 'dragleave', (event) ->
-          do event.preventDefault
-          do event.stopPropagation
-
-          element[0].classList.remove('active');
-        , false
-
-        element[0].addEventListener 'drop', (event) ->
-          do event.preventDefault
-
+        element.on 'drag dragstart dragend dragover dragenter dragleave drop', (e) ->
+          doNothing e
+        .on 'dragover dragenter', (e) ->
+          element[0].classList.add 'active'
+        .on 'dragleave dragend drop', (e) ->
+          element[0].classList.remove 'active'
+        .on 'drop', (e) ->
           file = event.dataTransfer.files[0];
           scope.fileHanlder file
-          element[0].classList.remove('active');
+
+        doNothing = (e) ->
+          do e.stopPropagation
+          do e.preventDefault
     }
 ]

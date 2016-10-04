@@ -113,8 +113,13 @@
             # console.log('uploaded', assemblyJson)
             $timeout (->
               $scope.progressBarCur = 0
+              $scope.uploadFile.status = 'EMPTY'
+              $scope.uploadShow = false
+              $scope.fileToUpload = null
+              $scope.uploadFile.name = ''
+              $scope.uploadFile.size = null
               return
-            ), 2000
+            ), 1000
             $scope.$$phase || $scope.$apply()
           ,
 
