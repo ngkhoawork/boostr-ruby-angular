@@ -30,6 +30,7 @@ Rails.application.routes.draw do
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       collection do
         get :pipeline_report
+        get :pipeline_summary_report
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create]

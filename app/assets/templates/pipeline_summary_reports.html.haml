@@ -1,0 +1,113 @@
+#reports
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.pull-right
+              %a.export{ href: '', ng: { click: 'exportReports()' } }
+                Export
+  .container-fluid.table-report
+    .row
+      .col-xs-12
+        %h3
+          Pipeline Summary Report
+    .row
+      .col-md-12
+        .table-wrapper{ ng: { repeat: '(title, dataObj) in data' } }
+          %table.table
+            %thead
+              %tr
+                %th.left{ width: "150" }
+                  -#%a{href:"javascript:void(0)", 'ng-click': 'changeSortType("name")'}
+                  {{title}}
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(1)'}
+                    Jan
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(2)'}
+                    Feb
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(3)'}
+                    Mar
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("Q1")'}
+                    Q1 Total
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(4)'}
+                    Apr
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(5)'}
+                    May
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(6)'}
+                    Jun
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("Q2")'}
+                    Q2 Total
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(7)'}
+                    Jul
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(8)'}
+                    Aug
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(9)'}
+                    Sep
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("Q3")'}
+                    Q3 Total
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(10)'}
+                    Oct
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(11)'}
+                    Nov
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType(12)'}
+                    Dec
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("Q4")'}
+                    Q4 Total
+                %th.right{ width: "90" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("FY")'}
+                    FY Total
+            %tbody
+              %tr{ ng: { repeat: '(key, row) in dataObj | orderBy:sortType:sortReverse', if: 'key!="Total"' } }
+                %td.left {{ key }}
+                %td.right ${{ row[1] / 100 | number : 0}}
+                %td.right ${{ row[2] / 100 | number : 0}}
+                %td.right ${{ row[3] / 100 | number : 0}}
+                %td.right ${{ row['Q1'] / 100 | number : 0}}
+                %td.right ${{ row[4] / 100 | number : 0}}
+                %td.right ${{ row[5] / 100 | number : 0}}
+                %td.right ${{ row[6] / 100 | number : 0}}
+                %td.right ${{ row['Q2'] / 100 | number : 0}}
+                %td.right ${{ row[7] / 100 | number : 0}}
+                %td.right ${{ row[8] / 100 | number : 0}}
+                %td.right ${{ row[9] / 100 | number : 0}}
+                %td.right ${{ row['Q3'] / 100 | number : 0}}
+                %td.right ${{ row[10] / 100 | number : 0}}
+                %td.right ${{ row[11] / 100 | number : 0}}
+                %td.right ${{ row[12] / 100 | number : 0}}
+                %td.right ${{ row['Q4'] / 100 | number : 0}}
+                %td.right ${{ row['FY'] / 100 | number : 0}}
+              %tr
+                %td.left Total
+                %td.right ${{ dataObj['Total'][1] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][2] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][3] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total']['Q1'] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][4] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][5] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][6] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total']['Q2'] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][7] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][8] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][9] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total']['Q3'] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][10] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][11] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total'][12] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total']['Q4'] / 100 | number : 0}}
+                %td.right ${{ dataObj['Total']['FY'] / 100 | number : 0}}
