@@ -28,7 +28,7 @@ class Api::DealAssetsController < ApplicationController
   end
 
   def asset_params
-    params.require(:asset).permit(:asset_file_name, :asset_file_size, :asset_content_type, :original_file_name)
+    params.require(:asset).permit(:asset_file_name, :asset_file_size, :asset_content_type, :original_file_name, :comment, :subtype)
   end
 
   def deal
