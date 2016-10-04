@@ -13,6 +13,10 @@ class Api::UsersController < ApplicationController
     end
   end
 
+  def signed_in_user
+    render json: current_user
+  end
+
   private
 
   def user_params
