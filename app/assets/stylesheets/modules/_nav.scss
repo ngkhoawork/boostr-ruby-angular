@@ -62,8 +62,11 @@
     border-color: transparent;
   }
 
-  .reports-header .team-list{
+  .reports-header {
+    padding-left: 0;
+    .team-list {
       margin-top: 5px;
+    }
   }
 
   .nav-tabs {

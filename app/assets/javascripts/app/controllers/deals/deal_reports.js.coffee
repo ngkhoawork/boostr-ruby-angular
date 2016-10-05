@@ -77,7 +77,7 @@
         return $sce.trustAsHtml(html)
 
       $scope.exportReports = ->
-        $window.open('/api/deals/pipeline_report.csv')
+        $window.open('/api/deals/pipeline_report.csv?team_id=' + $scope.selectedTeamId)
         return true
 
   ]

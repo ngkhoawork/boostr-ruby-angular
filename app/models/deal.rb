@@ -306,9 +306,19 @@ class Deal < ActiveRecord::Base
       ""
     end
   end
-  def self.to_pipeline_report_csv(company)
+  def self.to_pipeline_report_csv(company, team_id)
     CSV.generate do |csv|
-      deals = company.deals.open
+      all_members_list = []
+
+      if team_id == "0"
+        company.teams.where(parent_id: nil).each do |item|
+          all_members_list += item.all_members.collect{|member| member.id}
+        end
+      else
+        all_members_list = Team.find(team_id).all_members.collect{|member| member.id}
+      end
+
+      deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deal_members.user_id in (?)", all_members_list).distinct
       deal_ids = deals.collect{|deal| deal.id}
       range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
       header = []
