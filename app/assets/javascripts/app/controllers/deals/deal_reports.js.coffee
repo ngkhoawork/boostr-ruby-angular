@@ -14,7 +14,7 @@
           #          $scope.teams = teams
           $scope.teams = [{
             id: 0,
-            name:'All Teams',
+            name:'All Deals',
             children: teams,
             members: all_members,
             leaders: all_leaders,

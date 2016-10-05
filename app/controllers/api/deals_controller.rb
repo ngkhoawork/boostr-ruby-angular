@@ -104,7 +104,7 @@ class Api::DealsController < ApplicationController
   def pipeline_report
     respond_to do |format|
       format.json {
-        deal_list = ActiveModel::ArraySerializer.new(deals.distinct, each_serializer: DealReportSerializer)
+        deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_products).distinct, each_serializer: DealReportSerializer)
         deal_ids = deals.open.collect{|deal| deal.id}
         range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
         render json: [{deals: deal_list, range: range}].to_json
@@ -192,15 +192,14 @@ class Api::DealsController < ApplicationController
 
   def all_team_deals
     all_members_list = []
-
-    if params[:team_id] == "0"
-      company.teams.where(parent_id: nil).each do |item|
-        all_members_list += item.all_members.collect{|member| member.id}
-      end
+    if params[:team_id].to_i == 0
+      return company.deals.active
     else
-      all_members_list = Team.find(params[:team_id]).all_members.collect{|member| member.id}
+      selected_team = Team.find(params[:team_id])
+      all_members_list = selected_team.all_members.collect{|member| member.id}
+      all_members_list += selected_team.all_leaders.collect{|member| member.id}
     end
-    all_team_deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deal_members.user_id in (?)", all_members_list).includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_products).distinct
+    all_team_deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deals.deleted_at is NULL and deal_members.user_id in (?)", all_members_list)
     all_team_deals
   end
 
