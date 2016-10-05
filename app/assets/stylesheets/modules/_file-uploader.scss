@@ -9,6 +9,10 @@
     display: flex;
     align-items: center;
 }
+@mixin show-details {
+    margin-right: 15px;
+    cursor: pointer;
+}
 .file-name {
     width: 11rem;
     white-space: nowrap;
@@ -17,6 +21,21 @@
 }
 .file-size {
     margin-left: 10px;
+}
+.details-info {
+    padding: 0 15px;
+
+    .form-group {
+        margin-bottom: 15px;
+
+        .form-control[disabled] {
+            background-color: $modal-bg;
+        }
+    }
+    .control-label {
+        font-size: inherit;
+        color: $brand-tertiary;
+    }
 }
 
 /*=====  End of Common  ======*/
@@ -92,6 +111,9 @@
         &__header {
             @extend .list-elem-wrapper;
         }
+        &__show-datails {
+            @include show-details;
+        }
         &__file-name {
             @extend .file-name;
         }
@@ -101,11 +123,15 @@
         &__progress {
             margin-left: auto;
         }
+        &__details {
+            @extend .details-info;
+        }
 
         .progress {
             height: 4px;
-            border-radius: none;
+            border-radius: 0;
             background-color: $progress-bar-background;
+            margin-bottom: 15px;
 
             .progress-bar {
                 background-color: $progress-bar-success;
@@ -133,13 +159,20 @@
         padding: 0;
 
         &-elem {
-            @extend .list-elem-wrapper;
+            // @extend .list-elem-wrapper;
             @extend .ident-border;
 
             &:last-child {
                 border: none;
             }
 
+            &__main {
+                @extend .list-elem-wrapper;
+            }
+
+            &__show-datails {
+                @include show-details;
+            }
             &__file-name {
                 @extend .file-name;
             }
@@ -158,6 +191,9 @@
                         display: block;
                     }
                 }
+            }
+            &__details {
+                @extend .details-info;
             }
 
             &:hover &__delete {

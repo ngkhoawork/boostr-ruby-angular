@@ -8,39 +8,92 @@
   .files-uploader__content
     %figure.files-uploader__uploading-elem{ng: { show: 'uploadShow', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
       %header.files-uploader__uploading-elem__header
+        %span.files-uploader__uploading-elem__show-datails{"ng-click" => "showUploadDetails = !showUploadDetails", "ng-show" => "!showUploadDetails && uploaded"}
+          = inline_svg 'icons/hide-details.svg'
+        %span.files-uploader__uploading-elem__show-datails{"ng-click" => "showUploadDetails = !showUploadDetails", "ng-show" => "showUploadDetails && uploaded"}
+          = inline_svg 'icons/show-details.svg'
+
         %span.files-uploader__uploading-elem__file-name{ :title => "{{uploadFile.name}}" }
           {{ uploadFile.name }}
         %span.files-uploader__uploading-elem__file-size
           {{ uploadFile.size | bytes }}
+
         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'LOADING'"}}
           Loading {{ (progressBarCur / uploadFile.size) * 100 | number:0 }}% {{ progressBarCur < uploadFile.size ? '...' : '' }}
         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'SUCCESS'"}}
           Uploaded successfully
+        %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ABORT'"}}
+          Upload canceled by user
+
         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ERROR'"}}
           {{uploadError}}
           %btn.btn-link{ ng: {click: 'retry()'} } Retry
-        %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ABORT'"}}
-          Upload canceled by user
         %span.files-uploader__uploading-elem__cancel{ng: { show: 'progressBarCur < uploadFile.size && uploadFile.status != "ERROR" && uploadFile.status != "ABORT"' }}
           %btn.btn-link{ ng: {click: 'uploading.cancel()'} }
             Cancel
+
       %progressbar{:"ng-show" => "progressBarCur", :max => "uploadFile.size", :value => "progressBarCur" }
-        / %span{:style => "color:white; white-space:nowrap;"} {{progressBarCur}} / {{progressBarMax}}
+
+      %footer.files-uploader__uploading-elem__details.form-horizontal{ng: { show: 'showUploadDetails' }}
+        .form-group
+          %label.col-xs-2.control-label{ for: 'comment' } Notes:
+          .col-xs-10
+            %textarea.form-control{:name => 'comment', "ng-model" => "comment", :rows => 3, :placeholder => 'Comment'}
+
+        .form-group
+          %label.col-xs-2.control-label{ for: 'sub-type' } File Type:
+          .col-xs-4
+            %ui-select{ name: 'sub-type', ng: { model: 'subType.selected' } }
+              %ui-select-match{ placeholder: 'File Type' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'option in subTypes' }
+                %div{ ng: { bind: { html: 'option.name' } } }
+          .col-xs-4.col-xs-offset-2
+            %button.btn.btn-primary.btn-block{ :"ng-click" => "saveOnServer()" }
+              Save
+
     %ul.files-uploader__list
       %li.files-uploader__list-elem{ ng: { repeat: 'file in uploadedFiles | orderBy: "-created_at"'} }
-        %span.files-uploader__list-elem__file-name
-          %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
-        %span.files-uploader__list-elem__file-size
-          {{file.asset_file_size | bytes }}
-        %span.files-uploader__list-elem__delete
-          %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
-            = inline_svg 'icons/trash.svg'
+        %header.files-uploader__list-elem__main
+          %span.files-uploader__list-elem__file-name
+            %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
+          %span.files-uploader__list-elem__file-size
+            {{file.asset_file_size | bytes }}
+          %span.files-uploader__list-elem__delete
+            %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
+              = inline_svg 'icons/trash.svg'
+        %footer.files-uploader__list-elem__details.form-horizontal
+          .form-group
+            %label.col-xs-2.control-label{ for: 'comment' } Notes:
+            .col-xs-10
+              %textarea.form-control{:name => 'comment', :rows => 3}
+
+          .form-group
+            %label.col-xs-2.control-label{ for: 'sub-type' } File Type:
+            .col-xs-4
+              %input.form-control{:type => 'text', :disabled => true}
 
       %li.files-uploader__list-elem{ ng: { repeat: 'file in dealFiles | orderBy: "-created_at"'} }
-        %span.files-uploader__list-elem__file-name
-          %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
-        %span.files-uploader__list-elem__file-size
-          {{file.asset_file_size | bytes }}
-        %span.files-uploader__list-elem__delete
-          %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
-            = inline_svg 'icons/trash.svg'
+        %header.files-uploader__list-elem__main
+          %span.files-uploader__list-elem__show-datails{"ng-click" => "showDetails = !showDetails", "ng-show" => "!showDetails"}
+            = inline_svg 'icons/hide-details.svg'
+          %span.files-uploader__list-elem__show-datails{"ng-click" => "showDetails = !showDetails", "ng-show" => "showDetails"}
+            = inline_svg 'icons/show-details.svg'
+
+          %span.files-uploader__list-elem__file-name
+            %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
+          %span.files-uploader__list-elem__file-size
+            {{file.asset_file_size | bytes }}
+          %span.files-uploader__list-elem__delete
+            %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
+              = inline_svg 'icons/trash.svg'
+        %footer.files-uploader__list-elem__details.form-horizontal{"ng-show" => "showDetails"}
+          .form-group
+            %label.col-xs-2.control-label{ for: 'comment' } Notes:
+            .col-xs-10
+              %textarea.form-control{:name => 'comment', :rows => 3, :disabled => true}
+                {{ file.comment }}
+          .form-group
+            %label.col-xs-2.control-label{ for: 'sub-type' } File Type:
+            .col-xs-4
+              %input.form-control{:type => 'text', :disabled => true, :value => '{{ file.subtype }}'}

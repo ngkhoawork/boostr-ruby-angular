@@ -1,5 +1,5 @@
-@directives.directive 'uploadFile', ['$timeout', '$http', 'Transloadit', '$filter'
-  ($timeout, $http, Transloadit, $filter) ->
+@directives.directive 'uploadFile', ['$timeout', '$http', 'Transloadit', 'Field', '$filter'
+  ($timeout, $http, Transloadit, Field, $filter) ->
     restrict: 'E'
     templateUrl: 'directives/upload-files.html'
     scope:
@@ -11,6 +11,15 @@
       $scope.dealFiles = []
       $scope.uploadError = 'Connection lost'
       $scope.uploadShow = false;
+      $scope.uploaded = false;
+      $scope.assemblyJson = undefined;
+
+      $scope.subType = {};
+      $scope.subTypes = [];
+
+      Field.defaults {}, 'Multiple'
+        .then (resp) ->
+          $scope.subTypes = resp[0].options
 
       $scope.uploadFile =
         name: null
@@ -43,11 +52,55 @@
             $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
               return dealFile.id != file.id
 
+      $scope.saveOnServer = () ->
+        console.log 'subType', $scope.subType.selected
+        console.log 'comment', $scope.comment
+        assemblyJson = $scope.assemblyJson
+
+        if (assemblyJson && assemblyJson.results && assemblyJson.results[':original'] && assemblyJson.results[':original'].length)
+          # console.log assemblyJson.results[':original'][0]
+          folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
+          fullFileName = folder + assemblyJson.results[':original'][0].name
+
+        $http.post('/api/deals/'+ $routeParams.id + '/deal_assets',
+          {
+            asset:
+              asset_file_name: fullFileName
+              asset_file_size: assemblyJson.results[':original'][0].size
+              asset_content_type: assemblyJson.results[':original'][0].mime
+              original_file_name: assemblyJson.results[':original'][0].name
+              comment: $scope.comment
+              subtype: $scope.subType.selected
+          })
+          .then (response) ->
+            console.log(response.data)
+            $scope.dealFiles.push response.data
+
+            $scope.progressBarCur = 0
+            $scope.uploadFile.status = 'EMPTY'
+            $scope.uploadShow = false
+            $scope.fileToUpload = null
+            $scope.uploadFile.name = ''
+            $scope.uploadFile.size = null
+            $scope.subType.selected = ''
+            $scope.comment = ''
+
+        # $timeout (->
+        #   $scope.progressBarCur = 0
+        #   $scope.uploadFile.status = 'EMPTY'
+        #   $scope.uploadShow = false
+        #   $scope.fileToUpload = null
+        #   $scope.uploadFile.name = ''
+        #   $scope.uploadFile.size = null
+        #   return
+        # ), 1000
+
       $scope.upload = (file) ->
         if not file or 'name' not of file
           alert 'Wrong file'
           return
 
+        $scope.uploaded = false
         $scope.fileToUpload = file
         $scope.uploadFile.name = file.name
         $scope.uploadFile.size = file.size
@@ -91,35 +144,9 @@
           ,
 
           uploaded: (assemblyJson) ->
-            if (assemblyJson && assemblyJson.results && assemblyJson.results[':original'] && assemblyJson.results[':original'].length)
-              # console.log assemblyJson.results[':original'][0]
-              folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
-              fullFileName = folder + assemblyJson.results[':original'][0].name
-            $http.post('/api/deals/'+ $routeParams.id + '/deal_assets',
-              {
-                asset:
-                  asset_file_name: fullFileName
-                  asset_file_size: assemblyJson.results[':original'][0].size
-                  asset_content_type: assemblyJson.results[':original'][0].mime
-                  original_file_name: assemblyJson.results[':original'][0].name
-              })
-              .then (response) ->
-                console.log(response.data)
-    #            $scope.uploadedFiles.push response.data
-                $scope.dealFiles.push response.data
-
+            $scope.uploaded = true
+            $scope.assemblyJson = assemblyJson
             $scope.uploadFile.status = 'SUCCESS'
-            # console.log "$scope.uploadFile.status", $scope.uploadFile.status
-            # console.log('uploaded', assemblyJson)
-            $timeout (->
-              $scope.progressBarCur = 0
-              $scope.uploadFile.status = 'EMPTY'
-              $scope.uploadShow = false
-              $scope.fileToUpload = null
-              $scope.uploadFile.name = ''
-              $scope.uploadFile.size = null
-              return
-            ), 1000
             $scope.$$phase || $scope.$apply()
           ,
 

@@ -241,104 +241,59 @@
                   %button.btn-link{ ng: { click: 'deleteContact(contact)' } }
                     = inline_svg 'icons/trash.svg'
 
-    #files.col-xs-6
-      %h3.header Files
-      .files-uploader
-        .files-uploader__drop-area{ :"am-dnd" => true, :"file-hanlder" => "upload" }
-          %span.files-uploader__describe
-            Drag and drop a file to upload
-            %br
-            or <a href="#" ng-click="callUpload($event)"> click to browse</a>
-          %input#file-uploader.files-uploader__file-input{ type: 'file', 'onchange': 'angular.element(this).scope().changeFile(this)' }
-        .files-uploader__content
-          %figure.files-uploader__uploading-elem{ng: { show: 'progressBarCur', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
-            %header.files-uploader__uploading-elem__header
-              %span.files-uploader__uploading-elem__file-name{ :title => "{{uploadFile.name}}" }
-                {{ uploadFile.name }}
-              %span.files-uploader__uploading-elem__file-size
-                {{ uploadFile.size | bytes }}
-              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'LOADING'"}}
-                Loading {{ (progressBarCur / uploadFile.size) * 100 | number:0 }}% {{ progressBarCur < uploadFile.size ? '...' : '' }}
-              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'SUCCESS'"}}
-                Uploaded successfully
-              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ERROR'"}}
-                Connection lost
-                %btn.btn-link{ ng: {click: 'retry()'} } Retry
-              %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ABORT'"}}
-                Upload canceled by user
-              %span.files-uploader__uploading-elem__cancel{ng: { show: 'progressBarCur < uploadFile.size && uploadFile.status != "ERROR" && uploadFile.status != "ABORT"' }}
-                %btn.btn-link{ ng: {click: 'uploading.cancel()'} }
-                  Cancel
-            %progressbar{:max => "uploadFile.size", :value => "progressBarCur" }
-              / %span{:style => "color:white; white-space:nowrap;"} {{progressBarCur}} / {{progressBarMax}}
-          %ul.files-uploader__list
-            %li.files-uploader__list-elem{ ng: { repeat: 'file in uploadedFiles | orderBy: "-created_at"'} }
-              %span.files-uploader__list-elem__file-name
-                %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
-              %span.files-uploader__list-elem__file-size
-                {{file.asset_file_size | bytes }}
-              %span.files-uploader__list-elem__delete
-                %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
-                  = inline_svg 'icons/trash.svg'
+    .row
+      #files.col-xs-6
+        %h3.header Files
+        <upload-file deal-files="dealFiles"></upload-file>
 
-      /       %li.files-uploader__list-elem{ ng: { repeat: 'file in dealFiles | orderBy: "-created_at"'} }
-      /         %span.files-uploader__list-elem__file-name
-      /           %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
-      /         %span.files-uploader__list-elem__file-size
-      /           {{file.asset_file_size | bytes }}
-      /         %span.files-uploader__list-elem__delete
-      /           %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
-      /             = inline_svg 'icons/trash.svg'
-
-
-    #info.col-xs-6
-      %h3.header Additional Info
-      .well
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Type
-            .row
-              .col-xs-9.field-value.deal-type{ 'e-id': 'deal-type', editable: { select: 'currentDeal.deal_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.deal_type.options', onaftersave: 'updateDeal()' }
-                {{ currentDeal.deal_type.option.name }}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Source
-            .row
-              .col-xs-9.field-value{ 'e-id': 'deal-source', editable: { select: 'currentDeal.source_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.source_type.options', onaftersave: 'updateDeal()' }
-                {{ currentDeal.source_type.option.name }}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Next Steps
-            .row
-              .col-xs-9.field-value{ 'e-name': 'next-steps', editable: { text: 'currentDeal.next_steps' }, onaftersave: 'updateDeal()' }
-                {{ currentDeal.next_steps }}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Created
-            .row
-              .col-xs-9.field-value
-                {{ currentDeal.creator.first_name }} {{ currentDeal.creator.last_name }} on {{ currentDeal.created_at | date: 'shortDate' }} @ {{ currentDeal.created_at | date: 'shortTime'}}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Closed
-            .row
-              .col-xs-9.field-value
-                {{ currentDeal.closed_at | date: 'shortDate' }}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Closed Reason
-            .row
-              .col-xs-9.field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
-                {{ currentDeal.close_reason.option.name }}
+      #info.col-xs-6
+        %h3.header Additional Info
+        .well
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Type
+              .row
+                .col-xs-9.field-value.deal-type{ 'e-id': 'deal-type', editable: { select: 'currentDeal.deal_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.deal_type.options', onaftersave: 'updateDeal()' }
+                  {{ currentDeal.deal_type.option.name }}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Source
+              .row
+                .col-xs-9.field-value{ 'e-id': 'deal-source', editable: { select: 'currentDeal.source_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.source_type.options', onaftersave: 'updateDeal()' }
+                  {{ currentDeal.source_type.option.name }}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Next Steps
+              .row
+                .col-xs-9.field-value{ 'e-name': 'next-steps', editable: { text: 'currentDeal.next_steps' }, onaftersave: 'updateDeal()' }
+                  {{ currentDeal.next_steps }}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Created
+              .row
+                .col-xs-9.field-value
+                  {{ currentDeal.creator.first_name }} {{ currentDeal.creator.last_name }} on {{ currentDeal.created_at | date: 'shortDate' }} @ {{ currentDeal.created_at | date: 'shortTime'}}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Closed
+              .row
+                .col-xs-9.field-value
+                  {{ currentDeal.closed_at | date: 'shortDate' }}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Closed Reason
+              .row
+                .col-xs-9.field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
+                  {{ currentDeal.close_reason.option.name }}
