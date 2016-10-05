@@ -45,7 +45,7 @@
              $scope.data[percent_key] = {}
 
            _.each deal.deal_products, (deal_product) ->
-             month = new Date(deal_product.start_date).getMonth()
+             month = new Date(deal_product.start_date).getUTCMonth()
              $scope.data['Summary'][percent_key]['FY'] += deal_product.budget
              $scope.data['Summary'][percent_key][month + 1] += deal_product.budget
              $scope.data['Summary'][percent_key]['Q' + (Math.ceil((month + 1) / 3))] += deal_product.budget
