@@ -92,7 +92,7 @@
                 %ui-select-choices{ repeat: 'option in subTypes' }
                   %div{ ng: { bind: { html: 'option.name' } } }
             .col-xs-4.col-xs-offset-2
-              %button.btn.btn-primary.btn-block{ :"ng-click" => "saveOnServer(file)" }
+              %button.btn.btn-primary.btn-block{ :"ng-click" => "saveOnServer(file); showDetails = !showDetails;" }
                 Save
 
           / .form-group

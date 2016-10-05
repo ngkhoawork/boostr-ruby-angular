@@ -58,7 +58,7 @@
             asset_content_type: file.asset_content_type
             original_file_name: file.original_file_name
             comment: file.comment
-            subtype: file.subtype.name
+            subtype: file.subtype?.name || ''
 
 
       $scope.upload = (file) ->
