@@ -30,6 +30,7 @@
       transformRequest: transformAddContactRequest
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
+  pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
 
   currentDeal = undefined
 
@@ -42,6 +43,12 @@
   @pipeline_report = (params) ->
     deferred = $q.defer()
     pipeline_report_resource.query params, (response) ->
+      deferred.resolve(response)
+    deferred.promise
+
+  @pipeline_summary_report = (params) ->
+    deferred = $q.defer()
+    pipeline_summary_report_resource.query params, (response) ->
       deferred.resolve(response)
     deferred.promise
 

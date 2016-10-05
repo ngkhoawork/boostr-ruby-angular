@@ -62,6 +62,13 @@
     border-color: transparent;
   }
 
+  .reports-header {
+    padding-left: 0;
+    .team-list {
+      margin-top: 5px;
+    }
+  }
+
   .nav-tabs {
     background: $brand-primary;
     color: $white;

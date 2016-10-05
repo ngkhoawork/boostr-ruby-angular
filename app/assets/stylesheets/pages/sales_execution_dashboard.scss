@@ -164,78 +164,6 @@
     }
   }
 
-  .tree-dropdown.team-list {
-    height: 47px;
-    .select {
-      height: 47px;
-      border: 1px solid #d9e2ec;
-      -webkit-box-shadow: none;
-      box-shadow: none;
-      color: #58656f;
-      font-weight: normal;
-      font-size: 14px;
-      background: none;
-    }
-    .select::after {
-      display: inline-block;
-      width: 0;
-      height: 0;
-      margin-left: 2px;
-      vertical-align: middle;
-      border-top: 5px dashed;
-      border-top: 5px solid \9;
-      border-right: 5px solid transparent;
-      border-left: 5px solid transparent;
-      position: absolute;
-      right: 10px;
-      top: 22px;
-    }
-
-    p {
-      line-height: 47px;
-      margin: 0;
-    }
-
-    .select:hover {
-      color: #3996db;
-      cursor: pointer;
-    }
-
-    .list {
-      top: 50px;
-      border: 1px solid #D7E4F1;
-      border-radius: 4px;
-      -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-      background-clip: padding-box;
-      padding: 10px 10px;
-
-      p {
-        font-weight: normal;
-        color: #58656f;
-        background: #FFFFFF;
-        line-height: 40px;
-      }
-
-      p.selected {
-        background: #7ab9e9;
-        color: #FFFFFF;
-      }
-
-      p:hover{
-        color: #7ab9e9;
-        background: #FFFFFF;
-        cursor: pointer;
-      }
-
-      p.selected:hover {
-        background: #7ab9e9;
-        color: #FFFFFF;
-      }
-
-    }
-  }
-
   .member-list {
     height: 47px;
     width: 300px;
@@ -356,5 +284,77 @@
       }
     }
     .nv-legend{ transform: translate(-45px, 300px); }
+  }
+}
+
+.tree-dropdown.team-list {
+  height: 47px;
+  .select {
+    height: 47px;
+    border: 1px solid #d9e2ec;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    color: #58656f;
+    font-weight: normal;
+    font-size: 14px;
+    background: none;
+  }
+  .select::after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 5px dashed;
+    border-top: 5px solid \9;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+    position: absolute;
+    right: 10px;
+    top: 22px;
+  }
+
+  p {
+    line-height: 47px;
+    margin: 0;
+  }
+
+  .select:hover {
+    color: #3996db;
+    cursor: pointer;
+  }
+
+  .list {
+    top: 50px;
+    border: 1px solid #D7E4F1;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    background-clip: padding-box;
+    padding: 10px 10px;
+
+    p {
+      font-weight: normal;
+      color: #58656f;
+      background: #FFFFFF;
+      line-height: 40px;
+    }
+
+    p.selected {
+      background: #7ab9e9;
+      color: #FFFFFF;
+    }
+
+    p:hover{
+      color: #7ab9e9;
+      background: #FFFFFF;
+      cursor: pointer;
+    }
+
+    p.selected:hover {
+      background: #7ab9e9;
+      color: #FFFFFF;
+    }
+
   }
 }
