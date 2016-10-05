@@ -5,6 +5,14 @@ class Api::DealAssetsController < ApplicationController
     render json: deal.assets
   end
 
+  def update
+    if asset.update_attributes(asset_params)
+      render json: asset, status: :accepted
+    else
+      render json: { errors: asset.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   def create
     asset = deal.assets.new(asset_params)
 
