@@ -14,7 +14,7 @@
       $scope.uploaded = false;
       $scope.assemblyJson = undefined;
 
-      $scope.subType = {};
+      # $scope.subType = {};
       $scope.subTypes = [];
 
       Field.defaults {}, 'Multiple'
@@ -44,56 +44,22 @@
           scope.upload element.files[0]
 
       $scope.deleteFile = (file) ->
-        console.log 'file', file
         if (file && file.id)
           $http.delete('/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id)
           .then (respond) ->
-            console.log('del file', respond)
             $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
               return dealFile.id != file.id
 
-      $scope.saveOnServer = () ->
-        console.log 'subType', $scope.subType.selected
-        console.log 'comment', $scope.comment
-        assemblyJson = $scope.assemblyJson
+      $scope.saveOnServer = (file, subtype) ->
+        $http.put '/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id,
+          asset:
+            asset_file_name: file.asset_file_name
+            asset_file_size: file.asset_file_size
+            asset_content_type: file.asset_content_type
+            original_file_name: file.original_file_name
+            comment: file.comment
+            subtype: file.subtype.name
 
-        if (assemblyJson && assemblyJson.results && assemblyJson.results[':original'] && assemblyJson.results[':original'].length)
-          # console.log assemblyJson.results[':original'][0]
-          folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
-          fullFileName = folder + assemblyJson.results[':original'][0].name
-
-        $http.post('/api/deals/'+ $routeParams.id + '/deal_assets',
-          {
-            asset:
-              asset_file_name: fullFileName
-              asset_file_size: assemblyJson.results[':original'][0].size
-              asset_content_type: assemblyJson.results[':original'][0].mime
-              original_file_name: assemblyJson.results[':original'][0].name
-              comment: $scope.comment
-              subtype: $scope.subType.selected.name
-          })
-          .then (response) ->
-            console.log(response.data)
-            $scope.dealFiles.push response.data
-
-            $scope.progressBarCur = 0
-            $scope.uploadFile.status = 'EMPTY'
-            $scope.uploadShow = false
-            $scope.fileToUpload = null
-            $scope.uploadFile.name = ''
-            $scope.uploadFile.size = null
-            $scope.subType.selected = null
-            $scope.comment = ''
-
-        # $timeout (->
-        #   $scope.progressBarCur = 0
-        #   $scope.uploadFile.status = 'EMPTY'
-        #   $scope.uploadShow = false
-        #   $scope.fileToUpload = null
-        #   $scope.uploadFile.name = ''
-        #   $scope.uploadFile.size = null
-        #   return
-        # ), 1000
 
       $scope.upload = (file) ->
         if not file or 'name' not of file
@@ -145,8 +111,32 @@
 
           uploaded: (assemblyJson) ->
             $scope.uploaded = true
-            $scope.assemblyJson = assemblyJson
             $scope.uploadFile.status = 'SUCCESS'
+
+            if (assemblyJson && assemblyJson.results && assemblyJson.results[':original'] && assemblyJson.results[':original'].length)
+              folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
+              fullFileName = folder + assemblyJson.results[':original'][0].name
+
+            $http.post '/api/deals/'+ $routeParams.id + '/deal_assets',
+                asset:
+                  asset_file_name: fullFileName
+                  asset_file_size: assemblyJson.results[':original'][0].size
+                  asset_content_type: assemblyJson.results[':original'][0].mime
+                  original_file_name: assemblyJson.results[':original'][0].name
+                  # comment: $scope.comment
+                  # subtype: $scope.subType.selected.name
+              .then (response) ->
+                $scope.dealFiles.push response.data
+
+                $scope.progressBarCur = 0
+                $scope.uploadFile.status = 'EMPTY'
+                $scope.uploadShow = false
+                $scope.fileToUpload = null
+                $scope.uploadFile.name = ''
+                # $scope.uploadFile.size = null
+                # $scope.subType.selected = null
+                $scope.comment = ''
+
             $scope.$$phase || $scope.$apply()
           ,
 
@@ -156,11 +146,10 @@
 
           error: (error) ->
             $scope.uploadFile.status = 'ERROR'
-            console.log('error', error)
+            console.error('Error from transload', error)
             $scope.$$phase || $scope.$apply()
 
         })
-        console.log '$scope.uploading', $scope.uploading
 
       isValidFileName = (file) ->
         name = file.name.toLowerCase() # (/\.(gif|jpg|jpeg|tiff|png)$/i).test(filename)
