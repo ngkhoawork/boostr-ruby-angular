@@ -70,7 +70,7 @@
               asset_content_type: assemblyJson.results[':original'][0].mime
               original_file_name: assemblyJson.results[':original'][0].name
               comment: $scope.comment
-              subtype: $scope.subType.selected
+              subtype: $scope.subType.selected.name
           })
           .then (response) ->
             console.log(response.data)
@@ -82,7 +82,7 @@
             $scope.fileToUpload = null
             $scope.uploadFile.name = ''
             $scope.uploadFile.size = null
-            $scope.subType.selected = ''
+            $scope.subType.selected = null
             $scope.comment = ''
 
         # $timeout (->

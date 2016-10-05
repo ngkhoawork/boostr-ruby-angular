@@ -477,9 +477,7 @@ ActiveRecord::Schema.define(version: 20161004183815) do
     t.decimal  "win_rate"
     t.decimal  "average_deal_size"
     t.float    "cycle_time"
-    t.boolean  "is_active",              default: true
     t.string   "starting_page"
-    t.integer  "user_type",              default: 0,     null: false
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
