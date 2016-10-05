@@ -472,9 +472,14 @@ class Deal < ActiveRecord::Base
             "FY Total",
         ]
         csv << header
-        data_obj.each do |key,row|
 
-          if key == "Total"
+
+        if data_obj.nil?
+          next
+        end
+
+        data_obj.each do |key,row|
+          if key == "Total" || row.nil?
             next
           end
           line = [
