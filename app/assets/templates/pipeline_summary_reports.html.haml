@@ -75,39 +75,39 @@
             %tbody
               %tr{ ng: { repeat: '(key, row) in dataObj | orderBy:sortType:sortReverse', if: 'key!="Total"' } }
                 %td.left {{ key }}
-                %td.right ${{ row[1] / 100 | number : 0}}
-                %td.right ${{ row[2] / 100 | number : 0}}
-                %td.right ${{ row[3] / 100 | number : 0}}
-                %td.right ${{ row['Q1'] / 100 | number : 0}}
-                %td.right ${{ row[4] / 100 | number : 0}}
-                %td.right ${{ row[5] / 100 | number : 0}}
-                %td.right ${{ row[6] / 100 | number : 0}}
-                %td.right ${{ row['Q2'] / 100 | number : 0}}
-                %td.right ${{ row[7] / 100 | number : 0}}
-                %td.right ${{ row[8] / 100 | number : 0}}
-                %td.right ${{ row[9] / 100 | number : 0}}
-                %td.right ${{ row['Q3'] / 100 | number : 0}}
-                %td.right ${{ row[10] / 100 | number : 0}}
-                %td.right ${{ row[11] / 100 | number : 0}}
-                %td.right ${{ row[12] / 100 | number : 0}}
-                %td.right ${{ row['Q4'] / 100 | number : 0}}
-                %td.right ${{ row['FY'] / 100 | number : 0}}
+                %td.right ${{ (row[1] ? row[1] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[2] ? row[2] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[3] ? row[3] : 0) / 100 | number : 0}}
+                %td.right ${{ (row['Q1'] ? row['Q1'] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[4] ? row[4] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[5] ? row[5] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[6] ? row[6] : 0) / 100 | number : 0}}
+                %td.right ${{ (row['Q2'] ? row['Q2'] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[7] ? row[7] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[8] ? row[8] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[9] ? row[9] : 0) / 100 | number : 0}}
+                %td.right ${{ (row['Q3'] ? row['Q3'] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[10] ? row[10] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[11] ? row[11] : 0) / 100 | number : 0}}
+                %td.right ${{ (row[12] ? row[12] : 0) / 100 | number : 0}}
+                %td.right ${{ (row['Q4'] ? row['Q4'] : 0) / 100 | number : 0}}
+                %td.right ${{ (row['FY'] ? row['FY'] : 0) / 100 | number : 0}}
               %tr
                 %td.left Total
-                %td.right ${{ dataObj['Total'][1] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][2] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][3] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total']['Q1'] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][4] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][5] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][6] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total']['Q2'] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][7] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][8] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][9] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total']['Q3'] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][10] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][11] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total'][12] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total']['Q4'] / 100 | number : 0}}
-                %td.right ${{ dataObj['Total']['FY'] / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][1] ? dataObj['Total'][1] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][2] ? dataObj['Total'][2] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][3] ? dataObj['Total'][3] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total']['Q1'] ? dataObj['Total']['Q1'] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][4] ? dataObj['Total'][4] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][5] ? dataObj['Total'][5] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][6] ? dataObj['Total'][6] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total']['Q2'] ? dataObj['Total']['Q2'] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][7] ? dataObj['Total'][7] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][8] ? dataObj['Total'][8] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][9] ? dataObj['Total'][9] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total']['Q3'] ? dataObj['Total']['Q3'] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][10] ? dataObj['Total'][10] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][11] ? dataObj['Total'][11] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total'][12] ? dataObj['Total'][12] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total']['Q4'] ? dataObj['Total']['Q4'] : 0) / 100 | number : 0}}
+                %td.right ${{ (dataObj['Total']['FY'] ? dataObj['Total']['FY'] : 0) / 100 | number : 0}}
