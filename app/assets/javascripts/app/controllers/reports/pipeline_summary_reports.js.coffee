@@ -5,6 +5,7 @@
       $scope.sortReverse  = false
       $scope.filterOpen = true
       $scope.init = ->
+       currentYear = new Date().getUTCFullYear()
        $q.all({ dealData: Deal.pipeline_summary_report({filter: 'company'}) }).then (data) ->
          $scope.data = {
            'Summary': {
@@ -45,7 +46,11 @@
              $scope.data[percent_key] = {}
 
            _.each deal.deal_products, (deal_product) ->
-             month = new Date(deal_product.start_date).getUTCMonth()
+             startDate = new Date(deal_product.start_date)
+             month = startDate.getUTCMonth()
+             year = startDate.getUTCFullYear()
+             if (year != currentYear)
+               return
              $scope.data['Summary'][percent_key]['FY'] += deal_product.budget
              $scope.data['Summary'][percent_key][month + 1] += deal_product.budget
              $scope.data['Summary'][percent_key]['Q' + (Math.ceil((month + 1) / 3))] += deal_product.budget
