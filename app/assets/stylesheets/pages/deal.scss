@@ -271,6 +271,9 @@
     .file-uploader__drop-area {
       padding-bottom: 5px;
     }
+    textarea {
+      resize: vertical;
+    }
   }
 
   #contact {
