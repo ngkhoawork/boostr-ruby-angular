@@ -8,11 +8,6 @@
   .files-uploader__content
     %figure.files-uploader__uploading-elem{ng: { show: 'uploadShow', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
       %header.files-uploader__uploading-elem__header
-        / %span.files-uploader__uploading-elem__show-datails{"ng-click" => "showUploadDetails = !showUploadDetails", "ng-show" => "!showUploadDetails && uploaded"}
-        /   = inline_svg 'icons/hide-details.svg'
-        / %span.files-uploader__uploading-elem__show-datails{"ng-click" => "showUploadDetails = !showUploadDetails", "ng-show" => "showUploadDetails && uploaded"}
-        /   = inline_svg 'icons/show-details.svg'
-
         %span.files-uploader__uploading-elem__file-name{ :title => "{{uploadFile.name}}" }
           {{ uploadFile.name }}
         %span.files-uploader__uploading-elem__file-size
@@ -26,31 +21,13 @@
           Upload canceled by user
 
         %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ERROR'"}}
-          {{uploadError}}
+          %span {{uploadError}}
           %btn.btn-link{ ng: {click: 'retry()'} } Retry
         %span.files-uploader__uploading-elem__cancel{ng: { show: 'progressBarCur < uploadFile.size && uploadFile.status != "ERROR" && uploadFile.status != "ABORT"' }}
-          %btn.btn-link{ ng: {click: 'uploading.cancel()'} }
+          %btn.btn-link{ ng: {click: 'uploadCancel()'} }
             Cancel
 
       %progressbar{:"ng-show" => "progressBarCur", :max => "uploadFile.size", :value => "progressBarCur" }
-
-      / %footer.files-uploader__uploading-elem__details.form-horizontal{ng: { show: 'showUploadDetails' }}
-      /   .form-group
-      /     %label.col-xs-2.control-label{ for: 'comment' } Notes:
-      /     .col-xs-10
-      /       %textarea.form-control{:name => 'comment', "ng-model" => "comment", :rows => 3, :placeholder => 'Comment'}
-
-      /   .form-group
-      /     %label.col-xs-2.control-label{ for: 'sub-type' } File Type:
-      /     .col-xs-4
-      /       %ui-select{ name: 'sub-type', ng: { model: 'subType.selected' } }
-      /         %ui-select-match{ placeholder: 'File Type' }
-      /           {{ $select.selected.name }}
-      /         %ui-select-choices{ repeat: 'option in subTypes' }
-      /           %div{ ng: { bind: { html: 'option.name' } } }
-      /     .col-xs-4.col-xs-offset-2
-      /       %button.btn.btn-primary.btn-block{ :"ng-click" => "saveOnServer()" }
-      /         Save
 
     %ul.files-uploader__list
       %li.files-uploader__list-elem{ ng: { repeat: 'file in uploadedFiles | orderBy: "-created_at"'} }
@@ -90,7 +67,6 @@
             %label.col-xs-2.control-label{ for: 'comment' } Notes:
             .col-xs-10
               %textarea.form-control{:name => 'comment', :rows => 3, "ng-model" => "file.comment" }
-                {{ file.comment }}
           .form-group
             %label.col-xs-2.control-label{ for: 'sub-type' } File Type:
             .col-xs-4
@@ -102,13 +78,3 @@
             .col-xs-4.col-xs-offset-2
               %button.btn.btn-primary.btn-block{ :"ng-click" => "saveOnServer(file); showDetails = !showDetails;" }
                 Save
-
-          / .form-group
-          /   %label.col-xs-2.control-label{ for: 'comment' } Notes:
-          /   .col-xs-10
-          /     %textarea.form-control{:name => 'comment', :rows => 3, :disabled => true}
-          /       {{ file.comment }}
-          / .form-group
-          /   %label.col-xs-2.control-label{ for: 'sub-type' } File Type:
-          /   .col-xs-4
-          /     %input.form-control{:type => 'text', :disabled => true, :value => '{{ file.subtype }}'}

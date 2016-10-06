@@ -123,6 +123,8 @@
         }
         &__progress {
             margin-left: auto;
+            display: flex;
+            align-items: center;
         }
         &__details {
             @extend .details-info;

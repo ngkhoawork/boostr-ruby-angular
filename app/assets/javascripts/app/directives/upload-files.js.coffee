@@ -102,7 +102,7 @@
           progress: (loaded, total) ->
             $scope.uploadFile.size = total
             $scope.progressBarCur = loaded
-            $scope.$$phase || do $scope.$apply;
+            $scope.$$phase || $scope.$apply();
           ,
 
           processing: () ->
@@ -133,8 +133,6 @@
                 $scope.uploadShow = false
                 $scope.fileToUpload = null
                 $scope.uploadFile.name = ''
-                # $scope.uploadFile.size = null
-                # $scope.subType.selected = null
                 $scope.comment = ''
 
             $scope.$$phase || $scope.$apply()
@@ -150,6 +148,14 @@
             $scope.$$phase || $scope.$apply()
 
         })
+
+      $scope.uploadCancel = () ->
+        if $scope.uploading?
+          $timeout ()->
+            $scope.uploading.cancel()
+          , 0
+
+
 
       isValidFileName = (file) ->
         name = file.name.toLowerCase() # (/\.(gif|jpg|jpeg|tiff|png)$/i).test(filename)

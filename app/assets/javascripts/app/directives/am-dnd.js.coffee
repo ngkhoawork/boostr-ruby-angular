@@ -13,8 +13,10 @@
         .on 'dragleave dragend drop', (e) ->
           element[0].classList.remove 'active'
         .on 'drop', (e) ->
-          file = event.dataTransfer.files[0];
+          console.log e
+          file = e.originalEvent.dataTransfer.files[0];
           scope.fileHanlder file
+          do scope.$apply
 
         doNothing = (e) ->
           do e.stopPropagation
