@@ -120,11 +120,11 @@
                   = inline_svg 'icons/trash.svg'
                 {{ product.name }}
               %td.right
-                %span{ 'e-name': '{{ product.id }}', editable: { text: 'product.total_budget' }, onaftersave: 'updateDealProductTotalBudget(product.id, product.total_budget)' }
+                %span{ 'e-name': '{{ product.id }}', editable: { text: 'product.total_budget' }, onaftersave: 'updateDealProductBudgetTotalBudget(product.id, product.total_budget)' }
                   {{ product.total_budget | currency:'$':0  }}
-              %td.right{ ng: { repeat: 'deal_product in product.deal_products' } }
-                %span{ 'e-name': '{{ deal_product.id }}', editable: { text: 'deal_product.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
-                  {{ deal_product.budget | currency:'$':0 }}
+              %td.right{ ng: { repeat: 'deal_product_budget in product.deal_product_budgets' } }
+                %span{ 'e-name': '{{ deal_product_budget.id }}', editable: { text: 'deal_product_budget.budget' }, onaftersave: 'updateDealProductBudget(deal_product_budget)' }
+                  {{ deal_product_budget.budget | currency:'$':0 }}
 
       #new-product.well.dark
         .row{ ng: { hide: 'showProductForm' } }
@@ -141,7 +141,7 @@
                     .col-xs-12
                       .form-group
                         %label.control-label{ for: 'product' } Product
-                        %ui-select{ name: 'product', ng: { model: 'deal_product.product_id', disabled: true, required: true } }
+                        %ui-select{ name: 'product', ng: { model: 'deal_product_budget.product_id', disabled: true, required: true } }
                           %ui-select-match{ placeholder: 'Product' }
                             {{ $select.selected.name }}
                           %ui-select-choices{ repeat: 'product.id as product in products | filter: { name: $select.search }' }
@@ -150,7 +150,7 @@
                     .col-xs-12
                       .form-group
                         %label.control-label{ for: 'total_budget' } Total Budget
-                        %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal_product.total_budget', required: true }, name: 'total_budget' }
+                        %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal_product_budget.total_budget', required: true }, name: 'total_budget' }
                   .row
                     .col-xs-12
                       %button.btn.btn-primary.btn-block{ type: 'submit' } Add Product
@@ -158,7 +158,7 @@
                       %button#cancel.btn.btn-default.btn-block{ng: { click: 'cancelAddProduct()' }, type: 'button' } Cancel
                 .col-xs-10
                   .row.months
-                    .col-xs-2{ ng: { repeat: 'month in deal_product.months' } }
+                    .col-xs-2{ ng: { repeat: 'month in deal_product_budget.months' } }
                       .form-group
                         %label.control-label Month \#{{ $index + 1 }}
                         %input.form-control{ ng: { model: 'month.value'}, disabled: true }

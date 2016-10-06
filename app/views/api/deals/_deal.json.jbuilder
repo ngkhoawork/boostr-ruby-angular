@@ -18,11 +18,11 @@ json.contacts deal.contacts, :id, :name, :position, :address, :primary_client_js
 json.products deal.products do |product|
   json.id product.id
   json.name product.name
-  json.deal_products product.deal_products.where(deal_id: deal).order(:start_date) do |deal_product|
-    json.id deal_product.id
-    json.budget deal_product.budget / 100
+  json.deal_product_budgets product.deal_product_budgets.where(deal_id: deal).order(:start_date) do |deal_product_budget|
+    json.id deal_product_budget.id
+    json.budget deal_product_budget.budget / 100
   end
-  json.total_budget product.deal_products.where(deal_id: deal).sum(:budget) / 100
+  json.total_budget product.deal_product_budgets.where(deal_id: deal).sum(:budget) / 100
 end
 
 json.members deal.deal_members do |member|

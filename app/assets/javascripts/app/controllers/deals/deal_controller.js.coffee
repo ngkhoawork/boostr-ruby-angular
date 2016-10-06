@@ -134,7 +134,7 @@
   $scope.init = ->
     $scope.actRemColl = false;
     $scope.currentDeal = {}
-    $scope.resetDealProduct()
+    $scope.resetDealProductBudget()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal)
       $scope.activities = deal.activities
@@ -245,25 +245,25 @@
       $scope.stages = stages
 
   $scope.toggleProductForm = ->
-    $scope.resetDealProduct()
+    $scope.resetDealProductBudget()
     for month in $scope.currentDeal.months
-      $scope.deal_product.months.push({ value: '' })
+      $scope.deal_product_budget.months.push({ value: '' })
     $scope.showProductForm = !$scope.showProductForm
     Product.all().then (products) ->
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
 
-  $scope.$watch 'deal_product.total_budget', ->
-    budget = $scope.deal_product.total_budget / $scope.currentDeal.days
-    _.each $scope.deal_product.months, (month, index) ->
+  $scope.$watch 'deal_product_budget.total_budget', ->
+    budget = $scope.deal_product_budget.total_budget / $scope.currentDeal.days
+    _.each $scope.deal_product_budget.months, (month, index) ->
       month.value = $filter('currency')($scope.currentDeal.days_per_month[index] * budget, '$', 0)
 
   $scope.addProduct = ->
-    DealProduct.create($scope.deal_product).then (deal) ->
+    DealProductBudget.create($scope.deal_product_budget).then (deal) ->
       $scope.showProductForm = false
       $scope.currentDeal = deal
 
-  $scope.resetDealProduct = ->
-    $scope.deal_product = {
+  $scope.resetDealProductBudget = ->
+    $scope.deal_product_budget = {
       deal_id: $routeParams.id
       months: []
     }
@@ -293,12 +293,12 @@
             else
               $scope.init()
 
-  $scope.updateDealProduct = (data) ->
-    DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
+  $scope.updateDealProductBudget = (data) ->
+    DealProductBudget.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product_budget: data).then (deal) ->
       $scope.setCurrentDeal(deal)
 
-  $scope.updateDealProductTotalBudget = (product_id, total_budget) ->
-    DealProduct.update_total_budget(deal_id: $scope.currentDeal.id, product_id: product_id, total_budget: total_budget).then (deal) ->
+  $scope.updateDealProductBudgetTotalBudget = (product_id, total_budget) ->
+    DealProductBudget.update_total_budget(deal_id: $scope.currentDeal.id, product_id: product_id, total_budget: total_budget).then (deal) ->
       $scope.setCurrentDeal(deal)
 
   $scope.updateDealMember = (data) ->
@@ -328,7 +328,7 @@
 
   $scope.deleteProduct = (product) ->
     if confirm('Are you sure you want to delete "' +  product.name + '"?')
-      DealProduct.delete(id: product.id, deal_id: $scope.currentDeal.id).then (deal) ->
+      DealProductBudget.delete(id: product.id, deal_id: $scope.currentDeal.id).then (deal) ->
         $scope.setCurrentDeal(deal)
 
   $scope.isActive = (id) ->

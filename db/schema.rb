@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161006101856) do
+ActiveRecord::Schema.define(version: 20161006125433) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -204,15 +204,30 @@ ActiveRecord::Schema.define(version: 20161006101856) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "deal_products", force: :cascade do |t|
+  create_table "deal_product_budgets", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
     t.integer  "budget"
     t.date     "period"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.date     "start_date"
     t.date     "end_date"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "deal_product_id"
+  end
+
+  add_index "deal_product_budgets", ["deal_id"], name: "index_deal_product_budgets_on_deal_id", using: :btree
+  add_index "deal_product_budgets", ["product_id"], name: "index_deal_product_budgets_on_product_id", using: :btree
+
+  create_table "deal_products", force: :cascade do |t|
+    t.integer  "deal_id"
+    t.integer  "product_id"
+    t.integer  "budget"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.date     "start_date"
+    t.date     "end_date"
+    t.boolean  "open",       default: true
   end
 
   create_table "deal_stage_logs", force: :cascade do |t|
@@ -515,5 +530,8 @@ ActiveRecord::Schema.define(version: 20161006101856) do
 
   add_foreign_key "clients", "clients", column: "parent_client_id"
   add_foreign_key "deal_logs", "deals"
+  add_foreign_key "deal_product_budgets", "deal_products"
+  add_foreign_key "deal_product_budgets", "deals"
+  add_foreign_key "deal_product_budgets", "products"
   add_foreign_key "users", "teams"
 end

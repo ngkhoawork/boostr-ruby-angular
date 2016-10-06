@@ -43,7 +43,7 @@ Rails.application.routes.draw do
     end
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
-    resources :deal_products, only: [:create, :update, :destroy] do
+    resources :deal_product_budgets, only: [:create, :update, :destroy] do
       collection do
         put :update_total_budget
       end

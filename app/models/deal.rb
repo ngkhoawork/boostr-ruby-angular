@@ -16,6 +16,7 @@ class Deal < ActiveRecord::Base
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products
+  has_many :deal_product_budgets, through: :deal_products
   has_many :deal_logs
   has_many :products, -> { distinct }, through: :deal_products
   has_many :deal_members
@@ -31,7 +32,7 @@ class Deal < ActiveRecord::Base
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
   before_save do
-    if deal_products.empty?
+    if deal_product_budgets.empty?
       self.budget = budget.to_i * 100 if budget_changed?
     end
   end
@@ -155,11 +156,11 @@ class Deal < ActiveRecord::Base
   end
 
   def in_period_amt(start_date, end_date)
-    deal_products.for_time_period(start_date, end_date).to_a.sum do |deal_product|
-      from = [start_date, deal_product.start_date].max
-      to = [end_date, deal_product.end_date].min
+    deal_product_budgets.for_time_period(start_date, end_date).to_a.sum do |deal_product_budget|
+      from = [start_date, deal_product_budget.start_date].max
+      to = [end_date, deal_product_budget.end_date].min
       num_days = (to.to_date - from.to_date) + 1
-      deal_product.daily_budget * num_days
+      deal_product_budget.daily_budget * num_days
     end
   end
 
@@ -184,7 +185,7 @@ class Deal < ActiveRecord::Base
       end
       # monthly_budget = daily_budget * days_per_month[index]
       period = Date.new(*month)
-      deal_products.create(product_id: product_id, start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(2) * 100)
+      deal_product_budgets.create(product_id: product_id, start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(2) * 100)
     end
     update_total_budget if update_budget
   end
@@ -192,18 +193,18 @@ class Deal < ActiveRecord::Base
   def update_product_budget(product_id, total_budget)
     daily_budget = total_budget.to_f / days
 
-    deal_product_list = deal_products.where(product_id: product_id)
-    last_index = deal_product_list.count - 1
+    deal_product_budget_list = deal_product_budgets.where(product_id: product_id)
+    last_index = deal_product_budget_list.count - 1
     total = 0
-    deal_product_list.each_with_index do |deal_product, index|
+    deal_product_budget_list.each_with_index do |deal_product_budget, index|
       if last_index == index
-        deal_product_budget = total_budget.to_f - total
+        deal_product_budget_budget = total_budget.to_f - total
       else
 
-        deal_product_budget = (daily_budget * days_per_month[index]).round(0)
-        total = total + deal_product_budget
+        deal_product_budget_budget = (daily_budget * days_per_month[index]).round(0)
+        total = total + deal_product_budget_budget
       end
-      deal_product.update(budget: deal_product_budget)
+      deal_product_budget.update(budget: deal_product_budget_budget)
     end
   end
 
@@ -236,12 +237,12 @@ class Deal < ActiveRecord::Base
 
   def update_total_budget
     current_budget = self.budget.nil? ? 0 : self.budget
-    new_budget = deal_products.sum(:budget)
+    new_budget = deal_product_budgets.sum(:budget)
     deal_log = DealLog.new
     deal_log.deal_id = self.id
     deal_log.budget_change = new_budget - current_budget
     deal_log.save
-    update_attributes(budget: deal_products.sum(:budget))
+    update_attributes(budget: deal_product_budgets.sum(:budget))
   end
 
   def reset_products
@@ -250,10 +251,10 @@ class Deal < ActiveRecord::Base
       array = []
 
       products.each do |product|
-        old_deal_products = deal_products.where(product_id: product.id)
+        old_deal_product_budgets = deal_product_budgets.where(product_id: product.id)
 
-        total_budget = old_deal_products.sum(:budget) / 100
-        old_deal_products.destroy_all
+        total_budget = old_deal_product_budgets.sum(:budget) / 100
+        old_deal_product_budgets.destroy_all
         array << { id: product.id, total_budget: total_budget }
       end
 
@@ -326,7 +327,7 @@ class Deal < ActiveRecord::Base
       end
 
       deal_ids = deals.collect{|deal| deal.id}
-      range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
+      range = DealProductBudget.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
       header = []
       header << "Team Member"
       header << "Advertiser"
@@ -360,10 +361,10 @@ class Deal < ActiveRecord::Base
         line << deal.start_date
         line << deal.end_date
         range.each do |product_time|
-          deal_products = deal.deal_products.where({start_date: product_time}).select("sum(budget) as total_budget").collect{|deal_product| deal_product.total_budget}
+          deal_product_budgets = deal.deal_product_budgets.where({start_date: product_time}).select("sum(budget) as total_budget").collect{|deal_product_budget| deal_product_budget.total_budget}
 
-          if deal_products && deal_products[0]
-            line << "$" + (deal_products[0] / 100).round.to_s
+          if deal_product_budgets && deal_product_budgets[0]
+            line << "$" + (deal_product_budgets[0] / 100).round.to_s
           else
             line << "$0"
           end
@@ -460,7 +461,7 @@ class Deal < ActiveRecord::Base
                 data[percent_key]['Total']['FY'] = 0
               end
             end
-            user_product_budget = deal_product.budget * deal_member.share / 100
+            user_product_budget = deal_product_budget.budget * deal_member.share / 100
             data[percent_key][user_key]['FY'] += user_product_budget
             data[percent_key][user_key][month.to_s] += user_product_budget
             data[percent_key][user_key]['Q' + ((month / 3.0).ceil.to_s)] += user_product_budget
@@ -565,9 +566,9 @@ class Deal < ActiveRecord::Base
     products_csv = CSV.generate do |csv|
       csv << ["Deal ID", "Name", "Product", "Pricing Type", "Product Line", "Product Family", "Budget", "Period"]
       all.each do |deal|
-        deal.deal_products.each do |deal_product|
-          budget = !deal_product.budget.nil? ? deal_product.budget/100.0 : nil
-          product = deal_product.product
+        deal.deal_product_budgets.each do |deal_product_budget|
+          budget = !deal_product_budget.budget.nil? ? deal_product_budget.budget/100.0 : nil
+          product = deal_product_budget.product
           product_name = ""
           pricing_type = ""
           product_family = ""
@@ -578,7 +579,7 @@ class Deal < ActiveRecord::Base
             product_line = get_option(product, "Product Line")
             product_family = get_option(product, "Product Family")
           end
-		      csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget, deal_product.start_date.strftime("%B %Y")]
+		      csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget, deal_product_budget.start_date.strftime("%B %Y")]
         end
       end
     end

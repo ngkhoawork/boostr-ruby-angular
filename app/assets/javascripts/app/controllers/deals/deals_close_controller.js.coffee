@@ -6,7 +6,7 @@
     $scope.formType = "Closed Reason"
     $scope.submitText = "Submit"
     $scope.currentDeal = {}
-    $scope.resetDealProduct()
+    $scope.resetDealProductBudget()
     Deal.get(currentDeal.id).then (deal) ->
       $scope.setCurrentDeal(deal)
 
@@ -18,8 +18,8 @@
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
 
-  $scope.resetDealProduct = ->
-    $scope.deal_product = {
+  $scope.resetDealProductBudget = ->
+    $scope.deal_product_budget = {
       deal_id: $routeParams.id
       months: []
     }

@@ -11,7 +11,7 @@ feature 'Forecast' do
   let(:stage) { create :stage, probability: 100 }
   let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
   let!(:deal_member) { create :deal_member, deal: deal, user: member, share: 100 }
-  let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
+  let!(:deal_product_budget) { create_list :deal_product_budget, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
   describe 'showing the root level of teams' do
 
