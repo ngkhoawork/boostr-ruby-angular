@@ -71,8 +71,8 @@ class ForecastMember
 
     @weighted_pipeline = open_deals.sum do |deal|
       deal_total = 0
-      deal.deal_products.for_time_period(start_date, end_date).each do |deal_product|
-        deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
+      deal.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+        deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
       end
       deal_total * (deal.stage.probability / 100.0)
     end
@@ -90,8 +90,8 @@ class ForecastMember
 
     open_deals.each do |deal|
       deal_total = 0
-      deal.deal_products.for_time_period(start_date, end_date).each do |deal_product|
-        deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
+      deal.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+        deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
       end
       @weighted_pipeline_by_stage[deal.stage.id] ||= 0
       @weighted_pipeline_by_stage[deal.stage.id] += deal_total * (deal.stage.probability / 100.0)
@@ -111,8 +111,8 @@ class ForecastMember
 
     open_deals.each do |deal|
       deal_total = 0
-      deal.deal_products.for_time_period(start_date, end_date).each do |deal_product|
-        deal_total += deal_product.daily_budget * number_of_days(deal_product) * (deal_shares[deal.id]/100.0)
+      deal.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+        deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
       end
       @unweighted_pipeline_by_stage[deal.stage.id] ||= 0
       @unweighted_pipeline_by_stage[deal.stage.id] += deal_total
@@ -203,7 +203,7 @@ class ForecastMember
   end
 
   def open_deals
-    @open_deals ||= member.deals.open.for_time_period(start_date, end_date).includes(:deal_products, :stage).to_a
+    @open_deals ||= member.deals.open.for_time_period(start_date, end_date).includes(:deal_product_budgets, :stage).to_a
   end
 
   def complete_deals

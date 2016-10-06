@@ -1,7 +1,8 @@
-class DealProduct < ActiveRecord::Base
-  belongs_to :deal, touch: true
-  belongs_to :product
-  has_many :deal_product_budgets
+class DealProductBudget < ActiveRecord::Base
+  # belongs_to :deal, touch: true
+  # belongs_to :product
+  belongs_to :deal_product
+  delegate :deal, to: :deal_product
 
   scope :for_time_period, -> (start_date, end_date) { where('deal_product_budgets.start_date <= ? AND deal_product_budgets.end_date >= ?', end_date, start_date) }
 

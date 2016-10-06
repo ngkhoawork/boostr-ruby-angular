@@ -1,16 +1,16 @@
-@service.service 'DealProduct',
+@service.service 'DealProductBudget',
 ['$resource', '$q', '$rootScope',
 ($resource, $q, $rootScope) ->
 
-  resource = $resource '/api/deal_products/:id', { id: '@id' },
+  resource = $resource '/api/deal_product_budgets/:id', { id: '@id' },
     update: {
         method: 'PUT'
-        url: '/api/deal_products/:id'
+        url: '/api/deal_product_budgets/:id'
       }
-  resource_collection = $resource '/api/deal_products/', {  },
+  resource_collection = $resource '/api/deal_product_budgets/', {  },
     update: {
       method: 'PUT'
-      url: '/api/deal_products/update_total_budget'
+      url: '/api/deal_product_budgets/update_total_budget'
     }
   @create = (params) ->
     deferred = $q.defer()

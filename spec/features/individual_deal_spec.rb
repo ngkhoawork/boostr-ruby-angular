@@ -32,7 +32,7 @@ feature 'Individual Deal' do
         first('li a').trigger('click')
       end
 
-      first_deal_product = deal.deal_products.where(product_id: product.id).first
+      first_deal_product_budget = deal.deal_product_budgets.where(product_id: product.id).first
       within '#deal_overview' do
         deal_name = find('h3.deal-name')
         expect(deal_name).to have_text(deal.name)
@@ -102,7 +102,7 @@ feature 'Individual Deal' do
           expect(find('td:nth-child(14)')).to have_text('$10,326') # jun
 
           find('td:nth-child(3) span').trigger('click')
-          fill_in "#{first_deal_product.id}", with: '1000'
+          fill_in "#{first_deal_product_budget.id}", with: '1000'
           find('td:nth-child(3) input').native.send_keys(:Enter)
         end
       end
