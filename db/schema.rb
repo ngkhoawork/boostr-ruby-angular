@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161004183815) do
+ActiveRecord::Schema.define(version: 20161006101856) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -96,6 +96,7 @@ ActiveRecord::Schema.define(version: 20161004183815) do
     t.string   "original_file_name"
     t.string   "comment"
     t.string   "subtype"
+    t.integer  "created_by"
   end
 
   create_table "client_contacts", force: :cascade do |t|
@@ -477,7 +478,9 @@ ActiveRecord::Schema.define(version: 20161004183815) do
     t.decimal  "win_rate"
     t.decimal  "average_deal_size"
     t.float    "cycle_time"
+    t.boolean  "is_active",              default: true
     t.string   "starting_page"
+    t.integer  "user_type",              default: 0,     null: false
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

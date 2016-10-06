@@ -74,6 +74,14 @@
             %a{ href:'{{file.presigned_url}}' }{{file.original_file_name}}
           %span.files-uploader__list-elem__file-size
             {{file.asset_file_size | bytes }}
+          %span.files-uploader__list-elem__creator{ ng: { if: 'file.creator' } }
+            Added By
+            %br/
+            {{ file.creator.name }}
+          %span.files-uploader__list-elem__created
+            Date Added
+            %br/
+            {{ file.created_at | date : mediumDate }}
           %span.files-uploader__list-elem__delete
             %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
               = inline_svg 'icons/trash.svg'

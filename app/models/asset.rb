@@ -1,5 +1,6 @@
 class Asset < ActiveRecord::Base
   belongs_to :attachable, polymorphic: true
+  belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
 
   attr_accessor :presigned_url
 
@@ -15,11 +16,11 @@ class Asset < ActiveRecord::Base
 
   def as_json(options = {})
     super(options.merge(
-              methods: [
-                  :presigned_url
-              ]
-          )
-    )
+      include: {
+        creator: { only: [:id], methods: :name }
+      },
+      methods: [:presigned_url]
+    ))
   end
 
   def delete_from_s3

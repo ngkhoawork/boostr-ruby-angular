@@ -15,6 +15,7 @@ class Api::DealAssetsController < ApplicationController
 
   def create
     asset = deal.assets.new(asset_params)
+    asset.created_by = current_user.id
 
     if asset.save
       render json: asset, status: :created

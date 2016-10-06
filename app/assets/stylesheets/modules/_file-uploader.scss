@@ -21,6 +21,7 @@
 }
 .file-size {
     margin-left: 10px;
+    margin-right: auto;
 }
 .details-info {
     padding: 0 15px;
@@ -178,8 +179,15 @@
             &__file-size {
                 @extend .file-size;
             }
+            &__creator, &__created {
+                text-align: center;
+                @extend .file-size;
+                margin-right: 0;
+                font-size: 12px;
+            }
             &__delete {
-                margin-left: auto;
+                margin-left: 10px;
+                margin-right: 0;
                 opacity: 0;
                 transition: opacity 200ms;
 
