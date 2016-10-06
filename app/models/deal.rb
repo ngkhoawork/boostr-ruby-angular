@@ -374,10 +374,10 @@ class Deal < ActiveRecord::Base
       deals = company.deals.active.greater_than(50)
       data = {
         'Summary' => {
-          'Booked' => nil,
           '50% Prospects' => nil,
           '75% Prospects' => nil,
           '90% Prospects' => nil,
+          'Booked' => nil,
           'Total' => nil
         },
         'Booked' => nil,
