@@ -1,5 +1,5 @@
-@directives.directive 'uploadFile', ['$timeout', '$http', 'Transloadit', 'Field', '$filter'
-  ($timeout, $http, Transloadit, Field, $filter) ->
+@directives.directive 'uploadFile', ['$rootScope', '$timeout', '$http', 'Transloadit', 'Field', '$filter'
+  ($rootScope, $timeout, $http, Transloadit, Field, $filter) ->
     restrict: 'E'
     templateUrl: 'directives/upload-files.html'
     scope:
@@ -91,7 +91,7 @@
               key: 'a49408107c0e11e68f21fda8b5e9bb0a'
             },
 
-            template_id: '689738007e6b11e693c6c33c0cd97f1d'
+            template_id: $rootScope.transloaditTemplate
           },
 
           signature: (callback) ->
@@ -115,7 +115,7 @@
 
             if (assemblyJson && assemblyJson.results && assemblyJson.results[':original'] && assemblyJson.results[':original'].length)
               folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
-              fullFileName = folder + assemblyJson.results[':original'][0].name
+              fullFileName = folder + assemblyJson.results[':original'][0].url.substr(assemblyJson.results[':original'][0].url.lastIndexOf('/') + 1);
 
             $http.post '/api/deals/'+ $routeParams.id + '/deal_assets',
                 asset:

@@ -6,8 +6,7 @@ class Asset < ActiveRecord::Base
   ONE_HOUR = 60 * 60
 
   def presigned_url
-    # TODO Check other cases of URL transformation
-    obj = S3_BUCKET.object(self.asset_file_name.gsub(" ", "-"))
+    obj = S3_BUCKET.object(self.asset_file_name)
     if obj.nil?
       return ""
     end
