@@ -9,10 +9,10 @@
        $q.all({ dealData: Deal.pipeline_summary_report({filter: 'company'}) }).then (data) ->
          $scope.data = {
            'Summary': {
-             'Booked': null,
              '50% Prospects': null,
              '75% Prospects': null,
              '90% Prospects': null,
+             'Booked': null,
              'Total': null
            },
            'Booked': null,
