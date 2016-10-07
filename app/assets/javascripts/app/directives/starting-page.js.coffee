@@ -15,6 +15,8 @@
         $scope.userInfo.isUserStartingPage = false
       return
     $scope.setStartPage = () ->
+      if($scope.userInfo && $scope.userInfo.isUserStartingPage)
+        return
       $scope.userInfo.isUserStartingPage = true
       $http.post('/api/users/starting_page', user: starting_page: $location.$$url).success (user) ->
         $scope.current_user = user
