@@ -145,7 +145,7 @@
     $scope.anchors = [{name: 'campaign', id: 'campaign'},
                       {name: 'activities', id: 'activities'},
                       {name: 'team & split', id: 'teamsplit'},
-                      {name: 'documents', id: 'documents'},
+                      {name: 'attachments', id: 'attachments'},
                       {name: 'additional info', id: 'info'}]
 
     $scope.getDealFiles()
