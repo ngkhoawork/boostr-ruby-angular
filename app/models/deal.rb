@@ -374,6 +374,7 @@ class Deal < ActiveRecord::Base
         '90% Prospects' => nil
       }
 
+      current_year = Time.now.utc.year
       deals.each do |deal|
         if deal.stage.probability == 100
           percent_key = "Booked"
@@ -407,6 +408,9 @@ class Deal < ActiveRecord::Base
 
         deal.deal_products.each do |deal_product|
           month = deal_product.start_date.month
+          if deal_product.start_date.year != current_year
+            next
+          end
           data['Summary'][percent_key]['FY'] += deal_product.budget
           data['Summary'][percent_key][month.to_s] += deal_product.budget
           data['Summary'][percent_key]['Q' + ((month / 3.0).ceil.to_s)] += deal_product.budget
