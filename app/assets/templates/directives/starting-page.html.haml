@@ -1,3 +1,5 @@
-%button.set-starting{:"ng-click" => "setStartPage()"}
-  %span.glyphicon.glyphicon-star-empty
+-#%button.set-starting{"ng-click" => "setStartPage()"}
   %span.set-starting__description Set as starting page
+  %span.glyphicon.glyphicon-star-empty
+
+%span.glyphicon.glyphicon-star-empty{"ng-click" => "setStartPage()", 'tooltip':'Set as starting page', 'tooltip-placement':'left'}

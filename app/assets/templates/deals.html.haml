@@ -12,7 +12,6 @@
                 %li{ ng: { repeat: 'filter in dealFilters', class: '{active: filter.name == dealFilter.name}' } }
                   %a{ href: '', ng: { click: 'filterDeals(filter)' } }
                     {{ filter.name }}
-            %starting-page
 
             %li.pull-right.last
               %a.export{ href: '', ng: { click: 'exportDeals()' } }

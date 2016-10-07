@@ -5,4 +5,4 @@
     $scope.setStartPage = () ->
       $http.post '/api/users/starting_page', user:
         starting_page: $location.$$url
-  ]
+ ]
