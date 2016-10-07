@@ -44,7 +44,7 @@
           scope.upload element.files[0]
 
       $scope.deleteFile = (file) ->
-        if (file && file.id)
+        if (file && file.id && confirm('Are you sure you want to delete "' +  file.original_file_name + '"?'))
           $http.delete('/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id)
           .then (respond) ->
             $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
