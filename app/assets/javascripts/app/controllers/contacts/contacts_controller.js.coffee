@@ -325,6 +325,7 @@
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
+        $scope.reminderOptions.editMode = true
       , (err) ->
         $scope.reminderOptions.buttonDisabled = false
     else
@@ -334,6 +335,7 @@
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
+        $scope.reminderOptions.editMode = true
       , (err) ->
         $scope.reminderOptions.buttonDisabled = false
 
