@@ -1,6 +1,7 @@
 @app.controller 'SettingsUsersController',
 ['$scope', '$modal', 'User', 'CurrentUser',
 ($scope, $modal, User, CurrentUser) ->
+  $scope.user_types = User.user_types_list
   $scope.user_statuses = User.user_statuses_list
 
   $scope.init = () ->
