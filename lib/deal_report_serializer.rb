@@ -65,7 +65,7 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def deal_product_budgets
-    object.deal_product_budgets.group("start_date").select("sum(budget) as budget, start_date").collect{|product| product.serializable_hash(only: [:budget, :start_date])}
+    object.deal_product_budgets.group("start_date").select("sum(deal_product_budgets.budget) as budget, start_date").collect{|product| product.serializable_hash(only: [:budget, :start_date])}
     # object.deal_product_budgets.map {|deal_product_budget| deal_product_budget.serializable_hash(only: [:id, :budget, :start_date, :end_date]) rescue nil}
   end
 
