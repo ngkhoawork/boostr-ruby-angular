@@ -2,8 +2,6 @@
 ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$sce', 'Contact', 'Field', 'Activity',  'ActivityType', 'Reminder', '$http'
 ($scope, $rootScope, $modal, $routeParams, $location, $sce, Contact, Field, Activity, ActivityType, Reminder, $http) ->
 
-  console.log('$routeParams', $routeParams)
-
   $scope.contacts = []
   $scope.feedName = 'Updates'
   $scope.page = 1
@@ -67,7 +65,6 @@
     return $sce.trustAsHtml(html)
 
   $scope.getContacts = ->
-    console.log('$scope.contacts', $scope.contacts)
     $scope.isLoading = true
     params = {
       page: $scope.page,
@@ -77,7 +74,6 @@
     if $scope.query.trim().length
       params.name = $scope.query.trim()
     Contact.all1(params).then (contacts) ->
-      console.log('contacts', contacts)
       if $scope.page > 1
         $scope.contacts = $scope.contacts.concat(contacts)
       else
