@@ -33,7 +33,9 @@ feature 'Individual Deal' do
       end
 
       first_deal_product = deal.deal_products.where(product_id: product.id).first
-      within '#deal_overview' do
+      deal_overview = find(:xpath, '(//*[@id="deal_overview"])[2]')
+
+      within deal_overview do
         deal_name = find('h3.deal-name')
         expect(deal_name).to have_text(deal.name)
         deal_name.trigger('click')
@@ -171,7 +173,7 @@ feature 'Individual Deal' do
 
       expect(find('#total-amount')).to have_text('$359,932')
 
-      within '.black-table.sec tbody' do
+      within '#teamsplits .black-table.sec tbody' do
         expect(page).to have_css('tr', count: 1)
       end
     end

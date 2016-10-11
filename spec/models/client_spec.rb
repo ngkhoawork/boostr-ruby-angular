@@ -14,8 +14,8 @@ RSpec.describe Client, type: :model do
     let!(:clients) { create_list :client, 2, name: 'Bob' }
 
     it 'returns the id and name of the clients' do
-      header = "Client ID,Name\n"
-      body = "#{clients[0].id},Bob\n#{clients[1].id},Bob\n"
+      header = "Client ID,Name,Parent,Category,Subcategory\n"
+      body = "#{clients[0].id},Bob,,,\n#{clients[1].id},Bob,,,\n"
       csv = Client.to_csv
       expect(csv).to eq(header + body)
     end

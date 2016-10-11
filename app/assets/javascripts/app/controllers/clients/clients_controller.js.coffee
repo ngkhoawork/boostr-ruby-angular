@@ -69,6 +69,7 @@
 
   $scope.getContacts = (clientId) ->
     if ($scope.currentClient && $scope.currentClient.id)
+      $scope.currentClient.contacts = []
       ClientContacts.list($scope.currentClient.id)
       .then (response) ->
         if (response && response.data && response.data.length)

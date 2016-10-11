@@ -6,7 +6,7 @@ RSpec.describe Api::ActivitiesController, type: :controller do
   let(:user) { create :user, team: team }
   let(:client) { create :client }
   let(:deal) { create :deal, advertiser: client }
-  let(:contacts) { create_list :contact, 10, client: client }
+  let(:contacts) { create_list :contact, 10, clients: [client] }
   let(:activity_params) {
     attributes_for(:activity)
   }

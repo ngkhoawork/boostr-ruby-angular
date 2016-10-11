@@ -7,8 +7,8 @@ feature 'Clients' do
   describe 'showing client details' do
     let!(:client) { create :client, created_by: user.id }
     let!(:agency) { create :client, created_by: user.id }
-    let!(:contacts) { create_list :contact, 2, clients: [client] }
-    let!(:deal) { create_list :deal, 2, advertiser: client }
+    let!(:contacts) { create_list :contact, 2, clients: [client, agency] }
+    let!(:deal) { create_list :deal, 2, advertiser: client, agency: agency }
     let!(:agency_deal) { create :deal, agency: agency }
 
     before do
@@ -25,7 +25,7 @@ feature 'Clients' do
       end
 
       within '#client-detail' do
-        expect(find('h2.client-name')).to have_text(client.name)
+        expect(find('h2.client-name')).to have_text(user.clients.order(:name).first.name)
 
         within '#people' do
           expect(page).to have_css('.well', count: 2)
@@ -260,11 +260,18 @@ feature 'Clients' do
       expect(page).to have_css('#deal_modal')
 
       within '#deal_modal' do
+        advertiser_search = find "div[name='advertiser'] span.ui-select-toggle"
+        advertiser_search.click
+        advertiser_field = find "div[name='advertiser'] > input.form-control"
+        advertiser_field.set(client.name)
+
+        agency_search = find "div[name='agency'] span.ui-select-toggle"
+        agency_search.click
+        agency_field = find "div[name='agency'] > input.form-control"
+        agency_field.set(agency.name)
+
         fill_in 'name', with: 'Apple Watch Launch'
         ui_select('stage', open_stage.name)
-        fill_in 'budget', with: '1234'
-        ui_select('advertiser', client.name)
-        ui_select('agency', agency.name)
         ui_select('deal-type', 'Sponsorship')
         ui_select('source-type', 'RFP Response to Agency')
         fill_in 'next-steps', with: 'Meet with Rep'
