@@ -1,0 +1,80 @@
+.files-uploader
+  .files-uploader__drop-area{ :"am-dnd" => true, :"file-hanlder" => "upload", :"ng-disabled" => "uploadFile.status == 'LOADING'" }
+    %span.files-uploader__describe
+      Drag and drop a file to upload
+      %br
+      or <a href="#" ng-click="callUpload($event)"> click to browse</a>
+    %input#file-uploader.files-uploader__file-input{ type: 'file', 'onchange': 'angular.element(this).scope().changeFile(this)', 'file-model':'fileToUpload' }
+  .files-uploader__content
+    %figure.files-uploader__uploading-elem{ng: { show: 'uploadShow', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
+      %header.files-uploader__uploading-elem__header
+        %span.files-uploader__uploading-elem__file-name{ :title => "{{uploadFile.name}}" }
+          {{ uploadFile.name }}
+        %span.files-uploader__uploading-elem__file-size
+          {{ uploadFile.size | bytes }}
+
+        %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'LOADING'"}}
+          Loading {{ (progressBarCur / uploadFile.size) * 100 | number:0 }}% {{ progressBarCur < uploadFile.size ? '...' : '' }}
+        %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'SUCCESS'"}}
+          Uploaded successfully
+        %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ABORT'"}}
+          Upload canceled by user
+
+        %span.files-uploader__uploading-elem__progress{ng: { show: "uploadFile.status == 'ERROR'"}}
+          %span {{uploadError}}
+          %btn.btn-link{ ng: {click: 'retry()'} } Retry
+        %span.files-uploader__uploading-elem__cancel{ng: { show: 'progressBarCur < uploadFile.size && uploadFile.status != "ERROR" && uploadFile.status != "ABORT"' }}
+          %btn.btn-link{ ng: {click: 'uploadCancel()'} }
+            Cancel
+
+      %progressbar{:"ng-show" => "progressBarCur", :max => "uploadFile.size", :value => "progressBarCur" }
+
+    %ul.files-uploader__list
+      %li.files-uploader__list-elem{ ng: { repeat: 'file in uploadedFiles | orderBy: "-created_at"'} }
+        %header.files-uploader__list-elem__main
+          %span.files-uploader__list-elem__file-name
+            %a{ download: '', href:'{{file.presigned_url}}' }{{file.original_file_name}}
+          %span.files-uploader__list-elem__file-size
+            {{file.asset_file_size | bytes }}
+          %span.files-uploader__list-elem__delete
+            %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
+              = inline_svg 'icons/trash.svg'
+
+      %li.files-uploader__list-elem{ ng: { repeat: 'file in dealFiles | orderBy: "-created_at"'} }
+        %header.files-uploader__list-elem__main
+          %span.files-uploader__list-elem__show-datails{"ng-click" => "showDetails = !showDetails", "ng-show" => "!showDetails"}
+            = inline_svg 'icons/hide-details.svg'
+          %span.files-uploader__list-elem__show-datails{"ng-click" => "showDetails = !showDetails", "ng-show" => "showDetails"}
+            = inline_svg 'icons/show-details.svg'
+
+          %span.files-uploader__list-elem__file-name
+            %a{ download: '', href:'{{file.presigned_url}}' }{{file.original_file_name}}
+          %span.files-uploader__list-elem__file-size
+            {{file.asset_file_size | bytes }}
+          %span.files-uploader__list-elem__creator{ ng: { if: 'file.creator' } }
+            Added By
+            %br/
+            {{ file.creator.name }}
+          %span.files-uploader__list-elem__created
+            Date Added
+            %br/
+            {{ file.created_at | date : mediumDate }}
+          %span.files-uploader__list-elem__delete
+            %btn.btn-link{ ng: { click: 'deleteFile(file)' } }
+              = inline_svg 'icons/trash.svg'
+        %footer.files-uploader__list-elem__details.form-horizontal{"ng-show" => "showDetails"}
+          .form-group
+            %label.col-xs-2.control-label{ for: 'comment' } Notes:
+            .col-xs-10
+              %textarea.form-control{:name => 'comment', :rows => 3, "ng-model" => "file.comment" }
+          .form-group
+            %label.col-xs-2.control-label{ for: 'sub-type' } File Type:
+            .col-xs-4
+              %ui-select{ name: 'sub-type', ng: { model: 'file.subtype' } }
+                %ui-select-match{ placeholder: 'File Type' }
+                  {{ $select.selected.name || $select.selected }}
+                %ui-select-choices{ repeat: 'option in subTypes' }
+                  %div{ ng: { bind: { html: 'option.name' } } }
+            .col-xs-4.col-xs-offset-2
+              %button.btn.btn-primary.btn-block{ :"ng-click" => "saveOnServer(file); showDetails = !showDetails;" }
+                Save

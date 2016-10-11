@@ -48,6 +48,11 @@ $brand-tertiary: #232B31 !default;
 $brand-tertiary-darken: darken($brand-tertiary, 5%) !default;
 $brand-tertiary-lighten: lighten($brand-tertiary, 5%) !default;
 
+// Progress bar
+$progress-bar-background: $gray-darker1;
+$progress-bar-success: #8ac039;
+$progress-bar-error: #e45348;;
+
 // remainders
 $silver-border: #d7e1eb;
 $silver-background: #f4f7f9;
