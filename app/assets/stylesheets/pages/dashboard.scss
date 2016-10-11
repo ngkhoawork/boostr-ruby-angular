@@ -1,8 +1,4 @@
 #dashboard {
-  .dashboard-title {
-    @extend .starting-wrapper;
-  }
-
   #unassigned-contacts {
     .contact-list {
       border-top: 1px solid $very-light-gray;
