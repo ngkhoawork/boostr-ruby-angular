@@ -22,6 +22,7 @@
                 %th
                 %th.left Name
                 %th.left Title
+                %th.left Status
             %tbody
               %tr{ ng: { repeat: 'row in users', click: 'editModal(row)' } }
                 %td
@@ -33,3 +34,9 @@
                     {{ row.email }}
                 %td.left
                   {{ row.title }}
+                %td.left{ ng: { click: '$event.stopPropagation()' } }
+                  %ui-select{ name: 'is-active', ng: { model: 'row.is_active', disabled: 'row.id === current_user.id' }, 'on-select': 'submitUser(row)' }
+                    %ui-select-match
+                      {{ $select.selected.name }}
+                    %ui-select-choices{ repeat: 'status.value as status in user_statuses' }
+                      %div{ ng: { bind: { html: 'status.name' } } }

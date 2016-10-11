@@ -21,15 +21,22 @@ RSpec.describe Api::UsersController, type: :controller do
   end
 
   describe 'PUT #update' do
-    let(:user) { create :user }
+    let(:new_user) { create :user }
 
     it 'updates a user successfully' do
-      put :update, id: user.id, user: { first_name: 'New', last_name: 'Name', title: 'Boss' }, format: :json
+      put :update, id: new_user.id, user: { first_name: 'New', last_name: 'Name', title: 'Boss' }, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json['first_name']).to eq('New')
       expect(response_json['last_name']).to eq('Name')
       expect(response_json['title']).to eq('Boss')
+    end
+
+    it 'does not allow user to disable itself' do
+      put :update, id: user.id, user: { is_active: false }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['is_active']).to be(true)
     end
   end
 end

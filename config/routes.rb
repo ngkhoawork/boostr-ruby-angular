@@ -16,7 +16,11 @@ Rails.application.routes.draw do
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
-    resources :users, only: [:index, :update]
+    resources :users, only: [:index, :update] do
+      collection do
+        get :signed_in_user
+      end
+    end
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index] do

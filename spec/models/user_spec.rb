@@ -47,4 +47,33 @@ RSpec.describe User, type: :model do
       expect(user.name).to eq('Bobby Jones')
     end
   end
+
+  describe '#is_active?' do
+    it 'is true for active users' do
+      expect(user.is_active?).to be(true)
+    end
+
+    it 'is false for inactive users' do
+      user.is_active = false
+      expect(user.is_active?).to be(false)
+    end
+  end
+
+  describe '#inactive_message' do
+    it 'returns :user_is_not_active if user is inactive' do
+      user.is_active = false
+      expect(user.inactive_message).to be(:inactive)
+    end
+  end
+
+  describe '#active_for_authentication?' do
+    it 'is true for active users' do
+      expect(user.active_for_authentication?).to be(true)
+    end
+
+    it 'is false for inactive users' do
+      user.is_active = false
+      expect(user.active_for_authentication?).to be(false)
+    end
+  end
 end

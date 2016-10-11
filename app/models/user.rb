@@ -59,6 +59,18 @@ class User < ActiveRecord::Base
     ))
   end
 
+  def active_for_authentication?
+    super && self.is_active?
+  end
+
+  def inactive_message
+    self.is_active? ? super : :inactive
+  end
+
+  def is_active?
+    is_active
+  end
+
   def all_deals_for_time_period(start_date, end_date)
     deals.open.for_time_period(start_date, end_date)
   end

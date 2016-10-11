@@ -13,10 +13,18 @@ class Api::UsersController < ApplicationController
     end
   end
 
+  def signed_in_user
+    render json: current_user
+  end
+
   private
 
   def user_params
-    params.require(:user).permit(:first_name, :last_name, :title, :email, :notify, :win_rate, :average_deal_size, :cycle_time)
+    user_params = params.require(:user).permit(:first_name, :last_name, :title, :email, :notify, :win_rate, :average_deal_size, :cycle_time, :is_active)
+    if !user_params[:is_active].nil? && current_user.id == user.id
+      user_params[:is_active] = true
+    end
+    user_params
   end
 
   def user
