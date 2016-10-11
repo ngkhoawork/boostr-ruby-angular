@@ -107,6 +107,9 @@
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
+    .when '/users/sign_out',
+      templateUrl: 'sign_out.html'
+      controller: 'signOutController'
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])

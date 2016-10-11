@@ -193,20 +193,21 @@
         })
 
   $scope.setChartData = () ->
-    $scope.chartData = [
-      {
-        value: Math.min($scope.forecast.percent_to_quota, 100),
-        color:'#FB6C22',
-        highlight: '#FB6C22',
-        label: 'Complete'
-      },
-      {
-        value: Math.max(100 - $scope.forecast.percent_to_quota, 0),
-        color: '#FEA673',
-        highlight: '#FEA673',
-        label: 'Remaining'
-      }
-    ]
+    if($scope && $scope.forecast && $scope.forecast.percent_to_quota)
+      $scope.chartData = [
+        {
+          value: Math.min($scope.forecast.percent_to_quota, 100),
+          color:'#FB6C22',
+          highlight: '#FB6C22',
+          label: 'Complete'
+        },
+        {
+          value: Math.max(100 - $scope.forecast.percent_to_quota, 0),
+          color: '#FEA673',
+          highlight: '#FEA673',
+          label: 'Remaining'
+        }
+      ]
   $scope.getStages = ->
     Stage.query().$promise.then (stages) ->
       $scope.stages = stages
