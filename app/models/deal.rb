@@ -175,6 +175,12 @@ class Deal < ActiveRecord::Base
     daily_budget = total_budget.to_f / days
     last_index = months.count - 1
     total = 0
+    deal_product = deal_products.create(
+      product_id: product_id,
+      budget: total_budget,
+      start_date: Date.new(*months[0]).beginning_of_month,
+      end_date: Date.new(*months[-1]).end_of_month
+    )
     months.each_with_index do |month, index|
       if last_index == index
         monthly_budget = total_budget.to_f - total
@@ -184,8 +190,9 @@ class Deal < ActiveRecord::Base
       end
       # monthly_budget = daily_budget * days_per_month[index]
       period = Date.new(*month)
-      deal_product_budgets.create(product_id: product_id, start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(2) * 100)
+      deal_product.deal_product_budgets.create(start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(2) * 100)
     end
+
     update_total_budget if update_budget
   end
 

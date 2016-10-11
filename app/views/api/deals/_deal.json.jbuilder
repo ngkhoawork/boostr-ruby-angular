@@ -15,14 +15,14 @@ json.creator deal.creator, :first_name, :last_name
 
 json.contacts deal.contacts, :id, :name, :position, :address, :primary_client_json
 
-json.products deal.products do |product|
-  json.id product.id
-  json.name product.name
-  json.deal_product_budgets product.deal_product_budgets.where(deal_id: deal).order(:start_date) do |deal_product_budget|
+json.products deal.deal_products do |deal_product|
+  json.id deal_product.product.id
+  json.name deal_product.product.name
+  json.deal_product_budgets deal_product.deal_product_budgets.order(:start_date) do |deal_product_budget|
     json.id deal_product_budget.id
     json.budget deal_product_budget.budget / 100
   end
-  json.total_budget product.deal_product_budgets.where(deal_id: deal).sum(:budget) / 100
+  json.total_budget deal_product.budget
 end
 
 json.members deal.deal_members do |member|
