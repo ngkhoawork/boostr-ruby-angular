@@ -4,7 +4,7 @@
 }
 
 /**
- * So a lot of this stuff is just totally chewed up and nasty. The 
+ * So a lot of this stuff is just totally chewed up and nasty. The
  * activity-table class is an attempt to get away from the complete mess of
  * conflicting cascading craziness that happens further down in the file.
  */
@@ -209,8 +209,10 @@
       &:hover {
         td {
           &.action-td {
-            display: table-cell;
-            cursor: pointer;
+            opacity: 1;
+
+            // display: table-cell;
+            // cursor: pointer;
             width: 115px;
           }
 
@@ -283,7 +285,9 @@
         }
 
         &.action-td {
-          display: none;
+          opacity: 0;
+          transition: opacity 200ms;
+          // display: none;
         }
 
         svg {

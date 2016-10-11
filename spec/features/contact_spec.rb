@@ -9,12 +9,12 @@ feature 'Contacts' do
   describe 'creating a contact' do
     before do
       login_as user, scope: :user
-      visit '/people'
+      visit '/contacts'
       expect(page).to have_css('#contacts')
     end
 
     scenario 'pops up a new contact modal and creates a new contact', js: true do
-      find_link('New Person').trigger('click')
+      find_link('New Contact').trigger('click')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -44,7 +44,7 @@ feature 'Contacts' do
         expect(find('h2.contact-name')).to have_text('Bobby')
       end
 
-      find_link('New Person').trigger('click')
+      find_link('New Contact').trigger('click')
 
       expect(page).to have_css('#contact_modal')
 
@@ -82,7 +82,7 @@ feature 'Contacts' do
 
     before do
       login_as user, scope: :user
-      visit '/people'
+      visit '/contacts'
       expect(page).to have_css('#contacts')
     end
 
@@ -123,7 +123,7 @@ feature 'Contacts' do
     before do
       contacts.sort_by!(&:name)
       login_as user, scope: :user
-      visit '/people'
+      visit '/contacts'
       expect(page).to have_css('#contacts')
     end
 
@@ -150,11 +150,11 @@ feature 'Contacts' do
   end
 
   describe 'adding a reminder to a contact' do
-    let!(:contacts) { create_list :contact, 3, company: company, client: client }
+    let!(:contacts) { create_list :contact, 3, company: company, clients: [client] }
 
     before do
       login_as user, scope: :user
-      visit '/people'
+      visit '/contacts'
       expect(page).to have_css('#contacts')
     end
 

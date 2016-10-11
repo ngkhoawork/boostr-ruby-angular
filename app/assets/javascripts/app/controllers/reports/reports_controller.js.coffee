@@ -8,7 +8,7 @@
   $scope.years = []
   $scope.currentTimePeriod = {}
   $scope.company = {}
-  
+
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
       $scope.types = activityTypes
@@ -39,10 +39,10 @@
       user.currentReportValues[5] = $scope.getReportValue(user.reports, $scope.types[5].name, $scope.currentTimePeriod.id)
       user.currentReportValues[6] = $scope.getReportValue(user.reports, $scope.types[6].name, $scope.currentTimePeriod.id)
       user.currentReportValues[7] = $scope.getReportValue(user.reports, $scope.types[7].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[8] = $scope.getReportValue(user.reports, $scope.types[8].name, $scope.currentTimePeriod.id) 
+      user.currentReportValues[8] = $scope.getReportValue(user.reports, $scope.types[8].name, $scope.currentTimePeriod.id)
       user.currentReportValues[9] = $scope.getReportValue(user.reports, 'Total', $scope.currentTimePeriod.id)
       user.currentReportValues[10] = $scope.getReportValue(user.reports, 'Weekly Average', $scope.currentTimePeriod.id)
-      
+
     $scope.company.currentReportValues = []
     $scope.company.currentReportValues[0] = $scope.getCoReportValue($scope.company.reports, $scope.types[0].name, $scope.currentTimePeriod.id)
     $scope.company.currentReportValues[1] = $scope.getCoReportValue($scope.company.reports, $scope.types[1].name, $scope.currentTimePeriod.id)
@@ -52,7 +52,7 @@
     $scope.company.currentReportValues[5] = $scope.getCoReportValue($scope.company.reports, $scope.types[5].name, $scope.currentTimePeriod.id)
     $scope.company.currentReportValues[6] = $scope.getCoReportValue($scope.company.reports, $scope.types[6].name, $scope.currentTimePeriod.id)
     $scope.company.currentReportValues[7] = $scope.getCoReportValue($scope.company.reports, $scope.types[7].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[8] = $scope.getCoReportValue($scope.company.reports, $scope.types[8].name, $scope.currentTimePeriod.id) 
+    $scope.company.currentReportValues[8] = $scope.getCoReportValue($scope.company.reports, $scope.types[8].name, $scope.currentTimePeriod.id)
     $scope.company.currentReportValues[9] = $scope.getCoReportValue($scope.company.reports, 'Total', $scope.currentTimePeriod.id)
     $scope.company.currentReportValues[10] = $scope.getCoReportValue($scope.company.reports, 'Weekly Average', $scope.currentTimePeriod.id)
 
@@ -76,7 +76,7 @@
   $scope.updateTimePeriod = (time_period) ->
     $scope.currentTimePeriod = time_period
     $scope.initReport()
-      
+
   $scope.updateYear = (year) ->
     path = []
 

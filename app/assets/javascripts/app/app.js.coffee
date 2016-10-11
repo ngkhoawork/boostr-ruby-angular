@@ -19,6 +19,7 @@
   'tree.dropdown'
   'd3'
   'nvd3'
+  'ngTransloadit'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -135,6 +136,7 @@
 
 @app.run ['$rootScope', ($rootScope) ->
   $rootScope.currentUserIsLeader = currentUserIsLeader
+  $rootScope.transloaditTemplate = transloaditTemplate
 ]
 
 @service = angular.module 'services', ['ngResource']

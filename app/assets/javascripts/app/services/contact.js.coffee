@@ -29,22 +29,19 @@
     angular.toJson(send)
 
   resource = $resource '/api/contacts/:id', { id: '@id' },
-    query: {
+    query:
       isArray: true,
       transformResponse: (data, headers) ->
         resource.totalCount = headers()['x-total-count']
         angular.fromJson(data)
-    },
-    save: {
+    save:
       method: 'POST'
       url: '/api/contacts'
       transformRequest: transformRequest
-    },
-    update: {
+    update:
       method: 'PUT'
       url: '/api/contacts/:id'
       transformRequest: transformRequest
-    }
 
   # @TODO: Replace all of this with just returning resource
   allContacts = []

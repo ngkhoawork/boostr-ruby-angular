@@ -1,0 +1,213 @@
+/*==============================
+=            Common            =
+==============================*/
+.ident-border {
+    border-bottom: 1px solid $light-grayish-blue-2;
+}
+.list-elem-wrapper {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+}
+@mixin show-details {
+    margin-right: 15px;
+    cursor: pointer;
+}
+.file-name {
+    width: 19rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.file-size {
+    margin-left: 10px;
+    margin-right: auto;
+}
+.details-info {
+    padding: 0 15px;
+
+    .form-group {
+        margin-bottom: 15px;
+
+        .form-control[disabled] {
+            background-color: $modal-bg;
+        }
+    }
+    .control-label {
+        font-size: inherit;
+        color: $brand-tertiary;
+    }
+}
+
+/*=====  End of Common  ======*/
+
+
+.files-uploader {
+    // Extend bootstrap class
+    @extend .well;
+    padding: 0;
+    background-color: #fff;
+
+    &__drop-area {
+        @extend .ident-border;
+        padding: 19px;
+        text-align: center;
+        transition: box-shadow 300ms, color 300ms;
+
+        &.active {
+            box-shadow: inset 0px 0px 15px #9ccdff;
+        }
+
+        &[disabled] {
+            background-color: $gray-lighter;
+            cursor: not-allowed;
+
+            .files-uploader__describe {
+                &:before {
+                    color: inherit;
+                }
+
+                a {
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+
+    &__describe {
+        &:before {
+            @extend .glyphicon;
+            content: "\e198";
+            position: relative;
+            top: 1.4rem;
+            right: 20px;
+            font-size: 2rem;
+            color: $brand-primary;
+        }
+        a {
+            color: inherit;
+            text-decoration: underline;
+
+            &:hover, &:focus {
+                color: inherit;
+            }
+        }
+    }
+
+    &__file-input[type="file"] {
+        display: none;
+    }
+    &__content {
+        .btn-link {
+            color: inherit;
+            margin-left: 20px;
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+    &__uploading-elem {
+        &__header {
+            @extend .list-elem-wrapper;
+        }
+        &__show-datails {
+            @include show-details;
+        }
+        &__file-name {
+            @extend .file-name;
+        }
+        &__file-size {
+            @extend .file-size;
+        }
+        &__progress {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+        }
+        &__details {
+            @extend .details-info;
+        }
+
+        .progress {
+            height: 4px;
+            border-radius: 0;
+            background-color: $progress-bar-background;
+
+            .progress-bar {
+                background-color: $progress-bar-success;
+            }
+        }
+        &.success {
+            .files-uploader__uploading-elem__progress {
+                color: $progress-bar-success;
+            }
+        }
+        &.error {
+            .progress {
+                .progress-bar {
+                    background-color: $progress-bar-error;
+                }
+            }
+            .files-uploader__uploading-elem__progress {
+                color: $progress-bar-error;
+            }
+        }
+    }
+    &__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        &-elem {
+            // @extend .list-elem-wrapper;
+            @extend .ident-border;
+
+            &:last-child {
+                border: none;
+            }
+
+            &__main {
+                @extend .list-elem-wrapper;
+            }
+
+            &__show-datails {
+                @include show-details;
+            }
+            &__file-name {
+                @extend .file-name;
+            }
+            &__file-size {
+                @extend .file-size;
+            }
+            &__creator, &__created {
+                text-align: center;
+                @extend .file-size;
+                margin-right: 0;
+                font-size: 12px;
+            }
+            &__delete {
+                margin-left: 10px;
+                margin-right: 0;
+                opacity: 0;
+                transition: opacity 200ms;
+
+                .bnt-link {
+                    display: inline-block;
+
+                    svg {
+                        display: block;
+                    }
+                }
+            }
+            &__details {
+                @extend .details-info;
+            }
+
+            &:hover &__delete {
+                opacity: 1;
+            }
+        }
+    }
+}

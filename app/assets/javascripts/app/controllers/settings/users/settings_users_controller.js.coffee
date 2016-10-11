@@ -1,10 +1,14 @@
 @app.controller 'SettingsUsersController',
-['$scope', '$modal', 'User',
-($scope, $modal, User) ->
+['$scope', '$modal', 'User', 'CurrentUser',
+($scope, $modal, User, CurrentUser) ->
+  $scope.user_types = User.user_types_list
+  $scope.user_statuses = User.user_statuses_list
 
   $scope.init = () ->
     User.query().$promise.then (users) ->
       $scope.users = users
+    CurrentUser.get().$promise.then (user) ->
+      $scope.current_user = user
 
   $scope.showModal = () ->
     $scope.modalInstance = $modal.open
@@ -17,6 +21,9 @@
         onInvite: ->
           (user) ->
             $scope.users.push(user)
+
+  $scope.submitUser = (user) ->
+    user.$update()
 
   $scope.editModal = (user) ->
     $scope.modalInstance = $modal.open

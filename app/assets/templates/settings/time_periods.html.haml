@@ -28,11 +28,11 @@
                 %td.left {{ row.name }}
                 %td.right {{ row.start_date | date: 'shortDate' }}
                 %td.right {{ row.end_date | date: 'shortDate' }}
-                %td.action-column.info-td
-                  .empty
+                / %td.action-column.info-td
+                /   .empty
                 %td.action-td
-                  %a.edit-time-period{ href: '', ng: { click: 'editModal(row)' } }
+                  %a.edit-time-period{ href: '', ng: { click: 'editModal(row); $event.stopPropagation()' } }
                     = inline_svg 'icons/pencil.svg'
-                  %a.delete-time-period{ href: '', ng: { click: 'delete(row)' } }
+                  %a.delete-time-period{ href: '', ng: { click: 'delete(row); $event.stopPropagation()' } }
                     = inline_svg 'icons/trash.svg'
 

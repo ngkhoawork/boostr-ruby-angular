@@ -24,6 +24,9 @@
       method: 'GET',
       isArray: true
       url: 'api/deals/:id/deal_contacts'
+    deleteDealContact:
+      method: 'DELETE'
+      url: 'api/deals/:id/deal_contacts/:contact_id'
     updateContacts:
       method: 'PUT'
       url: 'api/deals/:id'
@@ -77,6 +80,8 @@
     deferred = $q.defer()
     resource.get id: deal_id, (deal) ->
       deferred.resolve(deal)
+    , (error) ->
+      deferred.reject(error)
     deferred.promise
 
   @delete = (deletedDeal) ->
@@ -89,6 +94,12 @@
   @dealContacts = (id, params) ->
     deferred = $q.defer()
     resource.dealContacts id: id, params: params, (contacts) ->
+      deferred.resolve(contacts)
+    deferred.promise
+
+  @deleteDealContact = (params) ->
+    deferred = $q.defer()
+    resource.deleteDealContact params, (response) ->
       deferred.resolve(contacts)
     deferred.promise
 

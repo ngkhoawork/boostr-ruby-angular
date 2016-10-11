@@ -1,6 +1,7 @@
 @app.controller 'NewUsersController',
 ['$scope', '$modalInstance', 'User', 'onInvite',
 ($scope, $modalInstance, User, onInvite) ->
+  $scope.user_types = User.user_types_list
 
   $scope.formType = "New"
   $scope.submitText = "Invite"

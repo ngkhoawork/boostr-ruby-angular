@@ -1,5 +1,4 @@
 #dashboard {
-
   #unassigned-contacts {
     .contact-list {
       border-top: 1px solid $very-light-gray;
@@ -137,16 +136,17 @@ a#add-contact {
     margin: 0;
     padding: 0 3px;
   }
+
+  .checkbox, .radio {
+    display: none;
+  }
 }
 
 #reminders-list .item-reminders:nth-of-type(1) {
   border-top: 1px solid $very-light-gray;
 }
 
-/*styled input*/
-.checkbox, .radio {
-  display: none;
-}
+
 
 .checkbox:checked + .checkbox-custom::before, .radio:checked + .radio-custom::before {
   color: #ff8e4a;

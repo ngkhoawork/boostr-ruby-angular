@@ -204,8 +204,6 @@
                 %td
                   %span{ 'e-name': 'share', editable: { text: 'member.share' }, onaftersave: 'updateDealMember(member)' }
                     {{ member.share }}%
-                %td.action-column.info-td
-                  .empty
                 %td.action-td
                   %a.delete-member{ href: '', ng: { click: 'deleteMember(member)' } }
                     = inline_svg 'icons/trash.svg'
@@ -228,6 +226,7 @@
                 %th.left Position
                 %th.left Email
                 %th.left Client Name
+                %th.action-column
             %tbody
               %tr{ ng: { repeat: "contact in currentDeal.contacts"} }
                 %td
@@ -238,58 +237,63 @@
                   {{ contact.address.email }}
                 %td
                   {{ contact.primary_client_json.name }}
+                %td.action-td
+                  %button.btn-link{ ng: { click: 'deleteContact(contact)' } }
+                    = inline_svg 'icons/trash.svg'
 
+    .row
+      #attachments.col-xs-6
+        %h3.header Attachments
+        <upload-file deal-files="dealFiles"></upload-file>
 
-
-
-    #info.col-xs-6.pull-right
-      %h3.header Additional Info
-      .well
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Type
-            .row
-              .col-xs-9.field-value.deal-type{ 'e-id': 'deal-type', editable: { select: 'currentDeal.deal_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.deal_type.options', onaftersave: 'updateDeal()' }
-                {{ currentDeal.deal_type.option.name }}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Source
-            .row
-              .col-xs-9.field-value{ 'e-id': 'deal-source', editable: { select: 'currentDeal.source_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.source_type.options', onaftersave: 'updateDeal()' }
-                {{ currentDeal.source_type.option.name }}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Next Steps
-            .row
-              .col-xs-9.field-value{ 'e-name': 'next-steps', editable: { text: 'currentDeal.next_steps' }, onaftersave: 'updateDeal()' }
-                {{ currentDeal.next_steps }}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Created
-            .row
-              .col-xs-9.field-value
-                {{ currentDeal.creator.first_name }} {{ currentDeal.creator.last_name }} on {{ currentDeal.created_at | date: 'shortDate' }} @ {{ currentDeal.created_at | date: 'shortTime'}}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Closed
-            .row
-              .col-xs-9.field-value
-                {{ currentDeal.closed_at | date: 'shortDate' }}
-        .row.field
-          .col-xs-10
-            .row
-              .col-xs-4
-                %h4.field-label Closed Reason
-            .row
-              .col-xs-9.field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
-                {{ currentDeal.close_reason.option.name }}
+      #info.col-xs-6
+        %h3.header Additional Info
+        .well
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Type
+              .row
+                .col-xs-9.field-value.deal-type{ 'e-id': 'deal-type', editable: { select: 'currentDeal.deal_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.deal_type.options', onaftersave: 'updateDeal()' }
+                  {{ currentDeal.deal_type.option.name }}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Source
+              .row
+                .col-xs-9.field-value{ 'e-id': 'deal-source', editable: { select: 'currentDeal.source_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.source_type.options', onaftersave: 'updateDeal()' }
+                  {{ currentDeal.source_type.option.name }}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Next Steps
+              .row
+                .col-xs-9.field-value{ 'e-name': 'next-steps', editable: { text: 'currentDeal.next_steps' }, onaftersave: 'updateDeal()' }
+                  {{ currentDeal.next_steps }}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Created
+              .row
+                .col-xs-9.field-value
+                  {{ currentDeal.creator.first_name }} {{ currentDeal.creator.last_name }} on {{ currentDeal.created_at | date: 'shortDate' }} @ {{ currentDeal.created_at | date: 'shortTime'}}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Closed
+              .row
+                .col-xs-9.field-value
+                  {{ currentDeal.closed_at | date: 'shortDate' }}
+          .row.field
+            .col-xs-10
+              .row
+                .col-xs-4
+                  %h4.field-label Closed Reason
+              .row
+                .col-xs-9.field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
+                  {{ currentDeal.close_reason.option.name }}

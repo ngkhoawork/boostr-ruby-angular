@@ -18,6 +18,8 @@
     // .notice= notice
     // .alert= alert
     = yield
+    :javascript
+      transloaditTemplate = '#{TRANSLOADIT_TEMPLATE}'
     - if current_user.leader?
       :javascript
         currentUserIsLeader = true

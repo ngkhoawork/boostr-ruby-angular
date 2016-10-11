@@ -12,6 +12,7 @@
                 %li{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}' } }
                   %a{ href: '', ng: { click: 'filterRevenues(filter)' } }
                     {{ filter.name }}
+
             %li.pull-right.last
               %input.search{ placeholder: 'Search', ng: { model: 'searchText' }, name: 'search' }
             %li.pull-right

@@ -1,6 +1,7 @@
 @app.controller "UsersEditController",
-['$scope', '$modalInstance', '$filter', 'user',
-($scope, $modalInstance, $filter, user) ->
+['$scope', '$modalInstance', '$filter', 'user', 'User'
+($scope, $modalInstance, $filter, user, User) ->
+  $scope.user_types = User.user_types_list
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"

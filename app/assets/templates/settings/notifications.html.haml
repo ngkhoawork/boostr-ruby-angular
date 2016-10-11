@@ -20,8 +20,8 @@
             %tbody{ 'ui-sortable': 'sortableOptions', ng: { model: 'notifications' } }
               %tr{ ng: { repeat: 'row in notifications | orderBy: "[name]"' } }
                 %td {{ row.name }}
-                %td.action-column.info-td
-                  .empty
+                / %td.action-column.info-td
+                /   .empty
                 %td.action-td
                   %a.edit-stage{ href: '', ng: { click: 'editModal(row)' } }
                     = inline_svg 'icons/pencil.svg'
