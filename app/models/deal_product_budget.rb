@@ -12,7 +12,12 @@ class DealProductBudget < ActiveRecord::Base
     self.budget = budget * 100 if budget_changed?
   end
 
+  before_create do
+    self.budget = budget * 100 if budget_changed?
+  end
+
   after_update do
+    deal_product.update_budget
     deal.update_total_budget
   end
 

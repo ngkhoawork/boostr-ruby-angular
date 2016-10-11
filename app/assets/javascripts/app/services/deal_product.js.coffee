@@ -1,17 +1,12 @@
-@service.service 'DealProductBudget',
+@service.service 'DealProduct',
 ['$resource', '$q', '$rootScope',
 ($resource, $q, $rootScope) ->
-
-  resource = $resource '/api/deal_product_budgets/:id', { id: '@id' },
-    update: {
-        method: 'PUT'
-        url: '/api/deal_product_budgets/:id'
-      }
-  resource_collection = $resource '/api/deal_product_budgets/', {  },
+  resource = $resource '/api/deals/:deal_id/deal_products/:id', { deal_id: '@deal_id', id: '@id' },
     update: {
       method: 'PUT'
-      url: '/api/deal_product_budgets/update_total_budget'
+      url: '/api/deals/:deal_id/deal_products/:id'
     }
+
   @create = (params) ->
     deferred = $q.defer()
     resource.save params, (deal) ->
@@ -21,12 +16,6 @@
   @update = (params) ->
     deferred = $q.defer()
     resource.update params, (deal) ->
-      deferred.resolve(deal)
-    deferred.promise
-
-  @update_total_budget = (params) ->
-    deferred = $q.defer()
-    resource_collection.update params, (deal) ->
       deferred.resolve(deal)
     deferred.promise
 

@@ -14,16 +14,6 @@ class Api::DealProductBudgetsController < ApplicationController
     end
   end
 
-  def destroy
-    deal.remove_product(params[:id])
-    render deal
-  end
-
-  def update_total_budget
-    deal.update_product_budget(params[:product_id], params[:total_budget])
-    render deal
-  end
-
   private
 
   def deal

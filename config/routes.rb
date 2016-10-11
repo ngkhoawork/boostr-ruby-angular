@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
+      resources :deal_products, only: [:create, :update, :destroy]
       collection do
         get :pipeline_report
         get :pipeline_summary_report
@@ -37,11 +38,7 @@ Rails.application.routes.draw do
     end
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
-    resources :deal_product_budgets, only: [:create, :update, :destroy] do
-      collection do
-        put :update_total_budget
-      end
-    end
+    resources :deal_product_budgets, only: [:create, :update]
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       get :all_members
     end

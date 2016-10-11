@@ -163,63 +163,24 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  #BTODO: move into deal_product
   def months
     (start_date..end_date).map { |d| [d.year, d.month] }.uniq
   end
 
+  #BTODO: move into deal_product
   def days
     (end_date - start_date + 1).to_i
   end
 
-  def add_product(product_id, total_budget, update_budget = true)
-    daily_budget = total_budget.to_f / days
-    last_index = months.count - 1
-    total = 0
-    deal_product = deal_products.create(
-      product_id: product_id,
-      budget: total_budget,
-      start_date: Date.new(*months[0]).beginning_of_month,
-      end_date: Date.new(*months[-1]).end_of_month
-    )
-    months.each_with_index do |month, index|
-      if last_index == index
-        monthly_budget = total_budget.to_f - total
-      else
-        monthly_budget = daily_budget * days_per_month[index]
-        total = total + monthly_budget
-      end
-      # monthly_budget = daily_budget * days_per_month[index]
-      period = Date.new(*month)
-      deal_product.deal_product_budgets.create(start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(2) * 100)
-    end
-
-    update_total_budget if update_budget
-  end
-
-  def update_product_budget(product_id, total_budget)
-    daily_budget = total_budget.to_f / days
-
-    deal_product_budget_list = deal_product_budgets.where(product_id: product_id)
-    last_index = deal_product_budget_list.count - 1
-    total = 0
-    deal_product_budget_list.each_with_index do |deal_product_budget, index|
-      if last_index == index
-        deal_product_budget_budget = total_budget.to_f - total
-      else
-
-        deal_product_budget_budget = (daily_budget * days_per_month[index]).round(0)
-        total = total + deal_product_budget_budget
-      end
-      deal_product_budget.update(budget: deal_product_budget_budget)
-    end
-  end
-
+  #BTODO: remove
   def remove_product(product_id, update_budget = true)
     delete_product = products.find(product_id)
     products.delete(delete_product)
     update_total_budget if update_budget
   end
 
+  #BTODO: move into deal_product
   def days_per_month
     array = []
 
