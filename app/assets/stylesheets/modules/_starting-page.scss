@@ -1,0 +1,28 @@
+starting-page {
+  display: block;
+  color: #FF7E30;
+  cursor: pointer;
+
+  .glyphicon{
+    float: right;
+    font-size: 17px;
+  }
+
+  .set-starting {
+    margin-left: 0;
+  }
+
+  .tooltip{
+    font-size: 13px;
+    .tooltip-inner {
+      background-color: transparent;
+      color: $brand-primary;
+    }
+    .tooltip-arrow {
+      display: none;
+    }
+    &.left {
+      margin-left: 2px;
+    }
+  }
+}

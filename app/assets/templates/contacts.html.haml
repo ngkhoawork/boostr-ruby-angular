@@ -12,6 +12,7 @@
                 %li{ ng: { repeat: 'filter in contactFilters', class: '{active: filter.name == contactFilter.name}' } }
                   %a{ href: '', ng: { click: 'filterContacts(filter)' } }
                     {{ filter.name }}
+
             %li.pull-right.last
               %a.upload{ href: '', ng: { click: 'showUploadModal()' } }
                 = inline_svg 'icons/upload.svg'

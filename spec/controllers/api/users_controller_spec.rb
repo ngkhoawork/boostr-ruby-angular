@@ -39,4 +39,19 @@ RSpec.describe Api::UsersController, type: :controller do
       expect(response_json['is_active']).to be(true)
     end
   end
+
+  describe 'POST #starting_page' do
+    it 'updates current user\'s starting page' do
+      put :starting_page, user: { starting_page: '/deals' }, format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json['starting_page']).to eq('/deals')
+    end
+
+    it 'does not update other attributes' do
+      expect do
+        put :starting_page, user: { first_name: 'New' }, format: :json
+      end.not_to change(user, :first_name)
+    end
+  end
 end

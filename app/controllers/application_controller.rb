@@ -13,6 +13,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def after_sign_in_path_for(user)
+    user.starting_page || root_path
+  end
+
   def set_csrf_cookie
     if protect_against_forgery?
       cookies['XSRF-TOKEN'] = form_authenticity_token

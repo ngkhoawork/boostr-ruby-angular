@@ -16,6 +16,9 @@
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal)
       $scope.activities = deal.activities
+    , (err) ->
+      if(err && err.status == 404)
+        $location.url('/deals')
 
     $scope.anchors = [{name: 'campaign', id: 'campaign'},
                       {name: 'activities', id: 'activities'},

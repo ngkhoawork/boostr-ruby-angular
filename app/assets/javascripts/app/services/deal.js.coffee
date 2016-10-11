@@ -80,6 +80,8 @@
     deferred = $q.defer()
     resource.get id: deal_id, (deal) ->
       deferred.resolve(deal)
+    , (error) ->
+      deferred.reject(error)
     deferred.promise
 
   @delete = (deletedDeal) ->

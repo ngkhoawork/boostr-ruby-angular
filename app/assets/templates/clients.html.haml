@@ -12,6 +12,7 @@
                 %li{ ng: { repeat: 'filter in clientFilters', class: '{active: filter.name == clientFilter.name}' } }
                   %a{ href: '', ng: { click: 'filterClients(filter)' } }
                     {{ filter.name }}
+
             %li.pull-right.last
               %a.export{ href: '', ng: { click: 'exportClients()' } }
                 Export
@@ -160,7 +161,7 @@
           %div{ ng: { include: "'partials/activities_client.html'" } }
 
 
-        #activities-feed.section          
+        #activities-feed.section
           %div{ ng: { include: "'partials/activities_feed_client.html'" } }
 
         #teamsplits.section

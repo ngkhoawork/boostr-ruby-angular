@@ -9,6 +9,7 @@
             = link_to "Sign out", destroy_user_session_path, method: :delete, class: 'navbar-link'
           - else
             = link_to "Sign in", new_user_session_path, class: 'navbar-link'
+          %starting-page
       .row
         %ul.nav.navbar-nav
           %li{ ng: { class: "{ active: isActive('/dashboard') }" } }

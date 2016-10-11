@@ -13,6 +13,7 @@
               .path-link
                 %a{ href: '', ng: { if: 'forecast.name' } }
                   {{ forecast.name }}
+
             %li.quota-period.pull-right.last{ dropdown: true }
               %a{ href: '', dropdown: { toggle: true } }
                 %span{ ng: { if: 'year' } }
