@@ -1,6 +1,6 @@
 class Product < ActiveRecord::Base
   belongs_to :company
-  has_many :deal_product_budgets
+  has_many :deal_products
   has_many :values, as: :subject
 
   validates :name, presence: true
