@@ -271,7 +271,7 @@ class Deal < ActiveRecord::Base
       end
 
       deal_ids = deals.collect{|deal| deal.id}
-      range = DealProductBudget.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
+      range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
       header = []
       header << "Team Member"
       header << "Advertiser"
@@ -305,7 +305,7 @@ class Deal < ActiveRecord::Base
         line << deal.start_date
         line << deal.end_date
         range.each do |product_time|
-          deal_product_budgets = deal.deal_product_budgets.where({start_date: product_time}).select("sum(budget) as total_budget").collect{|deal_product_budget| deal_product_budget.total_budget}
+          deal_product_budgets = deal.deal_product_budgets.where({start_date: product_time}).select("sum(deal_product_budgets.budget) as total_budget").collect{|deal_product_budget| deal_product_budget.total_budget}
 
           if deal_product_budgets && deal_product_budgets[0]
             line << "$" + (deal_product_budgets[0] / 100).round.to_s
@@ -367,7 +367,7 @@ class Deal < ActiveRecord::Base
           data[percent_key] = {}
         end
 
-        deal.deal_product_budgets.each do |deal_product|
+        deal.deal_product_budgets.each do |deal_product_budget|
           month = deal_product_budget.start_date.month
           data['Summary'][percent_key]['FY'] += deal_product_budget.budget
           data['Summary'][percent_key][month.to_s] += deal_product_budget.budget
