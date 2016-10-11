@@ -1,5 +1,5 @@
 require 'rails_helper'
-
+#BTODO: REFACTOR THIS SPEC
 RSpec.describe Api::DealProductBudgetsController, type: :controller do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
@@ -34,16 +34,6 @@ RSpec.describe Api::DealProductBudgetsController, type: :controller do
       response_json = JSON.parse(response.body)
       expect(response_json['products'][0]['deal_product_budgets'][0]['budget']).to eq(62_000)
       expect(response_json['budget']).to eq(6_200_000)
-    end
-  end
-
-  describe 'DELETE #destroy' do
-    let!(:deal_product_budget) { create :deal_product_budget, deal: deal, product: product }
-    it 'deletes the deal product' do
-      expect do
-        delete :destroy, id: product.id, deal_id: deal.id, format: :json
-        expect(response).to be_success
-      end.to change(DealProductBudget, :count).by(-1)
     end
   end
 end

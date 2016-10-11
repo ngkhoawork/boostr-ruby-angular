@@ -292,7 +292,12 @@ closed_deal = company.deals.create!({
   next_steps: "Deal complete.",
   created_by: company_user.id,
 })
-closed_deal.add_product(products[1].id, 50000)
+closed_deal.deal_products.create(
+  product_id: products[1].id,
+  budget: 50000,
+  start_date: closed_deal.start_date,
+  end_date: closed_deal.end_date
+)
 
 deals = []
 stages.each do |stage|
@@ -308,7 +313,12 @@ stages.each do |stage|
       next_steps: ["Follow-up with Bob", "Waiting on approval from finance", "Book flight to Arizona"].sample,
       created_by: company_user.id
     })
-    deal.add_product(products.sample.id, [5000, 100000, 2500000].sample)
+    deal.deal_products.create(
+      product_id: products.sample.id,
+      budget: [5000, 100000, 2500000].sample,
+      start_date: closed_deal.start_date,
+      end_date: closed_deal.end_date
+    )
     deals.push(deal)
   end
 end
@@ -325,8 +335,19 @@ prospecting_deal = company.deals.create!({
   created_by: company_user.id,
 })
 
-prospecting_deal.add_product(products[1].id, 2500000)
-prospecting_deal.add_product(products[2].id, 5000)
+prospecting_deal.deal_products.create(
+  product_id: products[1].id,
+  budget: 2500000,
+  start_date: closed_deal.start_date,
+  end_date: closed_deal.end_date
+)
+
+prospecting_deal.deal_products.create(
+  product_id: products[2].id,
+  budget: 5000,
+  start_date: closed_deal.start_date,
+  end_date: closed_deal.end_date
+)
 
 # Revenue
 csv =<<-eocsv
