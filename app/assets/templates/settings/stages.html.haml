@@ -30,8 +30,8 @@
                 %td.right {{ row.probability }}%
                 %td {{ row.open ? 'Open' : 'Closed' }}
                 %td {{ row.active ? 'Active' : 'Archived' }}
-                %td.action-column.info-td
-                  .empty
+                / %td.action-column.info-td
+                /   .empty
                 %td.action-td
                   %a.edit-stage{ href: '', ng: { click: 'edit(row)' } }
                     = inline_svg 'icons/pencil.svg'

@@ -11,5 +11,15 @@ FactoryGirl.define do
     before(:create) do |item|
       item.company = Company.first
     end
+
+    factory :deal_with_contacts do
+      transient do
+        contacts_count 3
+      end
+
+      after(:create) do |deal, evaluator|
+        create_list(:contact, evaluator.contacts_count, deals: [deal])
+      end
+    end
   end
 end

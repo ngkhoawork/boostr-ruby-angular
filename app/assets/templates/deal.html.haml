@@ -204,8 +204,6 @@
                 %td
                   %span{ 'e-name': 'share', editable: { text: 'member.share' }, onaftersave: 'updateDealMember(member)' }
                     {{ member.share }}%
-                %td.action-column.info-td
-                  .empty
                 %td.action-td
                   %a.delete-member{ href: '', ng: { click: 'deleteMember(member)' } }
                     = inline_svg 'icons/trash.svg'
@@ -228,6 +226,7 @@
                 %th.left Position
                 %th.left Email
                 %th.left Client Name
+                %th.action-column
             %tbody
               %tr{ ng: { repeat: "contact in currentDeal.contacts"} }
                 %td
@@ -238,6 +237,9 @@
                   {{ contact.address.email }}
                 %td
                   {{ contact.primary_client_json.name }}
+                %td.action-td
+                  %button.btn-link{ ng: { click: 'deleteContact(contact)' } }
+                    = inline_svg 'icons/trash.svg'
 
 
 

@@ -183,6 +183,13 @@
       DealMember.delete(id: member.id, deal_id: $scope.currentDeal.id).then (deal) ->
         $scope.setCurrentDeal(deal)
 
+  $scope.deleteContact = (deletedContact) ->
+    if confirm('Are you sure you want to delete "' +  deletedContact.name + '"?')
+      Deal.deleteDealContact id: $scope.currentDeal.id, contact_id: deletedContact.id
+        .then ->
+          $scope.currentDeal.contacts = _.reject $scope.currentDeal.contacts, (contact) ->
+            contact.id == deletedContact.id
+
   $scope.deleteProduct = (product) ->
     if confirm('Are you sure you want to delete "' +  product.name + '"?')
       DealProduct.delete(id: product.id, deal_id: $scope.currentDeal.id).then (deal) ->

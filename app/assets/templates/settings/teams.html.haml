@@ -31,8 +31,8 @@
                   = inline_svg 'icons/folder.svg', class: 'svg pull-left'
                 %td.left {{ team.leader_name }}
                 %td.right {{ team.members_count }}
-                %td.action-column.info-td
-                  .empty
+                / %td.action-column.info-td
+                /   .empty
                 %td.action-td
                   %a.edit-team{ href: '', ng: { click: 'editModal(team)' } }
                     = inline_svg 'icons/pencil.svg'

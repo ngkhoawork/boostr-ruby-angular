@@ -14,6 +14,11 @@ class Api::DealContactsController < ApplicationController
     end
   end
 
+  def destroy
+    deal.contacts.delete(params[:id])
+    render nothing: true
+  end
+
   private
 
   def deal_contact_params
