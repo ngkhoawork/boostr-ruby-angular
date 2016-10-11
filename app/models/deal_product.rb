@@ -3,15 +3,21 @@ class DealProduct < ActiveRecord::Base
   belongs_to :product
   has_many :deal_product_budgets, dependent: :destroy
 
-  scope :for_time_period, -> (start_date, end_date) { where('deal_product_budgets.start_date <= ? AND deal_product_budgets.end_date >= ?', end_date, start_date) }
+  validates :product, presence: true
 
-  validates :start_date, :end_date, :product, presence: true
+  accepts_nested_attributes_for :deal_product_budgets
 
   before_update :multiply_budget
   before_create :multiply_budget
 
   after_update do
-    update_product_budgets if deal_product_budgets.sum(:budget) != budget
+    if deal_product_budgets.sum(:budget) != budget
+      if budget_changed?
+        self.update_product_budgets
+      else
+        self.update_budget
+      end
+    end
     deal.update_total_budget
   end
 
@@ -25,18 +31,14 @@ class DealProduct < ActiveRecord::Base
   end
 
   def daily_budget
-    (budget / 100.0) / (end_date - start_date + 1).to_i
-  end
-
-  def months
-    (start_date..end_date).map { |d| [d.year, d.month] }.uniq
+    (budget / 100.0) / (deal.end_date - deal.start_date + 1).to_i
   end
 
   def create_product_budgets
-    last_index = months.count - 1
+    last_index = deal.months.count - 1
     total = 0
 
-    months.each_with_index do |month, index|
+    deal.months.each_with_index do |month, index|
       if last_index == index
         monthly_budget = (budget / 100.0) - total
       else
@@ -63,7 +65,6 @@ class DealProduct < ActiveRecord::Base
   end
 
   def update_budget
-    self.budget = deal_product_budgets.sum(:budget)
-    self.save
+    self.update(budget: deal_product_budgets.sum(:budget) / 100)
   end
 end

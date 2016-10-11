@@ -294,9 +294,7 @@ closed_deal = company.deals.create!({
 })
 closed_deal.deal_products.create(
   product_id: products[1].id,
-  budget: 50000,
-  start_date: closed_deal.start_date,
-  end_date: closed_deal.end_date
+  budget: 50000
 )
 
 deals = []
@@ -315,9 +313,7 @@ stages.each do |stage|
     })
     deal.deal_products.create(
       product_id: products.sample.id,
-      budget: [5000, 100000, 2500000].sample,
-      start_date: closed_deal.start_date,
-      end_date: closed_deal.end_date
+      budget: [5000, 100000, 2500000].sample
     )
     deals.push(deal)
   end
@@ -337,16 +333,12 @@ prospecting_deal = company.deals.create!({
 
 prospecting_deal.deal_products.create(
   product_id: products[1].id,
-  budget: 2500000,
-  start_date: closed_deal.start_date,
-  end_date: closed_deal.end_date
+  budget: 2500000
 )
 
 prospecting_deal.deal_products.create(
   product_id: products[2].id,
-  budget: 5000,
-  start_date: closed_deal.start_date,
-  end_date: closed_deal.end_date
+  budget: 5000
 )
 
 # Revenue

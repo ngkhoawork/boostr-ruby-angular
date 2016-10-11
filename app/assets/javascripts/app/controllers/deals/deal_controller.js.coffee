@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealProductBudget', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http'
-($scope, $routeParams, $modal, $filter, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealProductBudget, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http) ->
+['$scope', '$routeParams', '$modal', '$filter', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http'
+($scope, $routeParams, $modal, $filter, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -164,10 +164,6 @@
               $scope.setCurrentDeal(deal)
             else
               $scope.init()
-
-  $scope.updateDealProductBudget = (data) ->
-    DealProductBudget.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product_budget: data).then (deal) ->
-      $scope.setCurrentDeal(deal)
 
   $scope.updateDealProduct = (data) ->
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
