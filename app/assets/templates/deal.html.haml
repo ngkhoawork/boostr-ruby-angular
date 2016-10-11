@@ -123,7 +123,7 @@
                 %span{ 'e-name': '{{ deal_product.id }}', editable: { text: 'deal_product.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
                   {{ deal_product.budget | currency:'$':0  }}
               %td.right{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
-                %span{ 'e-name': '{{ deal_product_budget.id }}', editable: { text: 'deal_product_budget.budget' }, onaftersave: 'updateDealProductBudget(deal_product_budget)' }
+                %span{ 'e-name': '{{ deal_product_budget.id }}', editable: { text: 'deal_product_budget.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
                   {{ deal_product_budget.budget | currency:'$':0 }}
 
       #new-product.well.dark

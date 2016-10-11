@@ -44,7 +44,6 @@ Rails.application.routes.draw do
     end
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
-    resources :deal_product_budgets, only: [:create, :update]
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       get :all_members
     end

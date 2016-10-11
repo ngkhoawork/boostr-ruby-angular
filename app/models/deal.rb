@@ -164,24 +164,14 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  #BTODO: move into deal_product
-  def months
-    (start_date..end_date).map { |d| [d.year, d.month] }.uniq
-  end
-
-  #BTODO: move into deal_product
   def days
     (end_date - start_date + 1).to_i
   end
 
-  #BTODO: remove
-  def remove_product(product_id, update_budget = true)
-    delete_product = products.find(product_id)
-    products.delete(delete_product)
-    update_total_budget if update_budget
+  def months
+    (start_date..end_date).map { |d| [d.year, d.month] }.uniq
   end
 
-  #BTODO: move into deal_product
   def days_per_month
     array = []
 
@@ -216,18 +206,9 @@ class Deal < ActiveRecord::Base
   def reset_products
     # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
     ActiveRecord::Base.no_touching do
-      array = []
-
-      products.each do |product|
-        old_deal_product_budgets = deal_product_budgets.where(product_id: product.id)
-
-        total_budget = old_deal_product_budgets.sum(:budget) / 100
-        old_deal_product_budgets.destroy_all
-        array << { id: product.id, total_budget: total_budget }
-      end
-
-      array.each do |object|
-        add_product(object[:id], object[:total_budget], false)
+      deal_products.each do |deal_product|
+        deal_product.deal_product_budgets.destroy_all
+        deal_product.create_product_budgets
       end
     end
   end
@@ -536,7 +517,7 @@ class Deal < ActiveRecord::Base
       all.each do |deal|
         deal.deal_product_budgets.each do |deal_product_budget|
           budget = !deal_product_budget.budget.nil? ? deal_product_budget.budget/100.0 : nil
-          product = deal_product_budget.product
+          product = deal_product_budget.deal_product.product
           product_name = ""
           pricing_type = ""
           product_family = ""

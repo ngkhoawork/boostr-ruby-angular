@@ -8,17 +8,11 @@ class DealProductBudget < ActiveRecord::Base
 
   validates :start_date, :end_date, presence: true
 
-  before_update do
-    self.budget = budget * 100 if budget_changed?
-  end
+  before_update :multiply_budget
+  before_create :multiply_budget
 
-  before_create do
+  def multiply_budget
     self.budget = budget * 100 if budget_changed?
-  end
-
-  after_update do
-    deal_product.update_budget
-    deal.update_total_budget
   end
 
   def daily_budget

@@ -292,10 +292,6 @@
             else
               $scope.init()
 
-  $scope.updateDealProductBudget = (data) ->
-    DealProductBudget.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product_budget: data).then (deal) ->
-      $scope.setCurrentDeal(deal)
-
   $scope.updateDealProduct = (data) ->
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
       $scope.setCurrentDeal(deal)
