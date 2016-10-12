@@ -157,8 +157,9 @@
         i = 0
         arrayLength = $scope.contacts.length
         while i < arrayLength
-          if($scope.contacts[i].id == $scope.currentContact.id )
+          if($scope.currentContact && $scope.contacts[i].id == $scope.currentContact.id )
             $scope.contacts.splice(i, 1)
+            $scope.currentContact = null
             break
           i++
       ), (err) ->
