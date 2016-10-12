@@ -1,43 +1,39 @@
 @app.controller "ContactsAddController",
-['$scope', '$modalInstance', '$routeParams', '$filter', 'Contact', 'Deal', 'deal',
-($scope, $modalInstance, $routeParams, $filter, Contact, Deal, deal) ->
-  $scope.curentDealContacts = angular.copy deal.contacts
-
+['$scope', '$modalInstance', '$filter', 'Contact', 'Deal', 'DealContact', 'deal',
+($scope, $modalInstance, $filter, Contact, Deal, DealContact, deal) ->
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.contact = contact
   $scope.searchText = ""
-  Deal.dealContacts $routeParams.id
-    .then (contacts) ->
-      $scope.contacts = contacts
+  DealContact.query({deal_id: deal.id}, (contacts) ->
+    $scope.contacts = contacts
+  )
 
+  searchTimeout = null;
   $scope.searchObj = (name) ->
-    if name == ""
-      Deal.dealContacts $routeParams.id
-        .then (contacts) ->
-          $scope.contacts = contacts
-    else
-      Deal.dealContacts $routeParams.id, name
-        .then (contacts) ->
-          $scope.contacts = contacts
+    if searchTimeout
+      clearTimeout(searchTimeout)
+      searchTimeout = null
+    searchTimeout = setTimeout(
+      -> $scope.searchContacts(name)
+      350
+    )
+
+  $scope.searchContacts = (name) ->
+    DealContact.query({deal_id: deal.id, name: name}, (contacts) ->
+      $scope.contacts = contacts
+    )
 
   $scope.checkContact = (contact) ->
-    fliteredContact = $scope.curentDealContacts.filter (dealContact) ->
+    fliteredContact = deal.contacts.filter (dealContact) ->
       contact.id == dealContact.id
     fliteredContact.length == 0;
 
   $scope.addContact = (contact) ->
-    $scope.curentDealContacts.push contact
-
-    putData = $scope.curentDealContacts.map (contact) ->
-      contact.id
-
-    Deal.updateContacts $routeParams.id, {deal: deal, contacts: putData}
-      .then (contacts) ->
-        console.info 'PUT contacts: ', contacts
-      , (e) ->
-        console.error 'Error:', e
+    DealContact.save({ deal_id: deal.id, deal_contact: { contact_id: contact.id } }, ->
+      deal.contacts.push contact
+    )
 
   $scope.cancel = ->
-    $modalInstance.close($scope.curentDealContacts)
+    $modalInstance.close()
 ]

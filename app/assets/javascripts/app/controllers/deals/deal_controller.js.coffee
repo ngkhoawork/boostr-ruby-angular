@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit',
-($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit',
+($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -311,10 +311,13 @@
 
   $scope.deleteContact = (deletedContact) ->
     if confirm('Are you sure you want to delete "' +  deletedContact.name + '"?')
-      Deal.deleteDealContact id: $scope.currentDeal.id, contact_id: deletedContact.id
-        .then ->
-          $scope.currentDeal.contacts = _.reject $scope.currentDeal.contacts, (contact) ->
-            contact.id == deletedContact.id
+      DealContact.delete({
+        deal_id: $scope.currentDeal.id,
+        id: deletedContact.id
+        }, ->
+        $scope.currentDeal.contacts = _.reject $scope.currentDeal.contacts, (contact) ->
+          contact.id == deletedContact.id
+      )
 
   $scope.deleteProduct = (product) ->
     if confirm('Are you sure you want to delete "' +  product.name + '"?')
@@ -341,6 +344,7 @@
       resolve:
         currentDeal: ->
           currentDeal
+
   $scope.addContact = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_add_form.html'
@@ -351,8 +355,6 @@
       resolve:
         deal: ->
           $scope.currentDeal
-    .result.then (updatedContact) ->
-      $scope.currentDeal.contacts = angular.copy updatedContact
 
   $scope.$on 'updated_deal', ->
     $scope.init()
