@@ -152,9 +152,18 @@
           $scope.types
 
   $scope.delete = ->
-    if confirm('Are you sure you want to delete "' +  $scope.currentContact.name + '"?')
-      Contact.delete $scope.currentContact, ->
-        $location.path('/contacts')
+    if confirm('Are you sure you want to delete "' + $scope.currentContact.name + '"?')
+      Contact.delete({ id: $scope.currentContact.id }, ((res) ->
+        i = 0
+        arrayLength = $scope.contacts.length
+        while i < arrayLength
+          if($scope.contacts[i].id == $scope.currentContact.id )
+            $scope.contacts.splice(i, 1)
+            break
+          i++
+      ), (err) ->
+        console.log (err)
+      )
 
   $scope.deleteActivity = (activity) ->
     if confirm('Are you sure you want to delete the activity?')
