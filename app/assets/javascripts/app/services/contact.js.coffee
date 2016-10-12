@@ -97,13 +97,6 @@
     )
     deferred.promise
 
-#  resource.delete = (deletedContact, callback) ->
-#    resource.delete id: deletedContact.id, () ->
-#      allContacts = _.reject allContacts, (contact) ->
-#        contact.id == deletedContact.id
-#      callback?()
-#      $rootScope.$broadcast 'updated_contacts'
-
   resource.get = () ->
     currentContact
 
