@@ -4,6 +4,7 @@ class Api::DealProductsController < ApplicationController
   def create
     deal_product = deal.deal_products.new(deal_product_params)
     if deal_product.save
+      deal_product.create_product_budgets
       render deal
     else
       render json: { errors: deal_product.errors.messages }, status: :unprocessable_entity
