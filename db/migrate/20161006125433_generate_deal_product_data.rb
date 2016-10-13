@@ -15,7 +15,7 @@ class GenerateDealProductData < ActiveRecord::Migration
             deal_product_param = {
                 deal_id: deal_product_budget.deal_id,
                 product_id: product_id,
-                budget: budget,
+                budget: budget / 100,
                 start_date: start_date,
                 end_date: end_date,
                 open: deal.stage.probability != 100
@@ -34,7 +34,7 @@ class GenerateDealProductData < ActiveRecord::Migration
         deal_product_param = {
             deal_id: deal.id,
             product_id: product_id,
-            budget: budget,
+            budget: budget / 100,
             start_date: start_date,
             end_date: end_date,
             open: deal.stage.probability != 100

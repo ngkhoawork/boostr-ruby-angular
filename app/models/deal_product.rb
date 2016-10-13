@@ -22,7 +22,6 @@ class DealProduct < ActiveRecord::Base
   end
 
   after_create do
-    create_product_budgets
     deal.update_total_budget
   end
 

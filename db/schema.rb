@@ -94,6 +94,9 @@ ActiveRecord::Schema.define(version: 20161011190234) do
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
     t.string   "original_file_name"
+    t.string   "comment"
+    t.string   "subtype"
+    t.integer  "created_by"
   end
 
   create_table "client_contacts", force: :cascade do |t|
@@ -483,6 +486,9 @@ ActiveRecord::Schema.define(version: 20161011190234) do
     t.decimal  "win_rate"
     t.decimal  "average_deal_size"
     t.float    "cycle_time"
+    t.integer  "user_type",              default: 0,     null: false
+    t.boolean  "is_active",              default: true
+    t.string   "starting_page"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
