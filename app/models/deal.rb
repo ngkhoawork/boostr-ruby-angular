@@ -199,7 +199,7 @@ class Deal < ActiveRecord::Base
     deal_log.deal_id = self.id
     deal_log.budget_change = new_budget - current_budget
     deal_log.save
-    update_attributes(budget: deal_product_budgets.sum(:budget))
+    update_attributes(budget: deal_products.sum(:budget))
   end
 
   def reset_products
