@@ -22,7 +22,9 @@ class DealProduct < ActiveRecord::Base
   end
 
   after_create do
-    deal.update_total_budget
+    if deal_product_budgets.empty?
+      self.create_product_budgets
+    end
   end
 
   def multiply_budget
