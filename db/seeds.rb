@@ -296,6 +296,7 @@ closed_deal.deal_products.create(
   product_id: products[1].id,
   budget: 50000
 )
+closed_deal.update_total_budget
 
 deals = []
 stages.each do |stage|
@@ -315,6 +316,7 @@ stages.each do |stage|
       product_id: products.sample.id,
       budget: [5000, 100000, 2500000].sample
     )
+    deal.update_total_budget
     deals.push(deal)
   end
 end
@@ -340,6 +342,8 @@ prospecting_deal.deal_products.create(
   product_id: products[2].id,
   budget: 5000
 )
+
+prospecting_deal.update_total_budget
 
 # Revenue
 csv =<<-eocsv
