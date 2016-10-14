@@ -13,6 +13,8 @@ class Deal < ActiveRecord::Base
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
 
+  has_one :io, class_name: "Io", foreign_key: 'io_number'
+
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products
@@ -581,6 +583,7 @@ class Deal < ActiveRecord::Base
   def update_close
     self.closed_at = updated_at if !stage.open?
     if !stage.open? && stage.probability == 100
+      generate_io()
       notification = company.notifications.find_by_name('Closed Won')
       if !notification.nil? && !notification.recipients.nil?
         recipients = notification.recipients.split(',').map(&:strip)
@@ -597,6 +600,9 @@ class Deal < ActiveRecord::Base
           close_reason = self.values.find_by_field_id(field.id) if !field.nil?
           close_reason.destroy if !close_reason.nil?
         end
+        if self.io.present?
+          self.io.destroy
+        end
       end
       notification = company.notifications.find_by_name('Stage Changed')
       if !notification.nil? && !notification.recipients.nil?
@@ -606,6 +612,51 @@ class Deal < ActiveRecord::Base
           UserMailer.stage_changed_email(recipients, subject, self.id).deliver_later(wait: 10.minutes, queue: "default")
         end
       end      
+    end
+  end
+
+  def generate_io
+    puts "==========generate io"
+    io_param = {
+        advertiser_id: self.advertiser_id,
+        agency_id: self.agency_id,
+        budget: self.budget / 100,
+        start_date: self.start_date,
+        end_date: self.end_date,
+        name: self.name,
+        io_number: self.id,
+        external_io_number: self.id,
+        company_id: self.company_id
+    }
+    if io = Io.create!(io_param)
+      self.deal_members.each do |deal_member|
+        io_member_param = {
+            io_id: io.id,
+            user_id: deal_member.user_id,
+            share: deal_member.share,
+            from_date: self.start_date,
+            to_date: self.end_date,
+        }
+        IoMember.create!(io_member_param)
+      end
+
+      self.deal_products.each do |deal_product|
+        content_fee_param = {
+            io_id: io.id,
+            product_id: deal_product.id,
+            budget: deal_product.budget / 100
+        }
+        content_fee = ContentFee.create(content_fee_param)
+
+        # deal_product.deal_product_budgets.each do |deal_product_budget|
+        #   content_fee_product_budget_param = {
+        #       content_fee_id: content_fee.id,
+        #       budget: deal_product_budget.budget,
+        #       month: deal_product_budget.start_date
+        #   }
+        #   ContentFeeProductBudget.create(content_fee_product_budget_param)
+        # end
+      end
     end
   end
 

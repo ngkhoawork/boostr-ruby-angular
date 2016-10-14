@@ -1,0 +1,36 @@
+#io {
+  margin-top: 30px;
+  .return {
+    a {
+      color: $very-dark-desaturated-blue-4;
+      font-size: 13px;
+      font-weight: bold;
+    }
+  }
+
+  .campaign {
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+
+  .info {
+    font-size: 13px;
+    color: $very-dark-desaturated-blue-5;
+    .info-value {
+      font-weight: bold;
+    }
+  }
+
+  .editable-input {
+    font-size: 13px;
+  }
+
+//  .small-datepicker {
+//    font-size: 13px;
+//  }
+
+  .io-content {
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+}

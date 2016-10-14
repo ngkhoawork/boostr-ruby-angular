@@ -14,6 +14,7 @@ class Company < ActiveRecord::Base
   has_many :notifications
   has_many :activities
   has_many :activity_types
+  has_many :ios
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'

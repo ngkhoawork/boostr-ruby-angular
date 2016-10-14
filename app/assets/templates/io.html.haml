@@ -1,0 +1,102 @@
+#io
+  .container
+    .row.return
+      .col-xs-12
+        %a{ href:'/revenue' }
+          %i.fa.fa-arrow-left
+          Back to Revenue
+    .row.campaign
+      .col-xs-12
+        %h3.io-name
+          {{ currentIO.name }}
+        .info
+          Status:
+          %span.info-value
+            Active
+        .info
+          Advertiser:
+          %span.info-value
+            {{ currentIO.advertiser.name }}
+        .info
+          Agency:
+          %span.info-value
+            {{ currentIO.agency.name }}
+        .info
+          Budget:
+          %span.info-value
+            {{currentIO.budget | currency:'$':0 }}
+        .info
+          Start-End Dates:
+          %span.info-value.small-datepicker
+            &nbsp;from
+            %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.start_date', click: 'startOpened = true', class: '{ editing: startOpened }', change: 'updateIO()' }, 'is-open': 'startOpened' }
+              {{currentIO.start_date | date : 'M/d/yyyy' : '+0000'}}
+            &nbsp;to
+            %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
+              {{currentIO.end_date | date: 'M/d/yyyy' : '+0000'}}
+    .row.io-content
+      .col-xs-12
+        %h3
+          line items - content & fees
+        .table-wrapper
+          %table.table.table-striped.black-table.sec
+            %thead
+              %tr
+                %th.left Product
+                %th.left Type
+                %th.left Start Date
+                %th.left End Date
+                %th.left Total Budget
+                %th.left{ ng: { repeat: "range in dateRange" } }
+                  {{ range | date: 'MMM yyyy' : '+0000'}}
+            %tbody
+              %tr{ ng: { repeat: "content_fee in currentIO.content_fees"} }
+                %td
+                  {{ content_fee.product.name }}
+                %td
+                  Content Fee
+                %td
+                  {{ currentIO.start_date | date: 'M/d/yyyy' : '+0000'}}
+                %td
+                  {{ currentIO.end_date | date: 'M/d/yyyy' : '+0000'}}
+                %td
+                  %span{ 'e-name': '{{ content_fee.id }}', editable: { text: 'content_fee.budget' }, onaftersave: 'updateContentFee(content_fee)' }
+                    {{ content_fee.budget | currency:'$':0 }}
+                %td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'month'" } }
+                  %span{ 'e-name': '{{ product_budget.id }}', editable: { text: 'product_budget.budget' }, onaftersave: 'updateContentFee(content_fee)' }
+                    {{ product_budget.budget | currency:'$':0 }}
+    .row.io-content
+      .col-xs-12
+        %h3
+          Team & Split
+        .table-wrapper.small-datepicker
+          %table.table.table-striped.black-table.sec
+            %thead
+              %tr
+                %th.left Member
+                %th.left From
+                %th.left To
+                %th.left Role
+                %th.left Share
+                %th.action-column
+            %tbody
+              %tr{ ng: { repeat: "io_member in currentIO.io_members | orderBy: 'name'"} }
+                %td
+                  {{ io_member.name }}
+                %td
+                  %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'io_member.from_date', click: 'startOpened1 = true', class: '{ editing: startOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'startOpened1' }
+                    {{ io_member.from_date | date: 'M/d/yyyy' : '+0000' }}
+                %td
+                  %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'io_member.to_date', click: 'endOpened1 = true', class: '{ editing: endOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'endOpened1' }
+                    {{ io_member.to_date | date: 'M/d/yyyy' : '+0000' }}
+                %td
+                  %span
+                    {{ io_member.role.option.name }}
+                %td
+                  %span{ 'e-name': 'share', editable: { text: 'io_member.share' }, onaftersave: 'updateIOMember(io_member)' }
+                    {{ io_member.share }}%
+                %td.action-column.info-td
+                  .empty
+                %td.action-td
+                  -#%a.delete-member{ href: '', ng: { click: 'deleteMember(member)' } }
+                  -#  = inline_svg 'icons/trash.svg'
