@@ -18,10 +18,9 @@ class GenerateDealProductData < ActiveRecord::Migration
                 budget: budget / 100,
                 start_date: start_date,
                 end_date: end_date,
-                open: deal.stage.probability != 100,
                 deal_product_budgets: DealProductBudget.where(product_id: product_id, deal_id: deal.id)
             }
-            deal_product = DealProduct.create(deal_product_param)
+            deal_product = DealProduct.create!(deal_product_param)
           end
           start_date = deal_product_budget.start_date
           budget = 0
@@ -37,7 +36,6 @@ class GenerateDealProductData < ActiveRecord::Migration
             budget: budget / 100,
             start_date: start_date,
             end_date: end_date,
-            open: deal.stage.probability != 100,
             deal_product_budgets: DealProductBudget.where(product_id: product_id, deal_id: deal.id)
         }
         deal_product = DealProduct.create(deal_product_param)
