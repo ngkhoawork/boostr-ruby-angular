@@ -199,6 +199,16 @@
     }
   }
 
+  .new-product-form {
+    .has-error{
+      color: red;
+    }
+
+    .offset-bottom{
+      margin-bottom: 4px;
+    }
+  }
+
   #revenue_schedule {
     .currency-table {
       .total-budget__percent {

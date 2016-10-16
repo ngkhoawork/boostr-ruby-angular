@@ -167,20 +167,34 @@
                             %div{ ng: { bind: { html: 'product.name' } } }
                   .row.bordered
                     .col-xs-12
-                      .form-group
+                      .form-group.new-product-form
                         %label.control-label{ for: 'total_budget' } Total Budget
-                        %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal_product.budget', required: true }, name: 'total_budget' }
+                        %input.form-control{ 'ng-model': 'deal_product.budget',
+                          'ng-change': 'changeTotalBudget()'}
+                        %span.small{'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
+                          {{ (deal_product.budget_percent || 0 )+ '%'}}
                   .row
                     .col-xs-12
-                      %button.btn.btn-primary.btn-block{ type: 'submit' } Add Product
+                      %button.btn.btn-primary.btn-block{ type: 'submit',
+                        'ng-disabled': 'deal_product.isIncorrectTotalBudgetPercent || !deal_product.product_id', } Add Product
                     .col-xs-12
                       %button#cancel.btn.btn-default.btn-block{ng: { click: 'cancelAddProduct()' }, type: 'button' } Cancel
                 .col-xs-10
-                  .row.months
+                  .row.months.new-product-form
+                    .col-xs-1
+                      .form-group
+                        %label.control-label Legend
+                        %input.form-control.text-center.offset-bottom{placeholder: '$', 'ng-disabled': 'true'}
+                        %input.form-control.text-center{placeholder: '%', 'ng-disabled': 'true'}
                     .col-xs-2{ ng: { repeat: 'month in deal_product.months' } }
                       .form-group
                         %label.control-label Month \#{{ $index + 1 }}
-                        %input.form-control{ ng: { model: 'month.value'}, disabled: true }
+                        %input.form-control.offset-bottom{ 'ng-model': 'month.value',
+                        'ng-disabled': '!deal_product.budget',
+                        'ng-change': 'changeMonthValue(month.value, $index)'}
+                        %input.form-control{ 'ng-model': 'month.percent_value',
+                        'ng-disabled': '!deal_product.budget',
+                        'ng-change': 'changeMonthPercent(month.percent_value, $index)'}
 
     #activities.row
       %h3
