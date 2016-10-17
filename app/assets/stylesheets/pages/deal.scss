@@ -207,6 +207,17 @@
     .offset-bottom{
       margin-bottom: 4px;
     }
+
+    .legend {
+      label {
+        opacity: 0;
+      }
+
+      input {
+        cursor: default!important;
+      }
+
+    }
   }
 
   #revenue_schedule {

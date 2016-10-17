@@ -182,7 +182,7 @@
                 .col-xs-10
                   .row.months.new-product-form
                     .col-xs-1
-                      .form-group
+                      .form-group.legend
                         %label.control-label Legend
                         %input.form-control.text-center.offset-bottom{placeholder: '$', 'ng-disabled': 'true'}
                         %input.form-control.text-center{placeholder: '%', 'ng-disabled': 'true'}
@@ -191,10 +191,12 @@
                         %label.control-label Month \#{{ $index + 1 }}
                         %input.form-control.offset-bottom{ 'ng-model': 'month.value',
                         'ng-disabled': '!deal_product.budget',
-                        'ng-change': 'changeMonthValue(month.value, $index)'}
+                        'ng-change': 'changeMonthValue(month.value, $index)',
+                        'numbers-only':''}
                         %input.form-control{ 'ng-model': 'month.percent_value',
                         'ng-disabled': '!deal_product.budget',
-                        'ng-change': 'changeMonthPercent(month.percent_value, $index)'}
+                        'ng-change': 'changeMonthPercent(month.percent_value, $index)',
+                        'numbers-only':''}
 
     #activities.row
       %h3
