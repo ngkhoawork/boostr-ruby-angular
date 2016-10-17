@@ -302,7 +302,14 @@
 
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
-      $scope.setCurrentDeal(deal)
+      shareSum = 0
+      _.each deal.members, (member) ->
+        shareSum = shareSum + member.share
+      if(shareSum != 100)
+        $scope.errorMembersShareIsVisible = true
+      else
+        $scope.errorMembersShareIsVisible = false
+        $scope.setCurrentDeal(deal)
 
   $scope.deleteMember = (member) ->
     if confirm('Are you sure you want to delete "' +  member.name + '"?')

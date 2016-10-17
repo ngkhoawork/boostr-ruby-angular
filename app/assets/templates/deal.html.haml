@@ -6,9 +6,13 @@
           = inline_svg 'icons/caret.svg', class: 'transform'
           Back to Deals
     #deal_overview.row.campaign
-      .col-xs-9
+      .col-xs-3
         %h3.deal-name
           {{ currentDeal.advertiser.name + (currentDeal.agency ? " - " + currentDeal.agency.name : "") }}
+      .col-xs-9
+        %div.alert.alert-danger.text-center{'ng-if': 'errorMembersShareIsVisible'}
+          %i.fa.fa-warning
+          %span Team & Splits must equal 100%. The data is not saved
     #deal_overview.row.campaign
       .col-xs-9.icon-show-popup-wrapper
         %h3.deal-name{ editable: { text: 'currentDeal.name' }, onaftersave: 'updateDeal()', 'e-name': 'deal-name' }
@@ -172,6 +176,9 @@
     #teamsplit.row
       .col-xs-12
         #members.section
+          %div.alert.alert-danger.text-center{'ng-if': 'errorMembersShareIsVisible'}
+            %i.fa.fa-warning
+            %span Team & Splits must equal 100%. The data is not saved
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
             %a.add-member{ href: '', dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } }
               = inline_svg 'icons/add.svg'
