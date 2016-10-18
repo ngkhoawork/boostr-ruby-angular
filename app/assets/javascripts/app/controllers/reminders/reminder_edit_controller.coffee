@@ -63,6 +63,7 @@
 #            $scope.reminder = reminder
 #            $scope.reminder._date = new Date($scope.reminder.remind_on)
 #            $scope.reminder._time = new Date($scope.reminder.remind_on)
+            editMode = true
             $modalInstance.close()
           , (err) ->
             $scope.buttonDisabled = false
