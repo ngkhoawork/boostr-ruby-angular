@@ -67,6 +67,17 @@
                     {{ product_budget.budget | currency:'$':0 }}
     .row.io-content
       .col-xs-12
+        #members.section
+          %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+            %a.add-member{ href: '', dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } }
+              = inline_svg 'icons/add.svg'
+            %ul.dropdown-menu.new-member-options
+              %li.existing-user-options
+                %ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
+                  %ui-select-match{ placeholder: 'start typing their name here' }
+                    {{ $select.selected.name }}
+                  %ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
+                    %div{ ng: { bind: { html: 'user.name' } } }
         %h3
           Team & Split
         .table-wrapper.small-datepicker
@@ -98,5 +109,5 @@
                 %td.action-column.info-td
                   .empty
                 %td.action-td
-                  -#%a.delete-member{ href: '', ng: { click: 'deleteMember(member)' } }
-                  -#  = inline_svg 'icons/trash.svg'
+                  %a.delete-member{ href: '', ng: { click: 'deleteMember(io_member)' } }
+                    = inline_svg 'icons/trash.svg'

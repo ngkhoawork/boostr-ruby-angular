@@ -1,6 +1,6 @@
 @app.controller 'IOController',
-  ['$scope', '$modal', '$filter', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee'
-    ($scope, $modal, $filter, $routeParams, $location, $q, IO, IOMember, ContentFee) ->
+  ['$scope', '$modal', '$filter', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User'
+    ($scope, $modal, $filter, $routeParams, $location, $q, IO, IOMember, ContentFee, User) ->
       $scope.currentIO = {}
       $scope.activeTab = 'ios'
       $scope.dateRange = []
@@ -24,6 +24,16 @@
           $scope.currentIO = io
           updateDateRange()
 
+      $scope.showLinkExistingUser = ->
+        User.query().$promise.then (users) ->
+          $scope.users = $filter('notIn')(users, $scope.currentIO.io_members, 'user_id')
+
+      $scope.linkExistingUser = (item) ->
+        $scope.userToLink = undefined
+        IOMember.create(io_id: $scope.currentIO.id, io_member: { user_id: item.id, share: 0, from_date: $scope.currentIO.start_date, to_date: $scope.currentIO.end_date, values: [] }).then (io) ->
+          $scope.currentIO = io
+          updateDateRange()
+
       $scope.setActiveTab = (type) ->
         $scope.activeTab = type
 
@@ -41,6 +51,12 @@
         IOMember.update(id: data.id, io_id: $scope.currentIO.id, io_member: data).then (io) ->
           $scope.currentIO = io
           updateDateRange()
+
+      $scope.deleteMember = (io_member) ->
+        if confirm('Are you sure you want to delete "' +  io_member.name + '"?')
+          IOMember.delete(id: io_member.id, io_id: $scope.currentIO.id).then (io) ->
+            $scope.currentIO = io
+            updateDateRange()
 
       $scope.updateIO = ->
         IO.update(id: $scope.currentIO.id, io: $scope.currentIO).then (io) ->
