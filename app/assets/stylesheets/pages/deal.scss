@@ -225,15 +225,17 @@
       position: relative;
       .symbol {
         width: 0;
-        position: relative;
         display: inline-block;
         color: #939FA9;
         font-size: 14px;
       }
       .dollar {
-        right: -11px;
+        position: absolute;
+        margin-left: 5px;
+        padding-top: 1px;
       }
       .percent{
+        position: relative;
         right: 60px;
       }
 
