@@ -68,6 +68,14 @@ class DealProduct < ActiveRecord::Base
     end
   end
 
+  def update_periods
+    deal_product_budgets.each_with_index do |deal_product_budget, index|
+      period = Date.new(*deal.months[index])
+      deal_product_budget.start_date = period
+      deal_product_budget.end_date = period.end_of_month
+    end
+  end
+
   def update_budget
     self.update(budget: deal_product_budgets.sum(:budget) / 100)
   end

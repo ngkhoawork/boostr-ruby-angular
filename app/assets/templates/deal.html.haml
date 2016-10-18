@@ -183,14 +183,14 @@
                       %button#cancel.btn.btn-default.btn-block{ng: { click: 'cancelAddProduct()' }, type: 'button' } Cancel
                 .col-xs-10
                   .row.months.new-product-form
-                    .col-xs-2{ ng: { repeat: 'month in deal_product.months' } }
+                    .col-xs-2{ ng: { repeat: 'month in deal_product.deal_product_budgets' } }
                       .form-group
                         %label.control-label Month \#{{ $index + 1 }}
-                        %input.form-control.offset-bottom{ 'ng-model': 'month.value',
+                        %input.form-control.offset-bottom{ 'ng-model': 'month.budget',
                         'ng-disabled': '!deal_product.budget',
-                        'ng-change': 'changeMonthValue(month.value, $index)',
-                        'ng-focus': 'cutDollar(month.value, $index)',
-                        'ng-blur': 'setDollar(month.value, $index)',
+                        'ng-change': 'changeMonthValue(month.budget, $index)',
+                        'ng-focus': 'cutDollar(month.budget, $index)',
+                        'ng-blur': 'setDollar(month.budget, $index)',
                         'numbers-only':''}
                         %input.form-control{ 'ng-model': 'month.percent_value',
                         'ng-disabled': '!deal_product.budget',
