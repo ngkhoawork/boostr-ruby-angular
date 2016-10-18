@@ -196,6 +196,10 @@
   $scope.changeMonthValue = (monthValue, index)->
     if(!monthValue)
       monthValue = 0
+    if((monthValue+'').length > 1 && (monthValue+'').charAt(0) == '0')
+      monthValue = Number((monthValue + '').slice(1))
+    $scope.deal_product.months[index].value = monthValue
+
     $scope.deal_product.budget = 0
     _.each $scope.deal_product.months, (month, monthIndex) ->
       if(index == monthIndex)
@@ -208,6 +212,11 @@
   $scope.changeMonthPercent = (monthPercentValue, index)->
     if(!monthPercentValue)
       monthPercentValue = 0
+    if((monthPercentValue+'').length > 1 && (monthPercentValue+'').charAt(0) == '0')
+      monthPercentValue = Number((monthPercentValue + '').slice(1))
+    $scope.deal_product.months[index].percent_value = monthPercentValue
+
+    $scope.deal_product.months[index].value = monthValue
     $scope.deal_product.months[index].value = $scope.setDollar(Math.round(monthPercentValue/100*$scope.deal_product.budget))
     $scope.deal_product.budget_percent = 0
     _.each $scope.deal_product.months, (month) ->
