@@ -626,7 +626,8 @@ class Deal < ActiveRecord::Base
         name: self.name,
         io_number: self.id,
         external_io_number: self.id,
-        company_id: self.company_id
+        company_id: self.company_id,
+        deal_id: self.id
     }
     if io = Io.create!(io_param)
       self.deal_members.each do |deal_member|

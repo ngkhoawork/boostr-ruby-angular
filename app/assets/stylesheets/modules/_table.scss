@@ -339,6 +339,44 @@
       }
     }
   }
+
+  &.orange-table {
+    thead {
+      background-color: $white;
+      color: $brand-primary;
+
+      tr {
+        max-height: 55px !important;
+        height: 55px !important;
+        border-bottom: 1px solid $very-light-gray;
+        th {
+          color: $brand-primary !important;
+          text-transform: capitalize;
+          font-size: 15px;
+          font-family: $font-family-medium;
+          border: none !important;
+
+          a {
+            color: #67747E !important;
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        color: $gray-base;
+        font-family: $font-family-medium;
+        font-size: 13px;
+        max-height: 43px !important;
+        height: 43px !important;
+
+        td {
+          border: none;
+        }
+      }
+    }
+  }
 }
 
 .white-table {

@@ -1,9 +1,10 @@
 #io {
+  font-family: $font-family-sans-serif !important;
   margin-top: 30px;
   .return {
     a {
       color: $very-dark-desaturated-blue-4;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: bold;
     }
   }
@@ -14,7 +15,7 @@
   }
 
   .info {
-    font-size: 13px;
+    font-size: 12px;
     color: $very-dark-desaturated-blue-5;
     .info-value {
       font-weight: bold;
@@ -22,7 +23,7 @@
   }
 
   .editable-input {
-    font-size: 13px;
+    font-size: 12px;
   }
 
 //  .small-datepicker {
@@ -32,5 +33,24 @@
   .io-content {
     margin-top: 30px;
     margin-bottom: 20px;
+  }
+
+  .table {
+    thead {
+      tr {
+        th {
+          font-size: 12px !important;
+          font-family: $font-family-sans-serif !important;
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+          font-size: 12px !important;
+          font-family: $font-family-sans-serif !important;
+        }
+      }
+    }
   }
 }

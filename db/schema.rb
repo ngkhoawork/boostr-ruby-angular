@@ -320,6 +320,7 @@ ActiveRecord::Schema.define(version: 20161025081130) do
     t.datetime "updated_at",         null: false
     t.string   "name"
     t.integer  "company_id"
+    t.integer  "deal_id"
   end
 
   add_index "ios", ["advertiser_id"], name: "index_ios_on_advertiser_id", using: :btree
@@ -563,5 +564,6 @@ ActiveRecord::Schema.define(version: 20161025081130) do
   add_foreign_key "io_members", "ios"
   add_foreign_key "io_members", "users"
   add_foreign_key "ios", "companies"
+  add_foreign_key "ios", "deals"
   add_foreign_key "users", "teams"
 end
