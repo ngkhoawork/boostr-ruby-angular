@@ -6,9 +6,13 @@
           = inline_svg 'icons/caret.svg', class: 'transform'
           Back to Deals
     #deal_overview.row.campaign
-      .col-xs-9
+      .col-xs-3
         %h3.deal-name
           {{ currentDeal.advertiser.name + (currentDeal.agency ? " - " + currentDeal.agency.name : "") }}
+      .col-xs-9
+        %div.share-alert.alert.alert-danger.text-center{'ng-if': 'membersShareInvalid'}
+          %i.fa.fa-warning
+          %span Team & Splits must equal 100%
     #deal_overview.row.campaign
       .col-xs-9.icon-show-popup-wrapper
         %h3.deal-name{ editable: { text: 'currentDeal.name' }, onaftersave: 'updateDeal()', 'e-name': 'deal-name' }
@@ -172,6 +176,9 @@
     #teamsplit.row
       .col-xs-12
         #members.section
+          %div.share-alert.alert.alert-danger.text-center{'ng-if': 'membersShareInvalid'}
+            %i.fa.fa-warning
+            %span Team & Splits must equal 100%
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
             %a.add-member{ href: '', dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } }
               = inline_svg 'icons/add.svg'
@@ -202,7 +209,7 @@
                   %span{ 'e-name': 'role', editable: { select: 'member.role.option_id' }, 'e-ng-options': 'option.id as option.name for option in member.role.options', onaftersave: 'updateDealMember(member)' }
                     {{ member.role.option.name }}
                 %td
-                  %span{ 'e-name': 'share', editable: { text: 'member.share' }, onaftersave: 'updateDealMember(member)' }
+                  %span{ 'e-name': 'share', editable: { number: 'member.share', model: 'member.share' }, onaftersave: 'updateDealMember(member)' }
                     {{ member.share }}%
                 %td.action-td
                   %a.delete-member{ href: '', ng: { click: 'deleteMember(member)' } }

@@ -247,6 +247,9 @@
   }
 
   #members {
+    .share-alert {
+      margin-bottom: 0
+    }
     span {
       margin-top: 45px;
     }
@@ -371,23 +374,26 @@
 
 }
 
-#deal_overview .icon-show-popup-wrapper {
-  width: 100%;
-}
-
-#deal_overview .show-create-remainders-popup {
-  display: table;
-  height: 40px;
-  margin: 0;
-  padding: 0;
-  top: 20px;
-}
-
-#deal_overview .show-create-remainders-popup > label {
-  display: table-cell;
-  margin: 0;
-  vertical-align: middle;
-  line-height: 0;
+#deal_overview {
+  .share-alert {
+    margin-bottom: 0
+  }
+  .icon-show-popup-wrapper {
+    width: 100%;
+  }
+  .show-create-remainders-popup {
+    display: table;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    top: 20px;
+  }
+  .show-create-remainders-popup > label {
+    display: table-cell;
+    margin: 0;
+    vertical-align: middle;
+    line-height: 0;
+  }
 }
 
 #activities h3{

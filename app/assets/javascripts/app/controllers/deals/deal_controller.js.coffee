@@ -234,6 +234,7 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
+      $scope.verifyMembersShare()
     Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
 #    Contact.allForClient deal.advertiser_id, (contacts) ->
@@ -303,6 +304,12 @@
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.setCurrentDeal(deal)
+
+  $scope.verifyMembersShare = ->
+    share_sum = 0
+    _.each $scope.currentDeal.members, (member) ->
+      share_sum += member.share
+    $scope.membersShareInvalid = share_sum isnt 100
 
   $scope.deleteMember = (member) ->
     if confirm('Are you sure you want to delete "' +  member.name + '"?')
