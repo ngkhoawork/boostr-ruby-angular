@@ -3,6 +3,7 @@ class Api::DealProductsController < ApplicationController
 
   def create
     deal_product = deal.deal_products.new(deal_product_params)
+    deal_product.update_periods if params[:deal_product][:deal_product_budgets_attributes]
     if deal_product.save
       deal.update_total_budget
       render deal
