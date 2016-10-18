@@ -125,47 +125,103 @@
     $scope.showProductForm = !$scope.showProductForm
     Product.all().then (products) ->
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
+
 #==================add product form======================
-  $scope.changeTotalBudget = ->
-    $scope.deal_product.budget_percent = 100
-    $scope.deal_product.isIncorrectTotalBudgetPercent = false
-    budgetOneDay = Math.round($scope.deal_product.budget / $scope.currentDeal.days)
-    length = $scope.deal_product.months.length
+  addProductBudgetCorrection = ->
     budgetSum = 0
     budgetPercentSum = 0
+    length = $scope.deal_product.months.length
     _.each $scope.deal_product.months, (month, index) ->
       if(length-1 != index)
-        month.value = $scope.currentDeal.days_per_month[index] * budgetOneDay
-        budgetSum = budgetSum + $scope.currentDeal.days_per_month[index] * budgetOneDay
-        month.percent_value = Math.round(month.value / $scope.deal_product.budget * 100)
+        budgetSum = budgetSum + month.value
         budgetPercentSum = budgetPercentSum + month.percent_value
       else
         month.value = $scope.deal_product.budget - budgetSum
         month.percent_value = 100 - budgetPercentSum
 
+  cutSymbolsAddProductBudget = ->
+    _.each $scope.deal_product.months, (month) ->
+        month.value = Number((month.value+'').replace('$', ''))
+        month.percent_value = Number((month.percent_value+'').replace('%', ''))
+
+  $scope.cutDollar = (value, index) ->
+    value = Number((value+'').replace('$', ''))
+    if(index != undefined )
+      $scope.deal_product.months[index].value = value
+    else
+      return value
+
+  $scope.setDollar = (value, index) ->
+    value = '$' + value
+    if(index!= undefined )
+      $scope.deal_product.months[index].value = value
+    else
+      return value
+
+  $scope.cutPercent = (percent_value, index) ->
+    percent_value = Number((percent_value+'').replace('%', ''))
+    if(index!= undefined )
+      $scope.deal_product.months[index].percent_value = percent_value
+    else
+      return percent_value
+
+  $scope.setPercent = (percent_value, index) ->
+    percent_value = percent_value + '%'
+    if(index!= undefined)
+      $scope.deal_product.months[index].percent_value = percent_value
+    else
+      return percent_value
+
+  setSymbolsAddProductBudget = ->
+    _.each $scope.deal_product.months, (month) ->
+      month.value = '$' + month.value
+      month.percent_value =  month.percent_value + '%'
+
+
+  $scope.changeTotalBudget = ->
+    $scope.deal_product.budget_percent = 100
+    $scope.deal_product.isIncorrectTotalBudgetPercent = false
+    budgetOneDay = $scope.deal_product.budget / $scope.currentDeal.days
+    budgetSum = 0
+    budgetPercentSum = 0
+    _.each $scope.deal_product.months, (month, index) ->
+      month.value = Math.round($scope.currentDeal.days_per_month[index] * budgetOneDay)
+      month.percent_value = Math.round(month.value / $scope.deal_product.budget * 100)
+      budgetSum = budgetSum + $scope.currentDeal.days_per_month[index] * budgetOneDay
+      budgetPercentSum = budgetPercentSum + month.percent_value
+    if(budgetSum != $scope.deal_product.budget || budgetPercentSum != 100)
+      addProductBudgetCorrection()
+    setSymbolsAddProductBudget()
+
   $scope.changeMonthValue = (monthValue, index)->
     if(!monthValue)
       monthValue = 0
-    $scope.deal_product.months[index].value = monthValue
     $scope.deal_product.budget = 0
+    _.each $scope.deal_product.months, (month, monthIndex) ->
+      if(index == monthIndex)
+        $scope.deal_product.budget = $scope.deal_product.budget + Number(monthValue)
+      else
+        $scope.deal_product.budget = $scope.deal_product.budget + $scope.cutDollar(month.value)
     _.each $scope.deal_product.months, (month) ->
-      $scope.deal_product.budget = $scope.deal_product.budget + Number(month.value)
-    _.each $scope.deal_product.months, (month) ->
-      month.percent_value = Math.round(month.value / $scope.deal_product.budget * 100)
+      month.percent_value = $scope.setPercent( Math.round($scope.cutDollar(month.value) / $scope.deal_product.budget * 100))
 
   $scope.changeMonthPercent = (monthPercentValue, index)->
     if(!monthPercentValue)
       monthPercentValue = 0
-    $scope.deal_product.months[index].value = Math.round(monthPercentValue/100*$scope.deal_product.budget)
+    $scope.deal_product.months[index].value = $scope.setDollar(Math.round(monthPercentValue/100*$scope.deal_product.budget))
     $scope.deal_product.budget_percent = 0
     _.each $scope.deal_product.months, (month) ->
-      $scope.deal_product.budget_percent = $scope.deal_product.budget_percent + Number(month.percent_value)
+      $scope.deal_product.budget_percent = $scope.cutPercent($scope.deal_product.budget_percent) + $scope.cutPercent((month.percent_value))
     if($scope.deal_product.budget_percent != 100)
       $scope.deal_product.isIncorrectTotalBudgetPercent = true
     else
       $scope.deal_product.isIncorrectTotalBudgetPercent = false
 
+  $scope.resetAddProduct = ->
+    $scope.changeTotalBudget()
+
   $scope.addProduct = ->
+    cutSymbolsAddProductBudget()
     DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: $scope.deal_product).then (deal) ->
       $scope.showProductForm = false
       $scope.currentDeal = deal

@@ -178,24 +178,25 @@
                       %button.btn.btn-primary.btn-block{ type: 'submit',
                         'ng-disabled': 'deal_product.isIncorrectTotalBudgetPercent || !deal_product.product_id', } Add Product
                     .col-xs-12
+                      %button.btn.btn-primary.btn-block{ng: { click: 'resetAddProduct()', disabled:'deal_product.budget_percent === 100' }, type: 'button' } Reset
+                    .col-xs-12
                       %button#cancel.btn.btn-default.btn-block{ng: { click: 'cancelAddProduct()' }, type: 'button' } Cancel
                 .col-xs-10
                   .row.months.new-product-form
-                    .col-xs-1
-                      .form-group.legend
-                        %label.control-label Legend
-                        %input.form-control.text-center.offset-bottom{placeholder: '$', 'ng-disabled': 'true'}
-                        %input.form-control.text-center{placeholder: '%', 'ng-disabled': 'true'}
                     .col-xs-2{ ng: { repeat: 'month in deal_product.months' } }
                       .form-group
                         %label.control-label Month \#{{ $index + 1 }}
                         %input.form-control.offset-bottom{ 'ng-model': 'month.value',
                         'ng-disabled': '!deal_product.budget',
                         'ng-change': 'changeMonthValue(month.value, $index)',
+                        'ng-focus': 'cutDollar(month.value, $index)',
+                        'ng-blur': 'setDollar(month.value, $index)',
                         'numbers-only':''}
                         %input.form-control{ 'ng-model': 'month.percent_value',
                         'ng-disabled': '!deal_product.budget',
                         'ng-change': 'changeMonthPercent(month.percent_value, $index)',
+                        'ng-focus': 'cutPercent(month.percent_value, $index)',
+                        'ng-blur': 'setPercent(month.percent_value, $index)',
                         'numbers-only':''}
 
     #activities.row
