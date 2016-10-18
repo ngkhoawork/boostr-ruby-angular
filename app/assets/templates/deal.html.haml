@@ -104,7 +104,7 @@
         %table.table.white-table
           %thead
             %tr
-              %th.text-center Product
+              %th.text-left Product
               %th.text-center.no-pad Total Budget
               %th.text-center{ ng: { repeat: 'month in currentDeal.months' } }
                 {{ month | boDate }}
@@ -157,7 +157,7 @@
           .col-xs-12
             %form#product-form{ ng: { submit: 'addProduct()' } }
               .row
-                .col-xs-2
+                .col-xs-2.product-controls
                   .row.bordered
                     .col-xs-12
                       .form-group
@@ -171,9 +171,9 @@
                     .col-xs-12
                       .form-group.new-product-form
                         %label.control-label{ for: 'total_budget' } Total Budget
-                        %input.form-control{ 'ng-model': 'deal_product.budget',
+                        %input.form-control.total-budget{ 'ng-model': 'deal_product.budget',
                           'ng-change': 'changeTotalBudget()'}
-                        %span.small{'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
+                        %span.total-percent{'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
                           {{ (deal_product.budget_percent || 0 )+ '%'}}
                   .row
                     .col-xs-12

@@ -279,6 +279,9 @@
 
     table {
       thead {
+        th.text-left {
+          text-align: left;
+        }
         th:not(.no-pad) {
           padding-right: 19px;
         }
@@ -314,6 +317,14 @@
 
       svg {
         margin-bottom: -7px;
+      }
+    }
+    .product-controls {
+      .total-budget {
+        margin-bottom: 5px;
+      }
+      .total-percent {
+        padding-left: 12px;
       }
     }
     .ui-select-match-text {
