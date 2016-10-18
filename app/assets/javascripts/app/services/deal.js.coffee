@@ -3,13 +3,8 @@
 ($resource, $q, $rootScope) ->
 
   transformRequest = (original, headers) ->
-    original.deal.values_attributes = original.deal.values
+    original.deal.values_attributes = original.deal.values if original.deal.values
     angular.toJson(original)
-
-  transformAddContactRequest = (original, headers) ->
-    # original.deal.values_attributes = original.deal.values
-    console.log 'original:', original
-    angular.toJson(original.params)
 
   resource = $resource '/api/deals/:id', { id: '@id' },
     save:
@@ -20,17 +15,6 @@
       method: 'PUT'
       url: '/api/deals/:id'
       transformRequest: transformRequest
-    dealContacts:
-      method: 'GET',
-      isArray: true
-      url: 'api/deals/:id/deal_contacts'
-    deleteDealContact:
-      method: 'DELETE'
-      url: 'api/deals/:id/deal_contacts/:contact_id'
-    updateContacts:
-      method: 'PUT'
-      url: 'api/deals/:id'
-      transformRequest: transformAddContactRequest
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
@@ -69,13 +53,6 @@
       $rootScope.$broadcast 'updated_deals'
     deferred.promise
 
-  @updateContacts = (id, params) ->
-    deferred = do $q.defer
-    resource.updateContacts id: id, params: params, (deal) ->
-      deferred.resolve deal
-      $rootScope.$broadcast 'updated_deals'
-    deferred.promise
-
   @get = (deal_id) ->
     deferred = $q.defer()
     resource.get id: deal_id, (deal) ->
@@ -89,18 +66,6 @@
     resource.delete id: deletedDeal.id, () ->
       deferred.resolve()
       $rootScope.$broadcast 'updated_deals'
-    deferred.promise
-
-  @dealContacts = (id, params) ->
-    deferred = $q.defer()
-    resource.dealContacts id: id, params: params, (contacts) ->
-      deferred.resolve(contacts)
-    deferred.promise
-
-  @deleteDealContact = (params) ->
-    deferred = $q.defer()
-    resource.deleteDealContact params, (response) ->
-      deferred.resolve(contacts)
     deferred.promise
 
   return
