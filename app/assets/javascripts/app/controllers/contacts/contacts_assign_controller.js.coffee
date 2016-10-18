@@ -6,7 +6,7 @@
   $scope.contact = contact
   $scope.searchText = ""
   if typeId
-    Client.query({client_type_id: typeId}).$promise.then (clients) ->
+    Client.query(filter: 'all', client_type_id: typeId).$promise.then (clients) ->
       $scope.clients = clients
   else
     Client.query(filter: 'all').$promise.then (clients) ->
@@ -15,7 +15,7 @@
   $scope.searchObj = (name) ->
     if typeId
       if name == ""
-        Client.query({client_type_id: typeId}).$promise.then (clients) ->
+        Client.query(filter: 'all', client_type_id: typeId).$promise.then (clients) ->
           $scope.clients = clients
       else
         Client.query({name: name, client_type_id: typeId}).$promise.then (clients) ->
