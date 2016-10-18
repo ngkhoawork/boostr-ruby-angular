@@ -23,7 +23,8 @@ class Api::DealsController < ApplicationController
             range = deal['start_date'] .. deal['end_date']
 
             deal['month_amounts'] = []
-            monthly_revenues = DealProduct.select("date_part('month', start_date) as month, (sum(budget)/100.0) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue}}
+            monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('month', start_date) as month, (sum(deal_product_budgets.budget)/100.0) as revenue").where("deal_products.deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
+
             index = 0
             monthly_revenues.each do |monthly_revenue|
               for i in index..(monthly_revenue[:month]-2)
@@ -50,7 +51,7 @@ class Api::DealsController < ApplicationController
             end
 
             deal['quarter_amounts'] = []
-            quarterly_revenues = DealProduct.select("date_part('quarter', start_date) as quarter, (sum(budget)/100.0) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue}}
+            quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('quarter', start_date) as quarter, (sum(deal_product_budgets.budget)/100.0) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
             index = 0
             quarterly_revenues.each do |quarterly_revenue|
               for i in index..(quarterly_revenue[:quarter]-2)
@@ -104,9 +105,9 @@ class Api::DealsController < ApplicationController
   def pipeline_report
     respond_to do |format|
       format.json {
-        deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_products).distinct, each_serializer: DealReportSerializer)
+        deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_product_budgets).distinct , each_serializer: DealReportSerializer)
         deal_ids = deals.open.collect{|deal| deal.id}
-        range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
+        range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
         render json: [{deals: deal_list, range: range}].to_json
       }
       format.csv {
@@ -118,10 +119,10 @@ class Api::DealsController < ApplicationController
   def pipeline_summary_report
     respond_to do |format|
       format.json {
-        deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_products).distinct , each_serializer: DealReportSerializer)
+        deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_product_budgets).distinct , each_serializer: DealReportSerializer)
 
         deal_ids = deals.open.collect{|deal| deal.id}
-        range = DealProduct.select("distinct(start_date)").where("deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product| deal_product.start_date}
+        range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
         render json: [{deals: deal_list, range: range}].to_json
       }
       format.csv {

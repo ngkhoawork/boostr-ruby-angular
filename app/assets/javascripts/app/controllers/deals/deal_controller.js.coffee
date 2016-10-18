@@ -252,19 +252,18 @@
     Product.all().then (products) ->
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
 
-  $scope.$watch 'deal_product.total_budget', ->
-    budget = $scope.deal_product.total_budget / $scope.currentDeal.days
+  $scope.$watch 'deal_product.budget', ->
+    budget = $scope.deal_product.budget / $scope.currentDeal.days
     _.each $scope.deal_product.months, (month, index) ->
       month.value = $filter('currency')($scope.currentDeal.days_per_month[index] * budget, '$', 0)
 
   $scope.addProduct = ->
-    DealProduct.create($scope.deal_product).then (deal) ->
+    DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: $scope.deal_product).then (deal) ->
       $scope.showProductForm = false
       $scope.currentDeal = deal
 
   $scope.resetDealProduct = ->
     $scope.deal_product = {
-      deal_id: $routeParams.id
       months: []
     }
 
@@ -297,10 +296,6 @@
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
       $scope.setCurrentDeal(deal)
 
-  $scope.updateDealProductTotalBudget = (product_id, total_budget) ->
-    DealProduct.update_total_budget(deal_id: $scope.currentDeal.id, product_id: product_id, total_budget: total_budget).then (deal) ->
-      $scope.setCurrentDeal(deal)
-
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.setCurrentDeal(deal)
@@ -326,9 +321,9 @@
           contact.id == deletedContact.id
       )
 
-  $scope.deleteProduct = (product) ->
-    if confirm('Are you sure you want to delete "' +  product.name + '"?')
-      DealProduct.delete(id: product.id, deal_id: $scope.currentDeal.id).then (deal) ->
+  $scope.deleteDealProduct = (deal_product) ->
+    if confirm('Are you sure you want to delete "' +  deal_product.name + '"?')
+      DealProduct.delete(id: deal_product.id, deal_id: $scope.currentDeal.id).then (deal) ->
         $scope.setCurrentDeal(deal)
 
   $scope.isActive = (id) ->

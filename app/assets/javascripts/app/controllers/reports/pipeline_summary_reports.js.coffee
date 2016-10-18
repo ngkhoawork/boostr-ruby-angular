@@ -45,18 +45,18 @@
            if (!$scope.data[percent_key])
              $scope.data[percent_key] = {}
 
-           _.each deal.deal_products, (deal_product) ->
-             startDate = new Date(deal_product.start_date)
+           _.each deal.deal_product_budgets, (deal_product_budget) ->
+             startDate = new Date(deal_product_budget.start_date)
              month = startDate.getUTCMonth()
              year = startDate.getUTCFullYear()
              if (year != currentYear)
                return
-             $scope.data['Summary'][percent_key]['FY'] += deal_product.budget
-             $scope.data['Summary'][percent_key][month + 1] += deal_product.budget
-             $scope.data['Summary'][percent_key]['Q' + (Math.ceil((month + 1) / 3))] += deal_product.budget
-             $scope.data['Summary']['Total']['FY'] += deal_product.budget
-             $scope.data['Summary']['Total'][month + 1] += deal_product.budget
-             $scope.data['Summary']['Total']['Q' + (Math.ceil((month + 1) / 3))] += deal_product.budget
+             $scope.data['Summary'][percent_key]['FY'] += deal_product_budget.budget
+             $scope.data['Summary'][percent_key][month + 1] += deal_product_budget.budget
+             $scope.data['Summary'][percent_key]['Q' + (Math.ceil((month + 1) / 3))] += deal_product_budget.budget
+             $scope.data['Summary']['Total']['FY'] += deal_product_budget.budget
+             $scope.data['Summary']['Total'][month + 1] += deal_product_budget.budget
+             $scope.data['Summary']['Total']['Q' + (Math.ceil((month + 1) / 3))] += deal_product_budget.budget
              _.each deal.users, (user) ->
                user_key = user.first_name + ' ' + user.last_name
                if (!$scope.data[percent_key][user_key])
@@ -73,7 +73,7 @@
                  for i in [1 .. 4]
                    $scope.data[percent_key]['Total']['Q' + i] = 0
                  $scope.data[percent_key]['Total']['FY'] = 0
-               user_product_budget = deal_product.budget * user.share / 100
+               user_product_budget = deal_product_budget.budget * user.share / 100
                $scope.data[percent_key][user_key]['FY'] += user_product_budget
                $scope.data[percent_key][user_key][month + 1] += user_product_budget
                $scope.data[percent_key][user_key]['Q' + (Math.ceil((month + 1) / 3))] += user_product_budget
@@ -84,16 +84,16 @@
          $scope.deals = _.map $scope.deals, (deal) ->
            products = []
            _.each $scope.productRange, (range) ->
-             products.push($scope.findDealProductBudget(deal.deal_products, range) / 100)
+             products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range) / 100)
            deal.products = products
            return deal
 
       $scope.init()
 
-      $scope.findDealProductBudget = (dealProducts, productTime) ->
-        result =  _.find dealProducts, (dealProduct) ->
-          if (dealProduct.start_date == productTime)
-            return dealProduct
+      $scope.findDealProductBudgetBudget = (dealProductBudgets, productTime) ->
+        result =  _.find dealProductBudgets, (dealProductBudget) ->
+          if (dealProductBudget.start_date == productTime)
+            return dealProductBudget
         if result
           return result.budget
         else

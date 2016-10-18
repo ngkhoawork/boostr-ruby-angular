@@ -104,7 +104,7 @@ feature 'Individual Deal' do
           expect(find('td:nth-child(14)')).to have_text('$10,326') # jun
 
           find('td:nth-child(3) span').trigger('click')
-          fill_in "#{first_deal_product.id}", with: '1000'
+          fill_in "#{first_deal_product_budget.id}", with: '1000'
           find('td:nth-child(3) input').native.send_keys(:Enter)
         end
       end

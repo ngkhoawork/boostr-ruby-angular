@@ -11,7 +11,7 @@ RSpec.describe Api::WeightedPipelinesController, type: :controller do
   let(:member) { create :user, team: child }
   let(:deal) { create :deal, stage: stage, advertiser: client, start_date: "2015-01-01", end_date: "2015-12-31"  }
   let!(:deal_member) { create :deal_member, deal: deal, user: member, share: 100 }
-  let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
+  let!(:deal_product_budget) { create_list :deal_product_budget, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
   before do
     sign_in user

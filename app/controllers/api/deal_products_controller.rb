@@ -2,8 +2,13 @@ class Api::DealProductsController < ApplicationController
   respond_to :json
 
   def create
-    deal.add_product(product.id, params[:total_budget])
-    render deal
+    deal_product = deal.deal_products.new(deal_product_params)
+    if deal_product.save
+      deal.update_total_budget
+      render deal
+    else
+      render json: { errors: deal_product.errors.messages }, status: :unprocessable_entity
+    end
   end
 
   def update
@@ -15,12 +20,8 @@ class Api::DealProductsController < ApplicationController
   end
 
   def destroy
-    deal.remove_product(params[:id])
-    render deal
-  end
-
-  def update_total_budget
-    deal.update_product_budget(params[:product_id], params[:total_budget])
+    deal_product.destroy
+    deal.update_total_budget
     render deal
   end
 
@@ -30,15 +31,17 @@ class Api::DealProductsController < ApplicationController
     @deal ||= current_user.company.deals.find(params[:deal_id])
   end
 
-  def product
-    @product ||= current_user.company.products.find(params[:product_id])
-  end
-
   def deal_product
     @deal_product ||= deal.deal_products.find(params[:id])
   end
 
   def deal_product_params
-    params.require(:deal_product).permit(:budget)
+    params.require(:deal_product).permit(
+      :budget,
+      :product_id,
+      {
+        deal_product_budgets_attributes: [:id, :budget]
+      }
+    )
   end
 end

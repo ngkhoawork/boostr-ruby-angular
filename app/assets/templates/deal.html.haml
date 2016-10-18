@@ -114,17 +114,17 @@
                 {{ month | boDate }}
 
           %tbody
-            %tr{ ng: { repeat: 'product in currentDeal.products' } }
+            %tr{ ng: { repeat: 'deal_product in currentDeal.deal_products' } }
               %td
-                %span.hover-delete{ ng: { click: 'deleteProduct(product)' } }
+                %span.hover-delete{ ng: { click: 'deleteDealProduct(deal_product)' } }
                   = inline_svg 'icons/trash.svg'
-                {{ product.name }}
+                {{ deal_product.name }}
               %td.right
-                %span{ 'e-name': '{{ product.id }}', editable: { text: 'product.total_budget' }, onaftersave: 'updateDealProductTotalBudget(product.id, product.total_budget)' }
-                  {{ product.total_budget | currency:'$':0  }}
-              %td.right{ ng: { repeat: 'deal_product in product.deal_products' } }
                 %span{ 'e-name': '{{ deal_product.id }}', editable: { text: 'deal_product.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
-                  {{ deal_product.budget | currency:'$':0 }}
+                  {{ deal_product.budget | currency:'$':0  }}
+              %td.right{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
+                %span{ 'e-name': '{{ deal_product_budget.id }}', editable: { text: 'deal_product_budget.budget' }, onaftersave: 'updateDealProduct(deal_product)' }
+                  {{ deal_product_budget.budget | currency:'$':0 }}
 
       #new-product.well.dark
         .row{ ng: { hide: 'showProductForm' } }
@@ -150,7 +150,7 @@
                     .col-xs-12
                       .form-group
                         %label.control-label{ for: 'total_budget' } Total Budget
-                        %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal_product.total_budget', required: true }, name: 'total_budget' }
+                        %input.form-control{ placeholder: 'Total Budget', ng: { model: 'deal_product.budget', required: true }, name: 'total_budget' }
                   .row
                     .col-xs-12
                       %button.btn.btn-primary.btn-block{ type: 'submit' } Add Product
