@@ -182,6 +182,20 @@ RSpec.describe Deal, type: :model do
       expect(DealMember.first.values.first.option_id).to eq(role.option_id)
       expect(DealMember.first.share).to eq(client_member.share)
     end
+
+    context 'when there are no client members' do
+      let!(:client_wo_members) { create :client }
+      let!(:deal) { build :deal, advertiser: client_wo_members, creator: user }
+
+      it 'assigns 100 percent share to the deal creator' do
+        expect do
+          deal.save
+        end.to change(DealMember, :count).by(1)
+        expect(deal.deal_members.count).to be(1)
+        expect(deal.deal_members.first.user_id).to be(user.id)
+        expect(deal.deal_members.first.share).to be(100)
+      end
+    end
   end
 
   context 'to_zip' do

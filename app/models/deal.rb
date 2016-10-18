@@ -266,11 +266,15 @@ class Deal < ActiveRecord::Base
   def generate_deal_members
     # This only gets called on create where the Deal has inherently been touched
     ActiveRecord::Base.no_touching do
-      advertiser.client_members.each do |client_member|
-        deal_member = deal_members.create(client_member.defaults)
+      if advertiser.client_members.empty? && creator
+        deal_member = deal_members.create(user_id: creator.id, share: 100)
+      else
+        advertiser.client_members.each do |client_member|
+          deal_member = deal_members.create(client_member.defaults)
 
-        if client_member.role_value_defaults
-          deal_member.values.create(client_member.role_value_defaults)
+          if client_member.role_value_defaults
+            deal_member.values.create(client_member.role_value_defaults)
+          end
         end
       end
     end
