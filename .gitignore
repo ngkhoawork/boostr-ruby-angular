@@ -6,6 +6,8 @@
 *.gem
 *.rbc
 .DS_Store
+.ruby-gemset
+.ruby-version
 dump.rdb
 /.config
 /coverage/
