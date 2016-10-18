@@ -289,13 +289,26 @@
     }
   }
 
-  .add-product {
-    color: $brand-secondary;
-    text-transform: uppercase;
-    font-size: 12px;
+  #new-product {
+    .add-product {
+      color: $brand-secondary;
+      text-transform: uppercase;
+      font-size: 12px;
 
-    svg {
-      margin-bottom: -7px;
+      svg {
+        margin-bottom: -7px;
+      }
+    }
+    .ui-select-match-text {
+      width: 110px;
+    }
+    .ui-select-match-text, .ui-select-choices-row-inner {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .ui-select-bootstrap .ui-select-choices-row > a {
+      padding: 3px;
     }
   }
 
