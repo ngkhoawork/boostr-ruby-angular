@@ -44,17 +44,18 @@
           $scope.deals = _.map $scope.deals, (deal) ->
             products = []
             _.each $scope.productRange, (range) ->
-              products.push($scope.findDealProductBudget(deal.deal_products, range) / 100)
+              products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range) / 100)
             deal.products = products
             return deal
 
       $scope.go = (path) ->
         $location.path(path)
 
-      $scope.findDealProductBudget = (dealProducts, productTime) ->
-        result =  _.find dealProducts, (dealProduct) ->
-          if (dealProduct.start_date == productTime)
-            return dealProduct
+      $scope.findDealProductBudgetBudget = (dealProductBudgets, productTime) ->
+        result =  _.find dealProductBudgets, (dealProductBudget) ->
+          if (dealProductBudget.start_date == productTime)
+            return dealProductBudget
+
         if result
           return result.budget
         else

@@ -1,4 +1,4 @@
-class CreateDealProducts < ActiveRecord::Migration
+class CreateDealProductsOrigin < ActiveRecord::Migration
   def change
     create_table :deal_products do |t|
       t.integer :deal_id

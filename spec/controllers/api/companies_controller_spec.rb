@@ -9,7 +9,7 @@ RSpec.describe Api::CompaniesController, type: :controller do
   end
 
   describe 'GET #show' do
-    it 'returns json for a deal, products and deal_products' do
+    it 'returns json for a deal, products and deal_product_budgets' do
       get :show, format: :json
       expect(response).to be_success
     end

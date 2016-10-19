@@ -152,9 +152,22 @@
           $scope.types
 
   $scope.delete = ->
-    if confirm('Are you sure you want to delete "' +  $scope.currentContact.name + '"?')
-      Contact.delete $scope.currentContact, ->
-        $location.path('/contacts')
+    if confirm('Are you sure you want to delete "' + $scope.currentContact.name + '"?')
+      Contact.delete({ id: $scope.currentContact.id }, ((res) ->
+        i = 0
+        arrayLength = $scope.contacts.length
+        while i < arrayLength
+          if($scope.currentContact && $scope.contacts[i].id == $scope.currentContact.id )
+            $scope.contacts.splice(i, 1)
+            if($scope.contacts && $scope.contacts.length)
+              $scope.currentContact = $scope.contacts[0]
+            else
+              $scope.init()
+            break
+          i++
+      ), (err) ->
+        console.log (err)
+      )
 
   $scope.deleteActivity = (activity) ->
     if confirm('Are you sure you want to delete the activity?')
@@ -325,6 +338,7 @@
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
+        $scope.reminderOptions.editMode = true
       , (err) ->
         $scope.reminderOptions.buttonDisabled = false
     else
@@ -334,6 +348,7 @@
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
+        $scope.reminderOptions.editMode = true
       , (err) ->
         $scope.reminderOptions.buttonDisabled = false
 

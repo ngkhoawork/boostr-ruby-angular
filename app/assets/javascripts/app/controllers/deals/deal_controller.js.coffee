@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit',
-($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit',
+($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -234,6 +234,8 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
+      $scope.verifyMembersShare()
+      $scope.setBudgetPercent(deal)
     Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
 #    Contact.allForClient deal.advertiser_id, (contacts) ->
@@ -246,26 +248,249 @@
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()
     for month in $scope.currentDeal.months
-      $scope.deal_product.months.push({ value: '' })
+      $scope.deal_product.deal_product_budgets.push({ budget: '' })
     $scope.showProductForm = !$scope.showProductForm
     Product.all().then (products) ->
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
 
-  $scope.$watch 'deal_product.total_budget', ->
-    budget = $scope.deal_product.total_budget / $scope.currentDeal.days
-    _.each $scope.deal_product.months, (month, index) ->
-      month.value = $filter('currency')($scope.currentDeal.days_per_month[index] * budget, '$', 0)
+#==================add product form======================
+  addProductBudgetCorrection = ->
+    budgetSum = 0
+    budgetPercentSum = 0
+    length = $scope.deal_product.deal_product_budgets.length
+    _.each $scope.deal_product.deal_product_budgets, (month, index) ->
+      if(length-1 != index)
+        budgetSum = budgetSum + month.budget
+        budgetPercentSum = budgetPercentSum + month.percent_value
+      else
+        month.budget = $scope.deal_product.budget - budgetSum
+        month.percent_value = 100 - budgetPercentSum
+
+  cutSymbolsAddProductBudget = ->
+    _.each $scope.deal_product.deal_product_budgets, (month) ->
+        month.budget = Number((month.budget+'').replace('$', ''))
+        month.percent_value = Number((month.percent_value+'').replace('%', ''))
+
+  $scope.cutDollar = (value, index) ->
+    value = Number((value+'').replace('$', ''))
+    if(index != undefined )
+      $scope.deal_product.deal_product_budgets[index].budget = value
+    else
+      return value
+
+  $scope.setDollar = (value, index) ->
+    value = '$' + value
+    if(index!= undefined )
+      $scope.deal_product.deal_product_budgets[index].budget = value
+    else
+      return value
+
+  $scope.cutPercent = (percent_value, index) ->
+    percent_value = Number((percent_value+'').replace('%', ''))
+    if(index!= undefined )
+      $scope.deal_product.deal_product_budgets[index].percent_value = percent_value
+    else
+      return percent_value
+
+  $scope.setPercent = (percent_value, index) ->
+    percent_value = percent_value + '%'
+    if(index!= undefined)
+      $scope.deal_product.deal_product_budgets[index].percent_value = percent_value
+    else
+      return percent_value
+
+  setSymbolsAddProductBudget = ->
+    _.each $scope.deal_product.deal_product_budgets, (month) ->
+      month.budget = '$' + month.budget
+      month.percent_value =  month.percent_value + '%'
+
+
+  $scope.changeTotalBudget = ->
+    $scope.deal_product.budget_percent = 100
+    $scope.deal_product.isIncorrectTotalBudgetPercent = false
+    budgetOneDay = $scope.deal_product.budget / $scope.currentDeal.days
+    budgetSum = 0
+    budgetPercentSum = 0
+    _.each $scope.deal_product.deal_product_budgets, (month, index) ->
+      if(!$scope.deal_product.budget)
+        month.percent_value = 0
+        month.budget = 0
+      else
+        month.budget = Math.round($scope.currentDeal.days_per_month[index] * budgetOneDay)
+        month.percent_value = Math.round(month.budget / $scope.deal_product.budget * 100)
+      budgetSum = budgetSum + $scope.currentDeal.days_per_month[index] * budgetOneDay
+      budgetPercentSum = budgetPercentSum + month.percent_value
+    if($scope.deal_product.budget && budgetSum != $scope.deal_product.budget  || budgetPercentSum && budgetPercentSum != 100)
+      addProductBudgetCorrection()
+    setSymbolsAddProductBudget()
+
+  $scope.changeMonthValue = (monthValue, index)->
+    if(!monthValue)
+      monthValue = 0
+    if((monthValue+'').length > 1 && (monthValue+'').charAt(0) == '0')
+      monthValue = Number((monthValue + '').slice(1))
+    $scope.deal_product.deal_product_budgets[index].budget = monthValue
+
+    $scope.deal_product.budget = 0
+    _.each $scope.deal_product.deal_product_budgets, (month, monthIndex) ->
+      if(index == monthIndex)
+        $scope.deal_product.budget = $scope.deal_product.budget + Number(monthValue)
+      else
+        $scope.deal_product.budget = $scope.deal_product.budget + $scope.cutDollar(month.budget)
+    _.each $scope.deal_product.deal_product_budgets, (month) ->
+      month.percent_value = $scope.setPercent( Math.round($scope.cutDollar(month.budget) / $scope.deal_product.budget * 100))
+
+  $scope.changeMonthPercent = (monthPercentValue, index)->
+    if(!monthPercentValue)
+      monthPercentValue = 0
+    if((monthPercentValue+'').length > 1 && (monthPercentValue+'').charAt(0) == '0')
+      monthPercentValue = Number((monthPercentValue + '').slice(1))
+    $scope.deal_product.deal_product_budgets[index].percent_value = monthPercentValue
+    $scope.deal_product.deal_product_budgets[index].budget = $scope.setDollar(Math.round(monthPercentValue/100*$scope.deal_product.budget))
+
+    $scope.deal_product.budget_percent = 0
+    _.each $scope.deal_product.deal_product_budgets, (month) ->
+      $scope.deal_product.budget_percent = $scope.cutPercent($scope.deal_product.budget_percent) + $scope.cutPercent((month.percent_value))
+    if($scope.deal_product.budget_percent != 100)
+      $scope.deal_product.isIncorrectTotalBudgetPercent = true
+    else
+      $scope.deal_product.isIncorrectTotalBudgetPercent = false
+
+  $scope.resetAddProduct = ->
+    $scope.changeTotalBudget()
 
   $scope.addProduct = ->
-    DealProduct.create($scope.deal_product).then (deal) ->
+    cutSymbolsAddProductBudget()
+    DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: $scope.deal_product).then (deal) ->
       $scope.showProductForm = false
       $scope.currentDeal = deal
+      $scope.setBudgetPercent(deal)
 
   $scope.resetDealProduct = ->
     $scope.deal_product = {
-      deal_id: $routeParams.id
-      months: []
+      deal_product_budgets: []
     }
+#==================END add product form========================
+
+#============percent and money inputs logic=====================
+  $scope.saveCleanProductCopy = (deal_product)->
+    $scope.copyProduct = angular.copy(deal_product)
+    #    reset edit mode
+    $scope.copyProduct.isIncorrectTotalBudgetPercent = false
+    _.each $scope.copyProduct.deal_product_budget, (item) ->
+      item.editMode = undefined
+
+  $scope.initProductEditMode = (deal_product, deal_product_budget, elementOnFocus, isSaveCopyProduct )->
+    if(isSaveCopyProduct)
+      $scope.saveCleanProductCopy(deal_product)
+    deal_product_budget.editMode = true
+    setTimeout ->
+      if(elementOnFocus == 'moneyOnFocus')
+        el = angular.element('#deal_product_budget-'+ deal_product_budget.id)
+      if(elementOnFocus == 'percentOnFocus')
+        el = angular.element('#deal_product_budget-percent-'+ deal_product_budget.id)
+      if(el)
+        el.focus()
+
+  $scope.disableProductsEditMode = (deal_product, deal_product_budgets, deal_product_budget)->
+    setTimeout ->
+      activeElement = document.activeElement
+      if(activeElement && activeElement.id && ~activeElement.id.indexOf('deal_product_budget'))
+        return
+      _.each deal_product_budgets, (item) ->
+        item.editMode = undefined
+      if(deal_product.total_budget_percent == 100)
+        $scope.updateDealProduct(deal_product)
+      else
+        _.each $scope.currentDeal.deal_products, (item, index) ->
+          if(item.id == $scope.copyProduct.id)
+            $scope.currentDeal.deal_products[index] = angular.copy($scope.copyProduct)
+
+  $scope.changeMonthBudget = (deal_product, deal_product_budget, $index, $event, identityString) ->
+    if($event && $event.which == 13)
+      deal_product_budget.editMode = undefined
+      $scope.disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)
+      return
+    if(identityString == "moneyOnFocus")
+      if(!deal_product_budget.budget)
+        deal_product_budget.budget = 0
+      if((deal_product_budget.budget+'').length > 1 && (deal_product_budget.budget+'').charAt(0) == '0')
+        deal_product_budget.budget = Number((deal_product_budget.budget + '').slice(1))
+      deal_product.budget = 0
+      _.each deal_product.deal_product_budgets, (deal_product_budget) ->
+        deal_product.budget = deal_product.budget + Number(deal_product_budget.budget)
+      budgetPercentSum = 0
+      _.each deal_product.deal_product_budgets, (deal_product_budget) ->
+        deal_product_budget.budget_percent = Math.round(deal_product_budget.budget/deal_product.budget*100)
+        budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
+#      reset total_budget_percent
+      deal_product.total_budget_percent = 100
+      deal_product.isIncorrectTotalBudgetPercent = false;
+
+      if(budgetPercentSum != 100)
+        $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget)
+
+    if(identityString == "percentOnFocus")
+      deal_product_budget.budget = Math.round(deal_product_budget.budget_percent/100*deal_product.budget)
+      if(!deal_product_budget.budget)
+        deal_product_budget.budget = 0
+      if(!deal_product_budget.budget_percent)
+        deal_product_budget.budget_percent = 0
+      if((deal_product_budget.budget_percent+'').length > 1 &&(deal_product_budget.budget_percent+'').charAt(0) == '0')
+        deal_product_budget.budget_percent = Number((deal_product_budget.budget_percent+'').slice(1))
+      budgetPercentSum = 0
+      _.each deal_product.deal_product_budgets, (item) ->
+        budgetPercentSum = budgetPercentSum + Number(item.budget_percent)
+      deal_product.total_budget_percent = budgetPercentSum;
+      if(budgetPercentSum != 100)
+        deal_product.isIncorrectTotalBudgetPercent = true;
+        _.each deal_product.deal_product_budgets, (item) ->
+          item.editMode = true
+      else
+        deal_product.isIncorrectTotalBudgetPercent = false;
+        _.each deal_product.deal_product_budgets, (item) ->
+          if(deal_product_budget.id != item.id)
+            item.editMode = undefined
+      if(!deal_product_budget.budget_percent)
+        deal_product_budget.budget_percent = 0
+
+  $scope.setBudgetPercent = (deal) ->
+    if(deal && deal.deal_products instanceof Array)
+      _.each deal.deal_products, (deal_product) ->
+        if(deal_product && deal_product.deal_product_budgets instanceof Array)
+          budgetSum = 0
+          budgetPercentSum = 0
+          _.each deal_product.deal_product_budgets, (deal_product_budget, index) ->
+            deal_product_budget.budget_percent = Math.round(deal_product_budget.budget/deal_product.budget*100)
+            budgetSum = budgetSum + deal_product_budget.budget
+            budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
+
+#            need correct data from server
+#          if(budgetSum != product.total_budget || budgetPercentSum != 100)
+#            $scope.budgetCorrection(product.deal_products, product.total_budget)
+
+          deal_product.total_budget_percent = 100
+
+  $scope.budgetCorrection = (deal_product_budgets, total_product_budget, $index) ->
+    length = deal_product_budgets.length
+    budgetSum = 0
+    budgetPercentSum = 0
+    if($index)
+      _.each deal_product_budgets, (deal_product_budget, index) ->
+        if(0 == index)
+          budgetSum = budgetSum + Number(deal_product_budget.budget)
+          budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
+      deal_product_budgets[0].budget = total_product_budget - budgetSum
+      deal_product_budgets[0].budget_percent = 100 - budgetPercentSum
+    else
+      _.each deal_product_budgets, (deal_product_budget, index) ->
+        if(length-1 != index)
+          budgetSum = budgetSum + Number(deal_product_budget.budget)
+          budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
+      deal_product_budgets[length-1].budget = total_product_budget - budgetSum
+      deal_product_budgets[length-1].budget_percent = 100 - budgetPercentSum
+
+#============END percent and money inputs logic=====================
 
   $scope.showLinkExistingUser = ->
     User.query().$promise.then (users) ->
@@ -296,13 +521,15 @@
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
       $scope.setCurrentDeal(deal)
 
-  $scope.updateDealProductTotalBudget = (product_id, total_budget) ->
-    DealProduct.update_total_budget(deal_id: $scope.currentDeal.id, product_id: product_id, total_budget: total_budget).then (deal) ->
-      $scope.setCurrentDeal(deal)
-
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.setCurrentDeal(deal)
+
+  $scope.verifyMembersShare = ->
+    share_sum = 0
+    _.each $scope.currentDeal.members, (member) ->
+      share_sum += member.share
+    $scope.membersShareInvalid = share_sum isnt 100
 
   $scope.deleteMember = (member) ->
     if confirm('Are you sure you want to delete "' +  member.name + '"?')
@@ -311,14 +538,17 @@
 
   $scope.deleteContact = (deletedContact) ->
     if confirm('Are you sure you want to delete "' +  deletedContact.name + '"?')
-      Deal.deleteDealContact id: $scope.currentDeal.id, contact_id: deletedContact.id
-        .then ->
-          $scope.currentDeal.contacts = _.reject $scope.currentDeal.contacts, (contact) ->
-            contact.id == deletedContact.id
+      DealContact.delete({
+        deal_id: $scope.currentDeal.id,
+        id: deletedContact.id
+        }, ->
+        $scope.currentDeal.contacts = _.reject $scope.currentDeal.contacts, (contact) ->
+          contact.id == deletedContact.id
+      )
 
-  $scope.deleteProduct = (product) ->
-    if confirm('Are you sure you want to delete "' +  product.name + '"?')
-      DealProduct.delete(id: product.id, deal_id: $scope.currentDeal.id).then (deal) ->
+  $scope.deleteDealProduct = (deal_product) ->
+    if confirm('Are you sure you want to delete "' +  deal_product.name + '"?')
+      DealProduct.delete(id: deal_product.id, deal_id: $scope.currentDeal.id).then (deal) ->
         $scope.setCurrentDeal(deal)
 
   $scope.isActive = (id) ->
@@ -341,6 +571,7 @@
       resolve:
         currentDeal: ->
           currentDeal
+
   $scope.addContact = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_add_form.html'
@@ -351,8 +582,6 @@
       resolve:
         deal: ->
           $scope.currentDeal
-    .result.then (updatedContact) ->
-      $scope.currentDeal.contacts = angular.copy updatedContact
 
   $scope.$on 'updated_deal', ->
     $scope.init()
@@ -529,6 +758,7 @@
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
+        $scope.reminderOptions.editMode = true
       , (err) ->
         $scope.reminderOptions.buttonDisabled = false
 

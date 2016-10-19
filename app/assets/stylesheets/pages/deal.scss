@@ -199,9 +199,89 @@
     }
   }
 
+  .new-product-form {
+    .has-error{
+      color: red;
+    }
+
+    .offset-bottom{
+      margin-bottom: 4px;
+    }
+
+    .legend {
+      label {
+        opacity: 0;
+      }
+
+      input {
+        cursor: default!important;
+      }
+
+    }
+  }
+
   #revenue_schedule {
+    .currency-table {
+      position: relative;
+      .symbol {
+        width: 0;
+        display: inline-block;
+        color: #939FA9;
+        font-size: 14px;
+      }
+      .dollar {
+        position: absolute;
+        margin-left: 5px;
+        padding-top: 1px;
+      }
+      .percent{
+        position: relative;
+        right: 60px;
+      }
+
+      .total-budget__percent {
+        display: block;
+      }
+
+      .has-error{
+        color: red;
+      }
+      &__money {
+        height: 30px;
+        width: 110px;
+        display: inline-block;
+        padding: 7px 10px 7px 15px;
+        border-radius: 4px;
+        border: 1px solid #ff8e4a;
+        outline: none;
+        &:focus{
+          box-shadow: inset 0 0 5px #ff8034;
+        }
+      }
+      &__percent {
+        width: 60px;
+        height: 30px;
+        display: inline-block;
+        border:1px solid #ff8e4a;
+        outline: none;
+        padding: 7px 10px 7px 20px;
+        border-radius: 4px;
+        &:focus{
+          box-shadow: inset 0 0 5px #ff8034;
+        }
+      }
+
+      .glyphicon-link {
+        font-size: 12px;
+        color: #aaa;
+      }
+    }
+
     table {
       thead {
+        th.text-left {
+          text-align: left;
+        }
         th:not(.no-pad) {
           padding-right: 19px;
         }
@@ -229,13 +309,34 @@
     }
   }
 
-  .add-product {
-    color: $brand-secondary;
-    text-transform: uppercase;
-    font-size: 12px;
+  #new-product {
+    .add-product {
+      color: $brand-secondary;
+      text-transform: uppercase;
+      font-size: 12px;
 
-    svg {
-      margin-bottom: -7px;
+      svg {
+        margin-bottom: -7px;
+      }
+    }
+    .product-controls {
+      .total-budget {
+        margin-bottom: 5px;
+      }
+      .total-percent {
+        padding-left: 12px;
+      }
+    }
+    .ui-select-match-text {
+      width: 110px;
+    }
+    .ui-select-match-text, .ui-select-choices-row-inner {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .ui-select-bootstrap .ui-select-choices-row > a {
+      padding: 3px;
     }
   }
 
@@ -247,6 +348,9 @@
   }
 
   #members {
+    .share-alert {
+      margin-bottom: 0
+    }
     span {
       margin-top: 45px;
     }
@@ -371,23 +475,26 @@
 
 }
 
-#deal_overview .icon-show-popup-wrapper {
-  width: 100%;
-}
-
-#deal_overview .show-create-remainders-popup {
-  display: table;
-  height: 40px;
-  margin: 0;
-  padding: 0;
-  top: 20px;
-}
-
-#deal_overview .show-create-remainders-popup > label {
-  display: table-cell;
-  margin: 0;
-  vertical-align: middle;
-  line-height: 0;
+#deal_overview {
+  .share-alert {
+    margin-bottom: 0
+  }
+  .icon-show-popup-wrapper {
+    width: 100%;
+  }
+  .show-create-remainders-popup {
+    display: table;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    top: 20px;
+  }
+  .show-create-remainders-popup > label {
+    display: table-cell;
+    margin: 0;
+    vertical-align: middle;
+    line-height: 0;
+  }
 }
 
 #activities h3{

@@ -42,6 +42,9 @@
       method: 'PUT'
       url: '/api/contacts/:id'
       transformRequest: transformRequest
+    delete:
+      method: 'DELETE'
+      url: '/api/contacts/:id'
 
   # @TODO: Replace all of this with just returning resource
   allContacts = []
@@ -93,13 +96,6 @@
         deferred.reject(resp)
     )
     deferred.promise
-
-  resource.delete = (deletedContact, callback) ->
-    resource.delete id: deletedContact.id, () ->
-      allContacts = _.reject allContacts, (contact) ->
-        contact.id == deletedContact.id
-      callback?()
-      $rootScope.$broadcast 'updated_contacts'
 
   resource.get = () ->
     currentContact

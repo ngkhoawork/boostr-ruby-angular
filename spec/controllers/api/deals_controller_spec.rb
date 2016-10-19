@@ -80,24 +80,16 @@ RSpec.describe Api::DealsController, type: :controller do
   end
 
   describe 'GET #show' do
-    it 'returns json for a deal, products and deal_products' do
+    it 'returns json for a deal, products and deal_product_budgets' do
       get :show, id: deal.id, format: :json
       expect(response).to be_success
     end
   end
 
   describe 'PUT #update' do
-    let(:contacts) { create_list :contact, 4 }
-
     it 'updates the deal and returns success' do
       put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, format: :json
       expect(response).to be_success
-    end
-
-    it 'assigns contacts to the deal' do
-      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, contacts: contacts.map(&:id), format: :json
-      expect(response).to be_success
-      expect(deal.reload.contacts.length).to eq(contacts.length)
     end
 
     it 'doesn\'t call touch over and over' do

@@ -14,7 +14,7 @@ RSpec.describe ForecastMember do
     let(:stage) { create :stage, probability: 100 }
     let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-01-31"  }
     let!(:deal_member) { create :deal_member, deal: deal, user: user, share: 100 }
-    let!(:deal_product) { create_list :deal_product, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
+    let!(:deal_product_budget) { create_list :deal_product_budget, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
     it 'returns the revenue for a member that has no revenue' do
       expect(forecast.revenue).to eq(0)
@@ -93,7 +93,7 @@ RSpec.describe ForecastMember do
       let(:another_stage) { create :stage, probability: 90 }
       let(:another_deal) { create :deal, stage: another_stage, start_date: "2015-01-01", end_date: "2015-1-31"  }
       let!(:another_deal_member) { create :deal_member, deal: another_deal, user: user, share: 100 }
-      let!(:another_deal_product) { create_list :deal_product, 4, deal: another_deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
+      let!(:another_deal_product_budget) { create_list :deal_product_budget, 4, deal: another_deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
       it 'lists the weighted pipeline by stage' do
         stages = {}

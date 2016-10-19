@@ -10,7 +10,7 @@ feature 'Dashboard' do
   let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
   let(:member) { create :user, team: child }
   let!(:deal_member) { create :deal_member, deal: deal, user: member, share: 100 }
-  let!(:deal_product) { create :deal_product, deal: deal, budget: 200000, start_date: "2015-01-01", end_date: "2015-01-31" }
+  let!(:deal_product_budget) { create :deal_product_budget, deal: deal, budget: 200000, start_date: "2015-01-01", end_date: "2015-01-31" }
 
   describe 'as a leader' do
     let!(:quota) { create :quota, user: user, value: 20000, time_period: time_period }

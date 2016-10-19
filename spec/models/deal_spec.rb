@@ -59,6 +59,7 @@ RSpec.describe Deal, type: :model do
 
   describe '#in_period_amt' do
     let(:deal) { create :deal }
+    let(:product) { create :product }
     let(:time_period) { create :time_period, start_date: '2015-01-01', end_date: '2015-01-31' }
 
     it 'returns 0 when there are no deal products' do
@@ -66,15 +67,17 @@ RSpec.describe Deal, type: :model do
     end
 
     it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
-      create :deal_product, deal: deal, start_date: '2015-01-01', end_date: '2015-01-31', budget: 100000
+      single_month_deal = create :deal, start_date: '2015-01-01', end_date: '2015-01-31'
+      create :deal_product, deal: single_month_deal, product: product, budget: 1000
 
-      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(1000)
+      expect(single_month_deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(1000)
     end
 
     it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
-      create :deal_product, deal: deal, start_date: '2015-01-27', end_date: '2015-02-05', budget: 100000
+      two_month_deal = create :deal, start_date: '2015-01-27', end_date: '2015-02-05'
+      create :deal_product, deal: two_month_deal, product: product, budget: 1000
 
-      expect(deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(500)
+      expect(two_month_deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(500)
     end
   end
 
@@ -92,43 +95,6 @@ RSpec.describe Deal, type: :model do
     it 'returns an array of parseable month and year data' do
       expected = [[2015, 9], [2015, 10], [2015, 11], [2015, 12]]
       expect(deal.months).to eq(expected)
-    end
-  end
-
-  describe '#add_product' do
-    let(:product) { create :product }
-
-    it 'creates the correct number of DealProduct objects based on the deal timeline' do
-      deal = create :deal, start_date: Date.new(2015, 9, 25), end_date: Date.new(2015, 12, 28)
-      expected_budgets = [600_000, 3_100_000, 3_000_000, 2_800_000]
-      expect do
-        deal.add_product(product.id, '95000')
-        expect(DealProduct.all.map(&:budget)).to eq(expected_budgets)
-        expect(deal.budget).to eq(9_500_000)
-      end.to change(DealProduct, :count).by(4)
-    end
-
-    it 'creates the correct number of DealProduct objects based on the deal timeline' do
-      deal = create :deal, start_date: Date.new(2015, 8, 15), end_date: Date.new(2015, 9, 30)
-
-      expected_budgets = [3_617_021, 6_382_979]
-      expect do
-        deal.add_product(product.id, '100000')
-        expect(DealProduct.all.map(&:budget)).to eq(expected_budgets)
-        expect(deal.budget).to eq(10_000_000)
-      end.to change(DealProduct, :count).by(2)
-    end
-  end
-
-  describe '#remove_product' do
-    let(:deal) { create :deal }
-    let(:product) { create :product }
-    let!(:deal_product) { create :deal_product, deal: deal, product: product, start_date: deal.start_date, end_date: deal.start_date.end_of_month }
-
-    it 'deletes a product from a deal' do
-      expect do
-        deal.remove_product(product.id)
-      end.to change(DealProduct, :count).by(-1)
     end
   end
 
@@ -155,14 +121,14 @@ RSpec.describe Deal, type: :model do
   end
 
   describe '#reset_products' do
-    let(:deal) { create :deal }
-    let(:product) { create :product }
+    let!(:deal) { create :deal }
+    let!(:product) { create :product }
+    let!(:deal_product) { create :deal_product, deal: deal, product: product }
 
-    it 'deletes and recreates deal_products based on the start or end date changing' do
-      deal.add_product(product.id, 10_000)
+    it 'deletes and recreates deal_product_budgets based on the start or end date changing' do
       expect do
         deal.update_attributes(end_date: Date.new(2015, 9, 29))
-      end.to change(DealProduct, :count).by(1)
+      end.to change(DealProductBudget, :count).by(1)
     end
   end
 
@@ -182,6 +148,20 @@ RSpec.describe Deal, type: :model do
       expect(DealMember.first.values.first.option_id).to eq(role.option_id)
       expect(DealMember.first.share).to eq(client_member.share)
     end
+
+    context 'when there are no client members' do
+      let!(:client_wo_members) { create :client }
+      let!(:deal) { build :deal, advertiser: client_wo_members, creator: user }
+
+      it 'assigns 100 percent share to the deal creator' do
+        expect do
+          deal.save
+        end.to change(DealMember, :count).by(1)
+        expect(deal.deal_members.count).to be(1)
+        expect(deal.deal_members.first.user_id).to be(user.id)
+        expect(deal.deal_members.first.share).to be(100)
+      end
+    end
   end
 
   context 'to_zip' do
@@ -189,7 +169,7 @@ RSpec.describe Deal, type: :model do
     let(:product) { create :product }
  
     it 'returns the contents of deal zip' do
-      deal.add_product(product.id, 10_000)
+      deal.deal_products.create(product_id: product.id, budget: 10_000)
       deal_zip = Deal.to_zip
       expect(deal_zip).not_to be_nil
     end

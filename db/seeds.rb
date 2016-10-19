@@ -257,25 +257,25 @@ company_clients[2].client_members.create!([{
 company.contacts.create!([{
   name: "Dan Walsh",
   position: "Director Sales Strategy",
-  client: company_clients[0],
+  clients: [company_clients[0]],
   created_by: company_user.id,
   address: Address.create(email: "dan.walsh@example.com"),
 }, {
   name: "Bobby Jones",
   position: "CEO",
-  client: company_clients[1],
+  clients: [company_clients[1]],
   created_by: company_user.id,
   address: Address.create(email: "bobby.jones@example.com"),
 }, {
   name: "Jillian Jackson",
   position: "Leader",
-  client: company_clients[2],
+  clients: [company_clients[2]],
   created_by: company_user.id,
   address: Address.create(email: "jillian.jackson@example.com"),
 }, {
   name: "Brian Bennett",
   position: "Sales Advisor",
-  client: company_clients[1],
+  clients: [company_clients[1]],
   created_by: company_user.id,
   address: Address.create(email: "brian.bennett@example.com"),
 }])
@@ -292,8 +292,11 @@ closed_deal = company.deals.create!({
   next_steps: "Deal complete.",
   created_by: company_user.id,
 })
-
-closed_deal.add_product(products[1].id, 50000)
+closed_deal.deal_products.create(
+  product_id: products[1].id,
+  budget: 50000
+)
+closed_deal.update_total_budget
 
 deals = []
 stages.each do |stage|
@@ -309,7 +312,11 @@ stages.each do |stage|
       next_steps: ["Follow-up with Bob", "Waiting on approval from finance", "Book flight to Arizona"].sample,
       created_by: company_user.id
     })
-    deal.add_product(products.sample, [5000, 100000, 2500000].sample)
+    deal.deal_products.create(
+      product_id: products.sample.id,
+      budget: [5000, 100000, 2500000].sample
+    )
+    deal.update_total_budget
     deals.push(deal)
   end
 end
@@ -326,8 +333,17 @@ prospecting_deal = company.deals.create!({
   created_by: company_user.id,
 })
 
-prospecting_deal.add_product(products[1], 2500000)
-prospecting_deal.add_product(products[2], 5000)
+prospecting_deal.deal_products.create(
+  product_id: products[1].id,
+  budget: 2500000
+)
+
+prospecting_deal.deal_products.create(
+  product_id: products[2].id,
+  budget: 5000
+)
+
+prospecting_deal.update_total_budget
 
 # Revenue
 csv =<<-eocsv
