@@ -34,23 +34,56 @@ class Client < ActiveRecord::Base
   scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
 
   def self.to_csv
-    attributes = {
-      id: 'Client ID',
-      name: 'Name'
-    }
+    header = [
+      :Id,
+      :Name,
+      :Type,
+      :Parent,
+      :Category,
+      :Subcategory,
+      :Address,
+      :City,
+      :State,
+      :Zip,
+      :Phone,
+      :Website,
+      :Replace_team,
+      :Teammembers,
+      :Shares
+    ]
 
     CSV.generate(headers: true) do |csv|
-      header = attributes.values
-      header << 'Parent'
-      header << 'Category'
-      header << 'Subcategory'
       csv << header
 
       all.each do |client|
-        line = attributes.map{ |key, value| client.send(key) }
+        type_id = nil
+        if self.agency_type_id(client.company) == client.client_type_id
+          type_id = 'Agency'
+        elsif self.advertiser_type_id(client.company) == client.client_type_id
+          type_id = 'Advertiser'
+        end
+
+        team_members = client.client_members.map(&:user_id)
+        email_list = User.where(id: team_members).order(:id).map(&:email)
+        shares_list = client.client_members.order(:user_id).map(&:share)
+
+        line = []
+        line << client.id
+        line << client.name
+        line << type_id
         line << (client.parent_client_id.nil? ? nil : client.parent_client.name)
         line << (client.client_category_id.nil? ? nil : client.client_category.name)
         line << (client.client_subcategory_id.nil? ? nil : client.client_subcategory.name)
+        line << (client.address.nil? ? nil : client.address.street1)
+        line << (client.address.nil? ? nil : client.address.city)
+        line << (client.address.nil? ? nil : client.address.state)
+        line << (client.address.nil? ? nil : client.address.zip)
+        line << (client.address.nil? ? nil : client.address.phone)
+        line << client.website
+        line << nil
+        line << email_list.join(';')
+        line << shares_list.join(';')
+
         csv << line
       end
     end
@@ -214,6 +247,7 @@ class Client < ActiveRecord::Base
         subcategory = nil
       end
 
+      client_member_list = []
       if row[13].present? && row[14].present?
         member_emails = row[13].split(';')
         member_shares = row[14].split(';')
@@ -223,8 +257,7 @@ class Client < ActiveRecord::Base
           errors << error
           next
         end
-
-        client_member_list = []
+        
         client_member_list_error = false
 
         member_emails.each do |email|

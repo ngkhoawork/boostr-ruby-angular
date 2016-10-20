@@ -11,13 +11,47 @@ RSpec.describe Client, type: :model do
   end
 
   context 'to_csv' do
-    let!(:clients) { create_list :client, 2, name: 'Bob' }
+    let!(:user) { create :user }
+    let!(:user2) { create :user }
+    let!(:user3) { create :user }
+    let!(:company) { user.company }
+    let!(:category_field) { user.company.fields.where(name: 'Category').first }
+    let!(:category) { create :option, field: category_field, company: user.company }
+    let!(:subcategory) { create :option, option: category, company: user.company }
+    let!(:client) { create :client, client_category: category, client_subcategory: subcategory }
+    let!(:client_member1) { create :client_member, client: client, user: user }
+    let!(:client_member2) { create :client_member, client: client, user: user2 }
+    let!(:client_member3) { create :client_member, client: client, user: user3 }
+    let(:headers) { attributes_for :client_csv_data }
+    let(:client_ordered_data) {
+      build :client_csv_data,
+      id: client.id,
+      name: client.name,
+      type: client.client_type_id,
+      parent: '',
+      category: client.client_category.name,
+      subcategory: client.client_subcategory.name,
+      address: client.address.street1,
+      city: client.address.city,
+      state: client.address.state,
+      zip: client.address.zip,
+      phone: client.address.phone,
+      website: client.website,
+      replace_team: '',
+      teammembers: client.users.order(:id).map(&:email).join(';'),
+      shares: client.client_members.order(:user_id).map(&:share).join(';')
+    }
 
-    it 'returns the id and name of the clients' do
-      header = "Client ID,Name,Parent,Category,Subcategory\n"
-      body = "#{clients[0].id},Bob,,,\n#{clients[1].id},Bob,,,\n"
-      csv = Client.to_csv
-      expect(csv).to eq(header + body)
+    it 'returns correct headers' do
+      data = CSV.parse(Client.to_csv)
+      data_headers = headers.keys.map(&:capitalize).map(&:to_s)
+      expect(data[0]).to eq(data_headers)
+    end
+
+    it 'returns correct data for client' do
+      data = CSV.parse(Client.to_csv)
+      client_data = client_ordered_data.values.map(&:to_s).map { |el| el == '' ? nil : el }
+      expect(data[1]).to eq(client_data)
     end
   end
 
