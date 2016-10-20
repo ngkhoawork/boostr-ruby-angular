@@ -6,11 +6,11 @@
           = inline_svg 'icons/caret.svg', class: 'transform'
           Back to Deals
     #deal_overview.row.campaign
-      .col-xs-4
+      .col-xs-6
         %h3.deal-name
           {{ currentDeal.advertiser.name + (currentDeal.agency ? " - " + currentDeal.agency.name : "") }}
-      .col-xs-8
-        %div.share-alert.alert.alert-danger.text-center{'ng-if': 'membersShareInvalid'}
+      .col-xs-6.share-alert.alert.alert-danger.text-center{'ng-if': 'membersShareInvalid'}
+        %div
           %i.fa.fa-warning
           %span Team & Splits must equal 100%
     #deal_overview.row.campaign
