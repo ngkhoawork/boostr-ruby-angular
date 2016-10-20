@@ -72,6 +72,10 @@
   }
 
   .campaign {
+    .deal-name {
+      word-break: break-all;
+    }
+
     line-height: 22.78px;
 
     h3 {
