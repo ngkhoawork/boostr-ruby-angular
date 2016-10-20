@@ -55,7 +55,7 @@ class Client < ActiveRecord::Base
     CSV.generate(headers: true) do |csv|
       csv << header
 
-      all.each do |client|
+      all.order(:id).each do |client|
         type_id = nil
         if self.agency_type_id(client.company) == client.client_type_id
           type_id = 'Agency'
@@ -292,6 +292,22 @@ class Client < ActiveRecord::Base
         parent_client: parent
       }
 
+      type_value_params = {
+        value_type: 'Option',
+        subject_type: 'Client',
+        field_id: current_user.company.fields.where(name: 'Client Type').first.id,
+        option_id: type_id,
+        company_id: current_user.company.id
+      }
+
+      category_value_params = {
+        value_type: 'Option',
+        subject_type: 'Client',
+        field_id: current_user.company.fields.where(name: 'Category').first.id,
+        option_id: (category ? category.id : nil),
+        company_id: current_user.company.id
+      }
+
       if row[0]
         client = current_user.company.clients.find(row[0])
       end
@@ -315,11 +331,22 @@ class Client < ActiveRecord::Base
 
         address_params[:id] = client.address.id if client.address
         client_params[:id] = client.id
+        type_value_params[:subject_id] = client.id
+        category_value_params[:subject_id] = client.id
+
+        if client_type_field = client.values.where(field_id: type_value_params[:field_id]).first
+          type_value_params[:id] = client_type_field.id
+        end
+
+        if client_category_field = client.values.where(field_id: category_value_params[:field_id]).first
+          category_value_params[:id] = client.values.where(field_id: category_value_params[:field_id]).first.id
+        end
       else
         client = current_user.company.clients.create(created_by: current_user.id)
       end
 
       client_params[:address_attributes] = address_params
+      client_params[:values_attributes] = [type_value_params, category_value_params]
 
       if client.update_attributes(client_params)
         client.client_members.delete_all if row[12] == 'Y'
