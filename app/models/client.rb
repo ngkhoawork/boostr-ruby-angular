@@ -151,160 +151,167 @@ class Client < ActiveRecord::Base
 
   def self.import(file, current_user)
     errors = []
-    
-    if !current_user.is?(:superadmin)
-      error = { message: ['Permission denied'] }
-      errors << error
-    else
-      row_number = 0
-      CSV.parse(file, headers: true) do |row|
-        row_number += 1
+    row_number = 0
 
-        if !row[10].blank?
-          unless user = User.where('lower(email) = ? and company_id = ?', row[10].downcase, current_user.company_id).first
-            error = { row: row_number, message: ['Sales Rep 1 could not be found'] }
-            errors << error
-            next
-          end
+    CSV.parse(file, headers: true) do |row|
+      row_number += 1
+
+      if row[1].nil? || row[1].blank?
+        error = { row: row_number, message: ['Name is empty'] }
+        errors << error
+        next
+      end
+
+      if row[2].nil? || row[2].blank?
+        error = { row: row_number, message: ['Type is empty'] }
+        errors << error
+        next
+      end
+
+      if ['agency', 'advertiser'].include? row[2].downcase!
+        if row[2] == 'advertiser'
+          type_id = self.advertiser_type_id(current_user.company)
+        else
+          type_id = self.agency_type_id(current_user.company)
         end
+      else
+        error = { row: row_number, message: ['Type is invalid. Use "Agency" or "Advertiser" string'] }
+        errors << error
+        next
+      end
 
-        if row[13].present? && !row[13].blank?
-          unless user1 = User.where('lower(email) = ? and company_id = ?', row[13].downcase, current_user.company_id).first
-            error = { row: row_number, message: ['Sales Rep 2 could not be found'] }
-            errors << error
-            next
-          end
-        end
-
-        find_params = {
-          company_id: current_user.company_id,
-          name: row[0]
-        }
-
-        create_params = {
-          website: row[9]
-        }
-
-        client = Client.find_or_initialize_by(find_params)
-        unless client.update_attributes(create_params)
-          error = { row: row_number, message: client.errors.full_messages }
+      if row[3].present?
+        parent = Client.where("company_id = ? and lower(name) = ?", current_user.company_id, row[3].strip.downcase).first
+        unless parent
+          error = { row: row_number, message: ["Parent client #{row[3]} could not be found"] }
           errors << error
+          next
         end
+      else
+        parent = nil
+      end
 
-        update_params = {
-          created_by: current_user.id
-        }
+      if row[4].present? && row[2] == 'advertiser'
+        category_field = current_user.company.fields.where(name: 'Category').first
+        category = category_field.options.where(name: row[4]).first
+        unless category
+          error = { row: row_number, message: ["Category #{row[4]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        category = nil
+      end
 
-        client.update_attributes(update_params)
+      if row[5].present? && row[2] == 'advertiser'
+        subcategory = category.suboptions.where(name: row[5]).first
+        unless subcategory
+          error = { row: row_number, message: ["Subcategory #{row[5]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        subcategory = nil
+      end
 
-        find_address_params = {
-          addressable_id: client.id,
-          addressable_type: 'Client',
-        }
+      if row[13].present? && row[14].present?
+        member_emails = row[13].split(';')
+        member_shares = row[14].split(';')
 
-        address_params = {
-          street1: row[2],
-          street2: row[3],
-          city: row[4],
-          state: row[5],
-          zip: row[6],
-          phone: row[7],
-          email: row[8]
-        }
-
-        address = Address.find_or_initialize_by(find_address_params)      
-        unless address.update_attributes(address_params)      
-          error = { row: row_number, message: address.errors.full_messages }
+        if member_emails.length != member_shares.length
+          error = { row: row_number, message: [ 'Client team members count does not match shares count' ] }
           errors << error
           next
         end
 
-        option_error = insert_option(current_user, 'Client', client.id, row[1])
-        if option_error.present?
-          error = { row: row_number, message: option_error }
+        client_member_list = []
+        client_member_list_error = false
+
+        member_emails.each do |email|
+          if user = current_user.company.users.where(email: email).first
+            client_member_list << user
+          else
+            error = { row: row_number, message: ["Client team member #{email} could not be found in the users list"] }
+            errors << error
+            client_member_list_error = true
+          end
+        end
+
+        if client_member_list_error
+          next
+        end
+      end
+
+      address_params = {
+        street1: row[6].nil? ? nil : row[6].strip,
+        city: row[7].nil? ? nil : row[7].strip,
+        state: row[8].nil? ? nil : row[8].strip,
+        zip: row[9].nil? ? nil : row[9].strip,
+        phone: row[10].nil? ? nil : row[10].strip,
+      }
+
+      client_params = {
+        name: row[1].strip,
+        website: row[11].nil? ? nil : row[11].strip,
+        client_type_id: type_id,
+        client_category: category,
+        client_subcategory: subcategory,
+        parent_client: parent
+      }
+
+      if row[0]
+        client = current_user.company.clients.find(row[0])
+      end
+
+      unless client.present?
+        clients = current_user.company.clients.where('lower(name) = ?', row[1].strip.downcase)
+        if clients.length > 1
+          error = { row: row_number, message: ["Client name #{row[1]} matched more than one client record"] }
+          errors << error
+          next
+        end
+        client = clients.first
+      end
+
+      if client.present?
+        if parent.id == client.id
+          error = { row: row_number, message: ["Clients can't be parents of themselves"] }
           errors << error
           next
         end
 
-        if user.present?
-          find_client_member_params = {
-            client_id: client.id,
-            user_id: user.id
-          }
+        address_params[:id] = client.address.id if client.address
+        client_params[:id] = client.id
+      else
+        client = current_user.company.clients.create(created_by: current_user.id)
+      end
 
-          client_member_params = {
-            share: row[11]
-          }
+      client_params[:address_attributes] = address_params
 
-          client_member = ClientMember.find_or_initialize_by(find_client_member_params)
-          unless client_member.update_attributes(client_member_params)
-            error = { row: row_number, message: client_member.errors.full_messages }
-            errors << error
-            next
-          end
-
-          option_error = insert_option(current_user, 'ClientMember', client_member.id, row[12])
-          if option_error.present?
-            error = { row: row_number, message: option_error }
-            errors << error
-            next
-          end
+      if client.update_attributes(client_params)
+        client.client_members.delete_all if row[12] == 'Y'
+        client_member_list.each_with_index do |user, index|
+          client_member = client.client_members.find_or_initialize_by(user: user)
+          client_member.update(share: member_shares[index].to_i)
         end
-
-        if user1.present?
-          find_client_member1_params = {
-            client_id: client.id,
-          user_id: user1.id
-          }
-
-          client_member1_params = {
-            share: row[14]
-          }
-
-          client_member1 = ClientMember.find_or_initialize_by(find_client_member1_params)
-          unless client_member1.update_attributes(client_member1_params)
-            error = { row: row_number, message: client_member1.errors.full_messages }
-            errors << error
-            next
-          end
-
-          option_error = insert_option(current_user, 'ClientMember', client_member1.id, row[15])
-          if option_error.present?
-            error = { row: row_number, message: option_error }
-            errors << error
-            next
-          end
-
-        end
+      else
+        error = { row: row_number, message: client.errors.full_messages }
+        errors << error
+        next
       end
     end
     errors
   end
 
-  def self.insert_option(current_user, type, id, name)
-    option_params = {
-      company_id: current_user.company_id,
-      name: name
-    }
-
-    unless option = Option.find_by(option_params)
-      error = [type+': '+name+' '+'Option could not be found']
-      return error
-    end
-
-    value_params = {
-      company_id: current_user.company_id,
-      subject_type: type,
-      subject_id: id,
-      field_id: option.field_id,
-      value_type: 'Option',
-      option_id: option.id
-    }
-
-    unless value = Value.create(value_params)
-      error = { message: value.errors.full_messages }
-      return error
-    end
+  def self.client_type_field(company)
+    company.fields.where(name: 'Client Type').first
   end
 
+  def self.agency_type_id(company)
+    client_type_field(company).options.where(name: "Agency").first.id
+  end
+
+  def self.advertiser_type_id(company)
+    client_type_field(company).options.where(name: "Advertiser").first.id
+  end
 end
