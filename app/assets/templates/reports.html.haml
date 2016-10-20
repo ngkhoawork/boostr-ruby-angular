@@ -21,7 +21,7 @@
             %li.pull-right
               %a.export{ href: '', ng: { click: 'exportReports()' } }
                 Export
-  .container
+  .container.table-report
     .row
       .col-xs-12
         %h3
@@ -29,44 +29,44 @@
 
     .row
       .col-md-12
-        .table-wrapper
-          %table.table.table-hover.table-striped
+        .table-wrapper.seller-activities__table
+          %table.table.table-hover.text-center
             %thead
               %tr
-                %th.left Name
-                %th.left {{ types[0].name }}
-                %th.left {{ types[1].name }}
-                %th.left {{ types[2].name }}
-                %th.left {{ types[3].name }}
-                %th.left {{ types[4].name }}
-                %th.left {{ types[5].name }}
-                %th.left {{ types[6].name }}
-                %th.left {{ types[7].name }}
-                %th.left {{ types[8].name }}
-                %th.left Total
+                %th Name
+                %th {{ types[0].name }}
+                %th {{ types[1].name }}
+                %th {{ types[2].name }}
+                %th {{ types[3].name }}
+                %th {{ types[4].name }}
+                %th {{ types[5].name }}
+                %th {{ types[6].name }}
+                %th {{ types[7].name }}
+                %th {{ types[8].name }}
+                %th Total
 
             %tbody
               %tr{ ng: { repeat: 'user in users | orderBy: "-currentReportValues[9]"' } }
                 %td.left {{ user.name }}
-                %td.right {{ user.currentReportValues[0] }}
-                %td.right {{ user.currentReportValues[1] }}
-                %td.right {{ user.currentReportValues[2] }}
-                %td.right {{ user.currentReportValues[3] }}
-                %td.right {{ user.currentReportValues[4] }}
-                %td.right {{ user.currentReportValues[5] }}
-                %td.right {{ user.currentReportValues[6] }}
-                %td.right {{ user.currentReportValues[7] }}
-                %td.right {{ user.currentReportValues[8] }}
-                %td.right {{ user.currentReportValues[9] }}
+                %td {{ user.currentReportValues[0] }}
+                %td {{ user.currentReportValues[1] }}
+                %td {{ user.currentReportValues[2] }}
+                %td {{ user.currentReportValues[3] }}
+                %td {{ user.currentReportValues[4] }}
+                %td {{ user.currentReportValues[5] }}
+                %td {{ user.currentReportValues[6] }}
+                %td {{ user.currentReportValues[7] }}
+                %td {{ user.currentReportValues[8] }}
+                %td {{ user.currentReportValues[9] }}
               %tr
-                %td.left Total
-                %td.right {{ company.currentReportValues[0] }}
-                %td.right {{ company.currentReportValues[1] }}
-                %td.right {{ company.currentReportValues[2] }}
-                %td.right {{ company.currentReportValues[3] }}
-                %td.right {{ company.currentReportValues[4] }}
-                %td.right {{ company.currentReportValues[5] }}
-                %td.right {{ company.currentReportValues[6] }}
-                %td.right {{ company.currentReportValues[7] }}
-                %td.right {{ company.currentReportValues[8] }}
-                %td.right {{ company.currentReportValues[9] }}
+                %td.left  Total
+                %td {{ company.currentReportValues[0] }}
+                %td {{ company.currentReportValues[1] }}
+                %td {{ company.currentReportValues[2] }}
+                %td {{ company.currentReportValues[3] }}
+                %td {{ company.currentReportValues[4] }}
+                %td {{ company.currentReportValues[5] }}
+                %td {{ company.currentReportValues[6] }}
+                %td {{ company.currentReportValues[7] }}
+                %td {{ company.currentReportValues[8] }}
+                %td {{ company.currentReportValues[9] }}
