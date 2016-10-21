@@ -309,7 +309,10 @@ class Client < ActiveRecord::Base
       }
 
       if row[0]
-        client = current_user.company.clients.find(row[0])
+        begin
+          client = current_user.company.clients.find(row[0])
+        rescue ActiveRecord::RecordNotFound
+        end
       end
 
       unless client.present?
@@ -323,7 +326,7 @@ class Client < ActiveRecord::Base
       end
 
       if client.present?
-        if parent.id == client.id
+        if parent && parent.id == client.id
           error = { row: row_number, message: ["Clients can't be parents of themselves"] }
           errors << error
           next
