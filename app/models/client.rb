@@ -48,8 +48,7 @@ class Client < ActiveRecord::Base
       :Phone,
       :Website,
       :Replace_team,
-      :Teammembers,
-      :Shares
+      :Teammembers
     ]
 
     CSV.generate(headers: true) do |csv|
@@ -63,9 +62,9 @@ class Client < ActiveRecord::Base
           type_id = 'Advertiser'
         end
 
-        team_members = client.client_members.map(&:user_id)
-        email_list = User.where(id: team_members).order(:id).map(&:email)
-        shares_list = client.client_members.order(:user_id).map(&:share)
+        team_members = client.client_members.each_with_object([]) do |member, memo|
+          memo << member.user.email + '/' + member.share.to_s
+        end
 
         line = []
         line << client.id
@@ -81,8 +80,7 @@ class Client < ActiveRecord::Base
         line << (client.address.nil? ? nil : client.address.phone)
         line << client.website
         line << nil
-        line << email_list.join(';')
-        line << shares_list.join(';')
+        line << team_members.join(';')
 
         csv << line
       end
@@ -201,7 +199,8 @@ class Client < ActiveRecord::Base
         next
       end
 
-      if ['agency', 'advertiser'].include? row[2].downcase!
+      row[2].downcase!
+      if ['agency', 'advertiser'].include? row[2]
         if row[2] == 'advertiser'
           type_id = self.advertiser_type_id(current_user.company)
         else
@@ -214,7 +213,7 @@ class Client < ActiveRecord::Base
       end
 
       if row[3].present?
-        parent = Client.where("company_id = ? and lower(name) = ?", current_user.company_id, row[3].strip.downcase).first
+        parent = Client.where("company_id = ? and name ilike ?", current_user.company_id, row[3].strip.downcase).first
         unless parent
           error = { row: row_number, message: ["Parent client #{row[3]} could not be found"] }
           errors << error
@@ -226,7 +225,7 @@ class Client < ActiveRecord::Base
 
       if row[4].present? && row[2] == 'advertiser'
         category_field = current_user.company.fields.where(name: 'Category').first
-        category = category_field.options.where(name: row[4]).first
+        category = category_field.options.where('name ilike ?', row[4]).first
         unless category
           error = { row: row_number, message: ["Category #{row[4]} could not be found"] }
           errors << error
@@ -237,7 +236,7 @@ class Client < ActiveRecord::Base
       end
 
       if row[5].present? && row[2] == 'advertiser'
-        subcategory = category.suboptions.where(name: row[5]).first
+        subcategory = category.suboptions.where('name ilike ?', row[5]).first
         unless subcategory
           error = { row: row_number, message: ["Subcategory #{row[5]} could not be found"] }
           errors << error
@@ -248,25 +247,24 @@ class Client < ActiveRecord::Base
       end
 
       client_member_list = []
-      if row[13].present? && row[14].present?
-        member_emails = row[13].split(';')
-        member_shares = row[14].split(';')
+      if row[13].present?
+        members = row[13].split(';').map{|el| el.split('/') }
 
-        if member_emails.length != member_shares.length
-          error = { row: row_number, message: [ 'Client team members count does not match shares count' ] }
-          errors << error
-          next
-        end
-        
         client_member_list_error = false
 
-        member_emails.each do |email|
-          if user = current_user.company.users.where(email: email).first
-            client_member_list << user
-          else
-            error = { row: row_number, message: ["Client team member #{email} could not be found in the users list"] }
+        members.each do |member|
+          if member[1].nil?
+            error = { row: row_number, message: [ "Client team member #{member[0]} does not have share" ] }
             errors << error
             client_member_list_error = true
+            break
+          elsif user = current_user.company.users.where('email ilike ?', member[0]).first
+            client_member_list << user
+          else
+            error = { row: row_number, message: ["Client team member #{member[0]} could not be found in the users list"] }
+            errors << error
+            client_member_list_error = true
+            break
           end
         end
 
@@ -316,7 +314,7 @@ class Client < ActiveRecord::Base
       end
 
       unless client.present?
-        clients = current_user.company.clients.where('lower(name) = ?', row[1].strip.downcase)
+        clients = current_user.company.clients.where('name ilike ?', row[1].strip.downcase)
         if clients.length > 1
           error = { row: row_number, message: ["Client name #{row[1]} matched more than one client record"] }
           errors << error
@@ -355,7 +353,7 @@ class Client < ActiveRecord::Base
         client.client_members.delete_all if row[12] == 'Y'
         client_member_list.each_with_index do |user, index|
           client_member = client.client_members.find_or_initialize_by(user: user)
-          client_member.update(share: member_shares[index].to_i)
+          client_member.update(share: members[index][1].to_i)
         end
       else
         error = { row: row_number, message: client.errors.full_messages }

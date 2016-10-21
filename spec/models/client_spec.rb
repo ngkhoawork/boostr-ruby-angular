@@ -38,8 +38,7 @@ RSpec.describe Client, type: :model do
       phone: client.address.phone,
       website: client.website,
       replace_team: '',
-      teammembers: client.users.order(:id).map(&:email).join(';'),
-      shares: client.client_members.order(:user_id).map(&:share).join(';')
+      teammembers: [client.users.order(:id).map(&:email), client.client_members.order(:user_id).map(&:share).map(&:to_s)].transpose.map{|el|el.join('/')}.join(';')
     }
 
     it 'returns correct headers' do
@@ -85,8 +84,8 @@ RSpec.describe Client, type: :model do
       expect(new_client.address.zip).to eq(new_client_csv[:zip])
       expect(new_client.address.phone).to eq(new_client_csv[:phone].gsub(/[^0-9]/, ''))
       expect(new_client.website).to eq(new_client_csv[:website])
-      expect(new_client.client_members.first.user.email).to eq(new_client_csv[:teammembers])
-      expect(new_client.client_members.first.share).to eq(new_client_csv[:shares].to_i)
+      expect(new_client.client_members.first.user.email).to eq(new_client_csv[:teammembers].split('/')[0])
+      expect(new_client.client_members.first.share).to eq(new_client_csv[:teammembers].split('/')[1].to_i)
     end
 
     it 'updates an existing client by email match' do
@@ -105,8 +104,8 @@ RSpec.describe Client, type: :model do
       expect(existing_client.address.zip).to eq(existing_client_csv[:zip])
       expect(existing_client.address.phone).to eq(existing_client_csv[:phone].gsub(/[^0-9]/, ''))
       expect(existing_client.website).to eq(existing_client_csv[:website])
-      expect(existing_client.client_members.first.user.email).to eq(existing_client_csv[:teammembers])
-      expect(existing_client.client_members.first.share).to eq(existing_client_csv[:shares].to_i)
+      expect(existing_client.client_members.first.user.email).to eq(existing_client_csv[:teammembers].split('/')[0])
+      expect(existing_client.client_members.first.share).to eq(existing_client_csv[:teammembers].split('/')[1].to_i)
     end
 
     it 'updates an existing client by ID match' do
@@ -125,8 +124,8 @@ RSpec.describe Client, type: :model do
       expect(existing_client2.address.zip).to eq(existing_client_csv_id[:zip])
       expect(existing_client2.address.phone).to eq(existing_client_csv_id[:phone].gsub(/[^0-9]/, ''))
       expect(existing_client2.website).to eq(existing_client_csv_id[:website])
-      expect(existing_client2.client_members.first.user.email).to eq(existing_client_csv_id[:teammembers])
-      expect(existing_client2.client_members.first.share).to eq(existing_client_csv_id[:shares].to_i)
+      expect(existing_client2.client_members.first.user.email).to eq(existing_client_csv_id[:teammembers].split('/')[0])
+      expect(existing_client2.client_members.first.share).to eq(existing_client_csv_id[:teammembers].split('/')[1].to_i)
     end
 
     context 'invalid data' do
@@ -137,8 +136,8 @@ RSpec.describe Client, type: :model do
       let(:invalid_parent) { build :client_csv_data, parent: 'N/A' }
       let(:invalid_category) { build :client_csv_data, category: 'N/A', type: 'Advertiser' }
       let(:invalid_subcategory) { build :client_csv_data, subcategory: 'N/A', type: 'Advertiser' }
-      let(:invalid_team_share_length) { build :client_csv_data, teammembers: 'first;second', shares: '100' }
-      let(:invalid_team_member) { build :client_csv_data, teammembers: 'N/A' }
+      let(:invalid_share) { build :client_csv_data, teammembers: 'first;second' }
+      let(:invalid_team_member) { build :client_csv_data, teammembers: 'NA/100' }
       let(:own_parent) { build :client_csv_data, name: client.name }
       let(:ambigous_match) { build :client_csv_data, name: duplicate1.name }
 
@@ -181,8 +180,8 @@ RSpec.describe Client, type: :model do
 
       it 'validates equality of team member and shares length' do
         expect(
-          Client.import(generate_csv(invalid_team_share_length), user)
-        ).to eq([{:row=>1, :message=>["Client team members count does not match shares count"]}])
+          Client.import(generate_csv(invalid_share), user)
+        ).to eq([{:row=>1, :message=>["Client team member first does not have share"]}])
       end
 
       it 'requires client search by name to match no more than 1 client' do
@@ -194,7 +193,7 @@ RSpec.describe Client, type: :model do
       it 'validates team member presence' do
         expect(
           Client.import(generate_csv(invalid_team_member), user)
-        ).to eq([{:row=>1, :message=>["Client team member #{invalid_team_member[:teammembers]} could not be found in the users list"]}])
+        ).to eq([{:row=>1, :message=>["Client team member #{invalid_team_member[:teammembers].split('/')[0]} could not be found in the users list"]}])
       end
 
       it 'rejects clients set to be parents of themselves' do

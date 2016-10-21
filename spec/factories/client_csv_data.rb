@@ -14,7 +14,6 @@ FactoryGirl.define do
     website { FFaker::Internet.http_url }
     replace_team 'N'
     teammembers nil
-    shares nil
 
     initialize_with { attributes }
 
@@ -35,11 +34,7 @@ FactoryGirl.define do
 
       if item[:teammembers].nil?
         user = Company.first.users.first
-        item[:teammembers] = user.email
-      end
-
-      if item[:shares].nil?
-        item[:shares] = 100
+        item[:teammembers] = user.email + '/100'
       end
     end
   end
