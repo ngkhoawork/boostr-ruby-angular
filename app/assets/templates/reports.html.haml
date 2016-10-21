@@ -21,7 +21,7 @@
             %li.pull-right
               %a.export{ href: '', ng: { click: 'exportReports()' } }
                 Export
-  .container.table-report
+  .container-fluid.table-report
     .row
       .col-xs-12
         %h3
@@ -35,7 +35,7 @@
               %tr
                 %th.left{ 'ng-click': 'changeSortType("user.name")'}
                   Name
-                %th{ ng: { repeat: 'type in types track by $index' }, 'ng-click': 'changeSortType(type.name)', 'ng-if': 'type.name !== "Email"' }
+                %th{ ng: { repeat: 'type in types track by $index' }, 'ng-click': 'changeSortType(type.name)' }
                   {{ type.name }}
                 %th{ 'ng-click': 'changeSortType("Total")'}
                   Total
@@ -52,6 +52,7 @@
                 %td {{report['Entertainment']}}
                 %td {{report['CampaignReview']}}
                 %td {{report['QBR']}}
+                %td {{report['Email']}}
                 %td {{report['Total']}}
 
               %tr
@@ -65,4 +66,5 @@
                 %td {{companyReports['Entertainment']}}
                 %td {{companyReports['CampaignReview']}}
                 %td {{companyReports['QBR']}}
+                %td {{companyReports['Email']}}
                 %td {{companyReports['Total']}}
