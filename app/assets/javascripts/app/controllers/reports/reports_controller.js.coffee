@@ -29,32 +29,39 @@
             $scope.initReport()
 
   $scope.initReport = ->
-    _.each $scope.users, (user) ->
-      user.currentReportValues = []
-      user.currentReportValues[0] = $scope.getReportValue(user.reports, $scope.types[0].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[1] = $scope.getReportValue(user.reports, $scope.types[1].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[2] = $scope.getReportValue(user.reports, $scope.types[2].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[3] = $scope.getReportValue(user.reports, $scope.types[3].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[4] = $scope.getReportValue(user.reports, $scope.types[4].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[5] = $scope.getReportValue(user.reports, $scope.types[5].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[6] = $scope.getReportValue(user.reports, $scope.types[6].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[7] = $scope.getReportValue(user.reports, $scope.types[7].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[8] = $scope.getReportValue(user.reports, $scope.types[8].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[9] = $scope.getReportValue(user.reports, 'Total', $scope.currentTimePeriod.id)
-      user.currentReportValues[10] = $scope.getReportValue(user.reports, 'Weekly Average', $scope.currentTimePeriod.id)
+    $scope.sortType = 'user.name' #init value
+    $scope.sortReverse = false  #init value
 
-    $scope.company.currentReportValues = []
-    $scope.company.currentReportValues[0] = $scope.getCoReportValue($scope.company.reports, $scope.types[0].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[1] = $scope.getCoReportValue($scope.company.reports, $scope.types[1].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[2] = $scope.getCoReportValue($scope.company.reports, $scope.types[2].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[3] = $scope.getCoReportValue($scope.company.reports, $scope.types[3].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[4] = $scope.getCoReportValue($scope.company.reports, $scope.types[4].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[5] = $scope.getCoReportValue($scope.company.reports, $scope.types[5].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[6] = $scope.getCoReportValue($scope.company.reports, $scope.types[6].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[7] = $scope.getCoReportValue($scope.company.reports, $scope.types[7].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[8] = $scope.getCoReportValue($scope.company.reports, $scope.types[8].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[9] = $scope.getCoReportValue($scope.company.reports, 'Total', $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[10] = $scope.getCoReportValue($scope.company.reports, 'Weekly Average', $scope.currentTimePeriod.id)
+    #user reports
+    $scope.userReportValues = []
+    _.each $scope.users, (user) ->
+      report = {}
+      report.user = user
+      _.each $scope.types, (type) ->
+        typeName = cutSpace(type.name)
+        report[typeName] = $scope.getReportValue(user.reports, type.name, $scope.currentTimePeriod.id)
+      report['Total'] = $scope.getReportValue(user.reports, 'Total', $scope.currentTimePeriod.id)
+#     report['Weekly Average'] = $scope.getReportValue(user.reports, 'Weekly Average', $scope.currentTimePeriod.id)
+      $scope.userReportValues.push(report)
+
+    #companyReports
+    $scope.companyReports = {}
+    _.each $scope.types, (type) ->
+      typeName = cutSpace(type.name)
+      $scope.companyReports[typeName] = $scope.getCoReportValue($scope.company.reports, type.name, $scope.currentTimePeriod.id)
+    $scope.companyReports['Total'] = $scope.getCoReportValue($scope.company.reports, 'Total', $scope.currentTimePeriod.id)
+    #$scope.companyReports['Weekly Average'] = $scope.getReportValue($scope.company.reports, 'Weekly Average', $scope.currentTimePeriod.id)
+
+  cutSpace = (string) ->
+    angular.copy(string.replace(' ', ''))
+
+  $scope.changeSortType = (sortType) ->
+    sortType = cutSpace(sortType)
+    if sortType == $scope.sortType
+      $scope.sortReverse = !$scope.sortReverse
+    else
+      $scope.sortType = sortType
+      $scope.sortReverse = false
 
   $scope.$on 'updated_reports', ->
     $scope.init()

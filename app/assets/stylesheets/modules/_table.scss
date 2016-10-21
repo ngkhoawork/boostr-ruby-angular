@@ -451,6 +451,9 @@ tr:hover {
 
 .seller-activities__table {
   margin-bottom: 20px;
+  th {
+    cursor: pointer;
+  }
 }
 
 .table-report {

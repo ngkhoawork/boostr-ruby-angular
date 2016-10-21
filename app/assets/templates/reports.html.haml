@@ -33,40 +33,36 @@
           %table.table.table-hover.text-center
             %thead
               %tr
-                %th.left Name
-                %th {{ types[0].name }}
-                %th {{ types[1].name }}
-                %th {{ types[2].name }}
-                %th {{ types[3].name }}
-                %th {{ types[4].name }}
-                %th {{ types[5].name }}
-                %th {{ types[6].name }}
-                %th {{ types[7].name }}
-                %th {{ types[8].name }}
-                %th Total
+                %th.left{ 'ng-click': 'changeSortType("user.name")'}
+                  Name
+                %th{ ng: { repeat: 'type in types track by $index' }, 'ng-click': 'changeSortType(type.name)', 'ng-if': 'type.name !== "Email"' }
+                  {{ type.name }}
+                %th{ 'ng-click': 'changeSortType("Total")'}
+                  Total
 
             %tbody
-              %tr{ ng: { repeat: 'user in users | orderBy: "-currentReportValues[9]"' } }
-                %td.left {{ user.name }}
-                %td {{ user.currentReportValues[0] }}
-                %td {{ user.currentReportValues[1] }}
-                %td {{ user.currentReportValues[2] }}
-                %td {{ user.currentReportValues[3] }}
-                %td {{ user.currentReportValues[4] }}
-                %td {{ user.currentReportValues[5] }}
-                %td {{ user.currentReportValues[6] }}
-                %td {{ user.currentReportValues[7] }}
-                %td {{ user.currentReportValues[8] }}
-                %td {{ user.currentReportValues[9] }}
+              %tr{ ng: { repeat: 'report in userReportValues | orderBy:sortType:sortReverse' } }
+                %td.left {{ report.user.name }}
+                %td {{report['InitialMeeting']}}
+                %td {{report['Pitch']}}
+                %td {{report['Proposal']}}
+                %td {{report['Feedback']}}
+                %td {{report['AgencyMeeting']}}
+                %td {{report['ClientMeeting']}}
+                %td {{report['Entertainment']}}
+                %td {{report['CampaignReview']}}
+                %td {{report['QBR']}}
+                %td {{report['Total']}}
+
               %tr
                 %td.left  Total
-                %td {{ company.currentReportValues[0] }}
-                %td {{ company.currentReportValues[1] }}
-                %td {{ company.currentReportValues[2] }}
-                %td {{ company.currentReportValues[3] }}
-                %td {{ company.currentReportValues[4] }}
-                %td {{ company.currentReportValues[5] }}
-                %td {{ company.currentReportValues[6] }}
-                %td {{ company.currentReportValues[7] }}
-                %td {{ company.currentReportValues[8] }}
-                %td {{ company.currentReportValues[9] }}
+                %td {{companyReports['InitialMeeting']}}
+                %td {{companyReports['Pitch']}}
+                %td {{companyReports['Proposal']}}
+                %td {{companyReports['Feedback']}}
+                %td {{companyReports['AgencyMeeting']}}
+                %td {{companyReports['ClientMeeting']}}
+                %td {{companyReports['Entertainment']}}
+                %td {{companyReports['CampaignReview']}}
+                %td {{companyReports['QBR']}}
+                %td {{companyReports['Total']}}
