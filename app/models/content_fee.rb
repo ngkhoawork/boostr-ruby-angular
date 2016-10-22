@@ -25,6 +25,8 @@ class ContentFee < ActiveRecord::Base
     last_index = io.months.count - 1
     total = 0
 
+    io_start_date = io.start_date
+    io_end_date = io.end_date
     io.months.each_with_index do |month, index|
       if last_index == index
         monthly_budget = budget - total
@@ -32,8 +34,9 @@ class ContentFee < ActiveRecord::Base
         monthly_budget = (daily_budget * io.days_per_month[index]).round(0)
         total = total + monthly_budget
       end
+
       period = Date.new(*month)
-      content_fee_product_budgets.create(month: period, budget: monthly_budget.round(2))
+      content_fee_product_budgets.create(start_date: [period, io_start_date].max, end_date: [period.end_of_month, io_end_date].min, budget: monthly_budget.round(2))
     end
   end
 

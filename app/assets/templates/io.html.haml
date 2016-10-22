@@ -30,10 +30,10 @@
           %span.info-value.small-datepicker
             &nbsp;from
             %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.start_date', click: 'startOpened = true', class: '{ editing: startOpened }', change: 'updateIO()' }, 'is-open': 'startOpened' }
-              {{currentIO.start_date | date : 'M/d/yyyy' : '+0000'}}
+              {{currentIO.start_date | date : 'M/d/yyyy'}}
             &nbsp;to
             %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
-              {{currentIO.end_date | date: 'M/d/yyyy' : '+0000'}}
+              {{currentIO.end_date | date: 'M/d/yyyy'}}
     .row.io-content
       .col-xs-12
         %h3
@@ -56,13 +56,13 @@
                 %td
                   Content Fee
                 %td
-                  {{ currentIO.start_date | date: 'M/d/yyyy' : '+0000'}}
+                  {{ currentIO.start_date | date: 'M/d/yyyy' }}
                 %td
-                  {{ currentIO.end_date | date: 'M/d/yyyy' : '+0000'}}
+                  {{ currentIO.end_date | date: 'M/d/yyyy' }}
                 %td
                   %span{ 'e-name': '{{ content_fee.id }}', editable: { text: 'content_fee.budget' }, onaftersave: 'updateContentFee(content_fee)' }
                     {{ content_fee.budget | currency:'$':0 }}
-                %td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'month'" } }
+                %td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
                   %span{ 'e-name': '{{ product_budget.id }}', editable: { text: 'product_budget.budget' }, onaftersave: 'updateContentFee(content_fee)' }
                     {{ product_budget.budget | currency:'$':0 }}
     .row.io-content
@@ -96,10 +96,10 @@
                   {{ io_member.name }}
                 %td
                   %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'io_member.from_date', click: 'startOpened1 = true', class: '{ editing: startOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'startOpened1' }
-                    {{ io_member.from_date | date: 'M/d/yyyy' : '+0000' }}
+                    {{ io_member.from_date | date: 'M/d/yyyy' }}
                 %td
                   %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'io_member.to_date', click: 'endOpened1 = true', class: '{ editing: endOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'endOpened1' }
-                    {{ io_member.to_date | date: 'M/d/yyyy' : '+0000' }}
+                    {{ io_member.to_date | date: 'M/d/yyyy' }}
                 %td
                   %span
                     {{ io_member.role.option.name }}

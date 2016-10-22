@@ -10,7 +10,9 @@ class User < ActiveRecord::Base
   has_many :clients, -> (user) { where(company_id: user.company_id) }, through: :client_members
   has_many :revenues, -> (user) { where(company_id: user.company_id) }, through: :clients
   has_many :deal_members
+  has_many :io_members
   has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
+  has_many :ios, -> (user) { where(company_id: user.company_id) }, through: :io_members
   has_many :quotas, -> (user) { where(company_id: user.company_id) }
   has_many :teams, -> (user) { where(company_id: user.company_id) }, foreign_key: :leader_id
   has_many :team_members, -> (user) { where(company_id: user.company_id) }, through: :teams, source: :members

@@ -50,6 +50,7 @@ class Deal < ActiveRecord::Base
     # if stage_id_changed?
     #   update_close
     # end
+    generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
   end
@@ -582,8 +583,18 @@ class Deal < ActiveRecord::Base
 
   def update_close
     self.closed_at = updated_at if !stage.open?
+    should_open = stage.open?
     if !stage.open? && stage.probability == 100
-      generate_io()
+      self.deal_products.each do |deal_product|
+        if deal_product.product.revenue_type != "Content-Fee"
+          should_open = true
+          deal_product.open = false
+        else
+          deal_product.open = true
+        end
+        deal_product.save
+      end
+
       notification = company.notifications.find_by_name('Closed Won')
       if !notification.nil? && !notification.recipients.nil?
         recipients = notification.recipients.split(',').map(&:strip)
@@ -593,15 +604,16 @@ class Deal < ActiveRecord::Base
         end
       end
     else
+      self.deal_products.each do |deal_product|
+        deal_product.open = stage.open
+        deal_product.save
+      end
       if !self.closed_at.nil? && stage.open?
         self.closed_at = nil
         if !self.fields.nil? && !self.values.nil?
           field = self.fields.find_by_name("Close Reason")
           close_reason = self.values.find_by_field_id(field.id) if !field.nil?
           close_reason.destroy if !close_reason.nil?
-        end
-        if self.io.present?
-          self.io.destroy
         end
       end
       notification = company.notifications.find_by_name('Stage Changed')
@@ -613,52 +625,79 @@ class Deal < ActiveRecord::Base
         end
       end      
     end
+    self.open = should_open.to_s
+  end
+
+  def set_deal_status
+    should_open = stage.open?
+    if !stage.open? && stage.probability == 100
+      deal_products.each do |deal_product|
+        if deal_product.product.revenue_type != "Content-Fee"
+          should_open = true
+          deal_product.open = false
+        else
+          deal_product.open = true
+        end
+        deal_product.save
+      end
+    else
+      deal_products.each do |deal_product|
+        deal_product.open = stage.open
+        deal_product.save
+      end
+    end
+    self.open = should_open
+    self.save
   end
 
   def generate_io
-    puts "==========generate io"
-    io_param = {
-        advertiser_id: self.advertiser_id,
-        agency_id: self.agency_id,
-        budget: self.budget / 100,
-        start_date: self.start_date,
-        end_date: self.end_date,
-        name: self.name,
-        io_number: self.id,
-        external_io_number: self.id,
-        company_id: self.company_id,
-        deal_id: self.id
-    }
-    if io = Io.create!(io_param)
-      self.deal_members.each do |deal_member|
-        io_member_param = {
-            io_id: io.id,
-            user_id: deal_member.user_id,
-            share: deal_member.share,
-            from_date: self.start_date,
-            to_date: self.end_date,
-        }
-        IoMember.create!(io_member_param)
+    if !stage.open? && stage.probability == 100
+      io_param = {
+          advertiser_id: self.advertiser_id,
+          agency_id: self.agency_id,
+          budget: self.budget / 100,
+          start_date: self.start_date,
+          end_date: self.end_date,
+          name: self.name,
+          io_number: self.id,
+          external_io_number: self.id,
+          company_id: self.company_id,
+          deal_id: self.id
+      }
+      if io = Io.create!(io_param)
+        self.deal_members.each do |deal_member|
+          if deal_member.user.present?
+            io_member_param = {
+                io_id: io.id,
+                user_id: deal_member.user_id,
+                share: deal_member.share,
+                from_date: self.start_date,
+                to_date: self.end_date,
+            }
+            IoMember.create!(io_member_param)
+          end
+        end
+
+        self.deal_products.each do |deal_product|
+          if deal_product.product.revenue_type == "Content-Fee"
+            content_fee_param = {
+                io_id: io.id,
+                product_id: deal_product.id,
+                budget: deal_product.budget / 100
+            }
+            content_fee = ContentFee.create(content_fee_param)
+            deal_product.open = false
+            deal_product.save
+          end
+        end
       end
-
-      self.deal_products.each do |deal_product|
-        content_fee_param = {
-            io_id: io.id,
-            product_id: deal_product.id,
-            budget: deal_product.budget / 100
-        }
-        content_fee = ContentFee.create(content_fee_param)
-
-        # deal_product.deal_product_budgets.each do |deal_product_budget|
-        #   content_fee_product_budget_param = {
-        #       content_fee_id: content_fee.id,
-        #       budget: deal_product_budget.budget,
-        #       month: deal_product_budget.start_date
-        #   }
-        #   ContentFeeProductBudget.create(content_fee_product_budget_param)
-        # end
+    else
+      if self.io.present?
+        self.io.destroy
+        self.deal_products.product_type_of("Content-Fee").update_all(open: true)
       end
     end
+
   end
 
   def wday_in_stage

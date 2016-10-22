@@ -28,6 +28,7 @@
                 %th.left Product Line
                 %th.left Family
                 %th.left Type
+                %th.left Revenue Type
             %tbody
               %tr{ ng: { repeat: 'row in products', click: 'editModal(row)' } }
                 %td
@@ -36,3 +37,4 @@
                 %td.left {{ row.product_line.option.name }}
                 %td.left {{ row.product_family.option.name }}
                 %td.left {{ row.pricing_type.option.name }}
+                %td.left {{ row.revenue_type }}

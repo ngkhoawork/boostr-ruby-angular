@@ -94,6 +94,9 @@ ActiveRecord::Schema.define(version: 20161025081130) do
     t.datetime "created_at",         null: false
     t.datetime "updated_at",         null: false
     t.string   "original_file_name"
+    t.string   "comment"
+    t.string   "subtype"
+    t.integer  "created_by"
   end
 
   create_table "client_contacts", force: :cascade do |t|
@@ -177,9 +180,10 @@ ActiveRecord::Schema.define(version: 20161025081130) do
   create_table "content_fee_product_budgets", force: :cascade do |t|
     t.integer  "content_fee_id"
     t.integer  "budget"
-    t.date     "month"
+    t.date     "start_date"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
+    t.date     "end_date"
   end
 
   add_index "content_fee_product_budgets", ["content_fee_id"], name: "index_content_fee_product_budgets_on_content_fee_id", using: :btree
@@ -261,8 +265,8 @@ ActiveRecord::Schema.define(version: 20161025081130) do
     t.date     "end_date"
     t.string   "name"
     t.integer  "budget",              limit: 8
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
     t.integer  "stage_id"
     t.string   "deal_type"
     t.string   "source_type"
@@ -275,6 +279,7 @@ ActiveRecord::Schema.define(version: 20161025081130) do
     t.integer  "updated_by"
     t.datetime "activity_updated_at"
     t.integer  "previous_stage_id"
+    t.boolean  "open",                          default: true
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
@@ -357,7 +362,7 @@ ActiveRecord::Schema.define(version: 20161025081130) do
     t.integer  "company_id"
     t.string   "product_line"
     t.string   "family"
-    t.string   "pricing_type"
+    t.string   "revenue_type"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end
@@ -524,6 +529,9 @@ ActiveRecord::Schema.define(version: 20161025081130) do
     t.decimal  "win_rate"
     t.decimal  "average_deal_size"
     t.float    "cycle_time"
+    t.integer  "user_type",              default: 0,     null: false
+    t.boolean  "is_active",              default: true
+    t.string   "starting_page"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

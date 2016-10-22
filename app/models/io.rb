@@ -6,8 +6,13 @@ class Io < ActiveRecord::Base
   has_many :io_members, dependent: :destroy
   has_many :content_fees, dependent: :destroy
 
+  scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
+
   after_update do
-    reset_content_fees if (start_date_changed? || end_date_changed?)
+    if (start_date_changed? || end_date_changed?)
+      reset_content_fees
+      reset_member_effective_dates
+    end
   end
 
   def reset_content_fees
@@ -17,6 +22,27 @@ class Io < ActiveRecord::Base
         content_fee.content_fee_product_budgets.destroy_all
         content_fee.create_content_fee_product_budgets
       end
+    end
+  end
+
+  def reset_member_effective_dates
+    puts "============io_members"
+
+    io_members.each do |io_member|
+      date_changed = false
+      puts start_date_was
+      puts io_member.from_date
+      if start_date_was == io_member.from_date
+        io_member.from_date = start_date
+        date_changed = true
+        puts io_member.to_json
+      end
+      if end_date_was == io_member.to_date
+        io_member.to_date = end_date
+        date_changed = true
+      end
+
+      io_member.save if date_changed
     end
   end
 
