@@ -9,6 +9,8 @@
     $scope.upload($scope.files)
 
   $scope.upload = (files) ->
+    $scope.progressPercentage = 0;
+    $scope.errors = []
     if files and files.length
       i = 0
       $scope.uploading = true;
@@ -29,6 +31,7 @@
         ).success (data, status, headers, config) ->
           $scope.errors = data;
           $scope.progressPercentage = 100
+          $scope.uploading = false;
 
           $timeout ->
             $rootScope.$broadcast 'updated_clients'

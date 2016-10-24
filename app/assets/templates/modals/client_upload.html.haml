@@ -43,7 +43,7 @@
             .text{ ng: { hide: 'progressPercentage > 0' } }
               CSV File
         .col-xs-3
-          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files' } }
+          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "uploading" } }
             Browse
 
     .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
