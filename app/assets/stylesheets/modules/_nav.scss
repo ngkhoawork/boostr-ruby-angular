@@ -91,6 +91,10 @@
         color: $white;
         cursor: pointer;
 
+        &.export > svg {
+          width: 29px;
+        }
+
         &:hover,
         &:focus {
           color: $gray-lighter;

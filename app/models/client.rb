@@ -343,7 +343,8 @@ class Client < ActiveRecord::Base
           category_value_params[:id] = client.values.where(field_id: category_value_params[:field_id]).first.id
         end
       else
-        client = current_user.company.clients.create(created_by: current_user.id)
+        client = current_user.company.clients.create(name: row[1].strip)
+        client.update_attributes(created_by: current_user.id)
       end
 
       client_params[:address_attributes] = address_params
