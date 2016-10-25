@@ -72,10 +72,10 @@ class Api::ReportsController < ApplicationController
         line = [period.name]
         line << 'Total'
         company.activity_types.each do |type|
-          count = company.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ?', period.start_date, period.end_date, type.name).count
+          count = company.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ? and user_id in (?)', period.start_date, period.end_date, type.name, company.users.by_user_type(SELLER).ids).count
           line << count
         end
-        count = company.activities.where('happened_at >= ? and happened_at <= ?', period.start_date, period.end_date).count
+        count = company.activities.where('happened_at >= ? and happened_at <= ? and user_id in (?)', period.start_date, period.end_date, company.users.by_user_type(SELLER).ids).count
         line << count
         csv << line
       end
