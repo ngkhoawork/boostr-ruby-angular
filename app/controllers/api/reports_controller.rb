@@ -4,7 +4,7 @@ class Api::ReportsController < ApplicationController
   def index
     respond_to do |format|
       format.json { 
-        render json: { user_activities: user_activity_report, total_activity_report: total_activity_report }
+        render json: { user_activities: user_activity_reports, total_activity_report: total_activity_report }
       }
       format.csv { 
         send_data activity_csv_report, filename: "reports-#{Date.today}.csv"
@@ -14,18 +14,23 @@ class Api::ReportsController < ApplicationController
 
   private
 
-  def user_activity_report
-    data = company.users.by_user_type(SELLER).joins('left join activities on activities.user_id=users.id')
-    .where("happened_at >= ? and happened_at <= ?", time_period.start_date, time_period.end_date)
-    .select("users.id, concat(users.first_name, ' ', users.last_name) as fullname, activities.activity_type_name, count(activities) as count")
-    .order('users.id')
-    .group("users.id, fullname, activities.activity_type_name")
-    .collect { |user| { user_id: user.id, username: user.fullname, "#{user.activity_type_name}": user.count } }
+  def user_activity_reports
+    activity_report = []
+    company.users.by_user_type(SELLER).order(:first_name).each do |user|
+      user_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
+      .where("user_id = ? and happened_at >= ? and happened_at <= ?", user.id, time_period.start_date, time_period.end_date)
+      .select("activity_types.name, count(activities.id) as count")
+      .group("activity_types.name").collect { |activity| { username: user.name, "#{activity.name}": activity.count } }
+      .reduce({}, :merge)
 
-    data = data.group_by { |e| e[:user_id] }.values.map {|e| e.reduce({}, :merge)}
-    user_activities = data.each do |user_activity|
-      user_activity[:total] = user_activity.values[2..-1].reduce(:+)
+      if user_activities.empty?
+        user_activities = {username: user.name}
+      end
+      user_activities[:total] = user_activities.values[1..-1].reduce(:+) || 0
+      activity_report << user_activities
     end
+
+    activity_report
   end
 
   def total_activity_report
@@ -35,7 +40,7 @@ class Api::ReportsController < ApplicationController
     .group("activity_types.name").collect { |activity| { "#{activity.name}": activity.count } }
 
     total_activities = total_activities.reduce({}, :merge)
-    total_activities[:total] = total_activities.values.reduce(:+)
+    total_activities[:total] = total_activities.values.reduce(:+) || 0
     total_activities
   end
 
@@ -72,41 +77,6 @@ class Api::ReportsController < ApplicationController
         end
         count = company.activities.where('happened_at >= ? and happened_at <= ?', period.start_date, period.end_date).count
         line << count
-        csv << line
-      end
-    end
-  end
-
-  def xto_csv(company)
-    CSV.generate do |csv|
-      header = []
-      header << "Time Period"
-      header << "Name"
-      company.activity_types.each do |a|
-        header << a.name
-      end
-      header << "Total"
-      csv << header
-      company.time_periods.order(:name).each do |t|
-        company.users.order(:first_name).each do |u|
-          line = [t.name]
-          line << u.name
-          company.activity_types.each do |a|
-            r = all.where("time_period_id = ? and user_id = ? and name = ?", t.id, u.id, a.name).first
-            line << (r.nil? ? 0:r.value)
-          end
-          r = all.where("time_period_id = ? and user_id = ? and name = ?", t.id, u.id, 'Total').first
-          line << (r.nil? ? 0:r.value)
-          csv << line
-        end
-        line = [t.name]
-        line << 'Total'
-        company.activity_types.each do |a|
-          r = all.where("time_period_id = ? and user_id = ? and name = ?", t.id, -1, a.name).first
-          line << (r.nil? ? 0:r.value)
-        end
-        r = all.where("time_period_id = ? and user_id = ? and name = ?", t.id, -1, 'Total').first
-        line << (r.nil? ? 0:r.value)
         csv << line
       end
     end
