@@ -29,18 +29,22 @@
           if not $scope.currentTimePeriod
             $scope.currentTimePeriod = timePeriods[0]
 
-        ActivityReport.query({time_period_id: $scope.currentTimePeriod.id}, (report_data) ->
-          $scope.report_data = report_data
+        ActivityReport.get({time_period_id: $scope.currentTimePeriod.id}, (report_data) ->
+          $scope.user_activities = report_data.user_activities
+          $scope.total_activities = report_data.total_activity_report
           $scope.initReport()
         )
 
   $scope.initReport = ->
     $scope.userReportValues = []
-    _.each $scope.report_data, (report) ->
+    _.each $scope.user_activities, (report) ->
       _.each $scope.types, (type) ->
         report[type.name] = 0 if report[type.name] == undefined
 
       $scope.userReportValues.push(report)
+
+    _.each $scope.types, (type) ->
+      $scope.total_activities[type.name] = 0 if $scope.total_activities[type.name] == undefined
 
   $scope.updateTimePeriod = (time_period_id) ->
     path = []

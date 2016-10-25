@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161011190234) do
+ActiveRecord::Schema.define(version: 20161025081130) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -343,16 +342,6 @@ ActiveRecord::Schema.define(version: 20161011190234) do
   end
 
   add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
-
-  create_table "reports", force: :cascade do |t|
-    t.integer  "company_id"
-    t.integer  "user_id"
-    t.integer  "time_period_id"
-    t.string   "name"
-    t.integer  "value"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-  end
 
   create_table "revenues", force: :cascade do |t|
     t.integer  "order_number"

@@ -16,7 +16,6 @@ class User < ActiveRecord::Base
   has_many :team_members, -> (user) { where(company_id: user.company_id) }, through: :teams, source: :members
   has_many :snapshots, -> (user) { where(company_id: user.company_id) }
   has_many :activities
-  has_many :reports
   has_many :reminders
   has_many :contacts, through: :activities
 
@@ -54,9 +53,6 @@ class User < ActiveRecord::Base
 
   def as_json(options = {})
     super(options.merge(
-      include: {
-        reports: {}
-      },
       methods: [:name, :leader?, :leader]
     ))
   end
