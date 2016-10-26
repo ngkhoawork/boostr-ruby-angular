@@ -1,0 +1,49 @@
+#data_import
+  .container
+    .row
+      .col-xs-12
+        %h3 Data Import
+
+    .row
+      .col-sm-12
+        .panel
+          .panel-body
+            %h4 Client Import
+            %h5 Select a CSV file and upload it using the client import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadClientModal()' } }
+                = inline_svg 'icons/upload.svg'
+                Import Clients
+
+    .row
+      .col-sm-12
+        .panel
+          .panel-body
+            %h4 Contact Import
+            %h5 Select a CSV file and upload it using the contact import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadContactModal()' } }
+                = inline_svg 'icons/upload.svg'
+                Import Contacts
+
+    .row
+      .col-sm-12
+        .panel
+          .panel-body
+            %h4 Revenue Import
+            %h5 Select a CSV file and upload it using the revenues import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadRevenueModal()' } }
+                = inline_svg 'icons/upload.svg'
+                Import Revenues
+
+    .row
+      .col-sm-12
+        .panel
+          .panel-body
+            %h4 Activity Import
+            %h5 Select a CSV file and upload it using the activity import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadActivityModal()' } }
+                = inline_svg 'icons/upload.svg'
+                Import Activities

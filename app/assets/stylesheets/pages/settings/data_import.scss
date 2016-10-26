@@ -1,0 +1,16 @@
+#data_import {
+  li.import {
+    list-style: none;
+
+    a {
+      color: $brand-primary;
+      cursor: pointer;
+      line-height: 26px;
+      svg {
+        fill: $brand-primary;
+        float: left;
+        margin-right: 7px;
+      }
+    }
+  }
+}

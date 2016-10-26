@@ -1,4 +1,4 @@
-@app.controller 'SettingsToolsController',
+@app.controller 'SettingsDataImportController',
 ['$scope', '$modal',
 ($scope, $modal) ->
 
@@ -15,6 +15,22 @@
       templateUrl: 'modals/contact_upload.html'
       size: 'lg'
       controller: 'ContactsUploadController'
+      backdrop: 'static'
+      keyboard: false
+
+  $scope.showUploadRevenueModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/revenue_upload.html'
+      size: 'lg'
+      controller: 'RevenueUploadController'
+      backdrop: 'static'
+      keyboard: false
+
+  $scope.showUploadActivityModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_upload.html'
+      size: 'lg'
+      controller: 'ActivityUploadController'
       backdrop: 'static'
       keyboard: false
 ]
