@@ -151,6 +151,7 @@ class Activity < ActiveRecord::Base
         client: advertiser,
         agency: agency,
         activity_type_name: type.name,
+        activity_type_id: type.id,
         happened_at: happened_at,
         comment: row[7] ? row[7].strip : nil
       }
