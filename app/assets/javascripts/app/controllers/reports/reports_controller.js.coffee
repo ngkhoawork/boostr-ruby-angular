@@ -36,12 +36,18 @@
         )
 
   $scope.initReport = ->
+    $scope.sortType = 'username'
+    $scope.sortReverse = false
+
     $scope.userReportValues = []
     _.each $scope.user_activities, (report) ->
+      fullReport = {}
       _.each $scope.types, (type) ->
-        report[type.name] = 0 if report[type.name] == undefined
+        fullReport[cutSpace(type.name)] = report[type.name] || 0
+      fullReport.username = report.username
+      fullReport.total = report.total
 
-      $scope.userReportValues.push(report)
+      $scope.userReportValues.push(fullReport)
 
     _.each $scope.types, (type) ->
       $scope.total_activities[type.name] = 0 if $scope.total_activities[type.name] == undefined

@@ -33,24 +33,24 @@
           %table.table.table-hover.text-center
             %thead
               %tr
-                %th.left{ 'ng-click': 'changeSortType("user.name")'}
+                %th.left{ 'ng-click': 'changeSortType("username")'}
                   Name
                 %th{ ng: { repeat: 'type in types track by $index' }, 'ng-click': 'changeSortType(type.name)' }
                   {{ type.name }}
-                %th{ 'ng-click': 'changeSortType("Total")'}
+                %th{ 'ng-click': 'changeSortType("total")'}
                   Total
 
             %tbody
               %tr{ ng: { repeat: 'report in userReportValues | orderBy:sortType:sortReverse' } }
                 %td.left {{ report.username }}
-                %td {{report['Initial Meeting']}}
+                %td {{report['InitialMeeting']}}
                 %td {{report['Pitch']}}
                 %td {{report['Proposal']}}
                 %td {{report['Feedback']}}
-                %td {{report['Agency Meeting']}}
-                %td {{report['Client Meeting']}}
+                %td {{report['AgencyMeeting']}}
+                %td {{report['ClientMeeting']}}
                 %td {{report['Entertainment']}}
-                %td {{report['Campaign Review']}}
+                %td {{report['CampaignReview']}}
                 %td {{report['QBR']}}
                 %td {{report['Email']}}
                 %td {{report['total']}}
