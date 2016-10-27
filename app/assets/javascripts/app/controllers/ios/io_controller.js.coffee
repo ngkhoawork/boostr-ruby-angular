@@ -1,6 +1,6 @@
 @app.controller 'IOController',
-  ['$scope', '$modal', '$filter', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User'
-    ($scope, $modal, $filter, $routeParams, $location, $q, IO, IOMember, ContentFee, User) ->
+  ['$scope', '$modal', '$filter', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser'
+    ($scope, $modal, $filter, $routeParams, $location, $q, IO, IOMember, ContentFee, User, CurrentUser) ->
       $scope.currentIO = {}
       $scope.activeTab = 'ios'
       $scope.dateRange = []
@@ -11,15 +11,17 @@
           startDate = new Date($scope.currentIO.start_date)
           endDate = new Date($scope.currentIO.end_date)
           endDate.setUTCDate(1)
-          endDate.setMonth(endDate.getMonth() + 1)
+          endDate.setUTCMonth(endDate.getUTCMonth() + 1)
           d = startDate
           $scope.dateRange.push(angular.copy(d))
           loop
-            d.setMonth(d.getMonth() + 1)
+            d.setUTCMonth(d.getUTCMonth() + 1)
             break if d >= endDate
             $scope.dateRange.push(angular.copy(d))
 
       $scope.init = ->
+        CurrentUser.get().$promise.then (user) ->
+          $scope.currentUser = user
         IO.get($routeParams.id).then (io) ->
           $scope.currentIO = io
           updateDateRange()

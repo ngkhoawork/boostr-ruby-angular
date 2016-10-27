@@ -4,6 +4,8 @@
 
   $scope.activeTab = 'ios'
 
+  $scope.searchText = ''
+
   $scope.init = ->
     IO.all({}).then (ios) ->
       $scope.revenue = ios

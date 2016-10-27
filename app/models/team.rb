@@ -75,13 +75,22 @@ class Team < ActiveRecord::Base
   end
 
   def all_deals_for_time_period(start_date, end_date)
-    deals.open.for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) }
+    deals.where(open: true).for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) } + leader.all_deals_for_time_period(start_date, end_date)
   end
 
   def all_revenues_for_time_period(start_date, end_date)
     rs = revenues.for_time_period(start_date, end_date) + children.map {|c| c.all_revenues_for_time_period(start_date, end_date)}
     rs.flatten.map {|r| r.set_period_budget(start_date, end_date)}
     return rs
+  end
+
+  def crevenues(start_date, end_date)
+    return @crevenues if defined?(@crevenues)
+    @crevenues = []
+    all_members.each do |member|
+      @crevenues += member.crevenues(start_date, end_date)
+    end
+    @crevenues
   end
 
   def all_members

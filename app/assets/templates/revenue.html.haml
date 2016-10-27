@@ -9,7 +9,7 @@
             .input-group
               .input-group-addon
                 %i.glyphicon.glyphicon-search
-              %input.form-control{ ng: { model: 'query', change: 'search(query)' }, placeholder: "Search by Advertiser, Agency, Name" }
+              %input.form-control{ ng: { model: 'searchText' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
 
     .row
       .col-md-12
@@ -46,7 +46,9 @@
                 %td.right {{row.budget | currency:'$':0 }}
                 %td.left {{row.start_date | date: 'M/d/yyyy'}}
                 %td.left {{row.end_date | date: 'M/d/yyyy'}}
-                %td.left Active
+                %td.left
+                  %a{ href: '', ng: { if: "row.deal", click: 'go("/deals/" + row.deal.id)'  } }
+                    {{ row.deal.name }}
                 %td.right
                   %i.fa.fa-angle-right
 

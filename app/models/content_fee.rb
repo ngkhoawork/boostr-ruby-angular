@@ -1,7 +1,7 @@
 class ContentFee < ActiveRecord::Base
   belongs_to :io
-  belongs_to :deal_product, class_name: 'DealProduct', foreign_key: 'product_id'
   has_many :content_fee_product_budgets, dependent: :destroy
+  belongs_to :product
 
   accepts_nested_attributes_for :content_fee_product_budgets
 
@@ -60,10 +60,6 @@ class ContentFee < ActiveRecord::Base
 
   def update_budget
     self.update(budget: content_fee_product_budgets.sum(:budget))
-  end
-
-  def product
-    self.deal_product.product
   end
 
   def as_json(options = {})

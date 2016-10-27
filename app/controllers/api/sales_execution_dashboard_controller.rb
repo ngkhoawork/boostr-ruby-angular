@@ -139,6 +139,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
 
   def product_pipeline_data
     probability_colors = {
+        100 => "#76b119",
         90 => "#86c129",
         75 => "#a0ce56",
         50 => "#b3da76",
@@ -147,7 +148,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
         5 => "#e4ffb9"
     }
     # { 90=> "#3996db", 75 => "#52a1e2", 50 => "#7ab9e9", 25 => "#a4d0f0", 10 => "#d2e8f8", 5 => "#d2e8f8"}
-    probabilities = current_user.company.distinct_stages.where("stages.probability > 0 and stages.probability < 100").order("stages.probability desc").collect { |stage| stage.probability }
+    probabilities = current_user.company.distinct_stages.where("stages.probability > 0").order("stages.probability desc").collect { |stage| stage.probability }
     probabilities.reverse!
     product_names = current_user.company.products.collect {|product| product.name}
 
@@ -155,7 +156,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     product_pipeline_data_unweighted = []
 
     probabilities.each do |probability|
-      data = Deal.joins(:products).open.at_percent(probability).where("products.company_id = ? and deals.id in (?)", current_user.company.id, deal_ids).group("products.id").order("products.id asc").select("products.name, (sum(deal_products.budget) / 100) as total_budget").collect {|deal| {label: deal.name, value: deal.total_budget.to_i}}
+      data = Deal.joins(:products).open_partial.at_percent(probability).where("products.company_id = ? and deals.id in (?)", current_user.company.id, deal_ids).group("products.id").order("products.id asc").select("products.name, (sum(deal_products.budget) / 100) as total_budget").collect {|deal| {label: deal.name, value: deal.total_budget.to_i}}
       final_data_weighted = []
       final_data_unweighted = []
       product_names.each do |product_name|

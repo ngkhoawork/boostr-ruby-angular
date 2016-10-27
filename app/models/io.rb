@@ -1,10 +1,11 @@
 class Io < ActiveRecord::Base
   belongs_to :advertiser, class_name: 'Client', foreign_key: 'advertiser_id'
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
-  belongs_to :deal, class_name: 'Deal', foreign_key: 'io_number'
+  belongs_to :deal
   belongs_to :company
   has_many :io_members, dependent: :destroy
   has_many :content_fees, dependent: :destroy
+  has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
 
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
 
@@ -86,7 +87,8 @@ class Io < ActiveRecord::Base
     super(merge_recursively(options,
         include: {
             advertiser: { name: {} },
-            agency: { name: {} }
+            agency: { name: {} },
+            deal: { name: {} }
         }
       )
     )

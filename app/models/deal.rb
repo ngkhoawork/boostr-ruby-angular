@@ -77,6 +77,7 @@ class Deal < ActiveRecord::Base
   scope :closed_at, -> (start_date, end_date) { where('deals.closed_at >= ? and deals.closed_at <= ?', start_date, end_date) }
   scope :started_at, -> (start_date, end_date) { where('deals.created_at >= ? and deals.created_at <= ?', start_date, end_date) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
+  scope :open_partial, -> { where('deals.open IS true') }
   scope :closed, -> { joins(:stage).where('stages.open IS false') }
   scope :active, -> { where('deals.deleted_at is NULL') }
   scope :at_percent, -> (percentage) { joins(:stage).where('stages.probability = ?', percentage) }
@@ -588,9 +589,9 @@ class Deal < ActiveRecord::Base
       self.deal_products.each do |deal_product|
         if deal_product.product.revenue_type != "Content-Fee"
           should_open = true
-          deal_product.open = false
-        else
           deal_product.open = true
+        else
+          deal_product.open = false
         end
         deal_product.save
       end
@@ -634,9 +635,9 @@ class Deal < ActiveRecord::Base
       deal_products.each do |deal_product|
         if deal_product.product.revenue_type != "Content-Fee"
           should_open = true
-          deal_product.open = false
-        else
           deal_product.open = true
+        else
+          deal_product.open = false
         end
         deal_product.save
       end
@@ -660,7 +661,7 @@ class Deal < ActiveRecord::Base
           end_date: self.end_date,
           name: self.name,
           io_number: self.id,
-          external_io_number: self.id,
+          external_io_number: nil,
           company_id: self.company_id,
           deal_id: self.id
       }
@@ -682,7 +683,7 @@ class Deal < ActiveRecord::Base
           if deal_product.product.revenue_type == "Content-Fee"
             content_fee_param = {
                 io_id: io.id,
-                product_id: deal_product.id,
+                product_id: deal_product.product.id,
                 budget: deal_product.budget / 100
             }
             content_fee = ContentFee.create(content_fee_param)

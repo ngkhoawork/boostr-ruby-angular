@@ -64,7 +64,7 @@
         padding: 20px 0;
         color: $gray-normal;
         &:hover {
-          background-color: #ffffff !important;
+          background-color: $light-grayish-blue-3 !important;
           color: $very-dark-desaturated-blue-4;
         }
       }
@@ -74,7 +74,7 @@
       color: $very-dark-desaturated-blue-4;
 
       a {
-        background-color: #ffffff !important;
+        background-color: $light-grayish-blue-3 !important;
         padding: 20px 0;
         color: $very-dark-desaturated-blue-4;
       }

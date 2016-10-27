@@ -26,7 +26,7 @@
               %tbody
                 %tr
                   %td.text-right
-                    100%
+                    Revenue
                   %td.text-right
                     {{ revenuesByQuarter[year][1] | humanReadableMoney }}
                   %td.text-right
@@ -105,7 +105,7 @@
               %tbody
                 %tr
                   %td.text-right
-                    100%
+                    Revenue
                   %td.text-right
                     {{ revenuesByQuarter[year][1] | humanReadableMoney }}
                   %td.text-right
@@ -201,7 +201,7 @@
               %tbody
                 %tr{ 'ng-repeat': 'revenue in year_revenues' }
                   %td.left
-                    {{revenue.client.name}}
+                    {{revenue.advertiser.name}}
                   %td.right
                     {{ revenue.budget | humanReadableMoney }}
                   %td.right

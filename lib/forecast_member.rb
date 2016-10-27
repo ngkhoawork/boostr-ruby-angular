@@ -228,7 +228,7 @@ class ForecastMember
   end
 
   def open_deals
-    @open_deals ||= member.deals.for_time_period(start_date, end_date).where(open: true).includes(:deal_product_budgets, :stage).to_a
+    @open_deals ||= member.deals.where(open: true).for_time_period(start_date, end_date).includes(:deal_product_budgets, :stage).to_a
   end
 
   def complete_deals
@@ -242,13 +242,13 @@ class ForecastMember
   def number_of_days(comparer)
     from = [start_date, comparer.start_date].max
     to = [end_date, comparer.end_date].min
-    (to.to_date - from.to_date) + 1
+    [(to.to_date - from.to_date) + 1, 0].max
   end
 
   def effective_days(comparer, effecter)
     from = [start_date, comparer.start_date, effecter.from_date].max
     to = [end_date, comparer.end_date, effecter.to_date].min
-    (to.to_date - from.to_date) + 1
+    [(to.to_date - from.to_date) + 1, 0].max
   end
 
   def snapshots
