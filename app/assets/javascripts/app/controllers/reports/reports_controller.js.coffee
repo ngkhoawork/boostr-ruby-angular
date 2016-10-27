@@ -36,8 +36,8 @@
         )
 
   $scope.initReport = ->
-    $scope.sortType = 'username'
-    $scope.sortReverse = false
+    $scope.sortType = 'total'
+    $scope.sortReverse = true
 
     $scope.userReportValues = []
     _.each $scope.user_activities, (report) ->
