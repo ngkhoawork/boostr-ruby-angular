@@ -36,7 +36,7 @@
 
 #  $scope.showUploadDealsModal = () ->
 #    $scope.modalInstance = $modal.open
-#      templateUrl: 'modals/deals_upload.html'
+#      templateUrl: 'modals/deal_upload.html'
 #      size: 'lg'
 #      controller: 'DealUploadController'
 #      backdrop: 'static'
