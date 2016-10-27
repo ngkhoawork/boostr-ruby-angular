@@ -67,7 +67,7 @@
       $scope.sortReverse = !$scope.sortReverse
     else
       $scope.sortType = sortType
-      $scope.sortReverse = false
+      $scope.sortReverse = true
 
   $scope.$on 'updated_reports', ->
     $scope.init()
