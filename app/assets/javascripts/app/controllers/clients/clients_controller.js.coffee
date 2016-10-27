@@ -259,10 +259,6 @@
   $scope.go = (path) ->
     $location.path(path)
 
-  $scope.exportClients = ->
-    $window.open('/api/clients.csv')
-    return true
-
   $scope.filterClients = (filter) ->
     $scope.clientFilter = filter
     $scope.init()

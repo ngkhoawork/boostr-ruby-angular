@@ -1,5 +1,6 @@
 #data_import {
-  li.import {
+  li.import,
+  li.export {
     list-style: none;
 
     a {
@@ -11,6 +12,12 @@
         float: left;
         margin-right: 7px;
       }
+    }
+  }
+
+  li.export {
+    svg {
+      transform: rotate(180deg);
     }
   }
 }
