@@ -162,6 +162,7 @@ class Activity < ActiveRecord::Base
         rescue ActiveRecord::RecordNotFound
         end
       end
+
       if !(activity.present?)
         activity = current_user.company.activities.new
       end

@@ -563,6 +563,245 @@ class Deal < ActiveRecord::Base
 
   end
 
+  def self.import(file, current_user)
+    errors = []
+
+    row_number = 0
+    deal_type_field = current_user.company.fields.where(name: 'Deal Type').first
+    deal_source_field = current_user.company.fields.where(name: 'Deal Source').first
+
+    CSV.parse(file, headers: true) do |row|
+      row_number += 1
+
+      if row[0]
+        begin
+          deal = current_user.company.deals.find(row[0].strip)
+        rescue ActiveRecord::RecordNotFound
+          error = { row: row_number, message: ["Deal ID #{row[0]} could not be found"] }
+          errors << error
+          next
+        end
+      end
+
+      if row[1].nil? || row[1].blank?
+        error = { row: row_number, message: ["Deal name can't be blank"] }
+        errors << error
+        next
+      end
+
+      if row[2].present?
+        advertiser_type_id = Client.advertiser_type_id(current_user.company)
+        advertisers = current_user.company.clients.by_type_id(advertiser_type_id).where('name ilike ?', row[2].strip)
+        if advertisers.length > 1
+          error = { row: row_number, message: ["Advertiser #{row[2]} matched more than one client record"] }
+          errors << error
+          next
+        elsif advertisers.length == 0
+          error = { row: row_number, message: ["Advertiser #{row[2]} could not be found"] }
+          errors << error
+          next
+        else
+          advertiser = advertisers.first
+        end
+      else
+        error = { row: row_number, message: ["Advertiser can't be blank"] }
+        errors << error
+        next
+      end
+
+      if row[3].present?
+        agency_type_id = Client.agency_type_id(current_user.company)
+        agencies = current_user.company.clients.by_type_id(agency_type_id).where('name ilike ?', row[3].strip)
+        if agencies.length > 1
+          error = { row: row_number, message: ["Agency #{row[3]} matched more than one client record"] }
+          errors << error
+          next
+        elsif agencies.length == 0
+          error = { row: row_number, message: ["Agency #{row[3]} could not be found"] }
+          errors << error
+          next
+        else
+          agency = agencies.first
+        end
+      end
+
+      if row[4].present?
+        deal_type = deal_type_field.options.where('name ilike ?', row[4].strip).first
+        unless deal_type
+          error = { row: row_number, message: ["Deal Type #{row[4]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        deal_type = nil
+      end
+
+      if row[5].present?
+        deal_source = deal_source_field.options.where('name ilike ?', row[5].strip).first
+        unless deal_source
+          error = { row: row_number, message: ["Deal Source #{row[5]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        deal_source = nil
+      end
+
+      start_date = nil
+      if row[6].present?
+        if !(row[7].present?)
+          error = {row: row_number, message: ['End Date must be present if Start Date is set'] }
+          errors << error
+          next
+        end
+        begin
+          start_date = DateTime.parse(row[6])
+        rescue ArgumentError
+          error = {row: row_number, message: ['Start Date must be a valid datetime'] }
+          errors << error
+          next
+        end
+      end
+
+      end_date = nil
+      if row[7].present?
+        if !(row[6].present?)
+          error = {row: row_number, message: ['Start Date must be present if End Date is set'] }
+          errors << error
+          next
+        end
+        begin
+          end_date = DateTime.parse(row[7])
+        rescue ArgumentError
+          error = {row: row_number, message: ['End Date must be a valid datetime'] }
+          errors << error
+          next
+        end
+      end
+
+      if (end_date && start_date) && start_date > end_date
+        error = {row: row_number, message: ['Start Date must preceed End Date'] }
+        errors << error
+        next
+      end
+
+      if row[8].present?
+        stage = current_user.company.stages.where('name ilike ?', row[8].strip).first
+        unless stage
+          error = { row: row_number, message: ["Stage #{row[8]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        error = { row: row_number, message: ["Stage can't be blank"] }
+        errors << error
+        next
+      end
+
+      deal_member_list = []
+      if row[9].present?
+        deal_members = row[9].split(';').map{|el| el.split('/') }
+
+        deal_member_list_error = false
+
+        deal_members.each do |deal_member|
+          if deal_member[1].nil?
+            error = { row: row_number, message: ["Deal Member #{deal_member[0]} does not have a share"] }
+            errors << error
+            deal_member_list_error = true
+            break
+          elsif user = current_user.company.users.where('email ilike ?', deal_member[0]).first
+            deal_member_list << user
+          else
+            error = { row: row_number, message: ["Deal Member #{deal_member[0]} could not be found in the User list"] }
+            errors << error
+            deal_member_list_error = true
+            break
+          end
+        end
+
+        if deal_member_list_error
+          next
+        end
+      else
+        error = { row: row_number, message: ["Team can't be blank"] }
+        errors << error
+        next
+      end
+
+      deal_params = {
+        name: row[1].strip,
+        advertiser: advertiser,
+        agency: agency,
+        start_date: start_date,
+        end_date: end_date,
+        stage: stage,
+        updated_by: current_user.id
+      }
+
+      type_value_params = {
+        value_type: 'Option',
+        subject_type: 'Deal',
+        field_id: deal_type_field.id,
+        option_id: (deal_type ? deal_type.id : nil),
+        company_id: current_user.company.id
+      }
+
+      source_value_params = {
+        value_type: 'Option',
+        subject_type: 'Deal',
+        field_id: deal_source_field.id,
+        option_id: (deal_source ? deal_source.id : nil),
+        company_id: current_user.company.id
+      }
+
+      if !(deal.present?)
+        deals = current_user.company.deals.where('name ilike ?', row[1].strip.downcase)
+        if deals.length > 1
+          error = { row: row_number, message: ["Deal name #{row[1]} matched more than one deal record"] }
+          errors << error
+          next
+        end
+        deal = deals.first
+      end
+
+      if deal.present?
+        type_value_params[:subject_id] = deal.id
+        source_value_params[:subject_id] = deal.id
+
+        if deal_type_value = deal.values.where(field_id: deal_type_field).first
+          type_value_params[:id] = deal_type_value.id
+        end
+
+        if deal_source_value = deal.values.where(field_id: deal_source_field).first
+          source_value_params[:id] = deal_source_value.id
+        end
+      else
+        deal = current_user.company.deals.new(created_by: current_user.id)
+        deal_is_new = true
+      end
+
+      deal_params[:values_attributes] = [
+        type_value_params,
+        source_value_params
+      ]
+
+      if deal.update_attributes(deal_params)
+        deal.deal_members.delete_all if deal_is_new
+        deal_member_list.each_with_index do |user, index|
+          deal_member = deal.deal_members.find_or_initialize_by(user: user)
+          deal_member.update(share: deal_members[index][1].to_i)
+        end
+      else
+        error = { row: row_number, message: deal.errors.full_messages }
+        errors << error
+        next
+      end
+    end
+
+    errors
+  end
+
   def update_stage
     self.previous_stage_id = self.stage_id_was
     self.stage_updated_at = updated_at

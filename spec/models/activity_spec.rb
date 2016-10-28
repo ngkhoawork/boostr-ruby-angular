@@ -171,11 +171,4 @@ RSpec.describe Activity, type: :model do
       end
     end
   end
-
-  def generate_csv(data)
-    CSV.generate do |csv|
-      csv << data.keys
-      csv << data.values
-    end
-  end
 end
