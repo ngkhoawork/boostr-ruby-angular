@@ -81,5 +81,6 @@ class DealProduct < ActiveRecord::Base
 
   def update_budget
     self.update(budget: deal_product_budgets.sum(:budget) / 100)
+    deal.update_total_budget
   end
 end

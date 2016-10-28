@@ -756,7 +756,7 @@ class Deal < ActiveRecord::Base
       }
 
       if !(deal.present?)
-        deals = current_user.company.deals.where('name ilike ?', row[1].strip.downcase)
+        deals = current_user.company.deals.where('name ilike ?', row[1].strip)
         if deals.length > 1
           error = { row: row_number, message: ["Deal name #{row[1]} matched more than one deal record"] }
           errors << error
