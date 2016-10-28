@@ -17,6 +17,8 @@ class DealProduct < ActiveRecord::Base
       else
         self.update_budget
       end
+    end
+    if budget_changed?
       deal.update_total_budget
     end
   end
