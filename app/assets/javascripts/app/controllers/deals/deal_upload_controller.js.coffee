@@ -1,6 +1,6 @@
 @app.controller "DealUploadController",
-['$scope', '$rootScope', '$modalInstance', '$timeout', 'Activity', 'Upload',
-($scope, $rootScope, $modalInstance, $timeout, Activity, Upload) ->
+['$scope', '$rootScope', '$modalInstance', '$timeout', 'Deal', 'Upload',
+($scope, $rootScope, $modalInstance, $timeout, Deal, Upload) ->
 
   $scope.progressPercentage = 0
   $scope.errors = []

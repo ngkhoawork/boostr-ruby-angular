@@ -1,4 +1,4 @@
-#deal_upload_modal
+#revenue_upload_modal
   .modal-header.text-center
     %a.close{ ng: { click: 'cancel()' } }
       %span{'aria-hidden' => 'true'}
@@ -9,7 +9,7 @@
         Import Deals
       %br
       %small
-        Please export your clients from your current system into a CSV file.
+        Please export your deals from your current system into a CSV file.
 
   .modal-body
     .well.transparent
@@ -17,15 +17,16 @@
         Make sure your CSV file includes these EXACT headers and columns:
 
       %ol.row.center-block
-        %li.col-xs-3.col-xs-offset-2 Activity Id
-        %li.col-xs-3 Date*
-        %li.col-xs-3 Creator*
-        %li.col-xs-3.col-xs-offset-2 Advertiser
-        %li.col-xs-3 Agency
-        %li.col-xs-3 Deal
-        %li.col-xs-3.col-xs-offset-2 Type
-        %li.col-xs-3 Comments
-        %li.col-xs-3 Contacts (email1;email2)
+        %li.col-xs-3.col-xs-offset-2 Deal ID
+        %li.col-xs-3 Name*
+        %li.col-xs-3 Advertiser*
+        %li.col-xs-3.col-xs-offset-2 Agency
+        %li.col-xs-3 Type
+        %li.col-xs-3 Source
+        %li.col-xs-3.col-xs-offset-2 Start Date
+        %li.col-xs-3 End Date
+        %li.col-xs-3 Stage
+        %li.col-xs-3.col-xs-offset-2 Team (email1/%;email2/%)
 
     .well.well-lg.dark
       .row

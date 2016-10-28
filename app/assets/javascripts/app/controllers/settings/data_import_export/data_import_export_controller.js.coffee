@@ -1,4 +1,4 @@
-@app.controller 'SettingsDataImportController',
+@app.controller 'DataImportExportController',
 ['$scope', '$modal', '$window',
 ($scope, $modal, $window) ->
 
@@ -9,7 +9,7 @@
       controller: 'ClientsUploadController'
       backdrop: 'static'
       keyboard: false
-          
+
   $scope.showUploadContactModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_upload.html'
@@ -34,13 +34,13 @@
       backdrop: 'static'
       keyboard: false
 
-#  $scope.showUploadDealsModal = () ->
-#    $scope.modalInstance = $modal.open
-#      templateUrl: 'modals/deal_upload.html'
-#      size: 'lg'
-#      controller: 'DealUploadController'
-#      backdrop: 'static'
-#      keyboard: false
+  $scope.showUploadDealsModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_upload.html'
+      size: 'lg'
+      controller: 'DealUploadController'
+      backdrop: 'static'
+      keyboard: false
 
   $scope.showUploadContactsModal = ->
     $scope.modalInstance = $modal.open

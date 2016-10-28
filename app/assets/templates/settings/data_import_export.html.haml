@@ -31,13 +31,11 @@
           .panel-body
             %h4 Deals Import
             %h5 Select a CSV file and upload it using the client import module
-            -#%li.import
-            -#  %a.upload{ href: '', ng: { click: 'showUploadDealsModal()' } }
-            -#    = inline_svg 'icons/import.svg'
-            -#    Import Deals
             %li.import
-              %a.upload{ href: '' }
-                Coming soon...
+              %a.upload{ href: '', ng: { click: 'showUploadDealsModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Deals
+
 
       .col-sm-6
         .panel
@@ -69,8 +67,7 @@
             -#    = inline_svg 'icons/import.svg'
             -#    Export Contacts
             %li.import
-              %a.upload{ href: '' }
-                Coming soon...
+              Coming soon...
 
     .row
       .col-sm-6
@@ -92,8 +89,7 @@
             -#    = inline_svg 'icons/import.svg'
             -#    Export Revenues
             %li.import
-              %a.upload{ href: '' }
-                Coming soon...
+              Coming soon...
 
     .row
       .col-sm-6
@@ -115,5 +111,4 @@
             -#    = inline_svg 'icons/import.svg'
             -#    Export Activities
             %li.import
-              %a.upload{ href: '' }
-                Coming soon...
+              Coming soon...
