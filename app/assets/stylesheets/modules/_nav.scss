@@ -53,6 +53,69 @@
   }
 }
 
+.navbar-white {
+
+  .navbar-nav {
+    li {
+      font-size: 14px;
+      margin-left: 20px;
+      margin-right: 20px;
+      a {
+        padding: 20px 0;
+        color: $gray-normal;
+        &:hover {
+          background-color: $light-grayish-blue-3 !important;
+          color: $very-dark-desaturated-blue-4;
+        }
+      }
+    }
+
+    li.active {
+      color: $very-dark-desaturated-blue-4;
+
+      a {
+        background-color: $light-grayish-blue-3 !important;
+        padding: 20px 0;
+        color: $very-dark-desaturated-blue-4;
+      }
+    }
+  }
+
+  padding-bottom: 3px;
+  padding-top: 5px;
+
+  .active > a:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 0;
+    left: 0;
+    bottom: 15px;
+    border-bottom: 2px solid $brand-primary;
+  }
+
+  a {
+    color: $very-dark-desaturated-blue-1;
+  }
+
+  .navbar-brand {
+    padding: 22px 15px;
+  }
+
+  .navbar-text {
+    margin-top: 22px;
+    margin-bottom: 20px;
+
+    a {
+      color: $very-dark-desaturated-blue-1;
+    }
+
+    &.navbar-right {
+      margin-right: 0;
+    }
+  }
+}
+
 #nav {
   background: $brand-primary;
   margin-bottom: 15px;

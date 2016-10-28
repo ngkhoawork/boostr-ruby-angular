@@ -45,9 +45,15 @@
     .when '/contacts',
       templateUrl: 'contacts.html'
       controller: 'ContactsController'
+    .when '/old_revenue',
+      templateUrl: 'old_revenue.html'
+      controller: 'OldRevenueController'
     .when '/revenue',
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
+    .when '/ios/:id',
+      templateUrl: 'io.html'
+      controller: 'IOController'
     .when '/activities',
       templateUrl: 'activities.html'
       controller: 'ActivitiesController'

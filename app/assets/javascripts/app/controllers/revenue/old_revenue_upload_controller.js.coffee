@@ -1,4 +1,4 @@
-@app.controller "RevenueUploadController",
+@app.controller "OldRevenueUploadController",
 ['$scope', '$rootScope', '$modalInstance', '$timeout', 'Upload',
 ($scope, $rootScope, $modalInstance, $timeout, Upload) ->
 

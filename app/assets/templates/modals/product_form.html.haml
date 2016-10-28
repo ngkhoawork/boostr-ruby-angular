@@ -31,10 +31,18 @@
       .form-group
         %label.control-label{ for: 'pricing-type' } Pricing Type
         %ui-select{ name: 'pricing-type', ng: { model: 'product.pricing_type.option_id', disabled: true } }
-          %ui-select-match{ placeholder: 'Pricing Type' }
+          %ui-select-match{ placeholder: 'Family' }
             {{ $select.selected.name }}
           %ui-select-choices{ repeat: 'option.id as option in product.pricing_type.options | filter: { name: $select.search }' }
             %div{ ng: { bind: { html: 'option.name' } } }
+
+      .form-group
+        %label.control-label{ for: 'revenue-type' } Revenue Type
+        %ui-select{ name: 'revenue-type', ng: { model: 'product.revenue_type', disabled: true } }
+          %ui-select-match{ placeholder: 'Revenue Type' }
+            {{ $select.selected }}
+          %ui-select-choices{ repeat: 'revenue_type in revenue_types' }
+            %div{ ng: { bind: { html: 'revenue_type' } } }
 
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

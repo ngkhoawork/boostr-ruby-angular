@@ -32,6 +32,10 @@ Rails.application.routes.draw do
     end
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
+    resources :ios, only: [:index, :show, :create, :update, :destroy] do
+      resources :content_fees, only: [:create, :update, :destroy]
+      resources :io_members, only: [:index, :create, :update, :destroy]
+    end
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do

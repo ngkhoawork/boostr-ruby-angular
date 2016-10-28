@@ -140,7 +140,7 @@
       return DataStore.dataQuaterForecast
 
     DataStore.setDataQuarterForecast = (data) ->
-      probability_colors = [ { probability: "90", color: "#3996db"}, { probability: "75" , color: "#52a1e2" }, { probability: "50" , color: "#7ab9e9" }, { probability: "25" , color: "#a4d0f0" }, { probability: "10" , color: "#d2e8f8" }]
+      probability_colors = [ { probability: "100", color: "#1976bb"}, { probability: "90", color: "#3996db"}, { probability: "75" , color: "#52a1e2" }, { probability: "50" , color: "#7ab9e9" }, { probability: "25" , color: "#a4d0f0" }, { probability: "10" , color: "#d2e8f8" }]
       DataStore.dataQuaterForecast = _.map data, (row, index) ->
         graphData = []
         series = 1

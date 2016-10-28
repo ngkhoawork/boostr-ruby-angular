@@ -70,6 +70,50 @@
   }
 }
 
+.small-datepicker {
+  .text-muted {
+    color: $placeholder-text;
+  }
+
+  .btn-default {
+    color: $brand-secondary;
+    &.active {
+      background: $btn-primary-bg;
+      border: $btn-primary-border;
+      color: $btn-primary-color;
+      .text-info {
+        color: $btn-primary-color;
+      }
+    }
+  }
+
+  .edit {
+    border: 1px solid transparent;
+    padding: 3px 3px;
+    border-radius: 4px;
+
+    &:first-child {
+      margin-left: 0px;
+      margin-right: 0px;
+    }
+
+    &:hover {
+      border-color: $brand-primary-lighten;
+    }
+
+    &.editing {
+      border-color: $brand-primary;
+      border-width: 2px;
+    }
+  }
+
+  table {
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
 .ui-select-multiple.ui-select-bootstrap {
   padding: none;
 
