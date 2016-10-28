@@ -16,13 +16,14 @@ class User < ActiveRecord::Base
   has_many :team_members, -> (user) { where(company_id: user.company_id) }, through: :teams, source: :members
   has_many :snapshots, -> (user) { where(company_id: user.company_id) }
   has_many :activities
-  has_many :reports
   has_many :reminders
   has_many :contacts, through: :activities
 
   ROLES = %w(user admin superadmin)
 
   validates :first_name, :last_name, presence: true
+
+  scope :by_user_type, -> type_id { where(user_type: type_id) if type_id.present? }
 
   def roles=(roles)
     self.roles_mask = (roles & ROLES).map { |r| 2**ROLES.index(r) }.inject(0, :+)
@@ -52,9 +53,6 @@ class User < ActiveRecord::Base
 
   def as_json(options = {})
     super(options.merge(
-      include: {
-        reports: {}
-      },
       methods: [:name, :leader?, :leader]
     ))
   end

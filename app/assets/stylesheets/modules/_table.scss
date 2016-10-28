@@ -449,6 +449,13 @@ tr:hover {
   }
 }
 
+.seller-activities__table {
+  margin-bottom: 20px;
+  th {
+    cursor: pointer;
+  }
+}
+
 .table-report {
   padding: 0px 30px;
   table {
@@ -517,5 +524,11 @@ tr:hover {
       background-color: #3996db;
       color: #FFFFFF;
     }
+  }
+}
+
+@media screen and (max-width: 1170px) {
+  .seller-activities__table table thead th {
+    white-space: normal;
   }
 }
