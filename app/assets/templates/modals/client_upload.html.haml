@@ -17,22 +17,20 @@
         Make sure your CSV file includes these EXACT headers and columns:
 
       %ol.row.center-block
-        %li.col-xs-3.col-xs-offset-2 Name
-        %li.col-xs-3 Type
-        %li.col-xs-3 Street 1
-        %li.col-xs-3.col-xs-offset-2 Street 2
+        %li.col-xs-3.col-xs-offset-2 Client Id
+        %li.col-xs-3 Name*
+        %li.col-xs-3 Type*
+        %li.col-xs-3.col-xs-offset-2 Parent Client
+        %li.col-xs-3 Category
+        %li.col-xs-3 Subcategory
+        %li.col-xs-3.col-xs-offset-2 Address
         %li.col-xs-3 City
         %li.col-xs-3 State
         %li.col-xs-3.col-xs-offset-2 Zip
         %li.col-xs-3 Phone
-        %li.col-xs-3 Email
-        %li.col-xs-3.col-xs-offset-2 Website
-        %li.col-xs-3 Member 1
-        %li.col-xs-3 Share 1
-        %li.col-xs-3.col-xs-offset-2 Role 1
-        %li.col-xs-3 Member 2
-        %li.col-xs-3 Share 2
-        %li.col-xs-3.col-xs-offset-2 Role 2
+        %li.col-xs-3 Website
+        %li.col-xs-3.col-xs-offset-2 Replace Team (Y/N)
+        %li.col-xs-3 Teammembers (email1/%;email2/%)
 
     .well.well-lg.dark
       .row
@@ -45,7 +43,7 @@
             .text{ ng: { hide: 'progressPercentage > 0' } }
               CSV File
         .col-xs-3
-          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files' } }
+          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "uploading" } }
             Browse
 
     .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
