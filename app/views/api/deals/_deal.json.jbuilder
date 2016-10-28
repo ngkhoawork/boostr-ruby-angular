@@ -17,7 +17,7 @@ json.contacts deal.contacts, :id, :name, :position, :address, :primary_client_js
 
 json.products deal.products
 
-json.deal_products deal.deal_products do |deal_product|
+json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   json.id deal_product.id
   json.name deal_product.product.name
   json.deal_product_budgets deal_product.deal_product_budgets.order(:start_date) do |deal_product_budget|

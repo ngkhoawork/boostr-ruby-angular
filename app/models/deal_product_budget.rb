@@ -111,6 +111,7 @@ class DealProductBudget < ActiveRecord::Base
 
       if !(deal_product)
         deal_product = deal.deal_products.new(product: product)
+        deal_product_is_new = true
       else
         deal_product_budget_params[:deal_product_id] = deal_product.id
 
@@ -128,7 +129,8 @@ class DealProductBudget < ActiveRecord::Base
       end
 
       if deal_product.update_attributes(deal_product_budgets_attributes: [deal_product_budget_params])
-        deal_product.update_budget
+        deal_product.update_budget if deal_product_is_new
+        deal_product.deal.update_total_budget if deal_product_is_new
       else
         error = { row: row_number, message: deal_product.errors.full_messages }
         errors << error
