@@ -18,14 +18,6 @@
       backdrop: 'static'
       keyboard: false
 
-  $scope.showUploadRevenueModal = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/revenue_upload.html'
-      size: 'lg'
-      controller: 'RevenueUploadController'
-      backdrop: 'static'
-      keyboard: false
-
   $scope.showUploadActivityModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/activity_upload.html'
@@ -39,6 +31,14 @@
       templateUrl: 'modals/deal_upload.html'
       size: 'lg'
       controller: 'DealUploadController'
+      backdrop: 'static'
+      keyboard: false
+
+  $scope.showUploadDealProductModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_product_budget_upload.html'
+      size: 'lg'
+      controller: 'DealProductBudgetUploadController'
       backdrop: 'static'
       keyboard: false
 
@@ -60,7 +60,6 @@
       controller: 'RevenueUploadController'
       backdrop: 'static'
       keyboard: false
-
 
   $scope.exportClients = ->
     $window.open('/api/clients.csv')

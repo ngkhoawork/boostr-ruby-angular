@@ -20,7 +20,7 @@
         .panel
           .panel-body
             %h4 Clients Export
-            %h5 Click here for export Clients
+            %h5 Click here to export Clients
             %li.export
               %a{ href: '', ng: { click: 'exportClients()' } }
                 = inline_svg 'icons/import.svg'
@@ -30,7 +30,7 @@
         .panel
           .panel-body
             %h4 Deals Import
-            %h5 Select a CSV file and upload it using the client import module
+            %h5 Select a CSV file and upload it using the deal import module
             %li.import
               %a.upload{ href: '', ng: { click: 'showUploadDealsModal()' } }
                 = inline_svg 'icons/import.svg'
@@ -41,7 +41,28 @@
         .panel
           .panel-body
             %h4 Deals Export
-            %h5 Click here for export Deals
+            %h5 Click here to export Deals
+            %li.export
+              %a{ href: '', ng: { click: 'exportDeals()' } }
+                = inline_svg 'icons/import.svg'
+                Export Deals
+
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Deal Products Import
+            %h5 Select a CSV file and upload it using the deal products import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadDealProductModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Deal Products
+
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Deal Products Export
+            %h5 Please use Deals export to get Deal Products data
             %li.export
               %a{ href: '', ng: { click: 'exportDeals()' } }
                 = inline_svg 'icons/import.svg'
@@ -61,7 +82,7 @@
         .panel
           .panel-body
             %h4 Contacts Import
-            %h5 Click here for export Contacts
+            %h5 Click here to export Contacts
             -#%li.export
             -#  %a.upload{ href: '', ng: { click: 'exportContacts()' } }
             -#    = inline_svg 'icons/import.svg'
@@ -83,7 +104,7 @@
         .panel
           .panel-body
             %h4 Revenues Export
-            %h5 Click here for export Revenues
+            %h5 Click here to export Revenues
             -#%li.export
             -#  %a.upload{ href: '', ng: { click: 'exportRevenues()' } }
             -#    = inline_svg 'icons/import.svg'
@@ -105,7 +126,7 @@
         .panel
           .panel-body
             %h4 Activities Export
-            %h5 Click here for export Activities
+            %h5 Click here to export Activities
             -#%li.export
             -#  %a.upload{ href: '', ng: { click: 'exportActivities()' } }
             -#    = inline_svg 'icons/import.svg'
