@@ -1,0 +1,49 @@
+#revenue_upload_modal
+  .modal-header.text-center
+    %a.close{ ng: { click: 'cancel()' } }
+      %span{'aria-hidden' => 'true'}
+        = inline_svg 'icons/close.svg'
+    = inline_svg 'icons/csv.svg'
+    %h3.modal-title
+      %strong
+        Import Deal Products
+      %br
+      %small
+        Please export your deal products from your current system into a CSV file.
+
+  .modal-body
+    .well.transparent
+      %p.text-center
+        Make sure your CSV file includes these EXACT headers and columns:
+
+      %ol.row.center-block
+        %li.col-xs-3.col-xs-offset-2 Deal ID
+        %li.col-xs-3 Deal Name*
+        %li.col-xs-3 Deal Product*
+        %li.col-xs-3.col-xs-offset-2 Budget*
+        %li.col-xs-3
+          Period*
+          %br
+          (Month YYYY)
+
+    .well.well-lg.dark
+      .row
+        .col-xs-9
+          .progress
+            .progress-bar.progress-bar-striped{ aria: { valuemax: "100", valuemin: "0", valuenow: "{{ progressPercentage }}" }, role: "progressbar", style: "width: {{ progressPercentage }}%" }
+              %span.sr-only {{ progressPercentage }}% Complete
+              .text{ ng: { show: 'progressPercentage > 0' } }
+                {{ progressPercentage }}%
+            .text{ ng: { hide: 'progressPercentage > 0' } }
+              CSV File
+        .col-xs-3
+          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "uploading" } }
+            Browse
+
+    .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
+      %strong
+        Row {{ error.row }}
+      contains errors: {{ error.message.join(', ') }}
+
+    .modal-footer.text-center{ ng: { hide: 'progressPercentage < 100' } }
+      %button.btn.btn-primary.btn-lg{ ng: { click: 'cancel()' } } Done

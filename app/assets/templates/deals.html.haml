@@ -13,10 +13,6 @@
                   %a{ href: '', ng: { click: 'filterDeals(filter)' } }
                     {{ filter.name }}
 
-            %li.pull-right.last
-              %a.export{ href: '', ng: { click: 'exportDeals()' } }
-                = inline_svg 'icons/export.svg'
-                Export
             %li.pull-right
               %a.upload{ href: '', ng: { click: 'showModal()' } }
                 = inline_svg 'icons/add.svg'

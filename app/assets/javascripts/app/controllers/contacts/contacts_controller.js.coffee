@@ -119,16 +119,6 @@
       resolve:
         contact: ->
           {}
-  $scope.showUploadModal = ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/contact_upload.html'
-      size: 'lg'
-      controller: 'ContactsUploadController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        contact: ->
-          {}
 
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open

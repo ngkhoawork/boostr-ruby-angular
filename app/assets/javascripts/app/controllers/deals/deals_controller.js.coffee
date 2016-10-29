@@ -80,10 +80,6 @@
   $scope.go = (path) ->
     $location.path(path)
 
-  $scope.exportDeals = ->
-    $window.open('/api/deals.zip')
-    return true
-
   $scope.filterDeals = (filter) ->
     $scope.dealFilter = filter
     $rootScope.dealFilter = $scope.dealFilter

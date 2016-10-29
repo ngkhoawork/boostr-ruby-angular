@@ -1,0 +1,135 @@
+#data_import
+  .container
+    .row
+      .col-xs-6
+        %h3 Data Import
+      .col-xs-6
+        %h3 Data Export
+
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Clients Import
+            %h5 Select a CSV file and upload it using the client import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadClientModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Clients
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Clients Export
+            %h5 Click here to export Clients
+            %li.export
+              %a{ href: '', ng: { click: 'exportClients()' } }
+                = inline_svg 'icons/import.svg'
+                Export Clients
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Deals Import
+            %h5 Select a CSV file and upload it using the deal import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadDealsModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Deals
+
+
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Deals Export
+            %h5 Click here to export Deals
+            %li.export
+              %a{ href: '', ng: { click: 'exportDeals()' } }
+                = inline_svg 'icons/import.svg'
+                Export Deals
+
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Deal Products Import
+            %h5 Select a CSV file and upload it using the deal products import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadDealProductModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Deal Products
+
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Deal Products Export
+            %h5 Please use Deals export to get Deal Products data
+            %li.export
+              %a{ href: '', ng: { click: 'exportDeals()' } }
+                = inline_svg 'icons/import.svg'
+                Export Deals
+
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Contacts Import
+            %h5 Select a CSV file and upload it using the contact import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadContactsModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Contacts
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Contacts Import
+            %h5 Click here to export Contacts
+            -#%li.export
+            -#  %a.upload{ href: '', ng: { click: 'exportContacts()' } }
+            -#    = inline_svg 'icons/import.svg'
+            -#    Export Contacts
+            %li.import
+              Coming soon...
+
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Revenues Import
+            %h5 Select a CSV file and upload it using the revenues import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadRevenuesModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Revenues
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Revenues Export
+            %h5 Click here to export Revenues
+            -#%li.export
+            -#  %a.upload{ href: '', ng: { click: 'exportRevenues()' } }
+            -#    = inline_svg 'icons/import.svg'
+            -#    Export Revenues
+            %li.import
+              Coming soon...
+
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Activities Import
+            %h5 Select a CSV file and upload it using the activity import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadActivityModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Activities
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Activities Export
+            %h5 Click here to export Activities
+            -#%li.export
+            -#  %a.upload{ href: '', ng: { click: 'exportActivities()' } }
+            -#    = inline_svg 'icons/import.svg'
+            -#    Export Activities
+            %li.import
+              Coming soon...

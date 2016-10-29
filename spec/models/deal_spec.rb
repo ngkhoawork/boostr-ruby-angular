@@ -175,6 +175,230 @@ RSpec.describe Deal, type: :model do
     end
   end
 
+  describe '#import' do
+    let!(:user) { create :user }
+    let!(:another_user) { create :user }
+    let!(:company) { user.company }
+    let!(:stage_100) { create :stage, company: user.company, name: 'Won', probability: 100 }
+    let!(:advertiser) { create :client, created_by: user.id, client_type_id: advertiser_type_id(company) }
+    let!(:agency) { create :client, created_by: user.id, client_type_id: agency_type_id(company) }
+    let!(:deal_type_field) { user.company.fields.where(name: 'Deal Type').first }
+    let!(:deal_type) { create :option, field: deal_type_field, company: user.company }
+    let!(:deal_source_field) { user.company.fields.where(name: 'Deal Source').first }
+    let!(:deal_source) { create :option, field: deal_source_field, company: user.company }
+    let!(:existing_deal) { create :deal, creator: another_user, updator: another_user }
+
+    it 'creates a new deal from csv' do
+      data = build :deal_csv_data
+      expect do
+        expect(Deal.import(generate_csv(data), user)).to eq([])
+      end.to change(Deal, :count).by(1)
+
+      deal = Deal.last
+      expect(deal.name).to eq(data[:name])
+      expect(deal.advertiser.name).to eq(data[:advertiser])
+      expect(deal.agency.name).to eq(data[:agency])
+      expect(deal.creator.email).to eq(user.email)
+      expect(deal.updator.email).to eq(user.email)
+      expect(deal.start_date).to eq(Date.parse(data[:start_date]))
+      expect(deal.end_date).to eq(Date.parse(data[:end_date]))
+      expect(deal.stage.name).to eq(data[:stage])
+      expect(deal.users.map(&:email)).to eq([data[:team].split('/')[0]])
+      expect(deal.deal_members.map(&:share)).to eq([data[:team].split('/')[1].to_i])
+    end
+
+    it 'creates a deal with type and source' do
+      data = build :deal_csv_data, type: deal_type.name, source: deal_source.name
+      expect(Deal.import(generate_csv(data), user)).to eq([])
+      deal = Deal.last
+
+      expect(deal.values.where(field: deal_type_field).first.option_id).to eq deal_type.id
+      expect(deal.values.where(field: deal_source_field).first.option_id).to eq deal_source.id
+    end
+
+    it 'updates a deal by an ID match' do
+      data = build :deal_csv_data, id: existing_deal.id
+      expect do
+        expect(Deal.import(generate_csv(data), user)).to eq([])
+      end.not_to change(Deal, :count)
+      existing_deal.reload
+
+      expect(existing_deal.name).to eq(data[:name])
+      expect(existing_deal.advertiser.name).to eq(data[:advertiser])
+      expect(existing_deal.agency.name).to eq(data[:agency])
+      expect(existing_deal.creator.email).not_to eq(user.email)
+      expect(existing_deal.updator.email).to eq(user.email)
+      expect(existing_deal.start_date).to eq(Date.parse(data[:start_date]))
+      expect(existing_deal.end_date).to eq(Date.parse(data[:end_date]))
+      expect(existing_deal.stage.name).to eq(data[:stage])
+      expect(existing_deal.users.map(&:email)).to include(data[:team].split('/')[0])
+      expect(existing_deal.deal_members.map(&:share)).to include(data[:team].split('/')[1].to_i)
+    end
+
+    it 'finds a deal by name match' do
+      data = build :deal_csv_data, name: existing_deal.name
+      expect do
+        expect(Deal.import(generate_csv(data), user)).to eq([])
+      end.not_to change(Deal, :count)
+      existing_deal.reload
+
+      expect(existing_deal.updator.email).to eq(user.email)
+      expect(existing_deal.start_date).to eq(Date.parse(data[:start_date]))
+      expect(existing_deal.end_date).to eq(Date.parse(data[:end_date]))
+    end
+
+    context 'invalid data' do
+      let!(:duplicate_advertiser) { create :client, client_type_id: advertiser_type_id(user.company), company: company }
+      let!(:duplicate_advertiser2) { create :client, client_type_id: advertiser_type_id(user.company), company: company, name: duplicate_advertiser.name }
+      let!(:duplicate_agency) { create :client, client_type_id: agency_type_id(user.company), company: company }
+      let!(:duplicate_agency2) { create :client, client_type_id: agency_type_id(user.company), company: company, name: duplicate_agency.name }
+      let!(:duplicate_deal) { create :deal, name: existing_deal.name }
+
+      it 'requires ID to match' do
+        data = build :deal_csv_data, id: 0
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([row: 1, message: ["Deal ID #{data[:id]} could not be found"]])
+      end
+
+      it 'requires name to exist' do
+        data = build :deal_csv_data, name: nil
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([row: 1, message: ["Deal name can't be blank"]])
+      end
+
+      it 'requires name to match no more than one deal' do
+        data = build :deal_csv_data, name: duplicate_deal.name
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([row: 1, message: ["Deal name #{data[:name]} matched more than one deal record"]])
+      end
+
+      it 'requires advertiser to be present' do
+        data = build :deal_csv_data
+        data[:advertiser] = nil
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Advertiser can't be blank"]}])
+      end
+
+      it 'requires advertiser to exist' do
+        data = build :deal_csv_data, advertiser: 'N/A'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} could not be found"]}])
+      end
+
+      it 'requires advertiser to match no more than 1 client' do
+        data = build :deal_csv_data, advertiser: duplicate_advertiser2.name
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} matched more than one client record"]}])
+      end
+
+      it 'requires agency to exist' do
+        data = build :deal_csv_data, agency: 'N/A'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Agency #{data[:agency]} could not be found"]}])
+      end
+
+      it 'requires agency to match no more than 1 record' do
+        data = build :deal_csv_data, agency: duplicate_agency2.name
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Agency #{data[:agency]} matched more than one client record"]}])
+      end
+
+      it 'requires deal type to exist' do
+        data = build :deal_csv_data, type: 'N/A'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Deal Type #{data[:type]} could not be found"]}])
+      end
+
+      it 'requires deal source to exist' do
+        data = build :deal_csv_data, source: 'N/A'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Deal Source #{data[:source]} could not be found"]}])
+      end
+
+      it 'requires start date to be valid' do
+        data = build :deal_csv_data, start_date: 'zzz'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ['Start Date must be a valid datetime']}])
+      end
+
+      it 'requires end date to be valid' do
+        data = build :deal_csv_data, end_date: 'zzz'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ['End Date must be a valid datetime']}])
+      end
+
+      it 'requires start date to be present if end date is set' do
+        data = build :deal_csv_data, start_date: nil
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ['Start Date must be present if End Date is set']}])
+      end
+
+      it 'requires end date to be present if start date is set' do
+        data = build :deal_csv_data, end_date: nil
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ['End Date must be present if Start Date is set']}])
+      end
+
+      it 'requires start date to preceed end date' do
+        data = build :deal_csv_data, start_date: '2016-12-12 00:00:00 +0200', end_date: '2016-11-11 00:00:00 +0200'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ['Start Date must preceed End Date']}])
+      end
+
+      it 'requires stage to be present' do
+        data = build :deal_csv_data
+        data[:stage] = nil
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Stage can't be blank"]}])
+      end
+
+      it 'requires stage to exist' do
+        data = build :deal_csv_data, stage: 'N/A'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Stage #{data[:stage]} could not be found"]}])
+      end
+
+      it 'requires deal team to be present' do
+        data = build :deal_csv_data
+        data[:team] = nil
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Team can't be blank"]}])
+      end
+
+      it 'requires deal team members to exist' do
+        data = build :deal_csv_data, team: 'NA/0'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Deal Member #{data[:team].split('/')[0]} could not be found in the User list"]}])
+      end
+
+      it 'requires deal team member to have a share' do
+        data = build :deal_csv_data, team: 'NA'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Deal Member #{data[:team].split('/')[0]} does not have a share"]}])
+      end
+    end
+  end
+
   context 'after_update' do
     let(:user) { create :user }
     let(:stage) { create :stage }

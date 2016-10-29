@@ -13,10 +13,6 @@
                   %a{ href: '', ng: { click: 'filterContacts(filter)' } }
                     {{ filter.name }}
 
-            %li.pull-right.last
-              %a.upload{ href: '', ng: { click: 'showUploadModal()' } }
-                = inline_svg 'icons/import.svg'
-                Import
             %li.pull-right
               %a.upload{ href: '', ng: { click: 'showModal()' } }
                 = inline_svg 'icons/add.svg'
