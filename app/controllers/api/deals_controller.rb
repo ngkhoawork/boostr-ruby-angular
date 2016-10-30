@@ -84,7 +84,7 @@ class Api::DealsController < ApplicationController
       format.zip {
         require 'timeout'
         begin
-          status = Timeout::timeout(60) {
+          status = Timeout::timeout(120) {
             # Something that should be interrupted if it takes too much time...
             if current_user.leader?
               deals = company.deals
