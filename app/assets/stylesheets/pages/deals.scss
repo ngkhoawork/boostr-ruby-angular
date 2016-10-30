@@ -28,4 +28,17 @@
   .active {
     color: $light-grayish-blue-1;
   }
+
+  .table.table-striped {
+    tbody {
+      tr {
+        td {
+          &:first-child {
+            word-break: break-all;
+          }
+        }
+      }
+    }
+
+  }
 }
