@@ -1,6 +1,6 @@
 @app.controller 'ReportsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'User', 'ActivityType', 'TimePeriod', 'Company',
-($scope, $rootScope, $modal, $routeParams, $location, $window, User, ActivityType, TimePeriod, Company) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'User', 'ActivityType', 'TimePeriod', 'Company', 'ActivityReport',
+($scope, $rootScope, $modal, $routeParams, $location, $window, User, ActivityType, TimePeriod, Company, ActivityReport) ->
 
   $scope.users = []
   $scope.types = []
@@ -21,61 +21,58 @@
           $scope.currentTimePeriod = _.find $scope.timePeriods, (timePeriod) ->
             "#{timePeriod.id}" == $routeParams.time_period_id
         else
-          $scope.currentTimePeriod = timePeriods[0]
-        User.query().$promise.then (users) ->
-          $scope.users = users
-          Company.get().$promise.then (company) ->
-            $scope.company = company
-            $scope.initReport()
+          timePeriods.some (timePeriod) ->
+            if timePeriod.is_now
+              $scope.currentTimePeriod = timePeriod
+              return true
+            return false
+          if not $scope.currentTimePeriod
+            $scope.currentTimePeriod = timePeriods[0]
+
+        ActivityReport.get({time_period_id: $scope.currentTimePeriod.id}, (report_data) ->
+          $scope.user_activities = report_data.user_activities
+          $scope.total_activities = report_data.total_activity_report
+          $scope.initReport()
+        )
 
   $scope.initReport = ->
-    _.each $scope.users, (user) ->
-      user.currentReportValues = []
-      user.currentReportValues[0] = $scope.getReportValue(user.reports, $scope.types[0].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[1] = $scope.getReportValue(user.reports, $scope.types[1].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[2] = $scope.getReportValue(user.reports, $scope.types[2].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[3] = $scope.getReportValue(user.reports, $scope.types[3].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[4] = $scope.getReportValue(user.reports, $scope.types[4].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[5] = $scope.getReportValue(user.reports, $scope.types[5].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[6] = $scope.getReportValue(user.reports, $scope.types[6].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[7] = $scope.getReportValue(user.reports, $scope.types[7].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[8] = $scope.getReportValue(user.reports, $scope.types[8].name, $scope.currentTimePeriod.id)
-      user.currentReportValues[9] = $scope.getReportValue(user.reports, 'Total', $scope.currentTimePeriod.id)
-      user.currentReportValues[10] = $scope.getReportValue(user.reports, 'Weekly Average', $scope.currentTimePeriod.id)
+    $scope.sortType = 'total'
+    $scope.sortReverse = true
 
-    $scope.company.currentReportValues = []
-    $scope.company.currentReportValues[0] = $scope.getCoReportValue($scope.company.reports, $scope.types[0].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[1] = $scope.getCoReportValue($scope.company.reports, $scope.types[1].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[2] = $scope.getCoReportValue($scope.company.reports, $scope.types[2].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[3] = $scope.getCoReportValue($scope.company.reports, $scope.types[3].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[4] = $scope.getCoReportValue($scope.company.reports, $scope.types[4].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[5] = $scope.getCoReportValue($scope.company.reports, $scope.types[5].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[6] = $scope.getCoReportValue($scope.company.reports, $scope.types[6].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[7] = $scope.getCoReportValue($scope.company.reports, $scope.types[7].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[8] = $scope.getCoReportValue($scope.company.reports, $scope.types[8].name, $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[9] = $scope.getCoReportValue($scope.company.reports, 'Total', $scope.currentTimePeriod.id)
-    $scope.company.currentReportValues[10] = $scope.getCoReportValue($scope.company.reports, 'Weekly Average', $scope.currentTimePeriod.id)
+    $scope.userReportValues = []
+    _.each $scope.user_activities, (report) ->
+      fullReport = {}
+      _.each $scope.types, (type) ->
+        fullReport[cutSpace(type.name)] = report[type.name] || 0
+      fullReport.username = report.username
+      fullReport.total = report.total
+
+      $scope.userReportValues.push(fullReport)
+
+    _.each $scope.types, (type) ->
+      $scope.total_activities[type.name] = 0 if $scope.total_activities[type.name] == undefined
+
+  $scope.updateTimePeriod = (time_period_id) ->
+    path = []
+    path.push "/reports"
+    path.push "?time_period_id=#{time_period_id}" if time_period_id
+    $location.url(path.join(''))
+
+  cutSpace = (string) ->
+    angular.copy(string.replace(' ', ''))
+
+  $scope.changeSortType = (sortType) ->
+    sortType = cutSpace(sortType)
+    if sortType == $scope.sortType
+      $scope.sortReverse = !$scope.sortReverse
+    else
+      $scope.sortType = sortType
+      $scope.sortReverse = true
 
   $scope.$on 'updated_reports', ->
     $scope.init()
 
   $scope.init()
-
-  $scope.getReportValue = (reports, name, timePeriodId) ->
-    report = _.findWhere(reports, name: name, time_period_id: timePeriodId)
-    if (report == undefined) || report.nil?
-      return 0
-    return report.value
-
-  $scope.getCoReportValue = (reports, name, timePeriodId) ->
-    report = _.findWhere(reports, name: name, time_period_id: timePeriodId, user_id: -1)
-    if (report == undefined) || report.nil?
-      return 0
-    return report.value
-
-  $scope.updateTimePeriod = (time_period) ->
-    $scope.currentTimePeriod = time_period
-    $scope.initReport()
 
   $scope.updateYear = (year) ->
     path = []

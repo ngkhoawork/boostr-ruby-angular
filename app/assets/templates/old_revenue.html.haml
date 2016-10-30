@@ -1,0 +1,79 @@
+#revenue
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                {{ revenueFilter.name }}
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterRevenues(filter)' } }
+                    {{ filter.name }}
+            %li.pull-right.last
+              %input.search{ placeholder: 'Search', ng: { model: 'searchText' }, name: 'search' }
+            %li.pull-right
+              %a.upload{ href: '', ng: { click: 'showUploadModal()' } }
+                = inline_svg 'icons/upload.svg'
+                Upload
+  .container-fluid
+    .row
+      .col-xs-12
+        %h3
+          Revenue
+
+    .row
+      .col-md-12
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Client ID
+                %th.left Client Name
+                %th.right Order #
+                %th.right Line #
+                %th.left Ad Server
+                %th.right Price
+                %th.left Price Type
+                %th.right Quantity
+                %th.right Delivered
+                %th.right Remaining
+                %th.right Budget
+                %th.right Budget Remaining
+                %th.right Start Date
+                %th.right End Date
+                %th.left Sales Rep
+                %th.left Product
+                %th.right Date Loaded
+                %th.right Date Updated
+                %th.right Daily Run Rate
+                %th.right Days til Out of Budget
+                %th.right Amount at Risk/Upside Potential
+                %th.left Comment
+
+            %tbody
+              %tr{ ng: { repeat: 'row in revenue | filter:searchText' } }
+                %td.left {{ row.client_id }}
+                %td.left {{ row.client_name }}
+                %td.right {{ row.order_number }}
+                %td.right {{ row.line_number }}
+                %td.left {{ row.ad_server }}
+                %td.right {{ row.price/100 | currency:'$' }}
+                %td.left {{ row.price_type }}
+                %td.right {{ row.quantity | number }}
+                %td.right {{ row.delivered | number }}
+                %td.right {{ row.remaining | number }}
+                %td.right {{ row.budget | currency:'$':0 }}
+                %td.right {{ row.budget_remaining | currency:'$':0 }}
+                %td.right {{ row.start_date | date: 'shortDate' }}
+                %td.right {{ row.end_date | date: 'shortDate' }}
+                %td.left {{ row.user_name }}
+                %td.left {{ row.product_name }}
+                %td.right {{ row.created_at | date: 'shortDate' }}
+                %td.right {{ row.updated_at | date: 'shortDate' }}
+                %td.right {{ row.run_rate/100 | currency:'$':0 }}
+                %td.right {{ row.remaining_day }}
+                %td.right {{ row.balance | currency:'$':0 }}
+                %td.left {{ row.comment }}

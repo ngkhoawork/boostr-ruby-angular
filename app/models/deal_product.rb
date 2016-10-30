@@ -18,7 +18,9 @@ class DealProduct < ActiveRecord::Base
         self.update_budget
       end
     end
-    deal.update_total_budget
+    if budget_changed?
+      deal.update_total_budget
+    end
   end
 
   after_create do
@@ -26,6 +28,9 @@ class DealProduct < ActiveRecord::Base
       self.create_product_budgets
     end
   end
+
+  scope :product_type_of, -> (type) { joins(:product).where("products.revenue_type = ?", type) }
+  scope :open, ->  { where('deal_products.open IS true')  }
 
   def multiply_budget
     self.budget = budget * 100 if budget_changed?

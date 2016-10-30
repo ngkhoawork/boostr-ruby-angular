@@ -257,10 +257,10 @@
       Revenue.query(params).$promise.then (revenues) ->
         $scope.revenues = revenues
         $scope.sort.revenues = new McSort(
-          column: "client_name",
+          column: "name",
           compareFn: (column, a, b) ->
             switch (column)
-              when "client_name"
+              when "name"
                 a[column].localeCompare(b[column])
               else
                 a[column] - b[column]

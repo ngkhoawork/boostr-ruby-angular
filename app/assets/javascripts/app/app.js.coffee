@@ -45,9 +45,15 @@
     .when '/contacts',
       templateUrl: 'contacts.html'
       controller: 'ContactsController'
+    .when '/old_revenue',
+      templateUrl: 'old_revenue.html'
+      controller: 'OldRevenueController'
     .when '/revenue',
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
+    .when '/ios/:id',
+      templateUrl: 'io.html'
+      controller: 'IOController'
     .when '/activities',
       templateUrl: 'activities.html'
       controller: 'ActivitiesController'
@@ -78,9 +84,9 @@
     .when '/settings/users',
       templateUrl: 'settings/users.html'
       controller: 'SettingsUsersController'
-    .when '/settings/tools',
-      templateUrl: 'settings/tools.html'
-      controller: 'SettingsToolsController'
+    .when '/settings/data_import',
+      templateUrl: 'settings/data_import_export.html'
+      controller: 'DataImportExportController'
     .when '/settings/notifications',
       templateUrl: 'settings/notifications.html'
       controller: 'SettingsNotificationsController'

@@ -14,7 +14,7 @@ class Company < ActiveRecord::Base
   has_many :notifications
   has_many :activities
   has_many :activity_types
-  has_many :reports
+  has_many :ios
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -64,14 +64,6 @@ class Company < ActiveRecord::Base
       { name: 'Products', fields: fields.where(subject_type: 'Product')},
       { name: 'Multiple', fields: fields.where(subject_type: 'Multiple')}
     ]
-  end
-
-  def as_json(options = {})
-    super(options.merge(
-      include: {
-        reports: {}
-      }
-    ))
   end
 
   def teams_tree

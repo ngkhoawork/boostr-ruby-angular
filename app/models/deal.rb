@@ -13,6 +13,8 @@ class Deal < ActiveRecord::Base
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
 
+  has_one :io, class_name: "Io", foreign_key: 'io_number'
+
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products
@@ -48,6 +50,7 @@ class Deal < ActiveRecord::Base
     # if stage_id_changed?
     #   update_close
     # end
+    generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
   end
@@ -74,6 +77,7 @@ class Deal < ActiveRecord::Base
   scope :closed_at, -> (start_date, end_date) { where('deals.closed_at >= ? and deals.closed_at <= ?', start_date, end_date) }
   scope :started_at, -> (start_date, end_date) { where('deals.created_at >= ? and deals.created_at <= ?', start_date, end_date) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
+  scope :open_partial, -> { where('deals.open IS true') }
   scope :closed, -> { joins(:stage).where('stages.open IS false') }
   scope :active, -> { where('deals.deleted_at is NULL') }
   scope :at_percent, -> (percentage) { joins(:stage).where('stages.probability = ?', percentage) }
@@ -559,6 +563,245 @@ class Deal < ActiveRecord::Base
 
   end
 
+  def self.import(file, current_user)
+    errors = []
+
+    row_number = 0
+    deal_type_field = current_user.company.fields.where(name: 'Deal Type').first
+    deal_source_field = current_user.company.fields.where(name: 'Deal Source').first
+
+    CSV.parse(file, headers: true) do |row|
+      row_number += 1
+
+      if row[0]
+        begin
+          deal = current_user.company.deals.find(row[0].strip)
+        rescue ActiveRecord::RecordNotFound
+          error = { row: row_number, message: ["Deal ID #{row[0]} could not be found"] }
+          errors << error
+          next
+        end
+      end
+
+      if row[1].nil? || row[1].blank?
+        error = { row: row_number, message: ["Deal name can't be blank"] }
+        errors << error
+        next
+      end
+
+      if row[2].present?
+        advertiser_type_id = Client.advertiser_type_id(current_user.company)
+        advertisers = current_user.company.clients.by_type_id(advertiser_type_id).where('name ilike ?', row[2].strip)
+        if advertisers.length > 1
+          error = { row: row_number, message: ["Advertiser #{row[2]} matched more than one client record"] }
+          errors << error
+          next
+        elsif advertisers.length == 0
+          error = { row: row_number, message: ["Advertiser #{row[2]} could not be found"] }
+          errors << error
+          next
+        else
+          advertiser = advertisers.first
+        end
+      else
+        error = { row: row_number, message: ["Advertiser can't be blank"] }
+        errors << error
+        next
+      end
+
+      if row[3].present?
+        agency_type_id = Client.agency_type_id(current_user.company)
+        agencies = current_user.company.clients.by_type_id(agency_type_id).where('name ilike ?', row[3].strip)
+        if agencies.length > 1
+          error = { row: row_number, message: ["Agency #{row[3]} matched more than one client record"] }
+          errors << error
+          next
+        elsif agencies.length == 0
+          error = { row: row_number, message: ["Agency #{row[3]} could not be found"] }
+          errors << error
+          next
+        else
+          agency = agencies.first
+        end
+      end
+
+      if row[4].present?
+        deal_type = deal_type_field.options.where('name ilike ?', row[4].strip).first
+        unless deal_type
+          error = { row: row_number, message: ["Deal Type #{row[4]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        deal_type = nil
+      end
+
+      if row[5].present?
+        deal_source = deal_source_field.options.where('name ilike ?', row[5].strip).first
+        unless deal_source
+          error = { row: row_number, message: ["Deal Source #{row[5]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        deal_source = nil
+      end
+
+      start_date = nil
+      if row[6].present?
+        if !(row[7].present?)
+          error = {row: row_number, message: ['End Date must be present if Start Date is set'] }
+          errors << error
+          next
+        end
+        begin
+          start_date = DateTime.parse(row[6])
+        rescue ArgumentError
+          error = {row: row_number, message: ['Start Date must be a valid datetime'] }
+          errors << error
+          next
+        end
+      end
+
+      end_date = nil
+      if row[7].present?
+        if !(row[6].present?)
+          error = {row: row_number, message: ['Start Date must be present if End Date is set'] }
+          errors << error
+          next
+        end
+        begin
+          end_date = DateTime.parse(row[7])
+        rescue ArgumentError
+          error = {row: row_number, message: ['End Date must be a valid datetime'] }
+          errors << error
+          next
+        end
+      end
+
+      if (end_date && start_date) && start_date > end_date
+        error = {row: row_number, message: ['Start Date must preceed End Date'] }
+        errors << error
+        next
+      end
+
+      if row[8].present?
+        stage = current_user.company.stages.where('name ilike ?', row[8].strip).first
+        unless stage
+          error = { row: row_number, message: ["Stage #{row[8]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        error = { row: row_number, message: ["Stage can't be blank"] }
+        errors << error
+        next
+      end
+
+      deal_member_list = []
+      if row[9].present?
+        deal_members = row[9].split(';').map{|el| el.split('/') }
+
+        deal_member_list_error = false
+
+        deal_members.each do |deal_member|
+          if deal_member[1].nil?
+            error = { row: row_number, message: ["Deal Member #{deal_member[0]} does not have a share"] }
+            errors << error
+            deal_member_list_error = true
+            break
+          elsif user = current_user.company.users.where('email ilike ?', deal_member[0]).first
+            deal_member_list << user
+          else
+            error = { row: row_number, message: ["Deal Member #{deal_member[0]} could not be found in the User list"] }
+            errors << error
+            deal_member_list_error = true
+            break
+          end
+        end
+
+        if deal_member_list_error
+          next
+        end
+      else
+        error = { row: row_number, message: ["Team can't be blank"] }
+        errors << error
+        next
+      end
+
+      deal_params = {
+        name: row[1].strip,
+        advertiser: advertiser,
+        agency: agency,
+        start_date: start_date,
+        end_date: end_date,
+        stage: stage,
+        updated_by: current_user.id
+      }
+
+      type_value_params = {
+        value_type: 'Option',
+        subject_type: 'Deal',
+        field_id: deal_type_field.id,
+        option_id: (deal_type ? deal_type.id : nil),
+        company_id: current_user.company.id
+      }
+
+      source_value_params = {
+        value_type: 'Option',
+        subject_type: 'Deal',
+        field_id: deal_source_field.id,
+        option_id: (deal_source ? deal_source.id : nil),
+        company_id: current_user.company.id
+      }
+
+      if !(deal.present?)
+        deals = current_user.company.deals.where('name ilike ?', row[1].strip)
+        if deals.length > 1
+          error = { row: row_number, message: ["Deal name #{row[1]} matched more than one deal record"] }
+          errors << error
+          next
+        end
+        deal = deals.first
+      end
+
+      if deal.present?
+        type_value_params[:subject_id] = deal.id
+        source_value_params[:subject_id] = deal.id
+
+        if deal_type_value = deal.values.where(field_id: deal_type_field).first
+          type_value_params[:id] = deal_type_value.id
+        end
+
+        if deal_source_value = deal.values.where(field_id: deal_source_field).first
+          source_value_params[:id] = deal_source_value.id
+        end
+      else
+        deal = current_user.company.deals.new(created_by: current_user.id)
+        deal_is_new = true
+      end
+
+      deal_params[:values_attributes] = [
+        type_value_params,
+        source_value_params
+      ]
+
+      if deal.update_attributes(deal_params)
+        deal.deal_members.delete_all if deal_is_new
+        deal_member_list.each_with_index do |user, index|
+          deal_member = deal.deal_members.find_or_initialize_by(user: user)
+          deal_member.update(share: deal_members[index][1].to_i)
+        end
+      else
+        error = { row: row_number, message: deal.errors.full_messages }
+        errors << error
+        next
+      end
+    end
+
+    errors
+  end
+
   def update_stage
     self.previous_stage_id = self.stage_id_was
     self.stage_updated_at = updated_at
@@ -580,7 +823,18 @@ class Deal < ActiveRecord::Base
 
   def update_close
     self.closed_at = updated_at if !stage.open?
+    should_open = stage.open?
     if !stage.open? && stage.probability == 100
+      self.deal_products.each do |deal_product|
+        if deal_product.product.revenue_type != "Content-Fee"
+          should_open = true
+          deal_product.open = true
+        else
+          deal_product.open = false
+        end
+        deal_product.save
+      end
+
       notification = company.notifications.find_by_name('Closed Won')
       if !notification.nil? && !notification.recipients.nil?
         recipients = notification.recipients.split(',').map(&:strip)
@@ -590,6 +844,10 @@ class Deal < ActiveRecord::Base
         end
       end
     else
+      self.deal_products.each do |deal_product|
+        deal_product.open = stage.open
+        deal_product.save
+      end
       if !self.closed_at.nil? && stage.open?
         self.closed_at = nil
         if !self.fields.nil? && !self.values.nil?
@@ -607,6 +865,79 @@ class Deal < ActiveRecord::Base
         end
       end      
     end
+    self.open = should_open.to_s
+  end
+
+  def set_deal_status
+    should_open = stage.open?
+    if !stage.open? && stage.probability == 100
+      deal_products.each do |deal_product|
+        if deal_product.product.revenue_type != "Content-Fee"
+          should_open = true
+          deal_product.open = true
+        else
+          deal_product.open = false
+        end
+        deal_product.save
+      end
+    else
+      deal_products.each do |deal_product|
+        deal_product.open = stage.open
+        deal_product.save
+      end
+    end
+    self.open = should_open
+    self.save
+  end
+
+  def generate_io
+    if !stage.open? && stage.probability == 100
+      io_param = {
+          advertiser_id: self.advertiser_id,
+          agency_id: self.agency_id,
+          budget: self.budget / 100,
+          start_date: self.start_date,
+          end_date: self.end_date,
+          name: self.name,
+          io_number: self.id,
+          external_io_number: nil,
+          company_id: self.company_id,
+          deal_id: self.id
+      }
+      if io = Io.create!(io_param)
+        self.deal_members.each do |deal_member|
+          if deal_member.user.present?
+            io_member_param = {
+                io_id: io.id,
+                user_id: deal_member.user_id,
+                share: deal_member.share,
+                from_date: self.start_date,
+                to_date: self.end_date,
+            }
+            IoMember.create!(io_member_param)
+          end
+        end
+
+        self.deal_products.each do |deal_product|
+          if deal_product.product.revenue_type == "Content-Fee"
+            content_fee_param = {
+                io_id: io.id,
+                product_id: deal_product.product.id,
+                budget: deal_product.budget / 100
+            }
+            content_fee = ContentFee.create(content_fee_param)
+            deal_product.open = false
+            deal_product.save
+          end
+        end
+      end
+    else
+      if self.io.present?
+        self.io.destroy
+        self.deal_products.product_type_of("Content-Fee").update_all(open: true)
+      end
+    end
+
   end
 
   def wday_in_stage

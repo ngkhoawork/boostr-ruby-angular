@@ -21,7 +21,7 @@ class Contact < ActiveRecord::Base
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
   scope :unassigned, -> user_id { where(created_by: user_id).where('id NOT IN (SELECT DISTINCT(contact_id) from client_contacts)') }
   scope :by_email, -> email, company_id {
-    Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email=? and contacts.company_id=?", email, company_id)
+    Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email ilike ? and contacts.company_id=?", email, company_id)
   }
   scope :total_count, -> { except(:order, :limit, :offset).count.to_s }
   scope :by_client_ids, -> limit, offset, ids { Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).limit(limit).offset(offset).distinct }
@@ -198,9 +198,9 @@ class Contact < ActiveRecord::Base
   def email_unique?
     if address && address.email
       if id
-        contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=? and contacts.id != ?", company_id, address.email, id)
+        contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email ilike ? and contacts.id != ?", company_id, address.email, id)
       else
-        contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email=?", company_id, address.email)
+        contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email ilike ?", company_id, address.email)
       end
 
       if contact.present?

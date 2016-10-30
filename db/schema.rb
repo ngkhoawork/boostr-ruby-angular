@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161011190234) do
+ActiveRecord::Schema.define(version: 20161025081130) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -178,6 +178,27 @@ ActiveRecord::Schema.define(version: 20161011190234) do
 
   add_index "contacts", ["deleted_at"], name: "index_contacts_on_deleted_at", using: :btree
 
+  create_table "content_fee_product_budgets", force: :cascade do |t|
+    t.integer  "content_fee_id"
+    t.integer  "budget"
+    t.date     "start_date"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.date     "end_date"
+  end
+
+  add_index "content_fee_product_budgets", ["content_fee_id"], name: "index_content_fee_product_budgets_on_content_fee_id", using: :btree
+
+  create_table "content_fees", force: :cascade do |t|
+    t.integer  "io_id"
+    t.integer  "product_id"
+    t.integer  "budget"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "content_fees", ["io_id"], name: "index_content_fees_on_io_id", using: :btree
+
   create_table "deal_contacts", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "contact_id"
@@ -245,8 +266,8 @@ ActiveRecord::Schema.define(version: 20161011190234) do
     t.date     "end_date"
     t.string   "name"
     t.integer  "budget",              limit: 8
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
     t.integer  "stage_id"
     t.string   "deal_type"
     t.string   "source_type"
@@ -259,6 +280,7 @@ ActiveRecord::Schema.define(version: 20161011190234) do
     t.integer  "updated_by"
     t.datetime "activity_updated_at"
     t.integer  "previous_stage_id"
+    t.boolean  "open",                          default: true
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
@@ -278,6 +300,37 @@ ActiveRecord::Schema.define(version: 20161011190234) do
   add_index "fields", ["company_id"], name: "index_fields_on_company_id", using: :btree
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
+
+  create_table "io_members", force: :cascade do |t|
+    t.integer  "io_id"
+    t.integer  "user_id"
+    t.integer  "share"
+    t.date     "from_date"
+    t.date     "to_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "io_members", ["io_id"], name: "index_io_members_on_io_id", using: :btree
+  add_index "io_members", ["user_id"], name: "index_io_members_on_user_id", using: :btree
+
+  create_table "ios", force: :cascade do |t|
+    t.integer  "advertiser_id"
+    t.integer  "agency_id"
+    t.integer  "budget"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.integer  "external_io_number"
+    t.integer  "io_number"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+    t.string   "name"
+    t.integer  "company_id"
+    t.integer  "deal_id"
+  end
+
+  add_index "ios", ["advertiser_id"], name: "index_ios_on_advertiser_id", using: :btree
+  add_index "ios", ["agency_id"], name: "index_ios_on_agency_id", using: :btree
 
   create_table "notifications", force: :cascade do |t|
     t.integer  "company_id"
@@ -310,7 +363,7 @@ ActiveRecord::Schema.define(version: 20161011190234) do
     t.integer  "company_id"
     t.string   "product_line"
     t.string   "family"
-    t.string   "pricing_type"
+    t.string   "revenue_type"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end
@@ -343,16 +396,6 @@ ActiveRecord::Schema.define(version: 20161011190234) do
   end
 
   add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
-
-  create_table "reports", force: :cascade do |t|
-    t.integer  "company_id"
-    t.integer  "user_id"
-    t.integer  "time_period_id"
-    t.string   "name"
-    t.integer  "value"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-  end
 
   create_table "revenues", force: :cascade do |t|
     t.integer  "order_number"
@@ -523,7 +566,13 @@ ActiveRecord::Schema.define(version: 20161011190234) do
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
   add_foreign_key "clients", "clients", column: "parent_client_id"
+  add_foreign_key "content_fee_product_budgets", "content_fees"
+  add_foreign_key "content_fees", "ios"
   add_foreign_key "deal_logs", "deals"
   add_foreign_key "deal_product_budgets", "deal_products"
+  add_foreign_key "io_members", "ios"
+  add_foreign_key "io_members", "users"
+  add_foreign_key "ios", "companies"
+  add_foreign_key "ios", "deals"
   add_foreign_key "users", "teams"
 end

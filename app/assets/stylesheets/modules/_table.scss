@@ -232,6 +232,7 @@
         line-height: 28px;
 
         &:first-child {
+          word-break: break-all;
           padding-top: 8px;
           padding-left: 30px;
           color: $brand-tertiary;
@@ -313,6 +314,44 @@
         border-bottom: 1px solid $very-light-gray;
         th {
           color: #67747E !important;
+          text-transform: capitalize;
+          font-size: 15px;
+          font-family: $font-family-medium;
+          border: none !important;
+
+          a {
+            color: #67747E !important;
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        color: $gray-base;
+        font-family: $font-family-medium;
+        font-size: 13px;
+        max-height: 43px !important;
+        height: 43px !important;
+
+        td {
+          border: none;
+        }
+      }
+    }
+  }
+
+  &.orange-table {
+    thead {
+      background-color: $white;
+      color: $brand-primary;
+
+      tr {
+        max-height: 55px !important;
+        height: 55px !important;
+        border-bottom: 1px solid $very-light-gray;
+        th {
+          color: $brand-primary !important;
           text-transform: capitalize;
           font-size: 15px;
           font-family: $font-family-medium;
@@ -449,6 +488,13 @@ tr:hover {
   }
 }
 
+.seller-activities__table {
+  margin-bottom: 20px;
+  th {
+    cursor: pointer;
+  }
+}
+
 .table-report {
   padding: 0px 30px;
   table {
@@ -517,5 +563,11 @@ tr:hover {
       background-color: #3996db;
       color: #FFFFFF;
     }
+  }
+}
+
+@media screen and (max-width: 1170px) {
+  .seller-activities__table table thead th {
+    white-space: normal;
   }
 }

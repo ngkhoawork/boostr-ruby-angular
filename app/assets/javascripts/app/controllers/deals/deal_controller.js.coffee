@@ -8,6 +8,7 @@
   $scope.contacts = []
   $scope.errors = {}
   $scope.contactSearchText = ""
+  $anchorScroll()
 
 
   ###*

@@ -17,5 +17,31 @@
         color: $brand-primary;
       }
     }
+
+    table {
+      tr {
+
+        border: none !important;
+
+        th {
+          font-size: 13px !important;
+          padding: 0 0 0 0 !important;
+        }
+        th:first-child {
+          padding-left: 0px !important;
+
+        }
+
+        td {
+          padding: 0 0 0 0 !important;
+          font-size: 13px !important;
+        }
+
+        td:first-child {
+          padding-left: 0px !important;
+          padding-top: 0px !important;
+        }
+      }
+    }
   }
 }

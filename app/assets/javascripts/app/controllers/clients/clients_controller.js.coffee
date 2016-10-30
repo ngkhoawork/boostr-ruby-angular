@@ -133,6 +133,17 @@
         client: ->
           {}
 
+  $scope.showUploadModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/client_upload.html'
+      size: 'lg'
+      controller: 'ClientsUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        client: ->
+          {}
+
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
@@ -247,10 +258,6 @@
 
   $scope.go = (path) ->
     $location.path(path)
-
-  $scope.exportClients = ->
-    $window.open('/api/clients.csv')
-    return true
 
   $scope.filterClients = (filter) ->
     $scope.clientFilter = filter

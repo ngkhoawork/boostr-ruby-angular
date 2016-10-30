@@ -84,4 +84,11 @@ module Helpers
     client_owner_role_option = create :option, company: company, field: client_role_field(company), name: name
     build :value, company: company, field: client_role_field(company), option: client_owner_role_option
   end
+
+  def generate_csv(data)
+    CSV.generate do |csv|
+      csv << data.keys
+      csv << data.values
+    end
+  end
 end

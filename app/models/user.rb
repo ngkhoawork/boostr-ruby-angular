@@ -10,19 +10,22 @@ class User < ActiveRecord::Base
   has_many :clients, -> (user) { where(company_id: user.company_id) }, through: :client_members
   has_many :revenues, -> (user) { where(company_id: user.company_id) }, through: :clients
   has_many :deal_members
+  has_many :io_members
   has_many :deals, -> (user) { where(company_id: user.company_id) }, through: :deal_members
+  has_many :ios, -> (user) { where(company_id: user.company_id) }, through: :io_members
   has_many :quotas, -> (user) { where(company_id: user.company_id) }
   has_many :teams, -> (user) { where(company_id: user.company_id) }, foreign_key: :leader_id
   has_many :team_members, -> (user) { where(company_id: user.company_id) }, through: :teams, source: :members
   has_many :snapshots, -> (user) { where(company_id: user.company_id) }
   has_many :activities
-  has_many :reports
   has_many :reminders
   has_many :contacts, through: :activities
 
   ROLES = %w(user admin superadmin)
 
   validates :first_name, :last_name, presence: true
+
+  scope :by_user_type, -> type_id { where(user_type: type_id) if type_id.present? }
 
   def roles=(roles)
     self.roles_mask = (roles & ROLES).map { |r| 2**ROLES.index(r) }.inject(0, :+)
@@ -52,9 +55,6 @@ class User < ActiveRecord::Base
 
   def as_json(options = {})
     super(options.merge(
-      include: {
-        reports: {}
-      },
       methods: [:name, :leader?, :leader]
     ))
   end
@@ -72,7 +72,44 @@ class User < ActiveRecord::Base
   end
 
   def all_deals_for_time_period(start_date, end_date)
-    deals.open.for_time_period(start_date, end_date)
+    deals.where(open: true).for_time_period(start_date, end_date)
+  end
+
+  def all_ios_for_time_period(start_date, end_date)
+    ios.for_time_period(start_date, end_date)
+  end
+
+  def crevenues(start_date, end_date)
+    return @crevenues if defined?(@crevenues)
+    @crevenues = []
+    sum_budget = 0
+    sum_period_budget = 0
+    split_budget = 0
+    split_period_budget = 0
+    self.all_ios_for_time_period(start_date, end_date).each do |io|
+      io_member = io.io_members.find_by(user_id: self.id)
+      share = io_member.share
+      io.content_fees.each do |content_fee|
+        content_fee.content_fee_product_budgets.each do |content_fee_product_budget|
+          sum_budget += content_fee_product_budget.budget
+          if (start_date <= content_fee_product_budget.end_date && end_date >= content_fee_product_budget.start_date)
+            in_period_days = [[end_date, content_fee_product_budget.end_date].min - [start_date, content_fee_product_budget.start_date].max + 1, 0].max
+            in_period_effective_days = [[end_date, content_fee_product_budget.end_date, io_member.to_date].min - [start_date, content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
+            sum_period_budget += content_fee_product_budget.daily_budget * in_period_days
+            split_period_budget += content_fee_product_budget.daily_budget * in_period_effective_days * share / 100
+          end
+          effective_days = [[content_fee_product_budget.end_date, io_member.to_date].min - [content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
+          split_budget += content_fee_product_budget.daily_budget * effective_days * share / 100
+        end
+      end
+    end
+    @crevenues = [{
+        name: self.name,
+        sum_budget: sum_budget,
+        sum_period_budget: sum_period_budget,
+        split_budget: split_budget,
+        split_period_budget: split_period_budget
+    }]
   end
 
   def all_revenues_for_time_period(start_date, end_date)

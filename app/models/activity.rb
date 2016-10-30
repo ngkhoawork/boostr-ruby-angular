@@ -25,22 +25,158 @@ class Activity < ActiveRecord::Base
       client = company.clients.find(client_id)
       client.update_attribute(:activity_updated_at, happened_at)
     end
-    user = company.users.find(user_id)
-    time_period = company.time_periods.where("start_date <= ? and end_date >= ?", happened_at, happened_at).first
+  end
 
-    if !time_period.nil?
-      report = user.reports.find_or_initialize_by(name: activity_type.name, company_id: company.id, time_period_id: time_period.id)
-      report.update_attributes(value: report.value.nil? ? 1:(report.value+1))
+  def self.import(file, current_user)
+    errors = []
 
-      report_total = user.reports.find_or_initialize_by(name: 'Total', company_id: company.id, time_period_id: time_period.id)
-      report_total.update_attributes(value: user.reports.where("time_period_id = ? and company_id = ? and name != ?", time_period.id, company.id, 'Total').sum(:value))
+    row_number = 0
+    CSV.parse(file, headers: true) do |row|
+      row_number += 1
 
-      report_co = company.reports.find_or_initialize_by(name: activity_type.name, company_id: company.id, time_period_id: time_period.id, user_id: -1)
-      report_co.update_attributes(value: company.reports.where("name = ? and time_period_id =? and user_id != ?", activity_type.name, time_period.id, -1).sum(:value))
+      if row[1].present?
+        begin
+          happened_at = DateTime.parse(row[1])
+        rescue ArgumentError
+          error = {row: row_number, message: ['Date must be a valid datetime'] }
+          errors << error
+          next
+        end
+      else
+        error = { row: row_number, message: ['Date is empty'] }
+        errors << error
+        next
+      end
 
-      report_co_total = company.reports.find_or_initialize_by(name: 'Total', company_id: company.id, time_period_id: time_period.id, user_id: -1)
-      report_co_total.update_attributes(value: company.reports.where("name = ? and time_period_id =? and user_id != ?", 'Total', time_period.id, -1).sum(:value))
+      if row[2].nil? || row[2].blank?
+        error = { row: row_number, message: ['Creator is empty'] }
+        errors << error
+        next
+      else
+        creator = current_user.company.users.where('email ilike ?', row[2]).first
+        unless creator
+          error = { row: row_number, message: ["User #{row[2]} could not be found"] }
+          errors << error
+          next
+        end
+      end
+
+      if row[3].present?
+        advertiser_type_id = Client.advertiser_type_id(current_user.company)
+        advertisers = current_user.company.clients.by_type_id(advertiser_type_id).where('name ilike ?', row[3].strip)
+        if advertisers.length > 1
+          error = { row: row_number, message: ["Advertiser #{row[3]} matched more than one client record"] }
+          errors << error
+          next
+        elsif advertisers.length == 0
+          error = { row: row_number, message: ["Advertiser #{row[3]} could not be found"] }
+          errors << error
+          next
+        else
+          advertiser = advertisers.first
+        end
+      end
+
+      if row[4].present?
+        agency_type_id = Client.agency_type_id(current_user.company)
+        agencies = current_user.company.clients.by_type_id(agency_type_id).where('name ilike ?', row[4].strip)
+        if agencies.length > 1
+          error = { row: row_number, message: ["Agency #{row[4]} matched more than one client record"] }
+          errors << error
+          next
+        elsif agencies.length == 0
+          error = { row: row_number, message: ["Agency #{row[4]} could not be found"] }
+          errors << error
+          next
+        else
+          agency = agencies.first
+        end
+      end
+
+      if row[5].present?
+        deals = current_user.company.deals.where('name ilike ?', row[5].strip)
+        if deals.length > 1
+          error = { row: row_number, message: ["Deal #{row[5]} matched more than one deal record"] }
+          errors << error
+          next
+        elsif deals.length == 0
+          error = { row: row_number, message: ["Deal #{row[5]} could not be found"] }
+          errors << error
+          next
+        else
+          deal = deals.first
+        end
+      end
+
+      if row[6].present?
+        type = current_user.company.activity_types.where('name ilike ?', row[6].strip).first
+        unless type
+          error = { row: row_number, message: ["Activity type #{row[6]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        error = { row: row_number, message: ['Activity type is empty'] }
+        errors << error
+        next
+      end
+
+      contact_list = []
+      if row[8].present?
+        contact_emails = row[8].split(';')
+
+        contact_list_error = false
+        contact_emails.each do |email|
+          contact = Contact.by_email(email, current_user.company_id).first
+          if contact
+            contact_list << contact
+          else
+            error = { row: row_number, message: ["Activity contact #{email} could not be found in the contacts list"] }
+            errors << error
+            contact_list_error = true
+            break
+          end
+        end
+
+        if contact_list_error
+          next
+        end
+      end
+
+      activity_params = {
+        user: creator,
+        creator: creator,
+        updator: creator,
+        deal: deal,
+        client: advertiser,
+        agency: agency,
+        activity_type_name: type.name,
+        activity_type_id: type.id,
+        happened_at: happened_at,
+        comment: row[7] ? row[7].strip : nil
+      }
+
+      if row[0]
+        begin
+          activity = current_user.company.activities.find(row[0])
+        rescue ActiveRecord::RecordNotFound
+        end
+      end
+
+      if !(activity.present?)
+        activity = current_user.company.activities.new
+      end
+
+      if activity.update_attributes(activity_params)
+        activity.contacts << contact_list
+      else
+        error = { row: row_number, message: activity.errors.full_messages }
+        errors << error
+        next
+      end
     end
+
+    errors
   end
 
   def as_json(options = {})

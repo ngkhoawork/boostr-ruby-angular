@@ -84,7 +84,7 @@ class Api::DealsController < ApplicationController
       format.zip {
         require 'timeout'
         begin
-          status = Timeout::timeout(60) {
+          status = Timeout::timeout(120) {
             # Something that should be interrupted if it takes too much time...
             if current_user.leader?
               deals = company.deals
@@ -136,15 +136,26 @@ class Api::DealsController < ApplicationController
   end
 
   def create
-    @deal = company.deals.new(deal_params)
-
-    deal.created_by = current_user.id
-    deal.updated_by = current_user.id
-
-    if deal.save
-      render json: deal, status: :created
+    if params[:file].present?
+      require 'timeout'
+      begin
+        csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
+        errors = Deal.import(csv_file, current_user)
+        render json: errors
+      rescue Timeout::Error
+        return
+      end
     else
-      render json: { errors: deal.errors.messages }, status: :unprocessable_entity
+      @deal = company.deals.new(deal_params)
+
+      deal.created_by = current_user.id
+      deal.updated_by = current_user.id
+
+      if deal.save
+        render json: deal, status: :created
+      else
+        render json: { errors: deal.errors.messages }, status: :unprocessable_entity
+      end
     end
   end
 

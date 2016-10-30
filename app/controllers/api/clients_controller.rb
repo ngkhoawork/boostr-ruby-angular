@@ -24,14 +24,21 @@ class Api::ClientsController < ApplicationController
       }
 
       format.csv {
-        if current_user.leader?
-          ordered_clients = company.clients
-        elsif team.present?
-          ordered_clients = team.clients
-        else
-          ordered_clients = current_user.clients
+        require 'timeout'
+        begin
+          status = Timeout::timeout(120) {
+            if current_user.leader?
+              ordered_clients = company.clients
+            elsif team.present?
+              ordered_clients = team.clients
+            else
+              ordered_clients = current_user.clients
+            end
+            send_data ordered_clients.to_csv, filename: "clients-#{Date.today}.csv"
+          }
+        rescue Timeout::Error
+          return
         end
-        send_data ordered_clients.to_csv, filename: "clients-#{Date.today}.csv" 
       }
     end
   end
@@ -42,9 +49,16 @@ class Api::ClientsController < ApplicationController
 
   def create
     if params[:file].present?
-      csv_file = IO.read(params[:file].tempfile.path)
-      clients = Client.import(csv_file, current_user)
-      render json: clients
+      require 'timeout'
+      begin
+        status = Timeout::timeout(120) {
+          csv_file = IO.read(params[:file].tempfile.path)
+          clients = Client.import(csv_file, current_user)
+          render json: clients
+        }
+      rescue Timeout::Error
+        return
+      end
     else
       client = company.clients.new(client_params)
       client.created_by = current_user.id

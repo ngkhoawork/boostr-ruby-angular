@@ -37,11 +37,22 @@ class ForecastMember
       parts << deal.stage.id
       parts << deal.stage.updated_at
     end
+
     # Revenue
     clients.each do |client|
       parts << client.id
       parts << client.updated_at
     end
+
+    ios.each do |io|
+      parts << io.id
+      parts << io.updated_at
+      io.content_fee_product_budgets.each do |content_fee_product_budget|
+        parts << content_fee_product_budget.id
+        parts << content_fee_product_budget.updated_at
+      end
+    end
+
     # Week over week
     snapshots.each do |snapshot|
       parts << snapshot.id
@@ -71,9 +82,12 @@ class ForecastMember
 
     @weighted_pipeline = open_deals.sum do |deal|
       deal_total = 0
-      deal.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-        deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+      deal.deal_products.open.each do |deal_product|
+        deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+          deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+        end
       end
+
       deal_total * (deal.stage.probability / 100.0)
     end
   end
@@ -90,8 +104,10 @@ class ForecastMember
 
     open_deals.each do |deal|
       deal_total = 0
-      deal.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-        deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+      deal.deal_products.open.each do |deal_product|
+        deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+          deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+        end
       end
       @weighted_pipeline_by_stage[deal.stage.id] ||= 0
       @weighted_pipeline_by_stage[deal.stage.id] += deal_total * (deal.stage.probability / 100.0)
@@ -111,8 +127,10 @@ class ForecastMember
 
     open_deals.each do |deal|
       deal_total = 0
-      deal.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-        deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+      deal.deal_products.open.each do |deal_product|
+        deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+          deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+        end
       end
       @unweighted_pipeline_by_stage[deal.stage.id] ||= 0
       @unweighted_pipeline_by_stage[deal.stage.id] += deal_total
@@ -123,13 +141,16 @@ class ForecastMember
   def revenue
     return @revenue if defined?(@revenue)
 
-    client_shares = {}
-    member.client_members.each do |mem|
-      client_shares[mem.client_id] = mem.share
-    end
-
-    @revenue = revenues.sum do |rev|
-      rev.daily_budget * number_of_days(rev) * (client_shares[rev.client_id]/100.0)
+    @revenue = ios.sum do |io|
+      io_member = io.io_members.find_by(user_id: member.id)
+      share = io_member.share
+      total_budget = 0
+      io.content_fees.each do |content_fee|
+        content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+          total_budget += content_fee_product_budget.daily_budget * effective_days(content_fee_product_budget, io_member) * (share/100.0)
+        end
+      end
+      total_budget
     end
   end
 
@@ -198,12 +219,16 @@ class ForecastMember
     @revenues ||= member.company.revenues.where(client_id: client_ids).for_time_period(start_date, end_date).to_a
   end
 
+  def ios
+    @ios ||= member.ios.for_time_period(start_date, end_date).to_a
+  end
+
   def clients
     self.member.clients
   end
 
   def open_deals
-    @open_deals ||= member.deals.open.for_time_period(start_date, end_date).includes(:deal_product_budgets, :stage).to_a
+    @open_deals ||= member.deals.where(open: true).for_time_period(start_date, end_date).includes(:deal_product_budgets, :stage).to_a
   end
 
   def complete_deals
@@ -217,7 +242,13 @@ class ForecastMember
   def number_of_days(comparer)
     from = [start_date, comparer.start_date].max
     to = [end_date, comparer.end_date].min
-    (to.to_date - from.to_date) + 1
+    [(to.to_date - from.to_date) + 1, 0].max
+  end
+
+  def effective_days(comparer, effecter)
+    from = [start_date, comparer.start_date, effecter.from_date].max
+    to = [end_date, comparer.end_date, effecter.to_date].min
+    [(to.to_date - from.to_date) + 1, 0].max
   end
 
   def snapshots
