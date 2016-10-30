@@ -26,7 +26,7 @@ class Api::ClientsController < ApplicationController
       format.csv {
         require 'timeout'
         begin
-          status = Timeout::timeout(60) {
+          status = Timeout::timeout(120) {
             if current_user.leader?
               ordered_clients = company.clients
             elsif team.present?
@@ -51,7 +51,7 @@ class Api::ClientsController < ApplicationController
     if params[:file].present?
       require 'timeout'
       begin
-        status = Timeout::timeout(60) {
+        status = Timeout::timeout(120) {
           csv_file = IO.read(params[:file].tempfile.path)
           clients = Client.import(csv_file, current_user)
           render json: clients
