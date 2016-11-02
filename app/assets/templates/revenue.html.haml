@@ -51,6 +51,9 @@
           %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param != ''"}}
             %thead
               %tr
+                %th.left Ext IO #
+                %th.left Advertiser
+                %th.left Agency
                 %th.right Daily Rate
                 %th.right {{"#DaysNoBud"}}
                 %th.right {{ revenueFilter.param == "risk" ? "Risk Amt" : (revenueFilter.param == "upside" ? "Upside Amt" : "Balance") }}
@@ -74,6 +77,12 @@
 
             %tbody
               %tr{ ng: { repeat: 'displayLineItem in revenue | filter:searchText'} }
+                %td.left
+                  {{ displayLineItem.io.external_io_number }}
+                %td.left
+                  {{ displayLineItem.io.advertiser ? displayLineItem.io.advertiser.name : "" }}
+                %td.left
+                  {{ displayLineItem.io.agency ? displayLineItem.io.agency.name : "" }}
                 %td.right
                   {{ displayLineItem.daily_run_rate | currency:'$':0 }}
                 %td.right
