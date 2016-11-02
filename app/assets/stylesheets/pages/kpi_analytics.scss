@@ -1,0 +1,23 @@
+#kpi-analytics {
+  .legend {
+    border-bottom: 1px solid #F0F3F7;
+  }
+
+  .title {
+    margin-bottom: 25px;
+  }
+
+  .kpi-block {
+    &__filter{
+      display: inline-block;
+      list-style: none;
+    }
+
+    &__title {
+      font-weight: 300;
+      margin-top: 0;
+      margin-left: -5px;
+    }
+  }
+}
+

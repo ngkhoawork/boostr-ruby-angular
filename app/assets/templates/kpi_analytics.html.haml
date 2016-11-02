@@ -1,0 +1,93 @@
+#kpi-analytics
+  .container
+    .row
+      .col-xs-12
+        %h3.title KPI`s Dashboard
+
+    .row.well.kpi-block
+      .row.legend
+        .col-xs-3
+          %h4.kpi-block__title Win Rate by Seller
+        .col-xs-9
+          %span Filter by
+          %ul.kpi-block__filter
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                Team
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in teamFilters', class: '{active: filter.name == clientFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                    {{ filter.name }}
+          %ul.kpi-block__filter
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                Seller
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in sellerFilters', class: '{active: filter.name == clientFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                    {{ filter.name }}
+          %ul.kpi-block__filter
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                Time period
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in timeFilters', class: '{active: filter.name == clientFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                    {{ filter.name }}
+          %ul.kpi-block__filter
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                Product
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in productFilters', class: '{active: filter.name == clientFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                    {{ filter.name }}
+          .pull-right
+            %button.btn.btn-primary Month
+            %button.btn.btn-primary Quarter
+
+      .row
+        .col-xs-12
+          grafic
+      .row
+        .col-md-12.table-report.text-center
+          %table.table.table-hover
+            %thead
+              %tr
+                %th.left{ 'ng-click': 'changeSortType("username")'} 1
+                %th 1
+                %th 2
+                %th 3
+                %th 4
+                %th.text--bold{ 'ng-click': 'changeSortType("total")'}
+                  Total
+
+            %tbody
+              %tr
+                %td.left
+                %td 1
+                %td 2
+                %td 3
+                %td 4
+                %td 5
+              %tr
+                %td.left
+                %td 1
+                %td 2
+                %td 3
+                %td 4
+                %td 5
+
+              %tr.text--bold
+                %td.left Total
+                %td 1
+                %td 2
+                %td 3
+                %td 4
+                %td 5
+
+
