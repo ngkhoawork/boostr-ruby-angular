@@ -3,9 +3,23 @@ class Api::IosController < ApplicationController
 
   def index
     if params[:filter] == 'upside'
-      render json: display_line_items.where("balance > 0")
+      render json: display_line_items.where("balance > 0").as_json( include: {
+          io: {
+              include: {
+                  advertiser: {},
+                  agency: {}
+              }
+          }
+      })
     elsif params[:filter] == 'risk'
-      render json: display_line_items.where("balance < 0")
+      render json: display_line_items.where("balance < 0").as_json( include: {
+          io: {
+              include: {
+                  advertiser: {},
+                  agency: {}
+              }
+          }
+      })
     elsif params[:filter] == 'programmatic'
       render json: []
     else
