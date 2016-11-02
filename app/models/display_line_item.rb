@@ -25,4 +25,16 @@ class DisplayLineItem < ActiveRecord::Base
     self.save if should_save
   end
 
+  def merge_recursively(a, b)
+    a.merge(b) {|key, a_item, b_item| merge_recursively(a_item, b_item) }
+  end
+  def as_json(options = {})
+    super(merge_recursively(options,
+        include: {
+          product: {}
+        }
+      )
+    )
+  end
+
 end
