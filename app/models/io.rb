@@ -7,6 +7,7 @@ class Io < ActiveRecord::Base
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
   has_many :display_line_items, dependent: :destroy
+  has_many :print_items, dependent: :destroy
 
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
 

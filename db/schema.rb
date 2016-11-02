@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161102082934) do
+ActiveRecord::Schema.define(version: 20161102181106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -388,6 +388,20 @@ ActiveRecord::Schema.define(version: 20161102082934) do
   add_index "options", ["company_id", "field_id", "position", "deleted_at"], name: "options_index_composite", using: :btree
   add_index "options", ["option_id"], name: "index_options_on_option_id", using: :btree
 
+  create_table "print_items", force: :cascade do |t|
+    t.integer  "io_id"
+    t.string   "ad_unit"
+    t.string   "ad_type"
+    t.integer  "rate"
+    t.string   "market"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "print_items", ["io_id"], name: "index_print_items_on_io_id", using: :btree
+
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -606,5 +620,6 @@ ActiveRecord::Schema.define(version: 20161102082934) do
   add_foreign_key "io_members", "users"
   add_foreign_key "ios", "companies"
   add_foreign_key "ios", "deals"
+  add_foreign_key "print_items", "ios"
   add_foreign_key "users", "teams"
 end

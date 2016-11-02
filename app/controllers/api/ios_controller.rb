@@ -6,6 +6,8 @@ class Api::IosController < ApplicationController
       render json: display_line_items.where("balance > 0")
     elsif params[:filter] == 'risk'
       render json: display_line_items.where("balance < 0")
+    elsif params[:filter] == 'programmatic'
+      render json: []
     else
       render json: ios
     end
@@ -31,7 +33,8 @@ class Api::IosController < ApplicationController
         methods: [
           :product
         ]
-      }
+      },
+      print_items: {}
     } )
   end
 
@@ -55,7 +58,8 @@ class Api::IosController < ApplicationController
           methods: [
             :product
           ]
-        }
+        },
+        print_items: {}
       } )
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
