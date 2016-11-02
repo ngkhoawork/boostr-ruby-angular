@@ -19,6 +19,11 @@ class Api::IosController < ApplicationController
         methods: [
           :product
         ]
+      },
+      display_line_items: {
+        methods: [
+          :product
+        ]
       }
     } )
   end
@@ -26,19 +31,24 @@ class Api::IosController < ApplicationController
   def update
     if io.update_attributes(io_params)
       render json: io.as_json( include: {
-          io_members: {
-              methods: [
-                  :name
-              ]
+        io_members: {
+          methods: [
+            :name
+          ]
+        },
+        content_fees: {
+          include: {
+            content_fee_product_budgets: {}
           },
-          content_fees: {
-              include: {
-                  content_fee_product_budgets: {}
-              },
-              methods: [
-                  :product
-              ]
-          }
+          methods: [
+            :product
+          ]
+        },
+        display_line_items: {
+          methods: [
+            :product
+          ]
+        }
       } )
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity

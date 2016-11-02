@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161025081130) do
+ActiveRecord::Schema.define(version: 20161102082934) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -284,6 +284,36 @@ ActiveRecord::Schema.define(version: 20161025081130) do
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
+
+  create_table "display_line_items", force: :cascade do |t|
+    t.integer  "io_id"
+    t.integer  "line_number"
+    t.string   "ad_server"
+    t.integer  "quantity"
+    t.integer  "budget",                     limit: 8
+    t.string   "pricing_type"
+    t.integer  "product_id"
+    t.integer  "budget_delivered",           limit: 8
+    t.integer  "budget_remaining",           limit: 8
+    t.integer  "quantity_delivered"
+    t.integer  "quantity_remaining"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.integer  "daily_run_rate"
+    t.integer  "num_days_til_out_of_budget", limit: 8
+    t.integer  "quantity_delivered_3p"
+    t.integer  "quantity_remaining_3p"
+    t.integer  "budget_delivered_3p",        limit: 8
+    t.integer  "budget_remaining_3p",        limit: 8
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+    t.integer  "price",                      limit: 8
+    t.integer  "balance",                    limit: 8
+    t.datetime "last_alert_at"
+  end
+
+  add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
+  add_index "display_line_items", ["product_id"], name: "index_display_line_items_on_product_id", using: :btree
 
   create_table "fields", force: :cascade do |t|
     t.integer  "company_id"
@@ -570,6 +600,8 @@ ActiveRecord::Schema.define(version: 20161025081130) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "deal_logs", "deals"
   add_foreign_key "deal_product_budgets", "deal_products"
+  add_foreign_key "display_line_items", "ios"
+  add_foreign_key "display_line_items", "products"
   add_foreign_key "io_members", "ios"
   add_foreign_key "io_members", "users"
   add_foreign_key "ios", "companies"
