@@ -20,6 +20,7 @@ class User < ActiveRecord::Base
   has_many :activities
   has_many :reminders
   has_many :contacts, through: :activities
+  has_many :display_line_items, through: :ios
 
   ROLES = %w(user admin superadmin)
 
@@ -77,6 +78,38 @@ class User < ActiveRecord::Base
 
   def all_ios_for_time_period(start_date, end_date)
     ios.for_time_period(start_date, end_date)
+  end
+
+  def set_alert(should_save=false)
+    member_ids = [self.id]
+
+    if self.leader?
+      self.teams.each do |t|
+        member_ids += t.all_members.collect{|m| m.id}
+        member_ids += t.all_leaders.collect{|m| m.id}
+      end
+    end
+
+    member_ids = member_ids.uniq
+
+    io_ids = Io.joins(:io_members).where("io_members.user_id in (?)", member_ids).all.collect{|io| io.id}.uniq
+
+    DisplayLineItem.where("io_id in (?)", io_ids).each do |display|
+      if display.balance > 0
+        self.pos_balance_cnt += 1
+        self.pos_balance += display.balance
+      elsif display.balance < 0
+        self.neg_balance_cnt += 1
+        self.neg_balance += display.balance
+      end
+    end
+
+    self.pos_balance_l_cnt = self.pos_balance_cnt
+    self.pos_balance_l = self.pos_balance
+    self.neg_balance_l_cnt = self.neg_balance_cnt
+    self.neg_balance_l = self.neg_balance
+    self.last_alert_at = DateTime.now
+    self.save if should_save
   end
 
   def crevenues(start_date, end_date)

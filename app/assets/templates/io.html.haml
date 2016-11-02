@@ -40,38 +40,6 @@
               {{currentIO.start_date | date : 'M/d/yyyy'}}
     .row.io-content
       .col-xs-12
-        %h3
-          Line Items - content & fees
-        .table-wrapper
-          %table.table.table-striped.orange-table.sec
-            %thead
-              %tr
-                %th.left Product
-                %th.left Start Date
-                %th.left End Date
-                %th.left Total Budget
-                %th.left{ ng: { repeat: "range in dateRange" } }
-                  {{ range | date: 'MMM yyyy' : '+0000'}}
-            %tbody
-              %tr{ ng: { repeat: "content_fee in currentIO.content_fees"} }
-                %td
-                  {{ content_fee.product.name }}
-                %td
-                  {{ currentIO.start_date | date: 'M/d/yyyy' }}
-                %td
-                  {{ currentIO.end_date | date: 'M/d/yyyy' }}
-                %td
-                  %span{ 'e-name': '{{ content_fee.id }}', ng: { if: "currentUser.user_type == 5" }, editable: { text: 'content_fee.budget' }, onaftersave: 'updateContentFee(content_fee)' }
-                    {{ content_fee.budget | currency:'$':0 }}
-                  %span{ ng: { if: "currentUser.user_type != 5" } }
-                    {{ content_fee.budget | currency:'$':0 }}
-                %td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
-                  %span{ 'e-name': '{{ product_budget.id }}', ng: { if: "currentUser.user_type == 5" }, editable: { text: 'product_budget.budget' }, onaftersave: 'updateContentFee(content_fee)' }
-                    {{ product_budget.budget | currency:'$':0 }}
-                  %span{ ng: { if: "currentUser.user_type != 5" } }
-                    {{ product_budget.budget | currency:'$':0 }}
-    .row.io-content
-      .col-xs-12
         #members.section{ ng: { show: "currentUser.user_type == 5" } }
           %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
             %a.add-member{ href: '', dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } }
@@ -116,3 +84,139 @@
                 %td.action-td{ng:{if: "currentUser.user_type == 5"}}
                   %a.delete-member{ href: '', ng: { click: 'deleteMember(io_member)' } }
                     = inline_svg 'icons/trash.svg'
+    .row.io-content
+      .col-xs-12
+        %h3
+          Line Items - content & fees
+        .table-wrapper
+          %table.table.table-striped.orange-table.sec
+            %thead
+              %tr
+                %th.left Product
+                %th.left Start Date
+                %th.left End Date
+                %th.left Total Budget
+                %th.left{ ng: { repeat: "range in dateRange" } }
+                  {{ range | date: 'MMM yyyy' : '+0000'}}
+            %tbody
+              %tr{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0', repeat: "content_fee in currentIO.content_fees"} }
+                %td
+                  {{ content_fee.product.name }}
+                %td
+                  {{ currentIO.start_date | date: 'M/d/yyyy' }}
+                %td
+                  {{ currentIO.end_date | date: 'M/d/yyyy' }}
+                %td
+                  %span{ 'e-name': '{{ content_fee.id }}', ng: { if: "currentUser.user_type == 5" }, editable: { text: 'content_fee.budget' }, onaftersave: 'updateContentFee(content_fee)' }
+                    {{ content_fee.budget | currency:'$':0 }}
+                  %span{ ng: { if: "currentUser.user_type != 5" } }
+                    {{ content_fee.budget | currency:'$':0 }}
+                %td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
+                  %span{ 'e-name': '{{ product_budget.id }}', ng: { if: "currentUser.user_type == 5" }, editable: { text: 'product_budget.budget' }, onaftersave: 'updateContentFee(content_fee)' }
+                    {{ product_budget.budget | currency:'$':0 }}
+                  %span{ ng: { if: "currentUser.user_type != 5" } }
+                    {{ product_budget.budget | currency:'$':0 }}
+              %tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
+                %td.center{ 'colspan': '{{4+dateRange.length}}' }
+                  No data available
+    .row.io-content
+      .col-xs-12
+        %h3
+          Line Items - display
+        .table-wrapper
+          %table.table.table-striped.orange-table.sec
+            %thead
+              %tr
+                %th.left Line #
+                %th.left AdServer
+                %th.left Start Date
+                %th.left End Date
+                %th.left Product
+                %th.right Qty
+                %th.right Price
+                %th.left Price Type
+                %th.right Budget
+                %th.right Budg Del
+                %th.right Budg Rem
+                %th.right Qty Del
+                %th.right Qty Rem
+                %th.right 3PQtyDel
+                %th.right 3PQtyRem
+                %th.right 3PBudDel
+                %th.right 3PBudRem
+                %th.right Daily Rate
+                %th.right {{"#DaysNoBud"}}
+            %tbody
+              %tr{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items"} }
+                %td.left
+                  {{ displayLineItem.line_number }}
+                %td.left
+                  {{ displayLineItem.ad_server }}
+                %td.left
+                  {{ displayLineItem.start_date | date: 'M/d/yyyy' }}
+                %td.left
+                  {{ displayLineItem.end_date | date: 'M/d/yyyy' }}
+                %td.left
+                  {{ displayLineItem.product.name }}
+                %td.right
+                  {{ displayLineItem.quantity }}
+                %td.right
+                  {{ displayLineItem.price | currency:'$':0 }}
+                %td.left
+                  {{ displayLineItem.pricing_type }}
+                %td.right
+                  {{ displayLineItem.budget | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.budget_delivered | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.budget_remaining | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.quantity_delivered }}
+                %td.right
+                  {{ displayLineItem.quantity_remaining }}
+                %td.right
+                  {{ displayLineItem.budget_delivered_3p | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.budget_remaining_3p | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.quantity_delivered_3p | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.quantity_remaining_3p | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.daily_run_rate | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.num_days_til_out_of_budget }}
+              %tr{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
+                %td.center{ 'colspan': '19' }
+                  No data available
+    .row.io-content
+      .col-xs-12
+        %h3
+          Line Items - print
+        .table-wrapper
+          %table.table.table-striped.orange-table.sec
+            %thead
+              %tr
+                %th.left Ad Unit
+                %th.left Type
+                %th.right Rate
+                %th.left Market
+                %th.left Start Date
+                %th.left End Date
+            %tbody
+              %tr{ ng: { if: 'currentIO.print_items && currentIO.print_items.length > 0', repeat: "printItem in currentIO.print_items"} }
+                %td.left
+                  {{ printItem.ad_unit }}
+                %td.left
+                  {{ printItem.ad_type }}
+                %td.right
+                  {{ printItem.rate | currency:'$':0 }}
+                %td.left
+                  {{ printItem.market }}
+                %td.left
+                  {{ printItem.start_date | date: 'M/d/yyyy' }}
+                %td.left
+                  {{ printItem.end_date | date: 'M/d/yyyy' }}
+              %tr{ ng: { if: '!currentIO.print_items || currentIO.print_items.length == 0' } }
+                %td.center{ 'colspan': '{{4+2}}' }
+                  No data available
