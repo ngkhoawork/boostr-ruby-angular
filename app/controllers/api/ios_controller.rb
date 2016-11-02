@@ -2,7 +2,16 @@ class Api::IosController < ApplicationController
   respond_to :json
 
   def index
-    render json: ios
+    if params[:filter] == 'upside'
+      render json: display_line_items.where("balance > 0")
+    elsif params[:filter] == 'risk'
+      render json: display_line_items.where("balance < 0")
+    elsif params[:filter] == 'programmatic'
+      render json: []
+    else
+      render json: ios
+    end
+
   end
 
   def show
@@ -19,26 +28,38 @@ class Api::IosController < ApplicationController
         methods: [
           :product
         ]
-      }
+      },
+      display_line_items: {
+        methods: [
+          :product
+        ]
+      },
+      print_items: {}
     } )
   end
 
   def update
     if io.update_attributes(io_params)
       render json: io.as_json( include: {
-          io_members: {
-              methods: [
-                  :name
-              ]
+        io_members: {
+          methods: [
+            :name
+          ]
+        },
+        content_fees: {
+          include: {
+            content_fee_product_budgets: {}
           },
-          content_fees: {
-              include: {
-                  content_fee_product_budgets: {}
-              },
-              methods: [
-                  :product
-              ]
-          }
+          methods: [
+            :product
+          ]
+        },
+        display_line_items: {
+          methods: [
+            :product
+          ]
+        },
+        print_items: {}
       } )
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
@@ -57,6 +78,16 @@ class Api::IosController < ApplicationController
 
   def io
     @io ||= ios.find(params[:id])
+  end
+
+  def display_line_items
+    member_ids = [current_user.id]
+    if current_user.leader?
+      member_ids += current_user.teams.first.all_members.collect{|m| m.id}
+      member_ids += current_user.teams.first.all_leaders.collect{|m| m.id}
+    end
+    io_ids = Io.joins(:io_members).where("io_members.user_id in (?)", member_ids.uniq).all.collect{|io| io.id}.uniq
+    DisplayLineItem.where("io_id in (?)", io_ids)
   end
 
   def company

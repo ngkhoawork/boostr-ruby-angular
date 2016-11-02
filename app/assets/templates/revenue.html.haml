@@ -15,14 +15,11 @@
       .col-md-12
         .navbar.navbar-white
           %ul.nav.navbar-nav
-            %li{ ng: { class: "{ active: isActiveTab('ios') }" } }
-              %a{ href: "javascript:void(0);", ng: { click: 'setActiveTab("ios")'} }
-                IOs
-            %li{ ng: { class: "{ active: isActiveTab('programmatic') }" } }
-              %a{ href: "javascript:void(0);", ng: { click: 'setActiveTab("programmatic")'} }
-                Programmatic
+            %li{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}' } }
+              %a{ href: "javascript:void(0);", ng: { click: 'filterRevenues(filter)'} }
+                {{ filter.name }}
         .table-wrapper
-          %table.table.table-hover.table-striped
+          %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param == ''"}}
             %thead
               %tr
                 %th.left IO #
@@ -51,4 +48,70 @@
                     {{ row.deal.name }}
                 %td.right
                   %i.fa.fa-angle-right
+          %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param != ''"}}
+            %thead
+              %tr
+                %th.right Daily Rate
+                %th.right {{"#DaysNoBud"}}
+                %th.right {{ revenueFilter.param == "risk" ? "Risk Amt" : (revenueFilter.param == "upside" ? "Upside Amt" : "Balance") }}
+                %th.left Line #
+                %th.left AdServer
+                %th.left Start Date
+                %th.left End Date
+                %th.left Product
+                %th.right Qty
+                %th.right Price
+                %th.left Price Type
+                %th.right Budget
+                %th.right Budg Del
+                %th.right Budg Rem
+                %th.right Qty Del
+                %th.right Qty Rem
+                %th.right 3PQtyDel
+                %th.right 3PQtyRem
+                %th.right 3PBudDel
+                %th.right 3PBudRem
+
+            %tbody
+              %tr{ ng: { repeat: 'displayLineItem in revenue | filter:searchText'} }
+                %td.right
+                  {{ displayLineItem.daily_run_rate | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.num_days_til_out_of_budget }}
+                %td.right
+                  {{ displayLineItem.balance | currency:'$':0 }}
+                %td.left
+                  {{ displayLineItem.line_number }}
+                %td.left
+                  {{ displayLineItem.ad_server }}
+                %td.left
+                  {{ displayLineItem.start_date | date: 'M/d/yyyy' }}
+                %td.left
+                  {{ displayLineItem.end_date | date: 'M/d/yyyy' }}
+                %td.left
+                  {{ displayLineItem.product.name }}
+                %td.right
+                  {{ displayLineItem.quantity }}
+                %td.right
+                  {{ displayLineItem.price | currency:'$':0 }}
+                %td.left
+                  {{ displayLineItem.pricing_type }}
+                %td.right
+                  {{ displayLineItem.budget | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.budget_delivered | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.budget_remaining | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.quantity_delivered }}
+                %td.right
+                  {{ displayLineItem.quantity_remaining }}
+                %td.right
+                  {{ displayLineItem.budget_delivered_3p | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.budget_remaining_3p | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.quantity_delivered_3p | currency:'$':0 }}
+                %td.right
+                  {{ displayLineItem.quantity_remaining_3p | currency:'$':0 }}
 
