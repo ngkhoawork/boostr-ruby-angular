@@ -98,7 +98,7 @@ class User < ActiveRecord::Base
       if display.balance > 0
         self.pos_balance_cnt += 1
         self.pos_balance += display.balance
-      elsif r.balance < 0
+      elsif display.balance < 0
         self.neg_balance_cnt += 1
         self.neg_balance += display.balance
       end
