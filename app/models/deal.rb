@@ -509,10 +509,13 @@ class Deal < ActiveRecord::Base
     deals_csv = CSV.generate do |csv|
       csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]
       all.each do |deal|
-        agency_name = !deal.agency.nil? ? deal.agency.name : nil
+        agency_name = deal.agency.present? ? deal.agency.name : nil
+        advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
+        stage_name = deal.stage.present? ? deal.stage.name : nil
+        stage_probability = deal.stage.present? ? deal.stage.probability : nil
         budget = !deal.budget.nil? ? deal.budget/100.0 : nil
         member = deal.users.collect{|user| user.name}.join(";")
-        csv << [deal.id, deal.name, deal.advertiser.name, agency_name, member, budget, deal.stage.name, deal.stage.probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
+        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
       end
     end
 
