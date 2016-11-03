@@ -66,7 +66,7 @@
     return true
 
   $scope.exportDeals = ->
-    $window.open('/api/deals.zip')
+    $window.open('/api/deals.csv')
     return true
 
 #  $scope.exportContacts = ->
