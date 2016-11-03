@@ -567,8 +567,9 @@ class Deal < ActiveRecord::Base
     errors = []
 
     row_number = 0
-    deal_type_field = current_user.company.fields.where(name: 'Deal Type').first
-    deal_source_field = current_user.company.fields.where(name: 'Deal Source').first
+    deal_type_field = current_user.company.fields.find_by_name('Deal Type')
+    deal_source_field = current_user.company.fields.find_by_name('Deal Source')
+    close_reason_field = current_user.company.fields.find_by_name("Close Reason")
 
     CSV.parse(file, headers: true) do |row|
       row_number += 1
@@ -729,6 +730,61 @@ class Deal < ActiveRecord::Base
         next
       end
 
+      if row[10].present?
+        begin
+          created_at = DateTime.parse(row[10])
+        rescue ArgumentError
+          error = {row: row_number, message: ['Deal Creation Date must be a valid datetime'] }
+          errors << error
+          next
+        end
+      end
+
+      if row[11].present?
+        begin
+          closed_date = DateTime.parse(row[11])
+        rescue ArgumentError
+          error = {row: row_number, message: ['Deal Close Date must be a valid datetime'] }
+          errors << error
+          next
+        end
+      else
+        closed_date = nil
+      end
+
+      if row[12].present?
+        close_reason = close_reason_field.options.where('name ilike ?', row[12].strip).first
+        unless close_reason
+          error = { row: row_number, message: ["Close Reason #{row[12]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        close_reason = nil
+      end
+
+      deal_contact_list = []
+      if row[13].present?
+        deal_contacts = row[13].split(';')
+
+        deal_contact_list_error = false
+
+        deal_contacts.each do |deal_contact|
+          if contact = Contact.by_email(deal_contact, current_user.company_id).first
+            deal_contact_list << contact
+          else
+            error = { row: row_number, message: ["Contact #{deal_contact} could not be found"] }
+            errors << error
+            deal_contact_list_error = true
+            break
+          end
+        end
+
+        if deal_contact_list_error
+          next
+        end
+      end
+
       deal_params = {
         name: row[1].strip,
         advertiser: advertiser,
@@ -736,8 +792,11 @@ class Deal < ActiveRecord::Base
         start_date: start_date,
         end_date: end_date,
         stage: stage,
-        updated_by: current_user.id
+        updated_by: current_user.id,
+        closed_at: closed_date
       }
+
+      deal_params[:created_at] = created_at if created_at
 
       type_value_params = {
         value_type: 'Option',
@@ -752,6 +811,14 @@ class Deal < ActiveRecord::Base
         subject_type: 'Deal',
         field_id: deal_source_field.id,
         option_id: (deal_source ? deal_source.id : nil),
+        company_id: current_user.company.id
+      }
+
+      close_reason_params = {
+        value_type: 'Option',
+        subject_type: 'Deal',
+        field_id: close_reason_field.id,
+        option_id: (close_reason ? close_reason.id : nil),
         company_id: current_user.company.id
       }
 
@@ -783,7 +850,8 @@ class Deal < ActiveRecord::Base
 
       deal_params[:values_attributes] = [
         type_value_params,
-        source_value_params
+        source_value_params,
+        close_reason_params
       ]
 
       if deal.update_attributes(deal_params)
@@ -791,6 +859,9 @@ class Deal < ActiveRecord::Base
         deal_member_list.each_with_index do |user, index|
           deal_member = deal.deal_members.find_or_initialize_by(user: user)
           deal_member.update(share: deal_members[index][1].to_i)
+        end
+        deal_contact_list.each do |contact|
+          deal.deal_contacts.find_or_create_by(contact: contact)
         end
       else
         error = { row: row_number, message: deal.errors.full_messages }
