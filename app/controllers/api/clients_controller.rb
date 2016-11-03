@@ -52,7 +52,7 @@ class Api::ClientsController < ApplicationController
       require 'timeout'
       begin
         status = Timeout::timeout(120) {
-          csv_file = IO.read(params[:file].tempfile.path)
+          csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
           clients = Client.import(csv_file, current_user)
           render json: clients
         }
