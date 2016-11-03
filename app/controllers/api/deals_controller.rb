@@ -81,7 +81,7 @@ class Api::DealsController < ApplicationController
           render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage).distinct , each_serializer: DealIndexSerializer).to_json
         end
       }
-      format.zip {
+      format.csv {
         require 'timeout'
         begin
           status = Timeout::timeout(120) {
@@ -93,7 +93,7 @@ class Api::DealsController < ApplicationController
             else
               deals = current_user.deals
             end
-            send_data deals.to_zip, filename: "deals-#{Date.today}.zip"
+            send_data deals.to_csv, filename: "deals-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
