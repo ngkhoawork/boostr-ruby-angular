@@ -8,9 +8,15 @@
   }
 
   .kpi-block {
+    margin-bottom: 50px;
+
     &__filter{
       display: inline-block;
       list-style: none;
+    }
+
+    .buttons__filter {
+      margin-top: -10px;
     }
 
     &__title {

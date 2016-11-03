@@ -10,11 +10,12 @@
       $scope.sellerFilters = [
         { name: 'seller1', param: 'seller1' }
         { name: 'seller2', param: 'seller2' }
+        { name: 'seller3', param: 'seller3' }
       ]
 
       $scope.timeFilters = [
-        { name: 'time1', param: 'time1' }
-        { name: 'time2', param: 'time2' }
+        { name: 'period1', param: 'period1' }
+        { name: 'period1', param: 'period1' }
       ]
 
       $scope.productFilters = [
@@ -66,9 +67,9 @@
 
           /* Random Data Generator (took from nvd3.org) */
           function generateData() {
-              return stream_layers(3,10+Math.random()*200,.1).map(function(data, i) {
+              return stream_layers(3,30+Math.random()/10,.1).map(function(data, i) {
                   return {
-                      key: 'Stream' + i,
+                      key: 'Seller ' + (i+1),
                       values: data
                   };
               });
@@ -88,7 +89,7 @@
               }
               return d3.range(n).map(function() {
                   var a = [], i;
-                  for (i = 0; i < m; i++) a[i] = o + o * Math.random();
+                  for (i = 0; i < m; i++) a[i] = o + o * 1;
                   for (i = 0; i < 5; i++) bump(a);
                   return a.map(stream_index);
               });
@@ -98,7 +99,7 @@
           function stream_waves(n, m) {
               return d3.range(n).map(function(i) {
                   return d3.range(m).map(function(j) {
-                      var x = 20 * j / m - i / 3;
+                      var x = 20 * j / m - i ;
                       return 2 * x * Math.exp(-.5 * x);
                   }).map(stream_index);
               });

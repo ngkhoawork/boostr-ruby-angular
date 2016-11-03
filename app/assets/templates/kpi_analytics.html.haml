@@ -46,9 +46,9 @@
                 %li{ ng: { repeat: 'filter in productFilters', class: '{active: filter.name == clientFilter.name}' } }
                   %a{ href: '', ng: { click: 'filterClients(filter)' } }
                     {{ filter.name }}
-          .pull-right
+          .pull-right.buttons__filter
             %button.btn.btn-primary Month
-            %button.btn.btn-primary Quarter
+            %button.btn Quarter
 
       .row
         .col-xs-12.schedule
@@ -58,36 +58,48 @@
           %table.table.table-hover
             %thead
               %tr
-                %th.left{ 'ng-click': 'changeSortType("username")'} 1
-                %th 1
-                %th 2
-                %th 3
-                %th 4
+                %th Team
+                %th Seller
+                %th Quarter 1
+                %th Quarter 2
+                %th Quarter 3
+                %th Quarter 4
                 %th.text--bold{ 'ng-click': 'changeSortType("total")'}
-                  Total
+                  Date
 
             %tbody
               %tr
-                %td.left
-                %td 1
-                %td 2
-                %td 3
-                %td 4
-                %td 5
+                %td East
+                %td Seller 1
+                %td 42%
+                %td 50%
+                %td 10%
+                %td 50%
+                %td 11/1/16
               %tr
-                %td.left
-                %td 1
-                %td 2
-                %td 3
-                %td 4
-                %td 5
+                %td West
+                %td Seller 2
+                %td 42%
+                %td 4%
+                %td 10%
+                %td 50%
+                %td 11/1/16
+              %tr
+                %td West
+                %td Seller 3
+                %td 42%
+                %td 52%
+                %td 10%
+                %td 50%
+                %td 11/1/16
 
-              %tr.text--bold
-                %td.left Total
-                %td 1
-                %td 2
-                %td 3
-                %td 4
-                %td 5
+              %tr
+                %td
+                %td Average
+                %td.text--bold 52%
+                %td.text--bold 10%
+                %td.text--bold 50%
+                %td.text--bold 4%
+                %td
 
 
