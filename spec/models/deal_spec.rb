@@ -179,14 +179,18 @@ RSpec.describe Deal, type: :model do
     let!(:user) { create :user }
     let!(:another_user) { create :user }
     let!(:company) { user.company }
-    let!(:stage_100) { create :stage, company: user.company, name: 'Won', probability: 100 }
+    let!(:stage_100) { create :stage, company: user.company, name: 'Won', probability: 100, open: false }
+    let!(:stage_100) { create :stage, company: user.company, name: 'Lost', probability: 0, open: false }
     let!(:advertiser) { create :client, created_by: user.id, client_type_id: advertiser_type_id(company) }
     let!(:agency) { create :client, created_by: user.id, client_type_id: agency_type_id(company) }
-    let!(:deal_type_field) { user.company.fields.where(name: 'Deal Type').first }
+    let!(:deal_type_field) { user.company.fields.find_by_name('Deal Type') }
     let!(:deal_type) { create :option, field: deal_type_field, company: user.company }
-    let!(:deal_source_field) { user.company.fields.where(name: 'Deal Source').first }
+    let!(:deal_source_field) { user.company.fields.find_by_name('Deal Source') }
     let!(:deal_source) { create :option, field: deal_source_field, company: user.company }
+    let!(:close_reason_field) { user.company.fields.find_by_name('Close Reason') }
+    let!(:close_reason) { create :option, field: close_reason_field, company: user.company }
     let!(:existing_deal) { create :deal, creator: another_user, updator: another_user }
+    let!(:contacts) { create_list :contact, 4, company: company }
 
     it 'creates a new deal from csv' do
       data = build :deal_csv_data
@@ -205,6 +209,9 @@ RSpec.describe Deal, type: :model do
       expect(deal.stage.name).to eq(data[:stage])
       expect(deal.users.map(&:email)).to eq([data[:team].split('/')[0]])
       expect(deal.deal_members.map(&:share)).to eq([data[:team].split('/')[1].to_i])
+      expect(deal.created_at).to eq(data[:created])
+      expect(deal.closed_at).to eq(Date.parse(data[:closed_date]))
+      expect(deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 
     it 'creates a deal with type and source' do
@@ -233,6 +240,39 @@ RSpec.describe Deal, type: :model do
       expect(existing_deal.stage.name).to eq(data[:stage])
       expect(existing_deal.users.map(&:email)).to include(data[:team].split('/')[0])
       expect(existing_deal.deal_members.map(&:share)).to include(data[:team].split('/')[1].to_i)
+      expect(existing_deal.created_at).to eq(data[:created])
+      expect(existing_deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
+    end
+
+    it 'sets closed_at date for existing deals' do
+      data = build :deal_csv_data, id: existing_deal.id, stage: existing_deal.stage.name
+      expect do
+        expect(Deal.import(generate_csv(data), user)).to eq([])
+      end.not_to change(Deal, :count)
+      existing_deal.reload
+      expect(existing_deal.closed_at).to eq(Date.parse(data[:closed_date]))
+    end
+
+    it 'allows creation date to be nil' do
+      data = build :deal_csv_data, id: existing_deal.id, created: nil
+      expect do
+        expect(Deal.import(generate_csv(data), user)).to eq([])
+      end.not_to change(Deal, :count)
+    end
+
+    it 'allows close date to be nil' do
+      data = build :deal_csv_data, id: existing_deal.id, closed_date: nil
+      expect do
+        expect(Deal.import(generate_csv(data), user)).to eq([])
+      end.not_to change(Deal, :count)
+    end
+
+    it 'creates a deal with close reason' do
+      data = build :deal_csv_data, close_reason: close_reason.name
+      expect(Deal.import(generate_csv(data), user)).to eq([])
+      deal = Deal.last
+
+      expect(deal.values.where(field: close_reason_field).first.option_id).to eq close_reason.id
     end
 
     it 'finds a deal by name match' do
@@ -395,6 +435,34 @@ RSpec.describe Deal, type: :model do
         expect(
           Deal.import(generate_csv(data), user)
         ).to eq([{row: 1, message: ["Deal Member #{data[:team].split('/')[0]} does not have a share"]}])
+      end
+
+      it 'requires created date to be a valid date' do
+        data = build :deal_csv_data, created: 'NA'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Deal Creation Date must be a valid datetime"]}])
+      end
+
+      it 'requires closed date to be a valid date' do
+        data = build :deal_csv_data, closed_date: 'NA'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Deal Close Date must be a valid datetime"]}])
+      end
+
+      it 'requires company close reason to exist' do
+        data = build :deal_csv_data, close_reason: 'NA'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Close Reason #{data[:close_reason]} could not be found"]}])
+      end
+
+      it 'requires company contacts to exist' do
+        data = build :deal_csv_data, contacts: 'NA'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Contact #{data[:contacts]} could not be found"]}])
       end
     end
   end

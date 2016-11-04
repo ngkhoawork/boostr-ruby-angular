@@ -10,6 +10,10 @@ FactoryGirl.define do
     end_date '2016-02-02 00:00:00 +0200'
     stage nil
     team nil
+    created '2016-01-01 00:00:00 +0200'
+    closed_date '2016-02-02 00:00:00 +0200'
+    close_reason nil
+    contacts nil
 
     initialize_with { attributes }
 
@@ -29,6 +33,10 @@ FactoryGirl.define do
       if item[:team].nil?
         user = Company.first.users.first
         item[:team] = user.email + '/100'
+      end
+
+      if item[:contacts].nil?
+        item[:contacts] = Company.first.contacts.map(&:address).map(&:email).join(';')
       end
     end
   end
