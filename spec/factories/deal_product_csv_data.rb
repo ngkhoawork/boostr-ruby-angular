@@ -1,10 +1,9 @@
 FactoryGirl.define do
-  factory :deal_product_budget_csv_data, class: Hash do
+  factory :deal_product_csv_data, class: Hash do
     deal_id nil
     deal_name nil
-    deal_product nil
+    product nil
     budget 10000.0
-    period 'July 2015'
 
     initialize_with { attributes }
 
@@ -13,8 +12,8 @@ FactoryGirl.define do
         item[:deal_name] = Company.first.deals.order(:id).first.name
       end
 
-      if item[:deal_product].nil?
-        item[:deal_product] = Company.first.products.sample.name
+      if item[:product].nil?
+        item[:product] = Company.first.products.sample.name
       end
     end
   end

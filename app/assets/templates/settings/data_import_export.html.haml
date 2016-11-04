@@ -72,6 +72,27 @@
       .col-sm-6
         .panel
           .panel-body
+            %h4 Deal Product Budget Monthly Import
+            %h5 Select a CSV file and upload it using the deal products import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadDealProductBudgetModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Deal Product Budget Monthly
+
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Deal Product Budget Monthly Export
+            %h5 Please use Deals export to get Deal Product Budget Monthly data
+            %li.export
+              %a{ href: '', ng: { click: 'exportDeals()' } }
+                = inline_svg 'icons/import.svg'
+                Export Deals
+
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
             %h4 Contacts Import
             %h5 Select a CSV file and upload it using the contact import module
             %li.import
