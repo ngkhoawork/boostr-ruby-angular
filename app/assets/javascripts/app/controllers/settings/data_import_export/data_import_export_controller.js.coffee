@@ -36,6 +36,14 @@
 
   $scope.showUploadDealProductModal = ->
     $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_product_upload.html'
+      size: 'lg'
+      controller: 'DealProductUploadController'
+      backdrop: 'static'
+      keyboard: false
+
+  $scope.showUploadDealProductBudgetModal = ->
+    $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_product_budget_upload.html'
       size: 'lg'
       controller: 'DealProductBudgetUploadController'
