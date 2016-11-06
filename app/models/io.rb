@@ -82,6 +82,28 @@ class Io < ActiveRecord::Base
     update_attributes(budget: content_fees.sum(:budget))
   end
 
+  def effective_revenue_budget(member, start_date, end_date)
+    io_member = self.io_members.find_by(user_id: member.id)
+    share = io_member.share
+    total_budget = 0
+    self.content_fees.each do |content_fee|
+      content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+        total_budget += content_fee_product_budget.daily_budget * effective_days(start_date, end_date, content_fee_product_budget, io_member) * (share/100.0)
+      end
+    end
+    self.display_line_items.each do |display_line_item|
+      ave_run_rate = display_line_item.ave_run_rate
+      total_budget += ave_run_rate * effective_days(start_date, end_date, display_line_item, io_member) * (share/100.0)
+    end
+    total_budget
+  end
+
+  def effective_days(start_date, end_date, comparer, effecter)
+    from = [start_date, comparer.start_date, effecter.from_date].max
+    to = [end_date, comparer.end_date, effecter.to_date].min
+    [(to.to_date - from.to_date) + 1, 0].max.to_f
+  end
+
   def merge_recursively(a, b)
     a.merge(b) {|key, a_item, b_item| merge_recursively(a_item, b_item) }
   end

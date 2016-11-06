@@ -25,6 +25,12 @@ class DisplayLineItem < ActiveRecord::Base
     self.save if should_save
   end
 
+  def ave_run_rate
+    return @ave_run_rate if defined?(@ave_run_rate)
+    @ave_run_rate = self.budget / (self.end_date - self.start_date + 1)
+    @ave_run_rate.to_f
+  end
+
   def merge_recursively(a, b)
     a.merge(b) {|key, a_item, b_item| merge_recursively(a_item, b_item) }
   end
