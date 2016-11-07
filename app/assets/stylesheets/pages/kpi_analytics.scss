@@ -28,6 +28,63 @@
 
   .schedule {
     height: 450px;
+
+    svg:not(:root) {
+      overflow: visible;
+    }
+
+    path {
+      stroke: steelblue;
+      stroke-width: 2;
+      fill: none;
+    }
+    .graph2 {
+      .axis path, .axis line {
+        fill: none;
+        stroke: grey;
+        stroke-width: 1;
+        shape-rendering: crispEdges;
+      }
+    }
+
+    .graph5 {
+      .axis path, .axis line {
+        fill: none;
+        stroke: #333;
+      }
+      .axis .grid-line {
+        stroke: #000;
+        stroke-opacity: 0.2;
+      }
+      .axis text {
+        font: 10px Arial;
+      }
+    }
+
+    .graph4 {
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+
+      .grid path,
+      .grid line {
+        fill: none;
+        stroke: rgba(0, 0, 0, 0.25);
+        shape-rendering: crispEdges;
+      }
+
+      .x.axis path {
+        display: none;
+      }
+
+      .line {
+        fill: none;
+        stroke-width: 2.5px;
+      }
+    }
   }
 }
 
