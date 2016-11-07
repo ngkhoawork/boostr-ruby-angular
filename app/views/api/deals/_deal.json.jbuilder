@@ -22,7 +22,7 @@ json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   json.name deal_product.product.name
   json.deal_product_budgets deal_product.deal_product_budgets.order(:start_date) do |deal_product_budget|
     json.id deal_product_budget.id
-    json.budget deal_product_budget.budget / 100
+    json.budget deal_product_budget.budget.nil? ? 0 : deal_product_budget.budget / 100
   end
   json.budget deal_product.budget / 100
 end
