@@ -76,6 +76,11 @@ Rails.application.routes.draw do
       end
     end
     resources :kpis, only: [:index]
+    resources :kpis_dashboard, only: [] do
+      collection do
+        get :win_rate_by_seller
+      end
+    end
     resources :reminders, only: [:index, :show, :create, :update, :destroy]
     resources :remindable, only: [] do
       get '/:remindable_type', to: 'reminders#remindable'
