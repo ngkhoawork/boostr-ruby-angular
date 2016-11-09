@@ -369,14 +369,14 @@ RSpec.describe Deal, type: :model do
         data = build :deal_csv_data, start_date: 'zzz'
         expect(
           Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ['Start Date must have valid date format DD-MM-YYYY']}])
+        ).to eq([{row: 1, message: ['Start Date must have valid date format DD/MM/YYYY']}])
       end
 
       it 'requires end date to be valid' do
         data = build :deal_csv_data, end_date: 'zzz'
         expect(
           Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ['End Date must have valid date format DD-MM-YYYY']}])
+        ).to eq([{row: 1, message: ['End Date must have valid date format DD/MM/YYYY']}])
       end
 
       it 'requires start date to be present if end date is set' do
@@ -394,7 +394,7 @@ RSpec.describe Deal, type: :model do
       end
 
       it 'requires start date to preceed end date' do
-        data = build :deal_csv_data, start_date: '2016-12-12 00:00:00 +0200', end_date: '2016-11-11 00:00:00 +0200'
+        data = build :deal_csv_data, start_date: '12/12/2016', end_date: '11/11/2016'
         expect(
           Deal.import(generate_csv(data), user)
         ).to eq([{row: 1, message: ['Start Date must preceed End Date']}])
@@ -448,7 +448,7 @@ RSpec.describe Deal, type: :model do
         data = build :deal_csv_data, closed_date: 'NA'
         expect(
           Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Deal Close Date must be a valid datetime"]}])
+        ).to eq([{row: 1, message: ["Deal Close Date must have valid date format DD/MM/YYYY"]}])
       end
 
       it 'requires company close reason to exist' do

@@ -6,12 +6,12 @@ FactoryGirl.define do
     agency nil
     type nil
     source nil
-    start_date '01-01-2016'
-    end_date '02-02-2016'
+    start_date '01/01/2016'
+    end_date '02/02/2016'
     stage nil
     team nil
-    created '01-01-2016'
-    closed_date '02-02-2016'
+    created '01/01/2016'
+    closed_date '02/02/2016'
     close_reason nil
     contacts nil
 

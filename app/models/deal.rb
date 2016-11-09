@@ -676,7 +676,7 @@ class Deal < ActiveRecord::Base
         begin
           start_date = Date.parse(row[6])
         rescue ArgumentError
-          error = {row: row_number, message: ['Start Date must have valid date format DD-MM-YYYY'] }
+          error = {row: row_number, message: ['Start Date must have valid date format DD/MM/YYYY'] }
           errors << error
           next
         end
@@ -692,7 +692,7 @@ class Deal < ActiveRecord::Base
         begin
           end_date = Date.parse(row[7])
         rescue ArgumentError
-          error = {row: row_number, message: ['End Date must have valid date format DD-MM-YYYY'] }
+          error = {row: row_number, message: ['End Date must have valid date format DD/MM/YYYY'] }
           errors << error
           next
         end
@@ -760,9 +760,9 @@ class Deal < ActiveRecord::Base
 
       if row[11].present?
         begin
-          closed_date = DateTime.parse(row[11])
+          closed_date = Date.parse(row[11])
         rescue ArgumentError
-          error = {row: row_number, message: ['Deal Close Date must be a valid datetime'] }
+          error = {row: row_number, message: ['Deal Close Date must have valid date format DD/MM/YYYY'] }
           errors << error
           next
         end
