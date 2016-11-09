@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :activity_csv_data, class: Hash do
     id nil
-    date { FFaker::Time.date }
+    date '01/01/2016'
     creator nil
     advertiser nil
     agency nil

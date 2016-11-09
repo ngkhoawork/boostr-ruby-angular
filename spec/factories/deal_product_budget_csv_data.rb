@@ -4,7 +4,7 @@ FactoryGirl.define do
     deal_name nil
     deal_product nil
     budget 10000.0
-    period '07-2015'
+    period 'Jul-15'
 
     initialize_with { attributes }
 
