@@ -83,9 +83,9 @@ class DealProductBudget < ActiveRecord::Base
 
       if row[4]
         begin
-          period = Date.strptime(row[4].strip, '%B %Y')
+          period = Date.strptime(row[4].strip, '%m-%Y')
         rescue ArgumentError
-          error = {row: row_number, message: ['Period must be in valid format: Month YYYY'] }
+          error = {row: row_number, message: ['Period must be in valid format: MM-YYYY'] }
           errors << error
           next
         end

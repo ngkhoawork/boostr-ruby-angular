@@ -674,9 +674,9 @@ class Deal < ActiveRecord::Base
           next
         end
         begin
-          start_date = DateTime.parse(row[6])
+          start_date = Date.parse(row[6])
         rescue ArgumentError
-          error = {row: row_number, message: ['Start Date must be a valid datetime'] }
+          error = {row: row_number, message: ['Start Date must have valid date format DD-MM-YYYY'] }
           errors << error
           next
         end
@@ -690,9 +690,9 @@ class Deal < ActiveRecord::Base
           next
         end
         begin
-          end_date = DateTime.parse(row[7])
+          end_date = Date.parse(row[7])
         rescue ArgumentError
-          error = {row: row_number, message: ['End Date must be a valid datetime'] }
+          error = {row: row_number, message: ['End Date must have valid date format DD-MM-YYYY'] }
           errors << error
           next
         end

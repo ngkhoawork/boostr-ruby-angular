@@ -369,14 +369,14 @@ RSpec.describe Deal, type: :model do
         data = build :deal_csv_data, start_date: 'zzz'
         expect(
           Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ['Start Date must be a valid datetime']}])
+        ).to eq([{row: 1, message: ['Start Date must have valid date format DD-MM-YYYY']}])
       end
 
       it 'requires end date to be valid' do
         data = build :deal_csv_data, end_date: 'zzz'
         expect(
           Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ['End Date must be a valid datetime']}])
+        ).to eq([{row: 1, message: ['End Date must have valid date format DD-MM-YYYY']}])
       end
 
       it 'requires start date to be present if end date is set' do
