@@ -8,11 +8,10 @@ RSpec.describe Api::KpisDashboardController, type: :controller do
     sign_in user
   end
 
-  describe "GET #win_rate_by_seller" do
+  describe "GET #index" do
     it "returns http success" do
-      # get :win_rate_by_seller
-      # expect(response).to have_http_status(:success)
-      expect(true).to eq(true)
+      get :index
+      expect(response).to have_http_status(:success)
     end
   end
 end

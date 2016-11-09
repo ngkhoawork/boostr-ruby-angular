@@ -1,13 +1,11 @@
 class Api::KpisDashboardController < ApplicationController
   respond_to :json
 
-  def win_rate_by_seller
+  def index
     win_rate_list = []
     sellers = company.users.by_user_type(SELLER)
 
     seller_deals = Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', sellers.ids).distinct.active.includes(:stage, :deal_members)
-
-    win_rate_list << time_period_names
 
     sellers.each do |seller|
       win_rates = []
@@ -40,38 +38,51 @@ class Api::KpisDashboardController < ApplicationController
       win_rates.unshift(sellers_team(seller))
       win_rate_list << win_rates
     end
-    averages = []
-    win_rate_list[1..-1].transpose[2..-1].each do |average|
-      averages << (average.reduce(:+) / average.length).round(0)
-    end
-    averages.unshift('', '')
-    win_rate_list << averages
 
-    render json: { win_rates: win_rate_list }
+    render json: {
+      win_rates: win_rate_list,
+      time_periods: time_period_names,
+      average_win_rates: average_win_rates(win_rate_list)
+    }
   end
 
   private
 
   def start_date
-    Date.parse(params[:start_date])
+    if params[:start_date]
+      Date.parse(params[:start_date])
+    else
+      (Date.current - 6.months).beginning_of_month
+    end
   end
 
   def end_date
-    Date.parse(params[:end_date])
+    if params[:end_date]
+      Date.parse(params[:end_date])
+    else
+      (Date.current - 1.months).end_of_month
+    end
   end
 
   def time_periods
     time_periods = TimePeriods.new
-    case params[:time_period]
-    when 'month'
-      time_periods.months(start_date..end_date)
-    when 'qtr'
+    if params[:time_period] == 'qtr'
       time_periods.quarters(start_date..end_date)
+    else
+      time_periods.months(start_date..end_date)
     end
   end
 
+  def average_win_rates(win_rate_list)
+    averages = []
+    win_rate_list[1..-1].transpose[2..-1].each do |average|
+      averages << (average.reduce(:+) / average.length).round(0)
+    end if win_rate_list.length > 0
+    averages
+  end
+
   def time_period_names
-    names = %w[Team, Seller]
+    names = []
     if params[:time_period] == 'qtr'
       time_periods.each_with_index do |time_period, index|
         names << "Quarter #{index + 1}"
@@ -81,8 +92,7 @@ class Api::KpisDashboardController < ApplicationController
         names << time_period.first.strftime("%B")
       end
     end
-
-    names << 'Total'
+    names
   end
 
   def sellers_team(seller)
