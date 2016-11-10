@@ -53,7 +53,7 @@ class Api::KpisDashboardController < ApplicationController
     render json: {
       win_rates: win_rate_list,
       time_periods: time_period_names,
-      # average_win_rates: average_win_rates(win_rate_list),
+      average_win_rates: average_win_rates(win_rate_list),
       teams: root_teams.as_json(only: [:id, :name], override: true)
     }
   end
@@ -111,8 +111,8 @@ class Api::KpisDashboardController < ApplicationController
 
   def average_win_rates(win_rate_list)
     averages = []
-    win_rate_list[1..-1].transpose[2..-1].each do |average|
-      averages << (average.reduce(:+) / average.length).round(0)
+    win_rate_list.transpose[1..-2].each do |average|
+      averages << ((average.map{|w| w[:win_rate] }.reduce(:+)) / average.length).round(0)
     end if win_rate_list.length > 0
     averages
   end
@@ -130,14 +130,6 @@ class Api::KpisDashboardController < ApplicationController
     end
     names
   end
-
-  # def sellers_team(seller)
-  #   if seller.leader?
-  #     company.teams.find_by(leader: seller).name
-  #   else
-  #     seller.team.name if seller.team
-  #   end
-  # end
 
   def company
     @company ||= current_user.company
