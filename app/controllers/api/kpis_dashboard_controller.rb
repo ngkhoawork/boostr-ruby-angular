@@ -3,23 +3,34 @@ class Api::KpisDashboardController < ApplicationController
 
   def index
     win_rate_list = []
-    sellers = company.users.by_user_type(SELLER)
 
-    seller_deals = Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', sellers.ids).distinct.active.includes(:stage, :deal_members)
+    deals = deals_by_time_period
 
-    sellers.each do |seller|
+    if params[:team]
+      object = team_members
+    else
+      object = teams
+    end
+
+    object.each do |item|
       win_rates = []
+
+      if item.is_a?(User)
+        ids = [item.id]
+      else
+        ids = item.all_members.map(&:id)
+      end
       time_periods.each do |time_period|
-        complete_deals = seller_deals.select do |deal|
-          deal.deal_members.map(&:user_id).include?(seller.id) &&
+        complete_deals = deals.select do |deal|
+          (deal.deal_members.map(&:user_id) & ids).length > 0 &&
           deal.closed_at &&
           deal.closed_at >= time_period.first &&
           deal.closed_at <= time_period.last &&
           deal.stage.probability == 100
         end.count
 
-        incomplete_deals = seller_deals.select do |deal|
-          deal.deal_members.map(&:user_id).include?(seller.id) &&
+        incomplete_deals = deals.select do |deal|
+          (deal.deal_members.map(&:user_id) & ids).length > 0 &&
           deal.closed_at &&
           deal.closed_at >= time_period.first &&
           deal.closed_at <= time_period.last &&
@@ -30,23 +41,44 @@ class Api::KpisDashboardController < ApplicationController
         win_rate = 0.0
 
         win_rate = (complete_deals.to_f / (complete_deals.to_f + incomplete_deals.to_f) * 100).round(0) if (incomplete_deals + complete_deals) > 0
-        win_rates << win_rate
+        total_deals = complete_deals + incomplete_deals
+        win_rates << { win_rate: win_rate, total_deals: total_deals }
       end
 
-      win_rates << (win_rates.reduce(&:+) / win_rates.length).round(0)
-      win_rates.unshift(seller.name)
-      win_rates.unshift(sellers_team(seller))
+      win_rates << average_win_rate_by_item(win_rates)
+      win_rates.unshift(item.name)
       win_rate_list << win_rates
     end
 
     render json: {
       win_rates: win_rate_list,
       time_periods: time_period_names,
-      average_win_rates: average_win_rates(win_rate_list)
+      # average_win_rates: average_win_rates(win_rate_list),
+      teams: root_teams.as_json(only: [:id, :name], override: true)
     }
   end
 
   private
+
+  def deals_by_time_period
+    Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).distinct.active.includes(:stage, :deal_members)
+  end
+
+  def teams
+    if params[:team]
+      @team ||= [company.teams.find(params[:team])]
+    else
+      @team ||= root_teams
+    end
+  end
+
+  def team_members
+    @team_members ||= teams.map(&:all_members).flatten
+  end
+
+  def root_teams
+    company.teams.roots(true)
+  end
 
   def start_date
     if params[:start_date]
@@ -62,6 +94,10 @@ class Api::KpisDashboardController < ApplicationController
     else
       (Date.current - 1.months).end_of_month
     end
+  end
+
+  def average_win_rate_by_item(win_rates)
+    (win_rates.map{|w| w[:win_rate]}.reduce(:+) / win_rates.length).round(0)
   end
 
   def time_periods
@@ -95,13 +131,13 @@ class Api::KpisDashboardController < ApplicationController
     names
   end
 
-  def sellers_team(seller)
-    if seller.leader?
-      company.teams.find_by(leader: seller).name
-    else
-      seller.team.name if seller.team
-    end
-  end
+  # def sellers_team(seller)
+  #   if seller.leader?
+  #     company.teams.find_by(leader: seller).name
+  #   else
+  #     seller.team.name if seller.team
+  #   end
+  # end
 
   def company
     @company ||= current_user.company
