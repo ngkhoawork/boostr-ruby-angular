@@ -2,30 +2,7 @@ class Api::IosController < ApplicationController
   respond_to :json
 
   def index
-    if params[:filter] == 'upside'
-      render json: display_line_items.where("balance > 0").as_json( include: {
-          io: {
-              include: {
-                  advertiser: {},
-                  agency: {}
-              }
-          }
-      })
-    elsif params[:filter] == 'risk'
-      render json: display_line_items.where("balance < 0").as_json( include: {
-          io: {
-              include: {
-                  advertiser: {},
-                  agency: {}
-              }
-          }
-      })
-    elsif params[:filter] == 'programmatic'
-      render json: []
-    else
-      render json: ios
-    end
-
+    render json: ios
   end
 
   def show
@@ -50,6 +27,22 @@ class Api::IosController < ApplicationController
       },
       print_items: {}
     } )
+  end
+
+  def create
+    io = company.ios.new(io_params)
+    if io.deal_id
+      io.io_number = io.deal_id
+    elsif io.external_io_number
+      io.io_number = io.external_io_number
+    else
+
+    end
+    if io.save
+      render json: io, status: :created
+    else
+      render json: { errors: io.errors.messages }, status: :unprocessable_entity
+    end
   end
 
   def update
@@ -83,25 +76,29 @@ class Api::IosController < ApplicationController
   private
 
   def io_params
-    params.require(:io).permit(:name, :budget, :start_date, :end_date, :advertiser_id, :agency_id, :io_number, :external_io_number)
+    params.require(:io).permit(:name, :budget, :start_date, :end_date, :advertiser_id, :agency_id, :io_number, :external_io_number, :deal_id)
   end
 
   def ios
-    company.ios
+    if params[:page] && params[:page].to_i > 0
+      offset = (params[:page].to_i - 1) * 10
+      if params[:name]
+        company.ios.where("name ilike ?", "%#{params[:name]}%").limit(10).offset(offset)
+      else
+        company.ios.limit(10).offset(offset)
+      end
+    else
+      if params[:name]
+        company.ios.where("name ilike ?", "%#{params[:name]}%")
+      else
+        company.ios
+      end
+    end
   end
+
 
   def io
     @io ||= ios.find(params[:id])
-  end
-
-  def display_line_items
-    member_ids = [current_user.id]
-    if current_user.leader?
-      member_ids += current_user.teams.first.all_members.collect{|m| m.id}
-      member_ids += current_user.teams.first.all_leaders.collect{|m| m.id}
-    end
-    io_ids = Io.joins(:io_members).where("io_members.user_id in (?)", member_ids.uniq).all.collect{|io| io.id}.uniq
-    DisplayLineItem.where("io_id in (?)", io_ids)
   end
 
   def company

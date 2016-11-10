@@ -33,22 +33,23 @@
                 %th.left Deal Name
                 %th.right
 
-            %tbody
-              %tr{ ng: { repeat: 'row in revenue | filter:searchText', click: 'go("/ios/" + row.id)' } }
-                %td.left {{row.io_number}}
-                %td.left {{row.external_io_number}}
-                %td.left {{row.name}}
-                %td.left {{row.advertiser.name}}
-                %td.left {{row.agency.name}}
-                %td.right {{row.budget | currency:'$':0 }}
-                %td.left {{row.start_date | date: 'M/d/yyyy'}}
-                %td.left {{row.end_date | date: 'M/d/yyyy'}}
-                %td.left
-                  %a{ href: '', ng: { if: "row.deal", click: 'go("/deals/" + row.deal.id)'  } }
-                    {{ row.deal.name }}
-                %td.right
-                  %i.fa.fa-angle-right
-          %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param != ''"}}
+            %tbody{ ng: { repeat: 'row in revenue | filter:searchText', include: "'partials/revenue_io_rows.html'" } }
+
+          %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param == 'no-match'"}}
+            %thead
+              %tr
+                %th.left External #
+                %th.left Name
+                %th.left Advertiser
+                %th.left Agency
+                %th.right Budget
+                %th.left Start Date
+                %th.left End Date
+                %th.right
+
+            %tbody{ ng: { repeat: 'row in revenue | filter:searchText', include: "'partials/revenue_no_match_display_rows.html'" } }
+
+          %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param == 'risk' || revenueFilter.param == 'upside'"}}
             %thead
               %tr
                 %th.left Ext IO #
@@ -75,52 +76,4 @@
                 %th.right 3PBudDel
                 %th.right 3PBudRem
 
-            %tbody
-              %tr{ ng: { repeat: 'displayLineItem in revenue | filter:searchText'} }
-                %td.left
-                  {{ displayLineItem.io.external_io_number }}
-                %td.left
-                  {{ displayLineItem.io.advertiser ? displayLineItem.io.advertiser.name : "" }}
-                %td.left
-                  {{ displayLineItem.io.agency ? displayLineItem.io.agency.name : "" }}
-                %td.right
-                  {{ displayLineItem.daily_run_rate | currency:'$':0 }}
-                %td.right
-                  {{ displayLineItem.num_days_til_out_of_budget }}
-                %td.right
-                  {{ displayLineItem.balance | currency:'$':0 }}
-                %td.left
-                  {{ displayLineItem.line_number }}
-                %td.left
-                  {{ displayLineItem.ad_server }}
-                %td.left
-                  {{ displayLineItem.start_date | date: 'M/d/yyyy' }}
-                %td.left
-                  {{ displayLineItem.end_date | date: 'M/d/yyyy' }}
-                %td.left
-                  {{ displayLineItem.product.name }}
-                %td.right
-                  {{ displayLineItem.quantity }}
-                %td.right
-                  {{ displayLineItem.price | currency:'$':0 }}
-                %td.left
-                  {{ displayLineItem.pricing_type }}
-                %td.right
-                  {{ displayLineItem.budget | currency:'$':0 }}
-                %td.right
-                  {{ displayLineItem.budget_delivered | currency:'$':0 }}
-                %td.right
-                  {{ displayLineItem.budget_remaining | currency:'$':0 }}
-                %td.right
-                  {{ displayLineItem.quantity_delivered }}
-                %td.right
-                  {{ displayLineItem.quantity_remaining }}
-                %td.right
-                  {{ displayLineItem.budget_delivered_3p | currency:'$':0 }}
-                %td.right
-                  {{ displayLineItem.budget_remaining_3p | currency:'$':0 }}
-                %td.right
-                  {{ displayLineItem.quantity_delivered_3p | currency:'$':0 }}
-                %td.right
-                  {{ displayLineItem.quantity_remaining_3p | currency:'$':0 }}
-
+            %tbody{ ng: { repeat: 'displayLineItem in revenue | filter:searchText', include: "'partials/revenue_display_item_rows.html'"} }

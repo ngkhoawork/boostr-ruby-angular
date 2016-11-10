@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161102181106) do
+ActiveRecord::Schema.define(version: 20161109191553) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -309,6 +310,7 @@ ActiveRecord::Schema.define(version: 20161102181106) do
     t.integer  "price",                      limit: 8
     t.integer  "balance",                    limit: 8
     t.datetime "last_alert_at"
+    t.integer  "temp_io_id"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
@@ -515,6 +517,22 @@ ActiveRecord::Schema.define(version: 20161102181106) do
   add_index "teams", ["leader_id"], name: "index_teams_on_leader_id", using: :btree
   add_index "teams", ["parent_id"], name: "index_teams_on_parent_id", using: :btree
 
+  create_table "temp_ios", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "company_id"
+    t.string   "advertiser"
+    t.string   "agency"
+    t.integer  "budget",             limit: 8
+    t.date     "start_date"
+    t.date     "end_date"
+    t.integer  "external_io_number"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.integer  "io_id"
+  end
+
+  add_index "temp_ios", ["company_id"], name: "index_temp_ios_on_company_id", using: :btree
+
   create_table "time_periods", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -615,10 +633,13 @@ ActiveRecord::Schema.define(version: 20161102181106) do
   add_foreign_key "deal_product_budgets", "deal_products"
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"
+  add_foreign_key "display_line_items", "temp_ios"
   add_foreign_key "io_members", "ios"
   add_foreign_key "io_members", "users"
   add_foreign_key "ios", "companies"
   add_foreign_key "ios", "deals"
   add_foreign_key "print_items", "ios"
+  add_foreign_key "temp_ios", "companies"
+  add_foreign_key "temp_ios", "ios"
   add_foreign_key "users", "teams"
 end

@@ -1,6 +1,7 @@
 class DisplayLineItem < ActiveRecord::Base
   belongs_to :io
   belongs_to :product
+  belongs_to :temp_io
 
   before_save :set_alert
 

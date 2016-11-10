@@ -1,9 +1,10 @@
 @app.controller 'RevenueController',
-['$scope', '$modal', '$filter', '$routeParams', '$location', '$q', 'IO',
-($scope, $modal, $filter, $routeParams, $location, $q, IO) ->
+['$scope', '$modal', '$filter', '$routeParams', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem',
+($scope, $modal, $filter, $routeParams, $location, $q, IO, TempIO, DisplayLineItem) ->
 
   $scope.revenueFilters = [
     { name: 'IOs', param: '' }
+    { name: 'No-Match IOs', param: 'no-match' }
     { name: 'Programmatic', param: 'programmatic' }
     { name: 'Upside Revenues', param: 'upside' }
     { name: 'At Risk Revenues', param: 'risk' }
@@ -19,13 +20,34 @@
   $scope.searchText = ''
 
   $scope.init = ->
-    IO.all({filter: $scope.revenueFilter.param}).then (ios) ->
-      $scope.revenue = ios
+    $scope.revenue = []
+    switch $scope.revenueFilter.param
+      when "no-match"
+        TempIO.all({filter: $scope.revenueFilter.param}).then (tempIOs) ->
+          $scope.revenue = tempIOs
+      when "upside", "risk"
+        DisplayLineItem.all({filter: $scope.revenueFilter.param}).then (ios) ->
+          $scope.revenue = ios
+      else
+        IO.all({filter: $scope.revenueFilter.param}).then (ios) ->
+          $scope.revenue = ios
 
   $scope.filterRevenues = (filter) ->
     $scope.revenueFilter = filter
     $scope.init()
 
+  $scope.showAssignIOModal = (tempIO) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/io_assign_form.html'
+      size: 'lg'
+      controller: 'IOAssignController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        tempIO: ->
+          tempIO
+    .result.then (updated_temp_io) ->
+      $scope.init();
   $scope.go = (path) ->
     $location.path(path)
 

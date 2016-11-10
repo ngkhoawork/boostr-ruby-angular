@@ -1,0 +1,47 @@
+%tr
+  %td.left
+    {{ displayLineItem.io.external_io_number }}
+  %td.left
+    {{ displayLineItem.io.advertiser ? displayLineItem.io.advertiser.name : "" }}
+  %td.left
+    {{ displayLineItem.io.agency ? displayLineItem.io.agency.name : "" }}
+  %td.right
+    {{ displayLineItem.daily_run_rate | currency:'$':0 }}
+  %td.right
+    {{ displayLineItem.num_days_til_out_of_budget }}
+  %td.right
+    {{ displayLineItem.balance | currency:'$':0 }}
+  %td.left
+    {{ displayLineItem.line_number }}
+  %td.left
+    {{ displayLineItem.ad_server }}
+  %td.left
+    {{ displayLineItem.start_date | date: 'M/d/yyyy' }}
+  %td.left
+    {{ displayLineItem.end_date | date: 'M/d/yyyy' }}
+  %td.left
+    {{ displayLineItem.product.name }}
+  %td.right
+    {{ displayLineItem.quantity }}
+  %td.right
+    {{ displayLineItem.price | currency:'$':0 }}
+  %td.left
+    {{ displayLineItem.pricing_type }}
+  %td.right
+    {{ displayLineItem.budget | currency:'$':0 }}
+  %td.right
+    {{ displayLineItem.budget_delivered | currency:'$':0 }}
+  %td.right
+    {{ displayLineItem.budget_remaining | currency:'$':0 }}
+  %td.right
+    {{ displayLineItem.quantity_delivered }}
+  %td.right
+    {{ displayLineItem.quantity_remaining }}
+  %td.right
+    {{ displayLineItem.budget_delivered_3p | currency:'$':0 }}
+  %td.right
+    {{ displayLineItem.budget_remaining_3p | currency:'$':0 }}
+  %td.right
+    {{ displayLineItem.quantity_delivered_3p | currency:'$':0 }}
+  %td.right
+    {{ displayLineItem.quantity_remaining_3p | currency:'$':0 }}

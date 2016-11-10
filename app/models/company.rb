@@ -16,6 +16,7 @@ class Company < ActiveRecord::Base
   has_many :activity_types
   has_many :ios
   has_many :display_line_items, through: :ios
+  has_many :temp_ios
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'

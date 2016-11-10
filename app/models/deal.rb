@@ -897,6 +897,22 @@ class Deal < ActiveRecord::Base
     self.stage_updated_by = updated_by
   end
 
+  def close_display_product
+    should_open = false
+    self.deal_products.each do |deal_product|
+      if deal_product.product.revenue_type == "Display"
+        deal_product.open = false
+        deal_product.save
+      else
+        if deal_product.open == true
+          should_open = true
+        end
+      end
+    end
+    self.open = should_open
+    self.save
+  end
+
   def log_stage
     if company.present? && stage_id_was.present? && stage_updated_by_was.present? && stage_updated_at_was.present?
       deal_stage_logs.create(
