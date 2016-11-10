@@ -24,7 +24,7 @@
 
       #init query
       KPIDashboard.get().$promise.then ((data) ->
-
+        $scope.isTeamsNamesInWinRateTable = true
         Team.all(root_only: true).then ((teams) ->
           $scope.teams = teams
           createChart(data)
@@ -77,7 +77,7 @@
           item = {
             data: [],
             color: $scope.colors[i],
-            label: $scope.teams[i].name,
+            label: data.win_rates[i][0],
           }
           _.each data.win_rates[i], (dataItem, index) ->
             if (dataItem.win_rate != undefined && dataItem.total_deals != undefined)
@@ -119,13 +119,14 @@
           .scale($scope.scaleX)
           .orient('bottom')
           .tickFormat((d, i) ->
-            time_periods[i-1] || 0
+            time_periods[i-1]
           ).ticks(time_periods.length)
 
         #make Y
         yAxis = d3.svg.axis()
           .scale($scope.scaleY)
           .orient('left')
+          .tickFormat((d) -> d + '%')
 
         #paint Х
         $scope.svg.append('g')
@@ -160,25 +161,28 @@
 
         legend.append('rect')
           .attr('x', (d, i) ->
-            i * 50
+            i * 70
           )
           .attr('y', 0)
-          .attr('width', 10)
-          .attr('height', 10)
+          .attr('width', 13)
+          .attr('height', 13)
+          .attr("rx", 4)
+          .attr("ry", 4)
           .style 'fill', (d) ->
             d.color
 
         legend.append('text')
           .attr('x', (d, i) ->
-            i * 50 + 15
+            i * 70 + 20
           )
           .attr('y', 10)
           .attr('height', 30)
-          .attr('width', 100)
+          .attr('width', 150)
           .text (d) ->
             d.label
 
       createChart = (data)->
+        d3.select(".graph svg").remove();
         optimizeData = transformData(data)
         crateAxis(optimizeData, data.time_periods)
         _.each optimizeData, (chart) ->
@@ -214,6 +218,7 @@
       $scope.filterByTeam =(id) ->
         if(id)
           KPIDashboard.get({team:id}).$promise.then ((data) ->
+            $scope.isTeamsNamesInWinRateTable = false;
             createChart(data)
             initTablesData(data)
           ), (err) ->
@@ -221,6 +226,7 @@
               console.log(err)
         else
           KPIDashboard.get().$promise.then ((data) ->
+            $scope.isTeamsNamesInWinRateTable = true;
             createChart(data)
             initTablesData(data)
           ), (err) ->

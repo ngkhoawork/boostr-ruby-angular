@@ -41,16 +41,20 @@
     }
 
     .graph {
+      .x-axis,
+      .y-axis {
+        stroke-opacity: 0.4;
+      }
       .axis path, .axis line {
         fill: none;
-        stroke: #333;
+        stroke: #6B6B6B;
       }
       .axis .grid-line {
         stroke: #000;
         stroke-opacity: 0.2;
       }
       .axis text {
-        font: 10px Arial;
+        font: 12px Arial;
       }
     }
   }

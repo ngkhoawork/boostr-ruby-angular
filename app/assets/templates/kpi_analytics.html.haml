@@ -58,8 +58,10 @@
           %table.table.table-hover
             %thead
               %tr
-                %th
+                %th{ ng: { if: 'isTeamsNamesInWinRateTable' }}
                   Teams
+                %th{ ng: { if: '!isTeamsNamesInWinRateTable' }}
+                  Sellers
                 %th{ ng: { repeat: 'period in winRateTimePeriods' }}
                   {{period}}
                 %th.text--bold{ 'ng-click': 'changeSortType("total")'}
@@ -73,7 +75,7 @@
                   %span{ ng: { if: 'item.win_rate === undefined' }}
                     {{item}}
               %tr{ ng: { if: 'winRateAverage' }}
-                %td Average
+                %td.text--bold Average
                 %td.text--bold{ ng: { repeat: 'average in winRateAverage track by $index' }}
                   {{average}}
                 %td
