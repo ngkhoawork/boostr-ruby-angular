@@ -17,7 +17,7 @@
                 %span.caret
               %ul.dropdown-menu
                 %li{ ng: { repeat: 'filter in teamFilters', class: '{active: filter.name == clientFilter.name}' } }
-                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                  %a{ href: '', ng: { click: 'filterByTeam(filter.id)' } }
                     {{ filter.name }}
           %ul.kpi-block__filter
             %li{ dropdown: true }
@@ -34,9 +34,9 @@
                 Time period
                 %span.caret
               %ul.dropdown-menu
-                %li{ ng: { repeat: 'filter in timeFilters', class: '{active: filter.name == clientFilter.name}' } }
+                %li{ ng: { repeat: 'filter in timeFilters' } }
                   %a{ href: '', ng: { click: 'filterClients(filter)' } }
-                    {{ filter.name }}
+                    {{ filter }}
           %ul.kpi-block__filter
             %li{ dropdown: true }
               %a{ href: '', dropdown: { toggle: true } }

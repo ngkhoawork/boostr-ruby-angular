@@ -1,6 +1,6 @@
 @app.controller 'KPIAnalyticsController',
-  ['$scope', 'KPIDashboard',
-    ($scope, KPIDashboard) ->
+  ['$scope', 'KPIDashboard', 'Team'
+    ($scope, KPIDashboard, Team) ->
 
       #create chart===========================================================
       $scope.chartHeight= 500
@@ -9,9 +9,9 @@
       $scope.scaleX = null
       $scope.scaleY = null
       $scope.svg = null
+      $scope.teamFilters = []
 
       resetFilters = () ->
-        $scope.teamFilters = []
         $scope.sellerFilters = []
         $scope.timeFilters = []
         $scope.productFilters = []
@@ -24,18 +24,21 @@
 
       #init query
       KPIDashboard.get().$promise.then ((data) ->
-        createChart(data)
-        initTablesData(data)
+
+        Team.all(root_only: true).then ((teams) ->
+          $scope.teams = teams
+          createChart(data)
+          initTablesData(data)
+
+          $scope.teamFilters.push({name:'All', id:''})
+          _.each teams, (team) ->
+            $scope.teamFilters.push({name:team.name, id:team.id})
+          ), (err) ->
+            if err
+              console.log(err)
       ), (err) ->
         if err
           console.log(err)
-
-#      KPIDashboard.get({team:1}).$promise.then ((data) ->
-##        createChart(data)
-#        console.log(data)
-#      ), (err) ->
-#        if err
-#          console.log(err)
 
       createItemChart = (data, colorStroke, label) ->
         # make lines function
@@ -74,7 +77,7 @@
           item = {
             data: [],
             color: $scope.colors[i],
-            label: data.teams[i].name,
+            label: $scope.teams[i].name,
           }
           _.each data.win_rates[i], (dataItem, index) ->
             if (dataItem.win_rate != undefined && dataItem.total_deals != undefined)
@@ -183,9 +186,22 @@
 
 
       #END create chart===========================================================
+      #Filters====================================================================
+      createFilters = (data) ->
+        $scope.timeFilters = data.time_periods
+        $scope.sellerFilters = [
+          { name: 'seller1', param: 'seller1' }
+          { name: 'seller2', param: 'seller2' }
+          { name: 'seller3', param: 'seller3' }
+        ]
+      $scope.productFilters = [
+        { name: 'product1', param: 'product1' }
+        { name: 'product2', param: 'product2' }
+      ]
 
       initTablesData = (data)->
         resetFilters()
+        createFilters(data)
         resetTables()
         $scope.winRateTimePeriods = data.time_periods
         len = data.win_rates.length
@@ -195,25 +211,21 @@
           i++
         $scope.winRateAverage = data.average_win_rates
 
-      $scope.teamFilters = [
-        { name: 'My Team', param: '' }
-        { name: 'All Team', param: 'all' }
-      ]
+      $scope.filterByTeam =(id) ->
+        if(id)
+          KPIDashboard.get({team:id}).$promise.then ((data) ->
+            createChart(data)
+            initTablesData(data)
+          ), (err) ->
+            if err
+              console.log(err)
+        else
+          KPIDashboard.get().$promise.then ((data) ->
+            createChart(data)
+            initTablesData(data)
+          ), (err) ->
+            if err
+              console.log(err)
 
-      $scope.sellerFilters = [
-        { name: 'seller1', param: 'seller1' }
-        { name: 'seller2', param: 'seller2' }
-        { name: 'seller3', param: 'seller3' }
-      ]
-
-      $scope.timeFilters = [
-        { name: 'period1', param: 'period1' }
-        { name: 'period1', param: 'period1' }
-      ]
-
-      $scope.productFilters = [
-        { name: 'product1', param: 'product1' }
-        { name: 'product2', param: 'product2' }
-      ]
-
+#=====END Filters====================================================================
   ]
