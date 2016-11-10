@@ -1,6 +1,12 @@
 @app.controller 'KPIAnalyticsController',
-  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'User', 'ActivityType', 'TimePeriod', 'Company', 'ActivityReport',
-    ($scope, $rootScope, $modal, $routeParams, $location, $window, User, ActivityType, TimePeriod, Company, ActivityReport) ->
+  ['$scope', 'KPIDashboard',
+    ($scope, KPIDashboard) ->
+
+#      KPIDashboard.get().$promise.then ((defaultData) ->
+#        console.log(defaultData)
+#      ), (err) ->
+#        if err
+#          console.log(err)
 
       $scope.teamFilters = [
         { name: 'My Team', param: '' }
@@ -23,124 +29,150 @@
         { name: 'product2', param: 'product2' }
       ]
 
-      `
-          var height = 500,
-              width = 1070,
-              margin=30,
-              offset = 50,
-              usdData = [
-                  {x:1, rate: 42},
-                  {x:2, rate: 50},
-                  {x:3, rate: 10},
-                  {x:4, rate: 50},
+      data = {
+        "win_rates":["West Coast Sales","West Coast Member User",4.1,3.4,5.1,3.4,1.4,5.1,6],
+        "time_periods":["May","June","July","August","September","October"],
+        "average_win_rates":[5,20,30,10,0,50,8]
+      }
 
-              ],
-              eurData = [
-                  {x:1, rate: 42},
-                  {x:2, rate: 4},
-                  {x:3, rate: 15},
-                  {x:4, rate: 55},
-              ],
-              tData = [
-                  {x:1, rate: 37},
-                  {x:2, rate: 41},
-                  {x:3, rate: 22},
-                  {x:4, rate: 6},
-              ];;
+      height = 500
+      width = 1070
+      margin=30
+      usdData = [
+        {x:1, y: 42, r:5},
+        {x:2, y: 50, r:5},
+        {x:3, y: 10, r:5},
+        {x:4, y: 50, r:5},
 
-          var svg = d3.select(".graph").append("svg")
-              .attr("class", "axis")
-              .attr("width", width)
-              .attr("height", height);
+      ]
+      eurData = [
+        {x:1, y: 42, r:5},
+        {x:2, y: 4, r:5},
+        {x:3, y: 15, r:5},
+        {x:4, y: 55, r:5},
 
-          // длина оси X= ширина контейнера svg - отступ слева и справа
-          var xAxisLength = width - 2 * margin;
+      ]
+      tData = [
+        {x:1, y: 37, r:5},
+        {x:2, y: 41, r:5},
+        {x:3, y: 22, r:5},
+        {x:4, y: 6, r:5},
 
-          // длина оси Y = высота контейнера svg - отступ сверху и снизу
-          var yAxisLength = height - 2 * margin;
-          // находим максимальное значение для оси Y
-          var maxValue = 80;
-          // находим минимальное значение для оси Y
-          var minValue = 0;
+      ]
+      legendData = [
+        {color:"steelblue", name:'bbbb'},
+        {color:"green", name:'hhhh'},
+        {color:"orange", name:'aaaaa'}
+      ]
 
-          // функция интерполяции значений на ось Y
-          var scaleY = d3.scale.linear()
-              .domain([maxValue, minValue])
-              .range([0, yAxisLength]);
+      svg = d3.select(".graph").append("svg")
+        .attr("class", "axis")
+        .attr("width", width)
+        .attr("height", height);
+
+      #length X = width svg container - margin left and right
+      xAxisLength = width - 2 * margin;
+      #length Y = height svg container -  margin top and bottom
+      yAxisLength = height - 2 * margin;
+      #find max value for Y
+      maxValue = 80;
+      #find min value for Y
+      minValue = 0;
+
+      #interpolate function for Y
+      scaleY = d3.scale.linear()
+        .domain([maxValue, minValue])
+        .range([0, yAxisLength]);
+
+      #interpolate function for Y
+      scaleX = d3.scale.linear()
+        .domain([0, 4])
+        .range([0, xAxisLength]);
+
+      # make X
+      xAxis = d3.svg.axis()
+        .scale(scaleX)
+        .orient('bottom')
+        .tickFormat((d, i) ->
+          data.time_periods[i - 1] or 0
+        ).ticks(4)
+
+      #make Y
+      yAxis = d3.svg.axis()
+        .scale(scaleY)
+        .orient('left')
+
+      #paint Х
+      svg.append('g')
+        .attr('class', 'x-axis')
+        .attr('transform', 'translate(' + margin + ',' + (height - margin) + ')')
+        .call xAxis
+
+      #paint Y
+      svg.append('g').attr('class', 'y-axis')
+        .attr('transform', 'translate(' + margin + ',' + margin + ')')
+        .call yAxis
+
+      #paint gorizontal lines
+      d3.selectAll('g.y-axis g.tick')
+        .append('line').classed('grid-line', true)
+        .attr('x1', 0)
+        .attr('y1', 0)
+        .attr('x2', xAxisLength)
+        .attr('y2', 0)
+
+      #add legend
+      legendTable = d3.select("svg").append("g")
+        .attr("transform", "translate(70, "+(height+15)+")")
+        .attr("class", "legendTable");
+      legend = legendTable.selectAll('.legend')
+        .data(legendData).enter()
+        .append('g')
+        .attr('class', 'legend')
+        .attr('transform', (d, i) ->
+          'translate(' + i * 100 + ', 0)'
+        )
+
+      legend.append('rect')
+        .attr('x', (d, i) ->
+          i * 50
+        )
+        .attr('y', 0)
+        .attr('width', 10)
+        .attr('height', 10)
+        .style 'fill', (d) ->
+          d.color
 
 
+      legend.append('text')
+        .attr('x', (d, i) ->
+          i * 50 + 15
+        )
+        .attr('y', 10)
+        .attr('height', 30)
+        .attr('width', 100)
+        .text (d) ->
+          d.name
 
-          var scaleX = d3.scale.linear()
-              .domain([0, 4])
-              .range([0, xAxisLength]);
+      createChart = (data, colorStroke, label) ->
+        # make lines function
+        line = d3.svg.line().interpolate('monotone').x((d) ->
+          scaleX(d.x) + margin
+        ).y((d) ->
+          scaleY(d.y) + margin
+        )
+        g = svg.append('g')
+        g.append('path').attr('d', line(data)).style('stroke', colorStroke).style 'stroke-width', 2
+        # dots
+        svg.selectAll('.dot ' + label).data(data).enter().append('circle').style('stroke', colorStroke).style('fill', colorStroke).attr('class', 'dot ' + label).attr('r', (d) ->
+          d.r
+        ).transition().duration(2000).attr('cx', (d) ->
+          scaleX(d.x) + margin
+        ).attr 'cy', (d) ->
+          scaleY(d.y) + margin
+        return
 
-
-
-          var xAxis = d3.svg.axis()
-              .scale(scaleX)
-              .orient("bottom")
-              .ticks(4);
-
-          // создаем ось Y
-          var yAxis = d3.svg.axis()
-              .scale(scaleY)
-              .orient("left");
-
-          // отрисовка оси Х
-          svg.append("g")
-              .attr("class", "x-axis")
-              .attr("transform",  // сдвиг оси вниз и вправо
-                  "translate(" + margin + "," + (height - margin) + ")")
-              .call(xAxis);
-
-          // отрисовка оси Y
-          svg.append("g")
-              .attr("class", "y-axis")
-              .attr("transform", // сдвиг оси вниз и вправо на margin
-                  "translate(" + margin + "," + margin + ")")
-              .call(yAxis);
-
-          // рисуем горизонтальные линии
-          d3.selectAll("g.y-axis g.tick")
-              .append("line")
-              .classed("grid-line", true)
-              .attr("x1", 0)
-              .attr("y1", 0)
-              .attr("x2", xAxisLength)
-              .attr("y2", 0);
-          createChart(usdData, "steelblue", "usd");
-          createChart(eurData, "#FF7F0E", "euro");
-          createChart(tData, "#914CAF", "euro");
-
-          // обща функция для создания графиков
-          function createChart (data, colorStroke, label){
-
-// функция, создающая по массиву точек линии
-              var line = d3.svg.line()
-                  .interpolate("monotone")
-                  .x(function(d) { return scaleX(d.x)+margin; })
-                  .y(function(d){return scaleY(d.rate)+margin;});
-
-              var g = svg.append("g");
-              g.append("path")
-                  .attr("d", line(data))
-                  .style("stroke", colorStroke)
-                  .style("stroke-width", 2);
-
-// добавляем отметки к точкам
-              svg.selectAll(".dot "+ label)
-                  .data(data)
-                  .enter().append("circle")
-                  .style("stroke", colorStroke)
-                  .style("fill", colorStroke)
-                  .attr("class", "dot " + label)
-                  .attr("r",  function(d) {return d.rate/6;})
-                  .transition().duration(2000)
-                  .attr("cx", function(d) { return scaleX(d.x)+margin; })
-                  .attr("cy", function(d) { return scaleY(d.rate)+margin; });
-          };
-
-      `
-
-      console.log(d3)
+      createChart(usdData, "steelblue", "usd");
+      createChart(eurData, "green", "euro");
+      createChart(tData, "orange", "euro");
   ]
