@@ -74,7 +74,7 @@
                     {{item}}
               %tr{ ng: { if: 'winRateAverage' }}
                 %td Average
-                %td.text--bold{ ng: { repeat: 'average in winRateAverage' }}
+                %td.text--bold{ ng: { repeat: 'average in winRateAverage track by $index' }}
                   {{average}}
                 %td
 
