@@ -58,48 +58,24 @@
           %table.table.table-hover
             %thead
               %tr
-                %th Team
-                %th Seller
-                %th Quarter 1
-                %th Quarter 2
-                %th Quarter 3
-                %th Quarter 4
+                %th
+                  Teams
+                %th{ ng: { repeat: 'period in winRateTimePeriods' }}
+                  {{period}}
                 %th.text--bold{ 'ng-click': 'changeSortType("total")'}
                   Total
 
             %tbody
-              %tr
-                %td East
-                %td Seller 1
-                %td 42%
-                %td 50%
-                %td 10%
-                %td 50%
-                %td 38%
-              %tr
-                %td West
-                %td Seller 2
-                %td 42%
-                %td 4%
-                %td 15%
-                %td 55%
-                %td 29%
-              %tr
-                %td West
-                %td Seller 3
-                %td 37%
-                %td 41%
-                %td 22%
-                %td 6%
-                %td 26.5%
-
-              %tr
-                %td
+              %tr{ ng: { repeat: 'itemsData in winRateData' }}
+                %td{ ng: { repeat: 'item in itemsData' }}
+                  %span{ ng: { if: 'item.win_rate !== undefined' }}
+                    {{item.win_rate}}
+                  %span{ ng: { if: 'item.win_rate === undefined' }}
+                    {{item}}
+              %tr{ ng: { if: 'winRateAverage' }}
                 %td Average
-                %td.text--bold 40%
-                %td.text--bold 32%
-                %td.text--bold 16%
-                %td.text--bold 37%
+                %td.text--bold{ ng: { repeat: 'average in winRateAverage' }}
+                  {{average}}
                 %td
 
 

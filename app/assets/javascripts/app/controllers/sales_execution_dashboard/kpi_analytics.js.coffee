@@ -10,34 +10,32 @@
       $scope.scaleY = null
       $scope.svg = null
 
-      $scope.data = [
-        {
-          data: [
-            {x:1, y: 42, r:5},
-            {x:2, y: 50, r:5},
-            {x:3, y: 10, r:5},
-            {x:4, y: 50, r:5}
-          ],
-          color: 'blue',
-          label: 'seller2',
-        },
-        {
-          data: [
-            {x:1, y: 25, r:10},
-            {x:2, y: 3, r:13},
-            {x:3, y: 10, r:5},
-            {x:4, y: 41, r:5}
-          ],
-          color: 'orange',
-          label: 'seller1',
-        }
-      ]
+      resetFilters = () ->
+        $scope.teamFilters = []
+        $scope.sellerFilters = []
+        $scope.timeFilters = []
+        $scope.productFilters = []
+        $scope.winRateData = []
 
-      KPIDashboard.get().$promise.then ((defaultData) ->
-        createChart(defaultData)
+      resetTables = () ->
+        $scope.winRateData = []
+
+      $scope.colors = ['blue', 'orange', 'green', 'grey', 'yellow', 'red', 'aqua', 'azure', 'black', 'brown']
+
+      #init query
+      KPIDashboard.get().$promise.then ((data) ->
+        createChart(data)
+        initTablesData(data)
       ), (err) ->
         if err
           console.log(err)
+
+#      KPIDashboard.get({team:1}).$promise.then ((data) ->
+##        createChart(data)
+#        console.log(data)
+#      ), (err) ->
+#        if err
+#          console.log(err)
 
       createItemChart = (data, colorStroke, label) ->
         # make lines function
@@ -69,7 +67,24 @@
         return
 
       transformData = (data) ->
-        $scope.data
+        optimizedData = []
+        i = 0
+        len = data.win_rates.length
+        while i < len
+          item = {
+            data: [],
+            color: $scope.colors[i],
+            label: data.teams[i].name,
+          }
+          _.each data.win_rates[i], (dataItem, index) ->
+            if (dataItem.win_rate != undefined && dataItem.total_deals != undefined)
+              dot = {x:index, y: dataItem.win_rate, r:dataItem.total_deals}
+              if(dataItem.total_deals < 3.5)
+                dot.r = 3.5
+              item.data.push(dot)
+          optimizedData.push(item)
+          i++
+        optimizedData
 
       crateAxis = (data, time_periods) ->
         $scope.svg = d3.select(".graph").append("svg")
@@ -82,7 +97,7 @@
         #length Y = height svg container -  margin top and bottom
         yAxisLength = $scope.chartHeight- 2 * $scope.chartMargin;
         #find max value for Y
-        maxValue = 80;
+        maxValue = 100;
         #find min value for Y
         minValue = 0;
 
@@ -93,7 +108,7 @@
 
         #interpolate function for Y
         $scope.scaleX = d3.scale.linear()
-          .domain([0, 4])
+          .domain([0, time_periods.length])
           .range([0, xAxisLength]);
 
         # make X
@@ -102,7 +117,7 @@
           .orient('bottom')
           .tickFormat((d, i) ->
             time_periods[i-1] || 0
-          ).ticks(4)
+          ).ticks(time_periods.length)
 
         #make Y
         yAxis = d3.svg.axis()
@@ -162,32 +177,43 @@
 
       createChart = (data)->
         optimizeData = transformData(data)
-        time_periods=["May","June","July","August","September","October"]
-        crateAxis(optimizeData, time_periods)
+        crateAxis(optimizeData, data.time_periods)
         _.each optimizeData, (chart) ->
           createItemChart(chart.data, chart.color, chart.label);
 
 
       #END create chart===========================================================
-        $scope.teamFilters = [
-          { name: 'My Team', param: '' }
-          { name: 'All Team', param: 'all' }
-        ]
 
-        $scope.sellerFilters = [
-          { name: 'seller1', param: 'seller1' }
-          { name: 'seller2', param: 'seller2' }
-          { name: 'seller3', param: 'seller3' }
-        ]
+      initTablesData = (data)->
+        resetFilters()
+        resetTables()
+        $scope.winRateTimePeriods = data.time_periods
+        len = data.win_rates.length
+        i = 0
+        while i < len
+          $scope.winRateData.push(data.win_rates[i])
+          i++
+        $scope.winRateAverage = data.average_win_rates
 
-        $scope.timeFilters = [
-          { name: 'period1', param: 'period1' }
-          { name: 'period1', param: 'period1' }
-        ]
+      $scope.teamFilters = [
+        { name: 'My Team', param: '' }
+        { name: 'All Team', param: 'all' }
+      ]
 
-        $scope.productFilters = [
-          { name: 'product1', param: 'product1' }
-          { name: 'product2', param: 'product2' }
-        ]
+      $scope.sellerFilters = [
+        { name: 'seller1', param: 'seller1' }
+        { name: 'seller2', param: 'seller2' }
+        { name: 'seller3', param: 'seller3' }
+      ]
+
+      $scope.timeFilters = [
+        { name: 'period1', param: 'period1' }
+        { name: 'period1', param: 'period1' }
+      ]
+
+      $scope.productFilters = [
+        { name: 'product1', param: 'product1' }
+        { name: 'product2', param: 'product2' }
+      ]
 
   ]
