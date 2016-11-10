@@ -143,7 +143,6 @@
         .style 'fill', (d) ->
           d.color
 
-
       legend.append('text')
         .attr('x', (d, i) ->
           i * 50 + 15
@@ -162,14 +161,25 @@
           scaleY(d.y) + margin
         )
         g = svg.append('g')
-        g.append('path').attr('d', line(data)).style('stroke', colorStroke).style 'stroke-width', 2
+        g.append('path')
+          .attr('d', line(data))
+          .style('stroke', colorStroke)
+          .style('stroke-width', 2)
         # dots
-        svg.selectAll('.dot ' + label).data(data).enter().append('circle').style('stroke', colorStroke).style('fill', colorStroke).attr('class', 'dot ' + label).attr('r', (d) ->
-          d.r
-        ).transition().duration(2000).attr('cx', (d) ->
-          scaleX(d.x) + margin
-        ).attr 'cy', (d) ->
-          scaleY(d.y) + margin
+        svg.selectAll('.dot ' + label)
+          .data(data)
+          .enter()
+          .append('circle')
+          .style('stroke', colorStroke)
+          .style('fill', colorStroke)
+          .attr('class', 'dot ' + label)
+          .attr('r', (d) ->
+            d.r
+          ).transition().duration(2000)
+          .attr('cx', (d) ->
+            scaleX(d.x) + margin
+          ).attr 'cy', (d) ->
+            scaleY(d.y) + margin
         return
 
       createChart(usdData, "steelblue", "usd");
