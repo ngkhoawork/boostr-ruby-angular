@@ -4,8 +4,6 @@ class Api::KpisDashboardController < ApplicationController
   def index
     win_rate_list = []
 
-    deals = deals_by_time_period
-
     if params[:team]
       object = team_members
     else
@@ -18,25 +16,11 @@ class Api::KpisDashboardController < ApplicationController
       if item.is_a?(User)
         ids = [item.id]
       else
-        ids = item.all_members.map(&:id)
+        ids = item.all_sellers.map(&:id)
       end
       time_periods.each do |time_period|
-        complete_deals = deals.select do |deal|
-          (deal.deal_members.map(&:user_id) & ids).length > 0 &&
-          deal.closed_at &&
-          deal.closed_at >= time_period.first &&
-          deal.closed_at <= time_period.last &&
-          deal.stage.probability == 100
-        end.count
-
-        incomplete_deals = deals.select do |deal|
-          (deal.deal_members.map(&:user_id) & ids).length > 0 &&
-          deal.closed_at &&
-          deal.closed_at >= time_period.first &&
-          deal.closed_at <= time_period.last &&
-          deal.stage.probability == 0 &&
-          deal.stage.open == false
-        end.count
+        complete_deals = complete_deals_count(ids, time_period)
+        incomplete_deals = incomplete_deals_count(ids, time_period)
 
         win_rate = 0.0
 
@@ -53,15 +37,35 @@ class Api::KpisDashboardController < ApplicationController
     render json: {
       win_rates: win_rate_list,
       time_periods: time_period_names,
-      average_win_rates: average_win_rates(win_rate_list),
-      teams: root_teams.as_json(only: [:id, :name], override: true)
+      average_win_rates: average_win_rates(win_rate_list)
     }
   end
 
   private
 
+  def complete_deals_count(deal_member_ids, time_period)
+    deals_by_time_period.select do |deal|
+      (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
+      deal.closed_at &&
+      deal.closed_at >= time_period.first &&
+      deal.closed_at <= time_period.last &&
+      deal.stage.probability == 100
+    end.count    
+  end
+
+  def incomplete_deals_count(deal_member_ids, time_period)
+    deals_by_time_period.select do |deal|
+      (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
+      deal.closed_at &&
+      deal.closed_at >= time_period.first &&
+      deal.closed_at <= time_period.last &&
+      deal.stage.probability == 0 &&
+      deal.stage.open == false
+    end.count    
+  end
+
   def deals_by_time_period
-    Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).distinct.active.includes(:stage, :deal_members)
+    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).distinct.active.includes(:stage, :deal_members)
   end
 
   def teams
@@ -73,7 +77,7 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def team_members
-    @team_members ||= teams.map(&:all_members).flatten
+    @team_members ||= teams.map(&:all_sellers).flatten
   end
 
   def root_teams
@@ -111,10 +115,24 @@ class Api::KpisDashboardController < ApplicationController
 
   def average_win_rates(win_rate_list)
     averages = []
-    win_rate_list.transpose[1..-2].each do |average|
-      averages << ((average.map{|w| w[:win_rate] }.reduce(:+)) / average.length).round(0)
-    end if win_rate_list.length > 0
-    averages
+
+    if params[:team]
+      ids = team_members.map(&:id) << teams[0].leader.id
+      time_periods.each do |time_period|
+        complete_deals = complete_deals_count(ids, time_period)
+        incomplete_deals = incomplete_deals_count(ids, time_period)
+
+        win_rate = 0.0
+        win_rate = (complete_deals.to_f / (complete_deals.to_f + incomplete_deals.to_f) * 100).round(0) if (incomplete_deals + complete_deals) > 0
+        averages << win_rate
+      end
+      averages
+    else
+      win_rate_list.transpose[1..-2].each do |average|
+        averages << ((average.map{|w| w[:win_rate] }.reduce(:+)) / average.length).round(0)
+      end if win_rate_list.length > 0
+      averages
+    end
   end
 
   def time_period_names

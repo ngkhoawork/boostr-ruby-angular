@@ -106,6 +106,15 @@ class Team < ActiveRecord::Base
     return ms
   end
 
+  def all_sellers
+    sellers = []
+    sellers += members.by_user_type(SELLER)
+    children.each do |child|
+      sellers += child.all_sellers
+    end
+    sellers
+  end
+
 
   def all_leaders
     ls = leader.nil? ? []:[leader]
