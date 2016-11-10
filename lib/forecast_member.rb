@@ -51,6 +51,11 @@ class ForecastMember
         parts << content_fee_product_budget.id
         parts << content_fee_product_budget.updated_at
       end
+
+      io.display_line_items.each do |display_line_item|
+        parts << display_line_item.id
+        parts << display_line_item.updated_at
+      end
     end
 
     # Week over week
