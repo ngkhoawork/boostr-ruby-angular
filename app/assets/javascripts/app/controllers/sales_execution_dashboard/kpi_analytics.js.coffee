@@ -220,7 +220,9 @@
           .append('g')
           .attr('class', 'legend')
           .attr('transform', (d, i) ->
-            'translate(' + i * 100 + ', 0)'
+            if (i>5)
+              i = i-6
+            return 'translate(' + i * 100 + ', 0)'
           )
 
         legend.append('rect')
