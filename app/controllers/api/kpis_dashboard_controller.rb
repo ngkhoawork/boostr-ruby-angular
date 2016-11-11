@@ -45,6 +45,11 @@ class Api::KpisDashboardController < ApplicationController
 
   def complete_deals_count(deal_member_ids, time_period)
     deals_by_time_period.select do |deal|
+      (if params[:product_id]
+          deal.products.map(&:id).include?(params[:product_id].to_i)
+       else
+          true
+       end) &&
       (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
       deal.closed_at &&
       deal.closed_at >= time_period.first &&
@@ -55,6 +60,11 @@ class Api::KpisDashboardController < ApplicationController
 
   def incomplete_deals_count(deal_member_ids, time_period)
     deals_by_time_period.select do |deal|
+      (if params[:product_id]
+          deal.products.map(&:id).include?(params[:product_id])
+       else
+          true
+       end) &&
       (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
       deal.closed_at &&
       deal.closed_at >= time_period.first &&
@@ -65,7 +75,7 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def deals_by_time_period
-    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).distinct.active.includes(:stage, :deal_members)
+    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).distinct.active.includes(:stage, :deal_members, :products)
   end
 
   def teams
