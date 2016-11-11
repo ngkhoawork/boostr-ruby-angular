@@ -76,11 +76,9 @@
           query.team = $scope.teamId
 
         if($scope.start_date)
-          start_date = new Date($scope.start_date)
-          query.start_date = start_date.getFullYear() + '-' + start_date.getMonth()+ '-' + start_date.getDate()
+          query.start_date = $scope.start_date
         if($scope.end_date)
-          end_date = new Date($scope.end_date)
-          query.end_date = end_date.getFullYear() + '-' + end_date.getMonth()+ '-' + end_date.getDate()
+          query.end_date = $scope.end_date
 
         KPIDashboard.get(query).$promise.then ((data) ->
           createChart(data)
