@@ -180,13 +180,15 @@
         #paint Х
         $scope.svg.append('g')
           .attr('class', 'x-axis')
+          .attr('style', 'opacity:0.6')
           .attr('transform', 'translate(' + $scope.chartMargin + ',' + ($scope.chartHeight- $scope.chartMargin) + ')')
           .call xAxis
 
         #paint Y
         $scope.svg.append('g').attr('class', 'y-axis')
-          .attr('transform', 'translate(' + $scope.chartMargin + ',' + $scope.chartMargin + ')')
-          .call yAxis
+        .attr('style', 'opacity:0.6')
+        .attr('transform', 'translate(' + $scope.chartMargin + ',' + $scope.chartMargin + ')')
+        .call yAxis
 
         #paint gorizontal lines
         d3.selectAll('g.y-axis g.tick')
