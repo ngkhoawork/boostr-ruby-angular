@@ -1,6 +1,6 @@
 @app.controller 'KPIAnalyticsController',
-  ['$scope', 'KPIDashboard', 'Team', 'Product'
-    ($scope, KPIDashboard, Team, Product) ->
+  ['$scope', 'KPIDashboard', 'Team', 'Product', 'Field'
+    ($scope, KPIDashboard, Team, Product, Field) ->
 
       #create chart===========================================================
       $scope.chartHeight= 500
@@ -30,6 +30,12 @@
 
         Product.all().then (products) ->
           $scope.productsList = products
+
+        Field.defaults({}, 'Client').then (fields) ->
+          client_types = Field.findClientTypes(fields)
+          $scope.typesList = []
+          client_types.options.forEach (option) ->
+            $scope.typesList.push(option)
 
         Team.all(root_only: true).then ((teams) ->
           $scope.teams = teams
@@ -278,6 +284,10 @@
 
       $scope.filterByProduct =(product) ->
         $scope.productFilter = product
+#        getData()
+
+      $scope.filterByType =(type) ->
+        $scope.typeFilter = type
 #        getData()
 
 #=====END Filters====================================================================
