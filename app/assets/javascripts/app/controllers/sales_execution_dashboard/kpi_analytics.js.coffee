@@ -65,6 +65,12 @@
         if($scope.productFilter)
           query.product_id = $scope.productFilter.id
 
+#        if($scope.typeFilter)
+#          query.type = $scope.typeFilter.id
+#
+#        if($scope.sourceFilter)
+#          query.source = $scope.sourceFilter.id
+
         if($scope.teamId)
           query.team = $scope.teamId
 
