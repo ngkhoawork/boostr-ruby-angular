@@ -230,9 +230,10 @@
             i * 70
           )
           .attr('y', (d, i) ->
-            if(i>6)
-              0
-            20
+            if(i<6)
+              return 0
+            else
+              return 20
           )
           .attr('width', 13)
           .attr('height', 13)
@@ -246,9 +247,10 @@
             i * 70 + 20
           )
           .attr('y', (d, i) ->
-            if(i>6)
-              0
-            30
+            if(i<6)
+              return 10
+            else
+              return 30
            )
           .attr('height', 30)
           .attr('width', 150)
