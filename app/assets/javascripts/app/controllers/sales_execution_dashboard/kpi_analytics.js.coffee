@@ -79,7 +79,7 @@
           start_date = new Date($scope.start_date)
           query.start_date = start_date.getFullYear() + '-' + start_date.getMonth()+ '-' + start_date.getDate()
         if($scope.end_date)
-          end_date = new Date($scope.start_date)
+          end_date = new Date($scope.end_date)
           query.end_date = end_date.getFullYear() + '-' + end_date.getMonth()+ '-' + end_date.getDate()
 
         KPIDashboard.get(query).$promise.then ((data) ->
@@ -229,7 +229,11 @@
           .attr('x', (d, i) ->
             i * 70
           )
-          .attr('y', 0)
+          .attr('y', (d, i) ->
+            if(i>6)
+              0
+            20
+          )
           .attr('width', 13)
           .attr('height', 13)
           .attr("rx", 4)
@@ -241,7 +245,11 @@
           .attr('x', (d, i) ->
             i * 70 + 20
           )
-          .attr('y', 10)
+          .attr('y', (d, i) ->
+            if(i>6)
+              0
+            30
+           )
           .attr('height', 30)
           .attr('width', 150)
           .text (d) ->
