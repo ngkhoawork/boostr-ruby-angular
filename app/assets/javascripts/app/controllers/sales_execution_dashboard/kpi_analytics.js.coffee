@@ -22,7 +22,7 @@
       resetTables = () ->
         $scope.winRateData = []
 
-      $scope.colors = ['blue', 'orange', 'green', 'grey', 'yellow', 'red', 'aqua', 'azure', 'black', 'brown']
+      $scope.colors = ['blue', 'orange', 'green', 'grey', 'yellow', 'red', 'aqua', 'purple', 'black', 'brown']
 
       #init query
       KPIDashboard.get().$promise.then ((data) ->
