@@ -53,9 +53,9 @@
                 Source
                 %span.caret
               %ul.dropdown-menu
-                %li{ ng: { repeat: 'filter in sourceFilters', class: '{active: filter.name == clientFilter.name}' } }
-                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
-                    {{ filter.name }}
+                %li{ ng: { repeat: 'source in sources', class: '{active: source.name === sourceFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterBySource(source)' } }
+                    {{ source.name }}
           %ul.kpi-block__filter
             %span.bs-datepicker
               %input{ placeholder: 'Start Date',

@@ -31,11 +31,16 @@
         Product.all().then (products) ->
           $scope.productsList = products
 
-        Field.defaults({}, 'Client').then (fields) ->
-          client_types = Field.findClientTypes(fields)
+        Field.defaults({}, 'Deal').then (fields) ->
+          client_types = Field.findDealTypes(fields)
           $scope.typesList = []
           client_types.options.forEach (option) ->
             $scope.typesList.push(option)
+
+          sources = Field.findSources(fields)
+          $scope.sources = []
+          sources.options.forEach (option) ->
+            $scope.sources.push(option)
 
         Team.all(root_only: true).then ((teams) ->
           $scope.teams = teams
@@ -56,6 +61,9 @@
         query = {
           time_period: $scope.time_period,
         }
+
+        if($scope.productFilter)
+          query.product_id = $scope.productFilter.id
 
         if($scope.teamId)
           query.team = $scope.teamId
@@ -285,11 +293,16 @@
         getData()
 
       $scope.filterByProduct =(product) ->
+        console.log(product)
         $scope.productFilter = product
-#        getData()
+        getData()
 
       $scope.filterByType =(type) ->
         $scope.typeFilter = type
+#        getData()
+
+      $scope.filterBySource =(source) ->
+        $scope.sourceFilter = source
 #        getData()
 
 #=====END Filters====================================================================
