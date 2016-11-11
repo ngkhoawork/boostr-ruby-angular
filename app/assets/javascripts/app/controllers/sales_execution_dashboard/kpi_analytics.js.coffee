@@ -11,6 +11,7 @@
       $scope.svg = null
       $scope.teamFilters = []
       $scope.time_period = 'month'
+      $scope.teamId = ''
 
       resetFilters = () ->
         $scope.sellerFilters = []
@@ -41,15 +42,13 @@
         if err
           console.log(err)
 
-      getData = (options) ->
+      getData = () ->
         query = {
-          time_period: $scope.time_period
+          time_period: $scope.time_period,
         }
-        if(options.teamId)
-          $scope.isTeamsNamesInWinRateTable = false;
-          query.team = options.teamId
-        else
-          $scope.isTeamsNamesInWinRateTable = true;
+
+        if($scope.teamId)
+          query.team = $scope.teamId
 
         if($scope.start_date)
           start_date = new Date($scope.start_date)
@@ -58,20 +57,12 @@
           end_date = new Date($scope.start_date)
           query.end_date = end_date.getFullYear() + '-' + end_date.getMonth()+ '-' + end_date.getDate()
 
-        if(options)
-          KPIDashboard.get(query).$promise.then ((data) ->
-            createChart(data)
-            initTablesData(data)
-          ), (err) ->
-            if err
-              console.log(err)
-        else
-          KPIDashboard.get().$promise.then ((data) ->
-            createChart(data)
-            initTablesData(data)
-          ), (err) ->
-            if err
-              console.log(err)
+        KPIDashboard.get(query).$promise.then ((data) ->
+          createChart(data)
+          initTablesData(data)
+        ), (err) ->
+          if err
+            console.log(err)
 
       createItemChart = (data, colorStroke, label) ->
         # make lines function
@@ -114,12 +105,27 @@
           }
           _.each data.win_rates[i], (dataItem, index) ->
             if (dataItem.win_rate != undefined && dataItem.total_deals != undefined)
-              dot = {x:index, y: dataItem.win_rate, r:dataItem.total_deals}
-              if(dataItem.total_deals < 3.5)
-                dot.r = 3.5
+              dot = {x:index, y: dataItem.win_rate, r:dataItem.total_deals * 7}
+              if(dot.r < 1.4)
+                dot.r = 1.5
+              if(dot.r > 10)
+                dot.r = 10
               item.data.push(dot)
           optimizedData.push(item)
           i++
+          average = {
+            data: [],
+            color: '#3498DB',
+            label: 'Average',
+          }
+        _.each data.average_win_rates, (dataItem, index) ->
+          dot = {x:index+1, y: data.average_win_rates[index], r:3.5}
+          if(dot.r < 1.4)
+            dot.r = 1.5
+          if(dot.r > 10)
+            dot.r = 10
+          average.data.push(dot)
+        optimizedData.unshift(average)
         optimizedData
 
       crateAxis = (data, time_periods) ->
@@ -140,7 +146,7 @@
         #interpolate function for Y
         $scope.scaleY = d3.scale.linear()
           .domain([maxValue, minValue])
-          .range([0, yAxisLength]);
+          .range([0, yAxisLength])
 
         #interpolate function for Y
         $scope.scaleX = d3.scale.linear()
@@ -257,10 +263,18 @@
         $scope.winRateAverage = data.average_win_rates
 
       $scope.filterByTeam =(id) ->
-        options = {
-          teamId:id
-        }
-        getData(options)
+        $scope.teamId = id
+        getData()
+
+      $scope.filterByPeriod =(period) ->
+        $scope.time_period = period
+        getData()
+
+      $scope.resetDates = () ->
+        $scope.end_date = null
+        $scope.start_date = null
+        getData()
+
 
 #=====END Filters====================================================================
   ]

@@ -17,13 +17,30 @@
 
       .bs-datepicker {
         input{
+          border:1px solid #ff6e17;
+          border-radius: 5px;
+          color: #ff6e17;
+          outline: none;
           padding-left: 6px;
+        }
+        input::-webkit-input-placeholder {
+          color: #ff6e17;
+        }
+        input::-moz-placeholder {
+          color: #ff6e17;
+        }
+        input:-ms-input-placeholder {
+          color: #ff6e17;
         }
       }
     }
 
     .buttons__filter {
-      margin-top: -10px;
+      margin-top: -9px;
+      .btn {
+        margin-right: 17px;
+        background: white;
+      }
     }
 
     &__title {
@@ -48,6 +65,9 @@
     }
 
     .graph {
+      width: 1070px;
+      margin: auto;
+
       .x-axis,
       .y-axis {
         stroke-opacity: 0.4;
@@ -68,12 +88,17 @@
 
   .btnPrimary {
     color: #fff;
-    background-color: #FF7E30;
+    background-color: #FF7E30!important;
     border-color: #ff6e17;
 
     &:focus{
       outline: none;
     }
+  }
+
+  .reset-dates {
+    padding: 1px 4px;
+    margin-top: -2px;
   }
 }
 

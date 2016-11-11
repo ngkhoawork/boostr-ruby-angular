@@ -17,7 +17,7 @@
                 Team
                 %span.caret
               %ul.dropdown-menu
-                %li{ ng: { repeat: 'filter in teamFilters', class: '{active: filter.name == clientFilter.name}' } }
+                %li{ ng: { repeat: 'filter in teamFilters', class: '{active: filter.id == teamId}' } }
                   %a{ href: '', ng: { click: 'filterByTeam(filter.id)' } }
                     {{ filter.name }}
           %ul.kpi-block__filter
@@ -70,10 +70,13 @@
                 datepicker: { popup: 'MMMM d, y' },
                 ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
                 'is-open': 'callEndDateOpened' }
+          %ul.kpi-block__filter
+            %button.btn.btnPrimary.reset-dates{'ng-click': 'resetDates()'}
+              reset dates
           .pull-right.buttons__filter
-            %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'time_period = "month"'}
+            %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'filterByPeriod("month")'}
               Month
-            %button.btn{ 'ng-class': '{btnPrimary: time_period === "qtr"}', 'ng-click': 'time_period = "qtr"'}
+            %button.btn{ 'ng-class': '{btnPrimary: time_period === "qtr"}', 'ng-click': 'filterByPeriod("qtr")'}
               Quarter
 
       .row
