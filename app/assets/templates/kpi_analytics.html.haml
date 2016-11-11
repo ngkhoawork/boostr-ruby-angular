@@ -61,15 +61,15 @@
               %input{ placeholder: 'Start Date',
                 name: 'start_date', type: 'text',
                 datepicker: { popup: 'MMMM d, y' },
-                ng: { model: 'start_date', required: true, click: 'callDateOpened = true' },
-                'is-open': 'callDateOpened' }
-          -#%ul.kpi-block__filter
-          -#  %span.bs-datepicker
-          -#    %input{ placeholder: 'End Date',
-          -#      name: 'end_date', type: 'text',
-          -#      datepicker: { popup: 'MMMM d, y' },
-          -#      ng: { model: 'end_date', required: true, click: 'callDateOpened = true' },
-          -#      'is-open': 'callDateOpened' }
+                ng: { model: 'start_date', required: true, click: 'callStartDateOpened = true' },
+                'is-open': 'callStartDateOpened' }
+          %ul.kpi-block__filter
+            %span.bs-datepicker
+              %input{ placeholder: 'End Date',
+                name: 'end_date', type: 'text',
+                datepicker: { popup: 'MMMM d, y' },
+                ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
+                'is-open': 'callEndDateOpened' }
           .pull-right.buttons__filter
             %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'time_period = "month"'}
               Month
