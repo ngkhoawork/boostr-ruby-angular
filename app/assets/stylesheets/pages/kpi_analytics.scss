@@ -13,6 +13,13 @@
     &__filter{
       display: inline-block;
       list-style: none;
+      padding-left: 20px;
+
+      .bs-datepicker {
+        input{
+          padding-left: 6px;
+        }
+      }
     }
 
     .buttons__filter {
@@ -56,6 +63,16 @@
       .axis text {
         font: 12px Arial;
       }
+    }
+  }
+
+  .btnPrimary {
+    color: #fff;
+    background-color: #FF7E30;
+    border-color: #ff6e17;
+
+    &:focus{
+      outline: none;
     }
   }
 }

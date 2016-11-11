@@ -10,6 +10,7 @@
       $scope.scaleY = null
       $scope.svg = null
       $scope.teamFilters = []
+      $scope.time_period = 'month'
 
       resetFilters = () ->
         $scope.sellerFilters = []
@@ -39,6 +40,38 @@
       ), (err) ->
         if err
           console.log(err)
+
+      getData = (options) ->
+        query = {
+          time_period: $scope.time_period
+        }
+        if(options.teamId)
+          $scope.isTeamsNamesInWinRateTable = false;
+          query.team = options.teamId
+        else
+          $scope.isTeamsNamesInWinRateTable = true;
+
+        if($scope.start_date)
+          start_date = new Date($scope.start_date)
+          query.start_date = start_date.getFullYear() + '-' + start_date.getMonth()+ '-' + start_date.getDate()
+        if($scope.end_date)
+          end_date = new Date($scope.start_date)
+          query.end_date = end_date.getFullYear() + '-' + end_date.getMonth()+ '-' + end_date.getDate()
+
+        if(options)
+          KPIDashboard.get(query).$promise.then ((data) ->
+            createChart(data)
+            initTablesData(data)
+          ), (err) ->
+            if err
+              console.log(err)
+        else
+          KPIDashboard.get().$promise.then ((data) ->
+            createChart(data)
+            initTablesData(data)
+          ), (err) ->
+            if err
+              console.log(err)
 
       createItemChart = (data, colorStroke, label) ->
         # make lines function
@@ -198,10 +231,18 @@
           { name: 'seller2', param: 'seller2' }
           { name: 'seller3', param: 'seller3' }
         ]
-      $scope.productFilters = [
-        { name: 'product1', param: 'product1' }
-        { name: 'product2', param: 'product2' }
-      ]
+        $scope.productFilters = [
+          { name: 'product1', param: 'product1' }
+          { name: 'product2', param: 'product2' }
+        ]
+        $scope.typeFilters = [
+          { name: 'type1', param: 'type1' }
+          { name: 'type2', param: 'type2' }
+        ]
+        $scope.sourceFilters = [
+          { name: 'source1', param: 'source1' }
+          { name: 'source', param: 'source2' }
+        ]
 
       initTablesData = (data)->
         resetFilters()
@@ -216,22 +257,10 @@
         $scope.winRateAverage = data.average_win_rates
 
       $scope.filterByTeam =(id) ->
-        if(id)
-          KPIDashboard.get({team:id}).$promise.then ((data) ->
-            $scope.isTeamsNamesInWinRateTable = false;
-            createChart(data)
-            initTablesData(data)
-          ), (err) ->
-            if err
-              console.log(err)
-        else
-          KPIDashboard.get().$promise.then ((data) ->
-            $scope.isTeamsNamesInWinRateTable = true;
-            createChart(data)
-            initTablesData(data)
-          ), (err) ->
-            if err
-              console.log(err)
+        options = {
+          teamId:id
+        }
+        getData(options)
 
 #=====END Filters====================================================================
   ]

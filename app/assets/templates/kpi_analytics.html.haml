@@ -5,10 +5,11 @@
         %h3.title KPI`s Dashboard
 
     .row.well.kpi-block
-      .row.legend
-        .col-xs-3
+      .row
+        .col-xs-12
           %h4.kpi-block__title Win Rate by Seller
-        .col-xs-9
+      .row.legend
+        .col-xs-12
           %span Filter by
           %ul.kpi-block__filter
             %li{ dropdown: true }
@@ -31,24 +32,49 @@
           %ul.kpi-block__filter
             %li{ dropdown: true }
               %a{ href: '', dropdown: { toggle: true } }
-                Time period
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'filter in timeFilters' } }
-                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
-                    {{ filter }}
-          %ul.kpi-block__filter
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
                 Product
                 %span.caret
               %ul.dropdown-menu
                 %li{ ng: { repeat: 'filter in productFilters', class: '{active: filter.name == clientFilter.name}' } }
                   %a{ href: '', ng: { click: 'filterClients(filter)' } }
                     {{ filter.name }}
+          %ul.kpi-block__filter
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                Type
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in typeFilters', class: '{active: filter.name == clientFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                    {{ filter.name }}
+          %ul.kpi-block__filter
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                Source
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in sourceFilters', class: '{active: filter.name == clientFilter.name}' } }
+                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                    {{ filter.name }}
+          %ul.kpi-block__filter
+            %span.bs-datepicker
+              %input{ placeholder: 'Start Date',
+                name: 'start_date', type: 'text',
+                datepicker: { popup: 'MMMM d, y' },
+                ng: { model: 'start_date', required: true, click: 'callDateOpened = true' },
+                'is-open': 'callDateOpened' }
+          -#%ul.kpi-block__filter
+          -#  %span.bs-datepicker
+          -#    %input{ placeholder: 'End Date',
+          -#      name: 'end_date', type: 'text',
+          -#      datepicker: { popup: 'MMMM d, y' },
+          -#      ng: { model: 'end_date', required: true, click: 'callDateOpened = true' },
+          -#      'is-open': 'callDateOpened' }
           .pull-right.buttons__filter
-            %button.btn.btn-primary Month
-            %button.btn Quarter
+            %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'time_period = "month"'}
+              Month
+            %button.btn{ 'ng-class': '{btnPrimary: time_period === "qtr"}', 'ng-click': 'time_period = "qtr"'}
+              Quarter
 
       .row
         .col-xs-12.schedule
