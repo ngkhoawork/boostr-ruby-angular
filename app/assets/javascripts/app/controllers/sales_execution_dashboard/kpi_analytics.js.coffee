@@ -1,6 +1,6 @@
 @app.controller 'KPIAnalyticsController',
-  ['$scope', 'KPIDashboard', 'Team'
-    ($scope, KPIDashboard, Team) ->
+  ['$scope', 'KPIDashboard', 'Team', 'Product'
+    ($scope, KPIDashboard, Team, Product) ->
 
       #create chart===========================================================
       $scope.chartHeight= 500
@@ -27,6 +27,10 @@
       #init query
       KPIDashboard.get().$promise.then ((data) ->
         $scope.isTeamsNamesInWinRateTable = true
+
+        Product.all().then (products) ->
+          $scope.productsList = products
+
         Team.all(root_only: true).then ((teams) ->
           $scope.teams = teams
           createChart(data)
@@ -237,10 +241,7 @@
           { name: 'seller2', param: 'seller2' }
           { name: 'seller3', param: 'seller3' }
         ]
-        $scope.productFilters = [
-          { name: 'product1', param: 'product1' }
-          { name: 'product2', param: 'product2' }
-        ]
+
         $scope.typeFilters = [
           { name: 'type1', param: 'type1' }
           { name: 'type2', param: 'type2' }
@@ -275,6 +276,9 @@
         $scope.start_date = null
         getData()
 
+      $scope.filterByProduct =(product) ->
+        $scope.productFilter = product
+#        getData()
 
 #=====END Filters====================================================================
   ]
