@@ -26,6 +26,9 @@
 
       #init query
       KPIDashboard.get().$promise.then ((data) ->
+        createChart(data)
+        initTablesData(data)
+
         $scope.isTeamsNamesInWinRateTable = true
 
         Product.all().then (products) ->
@@ -44,8 +47,6 @@
 
         Team.all(root_only: true).then ((teams) ->
           $scope.teams = teams
-          createChart(data)
-          initTablesData(data)
 
           $scope.teamFilters.push({name:'All', id:''})
           _.each teams, (team) ->
@@ -101,13 +102,13 @@
           .style('stroke', colorStroke)
           .style('stroke-width', 2)
         # dots
-        $scope.svg.selectAll('.dot ' + label)
+        $scope.svg.selectAll('.dot' + label)
           .data(data)
           .enter()
           .append('circle')
           .style('stroke', colorStroke)
           .style('fill', colorStroke)
-          .attr('class', 'dot ' + label)
+          .attr('class', 'dot' + label)
           .attr('r', (d) ->
             d.r
           ).transition().duration(2000)
@@ -137,11 +138,11 @@
               item.data.push(dot)
           optimizedData.push(item)
           i++
-          average = {
-            data: [],
-            color: '#3498DB',
-            label: 'Average',
-          }
+        average = {
+          data: [],
+          color: '#3498DB',
+          label: 'Average',
+        }
         _.each data.average_win_rates, (dataItem, index) ->
           dot = {x:index+1, y: data.average_win_rates[index], r:3.5}
           if(dot.r < 1.4)
@@ -251,7 +252,7 @@
         optimizeData = transformData(data)
         crateAxis(optimizeData, data.time_periods)
         _.each optimizeData, (chart) ->
-          createItemChart(chart.data, chart.color, chart.label);
+          createItemChart(chart.data, chart.color, chart.color.replace(/#/, ''));
 
 
       #END create chart===========================================================
@@ -262,15 +263,6 @@
           { name: 'seller1', param: 'seller1' }
           { name: 'seller2', param: 'seller2' }
           { name: 'seller3', param: 'seller3' }
-        ]
-
-        $scope.typeFilters = [
-          { name: 'type1', param: 'type1' }
-          { name: 'type2', param: 'type2' }
-        ]
-        $scope.sourceFilters = [
-          { name: 'source1', param: 'source1' }
-          { name: 'source', param: 'source2' }
         ]
 
       initTablesData = (data)->
