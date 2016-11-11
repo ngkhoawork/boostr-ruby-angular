@@ -12,6 +12,19 @@ class Api::DisplayLineItemsController < ApplicationController
     })
   end
 
+  def create
+    if params[:file].present?
+      require 'timeout'
+      begin
+        csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
+        errors = DisplayLineItem.import(csv_file, current_user)
+        render json: errors
+      rescue Timeout::Error
+        return
+      end
+    end
+  end
+
   def display_line_items
     member_ids = [current_user.id]
     if current_user.leader?

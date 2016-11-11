@@ -69,6 +69,14 @@
       backdrop: 'static'
       keyboard: false
 
+  $scope.showUploadDisplayIOModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/display_io_upload.html'
+      size: 'lg'
+      controller: 'DisplayIOUploadController'
+      backdrop: 'static'
+      keyboard: false
+
   $scope.exportClients = ->
     $window.open('/api/clients.csv')
     return true

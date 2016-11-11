@@ -31,7 +31,7 @@ Rails.application.routes.draw do
       end
     end
     resources :temp_ios, only: [:index, :update]
-    resources :display_line_items, only: [:index]
+    resources :display_line_items, only: [:index, :create]
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
