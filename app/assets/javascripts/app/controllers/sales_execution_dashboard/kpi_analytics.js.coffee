@@ -225,7 +225,10 @@
 
         legend.append('rect')
           .attr('x', (d, i) ->
-            i * 70
+            if(i<6)
+              return i * 70
+            else
+              return (i-6) * 70
           )
           .attr('y', (d, i) ->
             if(i<6)
@@ -242,7 +245,10 @@
 
         legend.append('text')
           .attr('x', (d, i) ->
-            i * 70 + 20
+            if(i<6)
+              return i * 70 + 20
+            else
+              return (i-6) * 70 + 20
           )
           .attr('y', (d, i) ->
             if(i<6)
