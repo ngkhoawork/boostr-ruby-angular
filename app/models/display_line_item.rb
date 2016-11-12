@@ -3,7 +3,8 @@ class DisplayLineItem < ActiveRecord::Base
   belongs_to :product
   belongs_to :temp_io
 
-  after_create :set_alert
+  before_create :set_alert
+  before_update :set_alert
 
   after_create :update_io_budget
   after_update :update_io_budget
@@ -11,6 +12,13 @@ class DisplayLineItem < ActiveRecord::Base
   def update_io_budget
     if io.present?
       io.update_total_budget
+    end
+
+    if io_id_changed? && io.present?
+      io.members.update_all(pos_balance_cnt: 0, neg_balance_cnt: 0, pos_balance: 0, neg_balance: 0, pos_balance_l_cnt: 0, neg_balance_l_cnt: 0, pos_balance_l: 0, neg_balance_l: 0, last_alert_at: DateTime.now)
+      io.members.each do |user|
+        user.set_alert(true)
+      end
     end
   end
 
@@ -309,6 +317,8 @@ class DisplayLineItem < ActiveRecord::Base
           io_id: io_id,
           line_number: line_number,
           ad_server: ad_server,
+          start_date: start_date,
+          end_date: end_date,
           product_id: product_id,
           quantity: qty,
           price: price,

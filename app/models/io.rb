@@ -4,6 +4,7 @@ class Io < ActiveRecord::Base
   belongs_to :deal
   belongs_to :company
   has_many :io_members, dependent: :destroy
+  has_many :members, dependent: :destroy, through: :io_members
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
   has_many :display_line_items, dependent: :destroy
