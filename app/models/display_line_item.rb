@@ -3,7 +3,16 @@ class DisplayLineItem < ActiveRecord::Base
   belongs_to :product
   belongs_to :temp_io
 
-  before_save :set_alert
+  after_create :set_alert
+
+  after_create :update_io_budget
+  after_update :update_io_budget
+
+  def update_io_budget
+    if io.present?
+      io.update_total_budget
+    end
+  end
 
   def set_alert(should_save=false)
     if !budget.nil? && !budget_remaining.nil?

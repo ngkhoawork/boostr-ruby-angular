@@ -6,27 +6,7 @@ class Api::IosController < ApplicationController
   end
 
   def show
-    render json: io.as_json( include: {
-      io_members: {
-        methods: [
-          :name
-        ]
-      },
-      content_fees: {
-        include: {
-          content_fee_product_budgets: {}
-        },
-        methods: [
-          :product
-        ]
-      },
-      display_line_items: {
-        methods: [
-          :product
-        ]
-      },
-      print_items: {}
-    } )
+    render json: io.full_json
   end
 
   def create
@@ -35,8 +15,6 @@ class Api::IosController < ApplicationController
       io.io_number = io.deal_id
     elsif io.external_io_number
       io.io_number = io.external_io_number
-    else
-
     end
     if io.save
       render json: io, status: :created
@@ -47,27 +25,7 @@ class Api::IosController < ApplicationController
 
   def update
     if io.update_attributes(io_params)
-      render json: io.as_json( include: {
-        io_members: {
-          methods: [
-            :name
-          ]
-        },
-        content_fees: {
-          include: {
-            content_fee_product_budgets: {}
-          },
-          methods: [
-            :product
-          ]
-        },
-        display_line_items: {
-          methods: [
-            :product
-          ]
-        },
-        print_items: {}
-      } )
+      render json: io.full_json
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
     end

@@ -12,8 +12,8 @@ class ContentFee < ActiveRecord::Base
       else
         self.update_budget
       end
+      io.update_total_budget
     end
-    io.update_total_budget
   end
 
   after_create do
