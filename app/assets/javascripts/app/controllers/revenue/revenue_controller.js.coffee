@@ -36,6 +36,21 @@
     $scope.revenueFilter = filter
     $scope.init()
 
+  $scope.showIOEditModal = (io, $event) ->
+    $event.stopPropagation();
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/io_form.html'
+      size: 'lg'
+      controller: 'IOEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        io: ->
+          io
+    .result.then (updated_io) ->
+      if (updated_io)
+        $scope.init();
+
   $scope.showAssignIOModal = (tempIO) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/io_assign_form.html'
@@ -47,7 +62,8 @@
         tempIO: ->
           tempIO
     .result.then (updated_temp_io) ->
-      $scope.init();
+      if (updated_temp_io)
+        $scope.init();
   $scope.go = (path) ->
     $location.path(path)
 

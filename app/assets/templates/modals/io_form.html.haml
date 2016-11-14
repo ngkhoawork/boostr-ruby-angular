@@ -61,7 +61,7 @@
           .col-md-6.bs-datepicker
             %label.control-label{ for: 'end-date' } End Date*
             %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'io.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
-      .form-group
+      .form-group{ ng: {if: "formType == 'New'"}}
         .row
           .col-xs-6
             %label.control-label{ for: 'member' } IO Member*

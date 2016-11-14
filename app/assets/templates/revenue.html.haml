@@ -31,6 +31,7 @@
                 %th.left Start Date
                 %th.left End Date
                 %th.left Deal Name
+                %th.action-column
                 %th.right
 
             %tbody{ ng: { repeat: 'row in revenue | filter:searchText', include: "'partials/revenue_io_rows.html'" } }

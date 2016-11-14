@@ -10,5 +10,8 @@
   %td.left
     %a{ href: '', ng: { if: "row.deal", click: 'go("/deals/" + row.deal.id)'  } }
       {{ row.deal.name }}
+  %td.action-td
+    %a.edit-deal{ href: '', ng: { click: 'showIOEditModal(row, $event)' } }
+      = inline_svg 'icons/pencil.svg'
   %td.right
     %i.fa.fa-angle-right

@@ -49,7 +49,7 @@ class Api::IosController < ApplicationController
       if params[:name]
         company.ios.where("name ilike ?", "%#{params[:name]}%")
       else
-        company.ios
+        company.ios.order("name asc, id asc")
       end
     end
   end
