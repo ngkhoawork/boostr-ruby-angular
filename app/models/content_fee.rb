@@ -47,7 +47,7 @@ class ContentFee < ActiveRecord::Base
   def update_content_fee_product_budgets
     last_index = content_fee_product_budgets.count - 1
     total = 0
-    content_fee_product_budgets.each_with_index do |content_fee_product_budget, index|
+    content_fee_product_budgets.order("start_date asc").each_with_index do |content_fee_product_budget, index|
       if last_index == index
         monthly_budget = (budget) - total
       else
