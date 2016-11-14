@@ -3,6 +3,7 @@ class Api::KpisDashboardController < ApplicationController
 
   def index
     win_rate_list = []
+    average_size_list = []
 
     if params[:team]
       object = team_members
@@ -12,6 +13,7 @@ class Api::KpisDashboardController < ApplicationController
 
     object.each do |item|
       win_rates = []
+      average_deal_sizes = []
 
       if item.is_a?(User)
         ids = [item.id]
@@ -19,33 +21,43 @@ class Api::KpisDashboardController < ApplicationController
         ids = item.all_sellers.map(&:id)
       end
       time_periods.each do |time_period|
-        complete_deals = complete_deals_count(ids, time_period)
-        incomplete_deals = incomplete_deals_count(ids, time_period)
+        complete_deals = complete_deals_list(ids, time_period)
+        incomplete_deals = incomplete_deals_list(ids, time_period)
 
-        win_rate = 0
+        win_rate = 0.0
+        average_deal_size = 0
 
-        win_rate = (complete_deals.to_f / (complete_deals.to_f + incomplete_deals.to_f) * 100).round(0) if (incomplete_deals + complete_deals) > 0
-        total_deals = complete_deals + incomplete_deals
+        win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
+        average_deal_size = ((complete_deals.map(&:budget).reduce(:+) / complete_deals.count) / 100).round(0) if complete_deals.count > 0
+
+        total_deals = complete_deals.count + incomplete_deals.count
         win_rates << { win_rate: win_rate, total_deals: total_deals }
+        average_deal_sizes << { average_deal_size: average_deal_size, total_deals: total_deals }
       end
 
       win_rates << average_win_rate_by_item(win_rates)
       win_rates.unshift(item.name)
       win_rate_list << win_rates
+
+      average_deal_sizes << averaged_size_by_item(average_deal_sizes)
+      average_deal_sizes.unshift(item.name)
+      average_size_list << average_deal_sizes
     end
 
     render json: {
-      win_rates: win_rate_list,
       time_periods: time_period_names,
-      average_win_rates: average_win_rates(win_rate_list)
+      win_rates: win_rate_list,
+      average_win_rates: average_win_rates(win_rate_list),
+      average_deal_sizes: average_size_list,
+      averaged_average_deal_sizes: averaged_average_deal_sizes(average_size_list)
     }
   end
 
   private
 
-  def complete_deals_count(deal_member_ids, time_period)
+  def complete_deals_list(deal_member_ids, time_period)
     deals_by_time_period.select do |deal|
-      (if params[:product_id]
+      (if params[:product_id] && params[:product_id] != 'all'
           deal.products.map(&:id).include?(params[:product_id].to_i)
        else
           true
@@ -55,12 +67,12 @@ class Api::KpisDashboardController < ApplicationController
       deal.closed_at >= time_period.first &&
       deal.closed_at <= time_period.last &&
       deal.stage.probability == 100
-    end.count    
+    end
   end
 
-  def incomplete_deals_count(deal_member_ids, time_period)
+  def incomplete_deals_list(deal_member_ids, time_period)
     deals_by_time_period.select do |deal|
-      (if params[:product_id]
+      (if params[:product_id] && params[:product_id] != 'all'
           deal.products.map(&:id).include?(params[:product_id])
        else
           true
@@ -71,7 +83,7 @@ class Api::KpisDashboardController < ApplicationController
       deal.closed_at <= time_period.last &&
       deal.stage.probability == 0 &&
       deal.stage.open == false
-    end.count    
+    end
   end
 
   def deals_by_time_period
@@ -113,7 +125,11 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def average_win_rate_by_item(win_rates)
-    (win_rates.map{|w| w[:win_rate]}.reduce(:+) / win_rates.length).round(0)
+    (win_rates.map{|w| w[:win_rate] }.reduce(:+) / win_rates.length).round(0)
+  end
+
+  def averaged_size_by_item(average_deal_sizes)
+    (average_deal_sizes.map{|a| a[:average_deal_size] }.reduce(:+) / average_deal_sizes.length).round(0)
   end
 
   def time_periods
@@ -131,11 +147,11 @@ class Api::KpisDashboardController < ApplicationController
     if params[:team]
       ids = team_members.map(&:id) << teams[0].leader.id
       time_periods.each do |time_period|
-        complete_deals = complete_deals_count(ids, time_period)
-        incomplete_deals = incomplete_deals_count(ids, time_period)
+        complete_deals = complete_deals_list(ids, time_period)
+        incomplete_deals = incomplete_deals_list(ids, time_period)
 
         win_rate = 0.0
-        win_rate = (complete_deals.to_f / (complete_deals.to_f + incomplete_deals.to_f) * 100).round(0) if (incomplete_deals + complete_deals) > 0
+        win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
         averages << win_rate
       end
     else
@@ -148,11 +164,35 @@ class Api::KpisDashboardController < ApplicationController
     averages << total_average
   end
 
+  def averaged_average_deal_sizes(average_size_list)
+    averages = []
+
+    if params[:team]
+      ids = team_members.map(&:id) << teams[0].leader.id
+      time_periods.each do |time_period|
+        complete_deals = complete_deals_list(ids, time_period)
+        incomplete_deals = incomplete_deals_list(ids, time_period)
+
+        average_deal_size = 0
+        average_deal_size = ((complete_deals.map(&:budget).reduce(:+) / complete_deals.count) / 100).round(0) if complete_deals.count > 0
+
+        averages << average_deal_size
+      end
+    else
+      average_size_list.transpose[1..-2].each do |average|
+        averages << ((average.map{|w| w[:average_deal_size] }.reduce(:+)) / average.length).round(0)
+      end if average_size_list.length > 0
+    end
+
+    total_average = (average_size_list.map(&:last).reduce(:+) / average_size_list.length).round(0)
+    averages << total_average
+  end
+
   def time_period_names
     names = []
     if params[:time_period] == 'qtr'
       time_periods.each_with_index do |time_period, index|
-        names << "Quarter #{index + 1}"
+        names << "Q#{index + 1}-#{time_period.first.year}"
       end
     else
       time_periods.each do |time_period|
