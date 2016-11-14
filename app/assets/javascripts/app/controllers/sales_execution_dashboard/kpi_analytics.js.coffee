@@ -128,7 +128,7 @@
           }
           _.each data.win_rates[i], (dataItem, index) ->
             if (dataItem.win_rate != undefined && dataItem.total_deals != undefined)
-              dot = {x:index, y: dataItem.win_rate, r:dataItem.total_deals * 7}
+              dot = {x:index, y: dataItem.win_rate, r:dataItem.total_deals}
               if(dot.r < 1.4)
                 dot.r = 1.5
               if(dot.r > 10)
@@ -143,22 +143,6 @@
         }
         _.each data.average_win_rates, (dataItem, index) ->
           dot = {x:index+1, y: data.average_win_rates[index], r:3.5}
-          if(dot.r < 12 )
-            dot.r = 3
-          if(dot.r >= 12 && dot.r < 24)
-            dot.r = 4
-          if(dot.r >= 24 && dot.r < 37)
-            dot.r = 5
-          if(dot.r >= 37 && dot.r < 49)
-            dot.r = 6
-          if(dot.r >= 49 && dot.r < 61)
-            dot.r = 7
-          if(dot.r >= 61 && dot.r < 73)
-            dot.r = 8
-          if(dot.r >= 73 && dot.r < 85)
-            dot.r = 9
-          if(dot.r >= 85)
-            dot.r = 10
           average.data.push(dot)
         optimizedData.unshift(average)
         optimizedData
