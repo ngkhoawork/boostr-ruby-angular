@@ -22,7 +22,7 @@ class Api::KpisDashboardController < ApplicationController
         complete_deals = complete_deals_count(ids, time_period)
         incomplete_deals = incomplete_deals_count(ids, time_period)
 
-        win_rate = 0.0
+        win_rate = 0
 
         win_rate = (complete_deals.to_f / (complete_deals.to_f + incomplete_deals.to_f) * 100).round(0) if (incomplete_deals + complete_deals) > 0
         total_deals = complete_deals + incomplete_deals
@@ -75,7 +75,9 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def deals_by_time_period
-    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).distinct.active.includes(:stage, :deal_members, :products)
+    type_field_id = company.fields.find_by(subject_type: 'Deal', name: 'Deal Type').id if params[:type]
+    source_field_id = company.fields.find_by(subject_type: 'Deal', name: 'Deal Source').id if params[:source]
+    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).by_type(params[:type], type_field_id).by_source(params[:source], source_field_id).distinct.active.includes(:stage, :deal_members, :products)
   end
 
   def teams
@@ -136,13 +138,14 @@ class Api::KpisDashboardController < ApplicationController
         win_rate = (complete_deals.to_f / (complete_deals.to_f + incomplete_deals.to_f) * 100).round(0) if (incomplete_deals + complete_deals) > 0
         averages << win_rate
       end
-      averages
     else
       win_rate_list.transpose[1..-2].each do |average|
         averages << ((average.map{|w| w[:win_rate] }.reduce(:+)) / average.length).round(0)
       end if win_rate_list.length > 0
-      averages
     end
+
+    total_average = (win_rate_list.map(&:last).reduce(:+) / win_rate_list.length).round(0)
+    averages << total_average
   end
 
   def time_period_names
