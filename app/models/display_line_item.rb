@@ -15,8 +15,8 @@ class DisplayLineItem < ActiveRecord::Base
     end
 
     if io_id_changed? && io.present?
-      io.members.update_all(pos_balance_cnt: 0, neg_balance_cnt: 0, pos_balance: 0, neg_balance: 0, pos_balance_l_cnt: 0, neg_balance_l_cnt: 0, pos_balance_l: 0, neg_balance_l: 0, last_alert_at: DateTime.now)
-      io.members.each do |user|
+      io.users.update_all(pos_balance_cnt: 0, neg_balance_cnt: 0, pos_balance: 0, neg_balance: 0, pos_balance_l_cnt: 0, neg_balance_l_cnt: 0, pos_balance_l: 0, neg_balance_l: 0, last_alert_at: DateTime.now)
+      io.users.each do |user|
         user.set_alert(true)
       end
     end

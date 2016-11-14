@@ -5,6 +5,7 @@ class TempIo < ActiveRecord::Base
 
   after_update do
     redirect_display_line_items() if io_id_changed? && io.present?
+    update_io_start_end_dates() if io_id_changed? && io.present?
   end
 
   def redirect_display_line_items
@@ -17,5 +18,13 @@ class TempIo < ActiveRecord::Base
     end
   end
 
-
+  def update_io_start_end_dates
+    if start_date < io.start_date
+      io.start_date = start_date
+    end
+    if end_date > io.end_date
+      io.end_date = end_date
+    end
+    io.save
+  end
 end

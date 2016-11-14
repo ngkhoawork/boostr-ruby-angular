@@ -56,6 +56,11 @@ class ForecastMember
         parts << display_line_item.id
         parts << display_line_item.updated_at
       end
+
+      io.io_members.each do |io_member|
+        parts << io_member.id
+        parts << io_member.updated_at
+      end
     end
 
     # Week over week
