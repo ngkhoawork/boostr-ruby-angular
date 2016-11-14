@@ -10,6 +10,19 @@
   .kpi-block {
     margin-bottom: 50px;
 
+    .date-caret {
+      margin-left: -4px;
+      color: #ff6e17;
+    }
+
+    .default-date {
+      width: 95px;
+    }
+
+    .date {
+      width: 136px!important;
+    }
+
     &__filter{
       display: inline-block;
       list-style: none;
@@ -17,8 +30,8 @@
 
       .bs-datepicker {
         input{
-          border:1px solid #ff6e17;
-          border-radius: 5px;
+          cursor: pointer;
+          border:none;
           color: #ff6e17;
           outline: none;
           padding-left: 6px;

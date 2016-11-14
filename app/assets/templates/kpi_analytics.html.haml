@@ -56,20 +56,22 @@
                 %li{ ng: { repeat: 'source in sources', class: '{active: source.name === sourceFilter.name}' } }
                   %a{ href: '', ng: { click: 'filterBySource(source)' } }
                     {{ source.name }}
-          %ul.kpi-block__filter
+          %ul.kpi-block__filter.default-date{ng: { class: '{date: start_date}'}}
             %span.bs-datepicker
               %input{ placeholder: 'Start Date',
                 name: 'start_date', type: 'text',
                 datepicker: { popup: 'MMMM d, y' },
                 ng: { model: 'start_date', required: true, click: 'callStartDateOpened = true' },
-                'is-open': 'callStartDateOpened' }
-          %ul.kpi-block__filter
+                'is-open': 'callStartDateOpened', }
+          %span.date-caret.caret{ng: { if: '!start_date'}}
+          %ul.kpi-block__filter.default-date{ng: { class: '{date: end_date}'}}
             %span.bs-datepicker
               %input{ placeholder: 'End Date',
                 name: 'end_date', type: 'text',
                 datepicker: { popup: 'MMMM d, y' },
                 ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
                 'is-open': 'callEndDateOpened' }
+          %span.date-caret.caret{ng: { if: '!end_date'}}
           %ul.kpi-block__filter
             %button.btn.btnPrimary.reset-dates{'ng-click': 'resetDates()'}
               reset dates

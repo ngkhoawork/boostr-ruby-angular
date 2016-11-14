@@ -143,9 +143,21 @@
         }
         _.each data.average_win_rates, (dataItem, index) ->
           dot = {x:index+1, y: data.average_win_rates[index], r:3.5}
-          if(dot.r < 1.4)
-            dot.r = 1.5
-          if(dot.r > 10)
+          if(dot.r < 12 )
+            dot.r = 3
+          if(dot.r >= 12 && dot.r < 24)
+            dot.r = 4
+          if(dot.r >= 24 && dot.r < 37)
+            dot.r = 5
+          if(dot.r >= 37 && dot.r < 49)
+            dot.r = 6
+          if(dot.r >= 49 && dot.r < 61)
+            dot.r = 7
+          if(dot.r >= 61 && dot.r < 73)
+            dot.r = 8
+          if(dot.r >= 73 && dot.r < 85)
+            dot.r = 9
+          if(dot.r >= 85)
             dot.r = 10
           average.data.push(dot)
         optimizedData.unshift(average)
@@ -182,7 +194,9 @@
           .orient('bottom')
           .tickFormat((d, i) ->
             time_periods[i-1]
-          ).ticks(time_periods.length)
+          )
+          .tickPadding(10)
+          .ticks(time_periods.length)
 
         #make Y
         yAxis = d3.svg.axis()
