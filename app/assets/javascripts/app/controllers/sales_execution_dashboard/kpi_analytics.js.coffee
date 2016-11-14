@@ -188,7 +188,8 @@
         yAxis = d3.svg.axis()
           .scale($scope.scaleY)
           .orient('left')
-          .tickValues([20, 40, 60, 80, 100]);
+          .tickValues([20, 40, 60, 80, 100])
+          .tickFormat((d) -> d + "%");
 
         #paint Х
         $scope.svg.append('g')
