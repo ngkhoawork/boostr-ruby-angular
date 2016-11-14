@@ -33,15 +33,18 @@
 
         Product.all().then (products) ->
           $scope.productsList = products
+          $scope.productsList.unshift({name:'All', id:''})
 
         Field.defaults({}, 'Deal').then (fields) ->
           client_types = Field.findDealTypes(fields)
           $scope.typesList = []
+          $scope.typesList.push({name:'All', id:''})
           client_types.options.forEach (option) ->
             $scope.typesList.push(option)
 
           sources = Field.findSources(fields)
           $scope.sources = []
+          $scope.sources.push({name:'All', id:''})
           sources.options.forEach (option) ->
             $scope.sources.push(option)
 
@@ -306,7 +309,6 @@
         getData()
 
       $scope.filterByProduct =(product) ->
-        console.log(product)
         $scope.productFilter = product
         getData()
 
