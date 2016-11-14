@@ -69,11 +69,11 @@
         if($scope.productFilter)
           query.product_id = $scope.productFilter.id
 
-#        if($scope.typeFilter)
-#          query.type = $scope.typeFilter.id
-#
-#        if($scope.sourceFilter)
-#          query.source = $scope.sourceFilter.id
+        if($scope.typeFilter)
+          query.type = $scope.typeFilter.id
+
+        if($scope.sourceFilter)
+          query.source = $scope.sourceFilter.id
 
         if($scope.teamId)
           query.team = $scope.teamId
@@ -145,8 +145,9 @@
           label: 'Average',
         }
         _.each data.average_win_rates, (dataItem, index) ->
-          dot = {x:index+1, y: data.average_win_rates[index], r:3.5}
-          average.data.push(dot)
+          if(data.average_win_rates.length-1 !=index )
+            dot = {x:index+1, y: data.average_win_rates[index], r:3.5}
+            average.data.push(dot)
         optimizedData.unshift(average)
         optimizedData
 
@@ -294,6 +295,7 @@
           $scope.winRateData.push(data.win_rates[i])
           i++
         $scope.winRateAverage = data.average_win_rates
+        $scope.winRateAverage.unshift('Average')
 
       $scope.filterByTeam =(id) ->
         $scope.teamId = id
@@ -314,11 +316,11 @@
 
       $scope.filterByType =(type) ->
         $scope.typeFilter = type
-#        getData()
+        getData()
 
       $scope.filterBySource =(source) ->
         $scope.sourceFilter = source
-#        getData()
+        getData()
 
 #=====END Filters====================================================================
   ]
