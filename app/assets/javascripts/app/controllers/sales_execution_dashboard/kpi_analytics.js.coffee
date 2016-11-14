@@ -33,25 +33,25 @@
 
         Product.all().then (products) ->
           $scope.productsList = products
-          $scope.productsList.unshift({name:'All', id:''})
+          $scope.productsList.unshift({name:'All', id:'all'})
 
         Field.defaults({}, 'Deal').then (fields) ->
           client_types = Field.findDealTypes(fields)
           $scope.typesList = []
-          $scope.typesList.push({name:'All', id:''})
+          $scope.typesList.push({name:'All', id:'all'})
           client_types.options.forEach (option) ->
             $scope.typesList.push(option)
 
           sources = Field.findSources(fields)
           $scope.sources = []
-          $scope.sources.push({name:'All', id:''})
+          $scope.sources.push({name:'All', id:'all'})
           sources.options.forEach (option) ->
             $scope.sources.push(option)
 
         Team.all(root_only: true).then ((teams) ->
           $scope.teams = teams
 
-          $scope.teamFilters.push({name:'All', id:''})
+          $scope.teamFilters.push({name:'All', id:'all'})
           _.each teams, (team) ->
             $scope.teamFilters.push({name:team.name, id:team.id})
           ), (err) ->
