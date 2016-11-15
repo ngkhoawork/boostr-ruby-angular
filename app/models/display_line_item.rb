@@ -88,38 +88,38 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
-      start_date = nil
+      io_start_date = nil
       if row[2].present?
         begin
-          start_date = Date.strptime(row[2].strip, "%m/%d/%Y")
+          io_start_date = Date.strptime(row[2].strip, "%m/%d/%Y")
         rescue ArgumentError
-          error = {row: row_number, message: ['Start Date must be a valid datetime'] }
+          error = {row: row_number, message: ['IO Start Date must be a valid datetime'] }
           errors << error
           next
         end
       else
-        error = {row: row_number, message: ['Start Date must be present'] }
+        error = {row: row_number, message: ['IO Start Date must be present'] }
         errors << error
         next
       end
 
-      end_date = nil
+      io_end_date = nil
       if row[3].present?
         begin
-          end_date = Date.strptime(row[3].strip, "%m/%d/%Y")
+          io_end_date = Date.strptime(row[3].strip, "%m/%d/%Y")
         rescue ArgumentError
-          error = {row: row_number, message: ['End Date must be a valid datetime'] }
+          error = {row: row_number, message: ['IO End Date must be a valid datetime'] }
           errors << error
           next
         end
       else
-        error = {row: row_number, message: ['End Date must be present'] }
+        error = {row: row_number, message: ['IO End Date must be present'] }
         errors << error
         next
       end
 
-      if (end_date && start_date) && start_date > end_date
-        error = {row: row_number, message: ['Start Date must preceed End Date'] }
+      if (io_end_date && io_start_date) && io_start_date > io_end_date
+        error = {row: row_number, message: ['IO Start Date must preceed IO End Date'] }
         errors << error
         next
       end
@@ -173,10 +173,46 @@ class DisplayLineItem < ActiveRecord::Base
 
       ad_server = row[8]
 
+      start_date = nil
+      if row[9].present?
+        begin
+          start_date = Date.strptime(row[9].strip, "%m/%d/%Y")
+        rescue ArgumentError
+          error = {row: row_number, message: ['Start Date must be a valid datetime'] }
+          errors << error
+          next
+        end
+      else
+        error = {row: row_number, message: ['Start Date must be present'] }
+        errors << error
+        next
+      end
+
+      end_date = nil
+      if row[10].present?
+        begin
+          end_date = Date.strptime(row[10].strip, "%m/%d/%Y")
+        rescue ArgumentError
+          error = {row: row_number, message: ['End Date must be a valid datetime'] }
+          errors << error
+          next
+        end
+      else
+        error = {row: row_number, message: ['End Date must be present'] }
+        errors << error
+        next
+      end
+
+      if (end_date && start_date) && start_date > end_date
+        error = {row: row_number, message: ['Start Date must preceed End Date'] }
+        errors << error
+        next
+      end
+
       product_id = nil
 
-      if row[9]
-        products = current_user.company.products.where("name ilike ?", row[9].strip)
+      if row[11]
+        products = current_user.company.products.where("name ilike ?", row[11].strip)
         if products.count > 0
           product_id = products.first.id
         else
@@ -192,8 +228,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty = nil
-      if row[10]
-        qty = Integer(row[10].strip) rescue false
+      if row[12]
+        qty = Integer(row[12].strip) rescue false
         unless qty
           error = { row: row_number, message: ["Qty must be a numeric value"] }
           errors << error
@@ -205,12 +241,12 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
-      price = row[11]
-      pricing_type = row[12]
+      price = row[13]
+      pricing_type = row[14]
 
       budget = nil
-      if row[13]
-        budget = Float(row[13].strip) rescue false
+      if row[15]
+        budget = Float(row[15].strip) rescue false
         unless budget
           error = { row: row_number, message: ["Budget must be a numeric value"] }
           errors << error
@@ -223,8 +259,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_delivered = nil
-      if row[14]
-        budget_delivered = Float(row[14].strip) rescue false
+      if row[16]
+        budget_delivered = Float(row[16].strip) rescue false
         unless budget_delivered
           error = { row: row_number, message: ["Budget Delivered must be a numeric value"] }
           errors << error
@@ -233,8 +269,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_remaining = nil
-      if row[15]
-        budget_remaining = Float(row[15].strip) rescue false
+      if row[17]
+        budget_remaining = Float(row[17].strip) rescue false
         unless budget_remaining
           error = { row: row_number, message: ["Budget Remaining must be a numeric value"] }
           errors << error
@@ -243,8 +279,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered = nil
-      if row[16]
-        qty_delivered = Float(row[16].strip) rescue false
+      if row[18]
+        qty_delivered = Float(row[18].strip) rescue false
         unless qty_delivered
           error = { row: row_number, message: ["Qty Delivered must be a numeric value"] }
           errors << error
@@ -253,8 +289,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining = nil
-      if row[17]
-        qty_remaining = Float(row[17].strip) rescue false
+      if row[19]
+        qty_remaining = Float(row[19].strip) rescue false
         unless qty_remaining
           error = { row: row_number, message: ["Qty Remaining must be a numeric value"] }
           errors << error
@@ -263,8 +299,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered_3p = nil
-      if row[18]
-        qty_delivered_3p = Float(row[18].strip) rescue false
+      if row[20]
+        qty_delivered_3p = Float(row[20].strip) rescue false
         unless qty_delivered_3p
           error = { row: row_number, message: ["3P Qty Delivered must be a numeric value"] }
           errors << error
@@ -273,8 +309,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining_3p = nil
-      if row[19]
-        qty_remaining_3p = Float(row[19].strip) rescue false
+      if row[21]
+        qty_remaining_3p = Float(row[21].strip) rescue false
         unless qty_remaining_3p
           error = { row: row_number, message: ["3P Qty Remaining must be a numeric value"] }
           errors << error
@@ -283,8 +319,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_delivered_3p = nil
-      if row[20]
-        budget_delivered_3p = Float(row[20].strip) rescue false
+      if row[22]
+        budget_delivered_3p = Float(row[22].strip) rescue false
         unless budget_delivered_3p
           error = { row: row_number, message: ["3P Budget Delivered must be a numeric value"] }
           errors << error
@@ -293,8 +329,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_remaining_3p = nil
-      if row[21]
-        budget_remaining_3p = Float(row[21].strip) rescue false
+      if row[23]
+        budget_remaining_3p = Float(row[23].strip) rescue false
         unless budget_remaining_3p
           error = { row: row_number, message: ["3P Budget Remaining must be a numeric value"] }
           errors << error
@@ -304,8 +340,8 @@ class DisplayLineItem < ActiveRecord::Base
 
       temp_io_params = {
           name: io_name,
-          start_date: start_date,
-          end_date: end_date,
+          start_date: io_start_date,
+          end_date: io_end_date,
           budget: io_budget,
           advertiser: advertiser,
           agency: agency,

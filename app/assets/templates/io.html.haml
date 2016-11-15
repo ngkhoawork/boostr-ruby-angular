@@ -161,29 +161,29 @@
                 %td.right
                   {{ displayLineItem.quantity }}
                 %td.right
-                  {{ displayLineItem.price | currency:'$':0 }}
+                  {{ displayLineItem.price | currency:'$':2 }}
                 %td.left
                   {{ displayLineItem.pricing_type }}
                 %td.right
-                  {{ displayLineItem.budget | currency:'$':0 }}
+                  {{ displayLineItem.budget | currency:'$':2 }}
                 %td.right
-                  {{ displayLineItem.budget_delivered | currency:'$':0 }}
+                  {{ displayLineItem.budget_delivered | currency:'$':2 }}
                 %td.right
-                  {{ displayLineItem.budget_remaining | currency:'$':0 }}
+                  {{ displayLineItem.budget_remaining | currency:'$':2 }}
                 %td.right
                   {{ displayLineItem.quantity_delivered }}
                 %td.right
                   {{ displayLineItem.quantity_remaining }}
                 %td.right
-                  {{ displayLineItem.budget_delivered_3p | currency:'$':0 }}
+                  {{ displayLineItem.quantity_delivered_3p }}
                 %td.right
-                  {{ displayLineItem.budget_remaining_3p | currency:'$':0 }}
+                  {{ displayLineItem.quantity_remaining_3p }}
                 %td.right
-                  {{ displayLineItem.quantity_delivered_3p | currency:'$':0 }}
+                  {{ displayLineItem.budget_delivered_3p | currency:'$':2 }}
                 %td.right
-                  {{ displayLineItem.quantity_remaining_3p | currency:'$':0 }}
+                  {{ displayLineItem.budget_remaining_3p | currency:'$':2 }}
                 %td.right
-                  {{ displayLineItem.daily_run_rate | currency:'$':0 }}
+                  {{ displayLineItem.daily_run_rate | currency:'$':2 }}
                 %td.right
                   {{ displayLineItem.num_days_til_out_of_budget }}
               %tr{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }

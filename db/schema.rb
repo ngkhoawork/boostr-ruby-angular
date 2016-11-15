@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161109191553) do
+ActiveRecord::Schema.define(version: 20161115131744) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -290,11 +290,11 @@ ActiveRecord::Schema.define(version: 20161109191553) do
     t.integer  "line_number"
     t.string   "ad_server"
     t.integer  "quantity"
-    t.integer  "budget",                     limit: 8
+    t.decimal  "budget",                               precision: 15, scale: 2
     t.string   "pricing_type"
     t.integer  "product_id"
-    t.integer  "budget_delivered",           limit: 8
-    t.integer  "budget_remaining",           limit: 8
+    t.decimal  "budget_delivered",                     precision: 15, scale: 2
+    t.decimal  "budget_remaining",                     precision: 15, scale: 2
     t.integer  "quantity_delivered"
     t.integer  "quantity_remaining"
     t.date     "start_date"
@@ -303,11 +303,11 @@ ActiveRecord::Schema.define(version: 20161109191553) do
     t.integer  "num_days_til_out_of_budget", limit: 8
     t.integer  "quantity_delivered_3p"
     t.integer  "quantity_remaining_3p"
-    t.integer  "budget_delivered_3p",        limit: 8
-    t.integer  "budget_remaining_3p",        limit: 8
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
-    t.integer  "price",                      limit: 8
+    t.decimal  "budget_delivered_3p",                  precision: 15, scale: 2
+    t.decimal  "budget_remaining_3p",                  precision: 15, scale: 2
+    t.datetime "created_at",                                                    null: false
+    t.datetime "updated_at",                                                    null: false
+    t.decimal  "price",                                precision: 15, scale: 2
     t.integer  "balance",                    limit: 8
     t.datetime "last_alert_at"
     t.integer  "temp_io_id"
@@ -348,13 +348,13 @@ ActiveRecord::Schema.define(version: 20161109191553) do
   create_table "ios", force: :cascade do |t|
     t.integer  "advertiser_id"
     t.integer  "agency_id"
-    t.integer  "budget"
+    t.decimal  "budget",             precision: 15, scale: 2
     t.date     "start_date"
     t.date     "end_date"
     t.integer  "external_io_number"
     t.integer  "io_number"
-    t.datetime "created_at",         null: false
-    t.datetime "updated_at",         null: false
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
     t.string   "name"
     t.integer  "company_id"
     t.integer  "deal_id"
