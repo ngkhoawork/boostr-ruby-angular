@@ -74,6 +74,7 @@ class DisplayLineItem < ActiveRecord::Base
             ios = current_user.company.ios.where("io_number = ?", names[-1].strip)
             if (ios.count > 0)
               io_id = ios[0].id
+              io = ios[0]
               io_name = names[0..-2].join('_')
             else
               io_name = row[1]
