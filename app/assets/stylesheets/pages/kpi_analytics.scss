@@ -98,6 +98,7 @@
         span {
           display: inline-block;
           width: 73px;
+          text-align: center;
         }
 
         p:first-child {
@@ -110,36 +111,12 @@
           color: #2B3C49;
           font-size: 18px;
           font-weight: bold;
-          span:nth-child(1) {
-            text-align: left;
-          }
-          span:nth-child(1) {
-            text-align: left;
-          }
-          span:nth-child(1) {
-            text-align: center;
-          }
-          span:nth-child(1) {
-            text-align: left;
-          }
         }
 
         p:nth-child(3) {
           width: 230px;
           color: #A3ACB4;
           font-size: 12px;
-          span:nth-child(1) {
-            text-align: left;
-          }
-          span:nth-child(1) {
-            text-align: left;
-          }
-          span:nth-child(1) {
-            text-align: center;
-          }
-          span:nth-child(1) {
-            text-align: left;
-          }
         }
       }
 
