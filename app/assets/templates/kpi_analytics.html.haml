@@ -83,7 +83,7 @@
 
       .row
         .col-xs-12.schedule
-          %div.graph
+          %div.win-rate
       .row
         .col-md-12.table-report.text-center
           %table.table.table-hover
@@ -100,6 +100,39 @@
 
             %tbody
               %tr{ ng: { repeat: 'itemsData in winRateData' }}
+                %td{ ng: { repeat: 'item in itemsData' }}
+                  %span{ ng: { if: 'item.win_rate !== undefined' }}
+                    {{item.win_rate}}
+                  %span{ ng: { if: 'item.win_rate === undefined' }}
+                    {{item}}
+              %tr{ ng: { if: 'winRateAverage' }}
+                %td.text--bold{ ng: { repeat: 'average in winRateAverage track by $index' }}
+                  {{average}}
+
+    .row.well.kpi-block
+      .row
+        .col-xs-12
+          %h4.kpi-block__title Average Deal Size by Seller
+
+      .row
+        .col-xs-12.schedule
+          %div.deal-size
+      .row
+        .col-md-12.table-report.text-center
+          %table.table.table-hover
+            %thead
+              %tr
+                %th{ ng: { if: 'isTeamsNamesInWinRateTable' }}
+                  Teams
+                %th{ ng: { if: '!isTeamsNamesInWinRateTable' }}
+                  Sellers
+                %th{ ng: { repeat: 'period in winRateTimePeriods' }}
+                  {{period}}
+                %th.text--bold{ 'ng-click': 'changeSortType("total")'}
+                  Total
+
+            %tbody
+              %tr{ ng: { repeat: 'dealSize in dealSizeData track by $index' }}
                 %td{ ng: { repeat: 'item in itemsData' }}
                   %span{ ng: { if: 'item.win_rate !== undefined' }}
                     {{item.win_rate}}
