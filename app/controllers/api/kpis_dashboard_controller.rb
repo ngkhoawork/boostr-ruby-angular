@@ -31,7 +31,7 @@ class Api::KpisDashboardController < ApplicationController
         average_deal_size = ((complete_deals.map(&:budget).reduce(:+) / complete_deals.count) / 100).round(0) if complete_deals.count > 0
 
         total_deals = complete_deals.count + incomplete_deals.count
-        win_rates << { win_rate: win_rate, total_deals: total_deals }
+        win_rates << { win_rate: win_rate, total_deals: total_deals, won: complete_deals.count, lost: incomplete_deals.count }
         average_deal_sizes << { average_deal_size: average_deal_size, total_deals: total_deals }
       end
 
