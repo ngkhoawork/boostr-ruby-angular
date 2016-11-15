@@ -80,6 +80,67 @@
     .graph {
       width: 1070px;
       margin: auto;
+      position: relative;
+
+      div.tooltip {
+        position: absolute;
+        text-align: center;
+        width: 250px;
+        height: 100px;
+        padding: 10px 10px 10px 20px;
+        background: white;
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+        box-shadow: -1px 9px 36px -6px rgba(163,162,180,0.65);
+
+        span {
+          display: inline-block;
+          width: 73px;
+        }
+
+        p:first-child {
+          color: #FF7E30;
+          font-size: 16px;
+        }
+
+        p:nth-child(2) {
+          width: 230px;
+          color: #2B3C49;
+          font-size: 18px;
+          font-weight: bold;
+          span:nth-child(1) {
+            text-align: left;
+          }
+          span:nth-child(1) {
+            text-align: left;
+          }
+          span:nth-child(1) {
+            text-align: center;
+          }
+          span:nth-child(1) {
+            text-align: left;
+          }
+        }
+
+        p:nth-child(3) {
+          width: 230px;
+          color: #A3ACB4;
+          font-size: 12px;
+          span:nth-child(1) {
+            text-align: left;
+          }
+          span:nth-child(1) {
+            text-align: left;
+          }
+          span:nth-child(1) {
+            text-align: center;
+          }
+          span:nth-child(1) {
+            text-align: left;
+          }
+        }
+      }
 
       .x-axis,
       .y-axis {

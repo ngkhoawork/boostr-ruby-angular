@@ -102,6 +102,12 @@
           .attr('d', line(data))
           .style('stroke', colorStroke)
           .style('stroke-width', 2)
+
+        #Define the div for the tooltip
+        div = d3.select(".graph").append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0);
+
         # dots
         $scope.svg.selectAll('.dot' + label)
           .data(data)
@@ -109,15 +115,21 @@
           .append('circle')
           .style('stroke', colorStroke)
           .style('fill', colorStroke)
+          .style('cursor', 'pointer')
           .attr('class', 'dot' + label)
           .attr('r', (d) ->
             d.r
-          ).transition().duration(2000)
-          .attr('cx', (d) ->
+          ).attr('cx', (d) ->
             $scope.scaleX(d.x) + $scope.chartMargin
-          ).attr 'cy', (d) ->
+          ).attr('cy', (d) ->
             $scope.scaleY(d.y) + $scope.chartMargin
-        return
+          ).on('mouseover', (d) ->
+              div.transition().duration(200).style 'opacity', 1
+              div.html('<p>'+ d.seller + '</p><p><span>' + d.win_rate + '%</span><span>' +d.wins+ '</span><span>' +d.loses+'</span></p><p><span>Win Rate</span><span>Wins</span><span>Losses</span></p>')
+              .style('left', $scope.scaleX(d.x) + $scope.chartMargin - 115 + 'px')
+              .style('top', $scope.scaleY(d.y) + $scope.chartMargin + 18 + 'px')
+          ).on 'mouseout', (d) ->
+            div.transition().duration(500).style 'opacity', 0
 
       transformData = (data) ->
         optimizedData = []
@@ -131,10 +143,19 @@
           }
           _.each data.win_rates[i], (dataItem, index) ->
             if (dataItem.win_rate != undefined && dataItem.total_deals != undefined)
-              dot = {x:index, y: dataItem.win_rate, r:dataItem.total_deals}
-              if(dot.r < 1.4)
-                dot.r = 1.5
-              if(dot.r > 10)
+              dot = {
+                x:index,
+                y: dataItem.win_rate,
+                win_rate:dataItem.total_deals,
+                wins:dataItem.total_deals,
+                loses:dataItem.total_deals
+                seller:data.win_rates[i][0]
+              }
+              if(dataItem.total_deals < 10)
+                dot.r = 3
+              if(dataItem.total_deals >= 10 && dataItem.total_deals <= 20)
+                dot.r = 5
+              if(dataItem.total_deals > 20)
                 dot.r = 10
               item.data.push(dot)
           optimizedData.push(item)
@@ -146,7 +167,15 @@
         }
         _.each data.average_win_rates, (dataItem, index) ->
           if(data.average_win_rates.length-1 !=index )
-            dot = {x:index+1, y: data.average_win_rates[index], r:3.5}
+            dot = {
+              x:index+1,
+              y: data.average_win_rates[index],
+              r:3.5,
+              win_rate:dataItem,
+              wins:dataItem,
+              loses:dataItem
+              seller:'Average'
+            }
             average.data.push(dot)
         optimizedData.unshift(average)
         optimizedData
