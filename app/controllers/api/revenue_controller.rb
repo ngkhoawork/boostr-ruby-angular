@@ -83,7 +83,7 @@ class Api::RevenueController < ApplicationController
       end
 
       io_obj.display_line_items.where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year).each do |display_line_item|
-        year = display_line_item.start_date.year
+        # year = display_line_item.start_date.year
         for index in 1..12
           month = index.to_s
           if index < 10
