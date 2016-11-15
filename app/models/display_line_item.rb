@@ -384,12 +384,15 @@ class DisplayLineItem < ActiveRecord::Base
 
         display_line_item_params[:temp_io_id] = temp_io.id
       else
-        if io_start_date < io.start_date
-          io.start_date = io_start_date
+        if io.content_fees.count == 0
+          if io_start_date < io.start_date
+            io.start_date = io_start_date
+          end
+          if io_end_date < io.end_date
+            io.end_date = io_end_date
+          end
         end
-        if io_end_date < io.end_date
-          io.end_date = io_end_date
-        end
+        io.external_io_number = external_io_number
         io.save
       end
       display_line_item = nil
