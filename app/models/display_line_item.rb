@@ -50,6 +50,7 @@ class DisplayLineItem < ActiveRecord::Base
     CSV.parse(file, headers: true) do |row|
       row_number += 1
       io_id = nil
+      io = nil
 
       external_io_number = nil
       if row[0]
@@ -57,6 +58,7 @@ class DisplayLineItem < ActiveRecord::Base
         ios = current_user.company.ios.where("external_io_number = ?", row[0].strip)
         if ios.count > 0
           io_id = ios[0].id
+          io = ios[0]
         end
       else
         error = { row: row_number, message: ["Ext IO Num can't be blank"] }
@@ -359,12 +361,13 @@ class DisplayLineItem < ActiveRecord::Base
           quantity: qty,
           price: price,
           pricing_type: pricing_type,
+          budget: budget,
           budget_delivered: budget_delivered,
           budget_remaining: budget_remaining,
           quantity_delivered: qty_delivered,
           quantity_remaining: qty_remaining,
           quantity_delivered_3p: qty_delivered_3p,
-          quantity_delivered_3p: qty_remaining_3p,
+          quantity_remaining_3p: qty_remaining_3p,
           budget_delivered_3p: budget_delivered_3p,
           budget_remaining_3p: budget_remaining_3p
       }
@@ -379,9 +382,25 @@ class DisplayLineItem < ActiveRecord::Base
         end
 
         display_line_item_params[:temp_io_id] = temp_io.id
+      else
+        if io_start_date < io.start_date
+          io.start_date = io_start_date
+        end
+        if io_end_date < io.end_date
+          io.end_date = io_end_date
+        end
+        io.save
       end
-      display_line_item = DisplayLineItem.find_by_line_number(line_number)
-      if display_line_item
+      display_line_item = nil
+      if io_id.nil?
+        display_line_items = DisplayLineItem.where("line_number=? and temp_io_id=?", line_number, temp_io.id)
+      else
+        display_line_items = DisplayLineItem.where("line_number=? and io_id=?", line_number, io_id)
+      end
+      if display_line_items.count > 0
+        display_line_item = display_line_items.first
+      end
+      if display_line_item.present?
         display_line_item.update(display_line_item_params)
       else
         DisplayLineItem.create(display_line_item_params)
