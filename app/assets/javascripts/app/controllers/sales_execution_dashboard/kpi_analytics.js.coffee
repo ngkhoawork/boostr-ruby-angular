@@ -21,6 +21,7 @@
 
       resetTables = () ->
         $scope.winRateData = []
+        $scope.dealSizeData = []
 
       $scope.colors = ['blue', 'orange', 'green', 'grey', 'yellow', 'red', 'aqua', 'purple', 'black', 'brown']
 
@@ -106,13 +107,15 @@
         createFilters(data)
         resetTables()
         $scope.winRateTimePeriods = data.time_periods
-        len = data.win_rates.length
-        i = 0
-        while i < len
-          $scope.winRateData.push(data.win_rates[i])
-          i++
+        #win rates table
+        $scope.winRateData = data.win_rates
         $scope.winRateAverage = data.average_win_rates
         $scope.winRateAverage.unshift('Average')
+
+        #dealSize table
+        $scope.dealSizeData = data.average_deal_sizes
+        $scope.dealSizeDataAverage = data.averaged_average_deal_sizes
+        $scope.dealSizeDataAverage.unshift('Average')
 
       $scope.filterByTeam =(id) ->
         $scope.teamId = id
@@ -391,7 +394,7 @@
           $scope.scaleDSY(d.y) + $scope.chartMargin
         ).on('mouseover', (d) ->
           div.transition().duration(200).style 'opacity', 1
-          div.html('<p>'+ d.seller + '</p><p><span>' + d.win_rate + '%</span><span>' +d.wins+ '</span><span>' +d.loses+'</span></p><p><span>Win Rate</span><span>Wins</span><span>Losses</span></p>')
+          div.html('<p>'+ d.seller + '</p><p><span>' + d.win_rate + '$</span><span>' +d.wins+ '</span><span>' +d.loses+'</span></p><p><span>Win Rate</span><span>Wins</span><span>Losses</span></p>')
           .style('left', $scope.scaleDSX(d.x) + $scope.chartMargin - 115 + 'px')
           .style('top', $scope.scaleDSY(d.y) + $scope.chartMargin + 18 + 'px')
         ).on 'mouseout', (d) ->
@@ -413,8 +416,8 @@
                 x:index,
                 y: dataItem.average_deal_size,
                 win_rate:dataItem.average_deal_size,
-                wins:dataItem.won,
-                loses:dataItem.lost
+                wins:dataItem.won || 0,
+                loses:dataItem.lost || 0
                 seller:data.win_rates[i][0]
               }
               if(dataItem.total_deals < 10)
@@ -456,10 +459,8 @@
         xAxisLength = $scope.chartWidth - 2 * $scope.chartMargin;
         #length Y = height svg container -  margin top and bottom
         yAxisLength = $scope.chartHeight- 2 * $scope.chartMargin;
+
         #find max value for Y
-
-
-
         maxValue =  0;
         _.each data, (dataItem) ->
           _.each dataItem.data, (dataDot) ->

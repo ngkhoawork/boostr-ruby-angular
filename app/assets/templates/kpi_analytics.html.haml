@@ -132,12 +132,12 @@
                   Total
 
             %tbody
-              %tr{ ng: { repeat: 'dealSize in dealSizeData track by $index' }}
+              %tr{ ng: { repeat: 'itemsData in dealSizeData track by $index' }}
                 %td{ ng: { repeat: 'item in itemsData' }}
-                  %span{ ng: { if: 'item.win_rate !== undefined' }}
-                    {{item.win_rate}}
-                  %span{ ng: { if: 'item.win_rate === undefined' }}
+                  %span{ ng: { if: 'item.average_deal_size !== undefined' }}
+                    {{item.average_deal_size}}
+                  %span{ ng: { if: 'item.average_deal_size === undefined' }}
                     {{item}}
-              %tr{ ng: { if: 'winRateAverage' }}
-                %td.text--bold{ ng: { repeat: 'average in winRateAverage track by $index' }}
+              %tr
+                %td.text--bold{ ng: { repeat: 'average in dealSizeDataAverage track by $index' }}
                   {{average}}
