@@ -21,7 +21,7 @@ class Api::ContentFeesController < ApplicationController
   def destroy
     content_fee.destroy
     io.update_total_budget
-    render io
+    render io.full_json
   end
 
   private

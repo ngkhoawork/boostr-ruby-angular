@@ -37,7 +37,7 @@
             %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'currentIO.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
               {{currentIO.end_date | date: 'M/d/yyyy'}}
             %span{ ng: { if: "currentUser.user_type != 5" } }
-              {{currentIO.start_date | date : 'M/d/yyyy'}}
+              {{currentIO.end_date | date : 'M/d/yyyy'}}
     .row.io-content
       .col-xs-12
         #members.section{ ng: { show: "currentUser.user_type == 5" } }

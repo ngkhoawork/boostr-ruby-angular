@@ -91,7 +91,7 @@ class DisplayLineItem < ActiveRecord::Base
       start_date = nil
       if row[2].present?
         begin
-          start_date = Date.parse(row[2])
+          start_date = Date.strptime(row[2].strip, "%m/%d/%Y")
         rescue ArgumentError
           error = {row: row_number, message: ['Start Date must be a valid datetime'] }
           errors << error
@@ -106,7 +106,7 @@ class DisplayLineItem < ActiveRecord::Base
       end_date = nil
       if row[3].present?
         begin
-          end_date = Date.parse(row[3])
+          end_date = Date.strptime(row[3].strip, "%m/%d/%Y")
         rescue ArgumentError
           error = {row: row_number, message: ['End Date must be a valid datetime'] }
           errors << error
@@ -337,6 +337,9 @@ class DisplayLineItem < ActiveRecord::Base
         temp_io = TempIo.find_by_external_io_number(external_io_number)
         if temp_io.nil?
           temp_io = TempIo.create(temp_io_params)
+        else
+          # temp_io_params[:id] = temp_io.id
+          temp_io.update_attributes(temp_io_params)
         end
 
         display_line_item_params[:temp_io_id] = temp_io.id

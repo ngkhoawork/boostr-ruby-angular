@@ -17,7 +17,7 @@ class Api::IosController < ApplicationController
       io.io_number = io.external_io_number
     end
     if io.save
-      render json: io, status: :created
+      render json: io.full_json, status: :created
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
     end
