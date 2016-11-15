@@ -917,11 +917,10 @@ class Deal < ActiveRecord::Base
       self.deal_products.each do |deal_product|
         if deal_product.product.revenue_type != "Content-Fee"
           should_open = true
-          deal_product.open = true
+          deal_product.update_columns(open: true)
         else
-          deal_product.open = false
+          deal_product.update_columns(open: false)
         end
-        deal_product.save
       end
 
       notification = company.notifications.find_by_name('Closed Won')
@@ -933,10 +932,8 @@ class Deal < ActiveRecord::Base
         end
       end
     else
-      self.deal_products.each do |deal_product|
-        deal_product.open = stage.open
-        deal_product.save
-      end
+      self.deal_products.update_all(open: stage.open)
+
       if !self.closed_at.nil? && stage.open?
         self.closed_at = nil
         if !self.fields.nil? && !self.values.nil?
@@ -1015,8 +1012,7 @@ class Deal < ActiveRecord::Base
                 budget: deal_product.budget / 100
             }
             content_fee = ContentFee.create(content_fee_param)
-            deal_product.open = false
-            deal_product.save
+            deal_product.update_columns(open: false)
           end
         end
       end
