@@ -145,7 +145,8 @@ class Api::KpisDashboardController < ApplicationController
     averages = []
 
     if params[:team]
-      ids = team_members.map(&:id) << teams[0].leader.id
+      ids = team_members.map(&:id)
+      ids << teams[0].leader.id if teams[0].leader
       time_periods.each do |time_period|
         complete_deals = complete_deals_list(ids, time_period)
         incomplete_deals = incomplete_deals_list(ids, time_period)
@@ -168,7 +169,8 @@ class Api::KpisDashboardController < ApplicationController
     averages = []
 
     if params[:team]
-      ids = team_members.map(&:id) << teams[0].leader.id
+      ids = team_members.map(&:id)
+      ids << teams[0].leader.id if teams[0].leader
       time_periods.each do |time_period|
         complete_deals = complete_deals_list(ids, time_period)
         incomplete_deals = incomplete_deals_list(ids, time_period)
