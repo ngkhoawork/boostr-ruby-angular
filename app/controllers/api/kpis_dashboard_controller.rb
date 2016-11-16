@@ -148,11 +148,11 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def time_periods
-    time_periods = TimePeriods.new
+    time_period_builder = TimePeriods.new
     if params[:time_period] == 'qtr'
-      time_periods.quarters(start_date..end_date)
+      @time_periods ||= time_period_builder.quarters(start_date..end_date)
     else
-      time_periods.months(start_date..end_date)
+      @time_periods ||= time_period_builder.months(start_date..end_date)
     end
   end
 

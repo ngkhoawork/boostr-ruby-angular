@@ -1,6 +1,6 @@
 @app.controller 'KPIAnalyticsController',
-  ['$scope', 'KPIDashboard', 'Team', 'Product', 'Field'
-    ($scope, KPIDashboard, Team, Product, Field) ->
+  ['$scope', 'KPIDashboard', 'Team', 'Product', 'Field', '$filter'
+    ($scope, KPIDashboard, Team, Product, Field, $filter) ->
 
       #create chart===========================================================
       $scope.chartHeight= 500
@@ -88,9 +88,9 @@
         if($scope.teamId)
           query.team = $scope.teamId
 
-        if($scope.endDateIsValid && $scope.startDateIsValid  )
-          query.start_date = $scope.start_date
-          query.end_date = $scope.end_date
+        if($scope.endDateIsValid && $scope.startDateIsValid)
+          query.start_date = $filter('date')($scope.start_date, 'dd-MM-yyyy')
+          query.end_date = $filter('date')($scope.end_date, 'dd-MM-yyyy')
 
         KPIDashboard.get(query).$promise.then ((data) ->
           createChart(data)
