@@ -29,7 +29,7 @@ class Api::KpisDashboardController < ApplicationController
 
         win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
 
-        total_deal_size = complete_deals.map(&:budget).reduce(:+)
+        total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
         if total_deal_size && complete_deals.count > 0
           average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
         end
@@ -200,7 +200,7 @@ class Api::KpisDashboardController < ApplicationController
         incomplete_deals = incomplete_deals_list(ids, time_period)
 
         average_deal_size = 0
-        total_deal_size = complete_deals.map(&:budget).reduce(:+)
+        total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
         if total_deal_size && complete_deals.count > 0
           average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
         end
