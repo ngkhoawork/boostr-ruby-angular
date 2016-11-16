@@ -4,6 +4,7 @@ class Api::KpisDashboardController < ApplicationController
   def index
     win_rate_list = []
     average_size_list = []
+    cycle_time_list = []
 
     if params[:team] && params[:team] != 'all'
       object = team_members
@@ -14,6 +15,7 @@ class Api::KpisDashboardController < ApplicationController
     object.each do |item|
       win_rates = []
       average_deal_sizes = []
+      cycle_times = []
 
       if item.is_a?(User)
         ids = [item.id]
@@ -26,6 +28,7 @@ class Api::KpisDashboardController < ApplicationController
 
         win_rate = 0.0
         average_deal_size = 0
+        cycle_time = 0.0
 
         win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
 
@@ -33,27 +36,34 @@ class Api::KpisDashboardController < ApplicationController
         if total_deal_size && complete_deals.count > 0
           average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
         end
+        cycle_time_arr = complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s) - Date.parse(deal.created_at.utc.to_s)}
+        cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(0) if cycle_time_arr.count > 0
 
         total_deals = complete_deals.count + incomplete_deals.count
+
         win_rates << { win_rate: win_rate, total_deals: total_deals, won: complete_deals.count, lost: incomplete_deals.count }
-        average_deal_sizes << { average_deal_size: average_deal_size, total_deals: total_deals }
+        average_deal_sizes << { average_deal_size: average_deal_size, total_deals: total_deals, won: complete_deals.count }
+        cycle_times << { cycle_time: cycle_time, total_deals: total_deals, won: complete_deals.count }
       end
 
       win_rates << average_win_rate_by_item(item)
       win_rates.unshift(item.name)
       win_rate_list << win_rates
 
-      average_deal_sizes << averaged_size_by_item(average_deal_sizes)
+      average_deal_sizes << averaged_size_by_item(item)
       average_deal_sizes.unshift(item.name)
       average_size_list << average_deal_sizes
+
+      cycle_times << average_cycle_time_by_item(item)
+      cycle_times.unshift(item.name)
+      cycle_time_list << cycle_times
     end
 
     render json: {
       time_periods: time_period_names,
-      win_rates: win_rate_list,
-      average_win_rates: average_win_rates(win_rate_list),
-      average_deal_sizes: average_size_list,
-      averaged_average_deal_sizes: averaged_average_deal_sizes(average_size_list)
+      win_rates: win_rate_list << average_win_rates,
+      average_deal_sizes: average_size_list << averaged_average_deal_sizes,
+      cycle_times: cycle_time_list << average_cycle_time
     }
   end
 
@@ -108,6 +118,10 @@ class Api::KpisDashboardController < ApplicationController
     @team_members ||= teams.map(&:all_sellers).flatten
   end
 
+  def team_leaders
+    @team_leaders ||= teams.map(&:all_leaders).flatten
+  end
+
   def root_teams
     company.teams.roots(true)
   end
@@ -143,8 +157,37 @@ class Api::KpisDashboardController < ApplicationController
     win_rate
   end
 
-  def averaged_size_by_item(average_deal_sizes)
-    (average_deal_sizes.map{|a| a[:average_deal_size] }.reduce(:+) / average_deal_sizes.length).round(0)
+  def averaged_size_by_item(item)
+    if item.is_a?(User)
+      ids = [item.id]
+    else
+      ids = item.all_sellers.map(&:id)
+    end
+    complete_deals = complete_deals_list(ids, full_time_period)
+    incomplete_deals = incomplete_deals_list(ids, full_time_period)
+
+    average_deal_size = 0
+    total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
+    if total_deal_size && complete_deals.count > 0
+      average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
+    end
+    average_deal_size
+  end
+
+  def average_cycle_time_by_item(item)
+    if item.is_a?(User)
+      ids = [item.id]
+    else
+      ids = item.all_sellers.map(&:id)
+    end
+
+    complete_deals = complete_deals_list(ids, full_time_period)
+    incomplete_deals = incomplete_deals_list(ids, full_time_period)
+
+    cycle_time = 0.0
+    cycle_time_arr = complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s) - Date.parse(deal.created_at.utc.to_s)}
+    cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(0) if cycle_time_arr.count > 0
+    cycle_time
   end
 
   def time_periods
@@ -160,67 +203,94 @@ class Api::KpisDashboardController < ApplicationController
     time_periods.first.first..time_periods.last.last
   end
 
-  def average_win_rates(win_rate_list)
-    averages = []
+  def average_win_rates
+    averages = ['Average']
 
+    ids = team_members.map(&:id)
     if params[:team] && params[:team] != 'all'
-      ids = team_members.map(&:id)
       ids << teams[0].leader.id if teams[0].leader
-      time_periods.each do |time_period|
-        complete_deals = complete_deals_list(ids, time_period)
-        incomplete_deals = incomplete_deals_list(ids, time_period)
-
-        win_rate = 0.0
-        win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
-        averages << win_rate
-      end
-    else
-      win_rate_list.transpose[1..-2].each do |average|
-        averages << ((average.map{|w| w[:win_rate] }.reduce(:+)) / average.length).round(0)
-      end if win_rate_list.length > 0
     end
 
-    total_win_rate = win_rate_list.map(&:last).reduce(:+)
-    if total_win_rate && win_rate_list.length > 0
-      total_average = (total_win_rate / win_rate_list.length).round(0)
-    else
-      total_average = 0
+    time_periods.each do |time_period|
+      complete_deals = complete_deals_list(ids, time_period)
+      incomplete_deals = incomplete_deals_list(ids, time_period)
+      total_deals = complete_deals.count + incomplete_deals.count
+
+      win_rate = 0.0
+      win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
+      averages << {win_rate: win_rate, total_deals: total_deals, won: complete_deals.count, lost: incomplete_deals.count }
     end
-    averages << total_average
+
+    all_complete_deals = complete_deals_list(ids, full_time_period)
+    all_incomplete_deals = incomplete_deals_list(ids, full_time_period)
+
+    total_grand_win_rate = 0.0
+
+    total_grand_win_rate = (all_complete_deals.count.to_f / (all_complete_deals.count.to_f + all_incomplete_deals.count.to_f) * 100).round(0) if (all_incomplete_deals.count + all_complete_deals.count) > 0
+
+    averages << total_grand_win_rate
   end
 
-  def averaged_average_deal_sizes(average_size_list)
-    averages = []
+  def averaged_average_deal_sizes
+    averages = ['Average']
 
+    ids = team_members.map(&:id)
     if params[:team] && params[:team] != 'all'
-      ids = team_members.map(&:id)
       ids << teams[0].leader.id if teams[0].leader
-      time_periods.each do |time_period|
-        complete_deals = complete_deals_list(ids, time_period)
-        incomplete_deals = incomplete_deals_list(ids, time_period)
+    end
 
-        average_deal_size = 0
-        total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
-        if total_deal_size && complete_deals.count > 0
-          average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
-        end
+    time_periods.each do |time_period|
+      complete_deals = complete_deals_list(ids, time_period)
+      incomplete_deals = incomplete_deals_list(ids, time_period)
+      total_deals = complete_deals.count + incomplete_deals.count
 
-        averages << average_deal_size
+      average_deal_size = 0
+      total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
+      if total_deal_size && complete_deals.count > 0
+        average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
       end
-    else
-      average_size_list.transpose[1..-2].each do |average|
-        averages << ((average.map{|w| w[:average_deal_size] }.reduce(:+)) / average.length).round(0)
-      end if average_size_list.length > 0
+
+      averages << { average_deal_size: average_deal_size, total_deals: total_deals, won: complete_deals.count }
     end
 
+    all_complete_deals = complete_deals_list(ids, full_time_period)
 
-    total_average_size = average_size_list.map(&:last).reduce(:+)
-    if total_average_size && average_size_list.length > 0
-      total_average = (total_average_size / average_size_list.length).round(0)
-    else
-      total_average = 0
+    total_grand_average_size = 0
+    total_deal_size = all_complete_deals.map(&:budget).compact.reduce(:+)
+    if total_deal_size && all_complete_deals.count > 0
+      total_grand_average_size = ((total_deal_size / all_complete_deals.count) / 100).round(0)
     end
-    averages << total_average
+
+    averages << total_grand_average_size
+  end
+
+  def average_cycle_time
+    averages = ['Average']
+
+    ids = team_members.map(&:id)
+    if params[:team] && params[:team] != 'all'
+      ids << teams[0].leader.id if teams[0].leader
+    end
+
+    time_periods.each do |time_period|
+      complete_deals = complete_deals_list(ids, time_period)
+      incomplete_deals = incomplete_deals_list(ids, time_period)
+      total_deals = complete_deals.count + incomplete_deals.count
+      cycle_time = 0.0
+
+      cycle_time_arr = complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s) - Date.parse(deal.created_at.utc.to_s)}
+      cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(0) if cycle_time_arr.count > 0
+
+      averages << { cycle_time: cycle_time, total_deals: total_deals, won: complete_deals.count }
+    end
+
+    all_complete_deals = complete_deals_list(ids, full_time_period)
+    total_grand_cycle_time = 0.0
+
+    cycle_time_arr = all_complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s) - Date.parse(deal.created_at.utc.to_s)}
+    total_grand_cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(0) if cycle_time_arr.count > 0
+
+    averages << total_grand_cycle_time
   end
 
   def time_period_names
