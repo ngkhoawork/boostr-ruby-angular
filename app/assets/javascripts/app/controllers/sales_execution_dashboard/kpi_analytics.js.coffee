@@ -80,9 +80,8 @@
         if($scope.teamId)
           query.team = $scope.teamId
 
-        if($scope.start_date)
+        if($scope.endDateIsValid && $scope.startDateIsValid  )
           query.start_date = $scope.start_date
-        if($scope.end_date)
           query.end_date = $scope.end_date
 
         KPIDashboard.get(query).$promise.then ((data) ->
@@ -93,6 +92,27 @@
           if err
             console.log(err)
 
+#work with dates====================================================================
+      $scope.endDateIsValid = undefined
+      $scope.startDateIsValid = undefined
+
+      $scope.$watch 'start_date', () ->
+        checkDates()
+
+      $scope.$watch 'end_date', () ->
+        checkDates()
+
+      checkDates = () ->
+        end_date = new Date($scope.end_date).valueOf()
+        start_date = new Date($scope.start_date).valueOf()
+
+        if(end_date && start_date && end_date < start_date)
+          $scope.endDateIsValid = false
+
+        if(end_date && start_date && end_date > start_date)
+          $scope.endDateIsValid = true
+          $scope.startDateIsValid = true
+          getData()
 #Filters====================================================================
       createFilters = (data) ->
         $scope.timeFilters = data.time_periods
@@ -126,8 +146,10 @@
         getData()
 
       $scope.resetDates = () ->
-        $scope.end_date = null
         $scope.start_date = null
+        $scope.end_date = null
+        $scope.endDateIsValid = undefined
+        $scope.startDateIsValid = undefined
         getData()
 
       $scope.filterByProduct =(product) ->
@@ -394,7 +416,7 @@
           $scope.scaleDSY(d.y) + $scope.chartMargin
         ).on('mouseover', (d) ->
           div.transition().duration(200).style 'opacity', 1
-          div.html('<p>'+ d.seller + '</p><p><span>' + d.win_rate + '$</span><span>' +d.wins+ '</span><span>' +d.loses+'</span></p><p><span>Win Rate</span><span>Wins</span><span>Losses</span></p>')
+          div.html('<p>'+ d.seller + '</p><p><span>$' + d.win_rate + '</span><span>' +d.wins+ '</span></p><p><span>Deal Size</span><span>Wins</span></p>')
           .style('left', $scope.scaleDSX(d.x) + $scope.chartMargin - 115 + 'px')
           .style('top', $scope.scaleDSY(d.y) + $scope.chartMargin + 18 + 'px')
         ).on 'mouseout', (d) ->
@@ -417,7 +439,6 @@
                 y: dataItem.average_deal_size,
                 win_rate:dataItem.average_deal_size,
                 wins:dataItem.won || 0,
-                loses:dataItem.lost || 0
                 seller:data.win_rates[i][0]
               }
               if(dataItem.total_deals < 10)

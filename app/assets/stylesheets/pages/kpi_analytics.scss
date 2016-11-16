@@ -20,7 +20,14 @@
     }
 
     .date {
-      width: 136px!important;
+      width: 144px!important;
+    }
+
+    .dateInvalid {
+      input {
+        width: 136px;
+        border-bottom: 3px solid #ff6e17!important;
+      }
     }
 
     &__filter{

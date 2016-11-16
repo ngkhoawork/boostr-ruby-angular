@@ -60,7 +60,7 @@
                     ng: { model: 'start_date', required: true, click: 'callStartDateOpened = true' },
                     'is-open': 'callStartDateOpened', }
         %span.date-caret.caret{ng: { if: '!start_date'}}
-        %ul.kpi-block__filter.default-date{ng: { class: '{date: end_date}'}}
+        %ul.kpi-block__filter.default-date{ng: { class: '{date: end_date, dateInvalid: endDateIsValid === false}'}}
           %span.bs-datepicker
             %input{ placeholder: 'End Date',
                     name: 'end_date', type: 'text',
