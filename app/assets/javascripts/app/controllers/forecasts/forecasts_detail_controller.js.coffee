@@ -77,7 +77,7 @@
         for n in [1..4]
           budget = revenue.quarters[n-1]
           $scope.revenues[revenue.year][revenue.advertiser.id].quarter_amounts[n-1] += budget
-          $scope.revenuesByQuarter[revenue.year][n] += budget
+#          $scope.revenuesByQuarter[revenue.year][n] += budget
 
   $q.all(forecastRequests).then (responses) ->
     responses.forEach (response) ->
