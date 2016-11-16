@@ -31,7 +31,7 @@ class Api::KpisDashboardController < ApplicationController
 
         total_deal_size = complete_deals.map(&:budget).reduce(:+)
         if total_deal_size && complete_deals.count > 0
-          average_deal_size = (total_deal_size / complete_deals.count) / 100).round(0) 
+          average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
         end
 
         total_deals = complete_deals.count + incomplete_deals.count
@@ -202,7 +202,7 @@ class Api::KpisDashboardController < ApplicationController
         average_deal_size = 0
         total_deal_size = complete_deals.map(&:budget).reduce(:+)
         if total_deal_size && complete_deals.count > 0
-          average_deal_size = (total_deal_size / complete_deals.count) / 100).round(0) 
+          average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
         end
 
         averages << average_deal_size
