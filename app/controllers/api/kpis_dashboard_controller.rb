@@ -5,7 +5,7 @@ class Api::KpisDashboardController < ApplicationController
     win_rate_list = []
     average_size_list = []
 
-    if params[:team]
+    if params[:team] && params[:team] != 'all'
       object = team_members
     else
       object = teams
@@ -93,7 +93,7 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def teams
-    if params[:team]
+    if params[:team] && params[:team] != 'all'
       @team ||= [company.teams.find(params[:team])]
     else
       @team ||= root_teams
@@ -159,7 +159,7 @@ class Api::KpisDashboardController < ApplicationController
   def average_win_rates(win_rate_list)
     averages = []
 
-    if params[:team]
+    if params[:team] && params[:team] != 'all'
       ids = team_members.map(&:id)
       ids << teams[0].leader.id if teams[0].leader
       time_periods.each do |time_period|
@@ -183,7 +183,7 @@ class Api::KpisDashboardController < ApplicationController
   def averaged_average_deal_sizes(average_size_list)
     averages = []
 
-    if params[:team]
+    if params[:team] && params[:team] != 'all'
       ids = team_members.map(&:id)
       ids << teams[0].leader.id if teams[0].leader
       time_periods.each do |time_period|
