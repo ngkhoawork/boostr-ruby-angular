@@ -12,6 +12,9 @@ class DisplayLineItem < ActiveRecord::Base
   def update_io_budget
     if io.present?
       io.update_total_budget
+      if io.deal.present?
+        io.deal.close_display_product()
+      end
     end
 
     if io_id_changed? && io.present?
