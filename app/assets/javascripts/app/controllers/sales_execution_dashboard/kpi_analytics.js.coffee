@@ -61,9 +61,9 @@
             name:'All'
           })
 
-          $scope.teamFilters.push({name:'All', id:'all'})
-          _.each teams, (team) ->
-            $scope.teamFilters.push({name:team.name, id:team.id})
+#          $scope.teamFilters.push({name:'All', id:''})
+#          _.each teams, (team) ->
+#            $scope.teamFilters.push({name:team.name, id:team.id})
           ), (err) ->
             if err
               console.log(err)
