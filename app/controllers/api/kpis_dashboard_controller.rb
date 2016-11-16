@@ -176,7 +176,12 @@ class Api::KpisDashboardController < ApplicationController
       end if win_rate_list.length > 0
     end
 
-    total_average = (win_rate_list.map(&:last).reduce(:+) / win_rate_list.length).round(0)
+    total_win_rate = win_rate_list.map(&:last).reduce(:+)
+    if total_win_rate && win_rate_list.length > 0
+      total_average = (total_win_rate / win_rate_list.length).round(0)
+    else
+      total_average = 0
+    end
     averages << total_average
   end
 
@@ -201,7 +206,13 @@ class Api::KpisDashboardController < ApplicationController
       end if average_size_list.length > 0
     end
 
-    total_average = (average_size_list.map(&:last).reduce(:+) / average_size_list.length).round(0)
+
+    total_average_size = average_size_list.map(&:last).reduce(:+)
+    if total_average_size && average_size_list.length > 0
+      total_average = (total_average_size / average_size_list.length).round(0)
+    else
+      total_average = 0
+    end
     averages << total_average
   end
 
