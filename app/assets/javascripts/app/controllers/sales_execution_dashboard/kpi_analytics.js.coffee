@@ -12,6 +12,10 @@
       $scope.teamFilters = []
       $scope.time_period = 'month'
       $scope.teamId = ''
+      $scope.selectedTeam = {
+        id:'all',
+        name:'Team'
+      }
 
       resetFilters = () ->
         $scope.sellerFilters = []
@@ -50,8 +54,12 @@
           sources.options.forEach (option) ->
             $scope.sources.push(option)
 
-        Team.all(root_only: true).then ((teams) ->
+        Team.all(all_teams: true).then ((teams) ->
           $scope.teams = teams
+          $scope.teams.unshift({
+            id:'all',
+            name:'All'
+          })
 
           $scope.teamFilters.push({name:'All', id:'all'})
           _.each teams, (team) ->
@@ -91,6 +99,11 @@
         ), (err) ->
           if err
             console.log(err)
+
+      #team watcher
+      $scope.$watch 'selectedTeam', () ->
+        $scope.teamId = $scope.selectedTeam.id
+        getData()
 
 #work with dates====================================================================
       $scope.endDateIsValid = undefined

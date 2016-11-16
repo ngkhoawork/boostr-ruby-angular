@@ -7,15 +7,16 @@
     .row.legend.well.kpi-block
       .col-xs-12
         %span Filter by
-        %ul.kpi-block__filter
-          %li{ dropdown: true }
-            %a{ href: '', dropdown: { toggle: true } }
-              Team
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'filter in teamFilters', class: '{active: filter.id == teamId}' } }
-                %a{ href: '', ng: { click: 'filterByTeam(filter.id)' } }
-                  {{ filter.name }}
+        %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
+        -#%ul.kpi-block__filter
+        -#  %li{ dropdown: true }
+        -#    %a{ href: '', dropdown: { toggle: true } }
+        -#      Team
+        -#      %span.caret
+        -#    %ul.dropdown-menu
+        -#      %li{ ng: { repeat: 'filter in teamFilters', class: '{active: filter.id == teamId}' } }
+        -#        %a{ href: '', ng: { click: 'filterByTeam(filter.id)' } }
+        -#          {{ filter.name }}
         %ul.kpi-block__filter
           %li{ dropdown: true }
             %a{ href: '', dropdown: { toggle: true } }
