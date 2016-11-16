@@ -135,6 +135,17 @@ class User < ActiveRecord::Base
           split_budget += content_fee_product_budget.daily_budget * effective_days * share / 100
         end
       end
+      io.display_line_items.each do |display_line_item|
+        sum_budget += display_line_item.budget
+        if (start_date <= display_line_item.end_date && end_date >= display_line_item.start_date)
+          in_period_days = [[end_date, display_line_item.end_date].min - [start_date, display_line_item.start_date].max + 1, 0].max
+          in_period_effective_days = [[end_date, display_line_item.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
+          sum_period_budget += display_line_item.ave_run_rate * in_period_days
+          split_period_budget += display_line_item.ave_run_rate * in_period_effective_days * share / 100
+        end
+        effective_days = [[display_line_item.end_date, io_member.to_date].min - [display_line_item.start_date, io_member.from_date].max + 1, 0].max
+        split_budget += display_line_item.ave_run_rate * effective_days * share / 100
+      end
     end
     @crevenues = [{
         name: self.name,

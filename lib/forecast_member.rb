@@ -51,6 +51,16 @@ class ForecastMember
         parts << content_fee_product_budget.id
         parts << content_fee_product_budget.updated_at
       end
+
+      io.display_line_items.each do |display_line_item|
+        parts << display_line_item.id
+        parts << display_line_item.updated_at
+      end
+
+      io.io_members.each do |io_member|
+        parts << io_member.id
+        parts << io_member.updated_at
+      end
     end
 
     # Week over week
@@ -142,15 +152,7 @@ class ForecastMember
     return @revenue if defined?(@revenue)
 
     @revenue = ios.sum do |io|
-      io_member = io.io_members.find_by(user_id: member.id)
-      share = io_member.share
-      total_budget = 0
-      io.content_fees.each do |content_fee|
-        content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
-          total_budget += content_fee_product_budget.daily_budget * effective_days(content_fee_product_budget, io_member) * (share/100.0)
-        end
-      end
-      total_budget
+      io.effective_revenue_budget(member, start_date, end_date)
     end
   end
 

@@ -4,21 +4,7 @@ class Api::ContentFeesController < ApplicationController
   def create
     content_fee = io.content_fees.new(content_fee_params)
     if content_fee.save
-      render json: io.as_json( include: {
-          io_members: {
-              methods: [
-                  :name
-              ]
-          },
-          content_fees: {
-              include: {
-                  content_fee_product_budgets: {}
-              },
-              methods: [
-                  :product
-              ]
-          }
-      } )
+      render json: io.full_json
     else
       render json: { errors: content_fee.errors.messages }, status: :unprocessable_entity
     end
@@ -26,21 +12,7 @@ class Api::ContentFeesController < ApplicationController
 
   def update
     if content_fee.update_attributes(content_fee_params)
-      render json: io.as_json( include: {
-          io_members: {
-              methods: [
-                  :name
-              ]
-          },
-          content_fees: {
-              include: {
-                  content_fee_product_budgets: {}
-              },
-              methods: [
-                  :product
-              ]
-          }
-      } )
+      render json: io.full_json
     else
       render json: { errors: content_fee.errors.messages }, status: :unprocessable_entity
     end
@@ -49,7 +21,7 @@ class Api::ContentFeesController < ApplicationController
   def destroy
     content_fee.destroy
     io.update_total_budget
-    render io
+    render io.full_json
   end
 
   private

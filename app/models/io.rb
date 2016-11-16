@@ -4,6 +4,7 @@ class Io < ActiveRecord::Base
   belongs_to :deal
   belongs_to :company
   has_many :io_members, dependent: :destroy
+  has_many :users, dependent: :destroy, through: :io_members
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
   has_many :display_line_items, dependent: :destroy
@@ -79,7 +80,29 @@ class Io < ActiveRecord::Base
   end
 
   def update_total_budget
-    update_attributes(budget: content_fees.sum(:budget))
+    update_attributes(budget: (content_fees.sum(:budget) + display_line_items.sum(:budget)))
+  end
+
+  def effective_revenue_budget(member, start_date, end_date)
+    io_member = self.io_members.find_by(user_id: member.id)
+    share = io_member.share
+    total_budget = 0
+    self.content_fees.each do |content_fee|
+      content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+        total_budget += content_fee_product_budget.daily_budget * effective_days(start_date, end_date, content_fee_product_budget, io_member) * (share/100.0)
+      end
+    end
+    self.display_line_items.each do |display_line_item|
+      ave_run_rate = display_line_item.ave_run_rate
+      total_budget += ave_run_rate * effective_days(start_date, end_date, display_line_item, io_member) * (share/100.0)
+    end
+    total_budget
+  end
+
+  def effective_days(start_date, end_date, comparer, effecter)
+    from = [start_date, comparer.start_date, effecter.from_date].max
+    to = [end_date, comparer.end_date, effecter.to_date].min
+    [(to.to_date - from.to_date) + 1, 0].max.to_f
   end
 
   def merge_recursively(a, b)
@@ -94,5 +117,29 @@ class Io < ActiveRecord::Base
         }
       )
     )
+  end
+
+  def full_json
+    self.as_json( include: {
+        io_members: {
+            methods: [
+                :name
+            ]
+        },
+        content_fees: {
+            include: {
+                content_fee_product_budgets: {}
+            },
+            methods: [
+                :product
+            ]
+        },
+        display_line_items: {
+            methods: [
+                :product
+            ]
+        },
+        print_items: {}
+    } )
   end
 end
