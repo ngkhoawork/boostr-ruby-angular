@@ -77,7 +77,6 @@
         for n in [1..4]
           budget = revenue.quarters[n-1]
           $scope.revenues[revenue.year][revenue.advertiser.id].quarter_amounts[n-1] += budget
-#          $scope.revenuesByQuarter[revenue.year][n] += budget
 
   $q.all(forecastRequests).then (responses) ->
     responses.forEach (response) ->
@@ -104,6 +103,11 @@
         return if not team or not team.year or not team.quarter
 
         $scope.revenuesByQuarter[team.year][team.quarter] += team.revenue
+        $scope.forecastsByQuarter[team.year][team.quarter] += team.revenue
+        $scope.forecastsByYear[team.year] += team.revenue
+        $scope.unweightedByQuarter[team.year][team.quarter] += team.revenue
+        $scope.unweightedByYear[team.year] += team.revenue
+
         $scope.quotasByQuarter[team.year][team.quarter] += parseFloat(team.quota)
         $scope.quotasByYear[team.year] += parseFloat(team.quota)
         for stageId, pipeline of team.weighted_pipeline_by_stage
