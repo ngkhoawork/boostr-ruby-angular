@@ -35,7 +35,7 @@ class Api::KpisDashboardController < ApplicationController
         average_deal_sizes << { average_deal_size: average_deal_size, total_deals: total_deals }
       end
 
-      win_rates << average_win_rate_by_item(win_rates)
+      win_rates << average_win_rate_by_item(item)
       win_rates.unshift(item.name)
       win_rate_list << win_rates
 
@@ -87,8 +87,8 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def deals_by_time_period
-    type_field_id = company.fields.find_by(subject_type: 'Deal', name: 'Deal Type').id if params[:type]
-    source_field_id = company.fields.find_by(subject_type: 'Deal', name: 'Deal Source').id if params[:source]
+    type_field_id = company.fields.find_by(subject_type: 'Deal', name: 'Deal Type').id if params[:type] && params[:type] != 'all'
+    source_field_id = company.fields.find_by(subject_type: 'Deal', name: 'Deal Source').id if params[:source] && params[:source] != 'all'
     @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).by_type(params[:type], type_field_id).by_source(params[:source], source_field_id).distinct.active.includes(:stage, :deal_members, :products)
   end
 
@@ -124,8 +124,19 @@ class Api::KpisDashboardController < ApplicationController
     end
   end
 
-  def average_win_rate_by_item(win_rates)
-    (win_rates.map{|w| w[:win_rate] }.reduce(:+) / win_rates.length).round(0)
+  def average_win_rate_by_item(item)
+    if item.is_a?(User)
+      ids = [item.id]
+    else
+      ids = item.all_sellers.map(&:id)
+    end
+    complete_deals = complete_deals_list(ids, full_time_period)
+    incomplete_deals = incomplete_deals_list(ids, full_time_period)
+
+    win_rate = 0.0
+
+    win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
+    win_rate
   end
 
   def averaged_size_by_item(average_deal_sizes)
@@ -139,6 +150,10 @@ class Api::KpisDashboardController < ApplicationController
     else
       time_periods.months(start_date..end_date)
     end
+  end
+
+  def full_time_period
+    time_periods.first.first..time_periods.last.last
   end
 
   def average_win_rates(win_rate_list)
