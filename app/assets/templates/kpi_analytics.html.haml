@@ -4,83 +4,83 @@
       .col-xs-12
         %h3.title KPI`s Dashboard
 
+    .row.legend.well.kpi-block
+      .col-xs-12
+        %span Filter by
+        %ul.kpi-block__filter
+          %li{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              Team
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'filter in teamFilters', class: '{active: filter.id == teamId}' } }
+                %a{ href: '', ng: { click: 'filterByTeam(filter.id)' } }
+                  {{ filter.name }}
+        %ul.kpi-block__filter
+          %li{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              Seller
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'filter in sellerFilters', class: '{active: filter.name == clientFilter.name}' } }
+                %a{ href: '', ng: { click: 'filterClients(filter)' } }
+                  {{ filter.name }}
+        %ul.kpi-block__filter
+          %li{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              Product
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'product in productsList', class: '{active: product.name === productFilter.name}' } }
+                %a{ href: '', ng: { click: 'filterByProduct(product)' } }
+                  {{ product.name }}
+        %ul.kpi-block__filter
+          %li{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              Type
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'type in typesList', class: '{active: type.name === typeFilter.name}' } }
+                %a{ href: '', ng: { click: 'filterByType(type)' } }
+                  {{ type.name }}
+        %ul.kpi-block__filter
+          %li{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              Source
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'source in sources', class: '{active: source.name === sourceFilter.name}' } }
+                %a{ href: '', ng: { click: 'filterBySource(source)' } }
+                  {{ source.name }}
+        %ul.kpi-block__filter.default-date{ng: { class: '{date: start_date}'}}
+          %span.bs-datepicker
+            %input{ placeholder: 'Start Date',
+                    name: 'start_date', type: 'text',
+                    datepicker: { popup: 'MMMM d, y' },
+                    ng: { model: 'start_date', required: true, click: 'callStartDateOpened = true' },
+                    'is-open': 'callStartDateOpened', }
+        %span.date-caret.caret{ng: { if: '!start_date'}}
+        %ul.kpi-block__filter.default-date{ng: { class: '{date: end_date}'}}
+          %span.bs-datepicker
+            %input{ placeholder: 'End Date',
+                    name: 'end_date', type: 'text',
+                    datepicker: { popup: 'MMMM d, y' },
+                    ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
+                    'is-open': 'callEndDateOpened' }
+        %span.date-caret.caret{ng: { if: '!end_date'}}
+        %ul.kpi-block__filter
+          %button.btn.btnPrimary.reset-dates{'ng-click': 'resetDates()'}
+            Reset dates
+        .pull-right.buttons__filter
+          %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'filterByPeriod("month")'}
+            Month
+          %button.btn{ 'ng-class': '{btnPrimary: time_period === "qtr"}', 'ng-click': 'filterByPeriod("qtr")'}
+            Quarter
+
     .row.well.kpi-block
       .row
         .col-xs-12
           %h4.kpi-block__title Win Rate by Seller
-      .row.legend
-        .col-xs-12
-          %span Filter by
-          %ul.kpi-block__filter
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                Team
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'filter in teamFilters', class: '{active: filter.id == teamId}' } }
-                  %a{ href: '', ng: { click: 'filterByTeam(filter.id)' } }
-                    {{ filter.name }}
-          %ul.kpi-block__filter
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                Seller
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'filter in sellerFilters', class: '{active: filter.name == clientFilter.name}' } }
-                  %a{ href: '', ng: { click: 'filterClients(filter)' } }
-                    {{ filter.name }}
-          %ul.kpi-block__filter
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                Product
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'product in productsList', class: '{active: product.name === productFilter.name}' } }
-                  %a{ href: '', ng: { click: 'filterByProduct(product)' } }
-                    {{ product.name }}
-          %ul.kpi-block__filter
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                Type
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'type in typesList', class: '{active: type.name === typeFilter.name}' } }
-                  %a{ href: '', ng: { click: 'filterByType(type)' } }
-                    {{ type.name }}
-          %ul.kpi-block__filter
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                Source
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'source in sources', class: '{active: source.name === sourceFilter.name}' } }
-                  %a{ href: '', ng: { click: 'filterBySource(source)' } }
-                    {{ source.name }}
-          %ul.kpi-block__filter.default-date{ng: { class: '{date: start_date}'}}
-            %span.bs-datepicker
-              %input{ placeholder: 'Start Date',
-                name: 'start_date', type: 'text',
-                datepicker: { popup: 'MMMM d, y' },
-                ng: { model: 'start_date', required: true, click: 'callStartDateOpened = true' },
-                'is-open': 'callStartDateOpened', }
-          %span.date-caret.caret{ng: { if: '!start_date'}}
-          %ul.kpi-block__filter.default-date{ng: { class: '{date: end_date}'}}
-            %span.bs-datepicker
-              %input{ placeholder: 'End Date',
-                name: 'end_date', type: 'text',
-                datepicker: { popup: 'MMMM d, y' },
-                ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
-                'is-open': 'callEndDateOpened' }
-          %span.date-caret.caret{ng: { if: '!end_date'}}
-          %ul.kpi-block__filter
-            %button.btn.btnPrimary.reset-dates{'ng-click': 'resetDates()'}
-              Reset dates
-          .pull-right.buttons__filter
-            %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'filterByPeriod("month")'}
-              Month
-            %button.btn{ 'ng-class': '{btnPrimary: time_period === "qtr"}', 'ng-click': 'filterByPeriod("qtr")'}
-              Quarter
-
       .row
         .col-xs-12.schedule
           %div.win-rate
