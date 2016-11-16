@@ -131,7 +131,8 @@
                 %th.left AdServer
                 %th.left Start Date
                 %th.left End Date
-                %th.left Product
+                %th.left
+                  .product Product
                 %th.right Qty
                 %th.right Price
                 %th.left Price Type
@@ -147,7 +148,7 @@
                 %th.right Daily Rate
                 %th.right {{"#DaysNoBud"}}
             %tbody
-              %tr{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items"} }
+              %tr{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items | orderBy: 'line_number'"} }
                 %td.left
                   {{ displayLineItem.line_number }}
                 %td.left
