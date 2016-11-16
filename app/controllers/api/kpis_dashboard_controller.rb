@@ -34,7 +34,7 @@ class Api::KpisDashboardController < ApplicationController
 
         total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
         if total_deal_size && complete_deals.count > 0
-          average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
+          average_deal_size = ((total_deal_size / complete_deals.count) / 100000).round(0)
         end
         cycle_time_arr = complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s) - Date.parse(deal.created_at.utc.to_s)}
         cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(0) if cycle_time_arr.count > 0
@@ -169,7 +169,7 @@ class Api::KpisDashboardController < ApplicationController
     average_deal_size = 0
     total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
     if total_deal_size && complete_deals.count > 0
-      average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
+      average_deal_size = ((total_deal_size / complete_deals.count) / 100000).round(0)
     end
     average_deal_size
   end
@@ -247,7 +247,7 @@ class Api::KpisDashboardController < ApplicationController
       average_deal_size = 0
       total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
       if total_deal_size && complete_deals.count > 0
-        average_deal_size = ((total_deal_size / complete_deals.count) / 100).round(0)
+        average_deal_size = ((total_deal_size / complete_deals.count) / 100000).round(0)
       end
 
       averages << { average_deal_size: average_deal_size, total_deals: total_deals, won: complete_deals.count }
@@ -258,7 +258,7 @@ class Api::KpisDashboardController < ApplicationController
     total_grand_average_size = 0
     total_deal_size = all_complete_deals.map(&:budget).compact.reduce(:+)
     if total_deal_size && all_complete_deals.count > 0
-      total_grand_average_size = ((total_deal_size / all_complete_deals.count) / 100).round(0)
+      total_grand_average_size = ((total_deal_size / all_complete_deals.count) / 100000).round(0)
     end
 
     averages << total_grand_average_size
