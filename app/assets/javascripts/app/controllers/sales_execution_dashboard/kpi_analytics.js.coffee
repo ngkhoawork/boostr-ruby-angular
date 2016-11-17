@@ -27,13 +27,13 @@
         $scope.winRateData = []
         $scope.dealSizeData = []
 
-      $scope.colors = ['blue', 'orange', 'green', 'grey', 'yellow', 'red', 'aqua', 'purple', 'black', 'brown']
+      $scope.colors = ['#3498DB', 'blue', 'orange', 'green', 'grey', 'yellow', 'red', 'aqua', 'purple', 'black', 'brown']
 
       #init query
       KPIDashboard.get().$promise.then ((data) ->
+        initTablesData(data)
         createChart(data)
         createDSChart(data)
-        initTablesData(data)
 
         $scope.isTeamsNamesInWinRateTable = true
 
@@ -61,9 +61,6 @@
             name:'All'
           })
 
-#          $scope.teamFilters.push({name:'All', id:''})
-#          _.each teams, (team) ->
-#            $scope.teamFilters.push({name:team.name, id:team.id})
           ), (err) ->
             if err
               console.log(err)
@@ -143,12 +140,10 @@
         #win rates table
         $scope.winRateData = data.win_rates
         $scope.winRateAverage = data.average_win_rates
-        $scope.winRateAverage.unshift('Average')
 
         #dealSize table
         $scope.dealSizeData = data.average_deal_sizes
         $scope.dealSizeDataAverage = data.averaged_average_deal_sizes
-        $scope.dealSizeDataAverage.unshift('Average')
 
       $scope.filterByTeam =(id) ->
         $scope.teamId = id
@@ -221,16 +216,21 @@
             div.transition().duration(500).style 'opacity', 0
 
       transformData = (data) ->
+        dataCopyWinRates = angular.copy(data.win_rates)
+        #move Average up
+        averageData = dataCopyWinRates.pop()
+        dataCopyWinRates.unshift(averageData)
+
         optimizedData = []
         i = 0
-        len = data.win_rates.length
+        len = dataCopyWinRates.length
         while i < len
           item = {
             data: [],
             color: $scope.colors[i],
-            label: data.win_rates[i][0],
+            label: dataCopyWinRates[i][0],
           }
-          _.each data.win_rates[i], (dataItem, index) ->
+          _.each dataCopyWinRates[i], (dataItem, index) ->
             if (dataItem.win_rate != undefined && dataItem.total_deals != undefined)
               dot = {
                 x:index,
@@ -238,7 +238,7 @@
                 win_rate:dataItem.win_rate,
                 wins:dataItem.won,
                 loses:dataItem.lost
-                seller:data.win_rates[i][0]
+                seller:dataCopyWinRates[i][0]
               }
               if(dataItem.total_deals < 10)
                 dot.r = 3
@@ -249,24 +249,6 @@
               item.data.push(dot)
           optimizedData.push(item)
           i++
-        average = {
-          data: [],
-          color: '#3498DB',
-          label: 'Average',
-        }
-        _.each data.average_win_rates, (dataItem, index) ->
-          if(data.average_win_rates.length-1 !=index )
-            dot = {
-              x:index+1,
-              y: data.average_win_rates[index],
-              r:3.5,
-              win_rate:dataItem,
-              wins:dataItem,
-              loses:dataItem
-              seller:'Average'
-            }
-            average.data.push(dot)
-        optimizedData.unshift(average)
         optimizedData
 
       crateAxis = (data, time_periods) ->
@@ -429,30 +411,35 @@
           $scope.scaleDSY(d.y) + $scope.chartMargin
         ).on('mouseover', (d) ->
           div.transition().duration(200).style 'opacity', 1
-          div.html('<p>'+ d.seller + '</p><p><span>$' + d.win_rate + '</span><span>' +d.wins+ '</span></p><p><span>Deal Size</span><span>Wins</span></p>')
+          div.html('<p>'+ d.seller + '</p><p><span>$' + d.win_rate + 'k</span><span>' +d.wins+ '</span></p><p><span>Deal Size</span><span>Wins</span></p>')
           .style('left', $scope.scaleDSX(d.x) + $scope.chartMargin - 115 + 'px')
           .style('top', $scope.scaleDSY(d.y) + $scope.chartMargin + 18 + 'px')
         ).on 'mouseout', (d) ->
           div.transition().duration(500).style 'opacity', 0
 
       transformDSData = (data) ->
+        dataCopyDealSize = angular.copy(data.average_deal_sizes)
+        #move Average up
+        averageData = dataCopyDealSize.pop()
+        dataCopyDealSize.unshift(averageData)
+
         optimizedData = []
         i = 0
-        len = data.average_deal_sizes.length
+        len = dataCopyDealSize.length
         while i < len
           item = {
             data: [],
             color: $scope.colors[i],
-            label: data.average_deal_sizes[i][0],
+            label: dataCopyDealSize[i][0],
           }
-          _.each data.average_deal_sizes[i], (dataItem, index) ->
+          _.each dataCopyDealSize[i], (dataItem, index) ->
             if (dataItem.average_deal_size != undefined && dataItem.total_deals != undefined)
               dot = {
                 x:index,
                 y: dataItem.average_deal_size,
                 win_rate:dataItem.average_deal_size,
                 wins:dataItem.won || 0,
-                seller:data.win_rates[i][0]
+                seller:dataCopyDealSize[i][0]
               }
               if(dataItem.total_deals < 10)
                 dot.r = 3
@@ -463,24 +450,6 @@
               item.data.push(dot)
           optimizedData.push(item)
           i++
-        average = {
-          data: [],
-          color: '#3498DB',
-          label: 'Average',
-        }
-        _.each data.average_win_rates, (dataItem, index) ->
-          if(data.average_win_rates.length-1 !=index )
-            dot = {
-              x:index+1,
-              y: data.average_win_rates[index],
-              r:3.5,
-              win_rate:dataItem,
-              wins:dataItem,
-              loses:dataItem
-              seller:'Average'
-            }
-            average.data.push(dot)
-        optimizedData.unshift(average)
         optimizedData
 
       crateDSAxis = (data, time_periods) ->

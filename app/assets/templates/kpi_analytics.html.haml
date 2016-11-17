@@ -139,6 +139,3 @@
                     {{item.average_deal_size}}
                   %span{ ng: { if: 'item.average_deal_size === undefined' }}
                     {{item}}
-              %tr
-                %td.text--bold{ ng: { repeat: 'average in dealSizeDataAverage track by $index' }}
-                  {{average}}

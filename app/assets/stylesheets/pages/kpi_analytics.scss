@@ -1,4 +1,11 @@
 #kpi-analytics {
+  .table-report {
+    tbody tr:last-child{
+      font-weight: bold;
+    }
+  }
+
+
   //===========tree dropdown========================
   .tree-dropdown {
     position: relative;
