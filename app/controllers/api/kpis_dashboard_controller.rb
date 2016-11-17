@@ -119,12 +119,8 @@ class Api::KpisDashboardController < ApplicationController
     if params[:seller] && params[:seller] !='all'
       @team_members ||= company.users.where(id: params[:seller], user_type: [SELLER, SALES_MANAGER])
     else
-      @team_members ||= teams.map(&:all_sales_reps).flatten
+      @team_members ||= teams.map(&:all_sales_reps).flatten.sort_by(&:first_name)
     end
-  end
-
-  def team_leaders
-    @team_leaders ||= teams.map(&:all_leaders).flatten
   end
 
   def root_teams
@@ -209,11 +205,7 @@ class Api::KpisDashboardController < ApplicationController
 
   def average_win_rates
     averages = ['Average']
-
     ids = team_members.map(&:id)
-    if params[:team] && params[:team] != 'all'
-      ids << teams[0].leader.id if teams[0].leader
-    end
 
     time_periods.each do |time_period|
       complete_deals = complete_deals_list(ids, time_period)
@@ -237,11 +229,7 @@ class Api::KpisDashboardController < ApplicationController
 
   def averaged_average_deal_sizes
     averages = ['Average']
-
     ids = team_members.map(&:id)
-    if params[:team] && params[:team] != 'all'
-      ids << teams[0].leader.id if teams[0].leader
-    end
 
     time_periods.each do |time_period|
       complete_deals = complete_deals_list(ids, time_period)
@@ -270,11 +258,7 @@ class Api::KpisDashboardController < ApplicationController
 
   def average_cycle_time
     averages = ['Average']
-
     ids = team_members.map(&:id)
-    if params[:team] && params[:team] != 'all'
-      ids << teams[0].leader.id if teams[0].leader
-    end
 
     time_periods.each do |time_period|
       complete_deals = complete_deals_list(ids, time_period)

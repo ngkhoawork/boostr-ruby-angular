@@ -117,13 +117,13 @@ class Team < ActiveRecord::Base
 
   def all_sales_reps
     sales_reps = []
+    sales_reps << leader if !leader.nil?
     sales_reps += members.by_user_type([SELLER, SALES_MANAGER])
     children.each do |child|
       sales_reps += child.all_sales_reps
     end
     sales_reps
   end
-
 
   def all_leaders
     ls = leader.nil? ? []:[leader]
