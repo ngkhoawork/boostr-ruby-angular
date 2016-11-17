@@ -25,9 +25,28 @@
 }
 
 #revenue {
-  .table {
-    tbody tr {
-      cursor: pointer;
+  .table.table-striped {
+    thead {
+      .action-column {
+        width: 50px;
+      }
     }
+    tbody {
+      tr {
+        cursor: pointer;
+        td {
+          &:nth-child(3) {
+            word-break: break-all;
+          }
+          &:nth-child(9) {
+            word-break: break-all;
+          }
+        }
+        td.action-td {
+          width: 50px;
+        }
+      }
+    }
+
   }
 }

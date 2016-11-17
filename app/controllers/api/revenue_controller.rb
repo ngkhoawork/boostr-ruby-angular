@@ -69,7 +69,7 @@ class Api::RevenueController < ApplicationController
       io_obj = Io.find(io['id'])
       io[:quarters] = [0, 0, 0, 0]
       io[:year] = year
-      io['months'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      io[:months] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       total = 0
       if io['end_date'] == io['start_date']
         io['end_date'] += 1.day
@@ -77,13 +77,29 @@ class Api::RevenueController < ApplicationController
 
       io_obj.content_fee_product_budgets.where("date_part('year', start_date) = ?", year).each do |content_fee_product_budget|
         month = content_fee_product_budget.start_date.mon
-        io['months'][month - 1] += content_fee_product_budget.budget
+        io[:months][month - 1] += content_fee_product_budget.budget
         io[:quarters][(month - 1) / 3] += content_fee_product_budget.budget
         total += content_fee_product_budget.budget
       end
 
+      io_obj.display_line_items.where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year).each do |display_line_item|
+        # year = display_line_item.start_date.year
+        for index in 1..12
+          month = index.to_s
+          if index < 10
+            month = '0' + index.to_s
+          end
+          first_date = Date.parse("#{year}#{month}01")
+          num_of_days = [[first_date.end_of_month, display_line_item.end_date].min - [first_date, display_line_item.start_date].max + 1, 0].max.to_f
+
+          io[:months][index - 1] += display_line_item.ave_run_rate * num_of_days
+          io[:quarters][(index - 1) / 3] += display_line_item.ave_run_rate * num_of_days
+        end
+      end
+
       io['budget'] = total
     end
+
     ios
   end
 

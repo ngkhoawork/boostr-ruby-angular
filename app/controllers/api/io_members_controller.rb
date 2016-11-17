@@ -8,21 +8,7 @@ class Api::IoMembersController < ApplicationController
   def create
     io_member = io.io_members.build(io_member_params)
     if io_member.save
-      render json: io.as_json( include: {
-          io_members: {
-              methods: [
-                  :name
-              ]
-          },
-          content_fees: {
-              include: {
-                  content_fee_product_budgets: {}
-              },
-              methods: [
-                  :product
-              ]
-          }
-      } )
+      render json: io.full_json
     else
       render json: { errors: io_member.errors.messages }, status: :unprocessable_entity
     end
@@ -30,21 +16,7 @@ class Api::IoMembersController < ApplicationController
 
   def update
     if io_member.update_attributes(io_member_params)
-      render json: io.as_json( include: {
-          io_members: {
-              methods: [
-                  :name
-              ]
-          },
-          content_fees: {
-              include: {
-                  content_fee_product_budgets: {}
-              },
-              methods: [
-                  :product
-              ]
-          }
-      } )
+      render json: io.full_json
     else
       render json: { errors: io_member.errors.messages }, status: :unprocessable_entity
     end
@@ -52,21 +24,7 @@ class Api::IoMembersController < ApplicationController
 
   def destroy
     io_member.destroy
-    render json: io.as_json( include: {
-        io_members: {
-            methods: [
-                :name
-            ]
-        },
-        content_fees: {
-            include: {
-                content_fee_product_budgets: {}
-            },
-            methods: [
-                :product
-            ]
-        }
-    } )
+    render json: io.full_json
   end
 
   private

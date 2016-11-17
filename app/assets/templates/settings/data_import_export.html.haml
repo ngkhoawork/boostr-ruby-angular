@@ -118,14 +118,36 @@
             %h4 Revenues Import
             %h5 Select a CSV file and upload it using the revenues import module
             %li.import
-              %a.upload{ href: '', ng: { click: 'showUploadRevenuesModal()' } }
-                = inline_svg 'icons/import.svg'
-                Import Revenues
+              -#%a.upload{ href: '', ng: { click: 'showUploadRevenuesModal()' } }
+              -#  = inline_svg 'icons/import.svg'
+              -#  Import Revenues
+              Coming soon...
       .col-sm-6
         .panel
           .panel-body
             %h4 Revenues Export
             %h5 Click here to export Revenues
+            -#%li.export
+            -#  %a.upload{ href: '', ng: { click: 'exportRevenues()' } }
+            -#    = inline_svg 'icons/import.svg'
+            -#    Export Revenues
+            %li.import
+              Coming soon...
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Display IO Import
+            %h5 Select a CSV file and upload it using the display io import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadDisplayIOModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Revenues
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Display IO Export
+            %h5 Click here to export Display IOs
             -#%li.export
             -#  %a.upload{ href: '', ng: { click: 'exportRevenues()' } }
             -#    = inline_svg 'icons/import.svg'

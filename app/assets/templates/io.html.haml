@@ -37,7 +37,7 @@
             %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'currentIO.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
               {{currentIO.end_date | date: 'M/d/yyyy'}}
             %span{ ng: { if: "currentUser.user_type != 5" } }
-              {{currentIO.start_date | date : 'M/d/yyyy'}}
+              {{currentIO.end_date | date : 'M/d/yyyy'}}
     .row.io-content
       .col-xs-12
         #members.section{ ng: { show: "currentUser.user_type == 5" } }
@@ -131,7 +131,8 @@
                 %th.left AdServer
                 %th.left Start Date
                 %th.left End Date
-                %th.left Product
+                %th.left
+                  .product Product
                 %th.right Qty
                 %th.right Price
                 %th.left Price Type
@@ -147,7 +148,7 @@
                 %th.right Daily Rate
                 %th.right {{"#DaysNoBud"}}
             %tbody
-              %tr{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items"} }
+              %tr{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items | orderBy: 'line_number'"} }
                 %td.left
                   {{ displayLineItem.line_number }}
                 %td.left
@@ -175,13 +176,13 @@
                 %td.right
                   {{ displayLineItem.quantity_remaining }}
                 %td.right
+                  {{ displayLineItem.quantity_delivered_3p }}
+                %td.right
+                  {{ displayLineItem.quantity_remaining_3p }}
+                %td.right
                   {{ displayLineItem.budget_delivered_3p | currency:'$':0 }}
                 %td.right
                   {{ displayLineItem.budget_remaining_3p | currency:'$':0 }}
-                %td.right
-                  {{ displayLineItem.quantity_delivered_3p | currency:'$':0 }}
-                %td.right
-                  {{ displayLineItem.quantity_remaining_3p | currency:'$':0 }}
                 %td.right
                   {{ displayLineItem.daily_run_rate | currency:'$':0 }}
                 %td.right

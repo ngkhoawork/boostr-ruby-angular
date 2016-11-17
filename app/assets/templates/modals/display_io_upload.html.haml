@@ -1,0 +1,77 @@
+#revenue_upload_modal
+  .modal-header.text-center
+    %a.close{ ng: { click: 'cancel()' } }
+      %span{'aria-hidden' => 'true'}
+        = inline_svg 'icons/close.svg'
+    = inline_svg 'icons/csv.svg'
+    %h3.modal-title
+      %strong
+        Import Display IO
+      %br
+      %small
+        Please import your Display IOs from a CSV file into your current system.
+
+  .modal-body.uploader
+    .well.transparent
+      %p.text-center
+        Make sure your CSV file includes these EXACT headers and columns:
+
+      %ol.row.center-block
+        %li.col-xs-3.col-xs-offset-2 Ext IO Num *
+        %li.col-xs-3 IO Name *
+        %li.col-xs-3
+          IO Start Date *
+          %br
+          (YYYY-MM-DD)
+        %li.col-xs-3.col-xs-offset-2
+          IO End Date *
+          %br
+          (YYYY-MM-DD)
+        %li.col-xs-3 Budget *
+        %li.col-xs-3 Advertiser *
+        %li.col-xs-3.col-xs-offset-2 Agency *
+        %li.col-xs-3 Line Num *
+        %li.col-xs-3 AdServer
+        %li.col-xs-3.col-xs-offset-2
+          Start Date *
+          %br
+          (YYYY-MM-DD)
+        %li.col-xs-3
+          End Date *
+          %br
+          (YYYY-MM-DD)
+        %li.col-xs-3 Product *
+        %li.col-xs-3.col-xs-offset-2 Qty *
+        %li.col-xs-3 Price
+        %li.col-xs-3 Price Type
+        %li.col-xs-3.col-xs-offset-2 Budget *
+        %li.col-xs-3 Budget Delivered
+        %li.col-xs-3 Budget Remaining
+        %li.col-xs-3.col-xs-offset-2 Qty Delivered
+        %li.col-xs-3 Qty Remaining
+        %li.col-xs-3 3PQtyDelivered
+        %li.col-xs-3.col-xs-offset-2 3PQtyRemaining
+        %li.col-xs-3 3PBud Delivered
+        %li.col-xs-3 3P Bud Remaining
+
+    .well.well-lg.dark
+      .row
+        .col-xs-9
+          .progress
+            .progress-bar.progress-bar-striped{ aria: { valuemax: "100", valuemin: "0", valuenow: "{{ progressPercentage }}" }, role: "progressbar", style: "width: {{ progressPercentage }}%" }
+              %span.sr-only {{ progressPercentage }}% Complete
+              .text{ ng: { show: 'progressPercentage > 0' } }
+                {{ progressPercentage }}%
+            .text{ ng: { hide: 'progressPercentage > 0' } }
+              CSV File
+        .col-xs-3
+          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "uploading" } }
+            Browse
+
+    .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
+      %strong
+        Row {{ error.row }}
+      contains errors: {{ error.message.join(', ') }}
+
+    .modal-footer.text-center{ ng: { hide: 'progressPercentage < 100' } }
+      %button.btn.btn-primary.btn-lg{ ng: { click: 'cancel()' } } Done
