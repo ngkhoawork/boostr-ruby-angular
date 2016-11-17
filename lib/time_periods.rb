@@ -1,33 +1,57 @@
 class TimePeriods
-  def months(date_range)
-    months = date_range.map(&:beginning_of_month).uniq
-    months.each_with_index do |quarter, index|
+  def initialize(date_range)
+    @date_range = date_range
+  end
+
+  def months
+    months = @date_range.map(&:beginning_of_month).uniq
+    months.each_with_index do |month, index|
       if months.length == 1
-        months = [date_range]
+        months = [@date_range]
       elsif index == 0
-        months[index] = date_range.first..quarter.end_of_month
+        months[index] = @date_range.first..month.end_of_month
       elsif index == months.length - 1
-        months[index] = quarter.beginning_of_month..date_range.last
+        months[index] = month.beginning_of_month..@date_range.last
       else
-        months[index] = quarter.beginning_of_month..quarter.end_of_month
+        months[index] = month.beginning_of_month..month.end_of_month
       end
     end
     months
   end
 
-  def quarters(date_range)
-    quarters = date_range.map(&:beginning_of_quarter).uniq
+  def quarters
+    quarters = @date_range.map(&:beginning_of_quarter).uniq
     quarters.each_with_index do |quarter, index|
       if quarters.length == 1
-        quarters = [date_range]
+        quarters = [@date_range]
       elsif index == 0
-        quarters[index] = date_range.first..quarter.end_of_quarter
+        quarters[index] = @date_range.first..quarter.end_of_quarter
       elsif index == quarters.length - 1
-        quarters[index] = quarter.beginning_of_quarter..date_range.last
+        quarters[index] = quarter.beginning_of_quarter..@date_range.last
       else
         quarters[index] = quarter.beginning_of_quarter..quarter.end_of_quarter
       end
     end
     quarters
+  end
+
+  def time_period_names(period_type)
+    names = []
+    if period_type == 'qtr'
+      quarters.each do |time_period|
+        names << "Q#{quarter_month_numbers(time_period.first)}-#{time_period.first.year}"
+      end
+    else
+      months.each do |time_period|
+        names << time_period.first.strftime("%B")
+      end
+    end
+    names
+  end
+
+  private
+
+  def quarter_month_numbers(date)
+    1 + ((date.month-1)/3).to_i
   end
 end

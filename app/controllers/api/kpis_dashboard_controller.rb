@@ -60,7 +60,7 @@ class Api::KpisDashboardController < ApplicationController
     end
 
     render json: {
-      time_periods: time_period_names,
+      time_periods: @time_period_builder.time_period_names(params[:time_period]),
       win_rates: win_rate_list << average_win_rates,
       average_deal_sizes: average_size_list << averaged_average_deal_sizes,
       cycle_times: cycle_time_list << average_cycle_time
@@ -191,11 +191,11 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def time_periods
-    time_period_builder = TimePeriods.new
+    @time_period_builder ||= TimePeriods.new(start_date..end_date)
     if params[:time_period] == 'qtr'
-      @time_periods ||= time_period_builder.quarters(start_date..end_date)
+      @time_periods ||= @time_period_builder.quarters
     else
-      @time_periods ||= time_period_builder.months(start_date..end_date)
+      @time_periods ||= @time_period_builder.months
     end
   end
 
@@ -291,20 +291,6 @@ class Api::KpisDashboardController < ApplicationController
     total_grand_cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(0) if cycle_time_arr.count > 0
 
     averages << total_grand_cycle_time
-  end
-
-  def time_period_names
-    names = []
-    if params[:time_period] == 'qtr'
-      time_periods.each_with_index do |time_period, index|
-        names << "Q#{index + 1}-#{time_period.first.year}"
-      end
-    else
-      time_periods.each do |time_period|
-        names << time_period.first.strftime("%B")
-      end
-    end
-    names
   end
 
   def company
