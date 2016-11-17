@@ -135,9 +135,15 @@
             %tbody
               %tr{ ng: { repeat: 'itemsData in dealSizeData track by $index' }}
                 %td{ ng: { repeat: 'item in itemsData' }}
-                  %span{ ng: { if: 'item.average_deal_size !== undefined' }}
+                  %span{ ng: { if: 'item.average_deal_size !== undefined && item.average_deal_size > 0'}}
+                    {{item.average_deal_size | currency: '$' : 0}}k
+                  %span{ ng: { if: 'item.average_deal_size !== undefined && item.average_deal_size === 0'}}
                     {{item.average_deal_size}}
-                  %span{ ng: { if: 'item.average_deal_size === undefined' }}
+                  %span{ ng: { if: 'item.average_deal_size === undefined && !$last' }}
+                    {{item}}
+                  %span{ ng: { if: 'item.average_deal_size === undefined && $last && item > 0' }}
+                    {{item | currency: '$' : 0}}k
+                  %span{ ng: { if: 'item.average_deal_size === undefined && $last && item === 0' }}
                     {{item}}
 
     .row.well.kpi-block
