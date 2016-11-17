@@ -19,8 +19,13 @@
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
     $scope.contact.set_primary_client = true
-    Contact._update(id: $scope.contact.id, contact: $scope.contact).then (contact) ->
-      $modalInstance.close()
+    Contact._update(id: $scope.contact.id, contact: $scope.contact).then(
+      (contact) ->
+        $modalInstance.close()
+      (resp) ->
+        $scope.errors = resp.data.errors
+        $scope.buttonDisabled = false
+    )
 
   $scope.getClients = (query) ->
     $scope.isLoading = true
