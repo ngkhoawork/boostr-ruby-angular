@@ -5,8 +5,9 @@ class Api::KpisDashboardController < ApplicationController
     win_rate_list = []
     average_size_list = []
     cycle_time_list = []
+    @time_period_builder ||= TimePeriods.new(start_date..end_date)
 
-    if params[:team] && params[:team] != 'all'
+    if params[:seller] && params[:seller] !='all' || params[:team] && params[:team] != 'all'
       object = team_members
     else
       object = teams
@@ -20,7 +21,7 @@ class Api::KpisDashboardController < ApplicationController
       if item.is_a?(User)
         ids = [item.id]
       else
-        ids = item.all_sellers.map(&:id)
+        ids = item.all_sales_reps.map(&:id)
       end
       time_periods.each do |time_period|
         complete_deals = complete_deals_list(ids, time_period)
@@ -115,7 +116,11 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def team_members
-    @team_members ||= teams.map(&:all_sellers).flatten
+    if params[:seller] && params[:seller] !='all'
+      @team_members ||= company.users.where(id: params[:seller], user_type: [SELLER, SALES_MANAGER])
+    else
+      @team_members ||= teams.map(&:all_sales_reps).flatten
+    end
   end
 
   def team_leaders
@@ -146,7 +151,7 @@ class Api::KpisDashboardController < ApplicationController
     if item.is_a?(User)
       ids = [item.id]
     else
-      ids = item.all_sellers.map(&:id)
+      ids = item.all_sales_reps.map(&:id)
     end
     complete_deals = complete_deals_list(ids, full_time_period)
     incomplete_deals = incomplete_deals_list(ids, full_time_period)
@@ -161,7 +166,7 @@ class Api::KpisDashboardController < ApplicationController
     if item.is_a?(User)
       ids = [item.id]
     else
-      ids = item.all_sellers.map(&:id)
+      ids = item.all_sales_reps.map(&:id)
     end
     complete_deals = complete_deals_list(ids, full_time_period)
     incomplete_deals = incomplete_deals_list(ids, full_time_period)
@@ -178,7 +183,7 @@ class Api::KpisDashboardController < ApplicationController
     if item.is_a?(User)
       ids = [item.id]
     else
-      ids = item.all_sellers.map(&:id)
+      ids = item.all_sales_reps.map(&:id)
     end
 
     complete_deals = complete_deals_list(ids, full_time_period)
@@ -191,7 +196,6 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def time_periods
-    @time_period_builder ||= TimePeriods.new(start_date..end_date)
     if params[:time_period] == 'qtr'
       @time_periods ||= @time_period_builder.quarters
     else
