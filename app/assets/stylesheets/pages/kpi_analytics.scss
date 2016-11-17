@@ -192,7 +192,7 @@
 
   .schedule {
     height: 450px;
-    margin-bottom: 95px;
+    margin-bottom: 105px;
 
     svg:not(:root) {
       overflow: visible;
@@ -217,6 +217,43 @@
         width: 250px;
         height: 100px;
         padding: 10px 10px 10px 20px;
+        background: white;
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+        box-shadow: -1px 9px 36px -6px rgba(163,162,180,0.65);
+
+        span {
+          display: inline-block;
+          width: 73px;
+          text-align: center;
+        }
+
+        p:first-child {
+          color: #FF7E30;
+          font-size: 16px;
+        }
+
+        p:nth-child(2) {
+          width: 230px;
+          color: #2B3C49;
+          font-size: 18px;
+          font-weight: bold;
+        }
+
+        p:nth-child(3) {
+          width: 230px;
+          color: #A3ACB4;
+          font-size: 12px;
+        }
+      }
+
+      div.tooltip-small {
+        position: absolute;
+        text-align: center;
+        width: 200px;
+        height: 100px;
+        padding-top: 10px;
         background: white;
         border: 0px;
         border-radius: 8px;

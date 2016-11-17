@@ -391,7 +391,7 @@
 
         #Define the div for the tooltip
         div = d3.select(".deal-size").append("div")
-        .attr("class", "tooltip")
+        .attr("class", "tooltip-small")
         .style("opacity", 0);
 
         # dots
@@ -597,7 +597,7 @@
 
         #Define the div for the tooltip
         div = d3.select(".cycle-time").append("div")
-        .attr("class", "tooltip")
+        .attr("class", "tooltip-small")
         .style("opacity", 0);
 
         # dots
@@ -618,7 +618,7 @@
         ).on('mouseover', (d) ->
           div.transition().duration(200).style 'opacity', 1
           div.html('<p>'+ d.seller + '</p><p><span>' + d.win_rate + '</span><span>' +d.wins+ '</span></p><p><span>Cycle Time</span><span>Wins</span></p>')
-          .style('left', $scope.scaleCTX(d.x) + $scope.chartMargin - 115 + 'px')
+          .style('left', $scope.scaleCTX(d.x) + $scope.chartMargin - 100 + 'px')
           .style('top', $scope.scaleCTY(d.y) + $scope.chartMargin + 18 + 'px')
         ).on 'mouseout', (d) ->
           div.transition().duration(500).style 'opacity', 0
