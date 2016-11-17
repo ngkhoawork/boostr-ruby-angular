@@ -681,7 +681,7 @@
 
         #interpolate function for Y
         $scope.scaleCTY = d3.scale.linear()
-        .domain([100, minValue])
+        .domain([maxValue, minValue])
         .range([0, yAxisLength])
 
         #interpolate function for Y
