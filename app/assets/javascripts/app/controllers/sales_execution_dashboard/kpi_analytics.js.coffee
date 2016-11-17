@@ -497,7 +497,12 @@
         yAxis = d3.svg.axis()
         .scale($scope.scaleDSY)
         .orient("left")
-        .tickFormat((d) -> d + "$");
+        .tickFormat((d) ->
+          if(d == 0)
+            0
+          else
+            '$'+(d+'').replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$&,")+'k'
+        );
 
         #paint Х
         $scope.svgDS.append('g')
