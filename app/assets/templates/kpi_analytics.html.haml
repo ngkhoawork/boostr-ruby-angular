@@ -139,3 +139,33 @@
                     {{item.average_deal_size}}
                   %span{ ng: { if: 'item.average_deal_size === undefined' }}
                     {{item}}
+
+    .row.well.kpi-block
+      .row
+        .col-xs-12
+          %h4.kpi-block__title Average Cycle Time by Seller
+
+      .row
+        .col-xs-12.schedule
+          %div.cycle-time
+      .row
+        .col-md-12.table-report.text-center
+          %table.table.table-hover
+            %thead
+              %tr
+                %th{ ng: { if: 'isTeamsNamesInWinRateTable' }}
+                  Teams
+                %th{ ng: { if: '!isTeamsNamesInWinRateTable' }}
+                  Sellers
+                %th{ ng: { repeat: 'period in winRateTimePeriods' }}
+                  {{period}}
+                %th.text--bold{ 'ng-click': 'changeSortType("total")'}
+                  Total
+
+            %tbody
+              %tr{ ng: { repeat: 'itemsData in cycleTimeData track by $index' }}
+                %td{ ng: { repeat: 'item in itemsData' }}
+                  %span{ ng: { if: 'item.cycle_time !== undefined' }}
+                    {{item.cycle_time}}
+                  %span{ ng: { if: 'item.cycle_time === undefined' }}
+                    {{item}}
