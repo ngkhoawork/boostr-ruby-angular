@@ -41,16 +41,26 @@
 
   @create = (params) ->
     deferred = $q.defer()
-    resource.save params, (deal) ->
-      deferred.resolve(deal)
-      $rootScope.$broadcast 'updated_deals'
+    resource.save(
+      params,
+      (deal) ->
+        deferred.resolve(deal)
+        $rootScope.$broadcast 'updated_deals'
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
-    resource.update params, (deal) ->
-      deferred.resolve(deal)
-      $rootScope.$broadcast 'updated_deals'
+    resource.update(
+      params,
+      (deal) ->
+        deferred.resolve(deal)
+        $rootScope.$broadcast 'updated_deals'
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @get = (deal_id) ->

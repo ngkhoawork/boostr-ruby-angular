@@ -29,7 +29,8 @@
         tempIO: ->
           $scope.tempIO
     .result.then (created_io) ->
-      $scope.assignIO(created_io)
+      if (created_io)
+        $scope.assignIO(created_io)
 
   $scope.assignIO = (io) ->
     tempIO.io_id = io.id

@@ -68,8 +68,13 @@
       $scope.deals = deals
 
   $scope.submitForm = () ->
-    IO.update(id: $scope.io.id, io: $scope.io).then (io) ->
-      $modalInstance.close(io)
+    IO.update(id: $scope.io.id, io: $scope.io).then(
+      (io) ->
+        $modalInstance.close(io)
+      (resp) ->
+        $scope.errors = resp.data.errors
+        $scope.buttonDisabled = false
+    )
 
   $scope.cancel = ->
     $modalInstance.close()
