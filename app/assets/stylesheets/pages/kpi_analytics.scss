@@ -251,6 +251,7 @@
       div.tooltip-small {
         position: absolute;
         text-align: center;
+        z-index: 1000;
         width: 200px;
         height: 100px;
         padding-top: 10px;

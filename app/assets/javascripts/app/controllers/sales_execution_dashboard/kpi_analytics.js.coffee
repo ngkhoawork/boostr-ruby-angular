@@ -412,7 +412,7 @@
         ).on('mouseover', (d) ->
           div.transition().duration(200).style 'opacity', 1
           div.html('<p>'+ d.seller + '</p><p><span>$' + (d.win_rate+'').replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$&,") + 'k</span><span>' +d.wins+ '</span></p><p><span>Deal Size</span><span>Wins</span></p>')
-          .style('left', $scope.scaleDSX(d.x) + $scope.chartMargin - 115 + 'px')
+          .style('left', $scope.scaleDSX(d.x) + $scope.chartMargin - 105 + 'px')
           .style('top', $scope.scaleDSY(d.y) + $scope.chartMargin + 18 + 'px')
         ).on 'mouseout', (d) ->
           div.transition().duration(500).style 'opacity', 0
@@ -618,7 +618,7 @@
         ).on('mouseover', (d) ->
           div.transition().duration(200).style 'opacity', 1
           div.html('<p>'+ d.seller + '</p><p><span>' + d.win_rate + '</span><span>' +d.wins+ '</span></p><p><span>Cycle Time</span><span>Wins</span></p>')
-          .style('left', $scope.scaleCTX(d.x) + $scope.chartMargin - 100 + 'px')
+          .style('left', $scope.scaleCTX(d.x) + $scope.chartMargin - 105 + 'px')
           .style('top', $scope.scaleCTY(d.y) + $scope.chartMargin + 18 + 'px')
         ).on 'mouseout', (d) ->
           div.transition().duration(500).style 'opacity', 0
