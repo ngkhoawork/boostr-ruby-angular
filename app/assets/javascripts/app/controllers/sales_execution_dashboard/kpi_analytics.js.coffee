@@ -524,7 +524,7 @@
 
         #interpolate function for Y
         $scope.scaleDSY = d3.scale.linear()
-        .domain([maxValue, minValue])
+        .domain([maxValue || 1, minValue])
         .range([0, yAxisLength])
 
         # make X
@@ -547,6 +547,8 @@
           else
             '$'+(d+'').replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$&,")+'k'
         );
+        if maxValue is 0
+          yAxis.tickValues([0])
 
         #paint Х
         $scope.svgDS.append('g')
@@ -690,7 +692,7 @@
 
         #interpolate function for Y
         $scope.scaleCTY = d3.scale.linear()
-        .domain([maxValue, minValue])
+        .domain([maxValue || 1, minValue])
         .range([0, yAxisLength])
 
         #interpolate function for X
@@ -712,6 +714,8 @@
         yAxis = d3.svg.axis()
         .scale($scope.scaleCTY)
         .orient("left");
+        if maxValue is 0
+          yAxis.tickValues([0])
 
         #paint Х
         $scope.svgCT.append('g')
