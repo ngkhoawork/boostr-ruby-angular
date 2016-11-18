@@ -30,7 +30,10 @@
           xAxis: {
             showMaxMin: false,
             tickFormat: (d) =>
-              return if d.length > 18 then d.substr(0, 18) + '...' else d + '   '
+              if (d)
+                return if d.length > 18 then d.substr(0, 18) + '...' else d + '   '
+              else
+                return "N/A   "
           },
           yAxis: {
             ticks: 4,
