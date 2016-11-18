@@ -53,7 +53,7 @@
           sources.options.forEach (option) ->
             $scope.sources.push(option)
 
-        Seller.get({id: 'all'}).$promise.then (sellers) ->
+        Seller.query({id: 'all'}).$promise.then (sellers) ->
           $scope.sellers = sellers
 
         Team.all(all_teams: true).then (teams) ->
@@ -84,6 +84,9 @@
         if($scope.teamId)
           query.team = $scope.teamId
 
+        if($scope.sellerId)
+          query.seller = $scope.sellerId
+
         if($scope.endDateIsValid && $scope.startDateIsValid)
           query.start_date = $filter('date')($scope.start_date, 'dd-MM-yyyy')
           query.end_date = $filter('date')($scope.end_date, 'dd-MM-yyyy')
@@ -100,6 +103,9 @@
       #team watcher
       $scope.$watch 'selectedTeam', () ->
         $scope.teamId = $scope.selectedTeam.id
+        $scope.sellerId = null
+        Seller.query({id: $scope.teamId}).$promise.then (sellers) ->
+          $scope.sellers = sellers
         getData()
 
 #work with dates====================================================================
@@ -137,13 +143,6 @@
         #CycleTime table
         $scope.cycleTimeData = data.cycle_times
 
-      $scope.filterByTeam =(id) ->
-        $scope.teamId = id
-        $scope.sellerId = null
-        Seller.get({id: id}).$promise.then (sellers) ->
-          $scope.sellers = sellers
-        getData()
-
       $scope.filterByPeriod =(period) ->
         $scope.time_period = period
         getData()
@@ -151,8 +150,6 @@
       $scope.filterBySeller =(sellerId) ->
         $scope.teamId = null
         $scope.sellerId = sellerId
-        Seller.get({id: sellerId}).$promise.then (sellers) ->
-          $scope.sellers = sellers
         getData()
 
 #      $scope.resetDates = () ->
