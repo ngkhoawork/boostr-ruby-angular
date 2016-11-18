@@ -24,10 +24,27 @@
         $scope.winRateData = []
         $scope.dealSizeData = []
 
-      $scope.colors = ['#3498DB', 'blue', 'orange', 'green', 'grey', 'yellow', 'red', 'aqua', 'purple', 'black', 'brown']
+      getRandomColor = ->
+        letters = '0123456789ABCDEF'
+        color = '#'
+        i = 0
+        while i < 6
+          color += letters[Math.floor(Math.random() * 16)]
+          i++
+        color
+
+      createColorsArr = (length) ->
+        $scope.colors = ['#3498DB', 'blue', 'orange', 'green', 'grey', 'yellow', 'red', 'aqua', 'purple', 'black', 'brown']
+        if(length>12)
+          i = 0
+          whileLen = length-12
+          while i < whileLen
+            $scope.colors.push(getRandomColor())
+            i++
 
       #init query
       KPIDashboard.get().$promise.then ((data) ->
+        createColorsArr(data.win_rates.length)
         initTablesData(data)
         createChart(data)
         createDSChart(data)
@@ -92,6 +109,7 @@
           query.end_date = $filter('date')($scope.end_date, 'dd-MM-yyyy')
 
         KPIDashboard.get(query).$promise.then ((data) ->
+          createColorsArr(data.win_rates.length)
           createChart(data)
           createDSChart(data)
           createCTChart(data)
