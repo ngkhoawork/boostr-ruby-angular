@@ -126,7 +126,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
         end_date = Time.now.utc
     end
     deal_loss_data = Deal.joins("left join stages as prev_stages on prev_stages.id=deals.previous_stage_id")
-    .where("deals.id in (?) and deals.budget > 0", deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
+    .where("deals.id in (?) and deals.budget > 0 and deals.previous_stage_id IS NOT NULL", deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
     .select("prev_stages.name as name, count(deals.id) as count")
     .group("prev_stages.id")
     .order("count desc")
