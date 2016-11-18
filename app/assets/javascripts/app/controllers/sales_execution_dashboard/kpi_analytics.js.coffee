@@ -246,7 +246,7 @@
           .text (d) ->
             d.label
 
-      createItemChart = (data, colorStroke, label) ->
+      createItemChart = (data, colorStroke, label, dashed) ->
         # make lines function
         line = d3.svg.line().interpolate('monotone').x((d) ->
           $scope.scaleX(d.x) + $scope.chartMargin
@@ -254,10 +254,17 @@
           $scope.scaleY(d.y) + $scope.chartMargin
         )
         g = $scope.svg.append('g')
-        g.append('path')
-          .attr('d', line(data))
-          .style('stroke', colorStroke)
-          .style('stroke-width', 2)
+        if dashed
+          g.append('path')
+            .attr('d', line(data))
+            .style('stroke', colorStroke)
+            .style("stroke-dasharray", "10 8")
+            .style("stroke-width", "3")
+        else
+          g.append('path')
+            .attr('d', line(data))
+            .style('stroke', colorStroke)
+            .style('stroke-width', 2)
 
         #Define the div for the tooltip
         div = d3.select(".win-rate").append("div")
@@ -393,13 +400,15 @@
         d3.select(".win-rate svg").remove();
         optimizeData = transformData(data)
         createAxis(optimizeData, data.time_periods)
+        average = optimizeData.shift()
+        createItemChart(average.data, average.color, average.color.replace(/#/, ''), true);
         _.each optimizeData, (chart) ->
           createItemChart(chart.data, chart.color, chart.color.replace(/#/, ''));
 
 
 #=======================END WIN RATE=======================================================
 #=======================DEAl SIZE=======================================================
-      createDSItemChart = (data, colorStroke, label) ->
+      createDSItemChart = (data, colorStroke, label, dashed) ->
       # make lines function
         line = d3.svg.line().interpolate('monotone').x((d) ->
           $scope.scaleDSX(d.x) + $scope.chartMargin
@@ -407,10 +416,17 @@
           $scope.scaleDSY(d.y) + $scope.chartMargin
         )
         g = $scope.svgDS.append('g')
-        g.append('path')
-        .attr('d', line(data))
-        .style('stroke', colorStroke)
-        .style('stroke-width', 2)
+        if dashed
+          g.append('path')
+            .attr('d', line(data))
+            .style('stroke', colorStroke)
+            .style("stroke-dasharray", "10 8")
+            .style('stroke-width', 3)
+        else
+          g.append('path')
+            .attr('d', line(data))
+            .style('stroke', colorStroke)
+            .style('stroke-width', 2)
 
         #Define the div for the tooltip
         div = d3.select(".deal-size").append("div")
@@ -492,7 +508,7 @@
         yAxisLength = $scope.chartHeight- 2 * $scope.chartMargin;
 
         #find max value for Y
-        maxValue =  0;
+        maxValue = 0;
         _.each data, (dataItem) ->
           _.each dataItem.data, (dataDot) ->
             if(dataDot.y && maxValue < dataDot.y)
@@ -501,15 +517,15 @@
         #find min value for Y
         minValue = 0;
 
+        #interpolate function for X
+        $scope.scaleDSX = d3.scale.linear()
+        .domain([0, time_periods.length])
+        .range([0, xAxisLength]);
+
         #interpolate function for Y
         $scope.scaleDSY = d3.scale.linear()
         .domain([maxValue, minValue])
         .range([0, yAxisLength])
-
-        #interpolate function for Y
-        $scope.scaleDSX = d3.scale.linear()
-        .domain([0, time_periods.length])
-        .range([0, xAxisLength]);
 
         # make X
         xAxis = d3.svg.axis()
@@ -560,13 +576,15 @@
         d3.select(".deal-size svg").remove();
         optimizeData = transformDSData(data)
         createDSAxis(optimizeData, data.time_periods)
+        average = optimizeData.shift()
+        createDSItemChart(average.data, average.color, average.color.replace(/#/, ''), true);
         _.each optimizeData, (chart) ->
           createDSItemChart(chart.data, chart.color, chart.color.replace(/#/, ''));
 
 
 #=======================END DEAL SIZE=======================================================
 #=======================Cycle Time=======================================================
-      createCTItemChart = (data, colorStroke, label) ->
+      createCTItemChart = (data, colorStroke, label, dashed) ->
 # make lines function
         line = d3.svg.line().interpolate('monotone').x((d) ->
           $scope.scaleCTX(d.x) + $scope.chartMargin
@@ -574,10 +592,17 @@
           $scope.scaleCTY(d.y) + $scope.chartMargin
         )
         g = $scope.svgCT.append('g')
-        g.append('path')
-        .attr('d', line(data))
-        .style('stroke', colorStroke)
-        .style('stroke-width', 2)
+        if dashed
+          g.append('path')
+            .attr('d', line(data))
+            .style('stroke', colorStroke)
+            .style("stroke-dasharray", "10 8")
+            .style('stroke-width', 3)
+        else
+          g.append('path')
+            .attr('d', line(data))
+            .style('stroke', colorStroke)
+            .style('stroke-width', 2)
 
         #Define the div for the tooltip
         div = d3.select(".cycle-time").append("div")
@@ -668,7 +693,7 @@
         .domain([maxValue, minValue])
         .range([0, yAxisLength])
 
-        #interpolate function for Y
+        #interpolate function for X
         $scope.scaleCTX = d3.scale.linear()
         .domain([0, time_periods.length])
         .range([0, xAxisLength]);
@@ -716,6 +741,8 @@
         d3.select(".cycle-time svg").remove();
         optimizeData = transformCTData(data)
         createCTAxis(optimizeData, data.time_periods)
+        average = optimizeData.shift()
+        createCTItemChart(average.data, average.color, average.color.replace(/#/, ''), true);
         _.each optimizeData, (chart) ->
           createCTItemChart(chart.data, chart.color, chart.color.replace(/#/, ''));
 
