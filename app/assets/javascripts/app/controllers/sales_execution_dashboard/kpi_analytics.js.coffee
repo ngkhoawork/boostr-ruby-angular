@@ -38,7 +38,7 @@
         if(length>12)
           i = 0
           whileLen = length-12
-          while i < whileLen
+          while i <= whileLen
             $scope.colors.push(getRandomColor())
             i++
 
