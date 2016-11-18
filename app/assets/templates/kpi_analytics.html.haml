@@ -23,9 +23,9 @@
               Seller
               %span.caret
             %ul.dropdown-menu
-              %li{ ng: { repeat: 'filter in sellerFilters', class: '{active: filter.name == clientFilter.name}' } }
-                %a{ href: '', ng: { click: 'filterClients(filter)' } }
-                  {{ filter.name }}
+              %li{ ng: { repeat: 'seller in sellers', class: '{active: seller.name == sellerFilter.name}' } }
+                %a{ href: '', ng: { click: 'filterBySeller(seller.id)' } }
+                  {{ seller.name }}
         %ul.kpi-block__filter
           %li{ dropdown: true }
             %a{ href: '', dropdown: { toggle: true } }
@@ -69,9 +69,9 @@
                     ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
                     'is-open': 'callEndDateOpened' }
         %span.date-caret.caret{ng: { if: '!end_date'}}
-        %ul.kpi-block__filter
-          %button.btn.btnPrimary.reset-dates{'ng-click': 'resetDates()'}
-            Reset dates
+        -#%ul.kpi-block__filter
+        -#  %button.btn.btnPrimary.reset-dates{'ng-click': 'resetDates()'}
+        -#    Reset dates
         .pull-right.buttons__filter
           %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'filterByPeriod("month")'}
             Month

@@ -1,6 +1,6 @@
 @app.controller 'KPIAnalyticsController',
-  ['$scope', 'KPIDashboard', 'Team', 'Product', 'Field', '$filter'
-    ($scope, KPIDashboard, Team, Product, Field, $filter) ->
+  ['$scope', 'KPIDashboard', 'Team', 'Product', 'Field', 'Seller','$filter'
+    ($scope, KPIDashboard, Team, Product, Field, Seller, $filter) ->
 
       #create chart===========================================================
       $scope.chartHeight= 500
@@ -32,6 +32,7 @@
         createChart(data)
         createDSChart(data)
         createCTChart(data)
+        $scope.timeFilters = data.time_periods
 
         $scope.isTeamsNamesInWinRateTable = true
 
@@ -52,16 +53,16 @@
           sources.options.forEach (option) ->
             $scope.sources.push(option)
 
-        Team.all(all_teams: true).then ((teams) ->
+        Seller.get({id: 'all'}).$promise.then (sellers) ->
+          $scope.sellers = sellers
+
+        Team.all(all_teams: true).then (teams) ->
           $scope.teams = teams
           $scope.teams.unshift({
             id:'all',
             name:'All'
           })
 
-          ), (err) ->
-            if err
-              console.log(err)
       ), (err) ->
         if err
           console.log(err)
@@ -122,18 +123,9 @@
           $scope.endDateIsValid = true
           $scope.startDateIsValid = true
           getData()
-#Filters====================================================================
-      createFilters = (data) ->
-        $scope.timeFilters = data.time_periods
-        $scope.sellerFilters = [
-          { name: 'seller1', param: 'seller1' }
-          { name: 'seller2', param: 'seller2' }
-          { name: 'seller3', param: 'seller3' }
-        ]
-
+#Filters and Tables====================================================================
       initTablesData = (data)->
         resetFilters()
-        createFilters(data)
         resetTables()
         $scope.winRateTimePeriods = data.time_periods
         #win rates table
@@ -147,18 +139,28 @@
 
       $scope.filterByTeam =(id) ->
         $scope.teamId = id
+        $scope.sellerId = null
+        Seller.get({id: id}).$promise.then (sellers) ->
+          $scope.sellers = sellers
         getData()
 
       $scope.filterByPeriod =(period) ->
         $scope.time_period = period
         getData()
 
-      $scope.resetDates = () ->
-        $scope.start_date = null
-        $scope.end_date = null
-        $scope.endDateIsValid = undefined
-        $scope.startDateIsValid = undefined
+      $scope.filterBySeller =(sellerId) ->
+        $scope.teamId = null
+        $scope.sellerId = sellerId
+        Seller.get({id: sellerId}).$promise.then (sellers) ->
+          $scope.sellers = sellers
         getData()
+
+#      $scope.resetDates = () ->
+#        $scope.start_date = null
+#        $scope.end_date = null
+#        $scope.endDateIsValid = undefined
+#        $scope.startDateIsValid = undefined
+#        getData()
 
       $scope.filterByProduct =(product) ->
         $scope.productFilter = product
