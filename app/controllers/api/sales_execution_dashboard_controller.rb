@@ -137,17 +137,18 @@ class Api::SalesExecutionDashboardController < ApplicationController
 
   protected
 
+  def stage_color(probability)
+    if probability == 100
+      color_string = "rgb(110, 150, 20)";
+    else
+      red = 229 - 100 * probability / 100
+      green = 255 - 78 * probability / 100
+      blue = 185 - 160 * probability / 100
+      color_string = "rgb(#{red}, #{green}, #{blue})";
+    end
+  end
+
   def product_pipeline_data
-    probability_colors = {
-        100 => "#76b119",
-        90 => "#86c129",
-        75 => "#a0ce56",
-        50 => "#b3da76",
-        25 => "#c3e78b",
-        10 => "#d4f1a3",
-        5 => "#e4ffb9"
-    }
-    # { 90=> "#3996db", 75 => "#52a1e2", 50 => "#7ab9e9", 25 => "#a4d0f0", 10 => "#d2e8f8", 5 => "#d2e8f8"}
     probabilities = current_user.company.distinct_stages.where("stages.probability > 0").order("stages.probability desc").collect { |stage| stage.probability }
     probabilities.reverse!
     product_names = current_user.company.products.collect {|product| product.name}
@@ -169,8 +170,8 @@ class Api::SalesExecutionDashboardController < ApplicationController
           final_data_unweighted << {label: product_name, value: 0}
         end
       end
-      product_pipeline_data_unweighted << {key: probability.to_s + '%', color: probability_colors[probability], values: final_data_unweighted}
-      product_pipeline_data_weighted << {key: probability.to_s + '%', color: probability_colors[probability], values: final_data_weighted}
+      product_pipeline_data_unweighted << {key: probability.to_s + '%', color: stage_color(probability), values: final_data_unweighted}
+      product_pipeline_data_weighted << {key: probability.to_s + '%', color: stage_color(probability), values: final_data_weighted}
     end
 
     @product_pipeline_data = {
