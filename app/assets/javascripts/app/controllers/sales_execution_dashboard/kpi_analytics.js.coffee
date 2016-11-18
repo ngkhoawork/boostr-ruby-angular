@@ -173,6 +173,61 @@
 
 #=====END Filters====================================================================
 #=======================WIN RATE=======================================================
+      getCorrectFactor = (i) ->
+        if (i>5 && i<12)
+          i = i-6
+        if (i>=12 && i<18)
+          i = i-12
+        return i
+
+      createLegend = (data, selector) ->
+        legendTable = d3.select(selector+" svg").append("g")
+          .attr("transform", "translate(70, "+($scope.chartHeight+15)+")")
+          .attr("class", "legendTable");
+        legend = legendTable.selectAll(selector+' .legend')
+          .data(data).enter()
+          .append('g')
+          .attr('class', 'legend')
+          .attr('transform', (d, i) ->
+            return 'translate(' + getCorrectFactor(i) * 100 + ', 0)'
+          )
+
+        legend.append('rect')
+          .attr('x', (d, i) ->
+            return getCorrectFactor(i) * 70
+          )
+          .attr('y', (d, i) ->
+            if(i<6)
+              return 0
+            if(i>=6 && i < 12)
+              return 20
+            if(i>=12 && i < 18)
+              return 40
+          )
+          .attr('width', 13)
+          .attr('height', 13)
+          .attr("rx", 4)
+          .attr("ry", 4)
+          .style 'fill', (d) ->
+            d.color
+
+        legend.append('text')
+          .attr('x', (d, i) ->
+            return getCorrectFactor(i) * 70 + 20
+          )
+          .attr('y', (d, i) ->
+            if(i<6)
+              return 10
+            if(i>=6 && i < 12)
+              return 30
+            if(i>=12 && i < 18)
+              return 50
+          )
+          .attr('height', 30)
+          .attr('width', 150)
+          .text (d) ->
+            d.label
+
       createItemChart = (data, colorStroke, label) ->
         # make lines function
         line = d3.svg.line().interpolate('monotone').x((d) ->
@@ -314,56 +369,7 @@
           .attr('y2', 0)
 
         #add legend
-        legendTable = d3.select(".win-rate svg").append("g")
-          .attr("transform", "translate(70, "+($scope.chartHeight+15)+")")
-          .attr("class", "legendTable");
-        legend = legendTable.selectAll('.win-rate .legend')
-          .data(data).enter()
-          .append('g')
-          .attr('class', 'legend')
-          .attr('transform', (d, i) ->
-            if (i>5)
-              i = i-6
-            return 'translate(' + i * 100 + ', 0)'
-          )
-
-        legend.append('rect')
-          .attr('x', (d, i) ->
-            if(i<6)
-              return i * 70
-            else
-              return (i-6) * 70
-          )
-          .attr('y', (d, i) ->
-            if(i<6)
-              return 0
-            else
-              return 20
-          )
-          .attr('width', 13)
-          .attr('height', 13)
-          .attr("rx", 4)
-          .attr("ry", 4)
-          .style 'fill', (d) ->
-            d.color
-
-        legend.append('text')
-          .attr('x', (d, i) ->
-            if(i<6)
-              return i * 70 + 20
-            else
-              return (i-6) * 70 + 20
-          )
-          .attr('y', (d, i) ->
-            if(i<6)
-              return 10
-            else
-              return 30
-           )
-          .attr('height', 30)
-          .attr('width', 150)
-          .text (d) ->
-            d.label
+        createLegend(data, '.win-rate')
 
       createChart = (data)->
         d3.select(".win-rate svg").remove();
@@ -409,8 +415,13 @@
         ).attr('cy', (d) ->
           $scope.scaleDSY(d.y) + $scope.chartMargin
         ).on('mouseover', (d) ->
+          if(d.win_rate)
+            win_rate = '$' + (d.win_rate+'').replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$&,") + 'k'
+          else
+            win_rate = 0
+
           div.transition().duration(200).style 'opacity', 1
-          div.html('<p>'+ d.seller + '</p><p><span>$' + (d.win_rate+'').replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$&,") + 'k</span><span>' +d.wins+ '</span></p><p><span>Deal Size</span><span>Wins</span></p>')
+          div.html('<p>'+ d.seller + '</p><p><span>' + win_rate + '</span><span>' +d.wins+ '</span></p><p><span>Deal Size</span><span>Wins</span></p>')
           .style('left', $scope.scaleDSX(d.x) + $scope.chartMargin - 105 + 'px')
           .style('top', $scope.scaleDSY(d.y) + $scope.chartMargin + 18 + 'px')
         ).on 'mouseout', (d) ->
@@ -525,56 +536,7 @@
         .attr('y2', 0)
 
         #add legend
-        legendTable = d3.select(".deal-size svg").append("g")
-        .attr("transform", "translate(70, "+($scope.chartHeight+15)+")")
-        .attr("class", "legendTable");
-        legend = legendTable.selectAll('.deal-size .legend')
-        .data(data).enter()
-        .append('g')
-        .attr('class', 'legend')
-        .attr('transform', (d, i) ->
-          if (i>5)
-            i = i-6
-          return 'translate(' + i * 100 + ', 0)'
-        )
-
-        legend.append('rect')
-        .attr('x', (d, i) ->
-          if(i<6)
-            return i * 70
-          else
-            return (i-6) * 70
-        )
-        .attr('y', (d, i) ->
-          if(i<6)
-            return 0
-          else
-            return 20
-        )
-        .attr('width', 13)
-        .attr('height', 13)
-        .attr("rx", 4)
-        .attr("ry", 4)
-        .style 'fill', (d) ->
-          d.color
-
-        legend.append('text')
-        .attr('x', (d, i) ->
-          if(i<6)
-            return i * 70 + 20
-          else
-            return (i-6) * 70 + 20
-        )
-        .attr('y', (d, i) ->
-          if(i<6)
-            return 10
-          else
-            return 30
-        )
-        .attr('height', 30)
-        .attr('width', 150)
-        .text (d) ->
-          d.label
+        createLegend(data, '.deal-size')
 
       createDSChart = (data)->
         d3.select(".deal-size svg").remove();
@@ -730,56 +692,7 @@
         .attr('y2', 0)
 
         #add legend
-        legendTable = d3.select(".cycle-time svg").append("g")
-        .attr("transform", "translate(70, "+($scope.chartHeight+15)+")")
-        .attr("class", "legendTable");
-        legend = legendTable.selectAll('.cycle-time .legend')
-        .data(data).enter()
-        .append('g')
-        .attr('class', 'legend')
-        .attr('transform', (d, i) ->
-          if (i>5)
-            i = i-6
-          return 'translate(' + i * 100 + ', 0)'
-        )
-
-        legend.append('rect')
-        .attr('x', (d, i) ->
-          if(i<6)
-            return i * 70
-          else
-            return (i-6) * 70
-        )
-        .attr('y', (d, i) ->
-          if(i<6)
-            return 0
-          else
-            return 20
-        )
-        .attr('width', 13)
-        .attr('height', 13)
-        .attr("rx", 4)
-        .attr("ry", 4)
-        .style 'fill', (d) ->
-          d.color
-
-        legend.append('text')
-        .attr('x', (d, i) ->
-          if(i<6)
-            return i * 70 + 20
-          else
-            return (i-6) * 70 + 20
-        )
-        .attr('y', (d, i) ->
-          if(i<6)
-            return 10
-          else
-            return 30
-        )
-        .attr('height', 30)
-        .attr('width', 150)
-        .text (d) ->
-          d.label
+        createLegend(data, '.cycle-time')
 
       createCTChart = (data)->
         d3.select(".cycle-time svg").remove();
