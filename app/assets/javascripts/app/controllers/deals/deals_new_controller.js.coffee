@@ -47,9 +47,14 @@
         $scope.agencies = clients
 
   $scope.submitForm = () ->
-    Deal.create(deal: $scope.deal).then (deal) ->
-      $modalInstance.close()
-      $location.path('/deals/' + deal.id)
+    Deal.create(deal: $scope.deal).then(
+      (deal) ->
+        $modalInstance.close()
+        $location.path('/deals/' + deal.id)
+      (resp) ->
+        $scope.errors = resp.data.errors
+        $scope.buttonDisabled = false
+    )
 
   $scope.cancel = ->
     $modalInstance.close()

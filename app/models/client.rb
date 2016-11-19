@@ -24,7 +24,7 @@ class Client < ActiveRecord::Base
 
   accepts_nested_attributes_for :address, :values
 
-  validates :name, presence: true
+  validates :name, :client_type_id, presence: true
 
   before_create :ensure_client_member
 

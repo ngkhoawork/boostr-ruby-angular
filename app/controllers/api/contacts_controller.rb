@@ -24,13 +24,18 @@ class Api::ContactsController < ApplicationController
       contacts = Contact.import(csv_file, current_user)
       render json: contacts
     else
-      contact = current_user.company.contacts.new(contact_params)
-      contact.created_by = current_user.id
-      if contact.save
-        render json: contact, status: :created
+      if contact_params[:client_id].present?
+        contact = current_user.company.contacts.new(contact_params)
+        contact.created_by = current_user.id
+        if contact.save
+          render json: contact, status: :created
+        else
+          render json: { errors: contact.errors.messages }, status: :unprocessable_entity
+        end
       else
-        render json: { errors: contact.errors.messages }, status: :unprocessable_entity
+        render json: { errors: { "primary client": ["can't be blank"] } }, status: :unprocessable_entity
       end
+
     end
   end
 

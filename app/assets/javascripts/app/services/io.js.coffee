@@ -35,16 +35,26 @@
 
       @create = (params) ->
         deferred = $q.defer()
-        resource.save params, (io) ->
-          deferred.resolve(io)
-          $rootScope.$broadcast 'updated_ios'
+        resource.save(
+          params,
+          (io) ->
+            deferred.resolve(io)
+            $rootScope.$broadcast 'updated_ios'
+          (resp) ->
+            deferred.reject(resp)
+        )
         deferred.promise
 
       @update = (params) ->
         deferred = $q.defer()
-        resource.update params, (io) ->
-          deferred.resolve(io)
-          $rootScope.$broadcast 'updated_ios'
+        resource.update(
+          params,
+          (io) ->
+            deferred.resolve(io)
+            $rootScope.$broadcast 'updated_ios'
+          (resp) ->
+            deferred.reject(resp)
+        )
         deferred.promise
 
       @updateContacts = (id, params) ->

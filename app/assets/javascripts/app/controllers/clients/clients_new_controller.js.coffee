@@ -50,9 +50,14 @@
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
     $scope.removeCategoriesFromAgency()
-    $scope.client.$save ->
-      $rootScope.$broadcast 'newClient', $scope.client
-      $modalInstance.close()
+    $scope.client.$save(
+      ->
+        $rootScope.$broadcast 'newClient', $scope.client
+        $modalInstance.close()
+      (resp) ->
+        $scope.errors = resp.data.errors
+        $scope.buttonDisabled = false
+    )
 
   $scope.updateCategory = (category) ->
     $scope.client.client_subcategory_id = undefined
