@@ -48,8 +48,14 @@
         $scope.agencies = clients
 
   $scope.submitForm = () ->
-    Deal.update(id: $scope.deal.id, deal: $scope.deal).then (deal) ->
-      $modalInstance.close()
+    Deal.update(id: $scope.deal.id, deal: $scope.deal).then(
+      (deal) ->
+        $modalInstance.close()
+      (resp) ->
+        $scope.errors = resp.data.errors
+        $scope.buttonDisabled = false
+    )
+
 
   $scope.cancel = ->
     $modalInstance.close()

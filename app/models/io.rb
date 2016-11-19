@@ -10,6 +10,7 @@ class Io < ActiveRecord::Base
   has_many :display_line_items, dependent: :destroy
   has_many :print_items, dependent: :destroy
 
+  validates :name, :budget, :advertiser_id, :deal_id, :start_date, :end_date , presence: true
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
 
   after_update do

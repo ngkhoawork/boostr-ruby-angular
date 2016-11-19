@@ -73,10 +73,25 @@
       $scope.deals = deals
 
   $scope.submitForm = () ->
-    IO.create(io: $scope.io).then (io) ->
-      IOMember.create(io_id: io.id, io_member: $scope.ioMember).then (ioMember) ->
-        $modalInstance.close(io)
-
+    $scope.errors = {}
+    if (!$scope.ioMember.user_id)
+      $scope.errors['IO Member'] = ["can't be blank"]
+    if (!$scope.ioMember.share)
+      $scope.errors['Share'] = ["can't be blank"]
+    if (!$scope.ioMember.from_date)
+      $scope.errors['From Date'] = ["can't be blank"]
+    if (!$scope.ioMember.to_date)
+      $scope.errors['End Date'] = ["can't be blank"]
+    console.log(Object.keys($scope.errors).length);
+    if (Object.keys($scope.errors).length == 0)
+      IO.create(io: $scope.io).then(
+        (io) ->
+          IOMember.create(io_id: io.id, io_member: $scope.ioMember).then (ioMember) ->
+            $modalInstance.close(io)
+        (resp) ->
+          $scope.errors = resp.data.errors
+          $scope.buttonDisabled = false
+      )
   $scope.cancel = ->
     $modalInstance.close()
 
