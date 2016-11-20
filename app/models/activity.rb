@@ -36,7 +36,7 @@ class Activity < ActiveRecord::Base
 
       if row[1].present?
         begin
-          happened_at = DateTime.parse(row[1])
+          happened_at = Date.strptime(row[2].strip, "%m/%d/%Y")
         rescue ArgumentError
           error = {row: row_number, message: ['Date must be a valid datetime'] }
           errors << error
