@@ -72,6 +72,7 @@
 
         Seller.query({id: 'all'}).$promise.then (sellers) ->
           $scope.sellers = sellers
+          $scope.sellers.unshift({first_name:'All', id:'all'})
 
         Team.all(all_teams: true).then (teams) ->
           $scope.teams = teams
@@ -124,6 +125,7 @@
         $scope.sellerId = null
         Seller.query({id: $scope.teamId}).$promise.then (sellers) ->
           $scope.sellers = sellers
+          $scope.sellers.unshift({first_name:'All', id: 'all'})
         getData()
 
 #work with dates====================================================================
@@ -166,8 +168,9 @@
         getData()
 
       $scope.filterBySeller =(sellerId) ->
-        $scope.teamId = null
+#        $scope.teamId = null
         $scope.sellerId = sellerId
+        console.log('seller filter', $scope.teamId, $scope.sellerId);
         getData()
 
 #      $scope.resetDates = () ->
@@ -345,25 +348,25 @@
         #find min value for Y
         minValue = 0;
 
+        #interpolate function for X
+        $scope.scaleX = d3.scale.linear()
+          .domain([1, time_periods.length])
+          .range([100, xAxisLength]);
+
         #interpolate function for Y
         $scope.scaleY = d3.scale.linear()
           .domain([maxValue, minValue])
           .range([0, yAxisLength])
-
-        #interpolate function for Y
-        $scope.scaleX = d3.scale.linear()
-          .domain([0, time_periods.length])
-          .range([0, xAxisLength]);
 
         # make X
         xAxis = d3.svg.axis()
           .scale($scope.scaleX)
           .orient('bottom')
           .tickFormat((d, i) ->
-            time_periods[i-1]
+            time_periods[i]
           )
           .tickPadding(10)
-          .ticks(time_periods.length)
+          .ticks(time_periods.length - 1)
 
         #make Y
         yAxis = d3.svg.axis()
@@ -404,7 +407,6 @@
         createItemChart(average.data, average.color, average.color.replace(/#/, ''), true);
         _.each optimizeData, (chart) ->
           createItemChart(chart.data, chart.color, chart.color.replace(/#/, ''));
-
 
 #=======================END WIN RATE=======================================================
 #=======================DEAl SIZE=======================================================
@@ -692,7 +694,7 @@
 
         #interpolate function for Y
         $scope.scaleCTY = d3.scale.linear()
-        .domain([maxValue || 1, minValue])
+        .domain([maxValue || 10, minValue])
         .range([0, yAxisLength])
 
         #interpolate function for X

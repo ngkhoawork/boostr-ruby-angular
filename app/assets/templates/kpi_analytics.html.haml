@@ -103,9 +103,9 @@
               %tr{ ng: { repeat: 'itemsData in winRateData' }}
                 %td{ ng: { repeat: 'item in itemsData' }}
                   %span{ ng: { if: 'item.win_rate !== undefined' }}
-                    {{item.win_rate}}
+                    {{item.win_rate}}%
                   %span{ ng: { if: 'item.win_rate === undefined' }}
-                    {{item}}
+                    {{$last ? item + '%' : item}}
               %tr{ ng: { if: 'winRateAverage' }}
                 %td.text--bold{ ng: { repeat: 'average in winRateAverage track by $index' }}
                   {{average}}
