@@ -111,7 +111,14 @@ class Api::DealsController < ApplicationController
         render json: [{deals: deal_list, range: range}].to_json
       }
       format.csv {
-        send_data Deal.to_pipeline_report_csv(company, params[:team_id]), filename: "pipeline-report-#{Date.today}.csv"
+        require 'timeout'
+        begin
+          Timeout::timeout(90) {
+            send_data Deal.to_pipeline_report_csv(company, params[:team_id]), filename: "pipeline-report-#{Date.today}.csv"
+          }
+        rescue Timeout::Error
+          return
+        end
       }
     end
   end
@@ -126,7 +133,14 @@ class Api::DealsController < ApplicationController
         render json: [{deals: deal_list, range: range}].to_json
       }
       format.csv {
-        send_data Deal.to_pipeline_summary_report_csv(company), filename: "pipeline-summary-report-#{Date.today}.csv"
+        require 'timeout'
+        begin
+          Timeout::timeout(90) {
+            send_data Deal.to_pipeline_summary_report_csv(company), filename: "pipeline-summary-report-#{Date.today}.csv"
+          }
+        rescue Timeout::Error
+          return
+        end
       }
     end
   end
