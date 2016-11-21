@@ -54,6 +54,7 @@ Rails.application.routes.draw do
     resources :products, only: [:index, :create, :update]
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       get :all_members
+      get :all_sales_reps
     end
     resources :custom_values, only: [:index]
     resources :time_periods, only: [:index, :create, :update, :destroy]
@@ -76,6 +77,7 @@ Rails.application.routes.draw do
       end
     end
     resources :kpis, only: [:index]
+    resources :kpis_dashboard, only: [:index]
     resources :reminders, only: [:index, :show, :create, :update, :destroy]
     resources :remindable, only: [] do
       get '/:remindable_type', to: 'reminders#remindable'

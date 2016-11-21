@@ -1,0 +1,330 @@
+#kpi-analytics {
+  .dropdown-menu{
+    max-height: 400px;
+    overflow-y: scroll;
+  }
+  .table-report {
+    tbody tr:last-child{
+      font-weight: bold;
+    }
+  }
+
+  //===========tree dropdown========================
+  .tree-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-bottom: -26px;
+    margin-left: 10px;
+    font-size: 13px;
+    width: auto;
+    max-width: 100%;
+  }
+
+  .tree-dropdown .select {
+    padding: 0 10px;
+    height: 32px;
+    display: block;
+    line-height: 14px;
+    color: #ff6e17;
+    vertical-align: middle;
+    margin-right: 8px;
+    //background-color: #ffffff;
+    //border: 1px solid #cccccc;
+    //-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    //box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    border: none;
+  }
+
+  .tree-dropdown .select::after {
+    content: " ";
+    width: 0;
+    height: 0;
+    position: absolute;
+    right: 0;
+    top: 15px;
+    border-top: 5px dashed;
+    border-top: 5px solid \9;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+  }
+
+  .tree-dropdown p {
+    line-height: 32px;
+    margin: 0;
+  }
+
+  .tree-dropdown .list{
+    width: 180px;
+    box-sizing: content-box;
+    position: absolute;
+    top: 33px;
+    left: 0px;
+    right: 0px;
+    background-color: #FFF;
+    border-style: solid;
+    border-color: #cccccc;
+    border-width: 1px 1px 1px 1px;
+    z-index: 1100;
+    overflow-x: hidden;
+    max-height: 300px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  }
+
+  .tree-dropdown ul {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .tree-dropdown ul:first-child {
+    padding: 0px;
+  }
+
+  .tree-dropdown .list p:hover{
+    background: none;
+    color: #ff6e17;
+  }
+
+  .tree-dropdown .list p.selected{
+    background: #ff6e17;
+    color: #fff;
+  }
+
+  .tree-dropdown .level-0 {
+    padding-left: 15px
+  }
+  .tree-dropdown .level-1 {
+    padding-left: 30px
+  }
+  .tree-dropdown .level-2 {
+    padding-left: 45px
+  }
+  .tree-dropdown .level-3 {
+    padding-left: 60px
+  }
+  .tree-dropdown .level-4 {
+    padding-left: 75px
+  }
+  .tree-dropdown .level-5 {
+    padding-left: 90px
+  }
+  .tree-dropdown .level-6 {
+    padding-left: 105px
+  }
+  .tree-dropdown .level-7 {
+    padding-left: 120px
+  }
+  .tree-dropdown .level-8 {
+    padding-left: 135px
+  }
+  .tree-dropdown .level-9 {
+    padding-left: 150px
+  }
+  .tree-dropdown .level-10 {
+    padding-left: 110px
+  }
+  //===========END tree dropdown====================
+  .legend {
+    padding-top: 27px;
+  }
+
+  .title {
+    margin-bottom: 25px;
+  }
+
+  .kpi-block {
+    margin-bottom: 50px;
+
+    .date-caret {
+      margin-left: -4px;
+      color: #ff6e17;
+    }
+
+    .default-date {
+      width: 95px;
+    }
+
+    .date {
+      width: 136px!important;
+    }
+
+    .dateInvalid {
+      input {
+        width: 136px;
+        border-bottom: 3px solid #ff6e17!important;
+      }
+    }
+
+    &__filter{
+      display: inline-block;
+      list-style: none;
+      padding-left: 17px;
+
+      .bs-datepicker {
+        input{
+          cursor: pointer;
+          border:none;
+          color: #ff6e17;
+          outline: none;
+          padding-left: 6px;
+        }
+        input::-webkit-input-placeholder {
+          color: #ff6e17;
+        }
+        input::-moz-placeholder {
+          color: #ff6e17;
+        }
+        input:-ms-input-placeholder {
+          color: #ff6e17;
+        }
+      }
+    }
+
+    .buttons__filter {
+      margin-top: -6px;
+      .btn {
+        margin-right: -3px;
+        background: white;
+      }
+    }
+
+    &__title {
+      font-weight: 300;
+      margin-top: 0;
+      margin-left: -5px;
+    }
+  }
+
+  .schedule {
+    height: 450px;
+    margin-bottom: 105px;
+
+    svg:not(:root) {
+      overflow: visible;
+    }
+
+    path {
+      stroke: steelblue;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .win-rate,
+    .cycle-time,
+    .deal-size{
+      width: 1070px;
+      margin: auto;
+      position: relative;
+
+      div.tooltip {
+        position: absolute;
+        text-align: center;
+        width: 250px;
+        height: 100px;
+        padding: 10px 10px 10px 20px;
+        background: white;
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+        box-shadow: -1px 9px 36px -6px rgba(163,162,180,0.65);
+
+        span {
+          display: inline-block;
+          width: 73px;
+          text-align: center;
+        }
+
+        p:first-child {
+          color: #FF7E30;
+          font-size: 16px;
+        }
+
+        p:nth-child(2) {
+          width: 230px;
+          color: #2B3C49;
+          font-size: 18px;
+          font-weight: bold;
+        }
+
+        p:nth-child(3) {
+          width: 230px;
+          color: #A3ACB4;
+          font-size: 12px;
+        }
+      }
+
+      div.tooltip-small {
+        position: absolute;
+        text-align: center;
+        z-index: 1000;
+        width: 200px;
+        height: 100px;
+        padding-top: 10px;
+        background: white;
+        border: 0px;
+        border-radius: 8px;
+        pointer-events: none;
+        box-shadow: -1px 9px 36px -6px rgba(163,162,180,0.65);
+
+        span {
+          display: inline-block;
+          width: 73px;
+          text-align: center;
+        }
+
+        p:first-child {
+          color: #FF7E30;
+          font-size: 16px;
+        }
+
+        p:nth-child(2) {
+          width: 230px;
+          color: #2B3C49;
+          font-size: 18px;
+          font-weight: bold;
+        }
+
+        p:nth-child(3) {
+          width: 230px;
+          color: #A3ACB4;
+          font-size: 12px;
+        }
+      }
+
+      .x-axis,
+      .y-axis {
+        stroke-opacity: 0.4;
+      }
+      .axis path, .axis line {
+        fill: none;
+        stroke: #6B6B6B;
+      }
+      .axis .grid-line {
+        stroke: #000;
+        stroke-opacity: 0.2;
+      }
+      .axis text {
+        font: 12px Arial;
+      }
+    }
+  }
+
+  .btnPrimary {
+    color: #fff;
+    background-color: #FF7E30!important;
+    border-color: #ff6e17;
+
+    &:focus{
+      outline: none;
+    }
+  }
+
+  .reset-dates {
+    padding: 1px 4px;
+    margin-top: -2px;
+  }
+}
+

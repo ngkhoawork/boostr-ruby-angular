@@ -83,6 +83,9 @@ class Deal < ActiveRecord::Base
   scope :at_percent, -> (percentage) { joins(:stage).where('stages.probability = ?', percentage) }
   scope :greater_than, -> (percentage) { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
+  scope :by_type, -> (type_option_id, type_field_id) { joins(:values).where('values.field_id = ? AND values.option_id = ?', type_field_id, type_option_id) if type_option_id.present? && type_option_id != 'all' }
+
+  scope :by_source, -> (source_option_id, source_field_id) { joins(:values).where('values.field_id = ? AND values.option_id = ?', source_field_id, source_option_id) if source_option_id.present? && source_option_id != 'all'}
 
   def fields
     company.fields.where(subject_type: self.class.name)
