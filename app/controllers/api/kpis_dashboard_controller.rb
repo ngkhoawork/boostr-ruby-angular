@@ -117,7 +117,7 @@ class Api::KpisDashboardController < ApplicationController
 
   def team_members
     if params[:seller] && params[:seller] !='all'
-      @team_members ||= company.users.where(id: params[:seller], user_type: [SELLER, SALES_MANAGER])
+      @team_members ||= company.users.where(id: params[:seller])
     else
       @team_members ||= teams.map(&:all_sales_reps).flatten.sort_by(&:first_name)
     end
