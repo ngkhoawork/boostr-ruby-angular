@@ -6,6 +6,10 @@ FactoryGirl.define do
 
     before(:create) do |item|
       item.company = Company.first
+
+      if item.client_type_id.nil?
+        item.client_type_id = Company.first.fields.find_by(name: 'Client Type').options.ids.sample
+      end
     end
   end
 end
