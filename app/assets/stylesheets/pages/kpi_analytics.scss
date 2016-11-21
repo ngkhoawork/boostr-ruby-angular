@@ -1,4 +1,8 @@
 #kpi-analytics {
+  .dropdown-menu{
+    max-height: 400px;
+    overflow-y: scroll;
+  }
   .table-report {
     tbody tr:last-child{
       font-weight: bold;
