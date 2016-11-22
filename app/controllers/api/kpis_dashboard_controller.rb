@@ -102,9 +102,8 @@ class Api::KpisDashboardController < ApplicationController
   end
 
   def deals_by_time_period
-    type_field_id = company.fields.find_by(subject_type: 'Deal', name: 'Deal Type').id if params[:type] && params[:type] != 'all'
-    source_field_id = company.fields.find_by(subject_type: 'Deal', name: 'Deal Source').id if params[:source] && params[:source] != 'all'
-    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).by_type(params[:type], type_field_id).by_source(params[:source], source_field_id).distinct.active.includes(:stage, :deal_members, :products)
+    value_params = [params[:type], params[:source]].reject{|el| el.nil? || el == 'all'}
+    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).by_values(value_params).distinct.active.includes(:stage, :deal_members, :products)
   end
 
   def teams
