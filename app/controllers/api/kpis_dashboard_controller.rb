@@ -41,7 +41,11 @@ class Api::KpisDashboardController < ApplicationController
 
         win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
 
-        total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
+        if params[:product_id] && params[:product_id] != 'all'
+          total_deal_size = complete_deals.map{|d| d.deal_products.find_by(product_id: params[:product_id])}.compact.map(&:budget).compact.reduce(:+)
+        else
+          total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
+        end
         if total_deal_size && complete_deals.count > 0
           average_deal_size = ((total_deal_size / complete_deals.count) / 100000).round(0)
         end
@@ -179,7 +183,12 @@ class Api::KpisDashboardController < ApplicationController
     incomplete_deals = incomplete_deals_list(ids, full_time_period)
 
     average_deal_size = 0
-    total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
+    if params[:product_id] && params[:product_id] != 'all'
+      total_deal_size = complete_deals.map{|d| d.deal_products.find_by(product_id: params[:product_id])}.compact.map(&:budget).compact.reduce(:+)
+    else
+      total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
+    end
+
     if total_deal_size && complete_deals.count > 0
       average_deal_size = ((total_deal_size / complete_deals.count) / 100000).round(0)
     end
@@ -248,7 +257,12 @@ class Api::KpisDashboardController < ApplicationController
       total_deals = complete_deals.count + incomplete_deals.count
 
       average_deal_size = 0
-      total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
+
+      if params[:product_id] && params[:product_id] != 'all'
+        total_deal_size = complete_deals.map{|d| d.deal_products.find_by(product_id: params[:product_id])}.compact.map(&:budget).compact.reduce(:+)
+      else
+        total_deal_size = complete_deals.map(&:budget).compact.reduce(:+)
+      end
       if total_deal_size && complete_deals.count > 0
         average_deal_size = ((total_deal_size / complete_deals.count) / 100000).round(0)
       end
@@ -259,7 +273,12 @@ class Api::KpisDashboardController < ApplicationController
     all_complete_deals = complete_deals_list(ids, full_time_period)
 
     total_grand_average_size = 0
-    total_deal_size = all_complete_deals.map(&:budget).compact.reduce(:+)
+
+    if params[:product_id] && params[:product_id] != 'all'
+      total_deal_size = all_complete_deals.map{|d| d.deal_products.find_by(product_id: params[:product_id])}.compact.map(&:budget).compact.reduce(:+)
+    else
+      total_deal_size = all_complete_deals.map(&:budget).compact.reduce(:+)
+    end
     if total_deal_size && all_complete_deals.count > 0
       total_grand_average_size = ((total_deal_size / all_complete_deals.count) / 100000).round(0)
     end
