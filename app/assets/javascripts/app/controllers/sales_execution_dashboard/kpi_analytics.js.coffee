@@ -11,7 +11,6 @@
             $scope.time_period = 'month'
             $scope.teamId = ''
             $scope.selectedTeam = {
-
                 id:'all',
                 name:'Team'
             }
@@ -725,23 +724,27 @@
 
                 #interpolate function for X
                 $scope.scaleCTX = d3.scale.linear()
-                .domain([1, time_periods.length])
-                .range([$scope.chartOffsetX, xAxisLength]);
+                    .domain([1, time_periods.length])
+                    .range([$scope.chartOffsetX, xAxisLength])
 
                 # make X
                 xAxis = d3.svg.axis()
-                .scale($scope.scaleCTX)
-                .orient('bottom')
-                .tickFormat((d, i) ->
-                    time_periods[i]
-                )
-                .tickPadding(10)
-                .ticks(time_periods.length - 1)
+                    .scale($scope.scaleCTX)
+                    .orient('bottom')
+                    .tickFormat((d, i) ->
+                        time_periods[i]
+                    )
+                    .tickPadding(10)
+                    .ticks(time_periods.length - 1)
 
                 #make Y
                 yAxis = d3.svg.axis()
-                .scale($scope.scaleCTY)
-                .orient("left");
+                    .scale($scope.scaleCTY)
+                    .orient("left")
+                    .tickFormat((d) ->
+                        if d > 0 then return d + ' Days'
+                        return d
+                    )
                 if maxValue is 0
                     yAxis.tickValues([0])
 
