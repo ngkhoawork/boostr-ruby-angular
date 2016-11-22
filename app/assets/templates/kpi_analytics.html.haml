@@ -69,6 +69,12 @@
                     ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
                     'is-open': 'callEndDateOpened' }
         %span.date-caret.caret{ng: { if: '!end_date'}}
+
+        %span#reset-filter{'ng-click': 'resetFilters()'}
+          Reset
+
+
+
         -#%ul.kpi-block__filter
         -#  %button.btn.btnPrimary.reset-dates{'ng-click': 'resetDates()'}
         -#    Reset dates

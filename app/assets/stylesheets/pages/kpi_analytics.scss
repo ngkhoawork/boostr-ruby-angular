@@ -8,7 +8,15 @@
       font-weight: bold;
     }
   }
-
+  #reset-filter {
+    margin: 0 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #3498DB;
+    &:hover {
+      color: #39B2FF
+    }
+  }
   //===========tree dropdown========================
   .tree-dropdown {
     position: relative;
@@ -199,9 +207,6 @@
   }
 
   .schedule {
-    height: 450px;
-    margin-bottom: 105px;
-
     svg:not(:root) {
       overflow: visible;
     }
