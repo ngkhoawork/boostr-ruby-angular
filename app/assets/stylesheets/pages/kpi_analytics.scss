@@ -1,7 +1,7 @@
 #kpi-analytics {
   .dropdown-menu{
     max-height: 400px;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
   .table-report {
     tbody tr:last-child{
@@ -297,6 +297,11 @@
       .x-axis,
       .y-axis {
         stroke-opacity: 0.4;
+      }
+      .x-extra-axis {
+        .domain {
+          stroke: #dcdcdc;
+        }
       }
       .axis path, .axis line {
         fill: none;

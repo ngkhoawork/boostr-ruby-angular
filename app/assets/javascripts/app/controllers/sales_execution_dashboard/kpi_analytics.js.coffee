@@ -3,9 +3,10 @@
     ($scope, KPIDashboard, Team, Product, Field, Seller, $filter) ->
 
       #create chart===========================================================
-      $scope.chartHeight= 500
+      $scope.chartHeight = 500
       $scope.chartWidth = 1070
-      $scope.chartMargin= 30
+      $scope.chartMargin = 30
+      $scope.chartOffsetX = 100
       $scope.teamFilters = []
       $scope.time_period = 'month'
       $scope.teamId = ''
@@ -170,7 +171,6 @@
       $scope.filterBySeller =(sellerId) ->
 #        $scope.teamId = null
         $scope.sellerId = sellerId
-        console.log('seller filter', $scope.teamId, $scope.sellerId);
         getData()
 
 #      $scope.resetDates = () ->
@@ -351,14 +351,14 @@
         #interpolate function for X
         $scope.scaleX = d3.scale.linear()
           .domain([1, time_periods.length])
-          .range([100, xAxisLength]);
+          .range([$scope.chartOffsetX, xAxisLength]);
 
         #interpolate function for Y
         $scope.scaleY = d3.scale.linear()
           .domain([maxValue, minValue])
           .range([0, yAxisLength])
 
-        # make X
+        #make X
         xAxis = d3.svg.axis()
           .scale($scope.scaleX)
           .orient('bottom')
@@ -387,6 +387,15 @@
         .attr('style', 'opacity:0.6')
         .attr('transform', 'translate(' + $scope.chartMargin + ',' + $scope.chartMargin + ')')
         .call yAxis
+
+        #extra X
+        $scope.svg.append('g').attr('class', 'x-extra-axis')
+        .attr('transform', 'translate(' + $scope.chartMargin + ',' + ($scope.chartHeight- $scope.chartMargin) + ')')
+        .call (d3.svg.axis().scale(
+          d3.scale.linear()
+          .domain([1])
+          .range([0, $scope.chartOffsetX])
+        ).orient('bottom'))
 
         #paint gorizontal lines
         d3.selectAll('.win-rate g.y-axis g.tick')
@@ -521,8 +530,8 @@
 
         #interpolate function for X
         $scope.scaleDSX = d3.scale.linear()
-        .domain([0, time_periods.length])
-        .range([0, xAxisLength]);
+        .domain([1, time_periods.length])
+        .range([$scope.chartOffsetX, xAxisLength]);
 
         #interpolate function for Y
         $scope.scaleDSY = d3.scale.linear()
@@ -534,10 +543,10 @@
         .scale($scope.scaleDSX)
         .orient('bottom')
         .tickFormat((d, i) ->
-          time_periods[i-1]
+          time_periods[i]
         )
         .tickPadding(10)
-        .ticks(time_periods.length)
+        .ticks(time_periods.length - 1)
 
         #make Y
         yAxis = d3.svg.axis()
@@ -564,6 +573,15 @@
         .attr('style', 'opacity:0.6')
         .attr('transform', 'translate(' + $scope.chartMargin + ',' + $scope.chartMargin + ')')
         .call yAxis
+
+        #extra X
+        $scope.svgDS.append('g').attr('class', 'x-extra-axis')
+        .attr('transform', 'translate(' + $scope.chartMargin + ',' + ($scope.chartHeight- $scope.chartMargin) + ')')
+        .call (d3.svg.axis().scale(
+          d3.scale.linear()
+          .domain([1])
+          .range([0, $scope.chartOffsetX])
+        ).orient('bottom'))
 
         #paint gorizontal lines
         d3.selectAll('.deal-size g.y-axis g.tick')
@@ -699,18 +717,18 @@
 
         #interpolate function for X
         $scope.scaleCTX = d3.scale.linear()
-        .domain([0, time_periods.length])
-        .range([0, xAxisLength]);
+        .domain([1, time_periods.length])
+        .range([$scope.chartOffsetX, xAxisLength]);
 
         # make X
         xAxis = d3.svg.axis()
         .scale($scope.scaleCTX)
         .orient('bottom')
         .tickFormat((d, i) ->
-          time_periods[i-1]
+          time_periods[i]
         )
         .tickPadding(10)
-        .ticks(time_periods.length)
+        .ticks(time_periods.length - 1)
 
         #make Y
         yAxis = d3.svg.axis()
@@ -731,6 +749,15 @@
         .attr('style', 'opacity:0.6')
         .attr('transform', 'translate(' + $scope.chartMargin + ',' + $scope.chartMargin + ')')
         .call yAxis
+
+        #extra X
+        $scope.svgCT.append('g').attr('class', 'x-extra-axis')
+        .attr('transform', 'translate(' + $scope.chartMargin + ',' + ($scope.chartHeight- $scope.chartMargin) + ')')
+        .call (d3.svg.axis().scale(
+          d3.scale.linear()
+          .domain([1])
+          .range([0, $scope.chartOffsetX])
+        ).orient('bottom'))
 
         #paint gorizontal lines
         d3.selectAll('.cycle-time g.y-axis g.tick')
