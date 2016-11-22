@@ -7,8 +7,16 @@ class Api::KpisDashboardController < ApplicationController
     cycle_time_list = []
     @time_period_builder ||= TimePeriods.new(start_date..end_date)
 
-    if params[:seller] && params[:seller] !='all' || params[:team] && params[:team] != 'all'
+    if params[:seller] && params[:seller] !='all'
       object = team_members
+    elsif params[:team] && params[:team] != 'all'
+      if team.children.any?
+        object = team.children
+        object += team.members.by_user_type([SELLER, SALES_MANAGER])
+        object << team.leader if !team.leader.nil?
+      else
+        object = team_members
+      end
     else
       object = teams
     end
@@ -106,11 +114,15 @@ class Api::KpisDashboardController < ApplicationController
     @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).by_values(value_params).distinct.active.includes(:stage, :deal_members, :products)
   end
 
+  def team
+    @team = company.teams.find(params[:team])
+  end
+
   def teams
     if params[:team] && params[:team] != 'all'
-      @team ||= [company.teams.find(params[:team])]
+      @teams ||= [company.teams.find(params[:team])]
     else
-      @team ||= root_teams
+      @teams ||= root_teams
     end
   end
 
