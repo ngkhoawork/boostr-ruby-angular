@@ -60,16 +60,16 @@
     .when '/activity_types',
       templateUrl: 'activity_types.html'
       controller: 'ActivityTypesController'
-    .when '/reports',
+    .when '/smart_reports/seller_activities',
       templateUrl: 'reports.html'
       controller: 'ReportsController'
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
-    .when '/reports/sales_execution_dashboard',
+    .when '/smart_reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
       controller: 'SalesExecutionDashboardController'
-    .when '/reports/kpi_analytics',
+    .when '/smart_reports/kpi_analytics',
       templateUrl: 'kpi_analytics.html'
       controller: 'KPIAnalyticsController'
     .when '/reports/deal_reports',
