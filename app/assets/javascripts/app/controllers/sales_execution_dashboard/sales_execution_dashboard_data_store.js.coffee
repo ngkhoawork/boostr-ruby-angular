@@ -140,6 +140,7 @@
       return DataStore.dataQuaterForecast
 
     DataStore.setDataQuarterForecast = (data) ->
+      console.log(data);
       probability_colors = [ { probability: "100", color: "#1976bb"}, { probability: "90", color: "#3996db"}, { probability: "75" , color: "#52a1e2" }, { probability: "50" , color: "#7ab9e9" }, { probability: "25" , color: "#a4d0f0" }, { probability: "10" , color: "#d2e8f8" }]
       DataStore.dataQuaterForecast = _.map data, (row, index) ->
         graphData = []
@@ -155,11 +156,16 @@
         total_weighted = row.revenue
         total_unweighted = row.revenue
         series = series + 1
-        _.each probability_colors, (item) ->
-          color = item.color
-          probability = item.probability
-          stage = _.find row.stages, (o) ->
-            return o.probability == parseInt(probability)
+        stages = angular.copy(row.stages)
+        stages = _.sortBy stages, (stage) ->
+          return -stage.probability
+        _.each stages, (stage) ->
+          probability = stage.probability
+          red = parseInt(210 - 185 * probability / 100)
+          green = parseInt(232 - 114 * probability / 100)
+          blue = parseInt(248 - 61 * probability / 100)
+          color = "#" + ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
+
           if stage && row.weighted_pipeline_by_stage
             weighted_value = if row.weighted_pipeline_by_stage[stage.id] > 0 then row.weighted_pipeline_by_stage[stage.id] else 0
           else
@@ -185,7 +191,6 @@
         quota_weighted = Math.max(row.quota, total_unweighted / 5 * 6)
 
         DataStore.optionsQuarterForecast[index].chart.multibar = { forceY: [0,0,quota_weighted] }
-
         return {
           graphData: graphData,
           quota: row.quota,
