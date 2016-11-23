@@ -10,4 +10,9 @@ class UserMailer < ApplicationMailer
     @deal = Deal.find(deal_id)
     mail(to: recipients, subject: subject)
   end
+
+  def new_deal_email(recipients, subject, deal_id)
+    @deal = Deal.find(deal_id)
+    mail(to: recipients, subject: subject)
+  end
 end

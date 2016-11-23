@@ -1,0 +1,2 @@
+%p
+  #{@deal.name}, #{@deal.stage.present? ? @deal.stage.name : ""} & #{@deal.stage.present? ? @deal.stage.probability : "0"}% with flight dates of #{@deal.start_date.strftime("%m/%d/%y")} - #{@deal.end_date.strftime("%m/%d/%y")} was added by #{@deal.creator.present? ? @deal.creator.first_name + " " + @deal.creator.last_name : ""}.
