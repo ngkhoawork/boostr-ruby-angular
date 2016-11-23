@@ -1,14 +1,22 @@
 #kpi-analytics {
   .dropdown-menu{
     max-height: 400px;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
   .table-report {
     tbody tr:last-child{
       font-weight: bold;
     }
   }
-
+  #reset-filter {
+    margin: 0 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: #3498DB;
+    &:hover {
+      color: #39B2FF
+    }
+  }
   //===========tree dropdown========================
   .tree-dropdown {
     position: relative;
@@ -206,9 +214,6 @@
   }
 
   .schedule {
-    height: 450px;
-    margin-bottom: 105px;
-
     svg:not(:root) {
       overflow: visible;
     }
@@ -304,6 +309,11 @@
       .x-axis,
       .y-axis {
         stroke-opacity: 0.4;
+      }
+      .x-extra-axis {
+        .domain {
+          stroke: #dcdcdc;
+        }
       }
       .axis path, .axis line {
         fill: none;

@@ -69,6 +69,12 @@
                     ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
                     'is-open': 'callEndDateOpened' }
         %span.date-caret.caret{ng: { if: '!end_date'}}
+
+        %span#reset-filter{'ng-click': 'resetFilters()'}
+          Reset
+
+
+
         -#%ul.kpi-block__filter
         -#  %button.btn.btnPrimary.reset-dates{'ng-click': 'resetDates()'}
         -#    Reset dates
@@ -81,7 +87,7 @@
     .row.well.kpi-block
       .row
         .col-xs-12
-          %h4.kpi-block__title Win Rate by Seller
+          %h4.kpi-block__title Win Rate
       .row
         .col-xs-12.schedule
           %div.win-rate
@@ -113,7 +119,7 @@
     .row.well.kpi-block
       .row
         .col-xs-12
-          %h4.kpi-block__title Average Deal Size by Seller
+          %h4.kpi-block__title Average Deal Size
 
       .row
         .col-xs-12.schedule
@@ -149,7 +155,7 @@
     .row.well.kpi-block
       .row
         .col-xs-12
-          %h4.kpi-block__title Average Cycle Time by Seller
+          %h4.kpi-block__title Average Cycle Time
 
       .row
         .col-xs-12.schedule
