@@ -1,4 +1,5 @@
 class UserMailer < ApplicationMailer
+  include ActionView::Helpers::NumberHelper
   default from: 'boostr <noreply@boostrcrm.com>'
  
   def close_email(recipients, subject, deal)
