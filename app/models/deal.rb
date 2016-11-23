@@ -61,6 +61,7 @@ class Deal < ActiveRecord::Base
 
   after_create do
     generate_deal_members
+    send_new_deal_notification
   end
 
   before_destroy do
