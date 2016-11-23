@@ -130,14 +130,16 @@ class Deal < ActiveRecord::Base
     weighted_pipeline = {
       id: id,
       name: name,
-      client_name: advertiser.name,
+      client_name: (advertiser.nil? ? "" : advertiser.name),
+      agency_name: (agency.nil? ? "" : agency.name),
       probability: stage.probability,
       stage_id: stage.id,
       budget: budget,
       in_period_amt: in_period_amt(start_date, end_date),
       wday_in_stage: wday_in_stage,
       wday_since_opened: wday_since_opened,
-      start_date: self.start_date
+      start_date: self.start_date,
+      end_date: self.end_date
     }
 
     if stage.red_threshold.present? or stage.yellow_threshold.present?
