@@ -42,6 +42,8 @@
                   = link_to "Pipeline by User Report", "/reports/deal_reports"
                 %li
                   = link_to "Pipeline Summary Report", "/reports/pipeline_summary_reports"
+                %li
+                  = link_to "Activity Detail Report", "/reports/activity_detail_reports"
           - else
             %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -58,6 +60,8 @@
                   = link_to "Pipeline by User Report", "/reports/deal_reports"
                 %li
                   = link_to "Pipeline Summary Report", "/reports/pipeline_summary_reports"
+                %li
+                  = link_to "Activity Detail Report", "/reports/activity_detail_reports"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
             %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }

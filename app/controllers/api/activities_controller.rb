@@ -6,6 +6,9 @@ class Api::ActivitiesController < ApplicationController
       format.json {
         render json: activities
       }
+      format.csv {
+        send_data activity_csv_report, filename: "activity-detail-reports-#{Date.today}.csv"
+      }
     end
   end
 
@@ -111,6 +114,38 @@ class Api::ActivitiesController < ApplicationController
     @activity ||= company.activities.find(params[:id])
   end
 
+  def activity_csv_report
+    CSV.generate do |csv|
+      header = []
+      header << "Date"
+      header << "Type"
+      header << "Comments"
+      header << "Advertiser"
+      header << "Agency"
+      header << "Contacts"
+      header << "Deal"
+      header << "Creator"
+      csv << header
+
+      activities.each do |row|
+        line = []
+        line << row.happened_at.strftime("%m/%d/%Y")
+        line << row.activity_type_name
+        line << row.comment
+        line << (row.client.nil? ? "" : row.client.name)
+        line << (row.agency.nil? ? "" : row.agency.name)
+        contacts = ""
+        row.contacts.each do |contact|
+          contacts += contact.name + "\n"
+        end
+        line << contacts
+        line << (row.deal.nil? ? "" : row.deal.name)
+        line << (row.creator.nil? ? "" : row.creator.first_name + " " + row.creator.last_name)
+        csv << line
+      end
+    end
+  end
+
   def activities
     if params[:google_event_id]
       current_user.activities.where(google_event_id: params[:google_event_id])
@@ -122,7 +157,11 @@ class Api::ActivitiesController < ApplicationController
         []
       end
     else
-      if params[:page] && params[:filter] == "client"
+      if params[:filter] == "detail"
+        filtered_activities
+      elsif params[:team_id]
+        team.all_activities
+      elsif params[:page] && params[:filter] == "client"
         offset = (params[:page].to_i - 1) * 10
         if current_user.leader?
           team_members = current_user.all_team_members.collect{|member| member.id}
@@ -142,8 +181,45 @@ class Api::ActivitiesController < ApplicationController
     @company ||= current_user.company
   end
 
+  def filtered_activities
+    query_str = "user_id in (?)"
+    if params[:activity_type_id]
+      query_str += " and activity_type_id = #{params[:activity_type_id]}"
+    end
+
+    if params[:start_date] && params[:end_date]
+      query_str += " and happened_at >= '#{Date.parse(params[:start_date])}' and happened_at <= '#{Date.parse(params[:end_date])}'"
+    end
+
+    member_ids = []
+    if params[:member_id] && params[:member_id] != "all"
+      member_ids << params[:member_id]
+    elsif params[:team_id] && params[:team_id] != "all"
+      if team.present?
+        member_ids += team.all_members.collect{|member| member.id}
+      end
+    else
+      root_teams.each do |t|
+        member_ids += t.all_members.collect{|member| member.id}
+      end
+    end
+
+    puts "============"
+    puts query_str
+    puts member_ids
+    data = company.activities.where(query_str, member_ids)
+    # puts data
+    data
+  end
+
+  def root_teams
+    company.teams.roots(true)
+  end
+
   def team
-    if current_user.leader?
+    if params[:team_id]
+      company.teams.find(params[:team_id])
+    elsif current_user.leader?
       company.teams.where(leader: current_user).first!
     else
       current_user.team
