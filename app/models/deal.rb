@@ -225,15 +225,27 @@ class Deal < ActiveRecord::Base
     # This only gets called on create where the Deal has inherently been touched
     ActiveRecord::Base.no_touching do
       if advertiser.client_members.empty? && creator
-        deal_member = deal_members.create(user_id: creator.id, share: 100)
+        deal_members.create(user_id: creator.id, share: 100)
       else
+        should_create = true
+        total_share = 0
         advertiser.client_members.each do |client_member|
           deal_member = deal_members.create(client_member.defaults)
 
           if client_member.role_value_defaults
             deal_member.values.create(client_member.role_value_defaults)
           end
+
+          total_share += client_member.share
+          if client_member.user_id == creator.id
+            should_create = false
+          end
         end
+
+        if should_create == true
+          deal_members.create(user_id: creator.id, share: [100 - total_share, 0].max)
+        end
+
       end
     end
   end
