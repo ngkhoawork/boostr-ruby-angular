@@ -1,8 +1,8 @@
 @app.controller 'ActivityDetailReportsController',
   ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Team', 'Activity', 'ActivityType', '$filter',
     ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Team, Activity, ActivityType, $filter) ->
-      $scope.sortType     = 'name'
-      $scope.sortReverse  = false
+      $scope.sortType     = 'happened_at'
+      $scope.sortReverse  = true
       $scope.filterOpen = true
       $scope.teamFilters = []
       $scope.memberFilters = []

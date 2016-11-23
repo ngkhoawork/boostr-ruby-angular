@@ -1,4 +1,50 @@
-#kpi-analytics
+#reports
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.detail-filter
+              %span Filter by
+              %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
+              %ul.kpi-block__filter
+                %li{ dropdown: true }
+                  %a{ href: '', dropdown: { toggle: true } }
+                    Member
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{ ng: { repeat: 'member in members', class: '{active: member.id == memberId}' } }
+                      %a{ href: '', ng: { click: 'filterByMember(member.id)' } }
+                        {{ member.name }}
+              %ul.kpi-block__filter
+                %li{ dropdown: true }
+                  %a{ href: '', dropdown: { toggle: true } }
+                    Type
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{ ng: { repeat: 'activityType in activityTypes', class: '{active: activityType.id === activityTypeId}' } }
+                      %a{ href: '', ng: { click: 'filterByActivityType(activityType.id)' } }
+                        {{ activityType.name }}
+              %ul.kpi-block__filter.default-date{ng: { class: '{date: start_date}'}}
+                %span.bs-datepicker
+                  %input{ placeholder: 'Start Date',
+                          name: 'start_date', type: 'text',
+                          datepicker: { popup: 'MMMM d, y' },
+                          ng: { model: 'start_date', required: true, click: 'callStartDateOpened = true' },
+                          'is-open': 'callStartDateOpened', }
+              %span.date-caret.caret{ng: { if: '!start_date'}}
+              %ul.kpi-block__filter.default-date{ng: { class: '{date: end_date, dateInvalid: endDateIsValid === false}'}}
+                %span.bs-datepicker
+                  %input{ placeholder: 'End Date',
+                          name: 'end_date', type: 'text',
+                          datepicker: { popup: 'MMMM d, y' },
+                          ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
+                          'is-open': 'callEndDateOpened' }
+              %span.date-caret.caret{ng: { if: '!end_date'}}
+            %li.pull-right
+              %a.export{ href: '', ng: { click: 'exportReports()' } }
+                = inline_svg 'icons/export.svg'
+                Export
   .container.table-report
     .row
       .col-xs-12
@@ -6,45 +52,7 @@
           Activity Detail Report
     .row.kpi-block.report
       .col-xs-12
-        %span Filter by
-        %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
-        %ul.kpi-block__filter
-          %li{ dropdown: true }
-            %a{ href: '', dropdown: { toggle: true } }
-              Member
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'member in members', class: '{active: member.id == memberId}' } }
-                %a{ href: '', ng: { click: 'filterByMember(member.id)' } }
-                  {{ member.name }}
-        %ul.kpi-block__filter
-          %li{ dropdown: true }
-            %a{ href: '', dropdown: { toggle: true } }
-              Type
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'activityType in activityTypes', class: '{active: activityType.id === activityTypeId}' } }
-                %a{ href: '', ng: { click: 'filterByActivityType(activityType.id)' } }
-                  {{ activityType.name }}
-        %ul.kpi-block__filter.default-date{ng: { class: '{date: start_date}'}}
-          %span.bs-datepicker
-            %input{ placeholder: 'Start Date',
-                    name: 'start_date', type: 'text',
-                    datepicker: { popup: 'MMMM d, y' },
-                    ng: { model: 'start_date', required: true, click: 'callStartDateOpened = true' },
-                    'is-open': 'callStartDateOpened', }
-        %span.date-caret.caret{ng: { if: '!start_date'}}
-        %ul.kpi-block__filter.default-date{ng: { class: '{date: end_date, dateInvalid: endDateIsValid === false}'}}
-          %span.bs-datepicker
-            %input{ placeholder: 'End Date',
-                    name: 'end_date', type: 'text',
-                    datepicker: { popup: 'MMMM d, y' },
-                    ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
-                    'is-open': 'callEndDateOpened' }
-        %span.date-caret.caret{ng: { if: '!end_date'}}
-        .pull-right.buttons__filter
-          %button.btn.btnPrimary{'ng-click': 'exportReports()'}
-            Export
+
     .row
       .col-md-12
         .table-wrapper
