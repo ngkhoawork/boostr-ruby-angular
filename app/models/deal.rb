@@ -973,6 +973,17 @@ class Deal < ActiveRecord::Base
     self.open = should_open.to_s
   end
 
+  def send_new_deal_notification
+    notification = company.notifications.find_by_name('New Deal')
+    if !notification.nil? && !notification.recipients.nil?
+      recipients = notification.recipients.split(',').map(&:strip)
+      if !recipients.nil? && recipients.length > 0
+        subject = "A new $#{self.budget} deal for #{self.advertiser.present? ? self.advertiser.name : ""} just added to the pipeline"
+        UserMailer.new_deal_email(recipients, subject, self.id).deliver_later(wait: 10.minutes, queue: "default")
+      end
+    end
+  end
+
   def set_deal_status
     should_open = stage.open?
     if !stage.open? && stage.probability == 100
