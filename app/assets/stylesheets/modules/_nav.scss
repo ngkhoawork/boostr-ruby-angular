@@ -291,6 +291,7 @@
           outline: none;
           padding: 6px 0 0 6px;
           margin: 10px 0 0 0;
+          background: transparent;
         }
         input::-webkit-input-placeholder {
           color: #ff6e17;
@@ -356,7 +357,7 @@
 
             &.active {
               a {
-                color: $white;
+                color: $white !important;
 
                 &:hover,
                 &:focus {
