@@ -11,8 +11,9 @@ class UserMailer < ApplicationMailer
     mail(to: recipients, subject: subject)
   end
 
-  def new_deal_email(recipients, subject, deal_id)
+  def new_deal_email(recipients, deal_id)
     @deal = Deal.find(deal_id)
+    subject = "A new $#{@deal.budget} deal for #{@deal.advertiser.present? ? @deal.advertiser.name : ""} just added to the pipeline"
     mail(to: recipients, subject: subject)
   end
 end
