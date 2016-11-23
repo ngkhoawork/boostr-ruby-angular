@@ -53,7 +53,10 @@ Rails.application.routes.draw do
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
-      get :all_members
+      collection do
+        get :all_members
+      end
+      get :members
       get :all_sales_reps
     end
     resources :custom_values, only: [:index]
