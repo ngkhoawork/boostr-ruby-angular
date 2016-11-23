@@ -13,7 +13,7 @@ class UserMailer < ApplicationMailer
 
   def new_deal_email(recipients, deal_id)
     @deal = Deal.find(deal_id)
-    subject = "A new $#{@deal.budget} deal for #{@deal.advertiser.present? ? @deal.advertiser.name : ""} just added to the pipeline"
+    subject = "A new $#{@deal.budget.nil? ? 0 : @deal.budget / 100} deal for #{@deal.advertiser.present? ? @deal.advertiser.name : ""} just added to the pipeline"
     mail(to: recipients, subject: subject)
   end
 end
