@@ -979,8 +979,7 @@ class Deal < ActiveRecord::Base
     if !notification.nil? && !notification.recipients.nil?
       recipients = notification.recipients.split(',').map(&:strip)
       if !recipients.nil? && recipients.length > 0
-        subject = "A new $#{self.budget} deal for #{self.advertiser.present? ? self.advertiser.name : ""} just added to the pipeline"
-        UserMailer.new_deal_email(recipients, subject, self.id).deliver_later(wait: 10.minutes, queue: "default")
+        UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: "default")
       end
     end
   end
