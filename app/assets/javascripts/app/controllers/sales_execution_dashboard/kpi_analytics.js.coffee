@@ -18,18 +18,20 @@
                 startDate: null
                 endDate: null
             }
+            $scope.isDateSet = false
 
             datePickerInput = $document.find('#kpi-date-picker')
 
             $scope.datePickerApply = () ->
                 if ($scope.datePicker.startDate && $scope.datePicker.endDate)
-                    datePickerInput.val($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
-                    datePickerInput.attr('size', datePickerInput.val().length)
+                    datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+                    $scope.isDateSet = true
                     getData()
 
-#            $scope.datePickerCancel = () ->
-#                datePickerInput.attr('size', 10).val('')
-#                getData()
+            $scope.datePickerCancel = (s, r) ->
+                datePickerInput.html('Time period')
+                $scope.isDateSet = false
+                if !r then getData()
 
             $scope.resetFilters = () ->
                 $scope.productFilter = null
@@ -41,7 +43,7 @@
                     name:'Team'
                 }
                 $scope.sellerId = null
-                datePickerInput.attr('size', 10).val('')
+                $scope.datePickerCancel(null, true)
                 $scope.time_period = 'month'
                 getData()
 
@@ -136,7 +138,7 @@
                 if($scope.sellerId)
                     query.seller = $scope.sellerId
 
-                if($scope.datePicker.startDate && $scope.datePicker.endDate && datePickerInput.val())
+                if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
                     query.start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
                     query.end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
 

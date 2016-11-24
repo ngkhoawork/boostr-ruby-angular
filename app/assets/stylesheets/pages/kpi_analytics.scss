@@ -345,33 +345,15 @@
     .caret {
       color: $brand-primary;
       position: absolute;
-      right: 8px;
+      right: 0;
       top: 9px;
     }
     .date-picker {
-      border: none;
-      width: auto;
+      padding-right: 15px;
       height: 20px;
-      padding: 0;
       display: inline-block;
       color: $brand-primary;
       cursor: pointer;
-      &::-webkit-input-placeholder {
-        color: $brand-primary;
-      }
-      ::-moz-placeholder {
-        color: $brand-primary;
-      }
-      :-ms-input-placeholder {
-        color: $brand-primary;
-      }
-      :-moz-placeholder {
-        color: $brand-primary;
-      }
-      &:read-only {
-        background-color: white;
-
-      }
     }
   }
 }
@@ -389,9 +371,6 @@
     &:focus {
       border-color: $brand-primary;
     }
-  }
-  .cancelBtn {
-    display: none;
   }
   td.in-range {
     background-color: #FFD6A6 !important;

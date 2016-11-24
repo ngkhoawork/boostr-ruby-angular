@@ -8,15 +8,6 @@
       .col-xs-12
         %span Filter by
         %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
-        -#%ul.kpi-block__filter
-        -#  %li{ dropdown: true }
-        -#    %a{ href: '', dropdown: { toggle: true } }
-        -#      Team
-        -#      %span.caret
-        -#    %ul.dropdown-menu
-        -#      %li{ ng: { repeat: 'filter in teamFilters', class: '{active: filter.id == teamId}' } }
-        -#        %a{ href: '', ng: { click: 'filterByTeam(filter.id)' } }
-        -#          {{ filter.name }}
         %ul.kpi-block__filter
           %li{ dropdown: true }
             %a{ href: '', dropdown: { toggle: true } }
@@ -53,32 +44,15 @@
               %li{ ng: { repeat: 'source in sources', class: '{active: source.name === sourceFilter.name}' } }
                 %a{ href: '', ng: { click: 'filterBySource(source)' } }
                   {{ source.name }}
-        -#%ul.kpi-block__filter.default-date{ng: { class: '{date: start_date}'}}
-        -#  %span.bs-datepicker
-        -#    %input{ placeholder: 'Start Date',
-        -#            name: 'start_date', type: 'text',
-        -#            datepicker: { popup: 'MMMM d, y' },
-        -#            ng: { model: 'start_date', required: true, click: 'callStartDateOpened = true' },
-        -#            'is-open': 'callStartDateOpened', }
-        -#%span.date-caret.caret{ng: { if: '!start_date'}}
-        -#%ul.kpi-block__filter.default-date{ng: { class: '{date: end_date, dateInvalid: endDateIsValid === false}'}}
-        -#  %span.bs-datepicker
-        -#    %input{ placeholder: 'End Date',
-        -#            name: 'end_date', type: 'text',
-        -#            datepicker: { popup: 'MMMM d, y' },
-        -#            ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
-        -#            'is-open': 'callEndDateOpened' }
-        -#%span.date-caret.caret{ng: { if: '!end_date'}}
 
         .date-picker-wrap
-          %input.form-control.date-picker#kpi-date-picker{readonly: true,
-                                                        size: 10,
-                                                        placeholder: 'Time period',
-                                                        'date-range-picker': true,
-                                                        'ng-model': 'datePicker',
-                                                        :options => "{locale: {format: 'MMMM D, YYYY'},
-                                                                      eventHandlers: {'apply.daterangepicker': datePickerApply,
-                                                                                       'hide.daterangepicker': datePickerApply}}"}
+          %div.date-picker#kpi-date-picker{'date-range-picker': true,
+                                           'ng-model': 'datePicker',
+                                           :options => "{locale: {format: 'MMMM D, YYYY',
+                                                                  cancelLabel: 'Clear'},
+                                                         eventHandlers: {'apply.daterangepicker': datePickerApply,
+                                                                         'cancel.daterangepicker': datePickerCancel}}"}
+            Time period
           %span.caret
 
         %span#reset-filter{'ng-click': 'resetFilters()'}
@@ -87,9 +61,6 @@
 
 
 
-        -#%ul.kpi-block__filter
-        -#  %button.btn.btnPrimary.reset-dates{'ng-click': 'resetDates()'}
-        -#    Reset dates
         .pull-right.buttons__filter
           %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'filterByPeriod("month")'}
             Month
