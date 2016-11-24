@@ -20,6 +20,7 @@
   'd3'
   'nvd3'
   'ngTransloadit'
+  'daterangepicker'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

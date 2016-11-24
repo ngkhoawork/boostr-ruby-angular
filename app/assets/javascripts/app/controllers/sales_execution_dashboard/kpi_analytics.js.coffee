@@ -1,6 +1,6 @@
 @app.controller 'KPIAnalyticsController',
-    ['$scope', 'KPIDashboard', 'Team', 'Product', 'Field', 'Seller','$filter'
-        ($scope, KPIDashboard, Team, Product, Field, Seller, $filter) ->
+    ['$scope', '$document', 'KPIDashboard', 'Team', 'Product', 'Field', 'Seller','$filter'
+        ($scope, $document, KPIDashboard, Team, Product, Field, Seller, $filter) ->
 
             #create chart===========================================================
             $scope.chartHeight = 500
@@ -14,6 +14,22 @@
                 id:'all',
                 name:'Team'
             }
+            $scope.datePicker = {
+                startDate: null
+                endDate: null
+            }
+
+            datePickerInput = $document.find('#kpi-date-picker')
+
+            $scope.datePickerApply = () ->
+                if ($scope.datePicker.startDate && $scope.datePicker.endDate)
+                    datePickerInput.val($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+                    datePickerInput.attr('size', datePickerInput.val().length)
+                    getData()
+
+#            $scope.datePickerCancel = () ->
+#                datePickerInput.attr('size', 10).val('')
+#                getData()
 
             $scope.resetFilters = () ->
                 $scope.productFilter = null
@@ -25,10 +41,7 @@
                     name:'Team'
                 }
                 $scope.sellerId = null
-                $scope.start_date = null
-                $scope.end_date = null
-                $scope.endDateIsValid = null
-                $scope.startDateIsValid = null
+                datePickerInput.attr('size', 10).val('')
                 $scope.time_period = 'month'
                 getData()
 
@@ -123,9 +136,9 @@
                 if($scope.sellerId)
                     query.seller = $scope.sellerId
 
-                if($scope.endDateIsValid && $scope.startDateIsValid)
-                    query.start_date = $filter('date')($scope.start_date, 'dd-MM-yyyy')
-                    query.end_date = $filter('date')($scope.end_date, 'dd-MM-yyyy')
+                if($scope.datePicker.startDate && $scope.datePicker.endDate && datePickerInput.val())
+                    query.start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
+                    query.end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
 
                 KPIDashboard.get(query).$promise.then ((data) ->
                     createColorsArr(data.win_rates.length)
@@ -147,26 +160,26 @@
                 getData()
 
 #work with dates====================================================================
-            $scope.endDateIsValid = undefined
-            $scope.startDateIsValid = undefined
-
-            $scope.$watch 'start_date', () ->
-                checkDates()
-
-            $scope.$watch 'end_date', () ->
-                checkDates()
-
-            checkDates = () ->
-                end_date = new Date($scope.end_date).valueOf()
-                start_date = new Date($scope.start_date).valueOf()
-
-                if(end_date && start_date && end_date < start_date)
-                    $scope.endDateIsValid = false
-
-                if(end_date && start_date && end_date > start_date)
-                    $scope.endDateIsValid = true
-                    $scope.startDateIsValid = true
-                    getData()
+#            $scope.endDateIsValid = undefined
+#            $scope.startDateIsValid = undefined
+#
+#            $scope.$watch 'start_date', () ->
+#                checkDates()
+#
+#            $scope.$watch 'end_date', () ->
+#                checkDates()
+#
+#            checkDates = () ->
+#                end_date = new Date($scope.end_date).valueOf()
+#                start_date = new Date($scope.start_date).valueOf()
+#
+#                if(end_date && start_date && end_date < start_date)
+#                    $scope.endDateIsValid = false
+#
+#                if(end_date && start_date && end_date > start_date)
+#                    $scope.endDateIsValid = true
+#                    $scope.startDateIsValid = true
+#                    getData()
 #Filters and Tables====================================================================
             initTablesData = (data)->
                 resetFilters()
@@ -503,11 +516,11 @@
                                 wins:dataItem.won || 0,
                                 seller:dataCopyDealSize[i][0]
                             }
-                            if(dataItem.total_deals < 10)
+                            if(dataItem.won < 10)
                                 dot.r = 3
-                            if(dataItem.total_deals >= 10 && dataItem.total_deals <= 20)
+                            else if(dataItem.won < 20)
                                 dot.r = 5
-                            if(dataItem.total_deals > 20)
+                            else if(dataItem.won >= 20)
                                 dot.r = 10
                             item.data.push(dot)
                     optimizedData.push(item)
@@ -531,6 +544,20 @@
                     _.each dataItem.data, (dataDot) ->
                         if(dataDot.y && maxValue < dataDot.y)
                             maxValue = dataDot.y
+
+                ticksArr = []
+                if maxValue > 0
+                    step = (() ->
+                        if maxValue <= 10 then return 1
+                        Math.ceil((maxValue / 10) / 10) * 10
+                    )()
+                    for i in [0..maxValue + step] by step
+                        ticksArr.push(i)
+                        if i >= maxValue
+                            maxValue = i
+                            break
+                else
+                    ticksArr = [0]
 
                 #find min value for Y
                 minValue = 0;
@@ -564,9 +591,9 @@
                         0
                     else
                         '$'+(d+'').replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$&,")+'k'
-                );
-                if maxValue is 0
-                    yAxis.tickValues([0])
+                )
+                .tickValues(ticksArr)
+
 
                 #paint Х
                 $scope.svgDS.append('g')
@@ -685,11 +712,11 @@
                                 wins:dataItem.won || 0,
                                 seller:dataCopyCycleTimeSize[i][0]
                             }
-                            if(dataItem.total_deals < 10)
+                            if(dataItem.won < 10)
                                 dot.r = 3
-                            if(dataItem.total_deals >= 10 && dataItem.total_deals <= 20)
+                            else if(dataItem.won < 20)
                                 dot.r = 5
-                            if(dataItem.total_deals > 20)
+                            else if(dataItem.won >= 20)
                                 dot.r = 10
                             item.data.push(dot)
                     optimizedData.push(item)
@@ -713,7 +740,19 @@
                     _.each dataItem.data, (dataDot) ->
                         if(dataDot.y && maxValue < dataDot.y)
                             maxValue = dataDot.y
-
+                ticksArr = []
+                if maxValue > 0
+                    step = (() ->
+                        if maxValue <= 10 then return 1
+                        Math.ceil((maxValue / 10) / 10) * 10
+                    )()
+                    for i in [0..maxValue + step] by step
+                        ticksArr.push(i)
+                        if i >= maxValue
+                            maxValue = i
+                            break
+                else
+                    ticksArr = [0]
                 #find min value for Y
                 minValue = 0;
 
@@ -745,8 +784,7 @@
                         if d > 0 then return d + ' Days'
                         return d
                     )
-                if maxValue is 0
-                    yAxis.tickValues([0])
+                    .tickValues(ticksArr)
 
                 #paint Х
                 $scope.svgCT.append('g')

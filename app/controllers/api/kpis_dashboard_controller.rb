@@ -90,6 +90,8 @@ class Api::KpisDashboardController < ApplicationController
           true
        end) &&
       (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
+      (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
+      (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true) &&
       deal.closed_at &&
       deal.closed_at >= time_period.first &&
       deal.closed_at <= time_period.last &&
@@ -105,6 +107,8 @@ class Api::KpisDashboardController < ApplicationController
           true
        end) &&
       (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
+      (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
+      (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true) &&
       deal.closed_at &&
       deal.closed_at >= time_period.first &&
       deal.closed_at <= time_period.last &&
@@ -115,7 +119,7 @@ class Api::KpisDashboardController < ApplicationController
 
   def deals_by_time_period
     value_params = [params[:type], params[:source]].reject{|el| el.nil? || el == 'all'}
-    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).by_values(value_params).distinct.active.includes(:stage, :deal_members, :products)
+    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).by_values(value_params).distinct.active.includes(:stage, :products, :deal_members, 'values')
   end
 
   def team
