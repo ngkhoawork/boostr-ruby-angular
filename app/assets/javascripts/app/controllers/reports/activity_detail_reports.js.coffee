@@ -119,4 +119,11 @@
         $window.open('/api/activities.csv?' + query_str)
         return true
 
+      $scope.changeSortType = (sortType) ->
+        if sortType == $scope.sortType
+          $scope.sortReverse = !$scope.sortReverse
+        else
+          $scope.sortType = sortType
+          $scope.sortReverse = false
+
   ]
