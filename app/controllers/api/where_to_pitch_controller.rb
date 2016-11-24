@@ -17,7 +17,7 @@ class Api::WhereToPitchController < ApplicationController
       complete_deals = complete_deals_list(advertiser_deals)
       incomplete_deals = incomplete_deals_list(advertiser_deals)
 
-      win_rate = nil
+      win_rate = 0.0
       win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
 
       total_deals = advertiser_deals.length
@@ -34,7 +34,7 @@ class Api::WhereToPitchController < ApplicationController
       complete_deals = complete_deals_list(agency_deals)
       incomplete_deals = incomplete_deals_list(agency_deals)
 
-      win_rate = nil
+      win_rate = 0.0
       win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
 
       total_deals = agency_deals.length
