@@ -545,6 +545,20 @@
                         if(dataDot.y && maxValue < dataDot.y)
                             maxValue = dataDot.y
 
+                ticksArr = []
+                if maxValue > 0
+                    step = (() ->
+                        if maxValue <= 10 then return 1
+                        Math.ceil((maxValue / 10) / 10) * 10
+                    )()
+                    for i in [0..maxValue + step] by step
+                        ticksArr.push(i)
+                        if i >= maxValue
+                            maxValue = i
+                            break
+                else
+                    ticksArr = [0]
+
                 #find min value for Y
                 minValue = 0;
 
@@ -577,20 +591,9 @@
                         0
                     else
                         '$'+(d+'').replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, "$&,")+'k'
-                );
-                if maxValue > 0
-                    ticksArr = [0]
-                    val = maxValue
-                    tick = 0
-                    while val >= 50
-                        val -= 50
-                        tick += 50
-                        ticksArr.push(tick)
-                    if val > 0
-                        ticksArr.push(tick + val)
-                    yAxis.tickValues(ticksArr)
-                else
-                    yAxis.tickValues([0])
+                )
+                .tickValues(ticksArr)
+
 
                 #paint Х
                 $scope.svgDS.append('g')
@@ -737,7 +740,19 @@
                     _.each dataItem.data, (dataDot) ->
                         if(dataDot.y && maxValue < dataDot.y)
                             maxValue = dataDot.y
-
+                ticksArr = []
+                if maxValue > 0
+                    step = (() ->
+                        if maxValue <= 10 then return 1
+                        Math.ceil((maxValue / 10) / 10) * 10
+                    )()
+                    for i in [0..maxValue + step] by step
+                        ticksArr.push(i)
+                        if i >= maxValue
+                            maxValue = i
+                            break
+                else
+                    ticksArr = [0]
                 #find min value for Y
                 minValue = 0;
 
@@ -769,19 +784,7 @@
                         if d > 0 then return d + ' Days'
                         return d
                     )
-                if maxValue > 0
-                    ticksArr = [0]
-                    val = maxValue
-                    tick = 0
-                    while val >= 20
-                        val -= 20
-                        tick += 20
-                        ticksArr.push(tick)
-                    if val > 0
-                        ticksArr.push(tick + val)
-                    yAxis.tickValues(ticksArr)
-                else
-                    yAxis.tickValues([0])
+                    .tickValues(ticksArr)
 
                 #paint Х
                 $scope.svgCT.append('g')

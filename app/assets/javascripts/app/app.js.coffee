@@ -73,9 +73,6 @@
     .when '/reports/kpi_analytics',
       templateUrl: 'kpi_analytics.html'
       controller: 'KPIAnalyticsController'
-    .when '/reports/advertisers_chart',
-      templateUrl: 'advertisers_chart.html'
-      controller: 'AdvertisersChartController'
     .when '/reports/deal_reports',
       templateUrl: 'deal_reports.html'
       controller: 'DealReportsController'
