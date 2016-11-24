@@ -1,3 +1,5 @@
+@import '../base/variables';
+
 #kpi-analytics {
   .dropdown-menu{
     max-height: 400px;
@@ -335,6 +337,67 @@
   .reset-dates {
     padding: 1px 4px;
     margin-top: -2px;
+  }
+  .date-picker-wrap {
+    display: inline-block;
+    position: relative;
+    margin: 0 -6px 0 10px;
+    .caret {
+      color: $brand-primary;
+      position: absolute;
+      right: 8px;
+      top: 9px;
+    }
+    .date-picker {
+      border: none;
+      width: auto;
+      height: 20px;
+      padding: 0;
+      display: inline-block;
+      color: $brand-primary;
+      cursor: pointer;
+      &::-webkit-input-placeholder {
+        color: $brand-primary;
+      }
+      ::-moz-placeholder {
+        color: $brand-primary;
+      }
+      :-ms-input-placeholder {
+        color: $brand-primary;
+      }
+      :-moz-placeholder {
+        color: $brand-primary;
+      }
+      &:read-only {
+        background-color: white;
+
+      }
+    }
+  }
+}
+.daterangepicker {
+  .applyBtn {
+    background-color: $brand-primary;
+    border-color: $brand-primary;
+    &:hover {
+      background-color: #D26828;
+    }
+    &:active {
+      background-color: #A3511F;
+      border-color: #A3511F;
+    }
+    &:focus {
+      border-color: $brand-primary;
+    }
+  }
+  .cancelBtn {
+    display: none;
+  }
+  td.in-range {
+    background-color: #FFD6A6 !important;
+  }
+  td.active.start-date, td.active.end-date {
+    background-color: $brand-primary !important;
   }
 }
 
