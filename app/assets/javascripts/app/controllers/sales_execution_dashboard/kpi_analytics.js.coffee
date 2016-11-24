@@ -161,27 +161,6 @@
                     $scope.sellers.unshift({first_name:'All', id: 'all'})
                 getData()
 
-#work with dates====================================================================
-#            $scope.endDateIsValid = undefined
-#            $scope.startDateIsValid = undefined
-#
-#            $scope.$watch 'start_date', () ->
-#                checkDates()
-#
-#            $scope.$watch 'end_date', () ->
-#                checkDates()
-#
-#            checkDates = () ->
-#                end_date = new Date($scope.end_date).valueOf()
-#                start_date = new Date($scope.start_date).valueOf()
-#
-#                if(end_date && start_date && end_date < start_date)
-#                    $scope.endDateIsValid = false
-#
-#                if(end_date && start_date && end_date > start_date)
-#                    $scope.endDateIsValid = true
-#                    $scope.startDateIsValid = true
-#                    getData()
 #Filters and Tables====================================================================
             initTablesData = (data)->
                 resetFilters()
@@ -201,16 +180,10 @@
                 getData()
 
             $scope.filterBySeller =(sellerId) ->
-#        $scope.teamId = null
                 $scope.sellerId = sellerId
                 getData()
 
-#      $scope.resetDates = () ->
-#        $scope.start_date = null
-#        $scope.end_date = null
-#        $scope.endDateIsValid = undefined
-#        $scope.startDateIsValid = undefined
-#        getData()
+
 
             $scope.filterByProduct =(product) ->
                 $scope.productFilter = product
