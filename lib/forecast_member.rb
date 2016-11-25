@@ -148,12 +148,85 @@ class ForecastMember
     @unweighted_pipeline_by_stage
   end
 
+  def monthly_weighted_pipeline_by_stage
+    return @weighted_monthly_pipeline_by_stage if defined?(@weighted_monthly_pipeline_by_stage)
+
+    deal_shares = {}
+    member.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+
+    @monthly_weighted_pipeline_by_stage = {}
+
+    open_deals.each do |deal|
+      deal_total = 0
+      deal.deal_products.open.each do |deal_product|
+        deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+          deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+        end
+      end
+      @monthly_weighted_pipeline_by_stage[deal.stage.id] ||= 0
+      @monthly_weighted_pipeline_by_stage[deal.stage.id] += deal_total * (deal.stage.probability / 100.0)
+    end
+    @monthly_weighted_pipeline_by_stage
+  end
+
+  def unweighted_monthly_pipeline_by_stage
+    return @unweighted_monthly_pipeline_by_stage if defined?(@unweighted_monthly_pipeline_by_stage)
+
+    deal_shares = {}
+    member.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+
+    @unweighted_monthly_pipeline_by_stage = {}
+
+    open_deals.each do |deal|
+      deal_total = 0
+      deal.deal_products.open.each do |deal_product|
+        deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+          deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+        end
+      end
+      @unweighted_monthly_pipeline_by_stage[deal.stage.id] ||= 0
+      @unweighted_monthly_pipeline_by_stage[deal.stage.id] += deal_total
+    end
+    @unweighted_monthly_pipeline_by_stage
+  end
+
   def revenue
     return @revenue if defined?(@revenue)
 
     @revenue = ios.sum do |io|
       io.effective_revenue_budget(member, start_date, end_date)
     end
+  end
+
+  def monthly_revenue
+    return @monthly_revenue if defined?(@monthly_revenue)
+
+    @monthly_revenue = {}
+    months.each do |month_row|
+      @monthly_revenue[month_row[:start_date]] = 0
+    end
+    ios.sum do |io|
+      io_member = self.io_members.find_by(user_id: member.id)
+      share = io_member.share
+      self.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+        @monthly_revenue[content_fee_product_budget.start_date] += content_fee_product_budget.daily_budget * effective_days(content_fee_product_budget, io_member) * (share/100.0)
+      end
+      self.display_line_items.each do |display_line_item|
+        ave_run_rate = display_line_item.ave_run_rate
+        months.each do |month_row|
+          from = [start_date, comparer.start_date, effecter.from_date, month_row[:start_date]].max
+          to = [end_date, comparer.end_date, effecter.to_date, month_row[:end_date]].min
+          no_of_days = [(to.to_date - from.to_date) + 1, 0].max
+          @monthly_revenue[month_row.start_date] += ave_run_rate * no_of_days * (share/100.0)
+        end
+      end
+    end
+
+    @monthly_revenue
   end
 
   def wow_weighted_pipeline
@@ -259,5 +332,12 @@ class ForecastMember
     else
       @snapshots ||= member.snapshots.two_recent_for_time_period(start_date, end_date)
     end
+  end
+
+  def months
+    return @months if defined?(@months)
+
+    @months = (start_date..end_date).map { |d| { start_date: d.beginning_of_month, end_date: d.end_of_month } }.uniq
+    @months
   end
 end

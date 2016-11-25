@@ -105,15 +105,15 @@ class Api::DealsController < ApplicationController
   def pipeline_report
     respond_to do |format|
       format.json {
-        deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_product_budgets).distinct , each_serializer: DealReportSerializer)
-        deal_ids = deals.open.collect{|deal| deal.id}
+        deal_list = ActiveModel::ArraySerializer.new(deals.open.less_than(100).includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets).active.open.less_than(100).distinct , each_serializer: DealReportSerializer)
+        deal_ids = deals.active.open.less_than(100).collect{|deal| deal.id}
         range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
         render json: [{deals: deal_list, range: range}].to_json
       }
       format.csv {
         require 'timeout'
         begin
-          Timeout::timeout(90) {
+          Timeout::timeout(120) {
             send_data Deal.to_pipeline_report_csv(company, params[:team_id]), filename: "pipeline-report-#{Date.today}.csv"
           }
         rescue Timeout::Error

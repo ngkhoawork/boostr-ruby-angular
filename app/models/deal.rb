@@ -83,6 +83,7 @@ class Deal < ActiveRecord::Base
   scope :active, -> { where('deals.deleted_at is NULL') }
   scope :at_percent, -> (percentage) { joins(:stage).where('stages.probability = ?', percentage) }
   scope :greater_than, -> (percentage) { joins(:stage).where('stages.probability >= ?', percentage) }
+  scope :less_than, -> (percentage) { joins(:stage).where('stages.probability < ?', percentage) }
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :by_values, -> (value_ids) { joins(:values).where('values.option_id in (?)', value_ids) unless value_ids.empty? }
 
@@ -287,12 +288,12 @@ class Deal < ActiveRecord::Base
 
       deals = []
       if team_id == "0"
-        deals = company.deals.active
+        deals = company.deals.active.open.less_than(100)
       else
         selected_team = Team.find(team_id)
         all_members_list = selected_team.all_members.collect{|member| member.id}
         all_members_list += selected_team.all_leaders.collect{|member| member.id}
-        deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deal_members.user_id in (?) and deals.deleted_at is NULL", all_members_list).distinct
+        deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deal_members.user_id in (?) and deals.deleted_at is NULL", all_members_list).open.less_than(100).distinct
       end
 
       deal_ids = deals.collect{|deal| deal.id}
@@ -315,7 +316,6 @@ class Deal < ActiveRecord::Base
 
       csv << header
       deals.each do |deal|
-
         line = [
             deal.deal_members.collect {|deal_member| deal_member.user.first_name + " " + deal_member.user.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
             deal.advertiser ? deal.advertiser.name : nil,
