@@ -26,6 +26,18 @@ class Api::SalesExecutionDashboardController < ApplicationController
     end
   end
 
+  def monthly_forecast
+    # if !params[:start_date]
+    # end
+    start_date = Date.parse(params[:start_date])
+    end_date = Date.parse(params[:end_date])
+    if team.present?
+      render json: { forecast: MonthlyForecastTeamSerializer.new(ForecastTeam.new(team, start_date, end_date, nil, nil)) }
+    else
+      render json: { forecast: MonthlyForecastSerializer.new(Forecast.new(company, teams, start_date, end_date, nil)) }
+    end
+  end
+
   def kpis
     case params[:time_period]
       when "all_time"

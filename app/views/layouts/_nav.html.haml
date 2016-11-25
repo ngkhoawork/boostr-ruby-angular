@@ -61,6 +61,8 @@
                 %li
                   = link_to "Sales Execution Dashboard", "/smart_reports/sales_execution_dashboard"
                 %li
+                  = link_to "Monthly Forecasts", "/smart_reports/monthly_forecasts"
+                %li
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
           - else
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
@@ -72,6 +74,8 @@
                   = link_to "Sellers Activities", "/smart_reports/seller_activities"
                 %li
                   = link_to "Sales Execution Dashboard", "/smart_reports/sales_execution_dashboard"
+                %li
+                  = link_to "Monthly Forecasts", "/smart_reports/monthly_forecasts"
                 %li
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
