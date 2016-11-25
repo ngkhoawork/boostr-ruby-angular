@@ -237,10 +237,6 @@
       $scope.currentDeal = deal
       $scope.verifyMembersShare()
       $scope.setBudgetPercent(deal)
-    Contact.query().$promise.then (contacts) ->
-      $scope.contacts = contacts
-#    Contact.allForClient deal.advertiser_id, (contacts) ->
-#      $scope.contacts = contacts
 
   $scope.getStages = ->
     Stage.query().$promise.then (stages) ->
@@ -692,6 +688,11 @@
         Contact.all1(per: 10, page: 1).then (contacts) ->
           $scope.contacts = contacts
     return searchText
+
+  $scope.getContacts = () ->
+    if $scope.contacts.length == 0
+      Contact.all1(per: 10, page: 1).then (contacts) ->
+        $scope.contacts = contacts
 
   $scope.cancelActivity = ->
     $scope.initActivity()
