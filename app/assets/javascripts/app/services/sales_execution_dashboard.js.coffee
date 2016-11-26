@@ -6,6 +6,8 @@
 
   forecast_resource = $resource '/api/sales_execution_dashboard/forecast'
 
+  monthly_forecast_resource = $resource '/api/sales_execution_dashboard/monthly_forecast'
+
   deal_loss_summary_resource = $resource '/api/sales_execution_dashboard/deal_loss_summary'
 
   deal_loss_stages_resource = $resource '/api/sales_execution_dashboard/deal_loss_stages'
@@ -23,6 +25,12 @@
   @forecast = (params) ->
     deferred = $q.defer()
     forecast_resource.query params, (response) ->
+      deferred.resolve(response)
+    deferred.promise
+
+  @monthly_forecast = (params) ->
+    deferred = $q.defer()
+    monthly_forecast_resource.get params, (response) ->
       deferred.resolve(response)
     deferred.promise
 

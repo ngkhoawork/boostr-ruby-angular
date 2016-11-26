@@ -1,0 +1,70 @@
+#kpi-analytics
+  .container
+    .row
+      .col-xs-12
+        %h3.title Forecast
+
+    .row.legend.well
+      .col-xs-12
+        %span Filter by
+        %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
+        .date-picker-wrap
+          %div.date-picker#kpi-date-picker{'date-range-picker': true,
+                                           'ng-model': 'datePicker',
+                                           :options => "{locale: {format: 'MMMM D, YYYY',
+                                                                  cancelLabel: 'Clear'},
+                                                         eventHandlers: {'apply.daterangepicker': datePickerApply,
+                                                                         'cancel.daterangepicker': datePickerCancel}}"}
+            Time period
+          %span.caret
+
+        %span#reset-filter{'ng-click': 'resetFilters()'}
+          Reset
+
+        .pull-right.buttons__filter
+          %button.btn{ 'ng-class': '{btnPrimary: dataType === "weighted"}', 'ng-click': 'filterByDataType("weighted")'}
+            Weighted
+          %button.btn{ 'ng-class': '{btnPrimary: dataType === "unweighted"}', 'ng-click': 'filterByDataType("unweighted")'}
+            Unweighted
+
+    .row.well.kpi-block
+      .row
+        .col-xs-12
+          %h4.kpi-block__title Forecast by Month
+          %nvd3{ options:'optionsMonthlyForecast', data: 'dataMonthlyForecast', callback:"initLabels()", class: 'quarter-forecast-chart quarter-forecast-chart1', ng: {if: 'dataMonthlyForecast'}}
+      .row
+        .col-xs-12.schedule
+          %div.win-rate
+      .row
+        .col-md-12.table-report.text-center
+          %table.table.table-hover
+            %thead
+              %tr
+                %th
+                %th{ ng: { if: 'monthlyForecastData', repeat: 'month in monthlyForecastData.months' }}
+                  {{month}}
+            %tbody
+              %tr{ ng: { if: 'dataType=="weighted"', repeat: 'stage in monthlyForecastData.forecast.stages' }}
+                %td
+                  {{stage.probability.toString() + '%'}}
+                %td{ ng: { if: 'monthlyForecastData.forecast.monthly_weighted_pipeline_by_stage[stage.id]', repeat: 'month in monthlyForecastData.months' }}
+                  %span{ ng: { if: 'monthlyForecastData.forecast.monthly_weighted_pipeline_by_stage[stage.id][month]' }}
+                    {{monthlyForecastData.forecast.monthly_weighted_pipeline_by_stage[stage.id][month] | currency:'$':0}}
+                  %span{ ng: { if: '!monthlyForecastData.forecast.monthly_weighted_pipeline_by_stage[stage.id][month]' }}
+                    {{0 | currency:'$':0}}
+              %tr{ ng: { if: 'dataType=="unweighted"', repeat: 'stage in monthlyForecastData.forecast.stages' }}
+                %td
+                  {{stage.probability.toString() + '%'}}
+                %td{ ng: { if: 'monthlyForecastData.forecast.monthly_unweighted_pipeline_by_stage[stage.id]', repeat: 'month in monthlyForecastData.months' }}
+                  %span{ ng: { if: 'monthlyForecastData.forecast.monthly_unweighted_pipeline_by_stage[stage.id][month]' }}
+                    {{monthlyForecastData.forecast.monthly_unweighted_pipeline_by_stage[stage.id][month] | currency:'$':0}}
+                  %span{ ng: { if: '!monthlyForecastData.forecast.monthly_unweighted_pipeline_by_stage[stage.id][month]' }}
+                    {{0 | currency:'$':0}}
+              %tr{ ng: { if: 'monthlyForecastData.forecast.monthly_revenue' }}
+                %td
+                  Revenue
+                %td{ ng: { repeat: 'month in monthlyForecastData.months' }}
+                  %span{ ng: { if: 'monthlyForecastData.forecast.monthly_revenue[month]' }}
+                    {{monthlyForecastData.forecast.monthly_revenue[month] | currency:'$':0}}
+                  %span{ ng: { if: '!monthlyForecastData.forecast.monthly_revenue[month]' }}
+                    {{0 | currency:'$':0}}

@@ -73,6 +73,7 @@ Rails.application.routes.draw do
     resources :sales_execution_dashboard, only: [:index] do
       collection do
         get :forecast
+        get :monthly_forecast
         get :kpis
         get :deal_loss_summary
         get :deal_loss_stages

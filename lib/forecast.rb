@@ -90,6 +90,48 @@ class Forecast
     teams.sum(&:revenue)
   end
 
+  def monthly_weighted_pipeline_by_stage
+    return @monthly_weighted_pipeline_by_stage if defined?(@monthly_weighted_pipeline_by_stage)
+    @monthly_weighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.monthly_weighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @monthly_weighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |month, total|
+          @monthly_weighted_pipeline_by_stage[stage_id][month] ||= 0
+          @monthly_weighted_pipeline_by_stage[stage_id][month] += total
+        end
+      end
+    end
+    @monthly_weighted_pipeline_by_stage
+  end
+
+  def monthly_unweighted_pipeline_by_stage
+    return @monthly_unweighted_pipeline_by_stage if defined?(@monthly_unweighted_pipeline_by_stage)
+    @monthly_unweighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.monthly_unweighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @monthly_unweighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |month, total|
+          @monthly_unweighted_pipeline_by_stage[stage_id][month] ||= 0
+          @monthly_unweighted_pipeline_by_stage[stage_id][month] += total
+        end
+      end
+    end
+    @monthly_unweighted_pipeline_by_stage
+  end
+
+  def monthly_revenue
+    return @monthly_revenue if defined?(@monthly_revenue)
+    @monthly_revenue = {}
+    teams.each do |t|
+      t.monthly_revenue.each do |month, total|
+        @monthly_revenue[month] ||= 0
+        @monthly_revenue[month] += total
+      end
+    end
+    @monthly_revenue
+  end
+
   def amount
     teams.sum(&:amount)
   end
