@@ -162,11 +162,11 @@ class ForecastMember
     open_deals.each do |deal|
       @monthly_weighted_pipeline_by_stage[deal.stage.id] ||= {}
       months.each do |month_row|
-        @monthly_weighted_pipeline_by_stage[deal.stage.id][month_row[:start_date]] ||= 0
+        @monthly_weighted_pipeline_by_stage[deal.stage.id][month_row[:start_date].strftime("%b-%y")] ||= 0
       end
       deal.deal_products.open.each do |deal_product|
         deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-          @monthly_weighted_pipeline_by_stage[deal.stage.id][deal_product_budget.start_date.beginning_of_month] += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0) * (deal.stage.probability / 100.0)
+          @monthly_weighted_pipeline_by_stage[deal.stage.id][deal_product_budget.start_date.strftime("%b-%y")] += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0) * (deal.stage.probability / 100.0)
         end
       end
     end
@@ -186,11 +186,11 @@ class ForecastMember
     open_deals.each do |deal|
       @monthly_unweighted_pipeline_by_stage[deal.stage.id] ||= {}
       months.each do |month_row|
-        @monthly_unweighted_pipeline_by_stage[deal.stage.id][month_row[:start_date]] ||= 0
+        @monthly_unweighted_pipeline_by_stage[deal.stage.id][month_row[:start_date].strftime("%b-%y")] ||= 0
       end
       deal.deal_products.open.each do |deal_product|
         deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
-          @monthly_unweighted_pipeline_by_stage[deal.stage.id][deal_product_budget.start_date.beginning_of_month] += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+          @monthly_unweighted_pipeline_by_stage[deal.stage.id][deal_product_budget.start_date.strftime("%b-%y")] += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
         end
       end
 
@@ -211,14 +211,14 @@ class ForecastMember
 
     @monthly_revenue = {}
     months.each do |month_row|
-      @monthly_revenue[month_row[:start_date]] = 0
+      @monthly_revenue[month_row[:start_date].strftime("%b-%y")] = 0
     end
     ios.each do |io|
       io_member = io.io_members.find_by(user_id: member.id)
       share = io_member.share
       io.content_fees.each do |content_fee_item|
         content_fee_item.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget_item|
-          @monthly_revenue[content_fee_product_budget_item.start_date.beginning_of_month] += content_fee_product_budget_item.daily_budget * effective_days(content_fee_product_budget_item, io_member) * (share/100.0)
+          @monthly_revenue[content_fee_product_budget_item.start_date.strftime("%b-%y")] += content_fee_product_budget_item.daily_budget * effective_days(content_fee_product_budget_item, io_member) * (share/100.0)
         end
       end
       io.display_line_items.each do |display_line_item|
@@ -227,7 +227,7 @@ class ForecastMember
           from = [start_date, display_line_item.start_date, io_member.from_date, month_row[:start_date]].max
           to = [end_date, display_line_item.end_date, io_member.to_date, month_row[:end_date]].min
           no_of_days = [(to.to_date - from.to_date) + 1, 0].max
-          @monthly_revenue[month_row.start_date.beginning_of_month] += ave_run_rate * no_of_days * (share/100.0)
+          @monthly_revenue[month_row.start_date.strftime("%b-%y")] += ave_run_rate * no_of_days * (share/100.0)
         end
       end
     end

@@ -27,14 +27,22 @@ class Api::SalesExecutionDashboardController < ApplicationController
   end
 
   def monthly_forecast
-    # if !params[:start_date]
-    # end
-    start_date = Date.parse(params[:start_date])
-    end_date = Date.parse(params[:end_date])
-    if team.present?
-      render json: { forecast: MonthlyForecastTeamSerializer.new(ForecastTeam.new(team, start_date, end_date, nil, nil)) }
+    if params[:start_date]
+      start_date = Date.parse(params[:start_date])
     else
-      render json: { forecast: MonthlyForecastSerializer.new(Forecast.new(company, teams, start_date, end_date, nil)) }
+      start_date = Time.now.to_date
+    end
+    if params[:end_date]
+      end_date = Date.parse(params[:end_date])
+    else
+      end_date = start_date + 5.months
+    end
+
+    months = (start_date.to_date..end_date.to_date).map { |d| d.strftime("%b-%y") }.uniq
+    if team.present?
+      render json: { forecast: MonthlyForecastTeamSerializer.new(ForecastTeam.new(team, start_date, end_date, nil, nil)), months: months }
+    else
+      render json: { forecast: MonthlyForecastSerializer.new(Forecast.new(company, teams, start_date, end_date, nil)), months: months }
     end
   end
 
