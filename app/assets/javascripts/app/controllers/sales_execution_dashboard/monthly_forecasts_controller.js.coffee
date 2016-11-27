@@ -5,6 +5,8 @@
       #create chart===========================================================
       $scope.teamFilters = []
       $scope.teamId = ''
+      $scope.monthlyForecastData = []
+      $scope.totalData = { weighted: {}, unweighted: {} }
       $scope.selectedTeam = {
         id:'all',
         name:'Team'
@@ -60,6 +62,17 @@
 
         SalesExecutionDashboard.monthly_forecast(query).then ((data) ->
           $scope.monthlyForecastData = data
+          $scope.totalData = { weighted: {}, unweighted: {} }
+          _.each data.months, (month) ->
+            $scope.totalData.weighted[month] = (if data.forecast.monthly_revenue[month] then data.forecast.monthly_revenue[month] else 0)
+            $scope.totalData.unweighted[month] = (if data.forecast.monthly_revenue[month] then data.forecast.monthly_revenue[month] else 0)
+            _.each data.forecast.monthly_weighted_pipeline_by_stage, (pipeline, stage_id) ->
+              $scope.totalData.weighted[month] += (if pipeline[month] then pipeline[month] else 0)
+            _.each data.forecast.monthly_unweighted_pipeline_by_stage, (pipeline, stage_id) ->
+              $scope.totalData.unweighted[month] += (if pipeline[month] then pipeline[month] else 0)
+
+          console.log($scope.totalData)
+
           MonthlyForecastsDataStore.setData(data)
           $scope.dataMonthlyForecast =  MonthlyForecastsDataStore.getData($scope.dataType)
           $scope.optionsMonthlyForecast = MonthlyForecastsDataStore.getOptions()

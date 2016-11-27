@@ -1,6 +1,6 @@
 @app.controller 'ActivityDetailReportsController',
-  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Team', 'Activity', 'ActivityType', '$filter',
-    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Team, Activity, ActivityType, $filter) ->
+  ['$scope', '$document', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Team', 'Activity', 'ActivityType', '$filter',
+    ($scope, $document, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Team, Activity, ActivityType, $filter) ->
       $scope.sortType     = 'happened_at'
       $scope.sortReverse  = true
       $scope.filterOpen = true
@@ -13,6 +13,34 @@
         id:'all',
         name:'Team'
       }
+      $scope.datePicker = {
+        startDate: null
+        endDate: null
+      }
+      $scope.isDateSet = false
+
+      datePickerInput = $document.find('#kpi-date-picker')
+
+      $scope.datePickerApply = () ->
+        if ($scope.datePicker.startDate && $scope.datePicker.endDate)
+          datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+          $scope.isDateSet = true
+          fetchData()
+
+      $scope.datePickerCancel = (s, r) ->
+        datePickerInput.html('Time period')
+        $scope.isDateSet = false
+        if !r then fetchData()
+
+      $scope.resetFilters = () ->
+        $scope.memberId = null
+        $scope.activityTypeId = null
+        $scope.selectedTeam = {
+          id:'all',
+          name:'Team'
+        }
+        $scope.datePickerCancel(null, true)
+        fetchData()
 
       resetFilters = () ->
         $scope.memberFilters = []
@@ -38,9 +66,9 @@
         if($scope.memberId)
           query.member_id = $scope.memberId
 
-        if($scope.endDateIsValid && $scope.startDateIsValid)
-          query.start_date = $filter('date')($scope.start_date, 'dd-MM-yyyy')
-          query.end_date = $filter('date')($scope.end_date, 'dd-MM-yyyy')
+        if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
+          query.start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
+          query.end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
 
         Activity.all(query).then (activities) ->
           $scope.activities = activities
@@ -112,10 +140,11 @@
         if($scope.memberId)
           query_str += "&member_id=" + $scope.memberId
 
-        if($scope.endDateIsValid && $scope.startDateIsValid)
-          start_date = $filter('date')($scope.start_date, 'dd-MM-yyyy')
-          end_date = $filter('date')($scope.end_date, 'dd-MM-yyyy')
+        if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
+          start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
+          end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
           query_str += "&start_date=" + start_date + "&end_date=" + end_date
+
         $window.open('/api/activities.csv?' + query_str)
         return true
 

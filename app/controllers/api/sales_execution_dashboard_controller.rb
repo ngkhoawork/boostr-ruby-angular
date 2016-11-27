@@ -30,12 +30,12 @@ class Api::SalesExecutionDashboardController < ApplicationController
     if params[:start_date]
       start_date = Date.parse(params[:start_date])
     else
-      start_date = Time.now.to_date
+      start_date = Time.now.to_date.beginning_of_month
     end
     if params[:end_date]
       end_date = Date.parse(params[:end_date])
     else
-      end_date = start_date + 5.months
+      end_date = (start_date + 5.months).end_of_month
     end
 
     months = (start_date.to_date..end_date.to_date).map { |d| d.strftime("%b-%y") }.uniq
