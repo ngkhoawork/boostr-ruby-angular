@@ -6,7 +6,7 @@
       $scope.teamFilters = []
       $scope.teamId = ''
       $scope.monthlyForecastData = []
-      $scope.totalData = { weighted: {}, unweighted: {} }
+      $scope.totalData = null
       $scope.selectedTeam = {
         id:'all',
         name:'Team'
