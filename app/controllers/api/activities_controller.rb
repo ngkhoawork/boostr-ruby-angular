@@ -188,8 +188,13 @@ class Api::ActivitiesController < ApplicationController
     end
 
     if params[:start_date] && params[:end_date]
-      query_str += " and happened_at >= '#{Date.parse(params[:start_date])}' and happened_at <= '#{Date.parse(params[:end_date])}'"
+      start_date = Date.parse(params[:start_date])
+      end_date = Date.parse(params[:end_date])
+    else
+      end_date = Time.now.to_date
+      start_date = end_date - 30.days
     end
+    query_str += " and happened_at >= '#{start_date}' and happened_at <= '#{end_date}'"
 
     member_ids = []
     if params[:member_id] && params[:member_id] != "all"

@@ -25,22 +25,17 @@
                     %li{ ng: { repeat: 'activityType in activityTypes', class: '{active: activityType.id === activityTypeId}' } }
                       %a{ href: '', ng: { click: 'filterByActivityType(activityType.id)' } }
                         {{ activityType.name }}
-              %ul.kpi-block__filter.default-date{ng: { class: '{date: start_date}'}}
-                %span.bs-datepicker
-                  %input{ placeholder: 'Start Date',
-                          name: 'start_date', type: 'text',
-                          datepicker: { popup: 'MMMM d, y' },
-                          ng: { model: 'start_date', required: true, click: 'callStartDateOpened = true' },
-                          'is-open': 'callStartDateOpened', }
-              %span.date-caret.caret{ng: { if: '!start_date'}}
-              %ul.kpi-block__filter.default-date{ng: { class: '{date: end_date, dateInvalid: endDateIsValid === false}'}}
-                %span.bs-datepicker
-                  %input{ placeholder: 'End Date',
-                          name: 'end_date', type: 'text',
-                          datepicker: { popup: 'MMMM d, y' },
-                          ng: { model: 'end_date', required: true, click: 'callEndDateOpened = true' },
-                          'is-open': 'callEndDateOpened' }
-              %span.date-caret.caret{ng: { if: '!end_date'}}
+              .date-picker-wrap
+                %div.date-picker#kpi-date-picker{'date-range-picker': true,
+                                                 'ng-model': 'datePicker',
+                                                 :options => "{locale: {format: 'MMMM D, YYYY',
+                                                                        cancelLabel: 'Clear'},
+                                                               eventHandlers: {'apply.daterangepicker': datePickerApply,
+                                                                               'cancel.daterangepicker': datePickerCancel}}"}
+                  Time period
+                %span.caret
+              %span#reset-filter{'ng-click': 'resetFilters()'}
+                Reset
             %li.pull-right
               %a.export{ href: '', ng: { click: 'exportReports()' } }
                 = inline_svg 'icons/export.svg'

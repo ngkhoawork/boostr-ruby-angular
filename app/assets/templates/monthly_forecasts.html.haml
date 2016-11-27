@@ -1,8 +1,8 @@
-#kpi-analytics
+#kpi-analytics.monthly-forecasts
   .container
     .row
       .col-xs-12
-        %h3.title Forecast
+        %h3.title Forecast by Month
 
     .row.legend.well
       .col-xs-12
@@ -30,7 +30,6 @@
     .row.well.kpi-block
       .row
         .col-xs-12
-          %h4.kpi-block__title Forecast by Month
           %nvd3{ options:'optionsMonthlyForecast', data: 'dataMonthlyForecast', callback:"initLabels()", class: 'quarter-forecast-chart quarter-forecast-chart1', ng: {if: 'dataMonthlyForecast'}}
       .row
         .col-xs-12.schedule
@@ -68,3 +67,9 @@
                     {{monthlyForecastData.forecast.monthly_revenue[month] | currency:'$':0}}
                   %span{ ng: { if: '!monthlyForecastData.forecast.monthly_revenue[month]' }}
                     {{0 | currency:'$':0}}
+              %tr{ ng: { if: 'totalData[dataType]' }}
+                %td
+                  Total
+                %td{ ng: { repeat: 'month in monthlyForecastData.months' }}
+                  %span
+                    {{totalData[dataType][month] | currency:'$':0}}
