@@ -14,6 +14,7 @@ class Api::WhereToPitchController < ApplicationController
     where_to_pitch = []
     advertisers.each do |advertiser|
       advertiser_deals = advertiser_deals_list(advertiser.id)
+      next if advertiser_deals.length == 0
       complete_deals = complete_deals_list(advertiser_deals)
       incomplete_deals = incomplete_deals_list(advertiser_deals)
 
@@ -31,6 +32,7 @@ class Api::WhereToPitchController < ApplicationController
     where_to_pitch = []
     agencies.each do |agency|
       agency_deals = agency_deals_list(agency.id)
+      next if agency_deals.length == 0
       complete_deals = complete_deals_list(agency_deals)
       incomplete_deals = incomplete_deals_list(agency_deals)
 
