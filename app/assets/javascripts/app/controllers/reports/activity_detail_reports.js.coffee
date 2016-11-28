@@ -86,6 +86,10 @@
 
         ActivityType.all().then (activityTypes) ->
           $scope.activityTypes = activityTypes
+          $scope.activityTypes.unshift({
+            id:'',
+            name:'All'
+          })
 
       $scope.init()
 
