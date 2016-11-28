@@ -31,13 +31,15 @@
                 %span.caret
               %ul.dropdown-menu
                 %li
-                  = link_to "Pipeline by User Report", "/reports/deal_reports"
+                  = link_to "Pipeline by User", "/reports/deal_reports"
                 %li
-                  = link_to "Pipeline Summary Report", "/reports/pipeline_summary_reports"
+                  = link_to "Pipeline Summary", "/reports/pipeline_summary_reports"
                 %li
                   = link_to "Forecast Detail - Annual", "/reports/forecasts"
                 %li
-                  = link_to "Activity Detail Report", "/reports/activity_detail_reports"
+                  = link_to "Activity Detail", "/reports/activity_detail_reports"
+                %li
+                  = link_to "Activity Summary", "/reports/activity_summary"
           - else
             %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -45,11 +47,13 @@
                 %span.caret
               %ul.dropdown-menu
                 %li
-                  = link_to "Pipeline by User Report", "/reports/deal_reports"
+                  = link_to "Pipeline by User", "/reports/deal_reports"
                 %li
-                  = link_to "Pipeline Summary Report", "/reports/pipeline_summary_reports"
+                  = link_to "Pipeline Summary", "/reports/pipeline_summary_reports"
                 %li
-                  = link_to "Activity Detail Report", "/reports/activity_detail_reports"
+                  = link_to "Activity Detail", "/reports/activity_detail_reports"
+                %li
+                  = link_to "Activity Summary", "/reports/activity_summary"
           - if current_user.leader?
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -57,11 +61,9 @@
                 %span.caret
               %ul.dropdown-menu
                 %li
-                  = link_to "Sellers Activities", "/smart_reports/seller_activities"
-                %li
                   = link_to "Sales Execution Dashboard", "/smart_reports/sales_execution_dashboard"
                 %li
-                  = link_to "Monthly Forecasts", "/smart_reports/monthly_forecasts"
+                  = link_to "Monthly Forecast", "/smart_reports/monthly_forecasts"
                 %li
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
           - else
@@ -71,11 +73,9 @@
                 %span.caret
               %ul.dropdown-menu
                 %li
-                  = link_to "Sellers Activities", "/smart_reports/seller_activities"
-                %li
                   = link_to "Sales Execution Dashboard", "/smart_reports/sales_execution_dashboard"
                 %li
-                  = link_to "Monthly Forecasts", "/smart_reports/monthly_forecasts"
+                  = link_to "Monthly Forecast", "/smart_reports/monthly_forecasts"
                 %li
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
