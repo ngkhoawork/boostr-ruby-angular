@@ -61,7 +61,7 @@
     .when '/activity_types',
       templateUrl: 'activity_types.html'
       controller: 'ActivityTypesController'
-    .when '/smart_reports/seller_activities',
+    .when '/reports/activity_summary',
       templateUrl: 'reports.html'
       controller: 'ReportsController'
     .when '/reports/forecasts',
