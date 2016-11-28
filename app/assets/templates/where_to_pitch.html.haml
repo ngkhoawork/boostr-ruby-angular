@@ -63,12 +63,16 @@
 					.advertiser-block{style: 'background-color: #E74C3C'}
 						.title SOMETHING'S NOT WORKING
 						.body
-							%div{'ng-repeat': 'advertiser in advertisers[11]'}
+							%div{'ng-if': 'advertisers[11].length == 0'}
+								No data available
+							%div{'ng-if': 'advertisers[11].length > 0', 'ng-repeat': 'advertiser in advertisers[11]'}
 								{{advertiser.client_name}} ({{advertiser.total_deals + ', ' + advertiser.win_rate + '%'}})
 					.advertiser-block{style: 'background-color: #16A085'}
 						.title KEEP IT UP
 						.body
-							%div{'ng-repeat': 'advertiser in advertisers[12]'}
+							%div{'ng-if': 'advertisers[12].length == 0'}
+								No data available
+							%div{'ng-if': 'advertisers[12].length > 0', 'ng-repeat': 'advertiser in advertisers[12]'}
 								{{advertiser.client_name}} ({{advertiser.total_deals + ', ' + advertiser.win_rate + '%'}})
 					.legend-block
 
@@ -78,12 +82,16 @@
 					.advertiser-block{style: 'background-color: #F1C40F'}
 						.title WARNING!
 						.body
-							%div{'ng-repeat': 'advertiser in advertisers[21]'}
+							%div{'ng-if': 'advertisers[21].length == 0'}
+								No data available
+							%div{'ng-if': 'advertisers[21].length > 0', 'ng-repeat': 'advertiser in advertisers[21]'}
 								{{advertiser.client_name}} ({{advertiser.total_deals + ', ' + advertiser.win_rate + '%'}})
 					.advertiser-block{style: 'background-color: #91CE7B'}
 						.title PITCH MORE
 						.body
-							%div{'ng-repeat': 'advertiser in advertisers[22]'}
+							%div{'ng-if': 'advertisers[22].length == 0'}
+								No data available
+							%div{'ng-if': 'advertisers[22].length > 0', 'ng-repeat': 'advertiser in advertisers[22]'}
 								{{advertiser.client_name}} ({{advertiser.total_deals + ', ' + advertiser.win_rate + '%'}})
 					.legend-block
 
@@ -106,12 +114,16 @@
 					.advertiser-block{style: 'background-color: #E74C3C'}
 						.title SOMETHING'S NOT WORKING
 						.body
-							%div{'ng-repeat': 'agency in agencies[11]'}
+							%div{'ng-if': 'agencies[11].length == 0'}
+								No data available
+							%div{'ng-if': 'agencies[11].length > 0', 'ng-repeat': 'agency in agencies[11]'}
 								{{agency.client_name}} ({{agency.total_deals + ', ' + agency.win_rate + '%'}})
 					.advertiser-block{style: 'background-color: #16A085'}
 						.title KEEP IT UP
 						.body
-							%div{'ng-repeat': 'agency in agencies[12]'}
+							%div{'ng-if': 'agencies[12].length == 0'}
+								No data available
+							%div{'ng-if': 'agencies[12].length > 0', 'ng-repeat': 'agency in agencies[12]'}
 								{{agency.client_name}} ({{agency.total_deals + ', ' + agency.win_rate + '%'}})
 					.legend-block
 
@@ -121,12 +133,16 @@
 					.advertiser-block{style: 'background-color: #F1C40F'}
 						.title WARNING!
 						.body
-							%div{'ng-repeat': 'agency in agencies[21]'}
+							%div{'ng-if': 'agencies[21].length == 0'}
+								No data available
+							%div{'ng-if': 'agencies[21].length > 0', 'ng-repeat': 'agency in agencies[21]'}
 								{{agency.client_name}} ({{agency.total_deals + ', ' + agency.win_rate + '%'}})
 					.advertiser-block{style: 'background-color: #91CE7B'}
 						.title PITCH MORE
 						.body
-							%div{'ng-repeat': 'agency in agencies[22]'}
+							%div{'ng-if': 'agencies[22].length == 0'}
+								No data available
+							%div{'ng-if': 'agencies[22].length > 0', 'ng-repeat': 'agency in agencies[22]'}
 								{{agency.client_name}} ({{agency.total_deals + ', ' + agency.win_rate + '%'}})
 					.legend-block
 
