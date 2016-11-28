@@ -40,12 +40,17 @@ class Api::ContactsController < ApplicationController
   end
 
   def update
-    if contact.update_attributes(contact_params)
-      contact.update_primary_client if params[:contact][:set_primary_client]
-      render json: contact.as_json(include: {clients: {}}), status: :accepted
+    if contact_params[:client_id].present?
+      if contact.update_attributes(contact_params)
+        contact.update_primary_client if params[:contact][:set_primary_client]
+        render json: contact.as_json(include: {clients: {}}), status: :accepted
+      else
+        render json: { errors: contact.errors.messages }, status: :unprocessable_entity
+      end
     else
-      render json: { errors: contact.errors.messages }, status: :unprocessable_entity
+      render json: { errors: { "primary client": ["can't be blank"] } }, status: :unprocessable_entity
     end
+
   end
 
   def destroy

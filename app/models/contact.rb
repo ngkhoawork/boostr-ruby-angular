@@ -15,6 +15,7 @@ class Contact < ActiveRecord::Base
   accepts_nested_attributes_for :address
 
   validates :name, presence: true
+  validates :client_id, presence: true
   validate :email_is_present?
   validate :email_unique?
 
@@ -190,13 +191,13 @@ class Contact < ActiveRecord::Base
   private
 
   def email_is_present?
-    unless address and address.email
+    unless address and address.email and address.email.present?
       errors.add(:email, "can't be blank")
     end
   end
 
   def email_unique?
-    if address && address.email
+    if address && address.email.present?
       if id
         contact = Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("contacts.company_id=? and addresses.email ilike ? and contacts.id != ?", company_id, address.email, id)
       else
