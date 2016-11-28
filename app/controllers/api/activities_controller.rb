@@ -183,6 +183,20 @@ class Api::ActivitiesController < ApplicationController
 
   def filtered_activities
     query_str = "user_id in (?)"
+    is_company_activity = false
+    member_ids = []
+    if params[:member_id] && params[:member_id] != "all"
+      member_ids << params[:member_id]
+    elsif params[:team_id] && params[:team_id] != "all"
+      if team.present?
+        member_ids += team.all_members.collect{|member| member.id}
+      end
+    else
+      is_company_activity = true
+      query_str = "company_id = #{company.id}"
+    end
+
+
     if params[:activity_type_id]
       query_str += " and activity_type_id = #{params[:activity_type_id]}"
     end
@@ -196,23 +210,12 @@ class Api::ActivitiesController < ApplicationController
     end
     query_str += " and happened_at >= '#{start_date}' and happened_at <= '#{end_date}'"
 
-    member_ids = []
-    if params[:member_id] && params[:member_id] != "all"
-      member_ids << params[:member_id]
-    elsif params[:team_id] && params[:team_id] != "all"
-      if team.present?
-        member_ids += team.all_members.collect{|member| member.id}
-      end
+    if is_company_activity == true
+      data = company.activities.where(query_str)
     else
-      root_teams.each do |t|
-        member_ids += t.all_members.collect{|member| member.id}
-      end
+      data = company.activities.where(query_str, member_ids)
     end
 
-    puts "============"
-    puts query_str
-    puts member_ids
-    data = company.activities.where(query_str, member_ids)
     # puts data
     data
   end
