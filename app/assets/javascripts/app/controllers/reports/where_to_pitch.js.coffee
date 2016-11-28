@@ -37,7 +37,14 @@
                     when 'team' then $scope.filter.team = item.id
                     when 'seller' then $scope.filter.seller = item.id
                     when 'product' then $scope.filter.product_id = item.id
-                    when 'category' then $scope.filter.category_id = item.id
+                    when 'category'
+                        $scope.filter.category_id = item.id
+                        $scope.filter.subcategory_id = undefined
+                        if item.suboptions
+                            $scope.subcategories = angular.copy item.suboptions
+                            $scope.subcategories.unshift({name: 'All', id: null})
+                        else
+                            $scope.subcategories = $scope.allSubcategories
                     when 'subcategory' then $scope.filter.subcategory_id = item.id
 
                 applyFilter()
@@ -47,6 +54,7 @@
                 $scope.datePicker.element.html('Time period')
                 $scope.datePicker.isDateSet = false
                 $scope.selectedTeam = {id: 'all', name:'Team'}
+                $scope.subcategories = $scope.allSubcategories
                 applyFilter()
 
             $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->
@@ -85,7 +93,7 @@
                                     subcategories.push subcategory
 
                     $scope.categories = categories
-                    $scope.subcategories = subcategories
+                    $scope.subcategories = $scope.allSubcategories = subcategories
             ), (err) ->
                 if err then console.log(err)
 
