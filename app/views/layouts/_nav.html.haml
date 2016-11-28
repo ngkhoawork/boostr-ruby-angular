@@ -39,6 +39,10 @@
                 %li
                   = link_to "Activity Summary", "/reports/activity_summary"
                 %li
+                  = link_to "Where to Pitch", "/reports/where_to_pitch"
+                %li
+                  = link_to "Pipeline by User Report", "/reports/deal_reports"
+                %li
                   = link_to "Forecast Detail - Annual", "/reports/forecasts"
           - else
             %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
