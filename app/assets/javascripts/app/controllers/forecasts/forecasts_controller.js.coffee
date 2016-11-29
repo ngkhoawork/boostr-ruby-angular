@@ -232,7 +232,7 @@
             console.log(a[column])
             console.log(b[column])
             switch (column)
-              when "name", "client_name", "start_date"
+              when "name", "client_name", "agency_name", "start_date", "end_date"
                 a[column].localeCompare(b[column])
               else
                 a[column] - b[column]
