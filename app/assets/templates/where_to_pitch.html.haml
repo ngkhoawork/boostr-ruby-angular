@@ -21,7 +21,7 @@
 							Seller
 							%span.caret
 						%ul.dropdown-menu
-							%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id == filter.seller}' } }
+							%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller}' } }
 								%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
 									{{ seller.first_name +' '+seller.last_name}}
 				%ul.kpi-block__filter
@@ -55,13 +55,14 @@
 				%span#reset-filter{'ng-click': 'resetFilter()'}
 					Reset
 		.row.well.kpi-block
-			%span.advertiser-subtitle Advertiser Direct
+			%span.advertiser-subtitle Advertisers
 			.advertiser-chart-wrap.col-xs-12
+
 				.advertiser-row
 					.legend-block
-						< 10 deals
-					.advertiser-block{style: 'background-color: #E74C3C'}
-						.title SOMETHING'S NOT WORKING
+						> 10 deals
+					.advertiser-block{style: 'background-color: #F1C40F'}
+						.title WARNING!
 						.body
 							%div{'ng-if': 'advertisers[11].length == 0'}
 								No data available
@@ -78,9 +79,9 @@
 
 				.advertiser-row
 					.legend-block
-						> 10 deals
-					.advertiser-block{style: 'background-color: #F1C40F'}
-						.title WARNING!
+						< 10 deals
+					.advertiser-block{style: 'background-color: #E74C3C'}
+						.title SOMETHING'S NOT WORKING
 						.body
 							%div{'ng-if': 'advertisers[21].length == 0'}
 								No data available
@@ -95,6 +96,7 @@
 								{{advertiser.client_name}} ({{advertiser.total_deals + ', ' + advertiser.win_rate + '%'}})
 					.legend-block
 
+
 				.advertiser-row
 					.legend-block.legend-title
 						.vertical # Deals
@@ -108,11 +110,12 @@
 		.row.well
 			%span.advertiser-subtitle Agencies
 			.advertiser-chart-wrap.col-xs-12
+				
 				.advertiser-row
 					.legend-block
-						< 10 deals
-					.advertiser-block{style: 'background-color: #E74C3C'}
-						.title SOMETHING'S NOT WORKING
+						> 10 deals
+					.advertiser-block{style: 'background-color: #F1C40F'}
+						.title WARNING!
 						.body
 							%div{'ng-if': 'agencies[11].length == 0'}
 								No data available
@@ -129,9 +132,9 @@
 
 				.advertiser-row
 					.legend-block
-						> 10 deals
-					.advertiser-block{style: 'background-color: #F1C40F'}
-						.title WARNING!
+						< 10 deals
+					.advertiser-block{style: 'background-color: #E74C3C'}
+						.title SOMETHING'S NOT WORKING
 						.body
 							%div{'ng-if': 'agencies[21].length == 0'}
 								No data available

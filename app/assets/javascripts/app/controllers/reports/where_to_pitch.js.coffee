@@ -112,13 +112,13 @@
                     22: []
 
                 for item in data
-                    if item.total_deals < 10 && item.win_rate < 35
+                    if item.total_deals >= 10 && item.win_rate < 35
                         result[11].push item
-                    else if item.total_deals < 10 && item.win_rate >= 35
-                        result[12].push item
-                    else if item.total_deals >= 10 && item.win_rate < 35
-                        result[21].push item
                     else if item.total_deals >= 10 && item.win_rate >= 35
+                        result[12].push item
+                    else if item.total_deals < 10 && item.win_rate < 35
+                        result[21].push item
+                    else if item.total_deals < 10 && item.win_rate >= 35
                         result[22].push item
 
                 $scope[type] = result
