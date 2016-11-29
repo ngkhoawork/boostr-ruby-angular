@@ -9,7 +9,7 @@
 .navbar-nav {
   li {
     font-size: 15px;
-    margin-right: 53px;
+    margin-right: 43px;
 
     a {
       padding: 20px 0;
@@ -132,11 +132,218 @@
     }
   }
 
+  .detail-filter {
+    padding: 6px 0 0 6px;
+    margin: 10px 0 0 0;
+    >span {
+      color: #838F9A;
+    }
+    .dropdown-menu{
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .tree-dropdown {
+      position: relative;
+      display: inline-block;
+      margin-bottom: -26px;
+      margin-left: 10px;
+      font-size: 13px;
+      width: auto;
+      max-width: 100%;
+    }
+
+    .tree-dropdown .select {
+      padding: 0 10px;
+      height: 32px;
+      display: block;
+      line-height: 14px;
+      color: #ff6e17;
+      vertical-align: middle;
+      margin-right: 8px;
+      //background-color: #ffffff;
+      //border: 1px solid #cccccc;
+      //-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      //box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+      transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+      border: none;
+    }
+
+    .tree-dropdown .select::after {
+      content: " ";
+      width: 0;
+      height: 0;
+      position: absolute;
+      right: 0;
+      top: 15px;
+      border-top: 5px dashed;
+      border-top: 5px solid \9;
+      border-right: 5px solid transparent;
+      border-left: 5px solid transparent;
+    }
+
+    .tree-dropdown p {
+      line-height: 32px;
+      margin: 0;
+    }
+
+    .tree-dropdown .list{
+      width: 180px;
+      box-sizing: content-box;
+      position: absolute;
+      top: 33px;
+      left: 0px;
+      right: 0px;
+      background-color: #FFF;
+      border-style: solid;
+      border-color: #cccccc;
+      border-width: 1px 1px 1px 1px;
+      z-index: 1100;
+      overflow-x: hidden;
+      max-height: 300px;
+      -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    }
+
+    .tree-dropdown ul {
+      list-style-type: none;
+      padding: 0px;
+      margin: 0px;
+    }
+
+    .tree-dropdown ul:first-child {
+      padding: 0px;
+    }
+
+    .tree-dropdown .list p:hover{
+      background: none;
+      color: #ff6e17;
+    }
+
+    .tree-dropdown .list p.selected{
+      background: #ff6e17;
+      color: #fff;
+    }
+
+    .tree-dropdown .level-0 {
+      padding-left: 15px
+    }
+    .tree-dropdown .level-1 {
+      padding-left: 30px
+    }
+    .tree-dropdown .level-2 {
+      padding-left: 45px
+    }
+    .tree-dropdown .level-3 {
+      padding-left: 60px
+    }
+    .tree-dropdown .level-4 {
+      padding-left: 75px
+    }
+    .tree-dropdown .level-5 {
+      padding-left: 90px
+    }
+    .tree-dropdown .level-6 {
+      padding-left: 105px
+    }
+    .tree-dropdown .level-7 {
+      padding-left: 120px
+    }
+    .tree-dropdown .level-8 {
+      padding-left: 135px
+    }
+    .tree-dropdown .level-9 {
+      padding-left: 150px
+    }
+    .tree-dropdown .level-10 {
+      padding-left: 110px
+    }
+
+    .date-caret {
+      margin-left: -4px;
+      color: #ff6e17;
+    }
+
+    .default-date {
+      width: 95px;
+    }
+
+    .date {
+      width: 136px!important;
+    }
+
+    .dateInvalid {
+      input {
+        width: 136px;
+        border-bottom: 3px solid #ff6e17!important;
+      }
+    }
+
+    .kpi-block__filter{
+      display: inline-block;
+      list-style: none;
+      padding-left: 17px;
+
+      .bs-datepicker {
+        input{
+          cursor: pointer;
+          border:none;
+          color: #ff6e17;
+          outline: none;
+          padding: 6px 0 0 6px;
+          margin: 10px 0 0 0;
+          background: transparent;
+        }
+        input::-webkit-input-placeholder {
+          color: #ff6e17;
+        }
+        input::-moz-placeholder {
+          color: #ff6e17;
+        }
+        input:-ms-input-placeholder {
+          color: #ff6e17;
+        }
+      }
+    }
+    .reset-dates {
+      padding: 1px 4px;
+      margin-top: -2px;
+    }
+    #reset-filter {
+      margin: 0 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+      color: #3498DB;
+      &:hover {
+        color: #39B2FF
+      }
+    }
+    .date-picker-wrap {
+      display: inline-block;
+      position: relative;
+      margin: 0 -6px 0 10px;
+      .caret {
+        color: $brand-primary;
+        position: absolute;
+        right: 0;
+        top: 9px;
+      }
+      .date-picker {
+        padding-right: 15px;
+        height: 20px;
+        display: inline-block;
+        color: $brand-primary;
+        cursor: pointer;
+      }
+    }
+  }
+
   .nav-tabs {
     background: $brand-primary;
     color: $white;
 
-    li {
+    >li {
       margin-right: 30px;
 
       svg {
@@ -183,7 +390,7 @@
 
             &.active {
               a {
-                color: $white;
+                color: $white !important;
 
                 &:hover,
                 &:focus {

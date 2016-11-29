@@ -63,8 +63,8 @@ RSpec.describe DealProductBudget, type: :model do
 
     it 'generates three deal product budgets for three month deal' do
       row1 = build :deal_product_budget_csv_data, deal_id: three_month_deal.id
-      row2 = build :deal_product_budget_csv_data, deal_id: three_month_deal.id, period: 'August 2015'
-      row3 = build :deal_product_budget_csv_data, deal_id: three_month_deal.id, period: 'September 2015'
+      row2 = build :deal_product_budget_csv_data, deal_id: three_month_deal.id, period: 'Aug-15'
+      row3 = build :deal_product_budget_csv_data, deal_id: three_month_deal.id, period: 'Sep-15'
 
       expect do
         expect(DealProductBudget.import(generate_csv(row1), user)).to eq([])
@@ -150,15 +150,15 @@ RSpec.describe DealProductBudget, type: :model do
         ).to eq([row: 1, message: ["Period can't be blank"]])
       end
 
-      it 'requires period to be a valid Month YYYY' do
+      it 'requires period to have Mon-YY format' do
         data = build :deal_product_budget_csv_data, period: 'N/A'
         expect(
           DealProductBudget.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Period must be in valid format: Month YYYY"]])
+        ).to eq([row: 1, message: ["Period must be in valid format: Mon-YY"]])
       end
 
       it 'requires period to be within Deal period' do
-        data = build :deal_product_budget_csv_data, period: 'Jan 1900'
+        data = build :deal_product_budget_csv_data, period: 'Jan-00'
         expect(
           DealProductBudget.import(generate_csv(data), user)
         ).to eq([row: 1, message: ["Period #{data[:period]} must be within Deal Period"]])

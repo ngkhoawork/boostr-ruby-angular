@@ -61,6 +61,7 @@ class Deal < ActiveRecord::Base
 
   after_create do
     generate_deal_members
+    send_new_deal_notification
   end
 
   before_destroy do
@@ -84,6 +85,7 @@ class Deal < ActiveRecord::Base
   scope :greater_than, -> (percentage) { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :less_than, -> (percentage) { joins(:stage).where('stages.probability < ?', percentage) }
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
+  scope :by_values, -> (value_ids) { joins(:values).where('values.option_id in (?)', value_ids) unless value_ids.empty? }
 
   def fields
     company.fields.where(subject_type: self.class.name)
@@ -127,14 +129,16 @@ class Deal < ActiveRecord::Base
     weighted_pipeline = {
       id: id,
       name: name,
-      client_name: advertiser.name,
+      client_name: (advertiser.nil? ? "" : advertiser.name),
+      agency_name: (agency.nil? ? "" : agency.name),
       probability: stage.probability,
       stage_id: stage.id,
       budget: budget,
       in_period_amt: in_period_amt(start_date, end_date),
       wday_in_stage: wday_in_stage,
       wday_since_opened: wday_since_opened,
-      start_date: self.start_date
+      start_date: self.start_date,
+      end_date: self.end_date
     }
 
     if stage.red_threshold.present? or stage.yellow_threshold.present?
@@ -222,15 +226,27 @@ class Deal < ActiveRecord::Base
     # This only gets called on create where the Deal has inherently been touched
     ActiveRecord::Base.no_touching do
       if advertiser.client_members.empty? && creator
-        deal_member = deal_members.create(user_id: creator.id, share: 100)
+        deal_members.create(user_id: creator.id, share: 100)
       else
+        should_create = true
+        total_share = 0
         advertiser.client_members.each do |client_member|
           deal_member = deal_members.create(client_member.defaults)
 
           if client_member.role_value_defaults
             deal_member.values.create(client_member.role_value_defaults)
           end
+
+          total_share += client_member.share
+          if client_member.user_id == creator.id
+            should_create = false
+          end
         end
+
+        if should_create == true
+          deal_members.create(user_id: creator.id, share: [100 - total_share, 0].max)
+        end
+
       end
     end
   end
@@ -674,9 +690,9 @@ class Deal < ActiveRecord::Base
           next
         end
         begin
-          start_date = DateTime.parse(row[6])
+          start_date = Date.strptime(row[6], '%m/%d/%Y')
         rescue ArgumentError
-          error = {row: row_number, message: ['Start Date must be a valid datetime'] }
+          error = {row: row_number, message: ['Start Date must have valid date format MM/DD/YYYY'] }
           errors << error
           next
         end
@@ -690,9 +706,9 @@ class Deal < ActiveRecord::Base
           next
         end
         begin
-          end_date = DateTime.parse(row[7])
+          end_date = Date.strptime(row[7], '%m/%d/%Y')
         rescue ArgumentError
-          error = {row: row_number, message: ['End Date must be a valid datetime'] }
+          error = {row: row_number, message: ['End Date must have valid date format MM/DD/YYYY'] }
           errors << error
           next
         end
@@ -750,9 +766,9 @@ class Deal < ActiveRecord::Base
 
       if row[10].present?
         begin
-          created_at = DateTime.parse(row[10])
+          created_at = DateTime.strptime(row[10], '%m/%d/%Y')
         rescue ArgumentError
-          error = {row: row_number, message: ['Deal Creation Date must be a valid datetime'] }
+          error = {row: row_number, message: ['Deal Creation Date must have valid date format MM/DD/YYYY'] }
           errors << error
           next
         end
@@ -760,9 +776,9 @@ class Deal < ActiveRecord::Base
 
       if row[11].present?
         begin
-          closed_date = DateTime.parse(row[11])
+          closed_date = DateTime.strptime(row[11], '%m/%d/%Y')
         rescue ArgumentError
-          error = {row: row_number, message: ['Deal Close Date must be a valid datetime'] }
+          error = {row: row_number, message: ['Deal Close Date must have valid date format MM/DD/YYYY'] }
           errors << error
           next
         end
@@ -968,6 +984,16 @@ class Deal < ActiveRecord::Base
       end      
     end
     self.open = should_open.to_s
+  end
+
+  def send_new_deal_notification
+    notification = company.notifications.find_by_name('New Deal')
+    if !notification.nil? && !notification.recipients.nil?
+      recipients = notification.recipients.split(',').map(&:strip)
+      if !recipients.nil? && recipients.length > 0
+        UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: "default")
+      end
+    end
   end
 
   def set_deal_status

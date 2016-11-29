@@ -1,0 +1,166 @@
+#kpi-analytics
+  .container
+    .row
+      .col-xs-12
+        %h3.title KPI`s Dashboard
+
+    .row.legend.well.kpi-block
+      .col-xs-12
+        %span Filter by
+        %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
+        %ul.kpi-block__filter
+          %li{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              Seller
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id == sellerId}' } }
+                %a{ href: '', ng: { click: 'filterBySeller(seller.id)' } }
+                  {{ seller.first_name +' '+seller.last_name}}
+        %ul.kpi-block__filter
+          %li{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              Product
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'product in productsList', class: '{active: product.name === productFilter.name}' } }
+                %a{ href: '', ng: { click: 'filterByProduct(product)' } }
+                  {{ product.name }}
+        %ul.kpi-block__filter
+          %li{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              Type
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'type in typesList', class: '{active: type.name === typeFilter.name}' } }
+                %a{ href: '', ng: { click: 'filterByType(type)' } }
+                  {{ type.name }}
+        %ul.kpi-block__filter
+          %li{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              Source
+              %span.caret
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'source in sources', class: '{active: source.name === sourceFilter.name}' } }
+                %a{ href: '', ng: { click: 'filterBySource(source)' } }
+                  {{ source.name }}
+
+        .date-picker-wrap
+          %div.date-picker#kpi-date-picker{'date-range-picker': true,
+                                           'ng-model': 'datePicker',
+                                           :options => "{locale: {format: 'MMMM D, YYYY',
+                                                                  cancelLabel: 'Clear'},
+                                                         eventHandlers: {'apply.daterangepicker': datePickerApply,
+                                                                         'cancel.daterangepicker': datePickerCancel}}"}
+            Time period
+          %span.caret
+
+        %span#reset-filter{'ng-click': 'resetFilters()'}
+          Reset
+
+
+
+
+        .pull-right.buttons__filter
+          %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'filterByPeriod("month")'}
+            Month
+          %button.btn{ 'ng-class': '{btnPrimary: time_period === "qtr"}', 'ng-click': 'filterByPeriod("qtr")'}
+            Quarter
+
+    .row.well.kpi-block
+      .row
+        .col-xs-12
+          %h4.kpi-block__title Win Rate
+      .row
+        .col-xs-12.schedule
+          %div.win-rate
+      .row
+        .col-md-12.table-report.text-center
+          %table.table.table-hover
+            %thead
+              %tr
+                %th{ ng: { if: 'isTeamsNamesInWinRateTable' }}
+                  Teams
+                %th{ ng: { if: '!isTeamsNamesInWinRateTable' }}
+                  Sellers
+                %th{ ng: { repeat: 'period in winRateTimePeriods' }}
+                  {{period}}
+                %th.text--bold{ 'ng-click': 'changeSortType("total")'}
+                  Total
+
+            %tbody
+              %tr{ ng: { repeat: 'itemsData in winRateData' }}
+                %td{ ng: { repeat: 'item in itemsData' }}
+                  %span{ ng: { if: 'item.win_rate !== undefined' }}
+                    {{item.win_rate}}%
+                  %span{ ng: { if: 'item.win_rate === undefined' }}
+                    {{$last ? item + '%' : item}}
+              %tr{ ng: { if: 'winRateAverage' }}
+                %td.text--bold{ ng: { repeat: 'average in winRateAverage track by $index' }}
+                  {{average}}
+
+    .row.well.kpi-block
+      .row
+        .col-xs-12
+          %h4.kpi-block__title Average Deal Size
+
+      .row
+        .col-xs-12.schedule
+          %div.deal-size
+      .row
+        .col-md-12.table-report.text-center
+          %table.table.table-hover
+            %thead
+              %tr
+                %th{ ng: { if: 'isTeamsNamesInWinRateTable' }}
+                  Teams
+                %th{ ng: { if: '!isTeamsNamesInWinRateTable' }}
+                  Sellers
+                %th{ ng: { repeat: 'period in winRateTimePeriods' }}
+                  {{period}}
+                %th.text--bold{ 'ng-click': 'changeSortType("total")'}
+                  Total
+
+            %tbody
+              %tr{ ng: { repeat: 'itemsData in dealSizeData track by $index' }}
+                %td{ ng: { repeat: 'item in itemsData' }}
+                  %span{ ng: { if: 'item.average_deal_size !== undefined && item.average_deal_size > 0'}}
+                    {{item.average_deal_size | currency: '$' : 0}}k
+                  %span{ ng: { if: 'item.average_deal_size !== undefined && item.average_deal_size === 0'}}
+                    {{item.average_deal_size}}
+                  %span{ ng: { if: 'item.average_deal_size === undefined && !$last' }}
+                    {{item}}
+                  %span{ ng: { if: 'item.average_deal_size === undefined && $last && item > 0' }}
+                    {{item | currency: '$' : 0}}k
+                  %span{ ng: { if: 'item.average_deal_size === undefined && $last && item === 0' }}
+                    {{item}}
+
+    .row.well.kpi-block
+      .row
+        .col-xs-12
+          %h4.kpi-block__title Average Cycle Time
+
+      .row
+        .col-xs-12.schedule
+          %div.cycle-time
+      .row
+        .col-md-12.table-report.text-center
+          %table.table.table-hover
+            %thead
+              %tr
+                %th{ ng: { if: 'isTeamsNamesInWinRateTable' }}
+                  Teams
+                %th{ ng: { if: '!isTeamsNamesInWinRateTable' }}
+                  Sellers
+                %th{ ng: { repeat: 'period in winRateTimePeriods' }}
+                  {{period}}
+                %th.text--bold{ 'ng-click': 'changeSortType("total")'}
+                  Total
+
+            %tbody
+              %tr{ ng: { repeat: 'itemsData in cycleTimeData track by $index' }}
+                %td{ ng: { repeat: 'item in itemsData' }}
+                  %span{ ng: { if: 'item.cycle_time !== undefined' }}
+                    {{item.cycle_time}}
+                  %span{ ng: { if: 'item.cycle_time === undefined' }}
+                    {{item}}

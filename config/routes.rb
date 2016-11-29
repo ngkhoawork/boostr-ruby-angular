@@ -53,7 +53,11 @@ Rails.application.routes.draw do
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
-      get :all_members
+      collection do
+        get :all_members
+      end
+      get :members
+      get :all_sales_reps
     end
     resources :custom_values, only: [:index]
     resources :time_periods, only: [:index, :create, :update, :destroy]
@@ -69,6 +73,7 @@ Rails.application.routes.draw do
     resources :sales_execution_dashboard, only: [:index] do
       collection do
         get :forecast
+        get :monthly_forecast
         get :kpis
         get :deal_loss_summary
         get :deal_loss_stages
@@ -76,6 +81,7 @@ Rails.application.routes.draw do
       end
     end
     resources :kpis, only: [:index]
+    resources :kpis_dashboard, only: [:index]
     resources :reminders, only: [:index, :show, :create, :update, :destroy]
     resources :remindable, only: [] do
       get '/:remindable_type', to: 'reminders#remindable'

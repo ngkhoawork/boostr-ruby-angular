@@ -20,6 +20,7 @@
   'd3'
   'nvd3'
   'ngTransloadit'
+  'daterangepicker'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -60,21 +61,30 @@
     .when '/activity_types',
       templateUrl: 'activity_types.html'
       controller: 'ActivityTypesController'
-    .when '/reports',
+    .when '/reports/activity_summary',
       templateUrl: 'reports.html'
       controller: 'ReportsController'
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
-    .when '/reports/sales_execution_dashboard',
+    .when '/smart_reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
       controller: 'SalesExecutionDashboardController'
+    .when '/smart_reports/kpi_analytics',
+      templateUrl: 'kpi_analytics.html'
+      controller: 'KPIAnalyticsController'
+    .when '/smart_reports/monthly_forecasts',
+      templateUrl: 'monthly_forecasts.html'
+      controller: 'MonthlyForecastsController'
     .when '/reports/deal_reports',
       templateUrl: 'deal_reports.html'
       controller: 'DealReportsController'
     .when '/reports/pipeline_summary_reports',
       templateUrl: 'pipeline_summary_reports.html'
       controller: 'PipelineSummaryReportsController'
+    .when '/reports/activity_detail_reports',
+      templateUrl: 'activity_detail_reports.html'
+      controller: 'ActivityDetailReportsController'
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'

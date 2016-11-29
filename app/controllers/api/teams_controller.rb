@@ -21,12 +21,42 @@ class Api::TeamsController < ApplicationController
   end
 
   def all_members
-    current_team =current_user.company.teams.where(id: params[:team_id]).first
-    if current_team.present?
-      render json: current_team.all_members
+    if params[:team_id] && params[:team_id] == "all"
+      members = []
+      root_teams.each do |team_item|
+        members += team_item.all_members.collect{ |member| {id: member.id, name: member.name }}
+      end
+      render json: members
     else
-      render json: { errors: current_team.errors.messages }, status: :not_found
+      current_team = current_user.company.teams.where(id: params[:team_id]).first
+      if current_team.present?
+        render json: current_team.all_members.collect{ |member| {id: member.id, name: member.name }}
+      else
+        render json: { errors: current_team.errors.messages }, status: :not_found
+      end
     end
+
+  end
+
+  def members
+    if params[:team_id].present?
+      current_team = current_user.company.teams.where(id: params[:team_id]).first
+      if current_team.present?
+        render json: current_team.all_members.collect{ |member| {id: member.id, name: member.name }}
+      else
+        render json: { errors: current_team.errors.messages }, status: :not_found
+      end
+    end
+  end
+
+  def all_sales_reps
+    if !(teams.present?)
+      render json: { error: 'Team Not Found' }, status: :not_found
+    end
+
+    reps = teams.map(&:all_sales_reps).flatten
+
+    render json: reps
   end
 
   def create
@@ -57,11 +87,27 @@ class Api::TeamsController < ApplicationController
 
   private
 
+  def teams
+    if params[:team_id] && params[:team_id] == 'all'
+      @team ||= root_teams
+    elsif params[:team_id]
+      @team ||= [company.teams.find(params[:team_id])]
+    end
+  end
+
+  def root_teams
+    company.teams.roots(true)
+  end
+
   def team_params
     params.require(:team).permit(:name, :parent_id, :leader_id, :member_ids, member_ids: [])
   end
 
   def team
     @team ||= current_user.company.teams.where(id: params[:id]).first
+  end
+
+  def company
+    @company ||= current_user.company
   end
 end

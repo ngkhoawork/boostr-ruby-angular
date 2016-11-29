@@ -1,0 +1,95 @@
+#reports
+  #nav.transparent
+    .container
+      .row
+        .col-xs-12
+          %ul.nav.nav-tabs
+            %li.detail-filter.dropdown
+              %span Filter by
+              %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
+              %ul.kpi-block__filter
+                %li{ dropdown: true }
+                  %a{ href: '', dropdown: { toggle: true } }
+                    Creator
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{ ng: { repeat: 'member in members', class: '{active: member.id == memberId}' } }
+                      %a{ href: '', ng: { click: 'filterByMember(member.id)' } }
+                        {{ member.name }}
+              %ul.kpi-block__filter
+                %li{ dropdown: true }
+                  %a{ href: '', dropdown: { toggle: true } }
+                    Type
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{ ng: { repeat: 'activityType in activityTypes', class: '{active: activityType.id === activityTypeId}' } }
+                      %a{ href: '', ng: { click: 'filterByActivityType(activityType.id)' } }
+                        {{ activityType.name }}
+              .date-picker-wrap
+                %div.date-picker#kpi-date-picker{'date-range-picker': true,
+                                                 'ng-model': 'datePicker',
+                                                 :options => "{locale: {format: 'MMMM D, YYYY',
+                                                                        cancelLabel: 'Clear'},
+                                                               eventHandlers: {'apply.daterangepicker': datePickerApply,
+                                                                               'cancel.daterangepicker': datePickerCancel}}"}
+                  Time period
+                %span.caret
+              %span#reset-filter{'ng-click': 'resetFilters()'}
+                Reset
+            %li.pull-right
+              %a.export{ href: '', ng: { click: 'exportReports()' } }
+                = inline_svg 'icons/export.svg'
+                Export
+  .container-fluid.table-report
+    .row
+      .col-xs-12
+        %h3.title
+          Activity Detail
+    .row.kpi-block.report
+      .col-xs-12
+
+    .row
+      .col-md-12
+        .table-wrapper
+          %table.table
+            %thead
+              %tr
+                %th.left{ width: "120" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("happened_at")'}
+                    Date
+                %th.left{ width: "130" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("activity_type_name")'}
+                    Type
+                %th.left{ width: "auto" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("comment")'}
+                    Comments
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("client.name")'}
+                    Advertiser
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("agency.name")'}
+                    Agency
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("contacts[0].name")'}
+                    Contact
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal.name")'}
+                    Deal
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("creator.first_name")'}
+                    Creator
+            %tbody
+              %tr{ ng: { if: 'activities.length > 0', repeat: 'activity in activities | orderBy:sortType:sortReverse' } }
+                %td.left {{ activity.happened_at | date: 'MM-dd-yyyy' }}
+                %td.left {{ activity.activity_type_name }}
+                %td.left {{ activity.comment }}
+                %td.left {{ activity.client.name }}
+                %td.left {{ activity.agency.name }}
+                %td.left
+                  %div{ ng: { repeat: 'contact in activity.contacts' } }
+                    {{ contact.name }}
+                %td.left {{ activity.deal.name }}
+                %td.left {{ activity.creator.first_name + " " + activity.creator.last_name }}
+              %tr{ ng: { if: 'activities.length == 0' }}
+                %td.center{ colspan: '8' }
+                  No data available

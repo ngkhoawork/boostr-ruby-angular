@@ -21,27 +21,31 @@ class Team < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
-      only: [:id, :members_count, :name, :parent_id, :leader_id],
-      include: {
-        children: {
-          only: [:id, :members_count, :name, :parent_id],
-          methods: [:leader_name],
-          include: [
-            members: {
-              only: [:id, :first_name, :last_name]
-            },
-            leader: {
-              only: [:id, :first_name, :last_name]
-            }
-          ]
-        },
-        members: {
-          only: [:id, :first_name, :last_name, :team_id]
-        },
-        parent: { only: [:id, :name] } },
-      methods: [:leader_name]
-    ))
+    if options[:override]
+      super(options)
+    else
+      super(options.merge(
+        only: [:id, :members_count, :name, :parent_id, :leader_id],
+        include: {
+          children: {
+            only: [:id, :members_count, :name, :parent_id],
+            methods: [:leader_name],
+            include: [
+              members: {
+                only: [:id, :first_name, :last_name]
+              },
+              leader: {
+                only: [:id, :first_name, :last_name]
+              }
+            ]
+          },
+          members: {
+            only: [:id, :first_name, :last_name, :team_id]
+          },
+          parent: { only: [:id, :name] } },
+        methods: [:leader_name]
+      ).except(:override))
+    end
   end
 
   def all_children
@@ -102,6 +106,24 @@ class Team < ActiveRecord::Base
     return ms
   end
 
+  def all_sellers
+    sellers = []
+    sellers += members.by_user_type(SELLER)
+    children.each do |child|
+      sellers += child.all_sellers
+    end
+    sellers
+  end
+
+  def all_sales_reps
+    sales_reps = []
+    sales_reps << leader if !leader.nil?
+    sales_reps += members.by_user_type([SELLER, SALES_MANAGER])
+    children.each do |child|
+      sales_reps += child.all_sales_reps
+    end
+    sales_reps
+  end
 
   def all_leaders
     ls = leader.nil? ? []:[leader]
