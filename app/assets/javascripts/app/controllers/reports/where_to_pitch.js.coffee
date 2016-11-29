@@ -3,6 +3,26 @@
         ($scope, $document, WTP, Team, Product, Field, Seller) ->
 
             $scope.filter = {}
+            $scope.maxDeals = 10
+            $scope.slider =
+                deals:
+                    value: $scope.maxDeals
+                    options:
+                        floor: 0
+                        ceil: $scope.maxDeals
+                        onEnd: ->
+                            updateTable('advertisers', $scope.mainData.advertisers)
+                            updateTable('agencies', $scope.mainData.agencies)
+                winRate:
+                    value: 35
+                    options:
+                        floor: 0
+                        ceil: 100
+                        translate: (value) ->
+                            value + '%'
+                        onEnd: ->
+                            updateTable('advertisers', $scope.mainData.advertisers)
+                            updateTable('agencies', $scope.mainData.agencies)
             $scope.selectedTeam =
                 id: 'all'
                 name:'Team'
@@ -67,6 +87,7 @@
 
             #initial query
             WTP.get().$promise.then ((data) ->
+                $scope.mainData = data
                 updateTable('advertisers', data.advertisers)
                 updateTable('agencies', data.agencies)
 
@@ -99,12 +120,18 @@
 
             applyFilter = ->
                 WTP.get($scope.filter).$promise.then ((data) ->
+                    $scope.mainData = data
                     updateTable('advertisers', data.advertisers)
                     updateTable('agencies', data.agencies)
                 ), (err) ->
                     if err then console.log(err)
 
             updateTable = (type, data) ->
+                maxDeals = 0
+
+                deals = $scope.slider.deals.value
+                winRate = $scope.slider.winRate.value
+                
                 result =
                     11: []
                     12: []
@@ -112,13 +139,22 @@
                     22: []
 
                 for item in data
-                    if item.total_deals >= 10 && item.win_rate < 35
+                    if item.total_deals > maxDeals
+                        maxDeals = item.total_deals
+                        if maxDeals > $scope.maxDeals
+                            $scope.slider.deals.options.ceil = maxDeals
+                        else
+                            $scope.slider.deals.options.ceil = $scope.maxDeals
+                        if $scope.slider.deals.value > $scope.slider.deals.options.ceil
+                            $scope.slider.deals.value = $scope.slider.deals.options.ceil
+
+                    if item.total_deals >= deals && item.win_rate < winRate
                         result[11].push item
-                    else if item.total_deals >= 10 && item.win_rate >= 35
+                    else if item.total_deals >= deals && item.win_rate >= winRate
                         result[12].push item
-                    else if item.total_deals < 10 && item.win_rate < 35
+                    else if item.total_deals < deals && item.win_rate < winRate
                         result[21].push item
-                    else if item.total_deals < 10 && item.win_rate >= 35
+                    else if item.total_deals < deals && item.win_rate >= winRate
                         result[22].push item
 
                 $scope[type] = result

@@ -21,6 +21,7 @@
   'nvd3'
   'ngTransloadit'
   'daterangepicker'
+  'rzModule'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

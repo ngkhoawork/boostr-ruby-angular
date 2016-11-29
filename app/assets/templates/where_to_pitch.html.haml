@@ -54,13 +54,20 @@
 									{{ subcategory.name }}
 				%span#reset-filter{'ng-click': 'resetFilter()'}
 					Reset
+			.col-xs-6
+				%rzslider{'rz-slider-model': 'slider.deals.value', 'rz-slider-options': 'slider.deals.options', onEnd: 'slider.deals.onEnd()'}
+				%span Deals
+			.col-xs-6
+				%rzslider{'rz-slider-model': 'slider.winRate.value', 'rz-slider-options': 'slider.winRate.options'}
+				%span Win Rate
+
 		.row.well.kpi-block
 			%span.advertiser-subtitle Advertisers
 			.advertiser-chart-wrap.col-xs-12
 
 				.advertiser-row
 					.legend-block
-						> 10 deals
+						> {{slider.deals.value}} deals
 					.advertiser-block{style: 'background-color: #F1C40F'}
 						.title WARNING!
 						.body
@@ -79,7 +86,7 @@
 
 				.advertiser-row
 					.legend-block
-						< 10 deals
+						< {{slider.deals.value}} deals
 					.advertiser-block{style: 'background-color: #E74C3C'}
 						.title SOMETHING'S NOT WORKING
 						.body
@@ -102,9 +109,9 @@
 						.vertical # Deals
 						.horizontal Win Rate
 					.legend-block-wide
-						< 35%
+						< {{slider.winRate.value}}%
 					.legend-block-wide
-						> 35%
+						> {{slider.winRate.value}}%
 					.legend-block
 
 		.row.well
@@ -113,7 +120,7 @@
 				
 				.advertiser-row
 					.legend-block
-						> 10 deals
+						> {{slider.deals.value}} deals
 					.advertiser-block{style: 'background-color: #F1C40F'}
 						.title WARNING!
 						.body
@@ -132,7 +139,7 @@
 
 				.advertiser-row
 					.legend-block
-						< 10 deals
+						< {{slider.deals.value}} deals
 					.advertiser-block{style: 'background-color: #E74C3C'}
 						.title SOMETHING'S NOT WORKING
 						.body
@@ -154,8 +161,8 @@
 						.vertical # Deals
 						.horizontal Win Rate
 					.legend-block-wide
-						< 35%
+						< {{slider.winRate.value}}%
 					.legend-block-wide
-						> 35%
+						> {{slider.winRate.value}}%
 					.legend-block
 
