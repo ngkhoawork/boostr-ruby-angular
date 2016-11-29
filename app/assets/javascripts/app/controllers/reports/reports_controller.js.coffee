@@ -54,7 +54,7 @@
 
   $scope.updateTimePeriod = (time_period_id) ->
     path = []
-    path.push "/reports"
+    path.push "/reports/activity_summary"
     path.push "?time_period_id=#{time_period_id}" if time_period_id
     $location.url(path.join(''))
 
