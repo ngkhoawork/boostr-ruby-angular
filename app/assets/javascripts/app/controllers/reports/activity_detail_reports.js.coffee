@@ -85,7 +85,7 @@
         fetchTeamMembers("all")
 
         ActivityType.all().then (activityTypes) ->
-          $scope.activityTypes = activityTypes
+          $scope.activityTypes = angular.copy(activityTypes)
           $scope.activityTypes.unshift({
             id:'',
             name:'All'

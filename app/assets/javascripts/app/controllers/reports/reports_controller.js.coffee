@@ -11,7 +11,7 @@
 
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
-      $scope.types = activityTypes
+      $scope.types = angular.copy(activityTypes)
       TimePeriod.all().then (timePeriods) ->
         $scope.timePeriods = timePeriods
         if $routeParams.year
