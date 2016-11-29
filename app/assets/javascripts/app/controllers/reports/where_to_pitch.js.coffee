@@ -90,6 +90,7 @@
                 $scope.mainData = data
                 updateTable('advertisers', data.advertisers)
                 updateTable('agencies', data.agencies)
+                updateSlider(data)
 
                 Product.all().then (products) ->
                     $scope.productsList = products
@@ -123,12 +124,11 @@
                     $scope.mainData = data
                     updateTable('advertisers', data.advertisers)
                     updateTable('agencies', data.agencies)
+                    updateSlider(data)
                 ), (err) ->
                     if err then console.log(err)
 
             updateTable = (type, data) ->
-                maxDeals = 0
-
                 deals = $scope.slider.deals.value
                 winRate = $scope.slider.winRate.value
                 
@@ -139,15 +139,6 @@
                     22: []
 
                 for item in data
-                    if item.total_deals > maxDeals
-                        maxDeals = item.total_deals
-                        if maxDeals > $scope.maxDeals
-                            $scope.slider.deals.options.ceil = maxDeals
-                        else
-                            $scope.slider.deals.options.ceil = $scope.maxDeals
-                        if $scope.slider.deals.value > $scope.slider.deals.options.ceil
-                            $scope.slider.deals.value = $scope.slider.deals.options.ceil
-
                     if item.total_deals >= deals && item.win_rate < winRate
                         result[11].push item
                     else if item.total_deals >= deals && item.win_rate >= winRate
@@ -158,6 +149,18 @@
                         result[22].push item
 
                 $scope[type] = result
+
+            updateSlider = (data) ->
+                maxDeals = $scope.slider.deals.options.ceil = $scope.maxDeals
+                for advertiser in data.advertisers
+                    if advertiser.total_deals > maxDeals then maxDeals = advertiser.total_deals
+                for agency in data.agencies
+                    if agency.total_deals > maxDeals then maxDeals = agency.total_deals
+                if maxDeals > $scope.maxDeals
+                    $scope.slider.deals.options.ceil = maxDeals
+                if $scope.slider.deals.value > $scope.slider.deals.options.ceil
+                    $scope.slider.deals.value = $scope.slider.deals.options.ceil
+
 
 
     ]
