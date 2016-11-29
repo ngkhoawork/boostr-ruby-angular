@@ -227,7 +227,7 @@ class ForecastMember
           from = [start_date, display_line_item.start_date, io_member.from_date, month_row[:start_date]].max
           to = [end_date, display_line_item.end_date, io_member.to_date, month_row[:end_date]].min
           no_of_days = [(to.to_date - from.to_date) + 1, 0].max
-          @monthly_revenue[month_row.start_date.strftime("%b-%y")] += ave_run_rate * no_of_days * (share/100.0)
+          @monthly_revenue[month_row[:start_date].strftime("%b-%y")] += ave_run_rate * no_of_days * (share/100.0)
         end
       end
     end
