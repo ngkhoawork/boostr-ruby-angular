@@ -11,7 +11,7 @@ class Api::WhereToPitchController < ApplicationController
   private
 
   def where_to_pitch_by_advertiser
-    where_to_pitch = []
+    clients = []
     advertisers.each do |advertiser|
       advertiser_deals = advertiser_deals_list(advertiser.id)
       next if advertiser_deals.length == 0
@@ -23,16 +23,29 @@ class Api::WhereToPitchController < ApplicationController
 
       total_deals = advertiser_deals.length
 
-      where_to_pitch << { client_name: advertiser.name, win_rate: win_rate, total_deals: total_deals }
+      clients << { client_name: advertiser.name, win_rate: win_rate, total_deals: total_deals }
     end
-    where_to_pitch
+    clients.sort_by{|el| [el[:total_deals] * -1, el[:win_rate] * -1, el[:client_name]]}
   end
 
   def where_to_pitch_by_agency
-    where_to_pitch = []
+    clients = []
     agencies.each do |agency|
       agency_deals = agency_deals_list(agency.id)
       next if agency_deals.length == 0
+
+      if params[:category_id] || params[:subcategory_id]
+        related_advertisers = company.clients.where(id: agency_deals.map(&:advertiser_id).compact.uniq)
+
+        if params[:category_id]
+          next unless related_advertisers.map(&:client_category_id).include?(params[:category_id].to_i)
+        end
+
+        if params[:subcategory_id]
+          next unless related_advertisers.map(&:client_subcategory_id).include?(params[:subcategory_id].to_i)
+        end
+      end
+
       complete_deals = complete_deals_list(agency_deals)
       incomplete_deals = incomplete_deals_list(agency_deals)
 
@@ -41,9 +54,9 @@ class Api::WhereToPitchController < ApplicationController
 
       total_deals = agency_deals.length
 
-      where_to_pitch << { client_name: agency.name, win_rate: win_rate, total_deals: total_deals }
+      clients << { client_name: agency.name, win_rate: win_rate, total_deals: total_deals }
     end
-    where_to_pitch
+    clients.sort_by{|el| [el[:total_deals] * -1, el[:win_rate] * -1, el[:client_name]]}
   end
 
   def complete_deals_list(deals)
@@ -110,13 +123,11 @@ class Api::WhereToPitchController < ApplicationController
       .by_type_id(advertiser_type_id)
       .by_category(params[:category_id])
       .by_subcategory(params[:subcategory_id])
-      .order(:name)
   end
 
   def agencies
     company.clients
       .by_type_id(agency_type_id)
-      .order(:name)
   end
 
   def advertiser_deals_list(client_id)

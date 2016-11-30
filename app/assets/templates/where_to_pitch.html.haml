@@ -56,13 +56,13 @@
 					Reset
 			.col-xs-6
 				%rzslider{'rz-slider-model': 'slider.deals.value', 'rz-slider-options': 'slider.deals.options', onEnd: 'slider.deals.onEnd()'}
-				%span Deals
+				%span # Deals
 			.col-xs-6
 				%rzslider{'rz-slider-model': 'slider.winRate.value', 'rz-slider-options': 'slider.winRate.options'}
 				%span Win Rate
 
 		.row.well.kpi-block
-			%span.advertiser-subtitle Advertisers
+			%h4.chart-title Advertisers
 			.advertiser-chart-wrap.col-xs-12
 
 				.advertiser-row
@@ -115,7 +115,7 @@
 					.legend-block
 
 		.row.well
-			%span.advertiser-subtitle Agencies
+			%h4.chart-title Agencies
 			.advertiser-chart-wrap.col-xs-12
 				
 				.advertiser-row
