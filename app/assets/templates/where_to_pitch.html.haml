@@ -1,0 +1,168 @@
+#kpi-analytics
+	.container#advertisers-chart
+		.row
+			.col-xs-12
+				%h3.title Where to Pitch More vs. Less
+		.row.legend.well.kpi-block
+			.col-xs-12
+				%span Filter by
+				.date-picker-wrap
+					%div.date-picker#advertiser-date-picker{'date-range-picker': true,
+                                           'ng-model': 'datePicker.date',
+                                           :options => "{locale: {format: 'MMMM D, YYYY',cancelLabel: 'Clear'},
+                                                         eventHandlers: {'apply.daterangepicker': datePicker.apply,
+                                                                         'cancel.daterangepicker': datePicker.cancel}}"}
+						Time period
+					%span.caret
+				%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam'}
+				%ul.kpi-block__filter
+					%li{ dropdown: true }
+						%a{ href: '', dropdown: { toggle: true } }
+							Seller
+							%span.caret
+						%ul.dropdown-menu
+							%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller}' } }
+								%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
+									{{ seller.first_name +' '+seller.last_name}}
+				%ul.kpi-block__filter
+					%li{ dropdown: true }
+						%a{ href: '', dropdown: { toggle: true } }
+							Product
+							%span.caret
+						%ul.dropdown-menu
+							%li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
+								%a{ href: '', ng: { click: 'setFilter("product", product)' } }
+									{{ product.name }}
+				%ul.kpi-block__filter
+					%li{ dropdown: true }
+						%a{ href: '', dropdown: { toggle: true } }
+							Category
+							%span.caret
+						%ul.dropdown-menu
+							%li{ ng: { repeat: 'category in categories', class: '{active: category.id === filter.category_id}' } }
+								%a{ href: '', ng: { click: 'setFilter("category", category)' } }
+									{{ category.name }}
+
+				%ul.kpi-block__filter
+					%li{ dropdown: true }
+						%a{ href: '', dropdown: { toggle: true } }
+							Sub-Category
+							%span.caret
+						%ul.dropdown-menu
+							%li{ ng: { repeat: 'subcategory in subcategories', class: '{active: subcategory.id === filter.subcategory_id}' } }
+								%a{ href: '', ng: { click: 'setFilter("subcategory", subcategory)' } }
+									{{ subcategory.name }}
+				%span#reset-filter{'ng-click': 'resetFilter()'}
+					Reset
+			.col-xs-6
+				%rzslider{'rz-slider-model': 'slider.deals.value', 'rz-slider-options': 'slider.deals.options', onEnd: 'slider.deals.onEnd()'}
+				%span # Deals
+			.col-xs-6
+				%rzslider{'rz-slider-model': 'slider.winRate.value', 'rz-slider-options': 'slider.winRate.options'}
+				%span Win Rate
+
+		.row.well.kpi-block
+			%h4.chart-title Advertisers
+			.advertiser-chart-wrap.col-xs-12
+
+				.advertiser-row
+					.legend-block
+						> {{slider.deals.value}} deals
+					.advertiser-block{style: 'background-color: #E74C3C'}
+						.title SOMETHING'S NOT WORKING
+						.body
+							%div{'ng-if': 'advertisers[11].length == 0'}
+								No data available
+							%div{'ng-if': 'advertisers[11].length > 0', 'ng-repeat': 'advertiser in advertisers[11]'}
+								{{advertiser.client_name}} ({{advertiser.total_deals + ', ' + advertiser.win_rate + '%'}})
+					.advertiser-block{style: 'background-color: #16A085'}
+						.title KEEP IT UP
+						.body
+							%div{'ng-if': 'advertisers[12].length == 0'}
+								No data available
+							%div{'ng-if': 'advertisers[12].length > 0', 'ng-repeat': 'advertiser in advertisers[12]'}
+								{{advertiser.client_name}} ({{advertiser.total_deals + ', ' + advertiser.win_rate + '%'}})
+					.legend-block
+
+				.advertiser-row
+					.legend-block
+						< {{slider.deals.value}} deals
+					.advertiser-block{style: 'background-color: #F1C40F'}
+						.title WARNING!
+						.body
+							%div{'ng-if': 'advertisers[21].length == 0'}
+								No data available
+							%div{'ng-if': 'advertisers[21].length > 0', 'ng-repeat': 'advertiser in advertisers[21]'}
+								{{advertiser.client_name}} ({{advertiser.total_deals + ', ' + advertiser.win_rate + '%'}})
+					.advertiser-block{style: 'background-color: #91CE7B'}
+						.title PITCH MORE
+						.body
+							%div{'ng-if': 'advertisers[22].length == 0'}
+								No data available
+							%div{'ng-if': 'advertisers[22].length > 0', 'ng-repeat': 'advertiser in advertisers[22]'}
+								{{advertiser.client_name}} ({{advertiser.total_deals + ', ' + advertiser.win_rate + '%'}})
+					.legend-block
+
+
+				.advertiser-row
+					.legend-block.legend-title
+						.vertical # Deals
+						.horizontal Win Rate
+					.legend-block-wide
+						< {{slider.winRate.value}}%
+					.legend-block-wide
+						> {{slider.winRate.value}}%
+					.legend-block
+
+		.row.well
+			%h4.chart-title Agencies
+			.advertiser-chart-wrap.col-xs-12
+				
+				.advertiser-row
+					.legend-block
+						> {{slider.deals.value}} deals
+					.advertiser-block{style: 'background-color: #E74C3C'}
+						.title SOMETHING'S NOT WORKING
+						.body
+							%div{'ng-if': 'agencies[11].length == 0'}
+								No data available
+							%div{'ng-if': 'agencies[11].length > 0', 'ng-repeat': 'agency in agencies[11]'}
+								{{agency.client_name}} ({{agency.total_deals + ', ' + agency.win_rate + '%'}})
+					.advertiser-block{style: 'background-color: #16A085'}
+						.title KEEP IT UP
+						.body
+							%div{'ng-if': 'agencies[12].length == 0'}
+								No data available
+							%div{'ng-if': 'agencies[12].length > 0', 'ng-repeat': 'agency in agencies[12]'}
+								{{agency.client_name}} ({{agency.total_deals + ', ' + agency.win_rate + '%'}})
+					.legend-block
+
+				.advertiser-row
+					.legend-block
+						< {{slider.deals.value}} deals
+					.advertiser-block{style: 'background-color: #F1C40F'}
+						.title WARNING!
+						.body
+							%div{'ng-if': 'agencies[21].length == 0'}
+								No data available
+							%div{'ng-if': 'agencies[21].length > 0', 'ng-repeat': 'agency in agencies[21]'}
+								{{agency.client_name}} ({{agency.total_deals + ', ' + agency.win_rate + '%'}})
+					.advertiser-block{style: 'background-color: #91CE7B'}
+						.title PITCH MORE
+						.body
+							%div{'ng-if': 'agencies[22].length == 0'}
+								No data available
+							%div{'ng-if': 'agencies[22].length > 0', 'ng-repeat': 'agency in agencies[22]'}
+								{{agency.client_name}} ({{agency.total_deals + ', ' + agency.win_rate + '%'}})
+					.legend-block
+
+				.advertiser-row
+					.legend-block.legend-title
+						.vertical # Deals
+						.horizontal Win Rate
+					.legend-block-wide
+						< {{slider.winRate.value}}%
+					.legend-block-wide
+						> {{slider.winRate.value}}%
+					.legend-block
+

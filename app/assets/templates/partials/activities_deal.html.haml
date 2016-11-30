@@ -10,7 +10,7 @@
     #nav.transparent
       %ul.nav.nav-tabs
         %li{ ng: { class: "{ active: activeTab == 'Type' }" } }
-          %a.link{ href: '', ng: { click: 'setActiveTab("Type")' } }
+          %a.link{ href: '', ng: { click: "setActiveTab('Type'); getContacts()" } }
             = inline_svg 'icons/message.svg'
         %li.pull-right
           %button.btn.btn-primary.btn-block{ type: 'submit' } Post Update
