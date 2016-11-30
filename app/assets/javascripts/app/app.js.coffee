@@ -21,6 +21,7 @@
   'nvd3'
   'ngTransloadit'
   'daterangepicker'
+  'rzModule'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -76,6 +77,9 @@
     .when '/smart_reports/monthly_forecasts',
       templateUrl: 'monthly_forecasts.html'
       controller: 'MonthlyForecastsController'
+    .when '/smart_reports/where_to_pitch',
+      templateUrl: 'where_to_pitch.html'
+      controller: 'WhereToPitchController'
     .when '/reports/deal_reports',
       templateUrl: 'deal_reports.html'
       controller: 'DealReportsController'

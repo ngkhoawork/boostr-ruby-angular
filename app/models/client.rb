@@ -32,6 +32,8 @@ class Client < ActiveRecord::Base
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
   scope :exclude_ids, -> ids { where.not(id: ids) }
   scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
+  scope :by_category, -> category_id { where(client_category_id: category_id) if category_id.present? }
+  scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
 
   def self.to_csv
     header = [

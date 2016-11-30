@@ -39,6 +39,8 @@
                 %li
                   = link_to "Activity Summary", "/reports/activity_summary"
                 %li
+                  = link_to "Pipeline by User Report", "/reports/deal_reports"
+                %li
                   = link_to "Forecast Detail - Annual", "/reports/forecasts"
           - else
             %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
@@ -65,6 +67,8 @@
                 %li
                   = link_to "Monthly Forecast", "/smart_reports/monthly_forecasts"
                 %li
+                  = link_to "Where to Pitch", "/smart_reports/where_to_pitch"
+                %li
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
           - else
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
@@ -75,7 +79,11 @@
                 %li
                   = link_to "Sales Execution Dashboard", "/smart_reports/sales_execution_dashboard"
                 %li
+                  = link_to "Pipeline by User Report", "/reports/deal_reports"
+                %li
                   = link_to "Monthly Forecast", "/smart_reports/monthly_forecasts"
+                %li
+                  = link_to "Where to Pitch", "/smart_reports/where_to_pitch"
                 %li
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
