@@ -1,7 +1,6 @@
 @app.controller 'WhereToPitchController',
-    ['$scope', '$document', 'WhereToPitchService', 'Team', 'Product', 'Field', 'Seller'
-        ($scope, $document, WTP, Team, Product, Field, Seller) ->
-
+    ['$scope', '$document', 'WhereToPitchService', 'Team', 'Product', 'Field', 'Seller', 'CurrentUser'
+        ($scope, $document, WTP, Team, Product, Field, Seller, CurrentUser) ->
             $scope.filter = {}
             $scope.maxDeals = 10
             $scope.slider =
@@ -86,38 +85,45 @@
                 $scope.setFilter('team', nextTeam)
 
             #initial query
-            WTP.get().$promise.then ((data) ->
-                $scope.mainData = data
-                updateTable('advertisers', data.advertisers)
-                updateTable('agencies', data.agencies)
-                updateSlider(data)
+            CurrentUser.get().$promise.then (user) ->
+                $scope.user = user
+                query = {}
+                # if seller or manager then filter by this user
+                if user.user_type is 1 || user.user_type is 2
+                    query.seller = user.id
+                    $scope.filter.seller = user.id
+                WTP.get(query).$promise.then ((data) ->
+                    $scope.mainData = data
+                    updateTable('advertisers', data.advertisers)
+                    updateTable('agencies', data.agencies)
+                    updateSlider(data)
 
-                Product.all().then (products) ->
-                    $scope.productsList = products
-                    $scope.productsList.unshift({name: 'All', id: null})
+                    Product.all().then (products) ->
+                        $scope.productsList = products
+                        $scope.productsList.unshift({name: 'All', id: null})
 
-                Seller.query({id: 'all'}).$promise.then (sellers) ->
-                    $scope.sellers = sellers
-                    $scope.sellers.unshift({first_name: 'All', id: null})
+                    Seller.query({id: 'all'}).$promise.then (sellers) ->
+                        $scope.sellers = sellers
+                        $scope.sellers.unshift({first_name: 'All', id: null})
 
-                Team.all(all_teams: true).then (teams) ->
-                    $scope.teams = teams
-                    $scope.teams.unshift({id: null, name: 'All'})
+                    Team.all(all_teams: true).then (teams) ->
+                        $scope.teams = teams
+                        $scope.teams.unshift({id: null, name: 'All'})
 
-                Field.defaults({}, 'Client').then (clients) ->
-                    categories = [{name: 'All', id: null}]
-                    subcategories = [{name: 'All', id: null}]
-                    for client in clients
-                        if client.name is 'Category'
-                            for category in client.options
-                                categories.push category
-                                for subcategory in category.suboptions
-                                    subcategories.push subcategory
+                    Field.defaults({}, 'Client').then (clients) ->
+                        categories = [{name: 'All', id: null}]
+                        subcategories = [{name: 'All', id: null}]
+                        for client in clients
+                            if client.name is 'Category'
+                                for category in client.options
+                                    categories.push category
+                                    for subcategory in category.suboptions
+                                        subcategories.push subcategory
 
-                    $scope.categories = categories
-                    $scope.subcategories = $scope.allSubcategories = subcategories
-            ), (err) ->
-                if err then console.log(err)
+                        $scope.categories = categories
+                        $scope.subcategories = $scope.allSubcategories = subcategories
+                ), (err) ->
+                    if err then console.log(err)
 
             applyFilter = ->
                 WTP.get($scope.filter).$promise.then ((data) ->
@@ -147,6 +153,12 @@
                         result[21].push item
                     else if item.total_deals < deals && item.win_rate >= winRate
                         result[22].push item
+
+                #sorting data
+                for key of result
+                    result[key].sort((a, b) ->
+                        b.total_deals - a.total_deals || b.win_rate - a.win_rate
+                    )
 
                 $scope[type] = result
 
