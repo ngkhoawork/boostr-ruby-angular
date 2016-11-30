@@ -77,7 +77,7 @@
     .when '/smart_reports/monthly_forecasts',
       templateUrl: 'monthly_forecasts.html'
       controller: 'MonthlyForecastsController'
-    .when '/reports/where_to_pitch',
+    .when '/smart_reports/where_to_pitch',
       templateUrl: 'where_to_pitch.html'
       controller: 'WhereToPitchController'
     .when '/reports/deal_reports',
