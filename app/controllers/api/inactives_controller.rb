@@ -55,7 +55,7 @@ class Api::InactivesController < ApplicationController
   end
 
   def period
-    qtr_offset = params[:qtrs].to_i || 2
+    qtr_offset = (params[:qtrs] || 2).to_i
     date = Date.today << (qtr_offset * 3)
     date.beginning_of_quarter..Date.today
   end
