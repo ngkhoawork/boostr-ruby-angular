@@ -180,26 +180,30 @@ class Activity < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
-      include: {
-        :client => {},
-        :agency => {},
-        :deal => {
-          :include => [
-            :stage,
-            :advertiser
-          ]
-        },
-        :assets => {
-            methods: [
-                :presigned_url
+    if options[:override]
+      super(options)
+    else
+      super(options.merge(
+        include: {
+          :client => {},
+          :agency => {},
+          :deal => {
+            :include => [
+              :stage,
+              :advertiser
             ]
-        },
-        :contacts => {
-          include: { address: {} }
           },
-        :creator => {}
-      }
-    ))
+          :assets => {
+              methods: [
+                  :presigned_url
+              ]
+          },
+          :contacts => {
+            include: { address: {} }
+            },
+          :creator => {}
+        }
+      ).except(:override))
+    end
   end
 end
