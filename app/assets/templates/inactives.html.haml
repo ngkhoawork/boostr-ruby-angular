@@ -1,0 +1,70 @@
+#kpi-analytics
+	.container#inactives-dashboard
+		.row
+			.col-xs-12
+				%h3.title Which clients have gone inactive or are about to?
+		.row.legend.well.kpi-block
+			.col-xs-12
+				%span Filter by
+				%ul.kpi-block__filter
+					%li{ dropdown: true }
+						%a{ href: '', dropdown: { toggle: true } }
+							Spend Lookback Window
+							%span.caret
+						%ul.dropdown-menu
+							%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller}' } }
+								%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
+									{{ seller.first_name +' '+seller.last_name}}
+				%ul.kpi-block__filter
+					%li{ dropdown: true }
+						%a{ href: '', dropdown: { toggle: true } }
+							Product
+							%span.caret
+						%ul.dropdown-menu
+							%li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
+								%a{ href: '', ng: { click: 'setFilter("product", product)' } }
+									{{ product.name }}
+				%ul.kpi-block__filter
+					%li{ dropdown: true }
+						%a{ href: '', dropdown: { toggle: true } }
+							Category
+							%span.caret
+						%ul.dropdown-menu
+							%li{ ng: { repeat: 'category in categories', class: '{active: category.id === filter.category_id}' } }
+								%a{ href: '', ng: { click: 'setFilter("category", category)' } }
+									{{ category.name }}
+
+				%ul.kpi-block__filter
+					%li{ dropdown: true }
+						%a{ href: '', dropdown: { toggle: true } }
+							Sub-Category
+							%span.caret
+						%ul.dropdown-menu
+							%li{ ng: { repeat: 'subcategory in subcategories', class: '{active: subcategory.id === filter.subcategory_id}' } }
+								%a{ href: '', ng: { click: 'setFilter("subcategory", subcategory)' } }
+									{{ subcategory.name }}
+				%span#reset-filter{'ng-click': 'resetFilter()'}
+					Reset
+
+		.row.well.kpi-block
+			%h4.chart-title Inactive
+			%span No spend this quarter with spend last X Qtrs
+			.row
+				.col-md-12.table-report.text-center
+					%table.table.table-hover
+						%thead
+							%tr
+								%th Advertiser
+								%th Ave Spend per Qtr
+								%th Open Pipeline
+								%th Last Activity
+								%th Seller
+
+						%tbody
+							%tr
+								%td Unilever
+								%td $225,000
+								%td $ -
+								%td
+								%td Seller1
+

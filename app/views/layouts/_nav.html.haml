@@ -66,6 +66,8 @@
                   = link_to "Where to Pitch", "/smart_reports/where_to_pitch"
                 %li
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
+                %li
+                  = link_to "Inactives", "/smart_reports/inactives"
           - else
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -80,6 +82,8 @@
                   = link_to "Where to Pitch", "/smart_reports/where_to_pitch"
                 %li
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
+                %li
+                  = link_to "Inactives", "/smart_reports/inactives"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
             %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
