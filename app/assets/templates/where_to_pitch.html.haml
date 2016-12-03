@@ -5,61 +5,76 @@
 				%h3.title Where to Pitch More vs. Less
 		.row.legend.well.kpi-block
 			.col-xs-12
-				%span Filter by
-				.date-picker-wrap
-					%div.date-picker#advertiser-date-picker{'date-range-picker': true,
-                                           'ng-model': 'datePicker.date',
-                                           :options => "{locale: {format: 'MMMM D, YYYY',cancelLabel: 'Clear'},
-                                                         eventHandlers: {'apply.daterangepicker': datePicker.apply,
-                                                                         'cancel.daterangepicker': datePicker.cancel}}"}
-						Time period
-					%span.caret
-				%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam'}
-				%ul.kpi-block__filter
-					%li{ dropdown: true }
-						%a{ href: '', dropdown: { toggle: true } }
-							Seller
-							%span.caret
-						%ul.dropdown-menu
-							%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller}' } }
-								%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
-									{{ seller.first_name +' '+seller.last_name}}
-				%ul.kpi-block__filter
-					%li{ dropdown: true }
-						%a{ href: '', dropdown: { toggle: true } }
-							Product
-							%span.caret
-						%ul.dropdown-menu
-							%li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
-								%a{ href: '', ng: { click: 'setFilter("product", product)' } }
-									{{ product.name }}
-				%ul.kpi-block__filter
-					%li{ dropdown: true }
-						%a{ href: '', dropdown: { toggle: true } }
-							Category
-							%span.caret
-						%ul.dropdown-menu
-							%li{ ng: { repeat: 'category in categories', class: '{active: category.id === filter.category_id}' } }
-								%a{ href: '', ng: { click: 'setFilter("category", category)' } }
-									{{ category.name }}
+				%table.filter-block
+					%tr.filter-title
+						%td Time period
+						%td Team
+						%td Seller
+						%td Product
+						%td Category
+						%td Sub-Category
+						%td
+							%span.reset-filter{'ng-click': 'resetFilter()'}
+								Reset
+					%tr
+						%td
+							.date-picker-wrap
+								%div.date-picker#advertiser-date-picker{'date-range-picker': true,
+			                                           'ng-model': 'datePicker.date',
+			                                           :options => "{locale: {format: 'MMMM D, YYYY'},
+			                                                         eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
+									Time period
+								%span.caret
+						%td
+							%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'ng-class': '{"not-selected": selectedTeam.name == "All"}'}
+						%td
+							%ul.kpi-block__filter
+								%li{ dropdown: true }
+									%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.seller.id}' }
+										{{selected.seller ? selected.seller.first_name + ' ' + selected.seller.last_name : 'All'}}
+										%span.caret
+									%ul.dropdown-menu
+										%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller}' } }
+											%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
+												{{ seller.first_name +' '+seller.last_name}}
+						%td
+							%ul.kpi-block__filter
+								%li{ dropdown: true }
+									%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
+										{{selected.product ? selected.product.name : 'All'}}
+										%span.caret
+									%ul.dropdown-menu
+										%li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
+											%a{ href: '', ng: { click: 'setFilter("product", product)' } }
+												{{ product.name }}
+						%td
+							%ul.kpi-block__filter
+								%li{ dropdown: true }
+									%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.category.id}' }
+										{{selected.category ? selected.category.name : 'All'}}
+										%span.caret
+									%ul.dropdown-menu
+										%li{ ng: { repeat: 'category in categories', class: '{active: category.id === filter.category_id}' } }
+											%a{ href: '', ng: { click: 'setFilter("category", category)' } }
+												{{ category.name }}
 
-				%ul.kpi-block__filter
-					%li{ dropdown: true }
-						%a{ href: '', dropdown: { toggle: true } }
-							Sub-Category
-							%span.caret
-						%ul.dropdown-menu
-							%li{ ng: { repeat: 'subcategory in subcategories', class: '{active: subcategory.id === filter.subcategory_id}' } }
-								%a{ href: '', ng: { click: 'setFilter("subcategory", subcategory)' } }
-									{{ subcategory.name }}
-				%span#reset-filter{'ng-click': 'resetFilter()'}
-					Reset
+						%td
+							%ul.kpi-block__filter
+								%li{ dropdown: true }
+									%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.subcategory.id}' }
+										{{selected.subcategory ? selected.subcategory.name : 'All'}}
+										%span.caret
+									%ul.dropdown-menu
+										%li{ ng: { repeat: 'subcategory in subcategories', class: '{active: subcategory.id === filter.subcategory_id}' } }
+											%a{ href: '', ng: { click: 'setFilter("subcategory", subcategory)' } }
+												{{ subcategory.name }}
+			.horizontal-line.col-xs-12
 			.col-xs-6
+				%span.slider-title # Deals
 				%rzslider{'rz-slider-model': 'slider.deals.value', 'rz-slider-options': 'slider.deals.options', onEnd: 'slider.deals.onEnd()'}
-				%span # Deals
 			.col-xs-6
+				%span.slider-title % Win Rate
 				%rzslider{'rz-slider-model': 'slider.winRate.value', 'rz-slider-options': 'slider.winRate.options'}
-				%span Win Rate
 
 		.row.well.kpi-block
 			%h4.chart-title Advertisers

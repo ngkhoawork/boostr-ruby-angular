@@ -5,62 +5,71 @@
         %h3.title KPI`s Dashboard
 
     .row.legend.well.kpi-block
-      .col-xs-12
-        %span Filter by
-        %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
-        %ul.kpi-block__filter
-          %li{ dropdown: true }
-            %a{ href: '', dropdown: { toggle: true } }
-              Seller
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id == sellerId}' } }
-                %a{ href: '', ng: { click: 'filterBySeller(seller.id)' } }
-                  {{ seller.first_name +' '+seller.last_name}}
-        %ul.kpi-block__filter
-          %li{ dropdown: true }
-            %a{ href: '', dropdown: { toggle: true } }
-              Product
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'product in productsList', class: '{active: product.name === productFilter.name}' } }
-                %a{ href: '', ng: { click: 'filterByProduct(product)' } }
-                  {{ product.name }}
-        %ul.kpi-block__filter
-          %li{ dropdown: true }
-            %a{ href: '', dropdown: { toggle: true } }
-              Type
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'type in typesList', class: '{active: type.name === typeFilter.name}' } }
-                %a{ href: '', ng: { click: 'filterByType(type)' } }
-                  {{ type.name }}
-        %ul.kpi-block__filter
-          %li{ dropdown: true }
-            %a{ href: '', dropdown: { toggle: true } }
-              Source
-              %span.caret
-            %ul.dropdown-menu
-              %li{ ng: { repeat: 'source in sources', class: '{active: source.name === sourceFilter.name}' } }
-                %a{ href: '', ng: { click: 'filterBySource(source)' } }
-                  {{ source.name }}
+      .col-xs-10
+        %table.filter-block
+          %tr.filter-title
+            %td Team
+            %td Seller
+            %td Product
+            %td Type
+            %td Source
+            %td Time period
+            %td
+              %span.reset-filter{'ng-click': 'resetFilters()'}
+                Reset
+          %tr
+            %td
+              %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam", 'ng-class': '{"not-selected": selectedTeam.name == "All"}'}
+            %td
+              %ul.kpi-block__filter
+                %li{ dropdown: true }
+                  %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !sellerFilter}'  }
+                    {{sellerFilter ? sellerFilter.first_name + ' ' + sellerFilter.last_name : 'All'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id == sellerFilter.id}' } }
+                      %a{ href: '', ng: { click: 'filterBySeller(seller)' } }
+                        {{ seller.first_name +' '+seller.last_name}}
+            %td
+              %ul.kpi-block__filter
+                %li{ dropdown: true }
+                  %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !productFilter}' }
+                    {{productFilter ? productFilter.name : 'All'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{ ng: { repeat: 'product in productsList', class: '{active: product.name === productFilter.name}' } }
+                      %a{ href: '', ng: { click: 'filterByProduct(product)' } }
+                        {{ product.name }}
+            %td
+              %ul.kpi-block__filter
+                %li{ dropdown: true }
+                  %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !typeFilter}' }
+                    {{typeFilter ? typeFilter.name : 'All'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{ ng: { repeat: 'type in typesList', class: '{active: type.name === typeFilter.name}' } }
+                      %a{ href: '', ng: { click: 'filterByType(type)' } }
+                        {{ type.name }}
+            %td
+              %ul.kpi-block__filter
+                %li{ dropdown: true }
+                  %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !sourceFilter}' }
+                    {{sourceFilter ? sourceFilter.name : 'All'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{ ng: { repeat: 'source in sources', class: '{active: source.name === sourceFilter.name}' } }
+                      %a{ href: '', ng: { click: 'filterBySource(source)' } }
+                        {{ source.name }}
+            %td
+              .date-picker-wrap
+                %div.date-picker#kpi-date-picker{'date-range-picker': true,
+                                                 'ng-model': 'datePicker',
+                                                 :options => "{locale: {format: 'MMMM D, YYYY'},
+                                                               eventHandlers: {'apply.daterangepicker': datePickerApply}}"}
+                  Time period
+                %span.caret
 
-        .date-picker-wrap
-          %div.date-picker#kpi-date-picker{'date-range-picker': true,
-                                           'ng-model': 'datePicker',
-                                           :options => "{locale: {format: 'MMMM D, YYYY',
-                                                                  cancelLabel: 'Clear'},
-                                                         eventHandlers: {'apply.daterangepicker': datePickerApply,
-                                                                         'cancel.daterangepicker': datePickerCancel}}"}
-            Time period
-          %span.caret
-
-        %span#reset-filter{'ng-click': 'resetFilters()'}
-          Reset
-
-
-
-
+      .col-xs-2.pad
         .pull-right.buttons__filter
           %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'filterByPeriod("month")'}
             Month
