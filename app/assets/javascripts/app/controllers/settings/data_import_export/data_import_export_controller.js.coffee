@@ -77,6 +77,14 @@
       backdrop: 'static'
       keyboard: false
 
+  $scope.showUploadDisplayIOMonthlyBudgetModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/display_io_monthly_budget_upload.html'
+      size: 'lg'
+      controller: 'DisplayIOMonthlyBudgetUploadController'
+      backdrop: 'static'
+      keyboard: false
+
   $scope.exportClients = ->
     $window.open('/api/clients.csv')
     return true

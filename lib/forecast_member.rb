@@ -218,7 +218,7 @@ class ForecastMember
       share = io_member.share
       io.content_fees.each do |content_fee_item|
         content_fee_item.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget_item|
-          @monthly_revenue[content_fee_product_budget_item.start_date.strftime("%b-%y")] += content_fee_product_budget_item.daily_budget * effective_days(content_fee_product_budget_item, io_member) * (share/100.0)
+          @monthly_revenue[content_fee_product_budget_item.start_date.strftime("%b-%y")] += content_fee_product_budget_item.daily_budget * effective_days(io_member, [content_fee_product_budget_item]) * (share/100.0)
         end
       end
       io.display_line_items.each do |display_line_item|
@@ -227,7 +227,16 @@ class ForecastMember
           from = [start_date, display_line_item.start_date, io_member.from_date, month_row[:start_date]].max
           to = [end_date, display_line_item.end_date, io_member.to_date, month_row[:end_date]].min
           no_of_days = [(to.to_date - from.to_date) + 1, 0].max
-          @monthly_revenue[month_row[:start_date].strftime("%b-%y")] += ave_run_rate * no_of_days * (share/100.0)
+          in_budget_days = 0
+          in_budget_total = 0
+          display_line_item.display_line_item_budgets.each do |display_line_item_budget|
+            in_from = [start_date, display_line_item.start_date, io_member.from_date, display_line_item_budget.start_date, month_row[:start_date]].max
+            in_to = [end_date, display_line_item.end_date, io_member.to_date, display_line_item_budget.end_date, month_row[:end_date]].min
+            in_days = [(in_to.to_date - in_from.to_date) + 1, 0].max
+            in_budget_days += in_days
+            in_budget_total += display_line_item_budget.daily_budget * in_days * (share/100.0)
+          end
+          @monthly_revenue[month_row[:start_date].strftime("%b-%y")] += in_budget_total + ave_run_rate * (no_of_days - in_budget_days) * (share/100.0)
         end
       end
     end
@@ -326,10 +335,17 @@ class ForecastMember
     [(to.to_date - from.to_date) + 1, 0].max
   end
 
-  def effective_days(comparer, effecter)
-    from = [start_date, comparer.start_date, effecter.from_date].max
-    to = [end_date, comparer.end_date, effecter.to_date].min
-    [(to.to_date - from.to_date) + 1, 0].max
+  def effective_days(effecter, objects)
+    from = [start_date]
+    to = [end_date]
+    from += objects.collect{ |object| object.start_date }
+    to += objects.collect{ |object| object.end_date }
+
+    if effecter.present? && effecter.from_date && effecter.to_date
+      from << effecter.from_date
+      to << effecter.to_date
+    end
+    [(to.min.to_date - from.max.to_date) + 1, 0].max.to_f
   end
 
   def common_days(effector, comparer_list)

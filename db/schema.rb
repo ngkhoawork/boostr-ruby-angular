@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161123140221) do
+ActiveRecord::Schema.define(version: 20161204175353) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -283,6 +283,18 @@ ActiveRecord::Schema.define(version: 20161123140221) do
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
+
+  create_table "display_line_item_budgets", force: :cascade do |t|
+    t.integer  "display_line_item_id"
+    t.integer  "external_io_number"
+    t.float    "budget"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "display_line_item_budgets", ["display_line_item_id"], name: "index_display_line_item_budgets_on_display_line_item_id", using: :btree
 
   create_table "display_line_items", force: :cascade do |t|
     t.integer  "io_id"
@@ -630,6 +642,7 @@ ActiveRecord::Schema.define(version: 20161123140221) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "deal_logs", "deals"
   add_foreign_key "deal_product_budgets", "deal_products"
+  add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"
   add_foreign_key "display_line_items", "temp_ios"

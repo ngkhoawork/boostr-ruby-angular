@@ -3,6 +3,8 @@ class DisplayLineItem < ActiveRecord::Base
   belongs_to :product
   belongs_to :temp_io
 
+  has_many :display_line_item_budgets
+
   before_create :set_alert
   before_update :set_alert
 
@@ -139,7 +141,7 @@ class DisplayLineItem < ActiveRecord::Base
           next
         end
       else
-        error = { row: row_number, message: ["IOBudget can't be blank"] }
+        error = { row: row_number, message: ["IO Budget can't be blank"] }
         errors << error
         next
       end
@@ -419,7 +421,14 @@ class DisplayLineItem < ActiveRecord::Base
 
   def ave_run_rate
     return @ave_run_rate if defined?(@ave_run_rate)
-    @ave_run_rate = self.budget / (self.end_date - self.start_date + 1)
+    total_days = 0
+    total_amount = 0
+    self.display_line_item_budgets.each do |display_line_item_budget|
+      total_days += [self.end_date, display_line_item_budget.end_date].min - [display_line_item_budget.start_date, self.start_date].max
+      total_amount += display_line_item_budget.daily_budget * total_days
+    end
+    @ave_run_rate = (self.budget - total_amount) / (self.end_date - self.start_date + 1 - total_days)
+    # @ave_run_rate = (self.budget) / (self.end_date - self.start_date + 1)
     @ave_run_rate.to_f
   end
 
