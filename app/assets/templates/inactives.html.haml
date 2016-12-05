@@ -48,9 +48,12 @@
 
 		.row.well.kpi-block
 			%h4.chart-title Inactive
-			%span No spend this quarter with spend last X Qtrs
+			%span.chart-subtitle No spend this quarter with spend last X Qtrs
 			.row
-				.col-md-12.table-report.text-center
+				.col-xs-12
+					%svg#inactive-chart.inactives-chart
+			.row
+				.col-xs-12.table-report.text-center
 					%table.table.table-hover
 						%thead
 							%tr
@@ -61,10 +64,9 @@
 								%th Seller
 
 						%tbody
-							%tr
-								%td Unilever
-								%td $225,000
-								%td $ -
-								%td
-								%td Seller1
-
+							%tr{'ng-repeat': 'd in data'}
+								%td {{d.name}}
+								%td {{ d.average | currency : $ : 0}}
+								%td {{ d.open | currency : $ : 0}}
+								%td last/activity
+								%td {{d.seller}}
