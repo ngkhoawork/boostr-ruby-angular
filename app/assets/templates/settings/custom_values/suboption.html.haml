@@ -1,7 +1,8 @@
 .row
   .col-xs-10
-    .title{ editable: { text: 'suboption.name' }, onaftersave: 'updateSubOption(suboption)', 'e-name': 'name' }
-      {{ suboption.name }}
+    %input.title.editable-control{ type: 'text', 'ng-model': 'suboption.name', placeholder: "Enter option", 'ng-blur': 'isUpdating || updateSubOption(suboption)' }
+    -#.title{ editable: { text: 'suboption.name' }, onaftersave: 'updateSubOption(suboption)', 'e-name': 'name' }
+    -#  {{ suboption.name }}
 
   %a.delete{ href: '', ng: { click: 'deleteSubOption(suboption)', if: '!suboption.locked' } }
     = inline_svg 'icons/trash.svg'

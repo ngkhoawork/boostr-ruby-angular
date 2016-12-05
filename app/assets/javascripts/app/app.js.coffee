@@ -149,7 +149,8 @@
 @app.run ['editableOptions', (editableOptions) ->
   editableOptions.theme = 'bs3'
   editableOptions.buttons = 'no'
-  editableOptions.blurElem = 'cancel'
+  editableOptions.activate = 'select'
+  editableOptions.blurElem = 'submit'
   editableOptions.blurForm = 'cancel'
 ]
 
