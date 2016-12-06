@@ -33,7 +33,7 @@ class Api::ContactsController < ApplicationController
           render json: { errors: contact.errors.messages }, status: :unprocessable_entity
         end
       else
-        render json: { errors: { "primary client": ["can't be blank"] } }, status: :unprocessable_entity
+        render json: { errors: { "primary account": ["can't be blank"] } }, status: :unprocessable_entity
       end
 
     end
@@ -48,7 +48,7 @@ class Api::ContactsController < ApplicationController
         render json: { errors: contact.errors.messages }, status: :unprocessable_entity
       end
     else
-      render json: { errors: { "primary client": ["can't be blank"] } }, status: :unprocessable_entity
+      render json: { errors: { "primary account": ["can't be blank"] } }, status: :unprocessable_entity
     end
 
   end

@@ -13,9 +13,9 @@
   $scope.contactSearchText = ""
 
   $scope.clientFilters = [
-    { name: 'My Clients', param: '' }
-    { name: 'My Team\'s Clients', param: 'team' }
-    { name: 'All Clients', param: 'company' }
+    { name: 'My Accounts', param: '' }
+    { name: 'My Team\'s Accounts', param: 'team' }
+    { name: 'All Accounts', param: 'company' }
   ]
 
   if $routeParams.filter
@@ -241,7 +241,7 @@
     )
 
   $scope.delete = ->
-    if confirm('Are you sure you want to delete the client "' +  $scope.currentClient.name + '"?')
+    if confirm('Are you sure you want to delete the account "' +  $scope.currentClient.name + '"?')
       $scope.clients = $scope.clients.filter (el) ->
         el.id != $scope.currentClient.id
       $scope.currentClient.$delete()
