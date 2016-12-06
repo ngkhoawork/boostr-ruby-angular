@@ -55,6 +55,10 @@ class ForecastMember
       io.display_line_items.each do |display_line_item|
         parts << display_line_item.id
         parts << display_line_item.updated_at
+        display_line_item.display_line_item_budgets.each do |display_line_item_budget|
+          parts << display_line_item_budget.id
+          parts << display_line_item_budget.updated_at
+        end
       end
 
       io.io_members.each do |io_member|

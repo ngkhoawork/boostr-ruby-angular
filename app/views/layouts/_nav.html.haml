@@ -39,8 +39,6 @@
                 %li
                   = link_to "Activity Summary", "/reports/activity_summary"
                 %li
-                  = link_to "Pipeline by User Report", "/reports/deal_reports"
-                %li
                   = link_to "Forecast Detail - Annual", "/reports/forecasts"
           - else
             %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
@@ -78,8 +76,6 @@
               %ul.dropdown-menu
                 %li
                   = link_to "Sales Execution Dashboard", "/smart_reports/sales_execution_dashboard"
-                %li
-                  = link_to "Pipeline by User Report", "/reports/deal_reports"
                 %li
                   = link_to "Monthly Forecast", "/smart_reports/monthly_forecasts"
                 %li
