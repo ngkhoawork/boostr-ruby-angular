@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161204175353) do
+ActiveRecord::Schema.define(version: 20161206140639) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -322,6 +322,7 @@ ActiveRecord::Schema.define(version: 20161204175353) do
     t.integer  "balance",                    limit: 8
     t.datetime "last_alert_at"
     t.integer  "temp_io_id"
+    t.string   "ad_server_product"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree

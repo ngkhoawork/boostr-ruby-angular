@@ -133,6 +133,7 @@
                 %th.left End Date
                 %th.left
                   .product Product
+                %th.left Ad-Sever-Product
                 %th.right Qty
                 %th.right Price
                 %th.left Price Type
@@ -159,6 +160,8 @@
                   {{ displayLineItem.end_date | date: 'M/d/yyyy' }}
                 %td.left
                   {{ displayLineItem.product.name }}
+                %td.left
+                  {{ displayLineItem.ad_server_product }}
                 %td.right
                   {{ displayLineItem.quantity }}
                 %td.right
