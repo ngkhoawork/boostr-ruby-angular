@@ -276,6 +276,35 @@ class User < ActiveRecord::Base
     all_team_members
   end
 
+  def unweighted_pipeline(start_date, end_date)
+    return @unweighted_pipeline if defined?(@unweighted_pipeline)
+
+    deal_shares = {}
+    self.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+    @unweighted_pipeline = open_deals(start_date, end_date).sum do |deal|
+      deal_total = 0
+      deal.deal_products.open.each do |deal_product|
+        deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+          deal_total += deal_product_budget.daily_budget * number_of_days(start_date, end_date, deal_product_budget) * (deal_shares[deal.id]/100.0)
+        end
+      end
+
+      deal_total
+    end
+  end
+
+  def open_deals(start_date, end_date)
+    @open_deals ||= self.deals.where(open: true).for_time_period(start_date, end_date).includes(:deal_product_budgets, :stage).to_a
+  end
+
+  def number_of_days(start_date, end_date, comparer)
+    from = [start_date, comparer.start_date].max
+    to = [end_date, comparer.end_date].min
+    [(to.to_date - from.to_date) + 1, 0].max
+  end
+
   def all_activities
     @all_activities = []
     @all_activities += activities
