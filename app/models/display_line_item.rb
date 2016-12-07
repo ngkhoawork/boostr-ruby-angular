@@ -218,12 +218,14 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       product_id = nil
+      ad_server_product = nil
 
       if row[11]
         products = current_user.company.products.where("name ilike ?", row[11].strip)
         if products.count > 0
           product_id = products.first.id
         else
+          ad_server_product = row[11].strip
           products = current_user.company.products.where(revenue_type: 'Display')
           if products.count > 0
             product_id = products.first.id
@@ -235,11 +237,9 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
-      ad_server_product = row[12].strip
-
       qty = nil
-      if row[13]
-        qty = Integer(row[13].strip) rescue false
+      if row[12]
+        qty = Integer(row[12].strip) rescue false
         unless qty
           error = { row: row_number, message: ["Qty must be a numeric value"] }
           errors << error
@@ -251,12 +251,12 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
-      price = row[14]
-      pricing_type = row[15]
+      price = row[13]
+      pricing_type = row[14]
 
       budget = nil
-      if row[16]
-        budget = Float(row[16].strip) rescue false
+      if row[15]
+        budget = Float(row[15].strip) rescue false
         unless budget
           error = { row: row_number, message: ["Budget must be a numeric value"] }
           errors << error
@@ -269,8 +269,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_delivered = nil
-      if row[17]
-        budget_delivered = Float(row[17].strip) rescue false
+      if row[16]
+        budget_delivered = Float(row[16].strip) rescue false
         unless budget_delivered
           error = { row: row_number, message: ["Budget Delivered must be a numeric value"] }
           errors << error
@@ -279,8 +279,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_remaining = nil
-      if row[18]
-        budget_remaining = Float(row[18].strip) rescue false
+      if row[17]
+        budget_remaining = Float(row[17].strip) rescue false
         unless budget_remaining
           error = { row: row_number, message: ["Budget Remaining must be a numeric value"] }
           errors << error
@@ -289,8 +289,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered = nil
-      if row[19]
-        qty_delivered = Float(row[19].strip) rescue false
+      if row[18]
+        qty_delivered = Float(row[18].strip) rescue false
         unless qty_delivered
           error = { row: row_number, message: ["Qty Delivered must be a numeric value"] }
           errors << error
@@ -299,8 +299,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining = nil
-      if row[20]
-        qty_remaining = Float(row[20].strip) rescue false
+      if row[19]
+        qty_remaining = Float(row[19].strip) rescue false
         unless qty_remaining
           error = { row: row_number, message: ["Qty Remaining must be a numeric value"] }
           errors << error
@@ -309,8 +309,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered_3p = nil
-      if row[21]
-        qty_delivered_3p = Float(row[21].strip) rescue false
+      if row[20]
+        qty_delivered_3p = Float(row[20].strip) rescue false
         unless qty_delivered_3p
           error = { row: row_number, message: ["3P Qty Delivered must be a numeric value"] }
           errors << error
@@ -319,8 +319,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining_3p = nil
-      if row[22]
-        qty_remaining_3p = Float(row[22].strip) rescue false
+      if row[21]
+        qty_remaining_3p = Float(row[21].strip) rescue false
         unless qty_remaining_3p
           error = { row: row_number, message: ["3P Qty Remaining must be a numeric value"] }
           errors << error
@@ -329,8 +329,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_delivered_3p = nil
-      if row[23]
-        budget_delivered_3p = Float(row[23].strip) rescue false
+      if row[22]
+        budget_delivered_3p = Float(row[22].strip) rescue false
         unless budget_delivered_3p
           error = { row: row_number, message: ["3P Budget Delivered must be a numeric value"] }
           errors << error
@@ -339,8 +339,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_remaining_3p = nil
-      if row[24]
-        budget_remaining_3p = Float(row[24].strip) rescue false
+      if row[23]
+        budget_remaining_3p = Float(row[23].strip) rescue false
         unless budget_remaining_3p
           error = { row: row_number, message: ["3P Budget Remaining must be a numeric value"] }
           errors << error
@@ -427,11 +427,12 @@ class DisplayLineItem < ActiveRecord::Base
     total_days = 0
     total_amount = 0
     self.display_line_item_budgets.each do |display_line_item_budget|
-      total_days += [self.end_date, display_line_item_budget.end_date].min - [display_line_item_budget.start_date, self.start_date].max
-      total_amount += display_line_item_budget.daily_budget * total_days
+      days = [[self.end_date, display_line_item_budget.end_date].min - [display_line_item_budget.start_date, self.start_date].max + 1, 0].max
+      total_days += days
+      total_amount += display_line_item_budget.daily_budget * days
     end
-    @ave_run_rate = (self.budget - total_amount) / (self.end_date - self.start_date + 1 - total_days)
-    # @ave_run_rate = (self.budget) / (self.end_date - self.start_date + 1)
+    remaining_days = self.end_date - self.start_date + 1 - total_days
+    @ave_run_rate = remaining_days > 0 ? (self.budget - total_amount) / remaining_days : 0
     @ave_run_rate.to_f
   end
 

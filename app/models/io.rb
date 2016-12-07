@@ -91,6 +91,7 @@ class Io < ActiveRecord::Base
         total_budget += content_fee_product_budget.daily_budget * effective_days(start_date, end_date, io_member, [content_fee_product_budget]) * (share/100.0)
       end
     end
+
     self.display_line_items.each do |display_line_item|
       in_budget_days = 0
       in_budget_total = 0
@@ -99,8 +100,7 @@ class Io < ActiveRecord::Base
         in_budget_days += in_days
         in_budget_total += display_line_item_budget.daily_budget * in_days * (share/100.0)
       end
-      ave_run_rate = display_line_item.ave_run_rate
-      total_budget += in_budget_total + ave_run_rate * (effective_days(start_date, end_date, io_member, [display_line_item]) - in_budget_days) * (share/100.0)
+      total_budget += in_budget_total + display_line_item.ave_run_rate * (effective_days(start_date, end_date, io_member, [display_line_item]) - in_budget_days) * (share/100.0)
     end
     total_budget
   end
