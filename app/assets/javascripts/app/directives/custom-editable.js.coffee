@@ -9,7 +9,7 @@
     type: '@type'
   replace: true
   transclude: false
-  template: '<div class="templateRoot">' + '<span class="editable" ng-show="!editState" ng-click="toggle()">{{prefix}}{{model}}{{postfix}}</span>' + '<input class="inputText editable-field" type="text" ng-model="localModel" enter-press="toggle()" ng-show="editState && type == \'inputText\'" ng-blur="save()"/>' + '</div>'
+  template: '<div class="templateRoot">' + '<span class="editable" ng-show="!editState" ng-click="toggle()">{{prefix}}{{model | number : 0}}{{postfix}}</span>' + '<input class="inputText editable-field" type="text" ng-model="localModel" enter-press="toggle()" ng-show="editState && type == \'inputText\'" ng-blur="save()"/>' + '</div>'
   link: (scope, element, attrs) ->
     scope.editState = false
     # make a local ref so we can back out changes, this only happens once and persists
