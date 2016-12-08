@@ -78,6 +78,7 @@ class Deal < ActiveRecord::Base
   scope :closed_at, -> (start_date, end_date) { where('deals.closed_at >= ? and deals.closed_at <= ?', start_date, end_date) }
   scope :started_at, -> (start_date, end_date) { where('deals.created_at >= ? and deals.created_at <= ?', start_date, end_date) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
+  scope :close_status, -> { joins(:stage).where('stages.open IS false OR stages.probability = 100') }
   scope :open_partial, -> { where('deals.open IS true') }
   scope :closed, -> { joins(:stage).where('stages.open IS false') }
   scope :active, -> { where('deals.deleted_at is NULL') }
@@ -282,18 +283,29 @@ class Deal < ActiveRecord::Base
       ""
     end
   end
-  def self.to_pipeline_report_csv(company, team_id)
+  def self.to_pipeline_report_csv(company, team_id, status)
     CSV.generate do |csv|
       all_members_list = []
 
+      raw_deals = []
       deals = []
       if team_id == "0"
-        deals = company.deals.active.open.less_than(100)
+        raw_deals = company.deals.active
       else
         selected_team = Team.find(team_id)
         all_members_list = selected_team.all_members.collect{|member| member.id}
         all_members_list += selected_team.all_leaders.collect{|member| member.id}
-        deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deal_members.user_id in (?) and deals.deleted_at is NULL", all_members_list).open.less_than(100).distinct
+        raw_deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deal_members.user_id in (?) and deals.deleted_at is NULL", all_members_list).distinct
+      end
+      case status
+        when 'open'
+          deals = raw_deals.open.less_than(100)
+        when 'all'
+          deals = raw_deals
+        when 'closed'
+          deals = raw_deals.close_status
+        else
+          deals = raw_deals.open.less_than(100)
       end
 
       deal_ids = deals.collect{|deal| deal.id}
