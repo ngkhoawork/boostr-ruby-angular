@@ -1,10 +1,21 @@
 #reports
   #nav.transparent
     .container
-      .row
-        .col-xs-4.reports-header
+      .row.filter-section
+        .col-xs-4
           %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
-        .col-xs-8
+        .col-xs-4
+          %div.member-list.blue-theme{ dropdown: true }
+            %a{ href: '', dropdown: { toggle: true } }
+              %p{ class: "select" }
+                {{ selectedStatus.name ? selectedStatus.name : "Select Status" }}
+            %ul.dropdown-menu.members
+              %li{ ng: { repeat: 'filter in statusFilter', class: '{active: selectedStatus == filter.value}' } }
+                %a{ href: '', ng: { click: 'changeStatus(filter)' } }
+                  {{ filter.name }}
+            %span
+              &nbsp;
+        .col-xs-4
           %ul.nav.nav-tabs
             %li.pull-right
               %a.export{ href: '', ng: { click: 'exportReports()' } }
@@ -58,7 +69,7 @@
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("products["+$index+"]")'}
                     {{ productTime | date: 'MMM-yy' }}
             %tbody
-              %tr{ ng: { repeat: 'deal in deals | orderBy:sortType:sortReverse | filter:isOpen' } }
+              %tr{ ng: { repeat: 'deal in deals | orderBy:sortType:sortReverse' } }
                 %td.left
                   %div{ ng: { repeat: 'user in deal.users' } }
                     {{ user.first_name + " " + user.last_name + " (" + user.share + "%)"}}
