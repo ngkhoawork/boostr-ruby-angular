@@ -4,6 +4,13 @@
       $scope.sortType     = 'name'
       $scope.sortReverse  = false
       $scope.filterOpen = true
+      $scope.selectedStatus = {name: 'Open', value: 'open'}
+      $scope.statusFilter = [
+        {name: 'Open', value: 'open'},
+        {name: 'Closed', value: 'closed'},
+        {name: 'All', value: 'all'}
+      ]
+
       $scope.init = ->
         Team.all(all_teams: true).then (teams) ->
           all_members = []
@@ -20,11 +27,14 @@
             leaders: all_leaders,
             members_count: all_members.length
           }]
+#          $scope.selectedStatus = 'open'
           $scope.selectedTeam = $scope.teams[0]
           $scope.selectedTeamId = $scope.selectedTeam.id
 
       $scope.init()
-
+      $scope.changeStatus = (filter) =>
+        $scope.selectedStatus = filter
+        fetchData()
       $scope.$watch('selectedTeam', () =>
         if ($scope.selectedTeam)
           $scope.selectedTeamId = $scope.selectedTeam.id
@@ -38,7 +48,7 @@
       , true);
 
       fetchData = () =>
-        $q.all({ dealData: Deal.pipeline_report({filter: 'selected_team', team_id: $scope.selectedTeamId}) }).then (data) ->
+        $q.all({ dealData: Deal.pipeline_report({filter: 'selected_team', team_id: $scope.selectedTeamId, status: $scope.selectedStatus.value }) }).then (data) ->
           $scope.deals = data.dealData[0].deals
           $scope.productRange = data.dealData[0].range
           $scope.deals = _.map $scope.deals, (deal) ->
@@ -78,7 +88,7 @@
         return $sce.trustAsHtml(html)
 
       $scope.exportReports = ->
-        $window.open('/api/deals/pipeline_report.csv?team_id=' + $scope.selectedTeamId)
+        $window.open('/api/deals/pipeline_report.csv?team_id=' + $scope.selectedTeamId + '&status=' + $scope.selectedStatus.value)
         return true
 
   ]

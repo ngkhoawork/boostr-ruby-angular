@@ -105,8 +105,20 @@ class Api::DealsController < ApplicationController
   def pipeline_report
     respond_to do |format|
       format.json {
-        deal_list = ActiveModel::ArraySerializer.new(deals.open.less_than(100).includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets).active.open.less_than(100).distinct , each_serializer: DealReportSerializer)
-        deal_ids = deals.active.open.less_than(100).collect{|deal| deal.id}
+        selected_deals = nil
+        case params[:status]
+          when 'open'
+            selected_deals = deals.open.less_than(100)
+          when 'all'
+            selected_deals = deals
+          when 'closed'
+            selected_deals = deals.close_status
+          else
+            selected_deals = deals.open.less_than(100)
+        end
+
+        deal_list = ActiveModel::ArraySerializer.new(selected_deals.includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets).active.distinct , each_serializer: DealReportSerializer)
+        deal_ids = selected_deals.active.collect{|deal| deal.id}
         range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
         render json: [{deals: deal_list, range: range}].to_json
       }
@@ -114,7 +126,7 @@ class Api::DealsController < ApplicationController
         require 'timeout'
         begin
           Timeout::timeout(120) {
-            send_data Deal.to_pipeline_report_csv(company, params[:team_id]), filename: "pipeline-report-#{Date.today}.csv"
+            send_data Deal.to_pipeline_report_csv(company, params[:team_id], params[:status]), filename: "pipeline-report-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
