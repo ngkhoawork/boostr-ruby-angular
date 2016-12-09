@@ -3,6 +3,7 @@
 ($scope, CustomValue, Option) ->
 
   $scope.current = {}
+  $scope.isUpdating = false;
 
   CustomValue.all().then (custom_values) ->
     $scope.objects = custom_values
@@ -38,10 +39,18 @@
     $scope.current.option = option
 
   $scope.updateOption = (option, warn=true) ->
+    $scope.isUpdating = true;
     if option.id
       if option.is_new || !warn || confirm('Are you sure? All existing uses of this ' + $scope.current.field.name.toLowerCase() + ' will be updated.')
         Option.update({id: option.id, option: option, field_id: $scope.current.field.id }).then () ->
           option.is_new = false
+        setTimeout(()->
+          $scope.isUpdating = false
+        , 100);
+      else
+        setTimeout(()->
+          $scope.isUpdating = false
+        , 100);
     else
       Option.create({ option: option, field_id: $scope.current.field.id }).then (new_option) ->
         new_option.is_new = true
@@ -49,18 +58,30 @@
           if(option.name == new_option.name)
             $scope.current.field.options[i] = new_option
             $scope.setOption(new_option)
+    setTimeout(()->
+      $scope.isUpdating = false
+    , 100);
 
   $scope.updateSubOption = (suboption, warn=true) ->
+    $scope.isUpdating = true
     if suboption.id
       if suboption.is_new || !warn || confirm('Are you sure? All existing uses of this ' + $scope.current.field.name.toLowerCase() + ' will be updated.')
         Option.update({id: suboption.id, option: suboption, option_id: $scope.current.option.id }).then () ->
           suboption.is_new = false
+        setTimeout(()->
+          $scope.isUpdating = false
+        , 100);
+      else
+        setTimeout(()->
+          $scope.isUpdating = false
+        , 100);
     else
       Option.create({ option: suboption, option_id: $scope.current.option.id }).then (new_suboption) ->
         new_suboption.is_new = true
         _.each $scope.current.option.suboptions, (option, i) ->
           if(option.name == new_suboption.name)
             $scope.current.option.suboptions[i] = new_suboption
+
 
   $scope.deleteOption = (option) ->
     if option.id

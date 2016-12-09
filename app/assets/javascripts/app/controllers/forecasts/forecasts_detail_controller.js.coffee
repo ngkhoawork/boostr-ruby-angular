@@ -72,10 +72,10 @@
             $scope.revenues[revenue.year][revenue.advertiser.id].quarter_amounts[n-1] = 0
 
         for n in [1..12]
-          budget = revenue.months[n-1]
+          budget = parseFloat(revenue.months[n-1])
           $scope.revenues[revenue.year][revenue.advertiser.id].month_amounts[n-1] += budget
         for n in [1..4]
-          budget = revenue.quarters[n-1]
+          budget = parseFloat(revenue.quarters[n-1])
           $scope.revenues[revenue.year][revenue.advertiser.id].quarter_amounts[n-1] += budget
 
   $q.all(forecastRequests).then (responses) ->

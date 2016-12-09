@@ -65,13 +65,15 @@
           %div
             %p.person
               Name:
-            %span{type:'text', name:'edit-name', editable: { text: 'reminder.name' }, onaftersave: 'saveCurReminder(reminder)' }
-              {{ reminder.name }}
+            %input.title.editable-control{ type: 'text', 'ng-model': 'reminder.name', placeholder: "Enter option", 'ng-blur': 'saveCurReminder(reminder)' }
+            -#%span{type:'text', name:'edit-name', editable: { text: 'reminder.name' }, onaftersave: 'saveCurReminder(reminder)' }
+            -#  {{ reminder.name }}
           %div.edit-description-wrap
             %p.note
               note:
-            %span{ name:'edit-description', editable: { textarea: 'reminder.comment' }, onaftersave: 'saveCurReminder(reminder)' }
-              {{ reminder.comment }}
+            %input.title.editable-control{ type: 'text', 'ng-model': 'reminder.comment', placeholder: "Enter option", 'ng-blur': 'saveCurReminder(reminder)' }
+            -#%span{ name:'edit-description', editable: { textarea: 'reminder.comment' }, onaftersave: 'saveCurReminder(reminder)' }
+            -#  {{ reminder.comment }}
           %div.action-wrap
             -#%a.btn.cancel-edited-reminder{ng: { click: 'editShow=false' } } cancel
             %a.btn.cancel-edited-reminder{ng: { click: 'deleteCurReminder(reminder)' } } delete

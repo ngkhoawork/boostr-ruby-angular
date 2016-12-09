@@ -20,7 +20,7 @@
                 {{ $first ? '' : $last ? '& ' : ''}}{{ contact.name }}{{ $last ? '' : ', ' }}
             .row{ 'ng-if': "activity.client || activity.deal" }
               %span{ 'ng-if': "activity.client" }
-                Client:
+                Account:
                 %a{ href: '', ng: { href: '/clients/{{activity.client.id}}' } }
                   {{activity.client.name}}
               %span{ 'ng-if': "activity.deal" }
