@@ -6,19 +6,18 @@
           = inline_svg 'icons/close.svg'
       %h3.modal-title
         %strong
-          {{ formType }} Client
+          {{ formType }} Account
     .modal-body
       .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
           %i.fa.fa-warning
-          <strong style="text-transform: capitalize">{{field}}</strong>
           {{error}}
       .form-group
         .row
           .col-xs-6
-            %label.control-label{ for: 'client-type' } Client Type*
+            %label.control-label{ for: 'client-type' } Account Type*
             %ui-select{ name: 'client-type', ng: { model: 'client.client_type.option_id', change: 'searchClients("")', disabled: true } }
-              %ui-select-match{ placeholder: 'Client Type' }
+              %ui-select-match{ placeholder: 'Account Type' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'option.id as option in client.client_type.options | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'option.name' } } }

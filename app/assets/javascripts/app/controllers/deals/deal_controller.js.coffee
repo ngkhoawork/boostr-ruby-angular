@@ -520,8 +520,10 @@
 
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
-#      $scope.setCurrentDeal(deal)
+      $scope.setCurrentDeal(deal)
 
+  $scope.onEditableBlur = () ->
+    console.log("ddd")
   $scope.verifyMembersShare = ->
     share_sum = 0
     _.each $scope.currentDeal.members, (member) ->

@@ -16,16 +16,16 @@
             %li.pull-right
               %a.upload{ href: '', ng: { click: 'showModal()' } }
                 = inline_svg 'icons/add.svg'
-                New Client
+                New Account
 
   .container{ ng: { hide: 'query.length || (clients && clients.length > 0) || currentClient' } }
     .row
       .col-xs-6.col-xs-offset-3
         .well.text-center
           %h5
-            There are no clients to display.
+            There are no accounts to display.
             %a{ href: '', ng: { click: 'showModal()' } }
-              Add a client.
+              Add a account.
   .container{ ng: { show: 'query.length || clients.length > 0 || currentClient' } }
     .row
       #client-list.col-xs-4
@@ -120,21 +120,21 @@
               .row
                 .col-xs-3
                   %strong
-                    Client Type
+                    Account Type
                 .col-xs-9.detail
                   {{ currentClient.client_type.option.name }}
             .well{ ng: {if: 'currentClient.client_category_id'} }
               .row
                 .col-xs-3
                   %strong
-                    Client Category
+                    Account Category
                 .col-xs-9.detail
                   {{ currentClient.client_category.name }}
             .well{ ng: {if: 'currentClient.client_subcategory_id'} }
               .row
                 .col-xs-3
                   %strong
-                    Client Subcategory
+                    Account Subcategory
                 .col-xs-9.detail
                   {{ currentClient.client_subcategory.name }}
             .well

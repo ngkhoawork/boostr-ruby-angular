@@ -25,6 +25,7 @@ class Api::DisplayLineItemsController < ApplicationController
     end
   end
 
+  private
   def display_line_items
     member_ids = [current_user.id]
     if current_user.leader?

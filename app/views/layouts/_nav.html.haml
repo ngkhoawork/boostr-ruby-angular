@@ -21,7 +21,7 @@
           %li{ ng: { class: "{ active: isActive('/revenue') }" } }
             = link_to "REVENUE", "/revenue"
           %li{ ng: { class: "{ active: isActive('/clients') }" } }
-            = link_to "CLIENTS", "/clients"
+            = link_to "ACCOUNTS", "/clients"
           %li{ ng: { class: "{ active: isActive('/contacts') }" } }
             = link_to "CONTACTS", "/contacts"
           - if current_user.leader?
@@ -38,8 +38,6 @@
                   = link_to "Activity Detail", "/reports/activity_detail_reports"
                 %li
                   = link_to "Activity Summary", "/reports/activity_summary"
-                %li
-                  = link_to "Pipeline by User Report", "/reports/deal_reports"
                 %li
                   = link_to "Forecast Detail - Annual", "/reports/forecasts"
           - else
@@ -78,8 +76,6 @@
               %ul.dropdown-menu
                 %li
                   = link_to "Sales Execution Dashboard", "/smart_reports/sales_execution_dashboard"
-                %li
-                  = link_to "Pipeline by User Report", "/reports/deal_reports"
                 %li
                   = link_to "Monthly Forecast", "/smart_reports/monthly_forecasts"
                 %li

@@ -640,7 +640,7 @@ class Deal < ActiveRecord::Base
         advertiser_type_id = Client.advertiser_type_id(current_user.company)
         advertisers = current_user.company.clients.by_type_id(advertiser_type_id).where('name ilike ?', row[2].strip)
         if advertisers.length > 1
-          error = { row: row_number, message: ["Advertiser #{row[2]} matched more than one client record"] }
+          error = { row: row_number, message: ["Advertiser #{row[2]} matched more than one account record"] }
           errors << error
           next
         elsif advertisers.length == 0
@@ -660,7 +660,7 @@ class Deal < ActiveRecord::Base
         agency_type_id = Client.agency_type_id(current_user.company)
         agencies = current_user.company.clients.by_type_id(agency_type_id).where('name ilike ?', row[3].strip)
         if agencies.length > 1
-          error = { row: row_number, message: ["Agency #{row[3]} matched more than one client record"] }
+          error = { row: row_number, message: ["Agency #{row[3]} matched more than one account record"] }
           errors << error
           next
         elsif agencies.length == 0

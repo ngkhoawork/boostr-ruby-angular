@@ -10,21 +10,21 @@
       .col-sm-6
         .panel
           .panel-body
-            %h4 Clients Import
-            %h5 Select a CSV file and upload it using the client import module
+            %h4 Accounts Import
+            %h5 Select a CSV file and upload it using the account import module
             %li.import
               %a.upload{ href: '', ng: { click: 'showUploadClientModal()' } }
                 = inline_svg 'icons/import.svg'
-                Import Clients
+                Import Accounts
       .col-sm-6
         .panel
           .panel-body
-            %h4 Clients Export
-            %h5 Click here to export Clients
+            %h4 Accounts Export
+            %h5 Click here to export Accounts
             %li.export
               %a{ href: '', ng: { click: 'exportClients()' } }
                 = inline_svg 'icons/import.svg'
-                Export Clients
+                Export Accounts
     .row
       .col-sm-6
         .panel
@@ -142,12 +142,29 @@
             %li.import
               %a.upload{ href: '', ng: { click: 'showUploadDisplayIOModal()' } }
                 = inline_svg 'icons/import.svg'
-                Import Revenues
+                Import Display IOs
       .col-sm-6
         .panel
           .panel-body
             %h4 Display IO Export
             %h5 Click here to export Display IOs
+            %li.import
+              Coming soon...
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Display IO Monthly Budget Import
+            %h5 Select a CSV file and upload it using the display io monthly budget import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadDisplayIOMonthlyBudgetModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Display IO Monthly Budgets.
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Display IO Monthly Budget Export
+            %h5 Click here to export Display IO Monthly Budget
             -#%li.export
             -#  %a.upload{ href: '', ng: { click: 'exportRevenues()' } }
             -#    = inline_svg 'icons/import.svg'

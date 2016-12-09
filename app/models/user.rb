@@ -135,16 +135,43 @@ class User < ActiveRecord::Base
           split_budget += content_fee_product_budget.daily_budget * effective_days * share / 100
         end
       end
+      # io.display_line_items.each do |display_line_item|
+      #   sum_budget += display_line_item.budget
+      #   if (start_date <= display_line_item.end_date && end_date >= display_line_item.start_date)
+      #     in_period_days = [[end_date, display_line_item.end_date].min - [start_date, display_line_item.start_date].max + 1, 0].max
+      #     in_period_effective_days = [[end_date, display_line_item.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
+      #     sum_period_budget += display_line_item.ave_run_rate * in_period_days
+      #     split_period_budget += display_line_item.ave_run_rate * in_period_effective_days * share / 100
+      #   end
+      #   effective_days = [[display_line_item.end_date, io_member.to_date].min - [display_line_item.start_date, io_member.from_date].max + 1, 0].max
+      #   split_budget += display_line_item.ave_run_rate * effective_days * share / 100
+      # end
       io.display_line_items.each do |display_line_item|
         sum_budget += display_line_item.budget
+        in_budget_in_period_days = 0
+        in_budget_in_period_total = 0
+        in_budget_in_period_effective_days = 0
+        in_budget_in_period_effective_total = 0
+        in_budget_effective_days = 0
+        in_budget_effective_total = 0
+        display_line_item.display_line_item_budgets.each do |display_line_item_budget|
+          if (start_date <= display_line_item_budget.end_date && end_date >= display_line_item_budget.start_date)
+            in_budget_in_period_days += [[end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
+            in_budget_in_period_effective_days += [[end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
+            in_budget_in_period_total += display_line_item_budget.daily_budget * in_budget_in_period_days
+            in_budget_in_period_effective_total += display_line_item_budget.daily_budget * in_budget_in_period_effective_days * share / 100
+          end
+          in_budget_effective_days += [[display_line_item.end_date, io_member.to_date, display_line_item_budget.end_date].min - [display_line_item.start_date, io_member.from_date, display_line_item_budget.start_date].max + 1, 0].max
+          in_budget_effective_total += display_line_item_budget.daily_budget * in_budget_in_period_days * share / 100
+        end
         if (start_date <= display_line_item.end_date && end_date >= display_line_item.start_date)
           in_period_days = [[end_date, display_line_item.end_date].min - [start_date, display_line_item.start_date].max + 1, 0].max
           in_period_effective_days = [[end_date, display_line_item.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
-          sum_period_budget += display_line_item.ave_run_rate * in_period_days
-          split_period_budget += display_line_item.ave_run_rate * in_period_effective_days * share / 100
+          sum_period_budget += in_budget_in_period_effective_days + display_line_item.ave_run_rate * (in_period_days - in_budget_in_period_days)
+          split_period_budget += in_budget_in_period_effective_total + display_line_item.ave_run_rate * (in_period_effective_days - in_budget_in_period_effective_days) * share / 100
         end
         effective_days = [[display_line_item.end_date, io_member.to_date].min - [display_line_item.start_date, io_member.from_date].max + 1, 0].max
-        split_budget += display_line_item.ave_run_rate * effective_days * share / 100
+        split_budget += in_budget_effective_total + display_line_item.ave_run_rate * (effective_days - in_budget_effective_days) * share / 100
       end
     end
     @crevenues = [{
