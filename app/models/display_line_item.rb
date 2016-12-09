@@ -432,7 +432,7 @@ class DisplayLineItem < ActiveRecord::Base
       total_amount += display_line_item_budget.daily_budget * days
     end
     remaining_days = self.end_date - self.start_date + 1 - total_days
-    @ave_run_rate = remaining_days > 0 ? (self.budget - total_amount) / remaining_days : 0
+    @ave_run_rate = remaining_days > 0 ? [(self.budget - total_amount) / remaining_days, 0].max : 0
     @ave_run_rate.to_f
   end
 
