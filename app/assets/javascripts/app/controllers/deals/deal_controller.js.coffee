@@ -520,7 +520,7 @@
 
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
-      $scope.setCurrentDeal(deal)
+#      $scope.setCurrentDeal(deal)
 
   $scope.verifyMembersShare = ->
     share_sum = 0
@@ -581,9 +581,11 @@
           $scope.currentDeal
 
   $scope.$on 'updated_deal', ->
+    console.log('updated_deal')
     $scope.init()
 
   $scope.$on 'updated_activities', ->
+    console.log('updated_activities')
     $scope.init()
 
   $scope.init()

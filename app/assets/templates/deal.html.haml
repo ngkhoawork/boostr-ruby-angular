@@ -241,7 +241,7 @@
               %tr
                 %th.left Member
                 %th.left Role
-                %th.left Share
+                %th.left Share (%)
                 %th.action-column
             %tbody
               %tr{ ng: { repeat: "member in currentDeal.members | orderBy: 'name'"} }
@@ -251,8 +251,7 @@
                   %span{ 'e-name': 'role', editable: { select: 'member.role.option_id' }, 'e-ng-options': 'option.id as option.name for option in member.role.options', onaftersave: 'updateDealMember(member)' }
                     {{ member.role.option.name }}
                 %td
-                  %span{ 'e-name': 'share', editable: { number: 'member.share', model: 'member.share' }, onaftersave: 'updateDealMember(member)' }
-                    {{ member.share }}%
+                  %input.editable-control{ type: 'text', 'ng-model': 'member.share', placeholder: 0, 'ng-blur': 'updateDealMember(member)' }
                 %td.action-td
                   %a.delete-member{ href: '', ng: { click: 'deleteMember(member)' } }
                     = inline_svg 'icons/trash.svg'
@@ -320,8 +319,8 @@
                 .col-xs-4
                   %h4.field-label Next Steps
               .row
-                .col-xs-9.field-value{ 'e-name': 'next-steps', editable: { text: 'currentDeal.next_steps' }, onaftersave: 'updateDeal()' }
-                  {{ currentDeal.next_steps }}
+                .col-xs-9
+                  %input.editable-control{ type: 'text', 'ng-model': 'currentDeal.next_steps', placeholder: "Enter next steps", 'ng-blur': 'updateDeal()' }
           .row.field
             .col-xs-10
               .row

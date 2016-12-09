@@ -36,12 +36,11 @@
             %thead
               %tr
                 %th.left User
-                %th.right Total Quota
+                %th.right Total Quota ($)
             %tbody
               %tr{ ng: { repeat: 'quota in quotas' } }
                 %td.left
                   {{ quota.user_name }}
                   = inline_svg 'icons/profile.svg', class: 'svg pull-left'
                 %td.right
-                  %span{ editable: { text: 'quota.value' }, onaftersave: 'updateQuota(quota)', 'e-name': 'quota-value' }
-                    {{ quota.value || 0 | currency: '$': 0 }}
+                  %input.editable-control.text-center{ type: 'text', 'ng-model': 'quota.value', placeholder: "0", 'ng-blur': 'updateQuota(quota)', 'ng-style': "{width:'100px'}" }

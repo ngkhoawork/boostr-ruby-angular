@@ -1,7 +1,6 @@
 .row
   .col-xs-10
-    %span.title{ editable: { text: 'option.name' }, onaftersave: 'updateOption(option)', 'e-name': 'name' }
-      {{ option.name }}
+    %input.title.editable-control{ type: 'text', 'ng-model': 'option.name', placeholder: "Enter option", 'ng-blur': 'isUpdating || updateOption(option)' }
     |
     %span.total
       {{ option.suboptions.length }}-Sub
