@@ -84,6 +84,8 @@ class Api::RevenueController < ApplicationController
 
       io_obj.display_line_items.where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year).each do |display_line_item|
         # year = display_line_item.start_date.year
+        display_line_item_budgets = display_line_item.display_line_item_budgets.to_a
+
         for index in 1..12
           month = index.to_s
           if index < 10
@@ -91,9 +93,17 @@ class Api::RevenueController < ApplicationController
           end
           first_date = Date.parse("#{year}#{month}01")
           num_of_days = [[first_date.end_of_month, display_line_item.end_date].min - [first_date, display_line_item.start_date].max + 1, 0].max.to_f
-
-          io[:months][index - 1] += display_line_item.ave_run_rate * num_of_days
-          io[:quarters][(index - 1) / 3] += display_line_item.ave_run_rate * num_of_days
+          in_budget_days = 0
+          in_budget_total = 0
+          display_line_item_budgets.each do |display_line_item_budget|
+            in_from = [first_date, display_line_item.start_date, display_line_item_budget.start_date].max
+            in_to = [first_date.end_of_month, display_line_item.end_date, display_line_item_budget.end_date].min
+            in_days = [(in_to.to_date - in_from.to_date) + 1, 0].max
+            in_budget_days += in_days
+            in_budget_total += display_line_item_budget.daily_budget * in_days
+          end
+          io[:months][index - 1] += in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
+          io[:quarters][(index - 1) / 3] += in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
         end
       end
 
