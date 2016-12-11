@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161207124417) do
+ActiveRecord::Schema.define(version: 20161211083512) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,6 +138,46 @@ ActiveRecord::Schema.define(version: 20161207124417) do
     t.string   "subtype"
     t.integer  "created_by"
   end
+
+  create_table "bp_estimate_products", force: :cascade do |t|
+    t.integer  "bp_estimate_id"
+    t.integer  "product_id"
+    t.float    "estimate_seller"
+    t.float    "estimate_mgr"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "bp_estimate_products", ["bp_estimate_id"], name: "index_bp_estimate_products_on_bp_estimate_id", using: :btree
+  add_index "bp_estimate_products", ["product_id"], name: "index_bp_estimate_products_on_product_id", using: :btree
+
+  create_table "bp_estimates", force: :cascade do |t|
+    t.integer  "bp_id"
+    t.integer  "client_id"
+    t.integer  "user_id"
+    t.float    "estimate_seller"
+    t.float    "estimate_mgr"
+    t.string   "objectives"
+    t.string   "assumptions"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "bp_estimates", ["bp_id"], name: "index_bp_estimates_on_bp_id", using: :btree
+  add_index "bp_estimates", ["client_id"], name: "index_bp_estimates_on_client_id", using: :btree
+  add_index "bp_estimates", ["user_id"], name: "index_bp_estimates_on_user_id", using: :btree
+
+  create_table "bps", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "time_period_id"
+    t.date     "due_date"
+    t.integer  "company_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "bps", ["company_id"], name: "index_bps_on_company_id", using: :btree
+  add_index "bps", ["time_period_id"], name: "index_bps_on_time_period_id", using: :btree
 
   create_table "client_contacts", force: :cascade do |t|
     t.integer  "client_id"
@@ -691,6 +731,13 @@ ActiveRecord::Schema.define(version: 20161207124417) do
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
+  add_foreign_key "bp_estimate_products", "bp_estimates"
+  add_foreign_key "bp_estimate_products", "products"
+  add_foreign_key "bp_estimates", "bps"
+  add_foreign_key "bp_estimates", "clients"
+  add_foreign_key "bp_estimates", "users"
+  add_foreign_key "bps", "companies"
+  add_foreign_key "bps", "time_periods"
   add_foreign_key "clients", "clients", column: "parent_client_id"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
