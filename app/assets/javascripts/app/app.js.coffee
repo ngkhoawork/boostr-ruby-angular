@@ -125,6 +125,9 @@
     .when '/settings/stages',
       templateUrl: 'settings/stages.html'
       controller: 'SettingsStagesController'
+    .when '/settings/bps',
+      templateUrl: 'settings/bps.html'
+      controller: 'BPsController'
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
