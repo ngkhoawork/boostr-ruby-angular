@@ -1,114 +1,28 @@
 @app.controller 'DealsController',
-['$rootScope', '$scope', '$modal', '$filter', '$routeParams', '$q', '$location', '$window', 'Deal', 'Stage', 'Contact',
-($rootScope, $scope, $modal, $filter, $routeParams, $q, $location, $window, Deal, Stage, Contact) ->
+    ['$scope',
+        ($scope) ->
+            $scope.selectedDeal = null
+            $scope.columnNames = [
+                'PROSPECTING'
+                'DISCUSS REQUIREMENTS'
+                'PROPOSAL'
+                'NEGOTIATION'
+            ]
+            $scope.columns = (() ->
+                c = []
+                for i in $scope.columnNames
+                    c.push []
+                c
+            )()
 
-  $scope.dealFilters = [
-    { name: 'My Deals', param: '' }
-    { name: 'My Team\'s Deals', param: 'team' }
-    { name: 'All Deals', param: 'company' }
-  ]
+            for i in [1...10]
+                $scope.columns[Math.round(Math.random() * 3)].push(
+                    {name: 'Item ' + i, company: 'Company ' + i, seller: 'John Seller', revenue: i}
+                )
 
-  $scope.sort =
-    column: "name"
-    direction: "asc"
-    reset: ->
-      @column = "name"
-      @direction = "asc"
-      @execute()
 
-  if $routeParams.filter
-    _.each $scope.dealFilters, (filter) ->
-      if filter.param == $routeParams.filter
-        $scope.dealFilter = filter
-        $rootScope.dealFilter = $scope.dealFilter
-  else
-    if $rootScope.dealFilter != undefined
-      $scope.dealFilter = $rootScope.dealFilter
-    else
-      $scope.dealFilter = $scope.dealFilters[0]
 
-  $scope.init = ->
-    $q.all({ deals: Deal.all({filter: $scope.dealFilter.param}), stages: Stage.query().$promise }).then (data) ->
-      $scope.deals = data.deals
-      $scope.stages = data.stages
-      $scope.showStage('open')
-
-  $scope.showModal = ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/deal_form.html'
-      size: 'lg'
-      controller: 'DealsNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        deal: ->
-          {}
-
-  $scope.showStage = (stage) ->
-    if stage == 'open'
-      $scope.getOpenStages()
-      $scope.currentStage = 'open'
-      $scope.filteredDeals = $scope.openStages
-    else
-      $scope.currentStage = stage.id
-      $scope.filteredDeals = $filter('filter') $scope.deals, { stage_id: stage.id }
-    $scope.sort.reset()
-
-  $scope.getOpenStages = ->
-    $scope.openStages = $filter('openDeals') $scope.deals, $scope.stages
-    $scope.openStagesCount = $scope.openStages.length
-
-  $scope.countDealsForStage = (stage) ->
-    $filter('filter')($scope.deals, { stage_id: stage.id }).length
-
-  $scope.delete = (deal) ->
-    if confirm('Are you sure you want to delete "' +  deal.name + '"?')
-      Deal.delete deal, ->
-        $location.path('/deals')
-
-  $scope.showDealEditModal = (deal) ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/deal_form.html'
-      size: 'lg'
-      controller: 'DealsEditController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        deal: ->
-          deal
-
-  $scope.go = (path) ->
-    $location.path(path)
-
-  $scope.filterDeals = (filter) ->
-    $scope.dealFilter = filter
-    $rootScope.dealFilter = $scope.dealFilter
-    $scope.init()
-
-  $scope.$on 'updated_deals', ->
-    $scope.init()
-
-  $scope.sort.toggle = (field) ->
-    direction = "asc"
-    direction = "desc" if $scope.sort.column == field and $scope.sort.direction == "asc"
-    $scope.sort.column = field
-    $scope.sort.direction = direction
-    $scope.sort.execute()
-
-  $scope.sort.execute = ->
-    $scope.filteredDeals.sort (a, b) ->
-      switch $scope.sort.column
-        when "advertiser"
-          comparison = a.advertiser.name.localeCompare(b.advertiser.name)
-        when "name"
-          comparison = a.name.localeCompare(b.name)
-        when "stage"
-          comparison = a.stage.name.localeCompare(b.stage.name)
-        when "start_date"
-          comparison = a.start_date.localeCompare(b.start_date)
-        else
-          comparison = a.budget - b.budget
-    $scope.filteredDeals.reverse() if $scope.sort.direction == "desc"
-
-  $scope.init()
-]
+            document.addEventListener('keydown', (e) ->
+                if e.code is 'Space' then console.dir($scope.columns)
+            )
+    ]

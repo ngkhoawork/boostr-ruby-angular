@@ -1,86 +1,24 @@
 #deals
-  #nav.transparent
-    .container
-      .row
-        .col-xs-12
-          %ul.nav.nav-tabs
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                {{ dealFilter.name }}
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'filter in dealFilters', class: '{active: filter.name == dealFilter.name}' } }
-                  %a{ href: '', ng: { click: 'filterDeals(filter)' } }
-                    {{ filter.name }}
+	.container
+		.row
+			.col-xs-12.deals-menu
+		.row
+			.col-xs-3.deal-column{'ng-repeat': 'name in columnNames', 'ng-init': 'columnIndex = $index'}
+				.column-header
+					%span
+						{{name}}
+						%i ({{columns[columnIndex].length}})
+					%span
+						$10M (W) / $20M (UW)
+				.column-body{'dnd-list': 'columns[columnIndex]'}
+					.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
+								'dnd-draggable': 'deal',
+								'dnd-moved': 'columns[columnIndex].splice($index, 1)',
+								'dnd-effect-allowed': 'move'}
+						%span {{deal.name}}
+						%span {{deal.company}}
+						%span {{'$' + deal.revenue + 'M' + ' | ' + deal.seller}}
 
-            %li.pull-right
-              %a.upload{ href: '', ng: { click: 'showModal()' } }
-                = inline_svg 'icons/add.svg'
-                New Deal
 
 
-  .container
-    .row
-      .col-xs-3
-        .list-group.list-sm.stages
-          %a.list-group-item.vertical-center{ href: '', ng: { click: 'showStage("open")', class: '{ active: currentStage == "open" }'} }
-            .col-xs-8.col-xs-offset-4
-              .row
-                %h5
-                  All Open ({{ openStagesCount }})
-              .row.hide
-                $500,000
-          %a.list-group-item.vertical-center{ href: '', ng: { repeat: 'stage in stages', click: 'showStage(stage)', class: '{ active: currentStage == stage.id }' } }
-            .col-xs-8.col-xs-offset-4
-              .row
-                %h5
-                  {{ stage.name }} ({{ countDealsForStage(stage) }})
-              .row.hide
-                $500,000
-      .col-xs-9
-        .table-wrapper
-          %table.table.table-hover.table-striped
-            %thead
-              %tr
-                %th.left
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("name")' } }
-                    Name
-                    %i{ ng: { class: "{ 'fa': sort.column == 'name', 'fa-sort-asc': sort.column == 'name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'name' && sort.direction == 'desc' }" } }
-                %th.left
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("advertiser")' } }
-                    Advertiser
-                    %i{ ng: { class: "{ 'fa': sort.column == 'advertiser', 'fa-sort-asc': sort.column == 'advertiser' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'advertiser' && sort.direction == 'desc' }" } }
-                %th.left
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("agency")' } }
-                    Agency
-                    %i{ ng: { class: "{ 'fa': sort.column == 'agency', 'fa-sort-asc': sort.column == 'agency' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'agency' && sort.direction == 'desc' }" } }
-                %th.left
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("stage")' } }
-                    Stage
-                    %i{ ng: { class: "{ 'fa': sort.column == 'stage', 'fa-sort-asc': sort.column == 'stage' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'stage' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("budget")' } }
-                    Budget
-                    %i{ ng: { class: "{ 'fa': sort.column == 'budget', 'fa-sort-asc': sort.column == 'budget' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'budget' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("start_date")' } }
-                    Start Date
-                    %i{ ng: { class: "{ 'fa': sort.column == 'start_date', 'fa-sort-asc': sort.column == 'start_date' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'start_date' && sort.direction == 'desc' }" } }
-                %th.action-column
-            %tbody
-              %tr{ ng: { repeat: 'row in filteredDeals'} }
-                %td
-                  %a{ href: '', ng: { click: 'go("/deals/" + row.id)'  } }
-                    {{ row.name }}
-                %td {{ row.advertiser.name }}
-                %td {{ row.agency.name }}
-                %td {{ row.stage.name }}
-                %td.right {{ row.budget / 100 | currency:'$':0 }}
-                %td.right {{ row.start_date | date: 'shortDate' }}
-                / %td.action-column.info-td
-                /   .empty
-                %td.action-td
-                  %a.edit-deal{ href: '', ng: { click: 'showDealEditModal(row)' } }
-                    = inline_svg 'icons/pencil.svg'
-                  %a.delete-deal{ href: '', ng: { click: 'delete(row)' } }
-                    = inline_svg 'icons/trash.svg'
+

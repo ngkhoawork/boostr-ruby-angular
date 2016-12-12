@@ -22,6 +22,7 @@
   'ngTransloadit'
   'daterangepicker'
   'rzModule'
+  'dndLists'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
