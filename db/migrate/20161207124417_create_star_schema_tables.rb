@@ -14,7 +14,7 @@ class CreateStarSchemaTables < ActiveRecord::Migration
       t.integer :days_length
     end
 
-    create_table :account_revenue_fact do |t|
+    create_table :account_revenue_facts do |t|
       t.belongs_to :company, index: true, foreign_key: true
       t.belongs_to :account_dimension, index: true, foreign_key: true
       t.belongs_to :time_dimension, index: true, foreign_key: true
@@ -23,7 +23,7 @@ class CreateStarSchemaTables < ActiveRecord::Migration
       t.integer :revenue_amount
     end
 
-    create_table :account_pipeline_fact do |t|
+    create_table :account_pipeline_facts do |t|
       t.belongs_to :company, index: true, foreign_key: true
       t.belongs_to :account_dimension, index: true, foreign_key: true
       t.belongs_to :time_dimension, index: true, foreign_key: true
