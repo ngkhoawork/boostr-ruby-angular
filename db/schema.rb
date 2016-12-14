@@ -11,10 +11,44 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161206140639) do
+ActiveRecord::Schema.define(version: 20161207124417) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
+
+  create_table "account_dimensions", force: :cascade do |t|
+    t.string  "name"
+    t.integer "account_type"
+    t.integer "category_id"
+    t.integer "subcategory_id"
+  end
+
+  create_table "account_pipeline_fact", force: :cascade do |t|
+    t.integer "company_id"
+    t.integer "account_dimension_id"
+    t.integer "time_dimension_id"
+    t.integer "category_id"
+    t.integer "subcategory_id"
+    t.integer "pipeline_amount"
+  end
+
+  add_index "account_pipeline_fact", ["account_dimension_id"], name: "index_account_pipeline_fact_on_account_dimension_id", using: :btree
+  add_index "account_pipeline_fact", ["company_id"], name: "index_account_pipeline_fact_on_company_id", using: :btree
+  add_index "account_pipeline_fact", ["time_dimension_id"], name: "index_account_pipeline_fact_on_time_dimension_id", using: :btree
+
+  create_table "account_revenue_fact", force: :cascade do |t|
+    t.integer "company_id"
+    t.integer "account_dimension_id"
+    t.integer "time_dimension_id"
+    t.integer "category_id"
+    t.integer "subcategory_id"
+    t.integer "revenue_amount"
+  end
+
+  add_index "account_revenue_fact", ["account_dimension_id"], name: "index_account_revenue_fact_on_account_dimension_id", using: :btree
+  add_index "account_revenue_fact", ["company_id"], name: "index_account_revenue_fact_on_company_id", using: :btree
+  add_index "account_revenue_fact", ["time_dimension_id"], name: "index_account_revenue_fact_on_time_dimension_id", using: :btree
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -83,6 +117,12 @@ ActiveRecord::Schema.define(version: 20161206140639) do
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
     t.string   "mobile"
+  end
+
+  create_table "ar_internal_metadata", primary_key: "key", force: :cascade do |t|
+    t.string   "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "assets", force: :cascade do |t|
@@ -545,6 +585,13 @@ ActiveRecord::Schema.define(version: 20161206140639) do
 
   add_index "temp_ios", ["company_id"], name: "index_temp_ios_on_company_id", using: :btree
 
+  create_table "time_dimensions", force: :cascade do |t|
+    t.string  "name"
+    t.date    "start_date"
+    t.date    "end_date"
+    t.integer "days_length"
+  end
+
   create_table "time_periods", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -638,6 +685,12 @@ ActiveRecord::Schema.define(version: 20161206140639) do
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
+  add_foreign_key "account_pipeline_fact", "account_dimensions"
+  add_foreign_key "account_pipeline_fact", "companies"
+  add_foreign_key "account_pipeline_fact", "time_dimensions"
+  add_foreign_key "account_revenue_fact", "account_dimensions"
+  add_foreign_key "account_revenue_fact", "companies"
+  add_foreign_key "account_revenue_fact", "time_dimensions"
   add_foreign_key "clients", "clients", column: "parent_client_id"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
