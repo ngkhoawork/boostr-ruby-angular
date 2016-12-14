@@ -106,6 +106,32 @@ class Io < ActiveRecord::Base
     total_budget
   end
 
+  def total_effective_revenue_budget(start_date, end_date)
+    total_budget = 0
+    self.content_fees.each do |content_fee|
+      content_fee_product_budgets = content_fee.content_fee_product_budgets.select do |product_budget|
+        product_budget.start_date <= end_date &&
+        product_budget.end_date >= start_date
+      end
+
+      content_fee_product_budgets.each do |content_fee_product_budget|
+        total_budget += content_fee_product_budget.daily_budget * effective_days(start_date, end_date, nil, [content_fee_product_budget])
+      end
+    end
+
+    self.display_line_items.each do |display_line_item|
+      in_budget_days = 0
+      in_budget_total = 0
+      display_line_item.display_line_item_budgets.each do |display_line_item_budget|
+        in_days = effective_days(start_date, end_date, nil, [display_line_item, display_line_item_budget])
+        in_budget_days += in_days
+        in_budget_total += display_line_item_budget.daily_budget * in_days
+      end
+      total_budget += in_budget_total + display_line_item.ave_run_rate * (effective_days(start_date, end_date, nil, [display_line_item]) - in_budget_days)
+    end
+    total_budget
+  end
+
   def effective_days(start_date, end_date, effecter, objects)
     from = [start_date]
     to = [end_date]
