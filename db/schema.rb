@@ -24,7 +24,11 @@ ActiveRecord::Schema.define(version: 20161228230028) do
     t.integer "subcategory_id"
   end
 
+<<<<<<< HEAD
   create_table "account_pipeline_facts", force: :cascade do |t|
+=======
+  create_table "account_pipeline_fact", force: :cascade do |t|
+>>>>>>> 6beeba9... Created dimension and facts tables for data warehouse
     t.integer "company_id"
     t.integer "account_dimension_id"
     t.integer "time_dimension_id"
@@ -33,22 +37,39 @@ ActiveRecord::Schema.define(version: 20161228230028) do
     t.integer "pipeline_amount"
   end
 
+<<<<<<< HEAD
   add_index "account_pipeline_facts", ["account_dimension_id"], name: "index_account_pipeline_facts_on_account_dimension_id", using: :btree
   add_index "account_pipeline_facts", ["company_id"], name: "index_account_pipeline_facts_on_company_id", using: :btree
   add_index "account_pipeline_facts", ["time_dimension_id"], name: "index_account_pipeline_facts_on_time_dimension_id", using: :btree
 
   create_table "account_revenue_facts", force: :cascade do |t|
+=======
+  add_index "account_pipeline_fact", ["account_dimension_id"], name: "index_account_pipeline_fact_on_account_dimension_id", using: :btree
+  add_index "account_pipeline_fact", ["company_id"], name: "index_account_pipeline_fact_on_company_id", using: :btree
+  add_index "account_pipeline_fact", ["time_dimension_id"], name: "index_account_pipeline_fact_on_time_dimension_id", using: :btree
+
+  create_table "account_revenue_fact", force: :cascade do |t|
+>>>>>>> 6beeba9... Created dimension and facts tables for data warehouse
     t.integer "company_id"
     t.integer "account_dimension_id"
     t.integer "time_dimension_id"
     t.integer "category_id"
     t.integer "subcategory_id"
+<<<<<<< HEAD
     t.decimal "revenue_amount",       precision: 10, scale: 2
   end
 
   add_index "account_revenue_facts", ["account_dimension_id"], name: "index_account_revenue_facts_on_account_dimension_id", using: :btree
   add_index "account_revenue_facts", ["company_id"], name: "index_account_revenue_facts_on_company_id", using: :btree
   add_index "account_revenue_facts", ["time_dimension_id"], name: "index_account_revenue_facts_on_time_dimension_id", using: :btree
+=======
+    t.integer "revenue_amount"
+  end
+
+  add_index "account_revenue_fact", ["account_dimension_id"], name: "index_account_revenue_fact_on_account_dimension_id", using: :btree
+  add_index "account_revenue_fact", ["company_id"], name: "index_account_revenue_fact_on_company_id", using: :btree
+  add_index "account_revenue_fact", ["time_dimension_id"], name: "index_account_revenue_fact_on_time_dimension_id", using: :btree
+>>>>>>> 6beeba9... Created dimension and facts tables for data warehouse
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -117,6 +138,12 @@ ActiveRecord::Schema.define(version: 20161228230028) do
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
     t.string   "mobile"
+  end
+
+  create_table "ar_internal_metadata", primary_key: "key", force: :cascade do |t|
+    t.string   "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "assets", force: :cascade do |t|
@@ -719,6 +746,7 @@ ActiveRecord::Schema.define(version: 20161228230028) do
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
+<<<<<<< HEAD
   add_foreign_key "account_pipeline_facts", "account_dimensions"
   add_foreign_key "account_pipeline_facts", "companies"
   add_foreign_key "account_pipeline_facts", "time_dimensions"
@@ -732,6 +760,14 @@ ActiveRecord::Schema.define(version: 20161228230028) do
   add_foreign_key "bp_estimates", "users"
   add_foreign_key "bps", "companies"
   add_foreign_key "bps", "time_periods"
+=======
+  add_foreign_key "account_pipeline_fact", "account_dimensions"
+  add_foreign_key "account_pipeline_fact", "companies"
+  add_foreign_key "account_pipeline_fact", "time_dimensions"
+  add_foreign_key "account_revenue_fact", "account_dimensions"
+  add_foreign_key "account_revenue_fact", "companies"
+  add_foreign_key "account_revenue_fact", "time_dimensions"
+>>>>>>> 6beeba9... Created dimension and facts tables for data warehouse
   add_foreign_key "clients", "clients", column: "parent_client_id"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
