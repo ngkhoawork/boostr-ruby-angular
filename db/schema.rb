@@ -25,10 +25,14 @@ ActiveRecord::Schema.define(version: 20161228230028) do
   end
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   create_table "account_pipeline_facts", force: :cascade do |t|
 =======
   create_table "account_pipeline_fact", force: :cascade do |t|
 >>>>>>> 6beeba9... Created dimension and facts tables for data warehouse
+=======
+  create_table "account_pipeline_facts", force: :cascade do |t|
+>>>>>>> 8680ea2... Fixed non-plural table name in the star schema migration script
     t.integer "company_id"
     t.integer "account_dimension_id"
     t.integer "time_dimension_id"
@@ -37,6 +41,7 @@ ActiveRecord::Schema.define(version: 20161228230028) do
     t.integer "pipeline_amount"
   end
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   add_index "account_pipeline_facts", ["account_dimension_id"], name: "index_account_pipeline_facts_on_account_dimension_id", using: :btree
   add_index "account_pipeline_facts", ["company_id"], name: "index_account_pipeline_facts_on_company_id", using: :btree
@@ -50,6 +55,13 @@ ActiveRecord::Schema.define(version: 20161228230028) do
 
   create_table "account_revenue_fact", force: :cascade do |t|
 >>>>>>> 6beeba9... Created dimension and facts tables for data warehouse
+=======
+  add_index "account_pipeline_facts", ["account_dimension_id"], name: "index_account_pipeline_facts_on_account_dimension_id", using: :btree
+  add_index "account_pipeline_facts", ["company_id"], name: "index_account_pipeline_facts_on_company_id", using: :btree
+  add_index "account_pipeline_facts", ["time_dimension_id"], name: "index_account_pipeline_facts_on_time_dimension_id", using: :btree
+
+  create_table "account_revenue_facts", force: :cascade do |t|
+>>>>>>> 8680ea2... Fixed non-plural table name in the star schema migration script
     t.integer "company_id"
     t.integer "account_dimension_id"
     t.integer "time_dimension_id"
@@ -66,10 +78,16 @@ ActiveRecord::Schema.define(version: 20161228230028) do
     t.integer "revenue_amount"
   end
 
+<<<<<<< HEAD
   add_index "account_revenue_fact", ["account_dimension_id"], name: "index_account_revenue_fact_on_account_dimension_id", using: :btree
   add_index "account_revenue_fact", ["company_id"], name: "index_account_revenue_fact_on_company_id", using: :btree
   add_index "account_revenue_fact", ["time_dimension_id"], name: "index_account_revenue_fact_on_time_dimension_id", using: :btree
 >>>>>>> 6beeba9... Created dimension and facts tables for data warehouse
+=======
+  add_index "account_revenue_facts", ["account_dimension_id"], name: "index_account_revenue_facts_on_account_dimension_id", using: :btree
+  add_index "account_revenue_facts", ["company_id"], name: "index_account_revenue_facts_on_company_id", using: :btree
+  add_index "account_revenue_facts", ["time_dimension_id"], name: "index_account_revenue_facts_on_time_dimension_id", using: :btree
+>>>>>>> 8680ea2... Fixed non-plural table name in the star schema migration script
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -747,12 +765,16 @@ ActiveRecord::Schema.define(version: 20161228230028) do
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8680ea2... Fixed non-plural table name in the star schema migration script
   add_foreign_key "account_pipeline_facts", "account_dimensions"
   add_foreign_key "account_pipeline_facts", "companies"
   add_foreign_key "account_pipeline_facts", "time_dimensions"
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
+<<<<<<< HEAD
   add_foreign_key "bp_estimate_products", "bp_estimates"
   add_foreign_key "bp_estimate_products", "products"
   add_foreign_key "bp_estimates", "bps"
@@ -768,6 +790,8 @@ ActiveRecord::Schema.define(version: 20161228230028) do
   add_foreign_key "account_revenue_fact", "companies"
   add_foreign_key "account_revenue_fact", "time_dimensions"
 >>>>>>> 6beeba9... Created dimension and facts tables for data warehouse
+=======
+>>>>>>> 8680ea2... Fixed non-plural table name in the star schema migration script
   add_foreign_key "clients", "clients", column: "parent_client_id"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
