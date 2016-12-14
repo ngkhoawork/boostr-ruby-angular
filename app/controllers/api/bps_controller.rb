@@ -23,6 +23,15 @@ class Api::BpsController < ApplicationController
     end
   end
 
+  def show
+    bp = Bp.find(params[:id])
+    if bp.present?
+      render json: bp.full_json, status: :ok
+    else
+      render json: { error: 'Business Plan Not Found' }, status: :not_found
+    end
+  end
+
   private
 
   def bp_params

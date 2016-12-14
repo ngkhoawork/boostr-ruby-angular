@@ -8,11 +8,30 @@ class Bp < ActiveRecord::Base
 
   after_create :generate_bp_estimates
 
+  def merge_recursively(a, b)
+    a.merge(b) {|key, a_item, b_item| merge_recursively(a_item, b_item) }
+  end
+
   def as_json(options = {})
-    super(options.merge(
-        include: [:time_period],
-        methods: [:client_count, :status]
+    super(merge_recursively( options,
+        {
+            include: {time_period: {}},
+            methods: [:client_count, :status]
+        }
     ))
+  end
+
+  def full_json
+    self.as_json( {include: {
+        bp_estimates: {
+            include: {
+                bp_estimate_products: {},
+                client: {},
+                user: {}
+            },
+            methods: [:client_name, :user_name]
+        },
+    }})
   end
 
   def client_count

@@ -128,6 +128,9 @@
     .when '/settings/bps',
       templateUrl: 'settings/bps.html'
       controller: 'BPsController'
+    .when '/bp',
+      templateUrl: 'bp.html'
+      controller: 'BPController'
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'

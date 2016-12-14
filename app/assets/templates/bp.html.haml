@@ -1,0 +1,73 @@
+#reports.monthly-forecasts
+  .container-fluid.table-report
+    .row
+      .col-xs-8
+        .filter-title
+          %h3.title.pull-left Business Plan
+          %a.pull-right.upload{ href: '', ng: { click: 'showModal()' } }
+            = inline_svg 'icons/add.svg'
+
+          %ul.kpi-block__filter.pull-left
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                %span{ 'ng-if': 'selectedBP.id > 0' }
+                  {{ selectedBP.name }}
+                %span{ 'ng-if': 'selectedBP.id == 0' }
+                  Select Business Plan
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'bp in bps', class: '{active: bp.id == selectedBP.id}' } }
+                  %a{ href: '', ng: { click: 'selectBP(bp)' } }
+                    {{ bp.name }}
+
+    .row
+      .col-md-12.text-center
+        .alerts{ 'ng-if': 'notification' }
+          .alert.alert-success
+            %i.fa.fa-check-circle
+            <strong style="text-transform: capitalize"></strong>
+            {{notification}}
+        %table.table.gray-table
+          %thead
+            %tr
+              %th.left
+                %a.sort{ href: '', ng: { click: 'sort.toggle("client_name")' } }
+                  Account
+                  %i{ ng: { class: "{ 'fa': sort.column == 'client_name', 'fa-sort-asc': sort.column == 'client_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'client_name' && sort.direction == 'desc' }" } }
+              %th.left
+                %a.sort{ href: '', ng: { click: 'sort.toggle("user_name")' } }
+                  Seller
+                  %i{ ng: { class: "{ 'fa': sort.column == 'user_name', 'fa-sort-asc': sort.column == 'user_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'user_name' && sort.direction == 'desc' }" } }
+              %th {{selectedBP.time_period.name}} Pipeline
+              %th {{selectedBP.time_period.name}} Revenue
+              %th {{selectedBP.time_period.name}} Estimate
+              %th Mgr Estimate
+              %th {{selectedBP.time_period.name}} Revenue
+              %th % Change - YoY
+              %th {{selectedBP.time_period.name}} Revenue
+              %th % Change - QoQ
+          %tbody
+            %tr{ ng: { if: 'bpEstimates.length > 0', repeat: 'bp_estimate in bpEstimates' }}
+              %td.left
+                {{bp_estimate.client_name}}
+              %td.left
+                {{bp_estimate.user_name}}
+              %td
+                {{ 125000 | currency:'$':0 }}
+              %td
+                {{ 125000 | currency:'$':0 }}
+              %td
+                %div{'click-to-edit':'click-to-edit', type: "inputText", prefix: '$', 'ng-model': "bp_estimate.seller_estimate", 'on-after-save': 'updateBPEstimate(bp_estimate)'}
+              %td
+                %div{'click-to-edit':'click-to-edit', type: "inputText", prefix: '$', 'ng-model': "bp_estimate.mgr_estimate", 'on-after-save': 'updateBPEstimate(bp_estimate)'}
+              %td
+                {{ 125000 | currency:'$':0 }}
+              %td
+                20%
+              %td
+                {{ 125000 | currency:'$':0 }}
+              %td
+                {{'-20%'}}
+            %tr{ ng: { if: 'bpEstimates.length == 0' }}
+              %td.center{ colspan: '10' }
+                No data available
