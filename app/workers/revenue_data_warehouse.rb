@@ -5,10 +5,10 @@ class RevenueDataWarehouse
   sidekiq_options retry: false
 
   def perform
-    self.generate_account_revenue_facts
+    generate_account_revenue_facts
   end
 
-  def self.generate_account_revenue_facts
+  def generate_account_revenue_facts
     AccountRevenueFact.delete_all
     ios = Io.all.includes(:content_fees, :content_fee_product_budgets, :display_line_items, :display_line_item_budgets)
 
