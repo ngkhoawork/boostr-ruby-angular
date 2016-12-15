@@ -32,38 +32,40 @@ class Api::InactivesController < ApplicationController
   end
 
   def inactive_advertisers
-    inactives = advertisers_with_consecutive_revenues_in_past - advertisers_with_current_revenue
-
-    Client.where(id: inactives)
-          .by_category(params[:category_id])
-          .by_subcategory(params[:subcategory_id])
-          .includes(:activities, :users)
+    @inactives = Client.where(id: advertisers_with_consecutive_revenues_in_past - advertisers_with_current_revenue)
+      .by_category(params[:category_id])
+      .by_subcategory(params[:subcategory_id])
+      .includes(:activities, :users, :advertiser_deals)
   end
 
   def advertisers_with_current_revenue
-    content_fee_product_budgets = ContentFeeProductBudget.where('content_fee_product_budgets.start_date >= ? AND content_fee_product_budgets.end_date <= ? AND content_fee_product_budgets.budget > 0', current_quarter.first, current_quarter.last).select(:content_fee_id)
-
-    display_line_items = DisplayLineItem.where('display_line_items.start_date >= ? AND display_line_items.end_date <= ? AND display_line_items.budget > 0', current_quarter.first, current_quarter.last).select(:io_id)
-    content_fees = ContentFee.where(id: content_fee_product_budgets.map(&:content_fee_id)).select(:io_id)
-
-    ios = Io.where(id: content_fees.map(&:io_id) + display_line_items.map(&:io_id), company_id: current_user.company.id).select(:advertiser_id)
-    ios.map(&:advertiser_id)
+    time_dimension = TimeDimension.find_by(start_date: current_quarter.first, end_date: current_quarter.last)
+    AccountRevenueFact
+      .joins("INNER JOIN account_dimensions on account_revenue_facts.account_dimension_id = account_dimensions.id")
+      .where('account_dimensions.account_type = ?', Client::ADVERTISER)
+      .where('revenue_amount > 0')
+      .where(time_dimension_id: time_dimension.id)
+      .select(:account_dimension_id)
+      .map(&:account_dimension_id)
   end
 
   def advertisers_with_consecutive_revenues_in_past
+    time_dimensions = TimeDimension.where(start_date: previous_quarters.map(&:first), end_date: previous_quarters.map(&:last))
     advertisers = []
-    previous_quarters.each_with_index do |qtr, index|
-      content_fee_product_budgets = ContentFeeProductBudget.where('content_fee_product_budgets.start_date >= ? AND content_fee_product_budgets.end_date <= ? AND content_fee_product_budgets.budget > 0', qtr.first, qtr.last).select(:content_fee_id)
 
-      display_line_items = DisplayLineItem.where('display_line_items.start_date >= ? AND display_line_items.end_date <= ? AND display_line_items.budget > 0', qtr.first, qtr.last).select(:io_id)
-      content_fees = ContentFee.where(id: content_fee_product_budgets.map(&:content_fee_id)).select(:io_id)
-
-      ios = Io.where(id: content_fees.map(&:io_id) + display_line_items.map(&:io_id), company_id: current_user.company.id).select(:advertiser_id)
+    time_dimensions.each_with_index do |time_dimension, index|
+      accounts_with_revenues = AccountRevenueFact
+        .joins("INNER JOIN account_dimensions on account_revenue_facts.account_dimension_id = account_dimensions.id")
+        .where('account_dimensions.account_type = ?', Client::ADVERTISER)
+        .where('revenue_amount > 0')
+        .where(time_dimension_id: time_dimension.id)
+        .select(:account_dimension_id)
+        .map(&:account_dimension_id)
 
       if index == 0
-        advertisers.concat ios.map(&:advertiser_id)
+        advertisers.concat accounts_with_revenues
       else
-        advertisers.concat(ios.map(&:advertiser_id) & advertisers)
+        advertisers.concat(accounts_with_revenues & advertisers)
       end
     end
 
@@ -71,25 +73,24 @@ class Api::InactivesController < ApplicationController
   end
 
   def average_quarterly_spend(advertiser)
-    total_budget = 0
-    ios = Io.where(advertiser_id: advertiser.id).includes(:io_members, :content_fees, :display_line_items)
-    ios.each do |io|
-      advertiser.users.each do |user|
-        next unless io.io_members.map(&:user_id).include?(user.id)
-        total_budget += io.effective_revenue_budget(user, full_time_period.first, full_time_period.last)
-      end
-    end
+    time_dimensions = TimeDimension.where(start_date: previous_quarters.map(&:first), end_date: previous_quarters.map(&:last))
+    @total_revenues ||= AccountRevenueFact.where(account_dimension_id: @inactives.ids)
+    .where(time_dimension_id: time_dimensions.ids)
+    .group(:account_dimension_id)
+    .select('account_dimension_id, sum(revenue_amount) as total_revenue')
+    .collect{|el| {account_dimension_id: el.account_dimension_id, total_revenue: el.total_revenue} }
 
-    (total_budget / qtr_offset).round(0)
+    total_revenue = @total_revenues.find{|el| el[:account_dimension_id] == advertiser.id}
+    (total_revenue[:total_revenue] / qtr_offset).round(0)
   end
 
   def open_pipeline(advertiser)
-    pipeline = 0
-    advertiser.users.each do |user|
-      pipeline += user.unweighted_pipeline(current_quarter.first, current_quarter.last)
+    pipeline = advertiser.advertiser_deals.map(&:budget).compact.reduce(:+)
+    if pipeline == nil
+      0
+    else
+      (pipeline / 100).round(0)
     end
-
-    pipeline.round(0)
   end
 
   def advertiser_type_id
@@ -108,7 +109,7 @@ class Api::InactivesController < ApplicationController
 
   def current_quarter
     first = Date.today.beginning_of_quarter
-    last = Date.today
+    last = Date.today.end_of_quarter
     first..last
   end
 
