@@ -119,12 +119,6 @@ ActiveRecord::Schema.define(version: 20161211083512) do
     t.string   "mobile"
   end
 
-  create_table "ar_internal_metadata", primary_key: "key", force: :cascade do |t|
-    t.string   "value"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "assets", force: :cascade do |t|
     t.integer  "attachable_id"
     t.string   "attachable_type"
