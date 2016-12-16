@@ -244,3 +244,8 @@
 .center {
   text-align: center;
 }
+
+.money-field {
+  text-align: right;
+  width: calc(100% - 10px);
+}

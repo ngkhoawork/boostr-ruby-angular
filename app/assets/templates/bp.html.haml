@@ -53,21 +53,33 @@
               %td.left
                 {{bp_estimate.user_name}}
               %td
-                {{ 125000 | currency:'$':0 }}
+                {{ bp_estimate.pipeline | currency:'$':0 }}
               %td
-                {{ 125000 | currency:'$':0 }}
+                {{ bp_estimate.revenue | currency:'$':0 }}
               %td
-                %div{'click-to-edit':'click-to-edit', type: "inputText", prefix: '$', 'ng-model': "bp_estimate.seller_estimate", 'on-after-save': 'updateBPEstimate(bp_estimate)'}
+                $
+                %input.right.money-field{type: 'number', placeholder: 0, 'ng-model': 'bp_estimate.estimate_seller', 'ng-blur': 'updateBPEstimate(bp_estimate)'}
               %td
-                %div{'click-to-edit':'click-to-edit', type: "inputText", prefix: '$', 'ng-model': "bp_estimate.mgr_estimate", 'on-after-save': 'updateBPEstimate(bp_estimate)'}
+                $
+                %input.right.money-field{type: 'number', placeholder: 0, 'ng-model': 'bp_estimate.estimate_mgr', 'ng-blur': 'updateBPEstimate(bp_estimate)'}
               %td
-                {{ 125000 | currency:'$':0 }}
+                {{ bp_estimate.year_revenue | currency:'$':0 }}
               %td
-                20%
+                %span{'ng-if': 'bp_estimate.estimate_seller == null || bp_estimate.estimate_seller <= 0 || bp_estimate.year_revenue <= 0'}
+                  {{"-"}}
+                %span{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.year_revenue > 0  && bp_estimate.estimate_seller > bp_estimate.year_revenue'}
+                  {{ (bp_estimate.estimate_seller / bp_estimate.year_revenue - 1) * 100 | number:2 }}%
+                %span{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.year_revenue > 0  && bp_estimate.estimate_seller < bp_estimate.year_revenue'}
+                  {{ (bp_estimate.estimate_seller / bp_estimate.year_revenue - 1) * 100 | number:2 }}%
               %td
-                {{ 125000 | currency:'$':0 }}
+                {{ bp_estimate.prev_revenue | currency:'$':0 }}
               %td
-                {{'-20%'}}
+                %span{'ng-if': 'bp_estimate.estimate_seller == null || bp_estimate.estimate_seller <= 0 || bp_estimate.prev_revenue <= 0'}
+                  {{"-"}}
+                %span.positive{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.prev_revenue > 0  && bp_estimate.estimate_seller >= bp_estimate.prev_revenue'}
+                  {{ (bp_estimate.estimate_seller / bp_estimate.prev_revenue - 1) * 100 | number:2 }}%
+                %span.negative{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.prev_revenue > 0  && bp_estimate.estimate_seller < bp_estimate.prev_revenue'}
+                  {{ (bp_estimate.estimate_seller / bp_estimate.prev_revenue - 1) * 100 | number:2 }}%
             %tr{ ng: { if: 'bpEstimates.length == 0' }}
               %td.center{ colspan: '10' }
                 No data available
