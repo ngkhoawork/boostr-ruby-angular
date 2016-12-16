@@ -8,7 +8,7 @@ every(1.day, 'Snapshot Generator', at: '8:00', tz: 'UTC') do
   SnapshotGenerator.perform_async
 end
 
-every(1.day, 'Account Revenue Data Calculator', at: '14:30', tz: 'UTC') do
+every(1.day, 'Account Revenue Data Calculator', at: '15:00', tz: 'UTC') do
   RevenueDataWarehouse.perform_async
 end
 
