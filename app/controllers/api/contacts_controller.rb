@@ -40,7 +40,7 @@ class Api::ContactsController < ApplicationController
   end
 
   def update
-    if contact_params[:client_id].present?
+    if contact_params[:client_id].present? || params[:unassign] == true
       if contact.update_attributes(contact_params)
         contact.update_primary_client if params[:contact][:set_primary_client]
         render json: contact.as_json(include: {clients: {}}), status: :accepted
