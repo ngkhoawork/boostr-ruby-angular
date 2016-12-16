@@ -44,6 +44,10 @@ class DisplayLineItem < ActiveRecord::Base
         self.balance = 0
       end
       self.last_alert_at = DateTime.now
+    else
+      self.daily_run_rate = 0
+      self.num_days_til_out_of_budget = 0
+      self.balance = 0
     end
     self.save if should_save
   end
