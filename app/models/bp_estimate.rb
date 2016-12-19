@@ -4,6 +4,8 @@ class BpEstimate < ActiveRecord::Base
   belongs_to :user
   has_many :bp_estimate_products
 
+  accepts_nested_attributes_for :bp_estimate_products
+
   def client_name
     client.name
   end

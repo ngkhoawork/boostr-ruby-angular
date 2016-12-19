@@ -58,12 +58,6 @@
         )
         deferred.promise
 
-      @updateContacts = (id, params) ->
-        deferred = do $q.defer
-        resource.updateContacts id: id, params: params, (bp) ->
-          deferred.resolve bp
-          $rootScope.$broadcast 'updated_bps'
-        deferred.promise
 
       @get = (bp_id) ->
         deferred = $q.defer()

@@ -1,0 +1,46 @@
+@service.service 'BpEstimate',
+  ['$resource', '$q', '$rootScope',
+    ($resource, $q, $rootScope) ->
+      transformRequest = (original, headers) ->
+        send = {}
+        send.bp_estimate =
+          bp_id: original.bp_estimate.bp_id
+          client_id: original.bp_estimate.client_id
+          user_id: original.bp_estimate.user_id
+          estimate_seller: original.bp_estimate.estimate_seller
+          estimate_mgr: original.bp_estimate.estimate_mgr
+          objectives: original.bp_estimate.objectives
+          assumptions: original.bp_estimate.assumptions
+          bp_estimate_products_attributes: original.bp_estimate.bp_estimate_products
+
+        angular.toJson(send)
+
+      resource = $resource '/api/bps/:bp_id/bp_estimates/:id', { bp_id: '@bp_id', id: '@id' },
+        update:
+          method: 'PUT'
+          url: '/api/bps/:bp_id/bp_estimates/:id'
+          transformRequest: transformRequest
+        save:
+          method: 'POST'
+          transformRequest: transformRequest
+
+      @create = (params) ->
+        deferred = $q.defer()
+        resource.save params, (bp) ->
+          deferred.resolve(bp)
+        deferred.promise
+
+      @update = (params) ->
+        deferred = $q.defer()
+        resource.update params, (bp) ->
+          deferred.resolve(bp)
+        deferred.promise
+
+      @delete = (params) ->
+        deferred = $q.defer()
+        resource.delete params, (bp) ->
+          deferred.resolve(bp)
+        deferred.promise
+
+      return
+  ]

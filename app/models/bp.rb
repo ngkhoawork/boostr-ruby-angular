@@ -25,7 +25,11 @@ class Bp < ActiveRecord::Base
     self.as_json( {include: {
         bp_estimates: {
             include: {
-                bp_estimate_products: {},
+                bp_estimate_products: {
+                    include: {
+                        product: {}
+                    }
+                },
                 client: {},
                 user: {}
             },

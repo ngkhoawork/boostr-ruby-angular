@@ -30,7 +30,9 @@ Rails.application.routes.draw do
         end
       end
     end
-    resources :bps, only: [:index, :create, :update, :show, :destroy]
+    resources :bps, only: [:index, :create, :update, :show, :destroy] do
+      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy]
+    end
     resources :temp_ios, only: [:index, :update]
     resources :display_line_items, only: [:index, :create]
     resources :display_line_item_budgets, only: [:create]

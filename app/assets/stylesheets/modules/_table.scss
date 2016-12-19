@@ -500,7 +500,7 @@ tr:hover {
 
 .table-report {
   padding: 0px 30px;
-  table {
+  .table {
     table-layout: fixed;
     margin-top: 30px;
     thead{
@@ -538,9 +538,16 @@ tr:hover {
           line-height: 16px;
           font-size: 12px;
           word-break: break-word;
+
+          i.toggle-icon {
+            margin-left: -20px;
+            margin-right: 5px;
+            cursor: pointer;
+          }
         }
         td:first-child {
           padding-top: 10px;
+          padding-left: 30px;
           padding-bottom: 10px;
         }
       }
@@ -567,6 +574,44 @@ tr:hover {
     div.active {
       background-color: #3996db;
       color: #FFFFFF;
+    }
+  }
+}
+
+.bp-estimate-wrapper {
+
+}
+
+.bp-estimate-detail {
+  .bp-estimate-wrapper {
+//    padding-top: 20px !important;
+    vertical-align: top;
+
+    .bp-estimate-attribute {
+      padding-top: 10px;
+
+      .attr-label {
+        font-weight: bold;
+      }
+    }
+  }
+  .bp-estimate-product-list {
+    table.detail {
+      tr {
+        th {
+          padding: 10px 8px;
+        }
+        td {
+          border-top: 1px solid #ddd;
+          padding: 10px 8px;
+        }
+        th:first-child {
+          padding: 10px 0;
+        }
+        td:first-child {
+          padding: 10px 0;
+        }
+      }
     }
   }
 }

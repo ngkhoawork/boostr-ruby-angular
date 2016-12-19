@@ -1,6 +1,6 @@
 @app.controller 'BPController',
-  ['$scope', '$document', '$modal', 'BP',
-    ($scope, $document, $modal, BP) ->
+  ['$scope', '$document', '$modal', 'BP', 'BpEstimate',
+    ($scope, $document, $modal, BP, BpEstimate) ->
 
       class McSort
         constructor: (opts) ->
@@ -75,6 +75,16 @@
 
       $scope.selectBP = (bp) ->
         $scope.selectedBP = bp
+        startDate = new Date(bp.time_period.start_date)
+        year = startDate.getUTCFullYear()
+        month = startDate.getUTCMonth()
+        $scope.yearQuarter = 'Q' + (month / 3 + 1) + '-' + (year - 1)
+        prevMonth = month - 3
+        prevYear = year
+        if prevMonth < 0
+          prevMonth += 12
+          prevYear = year - 1
+        $scope.prevQuarter = 'Q' + (prevMonth / 3 + 1) + '-' + prevYear
         loadBPData()
 
       buildBPEstimate = (item) ->
@@ -135,14 +145,31 @@
 
           $scope.bpEstimates = _.map data.bp.bp_estimates, buildBPEstimate
 
-#          console.log($scope.bpEstimates)
-#          console.log($scope)
           setMcSort()
 
-      $scope.updateBPEstimate = (bpEstimate) ->
+      $scope.updateBpEstimate = (bpEstimate) ->
+        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate)
 
+      $scope.updateBpEstimateProduct = (bpEstimate) ->
+        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data) ->
+          replaceBpEstimate(data);
 
+      replaceBpEstimate = (bpEstimate) ->
+        targetBpEstimate = _.find($scope.bpEstimates, {id: bpEstimate.id})
+        targetBpEstimate.estimate_seller = bpEstimate.estimate_seller
+        targetBpEstimate.estimate_mgr = bpEstimate.estimate_mgr
 
+      $scope.totalSum = (elements, field) ->
+        total = 0
+        _.each elements, (item) ->
+          total += item[field]
+        return total
+
+      $scope.toggleRow = (rowId) ->
+        if ($scope.toggleId == rowId)
+          $scope.toggleId = null
+        else
+          $scope.toggleId = rowId
 
 
 #=======================END Cycle Time=======================================================

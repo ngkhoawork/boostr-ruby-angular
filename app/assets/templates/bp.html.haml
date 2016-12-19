@@ -4,8 +4,6 @@
       .col-xs-8
         .filter-title
           %h3.title.pull-left Business Plan
-          %a.pull-right.upload{ href: '', ng: { click: 'showModal()' } }
-            = inline_svg 'icons/add.svg'
 
           %ul.kpi-block__filter.pull-left
             %li{ dropdown: true }
@@ -42,44 +40,12 @@
               %th {{selectedBP.time_period.name}} Revenue
               %th {{selectedBP.time_period.name}} Estimate
               %th Mgr Estimate
-              %th {{selectedBP.time_period.name}} Revenue
+              %th {{yearQuarter}} Revenue
               %th % Change - YoY
-              %th {{selectedBP.time_period.name}} Revenue
+              %th {{prevQuarter}} Revenue
               %th % Change - QoQ
-          %tbody
-            %tr{ ng: { if: 'bpEstimates.length > 0', repeat: 'bp_estimate in bpEstimates' }}
-              %td.left
-                {{bp_estimate.client_name}}
-              %td.left
-                {{bp_estimate.user_name}}
-              %td
-                {{ bp_estimate.pipeline | currency:'$':0 }}
-              %td
-                {{ bp_estimate.revenue | currency:'$':0 }}
-              %td
-                $
-                %input.right.money-field{type: 'number', placeholder: 0, 'ng-model': 'bp_estimate.estimate_seller', 'ng-blur': 'updateBPEstimate(bp_estimate)'}
-              %td
-                $
-                %input.right.money-field{type: 'number', placeholder: 0, 'ng-model': 'bp_estimate.estimate_mgr', 'ng-blur': 'updateBPEstimate(bp_estimate)'}
-              %td
-                {{ bp_estimate.year_revenue | currency:'$':0 }}
-              %td
-                %span{'ng-if': 'bp_estimate.estimate_seller == null || bp_estimate.estimate_seller <= 0 || bp_estimate.year_revenue <= 0'}
-                  {{"-"}}
-                %span{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.year_revenue > 0  && bp_estimate.estimate_seller > bp_estimate.year_revenue'}
-                  {{ (bp_estimate.estimate_seller / bp_estimate.year_revenue - 1) * 100 | number:2 }}%
-                %span{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.year_revenue > 0  && bp_estimate.estimate_seller < bp_estimate.year_revenue'}
-                  {{ (bp_estimate.estimate_seller / bp_estimate.year_revenue - 1) * 100 | number:2 }}%
-              %td
-                {{ bp_estimate.prev_revenue | currency:'$':0 }}
-              %td
-                %span{'ng-if': 'bp_estimate.estimate_seller == null || bp_estimate.estimate_seller <= 0 || bp_estimate.prev_revenue <= 0'}
-                  {{"-"}}
-                %span.positive{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.prev_revenue > 0  && bp_estimate.estimate_seller >= bp_estimate.prev_revenue'}
-                  {{ (bp_estimate.estimate_seller / bp_estimate.prev_revenue - 1) * 100 | number:2 }}%
-                %span.negative{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.prev_revenue > 0  && bp_estimate.estimate_seller < bp_estimate.prev_revenue'}
-                  {{ (bp_estimate.estimate_seller / bp_estimate.prev_revenue - 1) * 100 | number:2 }}%
-            %tr{ ng: { if: 'bpEstimates.length == 0' }}
+          %tbody{ ng: { if: 'bpEstimates.length > 0', repeat: 'bp_estimate in bpEstimates', include: "'partials/bp_rows.html'" } }
+          %tbody{ ng: { if: 'bpEstimates.length == 0' } }
+            %tr
               %td.center{ colspan: '10' }
                 No data available
