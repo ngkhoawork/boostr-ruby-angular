@@ -39,12 +39,12 @@
       .attr-label
         Objectives
       .attr-value
-        {{bp_estimate.objectives}} &nbsp;
+        %input.text-focus-field{type: 'text', placeholder: 'Enter Objectives', 'ng-model': 'bp_estimate.objectives', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
     .bp-estimate-attribute
       .attr-label
         Assumptions
       .attr-value
-        {{bp_estimate.assumptions}} &nbsp;
+        %input.text-focus-field{type: 'text', placeholder: 'Enter Objectives', 'ng-model': 'bp_estimate.assumptions', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
   %td.bp-estimate-product-list.left{ colspan: "3"}
     %table.detail
       %tbody

@@ -54,7 +54,6 @@
        $scope.sort = new McSort({
          column: "client_name",
          compareFn: (column, a, b) ->
-           console.log(column)
            switch (column)
              when "client_name"
                a[column].localeCompare(b[column])
