@@ -88,6 +88,7 @@
                     client_types = Field.findClientTypes(fields)
                     $scope.setClientTypes(client_types)
 
+
             $scope.setClientTypes = (client_types) ->
                 client_types.options.forEach (option) ->
                     $scope[option.name] = option.id
@@ -126,6 +127,17 @@
                     keyboard: false
                     resolve:
                         deal: ->
+                            {}
+
+            $scope.showNewActivityModal = ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/activity_new_form.html'
+                    size: 'lg'
+                    controller: 'ActivityNewController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        activity: ->
                             {}
 
             $scope.showActivityEditModal = (activity) ->
@@ -386,8 +398,8 @@
                     buttonDisabled: false
                 }
 
-                $scope.reminders = []
-                $scope.completedReminders = []
+                reminders = []
+                completedReminders = []
                 $http.get('/api/reminders')
                 .then (respond) ->
                     if (respond && respond.data && respond.data.length)
@@ -427,9 +439,12 @@
                             #            curReminder.dateColorClass = 'silver';
                             curReminder.completed = !!curReminder.completed
                             if (curReminder.completed)
-                                $scope.completedReminders.push(curReminder)
+                                completedReminders.push(curReminder)
                             else
-                                $scope.reminders.push(curReminder)
+                                reminders.push(curReminder)
+
+                        $scope.completedReminders = completedReminders
+                        $scope.reminders = reminders
                 , (err) ->
 
             $scope.saveCurReminder = (curReminder) ->

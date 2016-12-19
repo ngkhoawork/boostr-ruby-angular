@@ -8,7 +8,7 @@
   }
 
   .modal-footer {
-    border-top-width: 0px;
+    border-top-width: 0;
     text-align: center;
     padding-top: 10px;
     padding-bottom: 20px;
@@ -21,6 +21,49 @@
   }
 }
 
+.popup-modal {
+  font-family: "Avenir Next", Arial, serif;
+  padding: 30px;
+  color: $main-font-color;
+  .form-group {
+    label {
+      color: $secondary-font-color;
+    }
+    input, select {
+      background-color: white;
+      font-weight: bold;
+    }
+  }
+  .date {
+    padding-left: 0;
+    padding-right: 30px;
+  }
+  .time {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .star {
+    color: $error-color;
+  }
+  .popup-modal-header {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid $separate-line-color;
+  }
+  .popup-modal-subtitle {
+    font-size: 22px;
+    font-weight: bold;
+  }
+  .popup-modal-body {
+
+  }
+  .popup-modal-footer {
+    text-align: right;
+  }
+}
 .modal-backdrop.in {
   height: 100%;
 }

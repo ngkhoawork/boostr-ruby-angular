@@ -1,0 +1,64 @@
+#activity-form-modal.popup-modal
+    .popup-modal-header
+        Add New Activity
+    %form
+        .popup-modal-body
+            .form-group
+                %label
+                    Type of Activity
+                    %span.star *
+                %select.form-control
+                    %option
+                        %ng-include{'src': '"assets/icons/pitch.svg"'}
+                        Pitch
+            .form-group
+                %label
+                    Related to
+                    %span.star *
+                %input.form-control{'placeholder': 'Choose Deal, Advertiser, Agency or add new one'}
+            .form-group
+                %label
+                    Pitched to
+                    %span.star *
+                %input.form-control{'placeholder': 'Choose Contact or add new'}
+            .col-xs-6.date
+                .form-group
+                    %label Date
+                    %input.form-control{'placeholder': 'Pick date'}
+            .col-xs-6.time
+                .form-group
+                    %label Time
+                    %input.form-control{'placeholder': 'Pick time'}
+            .form-group
+                %label
+                    Comment
+                    %span.star *
+                %input.form-control{'placeholder': 'Type your update here'}
+
+            .popup-modal-subtitle
+                Remind to follow up
+            .form-group
+                %label
+                    Reminder name
+                    %span.star *
+                %input.form-control
+            .col-xs-6.date
+                .form-group
+                    %label Date
+                    %input.form-control{'placeholder': 'Pick date'}
+            .col-xs-6.time
+                .form-group
+                    %label Time
+                    %input.form-control{'placeholder': 'Pick time'}
+            .form-group
+                %label
+                    Reminder note
+                    %span.star *
+                %textarea.form-control
+
+        .popup-modal-footer
+            %button.btn.btn-default{'type': 'submit'} Cancel
+            %button.btn.btn-warning{'type': 'submit'} Add Activity
+
+
+

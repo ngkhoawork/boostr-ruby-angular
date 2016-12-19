@@ -161,6 +161,12 @@
                     cursor: pointer;
                     color: #d3d3dc;
                     font-size: 25px;
+                    &:hover {
+                        color: darken(#d3d3dc, 10%);
+                    }
+                    &:active {
+                        color: darken(#d3d3dc, 25%);
+                    }
                 }
                 display: inline-block;
                 margin-right: -4px;
@@ -205,6 +211,13 @@
                 vertical-align: middle;
                 color: #1ABC9C;
                 margin-right: 10px;
+                &:hover {
+                    color: darken(#1ABC9C, 10%);
+                }
+                &:active {
+                    color: darken(#1ABC9C, 25%);
+                }
+
             }
             .name {
                 text-decoration: line-through;

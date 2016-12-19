@@ -1,8 +1,7 @@
 #reminders.block
 	%div.mb20
 		%span.title My Reminders
-		%add-button
-
+		-#%add-button
 	%div.reminder-item{'ng-repeat': 'reminder in reminders'}
 		%div.reminder-check
 			%i.fa.fa-check-circle-o{'ng-click': 'reminder.completed = true; saveReminder(reminder)'}
@@ -18,10 +17,10 @@
 			%a.delete-team{href: '', 'ng-click': 'deleteCurReminder(reminder)'}
 				Delete
 
-	-#%div{'ng-hide': '!completedReminders || !completedReminders.length'}
-	%div.reminders-completed-btn{'ng-click': 'showCompleted = !showCompleted'}
-		{{showCompleted ? 'Hide' : 'View'}} completed
-	%div.reminders-completed-item{'ng-show': 'showCompleted', 'ng-repeat': 'completedReminder in completedReminders'}
-		%i.fa.fa-check-circle{'ng-click': 'completedReminder.completed = false; saveReminder(completedReminder)'}
-		%span.name {{completedReminder.name}}
-		%span.date {{completedReminder.remind_on | date: 'mediumDate'}}
+	%div{'ng-hide': '!completedReminders || !completedReminders.length'}
+		%div.reminders-completed-btn{'ng-click': 'showCompleted = !showCompleted'}
+			{{showCompleted ? 'Hide' : 'View'}} completed
+		%div.reminders-completed-item{'ng-show': 'showCompleted', 'ng-repeat': 'completedReminder in completedReminders'}
+			%i.fa.fa-check-circle{'ng-click': 'completedReminder.completed = false; saveReminder(completedReminder)'}
+			%span.name {{completedReminder.name}}
+			%span.date {{completedReminder.remind_on | date: 'mediumDate'}}
