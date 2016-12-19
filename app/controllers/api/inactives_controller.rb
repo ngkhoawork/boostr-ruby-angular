@@ -1,57 +1,95 @@
 class Api::InactivesController < ApplicationController
   respond_to :json
 
-  def index
-    render json: {
-      inactives: inactives
-    }
-  end
-
-  private
-
   def inactives
-    inactives = []
-    inactive_advertisers.each do |advertiser|
-      last_activity = advertiser.activities.sort_by(&:happened_at).last
+    result = []
+
+    @inactives = Client.where(id: advertisers_with_revenue(in_range: previous_quarters) - advertisers_with_revenue(in_range: [current_quarter]))
+      .by_category(params[:category_id])
+      .by_subcategory(params[:subcategory_id])
+      .includes(:users, :advertiser_deals)
+
+    @inactives.each do |advertiser|
+      last_activity = advertiser.activities.order(happened_at: :desc).last
       sellers = advertiser.users.select do |user|
         user.user_type == SELLER ||
         user.user_type == SALES_MANAGER
       end
 
-      inactives << {
+      result << {
         id: advertiser.id,
         client_name: advertiser.name,
-        average_quarterly_spend: average_quarterly_spend(advertiser),
+        average_quarterly_spend: average_quarterly_spend(advertiser, in_range: previous_quarters),
         open_pipeline: open_pipeline(advertiser),
         last_activity: last_activity.as_json(override: true, only: [:id, :name, :happened_at, :activity_type_name, :comment]),
         sellers: sellers.map(&:name)
       }
     end
 
-    inactives.sort_by{|el| el[:average_quarterly_spend] * -1 }
+    render json: result.sort_by{ |el| el[:average_quarterly_spend] * -1 }
   end
 
-  def inactive_advertisers
-    @inactives = Client.where(id: advertisers_with_consecutive_revenues_in_past - advertisers_with_current_revenue)
+  def seasonal_inactives
+    result = []
+
+    @inactives = Client.where(id: advertisers_with_revenue(in_range: comparison_window[:first]) - advertisers_with_revenue(in_range: comparison_window[:second]))
       .by_category(params[:category_id])
       .by_subcategory(params[:subcategory_id])
-      .includes(:activities, :users, :advertiser_deals)
+      .includes(:users, :advertiser_deals)
+
+    @inactives.each do |advertiser|
+      last_activity = advertiser.activities.order(happened_at: :desc).last
+      sellers = advertiser.users.select do |user|
+        user.user_type == SELLER ||
+        user.user_type == SALES_MANAGER
+      end
+
+      result << {
+        id: advertiser.id,
+        client_name: advertiser.name,
+        average_quarterly_spend: average_quarterly_spend(advertiser, in_range: comparison_window[:first]),
+        open_pipeline: open_pipeline(advertiser),
+        last_activity: last_activity.as_json(override: true, only: [:id, :name, :happened_at, :activity_type_name, :comment]),
+        sellers: sellers.map(&:name)
+      }
+    end
+
+    render json: result.sort_by{ |el| el[:average_quarterly_spend] * -1 }
   end
 
-  def advertisers_with_current_revenue
-    time_dimension = TimeDimension.find_by(start_date: current_quarter.first, end_date: current_quarter.last)
-    AccountRevenueFact
-      .joins("INNER JOIN account_dimensions on account_revenue_facts.account_dimension_id = account_dimensions.id")
-      .where('account_dimensions.account_type = ?', Client::ADVERTISER)
-      .where('revenue_amount > 0')
-      .where(time_dimension_id: time_dimension.id)
-      .select(:account_dimension_id)
-      .map(&:account_dimension_id)
+  def soon_to_be_inactive
+    result = []
+
+    @inactives = Client.where(id: advertisers_with_decreased_revenue)
+      .by_category(params[:category_id])
+      .by_subcategory(params[:subcategory_id])
+      .includes(:users, :advertiser_deals)
+
+    @inactives.each do |advertiser|
+      last_activity = advertiser.activities.order(happened_at: :desc).last
+      sellers = advertiser.users.select do |user|
+        user.user_type == SELLER ||
+        user.user_type == SALES_MANAGER
+      end
+
+      result << {
+        id: advertiser.id,
+        client_name: advertiser.name,
+        average_quarterly_spend: average_quarterly_spend(advertiser, in_range: previous_quarters(lookback: 1)),
+        open_pipeline: open_pipeline(advertiser),
+        last_activity: last_activity.as_json(override: true, only: [:id, :name, :happened_at, :activity_type_name, :comment]),
+        sellers: sellers.map(&:name)
+      }
+    end
+
+    render json: result.sort_by{ |el| el[:average_quarterly_spend] * -1 }
   end
 
-  def advertisers_with_consecutive_revenues_in_past
-    time_dimensions = TimeDimension.where(start_date: previous_quarters.map(&:first), end_date: previous_quarters.map(&:last))
-    advertisers = []
+  private
+
+  def advertisers_with_revenue(in_range:)
+    time_dimensions = TimeDimension.where(start_date: in_range.map(&:first), end_date: in_range.map(&:last))
+    advertiser_ids = []
 
     time_dimensions.each_with_index do |time_dimension, index|
       accounts_with_revenues = AccountRevenueFact
@@ -63,17 +101,34 @@ class Api::InactivesController < ApplicationController
         .map(&:account_dimension_id)
 
       if index == 0
-        advertisers.concat accounts_with_revenues
+        advertiser_ids.concat accounts_with_revenues
       else
-        advertisers.concat(accounts_with_revenues & advertisers)
+        advertiser_ids.concat(accounts_with_revenues & advertiser_ids)
       end
     end
 
-    advertisers
+    advertiser_ids.uniq
   end
 
-  def average_quarterly_spend(advertiser)
-    time_dimensions = TimeDimension.where(start_date: previous_quarters.map(&:first), end_date: previous_quarters.map(&:last))
+  def advertisers_with_decreased_revenue
+    current_quarter_dimension = TimeDimension.find_by(start_date: current_quarter.first, end_date: current_quarter.last)
+    previous_quarter_dimension = TimeDimension.find_by(start_date: previous_quarters(lookback: 1).map(&:first), end_date: previous_quarters(lookback: 1).map(&:last))
+    advertiser_ids = advertisers_with_revenue(in_range: previous_quarters(lookback: 1) + [current_quarter])
+    advertiser_ids.select do |advertiser_id|
+      previous_quarter_revenue = AccountRevenueFact.find_by(
+        account_dimension_id: advertiser_id,
+        time_dimension_id: previous_quarter_dimension.id
+      ).revenue_amount
+
+      AccountRevenueFact.where(account_dimension_id: advertiser_id)
+      .where(time_dimension_id: current_quarter_dimension.id)
+      .where('revenue_amount <= ?', previous_quarter_revenue * (revenue_decrease / 100.0))
+      .exists?
+    end
+  end
+
+  def average_quarterly_spend(advertiser, in_range:)
+    time_dimensions = TimeDimension.where(start_date: in_range.map(&:first), end_date: in_range.map(&:last))
     @total_revenues ||= AccountRevenueFact.where(account_dimension_id: @inactives.ids)
     .where(time_dimension_id: time_dimensions.ids)
     .group(:account_dimension_id)
@@ -81,7 +136,7 @@ class Api::InactivesController < ApplicationController
     .collect{|el| {account_dimension_id: el.account_dimension_id, total_revenue: el.total_revenue} }
 
     total_revenue = @total_revenues.find{|el| el[:account_dimension_id] == advertiser.id}
-    (total_revenue[:total_revenue] / qtr_offset).round(0)
+    (total_revenue[:total_revenue] / in_range.length).round(0)
   end
 
   def open_pipeline(advertiser)
@@ -93,18 +148,8 @@ class Api::InactivesController < ApplicationController
     end
   end
 
-  def advertiser_type_id
-    Client.advertiser_type_id(current_user.company)
-  end
-
   def company
     @company ||= current_user.company
-  end
-
-  def full_time_period
-    first = Date.today.beginning_of_quarter << (qtr_offset * 3)
-    last = Date.today
-    first..last
   end
 
   def current_quarter
@@ -113,17 +158,26 @@ class Api::InactivesController < ApplicationController
     first..last
   end
 
-  def lookback_window
-    first = Date.today.beginning_of_quarter << (qtr_offset * 3)
-    last = Date.today.end_of_quarter << (1 * 3)
-    first..last
+  def comparison_window
+    if params[:comparison_first_start]  && params[:comparison_first_end] &&
+       params[:comparison_second_start] && params[:comparison_second_end]
+      first = Date.parse(params[:comparison_first_start])..Date.parse(params[:comparison_first_end])
+      second = Date.parse(params[:comparison_second_start])..Date.parse(params[:comparison_second_end])
+    else
+      first = previous_quarters(lookback: 2).first
+      second = previous_quarters(lookback: 2).second
+    end
+    {
+      first: [first],
+      second: [second]
+    }
   end
 
-  def previous_quarters
+  def previous_quarters(lookback: qtr_offset)
     quarters = []
-    qtr_offset.times do
-      first = Date.today.beginning_of_quarter << ((qtr_offset - quarters.length) * 3)
-      last = Date.today.end_of_quarter << ((qtr_offset - quarters.length) * 3)
+    lookback.times do
+      first = Date.today.beginning_of_quarter << ((lookback - quarters.length) * 3)
+      last = Date.today.end_of_quarter << ((lookback - quarters.length) * 3)
       quarters << (first..last)
     end
     quarters
@@ -131,5 +185,9 @@ class Api::InactivesController < ApplicationController
 
   def qtr_offset
     (params[:qtrs] || 2).to_i
+  end
+
+  def revenue_decrease
+    params[:revenue_decrease] || 75
   end
 end
