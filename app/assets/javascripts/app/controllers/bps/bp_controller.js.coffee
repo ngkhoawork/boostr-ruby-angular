@@ -1,6 +1,6 @@
 @app.controller 'BPController',
-  ['$scope', '$document', '$modal', 'BP', 'BpEstimate',
-    ($scope, $document, $modal, BP, BpEstimate) ->
+  ['$scope', '$rootScope', '$document', '$modal', 'BP', 'BpEstimate',
+    ($scope, $rootScope, $document, $modal, BP, BpEstimate) ->
 
       class McSort
         constructor: (opts) ->
@@ -39,7 +39,11 @@
           @execute()
 
       #create chart===========================================================
-      $scope.teamFilters = []
+      $scope.bpEstimateFilters = [
+        {name: "My Estimates", value: "my"},
+        {name: "My Team's Estimates", value: "team"},
+        {name: "All Estimates", value: "all"}
+      ]
       $scope.teamId = ''
       $scope.monthlyForecastData = []
       $scope.totalData = null
@@ -67,10 +71,21 @@
 
       #init query
       init = () ->
+        if $rootScope.userType == 1
+          $scope.selectedFilter = {name: "My Estimates", value: "my"}
+        else if $rootScope.userType == 2
+          $scope.selectedFilter = {name: "My Team's Estimates", value: "team"}
+        else
+          $scope.selectedFilter = {name: "All Estimates", value: "all"}
         BP.all().then (bps) ->
           $scope.bps = bps
 
       init()
+
+      $scope.selectFilter = (filter) ->
+        $scope.selectedFilter = filter
+        if $scope.selectedBP.id != 0
+          loadBPData()
 
       $scope.selectBP = (bp) ->
         $scope.selectedBP = bp
@@ -129,8 +144,8 @@
         return data
 
       loadBPData = () ->
-
-        BP.get($scope.selectedBP.id).then (data) ->
+        filters = { bp_id: $scope.selectedBP.id, filter: $scope.selectedFilter.value }
+        BpEstimate.all(filters).then (data) ->
           $scope.revenues = data.current.revenues
           $scope.pipelines = data.current.pipelines
 
@@ -142,7 +157,7 @@
           $scope.year_pipelines = data.year.pipelines
           $scope.year_time_period = data.prev.year_time_period
 
-          $scope.bpEstimates = _.map data.bp.bp_estimates, buildBPEstimate
+          $scope.bpEstimates = _.map data.bp_estimates, buildBPEstimate
 
           setMcSort()
 

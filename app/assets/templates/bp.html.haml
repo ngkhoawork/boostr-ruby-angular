@@ -18,6 +18,17 @@
                   %a{ href: '', ng: { click: 'selectBP(bp)' } }
                     {{ bp.name }}
 
+          %ul.kpi-block__filter.pull-left
+            %li{ dropdown: true }
+              %a{ href: '', dropdown: { toggle: true } }
+                %span
+                  {{ selectedFilter.name }}
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'filter in bpEstimateFilters', class: '{active: filter.value == selectedFilter.value}' } }
+                  %a{ href: '', ng: { click: 'selectFilter(filter)' } }
+                    {{ filter.name }}
+
     .row
       .col-md-12.text-center
         .alerts{ 'ng-if': 'notification' }

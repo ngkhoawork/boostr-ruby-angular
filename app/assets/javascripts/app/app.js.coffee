@@ -167,6 +167,7 @@
 @app.run ['$rootScope', ($rootScope) ->
   $rootScope.currentUserIsLeader = currentUserIsLeader
   $rootScope.transloaditTemplate = transloaditTemplate
+  $rootScope.userType = userType
 ]
 
 @service = angular.module 'services', ['ngResource']

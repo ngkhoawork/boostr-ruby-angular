@@ -24,22 +24,27 @@
           method: 'POST'
           transformRequest: transformRequest
 
+      @all = (params) ->
+        deferred = $q.defer()
+        resource.get params, (bp_estimates) ->
+          deferred.resolve(bp_estimates)
+        deferred.promise
       @create = (params) ->
         deferred = $q.defer()
-        resource.save params, (bp) ->
-          deferred.resolve(bp)
+        resource.save params, (bp_estimate) ->
+          deferred.resolve(bp_estimate)
         deferred.promise
 
       @update = (params) ->
         deferred = $q.defer()
-        resource.update params, (bp) ->
-          deferred.resolve(bp)
+        resource.update params, (bp_estimate) ->
+          deferred.resolve(bp_estimate)
         deferred.promise
 
       @delete = (params) ->
         deferred = $q.defer()
-        resource.delete params, (bp) ->
-          deferred.resolve(bp)
+        resource.delete params, (bp_estimate) ->
+          deferred.resolve(bp_estimate)
         deferred.promise
 
       return

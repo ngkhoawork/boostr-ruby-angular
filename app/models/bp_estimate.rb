@@ -13,4 +13,19 @@ class BpEstimate < ActiveRecord::Base
   def user_name
     user.name
   end
+
+  def full_json
+    self.as_json( {
+        include: {
+            bp_estimate_products: {
+                include: {
+                    product: {}
+                }
+            },
+            client: {},
+            user: {}
+        },
+        methods: [:client_name, :user_name]
+    })
+  end
 end
