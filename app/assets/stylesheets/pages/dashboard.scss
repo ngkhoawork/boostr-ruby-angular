@@ -1,604 +1,268 @@
 #dashboard {
-  #unassigned-contacts {
-    .contact-list {
-      border-top: 1px solid $very-light-gray;
-      .contact-log {
-        padding: 30px 40px 30px 10px;
-        border-bottom: 1px solid $very-light-gray;
-        .log {
-          a {
-            color: #75b4e2;
-          }
+    padding-top: 30px;
+    width: 1900px;
+    font-family: "Avenir Next", Arial, serif;
+    color: $main-font-color;
+    a {
+        color: $secondary-color;
+        font-weight: 600;
+    }
+    .main-title {
+        h2 {
+            margin: 40px 0;
         }
-      }
-      .contact-info {
-        padding: 10px 0;
-        border-bottom: 1px solid $very-light-gray;
-        background-color: $white;
-        .info {
-          display: inline-block;
-          vertical-align: middle;
-          width: calc(100% - 80px);
-          p {
-            padding: 2px 0px 2px 0px;
-            margin: 0px;
-          }
-
-          p.email {
-            padding-left: 10px;
-            span.datetime {
-              color: #c4c9cf;
+    }
+    .block {
+        margin-bottom: 30px;
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+    }
+    .time-period {
+        float: right;
+        span {
+            display: inline-block;
+            padding: 12px 5px;
+            margin: 0 10px;
+            font-weight: 600;
+            cursor: pointer;
+            &:first-child {
+                color: $secondary-font-color;
+                cursor: default;
             }
-          }
-
-          p.notification {
-            padding-left: 10px;
-            color: #c4c9cf;
-          }
-
-          p.warning {
-            padding-left: 10px;
-            color: #f04d44;
-          }
+            &.active {
+                color: $main-color;
+                border-bottom: 2px solid $main-color;
+            }
         }
-
-        .action {
-          width: 68px;
-          vertical-align: middle;
-          display: none;
+    }
+    #stats {
+        .stats-col {
+            margin-right: -4px;
+            width: 20%;
+            text-align: center;
+            height: 150px;
+            position: relative;
+            display: inline-block;
+            svg {
+                position: absolute;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+                g {
+                    path:last-child {
+                        fill: $main-color
+                    }
+                }
+                circle {
+                    fill: $main-color
+                }
+            }
+            .col-body-wrap {
+                width: 100%;
+                height: 100%;
+                display: table;
+                .col-body {
+                    display: table-cell;
+                    vertical-align: middle;
+                    .title {
+                        margin-right: 0;
+                    }
+                    .description {
+                        color: $secondary-font-color;
+                    }
+                }
+            }
         }
-      }
-      .contact-info:hover {
-        .action {
-          display: inline-block;
+    }
+    #activity {
+        .activity-item {
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid $separate-line-color;
+            .activity-header {
+                color: $secondary-font-color;
+                margin-bottom: 15px;
+                svg {
+                    width: 24px;
+                    height: 24px;
+                    vertical-align: bottom;
+                    margin-right: 10px;
+                }
+            }
+            .activity-body {
+                padding-right: 25%;
+                margin-bottom: 15px;
+                p {
+                    margin-bottom: 5px;
+                }
+            }
+            .activity-control {
+                a {
+                    color: $secondary-font-color;
+                    padding-right: 10px;
+                    text-decoration: none;
+                }
+            }
         }
-      }
+        .load-more {
+            text-align: center;
+            a {
+                text-decoration: none;
+                font-weight: 600;
+                color: $secondary-font-color;
+            }
+        }
     }
-  }
-
-  #activities-feed {
-    .section {
-
-      margin-top: 20px;
+    #open-deals, #pacing-alerts {
+        table {
+            thead {
+                background-color: white;
+                th {
+                    color: $secondary-font-color !important;
+                    border-left: none;
+                    border-right: none;
+                }
+            }
+            tr {
+                &:nth-of-type(even) {
+                    background-color: #fafafb;
+                }
+                th, td {
+                    text-align: left;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                }
+                th:last-child, td:last-child {
+                    text-align: right;
+                }
+                .stage {
+                    select {
+                        height: 40px;
+                        border: none;
+                        background-color: transparent;
+                        cursor: pointer;
+                        outline: none;
+                    }
+                }
+            }
+        }
     }
-
-    .activity-filter {
-      text-align: center;
-      margin-top: 6px;
-      margin-right: 50px;
-      div {
-        color: #959fa9;
-        padding: 8px 10px;
-        border: none;
-        border-radius: 4px;
-        display: inline-block;
-        cursor: pointer;
-        font-size: 13px;
-      }
-      div.active {
-        background-color: #FF7E30;
-        color: #FFFFFF;
-      }
-      div:hover {
-        background-color: $brand-primary-lighten;
-        color: #FFFFFF;
-      }
+    #reminders {
+        .reminder-item {
+            border-bottom: 1px solid $separate-line-color;
+            padding-top: 5px;
+            padding-bottom: 20px;
+            .reminder-check {
+                text-align: center;
+                i {
+                    cursor: pointer;
+                    color: #d3d3dc;
+                    font-size: 25px;
+                }
+                display: inline-block;
+                margin-right: -4px;
+                width: 12%;
+            }
+            .reminder-body {
+                vertical-align: middle;
+                display: inline-block;
+                width: 88%;
+                padding-right: 25%;
+                margin-top: 15px;
+                margin-bottom: 15px;
+                p {
+                    margin-bottom: 5px;
+                }
+            }
+            .reminder-control {
+                padding-left: 12%;
+                a {
+                    color: $secondary-font-color;
+                    padding-right: 10px;
+                    text-decoration: none;
+                }
+            }
+        }
+        .reminders-completed-btn {
+            text-align: center;
+            color: $secondary-font-color;
+            font-weight: 600;
+            padding: 20px 0;
+            border-bottom: 1px solid $separate-line-color;
+            cursor: pointer;
+        }
+        .reminders-completed-item {
+            border-bottom: 1px solid $separate-line-color;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            line-height: 25px;
+            i {
+                cursor: pointer;
+                font-size: 25px;
+                vertical-align: middle;
+                color: #1ABC9C;
+                margin-right: 10px;
+            }
+            .name {
+                text-decoration: line-through;
+                vertical-align: middle;
+            }
+            .date {
+                float: right;
+                color: $secondary-font-color;
+            }
+        }
     }
-
-  }
-
-  .activities-feed {
-    .long-text {
-      height: 100px;
-      overflow: auto;
+    #unassigned-contacts {
+        .contact {
+            border-bottom: 1px solid $separate-line-color;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            position: relative;
+            &:hover {
+                button {
+                    display: block;
+                }
+            }
+            p:nth-child(4) {
+                color: $error-color;
+            }
+            input {
+                font-weight: 600;
+                border: none;
+                border-bottom: 1px dashed $main-font-color;
+                &:focus {
+                    //padding: 5px 10px;
+                    //border: 1px solid $separate-line-color;
+                    //border-radius: 4px;
+                    outline: none;
+                }
+            }
+            button {
+                height: 36px;
+                padding: 5px 16px;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                margin: auto;
+                display: none;
+                &:active {
+                    outline: none;
+                }
+                svg {
+                    width: 15px;
+                    margin-right: 5px;
+                    vertical-align: middle;
+                    path {
+                        fill: white;
+                    }
+                }
+            }
+        }
     }
-
-    .attachments {
-      padding-top: 10px;
-      a {
-        color: #FF7E30;
-      }
-    }
-  }
-
-  .pad3 {
-    width: 490px;
-  }
-
-  .trigger-click.icon-show-activities-detail,
-  .trigger-click.icon-hide-activities-detail {
-    display: table;
-    margin-bottom: 0;
-  }
-
-  .icon-show-activities-detail svg,
-  .icon-hide-activities-detail svg {
-    display: table-cell;
-    vertical-align: middle;
-  }
-
-}
-
-a#add-contact {
-  outline: medium none;
-}
-
-#reminders {
-  margin-bottom: 20px;
-  background-color: #fff;
-  padding: 0;
-  margin-top: 40px;
-  h3 {
-    background-color: #f6f9fc;
-    border-radius: 5px 5px 0 0;
-    height: 32px;
-    line-height: 1.1;
-    margin: 0;
-    padding: 0 3px;
-  }
-
-  .checkbox, .radio {
-    display: none;
-  }
-}
-
-#reminders-list .item-reminders:nth-of-type(1) {
-  border-top: 1px solid $very-light-gray;
-}
-
-
-
-.checkbox:checked + .checkbox-custom::before, .radio:checked + .radio-custom::before {
-  color: #ff8e4a;
-  left: 1px;
-  line-height: 18px;
-  position: absolute;
-}
-
-.checkbox-custom, .radio-custom, .label {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.checkbox-custom, .radio-custom {
-  border: 2px solid #ccc;
-  border-radius: 3px;
-  height: 20px;
-  position: relative;
-  width: 20px;
-}
-
-.hide-completed-reminders,
-.show-details,
-.text-wrap.edit,
-.toggle-hide {
-  display: none;
-}
-
-.add-reminder {
-  display: table;
-  float: right;
-  outline: none;
-}
-
-.btn-wrap .trigger-click {
-  display: table-cell;
-  vertical-align: middle;
-  cursor: pointer;
-}
-
-.add-reminder svg {
-  display: table-cell;
-  fill: #ff7e30;
-  height: 32px;
-  vertical-align: middle;
-  width: 32px;
-}
-
-.add-reminder svg:hover {
-  fill: #e35500;
-}
-
-.checkbox-wrapper {
-  float: left;
-}
-
-.panel-heading {
-  height: 70px;
-}
-
-.panel.panel-default.item-reminders {
-  border: medium none;
-}
-
-.item-reminders .panel-heading {
-  border-radius: 0;
-  border-bottom: 1px solid $very-light-gray;
-  margin: 0 14px;
-  padding: 0;
-  background-color: $white;
-}
-
-.panel-collapse.collapse.in {
-  background: #f9fafa none repeat scroll 0 0;
-}
-
-.panel-group .panel + .panel {
-  margin-top: 0;
-}
-
-.show-reminders-details {
-  display: table-cell;
-  vertical-align: middle;
-  outline: medium none;
-}
-
-.btn-wrap {
-  display: table;
-  float: right;
-  height: 100%;
-}
-
-.text-wrap {
-  float: left;
-  padding: 5px 5px 5px 10px;
-}
-
-.red {
-  color: #f04d44;
-}
-
-.yellow {
-  color: #fbb361;
-}
-
-.silver {
-  color: #a6b0b7;
-}
-
-.text-wrap.show-detailse-wrap .name {
-  line-height: 60px;
-}
-
-.checkbox-wrapper > input {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.checkbox-wrapper {
-  float: left;
-  height: 70px;
-  line-height: 70px;
-}
-
-.checkbox-wrapper input {
-  margin: 0;
-  padding: 0;
-}
-
-.text-wrap > p {
-  margin: 0;
-}
-
-.panel-body.details > div > p:first-child {
-  float: left;
-  width: 13%;
-}
-
-.edit-delete-wrap {
-  margin-left: 13%;
-}
-
-.panel-body.details {
-  padding-bottom: 5px;
-}
-
-.panel {
-  box-shadow: none;
-}
-
-.panel.panel-default.item-reminders:last-child .panel-heading {
-  border-bottom: 1px solid $very-light-gray;
-}
-
-.completed-reminders {
-  height: 60px;
-  line-height: 60px;
-}
-
-.completed-reminders-section > span {
-  margin: 0;
-  text-transform: uppercase;
-  clear: both;
-  display: block;
-  text-align: center;
-  height: 60px;
-  line-height: 60px;
-}
-
-.panel-group {
-  margin-bottom: 0;
-}
-
-.text-wrap .name {
-  font-weight: bold;
-}
-
-/*completed reminders*/
-.completed-reminders.hide-completed-reminders {
-  width: 100%;
-}
-
-.completed-date {
-  float: right;
-}
-
-.main-wrap {
-  border-top: 1px solid $very-light-gray;
-  margin: 0 14px;
-  clear: both;
-}
-
-.completed-reminder > label {
-  display: table;
-  float: left;
-  margin: 0;
-}
-
-.completed-date {
-  display: block;
-  float: right;
-  height: 60px;
-  line-height: 60px;
-}
-
-.completed-name {
-  display: block;
-  float: left;
-  height: 60px;
-  line-height: 60px;
-  margin-left: 10px;
-}
-
-.details.details-edit > div > div p:first-child {
-  float: left;
-  width: 13%;
-  margin-top: 7px;
-  text-transform: lowercase;
-}
-
-.bs-datepicker.date-edit {
-  float: left;
-  height: 100%;
-  width: 84%;
-}
-
-.bs-datepicker.date-edit .edit {
-  display: block;
-  float: left;
-  margin: 0;
-  width: 100%;
-}
-
-.date-edit .edit,
-.details-edit .name,
-.details-edit .description,
-.details-edit .time-edit > input {
-  width: 84%;
-  height: 36px;
-  background-color: $silver-background;
-  border: 1px solid $silver-border;
-  border-radius: 3px;
-  padding-left: 10px;
-}
-
-.details-edit .time-edit {
-  &.spec > input {
-    width: 50%;
-    height: 36px;
-    background-color: $silver-background;
-    border: none;
-    border-radius: 3px;
-
-    &:hover {
-      border: 1px solid $brand-primary;
-      background-color: $silver-background;
-    }
-
-    &:focus {
-      border: 1px solid $brand-primary;
-      background-color: $white;
-      outline: none;
-    }
-  }
-}
-
-.details-edit {
-  .name:focus,
-  .date-edit .edit:focus,
-  .description:focus,
-  .time-edit > input:focus,
-  .name:hover,
-  .date-edit .edit:hover,
-  .description:hover,
-  .time-edit > input:hover {
-    background-color: $white;
-  }
-}
-
-.details-edit .description {
-  width: 84%;
-  height: 80px;
-  padding: 5px 10px;
-  resize: none;
-}
-
-.panel-body.details.details-edit div.edit-section-wrapper > div {
-  margin: 10px 0;
-  min-height: 36px;
-}
-
-.save-edited-reminder {
-  background: transparent none repeat scroll 0 0;
-  border-radius: 15px;
-  color: $brand-primary;
-  height: 30px;
-  text-transform: uppercase;
-  width: 83px;
-  border: 1px solid;
-}
-
-.save-edited-reminder:hover {
-  color: $placeholder-text;
-}
-
-.details-edit .action-wrap {
-  margin-left: 13%;
-}
-
-.edit-description-wrap {
-  margin: 10px 0 20px;
-}
-
-.completed-reminder .completed-name {
-  text-decoration: line-through;
-}
-
-input.show-reminder {
-  -webkit-appearance: none;
-  width: 1em;
-  height: 1em;
-  &:after {
-    content: '▹';
-  }
-  &.open {
-    &:after {
-      content: '▿';
-    }
-  }
-}
-
-.dropdown-menu td > .btn.btn-default {
-  display: block;
-  height: 47px;
-  margin-left: 3px;
-  outline: medium none;
-}
-
-.bs-datepicker .dropdown-menu table tr th .btn.pull-left,
-.bs-datepicker .dropdown-menu table tr th .btn.pull-right {
-  outline: medium none;
-}
-
-.bs-datepicker .dropdown-menu table tr th .btn.pull-left:active,
-.bs-datepicker .dropdown-menu table tr th .btn.pull-right:active,
-.bs-datepicker .dropdown-menu table tr th .btn.pull-left:focus,
-.bs-datepicker .dropdown-menu table tr th .btn.pull-right:focus,
-.bs-datepicker .dropdown-menu table tr th .btn.btn-sm:not(.pull-right):not(.pull-left):active,
-.bs-datepicker .dropdown-menu table tr th .btn.btn-sm:not(.pull-right):not(.pull-left):active {
-  border-color: $brand-primary;
-  outline: 1px solid $brand-primary;
-}
-
-.dropdown-menu {
-  td > .btn.btn-default:active,
-  td > .btn.btn-default:focus,
-  table td.form-group > input.form-control:active,
-  table td.form-group > input.form-control:focus {
-    border-color: $brand-primary;
-    outline: 1px solid $brand-primary;
-  }
-}
-
-.details-edit .edit-section-wrapper {
-  .bs-datepicker {
-    cursor: text;
-    float: left;
-    line-height: 36px;
-    min-height: 36px;
-    padding-left: 10px;
-    width: 87%;
-  }
-
-  .time-edit.spec > input {
-    background-color: $gray-ultralight;
-    border-radius: 3px;
-    float: left;
-    height: 36px;
-    margin: 0;
-    padding: 0 0 0 10px;
-    width: 87%;
-  }
-
-  .bs-datepicker:hover {
-    border: 1px solid $soft-orange;
-    border-radius: 4px;
-  }
-
-  .person + span {
-    float: left;
-    width: 87%;
-  }
-
-  .note + span {
-    min-height: 36px;
-    width: 87%;
-  }
-
-  .editable-control {
-    min-height: 36px;
-    width: 87%;
-  }
-
-  .btn.cancel-edited-reminder {
-    margin-left: 12%;
-  }
-
-  .form-inline.editable-wrap {
-    float: left;
-    width: 87%;
-  }
-
-  .edit-description-wrap .form-inline .form-group {
-    width: 100%;
-  }
-
-  .editable-controls.form-group {
-    width: 100%;
-  }
-
-  .editable-input.form-control.ng-pristine.ng-valid.ng-touched {
-    height: 36px;
-    padding: 0 0 0 10px;
-    width: 100% !important;
-  }
-
-  textarea.editable-input.form-control.ng-pristine.ng-valid.ng-touched {
-    height: 36px;
-    padding: 0 0 0 10px;
-    width: 100% !important;
-  }
-
-  .edit-section-wrapper .bs-datepicker {
-  }
-
-  .editable-input {
-    color: $dark-grayish-blue-1;
-  }
-
-  .editable-input, .editable-input:focus {
-    width: 100% !important;
-  }
-
-  textarea.editable-input.form-control.ng-pristine.ng-valid.ng-touched {
-    height: 70px;
-    padding: 0 0 0 10px;
-    width: 100%;
-    resize: none;
-    color: $dark-grayish-blue-1;
-  }
-  .btn.cancel-edited-reminder {
-    margin-left: 12%;
-  }
 }
 

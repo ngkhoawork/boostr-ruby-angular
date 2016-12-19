@@ -1,0 +1,42 @@
+#stats.block
+	%div{'ng-hide': 'forecast'}
+		%h4 Oops! No quota, no commissions.
+	%div{'ng-show': 'forecast'}
+		%div.mb40
+			%span.title My Stats
+			.time-period
+				%span Time period:
+				%span.active This Qtr
+				%span Next Qtr
+
+		%div
+			%div.stats-col
+				%svg#progress-circle
+				.col-body-wrap
+					.col-body
+						#progress-number.title 0%
+						.description Attainment
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.title {{forecast.quota | formatMoney}}
+						.description Quota
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.title {{forecast.amount | formatMoney}}
+						.description Forecast
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.title {{forecast.gap_to_quota * -1 | formatMoney}}
+						.description Gap to Goal
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.title {{forecast.new_deals_needed || 0}}
+						.description Deals Needed
