@@ -39,7 +39,7 @@
         %table.table.gray-table
           %thead
             %tr
-              %th.left{ width: "150" }
+              %th.left{ width: "200" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("client_name")' } }
                   Account
                   %i{ ng: { class: "{ 'fa': sort.column == 'client_name', 'fa-sort-asc': sort.column == 'client_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'client_name' && sort.direction == 'desc' }" } }
@@ -47,9 +47,9 @@
                 %a.sort{ href: '', ng: { click: 'sort.toggle("user_name")' } }
                   Seller
                   %i{ ng: { class: "{ 'fa': sort.column == 'user_name', 'fa-sort-asc': sort.column == 'user_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'user_name' && sort.direction == 'desc' }" } }
-              %th{ width: "150" }
+              %th{ width: "130" }
                 {{selectedBP.time_period.name}} Pipeline
-              %th{ width: "150" }
+              %th{ width: "130" }
                 {{selectedBP.time_period.name}} Revenue
               %th{ width: "150" }
                 {{selectedBP.time_period.name}} Estimate
