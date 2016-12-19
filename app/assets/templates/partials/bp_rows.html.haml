@@ -34,26 +34,26 @@
       {{ (bp_estimate.estimate_seller / bp_estimate.prev_revenue - 1) * 100 | number:2 }}%
 
 %tr.bp-estimate-detail{ ng: { if: 'toggleId == bp_estimate.id' } }
-  %td.bp-estimate-wrapper.left
+  %td.bp-estimate-wrapper.left{ colspan: '3' }
     .bp-estimate-attribute
       .attr-label
         Objectives
       .attr-value
-        %input.text-focus-field{type: 'text', placeholder: 'Enter Objectives', 'ng-model': 'bp_estimate.objectives', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Objectives', 'ng-model': 'bp_estimate.objectives', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
     .bp-estimate-attribute
       .attr-label
         Assumptions
       .attr-value
-        %input.text-focus-field{type: 'text', placeholder: 'Enter Assumptions', 'ng-model': 'bp_estimate.assumptions', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Assumptions', 'ng-model': 'bp_estimate.assumptions', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
   %td.bp-estimate-product-list.left{ colspan: "3"}
     %table.detail
       %tbody
         %tr
-          %th{ width: '180' }
+          %th{ width: "145" }
             Products
-          %th.center
+          %th.center{ width: "150" }
             {{selectedBP.time_period.name}} Estimate
-          %th.center
+          %th.center{ width: "144" }
             Mgr Estimate
         %tr{ ng: { repeat: 'bp_estimate_product in bp_estimate.bp_estimate_products' } }
           %td {{ bp_estimate_product.product.name }}
@@ -71,4 +71,4 @@
           %td
             {{ totalSum(bp_estimate.bp_estimate_products, 'estimate_mgr') | currency:'$':0 }}
 
-  %td{ colspan: "6"}
+  %td{ colspan: "4"}

@@ -30,7 +30,7 @@
                     {{ filter.name }}
 
     .row
-      .col-md-12.text-center
+      .col-md-12.text-center.bp-table-wrapper
         .alerts{ 'ng-if': 'notification' }
           .alert.alert-success
             %i.fa.fa-check-circle
@@ -39,22 +39,30 @@
         %table.table.gray-table
           %thead
             %tr
-              %th.left{ width: "200" }
+              %th.left{ width: "150" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("client_name")' } }
                   Account
                   %i{ ng: { class: "{ 'fa': sort.column == 'client_name', 'fa-sort-asc': sort.column == 'client_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'client_name' && sort.direction == 'desc' }" } }
-              %th.left
+              %th.left{ width: "150" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("user_name")' } }
                   Seller
                   %i{ ng: { class: "{ 'fa': sort.column == 'user_name', 'fa-sort-asc': sort.column == 'user_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'user_name' && sort.direction == 'desc' }" } }
-              %th {{selectedBP.time_period.name}} Pipeline
-              %th {{selectedBP.time_period.name}} Revenue
-              %th {{selectedBP.time_period.name}} Estimate
-              %th Mgr Estimate
-              %th {{yearQuarter}} Revenue
-              %th % Change - YoY
-              %th {{prevQuarter}} Revenue
-              %th % Change - QoQ
+              %th{ width: "150" }
+                {{selectedBP.time_period.name}} Pipeline
+              %th{ width: "150" }
+                {{selectedBP.time_period.name}} Revenue
+              %th{ width: "150" }
+                {{selectedBP.time_period.name}} Estimate
+              %th{ width: "150" }
+                Mgr Estimate
+              %th{ width: "130" }
+                {{yearQuarter}} Revenue
+              %th{ width: "130" }
+                {{'% Change - YoY'}}
+              %th{ width: "130" }
+                {{prevQuarter}} Revenue
+              %th{ width: "130" }
+                {{'% Change - QoQ'}}
           %tbody{ ng: { if: 'bpEstimates.length > 0', repeat: 'bp_estimate in bpEstimates', include: "'partials/bp_rows.html'" } }
           %tbody{ ng: { if: 'bpEstimates.length == 0' } }
             %tr

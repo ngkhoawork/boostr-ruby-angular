@@ -600,6 +600,8 @@ tr:hover {
   }
   .bp-estimate-product-list {
     table.detail {
+      width: 100%;
+      table-layout: fixed;
       tr {
         th {
           padding: 10px 8px;
