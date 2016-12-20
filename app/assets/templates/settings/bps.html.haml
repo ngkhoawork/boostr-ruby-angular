@@ -7,30 +7,6 @@
             = inline_svg 'icons/add.svg'
         %h3.title Business Plans
 
-
-    -#.row.legend.well
-    -#  .col-xs-12
-    -#    %span Filter by
-    -#    %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
-    -#    .date-picker-wrap
-    -#      %div.date-picker#kpi-date-picker{'date-range-picker': true,
-    -#                                       'ng-model': 'datePicker',
-    -#                                       :options => "{locale: {format: 'MMMM D, YYYY',
-    -#                                                              cancelLabel: 'Clear'},
-    -#                                                     eventHandlers: {'apply.daterangepicker': datePickerApply,
-    -#                                                                     'cancel.daterangepicker': datePickerCancel}}"}
-    -#        Time period
-    -#      %span.caret
-    -#
-    -#    %span#reset-filter{'ng-click': 'resetFilters()'}
-    -#      Reset
-    -#
-    -#    .pull-right.buttons__filter
-    -#      %button.btn{ 'ng-class': '{btnPrimary: dataType === "weighted"}', 'ng-click': 'filterByDataType("weighted")'}
-    -#        Weighted
-    -#      %button.btn{ 'ng-class': '{btnPrimary: dataType === "unweighted"}', 'ng-click': 'filterByDataType("unweighted")'}
-    -#        Unweighted
-
     .row
       .col-md-12.text-center
         .alerts{ 'ng-if': 'notification' }
@@ -43,7 +19,6 @@
             %tr
               %th Business Plan name
               %th Time period
-              %th # of clients
               %th Date Created
               %th Due Date
               %th Status
@@ -53,8 +28,6 @@
                 {{bp.name}}
               %td
                 {{bp.time_period.name}}
-              %td
-                {{bp.client_count}}
               %td
                 {{bp.created_at | date: 'shortDate'}}
               %td
