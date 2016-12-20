@@ -65,10 +65,10 @@
             %input.money-field{type: 'number', placeholder: 0, 'ng-model': 'bp_estimate_product.estimate_mgr', 'ng-blur': 'updateBpEstimateProduct(bp_estimate)'}
         %tr
           %td Total
-          %td
+          %td.right.total
             {{ totalSum(bp_estimate.bp_estimate_products, 'estimate_seller') | currency:'$':0 }}
 
-          %td
+          %td.right.total
             {{ totalSum(bp_estimate.bp_estimate_products, 'estimate_mgr') | currency:'$':0 }}
 
   %td{ colspan: "4"}
