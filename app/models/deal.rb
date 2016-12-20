@@ -1035,7 +1035,7 @@ class Deal < ActiveRecord::Base
       io_param = {
           advertiser_id: self.advertiser_id,
           agency_id: self.agency_id,
-          budget: self.budget / 100,
+          budget: (self.budget.nil? ? 0 : self.budget) / 100,
           start_date: self.start_date,
           end_date: self.end_date,
           name: self.name,
