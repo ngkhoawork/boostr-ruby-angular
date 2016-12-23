@@ -158,9 +158,9 @@
 
       loadBPData = () ->
         filters = { bp_id: $scope.selectedBP.id, filter: $scope.selectedFilter.value }
-        BP.accountTotalEstimates(id: $scope.selectedBP.id, filter: $scope.selectedFilter.value).then (accountTotalEstimates) ->
-          $scope.accountTotalEstimates = accountTotalEstimates
-          setSummaryMcSort()
+#        BP.accountTotalEstimates(id: $scope.selectedBP.id, filter: $scope.selectedFilter.value).then (accountTotalEstimates) ->
+#          $scope.accountTotalEstimates = accountTotalEstimates
+#          setSummaryMcSort()
         BpEstimate.all(filters).then (data) ->
           $scope.revenues = data.current.revenues
           $scope.pipelines = data.current.pipelines

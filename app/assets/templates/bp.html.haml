@@ -49,34 +49,15 @@
           Status:
           %span.info-value
             {{selectedBP.status}} / {{selectedBP.client_count}}
-    .row{ ng: { if: 'selectedBP.id > 0' } }
-      .col-xs-12
-        %h3.title Estimate Summary
-    .row{ ng: { if: 'selectedBP.id > 0' } }
-      .col-md-12.text-center
-        %table.table
-          %thead
-            %tr
-              %th.left
-                %a.sort{ href: '', ng: { click: 'summarySort.toggle("name")' } }
-                  Account
-                  %i{ ng: { class: "{ 'fa': summarySort.column == 'name', 'fa-sort-asc': summarySortcolumn == 'name' && summarySortdirection == 'asc', 'fa-sort-desc': summarySortcolumn == 'name' && summarySortdirection == 'desc' }" } }
-              %th Total Seller Estimates
-              %th Total Manager Estimates
-          %tbody
-            %tr{ ng: { if: 'accountTotalEstimates.length > 0', repeat: 'accountTotalEstimate in accountTotalEstimates' } }
-              %td.left
-                {{ accountTotalEstimate.name }}
-              %td
-                {{ accountTotalEstimate.total_estimate_seller | currency:'$':0 }}
-              %td
-                {{ accountTotalEstimate.total_estimate_seller | currency:'$':0 }}
-            %tr{ ng: { if: 'accountTotalEstimates.length == 0' }}
-              %td.center{ colspan: '4' }
-                No data available
-    .row{ ng: { if: 'selectedBP.id > 0' } }
-      .col-xs-12
-        %h3.title BP Estimates
+        .info
+          Total Seller Estimate:
+          %span.info-value
+            {{ totalSum(bpEstimates, 'estimate_seller') }}
+        .info
+          Total Manager Estimate:
+          %span.info-value
+            {{ totalSum(bpEstimates, 'estimate_mgr') }}
+
     .row{ ng: { if: 'selectedBP.id > 0' } }
       .col-md-12.text-center.bp-table-wrapper
         .alerts{ 'ng-if': 'notification' }
