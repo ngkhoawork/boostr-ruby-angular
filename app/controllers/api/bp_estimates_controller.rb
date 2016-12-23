@@ -99,15 +99,23 @@ class Api::BpEstimatesController < ApplicationController
 
   def bp_estimates
     return @bp_estimates if defined?(@bp_estimates)
+    incomplete = false
+    if params[:incomplete] == "true"
+      incomplete = true
+    end
+    unassigned = false
+    if params[:unassigned] == "true"
+      unassigned = true
+    end
     case params[:filter]
       when 'my'
-        @bp_estimates = bp.bp_estimates.where(user_id: current_user.id).collect{ |bp_estimate| bp_estimate.full_json }
+        @bp_estimates = bp.bp_estimates.unassigned(unassigned).incomplete(incomplete).where(user_id: current_user.id).collect{ |bp_estimate| bp_estimate.full_json }
       when 'team'
         member_ids = current_user.all_team_members.collect{ |member| member.id}
         member_ids << current_user.id
-        @bp_estimates = bp.bp_estimates.where("user_id in (?)", member_ids).collect{ |bp_estimate| bp_estimate.full_json }
-      when 'all'
-        @bp_estimates = bp.bp_estimates.all.collect{ |bp_estimate| bp_estimate.full_json }
+        @bp_estimates = bp.bp_estimates.unassigned(unassigned).incomplete(incomplete).where("user_id in (?)", member_ids).collect{ |bp_estimate| bp_estimate.full_json }
+      else
+        @bp_estimates = bp.bp_estimates.unassigned(unassigned).incomplete(incomplete).collect{ |bp_estimate| bp_estimate.full_json }
     end
   end
 

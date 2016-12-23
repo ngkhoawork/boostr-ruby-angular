@@ -4,6 +4,8 @@
     {{bp_estimate.client_name}}
   %td.left
     {{bp_estimate.user_name}}
+    %a.unassign-bp-estimates.pull-right{ href: '', ng: { if: 'bp_estimate.user_id != null',click: 'unassignBpEstimate(bp_estimate)' } }
+      = inline_svg 'icons/trash.svg'
   %td
     {{ bp_estimate.pipeline | currency:'$':0 }}
   %td

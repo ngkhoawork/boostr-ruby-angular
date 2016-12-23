@@ -25,6 +25,14 @@
           method: 'PUT'
           url: 'api/bps/:id'
           transformRequest: transformAddContactRequest
+        sellerTotalEstimates:
+          method: 'GET'
+          isArray: true
+          url: 'api/bps/:id/seller_total_estimates'
+        accountTotalEstimates:
+          method: 'GET'
+          isArray: true
+          url: 'api/bps/:id/account_total_estimates'
 
       currentBP = undefined
 
@@ -32,6 +40,17 @@
         deferred = $q.defer()
         resource.query params, (bps) ->
           deferred.resolve(bps)
+        deferred.promise
+
+      @sellerTotalEstimates = (params) ->
+        deferred = $q.defer()
+        resource.sellerTotalEstimates params, (data) ->
+          deferred.resolve(data)
+        deferred.promise
+      @accountTotalEstimates = (params) ->
+        deferred = $q.defer()
+        resource.accountTotalEstimates params, (data) ->
+          deferred.resolve(data)
         deferred.promise
 
       @create = (params) ->

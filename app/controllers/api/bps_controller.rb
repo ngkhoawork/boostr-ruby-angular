@@ -24,48 +24,40 @@ class Api::BpsController < ApplicationController
     end
   end
 
+  def account_total_estimates
+    bp = bps.find(params[:bp_id])
+    if bp.present?
+      data = bp.bp_estimates
+      .joins("LEFT JOIN clients ON clients.id = bp_estimates.client_id")
+      .where("bp_estimates.client_id IS NOT NULL and user_id in (?)", member_ids)
+      .group("clients.id")
+      .select("clients.id AS client_id, COALESCE( SUM(bp_estimates.estimate_seller), 0 ) AS total_estimate_seller, COALESCE( SUM(bp_estimates.estimate_mgr), 0 ) AS total_estimate_mgr, clients.name")
+      .collect { |bp_estimate| {client_id: bp_estimate.client_id, name: (bp_estimate.client_id.present? ? bp_estimate.name : ""), total_estimate_seller: bp_estimate.total_estimate_seller, total_estimate_mgr: bp_estimate.total_estimate_mgr} }
+      render json: data
+    else
+      render json: { error: 'Business Plan Not Found' }, status: :not_found
+    end
+  end
+
+  def seller_total_estimates
+    bp = bps.find(params[:bp_id])
+    if bp.present?
+      data = bp.bp_estimates
+      .joins("LEFT JOIN users ON users.id = bp_estimates.user_id")
+      .where("bp_estimates.user_id IS NOT NULL")
+      .group("users.id")
+      .select("users.id AS user_id, COALESCE( SUM(bp_estimates.estimate_seller), 0 ) AS total_estimate_seller, COALESCE( SUM(bp_estimates.estimate_mgr), 0 ) AS total_estimate_mgr, users.first_name, users.last_name")
+      .collect { |bp_estimate| {user_id: bp_estimate.user_id, name: (bp_estimate.user_id.present? ? (bp_estimate.first_name + ' ' + bp_estimate.last_name) : ""), total_estimate_seller: bp_estimate.total_estimate_seller, total_estimate_mgr: bp_estimate.total_estimate_mgr} }
+      render json: data
+    else
+      render json: { error: 'Business Plan Not Found' }, status: :not_found
+    end
+  end
+
   def show
     bp = Bp.find(params[:id])
-    # AccountPipelineCalculator.perform_async
     if bp.present?
-      time_dimensions = TimeDimension.where("start_date = ? and end_date = ?", bp.time_period.start_date, bp.time_period.end_date).to_a
-      year_time_dimensions = TimeDimension.where("start_date = ? and end_date = ?", bp.time_period.start_date - 1.years, bp.time_period.end_date -  1.years).to_a
-      prev_time_dimensions = TimeDimension.where("start_date = ? and end_date = ?", (bp.time_period.start_date - 3.months).beginning_of_month, (bp.time_period.end_date -  3.months).end_of_month).to_a
-      pipelines = []
-      revenues = []
-      year_pipelines = []
-      year_revenues = []
-      prev_pipelines = []
-      prev_revenues = []
-      year_time_period = nil
-      prev_time_period = nil
-      if time_dimensions.count > 0
-        pipelines = AccountPipelineFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, time_dimensions[0].id)
-        revenues = AccountRevenueFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, time_dimensions[0].id)
-      end
-      if year_time_dimensions.count > 0
-        year_time_periods = TimePeriod.where(company_id: company.id, start_date: year_time_dimensions[0].start_date, end_date: year_time_dimensions[0].end_date)
-        if year_time_periods.count > 0
-          year_pipelines = AccountPipelineFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, year_time_dimensions[0].id)
-          year_revenues = AccountRevenueFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, year_time_dimensions[0].id)
-          year_time_period = year_time_periods[0]
-        end
-      end
-      if prev_time_dimensions.count > 0
-        prev_time_periods = TimePeriod.where(company_id: company.id, start_date: prev_time_dimensions[0].start_date, end_date: prev_time_dimensions[0].end_date)
-        if prev_time_periods.count > 0
-          prev_pipelines = AccountPipelineFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, prev_time_dimensions[0].id)
-          prev_revenues = AccountRevenueFact.where("company_id = ? and time_dimension_id = ?", bp.company.id, prev_time_dimensions[0].id)
-          prev_time_period = prev_time_periods[0]
-        end
-      end
-
-      render json: {
-          bp: bp.full_json,
-          current: { pipelines: pipelines, revenues: revenues },
-          year: { pipelines: year_pipelines, revenues: year_revenues, time_period: year_time_period },
-          prev: { pipelines: prev_pipelines, revenues: prev_revenues, time_period: prev_time_period }
-      }, status: :ok
+      render json: bp, status: :ok
     else
       render json: { error: 'Business Plan Not Found' }, status: :not_found
     end
@@ -79,6 +71,22 @@ class Api::BpsController < ApplicationController
 
   def company
     current_user.company
+  end
+
+  def member_ids
+    return @member_ids if defined?(@member_ids)
+    member_ids = []
+    case params[:filter]
+      when 'my'
+        member_ids << current_user.id
+      when 'team'
+        member_ids = current_user.all_team_members.collect{ |member| member.id }
+        member_ids << current_user.id
+      else
+        member_ids = current_user.company.users.collect{ |member| member.id }
+    end
+
+    @member_ids = member_ids
   end
 
   def bps

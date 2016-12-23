@@ -1,6 +1,6 @@
-@app.controller 'BPController',
-  ['$scope', '$rootScope', '$document', '$modal', 'BP', 'BpEstimate',
-    ($scope, $rootScope, $document, $modal, BP, BpEstimate) ->
+@app.controller 'BPsBPController',
+  ['$scope', '$rootScope', '$routeParams', '$document', '$modal', 'BP', 'BpEstimate',
+    ($scope, $rootScope, $routeParams, $document, $modal, BP, BpEstimate) ->
 
       class McSort
         constructor: (opts) ->
@@ -54,65 +54,76 @@
       $scope.dataType = "weighted"
       $scope.notification = null
 
-      setMcSort = ->
-       $scope.sort = new McSort({
-         column: "client_name",
-         compareFn: (column, a, b) ->
-           switch (column)
-             when "client_name"
-               a[column].localeCompare(b[column])
-             when "user_name"
-               a[column].localeCompare(b[column])
-             else
-               a[column] - b[column]
-         dataset: $scope.bpEstimates
-         hasMultipleDatasets: false
-       })
-
-      setSummaryMcSort = ->
-        $scope.summarySort = new McSort({
-          column: "name",
+      setUnassignedMcSort = ->
+        $scope.unassignedSort = new McSort({
+          column: "client_name",
           compareFn: (column, a, b) ->
             switch (column)
-              when "name"
+              when "client_name"
+                a[column].localeCompare(b[column])
+              when "user_name"
                 a[column].localeCompare(b[column])
               else
                 a[column] - b[column]
-          dataset: $scope.accountTotalEstimates
+          dataset: $scope.unassignedBpEstimates
+          hasMultipleDatasets: false
+        })
+
+      setIncompleteMcSort = ->
+        $scope.incompleteSort = new McSort({
+          column: "client_name",
+          compareFn: (column, a, b) ->
+            switch (column)
+              when "client_name"
+                a[column].localeCompare(b[column])
+              when "user_name"
+                a[column].localeCompare(b[column])
+              else
+                a[column] - b[column]
+          dataset: $scope.incompleteBpEstimates
           hasMultipleDatasets: false
         })
 
       #init query
       init = () ->
-        if $rootScope.userType == 1
-          $scope.selectedFilter = {name: "My Estimates", value: "my"}
-        else if $rootScope.userType == 2
-          $scope.selectedFilter = {name: "My Team's Estimates", value: "team"}
-        else
-          $scope.selectedFilter = {name: "All Estimates", value: "all"}
-        BP.all().then (bps) ->
-          $scope.bps = bps
+        BP.get($routeParams.id).then (bp) ->
+          $scope.bp = bp
+          BP.sellerTotalEstimates(id: $routeParams.id).then (sellerTotalEstimates) ->
+            $scope.sellerTotalEstimates = sellerTotalEstimates
+          BpEstimate.all({ bp_id: $routeParams.id }).then (data) ->
+            $scope.revenues = data.current.revenues
+            $scope.pipelines = data.current.pipelines
+
+            $scope.prev_revenues = data.prev.revenues
+            $scope.prev_pipelines = data.prev.pipelines
+            $scope.prev_time_period = data.prev.time_period
+
+            $scope.year_revenues = data.year.revenues
+            $scope.year_pipelines = data.year.pipelines
+            $scope.year_time_period = data.prev.year_time_period
+
+            $scope.bpEstimates = _.map data.bp_estimates, buildBPEstimate
+            $scope.unassignedBpEstimates = _.filter $scope.bpEstimates, {user_id: null}
+            $scope.incompleteBpEstimates = _.filter $scope.bpEstimates, (item) ->
+              return item.user_id != null && item.estimate_seller == null
+            setUnassignedMcSort()
+            setIncompleteMcSort()
 
       init()
 
-      $scope.selectFilter = (filter) ->
-        $scope.selectedFilter = filter
-        if $scope.selectedBP.id != 0
-          loadBPData()
-
-      $scope.selectBP = (bp) ->
-        $scope.selectedBP = bp
-        startDate = new Date(bp.time_period.start_date)
-        year = startDate.getUTCFullYear()
-        month = startDate.getUTCMonth()
-        $scope.yearQuarter = 'Q' + (month / 3 + 1) + '-' + (year - 1)
-        prevMonth = month - 3
-        prevYear = year
-        if prevMonth < 0
-          prevMonth += 12
-          prevYear = year - 1
-        $scope.prevQuarter = 'Q' + (prevMonth / 3 + 1) + '-' + prevYear
-        loadBPData()
+      $scope.showAssignBpEstimateModal = (bpEstimate) ->
+        $scope.modalInstance = $modal.open
+          templateUrl: 'modals/bp_estimate_assign_form.html'
+          size: 'md'
+          controller: 'BpEstimatesAssignController'
+          backdrop: 'static'
+          keyboard: false
+          resolve:
+            bpEstimate: ->
+              bpEstimate
+        .result.then (updatedBpEstimate) ->
+          console.log(updatedBpEstimate)
+          replaceBpEstimate($scope.unassignedBpEstimates, updatedBpEstimate)
 
       buildBPEstimate = (item) ->
         data = angular.copy(item)
@@ -156,47 +167,27 @@
 
         return data
 
-      loadBPData = () ->
-        filters = { bp_id: $scope.selectedBP.id, filter: $scope.selectedFilter.value }
-        BP.accountTotalEstimates(id: $scope.selectedBP.id, filter: $scope.selectedFilter.value).then (accountTotalEstimates) ->
-          $scope.accountTotalEstimates = accountTotalEstimates
-          setSummaryMcSort()
-        BpEstimate.all(filters).then (data) ->
-          $scope.revenues = data.current.revenues
-          $scope.pipelines = data.current.pipelines
-
-          $scope.prev_revenues = data.prev.revenues
-          $scope.prev_pipelines = data.prev.pipelines
-          $scope.prev_time_period = data.prev.time_period
-
-          $scope.year_revenues = data.year.revenues
-          $scope.year_pipelines = data.year.pipelines
-          $scope.year_time_period = data.prev.year_time_period
-
-          $scope.bpEstimates = _.map data.bp_estimates, buildBPEstimate
-
-          setMcSort()
-
       $scope.updateBpEstimate = (bpEstimate) ->
-        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate)
+        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.bp.id, bp_estimate: bpEstimate)
 
-      $scope.updateBpEstimateProduct = (bpEstimate) ->
-        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data) ->
-          replaceBpEstimate(data);
+      $scope.updateBpEstimateProduct = (bpEstimate, type) ->
+        console.log(type)
+        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.bp.id, bp_estimate: bpEstimate).then (data) ->
+          console.log(type)
+          if (type == "unassigned")
+            replaceBpEstimate($scope.unassignedBpEstimates, data)
+          else if (type == "incomplete")
+            replaceBpEstimate($scope.incompleteBpEstimates, data)
 
-      $scope.unassignBpEstimate = (bpEstimate) ->
-        if confirm('Are you sure you want to unassign the BP estimate?')
-          bpEstimate.user_id = null
-          BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data) ->
-            replaceBpEstimate(data)
 
-      replaceBpEstimate = (bpEstimate) ->
-        targetBpEstimate = _.find($scope.bpEstimates, {id: bpEstimate.id})
+      replaceBpEstimate = (bpEstimates, bpEstimate) ->
+        targetBpEstimate = _.find(bpEstimates, {id: bpEstimate.id})
         targetBpEstimate.user_id = bpEstimate.user_id
         targetBpEstimate.user = bpEstimate.user
         targetBpEstimate.user_name = bpEstimate.user_name
         targetBpEstimate.estimate_seller = bpEstimate.estimate_seller
         targetBpEstimate.estimate_mgr = bpEstimate.estimate_mgr
+        console.log(targetBpEstimate)
 
       $scope.totalSum = (elements, field) ->
         total = 0

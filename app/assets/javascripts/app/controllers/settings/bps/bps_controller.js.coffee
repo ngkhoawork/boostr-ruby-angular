@@ -1,6 +1,6 @@
 @app.controller 'BPsController',
-  ['$scope', '$document', '$modal', 'BP', 'TimePeriod',
-    ($scope, $document, $modal, BP, TimePeriod) ->
+  ['$scope', '$document', '$location', '$modal', 'BP', 'TimePeriod',
+    ($scope, $document, $location, $modal, BP, TimePeriod) ->
 
       #create chart===========================================================
       $scope.teamFilters = []
@@ -31,6 +31,10 @@
       $scope.$on 'newBP', ->
         $scope.notification = "Business Plan data is being generated in a few seconds."
         init()
+
+      $scope.go = (bpId) ->
+        path = "/settings/bps/" + bpId
+        $location.path(path)
 
 
 #=======================END Cycle Time=======================================================

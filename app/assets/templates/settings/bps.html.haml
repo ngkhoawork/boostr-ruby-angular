@@ -17,14 +17,14 @@
         %table.table
           %thead
             %tr
-              %th Business Plan name
+              %th.left Business Plan name
               %th Time period
               %th Date Created
               %th Due Date
               %th Status
           %tbody
-            %tr{ ng: { if: 'bps.length > 0', repeat: 'bp in bps' }}
-              %td
+            %tr.clickable{ ng: { if: 'bps.length > 0', repeat: 'bp in bps', click: 'go(bp.id)' } }
+              %td.left
                 {{bp.name}}
               %td
                 {{bp.time_period.name}}
