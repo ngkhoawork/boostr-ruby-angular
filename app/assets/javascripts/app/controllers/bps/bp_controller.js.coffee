@@ -204,6 +204,14 @@
           total += item[field]
         return total
 
+
+      $scope.totalEstimate = (elements, field) ->
+        total = 0
+        _.each elements, (item) ->
+          if (item.user_id != null)
+            total += item[field]
+        return total
+
       $scope.toggleRow = (rowId) ->
         if ($scope.toggleId == rowId)
           $scope.toggleId = null

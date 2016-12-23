@@ -52,11 +52,11 @@
         .info
           Total Seller Estimate:
           %span.info-value
-            {{ totalSum(bpEstimates, 'estimate_seller') }}
+            {{ totalEstimate(bpEstimates, 'estimate_seller') }}
         .info
           Total Manager Estimate:
           %span.info-value
-            {{ totalSum(bpEstimates, 'estimate_mgr') }}
+            {{ totalEstimate(bpEstimates, 'estimate_mgr') }}
 
     .row{ ng: { if: 'selectedBP.id > 0' } }
       .col-md-12.text-center.bp-table-wrapper
