@@ -17,7 +17,7 @@ class Value < ActiveRecord::Base
     return value_number if value_type == 'Number'
     return value_float if value_type == 'Decimal'
     return value_float if value_type == 'Percent'
-    return (value_number / 100.0) if value_type == 'Money'
+    return value_number if value_type == 'Money'
     return value_datetime if value_type == 'Datetime'
     return value_object if value_type == 'Object'
   end
@@ -27,7 +27,7 @@ class Value < ActiveRecord::Base
     self.value_number = value if value_type == 'Number'
     self.value_float = value if value_type == 'Decimal'
     self.value_float = value if value_type == 'Percent'
-    self.value_number = value * 100 if value_type == 'Money'
+    self.value_number = value if value_type == 'Money'
     self.value_datetime = value if value_type == 'Datetime'
     self.value_object = value if value_type == 'Object'
   end

@@ -75,7 +75,7 @@
                 %td {{ row.advertiser.name }}
                 %td {{ row.agency.name }}
                 %td {{ row.stage.name }}
-                %td.right {{ row.budget / 100 | currency:'$':0 }}
+                %td.right {{ row.budget | currency:'$':0 }}
                 %td.right {{ row.start_date | date: 'shortDate' }}
                 / %td.action-column.info-td
                 /   .empty

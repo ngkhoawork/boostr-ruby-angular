@@ -84,7 +84,7 @@
          $scope.deals = _.map $scope.deals, (deal) ->
            products = []
            _.each $scope.productRange, (range) ->
-             products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range) / 100)
+             products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range))
            deal.products = products
            return deal
 

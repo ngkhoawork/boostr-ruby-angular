@@ -102,7 +102,7 @@
           %td {{ subrow.client_name }}
           %td {{ subrow.agency_name }}
           %td.right {{ subrow.probability }}%
-          %td.right {{ subrow.budget / 100 | currency: '$': 0 }}
+          %td.right {{ subrow.budget | currency: '$': 0 }}
           %td.right {{ subrow.in_period_amt | currency: '$': 0 }}
           %td.right {{ subrow.start_date | date: 'MM/dd/yyyy' }}
           %td.right {{ subrow.end_date | date: 'MM/dd/yyyy' }}

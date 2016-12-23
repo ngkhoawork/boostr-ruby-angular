@@ -84,7 +84,7 @@
             .row
               .col-xs-12
                 %h4#total-amount
-                  {{ currentDeal.budget / 100 | currency: '$': 0 }}
+                  {{ currentDeal.budget | currency: '$': 0 }}
           .col-xs-2.campaign-period.text-center
             .row
               .col-xs-12
@@ -92,7 +92,7 @@
             .row
               .col-xs-12
                 %h4#forecast
-                  {{ currentDeal.budget / 100 * currentDeal.stage.probability / 100 | currency: '$' :0 }}
+                  {{ currentDeal.budget * currentDeal.stage.probability / 100 | currency: '$' :0 }}
           .col-xs-2.campaign-period.text-center
             .row
               .col-xs-12

@@ -301,7 +301,7 @@ class ForecastTeam
 
   def average_deal_size
     if complete_deals.count > 0
-      @average_deal_size ||= (complete_deals.average(:budget) / 100).round(0)
+      @average_deal_size ||= complete_deals.average(:budget).round(0)
     else
       @average_deal_size ||= 0
     end
