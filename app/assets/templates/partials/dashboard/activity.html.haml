@@ -1,11 +1,11 @@
 #activity.block
 	%div.mb40
 		%span.title Activity
-		-#%add-button{'ng-click': 'showNewActivityModal()'}
+		%add-button{'ng-click': 'showNewActivityModal()'}
 
 	%div.activity-item{'ng-repeat': 'activity in activities | orderBy: "-happened_at"'}
 		%div.activity-header
-			%ng-include{'src': 'getType(activity.activity_type_name).icon'}
+			%span{'class': 'icon-activity-{{getIconName(activity.activity_type_name)}}'}
 			%span
 				%strong {{activity.activity_type_name}}
 			%span.pull-right {{activity.happened_at | date: 'mediumDate'}}

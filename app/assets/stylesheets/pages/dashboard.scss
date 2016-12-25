@@ -1,6 +1,6 @@
 #dashboard {
     padding-top: 30px;
-    width: 1900px;
+    min-width: 1600px;
     font-family: "Avenir Next", Arial, serif;
     color: $main-font-color;
     a {
@@ -84,12 +84,10 @@
             border-bottom: 1px solid $separate-line-color;
             .activity-header {
                 color: $secondary-font-color;
-                margin-bottom: 15px;
-                svg {
-                    width: 24px;
-                    height: 24px;
-                    vertical-align: bottom;
-                    margin-right: 10px;
+                margin-bottom: 10px;
+                span:nth-child(2) {
+                    margin-left: 5px;
+                    vertical-align: text-bottom;
                 }
             }
             .activity-body {
@@ -104,6 +102,7 @@
                     color: $secondary-font-color;
                     padding-right: 10px;
                     text-decoration: none;
+                    outline: none;
                 }
             }
         }
@@ -275,6 +274,10 @@
                     }
                 }
             }
+        }
+        .undo {
+            text-align: center;
+            padding: 15px 0;
         }
     }
 }

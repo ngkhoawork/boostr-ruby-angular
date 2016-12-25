@@ -1,64 +1,106 @@
 #activity-form-modal.popup-modal
-    .popup-modal-header
-        Add New Activity
-    %form
+    %form{'ng-submit': 'submitForm()'}
+        .popup-modal-header
+            Add New Activity
+            %span.close-btn{'ng-click': 'cancel()'} +
         .popup-modal-body
-            .form-group
+            .form-group{'ng-class':'{error: errors.type}'}
+                %span.error-text {{errors.type}}
                 %label
                     Type of Activity
-                    %span.star *
-                %select.form-control
-                    %option
-                        %ng-include{'src': '"assets/icons/pitch.svg"'}
-                        Pitch
-            .form-group
+                .dropdown
+                    %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                        %span{class: 'icon-activity-{{selectedType.iconName}}'}
+                        %span.text {{selectedType.name}}
+                        %span.caret
+                    %ul.dropdown-menu
+                        %li{'ng-repeat': 'type in types'}
+                            %a{'href': '', 'ng-click': 'selectType(type)'}
+                                %span{class: 'icon-activity-{{type.iconName}}'}
+                                %span.text {{type.name}}
+
+            .form-group{'ng-class':'{error: errors.deal}', style: 'margin-bottom: 5px'}
+                %span.error-text {{errors.deal}}
                 %label
                     Related to
                     %span.star *
-                %input.form-control{'placeholder': 'Choose Deal, Advertiser, Agency or add new one'}
-            .form-group
+                %input.form-control{'placeholder': 'Choose Deal', 'ng-model': 'form.deal', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)'}
+            .form-group.with-add-btn{'ng-class':'{error: errors.account}'}
+                %span.error-text {{errors.account}}
+                %label{style: 'display: block'}
+                    or
+                %input.form-control{'placeholder': 'Choose Advertiser or Agency', value: '15', 'ng-model': 'form.account', typeahead: 'item as item.formatted_name for item in searchClients($viewValue)'}
+                %button.add-btn{type: 'button', 'ng-click': 'openAccountModal()'}
+                    %span +
+            .form-group.with-add-btn{'ng-class':'{error: errors.contacts}'}
+                %span.error-text {{errors.contacts}}
                 %label
-                    Pitched to
+                    {{selectedType.action | firstUppercase}}
                     %span.star *
-                %input.form-control{'placeholder': 'Choose Contact or add new'}
+                -#%input.form-control{'placeholder': 'Choose Contact or add new', 'ng-model': 'form.contact'}
+                %ui-select{multiple: true, name: 'contacts', 'ng-model': 'form.contacts', disabled: true}
+                    %ui-select-match{placeholder: 'Choose Contact'}
+                        {{$item.name}}
+                    %ui-select-choices{repeat: 'contact.id as contact in contacts', refresh: 'searchContacts($select.search)', 'refresh-delay': '0'}
+                        %div{'ng-bind': {html: 'contact.name + " - " + contact.client.name'}}
+                %button.add-btn{type: 'button', 'ng-click': 'openContactModal()'}
+                    %span +
             .col-xs-6.date
-                .form-group
+                .form-group{'ng-class':'{error: errors.date}'}
+                    %span.error-text {{errors.date}}
                     %label Date
-                    %input.form-control{'placeholder': 'Pick date'}
+                    %span.star *
+                    .input-group
+                        %span.input-group-addon
+                            %i.fa.fa-calendar
+                        %span.bs-datepicker
+                            %input.form-control.box.w4{readonly: true, placeholder: 'Pick date', name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'form.date', required: true, click: 'dateOpened = true' }, 'is-open': 'dateOpened' }
             .col-xs-6.time
                 .form-group
                     %label Time
-                    %input.form-control{'placeholder': 'Pick time'}
-            .form-group
+                    %timepicker-pop.wrap-select-time.form-control-time{'input-time': 'form.time', 'show-meridian': 'showMeridian'}
+            .form-group{'ng-class':'{error: errors.comment}'}
+                %span.error-text {{errors.comment}}
                 %label
                     Comment
                     %span.star *
-                %input.form-control{'placeholder': 'Type your update here'}
-
+                %textarea.form-control{'msd-elastic': '', 'placeholder': 'Type your update here', 'ng-model': 'form.comment'}
+            .popup-modal-separate-line
             .popup-modal-subtitle
-                Remind to follow up
-            .form-group
-                %label
-                    Reminder name
-                    %span.star *
-                %input.form-control
-            .col-xs-6.date
-                .form-group
-                    %label Date
-                    %input.form-control{'placeholder': 'Pick date'}
-            .col-xs-6.time
-                .form-group
-                    %label Time
-                    %input.form-control{'placeholder': 'Pick time'}
-            .form-group
-                %label
-                    Reminder note
-                    %span.star *
-                %textarea.form-control
+                .show-hide-remainder-form
+                    %span.title-remainder Remind to follow up
+                    .switch-remainder-form
+                        %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'showReminderForm'}
+                        %label{:for => "rem-act-modal-toggle"}
+                            %span
+            .reminder-form{'ng-show': 'showReminderForm'}
+                .form-group{'ng-class':'{error: errors.reminderName}'}
+                    %span.error-text {{errors.reminderName}}
+                    %label
+                        Reminder name
+                        %span.star *
+                    %input.form-control{'ng-model': 'form.reminderName'}
+                .col-xs-6.date
+                    .form-group{'ng-class':'{error: errors.reminderDate}'}
+                        %span.error-text {{errors.reminderDate}}
+                        %label Date
+                        %span.star *
+                        .input-group
+                            %span.input-group-addon
+                                %i.fa.fa-calendar
+                            %span.bs-datepicker
+                                %input.form-control.box.w4{readonly: true, placeholder: 'Pick date', name: 'reminderDate', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'form.reminderDate', required: true, click: 'reminderDateOpened = true' }, 'is-open': 'reminderDateOpened' }
+                .col-xs-6.time
+                    .form-group
+                        %label Time
+                        %timepicker-pop.wrap-select-time.form-control-time{'input-time': 'form.reminderTime', 'show-meridian': 'showMeridian'}
+                .form-group{'ng-class':'{error: errors.reminderComment}'}
+                    %span.error-text {{errors.reminderComment}}
+                    %label
+                        Reminder note
+                        %span.star *
+                    %textarea.form-control{'msd-elastic': '', 'ng-model': 'form.reminderComment'}
 
         .popup-modal-footer
-            %button.btn.btn-default{'type': 'submit'} Cancel
-            %button.btn.btn-warning{'type': 'submit'} Add Activity
-
-
-
+            %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+            %button.btn.btn-warning{'type': 'submit'} {{submitButtonText}}

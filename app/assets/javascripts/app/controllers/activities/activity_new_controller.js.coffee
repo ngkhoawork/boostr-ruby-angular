@@ -1,96 +1,240 @@
-@app.controller 'ActivityNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field',
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field) ->
-  return null;
+@app.controller "ActivityNewController",
+    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Contact', 'Reminder', 'activity', '$http'
+        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Contact, Reminder, activity, $http) ->
 
-  $scope.init = ->
-    $scope.formType = 'New'
-    $scope.submitText = 'Create'
-    $scope.advertisers = []
-    $scope.agencies = []
-    Field.defaults(deal, 'Deal').then (fields) ->
-      deal.deal_type = Field.field(deal, 'Deal Type')
-      deal.source_type = Field.field(deal, 'Deal Source')
-      $scope.deal = deal
-
-    Field.defaults({}, 'Client').then (fields) ->
-      client_types = Field.findClientTypes(fields)
-      $scope.setClientTypes(client_types)
-
-    Stage.query().$promise.then (stages) ->
-      $scope.stages = stages
-
-  $scope.setClientTypes = (client_types) ->
-    client_types.options.forEach (option) ->
-      $scope[option.name] = option.id
-
-  $scope.advertiserSelected = (model) ->
-    $scope.deal.advertiser_id = model
-
-  $scope.agencySelected = (model) ->
-    $scope.deal.agency_id = model
-
-  searchTimeout = null;
-  $scope.searchClients = (query, type_id) ->
-    if searchTimeout
-      clearTimeout(searchTimeout)
-      searchTimeout = null
-    searchTimeout = setTimeout(
-      -> $scope.loadClients(query, type_id)
-      400
-    )
-
-  $scope.loadClients = (query, type_id) ->
-    Client.query({ filter: 'all', name: query, per: 10, client_type_id: type_id }).$promise.then (clients) ->
-      if type_id == $scope.Advertiser
-        $scope.advertisers = clients
-      if type_id == $scope.Agency
-        $scope.agencies = clients
-
-  $scope.submitForm = () ->
-    Deal.create(deal: $scope.deal).then(
-      (deal) ->
-        $modalInstance.close()
-        $location.path('/deals/' + deal.id)
-      (resp) ->
-        $scope.errors = resp.data.errors
-        $scope.buttonDisabled = false
-    )
-
-  $scope.cancel = ->
-    $modalInstance.close()
-
-  $scope.createNewClientModal = (option, target) ->
-    $scope.populateClient = true
-    $scope.populateClientTarget = target
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/client_form.html'
-      size: 'lg'
-      controller: 'ClientsNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        client: ->
-          {
-            client_type: {
-              option: option
+            $scope.types = []
+            $scope.showMeridian = true
+            $scope.submitButtonText = 'Add Activity'
+            $scope.selectedType =
+                action: 'had initial meeting with'
+            $scope.form = {
+                contacts: []
             }
-          }
-    # This will clear out the populateClient field if the form is dismissed
-    $scope.modalInstance.result.then(
-      null
-      ->
-        $scope.populateClient = false
-        $scope.populateClientTarget = false
-    )
+            $scope.errors = {}
 
-  $scope.$on 'newClient', (event, client) ->
-    if $scope.populateClient and $scope.populateClientTarget
-      Field.defaults(client, 'Client').then (fields) ->
-        client.client_type = Field.field(client, 'Client Type')
-        $scope.deal[$scope.populateClientTarget] = client.id
-        $scope.populateClient = false
-        $scope.populateClientTarget = false
+            $scope.reminder =
+                _date: new Date()
+                _time: new Date()
+                name: ''
+                comment: ''
+                completed: false
+                remind_on: ''
+                remindable_id: 0
+                remindable_type: 'Activity'
+                showSpinners: false
 
-  $scope.init()
-]
+            #edit mode
+            if activity
+                $scope.submitButtonText = 'Edit Activity'
+                if activity.deal
+                    activity.deal.formatted_name = activity.deal.name
+                    $scope.form.deal = activity.deal
+                if activity.client || activity.agency
+                    $scope.form.account = activity.client || activity.agency
+                    $scope.form.account.formatted_name = $scope.form.account.name
+                $scope.form.contacts = activity.contacts
+                $scope.form.date = new Date(activity.happened_at)
+                if activity.timed
+                    $scope.form.time = new Date(activity.happened_at)
+                $scope.form.comment = activity.comment
+                $http.get('/api/remindable/'+ activity.id + '/' + $scope.reminder.remindable_type)
+                    .then (respond) ->
+                        if (respond && respond.data && respond.data.length)
+                            _.each respond.data, (reminder) ->
+                                if (reminder && reminder.id && !reminder.completed && !reminder.deleted_at)
+                                    $scope.showReminderForm = true;
+                                    $scope.reminder.id = reminder.id
+                                    $scope.form.reminderName = reminder.name
+                                    $scope.form.reminderComment = reminder.comment
+                                    $scope.form.reminderDate = new Date(reminder.remind_on)
+                                    $scope.form.reminderTime = new Date(reminder.remind_on)
+#                                    $scope.editActivityReminder.remind_on = new Date(reminder.remind_on)
+#                                    $scope.editActivityReminder.completed = reminder.completed
+
+
+
+            $scope.contacts = []
+            $scope.showReminderForm = false
+
+            $scope.selectType = (type) ->
+                $scope.selectedType = type
+                $scope.form.type = type.id
+            ActivityType.all().then (activityTypes) ->
+                activityTypes.forEach (type) ->
+                    type.iconName = type.name.split(" ").join("-").toLowerCase()
+                $scope.types = activityTypes
+                if activity
+                    $scope.selectedType = _.findWhere(activityTypes, name: activity.activity_type_name)
+                    $scope.form.type = activity.activity_type_id
+                else
+                    $scope.selectedType = activityTypes[0]
+                    $scope.form.type = activityTypes[0].id
+
+            Contact.query().$promise.then (contacts) ->
+                $scope.contacts = contacts
+
+            $scope.searchDeals = (str) ->
+                Deal.all({name: str}).then (deals) ->
+                    deals
+
+            $scope.searchClients = (str) ->
+                Client.query({name: str}).$promise.then (clients) ->
+                    clients
+
+            $scope.searchContacts = (str) ->
+                if ($scope.contactSearchText != str)
+                    $scope.contactSearchText = str
+                    query = per: 10, page: 1
+                    if $scope.contactSearchText then query.contact_name = $scope.contactSearchText
+                    Contact.all1(query).then (contacts) ->
+                        contacts = contacts.filter (c)->
+                            $scope.form.contacts.indexOf(c.id) == -1
+                        $scope.contacts = contacts
+                str
+
+            $scope.getType = (type) ->
+                _.findWhere($scope.types, name: type)
+
+            $scope.openContactModal = ->
+                $rootScope.$broadcast 'dashboard.openContactModal'
+
+            $scope.openAccountModal = ->
+                $rootScope.$broadcast 'dashboard.openAccountModal'
+
+            $scope.cancel = ->
+                $modalInstance.close()
+
+            $scope.submitForm = ->
+                $scope.errors = {}
+
+                fields = ['deal', 'account', 'contacts', 'date', 'comment']
+                if $scope.showReminderForm
+                    fields.push('reminderName', 'reminderDate', 'reminderComment')
+
+                fields.forEach (key) ->
+                    field = $scope.form[key]
+                    switch key
+                        when 'deal'
+                            if !field && !$scope.form.account
+                                return $scope.errors[key] = 'Deal or Account is required'
+                            if field && typeof field != 'object'
+                                return $scope.errors[key] = 'This deal doesn\'t exist'
+                        when 'account'
+                            if !field && !$scope.form.deal
+                                #show only error border
+                                return $scope.errors[key] = '         '
+                            if field && typeof field != 'object'
+                                return $scope.errors[key] = 'This account doesn\'t exist'
+                        when 'date'
+                            if !field
+                                return $scope.errors[key] = 'Date is required'
+                        when 'contacts'
+                            if !field || !field.length
+                                return $scope.errors[key] = 'Contact is required'
+                        when 'comment'
+                            if !field
+                                return $scope.errors[key] = 'Comment is required'
+                        when 'reminderName'
+                            if !field
+                                return $scope.errors[key] = 'Name is required'
+                        when 'reminderDate'
+                            if !field
+                                return $scope.errors[key] = 'Date is required'
+                        when 'reminderComment'
+                            if !field
+                                return $scope.errors[key] = 'Comment is required'
+
+                if Object.keys($scope.errors).length > 0 then return
+
+                activityData =
+                    activity_type_id: $scope.selectedType.id
+                    activity_type_name: $scope.selectedType.name
+                    comment: $scope.form.comment
+                    happened_at: $scope.form.date
+                    timed: false
+                if $scope.form.time && $scope.form.time.getTime
+                    activityData.timed = true
+                    activityData.happened_at.setHours($scope.form.time.getHours(), $scope.form.time.getMinutes(), 0)
+                if $scope.form.deal
+                    activityData.client_id = $scope.form.deal.advertiser_id
+                    activityData.agency_id = $scope.form.deal.agency_id
+                else
+                    if $scope.form.account
+                        if $scope.form.account.client_type_id is 111
+                            activityData.client_id = $scope.form.account.id
+                        else if $scope.form.account.client_type_id is 112
+                            activityData.agency_id = $scope.form.account.id
+
+                if activity
+                    if $scope.form.contacts && $scope.form.contacts[0] && typeof $scope.form.contacts[0] == 'object'
+                        $scope.form.contacts = $scope.form.contacts.map (c) -> c.id
+                    updateActivity(activity.id, activityData, $scope.form.contacts)
+                else
+                    createActivity(activityData, $scope.form.contacts)
+
+
+
+
+            createActivity = (activity, contacts) ->
+                Activity.create({
+                    activity: activity
+                    contacts: contacts
+                }, (response) ->
+                    #response
+                ).then (activity) ->
+                    if (activity && activity.id && $scope.showReminderForm)
+                        $scope.reminder._date = $scope.form.reminderDate
+                        $scope.reminder._time = $scope.form.reminderTime
+                        $scope.reminder.name = $scope.form.reminderName
+                        $scope.reminder.comment = $scope.form.reminderComment
+                        reminder_date = new Date($scope.reminder._date)
+                        $scope.reminder.remindable_id = activity.id
+                        if $scope.reminder._time != undefined
+                            reminder_time = new Date($scope.reminder._time)
+                            reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+                        $scope.reminder.remind_on = reminder_date
+                        Reminder.create(reminder: $scope.reminder).then (reminder) ->
+                            $scope.cancel()
+                            $rootScope.$broadcast 'dashboard.updateBlocks', ['activities', 'reminders']
+                        , (err) ->
+                            console.log(err)
+                    else
+                        $scope.cancel()
+                        $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
+
+            updateActivity = (id, activity, contacts) ->
+                Activity.update({
+                    id: id
+                    activity: activity
+                    contacts: contacts
+                }, (response) ->
+                    #response
+                ).then (activity) ->
+                    if (activity && activity.id && $scope.showReminderForm)
+                        $scope.reminder._date = $scope.form.reminderDate
+                        $scope.reminder._time = $scope.form.reminderTime
+                        $scope.reminder.name = $scope.form.reminderName
+                        $scope.reminder.comment = $scope.form.reminderComment
+                        reminder_date = new Date($scope.reminder._date)
+                        $scope.reminder.remindable_id = activity.id
+                        if $scope.reminder._time != undefined
+                            reminder_time = new Date($scope.reminder._time)
+                            reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+                        $scope.reminder.remind_on = reminder_date
+                        if $scope.reminder.id
+                            Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
+                                .then (reminder) ->
+                                    $scope.cancel()
+                                    $rootScope.$broadcast 'dashboard.updateBlocks', ['activities', 'reminders']
+                                , (err) ->
+                                    console.log(err)
+                        else
+                            Reminder.create(reminder: $scope.reminder).then (reminder) ->
+                                $scope.cancel()
+                                $rootScope.$broadcast 'dashboard.updateBlocks', ['activities', 'reminders']
+                            , (err) ->
+                                console.log(err)
+                    else
+                        $scope.cancel()
+                        $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
+    ]

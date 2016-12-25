@@ -1,7 +1,7 @@
 @app.controller 'DashboardController',
-    ['$scope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType',
+    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType',
         'Reminder', 'Stage',
-        ($scope, $document, $http, $modal, $sce, Dashboard, Deal, Client, Field, Contact, Activity, ActivityType, Reminder, Stage) ->
+        ($scope, $rootScope, $document, $http, $modal, $sce, Dashboard, Deal, Client, Field, Contact, Activity, ActivityType, Reminder, Stage) ->
 
             $scope.progressPercentage = 10
             $scope.showMeridian = true
@@ -15,7 +15,6 @@
 
             $scope.showSpinners = (reminder) ->
                 reminder.showSpinners = true
-                console.log('reminder', reminder)
 
             $scope.init = ->
                 $scope.currentPage = 0;
@@ -59,14 +58,7 @@
                         $scope.selected[type.name].date = now
                         $scope.selected[type.name].contacts = []
 
-                $scope.activity_objects = {}
-                Activity.all({page: 1, filter: "client"}).then (activities) ->
-                    console.log(activities)
-                    $scope.activities = activities
-                    if activities.length == 10
-                        $scope.hasMoreActivities = true
-                    $scope.nextActivitiesPage = 2
-
+                $scope.activitiesInit()
 
                 Contact.all1(unassigned: "yes").then (contacts) ->
                     $scope.unassignedContacts = contacts
@@ -80,7 +72,6 @@
                 Dashboard.get().then (dashboard) ->
                     $scope.dashboard = dashboard
                     $scope.forecast = dashboard.forecast
-                    console.log(dashboard.forecast)
                     drawProgressCircle($scope.forecast.percent_to_quota)
 #                    $scope.setChartData()
 
@@ -88,6 +79,16 @@
                     client_types = Field.findClientTypes(fields)
                     $scope.setClientTypes(client_types)
 
+#                $scope.showNewActivityModal()
+
+            $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
+                blocks.forEach (name) -> $scope[name + 'Init']()
+
+            $scope.$on 'dashboard.openContactModal', ->
+                $scope.createNewContactModal()
+
+            $scope.$on 'dashboard.openAccountModal', ->
+                $scope.showNewAccountModal()
 
             $scope.setClientTypes = (client_types) ->
                 client_types.options.forEach (option) ->
@@ -105,6 +106,12 @@
                 animateScale: false,
                 showTooltips: false
             }
+            $scope.activitiesInit = ->
+                Activity.all({page: 1, filter: "client"}).then (activities) ->
+                    $scope.activities = activities
+                    if activities.length == 10
+                        $scope.hasMoreActivities = true
+                    $scope.nextActivitiesPage = 2
 
             $scope.loadMoreActivities = ->
                 if $scope.loadingMoreActivities == false
@@ -129,29 +136,52 @@
                         deal: ->
                             {}
 
+
+            $scope.showNewAccountModal = ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/client_form.html'
+                    size: 'lg'
+                    controller: 'ClientsNewController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        client: ->
+                            {}
+
             $scope.showNewActivityModal = ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/activity_new_form.html'
-                    size: 'lg'
+                    size: 'md'
                     controller: 'ActivityNewController'
                     backdrop: 'static'
                     keyboard: false
                     resolve:
                         activity: ->
-                            {}
+                            null
 
             $scope.showActivityEditModal = (activity) ->
                 $scope.modalInstance = $modal.open
-                    templateUrl: 'modals/activity_form.html'
-                    size: 'lg'
-                    controller: 'ActivitiesEditController'
+                    templateUrl: 'modals/activity_new_form.html'
+                    size: 'md'
+                    controller: 'ActivityNewController'
                     backdrop: 'static'
                     keyboard: false
                     resolve:
                         activity: ->
                             activity
-                        types: ->
-                            $scope.types
+
+#            $scope.showActivityEditModal = (activity) ->
+#                $scope.modalInstance = $modal.open
+#                    templateUrl: 'modals/activity_form.html'
+#                    size: 'lg'
+#                    controller: 'ActivitiesEditController'
+#                    backdrop: 'static'
+#                    keyboard: false
+#                    resolve:
+#                        activity: ->
+#                            activity
+#                        types: ->
+#                            $scope.types
 
             $scope.showAssignContactModal = (contact) ->
                 advertiserTypeId = null
@@ -185,6 +215,7 @@
                             return updated_contact
                         else
                             return item
+
             $scope.undoAssignContact = (contact) ->
                 previousContact = _.find $scope.unassignedContacts, (item) ->
                     return item.id == contact.id
@@ -312,6 +343,8 @@
                         contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
                         $scope.activity.timed = true
                     $scope.activity.happened_at = contact_date
+                    console.log($scope.activity)
+                    return
                     Activity.create({
                         activity: $scope.activity,
                         contacts: $scope.selected[$scope.activeType.name].contacts
@@ -354,7 +387,6 @@
                 $scope.init()
 
             $scope.updateDealStage = (currentDeal) ->
-                console.log(currentDeal)
                 if currentDeal != null
                     Stage.get(id: currentDeal.stage_id).$promise.then (stage) ->
                         if !stage.open
@@ -389,6 +421,9 @@
 
             $scope.getType = (type) ->
                 _.findWhere($scope.types, name: type)
+
+            $scope.getIconName = (typeName) ->
+                typeName && typeName.split(' ').join('-').toLowerCase()
 
             $scope.remindersInit = ->
                 $scope.remindersOptions = {
@@ -552,8 +587,8 @@
                 i = 0
                 progressNumber = $document.find('#progress-number')
                 interval = setInterval (->
-                    i++
-                    progressNumber.html(i + '%')
                     if i is p then clearInterval(interval)
+                    progressNumber.html(i + '%')
+                    i++
                 ), animationDuration / p
     ]
