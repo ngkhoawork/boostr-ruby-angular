@@ -56,6 +56,9 @@
                 No data available
     .row
       .col-xs-12
+        .section
+          %a.pull-right.upload{ href: '', ng: { click: 'showBpAddClientModal()' } }
+            = inline_svg 'icons/add.svg'
         %h3.title Unassigned Clients
     .row
       .col-md-12.text-center.bp-table-wrapper

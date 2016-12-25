@@ -22,18 +22,18 @@
     %span{'ng-if': 'bp_estimate.estimate_seller == null || bp_estimate.estimate_seller <= 0 || bp_estimate.year_revenue <= 0'}
       {{"-"}}
     %span.positive{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.year_revenue > 0  && bp_estimate.estimate_seller > bp_estimate.year_revenue'}
-      {{ (bp_estimate.estimate_seller / bp_estimate.year_revenue - 1) * 100 | number:2 }}%
+      {{ (bp_estimate.estimate_seller / bp_estimate.year_revenue - 1) * 100 | number:0 }}%
     %span.negative{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.year_revenue > 0  && bp_estimate.estimate_seller < bp_estimate.year_revenue'}
-      {{ (bp_estimate.estimate_seller / bp_estimate.year_revenue - 1) * 100 | number:2 }}%
+      {{ (bp_estimate.estimate_seller / bp_estimate.year_revenue - 1) * 100 | number:0 }}%
   %td
     {{ bp_estimate.prev_revenue | currency:'$':0 }}
   %td
     %span{'ng-if': 'bp_estimate.estimate_seller == null || bp_estimate.estimate_seller <= 0 || bp_estimate.prev_revenue <= 0'}
       {{"-"}}
     %span.positive{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.prev_revenue > 0  && bp_estimate.estimate_seller >= bp_estimate.prev_revenue'}
-      {{ (bp_estimate.estimate_seller / bp_estimate.prev_revenue - 1) * 100 | number:2 }}%
+      {{ (bp_estimate.estimate_seller / bp_estimate.prev_revenue - 1) * 100 | number:0 }}%
     %span.negative{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.prev_revenue > 0  && bp_estimate.estimate_seller < bp_estimate.prev_revenue'}
-      {{ (bp_estimate.estimate_seller / bp_estimate.prev_revenue - 1) * 100 | number:2 }}%
+      {{ (bp_estimate.estimate_seller / bp_estimate.prev_revenue - 1) * 100 | number:0 }}%
 
 %tr.bp-estimate-detail{ ng: { if: 'toggleId == bp_estimate.id' } }
   %td.bp-estimate-wrapper.left{ colspan: '3' }

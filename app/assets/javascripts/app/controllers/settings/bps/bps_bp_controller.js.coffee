@@ -125,6 +125,20 @@
           console.log(updatedBpEstimate)
           replaceBpEstimate($scope.unassignedBpEstimates, updatedBpEstimate)
 
+      $scope.showBpAddClientModal = () ->
+        $scope.modalInstance = $modal.open
+          templateUrl: 'modals/bp_add_client_form.html'
+          size: 'md'
+          controller: 'BpAddClientController'
+          backdrop: 'static'
+          keyboard: false
+          resolve:
+            bp: ->
+              $scope.bp
+        .result.then (bp) ->
+          if (bp && bp.id)
+            init()
+
       buildBPEstimate = (item) ->
         data = angular.copy(item)
 

@@ -33,6 +33,14 @@
           method: 'GET'
           isArray: true
           url: 'api/bps/:id/account_total_estimates'
+        unassignedClients:
+          method: 'GET'
+          isArray: true
+          url: 'api/bps/:id/unassigned_clients'
+        addClient:
+          method: 'POST'
+          isArray: false
+          url: 'api/bps/:id/add_client'
 
       currentBP = undefined
 
@@ -47,9 +55,22 @@
         resource.sellerTotalEstimates params, (data) ->
           deferred.resolve(data)
         deferred.promise
+
       @accountTotalEstimates = (params) ->
         deferred = $q.defer()
         resource.accountTotalEstimates params, (data) ->
+          deferred.resolve(data)
+        deferred.promise
+
+      @unassignedClients = (params) ->
+        deferred = $q.defer()
+        resource.unassignedClients params, (data) ->
+          deferred.resolve(data)
+        deferred.promise
+
+      @addClient = (params) ->
+        deferred = $q.defer()
+        resource.addClient params, (data) ->
           deferred.resolve(data)
         deferred.promise
 

@@ -24,6 +24,32 @@ class Api::BpsController < ApplicationController
     end
   end
 
+  def add_client
+    bp = bps.find(params[:bp_id])
+    if bp.present?
+      client = company.clients.find(params[:client_id])
+      client.users.each do |user|
+        bp_estimate = BpEstimate.find_or_initialize_by(bp_id: bp.id, client_id: params[:client_id], user_id: user.id)
+        bp_estimate.save()
+      end
+      render json: bp, status: :ok
+    else
+      render json: { error: 'Business Plan Not Found' }, status: :not_found
+    end
+  end
+
+  def unassigned_clients
+    bp = bps.find(params[:bp_id])
+    if bp.present?
+      advertiser_id = Client.advertiser_type_id(bp.company)
+      client_ids = bp.bp_estimates.collect{ |item| item.client_id}
+      clients = company.clients.by_type_id(advertiser_id).where("id NOT IN (?)", client_ids)
+      render json: clients, status: :ok
+    else
+      render json: { error: 'Business Plan Not Found' }, status: :not_found
+    end
+  end
+
   def account_total_estimates
     bp = bps.find(params[:bp_id])
     if bp.present?

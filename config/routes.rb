@@ -33,6 +33,8 @@ Rails.application.routes.draw do
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
       get :seller_total_estimates
       get :account_total_estimates
+      get :unassigned_clients
+      post :add_client
       resources :bp_estimates, only: [:index, :create, :update, :show, :destroy]
     end
     resources :temp_ios, only: [:index, :update]
