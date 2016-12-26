@@ -5,7 +5,7 @@
   $scope.submitText = "Update"
   $scope.bpEstimate = bpEstimate
   $scope.searchText = ""
-  User.query().$promise.then (sellers) ->
+  User.query(filter: "true").$promise.then (sellers) ->
     $scope.sellers = sellers
 
   $scope.assignUser = (user) ->
@@ -14,6 +14,13 @@
     BpEstimate.update(id: bpEstimate.id, bp_id: bpEstimate.bp_id, bp_estimate: bpEstimate).then (bpEstimate) ->
       $modalInstance.close(bpEstimate)
 
+  $scope.searchObj = (name) ->
+    if name == ""
+      User.query(filter: "true").$promise.then (sellers) ->
+        $scope.sellers = sellers
+    else
+      User.query(filter: "true", name: name).$promise.then (sellers) ->
+        $scope.sellers = sellers
   $scope.cancel = ->
     $modalInstance.close()
 ]

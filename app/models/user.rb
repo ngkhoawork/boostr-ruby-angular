@@ -27,6 +27,7 @@ class User < ActiveRecord::Base
   validates :first_name, :last_name, presence: true
 
   scope :by_user_type, -> type_id { where(user_type: type_id) if type_id.present? }
+  scope :by_name, -> name { where('users.first_name ilike ? or users.last_name ilike ?', "%#{name}%", "%#{name}%") if name.present? }
 
   def roles=(roles)
     self.roles_mask = (roles & ROLES).map { |r| 2**ROLES.index(r) }.inject(0, :+)

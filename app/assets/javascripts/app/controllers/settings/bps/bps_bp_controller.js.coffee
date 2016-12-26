@@ -122,8 +122,8 @@
             bpEstimate: ->
               bpEstimate
         .result.then (updatedBpEstimate) ->
-          console.log(updatedBpEstimate)
-          replaceBpEstimate($scope.unassignedBpEstimates, updatedBpEstimate)
+          if (updatedBpEstimate && updatedBpEstimate.id)
+            replaceBpEstimate($scope.unassignedBpEstimates, updatedBpEstimate)
 
       $scope.showBpAddClientModal = () ->
         $scope.modalInstance = $modal.open
@@ -185,9 +185,7 @@
         BpEstimate.update(id: bpEstimate.id, bp_id: $scope.bp.id, bp_estimate: bpEstimate)
 
       $scope.updateBpEstimateProduct = (bpEstimate, type) ->
-        console.log(type)
         BpEstimate.update(id: bpEstimate.id, bp_id: $scope.bp.id, bp_estimate: bpEstimate).then (data) ->
-          console.log(type)
           if (type == "unassigned")
             replaceBpEstimate($scope.unassignedBpEstimates, data)
           else if (type == "incomplete")
@@ -201,7 +199,6 @@
         targetBpEstimate.user_name = bpEstimate.user_name
         targetBpEstimate.estimate_seller = bpEstimate.estimate_seller
         targetBpEstimate.estimate_mgr = bpEstimate.estimate_mgr
-        console.log(targetBpEstimate)
 
       $scope.totalSum = (elements, field) ->
         total = 0

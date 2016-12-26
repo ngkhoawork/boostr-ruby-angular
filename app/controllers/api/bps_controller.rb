@@ -43,7 +43,7 @@ class Api::BpsController < ApplicationController
     if bp.present?
       advertiser_id = Client.advertiser_type_id(bp.company)
       client_ids = bp.bp_estimates.collect{ |item| item.client_id}
-      clients = company.clients.by_type_id(advertiser_id).where("id NOT IN (?)", client_ids)
+      clients = company.clients.by_type_id(advertiser_id).by_name(params[:name]).where("id NOT IN (?)", client_ids).limit(10)
       render json: clients, status: :ok
     else
       render json: { error: 'Business Plan Not Found' }, status: :not_found

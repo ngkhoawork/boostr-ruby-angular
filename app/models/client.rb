@@ -34,6 +34,7 @@ class Client < ActiveRecord::Base
   scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
   scope :by_category, -> category_id { where(client_category_id: category_id) if category_id.present? }
   scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
+  scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
 
   ADVERTISER = 10
   AGENCY = 11

@@ -2,7 +2,11 @@ class Api::UsersController < ApplicationController
   respond_to :json
 
   def index
-    render json: current_user.company.users.order(:id)
+    if params[:filter] && params[:filter] == "true"
+      render json: current_user.company.users.by_name(params[:name]).order(:id).limit(10)
+    else
+      render json: current_user.company.users.order(:id)
+    end
   end
 
   def update
