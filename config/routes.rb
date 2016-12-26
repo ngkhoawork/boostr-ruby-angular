@@ -23,6 +23,7 @@ Rails.application.routes.draw do
       end
     end
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
+      get :sellers
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index] do
         collection do

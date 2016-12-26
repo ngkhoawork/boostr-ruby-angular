@@ -1,11 +1,11 @@
 @app.controller "BpEstimatesAssignController",
-['$scope', '$modalInstance', '$filter', 'BpEstimate', 'User', 'bpEstimate'
-($scope, $modalInstance, $filter, BpEstimate, User, bpEstimate) ->
+['$scope', '$modalInstance', '$filter', 'BpEstimate', 'Client', 'bpEstimate'
+($scope, $modalInstance, $filter, BpEstimate, Client, bpEstimate) ->
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.bpEstimate = bpEstimate
   $scope.searchText = ""
-  User.query(filter: "true").$promise.then (sellers) ->
+  Client.sellers(id: bpEstimate.client_id).$promise.then (sellers) ->
     $scope.sellers = sellers
 
   $scope.assignUser = (user) ->
@@ -16,10 +16,10 @@
 
   $scope.searchObj = (name) ->
     if name == ""
-      User.query(filter: "true").$promise.then (sellers) ->
+      Client.sellers(id: bpEstimate.client_id).$promise.then (sellers) ->
         $scope.sellers = sellers
     else
-      User.query(filter: "true", name: name).$promise.then (sellers) ->
+      Client.sellers(id: bpEstimate.client_id, name: name).$promise.then (sellers) ->
         $scope.sellers = sellers
   $scope.cancel = ->
     $modalInstance.close()
