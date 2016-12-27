@@ -88,6 +88,7 @@
       init = () ->
         BP.get($routeParams.id).then (bp) ->
           $scope.bp = bp
+          drawProgressCircle($scope.bp.status * 100 / $scope.bp.client_count)
           BP.sellerTotalEstimates(id: $routeParams.id).then (sellerTotalEstimates) ->
             $scope.sellerTotalEstimates = sellerTotalEstimates
           BpEstimate.all({ bp_id: $routeParams.id }).then (data) ->
@@ -125,7 +126,7 @@
           if (updatedBpEstimate && updatedBpEstimate.id)
             replaceBpEstimate($scope.unassignedBpEstimates, updatedBpEstimate)
 
-      $scope.showBpAddClientModal = () ->
+      $scope.showAddClientModal = () ->
         $scope.modalInstance = $modal.open
           templateUrl: 'modals/bp_add_client_form.html'
           size: 'md'
@@ -211,6 +212,60 @@
           $scope.toggleId = null
         else
           $scope.toggleId = rowId
+
+      drawProgressCircle = (p) ->
+        p = Math.round(p)
+        animationDuration = 500
+        width = 105
+        height = 105
+        tau = 2 * Math.PI
+        arc = d3.svg.arc()
+        .innerRadius(45)
+        .outerRadius(48)
+        .startAngle(0)
+        svg = d3.select("#progress-circle")
+        .style('width': width + 'px')
+        .style('height': height + 'px')
+        svg.html('')
+        g = svg.append('g')
+        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
+        background = g.append('path')
+        .datum(endAngle: tau)
+        .style('fill', '#EEE')
+        .attr('d', arc)
+        foreground = g.append('path')
+        .datum(endAngle: 0)
+        .attr('d', arc)
+        point = svg.append('circle')
+        .attr('r', 5)
+        .attr('transform', 'translate(75, 11.5)')
+
+        arcTween = (newAngle) ->
+          (d) ->
+            interpolate = d3.interpolate(d.endAngle, newAngle)
+            (t) ->
+              d.endAngle = interpolate(t)
+              arc d
+
+        translateFn = (newAngle) ->
+          () ->
+            (t) ->
+              rotation_radius = 46
+              t_angle = newAngle * t - Math.PI / 2
+              t_x = rotation_radius * Math.cos(t_angle)
+              t_y = rotation_radius * Math.sin(t_angle)
+              'translate(' + (width / 2 + t_x) + ',' + (height / 2 + t_y) + ')'
+        endAngle = tau / 100 * p
+        foreground.transition().duration(animationDuration).attrTween('d', arcTween(endAngle))
+        point.transition().duration(animationDuration).attrTween('transform', translateFn(endAngle))
+
+        i = 0
+        progressNumber = $document.find('#progress-number')
+        interval = setInterval (->
+          if i is p then clearInterval(interval)
+          progressNumber.html(i + '%')
+          i++
+        ), animationDuration / p
 
 
 #=======================END Cycle Time=======================================================

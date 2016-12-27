@@ -578,52 +578,6 @@ tr:hover {
   }
 }
 
-.bp-estimate-wrapper {
-
-}
-
-.bp-estimate-detail {
-  .bp-estimate-wrapper {
-//    padding-top: 20px !important;
-    vertical-align: top;
-
-    .bp-estimate-attribute {
-      padding-top: 10px;
-
-      .attr-label {
-        font-weight: bold;
-      }
-      .attr-value {
-        padding-top: 5px;
-      }
-    }
-  }
-  .bp-estimate-product-list {
-    table.detail {
-      width: 100%;
-      table-layout: fixed;
-      tr {
-        th {
-          padding: 10px 8px;
-        }
-        td {
-          border-top: 1px solid #ddd;
-          padding: 10px 8px;
-        }
-        .total {
-          padding-right: 36px;
-        }
-        th:first-child {
-          padding: 10px 0;
-        }
-        td:first-child {
-          padding: 10px 0;
-        }
-      }
-    }
-  }
-}
-
 @media screen and (max-width: 1170px) {
   .seller-activities__table table thead th {
     white-space: normal;

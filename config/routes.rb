@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       get :account_total_estimates
       get :unassigned_clients
       post :add_client
+      post :add_all_clients
       resources :bp_estimates, only: [:index, :create, :update, :show, :destroy]
     end
     resources :temp_ios, only: [:index, :update]

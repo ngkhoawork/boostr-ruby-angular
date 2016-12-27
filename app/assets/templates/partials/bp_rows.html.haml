@@ -12,10 +12,10 @@
     {{ bp_estimate.revenue | currency:'$':0 }}
   %td
     $
-    %input.money-field{type: 'number', placeholder: 0, 'ng-model': 'bp_estimate.estimate_seller', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+    %input.money-field{type: 'text', placeholder: 0, 'ng-model': 'bp_estimate.estimate_seller', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
   %td
     $
-    %input.money-field{type: 'number', placeholder: 0, 'ng-model': 'bp_estimate.estimate_mgr', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+    %input.money-field{type: 'text', placeholder: 0, 'ng-model': 'bp_estimate.estimate_mgr', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
   %td
     {{ bp_estimate.year_revenue | currency:'$':0 }}
   %td
@@ -51,22 +51,22 @@
     %table.detail
       %tbody
         %tr
-          %th{ width: "125" }
+          %th.left{ width: "125" }
             Products
-          %th.center{ width: "150" }
+          %th{ width: "150" }
             {{selectedBP.time_period.name}} Estimate
-          %th.center{ width: "144" }
+          %th{ width: "168" }
             Mgr Estimate
         %tr{ ng: { repeat: 'bp_estimate_product in bp_estimate.bp_estimate_products' } }
-          %td {{ bp_estimate_product.product.name }}
+          %td.left {{ bp_estimate_product.product.name }}
           %td
             $
-            %input.money-field{type: 'number', placeholder: 0, 'ng-model': 'bp_estimate_product.estimate_seller', 'ng-blur': 'updateBpEstimateProduct(bp_estimate)'}
+            %input.money-field{type: 'text', placeholder: 0, 'ng-model': 'bp_estimate_product.estimate_seller', 'ng-blur': 'updateBpEstimateProduct(bp_estimate)'}
           %td
             $
-            %input.money-field{type: 'number', placeholder: 0, 'ng-model': 'bp_estimate_product.estimate_mgr', 'ng-blur': 'updateBpEstimateProduct(bp_estimate)'}
+            %input.money-field{type: 'text', placeholder: 0, 'ng-model': 'bp_estimate_product.estimate_mgr', 'ng-blur': 'updateBpEstimateProduct(bp_estimate)'}
         %tr
-          %td Total
+          %td.left Total
           %td.right.total
             {{ totalSum(bp_estimate.bp_estimate_products, 'estimate_seller') | currency:'$':0 }}
 

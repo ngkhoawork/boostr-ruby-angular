@@ -12,6 +12,10 @@
     BP.addClient(id: $scope.bp.id, client_id: client.id).then (bp) ->
       $modalInstance.close(bp)
 
+  $scope.addAllClients = () ->
+    BP.addAllClients(id: $scope.bp.id).then (bp) ->
+      $modalInstance.close(bp)
+
   $scope.searchObj = (name) ->
     if name == ""
       BP.unassignedClients(id: $scope.bp.id).then (unassignedClients) ->
