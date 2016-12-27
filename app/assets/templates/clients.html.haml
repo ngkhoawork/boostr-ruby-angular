@@ -270,7 +270,7 @@
                       .col-xs-4.vertical-line
                         {{ deal.stage.name }}
                       .col-xs-3.vertical-line
-                        {{ deal.budget / 100 | currency: '$': 0 }}
+                        {{ deal.budget | currency: '$': 0 }}
                       .col-xs-5.vertical-line
                         Starting {{ deal.start_date | date: 'shortDate' }}
                 .col-xs-1

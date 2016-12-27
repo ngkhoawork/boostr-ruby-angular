@@ -37,7 +37,7 @@ RSpec.describe DealProductBudget, type: :model do
       end.to change(DealProduct, :count).by(1)
 
       deal_product = DealProduct.last
-      expect(deal_product.budget).to eq(data[:budget] * 100)
+      expect(deal_product.budget).to eq(data[:budget])
     end
 
     it 'creates new deal product budget' do
@@ -51,7 +51,7 @@ RSpec.describe DealProductBudget, type: :model do
       data = build :deal_product_budget_csv_data
       expect(DealProductBudget.import(generate_csv(data), user)).to eq([])
       deal_product = DealProduct.last
-      expect(deal_product.budget).to eq(data[:budget] * 100)
+      expect(deal_product.budget).to eq(data[:budget])
     end
 
     it "updates deal's total budget" do
@@ -74,8 +74,8 @@ RSpec.describe DealProductBudget, type: :model do
       three_month_deal.reload
 
       deal_product = three_month_deal.deal_products.first
-      expect(deal_product.budget).to eq(30000 * 100)
-      expect(three_month_deal.budget).to eq(30000 * 100)
+      expect(deal_product.budget).to eq(30000)
+      expect(three_month_deal.budget).to eq(30000)
       expect(deal_product.deal_product_budgets.count).to eq(3)
     end
 

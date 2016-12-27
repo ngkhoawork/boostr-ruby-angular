@@ -300,19 +300,19 @@ ActiveRecord::Schema.define(version: 20161211083512) do
   end
 
   create_table "deal_product_budgets", force: :cascade do |t|
-    t.integer  "budget",          limit: 8
+    t.integer  "budget",          limit: 8, default: 0
     t.date     "period"
     t.date     "start_date"
     t.date     "end_date"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
     t.integer  "deal_product_id"
   end
 
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
-    t.integer  "budget",     limit: 8
+    t.integer  "budget",     limit: 8, default: 0
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
     t.boolean  "open",                 default: true
@@ -338,7 +338,7 @@ ActiveRecord::Schema.define(version: 20161211083512) do
     t.date     "start_date"
     t.date     "end_date"
     t.string   "name"
-    t.integer  "budget",              limit: 8
+    t.integer  "budget",              limit: 8, default: 0
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
     t.integer  "stage_id"

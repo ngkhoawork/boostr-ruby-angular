@@ -7,9 +7,6 @@ class DealProduct < ActiveRecord::Base
 
   accepts_nested_attributes_for :deal_product_budgets
 
-  before_update :multiply_budget
-  before_create :multiply_budget
-
   after_update do
     if deal_product_budgets.sum(:budget) != budget
       if budget_changed?
@@ -32,12 +29,8 @@ class DealProduct < ActiveRecord::Base
   scope :product_type_of, -> (type) { joins(:product).where("products.revenue_type = ?", type) }
   scope :open, ->  { where('deal_products.open IS true')  }
 
-  def multiply_budget
-    self.budget = budget * 100 if budget_changed?
-  end
-
   def daily_budget
-    (budget / 100.0) / (deal.end_date - deal.start_date + 1).to_i
+    budget / (deal.end_date - deal.start_date + 1).to_f
   end
 
   def create_product_budgets
@@ -46,7 +39,7 @@ class DealProduct < ActiveRecord::Base
 
     deal.months.each_with_index do |month, index|
       if last_index == index
-        monthly_budget = (budget / 100.0) - total
+        monthly_budget = budget - total
       else
         monthly_budget = (daily_budget * deal.days_per_month[index])
         monthly_budget = 0 if monthly_budget.between?(0, 1)
@@ -63,7 +56,7 @@ class DealProduct < ActiveRecord::Base
 
     deal_product_budgets.each_with_index do |deal_product_budget, index|
       if last_index == index
-        monthly_budget = (budget / 100.0) - total
+        monthly_budget = budget - total
       else
         monthly_budget = (daily_budget * deal.days_per_month[index])
         monthly_budget = 0 if monthly_budget.between?(0, 1)
@@ -82,7 +75,7 @@ class DealProduct < ActiveRecord::Base
   end
 
   def update_budget
-    self.update(budget: deal_product_budgets.sum(:budget) / 100)
+    self.update(budget: deal_product_budgets.sum(:budget))
   end
 
   def self.import(file, current_user)

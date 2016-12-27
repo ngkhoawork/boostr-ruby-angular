@@ -67,7 +67,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     cycle_time = 0.0
 
     win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f) * 100).round(0) if (incomplete_deals.count + complete_deals.count) > 0
-    average_deal_size = (complete_deals.average(:budget) / 100000).round(0) if complete_deals.count > 0
+    average_deal_size = (complete_deals.average(:budget) / 1000.0).round(0) if complete_deals.count > 0
     cycle_time_arr = complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s)  - Date.parse(deal.created_at.utc.to_s)}
     cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(0) if cycle_time_arr.count > 0
     #
@@ -79,7 +79,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     # team_cycle_time = 0.0
     #
     # team_win_rate = (team_complete_deals.count.to_f / (team_complete_deals.count.to_f + team_incomplete_deals.count.to_f) * 100).round(2) if (team_incomplete_deals.count + team_complete_deals.count) > 0
-    # team_average_deal_size = (team_complete_deals.average(:budget) / 100000).round(2) if team_complete_deals.count > 0
+    # team_average_deal_size = (team_complete_deals.average(:budget) / 1000.0).round(2) if team_complete_deals.count > 0
     # team_cycle_time_arr = team_complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s)  - Date.parse(deal.created_at.utc.to_s)}
     # team_cycle_time = (team_cycle_time_arr.sum.to_f / team_cycle_time_arr.count + 1).round(2) if team_cycle_time_arr.count > 0
 
@@ -102,7 +102,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     .joins("left join fields on  values.field_id=fields.id")
     .joins("left join options on options.id=values.option_id")
     .where("deals.id in (?) and deals.budget > 0 and fields.name='Close Reason'", deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
-    .select("options.name as name, (sum(deals.budget) / 100) as total_budget")
+    .select("options.name as name, sum(deals.budget) as total_budget")
     .group("options.name")
     .order("total_budget desc")
     .collect { |deal| {reason: deal.name, total_budget: deal.total_budget} }
@@ -177,7 +177,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     product_pipeline_data_unweighted = []
 
     probabilities.each do |probability|
-      data = Deal.joins(:products).open_partial.at_percent(probability).where("products.company_id = ? and deals.id in (?)", current_user.company.id, deal_ids).group("products.id").order("products.id asc").select("products.name, (sum(deal_products.budget) / 100) as total_budget").collect {|deal| {label: deal.name, value: deal.total_budget.to_i}}
+      data = Deal.joins(:products).open_partial.at_percent(probability).where("products.company_id = ? and deals.id in (?)", current_user.company.id, deal_ids).group("products.id").order("products.id asc").select("products.name, sum(deal_products.budget) as total_budget").collect {|deal| {label: deal.name, value: deal.total_budget.to_i}}
       final_data_weighted = []
       final_data_unweighted = []
       product_names.each do |product_name|
@@ -205,10 +205,10 @@ class Api::SalesExecutionDashboardController < ApplicationController
   def week_pipeline_data
     start_date = Time.now.utc.beginning_of_week - 7.days
     end_date = Time.now.utc.beginning_of_week - 1.seconds
-    pipeline_won = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(100).sum(:budget) / 100.0
-    pipeline_lost = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(0).sum(:budget) / 100.0
-    pipeline_added = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).started_at(start_date, end_date).sum(:budget) / 100.0
-    pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date).sum(:budget_change) / 100.0
+    pipeline_won = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(100).sum(:budget)
+    pipeline_lost = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(0).sum(:budget)
+    pipeline_added = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).started_at(start_date, end_date).sum(:budget)
+    pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date).sum(:budget_change)
 
     @week_pipeline_data = [
         {name: 'Added', value: pipeline_added.round, color:'#a4d0f0'},
