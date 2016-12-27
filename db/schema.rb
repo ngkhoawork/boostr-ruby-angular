@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161211083512) do
+ActiveRecord::Schema.define(version: 20161223094804) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -43,7 +43,7 @@ ActiveRecord::Schema.define(version: 20161211083512) do
     t.integer "time_dimension_id"
     t.integer "category_id"
     t.integer "subcategory_id"
-    t.integer "revenue_amount"
+    t.decimal "revenue_amount",       precision: 10, scale: 2
   end
 
   add_index "account_revenue_facts", ["account_dimension_id"], name: "index_account_revenue_facts_on_account_dimension_id", using: :btree

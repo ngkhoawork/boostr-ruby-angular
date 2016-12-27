@@ -12,7 +12,7 @@ class RevenueDataWarehouse
     time_dimensions = TimeDimension.all
     all_ios = Io.all.includes(:content_fees, :content_fee_product_budgets, :display_line_items, :display_line_item_budgets)
 
-    clients = Client.all.each do |client|
+    Client.all.each do |client|
       client_revenues = []
 
       ios = all_ios.select do |io|
