@@ -39,6 +39,11 @@
     update: {
       method: "PUT"
       transformRequest: transformRequest
+    },
+    sellers: {
+      method: "GET"
+      url: 'api/clients/:id/sellers'
+      isArray: true
     }
 
   resource.allClients = []
@@ -57,6 +62,12 @@
     resource.save params, (client) ->
       allClients.push(client)
       deferred.resolve(client)
+    deferred.promise
+
+  resource.__sellers = (params) ->
+    deferred = $q.defer()
+    resource.sellers params, (sellers) ->
+      deferred.resolve(sellers)
     deferred.promise
 
   resource.__update = (params) ->

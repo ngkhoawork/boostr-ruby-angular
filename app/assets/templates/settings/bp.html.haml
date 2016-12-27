@@ -6,34 +6,27 @@
           %i.fa.fa-arrow-left
           Back to Business Plans
     .row
-      .col-xs-8
-        .filter-title.bp-info
-          %h3.title Business Plan Detail
-          .info
-            Name:
-            %span.info-value
+      .bp-info.col-xs-12
+        .info
+          .info-body-wrap
+            .name
               {{ bp.name }}
-          .info
-            Time Period:
-            %span.info-value
-              {{ bp.time_period.name }}
-          .info
-            Date Created:
-            %span.info-value
-              {{bp.created_at | date: 'shortDate'}}
-          .info
-            Due Date:
-            %span.info-value
-              {{bp.due_date | date: 'shortDate'}}
-          .info
-            Status:
-            %span.info-value
-              {{bp.status}} / {{bp.client_count}}
+            .description
+              Created: {{bp.created_at | date: 'MMM dd, yyyy'}}
+            .description
+              Due Date: {{bp.due_date | date: 'MMM dd, yyyy'}}
+        .info
+          %svg#progress-circle
+          .info-body-wrap
+            .info-body
+              #progress-number.title
+                {{bp.status}} / {{bp.client_count}}
+              .description Status
     .row
       .col-xs-12
         %h3.title Estimate Summary
     .row
-      .col-md-12.text-center
+      .col-md-12.text-center.bp-table-wrapper
         %table.table
           %thead
             %tr
@@ -56,6 +49,9 @@
                 No data available
     .row
       .col-xs-12
+        .section
+          %a.pull-right.upload{ href: '', ng: { click: 'showAddClientModal()' } }
+            = inline_svg 'icons/add.svg'
         %h3.title Unassigned Clients
     .row
       .col-md-12.text-center.bp-table-wrapper
@@ -64,7 +60,7 @@
             %i.fa.fa-check-circle
             <strong style="text-transform: capitalize"></strong>
             {{notification}}
-        %table.table.gray-table
+        %table.table
           %thead
             %tr
               %th.left{ width: "200" }
@@ -90,7 +86,7 @@
                 No data available
     .row
       .col-xs-12
-        -#.filter-title
+        .section
         %h3.title Incomplete Estimates
     .row
       .col-md-12.text-center.bp-table-wrapper

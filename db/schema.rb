@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161223094804) do
+ActiveRecord::Schema.define(version: 20161227001939) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -283,9 +283,9 @@ ActiveRecord::Schema.define(version: 20161223094804) do
 
   create_table "deal_logs", force: :cascade do |t|
     t.integer  "deal_id"
-    t.integer  "budget_change"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.decimal  "budget_change", precision: 12, scale: 2
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
   end
 
   add_index "deal_logs", ["deal_id"], name: "index_deal_logs_on_deal_id", using: :btree
@@ -300,22 +300,22 @@ ActiveRecord::Schema.define(version: 20161223094804) do
   end
 
   create_table "deal_product_budgets", force: :cascade do |t|
-    t.integer  "budget",          limit: 8, default: 0
+    t.decimal  "budget",          precision: 12, scale: 2, default: 0.0
     t.date     "period"
     t.date     "start_date"
     t.date     "end_date"
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.datetime "created_at",                                             null: false
+    t.datetime "updated_at",                                             null: false
     t.integer  "deal_product_id"
   end
 
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
-    t.integer  "budget",     limit: 8, default: 0
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
-    t.boolean  "open",                 default: true
+    t.decimal  "budget",     precision: 12, scale: 2, default: 0.0
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
+    t.boolean  "open",                                default: true
   end
 
   create_table "deal_stage_logs", force: :cascade do |t|
@@ -338,9 +338,9 @@ ActiveRecord::Schema.define(version: 20161223094804) do
     t.date     "start_date"
     t.date     "end_date"
     t.string   "name"
-    t.integer  "budget",              limit: 8, default: 0
-    t.datetime "created_at",                                   null: false
-    t.datetime "updated_at",                                   null: false
+    t.decimal  "budget",              precision: 12, scale: 2, default: 0.0
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
     t.integer  "stage_id"
     t.string   "deal_type"
     t.string   "source_type"
@@ -353,7 +353,7 @@ ActiveRecord::Schema.define(version: 20161223094804) do
     t.integer  "updated_by"
     t.datetime "activity_updated_at"
     t.integer  "previous_stage_id"
-    t.boolean  "open",                          default: true
+    t.boolean  "open",                                         default: true
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree

@@ -510,7 +510,7 @@ tr:hover {
         th{
           color: #97a2ac !important;
           text-transform: capitalize;
-          font-weight: normal;
+          font-weight: bold;
           font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
           font-size: 13px;
           border-bottom: 2px solid #d9dde0;
@@ -574,52 +574,6 @@ tr:hover {
     div.active {
       background-color: #3996db;
       color: #FFFFFF;
-    }
-  }
-}
-
-.bp-estimate-wrapper {
-
-}
-
-.bp-estimate-detail {
-  .bp-estimate-wrapper {
-//    padding-top: 20px !important;
-    vertical-align: top;
-
-    .bp-estimate-attribute {
-      padding-top: 10px;
-
-      .attr-label {
-        font-weight: bold;
-      }
-      .attr-value {
-        padding-top: 5px;
-      }
-    }
-  }
-  .bp-estimate-product-list {
-    table.detail {
-      width: 100%;
-      table-layout: fixed;
-      tr {
-        th {
-          padding: 10px 8px;
-        }
-        td {
-          border-top: 1px solid #ddd;
-          padding: 10px 8px;
-        }
-        .total {
-          padding-right: 36px;
-        }
-        th:first-child {
-          padding: 10px 0;
-        }
-        td:first-child {
-          padding: 10px 0;
-        }
-      }
     }
   }
 }

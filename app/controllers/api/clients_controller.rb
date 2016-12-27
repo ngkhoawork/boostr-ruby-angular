@@ -83,6 +83,15 @@ class Api::ClientsController < ApplicationController
     render nothing: true
   end
 
+  def sellers
+    client = company.clients.find(params[:client_id])
+    if client.present?
+      render json: client.users.by_name(params[:name]).limit(10)
+    else
+      render json: "Client not found", status: :not_found
+    end
+  end
+
   private
 
   def limit

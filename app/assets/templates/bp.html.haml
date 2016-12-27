@@ -1,82 +1,62 @@
-#reports.monthly-forecasts
-  .container-fluid.table-report
+.bp-detail.skin-background
+  .container-fluid
     .row
-      .col-xs-12
-        .filter-title
-          %h3.title.pull-left Business Plan
-
-          %ul.kpi-block__filter.pull-left
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                %span{ 'ng-if': 'selectedBP.id > 0' }
-                  {{ selectedBP.name }}
-                %span{ 'ng-if': 'selectedBP.id == 0' }
-                  Select Business Plan
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'bp in bps', class: '{active: bp.id == selectedBP.id}' } }
-                  %a{ href: '', ng: { click: 'selectBP(bp)' } }
-                    {{ bp.name }}
-
-          %ul.kpi-block__filter.pull-left
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                %span
-                  {{ selectedFilter.name }}
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'filter in bpEstimateFilters', class: '{active: filter.value == selectedFilter.value}' } }
-                  %a{ href: '', ng: { click: 'selectFilter(filter)' } }
-                    {{ filter.name }}
-      .bp-info.col-xs-12{ ng: { if: 'selectedBP.id > 0' } }
+      %h3.pull-left Business Plan
+      %ul.bp-filter.pull-left
+        %li.title
+          Quarter
+        %li{ dropdown: true }
+          %a{ href: '', dropdown: { toggle: true } }
+            %span{ 'ng-if': 'selectedBP.id > 0' }
+              {{ selectedBP.name }}
+            %span{ 'ng-if': 'selectedBP.id == 0' }
+              Select a quarter
+            %span.caret
+          %ul.dropdown-menu
+            %li{ ng: { repeat: 'bp in bps | filter: { name: bpSearch }', class: '{active: bp.id == selectedBP.id}' } }
+              %a{ href: '', ng: { click: 'selectBP(bp)' } }
+                %span.name
+                  {{ bp.name }}
+                &nbsp;&nbsp;&nbsp;
+                %span.status
+                  {{bp.status}}/{{bp.client_count}}
+      .bp-info.col-xs-12{ ng: { show: 'selectedBP.id > 0' } }
         .info
-          Name:
-          %span.info-value
-            {{ selectedBP.name }}
+          .info-body-wrap
+            .name
+              {{ selectedBP.name }}
+            .description
+              Created: {{selectedBP.created_at | date: 'MMM dd, yyyy'}}
+            .description
+              Due Date: {{selectedBP.due_date | date: 'MMM dd, yyyy'}}
         .info
-          Time Period:
-          %span.info-value
-            {{ selectedBP.time_period.name }}
+          %svg#progress-circle
+          .info-body-wrap
+            .info-body
+              #progress-number.title
+                {{selectedBP.status}} / {{selectedBP.client_count}}
+              .description Status
         .info
-          Date Created:
-          %span.info-value
-            {{selectedBP.created_at | date: 'shortDate'}}
+          .info-body-wrap
+            .info-body
+              .title
+                {{ totalEstimate(bpEstimates, 'estimate_seller') | humanReadableMoney }}
+              .description Seller Estimate
         .info
-          Due Date:
-          %span.info-value
-            {{selectedBP.due_date | date: 'shortDate'}}
-        .info
-          Status:
-          %span.info-value
-            {{selectedBP.status}} / {{selectedBP.client_count}}
-    .row{ ng: { if: 'selectedBP.id > 0' } }
-      .col-xs-12
-        %h3.title Estimate Summary
-    .row{ ng: { if: 'selectedBP.id > 0' } }
-      .col-md-12.text-center
-        %table.table
-          %thead
-            %tr
-              %th.left
-                %a.sort{ href: '', ng: { click: 'summarySort.toggle("name")' } }
-                  Account
-                  %i{ ng: { class: "{ 'fa': summarySort.column == 'name', 'fa-sort-asc': summarySortcolumn == 'name' && summarySortdirection == 'asc', 'fa-sort-desc': summarySortcolumn == 'name' && summarySortdirection == 'desc' }" } }
-              %th Total Seller Estimates
-              %th Total Manager Estimates
-          %tbody
-            %tr{ ng: { if: 'accountTotalEstimates.length > 0', repeat: 'accountTotalEstimate in accountTotalEstimates' } }
-              %td.left
-                {{ accountTotalEstimate.name }}
-              %td
-                {{ accountTotalEstimate.total_estimate_seller | currency:'$':0 }}
-              %td
-                {{ accountTotalEstimate.total_estimate_seller | currency:'$':0 }}
-            %tr{ ng: { if: 'accountTotalEstimates.length == 0' }}
-              %td.center{ colspan: '4' }
-                No data available
-    .row{ ng: { if: 'selectedBP.id > 0' } }
-      .col-xs-12
-        %h3.title BP Estimates
+          .info-body-wrap
+            .info-body
+              .title
+                {{ totalEstimate(bpEstimates, 'estimate_mgr') | humanReadableMoney }}
+              .description Manager Estimate
+        .filter.pull-right
+          .filter-item{ ng: { repeat: 'filter in bpEstimateFilters', class: '{active: filter.value == selectedFilter.value}', click: 'selectFilter(filter)' } }
+            {{ filter.name }}
+          -#.filter-item.active
+          -#  All
+          -#.filter-item
+          -#  My Estimates
+          -#.filter-item
+          -#  My Team's Estimate
     .row{ ng: { if: 'selectedBP.id > 0' } }
       .col-md-12.text-center.bp-table-wrapper
         .alerts{ 'ng-if': 'notification' }
@@ -84,7 +64,7 @@
             %i.fa.fa-check-circle
             <strong style="text-transform: capitalize"></strong>
             {{notification}}
-        %table.table.gray-table
+        %table
           %thead
             %tr
               %th.left{ width: "200" }

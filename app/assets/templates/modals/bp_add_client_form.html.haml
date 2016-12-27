@@ -6,7 +6,7 @@
           = inline_svg 'icons/close.svg'
       %h3.modal-title
         %strong
-          Assign Seller to a BP Estimate
+          Add Client to a BP Estimate
     .modal-body
       .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
@@ -15,16 +15,17 @@
           {{error}}
 
       .form-group
-        %input.form-control{ name: 'seller', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj(searchText)' } }
+        %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj(searchText)' } }
       .form-group
         .row
           .col-xs-12
             .client-list
-              .client-info{ 'ng-repeat': 'seller in sellers | filter: { name: searchText }' }
-                .name{ ng: { bind: { html: 'seller.name' } } }
+              .client-info{ 'ng-repeat': 'client in clients | filter: { name: searchText }' }
+                .name{ ng: { bind: { html: 'client.name' } } }
                 .action
-                  %a{ href: "javascript:void(0)", 'ng-click': "assignUser(seller)" }
-                    Assign
+                  %a{ href: "javascript:void(0)", 'ng-click': "addClient(client)" }
+                    Add
 
     .modal-footer
+      %a.btn.btn-primary.btn-lg{ ng: { if: "clients.length > 0", click: 'addAllClients()' } } Assign All Clients
       %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel
