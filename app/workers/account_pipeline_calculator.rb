@@ -20,7 +20,7 @@ class AccountPipelineCalculator
           .select("deal_product_budgets.*, stages.probability, deals.id as deal_id").to_a
 
           deal_product_budgets.each do |deal_product_budget|
-            daily_budget = (deal_product_budget.budget / 100.0) / (deal_product_budget.end_date.to_date - deal_product_budget.start_date.to_date + 1).to_f
+            daily_budget = deal_product_budget.budget / (deal_product_budget.end_date.to_date - deal_product_budget.start_date.to_date + 1).to_f
             probability = deal_product_budget.probability
 
             time_dimensions.each do |time_dimension|
