@@ -8,6 +8,10 @@ every(1.day, 'Snapshot Generator', at: '8:00', tz: 'UTC') do
   SnapshotGenerator.perform_async
 end
 
+every(1.day, 'Account Dimension Synchronizer', at: '4:50', tz: 'UTC') do
+  AccountSynchronizer.perform_async
+end
+
 every(1.day, 'Account Revenue Data Calculator', at: '5:00', tz: 'UTC') do
   RevenueDataWarehouse.perform_async
 end
