@@ -9,7 +9,7 @@
 .navbar-nav {
   li {
     font-size: 15px;
-    margin-right: 43px;
+    margin-right: 23px;
 
     a {
       padding: 20px 0;
@@ -471,5 +471,19 @@
         }
       }
     }
+  }
+}
+
+.filter-title {
+  margin-top: 20px;
+  a.upload {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  ul {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    list-style-type: none;
   }
 }

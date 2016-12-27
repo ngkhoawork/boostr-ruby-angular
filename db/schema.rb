@@ -11,10 +11,44 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161206140639) do
+ActiveRecord::Schema.define(version: 20161211083512) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
+
+  create_table "account_dimensions", force: :cascade do |t|
+    t.string  "name"
+    t.integer "account_type"
+    t.integer "category_id"
+    t.integer "subcategory_id"
+  end
+
+  create_table "account_pipeline_facts", force: :cascade do |t|
+    t.integer "company_id"
+    t.integer "account_dimension_id"
+    t.integer "time_dimension_id"
+    t.integer "category_id"
+    t.integer "subcategory_id"
+    t.integer "pipeline_amount"
+  end
+
+  add_index "account_pipeline_facts", ["account_dimension_id"], name: "index_account_pipeline_facts_on_account_dimension_id", using: :btree
+  add_index "account_pipeline_facts", ["company_id"], name: "index_account_pipeline_facts_on_company_id", using: :btree
+  add_index "account_pipeline_facts", ["time_dimension_id"], name: "index_account_pipeline_facts_on_time_dimension_id", using: :btree
+
+  create_table "account_revenue_facts", force: :cascade do |t|
+    t.integer "company_id"
+    t.integer "account_dimension_id"
+    t.integer "time_dimension_id"
+    t.integer "category_id"
+    t.integer "subcategory_id"
+    t.integer "revenue_amount"
+  end
+
+  add_index "account_revenue_facts", ["account_dimension_id"], name: "index_account_revenue_facts_on_account_dimension_id", using: :btree
+  add_index "account_revenue_facts", ["company_id"], name: "index_account_revenue_facts_on_company_id", using: :btree
+  add_index "account_revenue_facts", ["time_dimension_id"], name: "index_account_revenue_facts_on_time_dimension_id", using: :btree
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -98,6 +132,46 @@ ActiveRecord::Schema.define(version: 20161206140639) do
     t.string   "subtype"
     t.integer  "created_by"
   end
+
+  create_table "bp_estimate_products", force: :cascade do |t|
+    t.integer  "bp_estimate_id"
+    t.integer  "product_id"
+    t.float    "estimate_seller"
+    t.float    "estimate_mgr"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "bp_estimate_products", ["bp_estimate_id"], name: "index_bp_estimate_products_on_bp_estimate_id", using: :btree
+  add_index "bp_estimate_products", ["product_id"], name: "index_bp_estimate_products_on_product_id", using: :btree
+
+  create_table "bp_estimates", force: :cascade do |t|
+    t.integer  "bp_id"
+    t.integer  "client_id"
+    t.integer  "user_id"
+    t.float    "estimate_seller"
+    t.float    "estimate_mgr"
+    t.string   "objectives"
+    t.string   "assumptions"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+  end
+
+  add_index "bp_estimates", ["bp_id"], name: "index_bp_estimates_on_bp_id", using: :btree
+  add_index "bp_estimates", ["client_id"], name: "index_bp_estimates_on_client_id", using: :btree
+  add_index "bp_estimates", ["user_id"], name: "index_bp_estimates_on_user_id", using: :btree
+
+  create_table "bps", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "time_period_id"
+    t.date     "due_date"
+    t.integer  "company_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "bps", ["company_id"], name: "index_bps_on_company_id", using: :btree
+  add_index "bps", ["time_period_id"], name: "index_bps_on_time_period_id", using: :btree
 
   create_table "client_contacts", force: :cascade do |t|
     t.integer  "client_id"
@@ -545,6 +619,13 @@ ActiveRecord::Schema.define(version: 20161206140639) do
 
   add_index "temp_ios", ["company_id"], name: "index_temp_ios_on_company_id", using: :btree
 
+  create_table "time_dimensions", force: :cascade do |t|
+    t.string  "name"
+    t.date    "start_date"
+    t.date    "end_date"
+    t.integer "days_length"
+  end
+
   create_table "time_periods", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -638,6 +719,19 @@ ActiveRecord::Schema.define(version: 20161206140639) do
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
+  add_foreign_key "account_pipeline_facts", "account_dimensions"
+  add_foreign_key "account_pipeline_facts", "companies"
+  add_foreign_key "account_pipeline_facts", "time_dimensions"
+  add_foreign_key "account_revenue_facts", "account_dimensions"
+  add_foreign_key "account_revenue_facts", "companies"
+  add_foreign_key "account_revenue_facts", "time_dimensions"
+  add_foreign_key "bp_estimate_products", "bp_estimates"
+  add_foreign_key "bp_estimate_products", "products"
+  add_foreign_key "bp_estimates", "bps"
+  add_foreign_key "bp_estimates", "clients"
+  add_foreign_key "bp_estimates", "users"
+  add_foreign_key "bps", "companies"
+  add_foreign_key "bps", "time_periods"
   add_foreign_key "clients", "clients", column: "parent_client_id"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
