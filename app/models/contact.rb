@@ -15,7 +15,6 @@ class Contact < ActiveRecord::Base
   accepts_nested_attributes_for :address
 
   validates :name, presence: true
-  validates :client_id, presence: true
   validate :email_is_present?
   validate :email_unique?
 
