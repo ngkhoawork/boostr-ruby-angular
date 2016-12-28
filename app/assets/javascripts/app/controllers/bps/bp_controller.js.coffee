@@ -50,6 +50,8 @@
       $scope.isDateSet = false
       $scope.selectedBP = {id: 0}
       $scope.bpEstimates = []
+      $scope.totalClients = 0
+      $scope.totalStatus = 0
 
       $scope.dataType = "weighted"
       $scope.notification = null
@@ -182,16 +184,20 @@
         $scope.totalClients = (_.uniq (_.map $scope.bpEstimates, 'client_id')).length
         client_estimates = {}
         _.each $scope.bpEstimates, (item) ->
-          if (item.estimate_seller && item.estimate_seller > 0)
-            if (client_estimates[item.client_id] == undefined)
-              client_estimates[item.client_id] = 1
-          else
-            client_estimates[item.client_id] = 0
+          if (item.user_id)
+            if (item.estimate_seller && item.estimate_seller > 0)
+              if (client_estimates[item.client_id] == undefined)
+                client_estimates[item.client_id] = 1
+            else
+              client_estimates[item.client_id] = 0
         count = 0
         for i of client_estimates
           count += client_estimates[i]
         $scope.totalStatus = count
-        drawProgressCircle($scope.totalStatus * 100 / $scope.totalClients)
+        percentage = 0
+        if ($scope.totalClients > 0)
+          percentage = $scope.totalStatus * 100 / $scope.totalClients
+        drawProgressCircle(percentage)
 
       $scope.updateBpEstimate = (bpEstimate) ->
         BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data)->

@@ -44,7 +44,7 @@ class Bp < ActiveRecord::Base
   end
 
   def status
-    status = bp_estimates.select("(count(CASE WHEN estimate_seller > 0 THEN 1 END) = count(user_id)) as is_complete").group("client_id").select{|row| row.is_complete == true }.size
+    status = bp_estimates.assigned.select("(count(CASE WHEN estimate_seller > 0 THEN 1 END) = count(user_id)) as is_complete").group("client_id").select{|row| row.is_complete == true }.size
     status
   end
 

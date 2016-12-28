@@ -91,7 +91,7 @@ class Api::BpsController < ApplicationController
     if bp.present?
       data = bp.bp_estimates
       .joins("LEFT JOIN users ON users.id = bp_estimates.user_id")
-      .where("bp_estimates.user_id IS NOT NULL")
+      .where("bp_estimates.user_id IS NOT NULL and users.user_type in (1, 2)")
       .group("users.id")
       .select("users.id AS user_id, COALESCE( SUM(bp_estimates.estimate_seller), 0 ) AS total_estimate_seller, COALESCE( SUM(bp_estimates.estimate_mgr), 0 ) AS total_estimate_mgr, users.first_name, users.last_name")
       .collect { |bp_estimate| {user_id: bp_estimate.user_id, name: (bp_estimate.user_id.present? ? (bp_estimate.first_name + ' ' + bp_estimate.last_name) : ""), total_estimate_seller: bp_estimate.total_estimate_seller, total_estimate_mgr: bp_estimate.total_estimate_mgr} }

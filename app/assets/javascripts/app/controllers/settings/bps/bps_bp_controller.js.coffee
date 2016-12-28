@@ -88,7 +88,10 @@
       init = () ->
         BP.get($routeParams.id).then (bp) ->
           $scope.bp = bp
-          drawProgressCircle($scope.bp.status * 100 / $scope.bp.client_count)
+          percentage = 0
+          if ($scope.bp.client_count > 0)
+            percentage = $scope.bp.status * 100 / $scope.bp.client_count
+          drawProgressCircle(percentage)
           BP.sellerTotalEstimates(id: $routeParams.id).then (sellerTotalEstimates) ->
             $scope.sellerTotalEstimates = sellerTotalEstimates
           BpEstimate.all({ bp_id: $routeParams.id }).then (data) ->
