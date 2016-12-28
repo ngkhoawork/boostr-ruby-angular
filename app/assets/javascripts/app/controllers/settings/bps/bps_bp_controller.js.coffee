@@ -263,7 +263,7 @@
         progressNumber = $document.find('#progress-number')
         interval = setInterval (->
           if i is p then clearInterval(interval)
-          progressNumber.html(i + '%')
+#          progressNumber.html(i + '%')
           i++
         ), animationDuration / p
 
