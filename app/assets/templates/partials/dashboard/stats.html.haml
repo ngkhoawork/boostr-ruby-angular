@@ -1,15 +1,16 @@
-#stats.block
-	%div{'ng-hide': 'forecast'}
+#stats.block{'ng-controller': 'DashboardStatsController'}
+	%div{'ng-hide': 'stats'}
 		%h4 Oops! No quota, no commissions.
-	%div{'ng-show': 'forecast'}
+	%div.stats-body{'ng-show': 'stats'}
 		%div.mb40
 			%span.title My Stats
+			{{test}}
 			.time-period
 				%span Time period:
-				%span.active This Qtr
-				%span Next Qtr
+				%span{'ng-class': '{active: qtr == 0}', 'ng-click': 'setStats(0)'} This Qtr
+				%span{'ng-class': '{active: qtr == 1}', 'ng-click': 'setStats(1)'} Next Qtr
 
-		%div
+		%div.stats-numbers
 			%div.stats-col
 				%svg#progress-circle
 				.col-body-wrap
@@ -20,23 +21,27 @@
 			%div.stats-col
 				.col-body-wrap
 					.col-body
-						.title {{forecast.quota | formatMoney}}
+						.title {{stats.quota | formatMoney}}
 						.description Quota
 
 			%div.stats-col
 				.col-body-wrap
 					.col-body
-						.title {{forecast.amount | formatMoney}}
+						.title {{stats.amount | formatMoney}}
 						.description Forecast
 
 			%div.stats-col
 				.col-body-wrap
 					.col-body
-						.title {{forecast.gap_to_quota * -1 | formatMoney}}
+						.title {{stats.gap_to_quota * -1 | formatMoney}}
 						.description Gap to Goal
 
 			%div.stats-col
 				.col-body-wrap
 					.col-body
-						.title {{forecast.new_deals_needed || 0}}
+						.title {{stats.new_deals_needed || 0}}
 						.description Deals Needed
+
+		#forecast-chart-container
+			%h4 Forecast
+			%svg#forecast-chart

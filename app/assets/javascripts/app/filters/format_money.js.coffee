@@ -3,7 +3,7 @@
         input = Math.round(input)
         if input is 0
             return '$0'
-        suffixes = ['K', 'M', 'B', 'T', 'Q']
+        suffixes = ['','K', 'M', 'B', 'T', 'Q']
         exp = Math.floor(Math.log(Math.abs(input)) / Math.log(1000))
         result = Math.round(Math.abs(input) / Math.pow(1000, exp) * 10) / 10
 

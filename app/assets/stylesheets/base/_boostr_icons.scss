@@ -9,7 +9,7 @@
   font-style: normal;
 }
 
-[class^="icon-"], [class*=" icon-"] {
+[class^="icon-activity-"], [class*=" icon-activity-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'icomoon' !important;
   speak: none;
@@ -18,6 +18,8 @@
   font-variant: normal;
   text-transform: none;
   line-height: 1;
+  color: $main-color;
+  font-size: 22px;
 
   /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
@@ -52,9 +54,12 @@
 .icon-activity-pitch:before {
   content: "\e908";
 }
-.icon-activity-proposal:before {
+.icon-activity-post-sale-meeting:before {
   content: "\e909";
 }
-.icon-activity-qbr:before {
+.icon-activity-proposal:before {
   content: "\e90a";
+}
+.icon-activity-qbr:before {
+  content: "\e90b";
 }

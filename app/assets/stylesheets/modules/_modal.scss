@@ -64,6 +64,30 @@
       resize: none;
     }
   }
+  .related {
+    border: 2px solid $separate-line-color;
+    padding: 5px 10px;
+    margin-bottom: 2px;
+    display: inline-block;
+    border-radius: 5px;
+    &.active {
+      border: none;
+      background-color: $main-color;
+      color: white;
+    }
+  }
+  .advertiser-agency {
+    .advertiser, .agency {
+      display: inline-block;
+      width: calc(50% - 30px);
+    }
+    .advertiser {
+      padding-right: 10px;
+    }
+    .agency {
+      padding-left: 10px;
+    }
+  }
   .with-add-btn {
     input.form-control, .ui-select-container  {
       display: inline-block;

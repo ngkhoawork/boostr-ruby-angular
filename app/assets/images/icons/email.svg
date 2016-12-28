@@ -1,32 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="23px" height="15px" viewBox="0 0 23 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
-    <title>icon-email</title>
-    <desc>Created with Sketch.</desc>
-    <defs>
-        <linearGradient x1="100%" y1="0%" x2="-0.937391846%" y2="100%" id="linearGradient-1">
-            <stop stop-color="#FF9F20" offset="0%"></stop>
-            <stop stop-color="#FF721C" offset="100%"></stop>
-        </linearGradient>
-        <path d="M1.05905646,0.0150123902 C0.783382329,0.0150123902 0.532235825,0.120679958 0.343295747,0.291713975 L9.19790512,9.41482391 C9.59976683,9.82882631 10.2572801,9.82882631 10.6591418,9.41482391 L19.5137967,0.291669295 C19.3248566,0.120635278 19.0737101,0.0149677104 18.798036,0.0149677104 L1.05905646,0.0149677104 L1.05905646,0.0150123902 Z" id="path-2"></path>
-        <mask id="mask-3" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1" y="-1" width="21.170501" height="11.710358">
-            <rect x="-0.656704253" y="-0.98503229" width="21.170501" height="11.710358" fill="white"></rect>
-            <use xlink:href="#path-2" fill="black"></use>
-        </mask>
-    </defs>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="activity-types" transform="translate(-81.000000, -344.000000)">
-            <g id="icon-email" transform="translate(83.000000, 345.000000)">
-                <g id="Layer_1">
-                    <path d="M19.5137967,0.291669295 L9.92854623,6.27272171 L0.343295747,0.291669295 C0.13301345,0.482004956 0,0.753568371 0,1.05479913 L0,12.8122261 C0,13.1149313 0.134287613,13.3876117 0.346344636,13.5780367 L9.92850072,7.60002253 L19.775364,13.8520575 L19.8570014,13.8520575 L19.8570014,1.05479913 C19.8570925,0.753568371 19.724079,0.482004956 19.5137967,0.291669295 Z" id="Shape" fill="#FF7200"></path>
-                    <path d="M19.5137967,0.291669295 L9.92854623,6.27272171 L0.343295747,0.291669295 C0.13301345,0.482004956 0,0.753568371 0,1.05479913 L0,12.8122261 C0,13.1149313 0.134287613,13.3876117 0.346344636,13.5780367 L9.92850072,7.60002253 L19.775364,13.8520575 L19.8570014,13.8520575 L19.8570014,1.05479913 C19.8570925,0.753568371 19.724079,0.482004956 19.5137967,0.291669295 Z" id="Shape-Copy" fill="#000000" opacity="0.100000001"></path>
-                    <path d="M1.05905646,13.8520575 L19.7754551,13.8520575 L13.0911993,6.93353496 L6.7658477,6.93353496 L0.346344636,13.5780814 C0.534920667,13.7475069 0.784838515,13.8520575 1.05905646,13.8520575 Z" id="Shape" fill="url(#linearGradient-1)"></path>
-                    <g id="Shape">
-                        <use fill="url(#linearGradient-1)" fill-rule="evenodd" xlink:href="#path-2"></use>
-                        <use stroke="#FFFFFF" mask="url(#mask-3)" stroke-width="2" xlink:href="#path-2"></use>
-                    </g>
-                </g>
-            </g>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 13.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 14948)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="512px" height="512px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+<path d="M256,51.2C142.677,51.2,51.2,143.36,51.2,256c0,113.322,92.16,204.8,204.8,204.8c113.322,0,204.8-92.159,204.8-204.8
+	C460.8,142.677,368.64,51.2,256,51.2z M256,486.059c-61.44,0-119.467-23.894-163.157-67.584
+	C49.152,374.784,25.259,317.439,25.259,256c0-61.44,23.893-119.467,67.584-163.157C136.533,49.152,194.56,25.259,256,25.259
+	c61.44,0,119.467,23.893,163.157,67.584c43.689,43.69,67.584,101.717,67.584,163.157c0,61.439-23.895,119.467-67.584,163.157
+	C375.467,462.165,317.44,486.059,256,486.059z"/>
+<g>
+	<g>
+		<polyline fill="none" stroke="#000000" stroke-width="15.7975" points="119.237,166.435 257.032,283.619 394.832,166.435 		"/>
+		<line fill="none" stroke="#000000" stroke-width="15.7975" x1="119.237" y1="337.112" x2="214.754" y2="243.161"/>
+		<line fill="none" stroke="#000000" stroke-width="15.7975" x1="395.811" y1="337.112" x2="300.293" y2="243.161"/>
+	</g>
+	<path fill="none" stroke="#000000" stroke-width="25.2759" d="M399.105,330.171c0,6.326-5.092,11.447-11.378,11.447H126.827
+		c-6.282,0-11.373-5.121-11.373-11.447V176.396c0-6.325,5.091-11.451,11.373-11.451h260.901c6.286,0,11.378,5.125,11.378,11.451
+		V330.171L399.105,330.171z"/>
+</g>
 </svg>

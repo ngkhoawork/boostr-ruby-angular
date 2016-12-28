@@ -22,14 +22,20 @@
             .form-group{'ng-class':'{error: errors.deal}', style: 'margin-bottom: 5px'}
                 %span.error-text {{errors.deal}}
                 %label
-                    Related to
+                    Related to Deal
                     %span.star *
                 %input.form-control{'placeholder': 'Choose Deal', 'ng-model': 'form.deal', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)'}
-            .form-group.with-add-btn{'ng-class':'{error: errors.account}'}
-                %span.error-text {{errors.account}}
-                %label{style: 'display: block'}
-                    or
-                %input.form-control{'placeholder': 'Choose Advertiser or Agency', value: '15', 'ng-model': 'form.account', typeahead: 'item as item.formatted_name for item in searchClients($viewValue)'}
+            .advertiser-agency
+                .form-group.advertiser{'ng-class':'{error: errors.advertiser}'}
+                    %span.error-text {{errors.advertiser}}
+                    %label{style: 'display: block'}
+                        or Advertiser
+                    %input.form-control{'placeholder': 'Choose Advertiser', 'ng-model': 'form.advertiser', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "advertiser")'}
+                .form-group.agency{'ng-class':'{error: errors.agency}'}
+                    %span.error-text {{errors.agency}}
+                    %label{style: 'display: block'}
+                        or Agency
+                    %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
                 %button.add-btn{type: 'button', 'ng-click': 'openAccountModal()'}
                     %span +
             .form-group.with-add-btn{'ng-class':'{error: errors.contacts}'}

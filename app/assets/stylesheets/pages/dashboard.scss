@@ -1,4 +1,6 @@
 #dashboard {
+    min-height: calc(100vh - 150px);
+    background-color: $main-background-color;
     padding-top: 30px;
     min-width: 1600px;
     font-family: "Avenir Next", Arial, serif;
@@ -39,6 +41,13 @@
         }
     }
     #stats {
+        .stats-numbers {
+            padding-bottom: 15px;
+            border-bottom: 1px solid $separate-line-color;
+        }
+        #forecast-chart-container {
+            margin-top: 30px;
+        }
         .stats-col {
             margin-right: -4px;
             width: 20%;
@@ -74,6 +83,49 @@
                         color: $secondary-font-color;
                     }
                 }
+            }
+        }
+        #forecast-chart {
+            g {
+                g:last-child {
+                    line {
+                        display: none;
+                    }
+                }
+            }
+
+            .bar {
+                line.connector {
+                    stroke: #afafaf;
+                    opacity: 0;
+                    shape-rendering: crispEdges;
+                }
+                text {
+                    text-anchor: middle;
+                    fill: $main-font-color;
+                    opacity: 0;
+                    font-weight: bold;
+                }
+            }
+
+            .axis {
+                text {
+                    font-size: 12px;
+                }
+                path, line {
+                    fill: none;
+                    stroke: $separate-line-color;
+                    opacity: 1;
+                    shape-rendering: crispEdges;
+                }
+            }
+            .tick {
+                line {
+                }
+            }
+            .max-value-line {
+                stroke-dasharray: 3, 3;
+                shape-rendering: crispEdges;
             }
         }
     }

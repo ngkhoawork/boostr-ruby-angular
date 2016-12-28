@@ -25,13 +25,16 @@
 
             #edit mode
             if activity
-                $scope.submitButtonText = 'Edit Activity'
+                $scope.submitButtonText = 'Save'
                 if activity.deal
                     activity.deal.formatted_name = activity.deal.name
                     $scope.form.deal = activity.deal
-                if activity.client || activity.agency
-                    $scope.form.account = activity.client || activity.agency
-                    $scope.form.account.formatted_name = $scope.form.account.name
+                if activity.client
+                    $scope.form.advertiser = activity.client
+                    $scope.form.advertiser.formatted_name = $scope.form.advertiser.name
+                if activity.agency
+                    $scope.form.agency = activity.agency
+                    $scope.form.agency.formatted_name = $scope.form.agency.name
                 $scope.form.contacts = activity.contacts
                 $scope.form.date = new Date(activity.happened_at)
                 if activity.timed
@@ -77,8 +80,12 @@
                 Deal.all({name: str}).then (deals) ->
                     deals
 
-            $scope.searchClients = (str) ->
-                Client.query({name: str}).$promise.then (clients) ->
+            $scope.searchClients = (str, type) ->
+                q =
+                    name: str
+                if type is 'advertiser' then q.client_type_id = 111
+                if type is 'agency' then q.client_type_id = 112
+                Client.query(q).$promise.then (clients) ->
                     clients
 
             $scope.searchContacts = (str) ->
@@ -107,7 +114,7 @@
             $scope.submitForm = ->
                 $scope.errors = {}
 
-                fields = ['deal', 'account', 'contacts', 'date', 'comment']
+                fields = ['deal', 'advertiser', 'agency', 'contacts', 'date', 'comment']
                 if $scope.showReminderForm
                     fields.push('reminderName', 'reminderDate', 'reminderComment')
 
@@ -115,16 +122,20 @@
                     field = $scope.form[key]
                     switch key
                         when 'deal'
-                            if !field && !$scope.form.account
-                                return $scope.errors[key] = 'Deal or Account is required'
+                            if !field && !$scope.form.advertiser && !$scope.form.agency
+                                return $scope.errors[key] = 'At least one is required'
                             if field && typeof field != 'object'
-                                return $scope.errors[key] = 'This deal doesn\'t exist'
-                        when 'account'
-                            if !field && !$scope.form.deal
-                                #show only error border
-                                return $scope.errors[key] = '         '
+                                return $scope.errors[key] = 'Record doesn\'t exist'
+                        when 'advertiser'
+                            if !field && !$scope.form.deal && !$scope.form.agency
+                                return $scope.errors[key] = ' '
                             if field && typeof field != 'object'
-                                return $scope.errors[key] = 'This account doesn\'t exist'
+                                return $scope.errors[key] = 'Record doesn\'t exist'
+                        when 'agency'
+                            if !field && !$scope.form.advertiser && !$scope.form.deal
+                                return $scope.errors[key] = ' '
+                            if field && typeof field != 'object'
+                                return $scope.errors[key] = 'Record doesn\'t exist'
                         when 'date'
                             if !field
                                 return $scope.errors[key] = 'Date is required'
@@ -156,14 +167,14 @@
                     activityData.timed = true
                     activityData.happened_at.setHours($scope.form.time.getHours(), $scope.form.time.getMinutes(), 0)
                 if $scope.form.deal
+                    activityData.deal_id = $scope.form.deal.id
                     activityData.client_id = $scope.form.deal.advertiser_id
                     activityData.agency_id = $scope.form.deal.agency_id
                 else
-                    if $scope.form.account
-                        if $scope.form.account.client_type_id is 111
-                            activityData.client_id = $scope.form.account.id
-                        else if $scope.form.account.client_type_id is 112
-                            activityData.agency_id = $scope.form.account.id
+                    if $scope.form.advertiser
+                        activityData.client_id = $scope.form.advertiser.id
+                    if $scope.form.agency
+                        activityData.agency_id = $scope.form.agency.id
 
                 if activity
                     if $scope.form.contacts && $scope.form.contacts[0] && typeof $scope.form.contacts[0] == 'object'

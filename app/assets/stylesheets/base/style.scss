@@ -1,15 +1,5 @@
 @import url(//fonts.googleapis.com/css?family=Montserrat:700,400);
 @import "gotham_fonts";
 @import "avenir_next_fonts";
-@import "boostr_icons";
 @import "variables";
-
-body {
-    background-color: $main-background-color !important;
-}
-
-//activity icons
-[class^="icon-activity-"] {
-    color: $main-color;
-    font-size: 22px;
-}
+@import "boostr_icons";

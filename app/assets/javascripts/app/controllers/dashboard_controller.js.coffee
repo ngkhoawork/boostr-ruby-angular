@@ -72,14 +72,11 @@
                 Dashboard.get().then (dashboard) ->
                     $scope.dashboard = dashboard
                     $scope.forecast = dashboard.forecast
-                    drawProgressCircle($scope.forecast.percent_to_quota)
 #                    $scope.setChartData()
 
                 Field.defaults({}, 'Client').then (fields) ->
                     client_types = Field.findClientTypes(fields)
                     $scope.setClientTypes(client_types)
-
-#                $scope.showNewActivityModal()
 
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
                 blocks.forEach (name) -> $scope[name + 'Init']()
@@ -94,18 +91,6 @@
                 client_types.options.forEach (option) ->
                     $scope[option.name] = option.id
 
-            $scope.chartOptions = {
-                responsive: false,
-                segmentShowStroke: true,
-                segmentStrokeColor: '#fff',
-                segmentStrokeWidth: 2,
-                percentageInnerCutout: 70,
-                animationSteps: 100,
-                animationEasing: 'easeOutBounce',
-                animateRotate: true,
-                animateScale: false,
-                showTooltips: false
-            }
             $scope.activitiesInit = ->
                 Activity.all({page: 1, filter: "client"}).then (activities) ->
                     $scope.activities = activities
@@ -170,19 +155,6 @@
                         activity: ->
                             activity
 
-#            $scope.showActivityEditModal = (activity) ->
-#                $scope.modalInstance = $modal.open
-#                    templateUrl: 'modals/activity_form.html'
-#                    size: 'lg'
-#                    controller: 'ActivitiesEditController'
-#                    backdrop: 'static'
-#                    keyboard: false
-#                    resolve:
-#                        activity: ->
-#                            activity
-#                        types: ->
-#                            $scope.types
-
             $scope.showAssignContactModal = (contact) ->
                 advertiserTypeId = null
                 $scope.modalInstance = $modal.open
@@ -240,22 +212,6 @@
                             message: ""
                         })
 
-            $scope.setChartData = () ->
-                if($scope && $scope.forecast && $scope.forecast.percent_to_quota)
-                    $scope.chartData = [
-                        {
-                            value: Math.min($scope.forecast.percent_to_quota, 100),
-                            color: '#FB6C22',
-                            highlight: '#FB6C22',
-                            label: 'Complete'
-                        },
-                        {
-                            value: Math.max(100 - $scope.forecast.percent_to_quota, 0),
-                            color: '#FEA673',
-                            highlight: '#FEA673',
-                            label: 'Remaining'
-                        }
-                    ]
             $scope.getStages = ->
                 Stage.query().$promise.then (stages) ->
                     $scope.stages = stages
@@ -538,57 +494,5 @@
                     type = type.toLowerCase().split(' ').join('-')
                     'assets/icons/dashboard/' + type + '.svg'
 
-            drawProgressCircle = (p) ->
-                p = Math.round(p)
-                animationDuration = 2000
-                width = 150
-                height = 150
-                tau = 2 * Math.PI
-                arc = d3.svg.arc()
-                    .innerRadius(62)
-                    .outerRadius(65)
-                    .startAngle(0)
-                svg = d3.select("#progress-circle")
-                    .style('width': width + 'px')
-                    .style('height': height + 'px')
-                svg.html('')
-                g = svg.append('g')
-                    .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
-                background = g.append('path')
-                    .datum(endAngle: tau)
-                    .style('fill', '#EEE')
-                    .attr('d', arc)
-                foreground = g.append('path')
-                    .datum(endAngle: 0)
-                    .attr('d', arc)
-                point = svg.append('circle')
-                    .attr('r', 5)
-                    .attr('transform', 'translate(75, 11.5)')
 
-                arcTween = (newAngle) ->
-                    (d) ->
-                        interpolate = d3.interpolate(d.endAngle, newAngle)
-                        (t) ->
-                            d.endAngle = interpolate(t)
-                            arc d
-
-                translateFn = (newAngle) ->
-                    () ->
-                        (t) ->
-                            rotation_radius = 63.5
-                            t_angle = newAngle * t - Math.PI / 2
-                            t_x = rotation_radius * Math.cos(t_angle)
-                            t_y = rotation_radius * Math.sin(t_angle)
-                            'translate(' + (width / 2 + t_x) + ',' + (height / 2 + t_y) + ')'
-                endAngle = tau / 100 * p
-                foreground.transition().duration(animationDuration).attrTween('d', arcTween(endAngle))
-                point.transition().duration(animationDuration).attrTween('transform', translateFn(endAngle))
-
-                i = 0
-                progressNumber = $document.find('#progress-number')
-                interval = setInterval (->
-                    if i is p then clearInterval(interval)
-                    progressNumber.html(i + '%')
-                    i++
-                ), animationDuration / p
     ]
