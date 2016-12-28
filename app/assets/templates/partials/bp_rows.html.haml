@@ -12,10 +12,10 @@
     {{ bp_estimate.revenue | currency:'$':0 }}
   %td
     $
-    %input.money-field{type: 'text', placeholder: 0, 'ng-model': 'bp_estimate.estimate_seller', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+    %input.money-field{type: 'text', placeholder: 0, 'ng-model': 'bp_estimate.estimate_seller', 'ng-blur': 'updateBpEstimateProduct(bp_estimate)'}
   %td
     $
-    %input.money-field{type: 'text', placeholder: 0, 'ng-model': 'bp_estimate.estimate_mgr', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+    %input.money-field{type: 'text', placeholder: 0, 'ng-model': 'bp_estimate.estimate_mgr', 'ng-blur': 'updateBpEstimateProduct(bp_estimate)'}
   %td
     {{ bp_estimate.year_revenue | currency:'$':0 }}
   %td
@@ -65,12 +65,5 @@
           %td
             $
             %input.money-field{type: 'text', placeholder: 0, 'ng-model': 'bp_estimate_product.estimate_mgr', 'ng-blur': 'updateBpEstimateProduct(bp_estimate)'}
-        %tr
-          %td.left Total
-          %td.right.total
-            {{ totalSum(bp_estimate.bp_estimate_products, 'estimate_seller') | currency:'$':0 }}
-
-          %td.right.total
-            {{ totalSum(bp_estimate.bp_estimate_products, 'estimate_mgr') | currency:'$':0 }}
 
   %td{ colspan: "4"}

@@ -200,11 +200,11 @@
         drawProgressCircle(percentage)
 
       $scope.updateBpEstimate = (bpEstimate) ->
-        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data)->
-          calculateStatus()
+        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate)
+
       $scope.updateBpEstimateProduct = (bpEstimate) ->
         BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data) ->
-          replaceBpEstimate(data);
+          replaceBpEstimate(data)
           calculateStatus()
 
       $scope.unassignBpEstimate = (bpEstimate) ->
@@ -220,6 +220,7 @@
         targetBpEstimate.user_name = bpEstimate.user_name
         targetBpEstimate.estimate_seller = bpEstimate.estimate_seller
         targetBpEstimate.estimate_mgr = bpEstimate.estimate_mgr
+        targetBpEstimate.bp_estimate_products = bpEstimate.bp_estimate_products
 
       $scope.totalSum = (elements, field) ->
         total = 0
