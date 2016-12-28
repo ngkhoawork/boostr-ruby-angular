@@ -18,16 +18,17 @@ class BPGenerator
               assumptions: nil,
               objectives: nil
           }
-          if (bp_estimate = bp.bp_estimates.create(bp_estimate_param))
-            bp.company.products.each do |product|
-              bp_estimate_product_param = {
-                  product_id: product.id,
-                  estimate_seller: nil,
-                  estimate_mgr: nil,
-              }
-              bp_estimate.bp_estimate_products.create(bp_estimate_product_param)
-            end
-          end
+          bp.bp_estimates.create(bp_estimate_param)
+          # if (bp_estimate = bp.bp_estimates.create(bp_estimate_param))
+          #   bp.company.products.each do |product|
+          #     bp_estimate_product_param = {
+          #         product_id: product.id,
+          #         estimate_seller: nil,
+          #         estimate_mgr: nil,
+          #     }
+          #     bp_estimate.bp_estimate_products.create(bp_estimate_product_param)
+          #   end
+          # end
         end
       end
     end

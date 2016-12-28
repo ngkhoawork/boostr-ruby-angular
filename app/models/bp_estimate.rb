@@ -10,6 +10,8 @@ class BpEstimate < ActiveRecord::Base
   scope :unassigned, -> (value) { if value == true then where('bp_estimates.user_id IS NULL') end}
   scope :assigned, -> { where('bp_estimates.user_id IS NOT NULL') }
 
+  after_create :generate_bp_estimate_products
+
   def client_name
     client.name
   end
@@ -31,5 +33,16 @@ class BpEstimate < ActiveRecord::Base
         },
         methods: [:client_name, :user_name]
     })
+  end
+
+  def generate_bp_estimate_products
+    bp.company.products.each do |product|
+      bp_estimate_product_param = {
+          product_id: product.id,
+          estimate_seller: nil,
+          estimate_mgr: nil,
+      }
+      bp_estimate_products.create(bp_estimate_product_param)
+    end
   end
 end
