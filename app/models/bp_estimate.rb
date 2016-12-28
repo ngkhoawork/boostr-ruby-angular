@@ -8,6 +8,7 @@ class BpEstimate < ActiveRecord::Base
 
   scope :incomplete, -> (value) { if value == true then where('bp_estimates.estimate_seller IS NULL OR bp_estimates.estimate_seller = 0') end }
   scope :unassigned, -> (value) { if value == true then where('bp_estimates.user_id IS NULL') end}
+  scope :assigned, -> { where('bp_estimates.user_id IS NOT NULL') }
 
   def client_name
     client.name
