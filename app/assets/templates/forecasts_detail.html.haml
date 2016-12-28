@@ -255,7 +255,7 @@
                   %td.left
                     {{deal.deal_members[0].name}}
                   %td.right
-                    {{ ((deal.budget || 0) / 100) | humanReadableMoney }}
+                    {{ (deal.budget || 0) | humanReadableMoney }}
                   %td.right
                     {{deal.stage.probability}}%
                   %td.left

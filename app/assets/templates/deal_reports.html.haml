@@ -80,7 +80,7 @@
                 %td.left {{ deal.agency.name }}
                 %td.left {{ deal.stage.name }}
                 %td.right {{ deal.stage.probability }}%
-                %td.right ${{ deal.budget / 100 | number : 0}}
+                %td.right ${{ (deal.budget || 0) | number : 0}}
                 %td.left {{ deal.next_steps.substr(0, 30) }}
                 %td.left{ 'ng-bind-html': "getHtml(deal.latest_activity)"}
                 %td.left {{ deal.start_date | date: 'MM-dd-yyyy' }}

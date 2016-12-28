@@ -500,7 +500,7 @@ tr:hover {
 
 .table-report {
   padding: 0px 30px;
-  table {
+  .table {
     table-layout: fixed;
     margin-top: 30px;
     thead{
@@ -510,7 +510,7 @@ tr:hover {
         th{
           color: #97a2ac !important;
           text-transform: capitalize;
-          font-weight: normal;
+          font-weight: bold;
           font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
           font-size: 13px;
           border-bottom: 2px solid #d9dde0;
@@ -533,13 +533,21 @@ tr:hover {
         height: auto !important;
         max-height: auto !important;
         td {
+          color: #67747E !important;
           padding: 10px 8px;
           line-height: 16px;
           font-size: 12px;
           word-break: break-word;
+
+          i.toggle-icon {
+            margin-left: -20px;
+            margin-right: 5px;
+            cursor: pointer;
+          }
         }
         td:first-child {
           padding-top: 10px;
+          padding-left: 30px;
           padding-bottom: 10px;
         }
       }

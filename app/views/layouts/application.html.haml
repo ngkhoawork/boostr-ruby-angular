@@ -20,6 +20,8 @@
     = yield
     :javascript
       transloaditTemplate = '#{TRANSLOADIT_TEMPLATE}'
+    :javascript
+      userType = parseInt('#{current_user.user_type }')
     - if current_user.leader?
       :javascript
         currentUserIsLeader = true

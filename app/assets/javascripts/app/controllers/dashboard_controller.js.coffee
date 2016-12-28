@@ -171,7 +171,7 @@
   $scope.undoAssignContact = (contact) ->
     previousContact = _.find $scope.unassignedContacts, (item) ->
       return item.id == contact.id
-    Contact._update(id: contact.id, contact: contact).then (updated_contact) ->
+    Contact._update(id: contact.id, contact: contact, unassign: true).then (updated_contact) ->
       $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
         if (item.id == updated_contact.id)
           return updated_contact

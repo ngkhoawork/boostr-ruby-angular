@@ -23,12 +23,21 @@ Rails.application.routes.draw do
       end
     end
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
+      get :sellers
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index] do
         collection do
           get :related_clients
         end
       end
+    end
+    resources :bps, only: [:index, :create, :update, :show, :destroy] do
+      get :seller_total_estimates
+      get :account_total_estimates
+      get :unassigned_clients
+      post :add_client
+      post :add_all_clients
+      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy]
     end
     resources :temp_ios, only: [:index, :update]
     resources :display_line_items, only: [:index, :create]

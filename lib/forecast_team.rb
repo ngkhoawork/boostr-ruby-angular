@@ -121,26 +121,26 @@ class ForecastTeam
     teams.each do |t|
       t.weighted_pipeline_by_stage.each do |stage_id, total|
         @weighted_pipeline_by_stage[stage_id] ||= 0
-        @weighted_pipeline_by_stage[stage_id] += total
+        @weighted_pipeline_by_stage[stage_id] += total.to_f
       end
     end
     members.each do |m|
       m.weighted_pipeline_by_stage.each do |stage_id, total|
         @weighted_pipeline_by_stage[stage_id] ||= 0
-        @weighted_pipeline_by_stage[stage_id] += total
+        @weighted_pipeline_by_stage[stage_id] += total.to_f
       end
     end
     if leader
       leader.weighted_pipeline_by_stage.each do |stage_id, total|
         @weighted_pipeline_by_stage[stage_id] ||= 0
-        @weighted_pipeline_by_stage[stage_id] += total
+        @weighted_pipeline_by_stage[stage_id] += total.to_f
       end
     end
     @weighted_pipeline_by_stage
   end
 
   def weighted_pipeline
-    teams.sum(&:weighted_pipeline) + members.sum(&:weighted_pipeline) + (leader.try(:weighted_pipeline) || 0)
+    (teams.sum(&:weighted_pipeline) + members.sum(&:weighted_pipeline) + (leader.try(:weighted_pipeline) || 0)).to_f
   end
 
   def unweighted_pipeline_by_stage
@@ -149,19 +149,19 @@ class ForecastTeam
     teams.each do |t|
       t.unweighted_pipeline_by_stage.each do |stage_id, total|
         @unweighted_pipeline_by_stage[stage_id] ||= 0
-        @unweighted_pipeline_by_stage[stage_id] += total
+        @unweighted_pipeline_by_stage[stage_id] += total.to_f
       end
     end
     members.each do |m|
       m.unweighted_pipeline_by_stage.each do |stage_id, total|
         @unweighted_pipeline_by_stage[stage_id] ||= 0
-        @unweighted_pipeline_by_stage[stage_id] += total
+        @unweighted_pipeline_by_stage[stage_id] += total.to_f
       end
     end
     if leader
       leader.unweighted_pipeline_by_stage.each do |stage_id, total|
         @unweighted_pipeline_by_stage[stage_id] ||= 0
-        @unweighted_pipeline_by_stage[stage_id] += total
+        @unweighted_pipeline_by_stage[stage_id] += total.to_f
       end
     end
     @unweighted_pipeline_by_stage
@@ -179,7 +179,7 @@ class ForecastTeam
         @monthly_weighted_pipeline_by_stage[stage_id] ||= {}
         stage_data.each do |month, total|
           @monthly_weighted_pipeline_by_stage[stage_id][month] ||= 0
-          @monthly_weighted_pipeline_by_stage[stage_id][month] += total
+          @monthly_weighted_pipeline_by_stage[stage_id][month] += total.to_f
         end
       end
     end
@@ -188,7 +188,7 @@ class ForecastTeam
         @monthly_weighted_pipeline_by_stage[stage_id] ||= {}
         stage_data.each do |month, total|
           @monthly_weighted_pipeline_by_stage[stage_id][month] ||= 0
-          @monthly_weighted_pipeline_by_stage[stage_id][month] += total
+          @monthly_weighted_pipeline_by_stage[stage_id][month] += total.to_f
         end
       end
     end
@@ -197,7 +197,7 @@ class ForecastTeam
         @monthly_weighted_pipeline_by_stage[stage_id] ||= {}
         stage_data.each do |month, total|
           @monthly_weighted_pipeline_by_stage[stage_id][month] ||= 0
-          @monthly_weighted_pipeline_by_stage[stage_id][month] += total
+          @monthly_weighted_pipeline_by_stage[stage_id][month] += total.to_f
         end
       end
     end
@@ -212,7 +212,7 @@ class ForecastTeam
         @monthly_unweighted_pipeline_by_stage[stage_id] ||= {}
         stage_data.each do |month, total|
           @monthly_unweighted_pipeline_by_stage[stage_id][month] ||= 0
-          @monthly_unweighted_pipeline_by_stage[stage_id][month] += total
+          @monthly_unweighted_pipeline_by_stage[stage_id][month] += total.to_f
         end
       end
     end
@@ -221,7 +221,7 @@ class ForecastTeam
         @monthly_unweighted_pipeline_by_stage[stage_id] ||= {}
         stage_data.each do |month, total|
           @monthly_unweighted_pipeline_by_stage[stage_id][month] ||= 0
-          @monthly_unweighted_pipeline_by_stage[stage_id][month] += total
+          @monthly_unweighted_pipeline_by_stage[stage_id][month] += total.to_f
         end
       end
     end
@@ -230,7 +230,7 @@ class ForecastTeam
         @monthly_unweighted_pipeline_by_stage[stage_id] ||= {}
         stage_data.each do |month, total|
           @monthly_unweighted_pipeline_by_stage[stage_id][month] ||= 0
-          @monthly_unweighted_pipeline_by_stage[stage_id][month] += total
+          @monthly_unweighted_pipeline_by_stage[stage_id][month] += total.to_f
         end
       end
     end
@@ -243,34 +243,34 @@ class ForecastTeam
     teams.each do |t|
       t.monthly_revenue.each do |month, total|
         @monthly_revenue[month] ||= 0
-        @monthly_revenue[month] += total
+        @monthly_revenue[month] += total.to_f
       end
     end
     members.each do |m|
       m.monthly_revenue.each do |month, total|
         @monthly_revenue[month] ||= 0
-        @monthly_revenue[month] += total
+        @monthly_revenue[month] += total.to_f
       end
     end
     if leader
       leader.monthly_revenue.each do |month, total|
         @monthly_revenue[month] ||= 0
-        @monthly_revenue[month] += total
+        @monthly_revenue[month] += total.to_f
       end
     end
     @monthly_revenue
   end
 
   def wow_weighted_pipeline
-    teams.sum(&:wow_weighted_pipeline) + members.sum(&:wow_weighted_pipeline) + (leader.try(:wow_weighted_pipeline) || 0)
+    (teams.sum(&:wow_weighted_pipeline) + members.sum(&:wow_weighted_pipeline) + (leader.try(:wow_weighted_pipeline) || 0)).to_f
   end
 
   def wow_revenue
-    teams.sum(&:wow_revenue) + members.sum(&:wow_revenue) + (leader.try(:wow_revenue) || 0)
+    (teams.sum(&:wow_revenue) + members.sum(&:wow_revenue) + (leader.try(:wow_revenue) || 0)).to_f
   end
 
   def amount
-    teams.sum(&:amount) + non_leader_members.sum(&:amount) + (leader.try(:amount) || 0)
+    (teams.sum(&:amount) + non_leader_members.sum(&:amount) + (leader.try(:amount) || 0)).to_f
   end
 
   def percent_to_quota
@@ -284,7 +284,7 @@ class ForecastTeam
   end
 
   def gap_to_quota
-    quota - amount
+    (quota - amount).to_f
   end
 
   def quota
@@ -301,7 +301,7 @@ class ForecastTeam
 
   def average_deal_size
     if complete_deals.count > 0
-      @average_deal_size ||= (complete_deals.average(:budget) / 100).round(0)
+      @average_deal_size ||= complete_deals.average(:budget).round(0)
     else
       @average_deal_size ||= 0
     end

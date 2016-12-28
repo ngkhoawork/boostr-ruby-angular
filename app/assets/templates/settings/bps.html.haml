@@ -1,0 +1,39 @@
+.bp-detail
+  .container.table-report
+    .row
+      .col-xs-12
+        .section
+          %a.pull-right.upload{ href: '', ng: { click: 'showModal()' } }
+            = inline_svg 'icons/add.svg'
+        %h3.title Business Plans
+
+    .row
+      .col-md-12.text-center.bp-table-wrapper
+        .alerts{ 'ng-if': 'notification' }
+          .alert.alert-success
+            %i.fa.fa-check-circle
+            <strong style="text-transform: capitalize"></strong>
+            {{notification}}
+        %table.table
+          %thead
+            %tr
+              %th.left Business Plan name
+              %th Time period
+              %th Date Created
+              %th Due Date
+              %th Status
+          %tbody
+            %tr.clickable{ ng: { if: 'bps.length > 0', repeat: 'bp in bps', click: 'go(bp.id)' } }
+              %td.left
+                {{bp.name}}
+              %td
+                {{bp.time_period.name}}
+              %td
+                {{bp.created_at | date: 'shortDate'}}
+              %td
+                {{bp.due_date | date: 'shortDate'}}
+              %td
+                {{bp.status}} / {{bp.client_count}}
+            %tr{ ng: { if: 'bps.length == 0' }}
+              %td.center{ colspan: '6' }
+                No data available
