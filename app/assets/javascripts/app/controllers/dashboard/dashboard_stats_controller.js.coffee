@@ -83,7 +83,7 @@
                 angular.copy(stats.stages).reverse().forEach (s, i) ->
                     data.push
                         name: s.probability + '%'
-                        value: Math.round(parseInt(stats.weighted_pipeline_by_stage[s.id])) * 200
+                        value: Math.round(parseInt(stats.weighted_pipeline_by_stage[s.id]))
                         color: shadeColor(stageColor, 0.8 / (stats.stages.length - 1) * i)
                 data.push
                     name: 'Gap', value: Math.round(parseInt(stats.gap_to_quota)), color: gapColor
