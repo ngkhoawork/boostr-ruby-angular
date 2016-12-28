@@ -28,10 +28,16 @@ class Api::BpsController < ApplicationController
     bp = bps.find(params[:bp_id])
     if bp.present?
       client = company.clients.find(params[:client_id])
-      client.users.each do |user|
-        bp_estimate = BpEstimate.find_or_initialize_by(bp_id: bp.id, client_id: params[:client_id], user_id: user.id)
+      if client.users.count > 0
+        client.users.each do |user|
+          bp_estimate = BpEstimate.find_or_initialize_by(bp_id: bp.id, client_id: params[:client_id], user_id: user.id)
+          bp_estimate.save()
+        end
+      else
+        bp_estimate = BpEstimate.find_or_initialize_by(bp_id: bp.id, client_id: client.id, user_id: nil)
         bp_estimate.save()
       end
+
       render json: bp, status: :ok
     else
       render json: { error: 'Business Plan Not Found' }, status: :not_found
@@ -47,10 +53,16 @@ class Api::BpsController < ApplicationController
       clients = company.clients.by_type_id(advertiser_id).by_name(params[:name]).where("id NOT IN (?)", client_ids).limit(10)
 
       clients.each do |client|
-        client.users.each do |user|
-          bp_estimate = BpEstimate.find_or_initialize_by(bp_id: bp.id, client_id: client.id, user_id: user.id)
+        if client.users.count > 0
+          client.users.each do |user|
+            bp_estimate = BpEstimate.find_or_initialize_by(bp_id: bp.id, client_id: client.id, user_id: user.id)
+            bp_estimate.save()
+          end
+        else
+          bp_estimate = BpEstimate.find_or_initialize_by(bp_id: bp.id, client_id: client.id, user_id: nil)
           bp_estimate.save()
         end
+
       end
 
       render json: bp, status: :ok
