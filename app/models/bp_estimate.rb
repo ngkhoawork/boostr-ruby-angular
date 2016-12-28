@@ -6,7 +6,7 @@ class BpEstimate < ActiveRecord::Base
 
   accepts_nested_attributes_for :bp_estimate_products
 
-  scope :incomplete, -> (value) { if value == true then where('bp_estimates.estimate_seller IS NULL') end }
+  scope :incomplete, -> (value) { if value == true then where('bp_estimates.estimate_seller IS NULL OR bp_estimates.estimate_seller = 0') end }
   scope :unassigned, -> (value) { if value == true then where('bp_estimates.user_id IS NULL') end}
 
   def client_name
