@@ -186,7 +186,7 @@
         return data
 
       $scope.updateBpEstimate = (bpEstimate) ->
-        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.bp.id, bp_estimate: bpEstimate)
+        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.bp.id, bp_estimate: bpEstimate).then (data)
 
       $scope.updateBpEstimateProduct = (bpEstimate, type) ->
         BpEstimate.update(id: bpEstimate.id, bp_id: $scope.bp.id, bp_estimate: bpEstimate).then (data) ->
@@ -203,6 +203,7 @@
         targetBpEstimate.user_name = bpEstimate.user_name
         targetBpEstimate.estimate_seller = bpEstimate.estimate_seller
         targetBpEstimate.estimate_mgr = bpEstimate.estimate_mgr
+        targetBpEstimate.bp_estimate_products = bpEstimate.bp_estimate_products
 
       $scope.totalSum = (elements, field) ->
         total = 0
