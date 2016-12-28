@@ -17,9 +17,9 @@
               %a{ href: '', ng: { click: 'selectBP(bp)' } }
                 %span.name
                   {{ bp.name }}
-                &nbsp;&nbsp;&nbsp;
-                %span.status
-                  {{bp.status}}/{{bp.client_count}}
+                -#&nbsp;&nbsp;&nbsp;
+                -#%span.status
+                -#  {{bp.status}} / {{bp.client_count}}
       .bp-info.col-xs-12{ ng: { show: 'selectedBP.id > 0' } }
         .info
           .info-body-wrap
@@ -34,7 +34,7 @@
           .info-body-wrap
             .info-body
               #progress-number.title
-                {{selectedBP.status}} / {{selectedBP.client_count}}
+                {{totalStatus}}/{{totalClients}}
               .description Status
         .info
           .info-body-wrap

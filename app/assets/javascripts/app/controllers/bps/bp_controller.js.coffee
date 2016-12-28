@@ -113,7 +113,6 @@
           prevYear = year - 1
         $scope.prevQuarter = 'Q' + (prevMonth / 3 + 1) + '-' + prevYear
         loadBPData()
-        drawProgressCircle($scope.selectedBP.status * 100 / $scope.selectedBP.client_count)
 
       buildBPEstimate = (item) ->
         data = angular.copy(item)
@@ -176,14 +175,31 @@
 
           $scope.bpEstimates = _.map data.bp_estimates, buildBPEstimate
 
+          calculateStatus()
           setMcSort()
 
-      $scope.updateBpEstimate = (bpEstimate) ->
-        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate)
+      calculateStatus = () ->
+        $scope.totalClients = (_.uniq (_.map $scope.bpEstimates, 'client_id')).length
+        client_estimates = {}
+        _.each $scope.bpEstimates, (item) ->
+          if (item.estimate_seller && item.estimate_seller > 0)
+            if (client_estimates[item.client_id] == undefined)
+              client_estimates[item.client_id] = 1
+          else
+            client_estimates[item.client_id] = 0
+        count = 0
+        for i of client_estimates
+          count += client_estimates[i]
+        $scope.totalStatus = count
+        drawProgressCircle($scope.totalStatus * 100 / $scope.totalClients)
 
+      $scope.updateBpEstimate = (bpEstimate) ->
+        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data)->
+          calculateStatus()
       $scope.updateBpEstimateProduct = (bpEstimate) ->
         BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data) ->
           replaceBpEstimate(data);
+          calculateStatus()
 
       $scope.unassignBpEstimate = (bpEstimate) ->
         if confirm('Are you sure you want to unassign the BP estimate?')
@@ -209,8 +225,8 @@
       $scope.totalEstimate = (elements, field) ->
         total = 0
         _.each elements, (item) ->
-          if (item.user_id != null)
-            total += item[field]
+          if (item.user_id != null && item[field])
+            total += parseInt(item[field])
         return total
 
       $scope.toggleRow = (rowId) ->
