@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161227001939) do
+ActiveRecord::Schema.define(version: 20161227165259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -283,7 +283,7 @@ ActiveRecord::Schema.define(version: 20161227001939) do
 
   create_table "deal_logs", force: :cascade do |t|
     t.integer  "deal_id"
-    t.decimal  "budget_change", precision: 12, scale: 2
+    t.decimal  "budget_change", precision: 15, scale: 2
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
   end
@@ -300,7 +300,7 @@ ActiveRecord::Schema.define(version: 20161227001939) do
   end
 
   create_table "deal_product_budgets", force: :cascade do |t|
-    t.decimal  "budget",          precision: 12, scale: 2, default: 0.0
+    t.decimal  "budget",          precision: 15, scale: 2, default: 0.0
     t.date     "period"
     t.date     "start_date"
     t.date     "end_date"
@@ -312,7 +312,7 @@ ActiveRecord::Schema.define(version: 20161227001939) do
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "product_id"
-    t.decimal  "budget",     precision: 12, scale: 2, default: 0.0
+    t.decimal  "budget",     precision: 15, scale: 2, default: 0.0
     t.datetime "created_at",                                         null: false
     t.datetime "updated_at",                                         null: false
     t.boolean  "open",                                default: true
@@ -338,7 +338,7 @@ ActiveRecord::Schema.define(version: 20161227001939) do
     t.date     "start_date"
     t.date     "end_date"
     t.string   "name"
-    t.decimal  "budget",              precision: 12, scale: 2, default: 0.0
+    t.decimal  "budget",              precision: 15, scale: 2, default: 0.0
     t.datetime "created_at",                                                  null: false
     t.datetime "updated_at",                                                  null: false
     t.integer  "stage_id"
