@@ -106,7 +106,7 @@
             $scope.bpEstimates = _.map data.bp_estimates, buildBPEstimate
             $scope.unassignedBpEstimates = _.filter $scope.bpEstimates, {user_id: null}
             $scope.incompleteBpEstimates = _.filter $scope.bpEstimates, (item) ->
-              return item.user_id != null && item.estimate_seller == null
+              return item.user_id != null && (item.estimate_seller == null || item.estimate_seller == 0)
             setUnassignedMcSort()
             setIncompleteMcSort()
 
