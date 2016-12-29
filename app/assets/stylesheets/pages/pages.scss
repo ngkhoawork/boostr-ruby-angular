@@ -22,6 +22,6 @@
 
 html,body { height:100%; }
 
-body > div {
+body > div.main-page-container {
   height: calc(100% - 149px);
 }
