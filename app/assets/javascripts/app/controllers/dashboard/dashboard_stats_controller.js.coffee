@@ -1,17 +1,18 @@
 @app.controller 'DashboardStatsController',
-    ['$scope', '$document', 'CurrentUser', 'SalesExecutionDashboard'
-        ($scope, $document, CurrentUser, SalesExecutionDashboard) ->
-            CurrentUser.get().$promise.then (user) ->
-                $scope.currentUser = user
-                SalesExecutionDashboard.forecast(member_id: user.id).then (data) ->
-                    $scope.forecast = data
-                    $scope.setStats(0)
+    ['$scope', '$document',
+        ($scope, $document) ->
+            $scope.$watch '$parent.dashboard', (dashboard)->
+                if !dashboard || !dashboard.forecast || !dashboard.next_quarter_forecast then return
+                $scope.forecast = [
+                    dashboard.forecast
+                    dashboard.next_quarter_forecast
+                ]
+                $scope.setStats(0)
 
             $scope.setStats = (n) ->
                 if $scope.qtr is n then return
                 $scope.qtr = n
                 $scope.stats = $scope.forecast[n]
-                console.log($scope.stats)
                 updateProgressCircle($scope.stats.percent_to_quota)
                 updateForecastChart($scope.stats)
             interval = null

@@ -71,8 +71,6 @@
 
                 Dashboard.get().then (dashboard) ->
                     $scope.dashboard = dashboard
-                    $scope.forecast = dashboard.forecast
-#                    $scope.setChartData()
 
                 Field.defaults({}, 'Client').then (fields) ->
                     client_types = Field.findClientTypes(fields)
