@@ -232,6 +232,9 @@
                 margin-bottom: 15px;
                 p {
                     margin-bottom: 5px;
+                    &.red {
+                        color: $error-color;
+                    }
                 }
             }
             .reminder-control {
@@ -240,6 +243,7 @@
                     color: $secondary-font-color;
                     padding-right: 10px;
                     text-decoration: none;
+                    outline: none;
                 }
             }
         }

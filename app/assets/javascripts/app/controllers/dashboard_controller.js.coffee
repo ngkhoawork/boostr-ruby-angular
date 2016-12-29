@@ -121,6 +121,16 @@
                         deal: ->
                             {}
 
+            $scope.showReminderEditModal = (reminder) ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/reminder_edit_form.html'
+                    size: 'md'
+                    controller: 'DashboardReminderEditController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        reminder: ->
+                            reminder
 
             $scope.showNewAccountModal = ->
                 $scope.modalInstance = $modal.open
@@ -393,7 +403,7 @@
                 completedReminders = []
                 $http.get('/api/reminders')
                 .then (respond) ->
-                    if (respond && respond.data && respond.data.length)
+                    if (respond && respond.data)
                         _.each respond.data, (curReminder) ->
 #                    curReminder.editMode = false
 #                    curReminder.collapsed = true
@@ -482,7 +492,8 @@
                 .then (reminder) ->
                     $scope.remindersInit()
                 , (err) ->
-#                $scope.buttonDisabled = false
+                    console.log(err)
+#                   $scope.buttonDisabled = false
 
             $scope.remindersInit()
 

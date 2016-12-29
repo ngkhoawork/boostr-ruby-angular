@@ -22,7 +22,7 @@
 					{{activity.client.name}}
 			%p{'ng-if': 'activity.deal'}
 				Deal
-				%a{href: '', 'ng-href': '/clients/{{activity.deal.id}}'}
+				%a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
 					{{activity.deal.name}}
 			%p{'ng-bind-html': 'getHtml(activity.comment)'}
 			%p{'ng-repeat': 'asset in activity.assets'}

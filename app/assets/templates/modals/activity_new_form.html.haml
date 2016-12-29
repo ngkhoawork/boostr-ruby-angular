@@ -1,7 +1,7 @@
 #activity-form-modal.popup-modal
     %form{'ng-submit': 'submitForm()'}
         .popup-modal-header
-            Add New Activity
+            {{popupTitle}}
             %span.close-btn{'ng-click': 'cancel()'} +
         .popup-modal-body
             .form-group{'ng-class':'{error: errors.type}'}

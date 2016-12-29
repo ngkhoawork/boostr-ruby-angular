@@ -1,19 +1,17 @@
 @app.controller 'DashboardStatsController',
     ['$scope', '$document', 'CurrentUser', 'SalesExecutionDashboard'
         ($scope, $document, CurrentUser, SalesExecutionDashboard) ->
-            $scope.qtr = 0
             CurrentUser.get().$promise.then (user) ->
                 $scope.currentUser = user
                 SalesExecutionDashboard.forecast(member_id: user.id).then (data) ->
                     $scope.forecast = data
-                    $scope.stats = $scope.forecast[0]
-                    updateProgressCircle($scope.stats.percent_to_quota)
-                    updateForecastChart($scope.stats)
+                    $scope.setStats(0)
 
             $scope.setStats = (n) ->
                 if $scope.qtr is n then return
                 $scope.qtr = n
                 $scope.stats = $scope.forecast[n]
+                console.log($scope.stats)
                 updateProgressCircle($scope.stats.percent_to_quota)
                 updateForecastChart($scope.stats)
             interval = null
@@ -85,10 +83,8 @@
                         name: s.probability + '%'
                         value: Math.round(parseInt(stats.weighted_pipeline_by_stage[s.id]))
                         color: shadeColor(stageColor, 0.8 / (stats.stages.length - 1) * i)
-                gap = Math.round(parseInt(stats.gap_to_quota))
-#                if gap < 0 then gap = 0
                 data.push
-                    name: 'Gap', value: gap , color: gapColor
+                    name: 'Gap', value: Math.round(parseInt(stats.gap_to_quota)) , color: gapColor
 
                 delay = 500
                 duration = 2000
@@ -122,10 +118,10 @@
                 data.forEach((d) ->
                     maxValue = maxValue + if d.value > 0 then d.value else 0
                     gapLine += d.value
+                    if d.name is 'Gap' and d.value < 0 then d.end = d.start
                 )
-                console.log(cap)
                 cap = maxValue * 1.15
-
+                if gap < 0 then gap = 0
                 ticksArr = []
                 if maxValue > 0
                     step = (() ->
@@ -211,7 +207,7 @@
                 bar.append('text')
                     .attr('x', x.rangeBand() / 2)
                     .attr 'y', (d) ->
-                        y(d.end) + if d.value < 0 then 6 else -16
+                        y(d.end) - 16
                     .attr 'dy', (d) ->
                         (if d.class == 'negative' then '-' else '') + '.75em'
                     .text (d) ->

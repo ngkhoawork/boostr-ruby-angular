@@ -33,7 +33,7 @@
 			%div.stats-col
 				.col-body-wrap
 					.col-body
-						.title {{stats.gap_to_quota | formatMoney}}
+						.title {{stats.gap_to_quota > 0 ? stats.gap_to_quota : 0 | formatMoney}}
 						.description Gap to Goal
 
 			%div.stats-col

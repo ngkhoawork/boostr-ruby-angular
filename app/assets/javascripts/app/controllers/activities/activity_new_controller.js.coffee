@@ -5,6 +5,7 @@
             $scope.types = []
             $scope.showMeridian = true
             $scope.submitButtonText = 'Add Activity'
+            $scope.pupupTitle = 'Add New Activity'
             $scope.selectedType =
                 action: 'had initial meeting with'
             $scope.form = {
@@ -25,6 +26,7 @@
 
             #edit mode
             if activity
+                $scope.pupupTitle = 'Edit Activity'
                 $scope.submitButtonText = 'Save'
                 if activity.deal
                     activity.deal.formatted_name = activity.deal.name
@@ -95,8 +97,8 @@
             $scope.searchClients = (str, type) ->
                 q =
                     name: str
-                if type is 'advertiser' then q.client_type_id = 111
-                if type is 'agency' then q.client_type_id = 112
+                if type is 'advertiser' then q.client_type_id = $scope.Advertiser
+                if type is 'agency' then q.client_type_id = $scope.Agency
                 Client.query(q).$promise.then (clients) ->
                     clients
 
