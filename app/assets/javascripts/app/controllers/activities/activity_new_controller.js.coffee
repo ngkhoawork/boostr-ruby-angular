@@ -75,6 +75,18 @@
 
             Contact.query().$promise.then (contacts) ->
                 $scope.contacts = contacts
+            $scope.onDealSelect = (item, model, label, event) ->
+                if !item then return
+                if item.advertiser_id
+                    Client.get({id: item.advertiser_id }).$promise.then (client) ->
+                        if client
+                            client.formatted_name = client.name
+                            $scope.form.advertiser = client
+                if item.agency_id
+                    Client.get({id: item.agency_id }).$promise.then (client) ->
+                        if client
+                            client.formatted_name = client.name
+                            $scope.form.agency = client
 
             $scope.searchDeals = (str) ->
                 Deal.all({name: str}).then (deals) ->

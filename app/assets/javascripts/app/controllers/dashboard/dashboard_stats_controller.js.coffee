@@ -85,8 +85,10 @@
                         name: s.probability + '%'
                         value: Math.round(parseInt(stats.weighted_pipeline_by_stage[s.id]))
                         color: shadeColor(stageColor, 0.8 / (stats.stages.length - 1) * i)
+                gap = Math.round(parseInt(stats.gap_to_quota))
+#                if gap < 0 then gap = 0
                 data.push
-                    name: 'Gap', value: Math.round(parseInt(stats.gap_to_quota)), color: gapColor
+                    name: 'Gap', value: gap , color: gapColor
 
                 delay = 500
                 duration = 2000
@@ -116,9 +118,12 @@
                 ])
 
                 maxValue = 0
+                gapLine = 0
                 data.forEach((d) ->
-                    maxValue += d.value
+                    maxValue = maxValue + if d.value > 0 then d.value else 0
+                    gapLine += d.value
                 )
+                console.log(cap)
                 cap = maxValue * 1.15
 
                 ticksArr = []
@@ -180,8 +185,8 @@
                     .attr("stroke", "#000")
                     .attr("x1", 0)
                     .attr("x2", 0)
-                    .attr("y1", y maxValue)
-                    .attr("y2", y maxValue)
+                    .attr("y1", y gapLine)
+                    .attr("y2", y gapLine)
                     .transition().duration(duration)
                     .attr("x2", width)
                 bar = chart.selectAll('.bar')
@@ -206,7 +211,7 @@
                 bar.append('text')
                     .attr('x', x.rangeBand() / 2)
                     .attr 'y', (d) ->
-                        y(d.end) - 16
+                        y(d.end) + if d.value < 0 then 6 else -16
                     .attr 'dy', (d) ->
                         (if d.class == 'negative' then '-' else '') + '.75em'
                     .text (d) ->

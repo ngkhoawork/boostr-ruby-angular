@@ -77,14 +77,14 @@
     }
   }
   .advertiser-agency {
-    .advertiser, .agency {
+    .advertiser-field, .agency-field {
       display: inline-block;
       width: calc(50% - 30px);
     }
-    .advertiser {
+    .advertiser-field {
       padding-right: 10px;
     }
-    .agency {
+    .agency-field {
       padding-left: 10px;
     }
   }
@@ -208,16 +208,14 @@
   }
   .add-btn {
     padding: 0;
-    height: 36px;
-    width: 36px;
-    position: relative;
+    height: 35px;
+    width: 35px;
     vertical-align: middle;
     margin-left: 15px;
     span {
-      position: absolute;
-      top: -6px;
-      left: 7px;
+      vertical-align: baseline;
       font-size: 28px;
+      line-height: 24px;
     }
   }
   .dropdown {
