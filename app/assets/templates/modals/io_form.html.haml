@@ -27,7 +27,7 @@
             %input.form-control{ placeholder: 'External IO #', ng: { model: 'io.external_io_number', required: true }, name: 'external_io_number' }
 
       .form-group{ ng: {if: "formType == 'New'"}}
-        %label.control-label{ for: 'deal' } Deal*
+        %label.control-label{ for: 'deal' } Deal
         %ui-select{ name: 'deal', ng: { model: 'io.deal_id', disabled: true, keyup: 'searchDeals($select.search)' }, 'on-select': "dealSelected($model)" }
           %ui-select-match{ placeholder: 'Deal' }
             {{ $select.selected.name }}
