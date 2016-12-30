@@ -1,0 +1,23 @@
+#pacing-alerts.block
+	%div.mb40
+		%span.title My Pacing Alerts
+
+	%table.deals-table.table.table-hover
+		%thead
+			%tr
+				%th Alert
+				%th # Lines
+				%th Est. Amount
+		%tbody
+			%tr{ng: {show: 'dashboard.current_user.pos_balance_l_cnt > 0'}}
+				%td
+					%a{href: '', ng: {href: '/revenue?filter=upside'}}
+						Revenue Upside Potential
+				%td {{dashboard.current_user.pos_balance_l_cnt}}
+				%td {{dashboard.current_user.pos_balance_l | currency:'$':0}}
+				%tr{ng: {show: 'dashboard.current_user.neg_balance_l_cnt > 0'}}
+					%td
+						%a{href: '', ng: {href: '/revenue?filter=risk'}}
+							Revenue at Risk
+					%td {{dashboard.current_user.neg_balance_l_cnt}}
+					%td {{dashboard.current_user.neg_balance_l | currency:'$':0}}

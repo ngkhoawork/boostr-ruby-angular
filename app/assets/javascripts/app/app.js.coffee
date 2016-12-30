@@ -22,6 +22,7 @@
   'ngTransloadit'
   'daterangepicker'
   'rzModule'
+  'monospaced.elastic'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
