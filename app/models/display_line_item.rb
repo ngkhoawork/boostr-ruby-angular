@@ -162,10 +162,6 @@ class DisplayLineItem < ActiveRecord::Base
       agency = nil
       if row[6]
         agency = row[6].strip
-      else
-        error = { row: row_number, message: ["Agency can't be blank"] }
-        errors << error
-        next
       end
 
       # =========================Display Line Item
