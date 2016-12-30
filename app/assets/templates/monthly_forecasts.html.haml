@@ -4,28 +4,56 @@
       .col-xs-12
         %h3.title Forecast by Month
 
-    .row.legend.well
-      .col-xs-12
-        %span Filter by
-        %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
-        .date-picker-wrap
-          %div.date-picker#kpi-date-picker{'date-range-picker': true,
-                                           'ng-model': 'datePicker',
-                                           :options => "{locale: {format: 'MMMM D, YYYY',
-                                                                  cancelLabel: 'Clear'},
-                                                         eventHandlers: {'apply.daterangepicker': datePickerApply,
-                                                                         'cancel.daterangepicker': datePickerCancel}}"}
-            Time period
-          %span.caret
+    .row.legend.well.kpi-block
+      .col-xs-10
+        %table.filter-block
+          %tr.filter-title
+            %td Team
+            %td Time period
+            %td
+              %span.reset-filter{'ng-click': 'resetFilters()'}
+                Reset
+          %tr
+            %td
+              %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam", 'ng-class': '{"not-selected": selectedTeam.name == "All"}'}
+            %td
+              .date-picker-wrap
+                %div.date-picker#kpi-date-picker{'date-range-picker': true,
+                                                 'ng-model': 'datePicker',
+                                                 :options => "{locale: {format: 'MMMM D, YYYY'},
+                                                               eventHandlers: {'apply.daterangepicker': datePickerApply}}"}
+                  Time period
+                %span.caret
 
-        %span#reset-filter{'ng-click': 'resetFilters()'}
-          Reset
-
+      .col-xs-2.pad
         .pull-right.buttons__filter
           %button.btn{ 'ng-class': '{btnPrimary: dataType === "weighted"}', 'ng-click': 'filterByDataType("weighted")'}
             Weighted
           %button.btn{ 'ng-class': '{btnPrimary: dataType === "unweighted"}', 'ng-click': 'filterByDataType("unweighted")'}
             Unweighted
+
+    -#.row.legend.well
+    -#  .col-xs-12
+    -#    %span Filter by
+    -#    %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
+    -#    .date-picker-wrap
+    -#      %div.date-picker#kpi-date-picker{'date-range-picker': true,
+    -#                                       'ng-model': 'datePicker',
+    -#                                       :options => "{locale: {format: 'MMMM D, YYYY',
+    -#                                                              cancelLabel: 'Clear'},
+    -#                                                     eventHandlers: {'apply.daterangepicker': datePickerApply,
+    -#                                                                     'cancel.daterangepicker': datePickerCancel}}"}
+    -#        Time period
+    -#      %span.caret
+    -#
+    -#    %span#reset-filter{'ng-click': 'resetFilters()'}
+    -#      Reset
+    -#
+    -#    .pull-right.buttons__filter
+    -#      %button.btn{ 'ng-class': '{btnPrimary: dataType === "weighted"}', 'ng-click': 'filterByDataType("weighted")'}
+    -#        Weighted
+    -#      %button.btn{ 'ng-class': '{btnPrimary: dataType === "unweighted"}', 'ng-click': 'filterByDataType("unweighted")'}
+    -#        Unweighted
 
     .row.well.kpi-block
       .row
