@@ -122,6 +122,9 @@
             $scope.openAccountModal = ->
                 $rootScope.$broadcast 'dashboard.openAccountModal'
 
+            $scope.$on 'newContact', (e, contact) ->
+                $scope.form.contacts.push contact
+
             $scope.cancel = ->
                 $modalInstance.close()
 
@@ -190,9 +193,10 @@
                     if $scope.form.agency
                         activityData.agency_id = $scope.form.agency.id
 
+                if $scope.form.contacts.length
+                    $scope.form.contacts = $scope.form.contacts.map (c) ->
+                        if typeof c is 'object' then c.id else c
                 if activity
-                    if $scope.form.contacts && $scope.form.contacts[0] && typeof $scope.form.contacts[0] == 'object'
-                        $scope.form.contacts = $scope.form.contacts.map (c) -> c.id
                     updateActivity(activity.id, activityData, $scope.form.contacts)
                 else
                     createActivity(activityData, $scope.form.contacts)

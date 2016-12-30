@@ -18,8 +18,8 @@
 					%strong {{contact.name + ($last ? '' : ', ')}}
 			%p{'ng-if': 'activity.client'}
 				Account
-				%a{href: '', 'ng-href': '/clients/{{activity.client.id}}'}
-					{{activity.client.name}}
+				-#%a{href: '', 'ng-href': '/clients/{{activity.client.id}}'}
+				%b {{activity.client.name}}
 			%p{'ng-if': 'activity.deal'}
 				Deal
 				%a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}

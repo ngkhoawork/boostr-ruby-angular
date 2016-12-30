@@ -73,6 +73,7 @@
                 ), animationDuration / p
 
             updateForecastChart = (stats) ->
+                statsContainer = $document.find('#stats')[0]
                 revenueColor = '#8CC135'
                 stageColor = '#3498DB'
                 gapColor = '#FF7200'
@@ -94,7 +95,7 @@
                     right: 30
                     bottom: 30
                     left: 80
-                width = 870 - (margin.left) - (margin.right)
+                width = statsContainer.clientWidth - 40 - (margin.left) - (margin.right)
                 height = 450 - (margin.top) - (margin.bottom)
                 padding = 0.3
 
