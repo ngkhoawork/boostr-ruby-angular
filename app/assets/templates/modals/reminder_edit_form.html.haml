@@ -1,0 +1,36 @@
+#activity-form-modal.popup-modal
+    %form{'ng-submit': 'submitForm()'}
+        .popup-modal-header
+            Edit Reminder
+            %span.close-btn{'ng-click': 'cancel()'} +
+        .popup-modal-body
+            .form-group{'ng-class':'{error: errors.name}'}
+                %span.error-text {{errors.name}}
+                %label
+                    Reminder name
+                    %span.star *
+                %input.form-control{'ng-model': 'reminder.name'}
+            .col-xs-6.date
+                .form-group{'ng-class':'{error: errors._date}'}
+                    %span.error-text {{errors._date}}
+                    %label Date
+                    %span.star *
+                    .input-group
+                        %span.input-group-addon
+                            %i.fa.fa-calendar
+                        %span.bs-datepicker
+                            %input.form-control.box.w4{readonly: true, placeholder: 'Pick date', name: 'reminderDate', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'reminderDateOpened = true' }, 'is-open': 'reminderDateOpened' }
+            .col-xs-6.time
+                .form-group
+                    %label Time
+                    %timepicker-pop.wrap-select-time.form-control-time{'input-time': 'reminder._time', 'show-meridian': 'showMeridian'}
+            .form-group{'ng-class':'{error: errors.comment}'}
+                %span.error-text {{errors.comment}}
+                %label
+                    Reminder note
+                    %span.star *
+                %textarea.form-control{'msd-elastic': '', 'ng-model': 'reminder.comment'}
+
+        .popup-modal-footer
+            %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+            %button.btn.btn-warning{'type': 'submit'} Save

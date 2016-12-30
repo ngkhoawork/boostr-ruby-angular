@@ -1,0 +1,40 @@
+#activity.block
+	%div.mb40
+		%span.title Activity
+		%add-button{'ng-click': 'showNewActivityModal()'}
+
+	%div.activity-item{'ng-repeat': 'activity in activities | orderBy: "-happened_at"'}
+		%div.activity-header
+			%span{'class': 'icon-activity-{{getIconName(activity.activity_type_name)}}'}
+			%span
+				%strong {{activity.activity_type_name}}
+			%span.pull-right {{activity.happened_at | date: 'mediumDate'}}
+
+		%div.activity-body
+			%p
+				%strong {{activity.creator.first_name}} {{activity.creator.last_name}}
+				{{getType(activity.activity_type_name).action}}
+				%span{'ng-repeat': 'contact in activity.contacts'}
+					%strong {{contact.name + ($last ? '' : ', ')}}
+			%p{'ng-if': 'activity.client'}
+				Account
+				-#%a{href: '', 'ng-href': '/clients/{{activity.client.id}}'}
+				%b {{activity.client.name}}
+			%p{'ng-if': 'activity.deal'}
+				Deal
+				%a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
+					{{activity.deal.name}}
+			%p{'ng-bind-html': 'getHtml(activity.comment)'}
+			%p{'ng-repeat': 'asset in activity.assets'}
+				%a{href: '{{asset.presigned_url}}', target: '_blank'}
+					{{asset.original_file_name}}
+
+		%div.activity-control
+			%a{href: '', 'ng-click': 'showActivityEditModal(activity)'}
+				Edit
+			%a.delete-team{href: '', 'ng-click': 'deleteActivity(activity)'}
+				Delete
+
+	%div.load-more{'ng-if': 'hasMoreActivities'}
+		%a{href: "javascript:void(0);", 'ng-click': 'loadMoreActivities()'}
+			Load more

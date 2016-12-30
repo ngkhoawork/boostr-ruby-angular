@@ -1,0 +1,20 @@
+#open-deals.block
+	%div.mb40
+		%span.title My Open Deals
+		%add-button{'ng-click': 'showNewDealModal()'}
+
+	%table.deals-table.table.table-hover
+		%thead
+			%tr
+				%th Deal
+				%th Stage
+				%th Start Date
+		%tbody
+			%tr{ng: {repeat: 'deal in dashboard.deals'}}
+				%td
+					%a{href: '', ng: {href: '/deals/{{deal.id}}'}}
+						{{deal.name}}
+				%td.stage
+					%span {{deal.stage.probability}}%
+					%select{'ng-change': 'updateDealStage(deal)', 'ng-options': 'stage.id as stage.name for stage in stages', 'ng-model': 'deal.stage_id'}
+				%td {{deal.start_date | date: 'mediumDate'}}
