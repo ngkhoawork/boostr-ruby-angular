@@ -9,7 +9,7 @@
       $scope.totalData = null
       $scope.selectedTeam = {
         id:'all',
-        name:'Team'
+        name:'All'
       }
       $scope.datePicker = {
         startDate: null
@@ -23,7 +23,7 @@
 
       $scope.datePickerApply = () ->
         if ($scope.datePicker.startDate && $scope.datePicker.endDate)
-          datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+          datePickerInput.html($scope.datePicker.startDate.format('MMM D, YY') + ' - ' + $scope.datePicker.endDate.format('MMM D, YY'))
           $scope.isDateSet = true
           getData()
 
@@ -32,12 +32,23 @@
         $scope.isDateSet = false
         if !r then getData()
 
+      $scope.datePickerDefault = ->
+        $scope.datePicker.startDate = moment()
+          .date(1)
+        $scope.datePicker.endDate = moment()
+          .add(5, 'months')
+          .endOf('month')
+        datePickerInput.html($scope.datePicker.startDate.format('MMM D, YY') + ' - ' + $scope.datePicker.endDate.format('MMM D, YY'))
+        $scope.isDateSet = true
+      $scope.datePickerDefault()
+
       $scope.resetFilters = () ->
+        $scope.teamId = 'all'
         $scope.selectedTeam = {
           id:'all',
-          name:'Team'
+          name:'All'
         }
-        $scope.datePickerCancel(null, true)
+        $scope.datePickerDefault()
         getData()
 
 
@@ -59,7 +70,7 @@
         if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
           query.start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
           query.end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
-
+        console.log(query)
         SalesExecutionDashboard.monthly_forecast(query).then ((data) ->
           $scope.monthlyForecastData = data
           $scope.totalData = { weighted: {}, unweighted: {} }
@@ -71,8 +82,6 @@
             _.each data.forecast.monthly_unweighted_pipeline_by_stage, (pipeline, stage_id) ->
               $scope.totalData.unweighted[month] += (if pipeline[month] then pipeline[month] else 0)
 
-          console.log($scope.totalData)
-
           MonthlyForecastsDataStore.setData(data)
           $scope.dataMonthlyForecast =  MonthlyForecastsDataStore.getData($scope.dataType)
           $scope.optionsMonthlyForecast = MonthlyForecastsDataStore.getOptions()
@@ -82,6 +91,7 @@
 
       #team watcher
       $scope.$watch 'selectedTeam', () ->
+        if $scope.teamId is $scope.selectedTeam.id then return
         $scope.teamId = $scope.selectedTeam.id
         getData()
 
