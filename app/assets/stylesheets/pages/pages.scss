@@ -21,7 +21,3 @@
 @import "where_to_pitch";
 
 html,body { height:100%; }
-
-body > div.main-page-container {
-  height: calc(100% - 149px);
-}
