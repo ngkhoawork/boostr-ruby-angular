@@ -12,6 +12,45 @@ class DealProductBudget < ActiveRecord::Base
     budget / (end_date - start_date + 1).to_f
   end
 
+  def self.to_csv(company_id)
+    header = [
+      :Deal_Id,
+      :Deal_Name,
+      :Deal_Percentage,
+      :Advertiser,
+      :Product,
+      :Budget,
+      :Start_Date,
+      :End_Date,
+    ]
+
+    CSV.generate(headers: true) do |csv|
+      csv << header
+
+      deals = Deal.where(company_id: company_id)
+      .includes(:products, :deal_products, :deal_product_budgets, :stage, :advertiser)
+      .order(:id)
+
+      deals.each do |deal|
+        deal.deal_products.each do |deal_product|
+          deal_product.deal_product_budgets.each do |dpb|
+            line = []
+            line << deal.id
+            line << deal.name
+            line << deal.stage.probability
+            line << deal.advertiser.name
+            line << deal_product.product.name
+            line << dpb.budget
+            line << dpb.start_date
+            line << dpb.end_date
+
+            csv << line
+          end
+        end
+      end
+    end
+  end
+
   def self.import(file, current_user)
     errors = []
     row_number = 0
