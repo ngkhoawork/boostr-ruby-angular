@@ -313,6 +313,8 @@ class Deal < ActiveRecord::Base
       header << "%"
       header << "Budget"
       header << "Latest Activity"
+      header << "Deal Type"
+      header << "Deal Source"
       header << "Next Steps"
       header << "Start Date"
       header << "End Date"
@@ -332,6 +334,8 @@ class Deal < ActiveRecord::Base
             "$" + (deal.budget.nil? ? 0 : deal.budget).round.to_s
         ]
         line << deal.latest_activity
+        line << get_option(deal, "Deal Type")
+        line << get_option(deal, "Deal Source")
         line << deal.next_steps
         line << deal.start_date
         line << deal.end_date

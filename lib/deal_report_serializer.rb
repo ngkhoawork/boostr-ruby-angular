@@ -19,6 +19,8 @@ class DealReportSerializer < ActiveModel::Serializer
     :deal_product_budgets,
     :users,
     :latest_activity,
+    :type,
+    :source,
   )
 
   def stage
@@ -62,6 +64,14 @@ class DealReportSerializer < ActiveModel::Serializer
     else
       ""
     end
+  end
+
+  def type
+    Deal.get_option(object, "Deal Type")
+  end
+
+  def source
+    Deal.get_option(object, "Deal Source")
   end
 
   def deal_product_budgets
