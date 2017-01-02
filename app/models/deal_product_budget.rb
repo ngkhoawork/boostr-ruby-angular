@@ -40,7 +40,7 @@ class DealProductBudget < ActiveRecord::Base
             line << deal.stage.probability
             line << deal.advertiser.name
             line << deal_product.product.name
-            line << dpb.budget
+            line << dpb.budget.try(:round)
             line << dpb.start_date
             line << dpb.end_date
 

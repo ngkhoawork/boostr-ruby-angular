@@ -7,7 +7,7 @@ class Api::DealProductBudgetsController < ApplicationController
         require 'timeout'
         begin
           status = Timeout::timeout(120) {
-            send_data DealProductBudget.to_csv(current_user.company_id), filename: "monthly_budgets-#{Date.today}.csv"
+            send_data DealProductBudget.to_csv(current_user.company_id), filename: "deal-prod-mon-budget-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
