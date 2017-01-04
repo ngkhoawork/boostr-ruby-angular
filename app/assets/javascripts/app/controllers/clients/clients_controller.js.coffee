@@ -125,7 +125,7 @@
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ClientsNewController'
       backdrop: 'static'
       keyboard: false
@@ -147,7 +147,7 @@
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ClientsEditController'
       backdrop: 'static'
       keyboard: false
@@ -192,7 +192,7 @@
   $scope.showNewDealModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'DealsNewController'
       backdrop: 'static'
       keyboard: false

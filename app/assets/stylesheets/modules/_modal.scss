@@ -78,6 +78,7 @@
   }
   .advertiser-agency {
     .advertiser-field, .agency-field {
+      vertical-align: middle;
       display: inline-block;
       width: calc(50% - 30px);
     }
@@ -86,6 +87,10 @@
     }
     .agency-field {
       padding-left: 10px;
+    }
+    .add-btn {
+      vertical-align: bottom;
+      margin-bottom: 18px;
     }
   }
   .with-add-btn {
@@ -180,13 +185,14 @@
   }
   .popup-modal-footer {
     text-align: right;
+    margin-top: 30px;
     button {
       border-radius: 20px;
       font-size: 16px;
       padding: 8px 24px;
       &:focus {
         outline: none;
-    }
+      }
     }
     button[type="submit"] {
       background: linear-gradient(to right, $main-color, lighten($main-color, 20%));
@@ -289,7 +295,7 @@
     .error-text {
       display: inline;
     }
-    input, textarea, .ui-select-container, button.dropdown-toggle {
+    input, textarea, .ui-select-container, .ui-select-toggle, button.dropdown-toggle {
       border-color: $error-color;
     }
   }
@@ -306,6 +312,21 @@
   }
   .ui-select-container {
     background-color: white;
+    .ui-select-match {
+      &.btn-default-focus {
+        background-color: white;
+      }
+      .ui-select-toggle {
+        &:focus {
+          border-color: $light-grayish-blue-1;
+        }
+        .ui-select-match-text {
+          font-weight: bold;
+        }
+        //border-radius: 5px;
+        background-color: white;
+      }
+    }
     .ui-select-search {
       &::-webkit-input-placeholder {
         color: #BCC6D2;

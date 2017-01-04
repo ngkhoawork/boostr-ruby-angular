@@ -48,11 +48,27 @@
         $scope.agencies = clients
 
   $scope.submitForm = () ->
+    $scope.errors = {}
+
+    fields = ['name', 'stage_id', 'advertiser_id', 'agency_id', 'deal_type', 'source_type']
+
+    fields.forEach (key) ->
+      field = $scope.deal[key]
+      switch key
+        when 'name'
+          if !field then return $scope.errors[key] = 'Name is required'
+        when 'stage_id'
+          if !field then return $scope.errors[key] = 'Stage is required'
+        when 'advertiser_id'
+          if !field then return $scope.errors[key] = 'Advertiser is required'
+
+    if Object.keys($scope.errors).length > 0 then return
+
     Deal.update(id: $scope.deal.id, deal: $scope.deal).then(
       (deal) ->
         $modalInstance.close()
       (resp) ->
-        $scope.errors = resp.data.errors
+        $scope.responseErrors = resp.data.errors
         $scope.buttonDisabled = false
     )
 
@@ -65,7 +81,7 @@
     $scope.populateClientTarget = target
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ClientsNewController'
       backdrop: 'static'
       keyboard: false
