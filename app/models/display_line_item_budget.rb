@@ -5,6 +5,59 @@ class DisplayLineItemBudget < ActiveRecord::Base
     budget.to_f / (end_date - start_date + 1).to_i
   end
 
+  def self.to_csv(company_id)
+    header = [
+      :IO_Num,
+      :IO_Name,
+      :Advertiser,
+      :Product,
+      :Budget,
+      :Start_Date,
+      :End_Date,
+      :Revenue_Type
+    ]
+
+    CSV.generate(headers: true) do |csv|
+      csv << header
+
+      ios = Io.where(company_id: company_id).includes(:advertiser, {display_line_items: :product}, :display_line_item_budgets, {content_fees: :product}, :content_fee_product_budgets)
+      ios.each do |io|
+        io.content_fees.each do |content_fee|
+          content_fee.content_fee_product_budgets.each do |cfpb|
+            line = []
+            line << io.io_number
+            line << io.name
+            line << io.advertiser.name
+            line << content_fee.product.name
+            line << cfpb.budget.try(:round)
+            line << cfpb.start_date
+            line << cfpb.end_date
+            line << content_fee.product.revenue_type
+
+            csv << line
+          end
+        end
+
+        io.display_line_items.each do |display_line_item|
+          display_line_item.display_line_item_budgets.each do |dlib|
+            budget = dlib.budget || (display_line_item.budget.to_f / (display_line_item.end_date - display_line_item.start_date + 1).to_i) * ((dlib.end_date - dlib.start_date + 1).to_i)
+            line = []
+            line << io.io_number
+            line << io.name
+            line << io.advertiser.name
+            line << display_line_item.product.name
+            line << budget.round
+            line << dlib.start_date
+            line << dlib.end_date
+            line << display_line_item.product.revenue_type
+
+            csv << line
+          end
+        end
+      end
+    end
+  end
+
   def self.import(file, current_user)
     errors = []
     row_number = 0

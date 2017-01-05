@@ -85,6 +85,10 @@
       backdrop: 'static'
       keyboard: false
 
+  $scope.exportDisplayIOMonthlyBudgets = ->
+    $window.open('/api/display_line_item_budgets.csv')
+    return true
+
   $scope.exportClients = ->
     $window.open('/api/clients.csv')
     return true

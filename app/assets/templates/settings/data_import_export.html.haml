@@ -159,18 +159,16 @@
             %li.import
               %a.upload{ href: '', ng: { click: 'showUploadDisplayIOMonthlyBudgetModal()' } }
                 = inline_svg 'icons/import.svg'
-                Import Display IO Monthly Budgets.
+                Import Display IO Monthly Budgets
       .col-sm-6
         .panel
           .panel-body
             %h4 Display IO Monthly Budget Export
             %h5 Click here to export Display IO Monthly Budget
-            -#%li.export
-            -#  %a.upload{ href: '', ng: { click: 'exportRevenues()' } }
-            -#    = inline_svg 'icons/import.svg'
-            -#    Export Revenues
-            %li.import
-              Coming soon...
+            %li.export
+              %a{ href: '', ng: { click: 'exportDisplayIOMonthlyBudgets()' } }
+                = inline_svg 'icons/import.svg'
+                Export Display IO Monthly Budgets
 
     .row
       .col-sm-6
