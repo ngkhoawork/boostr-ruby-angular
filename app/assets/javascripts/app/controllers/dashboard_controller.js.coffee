@@ -151,7 +151,7 @@
                     resolve:
                         activity: ->
                             null
-                        currentDeal: ->
+                        options: ->
                             null
 
             $scope.showActivityEditModal = (activity) ->
@@ -164,7 +164,7 @@
                     resolve:
                         activity: ->
                             activity
-                        currentDeal: ->
+                        options: ->
                             null
 
             $scope.showAssignContactModal = (contact) ->

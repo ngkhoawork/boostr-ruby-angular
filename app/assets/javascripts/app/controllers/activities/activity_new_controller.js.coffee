@@ -1,8 +1,9 @@
 @app.controller "ActivityNewController",
-    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Contact', 'Reminder', 'activity', 'currentDeal', '$http'
-        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Contact, Reminder, activity, currentDeal, $http) ->
+    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Contact', 'Reminder', 'activity', 'options', '$http'
+        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Contact, Reminder, activity, options, $http) ->
 
             $scope.types = []
+            $scope.showRelated = true
             $scope.showMeridian = true
             $scope.submitButtonText = 'Add Activity'
             $scope.popupTitle = 'Add New Activity'
@@ -24,10 +25,20 @@
                 remindable_type: 'Activity'
                 showSpinners: false
 
-            #deal page activity
-            $scope.currentDeal = currentDeal
-            if currentDeal
-                $scope.form.deal = currentDeal
+            #modal source dispatch
+            if options
+                console.log(options)
+                switch options.type
+                    when 'deal'
+                        $scope.showRelated = false
+                        $scope.form.deal = options.data
+                    when 'account'
+                        $scope.showRelated = false
+                        if options.isAdvertiser
+                            $scope.form.advertiser = options.data
+                        else
+                            $scope.form.agency = options.data
+
             #edit mode
             if activity
                 $scope.popupTitle = 'Edit Activity'
@@ -232,8 +243,11 @@
                             console.log(err)
                     else
                         $scope.cancel()
-                        if currentDeal
+                        if options
                             $rootScope.$broadcast 'updated_activities'
+#                            switch options.type
+#                                when 'deal'
+#                                when 'account'
                         else
                             $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
 

@@ -686,8 +686,9 @@
       resolve:
         activity: ->
           null
-        currentDeal: ->
-          $scope.currentDeal
+        options: ->
+          type: 'deal'
+          data: $scope.currentDeal
 
   $scope.showActivityEditModal = (activity) ->
     $scope.modalInstance = $modal.open
@@ -699,8 +700,9 @@
       resolve:
         activity: ->
           activity
-        currentDeal: ->
-          $scope.currentDeal
+        options: ->
+          type: 'deal'
+          data: $scope.currentDeal
 
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)

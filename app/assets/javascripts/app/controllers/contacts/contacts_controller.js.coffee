@@ -119,7 +119,7 @@
       resolve:
         contact: ->
           {}
-  $scope.showModal()
+
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'

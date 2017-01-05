@@ -18,7 +18,7 @@
                             %a{'href': '', 'ng-click': 'selectType(type)'}
                                 %span{class: 'icon-activity-{{type.iconName}}'}
                                 %span.text {{type.name}}
-            %div{'ng-if': '!currentDeal'}
+            %div{'ng-if': 'showRelated'}
                 .form-group{'ng-class':'{error: errors.deal}', style: 'margin-bottom: 5px'}
                     %span.error-text {{errors.deal}}
                     %label
