@@ -117,7 +117,22 @@ class Api::DealsController < ApplicationController
             selected_deals = deals.open.less_than(100)
         end
 
-        deal_list = ActiveModel::ArraySerializer.new(selected_deals.includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets).active.distinct , each_serializer: DealReportSerializer)
+        filtered_deals = selected_deals
+        .by_values(deal_type_source_params)
+        .includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets, 'values')
+        .active
+        .distinct
+
+        if time_period
+          filtered_deals = filtered_deals.for_time_period(time_period.start_date, time_period.end_date)
+        end
+
+        filtered_deals = filtered_deals.select do |deal|
+          (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
+          (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true)
+        end
+
+        deal_list = ActiveModel::ArraySerializer.new(filtered_deals, each_serializer: DealReportSerializer)
         deal_ids = selected_deals.active.collect{|deal| deal.id}
         range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
         render json: [{deals: deal_list, range: range}].to_json
@@ -206,6 +221,10 @@ class Api::DealsController < ApplicationController
     params.require(:deal).permit(:name, :stage_id, :budget, :start_date, :end_date, :advertiser_id, :agency_id, :closed_at, :next_steps, { values_attributes: [:id, :field_id, :option_id, :value] })
   end
 
+  def deal_type_source_params
+    [params[:type], params[:source]].reject{|el| el.nil? || el == 'all'}
+  end
+
   def deal
     @deal ||= company.deals.find(params[:id])
   end
@@ -225,6 +244,12 @@ class Api::DealsController < ApplicationController
       company.deals.active
     else
       current_user.deals.active
+    end
+  end
+
+  def time_period
+    if params[:time_period_id]
+      @time_period = company.time_periods.find(params[:time_period_id])
     end
   end
 
