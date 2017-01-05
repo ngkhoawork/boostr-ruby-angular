@@ -46,8 +46,7 @@
                             {{ $select.selected.name }}
                         %ui-select-choices{ repeat: 'agency.id as agency in agencies' }
                             %div{ ng: { bind: { html: 'agency.name' } } }
-                %button.add-btn{type: 'button', 'ng-click': 'createNewClientModal()'}
-                    %span +
+                %button.add-btn.plus-btn{type: 'button', 'ng-click': 'createNewClientModal()'}
             .form-group{ ng: {if: "formType == 'New'"}}
                 .row
                     .col-xs-6

@@ -18,26 +18,25 @@
                             %a{'href': '', 'ng-click': 'selectType(type)'}
                                 %span{class: 'icon-activity-{{type.iconName}}'}
                                 %span.text {{type.name}}
-
-            .form-group{'ng-class':'{error: errors.deal}', style: 'margin-bottom: 5px'}
-                %span.error-text {{errors.deal}}
-                %label
-                    Related to Deal
-                    %span.star *
-                %input.form-control{'placeholder': 'Choose Deal', 'ng-model': 'form.deal', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)', 'typeahead-on-select': 'onDealSelect($item, $model, $label, $event)'}
-            .advertiser-agency
-                .form-group.advertiser-field{'ng-class':'{error: errors.advertiser}'}
-                    %span.error-text {{errors.advertiser}}
-                    %label{style: 'display: block'}
-                        or Advertiser
-                    %input.form-control{'placeholder': 'Choose Advertiser', 'ng-model': 'form.advertiser', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "advertiser")'}
-                .form-group.agency-field{'ng-class':'{error: errors.agency}'}
-                    %span.error-text {{errors.agency}}
-                    %label{style: 'display: block'}
-                        or Agency
-                    %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
-                %button.add-btn{type: 'button', 'ng-click': 'openAccountModal()'}
-                    %span +
+            %div{'ng-if': '!currentDeal'}
+                .form-group{'ng-class':'{error: errors.deal}', style: 'margin-bottom: 5px'}
+                    %span.error-text {{errors.deal}}
+                    %label
+                        Related to Deal
+                        %span.star *
+                    %input.form-control{'placeholder': 'Choose Deal', 'ng-model': 'form.deal', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)', 'typeahead-on-select': 'onDealSelect($item, $model, $label, $event)'}
+                .advertiser-agency
+                    .form-group.advertiser-field{'ng-class':'{error: errors.advertiser}'}
+                        %span.error-text {{errors.advertiser}}
+                        %label{style: 'display: block'}
+                            or Advertiser
+                        %input.form-control{'placeholder': 'Choose Advertiser', 'ng-model': 'form.advertiser', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "advertiser")'}
+                    .form-group.agency-field{'ng-class':'{error: errors.agency}'}
+                        %span.error-text {{errors.agency}}
+                        %label{style: 'display: block'}
+                            or Agency
+                        %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
+                    %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openAccountModal()'}
             .form-group.with-add-btn{'ng-class':'{error: errors.contacts}'}
                 %span.error-text {{errors.contacts}}
                 %label
@@ -49,8 +48,7 @@
                         {{$item.name}}
                     %ui-select-choices{repeat: 'contact.id as contact in contacts', refresh: 'searchContacts($select.search)', 'refresh-delay': '0'}
                         %div{'ng-bind': {html: 'contact.name + " - " + contact.client.name'}}
-                %button.add-btn{type: 'button', 'ng-click': 'openContactModal()'}
-                    %span +
+                %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openContactModal()'}
             .col-xs-6.date
                 .form-group{'ng-class':'{error: errors.date}'}
                     %span.error-text {{errors.date}}

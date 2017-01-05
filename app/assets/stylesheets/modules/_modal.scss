@@ -88,7 +88,7 @@
     .agency-field {
       padding-left: 10px;
     }
-    .add-btn {
+    .add-btn.plus-btn {
       vertical-align: bottom;
       margin-bottom: 18px;
     }
@@ -212,16 +212,36 @@
       }
     }
   }
-  .add-btn {
-    padding: 0;
+  .add-btn.plus-btn {
     height: 35px;
     width: 35px;
-    vertical-align: middle;
+    position: relative;
+    border-radius: 50%;
     margin-left: 15px;
-    span {
-      vertical-align: baseline;
-      font-size: 28px;
-      line-height: 24px;
+    vertical-align: middle;
+    &:hover {
+      &:before, &:after {
+        background-color: white;
+      }
+    }
+    &:before, &:after {
+      transition: background-color 300ms;
+      content: '';
+      position: absolute;
+      display: block;
+      background-color: $main-color;
+      height: 15px;
+      width: 15px;
+      top: 8px;
+      left: 8px;
+    }
+    &:before {
+      left: 14px;
+      width: 3px;
+    }
+    &:after {
+      top: 14px;
+      height: 3px;
     }
   }
   .dropdown {

@@ -112,18 +112,18 @@
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ContactsNewController'
       backdrop: 'static'
       keyboard: false
       resolve:
         contact: ->
           {}
-
+  $scope.showModal()
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ContactsEditController'
       backdrop: 'static'
       keyboard: false

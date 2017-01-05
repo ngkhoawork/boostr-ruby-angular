@@ -1,11 +1,11 @@
 @app.controller "ActivityNewController",
-    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Contact', 'Reminder', 'activity', '$http'
-        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Contact, Reminder, activity, $http) ->
+    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Contact', 'Reminder', 'activity', 'currentDeal', '$http'
+        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Contact, Reminder, activity, currentDeal, $http) ->
 
             $scope.types = []
             $scope.showMeridian = true
             $scope.submitButtonText = 'Add Activity'
-            $scope.pupupTitle = 'Add New Activity'
+            $scope.popupTitle = 'Add New Activity'
             $scope.selectedType =
                 action: 'had initial meeting with'
             $scope.form = {
@@ -24,9 +24,13 @@
                 remindable_type: 'Activity'
                 showSpinners: false
 
+            #deal page activity
+            $scope.currentDeal = currentDeal
+            if currentDeal
+                $scope.form.deal = currentDeal
             #edit mode
             if activity
-                $scope.pupupTitle = 'Edit Activity'
+                $scope.popupTitle = 'Edit Activity'
                 $scope.submitButtonText = 'Save'
                 if activity.deal
                     activity.deal.formatted_name = activity.deal.name
@@ -55,7 +59,6 @@
                                     $scope.form.reminderTime = new Date(reminder.remind_on)
 #                                    $scope.editActivityReminder.remind_on = new Date(reminder.remind_on)
 #                                    $scope.editActivityReminder.completed = reminder.completed
-
 
 
             $scope.contacts = []
@@ -117,7 +120,7 @@
                 _.findWhere($scope.types, name: type)
 
             $scope.openContactModal = ->
-                $rootScope.$broadcast 'dashboard.openContactModal'
+                $rootScope.$broadcast 'openContactModal'
 
             $scope.openAccountModal = ->
                 $rootScope.$broadcast 'dashboard.openAccountModal'
@@ -229,7 +232,10 @@
                             console.log(err)
                     else
                         $scope.cancel()
-                        $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
+                        if currentDeal
+                            $rootScope.$broadcast 'updated_activities'
+                        else
+                            $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
 
             updateActivity = (id, activity, contacts) ->
                 Activity.update({

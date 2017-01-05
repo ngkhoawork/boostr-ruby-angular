@@ -79,7 +79,7 @@
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
                 blocks.forEach (name) -> $scope[name + 'Init']()
 
-            $scope.$on 'dashboard.openContactModal', ->
+            $scope.$on 'openContactModal', ->
                 $scope.createNewContactModal()
 
             $scope.$on 'dashboard.openAccountModal', ->
@@ -151,6 +151,8 @@
                     resolve:
                         activity: ->
                             null
+                        currentDeal: ->
+                            null
 
             $scope.showActivityEditModal = (activity) ->
                 $scope.modalInstance = $modal.open
@@ -162,6 +164,8 @@
                     resolve:
                         activity: ->
                             activity
+                        currentDeal: ->
+                            null
 
             $scope.showAssignContactModal = (contact) ->
                 advertiserTypeId = null
@@ -339,7 +343,7 @@
                 $scope.populateContact = true
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/contact_form.html'
-                    size: 'lg'
+                    size: 'md'
                     controller: 'ContactsNewController'
                     backdrop: 'static'
                     keyboard: false
