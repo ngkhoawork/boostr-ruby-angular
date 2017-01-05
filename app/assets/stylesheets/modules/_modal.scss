@@ -361,31 +361,64 @@
     .ui-select-choices {
       width: auto;
     }
-    .ui-select-match-item {
-      background-color: $main-color;
-      color: white;
-      font-size: 14px;
+    //.ui-select-match-item {
+    //  background-color: $main-color;
+    //  color: white;
+    //  font-size: 14px;
+    //  border-radius: 5px;
+    //  padding: 6px 6px 5px;
+    //  border-color: $main-color;
+    //  &:hover {
+    //    //border: none;
+    //    background-color: darken($main-color, 10%);
+    //    border-radius: 5px;
+    //    border-color: $main-color;
+    //  }
+    //  .ui-select-match-close {
+    //    padding-top: 2px;
+    //    font-size: 1.5em;
+    //    color: white;
+    //    text-shadow: none;
+    //    opacity: 1;
+    //    &:hover {
+    //      color: $secondary-font-color;
+    //    }
+    //  }
+    //}
+  }
+  .ui-select-container .ui-select-match-item {
+    background-color: $main-color;
+    color: white;
+    font-size: 14px;
+    border-radius: 5px;
+    padding: 6px 6px 5px;
+    border-color: $main-color;
+    &:hover {
+      //border: none;
+      background-color: darken($main-color, 10%);
       border-radius: 5px;
-      padding: 6px 6px 5px;
       border-color: $main-color;
+    }
+    .ui-select-match-close {
+      padding-top: 2px;
+      font-size: 1.5em;
+      color: white;
+      text-shadow: none;
+      opacity: 1;
       &:hover {
-        //border: none;
-        background-color: darken($main-color, 10%);
-        border-radius: 5px;
-        border-color: $main-color;
-      }
-      .ui-select-match-close {
-        padding-top: 2px;
-        font-size: 1.5em;
-        color: white;
-        text-shadow: none;
-        opacity: 1;
-        &:hover {
-          color: $secondary-font-color;
-        }
+        color: $secondary-font-color;
       }
     }
   }
-}.modal-backdrop.in {
+  .activity-contact {
+    font-weight: bold;
+    color: $secondary-font-color;
+    margin-bottom: 15px;
+    span {
+      color: $main-font-color;
+    }
+  }
+}
+.modal-backdrop.in {
   height: 100%;
 }

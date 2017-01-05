@@ -10,6 +10,7 @@
             $scope.selectedType =
                 action: 'had initial meeting with'
             $scope.form = {
+                date: new Date()
                 contacts: []
             }
             $scope.errors = {}
@@ -27,17 +28,24 @@
 
             #modal source dispatch
             if options
-                console.log(options)
+                $scope.showRelated = false
                 switch options.type
                     when 'deal'
-                        $scope.showRelated = false
                         $scope.form.deal = options.data
                     when 'account'
-                        $scope.showRelated = false
                         if options.isAdvertiser
                             $scope.form.advertiser = options.data
                         else
                             $scope.form.agency = options.data
+                    when 'contact'
+                        $scope.currentContact = options.data
+                        $scope.form.contacts.push options.data
+                        if options.isAdvertiser
+                            $scope.form.advertiser =
+                                id: options.data.client_id
+                        else
+                            $scope.form.agency =
+                                id: options.data.client_id
 
             #edit mode
             if activity

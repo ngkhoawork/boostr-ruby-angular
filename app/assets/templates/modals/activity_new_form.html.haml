@@ -37,18 +37,23 @@
                             or Agency
                         %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
                     %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openAccountModal()'}
-            .form-group.with-add-btn{'ng-class':'{error: errors.contacts}'}
-                %span.error-text {{errors.contacts}}
-                %label
+            %div{'ng-if': 'currentContact'}
+                .activity-contact
                     {{selectedType.action | firstUppercase}}
-                    %span.star *
-                -#%input.form-control{'placeholder': 'Choose Contact or add new', 'ng-model': 'form.contact'}
-                %ui-select{multiple: true, name: 'contacts', 'ng-model': 'form.contacts', disabled: true}
-                    %ui-select-match{placeholder: 'Choose Contact'}
-                        {{$item.name}}
-                    %ui-select-choices{repeat: 'contact.id as contact in contacts', refresh: 'searchContacts($select.search)', 'refresh-delay': '0'}
-                        %div{'ng-bind': {html: 'contact.name + " - " + contact.client.name'}}
-                %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openContactModal()'}
+                    %span {{currentContact.name}}
+            %div{'ng-if': '!currentContact'}
+                .form-group.with-add-btn{'ng-class':'{error: errors.contacts}'}
+                    %span.error-text {{errors.contacts}}
+                    %label
+                        {{selectedType.action | firstUppercase}}
+                        %span.star *
+                    -#%input.form-control{'placeholder': 'Choose Contact or add new', 'ng-model': 'form.contact'}
+                    %ui-select{multiple: true, name: 'contacts', 'ng-model': 'form.contacts', disabled: true}
+                        %ui-select-match{placeholder: 'Choose Contact'}
+                            {{$item.name}}
+                        %ui-select-choices{repeat: 'contact.id as contact in contacts', refresh: 'searchContacts($select.search)', 'refresh-delay': '0'}
+                            %div{'ng-bind': {html: 'contact.name + " - " + contact.client.name'}}
+                    %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openContactModal()'}
             .col-xs-6.date
                 .form-group{'ng-class':'{error: errors.date}'}
                     %span.error-text {{errors.date}}
