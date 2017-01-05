@@ -81,6 +81,7 @@ class Deal < ActiveRecord::Base
   scope :less_than, -> (percentage) { joins(:stage).where('stages.probability < ?', percentage) }
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :by_values, -> (value_ids) { joins(:values).where('values.option_id in (?)', value_ids) unless value_ids.empty? }
+  scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
 
   def fields
     company.fields.where(subject_type: self.class.name)

@@ -238,6 +238,8 @@ class Api::DealsController < ApplicationController
       company.deals.active
     elsif params[:filter] == 'selected_team' && params[:team_id]
       all_team_deals
+    elsif params[:filter] == 'user' && params[:user_id]
+      deal_member_filter
     elsif params[:filter] == 'team' && team.present?
       team.deals.active
     elsif params[:client_id].present?
@@ -253,6 +255,17 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def deal_member_filter
+    user = company.users.find params[:user_id]
+    if user.user_type == SELLER
+      company.deals.by_deal_team([user.id])
+    elsif user.user_type == SALES_MANAGER
+      company.deals.by_deal_team(user.teams_tree_members.ids)
+    else
+      company.deals.active
+    end
+  end
+
   def all_team_deals
     all_members_list = []
     if params[:team_id].to_i == 0
@@ -262,8 +275,7 @@ class Api::DealsController < ApplicationController
       all_members_list = selected_team.all_members.collect{|member| member.id}
       all_members_list += selected_team.all_leaders.collect{|member| member.id}
     end
-    all_team_deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deals.deleted_at is NULL and deal_members.user_id in (?)", all_members_list)
-    all_team_deals
+    company.deals.by_deal_team(all_members_list)
   end
 
   def team
