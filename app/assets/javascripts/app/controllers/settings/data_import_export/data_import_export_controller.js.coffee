@@ -61,14 +61,6 @@
         contact: ->
           {}
 
-  $scope.showUploadRevenuesModal = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/revenue_upload.html'
-      size: 'lg'
-      controller: 'RevenueUploadController'
-      backdrop: 'static'
-      keyboard: false
-
   $scope.showUploadDisplayIOModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/display_io_upload.html'
@@ -99,10 +91,6 @@
 
 #  $scope.exportContacts = ->
 #    $window.open('/api/contacts.zip')
-#    return true
-
-#  $scope.exportRevenues = ->
-#    $window.open('/api/revenues.zip')
 #    return true
 
 #  $scope.exportActivities = ->
