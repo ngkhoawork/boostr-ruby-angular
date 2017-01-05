@@ -190,7 +190,6 @@
 
   $scope.loadActivities = (contact_id) ->
     Activity.all(contact_id: contact_id).then (activities) ->
-      console.log(activities.length)
       $scope.currentActivities = activities
       $scope.activities = activities
 
@@ -200,11 +199,8 @@
 
   $scope.$on 'updated_current_contact', ->
     $scope.currentContact = Contact.get()
-    console.log('updated_current_contact')
     if $scope.currentContact && $scope.currentContact.id
       $scope.loadActivities($scope.currentContact.id)
-    else
-      console.log('NO CONTACT LOADED')
 
   $scope.$on 'updated_contacts', ->
     $scope.init()
