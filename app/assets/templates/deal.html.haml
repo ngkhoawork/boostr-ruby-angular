@@ -205,14 +205,8 @@
                         'numbers-only':''}
 
     #activities.row
-      %h3
-        Activities
-      #activities-content.row
-        .col-xs-7.pad5a
-          %div{ ng: { include: "'partials/activities_deal.html'" } }
-
-        .col-xs-5.pad
-          %div{ ng: { include: "'partials/activities_feed_deal.html'" } }
+      .col-xs-offset-6.col-xs-6
+        %div{'ng-include': '"partials/dashboard/activity.html"'}
 
     #teamsplit.row
       .col-xs-12

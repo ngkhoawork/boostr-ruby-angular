@@ -84,7 +84,7 @@
     $scope.populateClientTarget = target
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ClientsEditController'
       backdrop: 'static'
       keyboard: false

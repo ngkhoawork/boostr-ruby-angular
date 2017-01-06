@@ -1,8 +1,9 @@
-#activity.block
+#activity-feed.block
 	%div.mb40
 		%span.title Activity
 		%add-button{'ng-click': 'showNewActivityModal()'}
-
+	%p{'ng-show': '!activities || !activities.length'}
+		No activity
 	%div.activity-item{'ng-repeat': 'activity in activities | orderBy: "-happened_at"'}
 		%div.activity-header
 			%span{'class': 'icon-activity-{{getIconName(activity.activity_type_name)}}'}

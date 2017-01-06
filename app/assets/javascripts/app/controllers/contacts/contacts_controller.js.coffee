@@ -18,6 +18,9 @@
 
   $scope.contactFilter = $scope.contactFilters[0]
 
+  $scope.getIconName = (typeName) ->
+    typeName && typeName.split(' ').join('-').toLowerCase()
+
   $scope.activityReminderInit = ->
     $scope.activityReminder = {
       name: '',
@@ -112,7 +115,7 @@
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ContactsNewController'
       backdrop: 'static'
       keyboard: false
@@ -123,23 +126,40 @@
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ContactsEditController'
       backdrop: 'static'
       keyboard: false
 
+  $scope.showNewActivityModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_new_form.html'
+      size: 'md'
+      controller: 'ActivityNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          null
+        options: ->
+          type: 'contact'
+          data: $scope.currentContact
+          isAdvertiser: $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
+
   $scope.showActivityEditModal = (activity) ->
     $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_form.html'
-      size: 'lg'
-      controller: 'ActivitiesEditController'
+      templateUrl: 'modals/activity_new_form.html'
+      size: 'md'
+      controller: 'ActivityNewController'
       backdrop: 'static'
       keyboard: false
       resolve:
         activity: ->
           activity
-        types: ->
-          $scope.types
+        options: ->
+          type: 'contact'
+          data: $scope.currentContact
+          isAdvertiser: $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete "' + $scope.currentContact.name + '"?')
@@ -171,6 +191,7 @@
   $scope.loadActivities = (contact_id) ->
     Activity.all(contact_id: contact_id).then (activities) ->
       $scope.currentActivities = activities
+      $scope.activities = activities
 
   $scope.filterContacts = (filter) ->
     $scope.contactFilter = filter;

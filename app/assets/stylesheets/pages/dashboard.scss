@@ -129,44 +129,6 @@
             }
         }
     }
-    #activity {
-        .activity-item {
-            padding-bottom: 20px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid $separate-line-color;
-            .activity-header {
-                color: $secondary-font-color;
-                margin-bottom: 10px;
-                span:nth-child(2) {
-                    margin-left: 5px;
-                    vertical-align: text-bottom;
-                }
-            }
-            .activity-body {
-                padding-right: 25%;
-                margin-bottom: 15px;
-                p {
-                    margin-bottom: 5px;
-                }
-            }
-            .activity-control {
-                a {
-                    color: $secondary-font-color;
-                    padding-right: 10px;
-                    text-decoration: none;
-                    outline: none;
-                }
-            }
-        }
-        .load-more {
-            text-align: center;
-            a {
-                text-decoration: none;
-                font-weight: 600;
-                color: $secondary-font-color;
-            }
-        }
-    }
     #open-deals, #pacing-alerts {
         table {
             thead {
