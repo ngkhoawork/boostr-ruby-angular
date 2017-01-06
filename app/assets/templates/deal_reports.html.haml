@@ -1,4 +1,74 @@
 #reports
+  .row
+    .filters-block.col-xs-offset-2.col-xs-8
+      %a.pull-right{ href: '', ng: { click: 'exportReports()' } }
+        = inline_svg 'icons/export.svg'
+        Export
+      %table
+        %tr.filter-title
+          %td Team
+          %td Status
+          %td Type
+          %td Source
+          %td Creator
+          %td Time period
+          %td
+            %span.reset-filter{'ng-click': 'resetFilter()'}
+              Reset
+        %tr
+          %td
+            %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'ng-class': '{"not-selected": selectedTeam.name == "All"}'}
+          %td
+            %ul.filter-item
+              %li{ dropdown: true }
+                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
+                  {{selected.product ? selected.product.name : 'All'}}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
+                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
+                      {{ product.name }}
+          %td
+            %ul.filter-item
+              %li{ dropdown: true }
+                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
+                  {{selected.product ? selected.product.name : 'All'}}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
+                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
+                      {{ product.name }}
+          %td
+            %ul.filter-item
+              %li{ dropdown: true }
+                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
+                  {{selected.product ? selected.product.name : 'All'}}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
+                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
+                      {{ product.name }}
+          %td
+            %ul.filter-item
+              %li{ dropdown: true }
+                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
+                  {{selected.product ? selected.product.name : 'All'}}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
+                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
+                      {{ product.name }}
+          %td
+            %ul.filter-item
+              %li{ dropdown: true }
+                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
+                  {{selected.product ? selected.product.name : 'All'}}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
+                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
+                      {{ product.name }}
+
   #nav.transparent
     .container
       .row.filter-section
