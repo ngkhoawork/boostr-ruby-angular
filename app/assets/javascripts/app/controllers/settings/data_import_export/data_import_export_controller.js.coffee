@@ -93,6 +93,10 @@
     $window.open('/api/deals.csv')
     return true
 
+  $scope.exportDealProductMonhtlyBudget = ->
+    $window.open('/api/deal_product_budgets.csv')
+    return true
+
 #  $scope.exportContacts = ->
 #    $window.open('/api/contacts.zip')
 #    return true
