@@ -1,4 +1,4 @@
-namespace :update_deal_status do
+namespace :generate_missing_ios do
   desc "TODO"
   task :process_task, [:company_id] => [:environment] do |t, args|
     if args[:company_id]
