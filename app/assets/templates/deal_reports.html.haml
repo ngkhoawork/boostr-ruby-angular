@@ -59,6 +59,12 @@
                 %th.left{ width: "200" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("latest_activity")'}
                     Latest Activity
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("type")'}
+                    Deal Type
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("source")'}
+                    Deal Source
                 %th.left{ width: "100" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("start_date")'}
                     Start Date
@@ -83,6 +89,8 @@
                 %td.right ${{ (deal.budget || 0) | number : 0}}
                 %td.left {{ deal.next_steps.substr(0, 30) }}
                 %td.left{ 'ng-bind-html': "getHtml(deal.latest_activity)"}
+                %td.left {{ deal.type }}
+                %td.left {{ deal.source }}
                 %td.left {{ deal.start_date | date: 'MM-dd-yyyy' }}
                 %td.left {{ deal.end_date | date: 'MM-dd-yyyy' }}
                 %td.right{ ng: { repeat: 'productTime in productRange track by $index' } }
