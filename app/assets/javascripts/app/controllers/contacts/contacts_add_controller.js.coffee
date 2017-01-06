@@ -1,6 +1,6 @@
 @app.controller "ContactsAddController",
-['$scope', '$modalInstance', '$filter', 'Contact', 'Deal', 'DealContact', 'deal',
-($scope, $modalInstance, $filter, Contact, Deal, DealContact, deal) ->
+['$scope', '$modal', '$modalInstance', '$filter', 'Contact', 'Deal', 'DealContact', 'deal',
+($scope, $modal, $modalInstance, $filter, Contact, Deal, DealContact, deal) ->
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.contact = contact
@@ -36,4 +36,15 @@
 
   $scope.cancel = ->
     $modalInstance.close()
+    
+  $scope.createContact = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_form.html'
+      size: 'md'
+      controller: 'ContactsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          {}
 ]
