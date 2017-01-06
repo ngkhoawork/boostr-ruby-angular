@@ -10,6 +10,22 @@
     $scope.clients = clients
 
   $scope.submitForm = () ->
+    console.log($scope.contact)
+    $scope.errors = {}
+
+    fields = ['name', 'client_id', 'address']
+
+    fields.forEach (key) ->
+      field = $scope.contact[key]
+      switch key
+        when 'name'
+          if !field then return $scope.errors[key] = 'Name is required'
+        when 'client_id'
+          if !field  then return $scope.errors[key] = 'Primary Account is required'
+        when 'address'
+          if !field  then return $scope.errors[key] = 'Primary Account is required'
+
+    if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
     Contact.create(contact: $scope.contact).then(
       (contact) ->
@@ -17,7 +33,7 @@
         $rootScope.$broadcast 'newContact', contact
         $modalInstance.close()
       (resp) ->
-        $scope.errors = resp.data.errors
+        $scope.responseErrors = resp.data.errors
         $scope.buttonDisabled = false
     )
   $scope.getClients = (query) ->

@@ -48,7 +48,6 @@
     )
 
   $scope.submitForm = () ->
-    console.log($scope.client)
     $scope.errors = {}
 
     fields = ['name', 'client_type']

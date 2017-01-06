@@ -4,17 +4,19 @@
       {{ formType }} Contact
       %span.close-btn{'ng-click': 'cancel()'} +
     .popup-modal-body
-      .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
           %i.fa.fa-warning
           <strong style="text-transform: capitalize">{{field}}</strong>
           {{error}}
 
-      .form-group
+      .form-group{'ng-class':'{error: errors.name}'}
+        %span.error-text {{errors.name}}
         %label{ for: 'name' } Name
         %span.star *
         %input.form-control{ name: 'name', placeholder: 'Name', ng: { model: 'contact.name' } }
-      .form-group
+      .form-group{'ng-class':'{error: errors.client_id}'}
+        %span.error-text {{errors.client_id}}
         %label{ for: 'client' } Primary Account
         %span.star *
         %ui-select{ name: 'client', ng: { model: 'contact.client_id', disabled: true, keyup: 'searchClients($select.search)' } }
@@ -22,7 +24,8 @@
             {{ $select.selected.name || contact.primary_client_json.name }}
           %ui-select-choices{ repeat: 'client.id as client in clients | filter: { name: $select.search }' }
             %div{ ng: { bind: { html: 'client.name' } } }
-      .form-group
+      .form-group{'ng-class':'{error: errors.email}'}
+        %span.error-text {{errors.email}}
         %label{ for: 'email' } Email
         %span.star *
         %input#email.form-control{ name: 'email', placeholder: 'Email', ng: { model: 'contact.address.email' } }
