@@ -17,13 +17,33 @@
     $scope.contact.address.mobile = $filter('tel')($scope.contact.address.mobile)
 
   $scope.submitForm = () ->
+    emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
+
+    console.log($scope.contact)
+    $scope.errors = {}
+
+    fields = ['name', 'client_id', 'address']
+
+    fields.forEach (key) ->
+      field = $scope.contact[key]
+      switch key
+        when 'name'
+          if !field then return $scope.errors[key] = 'Name is required'
+        when 'client_id'
+          if !field  then return $scope.errors[key] = 'Primary Account is required'
+        when 'address'
+          if !field || !field.email then return $scope.errors.email = 'Email is required'
+          if !emailRegExp.test(field.email) then return $scope.errors.email = 'Email is not valid'
+
+    if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
     $scope.contact.set_primary_client = true
     Contact._update(id: $scope.contact.id, contact: $scope.contact).then(
       (contact) ->
         $modalInstance.close()
       (resp) ->
-        $scope.errors = resp.data.errors
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
         $scope.buttonDisabled = false
     )
 

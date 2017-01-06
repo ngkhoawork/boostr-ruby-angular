@@ -68,7 +68,8 @@
         $rootScope.$broadcast 'newClient', $scope.client
         $modalInstance.close()
       (resp) ->
-        $scope.responeErrors = resp.data.errors
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
         $scope.buttonDisabled = false
     )
 
