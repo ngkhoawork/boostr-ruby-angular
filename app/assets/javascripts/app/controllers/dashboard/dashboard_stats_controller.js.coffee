@@ -151,11 +151,10 @@
                     .outerTickSize(0)
                     .tickValues(ticksArr)
 
-
                 svg = d3.select('#forecast-chart')
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.top + margin.bottom)
-                    .style('height', height + margin.top + margin.bottom)
+                    .style('height', height + margin.top + margin.bottom + 'px')
                 svg.html('')
                 chart = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
