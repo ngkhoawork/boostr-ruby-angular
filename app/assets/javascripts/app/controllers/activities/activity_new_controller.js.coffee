@@ -1,14 +1,16 @@
 @app.controller "ActivityNewController",
-    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Contact', 'Reminder', 'activity', '$http'
-        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Contact, Reminder, activity, $http) ->
+    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Contact', 'Reminder', 'activity', 'options', '$http'
+        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Contact, Reminder, activity, options, $http) ->
 
             $scope.types = []
+            $scope.showRelated = true
             $scope.showMeridian = true
             $scope.submitButtonText = 'Add Activity'
-            $scope.pupupTitle = 'Add New Activity'
+            $scope.popupTitle = 'Add New Activity'
             $scope.selectedType =
                 action: 'had initial meeting with'
             $scope.form = {
+                date: new Date()
                 contacts: []
             }
             $scope.errors = {}
@@ -24,9 +26,30 @@
                 remindable_type: 'Activity'
                 showSpinners: false
 
+            #modal source dispatch
+            if options
+                $scope.showRelated = false
+                switch options.type
+                    when 'deal'
+                        $scope.form.deal = options.data
+                    when 'account'
+                        if options.isAdvertiser
+                            $scope.form.advertiser = options.data
+                        else
+                            $scope.form.agency = options.data
+                    when 'contact'
+                        $scope.currentContact = options.data
+                        $scope.form.contacts.push options.data
+                        if options.isAdvertiser
+                            $scope.form.advertiser =
+                                id: options.data.client_id
+                        else
+                            $scope.form.agency =
+                                id: options.data.client_id
+
             #edit mode
             if activity
-                $scope.pupupTitle = 'Edit Activity'
+                $scope.popupTitle = 'Edit Activity'
                 $scope.submitButtonText = 'Save'
                 if activity.deal
                     activity.deal.formatted_name = activity.deal.name
@@ -55,7 +78,6 @@
                                     $scope.form.reminderTime = new Date(reminder.remind_on)
 #                                    $scope.editActivityReminder.remind_on = new Date(reminder.remind_on)
 #                                    $scope.editActivityReminder.completed = reminder.completed
-
 
 
             $scope.contacts = []
@@ -117,7 +139,7 @@
                 _.findWhere($scope.types, name: type)
 
             $scope.openContactModal = ->
-                $rootScope.$broadcast 'dashboard.openContactModal'
+                $rootScope.$broadcast 'openContactModal'
 
             $scope.openAccountModal = ->
                 $rootScope.$broadcast 'dashboard.openAccountModal'
@@ -229,7 +251,13 @@
                             console.log(err)
                     else
                         $scope.cancel()
-                        $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
+                        if options
+                            $rootScope.$broadcast 'updated_activities'
+#                            switch options.type
+#                                when 'deal'
+#                                when 'account'
+                        else
+                            $rootScope.$broadcast 'dashboard.updateBlocks', ['activities']
 
             updateActivity = (id, activity, contacts) ->
                 Activity.update({

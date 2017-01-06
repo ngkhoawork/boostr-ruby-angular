@@ -17,7 +17,7 @@ class Deal < ActiveRecord::Base
 
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
-  has_many :deal_products
+  has_many :deal_products, dependent: :destroy
   has_many :deal_product_budgets, through: :deal_products
   has_many :deal_logs
   has_many :products, -> { distinct }, through: :deal_products
@@ -313,6 +313,8 @@ class Deal < ActiveRecord::Base
       header << "%"
       header << "Budget"
       header << "Latest Activity"
+      header << "Deal Type"
+      header << "Deal Source"
       header << "Next Steps"
       header << "Start Date"
       header << "End Date"
@@ -332,6 +334,8 @@ class Deal < ActiveRecord::Base
             "$" + (deal.budget.nil? ? 0 : deal.budget).round.to_s
         ]
         line << deal.latest_activity
+        line << get_option(deal, "Deal Type")
+        line << get_option(deal, "Deal Source")
         line << deal.next_steps
         line << deal.start_date
         line << deal.end_date

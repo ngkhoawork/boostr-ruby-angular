@@ -3,7 +3,7 @@
 		%span.title My Reminders
 		-#%add-button
 	%div{'ng-hide': 'reminders && reminders.length'}
-		No Reminders
+		No reminders
 	%div{'ng-show': 'reminders && reminders.length'}
 		%div.reminder-item{'ng-repeat': 'reminder in reminders'}
 			%div.reminder-check

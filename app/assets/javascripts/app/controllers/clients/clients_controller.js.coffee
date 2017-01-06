@@ -37,6 +37,9 @@
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
 
+  $scope.getIconName = (typeName) ->
+    typeName && typeName.split(' ').join('-').toLowerCase()
+
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->
       $scope[option.name] = option.id
@@ -60,7 +63,8 @@
 
   $scope.setClient = (client) ->
     $scope.currentClient = client
-    $scope.initActivity()
+    $scope.activities = client.activities.concat(client.agency_activities)
+#    $scope.initActivity()
     $scope.getContacts()
     $scope.getDeals($scope.currentClient)
     $scope.initReminder()
@@ -125,7 +129,7 @@
   $scope.showModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ClientsNewController'
       backdrop: 'static'
       keyboard: false
@@ -147,7 +151,7 @@
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ClientsEditController'
       backdrop: 'static'
       keyboard: false
@@ -155,18 +159,35 @@
         client: ->
           $scope.currentClient
 
+  $scope.showNewActivityModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_new_form.html'
+      size: 'md'
+      controller: 'ActivityNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          null
+        options: ->
+          type: 'account'
+          data: $scope.currentClient
+          isAdvertiser: $scope.currentClient.client_type_id == $scope.Advertiser
+
   $scope.showActivityEditModal = (activity) ->
     $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_form.html'
-      size: 'lg'
-      controller: 'ActivitiesEditController'
+      templateUrl: 'modals/activity_new_form.html'
+      size: 'md'
+      controller: 'ActivityNewController'
       backdrop: 'static'
       keyboard: false
       resolve:
         activity: ->
           activity
-        types: ->
-          $scope.types
+        options: ->
+          type: 'account'
+          data: $scope.currentClient
+          isAdvertiser: $scope.currentClient.client_type_id == $scope.Advertiser
 
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)
@@ -181,7 +202,7 @@
   $scope.showNewPersonModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ContactsNewController'
       backdrop: 'static'
       keyboard: false
@@ -192,7 +213,7 @@
   $scope.showNewDealModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'DealsNewController'
       backdrop: 'static'
       keyboard: false
@@ -271,6 +292,9 @@
         $scope.currentClient.client_subcategory = Field.getSuboption($scope.currentClient, $scope.currentClient.client_category, $scope.currentClient.client_subcategory_id)
       $scope.getDeals($scope.currentClient)
       $scope.getClientMembers()
+
+  $scope.$on 'openContactModal', ->
+    $scope.createNewContactModal()
 
   $scope.$on 'updated_clients', ->
     $scope.init()
@@ -386,7 +410,7 @@
     $scope.populateContact = true
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ContactsNewController'
       backdrop: 'static'
       keyboard: false
@@ -400,7 +424,6 @@
   $scope.$on 'newContact', (event, contact) ->
     if $scope.populateContact
       $scope.contacts.push contact
-      $scope.activity.contacts.push contact.id
       $scope.populateContact = false
 
   $scope.$on 'newClient', (event, client) ->

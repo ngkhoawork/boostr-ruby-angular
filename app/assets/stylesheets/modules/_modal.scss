@@ -78,6 +78,7 @@
   }
   .advertiser-agency {
     .advertiser-field, .agency-field {
+      vertical-align: middle;
       display: inline-block;
       width: calc(50% - 30px);
     }
@@ -86,6 +87,10 @@
     }
     .agency-field {
       padding-left: 10px;
+    }
+    .add-btn.plus-btn {
+      vertical-align: bottom;
+      margin-bottom: 18px;
     }
   }
   .with-add-btn {
@@ -180,13 +185,14 @@
   }
   .popup-modal-footer {
     text-align: right;
+    margin-top: 30px;
     button {
       border-radius: 20px;
       font-size: 16px;
       padding: 8px 24px;
       &:focus {
         outline: none;
-    }
+      }
     }
     button[type="submit"] {
       background: linear-gradient(to right, $main-color, lighten($main-color, 20%));
@@ -206,16 +212,36 @@
       }
     }
   }
-  .add-btn {
-    padding: 0;
+  .add-btn.plus-btn {
     height: 35px;
     width: 35px;
-    vertical-align: middle;
+    position: relative;
+    border-radius: 50%;
     margin-left: 15px;
-    span {
-      vertical-align: baseline;
-      font-size: 28px;
-      line-height: 24px;
+    vertical-align: middle;
+    &:hover {
+      &:before, &:after {
+        background-color: white;
+      }
+    }
+    &:before, &:after {
+      transition: background-color 300ms;
+      content: '';
+      position: absolute;
+      display: block;
+      background-color: $main-color;
+      height: 15px;
+      width: 15px;
+      top: 8px;
+      left: 8px;
+    }
+    &:before {
+      left: 14px;
+      width: 3px;
+    }
+    &:after {
+      top: 14px;
+      height: 3px;
     }
   }
   .dropdown {
@@ -289,7 +315,7 @@
     .error-text {
       display: inline;
     }
-    input, textarea, .ui-select-container, button.dropdown-toggle {
+    input, textarea, .ui-select-container, .ui-select-toggle, button.dropdown-toggle {
       border-color: $error-color;
     }
   }
@@ -306,6 +332,21 @@
   }
   .ui-select-container {
     background-color: white;
+    .ui-select-match {
+      &.btn-default-focus {
+        background-color: white;
+      }
+      .ui-select-toggle {
+        &:focus {
+          border-color: $light-grayish-blue-1;
+        }
+        .ui-select-match-text {
+          font-weight: bold;
+        }
+        //border-radius: 5px;
+        background-color: white;
+      }
+    }
     .ui-select-search {
       &::-webkit-input-placeholder {
         color: #BCC6D2;
@@ -320,31 +361,64 @@
     .ui-select-choices {
       width: auto;
     }
-    .ui-select-match-item {
-      background-color: $main-color;
-      color: white;
-      font-size: 14px;
+    //.ui-select-match-item {
+    //  background-color: $main-color;
+    //  color: white;
+    //  font-size: 14px;
+    //  border-radius: 5px;
+    //  padding: 6px 6px 5px;
+    //  border-color: $main-color;
+    //  &:hover {
+    //    //border: none;
+    //    background-color: darken($main-color, 10%);
+    //    border-radius: 5px;
+    //    border-color: $main-color;
+    //  }
+    //  .ui-select-match-close {
+    //    padding-top: 2px;
+    //    font-size: 1.5em;
+    //    color: white;
+    //    text-shadow: none;
+    //    opacity: 1;
+    //    &:hover {
+    //      color: $secondary-font-color;
+    //    }
+    //  }
+    //}
+  }
+  .ui-select-container .ui-select-match-item {
+    background-color: $main-color;
+    color: white;
+    font-size: 14px;
+    border-radius: 5px;
+    padding: 6px 6px 5px;
+    border-color: $main-color;
+    &:hover {
+      //border: none;
+      background-color: darken($main-color, 10%);
       border-radius: 5px;
-      padding: 6px 6px 5px;
       border-color: $main-color;
+    }
+    .ui-select-match-close {
+      padding-top: 2px;
+      font-size: 1.5em;
+      color: white;
+      text-shadow: none;
+      opacity: 1;
       &:hover {
-        //border: none;
-        background-color: darken($main-color, 10%);
-        border-radius: 5px;
-        border-color: $main-color;
-      }
-      .ui-select-match-close {
-        padding-top: 2px;
-        font-size: 1.5em;
-        color: white;
-        text-shadow: none;
-        opacity: 1;
-        &:hover {
-          color: $secondary-font-color;
-        }
+        color: $secondary-font-color;
       }
     }
   }
-}.modal-backdrop.in {
+  .activity-contact {
+    font-weight: bold;
+    color: $secondary-font-color;
+    margin-bottom: 15px;
+    span {
+      color: $main-font-color;
+    }
+  }
+}
+.modal-backdrop.in {
   height: 100%;
 }

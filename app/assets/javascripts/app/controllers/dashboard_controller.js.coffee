@@ -79,7 +79,7 @@
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
                 blocks.forEach (name) -> $scope[name + 'Init']()
 
-            $scope.$on 'dashboard.openContactModal', ->
+            $scope.$on 'openContactModal', ->
                 $scope.createNewContactModal()
 
             $scope.$on 'dashboard.openAccountModal', ->
@@ -111,7 +111,7 @@
             $scope.showNewDealModal = ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/deal_form.html'
-                    size: 'lg'
+                    size: 'md'
                     controller: 'DealsNewController'
                     backdrop: 'static'
                     keyboard: false
@@ -133,7 +133,7 @@
             $scope.showNewAccountModal = ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/client_form.html'
-                    size: 'lg'
+                    size: 'md'
                     controller: 'ClientsNewController'
                     backdrop: 'static'
                     keyboard: false
@@ -151,6 +151,8 @@
                     resolve:
                         activity: ->
                             null
+                        options: ->
+                            null
 
             $scope.showActivityEditModal = (activity) ->
                 $scope.modalInstance = $modal.open
@@ -162,6 +164,8 @@
                     resolve:
                         activity: ->
                             activity
+                        options: ->
+                            null
 
             $scope.showAssignContactModal = (contact) ->
                 advertiserTypeId = null
@@ -339,7 +343,7 @@
                 $scope.populateContact = true
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/contact_form.html'
-                    size: 'lg'
+                    size: 'md'
                     controller: 'ContactsNewController'
                     backdrop: 'static'
                     keyboard: false

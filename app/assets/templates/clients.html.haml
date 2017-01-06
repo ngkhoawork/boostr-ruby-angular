@@ -152,14 +152,8 @@
 
           %div{ ng: { include: "'partials/activities_related_advertisers_and_people.html'", show: "currentClient.client_type.option.name == 'Agency'" } }
 
-        #activities.section
-          %h2
-            activities
-          %div{ ng: { include: "'partials/activities_client.html'" } }
-
-
-        #activities-feed.section
-          %div{ ng: { include: "'partials/activities_feed_client.html'" } }
+        #activities
+          %div{'ng-include': '"partials/dashboard/activity.html"'}
 
         #teamsplits.section
           %span.pull-right

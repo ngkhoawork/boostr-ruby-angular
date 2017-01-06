@@ -41,7 +41,7 @@ Rails.application.routes.draw do
     end
     resources :temp_ios, only: [:index, :update]
     resources :display_line_items, only: [:index, :create]
-    resources :display_line_item_budgets, only: [:create]
+    resources :display_line_item_budgets, only: [:index, :create]
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
@@ -58,7 +58,7 @@ Rails.application.routes.draw do
       resources :deal_contacts, only: [:index, :create, :destroy]
       resources :deal_assets, only: [:index, :update, :create, :destroy]
     end
-    resources :deal_product_budgets, only: [:create]
+    resources :deal_product_budgets, only: [:index, :create]
     resources :deal_products, only: [:create]
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]

@@ -22,6 +22,10 @@ class User < ActiveRecord::Base
   has_many :contacts, through: :activities
   has_many :display_line_items, through: :ios
 
+  before_update do
+    modify_admin_status if user_type_changed?
+  end
+
   ROLES = %w(user admin superadmin)
 
   validates :first_name, :last_name, presence: true
@@ -41,6 +45,26 @@ class User < ActiveRecord::Base
 
   def is?(role)
     roles.include?(role.to_s)
+  end
+
+  def modify_admin_status
+    if user_type == ADMIN
+      add_role('admin')
+    else
+      remove_role('admin')
+    end
+  end
+
+  def add_role(role)
+    if !is?(role)
+      self.roles_mask += 2**ROLES.index(role)
+    end
+  end
+
+  def remove_role(role)
+    if is?(role)
+      self.roles_mask -= 2**ROLES.index(role)
+    end
   end
 
   def name

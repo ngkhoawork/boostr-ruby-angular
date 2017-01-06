@@ -9,6 +9,14 @@ RSpec.describe User, type: :model do
   let(:company) { Company.first }
   let(:user) { create :user }
 
+  context 'before_update' do
+    it 'promotes user to an admin if user type is changed to ADMIN' do
+      expect(user.is?('admin')).to eq false
+      user.update(user_type: ADMIN)
+      expect(user.reload.is?('admin')).to eq true
+    end
+  end
+
   context 'scopes' do
     let(:deal) { create :deal }
     let!(:deal_member) { create :deal_member, user: user, deal: deal }
@@ -45,6 +53,36 @@ RSpec.describe User, type: :model do
 
     it 'returns the first initial and last name if they are both present' do
       expect(user.name).to eq('Bobby Jones')
+    end
+  end
+
+  describe '#add_role' do
+    it 'adds a role' do
+      expect(user.is?('admin')).to eq false
+      user.add_role('admin')
+      expect(user.is?('admin')).to eq true
+    end
+
+    it 'does not add an existing role' do
+      user.update(roles_mask: 3)
+      expect(user.is?('admin')).to eq true
+      user.add_role('admin')
+      expect(user.roles_mask).to eq 3
+    end
+  end
+
+  describe '#remove_role' do
+    it 'removes a role' do
+      user.update(roles_mask: 3)
+      expect(user.is?('admin')).to eq true
+      user.remove_role('admin')
+      expect(user.is?('admin')).to eq false
+    end
+
+    it 'does not remove a non-existing role' do
+      expect(user.is?('admin')).to eq false
+      user.remove_role('admin')
+      expect(user.roles_mask).to eq 1
     end
   end
 

@@ -48,6 +48,19 @@
     )
 
   $scope.submitForm = () ->
+    $scope.errors = {}
+
+    fields = ['name', 'client_type']
+
+    fields.forEach (key) ->
+      field = $scope.client[key]
+      switch key
+        when 'name'
+          if !field then return $scope.errors[key] = 'Name is required'
+        when 'client_type'
+          if !field || !field.option_id then return $scope.errors[key] = 'Type is required'
+
+    if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
     $scope.removeCategoriesFromAgency()
     $scope.client.$save(
@@ -55,7 +68,8 @@
         $rootScope.$broadcast 'newClient', $scope.client
         $modalInstance.close()
       (resp) ->
-        $scope.errors = resp.data.errors
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
         $scope.buttonDisabled = false
     )
 

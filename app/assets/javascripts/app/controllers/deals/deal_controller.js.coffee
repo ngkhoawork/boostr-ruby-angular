@@ -10,7 +10,6 @@
   $scope.contactSearchText = ""
   $anchorScroll()
 
-
   ###*
    * FileUpload
   ###
@@ -26,6 +25,9 @@
     .then (respond) ->
       console.log('get files', respond)
       $scope.dealFiles = respond.data
+
+  $scope.getIconName = (typeName) ->
+    typeName && typeName.split(' ').join('-').toLowerCase()
 
   $scope.uploadFile =
     name: null
@@ -138,7 +140,9 @@
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal)
-      $scope.activities = deal.activities
+      $scope.activities = deal.activities.map (activity) ->
+        activity.activity_type_name = activity.activity_type && activity.activity_type.name
+        activity
     , (err) ->
       if(err && err.status == 404)
         $location.url('/deals')
@@ -582,6 +586,9 @@
         deal: ->
           $scope.currentDeal
 
+  $scope.$on 'openContactModal', ->
+    $scope.createNewContactModal()
+
   $scope.$on 'updated_deal', ->
     console.log('updated_deal')
     $scope.init()
@@ -598,70 +605,70 @@
   $scope.setActiveType = (type) ->
     $scope.activeType = type
 
-  $scope.submitForm = (form) ->
-    $scope.errors = {}
-    $scope.buttonDisabled = true
-    if form.$valid
-      if !$scope.activity.comment
-        $scope.buttonDisabled = false
-        $scope.errors['Comment'] = ["can't be blank."]
-      if !($scope.activeType && $scope.activeType.id)
-        $scope.buttonDisabled = false
-        $scope.errors['Activity Type'] = ["can't be blank."]
-      data = $scope.selected[$scope.activeType.name]
-      if !data.contacts || data.contacts.length == 0
-        $scope.buttonDisabled = false
-        $scope.errors['Contacts'] = ["can't be blank."]
-      if $scope.actRemColl
-        if !($scope.activityReminder && $scope.activityReminder.name)
-          $scope.buttonDisabled = false
-          $scope.errors['Activity Reminder Name'] = ["can't be blank."]
-        if !($scope.activityReminder && $scope.activityReminder._date)
-          $scope.buttonDisabled = false
-          $scope.errors['Activity Reminder Date'] = ["can't be blank."]
-        if !($scope.activityReminder && $scope.activityReminder._time)
-          $scope.buttonDisabled = false
-          $scope.errors['Activity Reminder Time'] = ["can't be blank."]
-      if !$scope.buttonDisabled
-        return
-      form.submitted = true
-      $scope.activity.deal_id = $scope.currentDeal.id
-
-      $scope.activity.client_id = $scope.currentDeal.advertiser_id
-      $scope.activity.agency_id = $scope.currentDeal.agency_id
-      $scope.activity.activity_type_id = $scope.activeType.id
-      $scope.activity.activity_type_name = $scope.activeType.name
-      contact_date = new Date(data.date)
-      if data.time != undefined
-        contact_time = new Date(data.time)
-        contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
-        $scope.activity.timed = true
-      $scope.activity.happened_at = contact_date
-      Activity.create({ activity: $scope.activity, contacts: data.contacts }, (response) ->
-        angular.forEach response.data.errors, (errors, key) ->
-          form[key].$dirty = true
-          form[key].$setValidity('server', false)
-          $scope.buttonDisabled = false
-      ).then (activity) ->
-        if (activity && activity.id && $scope.actRemColl)
-          reminder_date = new Date($scope.activityReminder._date)
-          $scope.activityReminder.remindable_id = activity.id
-          if $scope.activityReminder._time != undefined
-            reminder_time = new Date($scope.activityReminder._time)
-            reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
-          $scope.activityReminder.remind_on = reminder_date
-          Reminder.create(reminder: $scope.activityReminder)
-#          .then (reminder) ->
-#          , (err) ->
-
-        $scope.buttonDisabled = false
-        $scope.init()
+#  $scope.submitForm = (form) ->
+#    $scope.errors = {}
+#    $scope.buttonDisabled = true
+#    if form.$valid
+#      if !$scope.activity.comment
+#        $scope.buttonDisabled = false
+#        $scope.errors['Comment'] = ["can't be blank."]
+#      if !($scope.activeType && $scope.activeType.id)
+#        $scope.buttonDisabled = false
+#        $scope.errors['Activity Type'] = ["can't be blank."]
+#      data = $scope.selected[$scope.activeType.name]
+#      if !data.contacts || data.contacts.length == 0
+#        $scope.buttonDisabled = false
+#        $scope.errors['Contacts'] = ["can't be blank."]
+#      if $scope.actRemColl
+#        if !($scope.activityReminder && $scope.activityReminder.name)
+#          $scope.buttonDisabled = false
+#          $scope.errors['Activity Reminder Name'] = ["can't be blank."]
+#        if !($scope.activityReminder && $scope.activityReminder._date)
+#          $scope.buttonDisabled = false
+#          $scope.errors['Activity Reminder Date'] = ["can't be blank."]
+#        if !($scope.activityReminder && $scope.activityReminder._time)
+#          $scope.buttonDisabled = false
+#          $scope.errors['Activity Reminder Time'] = ["can't be blank."]
+#      if !$scope.buttonDisabled
+#        return
+#      form.submitted = true
+#      $scope.activity.deal_id = $scope.currentDeal.id
+#
+#      $scope.activity.client_id = $scope.currentDeal.advertiser_id
+#      $scope.activity.agency_id = $scope.currentDeal.agency_id
+#      $scope.activity.activity_type_id = $scope.activeType.id
+#      $scope.activity.activity_type_name = $scope.activeType.name
+#      contact_date = new Date(data.date)
+#      if data.time != undefined
+#        contact_time = new Date(data.time)
+#        contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
+#        $scope.activity.timed = true
+#      $scope.activity.happened_at = contact_date
+#      Activity.create({ activity: $scope.activity, contacts: data.contacts }, (response) ->
+#        angular.forEach response.data.errors, (errors, key) ->
+#          form[key].$dirty = true
+#          form[key].$setValidity('server', false)
+#          $scope.buttonDisabled = false
+#      ).then (activity) ->
+#        if (activity && activity.id && $scope.actRemColl)
+#          reminder_date = new Date($scope.activityReminder._date)
+#          $scope.activityReminder.remindable_id = activity.id
+#          if $scope.activityReminder._time != undefined
+#            reminder_time = new Date($scope.activityReminder._time)
+#            reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+#          $scope.activityReminder.remind_on = reminder_date
+#          Reminder.create(reminder: $scope.activityReminder)
+##          .then (reminder) ->
+##          , (err) ->
+#
+#        $scope.buttonDisabled = false
+#        $scope.init()
 
   $scope.createNewContactModal = ->
     $scope.populateContact = true
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'ContactsNewController'
       backdrop: 'static'
       keyboard: false
@@ -669,18 +676,33 @@
         contact: ->
           {}
 
+  $scope.showNewActivityModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_new_form.html'
+      size: 'md'
+      controller: 'ActivityNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          null
+        options: ->
+          type: 'deal'
+          data: $scope.currentDeal
+
   $scope.showActivityEditModal = (activity) ->
     $scope.modalInstance = $modal.open
-      templateUrl: 'modals/activity_form.html'
-      size: 'lg'
-      controller: 'ActivitiesEditController'
+      templateUrl: 'modals/activity_new_form.html'
+      size: 'md'
+      controller: 'ActivityNewController'
       backdrop: 'static'
       keyboard: false
       resolve:
         activity: ->
           activity
-        types: ->
-          $scope.types
+        options: ->
+          type: 'deal'
+          data: $scope.currentDeal
 
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)
