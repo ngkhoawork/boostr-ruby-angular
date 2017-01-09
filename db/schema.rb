@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161228230028) do
+ActiveRecord::Schema.define(version: 20170109085252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "account_dimensions", force: :cascade do |t|
     t.string  "name"
@@ -280,6 +279,79 @@ ActiveRecord::Schema.define(version: 20161228230028) do
   end
 
   add_index "deal_contacts", ["deal_id", "contact_id"], name: "index_deal_contacts_on_deal_id_and_contact_id", using: :btree
+
+  create_table "deal_custom_field_names", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "field_index"
+    t.string   "field_type"
+    t.string   "field_label"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.boolean  "is_required"
+    t.integer  "position"
+  end
+
+  add_index "deal_custom_field_names", ["company_id"], name: "index_deal_custom_field_names_on_company_id", using: :btree
+
+  create_table "deal_custom_fields", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "deal_id"
+    t.decimal  "currency1",      precision: 15, scale: 2
+    t.decimal  "currency2",      precision: 15, scale: 2
+    t.decimal  "currency3",      precision: 15, scale: 2
+    t.decimal  "currency4",      precision: 15, scale: 2
+    t.decimal  "currency5",      precision: 15, scale: 2
+    t.decimal  "currency6",      precision: 15, scale: 2
+    t.decimal  "currency7",      precision: 15, scale: 2
+    t.string   "currency_code1"
+    t.string   "currency_code2"
+    t.string   "currency_code3"
+    t.string   "currency_code4"
+    t.string   "currency_code5"
+    t.string   "currency_code6"
+    t.string   "currency_code7"
+    t.string   "text1"
+    t.string   "text2"
+    t.string   "text3"
+    t.string   "text4"
+    t.string   "text5"
+    t.text     "note1"
+    t.text     "note2"
+    t.datetime "datetime1"
+    t.datetime "datetime2"
+    t.datetime "datetime3"
+    t.datetime "datetime4"
+    t.datetime "datetime5"
+    t.datetime "datetime6"
+    t.datetime "datetime7"
+    t.decimal  "number1",        precision: 15, scale: 2
+    t.decimal  "number2",        precision: 15, scale: 2
+    t.decimal  "number3",        precision: 15, scale: 2
+    t.decimal  "number4",        precision: 15, scale: 2
+    t.decimal  "number5",        precision: 15, scale: 2
+    t.decimal  "number6",        precision: 15, scale: 2
+    t.decimal  "number7",        precision: 15, scale: 2
+    t.decimal  "integer1",       precision: 15
+    t.decimal  "integer2",       precision: 15
+    t.decimal  "integer3",       precision: 15
+    t.decimal  "integer4",       precision: 15
+    t.decimal  "integer5",       precision: 15
+    t.decimal  "integer6",       precision: 15
+    t.decimal  "integer7",       precision: 15
+    t.boolean  "boolean1"
+    t.boolean  "boolean2"
+    t.boolean  "boolean3"
+    t.decimal  "percentage1",    precision: 5,  scale: 2
+    t.decimal  "percentage2",    precision: 5,  scale: 2
+    t.decimal  "percentage3",    precision: 5,  scale: 2
+    t.decimal  "percentage4",    precision: 5,  scale: 2
+    t.decimal  "percentage5",    precision: 5,  scale: 2
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+  end
+
+  add_index "deal_custom_fields", ["company_id"], name: "index_deal_custom_fields_on_company_id", using: :btree
+  add_index "deal_custom_fields", ["deal_id"], name: "index_deal_custom_fields_on_deal_id", using: :btree
 
   create_table "deal_logs", force: :cascade do |t|
     t.integer  "deal_id"
@@ -735,6 +807,9 @@ ActiveRecord::Schema.define(version: 20161228230028) do
   add_foreign_key "clients", "clients", column: "parent_client_id"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
+  add_foreign_key "deal_custom_field_names", "companies"
+  add_foreign_key "deal_custom_fields", "companies"
+  add_foreign_key "deal_custom_fields", "deals"
   add_foreign_key "deal_logs", "deals"
   add_foreign_key "deal_product_budgets", "deal_products"
   add_foreign_key "display_line_item_budgets", "display_line_items"
