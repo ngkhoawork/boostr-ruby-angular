@@ -140,7 +140,6 @@
       return DataStore.dataQuaterForecast
 
     DataStore.setDataQuarterForecast = (data) ->
-      console.log(data);
       probability_colors = [ { probability: "100", color: "#1976bb"}, { probability: "90", color: "#3996db"}, { probability: "75" , color: "#52a1e2" }, { probability: "50" , color: "#7ab9e9" }, { probability: "25" , color: "#a4d0f0" }, { probability: "10" , color: "#d2e8f8" }]
       DataStore.dataQuaterForecast = _.map data, (row, index) ->
         graphData = []
@@ -183,10 +182,9 @@
             ],
             color: color
           })
-          total_weighted += weighted_value
-          total_unweighted += unweighted_value
+          total_weighted += parseInt(weighted_value)
+          total_unweighted += parseInt(unweighted_value)
           series = series + 1
-
 
         quota_weighted = Math.max(row.quota, total_unweighted / 5 * 6)
 
@@ -196,8 +194,8 @@
           quota: row.quota,
           maxValue: quota_weighted,
           revenue: row.revenue,
-          weighted_pipeline: row.weighted_pipeline,
-          percent_to_quota: row.percent_to_quota,
+          weighted_pipeline: parseInt(row.weighted_pipeline),
+          percent_to_quota: parseInt(row.percent_to_quota),
           new_deals_needed: row.new_deals_needed
         }
     return DataStore
