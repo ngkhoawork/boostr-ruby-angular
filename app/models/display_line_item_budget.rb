@@ -120,6 +120,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
       if row[3].present?
         begin
           start_date = Date.strptime(row[3].strip, "%m/%d/%Y")
+          if start_date.year < 100
+            start_date = Date.strptime(row[3].strip, "%m/%d/%y")
+          end
+
         rescue ArgumentError
           error = {row: row_number, message: ['Start Date must be a valid datetime'] }
           errors << error
@@ -135,6 +139,9 @@ class DisplayLineItemBudget < ActiveRecord::Base
       if row[4].present?
         begin
           end_date = Date.strptime(row[4].strip, "%m/%d/%Y")
+          if end_date.year < 100
+            end_date = Date.strptime(row[4].strip, "%m/%d/%y")
+          end
         rescue ArgumentError
           error = {row: row_number, message: ['End Date must be a valid datetime'] }
           errors << error

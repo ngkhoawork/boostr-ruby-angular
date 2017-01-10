@@ -104,6 +104,9 @@ class DisplayLineItem < ActiveRecord::Base
       if row[2].present?
         begin
           io_start_date = Date.strptime(row[2].strip, "%m/%d/%Y")
+          if io_start_date.year < 100
+            io_start_date = Date.strptime(row[2].strip, "%m/%d/%y")
+          end
         rescue ArgumentError
           error = {row: row_number, message: ['IO Start Date must be a valid datetime'] }
           errors << error
@@ -119,6 +122,9 @@ class DisplayLineItem < ActiveRecord::Base
       if row[3].present?
         begin
           io_end_date = Date.strptime(row[3].strip, "%m/%d/%Y")
+          if io_end_date.year < 100
+            io_end_date = Date.strptime(row[3].strip, "%m/%d/%y")
+          end
         rescue ArgumentError
           error = {row: row_number, message: ['IO End Date must be a valid datetime'] }
           errors << error
@@ -185,6 +191,9 @@ class DisplayLineItem < ActiveRecord::Base
       if row[9].present?
         begin
           start_date = Date.strptime(row[9].strip, "%m/%d/%Y")
+          if start_date.year < 100
+            start_date = Date.strptime(row[9].strip, "%m/%d/%y")
+          end
         rescue ArgumentError
           error = {row: row_number, message: ['Start Date must be a valid datetime'] }
           errors << error
@@ -200,6 +209,9 @@ class DisplayLineItem < ActiveRecord::Base
       if row[10].present?
         begin
           end_date = Date.strptime(row[10].strip, "%m/%d/%Y")
+          if end_date.year < 100
+            end_date = Date.strptime(row[10].strip, "%m/%d/%y")
+          end
         rescue ArgumentError
           error = {row: row_number, message: ['End Date must be a valid datetime'] }
           errors << error
