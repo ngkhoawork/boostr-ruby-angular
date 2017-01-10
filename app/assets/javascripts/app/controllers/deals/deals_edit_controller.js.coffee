@@ -1,6 +1,6 @@
 @app.controller 'DealsEditController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal',
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName',
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName) ->
   $scope.init = ->
     $scope.formType = 'Edit'
     $scope.submitText = 'Update'
@@ -8,6 +8,7 @@
     $scope.agencies = []
     $scope.deal = deal
 
+    getDealCustomFieldNames()
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
@@ -20,6 +21,9 @@
     Stage.query().$promise.then (stages) ->
       $scope.stages = stages
 
+  getDealCustomFieldNames = () ->
+    DealCustomFieldName.all().then (dealCustomFieldNames) ->
+      $scope.dealCustomFieldNames = dealCustomFieldNames
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->
       $scope[option.name] = option.id
