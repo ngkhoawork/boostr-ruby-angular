@@ -24,6 +24,15 @@
 
       }
     }
+    .reset-filter {
+      font-weight: bold;
+      padding: 5px 10px;
+      cursor: pointer;
+      color: #3498DB;
+      &:hover {
+        color: #39B2FF
+      }
+    }
   }
   .dropdown-menu{
     max-height: 400px;
@@ -32,15 +41,6 @@
   .table-report {
     tbody tr:last-child{
       font-weight: bold;
-    }
-  }
-  .reset-filter {
-    font-weight: bold;
-    padding: 5px 10px;
-    cursor: pointer;
-    color: #3498DB;
-    &:hover {
-      color: #39B2FF
     }
   }
   //===========tree dropdown========================
@@ -381,27 +381,5 @@
       color: $brand-primary;
       cursor: pointer;
     }
-  }
-}
-.daterangepicker {
-  .applyBtn {
-    background-color: $brand-primary;
-    border-color: $brand-primary;
-    &:hover {
-      background-color: #D26828;
-    }
-    &:active {
-      background-color: #A3511F;
-      border-color: #A3511F;
-    }
-    &:focus {
-      border-color: $brand-primary;
-    }
-  }
-  td.in-range {
-    background-color: #FFD6A6 !important;
-  }
-  td.active.start-date, td.active.end-date {
-    background-color: $brand-primary !important;
   }
 }
