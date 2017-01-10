@@ -9,13 +9,14 @@
       $scope.sources = []
       $scope.timePeriods = []
 
-      defaultSeller = {id: 'all', name: 'All', first_name: 'All'}
+      defaultUser = {id: 'all', name: 'All', first_name: 'All'}
+      currentUser = null
       $scope.filter =
         team: {id: null, name: 'All'}
         status: {id: 'open', name: 'Open'}
         type: {id: 'all', name: 'All'}
         source: {id: 'all', name: 'All'}
-        seller: defaultSeller
+        seller: defaultUser
         timePeriod: {id: 'all', name: 'All'}
       $scope.selectedTeam = $scope.filter.team
       $scope.statuses = [
@@ -27,6 +28,7 @@
       $scope.init = ->
         CurrentUser.get().$promise.then (user) ->
           if user.user_type is 1 || user.user_type is 2
+            currentUser = user
             $scope.filter.seller = user
           getData()
           Field.defaults({}, 'Deal').then (fields) ->
@@ -42,7 +44,7 @@
 
           Seller.query({id: 'all'}).$promise.then (sellers) ->
             $scope.sellers = sellers
-            $scope.sellers.unshift(defaultSeller)
+            $scope.sellers.unshift(defaultUser)
 
           TimePeriod.all().then (timePeriods) ->
             $scope.timePeriods = angular.copy timePeriods
@@ -61,11 +63,11 @@
       $scope.init()
 
       $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->
-        if nextTeam.id then $scope.filter.seller = defaultSeller
+        if nextTeam.id then $scope.filter.seller = defaultUser
         $scope.setFilter('team', nextTeam)
         Seller.query({id: nextTeam.id || 'all'}).$promise.then (sellers) ->
           $scope.sellers = sellers
-          $scope.sellers.unshift(defaultSeller)
+          $scope.sellers.unshift(defaultUser)
 
       $scope.setFilter = (key, value) ->
         if $scope.filter[key]is value
@@ -79,7 +81,7 @@
           status: {id: 'open', name: 'Open'}
           type: {id: 'all', name: 'All'}
           source: {id: 'all', name: 'All'}
-          seller: defaultSeller
+          seller: currentUser || defaultUser
           timePeriod: {id: 'all', name: 'All'}
         $scope.selectedTeam = $scope.filter.team
         getData()
@@ -91,7 +93,7 @@
           type: f.type.id
           source: f.source.id
         if f.timePeriod.id != 'all' then query.time_period_id = f.timePeriod.id
-        if $scope.filter.seller.id != defaultSeller.id
+        if $scope.filter.seller.id != defaultUser.id
           query.filter = 'user'
           query.user_id = f.seller.id
         else
