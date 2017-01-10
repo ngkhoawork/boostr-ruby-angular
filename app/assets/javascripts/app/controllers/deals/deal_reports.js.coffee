@@ -108,7 +108,6 @@
               products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range))
             deal.products = products
             deal
-          console.log($scope.deals.length)
 
       $scope.go = (path) ->
         $location.path(path)
