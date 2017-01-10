@@ -7,26 +7,39 @@
       %h3.modal-title
         %strong
           {{ formType }} Deal Custom Field
-
     .modal-body
-      .form-group{ ng: { if: 'formType == "New"' } }
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          <strong style="text-transform: capitalize">{{field}}</strong>
+          {{error}}
+      .form-group{ ng: { if: 'formType == "New"', class:'{error: errors.field_type}' } }
         .row
           .col-xs-12
-            %label.control-label{ for: 'field_type' } Field Type
+            %span.error-text {{errors.field_type}}
+            %label.control-label{ for: 'field_type' }
+              Field Type
+              %span.star *
             %ui-select{ name: 'field_type', ng: { model: 'dealCustomFieldName.field_type', disabled: true } }
               %ui-select-match{ placeholder: 'Select A Field Type' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'fieldType.value as fieldType in fieldTypes | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'fieldType.name' } } }
-      .form-group
+      .form-group{ ng: { class:'{error: errors.field_type}'} }
         .row
           .col-xs-12
-            %label.control-label{ for: 'field_label' } Field Label
+            %span.error-text {{errors.field_label}}
+            %label.control-label{ for: 'field_label' }
+              Field Label
+              %span.star *
             %input.form-control{ name: 'field_label', placeholder: 'Enter Field Label', ng: { model: 'dealCustomFieldName.field_label' } }
-      .form-group
+      .form-group{ ng: { class:'{error: errors.field_type}'} }
         .row
           .col-xs-12
-            %label.control-label{ for: 'position' } Position
+            %span.error-text {{errors.position}}
+            %label.control-label{ for: 'position' }
+              Position
+              %span.star *
             %input.form-control{ name: 'position', placeholder: 'Enter Position', ng: { model: 'dealCustomFieldName.position' } }
       .form-group
         .row

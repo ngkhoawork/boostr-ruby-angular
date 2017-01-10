@@ -45,9 +45,9 @@
         deferred = $q.defer()
         resource.save(
           params,
-        (deal_custom_field_name) ->
-          deferred.resolve(deal_custom_field_name)
-          $rootScope.$broadcast 'updated_deal_custom_field_names'
+          (deal_custom_field_name) ->
+            deferred.resolve(deal_custom_field_name)
+            $rootScope.$broadcast 'updated_deal_custom_field_names'
           (resp) ->
             deferred.reject(resp)
         )
@@ -57,9 +57,9 @@
         deferred = $q.defer()
         resource.update(
           params,
-        (deal_custom_field_name) ->
-          deferred.resolve(deal_custom_field_name)
-          $rootScope.$broadcast 'updated_deal_custom_field_names'
+          (deal_custom_field_name) ->
+            deferred.resolve(deal_custom_field_name)
+            $rootScope.$broadcast 'updated_deal_custom_field_names'
           (resp) ->
             deferred.reject(resp)
         )
