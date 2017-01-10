@@ -86,6 +86,7 @@
         $scope.selectedTeam = $scope.filter.team
         getData()
 
+      query = null
       getData = () =>
         f = $scope.filter
         query =
@@ -137,6 +138,10 @@
         $sce.trustAsHtml(html)
 
       $scope.exportReports = ->
-        $window.open('/api/deals/pipeline_report.csv?team_id=' + $scope.filter.team.id || 'all' + '&status=' + $scope.filter.status.id)
+        qs = for key, value of query
+          key + '=' + value
+        qs = qs.join('&')
+        $window.open('/api/deals/pipeline_report.csv?' + qs)
+        true
 
   ]
