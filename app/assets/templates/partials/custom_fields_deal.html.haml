@@ -1,11 +1,15 @@
 #custom-fields.block
     %div.mb40
         %span.title Custom Fields
-    %p{'ng-show': '!activities || !activities.length'}
+    %p{'ng-show': '!dealCustomFieldNames || !dealCustomFieldNames.length'}
         No Data
-    %div.custom-field-item{'ng-repeat': 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"'}
+    %div.custom-field-item{'ng-repeat': 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', 'ng-class':'{error: dealCustomFieldName.is_required == true && !currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]}'}
         %div.custom-field-item-label
-            {{dealCustomFieldName.field_label}}
+            %span.error-text is required.
+            %label{ for: '{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}' }
+                {{dealCustomFieldName.field_label}}
+                %span.star{ 'ng-if': "dealCustomFieldName.is_required == true" }
+                    *
         %div.custom-field-item-field
             .text-field{ ng: { if: "dealCustomFieldName.field_type == 'text' || dealCustomFieldName.field_type == 'number' || dealCustomFieldName.field_type == 'integer'" } }
                 %input.editable-control{ 'ng-model': "currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]", name: "{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
@@ -15,9 +19,10 @@
                 %div{'click-to-edit':'click-to-edit', type: "number", prefix: 'US$ ', 'ng-model': "currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]", 'on-after-save': 'updateDeal()'}
             .percentage-field{ ng: { if: "dealCustomFieldName.field_type == 'percentage'" } }
                 %div{'click-to-edit':'click-to-edit', type: "number", postfix: '%', 'ng-model': "currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]", 'on-after-save': 'updateDeal()'}
-            .datetime-field{ ng: { if: "dealCustomFieldName.field_type == 'datetime' " } }
-                %input.editable-control{readonly: true, name: '{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]', required: true, click: 'endOpened = true', change: "updateDeal()" }, 'is-open': 'endOpened' }
-            .boolean-field.switch-remainder-form{ ng: { if: "dealCustomFieldName.field_type == 'boolean' " } }
-                %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]', 'ng-change': "updateDeal()"}
-                %label{:for => "rem-act-modal-toggle"}
-                    %span
+            .datetime-field.bs-datepicker{ ng: { if: "dealCustomFieldName.field_type == 'datetime' " } }
+                %input.editable-control{readonly: true, name: '{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]', required: true, click: 'dateOpened[dealCustomFieldName.field_type + dealCustomFieldName.field_index] = true', change: "updateDeal()" }, 'is-open': 'dateOpened[dealCustomFieldName.field_type + dealCustomFieldName.field_index]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
+            .boolean-field.show-hide-remainder-form{ ng: { if: "dealCustomFieldName.field_type == 'boolean' " } }
+                .switch-remainder-form
+                    %input.cmn-toggle.cmn-toggle-round-flat{id: '{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}', type: 'checkbox', 'ng-model': 'currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]', 'ng-change': "updateDeal()"}
+                    %label{:for => "{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}"}
+                        %span

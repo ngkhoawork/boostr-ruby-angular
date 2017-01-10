@@ -161,7 +161,6 @@
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
-      console.log("ds", $scope.dealCustomFieldNames)
 
   $scope.initReminder = ->
     $scope.showReminder = false;

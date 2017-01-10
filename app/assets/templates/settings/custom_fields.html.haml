@@ -39,6 +39,7 @@
                 %th.left Name
                 %th.left Type
                 %th.left Required
+                %th.left Show on Modal
                 %th.action-column
             %tbody
               %tr{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames' } }
@@ -50,6 +51,8 @@
                   {{ dealCustomFieldName.field_type }}
                 %td.left
                   {{ dealCustomFieldName.required ? "Yes" : "No" }}
+                %td.left
+                  {{ dealCustomFieldName.show_on_modal ? "Yes" : "No" }}
                 %td.action-td
                   %a.edit-team{ href: '', ng: { click: 'editModal(dealCustomFieldName)' } }
                     = inline_svg 'icons/pencil.svg'

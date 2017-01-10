@@ -13,12 +13,28 @@
       margin-right: 20px;
     }
   }
-
+  .error-text {
+    display: none;
+    color: $error-color;
+    float: right;
+    margin-bottom: 5px;
+  }
+  .error {
+    .error-text {
+      display: inline;
+    }
+    input, textarea, .ui-select-container, .ui-select-toggle, button.dropdown-toggle {
+      border-color: $error-color;
+    }
+  }
   .custom-field-item {
     padding-bottom: 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid $separate-line-color;
+
+
     .custom-field-item-label {
+      padding-right: 25%;
       color: $secondary-font-color;
       margin-bottom: 5px;
       font-size: 14px;
@@ -29,6 +45,10 @@
 //      margin-bottom: 15px;
       font-size: 14px;
       font-family: "Gotham Medium", sans-serif;
+
+      .editable-control {
+        width: 100%;
+      }
     }
 
   }

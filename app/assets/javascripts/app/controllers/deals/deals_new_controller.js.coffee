@@ -70,6 +70,10 @@
         when 'end_date'
           if !field then return $scope.errors[key] = 'End date is required'
 
+    $scope.dealCustomFieldNames.forEach (item) ->
+      if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
+        $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
+
     if Object.keys($scope.errors).length > 0 then return
 
     Deal.create(deal: $scope.deal).then(
