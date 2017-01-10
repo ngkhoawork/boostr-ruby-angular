@@ -18,7 +18,7 @@ class Api::DealCustomFieldNamesController < ApplicationController
   end
 
   def create
-    count = deal_custom_field_names.by_type(deal_custom_field_name_params[:type]).count
+    count = deal_custom_field_names.by_type(deal_custom_field_name_params[:field_type]).count
 
     deal_custom_field_name = deal_custom_field_names.new(deal_custom_field_name_params)
     deal_custom_field_name.field_index = count + 1

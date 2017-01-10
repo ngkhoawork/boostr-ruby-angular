@@ -3,9 +3,9 @@
 ($scope, $routeParams, $location, $modal, DealCustomFieldName) ->
   $scope.tables = ['Deal', 'Client', 'DealProduct']
   $scope.init = () ->
-    $scope.getDealCustomFieldNames()
+    getDealCustomFieldNames()
 
-  $scope.getDealCustomFieldNames = () ->
+  getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
 
@@ -45,10 +45,10 @@
   $scope.delete = (dealCustomFieldName) ->
     if confirm('Are you sure you want to delete "' +  dealCustomFieldName.field_label + '"?')
       DealCustomFieldName.delete(id: dealCustomFieldName.id).then() ->
-        $scope.getDealCustomFieldNames()
+        getDealCustomFieldNames()
 
   $scope.$on 'updated_deal_custom_field_names', ->
-    $scope.getDealCustomFieldNames()
+    getDealCustomFieldNames()
 
   $scope.init()
 

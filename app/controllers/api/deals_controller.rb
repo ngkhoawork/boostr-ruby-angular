@@ -218,7 +218,80 @@ class Api::DealsController < ApplicationController
   private
 
   def deal_params
-    params.require(:deal).permit(:name, :stage_id, :budget, :start_date, :end_date, :advertiser_id, :agency_id, :closed_at, :next_steps, { values_attributes: [:id, :field_id, :option_id, :value] })
+    params.require(:deal).permit(
+        :name,
+        :stage_id,
+        :budget,
+        :start_date,
+        :end_date,
+        :advertiser_id,
+        :agency_id,
+        :closed_at,
+        :next_steps,
+        {
+            values_attributes: [
+                :id,
+                :field_id,
+                :option_id,
+                :value
+            ],
+            deal_custom_field_attributes: [
+                :id,
+                :company_id,
+                :deal_id,
+                :currency1,
+                :currency2,
+                :currency3,
+                :currency4,
+                :currency5,
+                :currency6,
+                :currency7,
+                :currency_code1,
+                :currency_code2,
+                :currency_code3,
+                :currency_code4,
+                :currency_code5,
+                :currency_code6,
+                :currency_code7,
+                :text1,
+                :text2,
+                :text3,
+                :text4,
+                :text5,
+                :note1,
+                :note2,
+                :datetime1,
+                :datetime2,
+                :datetime3,
+                :datetime4,
+                :datetime5,
+                :datetime6,
+                :datetime7,
+                :number1,
+                :number2,
+                :number3,
+                :number4,
+                :number5,
+                :number6,
+                :number7,
+                :integer1,
+                :integer2,
+                :integer3,
+                :integer4,
+                :integer5,
+                :integer6,
+                :integer7,
+                :boolean1,
+                :boolean2,
+                :boolean3,
+                :percentage1,
+                :percentage2,
+                :percentage3,
+                :percentage4,
+                :percentage5
+            ]
+        }
+    )
   end
 
   def deal_type_source_params

@@ -17,6 +17,10 @@ json.contacts deal.contacts, :id, :name, :position, :address, :primary_client_js
 
 json.products deal.products
 
+if deal.deal_custom_field
+  json.deal_custom_field deal.deal_custom_field
+end
+
 json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   json.id deal_product.id
   json.name deal_product.product.name

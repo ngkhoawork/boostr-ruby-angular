@@ -1,0 +1,35 @@
+#custom-fields {
+  font-family: "Avenir Next", Arial, serif;
+  color: $main-font-color;
+  a {
+    color: $secondary-color;
+    font-weight: 600;
+  }
+  &.block {
+    margin-bottom: 30px;
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-right: 20px;
+    }
+  }
+
+  .custom-field-item {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid $separate-line-color;
+    .custom-field-item-label {
+      color: $secondary-font-color;
+      margin-bottom: 5px;
+      font-size: 14px;
+      font-family: "Gotham Medium", sans-serif;
+    }
+    .custom-field-item-field {
+      padding-right: 25%;
+//      margin-bottom: 15px;
+      font-size: 14px;
+      font-family: "Gotham Medium", sans-serif;
+    }
+
+  }
+}

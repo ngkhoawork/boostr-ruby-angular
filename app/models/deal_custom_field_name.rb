@@ -1,6 +1,6 @@
 class DealCustomFieldName < ActiveRecord::Base
   belongs_to :company
-  scope :by_type, -> type { where(type: type) if type.present? }
+  scope :by_type, -> type { where(field_type: type) if type.present? }
 
   after_save :generate_field_index
 

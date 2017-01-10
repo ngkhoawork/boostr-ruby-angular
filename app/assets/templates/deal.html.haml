@@ -205,7 +205,9 @@
                         'numbers-only':''}
 
     #activities.row
-      .col-xs-offset-6.col-xs-6
+      .col-xs-6
+        %div{'ng-include': '"partials/custom_fields_deal.html"'}
+      .col-xs-6
         %div{'ng-include': '"partials/dashboard/activity.html"'}
 
     #teamsplit.row

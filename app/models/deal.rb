@@ -29,8 +29,11 @@ class Deal < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable
 
+  has_one :deal_custom_field, dependent: :destroy
+
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
 
+  accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
   before_update do
@@ -99,6 +102,7 @@ class Deal < ActiveRecord::Base
                   :agency,
                   :stage,
                   :values,
+                  :deal_custom_field,
                   deal_members: {
                       methods: [:name]
                   },
