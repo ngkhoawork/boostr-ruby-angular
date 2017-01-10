@@ -1,6 +1,6 @@
 @app.controller 'DealReportsController',
-  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Seller', 'Team', 'TimePeriod',
-    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Seller, Team, TimePeriod) ->
+  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Seller', 'Team', 'TimePeriod', 'CurrentUser',
+    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Seller, Team, TimePeriod, CurrentUser) ->
       $scope.sortType     = 'name'
       $scope.sortReverse  = false
       $scope.filterOpen = false
@@ -12,7 +12,7 @@
       defaultSeller = {id: 'all', name: 'All', first_name: 'All'}
       $scope.filter =
         team: {id: null, name: 'All'}
-        status: {id: 'all', name: 'All'}
+        status: {id: 'open', name: 'Open'}
         type: {id: 'all', name: 'All'}
         source: {id: 'all', name: 'All'}
         seller: defaultSeller
@@ -25,34 +25,38 @@
       ]
 
       $scope.init = ->
-        Field.defaults({}, 'Deal').then (fields) ->
-          client_types = Field.findDealTypes(fields)
-          $scope.types.push({name:'All', id:'all'})
-          client_types.options.forEach (option) ->
-            $scope.types.push(option)
+        CurrentUser.get().$promise.then (user) ->
+          if user.user_type is 1 || user.user_type is 2
+            $scope.filter.seller = user
+          getData()
+          Field.defaults({}, 'Deal').then (fields) ->
+            client_types = Field.findDealTypes(fields)
+            $scope.types.push({name:'All', id:'all'})
+            client_types.options.forEach (option) ->
+              $scope.types.push(option)
 
-          sources = Field.findSources(fields)
-          $scope.sources.push({name:'All', id:'all'})
-          sources.options.forEach (option) ->
-            $scope.sources.push(option)
+            sources = Field.findSources(fields)
+            $scope.sources.push({name:'All', id:'all'})
+            sources.options.forEach (option) ->
+              $scope.sources.push(option)
 
-        Seller.query({id: 'all'}).$promise.then (sellers) ->
-          $scope.sellers = sellers
-          $scope.sellers.unshift(defaultSeller)
+          Seller.query({id: 'all'}).$promise.then (sellers) ->
+            $scope.sellers = sellers
+            $scope.sellers.unshift(defaultSeller)
 
-        TimePeriod.all().then (timePeriods) ->
-          $scope.timePeriods = angular.copy timePeriods
-          $scope.timePeriods.unshift({name:'All', id:'all'})
+          TimePeriod.all().then (timePeriods) ->
+            $scope.timePeriods = angular.copy timePeriods
+            $scope.timePeriods.unshift({name:'All', id:'all'})
 
-        Team.all(all_teams: true).then (teams) ->
-#          all_members = []
-#          all_leaders = []
-#          _.each teams, (team) ->
-#            all_members = all_members.concat(team.members)
-#            all_leaders = all_leaders.concat(team.leaders)
-          #          $scope.teams = teams
-          $scope.teams = teams
-          $scope.teams.unshift {id: null, name: 'All'}
+          Team.all(all_teams: true).then (teams) ->
+  #          all_members = []
+  #          all_leaders = []
+  #          _.each teams, (team) ->
+  #            all_members = all_members.concat(team.members)
+  #            all_leaders = all_leaders.concat(team.leaders)
+            #          $scope.teams = teams
+            $scope.teams = teams
+            $scope.teams.unshift {id: null, name: 'All'}
 
       $scope.init()
 
@@ -72,7 +76,7 @@
       $scope.resetFilter = ->
         $scope.filter =
           team: {id: null, name: 'All'}
-          status: {id: 'all', name: 'All'}
+          status: {id: 'open', name: 'Open'}
           type: {id: 'all', name: 'All'}
           source: {id: 'all', name: 'All'}
           seller: defaultSeller
@@ -104,7 +108,7 @@
               products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range))
             deal.products = products
             deal
-      getData()
+          console.log($scope.deals.length)
 
       $scope.go = (path) ->
         $location.path(path)
