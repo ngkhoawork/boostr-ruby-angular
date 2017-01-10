@@ -104,36 +104,36 @@ class Api::DealsController < ApplicationController
 
   def pipeline_report
     respond_to do |format|
+      selected_deals = nil
+      case params[:status]
+        when 'open'
+          selected_deals = deals.open.less_than(100)
+        when 'all'
+          selected_deals = deals
+        when 'closed'
+          selected_deals = deals.close_status
+        else
+          selected_deals = deals.open.less_than(100)
+      end
+
+      filtered_deals = selected_deals
+      .by_values(deal_type_source_params)
+      .includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets, 'values')
+      .active
+      .distinct
+
+      if time_period
+        filtered_deals = filtered_deals.for_time_period(time_period.start_date, time_period.end_date)
+      end
+
+      filtered_deals = filtered_deals.select do |deal|
+        (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
+        (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true)
+      end
+
       format.json {
-        selected_deals = nil
-        case params[:status]
-          when 'open'
-            selected_deals = deals.open.less_than(100)
-          when 'all'
-            selected_deals = deals
-          when 'closed'
-            selected_deals = deals.close_status
-          else
-            selected_deals = deals.open.less_than(100)
-        end
-
-        filtered_deals = selected_deals
-        .by_values(deal_type_source_params)
-        .includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets, 'values')
-        .active
-        .distinct
-
-        if time_period
-          filtered_deals = filtered_deals.for_time_period(time_period.start_date, time_period.end_date)
-        end
-
-        filtered_deals = filtered_deals.select do |deal|
-          (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
-          (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true)
-        end
-
         deal_list = ActiveModel::ArraySerializer.new(filtered_deals, each_serializer: DealReportSerializer)
-        deal_ids = selected_deals.active.collect{|deal| deal.id}
+        deal_ids = filtered_deals.collect{|deal| deal.id}
         range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
         render json: [{deals: deal_list, range: range}].to_json
       }
@@ -141,7 +141,7 @@ class Api::DealsController < ApplicationController
         require 'timeout'
         begin
           Timeout::timeout(120) {
-            send_data Deal.to_pipeline_report_csv(company, params[:team_id], params[:status]), filename: "pipeline-report-#{Date.today}.csv"
+            send_data Deal.to_pipeline_report_csv(filtered_deals), filename: "pipeline-report-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return

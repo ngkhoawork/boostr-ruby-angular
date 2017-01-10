@@ -278,32 +278,10 @@ class Deal < ActiveRecord::Base
       ""
     end
   end
-  def self.to_pipeline_report_csv(company, team_id, status)
+  def self.to_pipeline_report_csv(deals)
     CSV.generate do |csv|
-      all_members_list = []
-
-      raw_deals = []
-      deals = []
-      if team_id == "0"
-        raw_deals = company.deals.active
-      else
-        selected_team = Team.find(team_id)
-        all_members_list = selected_team.all_members.collect{|member| member.id}
-        all_members_list += selected_team.all_leaders.collect{|member| member.id}
-        raw_deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deal_members.user_id in (?) and deals.deleted_at is NULL", all_members_list).distinct
-      end
-      case status
-        when 'open'
-          deals = raw_deals.open.less_than(100)
-        when 'all'
-          deals = raw_deals
-        when 'closed'
-          deals = raw_deals.close_status
-        else
-          deals = raw_deals.open.less_than(100)
-      end
-
       deal_ids = deals.collect{|deal| deal.id}
+
       range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
       header = []
       header << "Team Member"
