@@ -41,7 +41,7 @@
           $scope.sellers.unshift(defaultSeller)
 
         TimePeriod.all().then (timePeriods) ->
-          $scope.timePeriods = timePeriods
+          $scope.timePeriods = angular.copy timePeriods
           $scope.timePeriods.unshift({name:'All', id:'all'})
 
         Team.all(all_teams: true).then (teams) ->
