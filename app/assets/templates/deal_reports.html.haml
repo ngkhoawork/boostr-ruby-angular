@@ -1,6 +1,6 @@
 #reports
   .row
-    .filters-block.col-xs-offset-2.col-xs-8
+    .filters-block.container
       %a.pull-right{ href: '', ng: { click: 'exportReports()' } }
         = inline_svg 'icons/export.svg'
         Export
@@ -17,80 +17,62 @@
               Reset
         %tr
           %td
-            %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'ng-class': '{"not-selected": selectedTeam.name == "All"}'}
+            %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'ng-class': '{"empty": selectedTeam.name === "All"}'}
           %td
             %ul.filter-item
               %li{ dropdown: true }
-                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
-                  {{selected.product ? selected.product.name : 'All'}}
+                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.status.name === "All"}' }
+                  {{filter.status.name}}
                   %span.caret
                 %ul.dropdown-menu
-                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
-                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
-                      {{ product.name }}
+                  %li{ ng: { repeat: 'status in statuses', class: '{active: status.name === filter.status.name}' } }
+                    %a{ href: '', ng: { click: 'setFilter("status", status)' } }
+                      {{ status.name }}
           %td
             %ul.filter-item
               %li{ dropdown: true }
-                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
-                  {{selected.product ? selected.product.name : 'All'}}
+                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.type.name === "All"}' }
+                  {{filter.type.name}}
                   %span.caret
                 %ul.dropdown-menu
-                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
-                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
-                      {{ product.name }}
+                  %li{ ng: { repeat: 'type in types', class: '{active: type.id === filter.type.id}' } }
+                    %a{ href: '', ng: { click: 'setFilter("type", type)' } }
+                      {{ type.name }}
           %td
             %ul.filter-item
               %li{ dropdown: true }
-                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
-                  {{selected.product ? selected.product.name : 'All'}}
+                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.source.name === "All"}' }
+                  {{filter.source.name}}
                   %span.caret
                 %ul.dropdown-menu
-                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
-                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
-                      {{ product.name }}
+                  %li{ ng: { repeat: 'source in sources', class: '{active: source.id === filter.source.id}' } }
+                    %a{ href: '', ng: { click: 'setFilter("source", source)' } }
+                      {{ source.name }}
           %td
             %ul.filter-item
               %li{ dropdown: true }
-                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
-                  {{selected.product ? selected.product.name : 'All'}}
+                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.seller.name === "All"}' }
+                  {{(filter.seller.first_name && filter.seller.first_name + ' ' + filter.seller.last_name) || 'All'}}
                   %span.caret
                 %ul.dropdown-menu
-                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
-                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
-                      {{ product.name }}
-          %td
-            %ul.filter-item
-              %li{ dropdown: true }
-                %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !selected.product.id}' }
-                  {{selected.product ? selected.product.name : 'All'}}
-                  %span.caret
-                %ul.dropdown-menu
-                  %li{ ng: { repeat: 'product in productsList', class: '{active: product.id === filter.product_id}' } }
-                    %a{ href: '', ng: { click: 'setFilter("product", product)' } }
-                      {{ product.name }}
+                  %li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller.id}' } }
+                    %a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
+                      {{ seller.first_name + ' ' + seller.last_name}}
 
-  #nav.transparent
-    .container
-      .row.filter-section
-        .col-xs-4
-          %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
-        .col-xs-4
-          %div.member-list.blue-theme{ dropdown: true }
-            %a{ href: '', dropdown: { toggle: true } }
-              %p{ class: "select" }
-                {{ selectedStatus.name ? selectedStatus.name : "Select Status" }}
-            %ul.dropdown-menu.members
-              %li{ ng: { repeat: 'filter in statusFilter', class: '{active: selectedStatus == filter.value}' } }
-                %a{ href: '', ng: { click: 'changeStatus(filter)' } }
-                  {{ filter.name }}
-            %span
-              &nbsp;
-        .col-xs-4
-          %ul.nav.nav-tabs
-            %li.pull-right
-              %a.export{ href: '', ng: { click: 'exportReports()' } }
-                = inline_svg 'icons/export.svg'
-                Export
+          %td
+            %ul.filter-item
+              %li{ dropdown: true }
+                %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.timePeriod.name === "All"}' }
+                  %span{'ng-if': 'filter.timePeriod.start_date && filter.timePeriod.end_date'}
+                    {{filter.timePeriod.name}} ({{filter.timePeriod.start_date | date: 'shortDate'}} - {{filter.timePeriod.end_date | date: 'shortDate'}})
+                  %span{'ng-if': '!filter.timePeriod.start_date || !filter.timePeriod.end_date'}
+                    All
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
+                    %a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
+                      {{timePeriod.id !== 'all' ? (timePeriod.name + ' (' + timePeriod.start_date | date: 'shortDate' + ' - ' + timePeriod.end_date | date: 'shortDate' + ')') : 'All'}}
+
   .container-fluid.table-report
     .row
       .col-xs-12
