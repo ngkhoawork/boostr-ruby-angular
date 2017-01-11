@@ -16,9 +16,9 @@
             .text-area{ ng: { if: "dealCustomFieldName.field_type == 'note'" } }
                 %textarea.editable-control{ rows: 4, 'ng-model': "currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]", name: "{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
             .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'currency'" } }
-                %div{'click-to-edit':'click-to-edit', type: "number", prefix: 'US$ ', 'ng-model': "currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]", 'on-after-save': 'updateDeal()'}
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: 'US$ ', 'ng-model': "currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]", 'on-after-save': 'updateDeal()'}
             .percentage-field{ ng: { if: "dealCustomFieldName.field_type == 'percentage'" } }
-                %div{'click-to-edit':'click-to-edit', type: "number", postfix: '%', 'ng-model': "currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]", 'on-after-save': 'updateDeal()'}
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]", 'on-after-save': 'updateDeal()'}
             .datetime-field.bs-datepicker{ ng: { if: "dealCustomFieldName.field_type == 'datetime' " } }
                 %input.editable-control{readonly: true, name: '{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentDeal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]', required: true, click: 'dateOpened[dealCustomFieldName.field_type + dealCustomFieldName.field_index] = true', change: "updateDeal()" }, 'is-open': 'dateOpened[dealCustomFieldName.field_type + dealCustomFieldName.field_index]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
             .boolean-field.show-hide-remainder-form{ ng: { if: "dealCustomFieldName.field_type == 'boolean' " } }
