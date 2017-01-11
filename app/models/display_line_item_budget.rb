@@ -27,7 +27,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line = []
             line << io.io_number
             line << io.name
-            line << io.advertiser.name
+            line << io.advertiser.try(:name)
             line << content_fee.product.name
             line << cfpb.budget.try(:round)
             line << cfpb.start_date
@@ -44,7 +44,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line = []
             line << io.io_number
             line << io.name
-            line << io.advertiser.name
+            line << io.advertiser.try(:name)
             line << display_line_item.product.name
             line << budget.round
             line << dlib.start_date

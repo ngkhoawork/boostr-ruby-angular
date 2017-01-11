@@ -87,7 +87,9 @@ class Deal < ActiveRecord::Base
   end
 
   def formatted_name
-    name + ', '+ advertiser.name + ', '+ stage.name
+    formatted_name = name
+    formatted_name += ", #{advertiser.try(:name)}" if advertiser
+    formatted_name += ", #{stage.try(:name)}" if stage
   end
 
   def as_json(options = {})
