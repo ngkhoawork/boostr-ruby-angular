@@ -36,7 +36,12 @@
 
   $scope.cancel = ->
     $modalInstance.close()
-    
+
+  $scope.$on 'newContact', (e, contact) ->
+    DealContact.query({deal_id: deal.id}, (contacts) ->
+      $scope.contacts = contacts
+    )
+
   $scope.createContact = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
