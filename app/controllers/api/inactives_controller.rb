@@ -158,15 +158,26 @@ class Api::InactivesController < ApplicationController
     first..last
   end
 
+  def current_month
+    first = Date.today.beginning_of_month
+    last = Date.today.end_of_month
+    first..last
+  end
+
   def comparison_window
-    if params[:comparison_first_start]  && params[:comparison_first_end] &&
-       params[:comparison_second_start] && params[:comparison_second_end]
-      first = Date.parse(params[:comparison_first_start])..Date.parse(params[:comparison_first_end])
-      second = Date.parse(params[:comparison_second_start])..Date.parse(params[:comparison_second_end])
+    if params[:time_period_type] && params[:time_period_number]
+      if params[:time_period_type] == 'quarter'
+        first = previous_quarters(lookback: 8)[params[:time_period_number].to_i - 1]
+        second = (previous_quarters(lookback: 4) << current_quarter)[params[:time_period_number].to_i - 1]
+      elsif params[:time_period_type] == 'month'
+        first = previous_months(lookback: 24)[params[:time_period_number].to_i - 1]
+        second = (previous_months(lookback: 12) << current_month)[params[:time_period_number].to_i - 1]
+      end
     else
-      first = previous_quarters(lookback: 2).first
-      second = previous_quarters(lookback: 2).second
+      first = previous_quarters(lookback: 4).first
+      second = current_quarter
     end
+
     {
       first: [first],
       second: [second]
@@ -181,6 +192,16 @@ class Api::InactivesController < ApplicationController
       quarters << (first..last)
     end
     quarters
+  end
+
+  def previous_months(lookback: month_offset)
+    months = []
+    lookback.times do
+      first = Date.today.beginning_of_month << lookback - months.length
+      last = Date.today.end_of_month << lookback - months.length
+      months << (first..last)
+    end
+    months
   end
 
   def qtr_offset
