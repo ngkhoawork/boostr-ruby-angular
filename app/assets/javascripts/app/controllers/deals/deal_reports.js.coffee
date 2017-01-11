@@ -1,62 +1,116 @@
 @app.controller 'DealReportsController',
-  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Team',
-    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Team) ->
+  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Seller', 'Team', 'TimePeriod', 'CurrentUser',
+    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Seller, Team, TimePeriod, CurrentUser) ->
       $scope.sortType     = 'name'
       $scope.sortReverse  = false
-      $scope.filterOpen = true
-      $scope.selectedStatus = {name: 'Open', value: 'open'}
-      $scope.statusFilter = [
-        {name: 'Open', value: 'open'},
-        {name: 'Closed', value: 'closed'},
-        {name: 'All', value: 'all'}
+      $scope.filterOpen = false
+      $scope.teams = []
+      $scope.types = []
+      $scope.sources = []
+      $scope.timePeriods = []
+
+      defaultUser = {id: 'all', name: 'All', first_name: 'All'}
+      currentUser = null
+      $scope.filter =
+        team: {id: null, name: 'All'}
+        status: {id: 'open', name: 'Open'}
+        type: {id: 'all', name: 'All'}
+        source: {id: 'all', name: 'All'}
+        seller: defaultUser
+        timePeriod: {id: 'all', name: 'All'}
+      $scope.selectedTeam = $scope.filter.team
+      $scope.statuses = [
+        {id: 'all', name: 'All'}
+        {id: 'open', name: 'Open'},
+        {id: 'closed', name: 'Closed'},
       ]
 
       $scope.init = ->
-        Team.all(all_teams: true).then (teams) ->
-          all_members = []
-          all_leaders = []
-          _.each teams, (team) ->
-            all_members = all_members.concat(team.members)
-            all_leaders = all_leaders.concat(team.leaders)
-          #          $scope.teams = teams
-          $scope.teams = [{
-            id: 0,
-            name:'All Deals',
-            children: teams,
-            members: all_members,
-            leaders: all_leaders,
-            members_count: all_members.length
-          }]
-#          $scope.selectedStatus = 'open'
-          $scope.selectedTeam = $scope.teams[0]
-          $scope.selectedTeamId = $scope.selectedTeam.id
+        CurrentUser.get().$promise.then (user) ->
+          if user.user_type is 1 || user.user_type is 2
+            currentUser = user
+            $scope.filter.seller = user
+          getData()
+          Field.defaults({}, 'Deal').then (fields) ->
+            client_types = Field.findDealTypes(fields)
+            $scope.types.push({name:'All', id:'all'})
+            client_types.options.forEach (option) ->
+              $scope.types.push(option)
+
+            sources = Field.findSources(fields)
+            $scope.sources.push({name:'All', id:'all'})
+            sources.options.forEach (option) ->
+              $scope.sources.push(option)
+
+          Seller.query({id: 'all'}).$promise.then (sellers) ->
+            $scope.sellers = sellers
+            $scope.sellers.unshift(defaultUser)
+
+          TimePeriod.all().then (timePeriods) ->
+            $scope.timePeriods = angular.copy timePeriods
+            $scope.timePeriods.unshift({name:'All', id:'all'})
+
+          Team.all(all_teams: true).then (teams) ->
+  #          all_members = []
+  #          all_leaders = []
+  #          _.each teams, (team) ->
+  #            all_members = all_members.concat(team.members)
+  #            all_leaders = all_leaders.concat(team.leaders)
+            #          $scope.teams = teams
+            $scope.teams = teams
+            $scope.teams.unshift {id: null, name: 'All'}
 
       $scope.init()
-      $scope.changeStatus = (filter) =>
-        $scope.selectedStatus = filter
-        fetchData()
-      $scope.$watch('selectedTeam', () =>
-        if ($scope.selectedTeam)
-          $scope.selectedTeamId = $scope.selectedTeam.id
-          $scope.selectedMember = null
-          $scope.selectedMemberId = null
-          $scope.selectedMemberList = _.map $scope.selectedTeam.members, (item) =>
-            return item.id
-          $scope.selectedLeaderList = _.map $scope.selectedTeam.leaders, (item) =>
-            return item.id
-          fetchData()
-      , true);
 
-      fetchData = () =>
-        $q.all({ dealData: Deal.pipeline_report({filter: 'selected_team', team_id: $scope.selectedTeamId, status: $scope.selectedStatus.value }) }).then (data) ->
-          $scope.deals = data.dealData[0].deals
-          $scope.productRange = data.dealData[0].range
+      $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->
+        if nextTeam.id then $scope.filter.seller = defaultUser
+        $scope.setFilter('team', nextTeam)
+        Seller.query({id: nextTeam.id || 'all'}).$promise.then (sellers) ->
+          $scope.sellers = sellers
+          $scope.sellers.unshift(defaultUser)
+
+      $scope.setFilter = (key, value) ->
+        if $scope.filter[key]is value
+          return
+        $scope.filter[key] = value
+        getData()
+
+      $scope.resetFilter = ->
+        $scope.filter =
+          team: {id: null, name: 'All'}
+          status: {id: 'open', name: 'Open'}
+          type: {id: 'all', name: 'All'}
+          source: {id: 'all', name: 'All'}
+          seller: currentUser || defaultUser
+          timePeriod: {id: 'all', name: 'All'}
+        $scope.selectedTeam = $scope.filter.team
+        getData()
+
+      query = null
+      getData = () =>
+        f = $scope.filter
+        query =
+          status: f.status.id
+          type: f.type.id
+          source: f.source.id
+        if f.timePeriod.id != 'all' then query.time_period_id = f.timePeriod.id
+        if $scope.filter.seller.id != defaultUser.id
+          query.filter = 'user'
+          query.user_id = f.seller.id
+        else
+          query.filter = 'selected_team'
+          query.team_id = f.team.id || 'all'
+
+
+        Deal.pipeline_report(query).then (data) ->
+          $scope.deals = data[0].deals
+          $scope.productRange = data[0].range
           $scope.deals = _.map $scope.deals, (deal) ->
             products = []
             _.each $scope.productRange, (range) ->
-              products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range) / 100)
+              products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range))
             deal.products = products
-            return deal
+            deal
 
       $scope.go = (path) ->
         $location.path(path)
@@ -65,17 +119,13 @@
         result =  _.find dealProductBudgets, (dealProductBudget) ->
           if (dealProductBudget.start_date == productTime)
             return dealProductBudget
-
-        if result
-          return result.budget
-        else
-          return 0
+        if result then result.budget else 0
 
       $scope.changeFilter = (filterType) ->
         $scope.filterOpen = filterType
 
-      $scope.isOpen = (deal) ->
-        return deal.stage.open == $scope.filterOpen
+#      $scope.isOpen = (deal) ->
+#        return deal.stage.open == $scope.filterOpen
 
       $scope.changeSortType = (sortType) ->
         if sortType == $scope.sortType
@@ -85,10 +135,13 @@
           $scope.sortReverse = false
 
       $scope.getHtml = (html) ->
-        return $sce.trustAsHtml(html)
+        $sce.trustAsHtml(html)
 
       $scope.exportReports = ->
-        $window.open('/api/deals/pipeline_report.csv?team_id=' + $scope.selectedTeamId + '&status=' + $scope.selectedStatus.value)
-        return true
+        qs = for key, value of query
+          key + '=' + value
+        qs = qs.join('&')
+        $window.open('/api/deals/pipeline_report.csv?' + qs)
+        true
 
   ]

@@ -1,0 +1,121 @@
+.bp-detail
+  .container.table-report
+    .row.return
+      .col-xs-12
+        %a{ href:'/settings/bps' }
+          %i.fa.fa-arrow-left
+          Back to Business Plans
+    .row
+      .bp-info.col-xs-12
+        .info
+          .info-body-wrap
+            .name
+              {{ bp.name }}
+            .description
+              Created: {{bp.created_at | date: 'MMM dd, yyyy'}}
+            .description
+              Due Date: {{bp.due_date | date: 'MMM dd, yyyy'}}
+        .info
+          %svg#progress-circle
+          .info-body-wrap
+            .info-body
+              #progress-number.title
+                {{bp.status}} / {{bp.client_count}}
+              .description Status
+    .row
+      .col-xs-12
+        %h3.title Estimate Summary
+    .row
+      .col-md-12.text-center.bp-table-wrapper
+        %table.table
+          %thead
+            %tr
+              %th.left Seller
+              %th Time period
+              %th Total Seller Estimates
+              %th Total Manager Estimates
+          %tbody
+            %tr{ ng: { if: 'sellerTotalEstimates.length > 0', repeat: 'sellerTotalEstimate in sellerTotalEstimates' } }
+              %td.left
+                {{ sellerTotalEstimate.name }}
+              %td
+                {{ bp.time_period.name }}
+              %td
+                {{ sellerTotalEstimate.total_estimate_seller | currency:'$':0 }}
+              %td
+                {{ sellerTotalEstimate.total_estimate_seller | currency:'$':0 }}
+            %tr{ ng: { if: 'sellerTotalEstimates.length == 0' }}
+              %td.center{ colspan: '4' }
+                No data available
+    .row
+      .col-xs-12
+        .section
+          %a.pull-right.upload{ href: '', ng: { click: 'showAddClientModal()' } }
+            = inline_svg 'icons/add.svg'
+        %h3.title Unassigned Clients
+    .row
+      .col-md-12.text-center.bp-table-wrapper
+        .alerts{ 'ng-if': 'notification' }
+          .alert.alert-success
+            %i.fa.fa-check-circle
+            <strong style="text-transform: capitalize"></strong>
+            {{notification}}
+        %table.table
+          %thead
+            %tr
+              %th.left{ width: "200" }
+                %a.sort{ href: '', ng: { click: 'unassignedSort.toggle("client_name")' } }
+                  Account
+                  %i{ ng: { class: "{ 'fa': unassignedSort.column == 'client_name', 'fa-sort-asc': unassignedSort.column == 'client_name' && unassignedSort.direction == 'asc', 'fa-sort-desc': unassignedSort.column == 'client_name' && unassignedSort.direction == 'desc' }" } }
+              %th.left{ width: "150" }
+                %a.sort{ href: '', ng: { click: 'unassignedSort.toggle("user_name")' } }
+                  Seller
+                  %i{ ng: { class: "{ 'fa': unassignedSort.column == 'user_name', 'fa-sort-asc': unassignedSort.column == 'user_name' && unassignedSort.direction == 'asc', 'fa-sort-desc': unassignedSort.column == 'user_name' && unassignedSort.direction == 'desc' }" } }
+              %th{ width: "130" }
+                {{bp.time_period.name}} Pipeline
+              %th{ width: "130" }
+                {{bp.time_period.name}} Revenue
+              %th{ width: "150" }
+                {{bp.time_period.name}} Estimate
+              %th{ width: "150" }
+                Mgr Estimate
+          %tbody{ ng: { if: 'unassignedBpEstimates.length > 0', init: 'type="unassigned"', repeat: "bp_estimate in unassignedBpEstimates", include: "'partials/bp_simple_rows.html'" } }
+          %tbody{ ng: { if: 'unassignedBpEstimates.length == 0' } }
+            %tr
+              %td.center{ colspan: '6' }
+                No data available
+    .row
+      .col-xs-12
+        .section
+        %h3.title Incomplete Estimates
+    .row
+      .col-md-12.text-center.bp-table-wrapper
+        .alerts{ 'ng-if': 'notification' }
+          .alert.alert-success
+            %i.fa.fa-check-circle
+            <strong style="text-transform: capitalize"></strong>
+            {{notification}}
+        %table.table.gray-table
+          %thead
+            %tr
+              %th.left{ width: "200" }
+                %a.sort{ href: '', ng: { click: 'incompleteSort.toggle("client_name")' } }
+                  Account
+                  %i{ ng: { class: "{ 'fa': incompleteSort.column == 'client_name', 'fa-sort-asc': incompleteSort.column == 'client_name' && incompleteSort.direction == 'asc', 'fa-sort-desc': incompleteSort.column == 'client_name' && incompleteSort.direction == 'desc' }" } }
+              %th.left{ width: "150" }
+                %a.sort{ href: '', ng: { click: 'incompleteSort.toggle("user_name")' } }
+                  Seller
+                  %i{ ng: { class: "{ 'fa': incompleteSort.column == 'user_name', 'fa-sort-asc': incompleteSort.column == 'user_name' && incompleteSort.direction == 'asc', 'fa-sort-desc': incompleteSort.column == 'user_name' && incompleteSort.direction == 'desc' }" } }
+              %th{ width: "130" }
+                {{bp.time_period.name}} Pipeline
+              %th{ width: "130" }
+                {{bp.time_period.name}} Revenue
+              %th{ width: "150" }
+                {{bp.time_period.name}} Estimate
+              %th{ width: "150" }
+                Mgr Estimate
+          %tbody{ ng: { if: 'incompleteBpEstimates.length > 0', init: 'type="incomplete"', repeat: "bp_estimate in incompleteBpEstimates", include: "'partials/bp_simple_rows.html'" } }
+          %tbody{ ng: { if: 'incompleteBpEstimates.length == 0' } }
+            %tr
+              %td.center{ colspan: '6' }
+                No data available

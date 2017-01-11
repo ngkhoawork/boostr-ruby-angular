@@ -23,6 +23,7 @@ Rails.application.routes.draw do
       end
     end
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
+      get :sellers
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index] do
         collection do
@@ -30,8 +31,17 @@ Rails.application.routes.draw do
         end
       end
     end
+    resources :bps, only: [:index, :create, :update, :show, :destroy] do
+      get :seller_total_estimates
+      get :account_total_estimates
+      get :unassigned_clients
+      post :add_client
+      post :add_all_clients
+      resources :bp_estimates, only: [:index, :create, :update, :show, :destroy]
+    end
     resources :temp_ios, only: [:index, :update]
     resources :display_line_items, only: [:index, :create]
+    resources :display_line_item_budgets, only: [:index, :create]
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
@@ -48,7 +58,7 @@ Rails.application.routes.draw do
       resources :deal_contacts, only: [:index, :create, :destroy]
       resources :deal_assets, only: [:index, :update, :create, :destroy]
     end
-    resources :deal_product_budgets, only: [:create]
+    resources :deal_product_budgets, only: [:index, :create]
     resources :deal_products, only: [:create]
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]

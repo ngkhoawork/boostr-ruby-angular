@@ -23,7 +23,7 @@ class Api::DealsController < ApplicationController
             range = deal['start_date'] .. deal['end_date']
 
             deal['month_amounts'] = []
-            monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('month', start_date) as month, (sum(deal_product_budgets.budget)/100.0) as revenue").where("deal_products.deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
+            monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue").where("deal_products.deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
 
             index = 0
             monthly_revenues.each do |monthly_revenue|
@@ -51,7 +51,7 @@ class Api::DealsController < ApplicationController
             end
 
             deal['quarter_amounts'] = []
-            quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('quarter', start_date) as quarter, (sum(deal_product_budgets.budget)/100.0) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
+            quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
             index = 0
             quarterly_revenues.each do |quarterly_revenue|
               for i in index..(quarterly_revenue[:quarter]-2)
@@ -104,21 +104,36 @@ class Api::DealsController < ApplicationController
 
   def pipeline_report
     respond_to do |format|
-      format.json {
-        selected_deals = nil
-        case params[:status]
-          when 'open'
-            selected_deals = deals.open.less_than(100)
-          when 'all'
-            selected_deals = deals
-          when 'closed'
-            selected_deals = deals.close_status
-          else
-            selected_deals = deals.open.less_than(100)
-        end
+      selected_deals = nil
+      case params[:status]
+        when 'open'
+          selected_deals = deals.open.less_than(100)
+        when 'all'
+          selected_deals = deals
+        when 'closed'
+          selected_deals = deals.close_status
+        else
+          selected_deals = deals.open.less_than(100)
+      end
 
-        deal_list = ActiveModel::ArraySerializer.new(selected_deals.includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets).active.distinct , each_serializer: DealReportSerializer)
-        deal_ids = selected_deals.active.collect{|deal| deal.id}
+      filtered_deals = selected_deals
+      .by_values(deal_type_source_params)
+      .includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets, 'values')
+      .active
+      .distinct
+
+      if time_period
+        filtered_deals = filtered_deals.for_time_period(time_period.start_date, time_period.end_date)
+      end
+
+      filtered_deals = filtered_deals.select do |deal|
+        (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
+        (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true)
+      end
+
+      format.json {
+        deal_list = ActiveModel::ArraySerializer.new(filtered_deals, each_serializer: DealReportSerializer)
+        deal_ids = filtered_deals.collect{|deal| deal.id}
         range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
         render json: [{deals: deal_list, range: range}].to_json
       }
@@ -126,7 +141,7 @@ class Api::DealsController < ApplicationController
         require 'timeout'
         begin
           Timeout::timeout(120) {
-            send_data Deal.to_pipeline_report_csv(company, params[:team_id], params[:status]), filename: "pipeline-report-#{Date.today}.csv"
+            send_data Deal.to_pipeline_report_csv(filtered_deals), filename: "pipeline-report-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
@@ -206,6 +221,10 @@ class Api::DealsController < ApplicationController
     params.require(:deal).permit(:name, :stage_id, :budget, :start_date, :end_date, :advertiser_id, :agency_id, :closed_at, :next_steps, { values_attributes: [:id, :field_id, :option_id, :value] })
   end
 
+  def deal_type_source_params
+    [params[:type], params[:source]].reject{|el| el.nil? || el == 'all'}
+  end
+
   def deal
     @deal ||= company.deals.find(params[:id])
   end
@@ -219,12 +238,31 @@ class Api::DealsController < ApplicationController
       company.deals.active
     elsif params[:filter] == 'selected_team' && params[:team_id]
       all_team_deals
+    elsif params[:filter] == 'user' && params[:user_id]
+      deal_member_filter
     elsif params[:filter] == 'team' && team.present?
       team.deals.active
     elsif params[:client_id].present?
       company.deals.active
     else
       current_user.deals.active
+    end
+  end
+
+  def time_period
+    if params[:time_period_id]
+      @time_period = company.time_periods.find(params[:time_period_id])
+    end
+  end
+
+  def deal_member_filter
+    user = company.users.find params[:user_id]
+    if user.user_type == SELLER
+      company.deals.by_deal_team([user.id])
+    elsif user.user_type == SALES_MANAGER
+      company.deals.by_deal_team(user.teams_tree_members.ids)
+    else
+      company.deals.active
     end
   end
 
@@ -237,8 +275,7 @@ class Api::DealsController < ApplicationController
       all_members_list = selected_team.all_members.collect{|member| member.id}
       all_members_list += selected_team.all_leaders.collect{|member| member.id}
     end
-    all_team_deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deals.deleted_at is NULL and deal_members.user_id in (?)", all_members_list)
-    all_team_deals
+    company.deals.by_deal_team(all_members_list)
   end
 
   def team

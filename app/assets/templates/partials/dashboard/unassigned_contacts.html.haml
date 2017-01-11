@@ -1,0 +1,21 @@
+#unassigned-contacts.block
+	%div.mb20
+		%span.title Unassigned Contacts
+
+	%div.contact{'ng-repeat': 'contact in unassignedContacts'}
+		%button.btn.btn-primary.btn-lg{'ng-click': 'showAssignContactModal(contact)'}
+			= inline_svg "icons/client-meeting.svg"
+			Assign
+		%p {{contact.address.email}}
+		%p
+			%input{type: 'text', 'ng-model': 'contact.name', placeholder: 'Enter name', 'ng-blur': 'saveCurrentContact(contact)'}
+		%p{'ng-if': 'contact.name==contact.address.email'}
+			Name cannot match email address
+
+	%div.undo{ 'ng-if': "contactActionLog.length > 0" }
+		%div{ 'ng-repeat': "log in contactActionLog" }
+			%strong {{log.previousContact.name}}
+			{{log.message ? " assigned to " : "unassigned"}}
+			%strong {{log.message}}.
+			%a{ href:"javascript:void(0)", 'ng-click': "undoAssignContact(log.previousContact)" }
+				Undo

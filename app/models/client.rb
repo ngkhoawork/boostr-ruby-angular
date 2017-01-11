@@ -34,6 +34,10 @@ class Client < ActiveRecord::Base
   scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
   scope :by_category, -> category_id { where(client_category_id: category_id) if category_id.present? }
   scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
+  scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
+
+  ADVERTISER = 10
+  AGENCY = 11
 
   def self.to_csv
     header = [
@@ -217,7 +221,7 @@ class Client < ActiveRecord::Base
       if row[3].present?
         parent = Client.where("company_id = ? and name ilike ?", current_user.company_id, row[3].strip.downcase).first
         unless parent
-          error = { row: row_number, message: ["Parent client #{row[3]} could not be found"] }
+          error = { row: row_number, message: ["Parent account #{row[3]} could not be found"] }
           errors << error
           next
         end
@@ -256,14 +260,14 @@ class Client < ActiveRecord::Base
 
         members.each do |member|
           if member[1].nil?
-            error = { row: row_number, message: [ "Client team member #{member[0]} does not have share" ] }
+            error = { row: row_number, message: [ "Account team member #{member[0]} does not have share" ] }
             errors << error
             client_member_list_error = true
             break
           elsif user = current_user.company.users.where('email ilike ?', member[0]).first
             client_member_list << user
           else
-            error = { row: row_number, message: ["Client team member #{member[0]} could not be found in the users list"] }
+            error = { row: row_number, message: ["Account team member #{member[0]} could not be found in the users list"] }
             errors << error
             client_member_list_error = true
             break
@@ -318,7 +322,7 @@ class Client < ActiveRecord::Base
       unless client.present?
         clients = current_user.company.clients.where('name ilike ?', row[1].strip.downcase)
         if clients.length > 1
-          error = { row: row_number, message: ["Client name #{row[1]} matched more than one client record"] }
+          error = { row: row_number, message: ["Account name #{row[1]} matched more than one account record"] }
           errors << error
           next
         end
@@ -327,7 +331,7 @@ class Client < ActiveRecord::Base
 
       if client.present?
         if parent && parent.id == client.id
-          error = { row: row_number, message: ["Clients can't be parents of themselves"] }
+          error = { row: row_number, message: ["Accounts can't be parents of themselves"] }
           errors << error
           next
         end
@@ -377,5 +381,15 @@ class Client < ActiveRecord::Base
 
   def self.advertiser_type_id(company)
     client_type_field(company).options.where(name: "Advertiser").first.id
+  end
+
+  def global_type_id
+    if self.client_type_id
+      if self.client_type_id == Client.advertiser_type_id(company)
+        Client::ADVERTISER
+      elsif self.client_type_id == Client.agency_type_id(company)
+        Client::AGENCY
+      end
+    end
   end
 end

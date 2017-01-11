@@ -79,7 +79,7 @@ class Team < ActiveRecord::Base
   end
 
   def all_deals_for_time_period(start_date, end_date)
-    deals.where(open: true).for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) } + leader.all_deals_for_time_period(start_date, end_date)
+    deals.where(open: true).for_time_period(start_date, end_date) + children.map {|c| c.all_deals_for_time_period(start_date, end_date) } + (leader.nil? ? [] : leader.all_deals_for_time_period(start_date, end_date))
   end
 
   def all_revenues_for_time_period(start_date, end_date)

@@ -15,7 +15,6 @@ class Contact < ActiveRecord::Base
   accepts_nested_attributes_for :address
 
   validates :name, presence: true
-  validates :client_id, presence: true
   validate :email_is_present?
   validate :email_unique?
 
@@ -26,6 +25,7 @@ class Contact < ActiveRecord::Base
   }
   scope :total_count, -> { except(:order, :limit, :offset).count.to_s }
   scope :by_client_ids, -> limit, offset, ids { Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).limit(limit).offset(offset).distinct }
+
   scope :by_name, -> name { where('contacts.name ilike ?', "%#{name}%") if name.present? }
 
   after_save do
@@ -87,7 +87,7 @@ class Contact < ActiveRecord::Base
       end
 
       if row[1].nil? || row[1].blank?
-        error = { row: row_number, message: ['Client is empty'] }
+        error = { row: row_number, message: ['Account is empty'] }
         errors << error
         next
       end
@@ -99,7 +99,7 @@ class Contact < ActiveRecord::Base
       end
 
       unless client = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, row[1].strip.downcase).first
-        error = { row: row_number, message: ['Client ' + row[1].to_s + ' could not be found'] }
+        error = { row: row_number, message: ['Account ' + row[1].to_s + ' could not be found'] }
         errors << error
         next
       end
@@ -113,7 +113,7 @@ class Contact < ActiveRecord::Base
           if agency = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, agency_name.strip.downcase).first
             agency_data_list << agency
           else
-            error = { row: row_number, message: ['Client ' + agency_name.to_s + ' could not be found'] }
+            error = { row: row_number, message: ['Account ' + agency_name.to_s + ' could not be found'] }
             errors << error
             agency_list_error = true
             break

@@ -140,7 +140,6 @@
       return DataStore.dataQuaterForecast
 
     DataStore.setDataQuarterForecast = (data) ->
-      console.log(data);
       probability_colors = [ { probability: "100", color: "#1976bb"}, { probability: "90", color: "#3996db"}, { probability: "75" , color: "#52a1e2" }, { probability: "50" , color: "#7ab9e9" }, { probability: "25" , color: "#a4d0f0" }, { probability: "10" , color: "#d2e8f8" }]
       DataStore.dataQuaterForecast = _.map data, (row, index) ->
         graphData = []
@@ -167,26 +166,25 @@
           color = "#" + ((1 << 24) + (red << 16) + (green << 8) + blue).toString(16).slice(1);
 
           if stage && row.weighted_pipeline_by_stage
-            weighted_value = if row.weighted_pipeline_by_stage[stage.id] > 0 then row.weighted_pipeline_by_stage[stage.id] else 0
+            weighted_value = if row.weighted_pipeline_by_stage[stage.id] > 0 then parseFloat(row.weighted_pipeline_by_stage[stage.id]) else 0
           else
             weighted_value = 0
 
           if stage && row.unweighted_pipeline_by_stage
-            unweighted_value = if row.unweighted_pipeline_by_stage[stage.id] > 0 then row.unweighted_pipeline_by_stage[stage.id] else 0
+            unweighted_value = if row.unweighted_pipeline_by_stage[stage.id] > 0 then parseFloat(row.unweighted_pipeline_by_stage[stage.id]) else 0
           else
             unweighted_value = 0
           graphData.push ({
             key: probability + '%',
             values: [
-              {label: "weighted", value: weighted_value, series: series},
-              {label: "un-weighted", value: unweighted_value, series: series},
+              {label: "weighted", value: parseFloat(weighted_value), series: series},
+              {label: "un-weighted", value: parseFloat(unweighted_value), series: series},
             ],
             color: color
           })
-          total_weighted += weighted_value
-          total_unweighted += unweighted_value
+          total_weighted += parseFloat(weighted_value)
+          total_unweighted += parseFloat(unweighted_value)
           series = series + 1
-
 
         quota_weighted = Math.max(row.quota, total_unweighted / 5 * 6)
 
@@ -196,8 +194,8 @@
           quota: row.quota,
           maxValue: quota_weighted,
           revenue: row.revenue,
-          weighted_pipeline: row.weighted_pipeline,
-          percent_to_quota: row.percent_to_quota,
+          weighted_pipeline: parseFloat(row.weighted_pipeline),
+          percent_to_quota: parseFloat(row.percent_to_quota),
           new_deals_needed: row.new_deals_needed
         }
     return DataStore

@@ -1,2 +1,2 @@
 %p
-  #{@deal.name} for #{ @deal.budget.nil? ? '$0' : number_to_currency((@deal.budget/100.0).round, :precision => 0) } with flight dates #{@deal.start_date.strftime("%m/%d/%y") } - #{@deal.end_date.strftime("%m/%d/%y") } for #{@deal.advertiser.name} was won by #{@deal.deal_members.map(&:name).to_sentence if !@deal.deal_members.nil?}.
+  #{@deal.name} for #{ @deal.budget.nil? ? '$0' : number_to_currency((@deal.budget).round, :precision => 0) } with flight dates #{@deal.start_date.strftime("%m/%d/%y") } - #{@deal.end_date.strftime("%m/%d/%y") } for #{@deal.advertiser.name} was won by #{@deal.deal_members.map(&:name).to_sentence if !@deal.deal_members.nil?}.

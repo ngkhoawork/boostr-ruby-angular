@@ -12,10 +12,10 @@
     animationEasing: 'easeOutBounce',
     animateRotate: true,
     animateScale: false,
-    scaleLabel: '<%= parseFloat(value).formatMoney() %>',
+    scaleLabel: '<%= parseInt(value).formatMoney() %>',
     legendTemplate : '<ul class="tc-chart-js-legend"><li class="legend_quota"><span class="swatch"></span>Quota</li><% for (var i=datasets.length-1; i>=0; i--){%><li class="legend_<%= datasets[i].label.replace(\'%\', \'\') %>"><span class="swatch" style="background-color:<%= datasets[i].fillColor %>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
-    multiTooltipTemplate: '<%= value.formatMoney() %>',
-    tooltipTemplate: '<%= label %>: <%= value.formatMoney() %>',
+    multiTooltipTemplate: '<%= parseInt(value).formatMoney() %>',
+    tooltipTemplate: '<%= label %>: <%= parseInt(value).formatMoney() %>',
     tooltipHideZero: true
   }
 

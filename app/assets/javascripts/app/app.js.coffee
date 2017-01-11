@@ -22,6 +22,7 @@
   'ngTransloadit'
   'daterangepicker'
   'rzModule'
+  'monospaced.elastic'
   'dndLists'
 ])
 
@@ -126,6 +127,15 @@
     .when '/settings/stages',
       templateUrl: 'settings/stages.html'
       controller: 'SettingsStagesController'
+    .when '/settings/bps',
+      templateUrl: 'settings/bps.html'
+      controller: 'BPsController'
+    .when '/settings/bps/:id',
+      templateUrl: 'settings/bp.html'
+      controller: 'BPsBPController'
+    .when '/bp',
+      templateUrl: 'bp.html'
+      controller: 'BPController'
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
@@ -154,13 +164,15 @@
 @app.run ['editableOptions', (editableOptions) ->
   editableOptions.theme = 'bs3'
   editableOptions.buttons = 'no'
-  editableOptions.blurElem = 'cancel'
+  editableOptions.activate = 'select'
+  editableOptions.blurElem = 'submit'
   editableOptions.blurForm = 'cancel'
 ]
 
 @app.run ['$rootScope', ($rootScope) ->
   $rootScope.currentUserIsLeader = currentUserIsLeader
   $rootScope.transloaditTemplate = transloaditTemplate
+  $rootScope.userType = userType
 ]
 
 @service = angular.module 'services', ['ngResource']

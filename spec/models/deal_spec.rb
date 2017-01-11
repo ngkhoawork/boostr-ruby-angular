@@ -137,7 +137,7 @@ RSpec.describe Deal, type: :model do
     let!(:client_role_owner) { create :option, field: client_role_field(company), name: "Owner" }
     let(:role) { create :value, field: client_role_field(company), option: client_role_owner }
     let!(:client_member) { create :client_member, user: user, client: client, values: [role] }
-    let(:deal) { build :deal, advertiser: client }
+    let(:deal) { build :deal, advertiser: client, company: company }
 
     it 'creates deal_members with defaults when creating a deal' do
       expect do
@@ -151,7 +151,7 @@ RSpec.describe Deal, type: :model do
 
     context 'when there are no client members' do
       let!(:client_wo_members) { create :client }
-      let!(:deal) { build :deal, advertiser: client_wo_members, creator: user }
+      let!(:deal) { build :deal, advertiser: client_wo_members, creator: user, company: company }
 
       it 'assigns 100 percent share to the deal creator' do
         expect do
@@ -190,7 +190,7 @@ RSpec.describe Deal, type: :model do
     let!(:close_reason_field) { user.company.fields.find_by_name('Close Reason') }
     let!(:close_reason) { create :option, field: close_reason_field, company: user.company }
     let!(:existing_deal) { create :deal, creator: another_user, updator: another_user }
-    let!(:contacts) { create_list :contact, 4, company: company }
+    let!(:contacts) { create_list :contact, 4, company: company, client_id: advertiser.id }
 
     it 'creates a new deal from csv' do
       data = build :deal_csv_data
@@ -330,11 +330,11 @@ RSpec.describe Deal, type: :model do
         ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} could not be found"]}])
       end
 
-      it 'requires advertiser to match no more than 1 client' do
+      it 'requires advertiser to match no more than 1 record' do
         data = build :deal_csv_data, advertiser: duplicate_advertiser2.name
         expect(
           Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} matched more than one client record"]}])
+        ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} matched more than one account record"]}])
       end
 
       it 'requires agency to exist' do
@@ -348,7 +348,7 @@ RSpec.describe Deal, type: :model do
         data = build :deal_csv_data, agency: duplicate_agency2.name
         expect(
           Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Agency #{data[:agency]} matched more than one client record"]}])
+        ).to eq([{row: 1, message: ["Agency #{data[:agency]} matched more than one account record"]}])
       end
 
       it 'requires deal type to exist' do

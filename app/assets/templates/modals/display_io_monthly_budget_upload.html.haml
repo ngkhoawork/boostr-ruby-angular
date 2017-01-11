@@ -6,34 +6,29 @@
     = inline_svg 'icons/csv.svg'
     %h3.modal-title
       %strong
-        Import Revenue
+        Import IO Monthly Budget
       %br
       %small
-        Please export your bookings from your current system into a CSV file.
+        Please import your IO Monthly Budgets from a CSV file into your current system.
 
-  .modal-body
+  .modal-body.uploader
     .well.transparent
       %p.text-center
         Make sure your CSV file includes these EXACT headers and columns:
 
       %ol.row.center-block
-        %li.col-xs-3.col-xs-offset-2 Order #
-        %li.col-xs-3 Line #
-        %li.col-xs-3 Ad Server
-        %li.col-xs-3.col-xs-offset-2 Quantity
-        %li.col-xs-3 Price
-        %li.col-xs-3 Price Type
-        %li.col-xs-3.col-xs-offset-2 Delivered
-        %li.col-xs-3 Remaining
-        %li.col-xs-3 Budget
-        %li.col-xs-3.col-xs-offset-2 Budget Remaining
-        %li.col-xs-3 Start Date
-        %li.col-xs-3 End Date
-        %li.col-xs-3.col-xs-offset-2 Client
-        %li.col-xs-3 Client ID
-        %li.col-xs-3 Sales Rep
-        %li.col-xs-3.col-xs-offset-2 Product ID
-        %li.col-xs-3 Comment
+        %li.col-xs-3.col-xs-offset-2 Ext IO Num *
+        %li.col-xs-3 Line Item Num *
+        %li.col-xs-3
+          Budget *
+        %li.col-xs-3.col-xs-offset-2
+          Start Date *
+          %br
+          (MM/DD/YYYY)
+        %li.col-xs-3
+          End Date *
+          %br
+          (MM/DD/YYYY)
 
     .well.well-lg.dark
       .row
@@ -46,7 +41,7 @@
             .text{ ng: { hide: 'progressPercentage > 0' } }
               CSV File
         .col-xs-3
-          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files' } }
+          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "uploading" } }
             Browse
 
     .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }

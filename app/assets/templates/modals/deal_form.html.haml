@@ -1,85 +1,89 @@
-#deal_modal
-  %form{ ng: { submit: 'submitForm()' } }
-    .modal-header.text-center
-      %a.close{ ng: { click: 'cancel()' } }
-        %span{'aria-hidden' => 'true'}
-          = inline_svg 'icons/close.svg'
-      %h3.modal-title
-        %strong
-          {{ formType }} Deal
-    .modal-body
-      .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
-        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
-          %i.fa.fa-warning
-          <strong style="text-transform: capitalize">{{field}}</strong>
-          {{error}}
-      .form-group
-        %label.control-label{ for: 'name' } Name*
-        %input.form-control{ placeholder: 'Name', ng: { model: 'deal.name', required: true }, name: 'name' }
+#deal_modal.popup-modal
+    %form{ ng: { submit: 'submitForm()' } }
+        .popup-modal-header
+            {{formType}} Deal
+            %span.close-btn{'ng-click': 'cancel()'} +
+        .popup-modal-body
+            .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
+                .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+                    %i.fa.fa-warning
+                    <strong style="text-transform: capitalize">{{field}}</strong>
+                    {{error}}
+            .form-group{'ng-class':'{error: errors.name}'}
+                %span.error-text {{errors.name}}
+                %label{ for: 'name' }
+                    Name
+                    %span.star *
+                %input.form-control{ placeholder: 'Name', ng: { model: 'deal.name', required: true }, name: 'name' }
 
-      .form-group
-        %label.control-label{ for: 'stage' } Stage*
-        %ui-select{ name: 'stage', ng: { model: 'deal.stage_id', disabled: true, required: true } }
-          %ui-select-match{ placeholder: 'Stage' }
-            {{ $select.selected.name+" "+$select.selected.probability+"%" }}
-          %ui-select-choices{ repeat: 'stage.id as stage in stages | filter: { name: $select.search }' }
-            %div{ ng: { bind: { html: 'stage.name+" "+stage.probability+"%"' } } }
+            .form-group{'ng-class':'{error: errors.stage_id}'}
+                %span.error-text {{errors.stage_id}}
+                %label{ for: 'stage' }
+                    Stage
+                    %span.star *
+                %ui-select{ name: 'stage', ng: { model: 'deal.stage_id', required: true } }
+                    %ui-select-match{ placeholder: 'Stage' }
+                        {{ $select.selected.name+" "+$select.selected.probability+"%" }}
+                    %ui-select-choices{ repeat: 'stage.id as stage in stages | filter: { name: $select.search }' }
+                        %div{ ng: { bind: { html: 'stage.name+" "+stage.probability+"%"' } } }
+            .advertiser-agency
+                .form-group.advertiser-field{'ng-class':'{error: errors.advertiser_id}'}
+                    %span.error-text {{errors.advertiser_id}}
+                    %label{style: 'display: block'}
+                        Advertiser
+                        %span.star *
+                    %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, keyup: 'searchClients($select.search, Advertiser)' }, 'on-select': "advertiserSelected($model)" }
+                        %ui-select-match{ placeholder: 'Advertiser' }
+                            {{ $select.selected.name }}
+                        %ui-select-choices{ repeat: 'advertiser.id as advertiser in advertisers' }
+                            %div{ ng: { bind: { html: 'advertiser.name' } } }
+                .form-group.agency-field{'ng-class':'{error: errors.agency}'}
+                    %span.error-text {{errors.agency}}
+                    %label{style: 'display: block'}
+                        Agency
+                    %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency)' }, 'on-select': 'agencySelected($model)' }
+                        %ui-select-match{ placeholder: 'Agency' }
+                            {{ $select.selected.name }}
+                        %ui-select-choices{ repeat: 'agency.id as agency in agencies' }
+                            %div{ ng: { bind: { html: 'agency.name' } } }
+                %button.add-btn.plus-btn{type: 'button', 'ng-click': 'createNewClientModal()'}
+            .form-group{ ng: {if: "formType == 'New'"}}
+                .row
+                    .col-xs-6
+                        %label{ for: 'deal-type' } Type
+                        %ui-select{ name: 'deal-type', ng: { model: 'deal.deal_type.option_id', disabled: true } }
+                            %ui-select-match{ placeholder: 'Type' }
+                                {{ $select.selected.name }}
+                            %ui-select-choices{ repeat: 'option.id as option in deal.deal_type.options | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'option.name' } } }
+                    .col-xs-6
+                        %label{ for: 'source-type' } Source
+                        %ui-select{ name: 'source-type', ng: { model: 'deal.source_type.option_id', disabled: true } }
+                            %ui-select-match{ placeholder: 'Source' }
+                                {{ $select.selected.name }}
+                            %ui-select-choices{ repeat: 'option.id as option in deal.source_type.options | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'option.name' } } }
 
-      .form-group
-        .row
-          .col-xs-6
-            %label.control-label{ for: 'advertiser' } Advertiser*
-            .input-group
-              %ui-select{ name: 'advertiser', ng: { model: 'deal.advertiser_id', disabled: true, keyup: 'searchClients($select.search, Advertiser)' }, 'on-select': "advertiserSelected($model)" }
-                %ui-select-match{ placeholder: 'Advertiser' }
-                  {{ $select.selected.name }}
-                %ui-select-choices{ repeat: 'advertiser.id as advertiser in advertisers' }
-                  %div{ ng: { bind: { html: 'advertiser.name' } } }
-              .input-group-addon.create-new-modal-icon
-                %a{ ng: { click: 'createNewClientModal("Advertiser", "advertiser_id")' } }
-                  = inline_svg 'icons/add.svg'
-          .col-xs-6
-            %label.control-label{ for: 'agency' } Agency
-            .input-group
-              %ui-select{ name: 'agency', ng: { model: 'deal.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency)' }, 'on-select': 'agencySelected($model)' }
-                %ui-select-match{ placeholder: 'Agency' }
-                  {{ $select.selected.name }}
-                %ui-select-choices{ repeat: 'agency.id as agency in agencies' }
-                  %div{ ng: { bind: { html: 'agency.name' } } }
-              .input-group-addon.create-new-modal-icon
-                %a{ ng: { click: 'createNewClientModal("Agency", "agency_id")' } }
-                  = inline_svg 'icons/add.svg'
-      .form-group{ ng: {if: "formType == 'New'"}}
-        .row
-          .col-xs-6
-            %label.control-label{ for: 'deal-type' } Type
-            %ui-select{ name: 'deal-type', ng: { model: 'deal.deal_type.option_id', disabled: true } }
-              %ui-select-match{ placeholder: 'Type' }
-                {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'option.id as option in deal.deal_type.options | filter: { name: $select.search }' }
-                %div{ ng: { bind: { html: 'option.name' } } }
-          .col-xs-6
-            %label.control-label{ for: 'source-type' } Source
-            %ui-select{ name: 'source-type', ng: { model: 'deal.source_type.option_id', disabled: true } }
-              %ui-select-match{ placeholder: 'Source' }
-                {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'option.id as option in deal.source_type.options | filter: { name: $select.search }' }
-                %div{ ng: { bind: { html: 'option.name' } } }
+            .form-group
+                %label{ for: 'next-steps' } Next Steps
+                %input.form-control{ placeholder: 'Next Steps', ng: { model: 'deal.next_steps' }, name: 'next-steps' }
 
-      .form-group
-        %label.control-label{ for: 'next-steps' } Next Steps
-        %input.form-control{ placeholder: 'Next Steps', ng: { model: 'deal.next_steps' }, name: 'next-steps' }
+            %div{ ng: {if: "formType == 'New'"}}
+                .row
+                    .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.start_date}'}
+                        %span.error-text {{errors.start_date}}
+                        %label{ for: 'start-date' }
+                            Start Date
+                            %span.star *
+                        %input.form-control{readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
 
-      .form-group{ ng: {if: "formType == 'New'"}}
-        .row
-          .col-md-6.bs-datepicker
-            %label.control-label{ for: 'start-date' } Start Date*
-            %input.form-control{ name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+                    .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.end_date}'}
+                        %span.error-text {{errors.end_date}}
+                        %label{ for: 'end-date' }
+                            End Date
+                            %span.star *
+                        %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
 
-          .col-md-6.bs-datepicker
-            %label.control-label{ for: 'end-date' } End Date*
-            %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
-
-    .modal-footer.text-center
-      %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
-      %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel
+        .popup-modal-footer
+            %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+            %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

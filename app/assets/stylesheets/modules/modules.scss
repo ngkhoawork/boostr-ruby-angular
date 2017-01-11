@@ -10,7 +10,6 @@
 @import "progress-bars";
 @import "svg";
 @import "editable";
-@import "stats";
 @import "loading_bar";
 @import "activities";
 @import "tree-dropdown";
@@ -21,6 +20,8 @@
 @import "file-uploader";
 @import "daterangepicker";
 @import "rzslider";
+@import "activity_feed";
+@import "filters_block";
 
 .vertical-center {
   display: table;

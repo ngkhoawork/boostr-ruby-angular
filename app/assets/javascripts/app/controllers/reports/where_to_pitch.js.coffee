@@ -2,6 +2,7 @@
     ['$scope', '$document', 'WhereToPitchService', 'Team', 'Product', 'Field', 'Seller', 'CurrentUser'
         ($scope, $document, WTP, Team, Product, Field, Seller, CurrentUser) ->
             $scope.filter = {}
+            $scope.selected = {}
             $scope.maxDeals = 10
             $scope.slider =
                 deals:
@@ -18,13 +19,14 @@
                         floor: 0
                         ceil: 100
                         translate: (value) ->
-                            value + '%'
+                            if value > 0 && value < 100 then return value + '%'
+                            value
                         onEnd: ->
                             updateTable('advertisers', $scope.mainData.advertisers)
                             updateTable('agencies', $scope.mainData.agencies)
             $scope.selectedTeam =
                 id: 'all'
-                name:'Team'
+                name:'All'
             $scope.datePicker =
                 date:
                     startDate: null
@@ -34,7 +36,7 @@
                 apply: ->
                     _this = $scope.datePicker
                     if (_this.date.startDate && _this.date.endDate)
-                        _this.element.html(_this.date.startDate.format('MMMM D, YYYY') + ' - ' + _this.date.endDate.format('MMMM D, YYYY'))
+                        _this.element.html(_this.date.startDate.format('MMM D, YY') + ' - ' + _this.date.endDate.format('MMM D, YY'))
                         _this.isDateSet = true
                         $scope.setFilter('time period', _this.date)
                 cancel: ->
@@ -42,9 +44,22 @@
                     _this.element.html('Time period')
                     _this.isDateSet = false
                     $scope.setFilter('time period', _this.date)
+                setDefault: ->
+                    _this = $scope.datePicker
+                    _this.date.startDate = moment()
+                        .subtract(6, 'months')
+                        .date(1)
+                    _this.date.endDate = moment()
+                        .subtract(1, 'months')
+                        .endOf('month')
+                    _this.element.html(_this.date.startDate.format('MMM D, YY') + ' - ' + _this.date.endDate.format('MMM D, YY'))
+                    _this.isDateSet = true
+
+            $scope.datePicker.setDefault()
 
             $scope.setFilter = (type, item) ->
                 if !item then return
+                $scope.selected[type] = item
                 switch type
                     when 'time period'
                         if $scope.datePicker.isDateSet
@@ -69,16 +84,17 @@
                 applyFilter()
 
             $scope.resetFilter = ->
+                $scope.selected = {}
                 $scope.filter = {}
-                $scope.datePicker.element.html('Time period')
-                $scope.datePicker.isDateSet = false
-                $scope.selectedTeam = {id: 'all', name:'Team'}
+                $scope.selectedTeam = {id: 'all', name:'All'}
                 $scope.subcategories = $scope.allSubcategories
+                $scope.datePicker.setDefault()
                 applyFilter()
 
             $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->
                 if nextTeam.name == 'Team' && nextTeam.id == 'all' then return
                 $scope.filter.seller = null
+                delete $scope.selected.seller
                 Seller.query({id: nextTeam.id || 'all'}).$promise.then (sellers) ->
                     sellers.unshift({first_name: 'All', id: null})
                     $scope.sellers = sellers

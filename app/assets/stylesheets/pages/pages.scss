@@ -4,6 +4,7 @@
 @import "contacts";
 @import "revenue";
 @import "deals";
+@import "bp";
 @import "deal";
 @import "forecasts";
 @import "dashboard";
@@ -18,3 +19,6 @@
 @import "settings/users";
 @import "settings/data_import";
 @import "where_to_pitch";
+@import "deal_reports";
+
+html,body { height:100%; }

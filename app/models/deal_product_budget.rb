@@ -8,15 +8,47 @@ class DealProductBudget < ActiveRecord::Base
 
   validates :start_date, :end_date, presence: true
 
-  before_update :multiply_budget
-  before_create :multiply_budget
-
-  def multiply_budget
-    self.budget = budget * 100 if budget_changed?
+  def daily_budget
+    budget / (end_date - start_date + 1).to_f
   end
 
-  def daily_budget
-    (budget / 100.0) / (end_date - start_date + 1).to_i
+  def self.to_csv(company_id)
+    header = [
+      :Deal_Id,
+      :Deal_Name,
+      :Deal_Percentage,
+      :Advertiser,
+      :Product,
+      :Budget,
+      :Start_Date,
+      :End_Date,
+    ]
+
+    CSV.generate(headers: true) do |csv|
+      csv << header
+
+      deals = Deal.where(company_id: company_id)
+      .includes(:products, :deal_products, :deal_product_budgets, :stage, :advertiser)
+      .order(:id)
+
+      deals.each do |deal|
+        deal.deal_products.each do |deal_product|
+          deal_product.deal_product_budgets.each do |dpb|
+            line = []
+            line << deal.id
+            line << deal.name
+            line << deal.stage.probability
+            line << deal.advertiser.name
+            line << deal_product.product.name
+            line << dpb.budget.try(:round)
+            line << dpb.start_date
+            line << dpb.end_date
+
+            csv << line
+          end
+        end
+      end
+    end
   end
 
   def self.import(file, current_user)

@@ -3,7 +3,7 @@
 ($resource, $rootScope, $q) ->
 
   @types = [
-    {'name':'Initial Meeting', 'action':'had initial meeting with', 'icon':'/assets/icons/meeting.svg'},
+    {'name':'Initial Meeting', 'action':'had initial meeting with', 'icon':'/assets/icons/initial-meeting.svg'},
     {'name':'Pitch', 'action':'pitched to', 'icon':'/assets/icons/pitch.svg'},
     {'name':'Proposal', 'action':'sent proposal to', 'icon':'/assets/icons/proposal.svg'},
     {'name':'Feedback', 'action':'received feedback from', 'icon':'/assets/icons/feedback.svg'},

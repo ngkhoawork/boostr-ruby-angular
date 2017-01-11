@@ -6,9 +6,7 @@
         %span.datetime
           {{contact.created_at | date:"MMMM dd 'at' hh:mm a" }}
       %p.name
-        %span{type:'text', name:'edit-name', editable: { text: 'contact.name' }, onaftersave: 'saveCurrentContact(contact)' }
-          %strong
-            {{ contact.name }}
+        %input.title.editable-control{ type: 'text', 'ng-model': 'contact.name', placeholder: "Enter name", 'ng-blur': 'saveCurrentContact(contact)' }
       %p.notification{ 'ng-if': "contactNotification[contact.id]" }
         {{contactNotification[contact.id]}}
       %p.warning{ 'ng-if': "contact.name==contact.address.email" }

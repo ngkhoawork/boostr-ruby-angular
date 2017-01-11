@@ -14,7 +14,7 @@ class UserMailer < ApplicationMailer
 
   def new_deal_email(recipients, deal_id)
     @deal = Deal.find(deal_id)
-    subject = "A new $#{@deal.budget.nil? ? 0 : number_with_delimiter(@deal.budget / 100, :delimiter => ',')} deal for #{@deal.advertiser.present? ? @deal.advertiser.name : ""} just added to the pipeline"
+    subject = "A new #{@deal.budget.nil? ? '$0' : number_to_currency((@deal.budget).round, :precision => 0)} deal for #{@deal.advertiser.present? ? @deal.advertiser.name : ""} just added to the pipeline"
     mail(to: recipients, subject: subject)
   end
 end

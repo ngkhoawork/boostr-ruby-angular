@@ -9,7 +9,7 @@
   display: inline-block;
   width: 100%;
   height: 4px;
-  margin: 35px 0 15px 0;
+  margin: 14px 0 30px 0;
   vertical-align: middle;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -62,7 +62,7 @@
   left: 0;
   z-index: 1;
   width: 100%;
-  height: 32px;
+  height: 24px;
   padding-top: 16px;
   margin-top: -16px;
   box-sizing: border-box;
@@ -92,10 +92,10 @@
 }
 
 .rzslider .rz-pointer {
-  top: -14px;
+  top: -10px;
   z-index: 3;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
   background-color: $brand-primary;
   -webkit-border-radius: 16px;
@@ -108,8 +108,8 @@
 
 .rzslider .rz-pointer:after {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 8px;
+  left: 8px;
   width: 8px;
   height: 8px;
   background: #ffffff;
@@ -132,9 +132,9 @@
 }
 
 .rzslider .rz-bubble {
-  bottom: 16px;
+  bottom: -32px;
   padding: 1px 3px;
-  color: #55637d;
+  color: #a1aab3;
   cursor: default;
 }
 
@@ -143,7 +143,7 @@
 }
 
 .rzslider .rz-bubble.rz-limit {
-  color: #55637d;
+  color: #a1aab3;
 }
 
 .rzslider .rz-ticks {

@@ -12,7 +12,7 @@
             $scope.teamId = ''
             $scope.selectedTeam = {
                 id:'all',
-                name:'Team'
+                name:'All'
             }
             $scope.datePicker = {
                 startDate: null
@@ -24,7 +24,7 @@
 
             $scope.datePickerApply = () ->
                 if ($scope.datePicker.startDate && $scope.datePicker.endDate)
-                    datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+                    datePickerInput.html($scope.datePicker.startDate.format('MMM D, YY') + ' - ' + $scope.datePicker.endDate.format('MMM D, YY'))
                     $scope.isDateSet = true
                     getData()
 
@@ -33,6 +33,18 @@
                 $scope.isDateSet = false
                 if !r then getData()
 
+            $scope.datePickerDefault = ->
+                $scope.datePicker.startDate = moment()
+                    .subtract(6, 'months')
+                    .date(1)
+                $scope.datePicker.endDate = moment()
+                    .subtract(1, 'months')
+                    .endOf('month')
+                datePickerInput.html($scope.datePicker.startDate.format('MMM D, YY') + ' - ' + $scope.datePicker.endDate.format('MMM D, YY'))
+                $scope.isDateSet = true
+
+            $scope.datePickerDefault()
+
             $scope.resetFilters = () ->
                 $scope.productFilter = null
                 $scope.typeFilter = null
@@ -40,10 +52,10 @@
                 $scope.teamId = null
                 $scope.selectedTeam = {
                     id:'all',
-                    name:'Team'
+                    name:'All'
                 }
-                $scope.sellerId = null
-                $scope.datePickerCancel(null, true)
+                $scope.sellerFilter = null
+                $scope.datePickerDefault()
                 $scope.time_period = 'month'
                 getData()
 
@@ -135,8 +147,8 @@
                 if($scope.teamId)
                     query.team = $scope.teamId
 
-                if($scope.sellerId)
-                    query.seller = $scope.sellerId
+                if($scope.sellerFilter)
+                    query.seller = $scope.sellerFilter.id
 
                 if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
                     query.start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
@@ -155,7 +167,7 @@
             #team watcher
             $scope.$watch 'selectedTeam', () ->
                 $scope.teamId = $scope.selectedTeam.id
-                $scope.sellerId = null
+                $scope.sellerFilter = null
                 Seller.query({id: $scope.teamId}).$promise.then (sellers) ->
                     $scope.sellers = sellers
                     $scope.sellers.unshift({first_name:'All', id: 'all'})
@@ -179,8 +191,8 @@
                 $scope.time_period = period
                 getData()
 
-            $scope.filterBySeller =(sellerId) ->
-                $scope.sellerId = sellerId
+            $scope.filterBySeller =(seller) ->
+                $scope.sellerFilter = seller
                 getData()
 
 

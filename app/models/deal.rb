@@ -17,7 +17,7 @@ class Deal < ActiveRecord::Base
 
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
-  has_many :deal_products
+  has_many :deal_products, dependent: :destroy
   has_many :deal_product_budgets, through: :deal_products
   has_many :deal_logs
   has_many :products, -> { distinct }, through: :deal_products
@@ -32,12 +32,6 @@ class Deal < ActiveRecord::Base
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
-
-  before_save do
-    if deal_product_budgets.empty?
-      self.budget = budget.to_i * 100 if budget_changed?
-    end
-  end
 
   before_update do
     if stage_id_changed?
@@ -87,6 +81,7 @@ class Deal < ActiveRecord::Base
   scope :less_than, -> (percentage) { joins(:stage).where('stages.probability < ?', percentage) }
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :by_values, -> (value_ids) { joins(:values).where('values.option_id in (?)', value_ids) unless value_ids.empty? }
+  scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
 
   def fields
     company.fields.where(subject_type: self.class.name)
@@ -239,12 +234,12 @@ class Deal < ActiveRecord::Base
           end
 
           total_share += client_member.share
-          if client_member.user_id == creator.id
+          if creator && client_member.user_id == creator.id
             should_create = false
           end
         end
 
-        if should_create == true
+        if creator && should_create == true
           deal_members.create(user_id: creator.id, share: [100 - total_share, 0].max)
         end
 
@@ -283,32 +278,10 @@ class Deal < ActiveRecord::Base
       ""
     end
   end
-  def self.to_pipeline_report_csv(company, team_id, status)
+  def self.to_pipeline_report_csv(deals)
     CSV.generate do |csv|
-      all_members_list = []
-
-      raw_deals = []
-      deals = []
-      if team_id == "0"
-        raw_deals = company.deals.active
-      else
-        selected_team = Team.find(team_id)
-        all_members_list = selected_team.all_members.collect{|member| member.id}
-        all_members_list += selected_team.all_leaders.collect{|member| member.id}
-        raw_deals = company.deals.joins("left join deal_members on deals.id = deal_members.deal_id").where("deal_members.user_id in (?) and deals.deleted_at is NULL", all_members_list).distinct
-      end
-      case status
-        when 'open'
-          deals = raw_deals.open.less_than(100)
-        when 'all'
-          deals = raw_deals
-        when 'closed'
-          deals = raw_deals.close_status
-        else
-          deals = raw_deals.open.less_than(100)
-      end
-
       deal_ids = deals.collect{|deal| deal.id}
+
       range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
       header = []
       header << "Team Member"
@@ -319,6 +292,8 @@ class Deal < ActiveRecord::Base
       header << "%"
       header << "Budget"
       header << "Latest Activity"
+      header << "Deal Type"
+      header << "Deal Source"
       header << "Next Steps"
       header << "Start Date"
       header << "End Date"
@@ -335,9 +310,11 @@ class Deal < ActiveRecord::Base
             deal.agency ? deal.agency.name : nil,
             deal.stage.name,
             deal.stage.probability.nil? ? "" : deal.stage.probability.to_s + "%",
-            "$" + ((deal.budget.nil? ? 0 : deal.budget) / 100).round.to_s
+            "$" + (deal.budget.nil? ? 0 : deal.budget).round.to_s
         ]
         line << deal.latest_activity
+        line << get_option(deal, "Deal Type")
+        line << get_option(deal, "Deal Source")
         line << deal.next_steps
         line << deal.start_date
         line << deal.end_date
@@ -345,7 +322,7 @@ class Deal < ActiveRecord::Base
           deal_product_budgets = deal.deal_product_budgets.where({start_date: product_time}).select("sum(deal_product_budgets.budget) as total_budget").collect{|deal_product_budget| deal_product_budget.total_budget}
 
           if deal_product_budgets && deal_product_budgets[0]
-            line << "$" + (deal_product_budgets[0] / 100).round.to_s
+            line << "$" + deal_product_budgets[0].round.to_s
           else
             line << "$0"
           end
@@ -487,45 +464,45 @@ class Deal < ActiveRecord::Base
           end
           line = [
             key,
-            "$" + (row['1'] / 100).round.to_s,
-            "$" + (row['2'] / 100).round.to_s,
-            "$" + (row['3'] / 100).round.to_s,
-            "$" + (row['Q1'] / 100).round.to_s,
-            "$" + (row['4'] / 100).round.to_s,
-            "$" + (row['5'] / 100).round.to_s,
-            "$" + (row['6'] / 100).round.to_s,
-            "$" + (row['Q2'] / 100).round.to_s,
-            "$" + (row['7'] / 100).round.to_s,
-            "$" + (row['8'] / 100).round.to_s,
-            "$" + (row['9'] / 100).round.to_s,
-            "$" + (row['Q3'] / 100).round.to_s,
-            "$" + (row['10'] / 100).round.to_s,
-            "$" + (row['11'] / 100).round.to_s,
-            "$" + (row['12'] / 100).round.to_s,
-            "$" + (row['Q4'] / 100).round.to_s,
-            "$" + (row['FY'] / 100).round.to_s
+            "$" + row['1'].round.to_s,
+            "$" + row['2'].round.to_s,
+            "$" + row['3'].round.to_s,
+            "$" + row['Q1'].round.to_s,
+            "$" + row['4'].round.to_s,
+            "$" + row['5'].round.to_s,
+            "$" + row['6'].round.to_s,
+            "$" + row['Q2'].round.to_s,
+            "$" + row['7'].round.to_s,
+            "$" + row['8'].round.to_s,
+            "$" + row['9'].round.to_s,
+            "$" + row['Q3'].round.to_s,
+            "$" + row['10'].round.to_s,
+            "$" + row['11'].round.to_s,
+            "$" + row['12'].round.to_s,
+            "$" + row['Q4'].round.to_s,
+            "$" + row['FY'].round.to_s
           ]
           csv << line
         end
         line = [
             "Total",
-            "$" + (data_obj['Total']['1'] / 100).round.to_s,
-            "$" + (data_obj['Total']['2'] / 100).round.to_s,
-            "$" + (data_obj['Total']['3'] / 100).round.to_s,
-            "$" + (data_obj['Total']['Q1'] / 100).round.to_s,
-            "$" + (data_obj['Total']['4'] / 100).round.to_s,
-            "$" + (data_obj['Total']['5'] / 100).round.to_s,
-            "$" + (data_obj['Total']['6'] / 100).round.to_s,
-            "$" + (data_obj['Total']['Q2'] / 100).round.to_s,
-            "$" + (data_obj['Total']['7'] / 100).round.to_s,
-            "$" + (data_obj['Total']['8'] / 100).round.to_s,
-            "$" + (data_obj['Total']['9'] / 100).round.to_s,
-            "$" + (data_obj['Total']['Q3'] / 100).round.to_s,
-            "$" + (data_obj['Total']['10'] / 100).round.to_s,
-            "$" + (data_obj['Total']['11'] / 100).round.to_s,
-            "$" + (data_obj['Total']['12'] / 100).round.to_s,
-            "$" + (data_obj['Total']['Q4'] / 100).round.to_s,
-            "$" + (data_obj['Total']['FY'] / 100).round.to_s
+            "$" + data_obj['Total']['1'].round.to_s,
+            "$" + data_obj['Total']['2'].round.to_s,
+            "$" + data_obj['Total']['3'].round.to_s,
+            "$" + data_obj['Total']['Q1'].round.to_s,
+            "$" + data_obj['Total']['4'].round.to_s,
+            "$" + data_obj['Total']['5'].round.to_s,
+            "$" + data_obj['Total']['6'].round.to_s,
+            "$" + data_obj['Total']['Q2'].round.to_s,
+            "$" + data_obj['Total']['7'].round.to_s,
+            "$" + data_obj['Total']['8'].round.to_s,
+            "$" + data_obj['Total']['9'].round.to_s,
+            "$" + data_obj['Total']['Q3'].round.to_s,
+            "$" + data_obj['Total']['10'].round.to_s,
+            "$" + data_obj['Total']['11'].round.to_s,
+            "$" + data_obj['Total']['12'].round.to_s,
+            "$" + data_obj['Total']['Q4'].round.to_s,
+            "$" + data_obj['Total']['FY'].round.to_s
         ]
         csv << line
         csv << []
@@ -541,7 +518,7 @@ class Deal < ActiveRecord::Base
         advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
         stage_name = deal.stage.present? ? deal.stage.name : nil
         stage_probability = deal.stage.present? ? deal.stage.probability : nil
-        budget = !deal.budget.nil? ? deal.budget/100.0 : nil
+        budget = deal.budget
         member = deal.users.collect{|user| user.name}.join(";")
         csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
       end
@@ -556,7 +533,7 @@ class Deal < ActiveRecord::Base
         advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
         stage_name = deal.stage.present? ? deal.stage.name : nil
         stage_probability = deal.stage.present? ? deal.stage.probability : nil
-        budget = !deal.budget.nil? ? deal.budget/100.0 : nil
+        budget = deal.budget
         member = deal.users.collect{|user| user.name}.join(";")
         csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
       end
@@ -566,7 +543,7 @@ class Deal < ActiveRecord::Base
       csv << ["Deal ID", "Name", "Product", "Pricing Type", "Product Line", "Product Family", "Budget", "Period"]
       all.each do |deal|
         deal.deal_product_budgets.each do |deal_product_budget|
-          budget = !deal_product_budget.budget.nil? ? deal_product_budget.budget/100.0 : nil
+          budget = deal_product_budget.budget
           product = deal_product_budget.deal_product.product
           product_name = ""
           pricing_type = ""
@@ -640,7 +617,7 @@ class Deal < ActiveRecord::Base
         advertiser_type_id = Client.advertiser_type_id(current_user.company)
         advertisers = current_user.company.clients.by_type_id(advertiser_type_id).where('name ilike ?', row[2].strip)
         if advertisers.length > 1
-          error = { row: row_number, message: ["Advertiser #{row[2]} matched more than one client record"] }
+          error = { row: row_number, message: ["Advertiser #{row[2]} matched more than one account record"] }
           errors << error
           next
         elsif advertisers.length == 0
@@ -660,7 +637,7 @@ class Deal < ActiveRecord::Base
         agency_type_id = Client.agency_type_id(current_user.company)
         agencies = current_user.company.clients.by_type_id(agency_type_id).where('name ilike ?', row[3].strip)
         if agencies.length > 1
-          error = { row: row_number, message: ["Agency #{row[3]} matched more than one client record"] }
+          error = { row: row_number, message: ["Agency #{row[3]} matched more than one account record"] }
           errors << error
           next
         elsif agencies.length == 0
@@ -971,7 +948,7 @@ class Deal < ActiveRecord::Base
       if !notification.nil? && !notification.recipients.nil?
         recipients = notification.recipients.split(',').map(&:strip)
         if !recipients.nil? && recipients.length > 0
-          subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency((budget/100.0).round, :precision => 0))+' deal for '+advertiser.name+' was just won!'
+          subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency(budget.round, :precision => 0))+' deal for '+advertiser.name+' was just won!'
           UserMailer.close_email(recipients, subject, self).deliver_later(wait: 10.minutes, queue: "default")
         end
       end
@@ -1035,7 +1012,7 @@ class Deal < ActiveRecord::Base
       io_param = {
           advertiser_id: self.advertiser_id,
           agency_id: self.agency_id,
-          budget: self.budget / 100,
+          budget: self.budget.nil? ? 0 : self.budget,
           start_date: self.start_date,
           end_date: self.end_date,
           name: self.name,
@@ -1063,7 +1040,7 @@ class Deal < ActiveRecord::Base
             content_fee_param = {
                 io_id: io.id,
                 product_id: deal_product.product.id,
-                budget: deal_product.budget / 100
+                budget: deal_product.budget
             }
             content_fee = ContentFee.create(content_fee_param)
             deal_product.update_columns(open: false)

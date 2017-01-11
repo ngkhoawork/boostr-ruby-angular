@@ -26,6 +26,7 @@
       address_attributes: address_attributes
       client_id: original.contact.client_id
       set_primary_client: !!(original.contact.set_primary_client)
+    send.unassign = true if original.unassign
     angular.toJson(send)
 
   resource = $resource '/api/contacts/:id', { id: '@id' },

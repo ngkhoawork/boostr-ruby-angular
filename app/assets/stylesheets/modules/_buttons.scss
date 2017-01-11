@@ -16,3 +16,35 @@
   padding: 10px 48px;
   line-height: 15px;
 }
+
+.add-btn {
+  outline: none;
+  font-weight: bold;
+  background-color: transparent;
+  color: $main-color;
+  border: 2px solid $main-color;
+  border-radius: 100px;
+  padding: 4px 14px 4px 12px;
+  position: relative;
+  top: -3px;
+  transition: background-color 300ms, color 300ms;
+  svg {
+    width: 14px;
+    path {
+      transition: fill 300ms;
+      fill: $main-color;
+    }
+  }
+  svg, span {
+    vertical-align: middle;
+  }
+  &:hover {
+    background-color: $main-color;
+    color: white;
+    svg {
+      path {
+        fill: white;
+      }
+    }
+  }
+}

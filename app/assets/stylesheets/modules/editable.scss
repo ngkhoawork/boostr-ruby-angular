@@ -29,3 +29,24 @@ h3 {
 .panel-body.details.details-edit span {
   display: inline-block;
 }
+
+.editable-control,
+.editable-field {
+  border: 1px solid transparent;
+  padding: 7px 10px;
+  border-radius: 4px;
+  line-height: normal;
+
+  &:focus {
+    border-color: $brand-primary-lighten;
+    border-width: 1px;
+    outline: none;
+  }
+  &:hover {
+    border-color: $brand-primary-lighten;
+    border-width: 1px;
+  }
+  &::before {
+    content: '$';
+  }
+}

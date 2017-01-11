@@ -175,7 +175,7 @@
                   %th{colspan: 15}
                     {{year}}
                 %tr.subheading{ 'ng-show': 'showQuarterlyDeals' }
-                  %th.left Client
+                  %th.left Account
                   %th.right{ style: 'width: 12.5%' } Deal Value
                   %th.right{ style: 'width: 12.5%' } Probability
                   %th.right{ style: 'width: 12.5%' } Revenue Q1
@@ -183,7 +183,7 @@
                   %th.right{ style: 'width: 12.5%' } Revenue Q3
                   %th.right{ style: 'width: 12.5%' } Revenue Q4
                 %tr.subheading{ 'ng-hide': 'showQuarterlyDeals' }
-                  %th.left{ style: 'width: 200px' } Client
+                  %th.left{ style: 'width: 200px' } Account
                   %th.right{ style: 'width: 100px' } Deal Value
                   %th.right{ style: 'width: 100px' } Probability
                   %th.right{ style: 'width: 75px' } Jan
@@ -221,7 +221,7 @@
             %table.table.table-striped
               %thead
                 %tr{ 'ng-show': 'showQuarterlyDeals' }
-                  %th.left Client
+                  %th.left Account
                   %th.left Seller
                   %th.right Deal Value
                   %th.right Probability
@@ -231,7 +231,7 @@
                   %th.right Revenue Q3
                   %th.right Revenue Q4
                 %tr{ 'ng-hide': 'showQuarterlyDeals' }
-                  %th.left Client
+                  %th.left Account
                   %th.left Seller
                   %th.right Deal Value
                   %th.right Probability
@@ -255,7 +255,7 @@
                   %td.left
                     {{deal.deal_members[0].name}}
                   %td.right
-                    {{ ((deal.budget || 0) / 100) | humanReadableMoney }}
+                    {{ (deal.budget || 0) | humanReadableMoney }}
                   %td.right
                     {{deal.stage.probability}}%
                   %td.left
