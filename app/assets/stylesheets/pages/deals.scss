@@ -1,51 +1,80 @@
 #deals {
+    font-family: "Avenir Next", Arial, serif;
+    color: $main-font-color;
     background-color: #F5F5F5;
+    min-height: calc(100vh - 150px);
+    a {
+        color: $secondary-color;
+    }
     .deals-menu {
-        height: 70px;
+        padding: 30px;
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    }
+    .deals-container {
+        white-space: nowrap;
+        overflow-x: scroll;
     }
     .deal-column {
-        padding: 0;
         border-right: 2px solid #E7EBF0;
+        width: 20%;
+        display: inline-block;
+        vertical-align: top;
         .column-header {
+            position: relative;
             text-align: center;
             background-color: white;
+            height: 72px;
             border-bottom: 1px solid #E4E4E6;
+            //border: 2px solid #E4E4E6;
             padding: 15px 0;
+            //svg {
+            //    z-index: 0;
+            //    top: 0;
+            //    left: -1px;
+            //    position: absolute;
+            //    width: 103.5%;
+            //    height: 100%;
+            //    path {
+            //        fill: white;
+            //    }
+            //}
             &:before, &:after {
                 content: '';
                 position: absolute;
-                right: -17px;
+                right: -16px;
                 top: 0;
-                border-left: 15px solid #E7EBF0;
-                border-top: 38px solid transparent;
-                border-bottom: 38px solid transparent;
+                border-left: 14px solid #E7EBF0;
+                border-top: 36px solid transparent;
+                border-bottom: 36px solid transparent;
                 z-index: 1;
             }
             &:after {
                 border-left-color: white;
-                right: -15px;
+                right: -14px;
             }
             span {
+                z-index: 1;
                 display: block;
             }
             span:nth-child(1) {
                 font-weight: bold;
-                font-size: 18px;
-                color: black;
                 i {
                     font-style: normal;
-                    color: #8D98A2;
+                    color: $secondary-font-color;
                 }
             }
             span:nth-child(2) {
-                color: #98A2AB;
+                color: $secondary-font-color;
             }
 
         }
         .column-body {
             position: relative;
-            min-height: 700px;
             padding: 10px;
+            min-height: calc(100vh - 150px - 100px);
             .dndPlaceholder {
                 display: block;
                 min-height: 82px;
@@ -57,7 +86,6 @@
         }
     }
     .deal-block {
-        cursor: pointer;
         position: relative;
         padding: 10px;
         margin-bottom: 10px;
@@ -77,7 +105,7 @@
             color: #8D98A2;
         }
         span:nth-child(3) {
-            color: #98A2AB;
+            font-weight: bold;
         }
         &.dndDraggingSource {
             display: none;

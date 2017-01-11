@@ -1,21 +1,26 @@
 #deals
-	.container
+	.container-fluid
 		.row
 			.col-xs-12.deals-menu
-		.row
-			.col-xs-3.deal-column{'ng-repeat': 'name in columnNames', 'ng-init': 'columnIndex = $index'}
+				.title Deals
+		.row.deals-container
+			.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index'}
 				.column-header
 					%span
-						{{name}}
+						{{stage.name}}
 						%i ({{columns[columnIndex].length}})
 					%span
-						$10M (W) / $20M (UW)
-				.column-body{'dnd-list': 'columns[columnIndex]'}
+						{{calcWeighted(columns[columnIndex]) | formatMoney}} (W) / {{calcUnweighted(columns[columnIndex], stage) | formatMoney}} (UW)
+				.column-body{'dnd-list': 'columns[columnIndex]',
+							 'dnd-drop': 'onDrop(item, stage)'}
 					.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
 								'dnd-draggable': 'deal',
 								'dnd-moved': 'columns[columnIndex].splice($index, 1)',
 								'dnd-effect-allowed': 'move'}
-						%span {{deal.name}}
+						.date.pull-right {{deal.start_date | date: 'mediumDate'}}
+						%span
+							%a{href: ''}
+								{{deal.name}}
 						%span {{deal.company}}
 						%span {{'$' + deal.revenue + 'M' + ' | ' + deal.seller}}
 
