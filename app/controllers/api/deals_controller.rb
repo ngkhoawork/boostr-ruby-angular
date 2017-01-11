@@ -78,7 +78,7 @@ class Api::DealsController < ApplicationController
           end
           render json: response_deals
         else
-          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage).distinct , each_serializer: DealIndexSerializer).to_json
+          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage, :users).distinct , each_serializer: DealIndexSerializer)
         end
       }
       format.csv {

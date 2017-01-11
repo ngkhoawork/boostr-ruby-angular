@@ -6,6 +6,7 @@ class DealIndexSerializer < ActiveModel::Serializer
     :advertiser_id,
     :agency_id,
     :company_id,
+    :deal_members,
     :start_date,
     :end_date,
     :name,
@@ -27,6 +28,10 @@ class DealIndexSerializer < ActiveModel::Serializer
 
   def agency
     object.agency.serializable_hash(only: [:id, :name]) rescue nil
+  end
+
+  def deal_members
+    object.users.as_json(override: true, only: [:id], methods: :name)
   end
 
   def cache_key

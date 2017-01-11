@@ -80,9 +80,13 @@ class User < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
-      methods: [:name, :leader?, :leader]
-    ))
+    if options[:override]
+      super(options)
+    else
+      super(options.merge(
+        methods: [:name, :leader?, :leader]
+      ).except(:override))
+    end
   end
 
   def active_for_authentication?
