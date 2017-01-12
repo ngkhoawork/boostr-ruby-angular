@@ -17,6 +17,7 @@ class DealIndexSerializer < ActiveModel::Serializer
     :deleted_at,
     :advertiser,
     :agency,
+    :deal_custom_field,
     :stage_id,
     :stage)
 
@@ -27,6 +28,10 @@ class DealIndexSerializer < ActiveModel::Serializer
 
   def agency
     object.agency.serializable_hash(only: [:id, :name]) rescue nil
+  end
+
+  def agency
+    object.deal_custom_field
   end
 
   def cache_key

@@ -121,6 +121,9 @@
                 %th.right{ width: "80", ng: { repeat: 'productTime in productRange track by $index' } }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("products["+$index+"]")'}
                     {{ productTime | date: 'MMM-yy' }}
+                %th.right{ width: "80", ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_custom_field[fieldName]")'}
+                    {{dealCustomFieldName.field_label}}
             %tbody
               %tr{ ng: { repeat: 'deal in deals | orderBy:sortType:sortReverse' } }
                 %td.left
@@ -142,3 +145,18 @@
                 %td.left {{ deal.end_date | date: 'MM-dd-yyyy' }}
                 %td.right{ ng: { repeat: 'productTime in productRange track by $index' } }
                   ${{ deal.products[$index] | number : 0 }}
+                %td.right{ width: "80", ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "percentage"'}
+                    {{deal.deal_custom_field[fieldName] || 0}}%
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "number"'}
+                    {{ (deal.deal_custom_field[fieldName] || 0) | number : 2}}
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "currency"'}
+                    ${{ (deal.deal_custom_field[fieldName] || 0) | number : 2}}
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "text" || dealCustomFieldName.field_type == "note"'}
+                    {{deal.deal_custom_field[fieldName] || "N/A"}}
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "integer"'}
+                    {{ (deal.deal_custom_field[fieldName] || 0) | number : 0}}
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "boolean"'}
+                    {{ deal.deal_custom_field[fieldName] ? "Yes" : "No" }}
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "datetime"'}
+                    {{ deal.deal_custom_field[fieldName] ? (deal.deal_custom_field[fieldName] | date: 'MM-dd-yyyy') : "N/A" }}

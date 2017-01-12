@@ -83,20 +83,20 @@
                             End Date
                             %span.star *
                         %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
-            .form-group{'ng-repeat': 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', 'ng-if': "dealCustomFieldName.show_on_modal", 'ng-class':'{error: errors[dealCustomFieldName.field_type + dealCustomFieldName.field_index]}'}
-                %span.error-text {{errors[dealCustomFieldName.field_type + dealCustomFieldName.field_index]}}
-                %label{ for: '{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}' }
+            .form-group{ng: {repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", if: "dealCustomFieldName.show_on_modal", class:'{error: errors[fieldName]}'}}
+                %span.error-text {{errors[fieldName]}}
+                %label{ for: '{{fieldName}}' }
                     {{dealCustomFieldName.field_label}}
                     %span.star{ 'ng-if': "dealCustomFieldName.is_required == true" }
                         *
-                %input.form-control{ 'ng-if': "dealCustomFieldName.field_type != 'note' && dealCustomFieldName.field_type != 'datetime' && dealCustomFieldName.field_type != 'boolean'", placeholder: 'Enter {{dealCustomFieldName.field_label}}', ng: { model: 'deal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]' }, name: '{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}' }
-                %textarea.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'note'", rows: 4, 'ng-model': "deal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]", name: "{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}' }
+                %input.form-control{ 'ng-if': "dealCustomFieldName.field_type != 'note' && dealCustomFieldName.field_type != 'datetime' && dealCustomFieldName.field_type != 'boolean'", placeholder: 'Enter {{dealCustomFieldName.field_label}}', ng: { model: 'deal.deal_custom_field[fieldName]' }, name: '{{fieldName}}' }
+                %textarea.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'note'", rows: 4, 'ng-model': "deal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}' }
                 .bs-datepicker
-                    %input.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'datetime'", readonly: true, name: '{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]', required: true, click: 'dateOpened[dealCustomFieldName.field_type + dealCustomFieldName.field_index] = true' }, 'is-open': 'dateOpened[dealCustomFieldName.field_type + dealCustomFieldName.field_index]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
+                    %input.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.deal_custom_field[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
                 .show-hide-remainder-form{ ng: { if: "dealCustomFieldName.field_type == 'boolean' " } }
                     .switch-remainder-form
-                        %input.cmn-toggle.cmn-toggle-round-flat{id: "{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}", type: 'checkbox', 'ng-model': 'deal.deal_custom_field[dealCustomFieldName.field_type + dealCustomFieldName.field_index]'}
-                        %label{:for => "{{dealCustomFieldName.field_type + dealCustomFieldName.field_index}}"}
+                        %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'deal.deal_custom_field[fieldName]'}
+                        %label{:for => "{{fieldName}}"}
                             %span
         .popup-modal-footer
             %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
