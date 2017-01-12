@@ -2,81 +2,132 @@
     ['$scope', '$document', 'InactivesService', 'Product', 'Field'
         ($scope, $document, IN, Product, Field) ->
             colors = ['#3498DB', '#8CC135']
+            $scope.inactive =
+                data: null
+                chartId: '#inactive-chart'
+                lookbackWindow: [
+                    {name: '1 Qtr', value: 1}
+                    {name: '2 Qtrs', value: 2}
+                    {name: '3 Qtrs', value: 3}
+                    {name: '4 Qtrs', value: 4}
+                    {name: '5 Qtrs', value: 5}
+                    {name: '6 Qtrs', value: 6}
+                    {name: '7 Qtrs', value: 7}
+                    {name: '8 Qtrs', value: 8}
+                ]
+                filter: {'qtrs': 2}
+                selected: {'qtrs': {name: '2 Qtrs', value: 2}}
+                setFilter: (type, item) ->
+                    if !item then return
+                    this.selected[type] = item
+                    switch type
+                        when 'qtrs' then this.filter.qtrs = item.value
+                        when 'team' then this.filter.team = item.id
+                        when 'seller' then this.filter.seller = item.id
+                        when 'product' then this.filter.product_id = item.id
+                        when 'category'
+                            this.filter.category_id = item.id
+                            this.filter.subcategory_id = undefined
+                            if item.suboptions
+                                this.selected.subcategory = undefined
+                                this.subcategories = angular.copy item.suboptions
+                                this.subcategories.unshift({name: 'All', id: null})
+                            else
+                                this.subcategories = this.allSubcategories
+                        when 'subcategory' then this.filter.subcategory_id = item.id
+                    this.applyFilter()
 
-            $scope.lookbackWindow = [
-                {name: '1 Qtr', value: 1}
-                {name: '2 Qtrs', value: 2}
-                {name: '3 Qtrs', value: 3}
-                {name: '4 Qtrs', value: 4}
-                {name: '5 Qtrs', value: 5}
-                {name: '6 Qtrs', value: 6}
-                {name: '7 Qtrs', value: 7}
-                {name: '8 Qtrs', value: 8}
-            ]
-            $scope.filter = {'qtrs': 2}
-            $scope.selected = {'qtrs': {name: '2 Qtrs', value: 2}}
+                resetFilter: ->
+                    this.selected = {'qtrs': {name: '2 Qtrs', value: 2}}
+                    this.filter = {'qtrs': 2}
+                    this.subcategories = this.allSubcategories
+                    this.applyFilter()
 
-            $scope.setFilter = (type, item) ->
-                if !item then return
-                $scope.selected[type] = item
-                switch type
-                    when 'qtrs' then $scope.filter.qtrs = item.value
-                    when 'team' then $scope.filter.team = item.id
-                    when 'seller' then $scope.filter.seller = item.id
-                    when 'product' then $scope.filter.product_id = item.id
-                    when 'category'
-                        $scope.filter.category_id = item.id
-                        $scope.filter.subcategory_id = undefined
-                        if item.suboptions
-                            $scope.subcategories = angular.copy item.suboptions
-                            $scope.subcategories.unshift({name: 'All', id: null})
-                        else
-                            $scope.subcategories = $scope.allSubcategories
-                    when 'subcategory' then $scope.filter.subcategory_id = item.id
+                applyFilter: ->
+                    IN.get(this.filter).$promise.then ((data) ->
+                        console.log('INACTIVE: ', data.inactives.length)
+                        $scope.inactive.data = angular.copy(data.inactives)
+                        drawChart(data.inactives, $scope.inactive.chartId, true)
+                    ), (err) ->
+                        if err then console.log(err)
+            $scope.seasonalInactive =
+                data: null
+                chartId: '#seasonal-chart'
+                lookbackWindow: [
+                    {name: '1 Qtr', value: 1}
+                    {name: '2 Qtrs', value: 2}
+                    {name: '3 Qtrs', value: 3}
+                    {name: '4 Qtrs', value: 4}
+                    {name: '5 Qtrs', value: 5}
+                    {name: '6 Qtrs', value: 6}
+                    {name: '7 Qtrs', value: 7}
+                    {name: '8 Qtrs', value: 8}
+                ]
+                filter: {'qtrs': 2}
+                selected: {'qtrs': {name: '2 Qtrs', value: 2}}
+                setFilter: (type, item) ->
+                    if !item then return
+                    this.selected[type] = item
+                    switch type
+                        when 'qtrs' then this.filter.qtrs = item.value
+                        when 'team' then this.filter.team = item.id
+                        when 'seller' then this.filter.seller = item.id
+                        when 'product' then this.filter.product_id = item.id
+                        when 'category'
+                            this.filter.category_id = item.id
+                            this.filter.subcategory_id = undefined
+                            if item.suboptions
+                                this.selected.subcategory = undefined
+                                this.subcategories = angular.copy item.suboptions
+                                this.subcategories.unshift({name: 'All', id: null})
+                            else
+                                this.subcategories = this.allSubcategories
+                        when 'subcategory' then this.filter.subcategory_id = item.id
+                    this.applyFilter()
 
-                applyFilter()
+                resetFilter: ->
+                    this.selected = {'qtrs': {name: '2 Qtrs', value: 2}}
+                    this.filter = {'qtrs': 2}
+                    this.subcategories = this.allSubcategories
+                    this.applyFilter()
 
-            $scope.resetFilter = ->
-                $scope.selected = {'qtrs': {name: '2 Qtrs', value: 2}}
-                $scope.filter = {'qtrs': 2}
-                $scope.subcategories = $scope.allSubcategories
-                applyFilter()
+                applyFilter: ->
+                    IN.get(this.filter).$promise.then ((data) ->
+                        console.log('SEASONAL INACTIVE: ', data.inactives.length)
+                        $scope.seasonalInactive.data = angular.copy(data.inactives)
+                        drawChart(data.inactives, $scope.seasonalInactive.chartId, true)
+                    ), (err) ->
+                        if err then console.log(err)
 
             #initial query
-            IN.get().$promise.then ((data) ->
+            Product.all().then (products) ->
+                products.unshift({name: 'All', id: null})
+                $scope.inactive.productsList = products
+                $scope.seasonalInactive.productsList = products
 
-                Product.all().then (products) ->
-                    $scope.productsList = products
-                    $scope.productsList.unshift({name: 'All', id: null})
+            Field.defaults({}, 'Client').then (clients) ->
+                categories = [{name: 'All', id: null}]
+                subcategories = [{name: 'All', id: null}]
+                for client in clients
+                    if client.name is 'Category'
+                        for category in client.options
+                            categories.push category
+                            for subcategory in category.suboptions
+                                subcategories.push subcategory
 
-                Field.defaults({}, 'Client').then (clients) ->
-                    categories = [{name: 'All', id: null}]
-                    subcategories = [{name: 'All', id: null}]
-                    for client in clients
-                        if client.name is 'Category'
-                            for category in client.options
-                                categories.push category
-                                for subcategory in category.suboptions
-                                    subcategories.push subcategory
+                $scope.inactive.categories = categories
+                $scope.seasonalInactive.categories = categories
+                $scope.inactive.subcategories = $scope.inactive.allSubcategories = subcategories
+                $scope.seasonalInactive.subcategories = $scope.seasonalInactive.allSubcategories = subcategories
 
-                    $scope.categories = categories
-                    $scope.subcategories = $scope.allSubcategories = subcategories
+            $scope.inactive.applyFilter()
+            $scope.seasonalInactive.applyFilter()
+#            IN.get().$promise.then ((data) ->
+#                $scope.inactive.data = angular.copy(data.inactives)
+#                drawChart(data.inactives)
 
-                $scope.inactives = angular.copy(data.inactives)
-                drawChart(data.inactives)
-
-            ), (err) ->
-                if err then console.log(err)
-
-            applyFilter = ->
-                IN.get($scope.filter).$promise.then ((data) ->
-                    $scope.inactives = angular.copy(data.inactives)
-                    drawChart(data.inactives, true)
-                ), (err) ->
-                    if err then console.log(err)
-
-            drawChart = (data, isUpdating) ->
-
+            drawChart = (data, chartId, isUpdating) ->
+                if !data || !data.length then return
                 data.reverse()
 
                 width = 940
@@ -85,7 +136,7 @@
                     top: 30
                     right: 40
                     bottom: 70
-                    left: 100
+                    left: 150
 
                 x = d3.scale.linear().range([
                     0
@@ -125,7 +176,7 @@
                     .scale(y)
                     .orient('left')
 
-                svg = d3.select('#inactive-chart')
+                svg = d3.select(chartId)
                 if isUpdating then svg.html('')
 
                 svg = svg
