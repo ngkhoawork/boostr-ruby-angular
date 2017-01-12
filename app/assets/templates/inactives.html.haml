@@ -8,7 +8,7 @@
 			%table.filter-block.pull-right
 				%tr.filter-title
 					%td Spend Lookback Window
-					%td Product
+					-#%td Product
 					%td Category
 					%td Sub-Category
 					%td
@@ -18,23 +18,23 @@
 					%td
 						%ul.kpi-block__filter
 							%li{ dropdown: true }
-								%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !inactive.selected.qtrs.value}' }
-									{{inactive.selected.qtrs ? inactive.selected.qtrs.name : 'All'}}
+								%a{ href: '', dropdown: { toggle: true }}
+									{{inactive.selected.qtrs.name}}
 									%span.caret
 								%ul.dropdown-menu
-									%li{ ng: { repeat: 'option in inactive.lookbackWindow', class: '{active: option.value === inactive.inactive.filter.qtrs}' } }
+									%li{ ng: { repeat: 'option in inactive.lookbackWindow', class: '{active: option.value === inactive.filter.qtrs}' } }
 										%a{ href: '', ng: { click: 'inactive.setFilter("qtrs", option)' } }
 											{{ option.name }}
-					%td
-						%ul.kpi-block__filter
-							%li{ dropdown: true }
-								%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !inactive.selected.product.id}' }
-									{{inactive.selected.product ? inactive.selected.product.name : 'All'}}
-									%span.caret
-								%ul.dropdown-menu
-									%li{ ng: { repeat: 'product in inactive.productsList', class: '{active: product.id === inactive.filter.product_id}' } }
-										%a{ href: '', ng: { click: 'inactive.setFilter("product", product)' } }
-											{{ product.name }}
+					-#%td
+					-#	%ul.kpi-block__filter
+					-#		%li{ dropdown: true }
+					-#			%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !inactive.selected.product.id}' }
+					-#				{{inactive.selected.product ? inactive.selected.product.name : 'All'}}
+					-#				%span.caret
+					-#			%ul.dropdown-menu
+					-#				%li{ ng: { repeat: 'product in inactive.productsList', class: '{active: product.id === inactive.filter.product_id}' } }
+					-#					%a{ href: '', ng: { click: 'inactive.setFilter("product", product)' } }
+					-#						{{ product.name }}
 					%td
 						%ul.kpi-block__filter
 							%li{ dropdown: true }
@@ -58,9 +58,9 @@
 											{{ subcategory.name }}
 			%h4.chart-title Inactive
 			%span.chart-subtitle No spend this quarter with spend last X Qtrs
-			%div{'ng-style': '{display: inactive.data.length == 0 ? "block" : "none"}'}
+			%div{'ng-show': 'inactive.data.length == 0'}
 				%h4.chart-title No Data Available
-			%div{'ng-style': '{display: inactive.data.length > 0 ? "block" : "none"}'}
+			%div{'ng-show': 'inactive.data.length > 0'}
 				.col-xs-12.pad
 					%svg#inactive-chart.inactives-chart
 				.col-xs-12.table-report.text-center
@@ -81,11 +81,11 @@
 								%td {{item.last_activity.activity_type_name}}
 								%td {{item.sellers.join(', ')}}
 
-		.row.well.kpi-block
+		.row.well.kpi-block{'ng-style': '{"margin-bottom": seasonalInactive.data.length == 0 ? "250px" : "0"}'}
 			%table.filter-block.pull-right
 				%tr.filter-title
-					%td Spend Lookback Window
-					%td Product
+					%td Comparison Type
+					%td Comparison Time Period
 					%td Category
 					%td Sub-Category
 					%td
@@ -95,23 +95,23 @@
 					%td
 						%ul.kpi-block__filter
 							%li{ dropdown: true }
-								%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !seasonalInactive.selected.qtrs.value}' }
-									{{seasonalInactive.selected.qtrs ? seasonalInactive.selected.qtrs.name : 'All'}}
+								%a{ href: '', dropdown: { toggle: true }}
+									{{seasonalInactive.selected.comparisonType.name}}
 									%span.caret
 								%ul.dropdown-menu
-									%li{ ng: { repeat: 'option in seasonalInactive.lookbackWindow', class: '{active: option.value === seasonalInactive.seasonalInactive.filter.qtrs}' } }
-										%a{ href: '', ng: { click: 'seasonalInactive.setFilter("qtrs", option)' } }
+									%li{ ng: { repeat: 'option in seasonalInactive.comparisonTypes', class: '{active: option.value === seasonalInactive.filter["time_period_type"]}' } }
+										%a{ href: '', ng: { click: 'seasonalInactive.setFilter("comparisonType", option)' } }
 											{{ option.name }}
 					%td
 						%ul.kpi-block__filter
 							%li{ dropdown: true }
-								%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !seasonalInactive.selected.product.id}' }
-									{{seasonalInactive.selected.product ? seasonalInactive.selected.product.name : 'All'}}
+								%a{ href: '', dropdown: { toggle: true }}
+									{{seasonalInactive.selected.comparisonNumber.name}}
 									%span.caret
 								%ul.dropdown-menu
-									%li{ ng: { repeat: 'product in seasonalInactive.productsList', class: '{active: product.id === seasonalInactive.filter.product_id}' } }
-										%a{ href: '', ng: { click: 'seasonalInactive.setFilter("product", product)' } }
-											{{ product.name }}
+									%li{ ng: { repeat: 'option in seasonalInactive.comparisonNames[seasonalInactive.selectedType]', class: '{active: option.value === seasonalInactive.filter["time_period_number"]}' } }
+										%a{ href: '', ng: { click: 'seasonalInactive.setFilter("comparisonNumber", option)' } }
+											{{ option.name }}
 					%td
 						%ul.kpi-block__filter
 							%li{ dropdown: true }
@@ -135,9 +135,9 @@
 											{{ subcategory.name }}
 			%h4.chart-title Seasonal Inactive
 			%span.chart-subtitle Quarter over Quarter - X
-			%div{'ng-style': '{display: seasonalInactive.data.length == 0 ? "block" : "none"}'}
+			%div{'ng-show': 'seasonalInactive.data.length == 0'}
 				%h4.chart-title No Data Available
-			%div{'ng-style': '{display: seasonalInactive.data.length > 0 ? "block" : "none"}'}
+			%div{'ng-show': 'seasonalInactive.data.length > 0'}
 				.col-xs-12.pad
 					%svg#seasonal-chart.inactives-chart
 				.col-xs-12.table-report.text-center

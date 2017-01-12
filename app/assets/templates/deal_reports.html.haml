@@ -4,10 +4,10 @@
       .col-xs-12
         %h3.title
           Pipeline by User
+        %a.export.pull-right{ href: '', ng: { click: 'exportReports()' } }
+          = inline_svg 'icons/export.svg'
+          Export
         .filters-block
-          %a.pull-right{ href: '', ng: { click: 'exportReports()' } }
-            = inline_svg 'icons/export.svg'
-            Export
           %table
             %tr.filter-title
               %td Team

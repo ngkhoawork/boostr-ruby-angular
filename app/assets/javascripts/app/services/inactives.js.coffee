@@ -3,9 +3,14 @@
         ($resource) ->
 
             resource = $resource '/api/inactives', { },
-                update: {
-                    method: 'PUT'
-                    url: '/api'
+                inactive: {
+                    method: 'GET'
+                    url: '/api/inactives/inactives'
+                    isArray: true
+                }
+                seasonalInactive: {
+                    method: 'GET'
+                    url: '/api/inactives/seasonal_inactives'
                 }
 
             resource

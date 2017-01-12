@@ -15,15 +15,13 @@
                     {name: '7 Qtrs', value: 7}
                     {name: '8 Qtrs', value: 8}
                 ]
-                filter: {'qtrs': 2}
-                selected: {'qtrs': {name: '2 Qtrs', value: 2}}
+                filter: {}
+                selected: {}
                 setFilter: (type, item) ->
                     if !item then return
                     this.selected[type] = item
                     switch type
                         when 'qtrs' then this.filter.qtrs = item.value
-                        when 'team' then this.filter.team = item.id
-                        when 'seller' then this.filter.seller = item.id
                         when 'product' then this.filter.product_id = item.id
                         when 'category'
                             this.filter.category_id = item.id
@@ -44,35 +42,36 @@
                     this.applyFilter()
 
                 applyFilter: ->
-                    IN.get(this.filter).$promise.then ((data) ->
-                        console.log('INACTIVE: ', data.inactives.length)
-                        $scope.inactive.data = angular.copy(data.inactives)
-                        drawChart(data.inactives, $scope.inactive.chartId, true)
+                    IN.inactive(this.filter).$promise.then ((data) ->
+                        $scope.inactive.data = angular.copy(data)
+                        drawChart(data, $scope.inactive.chartId, true)
                     ), (err) ->
                         if err then console.log(err)
+            #default filters
+            $scope.inactive.setFilter('qtrs', $scope.inactive.lookbackWindow[1])
+
+            currentQuarter = moment().quarter()
             $scope.seasonalInactive =
                 data: null
                 chartId: '#seasonal-chart'
-                lookbackWindow: [
-                    {name: '1 Qtr', value: 1}
-                    {name: '2 Qtrs', value: 2}
-                    {name: '3 Qtrs', value: 3}
-                    {name: '4 Qtrs', value: 4}
-                    {name: '5 Qtrs', value: 5}
-                    {name: '6 Qtrs', value: 6}
-                    {name: '7 Qtrs', value: 7}
-                    {name: '8 Qtrs', value: 8}
+                selectedType: 'quarters'
+                default: {}
+                comparisonTypes: [
+                    {name: 'Quarters', value: 'quarter'}
+                    {name: 'Months', value: 'month'}
                 ]
-                filter: {'qtrs': 2}
-                selected: {'qtrs': {name: '2 Qtrs', value: 2}}
+                filter: {}
+                selected: {}
                 setFilter: (type, item) ->
                     if !item then return
                     this.selected[type] = item
                     switch type
-                        when 'qtrs' then this.filter.qtrs = item.value
-                        when 'team' then this.filter.team = item.id
-                        when 'seller' then this.filter.seller = item.id
-                        when 'product' then this.filter.product_id = item.id
+                        when 'comparisonType'
+                            this.selectedType = item.name.toLowerCase()
+                            this.filter['time_period_type'] = item.value
+                            if this.comparisonNames
+                                return this.setFilter('comparisonNumber', this.comparisonNames[this.selectedType][0])
+                        when 'comparisonNumber' then this.filter['time_period_number'] = item.value
                         when 'category'
                             this.filter.category_id = item.id
                             this.filter.subcategory_id = undefined
@@ -86,24 +85,31 @@
                     this.applyFilter()
 
                 resetFilter: ->
-                    this.selected = {'qtrs': {name: '2 Qtrs', value: 2}}
-                    this.filter = {'qtrs': 2}
+                    this.selectedType = 'quarters'
+                    this.selected = this.default.selected
+                    this.filter = this.default.filter
                     this.subcategories = this.allSubcategories
                     this.applyFilter()
 
                 applyFilter: ->
-                    IN.get(this.filter).$promise.then ((data) ->
-                        console.log('SEASONAL INACTIVE: ', data.inactives.length)
-                        $scope.seasonalInactive.data = angular.copy(data.inactives)
-                        drawChart(data.inactives, $scope.seasonalInactive.chartId, true)
+                    IN.seasonalInactive(this.filter).$promise.then ((data) ->
+                        _this = $scope.seasonalInactive
+                        _this.data = angular.copy(data['seasonal_inactives'])
+                        if !_this.selected.comparisonNumber && data['season_names']
+                            data['season_names'].quarters.reverse()
+                            data['season_names'].months.reverse()
+                            _this.comparisonNames = data['season_names']
+                            _this.selected.comparisonNumber = _this.comparisonNames[_this.selectedType][0]
+                            _this.filter['time_period_number'] = _this.selected.comparisonNumber.value
+                            _this.default =
+                                selected: angular.copy(_this.selected)
+                                filter: angular.copy(_this.filter)
+                        drawChart(data['seasonal_inactives'], _this.chartId, true)
                     ), (err) ->
                         if err then console.log(err)
 
-            #initial query
-            Product.all().then (products) ->
-                products.unshift({name: 'All', id: null})
-                $scope.inactive.productsList = products
-                $scope.seasonalInactive.productsList = products
+            #default filters
+            $scope.seasonalInactive.setFilter('comparisonType', $scope.seasonalInactive.comparisonTypes[0])
 
             Field.defaults({}, 'Client').then (clients) ->
                 categories = [{name: 'All', id: null}]
@@ -119,12 +125,6 @@
                 $scope.seasonalInactive.categories = categories
                 $scope.inactive.subcategories = $scope.inactive.allSubcategories = subcategories
                 $scope.seasonalInactive.subcategories = $scope.seasonalInactive.allSubcategories = subcategories
-
-            $scope.inactive.applyFilter()
-            $scope.seasonalInactive.applyFilter()
-#            IN.get().$promise.then ((data) ->
-#                $scope.inactive.data = angular.copy(data.inactives)
-#                drawChart(data.inactives)
 
             drawChart = (data, chartId, isUpdating) ->
                 if !data || !data.length then return
@@ -264,6 +264,5 @@
                     .attr('height', 30)
                     .attr('width', 150)
                     .text (d) -> d.label
-
 
     ]
