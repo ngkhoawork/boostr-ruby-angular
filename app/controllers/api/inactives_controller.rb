@@ -202,7 +202,7 @@ class Api::InactivesController < ApplicationController
     months = []
     month_list.each_with_index do |month, index|
       months << {
-        name: month.first.strftime("%B"),
+        name: "#{month.first.strftime("%B")} #{month.first.year}",
         value: index + 1
       }
     end
