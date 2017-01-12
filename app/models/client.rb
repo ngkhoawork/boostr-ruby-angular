@@ -39,9 +39,6 @@ class Client < ActiveRecord::Base
   ADVERTISER = 10
   AGENCY = 11
 
-  ADVERTISER = 10
-  AGENCY = 11
-
   def self.to_csv
     header = [
       :Id,
