@@ -86,8 +86,8 @@
 
                 resetFilter: ->
                     this.selectedType = 'quarters'
-                    this.selected = this.default.selected
-                    this.filter = this.default.filter
+                    this.selected = angular.copy this.default.selected
+                    this.filter = angular.copy this.default.filter
                     this.subcategories = this.allSubcategories
                     this.applyFilter()
 
@@ -102,8 +102,8 @@
                             _this.selected.comparisonNumber = _this.comparisonNames[_this.selectedType][0]
                             _this.filter['time_period_number'] = _this.selected.comparisonNumber.value
                             _this.default =
-                                selected: angular.copy(_this.selected)
-                                filter: angular.copy(_this.filter)
+                                selected: angular.copy _this.selected
+                                filter: angular.copy _this.filter
                         drawChart(data['seasonal_inactives'], _this.chartId, true)
                     ), (err) ->
                         if err then console.log(err)
