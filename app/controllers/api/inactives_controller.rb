@@ -100,6 +100,7 @@ class Api::InactivesController < ApplicationController
         .where('account_dimensions.account_type = ?', Client::ADVERTISER)
         .where('revenue_amount > 0')
         .where(time_dimension_id: time_dimension.id)
+        .where(company_id: company.id)
         .select(:account_dimension_id)
         .map(&:account_dimension_id)
 
