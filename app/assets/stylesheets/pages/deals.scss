@@ -11,6 +11,7 @@
         .title {
             font-size: 24px;
             font-weight: bold;
+            margin-right: 40px;
         }
     }
     .deals-container {
@@ -19,7 +20,7 @@
     }
     .deal-column {
         border-right: 2px solid #E7EBF0;
-        width: 20%;
+        width: 271px;
         display: inline-block;
         vertical-align: top;
         .column-header {
@@ -74,7 +75,6 @@
         .column-body {
             position: relative;
             padding: 10px;
-            min-height: calc(100vh - 150px - 100px);
             .dndPlaceholder {
                 display: block;
                 min-height: 82px;
@@ -86,6 +86,7 @@
         }
     }
     .deal-block {
+        white-space: normal;
         position: relative;
         padding: 10px;
         margin-bottom: 10px;
@@ -93,18 +94,20 @@
         //box-shadow: 0 1px 3px gray;
         border-bottom: 2px solid #E4E4E6;
         background-color: white;
+        .date {
+            color: $secondary-font-color;
+        }
         span {
             display: block;
         }
-        span:nth-child(1) {
+        span:nth-child(2) {
             font-weight: bold;
-            font-size: 16px;
             color: black;
         }
-        span:nth-child(2) {
+        span:nth-child(3) {
             color: #8D98A2;
         }
-        span:nth-child(3) {
+        span:nth-child(4) {
             font-weight: bold;
         }
         &.dndDraggingSource {

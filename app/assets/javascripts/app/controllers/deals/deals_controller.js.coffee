@@ -1,30 +1,23 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$scope', '$modal', '$filter', '$routeParams', '$q', '$location', '$window', 'Deal', 'Stage', 'Contact',
-        ($rootScope, $scope, $modal, $filter, $routeParams, $q, $location, $window, Deal, Stage, Contact) ->
+    ['$rootScope', '$document', '$scope', '$modal', '$q', '$location', 'Deal', 'Stage', '$timeout',
+        ($rootScope, $document, $scope, $modal, $q, $location, Deal, Stage, $timeout) ->
             $scope.selectedDeal = null
             $scope.stagesById = {}
-            $scope.columnNames = [
-                'Prospecting'
-                'Discuss Requirements'
-                'Proposal'
-                'Negotiation'
-                'Verbal Commit'
-                'Test1'
-                'Test2'
-                'Test3'
-            ]
             $scope.columns = []
 
-#            for i in [1...30]
-#                $scope.columns[Math.round(Math.random() * 3)].push(
-#                    {name: 'Item ' + i, company: 'Company ' + i, seller: 'John Seller', revenue: i}
-#                )
-
-
-
-            document.addEventListener('keydown', (e) ->
-                if e.code is 'Space' then console.dir($scope.columns)
-            )
+            $scope.updateColumnsHeight = ->
+                blocks = $document.find('.deal-block')
+                blockHeight = (blocks && blocks[0] && blocks[0].offsetHeight)
+                console.log(blockHeight)
+                columns = $document.find('.column-body')
+                maxLength = 0
+                $scope.columns.forEach (column) ->
+                    if column.length > maxLength
+                        maxLength = column.length
+                console.log(maxLength)
+                columns.each () ->
+                    @style.height = (maxLength * (blockHeight + 10) + 20) + 'px'
+                return true
 
             $q.all({ deals: Deal.all(), stages: Stage.query().$promise }).then (data) ->
                 $scope.deals = data.deals
@@ -34,12 +27,14 @@
                     $scope.stagesById[stage.id] = stage
                     $scope.columns.push []
                 $scope.deals.forEach (deal) ->
-                    console.log(deal.next_steps)
+                    if deal.deal_members && deal.deal_members.length
+                        deal.members = deal.deal_members.map (member) -> member.name
                     index = $scope.stagesById[deal.stage_id].index
                     $scope.columns[index].push deal
                 console.log($scope.deals)
                 console.log($scope.stages)
                 console.log($scope.stagesById)
+                $timeout $scope.updateColumnsHeight, 100
 
             $scope.onDealMove = (columnIndex, dealIndex) ->
                 deal = console.log($scope.columns[columnIndex][dealIndex])
@@ -47,7 +42,7 @@
                 console.log(deal)
 
             $scope.onDrop = (deal, newStage) ->
-                console.log(deal, newStage)
+#                updateColumnsHeight()
                 deal
 
             $scope.calcWeighted = (deals) ->
@@ -63,5 +58,15 @@
                     unweighted += (parseInt(deal.budget) || 0) * mod
                 unweighted
 
+            $scope.showNewDealModal = ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/deal_form.html'
+                    size: 'md'
+                    controller: 'DealsNewController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        deal: ->
+                            {}
 
     ]

@@ -2,9 +2,10 @@
 	.container-fluid
 		.row
 			.col-xs-12.deals-menu
-				.title Deals
+				%span.title Deals
+				%add-button{'ng-click': 'showNewDealModal()'} Add Deal
 		.row.deals-container
-			.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index'}
+			.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index; $last && updateColumnsHeight()'}
 				.column-header
 					%span
 						{{stage.name}}
@@ -19,10 +20,9 @@
 								'dnd-effect-allowed': 'move'}
 						.date.pull-right {{deal.start_date | date: 'mediumDate'}}
 						%span
-							%a{href: ''}
-								{{deal.name}}
-						%span {{deal.company}}
-						%span {{'$' + deal.revenue + 'M' + ' | ' + deal.seller}}
+							%a{href: '/deals/{{deal.id}}'} {{deal.name}}
+						%span {{deal.advertiser ?deal.advertiser.name : '-'}} | {{deal.agency ? deal.agency.name : '-'}}
+						%span {{deal.budget | formatMoney}} | {{deal.members ? deal.members.join(', ') : '-'}}
 
 
 
