@@ -54,7 +54,10 @@ class Api::InactivesController < ApplicationController
       }
     end
 
-    render json: result.sort_by{ |el| el[:average_quarterly_spend] * -1 }
+    render json: {
+      seasonal_inactives: result.sort_by{ |el| el[:average_quarterly_spend] * -1 },
+      season_names: season_names
+    }
   end
 
   def soon_to_be_inactive
@@ -167,11 +170,11 @@ class Api::InactivesController < ApplicationController
   def comparison_window
     if params[:time_period_type] && params[:time_period_number]
       if params[:time_period_type] == 'quarter'
-        first = previous_quarters(lookback: 8)[params[:time_period_number].to_i - 1]
-        second = (previous_quarters(lookback: 4) << current_quarter)[params[:time_period_number].to_i - 1]
+        first = previous_quarters(lookback: 8)[params[:time_period_number].to_i]
+        second = (previous_quarters(lookback: 4) << current_quarter)[params[:time_period_number].to_i]
       elsif params[:time_period_type] == 'month'
-        first = previous_months(lookback: 24)[params[:time_period_number].to_i - 1]
-        second = (previous_months(lookback: 12) << current_month)[params[:time_period_number].to_i - 1]
+        first = previous_months(lookback: 24)[params[:time_period_number].to_i]
+        second = (previous_months(lookback: 12) << current_month)[params[:time_period_number].to_i]
       end
     else
       first = previous_quarters(lookback: 4).first
@@ -182,6 +185,36 @@ class Api::InactivesController < ApplicationController
       first: [first],
       second: [second]
     }
+  end
+
+  def season_names
+    quarter_list = (previous_quarters(lookback: 4) << current_quarter).drop(1)
+    month_list = (previous_months(lookback: 12) << current_month).drop(1)
+
+    quarters = []
+    quarter_list.each_with_index do |quarter, index|
+      quarters << {
+        name: "Q#{quarter_number(quarter)} #{quarter.first.year}",
+        value: index + 1
+      }
+    end
+
+    months = []
+    month_list.each_with_index do |month, index|
+      months << {
+        name: month.first.strftime("%B"),
+        value: index + 1
+      }
+    end
+
+    {
+      quarters: quarters,
+      months: months
+    }
+  end
+
+  def quarter_number(quarter)
+    1 + ((quarter.first.month - 1) / 3).to_i
   end
 
   def previous_quarters(lookback: qtr_offset)
