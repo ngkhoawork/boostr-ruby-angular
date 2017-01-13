@@ -5,7 +5,7 @@
 				%span.title Deals
 				%add-button{'ng-click': 'showNewDealModal()'} Add Deal
 		.row.deals-container
-			.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index; $last && updateColumnsHeight()'}
+			.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index'}
 				.column-header
 					%span
 						{{stage.name}}

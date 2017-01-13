@@ -8,15 +8,18 @@
             $scope.updateColumnsHeight = ->
                 blocks = $document.find('.deal-block')
                 blockHeight = (blocks && blocks[0] && blocks[0].offsetHeight)
-                console.log(blockHeight)
                 columns = $document.find('.column-body')
-                maxLength = 0
-                $scope.columns.forEach (column) ->
-                    if column.length > maxLength
-                        maxLength = column.length
-                console.log(maxLength)
+                maxHeight = 0
+#                maxLength = 0
+#                $scope.columns.forEach (column) ->
+#                    if column.length > maxLength
+#                        maxLength = column.length
                 columns.each () ->
-                    @style.height = (maxLength * (blockHeight + 10) + 20) + 'px'
+                    if this.offsetHeight > maxHeight
+                         maxHeight = this.offsetHeight
+                columns.each () ->
+#                    @style.height = (maxLength * (blockHeight + 10) + 20) + 'px'
+                    this.style.height = maxHeight + 'px'
                 return true
 
             $q.all({ deals: Deal.all(), stages: Stage.query().$promise }).then (data) ->
@@ -31,18 +34,21 @@
                         deal.members = deal.deal_members.map (member) -> member.name
                     index = $scope.stagesById[deal.stage_id].index
                     $scope.columns[index].push deal
-                console.log($scope.deals)
-                console.log($scope.stages)
-                console.log($scope.stagesById)
-                $timeout $scope.updateColumnsHeight, 100
+                $timeout $scope.updateColumnsHeight, 300
 
-            $scope.onDealMove = (columnIndex, dealIndex) ->
-                deal = console.log($scope.columns[columnIndex][dealIndex])
-                $scope.columns[columnIndex].splice(dealIndex, 1)
-                console.log(deal)
+#            $scope.onDealMove = (columnIndex, dealIndex) ->
+#                deal = $scope.columns[columnIndex][dealIndex]
+#                $scope.columns[columnIndex].splice(dealIndex, 1)
+#                console.log(deal)
+#                $timeout $scope.updateColumnsHeight, 300
 
             $scope.onDrop = (deal, newStage) ->
-#                updateColumnsHeight()
+                $timeout $scope.updateColumnsHeight, 300
+                deal.stage_id = newStage.id
+                if !newStage.open
+                    $scope.showCloseDealModal(deal)
+                else
+                    Deal.update(id: deal.id, deal: deal).then (deal) ->
                 deal
 
             $scope.calcWeighted = (deals) ->
@@ -58,6 +64,7 @@
                     unweighted += (parseInt(deal.budget) || 0) * mod
                 unweighted
 
+
             $scope.showNewDealModal = ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/deal_form.html'
@@ -69,4 +76,14 @@
                         deal: ->
                             {}
 
+            $scope.showCloseDealModal = (currentDeal) ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/deal_close_form.html'
+                    size: 'lg'
+                    controller: 'DealsCloseController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        currentDeal: ->
+                            currentDeal
     ]
