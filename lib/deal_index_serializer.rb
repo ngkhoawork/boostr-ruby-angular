@@ -30,7 +30,7 @@ class DealIndexSerializer < ActiveModel::Serializer
     object.agency.serializable_hash(only: [:id, :name]) rescue nil
   end
 
-  def agency
+  def deal_custom_field
     object.deal_custom_field
   end
 
