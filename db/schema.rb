@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170110194433) do
+ActiveRecord::Schema.define(version: 20170113213404) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -290,6 +290,7 @@ ActiveRecord::Schema.define(version: 20170110194433) do
     t.boolean  "is_required"
     t.integer  "position"
     t.boolean  "show_on_modal"
+    t.boolean  "disabled"
   end
 
   add_index "deal_custom_field_names", ["company_id"], name: "index_deal_custom_field_names_on_company_id", using: :btree

@@ -54,7 +54,7 @@ class Api::DealCustomFieldNamesController < ApplicationController
   end
 
   def deal_custom_field_name_params
-    params.require(:deal_custom_field_name).permit(:field_type, :field_label, :is_required, :position, :show_on_modal)
+    params.require(:deal_custom_field_name).permit(:field_type, :field_label, :is_required, :position, :show_on_modal, :disabled)
   end
 
   def deal_custom_field_names

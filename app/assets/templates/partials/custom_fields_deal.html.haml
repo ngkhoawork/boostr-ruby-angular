@@ -1,9 +1,30 @@
 #custom-fields.block
     %div.mb40
-        %span.title Custom Fields
+        %span.title Campaign Details
     %p{'ng-show': '!dealCustomFieldNames || !dealCustomFieldNames.length'}
         No Data
-    %div.custom-field-item{ng:{repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", class:'{error: dealCustomFieldName.is_required == true && !currentDeal.deal_custom_field[fieldName]}'}}
+    %div.custom-field-item{'ng-if': " currentDeal.stage.open == false"}
+        %div.custom-field-item-label
+            %label{ for: 'closed_reason' }
+                Closed Reason
+        %div.custom-field-item-field
+            .field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
+                {{ currentDeal.close_reason.option.name }}
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label{ for: 'type' }
+                Type
+        %div.custom-field-item-field
+            .deal-type{ 'e-id': 'deal-type', editable: { select: 'currentDeal.deal_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.deal_type.options', onaftersave: 'updateDeal()' }
+                {{ currentDeal.deal_type.option.name }}
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label{ for: 'source' }
+                Source
+        %div.custom-field-item-field
+            .field-value{ 'e-id': 'deal-source', editable: { select: 'currentDeal.source_type.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.source_type.options', onaftersave: 'updateDeal()' }
+                {{ currentDeal.source_type.option.name }}
+    %div.custom-field-item{ng:{repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', if: "!dealCustomFieldName.disabled", init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", class:'{error: dealCustomFieldName.is_required == true && !currentDeal.deal_custom_field[fieldName]}'}}
         %div.custom-field-item-label
             %span.error-text is required.
             %label{ for: '{{fieldName}}' }

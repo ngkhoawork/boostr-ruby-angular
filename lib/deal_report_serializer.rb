@@ -81,7 +81,7 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def deal_custom_field
-    object.deal_custom_field
+    object.deal_custom_field rescue nil
   end
 
   def close_reason

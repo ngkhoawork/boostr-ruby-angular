@@ -83,7 +83,7 @@
                             End Date
                             %span.star *
                         %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
-            .form-group{ng: {repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", if: "dealCustomFieldName.show_on_modal", class:'{error: errors[fieldName]}'}}
+            .form-group{ng: {repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", if: "dealCustomFieldName.show_on_modal && !dealCustomFieldName.disabled", class:'{error: errors[fieldName]}'}}
                 %span.error-text {{errors[fieldName]}}
                 %label{ for: '{{fieldName}}' }
                     {{dealCustomFieldName.field_label}}
