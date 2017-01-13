@@ -3,13 +3,6 @@
         %span.title Campaign Details
     %p{'ng-show': '!dealCustomFieldNames || !dealCustomFieldNames.length'}
         No Data
-    %div.custom-field-item{'ng-if': " currentDeal.stage.open == false"}
-        %div.custom-field-item-label
-            %label{ for: 'closed_reason' }
-                Closed Reason
-        %div.custom-field-item-field
-            .field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
-                {{ currentDeal.close_reason.option.name }}
     %div.custom-field-item
         %div.custom-field-item-label
             %label{ for: 'type' }
@@ -32,10 +25,14 @@
                 %span.star{ 'ng-if': "dealCustomFieldName.is_required == true" }
                     *
         %div.custom-field-item-field
-            .text-field{ ng: { if: "dealCustomFieldName.field_type == 'text' || dealCustomFieldName.field_type == 'number' || dealCustomFieldName.field_type == 'integer'" } }
+            .text-field{ ng: { if: "dealCustomFieldName.field_type == 'text'" } }
                 %input.editable-control{ 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
             .text-area{ ng: { if: "dealCustomFieldName.field_type == 'note'" } }
                 %textarea.editable-control{ rows: 4, 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
+            .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'number'" } }
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+            .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'integer'" } }
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
             .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'currency'" } }
                 %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: 'US$ ', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
             .percentage-field{ ng: { if: "dealCustomFieldName.field_type == 'percentage'" } }

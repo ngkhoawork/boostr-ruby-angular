@@ -17,6 +17,10 @@
           Created by {{ currentDeal.creator.first_name }} {{ currentDeal.creator.last_name }} on {{ currentDeal.created_at | date: 'shortDate' }} @ {{ currentDeal.created_at | date: 'shortTime'}}
         .deal-info{ 'ng-if': "currentDeal.stage.open == false" }
           Closed at {{ currentDeal.closed_at | date: 'shortDate' }}
+        .deal-info{ 'ng-if': "currentDeal.stage.open == false" }
+          Closed Reason:
+          .field-value{ 'e-id': 'close-reason', editable: { select: 'currentDeal.close_reason.option_id' }, 'e-ng-options': 'option.id as option.name for option in currentDeal.close_reason.options', onaftersave: 'updateDeal()' }
+            {{ currentDeal.close_reason.option.name }}
       .col-xs-6
         %div.next-steps
           .row

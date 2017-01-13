@@ -85,6 +85,14 @@
       font-size: 13px;
       font-weight: normal;
       color: #9FA6AD;
+      .field-value{
+        display: inline-block;
+        width: 200px;
+      }
+      .form-inline {
+        display: inline-block;
+        width: 200px;
+      }
     }
 
     line-height: 22.78px;
