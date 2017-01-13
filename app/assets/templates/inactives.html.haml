@@ -57,7 +57,7 @@
 										%a{ href: '', ng: { click: 'inactive.setFilter("subcategory", subcategory)' } }
 											{{ subcategory.name }}
 			%h4.chart-title Inactive
-			%span.chart-subtitle No spend this quarter with spend last X Qtrs
+			%span.chart-subtitle No spend this quarter with spend last {{inactive.selected.qtrs.name}}
 			%div{'ng-show': 'inactive.data.length == 0'}
 				%h4.chart-title No Data Available
 			%div{'ng-show': 'inactive.data.length > 0'}
@@ -78,7 +78,7 @@
 								%td {{item.client_name}}
 								%td {{item.average_quarterly_spend | currency : $ : 0}}
 								%td {{item.open_pipeline | currency : $ : 0}}
-								%td {{item.last_activity.activity_type_name}}
+								%td {{item.last_activity.activity_type_name}} - {{item.last_activity.happened_at | date : mediumDate}}
 								%td {{item.sellers.join(', ')}}
 
 		.row.well.kpi-block{'ng-style': '{"margin-bottom": seasonalInactive.data.length == 0 ? "250px" : "0"}'}
@@ -134,7 +134,7 @@
 										%a{ href: '', ng: { click: 'seasonalInactive.setFilter("subcategory", subcategory)' } }
 											{{ subcategory.name }}
 			%h4.chart-title Seasonal Inactive
-			%span.chart-subtitle Quarter over Quarter - X
+			%span.chart-subtitle {{seasonalInactive.getSeasonalDescription()}}
 			%div{'ng-show': 'seasonalInactive.data.length == 0'}
 				%h4.chart-title No Data Available
 			%div{'ng-show': 'seasonalInactive.data.length > 0'}
@@ -155,5 +155,5 @@
 								%td {{item.client_name}}
 								%td {{item.average_quarterly_spend | currency : $ : 0}}
 								%td {{item.open_pipeline | currency : $ : 0}}
-								%td {{item.last_activity.activity_type_name}}
+								%td {{item.last_activity.activity_type_name}} - {{item.last_activity.happened_at | date : mediumDate}}
 								%td {{item.sellers.join(', ')}}

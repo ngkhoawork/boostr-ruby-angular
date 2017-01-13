@@ -62,6 +62,12 @@
                 ]
                 filter: {}
                 selected: {}
+                getSeasonalDescription: ->
+                    period2 = this.selected.comparisonNumber.name
+                    year = parseInt period2.substr -4
+                    name = period2.slice 0, -4
+                    period1 = name + (year - 1)
+                    period1 + ' over ' + period2
                 setFilter: (type, item) ->
                     if !item then return
                     this.selected[type] = item
