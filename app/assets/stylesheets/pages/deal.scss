@@ -367,7 +367,13 @@
   }
 
   .header {
-    margin-top: 20px;
+    padding-top: 30px;
+    padding-bottom: 11px;
+    line-height: 1;
+    height: auto;
+  }
+  .title-header {
+    margin-top: 10px;
     margin-left: 15px;
     font-size: 20px !important;
     line-height: 1;
