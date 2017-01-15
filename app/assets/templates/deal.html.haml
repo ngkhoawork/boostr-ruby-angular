@@ -33,6 +33,8 @@
           %i.fa.fa-warning
           %span Team & Splits must equal 100%
     #deal_overview.row.campaign
+      %h3.header
+        Campaign
       .col-xs-9.icon-show-popup-wrapper
         .clock.show-create-remainders-popup
           %label{ 'for': 'deal-reminders'}
@@ -65,7 +67,7 @@
 
                 .modal-footer.text-center
                   %button.btn.btn-primary.btn-lg.btn-add-remainder{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } } Set Reminder
-    #nav.transparent.sec
+    -##nav.transparent.sec
       .row
         .col-xs-12
           %ul.nav.nav-tabs
@@ -76,8 +78,6 @@
               Updated {{ currentDeal.updated_at | date: 'MMMM d, y' }}
 
     #campaign
-      %h3.header
-        Campaign
       .well
         .row
           .col-xs-4.campaign-period
