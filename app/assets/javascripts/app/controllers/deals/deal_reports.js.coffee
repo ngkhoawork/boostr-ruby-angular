@@ -1,6 +1,6 @@
 @app.controller 'DealReportsController',
-  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Seller', 'Team', 'TimePeriod', 'CurrentUser',
-    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Seller, Team, TimePeriod, CurrentUser) ->
+  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Seller', 'Team', 'TimePeriod', 'CurrentUser', 'DealCustomFieldName',
+    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Seller, Team, TimePeriod, CurrentUser, DealCustomFieldName) ->
       $scope.sortType     = 'name'
       $scope.sortReverse  = false
       $scope.filterOpen = false
@@ -26,6 +26,7 @@
       ]
 
       $scope.init = ->
+        getDealCustomFieldNames()
         CurrentUser.get().$promise.then (user) ->
           if user.user_type is 1 || user.user_type is 2
             currentUser = user
@@ -60,6 +61,9 @@
             $scope.teams = teams
             $scope.teams.unshift {id: null, name: 'All'}
 
+      getDealCustomFieldNames = () ->
+        DealCustomFieldName.all().then (dealCustomFieldNames) ->
+          $scope.dealCustomFieldNames = dealCustomFieldNames
       $scope.init()
 
       $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->

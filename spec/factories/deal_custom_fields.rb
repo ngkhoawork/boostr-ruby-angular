@@ -1,0 +1,57 @@
+FactoryGirl.define do
+  factory :deal_custom_field do
+    company nil
+deal nil
+currency1 ""
+currency2 ""
+currency3 ""
+currency4 ""
+currency5 ""
+currency6 ""
+currency7 ""
+currency_code1 "MyString"
+currency_code2 "MyString"
+currency_code3 "MyString"
+currency_code4 "MyString"
+currency_code5 "MyString"
+currency_code6 "MyString"
+currency_code7 "MyString"
+text1 "MyString"
+text2 "MyString"
+text3 "MyString"
+text4 "MyString"
+text5 "MyString"
+note1 "MyText"
+note2 "MyText"
+datetime1 '01/01/2016'
+datetime2 '01/01/2016'
+datetime3 '01/01/2016'
+datetime4 '01/01/2016'
+datetime5 '01/01/2016'
+datetime6 '01/01/2016'
+datetime7 '01/01/2016'
+number1 ""
+number2 ""
+number3 ""
+number4 ""
+number5 ""
+number6 ""
+number7 ""
+integer1 ""
+integer2 ""
+integer3 ""
+integer4 ""
+integer5 ""
+integer6 ""
+integer7 ""
+boolean1 false
+boolean2 false
+boolean3 false
+percentage1 ""
+percentage2 ""
+percentage3 ""
+percentage4 ""
+percentage5 ""
+  end
+
+end

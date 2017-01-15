@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit',
-($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName',
+($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -19,6 +19,7 @@
   $scope.progressBarCur = 0
   $scope.uploadedFiles = []
   $scope.dealFiles = []
+  $scope.dealCustomFieldNames = []
 
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
@@ -155,6 +156,11 @@
 
     $scope.getDealFiles()
     $scope.initActivity()
+    getDealCustomFieldNames()
+
+  getDealCustomFieldNames = () ->
+    DealCustomFieldName.all().then (dealCustomFieldNames) ->
+      $scope.dealCustomFieldNames = dealCustomFieldNames
 
   $scope.initReminder = ->
     $scope.showReminder = false;

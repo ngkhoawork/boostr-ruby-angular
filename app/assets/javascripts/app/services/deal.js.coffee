@@ -4,6 +4,7 @@
 
   transformRequest = (original, headers) ->
     original.deal.values_attributes = original.deal.values if original.deal.values
+    original.deal.deal_custom_field_attributes = original.deal.deal_custom_field if original.deal.deal_custom_field
     angular.toJson(original)
 
   resource = $resource '/api/deals/:id', { id: '@id' },

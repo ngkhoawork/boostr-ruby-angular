@@ -17,6 +17,7 @@ class DealReportSerializer < ActiveModel::Serializer
     :stage,
     :agency,
     :deal_product_budgets,
+    :deal_custom_field,
     :users,
     :latest_activity,
     :type,
@@ -77,6 +78,10 @@ class DealReportSerializer < ActiveModel::Serializer
   def deal_product_budgets
     object.deal_product_budgets.group("start_date").select("sum(deal_product_budgets.budget) as budget, start_date").collect{|product| product.serializable_hash(only: [:budget, :start_date])}
     # object.deal_product_budgets.map {|deal_product_budget| deal_product_budget.serializable_hash(only: [:id, :budget, :start_date, :end_date]) rescue nil}
+  end
+
+  def deal_custom_field
+    object.deal_custom_field rescue nil
   end
 
   def close_reason

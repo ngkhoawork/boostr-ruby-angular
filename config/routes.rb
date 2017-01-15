@@ -31,6 +31,8 @@ Rails.application.routes.draw do
         end
       end
     end
+    resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy]
+    
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
       get :seller_total_estimates
       get :account_total_estimates

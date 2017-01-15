@@ -1,12 +1,14 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal',
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName',
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName) ->
 
   $scope.init = ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
     $scope.advertisers = []
     $scope.agencies = []
+    $scope.dealCustomFieldNames = []
+    getDealCustomFieldNames()
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
@@ -19,6 +21,9 @@
     Stage.query().$promise.then (stages) ->
       $scope.stages = stages
 
+  getDealCustomFieldNames = () ->
+    DealCustomFieldName.all().then (dealCustomFieldNames) ->
+      $scope.dealCustomFieldNames = dealCustomFieldNames
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->
       $scope[option.name] = option.id
@@ -64,6 +69,10 @@
           if !field then return $scope.errors[key] = 'Start date is required'
         when 'end_date'
           if !field then return $scope.errors[key] = 'End date is required'
+
+    $scope.dealCustomFieldNames.forEach (item) ->
+      if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
+        $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
 

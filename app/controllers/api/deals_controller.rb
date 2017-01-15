@@ -78,7 +78,7 @@ class Api::DealsController < ApplicationController
           end
           render json: response_deals
         else
-          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage).distinct , each_serializer: DealIndexSerializer).to_json
+          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage, :deal_custom_field).distinct , each_serializer: DealIndexSerializer).to_json
         end
       }
       format.csv {
@@ -141,7 +141,7 @@ class Api::DealsController < ApplicationController
         require 'timeout'
         begin
           Timeout::timeout(120) {
-            send_data Deal.to_pipeline_report_csv(filtered_deals), filename: "pipeline-report-#{Date.today}.csv"
+            send_data Deal.to_pipeline_report_csv(filtered_deals, company), filename: "pipeline-report-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
@@ -153,7 +153,7 @@ class Api::DealsController < ApplicationController
   def pipeline_summary_report
     respond_to do |format|
       format.json {
-        deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_product_budgets).distinct , each_serializer: DealReportSerializer)
+        deal_list = ActiveModel::ArraySerializer.new(deals.includes(:advertiser, :agency, :stage, :previous_stage, :users, :deal_product_budgets, :deal_custom_field).distinct , each_serializer: DealReportSerializer)
 
         deal_ids = deals.open.collect{|deal| deal.id}
         range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
@@ -218,7 +218,80 @@ class Api::DealsController < ApplicationController
   private
 
   def deal_params
-    params.require(:deal).permit(:name, :stage_id, :budget, :start_date, :end_date, :advertiser_id, :agency_id, :closed_at, :next_steps, { values_attributes: [:id, :field_id, :option_id, :value] })
+    params.require(:deal).permit(
+        :name,
+        :stage_id,
+        :budget,
+        :start_date,
+        :end_date,
+        :advertiser_id,
+        :agency_id,
+        :closed_at,
+        :next_steps,
+        {
+            values_attributes: [
+                :id,
+                :field_id,
+                :option_id,
+                :value
+            ],
+            deal_custom_field_attributes: [
+                :id,
+                :company_id,
+                :deal_id,
+                :currency1,
+                :currency2,
+                :currency3,
+                :currency4,
+                :currency5,
+                :currency6,
+                :currency7,
+                :currency_code1,
+                :currency_code2,
+                :currency_code3,
+                :currency_code4,
+                :currency_code5,
+                :currency_code6,
+                :currency_code7,
+                :text1,
+                :text2,
+                :text3,
+                :text4,
+                :text5,
+                :note1,
+                :note2,
+                :datetime1,
+                :datetime2,
+                :datetime3,
+                :datetime4,
+                :datetime5,
+                :datetime6,
+                :datetime7,
+                :number1,
+                :number2,
+                :number3,
+                :number4,
+                :number5,
+                :number6,
+                :number7,
+                :integer1,
+                :integer2,
+                :integer3,
+                :integer4,
+                :integer5,
+                :integer6,
+                :integer7,
+                :boolean1,
+                :boolean2,
+                :boolean3,
+                :percentage1,
+                :percentage2,
+                :percentage3,
+                :percentage4,
+                :percentage5
+            ]
+        }
+    )
   end
 
   def deal_type_source_params
