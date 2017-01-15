@@ -28,7 +28,8 @@
               %h4.field-label Next Steps
           .row
             .col-xs-12.right
-              %input.editable-control.right{ type: 'text', 'ng-model': 'currentDeal.next_steps', placeholder: "Enter next steps", 'ng-blur': 'updateDeal()' }
+              %textarea.editable-control{ rows: 3, 'ng-model': "currentDeal.next_steps", name: "next_steps", placeholder: 'Enter Next Steps', 'ng-blur': 'updateDeal()' }
+              -#%input.editable-control.right{ type: 'text', 'ng-model': 'currentDeal.next_steps', placeholder: "Enter next steps", 'ng-blur': 'updateDeal()' }
         %div.share-alert.alert.alert-danger.text-center{'ng-if': 'membersShareInvalid'}
           %i.fa.fa-warning
           %span Team & Splits must equal 100%
