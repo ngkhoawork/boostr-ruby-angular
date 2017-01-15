@@ -7,6 +7,25 @@
     min-height: 70px;
   }
 
+  .modal-body {
+    .error-text {
+      display: none;
+      color: $error-color;
+      float: right;
+      margin-bottom: 5px;
+    }
+    .error {
+      .error-text {
+        display: inline;
+      }
+      input, textarea, .ui-select-container, .ui-select-toggle, button.dropdown-toggle {
+        border-color: $error-color;
+      }
+    }
+  }
+
+
+
   .modal-footer {
     border-top-width: 0;
     text-align: center;

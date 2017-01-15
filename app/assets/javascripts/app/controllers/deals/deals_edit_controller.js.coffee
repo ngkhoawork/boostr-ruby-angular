@@ -1,6 +1,6 @@
 @app.controller 'DealsEditController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal',
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName',
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName) ->
   $scope.init = ->
     $scope.formType = 'Edit'
     $scope.submitText = 'Update'
@@ -8,6 +8,7 @@
     $scope.agencies = []
     $scope.deal = deal
 
+    getDealCustomFieldNames()
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
@@ -20,6 +21,9 @@
     Stage.query().$promise.then (stages) ->
       $scope.stages = stages
 
+  getDealCustomFieldNames = () ->
+    DealCustomFieldName.all().then (dealCustomFieldNames) ->
+      $scope.dealCustomFieldNames = dealCustomFieldNames
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->
       $scope[option.name] = option.id
@@ -61,6 +65,10 @@
           if !field then return $scope.errors[key] = 'Stage is required'
         when 'advertiser_id'
           if !field then return $scope.errors[key] = 'Advertiser is required'
+
+    $scope.dealCustomFieldNames.forEach (item) ->
+      if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
+        $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
 

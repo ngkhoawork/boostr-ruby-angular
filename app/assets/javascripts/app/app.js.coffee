@@ -132,6 +132,9 @@
     .when '/settings/bps/:id',
       templateUrl: 'settings/bp.html'
       controller: 'BPsBPController'
+    .when '/settings/custom_fields/',
+      templateUrl: 'settings/custom_fields.html'
+      controller: 'SettingsDealCustomFieldNamesController'
     .when '/bp',
       templateUrl: 'bp.html'
       controller: 'BPController'

@@ -29,8 +29,11 @@ class Deal < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable
 
+  has_one :deal_custom_field, dependent: :destroy
+
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
 
+  accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
   before_update do
@@ -99,6 +102,7 @@ class Deal < ActiveRecord::Base
                   :agency,
                   :stage,
                   :values,
+                  :deal_custom_field,
                   deal_members: {
                       methods: [:name]
                   },
@@ -278,7 +282,7 @@ class Deal < ActiveRecord::Base
       ""
     end
   end
-  def self.to_pipeline_report_csv(deals)
+  def self.to_pipeline_report_csv(deals, company)
     CSV.generate do |csv|
       deal_ids = deals.collect{|deal| deal.id}
 
@@ -299,6 +303,10 @@ class Deal < ActiveRecord::Base
       header << "End Date"
       range.each do |product_time|
         header << product_time.strftime("%Y-%m")
+      end
+      deal_custom_field_names = company.deal_custom_field_names.order("position asc")
+      deal_custom_field_names.each do |deal_custom_field_name|
+        header << deal_custom_field_name.field_label
       end
 
       csv << header
@@ -325,6 +333,29 @@ class Deal < ActiveRecord::Base
             line << "$" + deal_product_budgets[0].round.to_s
           else
             line << "$0"
+          end
+        end
+
+        deal_custom_field = deal.deal_custom_field.as_json
+        deal_custom_field_names.each do |deal_custom_field_name|
+          field_name = deal_custom_field_name.field_type + deal_custom_field_name.field_index.to_s
+          value = nil
+          if deal_custom_field.present?
+            value = deal_custom_field[field_name]
+          end
+          # line << value
+
+          case deal_custom_field_name.field_type
+            when "currency"
+              line << '$' + (value || 0).to_s
+            when "percentage"
+              line << (value || 0).to_s + "%"
+            when "number", "integer"
+              line << (value || 0)
+            when "datetime"
+              line << (value.present? ? (value.strftime("%Y-%m-%d")) : value)
+            else
+              line << value
           end
         end
 
