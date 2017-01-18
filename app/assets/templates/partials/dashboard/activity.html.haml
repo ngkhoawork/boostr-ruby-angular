@@ -36,6 +36,5 @@
 			%a.delete-team{href: '', 'ng-click': 'deleteActivity(activity)'}
 				Delete
 
-	%div.load-more{'ng-if': 'hasMoreActivities'}
-		%a{href: "javascript:void(0);", 'ng-click': 'loadMoreActivities()'}
-			Load more
+	%span.load-more{'ng-if': 'hasMoreActivities', 'ng-click': 'loadMoreActivities()'}
+		Load more

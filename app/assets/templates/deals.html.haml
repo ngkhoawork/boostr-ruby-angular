@@ -1,28 +1,144 @@
 #deals
+	.deals-filter{'ng-class': '{open: filter.isOpen}'}
+		.header
+			Filter
+			%span.pull-right{'ng-click': 'filter.close($event)'} Close
+		.body
+			.filter-row
+				.filter-name
+					%div
+						Owner
+				.filter-dropdown
+					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.owner}'}
+							{{filter.selected.owner || 'Select an owner'}}
+							%span.caret
+						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+								%i.fa.fa-search
+								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+							%span.dropdown-title Select from list
+							.dropdown-option{'ng-repeat': 'owner in filter.owners | filter: filtering | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("owner", owner)'} {{owner}}
+			.filter-row
+				.filter-name
+					%div
+						Advertiser
+				.filter-dropdown
+					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
+							{{filter.selected.advertiser.name || 'Select an advertiser'}}
+							%span.caret
+						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+								%i.fa.fa-search
+								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+							%span.dropdown-title Select from list
+							.dropdown-option{'ng-repeat': 'advertiser in filter.advertisers | filter: filtering | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("advertiser", advertiser)'} {{advertiser.name}}
+			.filter-row
+				.filter-name
+					%div
+						Agency
+				.filter-dropdown
+					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.agency}'}
+							{{filter.selected.agency.name || 'Select an agency'}}
+							%span.caret
+						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+								%i.fa.fa-search
+								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+							%span.dropdown-title Select from list
+							.dropdown-option{'ng-repeat': 'agency in filter.agencies | filter: filtering | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("agency", agency)'} {{agency.name}}
+			.filter-row
+				.filter-name
+					%div
+						Budget
+				.filter-dropdown
+					%span{'dropdown': '', 'on-toggle': 'filter.slider.refresh()'}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.budget.min || filter.selected.budget.max}'}
+							{{filter.getBudgetValue()}}
+							%span.caret
+						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+							.dropdown-budget{'ng-click': '$event.stopPropagation()'}
+								.budget-range-input
+									From
+									%input.form-control{'ng-model': 'filter.minBudget', 'ng-change': 'filter.slider.onChangeNumber("min")'}
+									to
+									%input.form-control{'ng-model': 'filter.maxBudget', 'ng-change': 'filter.slider.onChangeNumber("max")'}
+								%rzslider{'rz-slider-model': 'filter.slider.minValue',
+										  'rz-slider-high': 'filter.slider.maxValue',
+										  'rz-slider-options': 'filter.slider.options'}
+			.filter-row
+				.filter-name
+					%div
+						Start Date
+				.filter-dropdown
+					%span.bs-datepicker
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.startDate}'}
+							%input.date{readonly: true,
+										placeholder: 'Set start date',
+										type: 'text',
+										datepicker: { popup: 'MMMM d, y' },
+										ng: { model: 'filter.selected.startDate',
+										click: 'filter.isStartDateOpen = !filter.isStartDateOpen; filter.isEndDateOpen = false' },
+										'is-open': 'filter.isStartDateOpen'}
+							%span.caret
+			.filter-row
+				.filter-name
+					%div
+						End Date
+				.filter-dropdown
+					%span.bs-datepicker
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.endDate}'}
+							%input.date{readonly: true,
+										placeholder: 'Set end date',
+										type: 'text',
+										datepicker: { popup: 'MMMM d, y' },
+										ng: { model: 'filter.selected.endDate',
+										click: 'filter.isEndDateOpen = !filter.isEndDateOpen; filter.isStartDateOpen = false' },
+										'is-open': 'filter.isEndDateOpen'}
+							%span.caret
+
+		.footer
+			%span.reset{'ng-click': 'filter.reset()'} Reset
+			%button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
 	.container-fluid
 		.row
 			.col-xs-12.deals-menu
 				%span.title Deals
 				%add-button{'ng-click': 'showNewDealModal()'} Add Deal
+				.deals-types
+					%span{'ng-repeat': 'type in dealTypes', 'ng-class': '{active: type === selectedType}', 'ng-click': 'filterDeals(type)'}
+						{{type.name}}
+				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
+					%i.fa.fa-filter
+					Add filter
 		.row.deals-container
-			.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index'}
-				.column-header
-					%span
-						{{stage.name}}
-						%i ({{columns[columnIndex].length}})
-					%span
-						{{calcWeighted(columns[columnIndex]) | formatMoney}} (W) / {{calcUnweighted(columns[columnIndex], stage) | formatMoney}} (UW)
-				.column-body{'dnd-list': 'columns[columnIndex]',
-							 'dnd-drop': 'onDrop(item, stage)'}
-					.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
-								'dnd-draggable': 'deal',
-								'dnd-moved': 'columns[columnIndex].splice($index, 1)',
-								'dnd-effect-allowed': 'move'}
-						.date.pull-right {{deal.start_date | date: 'mediumDate'}}
+			.deals-table
+				.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index'}
+					.column-header
 						%span
-							%a{href: '/deals/{{deal.id}}'} {{deal.name}}
-						%span {{deal.advertiser ?deal.advertiser.name : '-'}} | {{deal.agency ? deal.agency.name : '-'}}
-						%span {{deal.budget | formatMoney}} | {{deal.members ? deal.members.join(', ') : '-'}}
+							{{stage.name}}
+							%i ({{columns[columnIndex].length || 0}})
+						%span
+							{{calcWeighted(columns[columnIndex], stage) | formatMoney}} (W) / {{calcUnweighted(columns[columnIndex]) | formatMoney}} (UW)
+					.column-body{'dnd-list': 'columns[columnIndex]',
+								 'dnd-drop': 'onDrop(item, stage)'}
+						.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
+									'ng-click': 'linkTo("/deals/" + deal.id)',
+									'dnd-draggable': 'deal',
+									'dnd-moved': 'columns[columnIndex].splice($index, 1)',
+									'dnd-effect-allowed': 'move'}
+							.date.pull-right{'ng-class': '{expired: deal.isExpired}'} {{deal.start_date | date: 'mediumDate'}}
+							%span {{deal.name}}
+							%span {{(deal.advertiser && deal.advertiser.name || '') + ((deal.advertiser && deal.agency) ? ' | ' : '') + (deal.agency && deal.agency.name || '')}}
+							%span
+								{{deal.budget | formatMoney}}
+								%i &#183;
+								{{deal.members ? deal.members.join(', ') : '-'}}
 
 
 

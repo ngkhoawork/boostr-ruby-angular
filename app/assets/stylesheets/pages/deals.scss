@@ -1,91 +1,314 @@
 #deals {
+    $deals-menu-h: 100px;
+    $deals-column-header-h: 72px;
+    $deals-filter-w: 350px;
+
     font-family: "Avenir Next", Arial, serif;
     color: $main-font-color;
     background-color: #F5F5F5;
     min-height: calc(100vh - 150px);
+    position: relative;
+    overflow-x: hidden;
     a {
         color: $secondary-color;
     }
+    .deals-types {
+        display: inline-block;
+        margin-left: 50px;
+        span {
+            display: inline-block;
+            padding: 12px 5px;
+            margin: 0 10px;
+            font-weight: bold;
+            cursor: pointer;
+            &.active {
+                color: $main-color;
+                border-bottom: 2px solid $main-color;
+            }
+        }
+    }
+    .deals-filter {
+        background-color: white;
+        height: 100%;
+        width: $deals-filter-w;
+        position: absolute;
+        right: -$deals-filter-w - 5px;
+        z-index: 2;
+        transition: right 500ms;
+        box-shadow: -2px 0 10px gray;
+        &.open {
+            right: 0;
+        }
+        .header {
+            padding: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            border-bottom: 2px solid $separate-line-color;
+            span {
+                padding: 5px;
+                line-height: 20px;
+                font-size: 12px;
+                color: $secondary-font-color;
+                cursor: pointer;
+                opacity: 0.7;
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
+        .body {
+            width: 100%;
+            padding: 20px 25px 10px;
+            border-bottom: 2px solid $separate-line-color;
+            position: relative;
+            .filter-row {
+                padding: 10px 0;
+            }
+            .filter-name {
+                vertical-align: top;
+                display: inline-block;
+                width: 35%;
+                font-size: 12px;
+                color: $secondary-font-color;
+                min-height: 30px;
+            }
+            .filter-dropdown {
+                width: 63%;
+                display: inline-block;
+                .date {
+                    border: none;
+                    width: 100%;
+                    cursor: pointer;
+                }
+                .dropdown-button {
+                    font-size: 12px;
+                    cursor: pointer;
+                    color: lighten($secondary-font-color, 30%);
+                    position: relative;
+                    border-bottom: 1px solid lighten($secondary-font-color, 40%);
+                    padding: 0 15px 5px 5px;
+                    &.selected {
+                        color: inherit;
+                        font-size: 14px;
+                        font-weight: bold;
+                    }
+                    .caret {
+                        color: lighten($secondary-font-color, 20%);
+                        position: absolute;
+                        right: 3px;
+                        top: 30%;
+                    }
+                    input {
+                        &::-webkit-input-placeholder { color: lighten($secondary-font-color, 30%) }
+                        &:-moz-placeholder { color: lighten($secondary-font-color, 30%) }
+                        &::-moz-placeholder { color: lighten($secondary-font-color, 30%) }
+                        &:-ms-input-placeholder { color: lighten($secondary-font-color, 30%) }
+                    }
+                    ul.dropdown-menu {
+                        top: auto !important;
+                        left: 10% !important;
+                    }
+                }
+                .bs-datepicker {
+                    .dropdown-button {
+                        position: static;
+                    }
+                }
+                .dropdown {
+                    position: static;
+                    .dropdown-menu {
+                        left: -20px;
+                        padding: 0 0 10px;
+                        top: auto;
+                        width: $deals-filter-w;
+                        .dropdown-search {
+                            position: relative;
+                            padding: 10px;
+                            margin-bottom: 0;
+                            input {
+                                background-color: white;
+                                padding-right: 40px;
+                            }
+                            i {
+                                position: absolute;
+                                right: 24px;
+                                top: 24px;
+                                font-size: 18px;
+                                color: $secondary-font-color;
+                                opacity: 0.7;
+                                pointer-events: none;
+                            }
+                        }
+                        .dropdown-title {
+                            color: $secondary-font-color;
+                            padding: 6px 20px;
+                            display: inline-block;
+                            font-size: 13px;
+                            opacity: 0.8;
+                        }
+                        .dropdown-option {
+                            a {
+                                display: block;
+                                cursor: pointer;
+                                padding: 6px 20px;
+                                color: inherit;
+                                &:hover, &:focus {
+                                    background-color: #EDEFF0;
+                                    outline: none;
+                                }
+
+                            }
+                        }
+                        .dropdown-budget {
+                            padding: 10px;
+                            color: lighten($secondary-font-color, 30%);
+                            .budget-range-input {
+                                margin-bottom: 10px;
+                                input {
+                                    margin: 0 4px;
+                                    display: inline-block;
+                                    background-color: white;
+                                    width: calc(50% - 36px);
+                                    height: 40px;
+                                }
+                            }
+                            .rzslider {
+                                .rz-bar {
+                                    height: 3px;
+                                    &.rz-selection {
+                                        background-color: $main-color;
+                                    }
+                                }
+                                .rz-bubble:not(.rz-limit) {
+                                    color: $main-font-color;
+                                }
+                                .rz-pointer {
+                                    border: 2px solid #D8E0F3;
+                                    background-color: white;
+                                    top: -8px;
+                                    width: 19px;
+                                    height: 19px;
+                                    &:after {
+                                        top: 3px;
+                                        left: 3px;
+                                        width: 9px;
+                                        height: 9px;
+                                        border-radius: 50%;
+                                        background-color: $main-color;
+                                    }
+                                    &.rz-active {
+                                        &:after {
+                                            background-color: $main-color;
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .footer {
+            padding: 25px;
+            text-align: center;
+            .reset {
+                padding: 5px;
+                margin-right: 25px;
+                cursor: pointer;
+                color: $secondary-color;
+                opacity: 0.8;
+                &:hover {
+                    opacity: 1;
+                }
+            }
+            .btn-main {
+                padding: 6px 22px;
+                font-size: 14px;
+            }
+        }
+    }
     .deals-menu {
+        height: $deals-menu-h;
         padding: 30px;
         .title {
             font-size: 24px;
             font-weight: bold;
             margin-right: 40px;
         }
+        .btn-main {
+            margin-top: 5px;
+        }
     }
     .deals-container {
-        white-space: nowrap;
-        overflow-x: scroll;
+        overflow-x: auto;
     }
-    .deal-column {
-        border-right: 2px solid #E7EBF0;
-        width: 271px;
-        display: inline-block;
-        vertical-align: top;
-        .column-header {
-            position: relative;
-            text-align: center;
-            background-color: white;
-            height: 72px;
-            border-bottom: 1px solid #E4E4E6;
-            //border: 2px solid #E4E4E6;
-            padding: 15px 0;
-            //svg {
-            //    z-index: 0;
-            //    top: 0;
-            //    left: -1px;
-            //    position: absolute;
-            //    width: 103.5%;
-            //    height: 100%;
-            //    path {
-            //        fill: white;
-            //    }
-            //}
-            &:before, &:after {
-                content: '';
-                position: absolute;
-                right: -16px;
-                top: 0;
-                border-left: 14px solid #E7EBF0;
-                border-top: 36px solid transparent;
-                border-bottom: 36px solid transparent;
-                z-index: 1;
-            }
-            &:after {
-                border-left-color: white;
-                right: -14px;
-            }
-            span {
-                z-index: 1;
-                display: block;
-            }
-            span:nth-child(1) {
-                font-weight: bold;
-                i {
-                    font-style: normal;
+    .deals-table {
+        height: 100%;
+        min-height: calc(100vh - #{$header-height} - #{$deals-menu-h});
+        display: table;
+        table-layout: fixed;
+        white-space: nowrap;
+        margin: 0 auto;
+        .deal-column {
+            height: 100%;
+            border-right: 2px solid #E7EBF0;
+            box-sizing: border-box;
+            min-width: 14.1vw;
+            display: table-cell;
+            .column-header {
+                position: relative;
+                text-align: center;
+                background-color: white;
+                height: $deals-column-header-h;
+                border-bottom: 1px solid #E4E4E6;
+                padding: 15px 0;
+                &:before, &:after {
+                    content: '';
+                    position: absolute;
+                    right: -16px;
+                    top: 0;
+                    border-left: 14px solid #E7EBF0;
+                    border-top: 36px solid transparent;
+                    border-bottom: 36px solid transparent;
+                    z-index: 1;
+                }
+                &:after {
+                    border-left-color: white;
+                    right: -14px;
+                }
+                span {
+                    z-index: 1;
+                    display: block;
+                }
+                span:nth-child(1) {
+                    font-weight: bold;
+                    i {
+                        font-style: normal;
+                        color: $secondary-font-color;
+                    }
+                }
+                span:nth-child(2) {
                     color: $secondary-font-color;
                 }
-            }
-            span:nth-child(2) {
-                color: $secondary-font-color;
-            }
 
-        }
-        .column-body {
-            position: relative;
-            padding: 10px;
-            .dndPlaceholder {
-                display: block;
-                min-height: 82px;
-                background-color: #e1e1e1;
-                border-radius: 3px;
-                margin-bottom: 10px;
             }
-
+            .column-body {
+                height: calc(100% - #{$deals-column-header-h});
+                position: relative;
+                padding: 10px;
+                .dndPlaceholder {
+                    display: block;
+                    min-height: 82px;
+                    background-color: #e1e1e1;
+                    border-radius: 3px;
+                    margin-bottom: 10px;
+                }
+            }
         }
     }
     .deal-block {
+        cursor: pointer;
         white-space: normal;
         position: relative;
         padding: 10px;
@@ -96,6 +319,9 @@
         background-color: white;
         .date {
             color: $secondary-font-color;
+            &.expired {
+                color: $error-color;
+            }
         }
         span {
             display: block;
@@ -109,6 +335,14 @@
         }
         span:nth-child(4) {
             font-weight: bold;
+            i {
+                font-style: normal;
+                font-size: 18px;
+                line-height: 14px;
+                color: $secondary-font-color;
+                opacity: 0.7;
+                padding: 0 3px;
+            }
         }
         &.dndDraggingSource {
             display: none;
