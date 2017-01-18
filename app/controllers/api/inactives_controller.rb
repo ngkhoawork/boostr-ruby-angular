@@ -107,7 +107,7 @@ class Api::InactivesController < ApplicationController
       if index == 0
         advertiser_ids.concat accounts_with_revenues
       else
-        advertiser_ids.concat(accounts_with_revenues & advertiser_ids)
+        advertiser_ids = accounts_with_revenues & advertiser_ids
       end
     end
 
