@@ -144,11 +144,11 @@ class Api::InactivesController < ApplicationController
   end
 
   def open_pipeline(advertiser)
-    pipeline = advertiser.advertiser_deals.map(&:budget).compact.reduce(:+)
+    pipeline = advertiser.advertiser_deals.open.map(&:budget).compact.reduce(:+)
     if pipeline == nil
       0
     else
-      (pipeline / 100).round(0)
+      pipeline.round(0)
     end
   end
 
