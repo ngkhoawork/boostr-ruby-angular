@@ -91,7 +91,7 @@ class Api::InactivesController < ApplicationController
   private
 
   def advertisers_with_revenue(in_range:)
-    time_dimensions = TimeDimension.where(start_date: in_range.map(&:first), end_date: in_range.map(&:last))
+    time_dimensions = TimeDimension.where(start_date: in_range.map(&:first), end_date: in_range.map(&:last)).where('days_length < ?', 360)
     advertiser_ids = []
 
     time_dimensions.each_with_index do |time_dimension, index|
