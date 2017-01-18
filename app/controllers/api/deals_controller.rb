@@ -140,7 +140,7 @@ class Api::DealsController < ApplicationController
       format.csv {
         require 'timeout'
         begin
-          Timeout::timeout(120) {
+          Timeout::timeout(240) {
             send_data Deal.to_pipeline_report_csv(filtered_deals, company), filename: "pipeline-report-#{Date.today}.csv"
           }
         rescue Timeout::Error
