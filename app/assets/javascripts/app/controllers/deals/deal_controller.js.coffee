@@ -710,6 +710,17 @@
           type: 'deal'
           data: $scope.currentDeal
 
+  $scope.showDealEditModal = (deal) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_form.html'
+      size: 'md'
+      controller: 'DealsEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        deal: ->
+          deal
+
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)
       $scope.contactSearchText = searchText
