@@ -170,52 +170,32 @@ class Api::InactivesController < ApplicationController
 
   def comparison_window
     if params[:time_period_type] && params[:time_period_number]
+      last_year_start = Date.today.beginning_of_year << 12
+      end_of_this_year = Date.today.end_of_year
+      time_periods = TimePeriods.new(last_year_start..end_of_this_year)
+
       if params[:time_period_type] == 'quarter'
-        first = previous_quarters(lookback: 8)[params[:time_period_number].to_i]
-        second = (previous_quarters(lookback: 4) << current_quarter)[params[:time_period_number].to_i]
+        current_time_period = time_periods.quarters[params[:time_period_number].to_i - 1]
       elsif params[:time_period_type] == 'month'
-        first = previous_months(lookback: 24)[params[:time_period_number].to_i]
-        second = (previous_months(lookback: 12) << current_month)[params[:time_period_number].to_i]
+        current_time_period = time_periods.months[params[:time_period_number].to_i - 1]
       end
+      period_in_previous_year = (current_time_period.first << 12)..(current_time_period.last << 12)
     else
-      first = previous_quarters(lookback: 4).first
-      second = current_quarter
+      period_in_previous_year = previous_quarters(lookback: 4).first
+      current_time_period = current_quarter
     end
 
     {
-      first: [first],
-      second: [second]
+      first: [period_in_previous_year],
+      second: [current_time_period]
     }
   end
 
   def season_names
-    quarter_list = (previous_quarters(lookback: 4) << current_quarter).drop(1)
-    month_list = (previous_months(lookback: 12) << current_month).drop(1)
-
-    quarters = []
-    quarter_list.each_with_index do |quarter, index|
-      quarters << {
-        name: "Q#{quarter_number(quarter)} #{quarter.first.year}",
-        value: index + 1
-      }
-    end
-
-    months = []
-    month_list.each_with_index do |month, index|
-      months << {
-        name: "#{month.first.strftime("%B")} #{month.first.year}",
-        value: index + 1
-      }
-    end
-
-    {
-      quarters: quarters,
-      months: months
-    }
-  end
-
-  def quarter_number(quarter)
-    1 + ((quarter.first.month - 1) / 3).to_i
+    last_year_start = Date.today.beginning_of_year << 12
+    end_of_this_year = Date.today.end_of_year
+    time_periods = TimePeriods.new(last_year_start..end_of_this_year)
+    time_periods.all_time_periods_with_names
   end
 
   def previous_quarters(lookback: qtr_offset)
@@ -226,16 +206,6 @@ class Api::InactivesController < ApplicationController
       quarters << (first..last)
     end
     quarters
-  end
-
-  def previous_months(lookback: month_offset)
-    months = []
-    lookback.times do
-      first = Date.today.beginning_of_month << lookback - months.length
-      last = Date.today.end_of_month << lookback - months.length
-      months << (first..last)
-    end
-    months
   end
 
   def qtr_offset

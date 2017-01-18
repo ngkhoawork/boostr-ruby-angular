@@ -49,6 +49,29 @@ class TimePeriods
     names
   end
 
+  def all_time_periods_with_names
+    quarters_with_names = []
+    quarters.each_with_index do |quarter, index|
+      quarters_with_names << {
+        name: "Q#{quarter_month_numbers(quarter.first)}-#{quarter.first.year}",
+        value: index + 1
+      }
+    end
+
+    month_with_names = []
+    months.each_with_index do |month, index|
+      month_with_names << {
+        name: "#{month.first.strftime("%B")} #{month.first.year}",
+        value: index + 1
+      }
+    end
+
+    {
+      quarters: quarters_with_names,
+      months: month_with_names
+    }
+  end
+
   private
 
   def quarter_month_numbers(date)
