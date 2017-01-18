@@ -78,6 +78,10 @@ class DealProduct < ActiveRecord::Base
     self.update(budget: deal_product_budgets.sum(:budget))
   end
 
+  def update_local_budget
+    self.update(budget_loc: deal_product_budgets.sum(:budget_loc))
+  end
+
   def self.import(file, current_user)
     errors = []
     row_number = 0

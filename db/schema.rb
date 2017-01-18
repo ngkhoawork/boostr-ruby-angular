@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(version: 20170113213404) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "account_dimensions", force: :cascade do |t|
     t.string  "name"
@@ -255,9 +254,10 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.integer  "content_fee_id"
     t.integer  "budget"
     t.date     "start_date"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
     t.date     "end_date"
+    t.decimal  "budget_loc",     precision: 15, scale: 2, default: 0.0
   end
 
   add_index "content_fee_product_budgets", ["content_fee_id"], name: "index_content_fee_product_budgets_on_content_fee_id", using: :btree
@@ -266,11 +266,18 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.integer  "io_id"
     t.integer  "product_id"
     t.integer  "budget"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.decimal  "budget_loc", precision: 15, scale: 2, default: 0.0
   end
 
   add_index "content_fees", ["io_id"], name: "index_content_fees_on_io_id", using: :btree
+
+  create_table "currencies", force: :cascade do |t|
+    t.string "curr_cd"
+    t.string "curr_symbol"
+    t.string "name"
+  end
 
   create_table "deal_contacts", force: :cascade do |t|
     t.integer  "deal_id"
@@ -382,6 +389,7 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.datetime "created_at",                                             null: false
     t.datetime "updated_at",                                             null: false
     t.integer  "deal_product_id"
+    t.decimal  "budget_loc",      precision: 15, scale: 2, default: 0.0
   end
 
   create_table "deal_products", force: :cascade do |t|
@@ -391,6 +399,7 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.datetime "created_at",                                         null: false
     t.datetime "updated_at",                                         null: false
     t.boolean  "open",                                default: true
+    t.decimal  "budget_loc", precision: 15, scale: 2, default: 0.0
   end
 
   create_table "deal_stage_logs", force: :cascade do |t|
@@ -414,8 +423,8 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.date     "end_date"
     t.string   "name"
     t.decimal  "budget",              precision: 15, scale: 2, default: 0.0
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
+    t.datetime "created_at",                                                   null: false
+    t.datetime "updated_at",                                                   null: false
     t.integer  "stage_id"
     t.string   "deal_type"
     t.string   "source_type"
@@ -429,6 +438,8 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.datetime "activity_updated_at"
     t.integer  "previous_stage_id"
     t.boolean  "open",                                         default: true
+    t.string   "curr_cd",                                      default: "USD"
+    t.decimal  "budget_loc",          precision: 15, scale: 2, default: 0.0
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
@@ -439,8 +450,9 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.float    "budget"
     t.date     "start_date"
     t.date     "end_date"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
+    t.decimal  "budget_loc",           precision: 15, scale: 2, default: 0.0
   end
 
   add_index "display_line_item_budgets", ["display_line_item_id"], name: "index_display_line_item_budgets_on_display_line_item_id", using: :btree
@@ -465,17 +477,33 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.integer  "quantity_remaining_3p"
     t.decimal  "budget_delivered_3p",                  precision: 15, scale: 2
     t.decimal  "budget_remaining_3p",                  precision: 15, scale: 2
-    t.datetime "created_at",                                                    null: false
-    t.datetime "updated_at",                                                    null: false
+    t.datetime "created_at",                                                                  null: false
+    t.datetime "updated_at",                                                                  null: false
     t.decimal  "price",                                precision: 15, scale: 2
     t.integer  "balance",                    limit: 8
     t.datetime "last_alert_at"
     t.integer  "temp_io_id"
     t.string   "ad_server_product"
+    t.decimal  "budget_loc",                           precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget_delivered_loc",                 precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget_remaining_loc",                 precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget_delivered_3p_loc",              precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget_remaining_3p_loc",              precision: 15, scale: 2, default: 0.0
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
   add_index "display_line_items", ["product_id"], name: "index_display_line_items_on_product_id", using: :btree
+
+  create_table "exchange_rates", force: :cascade do |t|
+    t.integer "company_id"
+    t.date    "start_date"
+    t.date    "end_date"
+    t.integer "currency_id"
+    t.decimal "rate",        precision: 15, scale: 4
+  end
+
+  add_index "exchange_rates", ["company_id"], name: "index_exchange_rates_on_company_id", using: :btree
+  add_index "exchange_rates", ["currency_id"], name: "index_exchange_rates_on_currency_id", using: :btree
 
   create_table "fields", force: :cascade do |t|
     t.integer  "company_id"
@@ -514,11 +542,12 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.date     "end_date"
     t.integer  "external_io_number"
     t.integer  "io_number"
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.datetime "created_at",                                                null: false
+    t.datetime "updated_at",                                                null: false
     t.string   "name"
     t.integer  "company_id"
     t.integer  "deal_id"
+    t.decimal  "budget_loc",         precision: 15, scale: 2, default: 0.0
   end
 
   add_index "ios", ["advertiser_id"], name: "index_ios_on_advertiser_id", using: :btree
@@ -579,10 +608,12 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.integer  "value"
     t.integer  "user_id"
     t.integer  "company_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
     t.datetime "start_date"
     t.datetime "end_date"
+    t.string   "curr_cd"
+    t.decimal  "budget_loc",     precision: 15, scale: 2, default: 0.0
   end
 
   add_index "quota", ["end_date"], name: "index_quota_on_end_date", using: :btree
@@ -762,6 +793,7 @@ ActiveRecord::Schema.define(version: 20170113213404) do
     t.integer  "user_type",              default: 0,     null: false
     t.boolean  "is_active",              default: true
     t.string   "starting_page"
+    t.string   "default_currency",       default: "USD"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
@@ -819,6 +851,8 @@ ActiveRecord::Schema.define(version: 20170113213404) do
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"
   add_foreign_key "display_line_items", "temp_ios"
+  add_foreign_key "exchange_rates", "companies"
+  add_foreign_key "exchange_rates", "currencies"
   add_foreign_key "io_members", "ios"
   add_foreign_key "io_members", "users"
   add_foreign_key "ios", "companies"

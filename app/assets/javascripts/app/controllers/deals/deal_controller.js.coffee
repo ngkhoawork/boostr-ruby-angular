@@ -1,13 +1,39 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName',
-($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName) ->
+[
+  '$scope',
+  '$routeParams',
+  '$modal',
+  '$filter',
+  '$timeout',
+  '$location',
+  '$anchorScroll',
+  '$sce',
+  'Deal',
+  'Product',
+  'DealProduct',
+  'DealMember',
+  'DealContact',
+  'Stage',
+  'User',
+  'Field',
+  'Activity',
+  'Contact',
+  'ActivityType',
+  'Reminder',
+  '$http',
+  'Transloadit',
+  'Currency',
+  'DealCustomFieldName',
+($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, Currency) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
   $scope.types = []
   $scope.contacts = []
   $scope.errors = {}
+  $scope.currencies = []
   $scope.contactSearchText = ""
+  $scope.currency_symbol = '$'
   $anchorScroll()
 
   ###*
@@ -24,7 +50,6 @@
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
     .then (respond) ->
-      console.log('get files', respond)
       $scope.dealFiles = respond.data
 
   $scope.getIconName = (typeName) ->
@@ -236,7 +261,22 @@
 
     $scope.activityReminderInit()
 
+  $scope.getCompanyCurrencies = ->
+    Currency.active_currencies().then (currencies) ->
+      $scope.currencies = currencies
+
+  $scope.updateDealCurrency = ->
+    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
+      $scope.setCurrentDeal(deal)
+
   $scope.setCurrentDeal = (deal) ->
+    if deal
+      if deal.currency
+        if deal.currency.curr_symbol
+          $scope.currency_symbol = deal.currency.curr_symbol
+        else if deal.currency.curr_cd
+          $scope.currency_symbol = deal.currency.curr_cd
+
     _.each deal.members, (member) ->
       Field.defaults(member, 'Client').then (fields) ->
         member.role = Field.field(member, 'Member Role')
@@ -275,18 +315,18 @@
 
   cutSymbolsAddProductBudget = ->
     _.each $scope.deal_product.deal_product_budgets, (month) ->
-        month.budget = Number((month.budget+'').replace('$', ''))
+        month.budget = Number((month.budget+'').replace($scope.currency_symbol, ''))
         month.percent_value = Number((month.percent_value+'').replace('%', ''))
 
-  $scope.cutDollar = (value, index) ->
-    value = Number((value+'').replace('$', ''))
+  $scope.cutCurrencySymbol = (value, index) ->
+    value = Number((value + '').replace($scope.currency_symbol, ''))
     if(index != undefined )
       $scope.deal_product.deal_product_budgets[index].budget = value
     else
       return value
 
-  $scope.setDollar = (value, index) ->
-    value = '$' + value
+  $scope.setCurrencySymbol = (value, index) ->
+    value = $scope.currency_symbol + value
     if(index!= undefined )
       $scope.deal_product.deal_product_budgets[index].budget = value
     else
@@ -308,7 +348,7 @@
 
   setSymbolsAddProductBudget = ->
     _.each $scope.deal_product.deal_product_budgets, (month) ->
-      month.budget = '$' + month.budget
+      month.budget = $scope.currency_symbol + month.budget
       month.percent_value =  month.percent_value + '%'
 
 
@@ -343,9 +383,9 @@
       if(index == monthIndex)
         $scope.deal_product.budget = $scope.deal_product.budget + Number(monthValue)
       else
-        $scope.deal_product.budget = $scope.deal_product.budget + $scope.cutDollar(month.budget)
+        $scope.deal_product.budget = $scope.deal_product.budget + $scope.cutCurrencySymbol(month.budget)
     _.each $scope.deal_product.deal_product_budgets, (month) ->
-      month.percent_value = $scope.setPercent( Math.round($scope.cutDollar(month.budget) / $scope.deal_product.budget * 100))
+      month.percent_value = $scope.setPercent( Math.round($scope.cutCurrencySymbol(month.budget) / $scope.deal_product.budget * 100))
 
   $scope.changeMonthPercent = (monthPercentValue, index)->
     if(!monthPercentValue)
@@ -353,7 +393,7 @@
     if((monthPercentValue+'').length > 1 && (monthPercentValue+'').charAt(0) == '0')
       monthPercentValue = Number((monthPercentValue + '').slice(1))
     $scope.deal_product.deal_product_budgets[index].percent_value = monthPercentValue
-    $scope.deal_product.deal_product_budgets[index].budget = $scope.setDollar(Math.round(monthPercentValue/100*$scope.deal_product.budget))
+    $scope.deal_product.deal_product_budgets[index].budget = $scope.setCurrencySymbol(Math.round(monthPercentValue/100*$scope.deal_product.budget))
 
     $scope.deal_product.budget_percent = 0
     _.each $scope.deal_product.deal_product_budgets, (month) ->

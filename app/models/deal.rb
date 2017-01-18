@@ -32,11 +32,16 @@ class Deal < ActiveRecord::Base
   has_one :deal_custom_field, dependent: :destroy
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
+  validate :active_exchange_rate
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
   before_update do
+    if curr_cd_changed?
+      update_product_currency
+    end
+
     if stage_id_changed?
       update_stage
       update_close
@@ -85,6 +90,14 @@ class Deal < ActiveRecord::Base
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :by_values, -> (value_ids) { joins(:values).where('values.option_id in (?)', value_ids) unless value_ids.empty? }
   scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
+
+  def active_exchange_rate
+    if curr_cd != 'USD'
+      unless company.active_currencies.include?(curr_cd)
+        errors.add(:curr_cd, 'does not have an active exchange rate')
+      end
+    end
+  end
 
   def fields
     company.fields.where(subject_type: self.class.name)
@@ -204,6 +217,12 @@ class Deal < ActiveRecord::Base
     array
   end
 
+  # def set_user_currency
+  #   if creator.try(:default_currency) && company.has_exchange_rate_for(creator.default_currency)
+  #     self.curr_cd = creator.default_currency
+  #   end
+  # end
+
   def update_total_budget
     current_budget = self.budget.nil? ? 0 : self.budget
     new_budget = deal_product_budgets.sum(:budget)
@@ -212,6 +231,17 @@ class Deal < ActiveRecord::Base
     deal_log.budget_change = new_budget - current_budget
     deal_log.save
     update_attributes(budget: deal_products.sum(:budget))
+  end
+
+  def update_product_currency
+    exchange_rate = company.exchange_rate_for(currency: curr_cd)
+    deal_product_budgets.map{ |dpb| dpb.update_local_budget(exchange_rate) }
+    deal_products.map{ |deal_product| deal_product.update_local_budget }
+    self.budget_loc = deal_products.sum(:budget_loc)
+  end
+
+  def currency
+    Currency.find_by(curr_cd: curr_cd)
   end
 
   def reset_products

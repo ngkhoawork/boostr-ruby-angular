@@ -22,6 +22,7 @@
                 %th.left Name
                 %th.left Email
                 %th.left Title
+                %th.left Default Currency
                 %th.left Type
                 %th.left Status
             %tbody
@@ -32,6 +33,12 @@
                   {{ user.email }}
                 %td.left{ ng: { click: 'editModal(user)' } }
                   {{ user.title }}
+                %td.left
+                  %ui-select{ name: 'default-currency', ng: { model: 'user.default_currency' }, 'on-select': 'submitUser(user)' }
+                    %ui-select-match
+                      {{ $select.selected.curr_cd }}
+                    %ui-select-choices{ repeat: 'currency.curr_cd as currency in currencies' }
+                      %div{ ng: { bind: { html: 'currency.curr_cd + " " + currency.curr_symbol' } } }
                 %td.left
                   %ui-select{ name: 'user-types', ng: { model: 'user.user_type' }, 'on-select': 'submitUser(user)' }
                     %ui-select-match{ placeholder: 'Default' }

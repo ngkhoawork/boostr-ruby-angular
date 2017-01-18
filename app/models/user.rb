@@ -29,6 +29,7 @@ class User < ActiveRecord::Base
   ROLES = %w(user admin superadmin)
 
   validates :first_name, :last_name, presence: true
+  validate :currency_exists
 
   scope :by_user_type, -> type_id { where(user_type: type_id) if type_id.present? }
   scope :by_name, -> name { where('users.first_name ilike ? or users.last_name ilike ?', "%#{name}%", "%#{name}%") if name.present? }
@@ -139,6 +140,12 @@ class User < ActiveRecord::Base
     self.neg_balance_l = self.neg_balance
     self.last_alert_at = DateTime.now
     self.save if should_save
+  end
+
+  def currency_exists
+    if default_currency.present? && Currency.find_by(curr_cd: default_currency).nil?
+      errors.add(:default_currency, "currency does not exist")
+    end
   end
 
   def crevenues(start_date, end_date)

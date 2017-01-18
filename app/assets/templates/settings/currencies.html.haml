@@ -1,0 +1,66 @@
+#currencies.block
+  %div.mb40
+    %span.title Active Currencies
+    %add-button{ ng: { click: 'showNewExchangeRateModal()'} }
+    %br
+    %span.small
+      Default currency is USD
+
+  %table.currencies-table.table
+    %thead
+      %tr
+        %th Currency
+        %th Conversion Rate
+        %th Effective Dates
+    %tbody{ ng: { if: 'active_currencies.length > 0', repeat: 'currency in active_currencies' } }
+      %tr.clickable
+        %td{ ng: { click: 'toggleRow(currency.id)' } }
+          %i{ ng: { class: "{ 'fa fa-chevron-down toggle-icon': toggleId == currency.id, 'fa fa-chevron-right toggle-icon': toggleId != currency.id }" } }
+          {{ currency.name }} ({{ currency.curr_cd }})
+        %td
+          %span
+            {{ currency.rate }}
+        %td
+          %span
+            From To
+
+      %tr.submenu{ ng: { if: 'toggleId == currency.id' } }
+        %td
+          %span.subheader
+            Conversion Rates
+            %strong to
+            USD
+        %td
+          %span.subheader
+            Conversion Rates
+            %strong from
+            USD
+        %td
+          %span.subheader
+            Effective Dates
+      %tr.clickable.submenu{ ng: { if: 'toggleId == currency.id', repeat: 'exchange_rate in currency.exchange_rates', click: 'showEditExchangeRateModal(currency.curr_cd, exchange_rate)' } }
+        %td
+          $1 USD = 
+          %span.dashed
+            {{currency.curr_symbol}}{{ exchange_rate.rate }} {{currency.curr_cd}}
+        %td
+          {{currency.curr_symbol}}1 {{currency.curr_cd}} =
+          %span.dashed
+            ${{1 / exchange_rate.rate | number : 4 }} USD
+        %td
+          From
+          %span.dashed {{ exchange_rate.start_date }}
+          to
+          %span.dashed {{ exchange_rate.end_date }}
+          %a.trashcan.pull-right{ href: '', ng: { click: 'deleteExchangeRate(exchange_rate); $event.stopPropagation()' } }
+            = inline_svg 'icons/trash.svg'
+      %tr.submenu.row-footer.clickable{ ng: { if: 'toggleId == currency.id', click: 'showNewExchangeRateModal(currency.curr_cd)' } }
+        %td{colspan: '3'}
+          %div
+            + Add new conversion rate
+          
+
+    %tbody{ ng: { if: 'active_currencies.length == 0' } }
+      %tr
+        %td.center{ colspan: '10' }
+          No data available
