@@ -17,7 +17,7 @@
                 owners: []
                 advertisers: []
                 agencies: []
-                isOpen: true
+                isOpen: false
                 isEndDateOpen: false
                 isStartDateOpen: false
                 search: ''
