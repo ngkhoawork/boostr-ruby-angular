@@ -25,7 +25,7 @@
           .col-xs-12
             %label.control-label{ for: 'parent' } Team Parent
             %ui-select{ name: 'parent', ng: { model: 'team.parent_id', disabled: true } }
-              %ui-select-match{ placeholder: 'Select A Team' }
+              %ui-select-match{ placeholder: 'Select A Team', "allow-clear": 'true' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'team.id as team in teams | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'team.name' } } }
