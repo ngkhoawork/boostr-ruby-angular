@@ -63,6 +63,7 @@
                 filter: {}
                 selected: {}
                 getSeasonalDescription: ->
+                    if !this.selected.comparisonNumber then return
                     period2 = this.selected.comparisonNumber.name
                     year = parseInt period2.substr -4
                     name = period2.slice 0, -4
@@ -115,6 +116,7 @@
                         if err then console.log(err)
 
             #default filters
+            $scope.seasonalInactive.filter['time_period_number'] = 8
             $scope.seasonalInactive.setFilter('comparisonType', $scope.seasonalInactive.comparisonTypes[0])
 
             Field.defaults({}, 'Client').then (clients) ->
@@ -245,7 +247,8 @@
                     {color: colors[0], label: 'Ave Spend per Qtr'}
                     {color: colors[1], label: 'Open Pipeline'}
                 ]
-
+                if chartId == $scope.seasonalInactive.chartId && $scope.seasonalInactive.selected.comparisonType.value == 'month'
+                    legendData[0].label = 'Ave Spend per Month'
                 #add legend
                 legend = svg.append("g")
                     .attr("transform", "translate(0, " + (height + 50) + ")")
