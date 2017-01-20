@@ -37,8 +37,8 @@ class DealProductBudget < ActiveRecord::Base
             line = []
             line << deal.id
             line << deal.name
-            line << deal.stage.probability
-            line << deal.advertiser.name
+            line << deal.stage.present? ? deal.stage.probability : nil
+            line << deal.advertiser.try(:name)
             line << deal_product.product.name
             line << dpb.budget.try(:round)
             line << dpb.start_date
