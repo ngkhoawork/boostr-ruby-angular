@@ -1,4 +1,5 @@
 #activity-feed {
+  position: relative;
   font-family: "Avenir Next", Arial, serif;
   color: $main-font-color;
   a {
@@ -6,14 +7,16 @@
     font-weight: 600;
   }
   &.block {
-    margin-bottom: 30px;
+    margin-bottom: 0;
     .title {
       font-size: 22px;
       font-weight: 600;
       margin-right: 20px;
     }
   }
-
+  //& div.activity-item:last-of-type {
+  //  margin-bottom: 0;
+  //}
   .activity-item {
     padding-bottom: 20px;
     margin-bottom: 20px;
@@ -43,11 +46,18 @@
     }
   }
   .load-more {
+    position: absolute;
+    width: 100%;
+    display: block;
     text-align: center;
-    a {
-      text-decoration: none;
-      font-weight: 600;
-      color: $secondary-font-color;
+    cursor: pointer;
+    padding: 10px 0;
+    left: 0;
+    bottom: 0;
+    font-weight: 600;
+    color: $secondary-font-color;
+    &:hover {
+      background-color: $separate-line-color;
     }
   }
 }

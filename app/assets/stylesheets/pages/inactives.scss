@@ -1,0 +1,27 @@
+#inactives-dashboard {
+    .filter-block {
+        margin-top: 10px;
+    }
+    .chart-title {
+        margin-bottom: 0;
+    }
+    .table-report {
+        padding: 0 15px;
+        td {
+            font-weight: normal;
+        }
+    }
+    .inactives-chart {
+        height: auto;
+        .axis {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #d9dde0;
+            shape-rendering: crispEdges;
+        }
+    }
+}

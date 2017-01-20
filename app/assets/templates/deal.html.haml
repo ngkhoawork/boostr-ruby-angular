@@ -7,8 +7,9 @@
           Back to Deals
     #deal_overview.row.campaign
       .col-xs-6
-        %h3.deal-name{ editable: { text: 'currentDeal.name' }, onaftersave: 'updateDeal()', 'e-name': 'deal-name' }
+        %h3.deal-name
           {{ currentDeal.name }}
+          %i.fa.fa-pencil.edit-deal{'ng-click': 'showDealEditModal(currentDeal)'}
         .deal-info{ 'ng-if': "currentDeal.agency_id" }
           Agency - {{currentDeal.agency.name}}
         .deal-info{ 'ng-if': "currentDeal.advertiser_id" }

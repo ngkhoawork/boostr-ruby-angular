@@ -5,8 +5,18 @@
         margin-right: 90px;
     }
     .filters-block {
-        width: 1200px;
         display: inline-block;
         vertical-align: middle;
+    }
+    .export {
+        margin-top: 15px;
+        svg {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            g {
+                fill: $main-color;
+            }
+        }
     }
 }

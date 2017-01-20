@@ -1,7 +1,7 @@
 #activity-feed.block
 	%div.mb40
 		%span.title Activity
-		%add-button{'ng-click': 'showNewActivityModal()'}
+		%add-button{'ng-click': 'showNewActivityModal()'} Add
 	%p{'ng-show': '!activities || !activities.length'}
 		No activity
 	%div.activity-item{'ng-repeat': 'activity in activities | orderBy: "-happened_at"'}
@@ -36,6 +36,5 @@
 			%a.delete-team{href: '', 'ng-click': 'deleteActivity(activity)'}
 				Delete
 
-	%div.load-more{'ng-if': 'hasMoreActivities'}
-		%a{href: "javascript:void(0);", 'ng-click': 'loadMoreActivities()'}
-			Load more
+	%span.load-more{'ng-if': 'hasMoreActivities', 'ng-click': 'loadMoreActivities()'}
+		Load more

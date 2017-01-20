@@ -48,3 +48,31 @@
     }
   }
 }
+
+.btn-main {
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 6px 22px;
+  border: none;
+  color: $main-font-color;
+  background-color: white;
+  box-shadow: 0 1px 1px gray;
+  .fa {
+    margin-right: 5px;
+    color: $secondary-font-color;
+  }
+  &:hover {
+    background-color: darken(white, 5%)
+  }
+  &:focus {
+    outline: none;
+  }
+  &.submit {
+    color: white;
+    background: linear-gradient(to right, $main-color, lighten($main-color, 20%));
+    &:hover {
+      background: linear-gradient(to right, darken($main-color, 10%), darken(lighten($main-color, 20%), 10%));
+    }
+  }
+}

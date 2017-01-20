@@ -8,6 +8,20 @@
       color: $brand-tertiary;
     }
   }
+  .edit-deal {
+    color: $secondary-font-color;
+    margin-left: 8px;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    padding: 4px 6px;
+    font-size: 20px;
+    border-radius: 5px;
+    &:hover {
+      background-color: $secondary-font-color;
+      color: white;
+    }
+  }
 
   .transform {
     transform: rotate(180deg);

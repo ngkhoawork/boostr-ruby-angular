@@ -1,0 +1,44 @@
+#deals {
+  .stages {
+    a.list-group-item {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      min-height: auto;
+    }
+
+    .filter {
+      border: 0;
+      min-height: auto;
+      padding: 15px 15px;
+      opacity: 1;
+
+      h5 {
+        color: $brand-primary;
+        text-transform: uppercase;
+      }
+    }
+  }
+  .sort {
+    color: $white;
+    &:hover,
+    &:focus {
+      color: $light-grayish-blue-1;
+    }
+  }
+  .active {
+    color: $light-grayish-blue-1;
+  }
+
+  .table.table-striped {
+    tbody {
+      tr {
+        td {
+          &:first-child {
+            word-break: break-all;
+          }
+        }
+      }
+    }
+
+  }
+}

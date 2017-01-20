@@ -95,6 +95,13 @@ Rails.application.routes.draw do
     resources :kpis, only: [:index]
     resources :kpis_dashboard, only: [:index]
     resources :where_to_pitch, only: [:index]
+    resources :inactives, only: [] do
+      collection do
+        get :inactives
+        get :seasonal_inactives
+        get :soon_to_be_inactive
+      end
+    end
     resources :reminders, only: [:index, :show, :create, :update, :destroy]
     resources :remindable, only: [] do
       get '/:remindable_type', to: 'reminders#remindable'
