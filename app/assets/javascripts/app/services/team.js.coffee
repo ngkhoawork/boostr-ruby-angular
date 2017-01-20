@@ -2,10 +2,15 @@
 ['$resource', '$rootScope', '$q',
 ($resource, $rootScope, $q) ->
 
+  transformRequest = (original, headers) ->
+    original.team.parent_id = null if original.team.parent_id == undefined
+    angular.toJson(original)
+
   resource = $resource '/api/teams/:id', { id: '@id' },
     update: {
       method: 'PUT'
       url: '/api/teams/:id'
+      transformRequest: transformRequest
     }
     members: {
       method: 'GET'
