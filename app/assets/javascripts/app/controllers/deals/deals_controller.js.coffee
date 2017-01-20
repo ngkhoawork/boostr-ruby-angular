@@ -195,8 +195,7 @@
                         return 0
 
             $scope.onDrop = (deal, newStage) ->
-
-                return deal
+                if deal.stage_id is newStage.id then return
                 deal.stage_id = newStage.id
                 if !newStage.open
                     $scope.showCloseDealModal(deal)
