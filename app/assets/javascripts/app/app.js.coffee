@@ -81,6 +81,9 @@
     .when '/smart_reports/where_to_pitch',
       templateUrl: 'where_to_pitch.html'
       controller: 'WhereToPitchController'
+    .when '/smart_reports/inactives',
+      templateUrl: 'inactives.html'
+      controller: 'InactivesController'
     .when '/reports/deal_reports',
       templateUrl: 'deal_reports.html'
       controller: 'DealReportsController'

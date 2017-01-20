@@ -276,6 +276,16 @@ class User < ActiveRecord::Base
     all_team_members
   end
 
+  def open_deals(start_date, end_date)
+    @open_deals ||= self.deals.where(open: true).for_time_period(start_date, end_date).includes(:deal_product_budgets, :stage).to_a
+  end
+
+  def number_of_days(start_date, end_date, comparer)
+    from = [start_date, comparer.start_date].max
+    to = [end_date, comparer.end_date].min
+    [(to.to_date - from.to_date) + 1, 0].max
+  end
+
   def all_activities
     @all_activities = []
     @all_activities += activities
