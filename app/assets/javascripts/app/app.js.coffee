@@ -23,6 +23,7 @@
   'daterangepicker'
   'rzModule'
   'monospaced.elastic'
+  'dndLists'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

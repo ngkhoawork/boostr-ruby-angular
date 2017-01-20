@@ -78,7 +78,7 @@ class Api::DealsController < ApplicationController
           end
           render json: response_deals
         else
-          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage, :deal_custom_field).distinct , each_serializer: DealIndexSerializer).to_json
+          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users).distinct , each_serializer: DealIndexSerializer).to_json
         end
       }
       format.csv {
@@ -314,7 +314,7 @@ class Api::DealsController < ApplicationController
     elsif params[:filter] == 'user' && params[:user_id]
       deal_member_filter
     elsif params[:filter] == 'team' && team.present?
-      team.deals.active
+      company.deals.by_deal_team(current_user.teams_tree_members.ids)
     elsif params[:client_id].present?
       company.deals.active
     else
