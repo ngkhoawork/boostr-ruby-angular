@@ -10,7 +10,7 @@ class Api::InactivesController < ApplicationController
       .includes(:users, :advertiser_deals)
 
     @inactives.each do |advertiser|
-      last_activity = advertiser.activities.order(happened_at: :desc).last
+      last_activity = advertiser.activities.order(:happened_at).last
       sellers = advertiser.users.select do |user|
         user.user_type == SELLER ||
         user.user_type == SALES_MANAGER
@@ -38,7 +38,7 @@ class Api::InactivesController < ApplicationController
       .includes(:users, :advertiser_deals)
 
     @inactives.each do |advertiser|
-      last_activity = advertiser.activities.order(happened_at: :desc).last
+      last_activity = advertiser.activities.order(:happened_at).last
       sellers = advertiser.users.select do |user|
         user.user_type == SELLER ||
         user.user_type == SALES_MANAGER
@@ -69,7 +69,7 @@ class Api::InactivesController < ApplicationController
       .includes(:users, :advertiser_deals)
 
     @inactives.each do |advertiser|
-      last_activity = advertiser.activities.order(happened_at: :desc).last
+      last_activity = advertiser.activities.order(:happened_at).last
       sellers = advertiser.users.select do |user|
         user.user_type == SELLER ||
         user.user_type == SALES_MANAGER
