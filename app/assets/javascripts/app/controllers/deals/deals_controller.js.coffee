@@ -13,6 +13,15 @@
                 {name: 'My Team\'s Deals', param: 'team'}
                 {name: 'All Deals', param: 'company'}
             ]
+            Selection = ->
+                @owner = ''
+                @advertiser = ''
+                @agency = ''
+                @budget = ''
+                @date =
+                    startDate: null
+                    endDate: null
+                return
             $scope.filter =
                 owners: []
                 advertisers: []
@@ -23,13 +32,7 @@
                 search: ''
                 minBudget: null
                 maxBudget: null
-                selected:
-                    owner: ''
-                    advertiser: ''
-                    agency: ''
-                    budget: ''
-                    startDate: null
-                    endDate: null
+                selected: new Selection()
                 slider:
                     minValue: 0
                     maxValue: 0
@@ -71,6 +74,14 @@
                         if this.maxValue is 0 then this.maxValue = this.minValue
                     refresh: ->
                         $scope.$broadcast 'rzSliderForceRender'
+                datePicker:
+                    date:
+                        startDate: null
+                        endDate: null
+                    apply: ->
+                        _this = $scope.filter.datePicker
+                        if (_this.date.startDate && _this.date.endDate)
+                            $scope.filter.selected.date = _this.date
                 apply: (reset) ->
                     selected = this.selected
                     $scope.deals = $scope.allDeals.filter (deal) ->
@@ -87,10 +98,10 @@
                                 return false
                             if selected.budget.max && parseInt(deal.budget) > selected.budget.max
                                 return false
-                        if selected.startDate && !moment(selected.startDate).isSame(deal.start_date, 'day')
-                            return false
-                        if selected.endDate && !moment(selected.endDate).isSame(deal.end_date, 'day')
-                            return false
+                        if selected.date.startDate && selected.date.endDate
+                            if moment(selected.date.startDate).startOf('day').diff(deal.start_date, 'day') > 0 or
+                            moment(selected.date.endDate).startOf('day').diff(deal.start_date, 'day') < 0
+                                return false
                         deal
                     columns = angular.copy $scope.emptyColumns
                     $scope.deals.forEach (deal) ->
@@ -99,14 +110,10 @@
                         columns[index].push deal
                     $scope.columns = columns
                     if !reset then this.isOpen = false
-                reset: ->
-                    this.selected =
-                        owner: ''
-                        advertiser: ''
-                        agency: ''
-                        budget: ''
-                        startDate: null
-                        endDate: null
+                reset: (key) ->
+                    this.selected[key] = new Selection()[key]
+                resetAll: ->
+                    this.selected = new Selection()
                     this.apply(true)
                 getBudgetValue: ->
                     budget = this.selected.budget
@@ -117,6 +124,11 @@
                     if budget.min && budget.max
                         return formatMoney(budget.min) + ' - ' + formatMoney(budget.max)
                     return 'Budget'
+                getDateValue: ->
+                    date = this.selected.date
+                    if date.startDate && date.endDate
+                        return """#{date.startDate.format('MMMM D, YYYY')} -\n#{date.endDate.format('MMMM D, YYYY')}"""
+                    return 'Time period'
                 select: (key, value) ->
                     this.selected[key] = value
                 onDropdownToggle: ->
@@ -161,6 +173,9 @@
                     $scope.filter.slider.maxValue = maxBudget
                     $scope.filter.slider.options.ceil = maxBudget
                     $scope.columns = columns
+
+#                    delete $scope.stagesById[Object.keys($scope.stagesById)[0]]
+#                    delete $scope.stagesById[Object.keys($scope.stagesById)[0]]
 
     #                $scope.stagesById[100] = {index: 7, name: 'TEST1'}
     #                $scope.columns.push []
@@ -235,4 +250,26 @@
                     resolve:
                         currentDeal: ->
                             currentDeal
+
+            $scope.coloringColumns = ->
+                baseColor = '#ff7200'
+                headers = $document.find('.column-header')
+                headers.each (i, elem) ->
+                    color = shadeColor baseColor, 0.8 - 0.8 / (headers.length - 1) * i
+                    header = angular.element(elem)
+                    svgPolygon = header.find('polygon')
+                    header.css('backgroundColor', color)
+                    svgPolygon.css('fill', color)
+                return true
+
+            shadeColor = (color, percent) ->
+                f = parseInt(color.slice(1), 16)
+                t = if percent < 0 then 0 else 255
+                p = if percent < 0 then percent * -1 else percent
+                R = f >> 16
+                G = f >> 8 & 0x00FF
+                B = f & 0x0000FF
+                '#' + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + Math.round((t - B) * p) + B).toString(16).slice(1)
+
+
     ]

@@ -203,4 +203,7 @@
     td.active.start-date, td.active.end-date {
         background-color: $brand-primary !important;
     }
+    .ranges {
+        float: none !important;
+    }
 }

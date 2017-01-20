@@ -75,6 +75,22 @@
             .filter-dropdown {
                 width: 63%;
                 display: inline-block;
+                position: relative;
+                .fa-close {
+                    padding: 2px 3px;
+                    position: absolute;
+                    left: -23px;
+                    top: -1px;
+                    color: $secondary-font-color;
+                    font-size: 16px;
+                    cursor: pointer;
+                    &:hover {
+                        color: lighten($secondary-font-color, 20%)
+                    }
+                }
+                .filter-date {
+                    white-space: pre-wrap;
+                }
                 .date {
                     border: none;
                     width: 100%;
@@ -105,19 +121,18 @@
                         &:-ms-input-placeholder { color: lighten($secondary-font-color, 30%) }
                     }
                     ul.dropdown-menu {
-                        top: auto !important;
-                        left: 10% !important;
+                        top: 30px !important;
+                        left: -50% !important;
                     }
                 }
                 .bs-datepicker {
                     .dropdown-button {
-                        position: static;
                     }
                 }
                 .dropdown {
                     position: static;
                     .dropdown-menu {
-                        left: -20px;
+                        left: -80%;
                         padding: 0 0 10px;
                         top: auto;
                         width: $deals-filter-w;
@@ -252,7 +267,7 @@
         margin: 0 auto;
         .deal-column {
             height: 100%;
-            border-right: 2px solid #E7EBF0;
+            //border-right: 2px solid #E7EBF0;
             box-sizing: border-box;
             min-width: 14.1vw;
             display: table-cell;
@@ -263,19 +278,17 @@
                 height: $deals-column-header-h;
                 border-bottom: 1px solid #E4E4E6;
                 padding: 15px 0;
-                &:before, &:after {
-                    content: '';
+                svg {
+                    height: auto;
                     position: absolute;
-                    right: -16px;
                     top: 0;
-                    border-left: 14px solid #E7EBF0;
-                    border-top: 36px solid transparent;
-                    border-bottom: 36px solid transparent;
+                    right: -15px;
                     z-index: 1;
-                }
-                &:after {
-                    border-left-color: white;
-                    right: -14px;
+                    polygon {
+                        fill: white;
+                        stroke: #E4E4E6;
+                        stroke-width: 2;
+                    }
                 }
                 span {
                     z-index: 1;
@@ -285,11 +298,9 @@
                     font-weight: bold;
                     i {
                         font-style: normal;
-                        color: $secondary-font-color;
                     }
                 }
                 span:nth-child(2) {
-                    color: $secondary-font-color;
                 }
 
             }
@@ -297,6 +308,7 @@
                 height: calc(100% - #{$deals-column-header-h});
                 position: relative;
                 padding: 10px;
+                border-right: 2px solid #E7EBF0;
                 .dndPlaceholder {
                     display: block;
                     min-height: 82px;
@@ -318,6 +330,7 @@
         border-bottom: 2px solid #E4E4E6;
         background-color: white;
         .date {
+            padding-top: 3px;
             color: $secondary-font-color;
             &.expired {
                 color: $error-color;
@@ -325,16 +338,16 @@
         }
         span {
             display: block;
+            padding: 3px 0;
         }
         span:nth-child(2) {
+            color: $secondary-color;
             font-weight: bold;
-            color: black;
         }
         span:nth-child(3) {
             color: #8D98A2;
         }
         span:nth-child(4) {
-            font-weight: bold;
             i {
                 font-style: normal;
                 font-size: 18px;
@@ -357,8 +370,10 @@
         }
     }
     .deal-column:last-child {
-        border-right: none;
-        .column-header:before, .column-header:after {
+        .column-body {
+            border-right: none;
+        }
+        svg {
             display: none;
         }
     }

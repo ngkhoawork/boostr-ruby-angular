@@ -9,6 +9,7 @@
 					%div
 						Owner
 				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.owner', 'ng-click': 'filter.reset("owner")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.owner}'}
 							{{filter.selected.owner || 'Select an owner'}}
@@ -25,6 +26,7 @@
 					%div
 						Advertiser
 				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.advertiser', 'ng-click': 'filter.reset("advertiser")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
 							{{filter.selected.advertiser.name || 'Select an advertiser'}}
@@ -41,6 +43,7 @@
 					%div
 						Agency
 				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.agency', 'ng-click': 'filter.reset("agency")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.agency}'}
 							{{filter.selected.agency.name || 'Select an agency'}}
@@ -57,6 +60,7 @@
 					%div
 						Budget
 				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.budget.min || filter.selected.budget.max', 'ng-click': 'filter.reset("budget")'}
 					%span{'dropdown': '', 'on-toggle': 'filter.slider.refresh()'}
 						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.budget.min || filter.selected.budget.max}'}
 							{{filter.getBudgetValue()}}
@@ -76,35 +80,18 @@
 					%div
 						Start Date
 				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.date.startDate && filter.selected.date.endDate', 'ng-click': 'filter.reset("date")'}
 					%span.bs-datepicker
-						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.startDate}'}
-							%input.date{readonly: true,
-										placeholder: 'Set start date',
-										type: 'text',
-										datepicker: { popup: 'MMMM d, y' },
-										ng: { model: 'filter.selected.startDate',
-										click: 'filter.isStartDateOpen = !filter.isStartDateOpen; filter.isEndDateOpen = false' },
-										'is-open': 'filter.isStartDateOpen'}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.date.startDate && filter.selected.date.endDate}'}
+							%div.date-picker{'date-range-picker': true,
+			                                           'ng-model': 'filter.datePicker.date',
+			                                           options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.apply}}'}
+								%span.filter-date {{filter.getDateValue()}}
 							%span.caret
-			.filter-row
-				.filter-name
-					%div
-						End Date
-				.filter-dropdown
-					%span.bs-datepicker
-						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.endDate}'}
-							%input.date{readonly: true,
-										placeholder: 'Set end date',
-										type: 'text',
-										datepicker: { popup: 'MMMM d, y' },
-										ng: { model: 'filter.selected.endDate',
-										click: 'filter.isEndDateOpen = !filter.isEndDateOpen; filter.isStartDateOpen = false' },
-										'is-open': 'filter.isEndDateOpen'}
-							%span.caret
-
 		.footer
-			%span.reset{'ng-click': 'filter.reset()'} Reset
+			%span.reset{'ng-click': 'filter.resetAll()'} Reset
 			%button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
+
 	.container-fluid
 		.row
 			.col-xs-12.deals-menu
@@ -118,13 +105,15 @@
 					Add filter
 		.row.deals-container
 			.deals-table
-				.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index'}
+				.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header
 						%span
 							{{stage.name}}
 							%i ({{columns[columnIndex].length || 0}})
 						%span
 							{{calcWeighted(columns[columnIndex], stage) | formatMoney}} (W) / {{calcUnweighted(columns[columnIndex]) | formatMoney}} (UW)
+						%svg{width: '17', height: '72'}
+							%polygon{points: '-2,-7 15, 36, -2, 79'}
 					.column-body{'dnd-list': 'columns[columnIndex]',
 								 'dnd-drop': 'onDrop(item, stage)'}
 						.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
@@ -139,7 +128,3 @@
 								{{deal.budget | formatMoney}}
 								%i &#183;
 								{{deal.members ? deal.members.join(', ') : '-'}}
-
-
-
-
