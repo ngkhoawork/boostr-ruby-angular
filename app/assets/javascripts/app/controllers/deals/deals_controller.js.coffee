@@ -165,9 +165,6 @@
                             maxBudget = parseInt(deal.budget)
                         index = $scope.stagesById[deal.stage_id].index
                         columns[index].push deal
-                    columns.forEach (col) ->
-                        col.sort (d1, d2) ->
-                            new Date(d1.start_date) > new Date(d2.start_date)
 
                     $scope.allDeals = angular.copy $scope.deals
                     $scope.filter.owners = _.uniq owners
@@ -176,16 +173,7 @@
                     $scope.filter.slider.maxValue = maxBudget
                     $scope.filter.slider.options.ceil = maxBudget
                     $scope.columns = columns
-
-#                    delete $scope.stagesById[Object.keys($scope.stagesById)[0]]
-#                    delete $scope.stagesById[Object.keys($scope.stagesById)[0]]
-
-    #                $scope.stagesById[100] = {index: 7, name: 'TEST1'}
-    #                $scope.columns.push []
-    #                $scope.stagesById[200] = {index: 7, name: 'TEST2'}
-    #                $scope.columns.push []
-    #                $scope.stagesById[300] = {index: 7, name: 'TEST3'}
-    #                $scope.columns.push []
+                    $scope.sortingDealsByDate()
 
             $scope.filterDeals = (filter) ->
                 $scope.selectedType = filter
@@ -197,7 +185,18 @@
             $scope.openFilter = ->
                 $scope.isFilterOpen = !$scope.isFilterOpen
 
+            $scope.sortingDealsByDate = ->
+                _.each $scope.columns, (col) ->
+                    col.sort (d1, d2) ->
+                        d1 = new Date(d1.start_date)
+                        d2 = new Date(d2.start_date)
+                        if d1 > d2 then return 1
+                        if d1 < d2 then return -1
+                        return 0
+
             $scope.onDrop = (deal, newStage) ->
+
+                return deal
                 deal.stage_id = newStage.id
                 if !newStage.open
                     $scope.showCloseDealModal(deal)
