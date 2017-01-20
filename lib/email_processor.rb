@@ -18,10 +18,13 @@ class EmailProcessor
         if contact_email=="email@mail.boostrcrm.com" || contact_email=="email@postman.boostrcrm.com" || contact_email=="email@postman.staging.boostrcrm.com" || contact_email=="email@postman.testing.boostrcrm.com"
           next
         end
-        addresses = Address.where(addressable_type: "Contact", email: contact_email)
-        if addresses.count > 0
-          client_id = addresses[0].addressable.client_id
-          contacts << addresses[0].addressable
+        addresses = Address.contacts_by_email(contact_email)
+
+        if company_contact = Contact.find_by(id: addresses.map(&:addressable_id), company_id: company_id)
+          if user.company.clients.exists? company_contact.client_id
+            client_id = company_contact.client_id
+          end
+          contacts << company_contact
         else
           contact_emails_added << contact_email
         end
