@@ -25,16 +25,6 @@
 									%li{ ng: { repeat: 'option in inactive.lookbackWindow', class: '{active: option.value === inactive.filter.qtrs}' } }
 										%a{ href: '', ng: { click: 'inactive.setFilter("qtrs", option)' } }
 											{{ option.name }}
-					-#%td
-					-#	%ul.kpi-block__filter
-					-#		%li{ dropdown: true }
-					-#			%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"not-selected": !inactive.selected.product.id}' }
-					-#				{{inactive.selected.product ? inactive.selected.product.name : 'All'}}
-					-#				%span.caret
-					-#			%ul.dropdown-menu
-					-#				%li{ ng: { repeat: 'product in inactive.productsList', class: '{active: product.id === inactive.filter.product_id}' } }
-					-#					%a{ href: '', ng: { click: 'inactive.setFilter("product", product)' } }
-					-#						{{ product.name }}
 					%td
 						%ul.kpi-block__filter
 							%li{ dropdown: true }
@@ -145,7 +135,7 @@
 						%thead
 							%tr
 								%th Advertiser
-								%th Ave Spend per Qtr
+								%th Ave Spend per {{seasonalInactive.selected.comparisonType.value == 'month' ? 'Month' : 'Qtr'}}
 								%th Open Pipeline
 								%th Last Activity
 								%th Seller
