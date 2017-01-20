@@ -117,12 +117,12 @@
 					.column-body{'dnd-list': 'columns[columnIndex]',
 								 'dnd-drop': 'onDrop(item, stage)'}
 						.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
-									'ng-click': 'linkTo("/deals/" + deal.id)',
 									'dnd-draggable': 'deal',
 									'dnd-moved': 'columns[columnIndex].splice($index, 1)',
 									'dnd-effect-allowed': 'move'}
 							.date.pull-right{'ng-class': '{expired: deal.isExpired}'} {{deal.start_date | date: 'mediumDate'}}
-							%span {{deal.name}}
+							%span
+								%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
 							%span {{(deal.advertiser && deal.advertiser.name || '') + ((deal.advertiser && deal.agency) ? ' | ' : '') + (deal.agency && deal.agency.name || '')}}
 							%span
 								{{deal.budget | formatMoney}}

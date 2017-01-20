@@ -87,9 +87,9 @@
                     $scope.deals = $scope.allDeals.filter (deal) ->
                         if selected.owner && deal.members.indexOf(selected.owner) is -1
                             return false
-                        if selected.advertiser && (deal.advertiser && deal.advertiser.id != selected.advertiser.id)
+                        if selected.advertiser && (!deal.advertiser || deal.advertiser.id != selected.advertiser.id)
                             return false
-                        if selected.agency && (deal.agency && deal.agency.id != selected.agency.id)
+                        if selected.agency && (!deal.agency || deal.agency.id != selected.agency.id)
                             return false
                         if selected.budget
                             if !parseInt(deal.budget)
@@ -165,6 +165,9 @@
                             maxBudget = parseInt(deal.budget)
                         index = $scope.stagesById[deal.stage_id].index
                         columns[index].push deal
+                    columns.forEach (col) ->
+                        col.sort (d1, d2) ->
+                            new Date(d1.start_date) > new Date(d2.start_date)
 
                     $scope.allDeals = angular.copy $scope.deals
                     $scope.filter.owners = _.uniq owners
