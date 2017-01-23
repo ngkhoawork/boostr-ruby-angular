@@ -256,7 +256,24 @@
         }
     }
     .deals-container {
-        overflow-x: auto;
+        overflow-x: scroll;
+        position: relative;
+        .dragzone-scroll {
+            z-index: 99;
+            opacity: 0.4;
+            background-color: green;
+            position: fixed;
+            width: 14vw;
+            height: 100vh;
+            top: 0;
+            pointer-events: none;
+            &#left-scroll {
+                left: 0;
+            }
+            &#right-scroll {
+                right: 0;
+            }
+        }
     }
     .deals-table {
         height: 100%;
@@ -265,11 +282,12 @@
         table-layout: fixed;
         white-space: nowrap;
         margin: 0 auto;
+        //overflow-x: scroll;
         .deal-column {
             height: 100%;
             //border-right: 2px solid #E7EBF0;
             box-sizing: border-box;
-            min-width: 14.1vw;
+            min-width: 19.8vw;
             display: table-cell;
             .column-header {
                 position: relative;

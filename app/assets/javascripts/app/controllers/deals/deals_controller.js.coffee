@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage'
-        ($rootScope, $document, $scope, $filter, $modal, $q, $location, Deal, Stage) ->
+    ['$rootScope', '$window', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage'
+        ($rootScope, $window, $document, $scope, $filter, $modal, $q, $location, Deal, Stage) ->
             formatMoney = $filter('formatMoney')
 
             $scope.selectedDeal = null
@@ -175,6 +175,18 @@
                     $scope.columns = columns
                     $scope.sortingDealsByDate()
 
+#                    delete $scope.stagesById[Object.keys($scope.stagesById)[0]]
+#                    delete $scope.stagesById[Object.keys($scope.stagesById)[0]]
+
+                    $scope.stagesById[100] = {index: 7, name: 'TEST1'}
+                    $scope.columns.push []
+                    $scope.stagesById[200] = {index: 8, name: 'TEST2'}
+                    $scope.columns.push []
+                    $scope.stagesById[300] = {index: 9, name: 'TEST3'}
+                    $scope.columns.push []
+                    $scope.stagesById[400] = {index: 10, name: 'TEST4'}
+                    $scope.columns.push []
+
             $scope.filterDeals = (filter) ->
                 $scope.selectedType = filter
                 $rootScope.dealFilter = $scope.dealFilter
@@ -195,6 +207,7 @@
                         return 0
 
             $scope.onDrop = (deal, newStage) ->
+                return deal
                 if deal.stage_id is newStage.id then return
                 deal.stage_id = newStage.id
                 if !newStage.open
@@ -272,5 +285,44 @@
                 B = f & 0x0000FF
                 '#' + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + Math.round((t - B) * p) + B).toString(16).slice(1)
 
+            x = 0
+            shift = 0
+            dragDirection = null
+            interval = null
+            dealsContainer = null
+            angular.element(document).ready ->
+                dealsContainer = angular.element('.deals-container')[0]
+                angular.element('#deals').on 'drag', (event) ->
+                    if shift >= 35
+                        dragDirection = 'right'
+                        shift = 0
+                    else if shift <= -35
+                        dragDirection = 'left'
+                        shift = 0
+                    if x then shift -= x - event.clientX
+                    x = event.clientX
+
+            $scope.onDragStart = ->
+                x = 0
+                shift = 0
+                dragDirection = null
+                interval = setInterval checkPositionThenScroll, 33
+
+            $scope.onDragEnd = ->
+                clearInterval interval
+
+            checkPositionThenScroll = ->
+                if !dealsContainer then return
+
+                scrollZone = 0.14
+                width = $window.innerWidth
+                leftBorder = width * scrollZone
+                rightBorder = width * (1 - scrollZone)
+#                fastScrollZone = slowScrollZone / 2
+
+                if x <= leftBorder && dragDirection == 'left'
+                    dealsContainer.scrollLeft -= (leftBorder - x) / 10
+                else if x >= rightBorder && dragDirection == 'right'
+                    dealsContainer.scrollLeft += (x - rightBorder) / 10
 
     ]

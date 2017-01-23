@@ -104,6 +104,8 @@
 					%i.fa.fa-filter
 					Add filter
 		.row.deals-container
+			#left-scroll.dragzone-scroll
+			#right-scroll.dragzone-scroll
 			.deals-table
 				.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header
@@ -119,7 +121,9 @@
 						.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
 									'dnd-draggable': 'deal',
 									'dnd-moved': 'columns[columnIndex].splice($index, 1)',
-									'dnd-effect-allowed': 'move'}
+									'dnd-effect-allowed': 'move',
+									'dnd-dragstart': 'onDragStart()',
+									'dnd-dragend': 'onDragEnd()'}
 							.date.pull-right{'ng-class': '{expired: deal.isExpired}'} {{deal.start_date | date: 'mediumDate'}}
 							%span
 								%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
