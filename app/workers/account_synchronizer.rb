@@ -1,4 +1,4 @@
-class AccountSynchronizer
+class AccountSynchronizer < BaseWorker
   def perform
     synchronize_account_dimensions
   end
