@@ -279,15 +279,16 @@
             dealsContainer = null
             angular.element(document).ready ->
                 dealsContainer = angular.element('.deals-container')[0]
-                angular.element('#deals').on 'drag', (event) ->
+                angular.element('#deals').on 'drag', (e) ->
+                    e = e.originalEvent
                     if shift >= 35
                         dragDirection = 'right'
                         shift = 0
                     else if shift <= -35
                         dragDirection = 'left'
                         shift = 0
-                    if x then shift -= x - event.clientX
-                    x = event.clientX
+                    if x then shift -= x - e.clientX
+                    x = e.clientX
 
             $scope.onDragStart = ->
                 x = 0
