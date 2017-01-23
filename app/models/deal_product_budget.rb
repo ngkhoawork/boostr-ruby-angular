@@ -13,9 +13,7 @@ class DealProductBudget < ActiveRecord::Base
   end
 
   def update_local_budget(exchange_rate)
-    self.update(
-      budget_loc: budget * exchange_rate
-    )
+    self.update(budget_loc: budget * exchange_rate)
   end
 
   def self.to_csv(company_id)

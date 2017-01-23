@@ -217,27 +217,35 @@ class Deal < ActiveRecord::Base
     array
   end
 
-  # def set_user_currency
-  #   if creator.try(:default_currency) && company.has_exchange_rate_for(creator.default_currency)
-  #     self.curr_cd = creator.default_currency
-  #   end
-  # end
-
   def update_total_budget
     current_budget = self.budget.nil? ? 0 : self.budget
+    current_budget_loc = self.budget_loc.nil? ? 0 : self.budget_loc
     new_budget = deal_product_budgets.sum(:budget)
-    deal_log = DealLog.new
-    deal_log.deal_id = self.id
-    deal_log.budget_change = new_budget - current_budget
-    deal_log.save
-    update_attributes(budget: deal_products.sum(:budget))
+    new_budget_loc = deal_product_budgets.sum(:budget_loc)
+    budget_change = new_budget - current_budget
+    budget_change_loc = new_budget_loc - current_budget_loc
+
+    write_to_deal_log(budget_change, budget_change_loc) if budget_change != 0
+
+    update_attributes(budget: new_budget, budget_loc: new_budget_loc)
+  end
+
+  def deal_exchange_rate
+    company.exchange_rate_for(currency: self.curr_cd)
   end
 
   def update_product_currency
-    exchange_rate = company.exchange_rate_for(currency: curr_cd)
-    deal_product_budgets.map{ |dpb| dpb.update_local_budget(exchange_rate) }
-    deal_products.map{ |deal_product| deal_product.update_local_budget }
-    self.budget_loc = deal_products.sum(:budget_loc)
+    deal_product_budgets.update_all("budget_loc = budget * #{deal_exchange_rate}")
+    deal_products.map{ |deal_product| deal_product.update_budget }
+    self.budget_loc = budget * deal_exchange_rate
+  end
+
+  def write_to_deal_log(budget_change, budget_change_loc)
+    deal_log = DealLog.new
+    deal_log.deal_id = self.id
+    deal_log.budget_change = budget_change
+    deal_log.budget_change_loc = budget_change_loc
+    deal_log.save
   end
 
   def currency

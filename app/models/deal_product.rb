@@ -7,22 +7,24 @@ class DealProduct < ActiveRecord::Base
 
   accepts_nested_attributes_for :deal_product_budgets
 
-  after_update do
-    if deal_product_budgets.sum(:budget) != budget
-      if budget_changed?
-        self.update_product_budgets
-      else
-        self.update_budget
-      end
-    end
-    if budget_changed?
-      deal.update_total_budget
-    end
-  end
-
   after_create do
     if deal_product_budgets.empty?
       self.create_product_budgets
+    end
+  end
+
+  after_update do
+    if deal_product_budgets.sum(:budget_loc) != budget_loc || deal_product_budgets.sum(:budget) != budget
+      if budget_loc_changed? || budget_changed?
+        self.update_product_budgets
+      else
+        self.update_budget
+        should_update_deal_budget = true
+      end
+    end
+
+    if should_update_deal_budget
+      deal.update_total_budget
     end
   end
 
@@ -31,6 +33,14 @@ class DealProduct < ActiveRecord::Base
 
   def daily_budget
     budget / (deal.end_date - deal.start_date + 1).to_f
+  end
+
+  def daily_budget_loc
+    budget_loc / (deal.end_date - deal.start_date + 1).to_f
+  end
+
+  def local_currency_budget_in_usd
+    budget_loc / deal.deal_exchange_rate
   end
 
   def create_product_budgets
@@ -53,17 +63,29 @@ class DealProduct < ActiveRecord::Base
   def update_product_budgets
     last_index = deal_product_budgets.count - 1
     total = 0
+    total_loc = 0
 
     deal_product_budgets.each_with_index do |deal_product_budget, index|
       if last_index == index
         monthly_budget = budget - total
+        monthly_budget_loc = budget_loc - total_loc
       else
         monthly_budget = (daily_budget * deal.days_per_month[index])
         monthly_budget = 0 if monthly_budget.between?(0, 1)
-        total = total + monthly_budget.round(0)
+        total += monthly_budget.round(0)
+
+        monthly_budget_loc = (daily_budget_loc * deal.days_per_month[index])
+        monthly_budget_loc = 0 if monthly_budget_loc.between?(0, 1)
+        total_loc += monthly_budget_loc.round(0)
       end
-      deal_product_budget.update(budget: monthly_budget.round(0))
+      deal_product_budget.update(budget: monthly_budget.round(0), budget_loc: monthly_budget_loc.round(0))
     end
+  end
+
+  def update_budget
+    new_budget = deal_product_budgets.sum(:budget)
+    new_budget_loc = deal_product_budgets.sum(:budget_loc)
+    self.update(budget: new_budget, budget_loc: new_budget_loc)
   end
 
   def update_periods
@@ -72,14 +94,6 @@ class DealProduct < ActiveRecord::Base
       deal_product_budget.start_date = period
       deal_product_budget.end_date = period.end_of_month
     end
-  end
-
-  def update_budget
-    self.update(budget: deal_product_budgets.sum(:budget))
-  end
-
-  def update_local_budget
-    self.update(budget_loc: deal_product_budgets.sum(:budget_loc))
   end
 
   def self.import(file, current_user)

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170113213404) do
+ActiveRecord::Schema.define(version: 20170116184531) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -365,9 +365,10 @@ ActiveRecord::Schema.define(version: 20170113213404) do
 
   create_table "deal_logs", force: :cascade do |t|
     t.integer  "deal_id"
-    t.decimal  "budget_change", precision: 15, scale: 2
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
+    t.decimal  "budget_change",     precision: 15, scale: 2
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
+    t.decimal  "budget_change_loc", precision: 15, scale: 2, default: 0.0
   end
 
   add_index "deal_logs", ["deal_id"], name: "index_deal_logs_on_deal_id", using: :btree

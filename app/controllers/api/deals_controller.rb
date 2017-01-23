@@ -223,6 +223,7 @@ class Api::DealsController < ApplicationController
         :name,
         :stage_id,
         :budget,
+        :budget_loc,
         :curr_cd,
         :start_date,
         :end_date,

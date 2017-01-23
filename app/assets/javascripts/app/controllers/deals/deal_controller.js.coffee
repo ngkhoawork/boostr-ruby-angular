@@ -22,8 +22,8 @@
   'Reminder',
   '$http',
   'Transloadit',
-  'Currency',
   'DealCustomFieldName',
+  'Currency',
 ($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, Currency) ->
 
   $scope.showMeridian = true
@@ -295,7 +295,7 @@
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()
     for month in $scope.currentDeal.months
-      $scope.deal_product.deal_product_budgets.push({ budget: '' })
+      $scope.deal_product.deal_product_budgets.push({ budget_loc: '' })
     $scope.showProductForm = !$scope.showProductForm
     Product.all().then (products) ->
       $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
@@ -307,28 +307,28 @@
     length = $scope.deal_product.deal_product_budgets.length
     _.each $scope.deal_product.deal_product_budgets, (month, index) ->
       if(length-1 != index)
-        budgetSum = budgetSum + month.budget
+        budgetSum = budgetSum + month.budget_loc
         budgetPercentSum = budgetPercentSum + month.percent_value
       else
-        month.budget = $scope.deal_product.budget - budgetSum
+        month.budget_loc = $scope.deal_product.budget_loc - budgetSum
         month.percent_value = 100 - budgetPercentSum
 
   cutSymbolsAddProductBudget = ->
     _.each $scope.deal_product.deal_product_budgets, (month) ->
-        month.budget = Number((month.budget+'').replace($scope.currency_symbol, ''))
+        month.budget_loc = Number((month.budget_loc+'').replace($scope.currency_symbol, ''))
         month.percent_value = Number((month.percent_value+'').replace('%', ''))
 
   $scope.cutCurrencySymbol = (value, index) ->
     value = Number((value + '').replace($scope.currency_symbol, ''))
     if(index != undefined )
-      $scope.deal_product.deal_product_budgets[index].budget = value
+      $scope.deal_product.deal_product_budgets[index].budget_loc = value
     else
       return value
 
   $scope.setCurrencySymbol = (value, index) ->
     value = $scope.currency_symbol + value
     if(index!= undefined )
-      $scope.deal_product.deal_product_budgets[index].budget = value
+      $scope.deal_product.deal_product_budgets[index].budget_loc = value
     else
       return value
 
@@ -348,26 +348,26 @@
 
   setSymbolsAddProductBudget = ->
     _.each $scope.deal_product.deal_product_budgets, (month) ->
-      month.budget = $scope.currency_symbol + month.budget
+      month.budget_loc = $scope.currency_symbol + month.budget_loc
       month.percent_value =  month.percent_value + '%'
 
 
   $scope.changeTotalBudget = ->
     $scope.deal_product.budget_percent = 100
     $scope.deal_product.isIncorrectTotalBudgetPercent = false
-    budgetOneDay = $scope.deal_product.budget / $scope.currentDeal.days
+    budgetOneDay = $scope.deal_product.budget_loc / $scope.currentDeal.days
     budgetSum = 0
     budgetPercentSum = 0
     _.each $scope.deal_product.deal_product_budgets, (month, index) ->
-      if(!$scope.deal_product.budget)
+      if(!$scope.deal_product.budget_loc)
         month.percent_value = 0
-        month.budget = 0
+        month.budget_loc = 0
       else
-        month.budget = Math.round($scope.currentDeal.days_per_month[index] * budgetOneDay)
-        month.percent_value = Math.round(month.budget / $scope.deal_product.budget * 100)
+        month.budget_loc = Math.round($scope.currentDeal.days_per_month[index] * budgetOneDay)
+        month.percent_value = Math.round(month.budget_loc / $scope.deal_product.budget_loc * 100)
       budgetSum = budgetSum + $scope.currentDeal.days_per_month[index] * budgetOneDay
       budgetPercentSum = budgetPercentSum + month.percent_value
-    if($scope.deal_product.budget && budgetSum != $scope.deal_product.budget  || budgetPercentSum && budgetPercentSum != 100)
+    if($scope.deal_product.budget_loc && budgetSum != $scope.deal_product.budget_loc  || budgetPercentSum && budgetPercentSum != 100)
       addProductBudgetCorrection()
     setSymbolsAddProductBudget()
 
@@ -376,16 +376,16 @@
       monthValue = 0
     if((monthValue+'').length > 1 && (monthValue+'').charAt(0) == '0')
       monthValue = Number((monthValue + '').slice(1))
-    $scope.deal_product.deal_product_budgets[index].budget = monthValue
+    $scope.deal_product.deal_product_budgets[index].budget_loc = monthValue
 
-    $scope.deal_product.budget = 0
+    $scope.deal_product.budget_loc = 0
     _.each $scope.deal_product.deal_product_budgets, (month, monthIndex) ->
       if(index == monthIndex)
-        $scope.deal_product.budget = $scope.deal_product.budget + Number(monthValue)
+        $scope.deal_product.budget_loc = $scope.deal_product.budget_loc + Number(monthValue)
       else
-        $scope.deal_product.budget = $scope.deal_product.budget + $scope.cutCurrencySymbol(month.budget)
+        $scope.deal_product.budget_loc = $scope.deal_product.budget_loc + $scope.cutCurrencySymbol(month.budget_loc)
     _.each $scope.deal_product.deal_product_budgets, (month) ->
-      month.percent_value = $scope.setPercent( Math.round($scope.cutCurrencySymbol(month.budget) / $scope.deal_product.budget * 100))
+      month.percent_value = $scope.setPercent( Math.round($scope.cutCurrencySymbol(month.budget_loc) / $scope.deal_product.budget_loc * 100))
 
   $scope.changeMonthPercent = (monthPercentValue, index)->
     if(!monthPercentValue)
@@ -393,7 +393,7 @@
     if((monthPercentValue+'').length > 1 && (monthPercentValue+'').charAt(0) == '0')
       monthPercentValue = Number((monthPercentValue + '').slice(1))
     $scope.deal_product.deal_product_budgets[index].percent_value = monthPercentValue
-    $scope.deal_product.deal_product_budgets[index].budget = $scope.setCurrencySymbol(Math.round(monthPercentValue/100*$scope.deal_product.budget))
+    $scope.deal_product.deal_product_budgets[index].budget_loc = $scope.setCurrencySymbol(Math.round(monthPercentValue/100*$scope.deal_product.budget_loc))
 
     $scope.deal_product.budget_percent = 0
     _.each $scope.deal_product.deal_product_budgets, (month) ->
@@ -459,28 +459,28 @@
       $scope.disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)
       return
     if(identityString == "moneyOnFocus")
-      if(!deal_product_budget.budget)
-        deal_product_budget.budget = 0
-      if((deal_product_budget.budget+'').length > 1 && (deal_product_budget.budget+'').charAt(0) == '0')
-        deal_product_budget.budget = Number((deal_product_budget.budget + '').slice(1))
-      deal_product.budget = 0
+      if(!deal_product_budget.budget_loc)
+        deal_product_budget.budget_loc = 0
+      if((deal_product_budget.budget_loc+'').length > 1 && (deal_product_budget.budget_loc+'').charAt(0) == '0')
+        deal_product_budget.budget_loc = Number((deal_product_budget.budget_loc + '').slice(1))
+      deal_product.budget_loc = 0
       _.each deal_product.deal_product_budgets, (deal_product_budget) ->
-        deal_product.budget = deal_product.budget + Number(deal_product_budget.budget)
+        deal_product.budget_loc = deal_product.budget_loc + Number(deal_product_budget.budget_loc)
       budgetPercentSum = 0
       _.each deal_product.deal_product_budgets, (deal_product_budget) ->
-        deal_product_budget.budget_percent = Math.round(deal_product_budget.budget/deal_product.budget*100)
+        deal_product_budget.budget_percent = Math.round(deal_product_budget.budget_loc/deal_product.budget_loc*100)
         budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
 #      reset total_budget_percent
       deal_product.total_budget_percent = 100
       deal_product.isIncorrectTotalBudgetPercent = false;
 
       if(budgetPercentSum != 100)
-        $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget)
+        $scope.budgetCorrection(deal_product.deal_product_budgets, deal_product.budget_loc)
 
     if(identityString == "percentOnFocus")
-      deal_product_budget.budget = Math.round(deal_product_budget.budget_percent/100*deal_product.budget)
-      if(!deal_product_budget.budget)
-        deal_product_budget.budget = 0
+      deal_product_budget.budget_loc = Math.round(deal_product_budget.budget_percent/100*deal_product.budget_loc)
+      if(!deal_product_budget.budget_loc)
+        deal_product_budget.budget_loc = 0
       if(!deal_product_budget.budget_percent)
         deal_product_budget.budget_percent = 0
       if((deal_product_budget.budget_percent+'').length > 1 &&(deal_product_budget.budget_percent+'').charAt(0) == '0')
@@ -508,8 +508,8 @@
           budgetSum = 0
           budgetPercentSum = 0
           _.each deal_product.deal_product_budgets, (deal_product_budget, index) ->
-            deal_product_budget.budget_percent = Math.round(deal_product_budget.budget/deal_product.budget*100)
-            budgetSum = budgetSum + deal_product_budget.budget
+            deal_product_budget.budget_percent = Math.round(deal_product_budget.budget_loc/deal_product.budget_loc*100)
+            budgetSum = budgetSum + deal_product_budget.budget_loc
             budgetPercentSum = budgetPercentSum + deal_product_budget.budget_percent
 
 #            need correct data from server
@@ -525,16 +525,16 @@
     if($index)
       _.each deal_product_budgets, (deal_product_budget, index) ->
         if(0 == index)
-          budgetSum = budgetSum + Number(deal_product_budget.budget)
+          budgetSum = budgetSum + Number(deal_product_budget.budget_loc)
           budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
-      deal_product_budgets[0].budget = total_product_budget - budgetSum
+      deal_product_budgets[0].budget_loc = total_product_budget - budgetSum
       deal_product_budgets[0].budget_percent = 100 - budgetPercentSum
     else
       _.each deal_product_budgets, (deal_product_budget, index) ->
         if(length-1 != index)
-          budgetSum = budgetSum + Number(deal_product_budget.budget)
+          budgetSum = budgetSum + Number(deal_product_budget.budget_loc)
           budgetPercentSum = budgetPercentSum + Number(deal_product_budget.budget_percent)
-      deal_product_budgets[length-1].budget = total_product_budget - budgetSum
+      deal_product_budgets[length-1].budget_loc = total_product_budget - budgetSum
       deal_product_budgets[length-1].budget_percent = 100 - budgetPercentSum
 
 #============END percent and money inputs logic=====================

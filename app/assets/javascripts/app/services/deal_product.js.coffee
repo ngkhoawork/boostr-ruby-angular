@@ -4,7 +4,7 @@
   transformRequest = (original, headers) ->
     send = {}
     send.deal_product =
-      budget: original.deal_product.budget
+      budget_loc: original.deal_product.budget_loc
       deal_product_budgets_attributes: original.deal_product.deal_product_budgets
       product_id: original.deal_product.product_id
     angular.toJson(send)

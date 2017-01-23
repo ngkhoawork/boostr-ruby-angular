@@ -12,7 +12,8 @@ class Api::DealProductsController < ApplicationController
         return
       end
     else
-      deal_product = deal.deal_products.new(deal_product_params)
+      converted_params = ConvertCurrency.call(deal, deal_product_params)
+      deal_product = deal.deal_products.new(converted_params)
       deal_product.update_periods if params[:deal_product][:deal_product_budgets_attributes]
       if deal_product.save
         deal.update_total_budget
@@ -24,7 +25,9 @@ class Api::DealProductsController < ApplicationController
   end
 
   def update
-    if deal_product.update_attributes(deal_product_params)
+    converted_params = ConvertCurrency.call(deal, deal_product_params)
+    if deal_product.update_attributes(converted_params)
+      deal.update_total_budget
       render deal
     else
       render json: { errors: deal_product.errors.messages }, status: :unprocessable_entity
@@ -49,10 +52,10 @@ class Api::DealProductsController < ApplicationController
 
   def deal_product_params
     params.require(:deal_product).permit(
-      :budget,
+      :budget_loc,
       :product_id,
       {
-        deal_product_budgets_attributes: [:id, :budget]
+        deal_product_budgets_attributes: [:id, :budget_loc]
       }
     )
   end
