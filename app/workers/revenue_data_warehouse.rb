@@ -1,9 +1,4 @@
-class RevenueDataWarehouse
-  include Sidekiq::Worker
-
-  sidekiq_options queue: "default"
-  sidekiq_options retry: false
-
+class RevenueDataWarehouse < BaseWorker
   def perform
     generate_account_revenue_facts
   end

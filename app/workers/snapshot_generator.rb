@@ -1,9 +1,4 @@
-class SnapshotGenerator
-  include Sidekiq::Worker
-
-  sidekiq_options queue: "default"
-  sidekiq_options retry: false
-
+class SnapshotGenerator < BaseWorker
   def perform(day=nil)
     day ||= Date.today.wday
 

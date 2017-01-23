@@ -49,6 +49,7 @@ class Company < ActiveRecord::Base
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
     notifications.find_or_initialize_by(name: 'New Deal', active: true)
+    notifications.find_or_initialize_by(name: 'Deal Reports', active: true)
 
     activity_types.find_or_initialize_by(name:'Initial Meeting', action:'had initial meeting with', icon:'/assets/icons/meeting.svg')
     activity_types.find_or_initialize_by(name:'Pitch', action:'pitched to', icon:'/assets/icons/pitch.svg')
