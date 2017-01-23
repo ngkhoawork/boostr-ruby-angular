@@ -40,6 +40,8 @@
                   = link_to "Activity Summary", "/reports/activity_summary"
                 %li
                   = link_to "Forecast Detail - Annual", "/reports/forecasts"
+                %li
+                  = link_to "Last Week Deals Report", "/reports/last_week_deals_report"
           - else
             %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }

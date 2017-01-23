@@ -4,7 +4,7 @@ class DealReportGenerator < BaseWorker
     active_notifications.each do |notification|
       recipients = notification.recipients_arr
       next if recipients.blank?
-      ReportsMailer.deals_daily_mail(recipients).deliver_now
+      ReportsMailer.deals_daily_mail(recipients, company_id).deliver_now
     end
   end
 end

@@ -12,11 +12,10 @@ class Api::DealReportsController < ApplicationController
     end
   end
 
-
   private
 
   def deal_report_service
-    @deal_report_service ||= DealReportService.new(target_date: 1.week.ago)
+    @deal_report_service ||= DealReportService.new(target_date: 1.week.ago, company_id: current_user.company_id)
   end
 
   def generate_csv_report

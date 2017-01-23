@@ -1,0 +1,111 @@
+#reports
+  .container-fluid.table-report
+    .row
+      .col-xs-12
+        %h3.title
+          Last Week Deal report
+    .row
+      .col-md-12
+        .table-wrapper
+          %table.table
+            %thead
+              %tr
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)"}
+                    Deal type
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)"}
+                    Deal name
+                %th.left{ width: "250" }
+                  %a{href:"javascript:void(0)"}
+                    Advertiser name
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)"}
+                    Deal budget
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)"}
+                    Deal start date
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)"}
+                    Deal stage name
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)"}
+                    Previous stage id
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)"}
+                    Stage id
+            %tbody
+              %tr{ ng: { repeat: 'won_deal in report_data.won_deals | orderBy:sortType:sortReverse' } }
+                %td.left
+                  Won deals
+                %td.left
+                  %a{ href: '', ng: { click: 'go("/deals/" + won_deal.id)'  } }
+                    {{ won_deal.name }}
+                %td.left
+                  {{ won_deal.advertiser_name }}
+                %td.left
+                  {{ won_deal.budget }}
+                %td.left
+                  {{ won_deal.start_date }}
+                %td.left
+                  {{ won_deal.stage_name }}
+                %td.left
+                  {{ won_deal.deal_stage_log_previous_stage_id }}
+                %td.left
+                  {{ won_deal.stage_id }}
+
+              %tr{ ng: { repeat: 'new_deal in report_data.new_deals | orderBy:sortType:sortReverse' } }
+                %td.left
+                  New deals
+                %td.left
+                  %a{ href: '', ng: { click: 'go("/deals/" + new_deal.id)'  } }
+                    {{ new_deal.name }}
+                %td.left
+                  {{ new_deal.advertiser_name }}
+                %td.left
+                  {{ new_deal.budget }}
+                %td.left
+                  {{ new_deal.start_date }}
+                %td.left
+                  {{ new_deal.stage_name }}
+                %td.left
+                  {{ new_deal.deal_stage_log_previous_stage_id }}
+                %td.left
+                  {{ new_deal.stage_id }}
+
+              %tr{ ng: { repeat: 'lost_deal in report_data.lost_deals | orderBy:sortType:sortReverse' } }
+                %td.left
+                  Lost deals
+                %td.left
+                  %a{ href: '', ng: { click: 'go("/deals/" + lost_deal.id)'  } }
+                    {{ lost_deal.name }}
+                %td.left
+                  {{ lost_deal.advertiser_name }}
+                %td.left
+                  {{ lost_deal.budget }}
+                %td.left
+                  {{ lost_deal.start_date }}
+                %td.left
+                  {{ lost_deal.stage_name }}
+                %td.left
+                  {{ lost_deal.deal_stage_log_previous_stage_id }}
+                %td.left
+                  {{ lost_deal.stage_id }}
+              %tr{ ng: { repeat: 'advanced_deal in report_data.advanced_deals | orderBy:sortType:sortReverse' } }
+                %td.left
+                  Advanced deals
+                %td.left
+                  %a{ href: '', ng: { click: 'go("/deals/" + advanced_deal.id)'  } }
+                    {{ advanced_deal.name }}
+                %td.left
+                  {{ advanced_deal.advertiser_name }}
+                %td.left
+                  {{ advanced_deal.budget }}
+                %td.left
+                  {{ advanced_deal.start_date }}
+                %td.left
+                  {{ advanced_deal.stage_name }}
+                %td.left
+                  {{ advanced_deal.deal_stage_log_previous_stage_id }}
+                %td.left
+                  {{ advanced_deal.stage_id }}

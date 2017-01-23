@@ -28,21 +28,21 @@ class DealReportService < BaseService
 
   # New Deals - (list of deals where created = target date)
   def new_deals
-    Deal.where(created_at: target_date)
+    Deal.where(created_at: target_date, company_id: company_id)
   end
 
   # Advanced Deals - (list of deals that changed sales stage on target date -use deal_stage_logs.created_at yesterday)
   def advanced_deals
-    Deal.joins(:deal_stage_logs).where(deal_stage_logs: { created_at: target_date })
+    Deal.joins(:deal_stage_logs).where(deals: {company_id: company_id}, deal_stage_logs: { created_at: target_date })
   end
 
   # Won Deals - (list of deals that went to 100% yesterday)
   def won_deals
-    Deal.at_percent(100)
+    Deal.at_percent(100).where(company_id: company_id)
   end
 
   def lost_deals
-    Deal.at_percent(100).closed
+    Deal.at_percent(100).closed.where(company_id: company_id)
   end
 
   def report_data
