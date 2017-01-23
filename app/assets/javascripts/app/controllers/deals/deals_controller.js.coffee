@@ -305,7 +305,6 @@
                 width = $window.innerWidth
                 leftBorder = width * scrollZone
                 rightBorder = width * (1 - scrollZone)
-#                fastScrollZone = slowScrollZone / 2
 
                 if x <= leftBorder && dragDirection == 'left'
                     dealsContainer.scrollLeft -= (leftBorder - x) / 10
