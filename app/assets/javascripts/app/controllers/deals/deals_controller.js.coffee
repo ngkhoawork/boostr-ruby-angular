@@ -175,18 +175,6 @@
                     $scope.columns = columns
                     $scope.sortingDealsByDate()
 
-#                    delete $scope.stagesById[Object.keys($scope.stagesById)[0]]
-#                    delete $scope.stagesById[Object.keys($scope.stagesById)[0]]
-
-                    $scope.stagesById[100] = {index: 7, name: 'TEST1'}
-                    $scope.columns.push []
-                    $scope.stagesById[200] = {index: 8, name: 'TEST2'}
-                    $scope.columns.push []
-                    $scope.stagesById[300] = {index: 9, name: 'TEST3'}
-                    $scope.columns.push []
-                    $scope.stagesById[400] = {index: 10, name: 'TEST4'}
-                    $scope.columns.push []
-
             $scope.filterDeals = (filter) ->
                 $scope.selectedType = filter
                 $rootScope.dealFilter = $scope.dealFilter
@@ -207,7 +195,6 @@
                         return 0
 
             $scope.onDrop = (deal, newStage) ->
-                return deal
                 if deal.stage_id is newStage.id then return
                 deal.stage_id = newStage.id
                 if !newStage.open
@@ -318,7 +305,6 @@
                 width = $window.innerWidth
                 leftBorder = width * scrollZone
                 rightBorder = width * (1 - scrollZone)
-#                fastScrollZone = slowScrollZone / 2
 
                 if x <= leftBorder && dragDirection == 'left'
                     dealsContainer.scrollLeft -= (leftBorder - x) / 10
