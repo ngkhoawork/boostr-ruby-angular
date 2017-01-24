@@ -27,7 +27,9 @@ class ExchangeRate < ActiveRecord::Base
     siblings.overlaps start_date, end_date
   end
 
+  private
+
   def siblings
-    ExchangeRate.for_currency(company_id, currency_id)
+    ExchangeRate.for_currency(company_id, currency_id).where('id != ?', id || -1)
   end
 end
