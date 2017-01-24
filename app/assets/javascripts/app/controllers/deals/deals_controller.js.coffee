@@ -4,7 +4,7 @@
             formatMoney = $filter('formatMoney')
 
             $scope.selectedDeal = null
-            $scope.stagesById = {}
+            $scope.stages = []
             $scope.columns = []
             $scope.allDeals = []
             $scope.selectedType = 0
@@ -106,9 +106,10 @@
                     columns = angular.copy $scope.emptyColumns
                     $scope.deals.forEach (deal) ->
                         if !deal || !deal.stage_id then return
-                        index = $scope.stagesById[deal.stage_id].index
-                        columns[index].push deal
+                        stage = _.findWhere $scope.stages, id: deal.stage_id
+                        if stage then columns[stage.index].push deal
                     $scope.columns = columns
+                    $scope.sortingDealsByDate()
                     if !reset then this.isOpen = false
                 reset: (key) ->
                     this.selected[key] = new Selection()[key]
@@ -151,7 +152,6 @@
                     $scope.stages = data.stages
                     $scope.stages.forEach (stage, i) ->
                         stage.index = i
-                        $scope.stagesById[stage.id] = stage
                         columns.push []
                     $scope.emptyColumns = angular.copy columns
                     $scope.deals.forEach (deal) ->
@@ -163,8 +163,8 @@
                         if deal.agency then agencies.push deal.agency
                         if deal.budget && parseInt(deal.budget) > maxBudget
                             maxBudget = parseInt(deal.budget)
-                        index = $scope.stagesById[deal.stage_id].index
-                        columns[index].push deal
+                        stage = _.findWhere $scope.stages, id: deal.stage_id
+                        if stage then columns[stage.index].push deal
 
                     $scope.allDeals = angular.copy $scope.deals
                     $scope.filter.owners = _.uniq owners

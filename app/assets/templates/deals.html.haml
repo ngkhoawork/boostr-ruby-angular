@@ -105,7 +105,7 @@
 					Add filter
 		.row.deals-container
 			.deals-table
-				.deal-column{'ng-repeat': '(id, stage) in stagesById', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
+				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header
 						%span
 							{{stage.name}}
