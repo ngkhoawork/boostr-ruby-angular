@@ -175,6 +175,10 @@
                     $scope.columns = columns
                     $scope.sortingDealsByDate()
 
+#                    for i in [1..15]
+#                        $scope.stages.push {index: 6 + i, name: 'TEST' + i}
+#                        $scope.columns.push []
+
             $scope.filterDeals = (filter) ->
                 $scope.selectedType = filter
                 $rootScope.dealFilter = $scope.dealFilter

@@ -271,7 +271,10 @@
             height: 100%;
             //border-right: 2px solid #E7EBF0;
             box-sizing: border-box;
-            min-width: 19.7vw;
+            min-width: 14.1vw;
+            width: 20vw;
+            //max-width: 30vw;
+            //min-width: 19.7vw;
             display: table-cell;
             .column-header {
                 position: relative;
