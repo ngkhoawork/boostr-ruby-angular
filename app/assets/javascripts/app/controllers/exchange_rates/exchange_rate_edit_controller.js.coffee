@@ -3,7 +3,7 @@
 ($scope, $rootScope, $modalInstance, Currency, ExchangeRate, options, exchange_rate) ->
   $scope.formType = 'Edit'
   $scope.submitText = 'Update'
-  $scope.popupTitle = "Edit #{options.curr_cd} Exchange Rate"
+  $scope.popupTitle = "Edit #{options.curr_cd} Exchange Rate to USD"
 
   if exchange_rate
     $scope.form = {
