@@ -1084,6 +1084,8 @@ class Deal < ActiveRecord::Base
           advertiser_id: self.advertiser_id,
           agency_id: self.agency_id,
           budget: self.budget.nil? ? 0 : self.budget,
+          budget_loc: self.budget_loc.nil? ? 0 : self.budget_loc,
+          curr_cd: self.curr_cd,
           start_date: self.start_date,
           end_date: self.end_date,
           name: self.name,
@@ -1111,7 +1113,8 @@ class Deal < ActiveRecord::Base
             content_fee_param = {
                 io_id: io.id,
                 product_id: deal_product.product.id,
-                budget: deal_product.budget
+                budget: deal_product.budget,
+                budget_loc: deal_product.budget_loc
             }
             content_fee = ContentFee.create(content_fee_param)
             deal_product.update_columns(open: false)

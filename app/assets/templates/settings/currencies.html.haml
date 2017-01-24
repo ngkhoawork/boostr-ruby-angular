@@ -22,8 +22,6 @@
           %span
             {{ currency.rate }}
         %td
-          %span
-            From To
 
       %tr.submenu{ ng: { if: 'toggleId == currency.id' } }
         %td
@@ -50,18 +48,18 @@
             ${{1 / exchange_rate.rate | number : 4 }} USD
         %td
           From
-          %span.dashed {{ exchange_rate.start_date }}
+          %span.dashed {{ exchange_rate.start_date | date: 'mediumDate' }}
           to
-          %span.dashed {{ exchange_rate.end_date }}
+          %span.dashed {{ exchange_rate.end_date | date: 'mediumDate' }}
           %a.trashcan.pull-right{ href: '', ng: { click: 'deleteExchangeRate(exchange_rate); $event.stopPropagation()' } }
             = inline_svg 'icons/trash.svg'
       %tr.submenu.row-footer.clickable{ ng: { if: 'toggleId == currency.id', click: 'showNewExchangeRateModal(currency.curr_cd)' } }
         %td{colspan: '3'}
           %div
-            + Add new conversion rate
+            + Add new {{ currency.curr_cd }} conversion rate
           
 
     %tbody{ ng: { if: 'active_currencies.length == 0' } }
       %tr
-        %td.center{ colspan: '10' }
+        %td.center{ colspan: '3' }
           No data available

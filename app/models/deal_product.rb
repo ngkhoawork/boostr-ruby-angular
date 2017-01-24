@@ -46,17 +46,28 @@ class DealProduct < ActiveRecord::Base
   def create_product_budgets
     last_index = deal.months.count - 1
     total = 0
+    total_loc = 0
 
     deal.months.each_with_index do |month, index|
       if last_index == index
         monthly_budget = budget - total
+        monthly_budget_loc = budget_loc - total_loc
       else
-        monthly_budget = (daily_budget * deal.days_per_month[index])
+        monthly_budget = (daily_budget * deal.days_per_month[index]).round(0)
         monthly_budget = 0 if monthly_budget.between?(0, 1)
-        total = total + monthly_budget.round(0)
+        total += monthly_budget
+
+        monthly_budget_loc = (daily_budget_loc * deal.days_per_month[index]).round(0)
+        monthly_budget_loc = 0 if monthly_budget_loc.between?(0, 1)
+        total_loc += monthly_budget_loc
       end
       period = Date.new(*month)
-      deal_product_budgets.create(start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(0))
+      deal_product_budgets.create(
+        start_date: period,
+        end_date: period.end_of_month,
+        budget: monthly_budget,
+        budget_loc: monthly_budget_loc
+      )
     end
   end
 

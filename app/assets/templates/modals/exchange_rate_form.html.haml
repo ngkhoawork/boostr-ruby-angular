@@ -49,4 +49,4 @@
 
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
-      %button.btn.btn-warning{'type': 'submit'} {{submitText}}
+      %button.btn.btn-warning{'type': 'submit', ng: { disabled: 'buttonDisabled' }} {{submitText}}

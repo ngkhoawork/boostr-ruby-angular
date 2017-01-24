@@ -2,14 +2,7 @@ class MultiCurrencyColumns < ActiveRecord::Migration
   def change
     # Currency type identificator
     add_column :deals, :curr_cd, :string, default: 'USD'
-    # add_column :deal_products, :curr_cd, :string
-    # add_column :deal_product_budgets, :curr_cd, :string
-    # add_column :ios, :curr_cd, :string
-    # add_column :content_fees, :curr_cd, :string
-    # add_column :content_fee_product_budgets, :curr_cd, :string
     add_column :quota, :curr_cd, :string
-    # add_column :display_line_items, :curr_cd, :string
-    # add_column :display_line_item_budgets, :curr_cd, :string
 
     # Budget in the local currency
     add_column :deals, :budget_loc, :decimal, precision: 15, scale: 2, default: 0

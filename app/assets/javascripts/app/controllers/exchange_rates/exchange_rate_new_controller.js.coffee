@@ -3,7 +3,7 @@
 ($scope, $rootScope, $modalInstance, Currency, ExchangeRate, options) ->
   $scope.formType = 'New'
   $scope.submitText = 'Create'
-  $scope.popupTitle = 'Add New Exchange Rate'
+  $scope.popupTitle = 'Add New Exchange Rate to USD'
   $scope.form = {
     start_date: new Date()
     end_date: new Date()
@@ -55,12 +55,19 @@
       start_date: $scope.form.start_date
       end_date: $scope.form.end_date
 
+    $scope.buttonDisabled = true
     createExchangeRate(exchange_rate_data)
 
   createExchangeRate = (data) ->
-    ExchangeRate.create(data).then (exchange_rate) ->
-      $scope.cancel()
-      $rootScope.$broadcast 'exchange_rates_modified'
+    ExchangeRate.create(exchange_rate: data).then(
+      (exchange_rate) ->
+        $scope.cancel()
+        $rootScope.$broadcast 'exchange_rates_modified'
+      (resp) ->
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
+        $scope.buttonDisabled = false
+    )
 
   $scope.cancel = ->
     $modalInstance.close()

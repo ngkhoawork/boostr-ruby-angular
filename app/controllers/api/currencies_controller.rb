@@ -14,7 +14,7 @@ class Api::CurrenciesController < ApplicationController
   end
 
   def exchange_rates_by_currencies
-    currencies = Currency.joins(:exchange_rates).where('exchange_rates.company_id = ?', company.id).includes('exchange_rates')
+    currencies = Currency.joins(:exchange_rates).where('exchange_rates.company_id = ?', company.id).includes('exchange_rates').distinct
     render json: currencies.as_json(include: :exchange_rates)
   end
 

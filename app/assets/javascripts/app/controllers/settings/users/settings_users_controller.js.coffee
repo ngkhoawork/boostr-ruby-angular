@@ -5,7 +5,7 @@
   $scope.user_statuses = User.user_statuses_list
 
   $scope.init = () ->
-    Currency.all().then (currencies) ->
+    Currency.active_currencies().then (currencies) ->
       $scope.currencies = currencies
     User.query().$promise.then (users) ->
       $scope.users = users

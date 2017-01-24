@@ -29,7 +29,7 @@ class Api::ExchangeRatesController < ApplicationController
   private
 
   def exchange_rate
-    company.exchange_rates.find(params[:id])
+    @exchange_rate ||= company.exchange_rates.find(params[:id])
   end
 
   def exchange_rate_params

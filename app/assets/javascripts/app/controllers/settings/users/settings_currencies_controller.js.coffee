@@ -15,7 +15,7 @@
   $scope.showNewExchangeRateModal = (curr_cd = '') ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/exchange_rate_form.html'
-      size: 'md'
+      size: 'lg'
       controller: 'ExchangeRateNewController'
       backdrop: 'static'
       keyboard: false
@@ -26,7 +26,7 @@
   $scope.showEditExchangeRateModal = (curr_cd, exchange_rate) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/exchange_rate_form.html'
-      size: 'md'
+      size: 'lg'
       controller: 'ExchangeRateEditController'
       backdrop: 'static'
       keyboard: false

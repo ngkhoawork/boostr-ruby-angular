@@ -55,12 +55,19 @@
       start_date: $scope.form.start_date
       end_date: $scope.form.end_date
 
+    $scope.buttonDisabled = true
     updateExchangeRate(exchange_rate_data)
 
   updateExchangeRate = (data) ->
-    ExchangeRate.update(id: exchange_rate.id, exchange_rate: data).then (exchange_rate) ->
-      $scope.cancel()
-      $rootScope.$broadcast 'exchange_rates_modified'
+    ExchangeRate.update(id: exchange_rate.id, exchange_rate: data).then(
+      (exchange_rate) ->
+        $scope.cancel()
+        $rootScope.$broadcast 'exchange_rates_modified'
+      (resp) ->
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
+        $scope.buttonDisabled = false
+    )
 
   $scope.cancel = ->
     $modalInstance.close()

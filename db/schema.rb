@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170116184531) do
+ActiveRecord::Schema.define(version: 20170124060608) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -543,12 +543,13 @@ ActiveRecord::Schema.define(version: 20170116184531) do
     t.date     "end_date"
     t.integer  "external_io_number"
     t.integer  "io_number"
-    t.datetime "created_at",                                                null: false
-    t.datetime "updated_at",                                                null: false
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
     t.string   "name"
     t.integer  "company_id"
     t.integer  "deal_id"
     t.decimal  "budget_loc",         precision: 15, scale: 2, default: 0.0
+    t.string   "curr_cd",                                     default: "USD"
   end
 
   add_index "ios", ["advertiser_id"], name: "index_ios_on_advertiser_id", using: :btree

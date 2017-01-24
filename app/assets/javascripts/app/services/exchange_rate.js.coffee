@@ -12,14 +12,24 @@
 
   @create = (params) ->
     deferred = $q.defer()
-    resource.save params, (date) ->
-      deferred.resolve(date)
+    resource.save(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
-    resource.update params, (date) ->
-      deferred.resolve(date)
+    resource.update(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   return
