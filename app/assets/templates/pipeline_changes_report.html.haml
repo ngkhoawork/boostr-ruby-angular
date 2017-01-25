@@ -28,14 +28,14 @@
               %tr
                 %th.left{ width: "200" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_type")'}
-                    Deal type
+                    Change type
                 %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("name")'}
                     Deal name
                 %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("advertiser_name")'}
                     Advertiser name
-                %th.left{ width: "100" }
+                %th.right{ width: "100" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget")'}
                     Deal budget
                 %th.left{ width: "150" }
@@ -57,7 +57,7 @@
                 %td.left
                   {{ deal.advertiser_name }}
                 %td.right
-                  {{ deal.budget | currency}}
+                  {{ deal.budget | currency:'$':0 }}
                 %td.left
                   {{ deal.start_date | date: 'MM-dd-yyyy' }}
                 %td.left

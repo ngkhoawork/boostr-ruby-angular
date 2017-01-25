@@ -3,7 +3,7 @@ class Notification < ActiveRecord::Base
   
   validates :name, presence: true
 
-  scope :active_deal_notifications, -> { where('notifications.active = true AND notifications.name = \'Deal Reports\'') }
+  scope :active_pipeline_changes_notifications, -> { where('notifications.active = true AND notifications.name = \'Pipeline Changes Reports\'') }
 
   def recipients_arr
     return [] if recipients.blank?
