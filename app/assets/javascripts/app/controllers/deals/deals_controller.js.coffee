@@ -150,6 +150,8 @@
                     maxBudget = 0
                     $scope.deals = data.deals
                     $scope.stages = data.stages
+                    $scope.stages = $scope.stages.filter (stage) ->
+                        stage.active
                     $scope.stages.forEach (stage, i) ->
                         stage.index = i
                         columns.push []
