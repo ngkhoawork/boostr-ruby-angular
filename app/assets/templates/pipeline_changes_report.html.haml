@@ -1,0 +1,66 @@
+#reports
+  .container-fluid.table-report
+    .row
+      .col-xs-12
+        %h3.title
+          Pipeline Change Report
+        .filters-block.pipeline-filter-block
+          %span.filter-block-label Filter By:
+          .date-picker-wrap
+            %div.date-picker#pipeline-change-date-picker{'date-range-picker': true,
+                                                 'ng-model': 'datePicker',
+                                                 :options => "{locale: {format: 'MMMM D, YYYY',
+                                                                        cancelLabel: 'Clear'},
+                                                               eventHandlers: {'apply.daterangepicker': datePickerApply,
+                                                                               'cancel.daterangepicker': datePickerCancel}}"}
+              Time period
+            %span.caret
+          %span#reset-pipeline-filter{'ng-click': 'resetFilters()'}
+            Reset
+          -#%a.pull-right{ href: '', ng: { click: 'exportReports()' } }
+          -#  = inline_svg 'icons/export.svg'
+          -#  Export
+    .row
+      .col-md-12
+        .table-wrapper
+          %table.table
+            %thead
+              %tr
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_type")'}
+                    Deal type
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("name")'}
+                    Deal name
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("advertiser_name")'}
+                    Advertiser name
+                %th.left{ width: "100" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget")'}
+                    Deal budget
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("start_date")'}
+                    Deal start date
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("stage_name")'}
+                    Stage name
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_stage_log_previous_stage")'}
+                    Previous stage
+            %tbody
+              %tr{ ng: { repeat: 'deal in report_data_items | orderBy:sortType:sortReverse' } }
+                %td.left
+                  {{ deal.deal_type }}
+                %td.left
+                  %a{ href: '', ng: { click: 'go("/deals/" + deal.id)'  } }
+                    {{ deal.name }}
+                %td.left
+                  {{ deal.advertiser_name }}
+                %td.right
+                  {{ deal.budget | currency}}
+                %td.left
+                  {{ deal.start_date | date: 'MM-dd-yyyy' }}
+                %td.left
+                  {{ deal.stage_name }}
+                %td.left
+                  {{ deal.deal_stage_log_previous_stage }}

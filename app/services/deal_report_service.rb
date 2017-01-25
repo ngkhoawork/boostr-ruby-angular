@@ -18,8 +18,7 @@ class DealReportService < BaseService
           line << val['budget']
           line << val['start_date']
           line << val['stage_name']
-          line << val['deal_stage_log_previous_stage_id']
-          line << val['stage_id']
+          line << val['deal_stage_log_previous_stage']
           csv << line
         end
       end
@@ -28,33 +27,38 @@ class DealReportService < BaseService
 
   # New Deals - (list of deals where created = target date)
   def new_deals
-    Deal.where(created_at: target_date, company_id: company_id)
+    Deal.where(created_at: date_range, company_id: company_id)
   end
 
   # Advanced Deals - (list of deals that changed sales stage on target date -use deal_stage_logs.created_at yesterday)
-  def advanced_deals
-    Deal.joins(:deal_stage_logs).where(deals: {company_id: company_id}, deal_stage_logs: { created_at: target_date })
+  def stage_changed_deals
+    Deal.joins(:deal_stage_logs).where(deals: { company_id: company_id }, deal_stage_logs: { created_at: date_range })
   end
 
   # Won Deals - (list of deals that went to 100% yesterday)
   def won_deals
-    Deal.at_percent(100).where(company_id: company_id)
+    Deal.at_percent(100).where(company_id: company_id, closed_at: date_range )
   end
 
   def lost_deals
-    Deal.at_percent(100).closed.where(company_id: company_id)
+    Deal.at_percent(0).where(company_id: company_id, closed_at: date_range)
   end
 
   def report_data
     @report_data ||= {
                         new_deals: API::Deals::Collection.new(new_deals).to_hash['deals'],
-                        advanced_deals: API::Deals::Collection.new(advanced_deals).to_hash['deals'],
+                        stage_changed_deals: API::Deals::Collection.new(stage_changed_deals).to_hash['deals'],
                         won_deals: API::Deals::Collection.new(won_deals).to_hash['deals'],
                         lost_deals: API::Deals::Collection.new(lost_deals).to_hash['deals']
                       }
   end
 
+  def date_range
+    return target_date unless target_date.kind_of? Hash
+    target_date[:start_date]..target_date[:end_date]
+  end
+
   def csv_header
-    [:deal_type, :deal_name, :advertiser_name, :budget, :start_date, :stage_name, :deal_stage_log_previous_stage_id, :stage_id]
+    [:deal_type, :deal_name, :advertiser_name, :budget, :start_date, :stage_name, :deal_stage_log_previous_stage]
   end
 end

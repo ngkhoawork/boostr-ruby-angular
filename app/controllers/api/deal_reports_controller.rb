@@ -4,7 +4,7 @@ class Api::DealReportsController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        render json: generate_data_report.to_json
+        render json: { report_data: generate_data_report }.to_json
       }
       format.csv {
         send_data generate_csv_report, filename: "deals-report-#{1.week.ago}.csv"
@@ -15,7 +15,7 @@ class Api::DealReportsController < ApplicationController
   private
 
   def deal_report_service
-    @deal_report_service ||= DealReportService.new(target_date: 1.week.ago, company_id: current_user.company_id)
+    @deal_report_service ||= DealReportService.new(target_date: date_range_params, company_id: current_user.company_id)
   end
 
   def generate_csv_report
@@ -23,7 +23,13 @@ class Api::DealReportsController < ApplicationController
   end
 
   def generate_data_report
-    deal_report_service.generate_report
+    report_data = deal_report_service.generate_report
+    reports_with_type = report_data.each {|key, val| val.each{|deal| deal['deal_type'] = key.to_s.humanize } }
+    reports_with_type.flatten(2).keep_if { |elem| elem.kind_of? Hash }
+  end
+
+  def date_range_params
+    params.permit(:start_date, :end_date)
   end
 
 end

@@ -6,7 +6,7 @@
 %h1 Advanced Deals
 - @advanced_deals.each do |advanced_deal|
   %p
-    #{ advanced_deal['name'] } - #{ advanced_deal['advertiser_name'] } - #{ advanced_deal['budget'] } - #{ advanced_deal['start_date'] } - #{ advanced_deal['stage_name'] } - From #{ advanced_deal['deal_stage_log_previous_stage_id'] } - To #{ advanced_deal['stage_id'] }
+    #{ advanced_deal['name'] } - #{ advanced_deal['advertiser_name'] } - #{ advanced_deal['budget'] } - #{ advanced_deal['start_date'] } - #{ advanced_deal['stage_name'] } - From #{ advanced_deal['deal_stage_log_previous_stage'] } - To #{ advanced_deal['stage_name'] }
 
 %h1 Won Deals
 - @won_deals.each do |won_deal|

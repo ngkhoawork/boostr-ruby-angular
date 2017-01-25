@@ -84,9 +84,9 @@
     .when '/reports/deal_reports',
       templateUrl: 'deal_reports.html'
       controller: 'DealReportsController'
-    .when '/reports/last_week_deals_report',
-      templateUrl: 'last_week_deals_report.html'
-      controller: 'LastWeekDealsReportController'
+    .when '/reports/pipeline_changes_report',
+      templateUrl: 'pipeline_changes_report.html'
+      controller: 'PipelineChangeReportController'
     .when '/reports/pipeline_summary_reports',
       templateUrl: 'pipeline_summary_reports.html'
       controller: 'PipelineSummaryReportsController'
