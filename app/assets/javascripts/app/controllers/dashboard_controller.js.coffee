@@ -357,7 +357,7 @@
             $scope.updateDealStage = (currentDeal) ->
                 if currentDeal != null
                     Stage.get(id: currentDeal.stage_id).$promise.then (stage) ->
-                        if !stage.open
+                        if !stage.open && stage.probability == 0
                             $scope.showModal(currentDeal)
                         else
                             Deal.update(id: currentDeal.id, deal: currentDeal).then (deal) ->
