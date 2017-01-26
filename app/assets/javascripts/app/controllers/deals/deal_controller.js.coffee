@@ -509,7 +509,7 @@
   $scope.updateDealStage = (currentDeal) ->
     if currentDeal != null
       Stage.get(id: currentDeal.stage_id).$promise.then (stage) ->
-        if !stage.open
+        if !stage.open && stage.probability == 0
           $scope.showModal(currentDeal)
         else
           Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
@@ -567,7 +567,7 @@
   $scope.showModal = (currentDeal) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_close_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'DealsCloseController'
       backdrop: 'static'
       keyboard: false

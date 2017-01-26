@@ -250,7 +250,7 @@
             $scope.showCloseDealModal = (currentDeal) ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/deal_close_form.html'
-                    size: 'lg'
+                    size: 'md'
                     controller: 'DealsCloseController'
                     backdrop: 'static'
                     keyboard: false
