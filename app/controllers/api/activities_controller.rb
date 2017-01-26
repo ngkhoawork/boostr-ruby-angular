@@ -206,9 +206,9 @@ class Api::ActivitiesController < ApplicationController
 
     if params[:start_date] && params[:end_date]
       start_date = Date.parse(params[:start_date])
-      end_date = Date.parse(params[:end_date])
+      end_date = Date.parse(params[:end_date]).end_of_day
     else
-      end_date = Time.now.to_date
+      end_date = Time.now.end_of_day
       start_date = end_date - 30.days
     end
     query_str += " and happened_at >= '#{start_date}' and happened_at <= '#{end_date}'"
