@@ -203,7 +203,7 @@
             $scope.onDrop = (deal, newStage) ->
                 if deal.stage_id is newStage.id then return
                 deal.stage_id = newStage.id
-                if !newStage.open
+                if !newStage.open && newStage.probability == 0
                     $scope.showCloseDealModal(deal)
                 else
                     Deal.update(id: deal.id, deal: deal).then (deal) ->
