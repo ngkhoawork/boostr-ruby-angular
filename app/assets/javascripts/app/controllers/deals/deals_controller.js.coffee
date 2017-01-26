@@ -8,6 +8,7 @@
             $scope.columns = []
             $scope.allDeals = []
             $scope.selectedType = 0
+            $scope.lastMoveAction = {}
             $scope.dealTypes = [
                 {name: 'My Deals', param: ''}
                 {name: 'My Team\'s Deals', param: 'team'}
@@ -200,6 +201,17 @@
                         if d1 < d2 then return -1
                         return 0
 
+            $scope.onMoved = (dealIndex, columnIndex) ->
+                $scope.lastMoveAction.from =
+                    deal: dealIndex
+                    column: columnIndex
+                $scope.columns[columnIndex].splice(dealIndex, 1)
+
+            $scope.onInserted = (dealIndex, columnIndex) ->
+                $scope.lastMoveAction.to =
+                    deal: dealIndex
+                    column: columnIndex
+
             $scope.onDrop = (deal, newStage) ->
                 if deal.stage_id is newStage.id then return
                 deal.stage_id = newStage.id
@@ -208,6 +220,18 @@
                 else
                     Deal.update(id: deal.id, deal: deal).then (deal) ->
                 deal
+
+            $scope.undoLastMove = ->
+                last = $scope.lastMoveAction
+                if last.from && last.to && last.from.column != last.to.column
+                    deal = angular.copy $scope.columns[last.to.column][last.to.deal]
+                    prevStage = $scope.stages[last.from.column]
+                    if deal && prevStage
+                        deal.stage_id = prevStage.id
+                        $scope.columns[last.to.column].splice(last.to.deal, 1)
+                        $scope.columns[last.from.column].splice(last.from.deal, 0, deal)
+
+            $scope.$on 'closeDealCanceled', $scope.undoLastMove
 
             $scope.filtering = (item) ->
                 if !item then return false

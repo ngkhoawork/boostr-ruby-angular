@@ -37,6 +37,7 @@
       $modalInstance.close()
     
   $scope.cancel = ->
+    $rootScope.$broadcast 'closeDealCanceled'
     $modalInstance.close()
 
   $scope.init()
