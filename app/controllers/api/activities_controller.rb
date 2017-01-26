@@ -210,7 +210,6 @@ class Api::ActivitiesController < ApplicationController
     else
       end_date = Time.now.to_date
       start_date = end_date - 30.days
-      binding.pry
     end
     query_str += " and happened_at >= '#{start_date}' and happened_at <= '#{end_date}'"
 
