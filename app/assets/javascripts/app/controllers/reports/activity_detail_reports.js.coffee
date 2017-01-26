@@ -159,4 +159,17 @@
           $scope.sortType = sortType
           $scope.sortReverse = false
 
+      $scope.getHtml = (html) ->
+        return $sce.trustAsHtml(html)
+
+      $scope.showEmailsModal = (activity) ->
+        $scope.modalInstance = $modal.open
+          templateUrl: 'modals/activity_emails.html'
+          size: 'lg'
+          controller: 'ActivityEmailsController'
+          backdrop: 'static'
+          keyboard: false
+          resolve:
+            activity: ->
+              activity
   ]

@@ -710,6 +710,17 @@
           type: 'deal'
           data: $scope.currentDeal
 
+  $scope.showEmailsModal = (activity) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_emails.html'
+      size: 'lg'
+      controller: 'ActivityEmailsController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          activity
+
   $scope.showDealEditModal = (deal) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_form.html'
