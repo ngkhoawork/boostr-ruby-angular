@@ -3,6 +3,7 @@ class Io < ActiveRecord::Base
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
   belongs_to :deal
   belongs_to :company
+  has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   has_many :io_members, dependent: :destroy
   has_many :users, dependent: :destroy, through: :io_members
   has_many :content_fees, dependent: :destroy
@@ -79,6 +80,10 @@ class Io < ActiveRecord::Base
     array
   end
 
+  def exchange_rate
+    company.exchange_rate_for(currency: self.curr_cd, at_date: self.created_at)
+  end
+
   def update_total_budget
     update_attributes(budget: (content_fees.sum(:budget) + display_line_items.sum(:budget)))
   end
@@ -125,6 +130,7 @@ class Io < ActiveRecord::Base
   def as_json(options = {})
     super(merge_recursively(options,
         include: {
+            currency: { only: :curr_symbol },
             advertiser: { name: {} },
             agency: { name: {} },
             deal: { name: {} }
@@ -140,6 +146,7 @@ class Io < ActiveRecord::Base
                 :name
             ]
         },
+        currency: {},
         content_fees: {
             include: {
                 content_fee_product_budgets: {}

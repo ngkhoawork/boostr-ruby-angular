@@ -78,6 +78,20 @@
 			.filter-row
 				.filter-name
 					%div
+						Currency
+				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.exchange_rate', 'ng-click': 'filter.reset("exchange_rate")'}
+					%span{ 'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()' }
+						.dropdown-button{ 'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.exchange_rate}' }
+							{{ filter.selected.exchange_rate.currency.name || 'Select a currency' }}
+							%span.caret
+						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+							%span.dropdown-title Select from list
+							.dropdown-option{'ng-repeat': 'exchange_rate in filter.exchange_rates | filter: filtering | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("exchange_rate", exchange_rate)'} {{exchange_rate.currency.name}}
+			.filter-row
+				.filter-name
+					%div
 						Start Date
 				.filter-dropdown
 					%i.fa.fa-close{'ng-show': 'filter.selected.date.startDate && filter.selected.date.endDate', 'ng-click': 'filter.reset("date")'}
@@ -111,7 +125,7 @@
 							{{stage.name}}
 							%i ({{columns[columnIndex].length || 0}})
 						%span
-							{{calcWeighted(columns[columnIndex], stage) | formatMoney}} (W) / {{calcUnweighted(columns[columnIndex]) | formatMoney}} (UW)
+							{{calcWeighted(columns[columnIndex], stage) | convertCurrency: appliedExchangeRate.rate | formatMoney: appliedExchangeRate.currency.curr_symbol }} (W) / {{calcUnweighted(columns[columnIndex]) | convertCurrency: appliedExchangeRate.rate | formatMoney: appliedExchangeRate.currency.curr_symbol }} (UW)
 						%svg{width: '17', height: '72'}
 							%polygon{points: '-2,-7 15, 36, -2, 79'}
 					.column-body{'dnd-list': 'columns[columnIndex]',
@@ -125,6 +139,6 @@
 								%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
 							%span {{(deal.advertiser && deal.advertiser.name || '') + ((deal.advertiser && deal.agency) ? ' | ' : '') + (deal.agency && deal.agency.name || '')}}
 							%span
-								{{deal.budget | formatMoney}}
+								{{deal.budget | convertCurrency: appliedExchangeRate.rate | formatMoney: appliedExchangeRate.currency.curr_symbol }}
 								%i &#183;
 								{{deal.members ? deal.members.join(', ') : '-'}}

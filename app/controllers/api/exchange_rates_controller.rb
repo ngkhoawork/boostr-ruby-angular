@@ -1,14 +1,6 @@
 class Api::ExchangeRatesController < ApplicationController
   respond_to :json
 
-  # def index
-  #   respond_to do |format|
-  #     format.json {
-  #       render json: exchange_rate_by_currency.as_json(include: :exchange_rates)
-  #     }
-  #   end
-  # end
-
   def create
     exchange_rate = company.exchange_rates.new(exchange_rate_params)
     if exchange_rate.save
@@ -24,6 +16,10 @@ class Api::ExchangeRatesController < ApplicationController
     else
       render json: { errors: exchange_rate.errors.messages }, status: :unprocessable_entity
     end
+  end
+
+  def active_exchange_rates
+    render json: company.exchange_rates.where('start_date <= ? AND end_date >= ?', Date.today, Date.today).includes(:currency).as_json(include: :currency)
   end
 
   private

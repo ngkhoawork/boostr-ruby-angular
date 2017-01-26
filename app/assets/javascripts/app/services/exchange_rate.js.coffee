@@ -9,6 +9,10 @@
     update:
       method: 'PUT'
       url: '/api/exchange_rates/:id'
+    active_exchange_rates:
+      method: 'GET'
+      isArray: true
+      url: '/api/exchange_rates/active_exchange_rates'
 
   @create = (params) ->
     deferred = $q.defer()
@@ -30,6 +34,12 @@
       (resp) ->
         deferred.reject(resp)
     )
+    deferred.promise
+
+  @active_exchange_rates = (params) ->
+    deferred = $q.defer()
+    resource.active_exchange_rates params, (data) ->
+      deferred.resolve(data)
     deferred.promise
 
   return

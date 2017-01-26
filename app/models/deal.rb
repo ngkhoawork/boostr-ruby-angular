@@ -14,6 +14,7 @@ class Deal < ActiveRecord::Base
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
 
   has_one :io, class_name: "Io", foreign_key: 'io_number'
+  has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
 
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
@@ -230,7 +231,7 @@ class Deal < ActiveRecord::Base
     update_attributes(budget: new_budget, budget_loc: new_budget_loc)
   end
 
-  def deal_exchange_rate
+  def exchange_rate
     company.exchange_rate_for(currency: self.curr_cd)
   end
 
@@ -246,10 +247,6 @@ class Deal < ActiveRecord::Base
     deal_log.budget_change = budget_change
     deal_log.budget_change_loc = budget_change_loc
     deal_log.save
-  end
-
-  def currency
-    Currency.find_by(curr_cd: curr_cd)
   end
 
   def reset_products

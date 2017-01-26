@@ -12,7 +12,8 @@ class Api::DealProductsController < ApplicationController
         return
       end
     else
-      converted_params = ConvertCurrency.call(deal, deal_product_params)
+      exchange_rate = deal.exchange_rate
+      converted_params = ConvertCurrency.call(exchange_rate, deal_product_params)
       deal_product = deal.deal_products.new(converted_params)
       deal_product.update_periods if params[:deal_product][:deal_product_budgets_attributes]
       if deal_product.save
@@ -25,7 +26,8 @@ class Api::DealProductsController < ApplicationController
   end
 
   def update
-    converted_params = ConvertCurrency.call(deal, deal_product_params)
+    exchange_rate = deal.exchange_rate
+    converted_params = ConvertCurrency.call(exchange_rate, deal_product_params)
     if deal_product.update_attributes(converted_params)
       deal.update_total_budget
       render deal

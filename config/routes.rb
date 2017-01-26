@@ -78,7 +78,11 @@ Rails.application.routes.draw do
         get :exchange_rates_by_currencies
       end
     end
-    resources :exchange_rates, only: [:create, :update, :destroy]
+    resources :exchange_rates, only: [:create, :update, :destroy] do
+      collection do
+        get :active_exchange_rates
+      end
+    end
     resources :time_periods, only: [:index, :create, :update, :destroy]
     resources :quotas, only: [:index, :create, :update]
     resources :forecasts, only: [:index, :show]

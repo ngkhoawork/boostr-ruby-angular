@@ -159,7 +159,6 @@
                     %span.small.editable{'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "percentOnFocus", "saveCopyProduct")'}
                       {{ deal_product_budget.budget_percent+ '%'}}
                 %div{'ng-if': 'deal_product_budget.editMode'}
-                  %span.symbol.currency {{ currency_symbol }}
                   %input.currency-table__money{ 'ng-model': 'deal_product_budget.budget_loc',
                     'ng-change': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "moneyOnFocus")',
                     'ng-keypress': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "moneyOnFocus")',

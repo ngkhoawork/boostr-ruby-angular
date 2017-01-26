@@ -132,11 +132,11 @@ class Company < ActiveRecord::Base
     rates.map(&:currency).map(&:curr_cd) << 'USD'
   end
 
-  def exchange_rate_for(currency:)
+  def exchange_rate_for(at_date: Date.today, currency:)
     return 1 if currency == 'USD'
     self.exchange_rates
         .where(currency: Currency.find_by(curr_cd: currency))
-        .where('start_date <= ? AND end_date >= ?', Date.today, Date.today)
+        .where('start_date <= ? AND end_date >= ?', at_date, at_date)
         .first!
         .rate
   end

@@ -1,5 +1,5 @@
 @filters.filter 'formatMoney', ->
-    (input) ->
+    (input, curr_symbol = '$') ->
         input = Math.round(input)
         if input is 0
             return '$0'
@@ -10,4 +10,4 @@
         if result >= 1000
             result = result / 1000
             exp += 1
-        '$' + result + suffixes[exp]
+        curr_symbol + result + suffixes[exp]
