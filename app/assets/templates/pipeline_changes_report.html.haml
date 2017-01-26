@@ -47,6 +47,9 @@
                 %th.left{ width: "200" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_stage_log_previous_stage")'}
                     Previous stage
+                %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
+                    Budget change
             %tbody
               %tr{ ng: { repeat: 'deal in report_data_items | orderBy:sortType:sortReverse' } }
                 %td.left
@@ -64,3 +67,5 @@
                   {{ deal.stage_name }}
                 %td.left
                   {{ deal.deal_stage_log_previous_stage }}
+                %td.left
+                  {{ deal.budget_change | currency:'$':0 }}

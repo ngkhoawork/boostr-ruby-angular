@@ -44,12 +44,18 @@ class DealReportService < BaseService
     Deal.at_percent(0).where(company_id: company_id, closed_at: date_range)
   end
 
+  def budget_changed
+    deal_logs =  DealLog.includes(:deal).where(created_at: date_range).where(deals: { company_id: company_id })
+    ActiveModel::ArraySerializer.new(deal_logs, each_serializer: BudgetChangeSerializer).as_json
+  end
+
   def report_data
     @report_data ||= {
                         new_deals: API::Deals::Collection.new(new_deals).to_hash['deals'],
                         stage_changed_deals: API::Deals::Collection.new(stage_changed_deals).to_hash['deals'],
                         won_deals: API::Deals::Collection.new(won_deals).to_hash['deals'],
-                        lost_deals: API::Deals::Collection.new(lost_deals).to_hash['deals']
+                        lost_deals: API::Deals::Collection.new(lost_deals).to_hash['deals'],
+                        budget_changed: budget_changed
                       }
   end
 
