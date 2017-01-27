@@ -75,7 +75,7 @@ class ContentFee < ActiveRecord::Base
         total_loc += monthly_budget_loc
       end
       content_fee_product_budget.update(
-        budget: monthly_budget.round(2)
+        budget: monthly_budget.round(2),
         budget_loc: monthly_budget_loc.round(2)
       )
     end
