@@ -1,13 +1,14 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage'
-        ($rootScope, $document, $scope, $filter, $modal, $q, $location, Deal, Stage) ->
+    ['$rootScope', '$window', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage'
+        ($rootScope, $window, $document, $scope, $filter, $modal, $q, $location, Deal, Stage) ->
             formatMoney = $filter('formatMoney')
 
             $scope.selectedDeal = null
-            $scope.stagesById = {}
+            $scope.stages = []
             $scope.columns = []
             $scope.allDeals = []
             $scope.selectedType = 0
+            $scope.lastMoveAction = {}
             $scope.dealTypes = [
                 {name: 'My Deals', param: ''}
                 {name: 'My Team\'s Deals', param: 'team'}
@@ -106,9 +107,10 @@
                     columns = angular.copy $scope.emptyColumns
                     $scope.deals.forEach (deal) ->
                         if !deal || !deal.stage_id then return
-                        index = $scope.stagesById[deal.stage_id].index
-                        columns[index].push deal
+                        stage = _.findWhere $scope.stages, id: deal.stage_id
+                        if stage then columns[stage.index].push deal
                     $scope.columns = columns
+                    $scope.sortingDealsByDate()
                     if !reset then this.isOpen = false
                 reset: (key) ->
                     this.selected[key] = new Selection()[key]
@@ -149,9 +151,10 @@
                     maxBudget = 0
                     $scope.deals = data.deals
                     $scope.stages = data.stages
+                    $scope.stages = $scope.stages.filter (stage) ->
+                        stage.active
                     $scope.stages.forEach (stage, i) ->
                         stage.index = i
-                        $scope.stagesById[stage.id] = stage
                         columns.push []
                     $scope.emptyColumns = angular.copy columns
                     $scope.deals.forEach (deal) ->
@@ -163,8 +166,8 @@
                         if deal.agency then agencies.push deal.agency
                         if deal.budget && parseInt(deal.budget) > maxBudget
                             maxBudget = parseInt(deal.budget)
-                        index = $scope.stagesById[deal.stage_id].index
-                        columns[index].push deal
+                        stage = _.findWhere $scope.stages, id: deal.stage_id
+                        if stage then columns[stage.index].push deal
 
                     $scope.allDeals = angular.copy $scope.deals
                     $scope.filter.owners = _.uniq owners
@@ -174,6 +177,10 @@
                     $scope.filter.slider.options.ceil = maxBudget
                     $scope.columns = columns
                     $scope.sortingDealsByDate()
+
+#                    for i in [1..15]
+#                        $scope.stages.push {index: 6 + i, name: 'TEST' + i}
+#                        $scope.columns.push []
 
             $scope.filterDeals = (filter) ->
                 $scope.selectedType = filter
@@ -194,14 +201,37 @@
                         if d1 < d2 then return -1
                         return 0
 
+            $scope.onMoved = (dealIndex, columnIndex) ->
+                $scope.lastMoveAction.from =
+                    deal: dealIndex
+                    column: columnIndex
+                $scope.columns[columnIndex].splice(dealIndex, 1)
+
+            $scope.onInserted = (dealIndex, columnIndex) ->
+                $scope.lastMoveAction.to =
+                    deal: dealIndex
+                    column: columnIndex
+
             $scope.onDrop = (deal, newStage) ->
                 if deal.stage_id is newStage.id then return
                 deal.stage_id = newStage.id
-                if !newStage.open
+                if !newStage.open && newStage.probability == 0
                     $scope.showCloseDealModal(deal)
                 else
                     Deal.update(id: deal.id, deal: deal).then (deal) ->
                 deal
+
+            $scope.undoLastMove = ->
+                last = $scope.lastMoveAction
+                if last.from && last.to && last.from.column != last.to.column
+                    deal = angular.copy $scope.columns[last.to.column][last.to.deal]
+                    prevStage = $scope.stages[last.from.column]
+                    if deal && prevStage
+                        deal.stage_id = prevStage.id
+                        $scope.columns[last.to.column].splice(last.to.deal, 1)
+                        $scope.columns[last.from.column].splice(last.from.deal, 0, deal)
+
+            $scope.$on 'closeDealCanceled', $scope.undoLastMove
 
             $scope.filtering = (item) ->
                 if !item then return false
@@ -244,7 +274,7 @@
             $scope.showCloseDealModal = (currentDeal) ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/deal_close_form.html'
-                    size: 'lg'
+                    size: 'md'
                     controller: 'DealsCloseController'
                     backdrop: 'static'
                     keyboard: false
@@ -272,5 +302,44 @@
                 B = f & 0x0000FF
                 '#' + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + Math.round((t - B) * p) + B).toString(16).slice(1)
 
+            x = 0
+            shift = 0
+            dragDirection = null
+            interval = null
+            dealsContainer = null
+            angular.element(document).ready ->
+                dealsContainer = angular.element('.deals-container')[0]
+                angular.element('#deals').on 'drag', (e) ->
+                    e = e.originalEvent
+                    if shift >= 35
+                        dragDirection = 'right'
+                        shift = 0
+                    else if shift <= -35
+                        dragDirection = 'left'
+                        shift = 0
+                    if x then shift -= x - e.clientX
+                    x = e.clientX
+
+            $scope.onDragStart = ->
+                x = 0
+                shift = 0
+                dragDirection = null
+                interval = setInterval checkPositionThenScroll, 33
+
+            $scope.onDragEnd = ->
+                clearInterval interval
+
+            checkPositionThenScroll = ->
+                if !dealsContainer then return
+
+                scrollZone = 0.14
+                width = $window.innerWidth
+                leftBorder = width * scrollZone
+                rightBorder = width * (1 - scrollZone)
+
+                if x <= leftBorder && dragDirection == 'left'
+                    dealsContainer.scrollLeft -= (leftBorder - x) / 10
+                else if x >= rightBorder && dragDirection == 'right'
+                    dealsContainer.scrollLeft += (x - rightBorder) / 10
 
     ]

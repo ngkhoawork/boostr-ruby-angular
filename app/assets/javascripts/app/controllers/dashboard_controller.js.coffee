@@ -226,7 +226,7 @@
 
             $scope.getStages = ->
                 Stage.query().$promise.then (stages) ->
-                    $scope.stages = stages
+                    $scope.stages = stages.filter (stage) -> stage.active
 
             $scope.$on 'updated_dashboards', ->
                 $scope.init()
@@ -357,7 +357,7 @@
             $scope.updateDealStage = (currentDeal) ->
                 if currentDeal != null
                     Stage.get(id: currentDeal.stage_id).$promise.then (stage) ->
-                        if !stage.open
+                        if !stage.open && stage.probability == 0
                             $scope.showModal(currentDeal)
                         else
                             Deal.update(id: currentDeal.id, deal: currentDeal).then (deal) ->
@@ -366,7 +366,7 @@
             $scope.showModal = (currentDeal) ->
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/deal_close_form.html'
-                    size: 'lg'
+                    size: 'md'
                     controller: 'DealsCloseController'
                     backdrop: 'static'
                     keyboard: false

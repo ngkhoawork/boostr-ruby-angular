@@ -25,12 +25,19 @@
     }
 
   $scope.submitForm = () ->
+    $scope.errors = {}
+
+    if !$scope.currentDeal.close_reason.option_id
+      $scope.errors.reason = 'Reason is required'
+      return
+
     $scope.currentDeal.stage_id = currentDeal.stage_id
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
       $rootScope.$broadcast 'updated_deal'
       $modalInstance.close()
     
   $scope.cancel = ->
+    $rootScope.$broadcast 'closeDealCanceled'
     $modalInstance.close()
 
   $scope.init()
