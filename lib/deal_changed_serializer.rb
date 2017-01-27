@@ -1,7 +1,7 @@
-class BudgetChangeSerializer < ActiveModel::Serializer
+class DealChangedSerializer < ActiveModel::Serializer
   cached
 
-  attributes(:id, :name, :advertiser_name, :start_date, :stage_name, :budget, :budget_change, :deal_stage_log_previous_stage)
+  attributes(:id, :name, :advertiser_name, :start_date, :stage_name, :budget, :deal_stage_log_previous_stage)
 
   private
 
@@ -14,7 +14,7 @@ class BudgetChangeSerializer < ActiveModel::Serializer
   end
 
   def stage_name
-    ''
+    object.deal.stage_name
   end
 
   def budget
@@ -22,7 +22,7 @@ class BudgetChangeSerializer < ActiveModel::Serializer
   end
 
   def deal_stage_log_previous_stage
-    ''
+    object.previous_stage.try(:name) || ''
   end
 
   def id

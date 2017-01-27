@@ -32,7 +32,8 @@ class DealReportService < BaseService
 
   # Advanced Deals - (list of deals that changed sales stage on target date -use deal_stage_logs.created_at yesterday)
   def stage_changed_deals
-    Deal.joins(:deal_stage_logs).where(deals: { company_id: company_id }, deal_stage_logs: { created_at: date_range })
+    deal_stage_logs = DealStageLog.includes(:deal).where(created_at: date_range).where(deals: { company_id: company_id })
+    ActiveModel::ArraySerializer.new(deal_stage_logs, each_serializer: DealChangedSerializer).as_json
   end
 
   # Won Deals - (list of deals that went to 100% yesterday)
@@ -52,7 +53,7 @@ class DealReportService < BaseService
   def report_data
     @report_data ||= {
                         new_deals: API::Deals::Collection.new(new_deals).to_hash['deals'],
-                        stage_changed_deals: API::Deals::Collection.new(stage_changed_deals).to_hash['deals'],
+                        stage_changed_deals: stage_changed_deals,
                         won_deals: API::Deals::Collection.new(won_deals).to_hash['deals'],
                         lost_deals: API::Deals::Collection.new(lost_deals).to_hash['deals'],
                         budget_changed: budget_changed
@@ -61,7 +62,7 @@ class DealReportService < BaseService
 
   def date_range
     return target_date unless target_date.kind_of? Hash
-    target_date[:start_date]..target_date[:end_date]
+    Date.parse(target_date[:start_date]).end_of_day..Date.parse(target_date[:end_date]).end_of_day
   end
 
   def csv_header
