@@ -14,7 +14,7 @@ class DealChangedSerializer < ActiveModel::Serializer
   end
 
   def stage_name
-    object.deal.stage_name
+    object.stage.try(:name)
   end
 
   def budget
