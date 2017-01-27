@@ -36,6 +36,9 @@ class Deal < ActiveRecord::Base
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
+  delegate :name, to: :advertiser, allow_nil: true, prefix: true
+  delegate :name, to: :stage, allow_nil: true, prefix: true
+
   before_update do
     if stage_id_changed?
       update_stage

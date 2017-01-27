@@ -1,9 +1,4 @@
-class BPGenerator
-  include Sidekiq::Worker
-
-  sidekiq_options queue: "default"
-  sidekiq_options retry: false
-
+class BPGenerator < BaseWorker
   def perform(bp_id)
     bp = Bp.find(bp_id)
     if bp.present?

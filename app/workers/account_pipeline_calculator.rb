@@ -1,10 +1,5 @@
-class AccountPipelineCalculator
-  include Sidekiq::Worker
-
-  sidekiq_options queue: "default"
-  sidekiq_options retry: false
-
-  def perform()
+class AccountPipelineCalculator < BaseWorker
+  def perform
     Company.all.each do |company|
       time_dimensions = TimeDimension.all
 

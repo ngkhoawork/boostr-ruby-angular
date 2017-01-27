@@ -1,9 +1,4 @@
-class AccountSynchronizer
-  include Sidekiq::Worker
-
-  sidekiq_options queue: "default"
-  sidekiq_options retry: false
-
+class AccountSynchronizer < BaseWorker
   def perform
     synchronize_account_dimensions
   end
