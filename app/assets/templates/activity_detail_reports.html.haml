@@ -82,7 +82,12 @@
               %tr{ ng: { if: 'activities.length > 0', repeat: 'activity in activities | orderBy:sortType:sortReverse' } }
                 %td.left {{ activity.happened_at | date: 'MM-dd-yyyy' }}
                 %td.left {{ activity.activity_type_name }}
-                %td.left {{ activity.comment }}
+                %td.left
+                  %div{'ng-if': 'activity.activity_type_name != "Email"','ng-bind-html': 'getHtml(activity.comment)'}
+                  %div{'ng-if': 'activity.activity_type_name == "Email"'}
+                    %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
+                    %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
+                      Show email
                 %td.left {{ activity.client.name }}
                 %td.left {{ activity.agency.name }}
                 %td.left

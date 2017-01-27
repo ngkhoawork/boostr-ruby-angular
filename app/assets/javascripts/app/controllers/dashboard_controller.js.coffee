@@ -374,6 +374,17 @@
                         currentDeal: ->
                             currentDeal
 
+            $scope.showEmailsModal = (activity) ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/activity_emails.html'
+                    size: 'lg'
+                    controller: 'ActivityEmailsController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        activity: ->
+                            activity
+
             $scope.$on 'updated_deal', ->
                 $scope.init()
             $scope.$on 'newContact', (event, contact) ->
