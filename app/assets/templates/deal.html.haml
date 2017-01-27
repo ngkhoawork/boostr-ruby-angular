@@ -100,7 +100,7 @@
             .row
               .col-xs-12
                 %h5
-                  .stage{ editable: { select: 'currentDeal.stage_id' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDealStage(currentDeal)', onshow: 'getStages()' }
+                  .stage{ editable: { select: 'selectedStageId' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDealStage(currentDeal, selectedStageId)', onshow: 'getStages()' }
                     {{ currentDeal.stage.name }}
                     .small
                       {{ currentDeal.stage.probability }}% probability

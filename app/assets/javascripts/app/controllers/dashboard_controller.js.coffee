@@ -226,7 +226,7 @@
 
             $scope.getStages = ->
                 Stage.query().$promise.then (stages) ->
-                    $scope.stages = stages
+                    $scope.stages = stages.filter (stage) -> stage.active
 
             $scope.$on 'updated_dashboards', ->
                 $scope.init()

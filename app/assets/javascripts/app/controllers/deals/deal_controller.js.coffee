@@ -8,6 +8,8 @@
   $scope.contacts = []
   $scope.errors = {}
   $scope.contactSearchText = ""
+  $scope.prevStageId = null
+  $scope.selectedStageId = null
   $anchorScroll()
 
   ###*
@@ -239,12 +241,14 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
+      $scope.selectedStageId = deal.stage_id
       $scope.verifyMembersShare()
       $scope.setBudgetPercent(deal)
 
   $scope.getStages = ->
     Stage.query().$promise.then (stages) ->
-      $scope.stages = stages
+      $scope.stages = stages.filter (stage) ->
+        stage.active
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()
@@ -365,6 +369,7 @@
     DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: $scope.deal_product).then (deal) ->
       $scope.showProductForm = false
       $scope.currentDeal = deal
+      $scope.selectedStageId = deal.stage_id
       $scope.setBudgetPercent(deal)
 
   $scope.resetDealProduct = ->
@@ -506,9 +511,11 @@
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
       $scope.setCurrentDeal(deal)
 
-  $scope.updateDealStage = (currentDeal) ->
-    if currentDeal != null
-      Stage.get(id: currentDeal.stage_id).$promise.then (stage) ->
+  $scope.updateDealStage = (currentDeal, stageId) ->
+    if currentDeal && stageId
+      $scope.prevStageId = currentDeal.stage_id
+      currentDeal.stage_id = stageId
+      Stage.get(id: stageId).$promise.then (stage) ->
         if !stage.open && stage.probability == 0
           $scope.showModal(currentDeal)
         else
@@ -586,6 +593,13 @@
         deal: ->
           $scope.currentDeal
 
+  $scope.backToPrevStage = ->
+    if $scope.prevStageId
+      $scope.currentDeal.stage_id = $scope.prevStageId
+      $scope.selectedStageId = $scope.prevStageId
+
+  $scope.$on 'closeDealCanceled', $scope.backToPrevStage
+
   $scope.$on 'openContactModal', ->
     $scope.createNewContactModal()
 
@@ -605,64 +619,6 @@
   $scope.setActiveType = (type) ->
     $scope.activeType = type
 
-#  $scope.submitForm = (form) ->
-#    $scope.errors = {}
-#    $scope.buttonDisabled = true
-#    if form.$valid
-#      if !$scope.activity.comment
-#        $scope.buttonDisabled = false
-#        $scope.errors['Comment'] = ["can't be blank."]
-#      if !($scope.activeType && $scope.activeType.id)
-#        $scope.buttonDisabled = false
-#        $scope.errors['Activity Type'] = ["can't be blank."]
-#      data = $scope.selected[$scope.activeType.name]
-#      if !data.contacts || data.contacts.length == 0
-#        $scope.buttonDisabled = false
-#        $scope.errors['Contacts'] = ["can't be blank."]
-#      if $scope.actRemColl
-#        if !($scope.activityReminder && $scope.activityReminder.name)
-#          $scope.buttonDisabled = false
-#          $scope.errors['Activity Reminder Name'] = ["can't be blank."]
-#        if !($scope.activityReminder && $scope.activityReminder._date)
-#          $scope.buttonDisabled = false
-#          $scope.errors['Activity Reminder Date'] = ["can't be blank."]
-#        if !($scope.activityReminder && $scope.activityReminder._time)
-#          $scope.buttonDisabled = false
-#          $scope.errors['Activity Reminder Time'] = ["can't be blank."]
-#      if !$scope.buttonDisabled
-#        return
-#      form.submitted = true
-#      $scope.activity.deal_id = $scope.currentDeal.id
-#
-#      $scope.activity.client_id = $scope.currentDeal.advertiser_id
-#      $scope.activity.agency_id = $scope.currentDeal.agency_id
-#      $scope.activity.activity_type_id = $scope.activeType.id
-#      $scope.activity.activity_type_name = $scope.activeType.name
-#      contact_date = new Date(data.date)
-#      if data.time != undefined
-#        contact_time = new Date(data.time)
-#        contact_date.setHours(contact_time.getHours(), contact_time.getMinutes(), 0, 0)
-#        $scope.activity.timed = true
-#      $scope.activity.happened_at = contact_date
-#      Activity.create({ activity: $scope.activity, contacts: data.contacts }, (response) ->
-#        angular.forEach response.data.errors, (errors, key) ->
-#          form[key].$dirty = true
-#          form[key].$setValidity('server', false)
-#          $scope.buttonDisabled = false
-#      ).then (activity) ->
-#        if (activity && activity.id && $scope.actRemColl)
-#          reminder_date = new Date($scope.activityReminder._date)
-#          $scope.activityReminder.remindable_id = activity.id
-#          if $scope.activityReminder._time != undefined
-#            reminder_time = new Date($scope.activityReminder._time)
-#            reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
-#          $scope.activityReminder.remind_on = reminder_date
-#          Reminder.create(reminder: $scope.activityReminder)
-##          .then (reminder) ->
-##          , (err) ->
-#
-#        $scope.buttonDisabled = false
-#        $scope.init()
 
   $scope.createNewContactModal = ->
     $scope.populateContact = true
@@ -735,19 +691,6 @@
         $scope.$emit('updated_activities')
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
-
-#  $scope.reminderModal = ->
-#    $scope.modalInstance = $modal.open
-#      templateUrl: 'modals/reminder_form.html'
-#      size: 'lg'
-#      controller: 'ReminderEditController'
-#      backdrop: 'static'
-#      keyboard: false
-#      resolve:
-#        itemId: ->
-#          $scope.itemId
-#        itemType: ->
-#          $scope.itemType
 
   $scope.submitReminderForm = () ->
     $scope.reminderOptions.errors = {}
