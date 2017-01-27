@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170124060608) do
+ActiveRecord::Schema.define(version: 20170127142632) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -490,6 +490,8 @@ ActiveRecord::Schema.define(version: 20170124060608) do
     t.decimal  "budget_remaining_loc",                 precision: 15, scale: 2, default: 0.0
     t.decimal  "budget_delivered_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.decimal  "budget_remaining_3p_loc",              precision: 15, scale: 2, default: 0.0
+    t.integer  "balance_loc",                limit: 8
+    t.integer  "daily_run_rate_loc"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree

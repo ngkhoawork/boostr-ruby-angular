@@ -3,7 +3,7 @@
   %td.left {{row.name}}
   %td.left {{row.advertiser}}
   %td.left {{row.agency}}
-  %td.right {{row.budget | currency:'$':0 }}
+  %td.right {{row.budget_loc | currency:row.currency.curr_symbol:0}}
   %td.left {{row.start_date | date: 'M/d/yyyy'}}
   %td.left {{row.end_date | date: 'M/d/yyyy'}}
   %td.right

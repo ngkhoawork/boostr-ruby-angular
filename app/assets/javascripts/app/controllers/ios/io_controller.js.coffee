@@ -4,6 +4,7 @@
       $scope.currentIO = {}
       $scope.activeTab = 'ios'
       $scope.dateRange = []
+      $scope.currency_symbol = '$'
 
       updateDateRange = () ->
         if $scope.currentIO
@@ -24,6 +25,9 @@
           $scope.currentUser = user
         IO.get($routeParams.id).then (io) ->
           $scope.currentIO = io
+          if io.currency
+            if io.currency.curr_symbol
+              $scope.currency_symbol = io.currency.curr_symbol
           updateDateRange()
 
       $scope.showLinkExistingUser = ->

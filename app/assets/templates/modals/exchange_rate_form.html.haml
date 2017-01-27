@@ -22,7 +22,7 @@
         .form-group{ ng: { class: '{error: errors.rate}' } }
           %span.error-text {{ errors.rate }}
           %label
-            Exchange Rate
+            Exchange Rate to USD
           %span.star *
           %input.form-control{type: 'number', min: '0', step: '.0001', 'placeholder': 'Exchange Rate', ng: { model: 'form.rate' } }
 

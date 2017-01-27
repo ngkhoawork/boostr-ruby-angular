@@ -40,7 +40,7 @@ class DealProduct < ActiveRecord::Base
   end
 
   def local_currency_budget_in_usd
-    budget_loc / deal.deal_exchange_rate
+    budget_loc / deal.exchange_rate
   end
 
   def create_product_budgets

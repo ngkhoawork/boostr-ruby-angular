@@ -85,7 +85,12 @@ class Io < ActiveRecord::Base
   end
 
   def update_total_budget
-    update_attributes(budget: (content_fees.sum(:budget) + display_line_items.sum(:budget)))
+    new_budget = (content_fees.sum(:budget) + display_line_items.sum(:budget))
+    new_budget_loc = (content_fees.sum(:budget_loc) + display_line_items.sum(:budget_loc))
+    update_attributes(
+      budget: new_budget,
+      budget_loc: new_budget_loc
+    )
   end
 
   def effective_revenue_budget(member, start_date, end_date)

@@ -2,11 +2,12 @@ class Api::DisplayLineItemsController < ApplicationController
   respond_to :json
 
   def index
-    render json: display_line_items.where("balance > 0").as_json( include: {
+    render json: display_line_items.as_json( include: {
         io: {
             include: {
                 advertiser: {},
-                agency: {}
+                agency: {},
+                currency: { only: :curr_symbol }
             }
         }
     })
@@ -32,13 +33,13 @@ class Api::DisplayLineItemsController < ApplicationController
       member_ids += current_user.teams.first.all_members.collect{|m| m.id}
       member_ids += current_user.teams.first.all_leaders.collect{|m| m.id}
     end
-    io_ids = Io.joins(:io_members).where("io_members.user_id in (?)", member_ids.uniq).all.collect{|io| io.id}.uniq
+    io_ids = Io.where(company: current_user.company)
     if params[:filter] == 'upside'
-      DisplayLineItem.where("balance > 0 and io_id in (?)", io_ids)
+      DisplayLineItem.where("io_id in (?)", 131)
     elsif params[:filter] == 'risk'
-      DisplayLineItem.where("balance < 0 and io_id in (?)", io_ids)
+      DisplayLineItem.where("io_id in (?)", 131)
     else
-      DisplayLineItem.where("io_id in (?)", io_ids)
+      DisplayLineItem.where("io_id in (?)", 131)
     end
   end
 

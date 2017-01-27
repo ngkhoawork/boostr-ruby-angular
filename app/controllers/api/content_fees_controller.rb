@@ -2,7 +2,9 @@ class Api::ContentFeesController < ApplicationController
   respond_to :json
 
   def create
-    content_fee = io.content_fees.new(content_fee_params)
+    exchange_rate = io.exchange_rate
+    converted_params = ConvertCurrency.call(exchange_rate, content_fee_params)
+    content_fee = io.content_fees.new(converted_params)
     if content_fee.save
       render json: io.full_json
     else
@@ -11,7 +13,9 @@ class Api::ContentFeesController < ApplicationController
   end
 
   def update
-    if content_fee.update_attributes(content_fee_params)
+    exchange_rate = io.exchange_rate
+    converted_params = ConvertCurrency.call(exchange_rate, content_fee_params)
+    if content_fee.update_attributes(converted_params)
       render json: io.full_json
     else
       render json: { errors: content_fee.errors.messages }, status: :unprocessable_entity
@@ -37,10 +41,11 @@ class Api::ContentFeesController < ApplicationController
   def content_fee_params
     params.require(:content_fee).permit(
         :budget,
+        :budget_loc,
         :product_id,
         :io_id,
         {
-            content_fee_product_budgets_attributes: [:id, :budget]
+            content_fee_product_budgets_attributes: [:id, :budget, :budget_loc]
         }
     )
   end

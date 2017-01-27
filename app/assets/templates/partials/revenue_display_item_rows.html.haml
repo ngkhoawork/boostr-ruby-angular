@@ -6,11 +6,11 @@
   %td.left
     {{ displayLineItem.io.agency ? displayLineItem.io.agency.name : "" }}
   %td.right
-    {{ displayLineItem.daily_run_rate | currency:'$':0 }}
+    {{ displayLineItem.daily_run_rate | currency:displayLineItem.io.currency.curr_symbol:0 }}
   %td.right
     {{ displayLineItem.num_days_til_out_of_budget }}
   %td.right
-    {{ displayLineItem.balance | currency:'$':0 }}
+    {{ displayLineItem.balance | currency:displayLineItem.io.currency.curr_symbol:0 }}
   %td.left
     {{ displayLineItem.line_number }}
   %td.left
@@ -24,15 +24,15 @@
   %td.right
     {{ displayLineItem.quantity }}
   %td.right
-    {{ displayLineItem.price | currency:'$':0 }}
+    {{ displayLineItem.price | currency:displayLineItem.io.currency.curr_symbol:0 }}
   %td.left
     {{ displayLineItem.pricing_type }}
   %td.right
-    {{ displayLineItem.budget | currency:'$':0 }}
+    {{ displayLineItem.budget_loc | currency:displayLineItem.io.currency.curr_symbol:0 }}
   %td.right
-    {{ displayLineItem.budget_delivered | currency:'$':0 }}
+    {{ displayLineItem.budget_delivered_loc | currency:displayLineItem.io.currency.curr_symbol:0 }}
   %td.right
-    {{ displayLineItem.budget_remaining | currency:'$':0 }}
+    {{ displayLineItem.budget_remaining_loc | currency:displayLineItem.io.currency.curr_symbol:0 }}
   %td.right
     {{ displayLineItem.quantity_delivered }}
   %td.right
@@ -42,6 +42,6 @@
   %td.right
     {{ displayLineItem.quantity_remaining_3p }}
   %td.right
-    {{ displayLineItem.budget_delivered_3p | currency:'$':0 }}
+    {{ displayLineItem.budget_delivered_3p_loc | currency:displayLineItem.io.currency.curr_symbol:0 }}
   %td.right
-    {{ displayLineItem.budget_remaining_3p | currency:'$':0 }}
+    {{ displayLineItem.budget_remaining_3p_loc | currency:displayLineItem.io.currency.curr_symbol:0 }}

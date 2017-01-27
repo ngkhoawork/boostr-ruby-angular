@@ -5,6 +5,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
     budget.to_f / (end_date - start_date + 1).to_i
   end
 
+  def daily_budget_loc
+    budget_loc.to_f / (end_date - start_date + 1).to_i
+  end
+
   def self.to_csv(company_id)
     header = [
       :IO_Num,

@@ -236,9 +236,9 @@ class Deal < ActiveRecord::Base
   end
 
   def update_product_currency
-    deal_product_budgets.update_all("budget_loc = budget * #{deal_exchange_rate}")
+    deal_product_budgets.update_all("budget_loc = budget * #{self.exchange_rate}")
     deal_products.map{ |deal_product| deal_product.update_budget }
-    self.budget_loc = budget * deal_exchange_rate
+    self.budget_loc = budget * self.exchange_rate
   end
 
   def write_to_deal_log(budget_change, budget_change_loc)

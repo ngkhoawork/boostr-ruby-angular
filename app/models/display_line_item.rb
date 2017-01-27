@@ -31,23 +31,30 @@ class DisplayLineItem < ActiveRecord::Base
     if !budget.nil? && !budget_remaining.nil?
       if budget > 0 && start_date < DateTime.now && DateTime.now < end_date
         self.daily_run_rate = ((budget - budget_remaining)/(DateTime.now.to_date-start_date.to_date+1))
+        self.daily_run_rate_loc = ((budget_loc - budget_remaining_loc)/(DateTime.now.to_date-start_date.to_date+1))
         if self.daily_run_rate != 0
           self.num_days_til_out_of_budget = budget_remaining/(self.daily_run_rate)
           self.balance = ((end_date.to_date-DateTime.now.to_date+1)-self.num_days_til_out_of_budget)*(self.daily_run_rate)
+          self.balance_loc = ((end_date.to_date-DateTime.now.to_date+1)-self.num_days_til_out_of_budget)*(self.daily_run_rate_loc)
         else
           self.num_days_til_out_of_budget = 0
           self.balance = 0
+          self.balance_loc = 0
         end
       else
         self.daily_run_rate = 0
+        self.daily_run_rate_loc = 0
         self.num_days_til_out_of_budget = 0
         self.balance = 0
+        self.balance_loc = 0
       end
       self.last_alert_at = DateTime.now
     else
       self.daily_run_rate = 0
+      self.daily_run_rate_loc = 0
       self.num_days_til_out_of_budget = 0
       self.balance = 0
+      self.balance_loc = 0
     end
     self.save if should_save
   end
