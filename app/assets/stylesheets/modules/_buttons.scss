@@ -76,3 +76,20 @@
     }
   }
 }
+.activity-email-btn {
+  background-color: #DDDDDD;
+  &:focus {
+    color: $main-font-color;
+    outline: none;
+    &:active {
+      outline: none;
+    }
+  }
+  &:hover {
+    color: white;
+    background-color: darken(#DDDDDD, 10%);
+    &:active {
+      outline: none;
+    }
+  }
+}

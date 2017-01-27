@@ -189,6 +189,17 @@
           data: $scope.currentClient
           isAdvertiser: $scope.currentClient.client_type_id == $scope.Advertiser
 
+  $scope.showEmailsModal = (activity) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_emails.html'
+      size: 'lg'
+      controller: 'ActivityEmailsController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          activity
+
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)
       $scope.contactSearchText = searchText

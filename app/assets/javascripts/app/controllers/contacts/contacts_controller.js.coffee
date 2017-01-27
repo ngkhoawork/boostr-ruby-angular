@@ -161,6 +161,17 @@
           data: $scope.currentContact
           isAdvertiser: $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
 
+  $scope.showEmailsModal = (activity) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/activity_emails.html'
+      size: 'lg'
+      controller: 'ActivityEmailsController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        activity: ->
+          activity
+
   $scope.delete = ->
     if confirm('Are you sure you want to delete "' + $scope.currentContact.name + '"?')
       Contact.delete({ id: $scope.currentContact.id }, ((res) ->

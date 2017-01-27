@@ -16,7 +16,7 @@ class Api::ReportsController < ApplicationController
 
   def user_activity_reports
     activity_report = []
-    company.users.by_user_type(SELLER).order(:first_name).each do |user|
+    company.users.by_user_type([SELLER, SALES_MANAGER]).order(:first_name).each do |user|
       user_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
       .where("user_id = ? and happened_at >= ? and happened_at <= ?", user.id, time_period.start_date, time_period.end_date)
       .select("activity_types.name, count(activities.id) as count")
@@ -35,7 +35,7 @@ class Api::ReportsController < ApplicationController
 
   def total_activity_report
     total_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
-    .where("user_id in (?) and happened_at >= ? and happened_at <= ?", company.users.by_user_type(SELLER).ids, time_period.start_date, time_period.end_date)
+    .where("user_id in (?) and happened_at >= ? and happened_at <= ?", company.users.by_user_type([SELLER, SALES_MANAGER]).ids, time_period.start_date, time_period.end_date)
     .select("activity_types.name, count(activities.id) as count")
     .group("activity_types.name").collect { |activity| { "#{activity.name}": activity.count } }
 
@@ -56,7 +56,7 @@ class Api::ReportsController < ApplicationController
       csv << header
 
       company.time_periods.order(:name).each do |period|
-        company.users.by_user_type(SELLER).order(:first_name).each do |user|
+        company.users.by_user_type([SELLER, SALES_MANAGER]).order(:first_name).each do |user|
           line = [period.name]
           line << user.name
           company.activity_types.each do |type|
@@ -72,10 +72,10 @@ class Api::ReportsController < ApplicationController
         line = [period.name]
         line << 'Total'
         company.activity_types.each do |type|
-          count = company.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ? and user_id in (?)', period.start_date, period.end_date, type.name, company.users.by_user_type(SELLER).ids).count
+          count = company.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ? and user_id in (?)', period.start_date, period.end_date, type.name, company.users.by_user_type([SELLER, SALES_MANAGER]).ids).count
           line << count
         end
-        count = company.activities.where('happened_at >= ? and happened_at <= ? and user_id in (?)', period.start_date, period.end_date, company.users.by_user_type(SELLER).ids).count
+        count = company.activities.where('happened_at >= ? and happened_at <= ? and user_id in (?)', period.start_date, period.end_date, company.users.by_user_type([SELLER, SALES_MANAGER]).ids).count
         line << count
         csv << line
       end

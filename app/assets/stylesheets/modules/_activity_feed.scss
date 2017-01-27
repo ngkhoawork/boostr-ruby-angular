@@ -1,63 +1,63 @@
 #activity-feed {
-  position: relative;
-  font-family: "Avenir Next", Arial, serif;
-  color: $main-font-color;
-  a {
-    color: $secondary-color;
-    font-weight: 600;
-  }
-  &.block {
-    margin-bottom: 0;
-    .title {
-      font-size: 22px;
-      font-weight: 600;
-      margin-right: 20px;
+    position: relative;
+    font-family: "Avenir Next", Arial, serif;
+    color: $main-font-color;
+    a {
+        color: $secondary-color;
+        font-weight: 600;
     }
-  }
-  //& div.activity-item:last-of-type {
-  //  margin-bottom: 0;
-  //}
-  .activity-item {
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid $separate-line-color;
-    .activity-header {
-      color: $secondary-font-color;
-      margin-bottom: 10px;
-      span:nth-child(2) {
-        margin-left: 5px;
-        vertical-align: text-bottom;
-      }
+    &.block {
+        margin-bottom: 0;
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
     }
-    .activity-body {
-      padding-right: 25%;
-      margin-bottom: 15px;
-      p {
-        margin-bottom: 5px;
-      }
+    //& div.activity-item:last-of-type {
+    //  margin-bottom: 0;
+    //}
+    .activity-item {
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid $separate-line-color;
+        .activity-header {
+            color: $secondary-font-color;
+            margin-bottom: 10px;
+            span:nth-child(2) {
+                margin-left: 5px;
+                vertical-align: text-bottom;
+            }
+        }
+        .activity-body {
+            padding-right: 25%;
+            margin-bottom: 15px;
+            p {
+                margin-bottom: 5px;
+            }
+        }
+        .activity-control {
+            a {
+                color: $secondary-font-color;
+                padding-right: 10px;
+                text-decoration: none;
+                outline: none;
+            }
+        }
     }
-    .activity-control {
-      a {
+    .load-more {
+        position: absolute;
+        width: 100%;
+        display: block;
+        text-align: center;
+        cursor: pointer;
+        padding: 10px 0;
+        left: 0;
+        bottom: 0;
+        font-weight: 600;
         color: $secondary-font-color;
-        padding-right: 10px;
-        text-decoration: none;
-        outline: none;
-      }
+        &:hover {
+            background-color: $separate-line-color;
+        }
     }
-  }
-  .load-more {
-    position: absolute;
-    width: 100%;
-    display: block;
-    text-align: center;
-    cursor: pointer;
-    padding: 10px 0;
-    left: 0;
-    bottom: 0;
-    font-weight: 600;
-    color: $secondary-font-color;
-    &:hover {
-      background-color: $separate-line-color;
-    }
-  }
 }

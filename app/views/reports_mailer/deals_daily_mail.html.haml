@@ -1,0 +1,19 @@
+%h1 New Deals
+- @new_deals.each do |new_deal|
+  %p
+    #{ new_deal['name'] } - #{ new_deal['advertiser_name'] } - $ #{ new_deal['budget'].try(:to_i) } - #{ new_deal['start_date'] } - #{ new_deal['stage_name'] }
+
+%h1 Stage Changed Deals
+- @stage_changed_deals.each do |stage_changed_deal|
+  %p
+    #{ stage_changed_deal['name'] } - #{ stage_changed_deal['advertiser_name'] } - $ #{ stage_changed_deal['budget'].try(:to_i) } - #{ stage_changed_deal['start_date'] } - #{ stage_changed_deal['stage_name'] } - From #{ stage_changed_deal['deal_stage_log_previous_stage'] } - To #{ stage_changed_deal['stage_name'] }
+
+%h1 Won Deals
+- @won_deals.each do |won_deal|
+  %p
+    #{ won_deal['name'] } - #{ won_deal['advertiser_name'] } - $ #{ won_deal['budget'].try(:to_i) } - #{ won_deal['start_date'] }
+
+%h1 Lost Deals
+- @lost_deals.each do |lost_deal|
+  %p
+    #{ lost_deal['name'] } - #{ lost_deal['advertiser_name'] } - $ #{ lost_deal['budget'].try(:to_i) } - #{ lost_deal['start_date'] }

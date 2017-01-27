@@ -25,7 +25,11 @@
 				Deal
 				%a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
 					{{activity.deal.name}}
-			%p{'ng-bind-html': 'getHtml(activity.comment)'}
+			%p{'ng-if': 'activity.activity_type_name != "Email"','ng-bind-html': 'getHtml(activity.comment)'}
+			%div{'ng-if': 'activity.activity_type_name == "Email"'}
+				%p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
+				%button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
+					Show email
 			%p{'ng-repeat': 'asset in activity.assets'}
 				%a{href: '{{asset.presigned_url}}', target: '_blank'}
 					{{asset.original_file_name}}

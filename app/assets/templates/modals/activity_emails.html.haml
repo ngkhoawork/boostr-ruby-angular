@@ -1,0 +1,8 @@
+#activity-form-modal.popup-modal
+    .popup-modal-header
+        Email
+        %span.close-btn{'ng-click': 'cancel()'} +
+    .popup-modal-body{'ng-bind-html': 'getHtml(activity.comment)'}
+
+    .popup-modal-footer
+        %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
