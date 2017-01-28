@@ -78,6 +78,12 @@ class DisplayLineItemBudget < ActiveRecord::Base
         if ios.count > 0
           io_id = ios[0].id
           io = ios[0]
+
+          unless io.exchange_rate
+            error = { row: row_number, message: ["No exchange rate for #{io.curr_cd} found at #{io.created_at.strftime("%m/%d/%Y")}"] }
+            errors << error
+            next
+          end
         else
           error = { row: row_number, message: ["Ext IO Num doesn't match with any IO."] }
           errors << error
@@ -107,8 +113,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
       end
 
       budget = nil
+      budget_loc = nil
       if row[2]
         budget = Float(row[2].strip) rescue false
+        budget_loc = budget * io.exchange_rate
         unless budget
           error = { row: row_number, message: ["Budget must be a numeric value"] }
           errors << error
@@ -166,6 +174,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
       display_line_item_budget_params = {
           external_io_number: external_io_number,
           budget: budget,
+          budget_loc: budget_loc,
           start_date: start_date,
           end_date: end_date
       }

@@ -122,12 +122,13 @@
                     {{ currentDeal.stage.name }}
                     .small
                       {{ currentDeal.stage.probability }}% probability
-          .col-xs-2.campaign-period.text-center
+          .col-xs-2.campaign-period.text-center{ ng: { class: '{error: errors.curr_cd}' } }
             .row
               .col-xs-12
                 Deal Currency
             .row
               .col-xs-12
+                %span.error-text {{ errors.curr_cd }}
                 %h4
                   .currency{ editable: { select: 'currentDeal.curr_cd' }, 'e-ng-options': 'currency.curr_cd as currency.name for currency in currencies', onaftersave: 'updateDealCurrency()', onshow: 'getCompanyCurrencies()' }
                     {{ currentDeal.curr_cd }}

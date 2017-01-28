@@ -407,12 +407,17 @@
     $scope.changeTotalBudget()
 
   $scope.addProduct = ->
+    $scope.errors = {}
     cutSymbolsAddProductBudget()
-    DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: $scope.deal_product).then (deal) ->
-      $scope.showProductForm = false
-      $scope.currentDeal = deal
-      $scope.setBudgetPercent(deal)
-
+    DealProduct.create(deal_id: $scope.currentDeal.id, deal_product: $scope.deal_product).then(
+      (deal) ->
+        $scope.showProductForm = false
+        $scope.currentDeal = deal
+        $scope.setBudgetPercent(deal)
+      (resp) ->
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
+    )
   $scope.resetDealProduct = ->
     $scope.deal_product = {
       deal_product_budgets: []
@@ -565,8 +570,14 @@
               $scope.init()
 
   $scope.updateDealProduct = (data) ->
-    DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then (deal) ->
-      $scope.setCurrentDeal(deal)
+    $scope.errors = {}
+    DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then(
+      (deal) ->
+        $scope.setCurrentDeal(deal)
+      (resp) ->
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
+    )
 
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
@@ -596,9 +607,15 @@
       )
 
   $scope.deleteDealProduct = (deal_product) ->
+    $scope.errors = {}
     if confirm('Are you sure you want to delete "' +  deal_product.name + '"?')
-      DealProduct.delete(id: deal_product.id, deal_id: $scope.currentDeal.id).then (deal) ->
-        $scope.setCurrentDeal(deal)
+      DealProduct.delete(id: deal_product.id, deal_id: $scope.currentDeal.id).then(
+        (deal) ->
+          $scope.setCurrentDeal(deal)
+        (resp) ->
+          for key, error of resp.data.errors
+            $scope.errors[key] = error && error[0]
+      )
 
   $scope.isActive = (id) ->
     $scope.activeAnchor == id

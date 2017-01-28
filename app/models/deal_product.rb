@@ -4,6 +4,7 @@ class DealProduct < ActiveRecord::Base
   has_many :deal_product_budgets, dependent: :destroy
 
   validates :product, presence: true
+  validate :active_exchange_rate
 
   accepts_nested_attributes_for :deal_product_budgets
 
@@ -41,6 +42,14 @@ class DealProduct < ActiveRecord::Base
 
   def local_currency_budget_in_usd
     budget_loc / deal.exchange_rate
+  end
+
+  def active_exchange_rate
+    if deal && deal.curr_cd != 'USD'
+      unless deal.company.active_currencies.include?(deal.curr_cd)
+        errors.add(:curr_cd, 'does not have an active exchange rate')
+      end
+    end
   end
 
   def create_product_budgets

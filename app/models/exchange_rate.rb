@@ -5,6 +5,8 @@ class ExchangeRate < ActiveRecord::Base
   validates :rate, :company_id, :currency_id, :start_date, :end_date, presence: true
   validate :not_overlap
 
+  default_scope { order('end_date DESC') }
+
   scope :overlaps, -> (start_date, end_date) do
     where "((start_date <= ?) and (end_date >= ?))", end_date, start_date
   end

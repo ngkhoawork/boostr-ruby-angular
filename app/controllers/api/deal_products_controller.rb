@@ -37,9 +37,13 @@ class Api::DealProductsController < ApplicationController
   end
 
   def destroy
-    deal_product.destroy
-    deal.update_total_budget
-    render deal
+    unless deal.valid?
+      render json: { errors: deal.errors.messages }, status: :unprocessable_entity
+    else
+      deal_product.destroy
+      deal.update_total_budget
+      render deal
+    end
   end
 
   private

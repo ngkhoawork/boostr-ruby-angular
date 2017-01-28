@@ -137,8 +137,8 @@ class Company < ActiveRecord::Base
     self.exchange_rates
         .where(currency: Currency.find_by(curr_cd: currency))
         .where('start_date <= ? AND end_date >= ?', at_date, at_date)
-        .first!
-        .rate
+        .first
+        .try(:rate)
   end
 
   protected

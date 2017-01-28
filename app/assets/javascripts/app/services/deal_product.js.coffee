@@ -20,20 +20,35 @@
 
   @create = (params) ->
     deferred = $q.defer()
-    resource.save params, (deal) ->
-      deferred.resolve(deal)
+    resource.save(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
-    resource.update params, (deal) ->
-      deferred.resolve(deal)
+    resource.update(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @delete = (params) ->
     deferred = $q.defer()
-    resource.delete params, (deal) ->
-      deferred.resolve(deal)
+    resource.delete(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   return

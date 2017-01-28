@@ -13,6 +13,7 @@ class Io < ActiveRecord::Base
   has_many :print_items, dependent: :destroy
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
+  validate :active_exchange_rate
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
 
   after_update do
@@ -82,6 +83,14 @@ class Io < ActiveRecord::Base
 
   def exchange_rate
     company.exchange_rate_for(currency: self.curr_cd, at_date: self.created_at)
+  end
+
+  def active_exchange_rate
+    if curr_cd != 'USD'
+      unless self.exchange_rate
+        errors.add(:curr_cd, "does not have an exchange rate for #{self.curr_cd} at #{self.created_at.strftime("%m/%d/%Y")}")
+      end
+    end
   end
 
   def update_total_budget

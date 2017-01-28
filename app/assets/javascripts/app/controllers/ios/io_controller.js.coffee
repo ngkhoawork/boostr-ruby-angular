@@ -50,9 +50,15 @@
         $location.path(path)
 
       $scope.updateContentFee = (data) ->
-        ContentFee.update(id: data.id, io_id: $scope.currentIO.id, content_fee: data).then (io) ->
-          $scope.currentIO = io
-          updateDateRange()
+        $scope.errors = {}
+        ContentFee.update(id: data.id, io_id: $scope.currentIO.id, content_fee: data).then(
+          (io) ->
+            $scope.currentIO = io
+            updateDateRange()
+          (resp) ->
+            for key, error of resp.data.errors
+              $scope.errors[key] = error && error[0]
+        )
       $scope.updateIOMember = (data) ->
         IOMember.update(id: data.id, io_id: $scope.currentIO.id, io_member: data).then (io) ->
           $scope.currentIO = io
@@ -65,8 +71,14 @@
             updateDateRange()
 
       $scope.updateIO = ->
-        IO.update(id: $scope.currentIO.id, io: $scope.currentIO).then (io) ->
-          $scope.currentIO = io
-          updateDateRange()
+        $scope.errors = {}
+        IO.update(id: $scope.currentIO.id, io: $scope.currentIO).then(
+          (io) ->
+            $scope.currentIO = io
+            updateDateRange()
+          (resp) ->
+            for key, error of resp.data.errors
+              $scope.errors[key] = error && error[0]
+        )
       $scope.init()
   ]

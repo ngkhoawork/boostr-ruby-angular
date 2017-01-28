@@ -3,6 +3,8 @@ class ContentFee < ActiveRecord::Base
   has_many :content_fee_product_budgets, dependent: :destroy
   belongs_to :product
 
+  validate :active_exchange_rate
+
   accepts_nested_attributes_for :content_fee_product_budgets
 
   after_update do
@@ -19,6 +21,14 @@ class ContentFee < ActiveRecord::Base
   after_create do
     create_content_fee_product_budgets
     io.update_total_budget
+  end
+
+  def active_exchange_rate
+    if io.curr_cd != 'USD'
+      unless io.exchange_rate
+        errors.add(:curr_cd, "does not have an exchange rate for #{io.curr_cd} at #{io.created_at.strftime("%m/%d/%Y")}")
+      end
+    end
   end
 
   def create_content_fee_product_budgets

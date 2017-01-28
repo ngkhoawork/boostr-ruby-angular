@@ -25,10 +25,12 @@
           Budget:
           %span.info-value
             {{currentIO.budget_loc | currency:currency_symbol:0 }}
-        .info
-          Currency:
-          %span.info-value
-            {{ currentIO.curr_cd }}
+        .info{ ng: { class: '{error: errors.curr_cd}' } }
+          .info-error
+            Currency:
+            %span.info-value
+              {{ currentIO.curr_cd }}
+          %span.error-text {{ errors.curr_cd }}
         .info
           Start-End Dates:
           %span.info-value.small-datepicker
