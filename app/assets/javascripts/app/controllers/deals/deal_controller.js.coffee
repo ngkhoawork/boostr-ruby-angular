@@ -266,8 +266,14 @@
       $scope.currencies = currencies
 
   $scope.updateDealCurrency = ->
-    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
-      $scope.setCurrentDeal(deal)
+    $scope.errors = {}
+    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
+      (deal) ->
+        $scope.setCurrentDeal(deal)
+      (resp) ->
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
+    )
 
   $scope.setCurrentDeal = (deal) ->
     if deal
@@ -554,20 +560,32 @@
       $scope.setCurrentDeal(deal)
 
   $scope.updateDeal = ->
-    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
-      $scope.setCurrentDeal(deal)
+    $scope.errors = {}
+    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
+      (deal) ->
+        $scope.setCurrentDeal(deal)
+      (resp) ->
+        for key, error of resp.data.errors
+          $scope.errors[key] = error && error[0]
+    )
 
   $scope.updateDealStage = (currentDeal) ->
+    $scope.errors = {}
     if currentDeal != null
       Stage.get(id: currentDeal.stage_id).$promise.then (stage) ->
         if !stage.open
           $scope.showModal(currentDeal)
         else
-          Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
-            if currentDeal.close_reason.option == undefined
-              $scope.setCurrentDeal(deal)
-            else
-              $scope.init()
+          Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
+            (deal) ->
+              if currentDeal.close_reason.option == undefined
+                $scope.setCurrentDeal(deal)
+              else
+                $scope.init()
+            (resp) ->
+              for key, error of resp.data.errors
+                $scope.errors[key] = error && error[0]
+          )
 
   $scope.updateDealProduct = (data) ->
     $scope.errors = {}
@@ -653,8 +671,12 @@
     $scope.createNewContactModal()
 
   $scope.$on 'updated_deal', ->
-    console.log('updated_deal')
     $scope.init()
+
+  $scope.$on 'deal_update_errors', (event, errors) ->
+    $scope.errors = {}
+    for key, error of errors
+      $scope.errors[key] = error && error[0]
 
   $scope.$on 'updated_activities', ->
     console.log('updated_activities')

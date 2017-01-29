@@ -33,7 +33,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line << io.name
             line << io.advertiser.try(:name)
             line << content_fee.product.name
-            line << cfpb.budget.try(:round)
+            line << (cfpb.budget_loc.try(:round) || 0)
             line << cfpb.start_date
             line << cfpb.end_date
             line << content_fee.product.revenue_type
@@ -44,13 +44,13 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
         io.display_line_items.each do |display_line_item|
           display_line_item.display_line_item_budgets.each do |dlib|
-            budget = dlib.budget || (display_line_item.budget.to_f / (display_line_item.end_date - display_line_item.start_date + 1).to_i) * ((dlib.end_date - dlib.start_date + 1).to_i)
+            budget = dlib.budget_loc || (display_line_item.budget_loc.to_f / (display_line_item.end_date - display_line_item.start_date + 1).to_i) * ((dlib.end_date - dlib.start_date + 1).to_i)
             line = []
             line << io.io_number
             line << io.name
             line << io.advertiser.try(:name)
             line << display_line_item.product.name
-            line << budget.round
+            line << (budget.try(:round) || 0)
             line << dlib.start_date
             line << dlib.end_date
             line << display_line_item.product.revenue_type

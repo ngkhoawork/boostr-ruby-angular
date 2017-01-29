@@ -580,30 +580,30 @@ class Deal < ActiveRecord::Base
 
   def self.to_csv
     CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]
+      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]
       all.each do |deal|
         agency_name = deal.agency.present? ? deal.agency.name : nil
         advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
         stage_name = deal.stage.present? ? deal.stage.name : nil
         stage_probability = deal.stage.present? ? deal.stage.probability : nil
-        budget = deal.budget
+        budget = (deal.budget_loc.try(:round) || 0)
         member = deal.users.collect{|user| user.name}.join(";")
-        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
+        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
       end
     end
   end
 
   def self.to_zip
     deals_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]
+      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]
       all.each do |deal|
         agency_name = deal.agency.present? ? deal.agency.name : nil
         advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
         stage_name = deal.stage.present? ? deal.stage.name : nil
         stage_probability = deal.stage.present? ? deal.stage.probability : nil
-        budget = deal.budget
+        budget = (deal.budget_loc.try(:round) || 0)
         member = deal.users.collect{|user| user.name}.join(";")
-        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
+        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
       end
     end
 
@@ -611,7 +611,7 @@ class Deal < ActiveRecord::Base
       csv << ["Deal ID", "Name", "Product", "Pricing Type", "Product Line", "Product Family", "Budget", "Period"]
       all.each do |deal|
         deal.deal_product_budgets.each do |deal_product_budget|
-          budget = deal_product_budget.budget
+          budget = (deal_product_budget.budget_loc.try(:round) || 0)
           product = deal_product_budget.deal_product.product
           product_name = ""
           pricing_type = ""
@@ -661,6 +661,7 @@ class Deal < ActiveRecord::Base
     deal_type_field = current_user.company.fields.find_by_name('Deal Type')
     deal_source_field = current_user.company.fields.find_by_name('Deal Source')
     close_reason_field = current_user.company.fields.find_by_name("Close Reason")
+    list_of_currencies = Currency.pluck(:curr_cd)
 
     CSV.parse(file, headers: true) do |row|
       row_number += 1
@@ -717,10 +718,24 @@ class Deal < ActiveRecord::Base
         end
       end
 
-      if row[4].present?
-        deal_type = deal_type_field.options.where('name ilike ?', row[4].strip).first
+      curr_cd = nil
+      if row[4]
+        curr_cd = row[4].strip
+        if !(list_of_currencies.include?(curr_cd))
+          error = { row: row_number, message: ["Currency #{curr_cd} is not found"] }
+          errors << error
+          next
+        end
+      else
+        error = { row: row_number, message: ["Currency code can't be blank"] }
+        errors << error
+        next
+      end
+
+      if row[5].present?
+        deal_type = deal_type_field.options.where('name ilike ?', row[5].strip).first
         unless deal_type
-          error = { row: row_number, message: ["Deal Type #{row[4]} could not be found"] }
+          error = { row: row_number, message: ["Deal Type #{row[5]} could not be found"] }
           errors << error
           next
         end
@@ -728,10 +743,10 @@ class Deal < ActiveRecord::Base
         deal_type = nil
       end
 
-      if row[5].present?
-        deal_source = deal_source_field.options.where('name ilike ?', row[5].strip).first
+      if row[6].present?
+        deal_source = deal_source_field.options.where('name ilike ?', row[6].strip).first
         unless deal_source
-          error = { row: row_number, message: ["Deal Source #{row[5]} could not be found"] }
+          error = { row: row_number, message: ["Deal Source #{row[6]} could not be found"] }
           errors << error
           next
         end
@@ -740,14 +755,14 @@ class Deal < ActiveRecord::Base
       end
 
       start_date = nil
-      if row[6].present?
-        if !(row[7].present?)
+      if row[7].present?
+        if !(row[8].present?)
           error = {row: row_number, message: ['End Date must be present if Start Date is set'] }
           errors << error
           next
         end
         begin
-          start_date = Date.strptime(row[6], '%m/%d/%Y')
+          start_date = Date.strptime(row[7], '%m/%d/%Y')
         rescue ArgumentError
           error = {row: row_number, message: ['Start Date must have valid date format MM/DD/YYYY'] }
           errors << error
@@ -756,14 +771,14 @@ class Deal < ActiveRecord::Base
       end
 
       end_date = nil
-      if row[7].present?
-        if !(row[6].present?)
+      if row[8].present?
+        if !(row[7].present?)
           error = {row: row_number, message: ['Start Date must be present if End Date is set'] }
           errors << error
           next
         end
         begin
-          end_date = Date.strptime(row[7], '%m/%d/%Y')
+          end_date = Date.strptime(row[8], '%m/%d/%Y')
         rescue ArgumentError
           error = {row: row_number, message: ['End Date must have valid date format MM/DD/YYYY'] }
           errors << error
@@ -778,9 +793,9 @@ class Deal < ActiveRecord::Base
       end
 
       if row[8].present?
-        stage = current_user.company.stages.where('name ilike ?', row[8].strip).first
+        stage = current_user.company.stages.where('name ilike ?', row[9].strip).first
         unless stage
-          error = { row: row_number, message: ["Stage #{row[8]} could not be found"] }
+          error = { row: row_number, message: ["Stage #{row[9]} could not be found"] }
           errors << error
           next
         end
@@ -791,8 +806,8 @@ class Deal < ActiveRecord::Base
       end
 
       deal_member_list = []
-      if row[9].present?
-        deal_members = row[9].split(';').map{|el| el.split('/') }
+      if row[10].present?
+        deal_members = row[10].split(';').map{|el| el.split('/') }
 
         deal_member_list_error = false
 
@@ -821,7 +836,7 @@ class Deal < ActiveRecord::Base
         next
       end
 
-      if row[10].present?
+      if row[11].present?
         begin
           created_at = DateTime.strptime(row[10], '%m/%d/%Y')
         rescue ArgumentError
@@ -831,7 +846,7 @@ class Deal < ActiveRecord::Base
         end
       end
 
-      if row[11].present?
+      if row[12].present?
         begin
           closed_date = DateTime.strptime(row[11], '%m/%d/%Y')
         rescue ArgumentError
@@ -843,10 +858,10 @@ class Deal < ActiveRecord::Base
         closed_date = nil
       end
 
-      if row[12].present?
-        close_reason = close_reason_field.options.where('name ilike ?', row[12].strip).first
+      if row[13].present?
+        close_reason = close_reason_field.options.where('name ilike ?', row[13].strip).first
         unless close_reason
-          error = { row: row_number, message: ["Close Reason #{row[12]} could not be found"] }
+          error = { row: row_number, message: ["Close Reason #{row[13]} could not be found"] }
           errors << error
           next
         end
@@ -855,8 +870,8 @@ class Deal < ActiveRecord::Base
       end
 
       deal_contact_list = []
-      if row[13].present?
-        deal_contacts = row[13].split(';')
+      if row[14].present?
+        deal_contacts = row[14].split(';')
 
         deal_contact_list_error = false
 
@@ -880,6 +895,7 @@ class Deal < ActiveRecord::Base
         name: row[1].strip,
         advertiser: advertiser,
         agency: agency,
+        curr_cd: curr_cd,
         start_date: start_date,
         end_date: end_date,
         stage: stage,

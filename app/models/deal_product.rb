@@ -166,8 +166,10 @@ class DealProduct < ActiveRecord::Base
         next
       end
 
+      budget = nil
       if row[3]
         budget = Float(row[3].strip) rescue false
+        budget_loc = budget
         unless budget
           error = { row: row_number, message: ["Budget must be a numeric value"] }
           errors << error
@@ -179,9 +181,18 @@ class DealProduct < ActiveRecord::Base
         next
       end
 
+      if deal.exchange_rate
+        budget = budget_loc / deal.exchange_rate
+      else
+        error = { row: row_number, message: ["No active exchange rate for #{deal.curr_cd} at #{Date.today.strftime("%m/%d/%Y")}"] }
+        errors << error
+        next
+      end
+
       deal_product_params = {
         deal_id: deal.id,
         budget: budget,
+        budget_loc: budget_loc,
         product_id: product.id
       }
 
