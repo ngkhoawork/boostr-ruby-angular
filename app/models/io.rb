@@ -18,7 +18,6 @@ class Io < ActiveRecord::Base
 
   after_update do
     if (start_date_changed? || end_date_changed?)
-      reset_content_fees
       reset_member_effective_dates
     end
   end
