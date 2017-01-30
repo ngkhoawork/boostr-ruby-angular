@@ -1124,7 +1124,7 @@ class Deal < ActiveRecord::Base
           end
         end
 
-        self.deal_products.each do |deal_product|
+        self.deal_products.order(:created_at).each do |deal_product|
           if deal_product.product.revenue_type == "Content-Fee"
             content_fee_param = {
                 io_id: io.id,
