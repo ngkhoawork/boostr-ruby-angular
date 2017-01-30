@@ -43,32 +43,36 @@ class ContentFee < ActiveRecord::Base
         )
       end
     else
-      last_index = io.months.count - 1
-      total = 0
-      total_loc = 0
+      generate_content_fee_product_budgets
+    end
+  end
 
-      io_start_date = io.start_date
-      io_end_date = io.end_date
-      io.months.each_with_index do |month, index|
-        if last_index == index
-          monthly_budget = budget - total
-          monthly_budget_loc = budget_loc - total_loc
-        else
-          monthly_budget = (daily_budget * io.days_per_month[index]).round(0)
-          total += monthly_budget
+  def generate_content_fee_product_budgets
+    last_index = io.months.count - 1
+    total = 0
+    total_loc = 0
 
-          monthly_budget_loc = (daily_budget_loc * io.days_per_month[index]).round(0)
-          total_loc += monthly_budget_loc
-        end
+    io_start_date = io.start_date
+    io_end_date = io.end_date
+    io.months.each_with_index do |month, index|
+      if last_index == index
+        monthly_budget = budget - total
+        monthly_budget_loc = budget_loc - total_loc
+      else
+        monthly_budget = (daily_budget * io.days_per_month[index]).round(0)
+        total += monthly_budget
 
-        period = Date.new(*month)
-        content_fee_product_budgets.create(
-          start_date: [period, io_start_date].max,
-          end_date: [period.end_of_month, io_end_date].min,
-          budget: monthly_budget.round(2),
-          budget_loc: monthly_budget_loc.round(2)
-        )
+        monthly_budget_loc = (daily_budget_loc * io.days_per_month[index]).round(0)
+        total_loc += monthly_budget_loc
       end
+
+      period = Date.new(*month)
+      content_fee_product_budgets.create(
+        start_date: [period, io_start_date].max,
+        end_date: [period.end_of_month, io_end_date].min,
+        budget: monthly_budget.round(2),
+        budget_loc: monthly_budget_loc.round(2)
+      )
     end
   end
 

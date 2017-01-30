@@ -28,7 +28,7 @@ class Io < ActiveRecord::Base
     ActiveRecord::Base.no_touching do
       content_fees.each do |content_fee|
         content_fee.content_fee_product_budgets.destroy_all
-        content_fee.create_content_fee_product_budgets
+        content_fee.generate_content_fee_product_budgets
       end
     end
   end
