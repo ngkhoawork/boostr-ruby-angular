@@ -5,6 +5,7 @@ class ReportsMailer < ApplicationMailer
     @stage_changed_deals = report_data[:stage_changed_deals]
     @won_deals = report_data[:won_deals]
     @lost_deals = report_data[:lost_deals]
+    @budget_changed_deals = report_data[:budget_changed]
     mail(to: recipients, subject: 'Boostr Daily Pipeline Changes')
   end
 end
