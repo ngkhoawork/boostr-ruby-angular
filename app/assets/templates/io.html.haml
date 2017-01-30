@@ -24,7 +24,13 @@
         .info
           Budget:
           %span.info-value
-            {{currentIO.budget | currency:'$':0 }}
+            {{currentIO.budget_loc | currency:currency_symbol:0 }}
+        .info{ ng: { class: '{error: errors.curr_cd}' } }
+          .info-error
+            Currency:
+            %span.info-value
+              {{ currentIO.curr_cd }}
+          %span.error-text {{ errors.curr_cd }}
         .info
           Start-End Dates:
           %span.info-value.small-datepicker
@@ -95,8 +101,8 @@
                 %th.left Start Date
                 %th.left End Date
                 %th.left Total Budget
-                %th.left{ ng: { repeat: "range in dateRange" } }
-                  {{ range | date: 'MMM yyyy' : '+0000'}}
+                %th.left{ ng: { repeat: "range in currentIO.readable_months" } }
+                  {{ range.name }}
             %tbody
               %tr{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0', repeat: "content_fee in currentIO.content_fees"} }
                 %td
@@ -106,15 +112,15 @@
                 %td
                   {{ currentIO.end_date | date: 'M/d/yyyy' }}
                 %td
-                  %span{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "content_fee.budget", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.user_type == 5" }
+                  %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.user_type == 5" }
                   %span{ ng: { if: "currentUser.user_type != 5" } }
-                    {{ content_fee.budget | currency:'$':0 }}
+                    {{ content_fee.budget_loc | currency:currency_symbol:0 }}
                 %td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
-                  %span{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "product_budget.budget", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.user_type == 5" }
+                  %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.user_type == 5" }
                   %span{ ng: { if: "currentUser.user_type != 5" } }
-                    {{ product_budget.budget | currency:'$':0 }}
+                    {{ product_budget.budget_loc | currency:currency_symbol:0 }}
               %tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
-                %td.center{ 'colspan': '{{4+dateRange.length}}' }
+                %td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
                   No data available
     .row.io-content
       .col-xs-12
@@ -162,15 +168,15 @@
                 %td.right
                   {{ displayLineItem.quantity }}
                 %td.right
-                  {{ displayLineItem.price | currency:'$':0 }}
+                  {{ displayLineItem.price | currency:currency_symbol:0 }}
                 %td.left
                   {{ displayLineItem.pricing_type }}
                 %td.right
-                  {{ displayLineItem.budget | currency:'$':0 }}
+                  {{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
                 %td.right
-                  {{ displayLineItem.budget_delivered | currency:'$':0 }}
+                  {{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
                 %td.right
-                  {{ displayLineItem.budget_remaining | currency:'$':0 }}
+                  {{ displayLineItem.budget_remaining_loc | currency:currency_symbol:0 }}
                 %td.right
                   {{ displayLineItem.quantity_delivered }}
                 %td.right
@@ -180,11 +186,11 @@
                 %td.right
                   {{ displayLineItem.quantity_remaining_3p }}
                 %td.right
-                  {{ displayLineItem.budget_delivered_3p | currency:'$':0 }}
+                  {{ displayLineItem.budget_delivered_3p_loc | currency:currency_symbol:0 }}
                 %td.right
-                  {{ displayLineItem.budget_remaining_3p | currency:'$':0 }}
+                  {{ displayLineItem.budget_remaining_3p_loc | currency:currency_symbol:0 }}
                 %td.right
-                  {{ displayLineItem.daily_run_rate | currency:'$':0 }}
+                  {{ displayLineItem.daily_run_rate | currency:currency_symbol:0 }}
                 %td.right
                   {{ displayLineItem.num_days_til_out_of_budget }}
               %tr{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
@@ -211,7 +217,7 @@
                 %td.left
                   {{ printItem.ad_type }}
                 %td.right
-                  {{ printItem.rate | currency:'$':0 }}
+                  {{ printItem.rate | currency:currency_symbol:0 }}
                 %td.left
                   {{ printItem.market }}
                 %td.left

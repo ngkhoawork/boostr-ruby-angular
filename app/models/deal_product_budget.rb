@@ -12,6 +12,10 @@ class DealProductBudget < ActiveRecord::Base
     budget / (end_date - start_date + 1).to_f
   end
 
+  def update_local_budget(exchange_rate)
+    self.update(budget_loc: budget * exchange_rate)
+  end
+
   def self.to_csv(company_id)
     header = [
       :Deal_Id,
@@ -22,6 +26,7 @@ class DealProductBudget < ActiveRecord::Base
       :Budget,
       :Start_Date,
       :End_Date,
+      :Budget_USD
     ]
 
     CSV.generate(headers: true) do |csv|
@@ -40,9 +45,10 @@ class DealProductBudget < ActiveRecord::Base
             line << (deal.stage.present? ? deal.stage.probability : nil)
             line << deal.advertiser.try(:name)
             line << deal_product.product.name
-            line << dpb.budget.try(:round)
+            line << (dpb.budget_loc.try(:round) || 0)
             line << dpb.start_date
             line << dpb.end_date
+            line << (dpb.budget.try(:round) || 0)
 
             csv << line
           end
@@ -101,14 +107,25 @@ class DealProductBudget < ActiveRecord::Base
         next
       end
 
+      budget = nil
       if row[3]
-        unless budget = Float(row[3].strip) rescue false
+        budget = Float(row[3].strip) rescue false
+        budget_loc = budget
+        unless budget
           error = { row: row_number, message: ["Budget must be a numeric value"] }
           errors << error
           next
         end
       else
         error = { row: row_number, message: ["Budget can't be blank"] }
+        errors << error
+        next
+      end
+
+      if deal.exchange_rate
+        budget = budget_loc / deal.exchange_rate
+      else
+        error = { row: row_number, message: ["No active exchange rate for #{deal.curr_cd} at #{Date.today.strftime("%m/%d/%Y")}"] }
         errors << error
         next
       end
@@ -135,6 +152,7 @@ class DealProductBudget < ActiveRecord::Base
 
       deal_product_budget_params = {
         budget: budget,
+        budget_loc: budget_loc,
         start_date: period.beginning_of_month,
         end_date: period.end_of_month
       }

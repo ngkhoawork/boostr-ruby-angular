@@ -4,7 +4,7 @@
   transformRequest = (original, headers) ->
     send = {}
     send.deal_product =
-      budget: original.deal_product.budget
+      budget_loc: original.deal_product.budget_loc
       deal_product_budgets_attributes: original.deal_product.deal_product_budgets
       product_id: original.deal_product.product_id
     angular.toJson(send)
@@ -20,20 +20,35 @@
 
   @create = (params) ->
     deferred = $q.defer()
-    resource.save params, (deal) ->
-      deferred.resolve(deal)
+    resource.save(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
-    resource.update params, (deal) ->
-      deferred.resolve(deal)
+    resource.update(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @delete = (params) ->
     deferred = $q.defer()
-    resource.delete params, (deal) ->
-      deferred.resolve(deal)
+    resource.delete(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   return

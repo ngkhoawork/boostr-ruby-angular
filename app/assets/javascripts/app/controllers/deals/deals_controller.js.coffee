@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$window', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage'
-        ($rootScope, $window, $document, $scope, $filter, $modal, $q, $location, Deal, Stage) ->
+    ['$rootScope', '$window', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate',
+        ($rootScope, $window, $document, $scope, $filter, $modal, $q, $location, Deal, Stage, ExchangeRate) ->
             formatMoney = $filter('formatMoney')
 
             $scope.selectedDeal = null
@@ -19,11 +19,13 @@
                 @advertiser = ''
                 @agency = ''
                 @budget = ''
+                @exchange_rate = ''
                 @date =
                     startDate: null
                     endDate: null
                 return
             $scope.filter =
+                exchange_rates: []
                 owners: []
                 advertisers: []
                 agencies: []
@@ -85,6 +87,7 @@
                             $scope.filter.selected.date = _this.date
                 apply: (reset) ->
                     selected = this.selected
+                    $scope.appliedExchangeRate = selected.exchange_rate
                     $scope.deals = $scope.allDeals.filter (deal) ->
                         if selected.owner && deal.members.indexOf(selected.owner) is -1
                             return false
@@ -98,6 +101,9 @@
                             if selected.budget.min && parseInt(deal.budget) < selected.budget.min
                                 return false
                             if selected.budget.max && parseInt(deal.budget) > selected.budget.max
+                                return false
+                        if selected.exchange_rate
+                            if deal.curr_cd != selected.exchange_rate.currency.curr_cd
                                 return false
                         if selected.date.startDate && selected.date.endDate
                             if moment(selected.date.startDate).startOf('day').diff(deal.start_date, 'day') > 0 or
@@ -176,6 +182,7 @@
                     $scope.filter.slider.maxValue = maxBudget
                     $scope.filter.slider.options.ceil = maxBudget
                     $scope.columns = columns
+                    getExchangeRates()
                     $scope.sortingDealsByDate()
 
 #                    for i in [1..15]
@@ -292,6 +299,19 @@
                     header.css('backgroundColor', color)
                     svgPolygon.css('fill', color)
                 return true
+
+            getExchangeRates = ->
+                ExchangeRate.active_exchange_rates().then (exchange_rates) ->
+                    usd_exchange_rate = {
+                        rate: 1,
+                        currency: {
+                            name: 'United States dollar',
+                            curr_cd: 'USD',
+                            curr_symbol: '$'
+                        }
+                    }
+                    exchange_rates.unshift usd_exchange_rate
+                    $scope.filter.exchange_rates = exchange_rates
 
             shadeColor = (color, percent) ->
                 f = parseInt(color.slice(1), 16)

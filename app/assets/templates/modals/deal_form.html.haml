@@ -17,15 +17,27 @@
                 %input.form-control{ placeholder: 'Name', ng: { model: 'deal.name', required: true }, name: 'name' }
 
             .form-group{'ng-class':'{error: errors.stage_id}'}
-                %span.error-text {{errors.stage_id}}
-                %label{ for: 'stage' }
-                    Stage
-                    %span.star *
-                %ui-select{ name: 'stage', ng: { model: 'deal.stage_id', required: true } }
-                    %ui-select-match{ placeholder: 'Stage' }
-                        {{ $select.selected.name+" "+$select.selected.probability+"%" }}
-                    %ui-select-choices{ repeat: 'stage.id as stage in stages | filter: { name: $select.search }' }
-                        %div{ ng: { bind: { html: 'stage.name+" "+stage.probability+"%"' } } }
+                .row
+                    .col-xs-6
+                        %span.error-text {{errors.stage_id}}
+                        %label{ for: 'stage' }
+                            Stage
+                            %span.star *
+                        %ui-select{ name: 'stage', ng: { model: 'deal.stage_id', required: true } }
+                            %ui-select-match{ placeholder: 'Stage' }
+                                {{ $select.selected.name+" "+$select.selected.probability+"%" }}
+                            %ui-select-choices{ repeat: 'stage.id as stage in stages | filter: { name: $select.search }' }
+                                %div{ ng: { bind: { html: 'stage.name+" "+stage.probability+"%"' } } }
+                    .col-xs-6
+                        %span.error-text {{errors.curr_cd}}
+                        %label{ for: 'currency' }
+                            Deal Currency
+                            %span.star
+                        %ui-select{ name: 'currency', ng: { model: 'deal.curr_cd', required: true } }
+                            %ui-select-match
+                                {{ $select.selected.name }}
+                            %ui-select-choices{ repeat: 'currency.curr_cd as currency in currencies' }
+                                %div{ ng: { bind: { html: 'currency.name' } } }
             .advertiser-agency
                 .form-group.advertiser-field{'ng-class':'{error: errors.advertiser_id}'}
                     %span.error-text {{errors.advertiser_id}}

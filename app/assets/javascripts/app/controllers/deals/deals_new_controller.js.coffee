@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName',
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName', 'Currency', 'CurrentUser'
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, Currency, CurrentUser) ->
 
   $scope.init = ->
     $scope.formType = 'New'
@@ -9,10 +9,17 @@
     $scope.agencies = []
     $scope.dealCustomFieldNames = []
     getDealCustomFieldNames()
+    CurrentUser.get().$promise.then (user) ->
+      $scope.currentUser = user
+
+    Currency.active_currencies().then (currencies) ->
+      $scope.currencies = currencies
+
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
       $scope.deal = deal
+      $scope.setDefaultCurrency()
 
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
@@ -24,6 +31,13 @@
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
+
+  $scope.setDefaultCurrency = ->
+    curr_cd = 'USD'
+    user_currency = _.find($scope.currencies, {curr_cd: $scope.currentUser.default_currency})
+    curr_cd = user_currency.curr_cd if user_currency
+    $scope.deal.curr_cd = curr_cd
+
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->
       $scope[option.name] = option.id

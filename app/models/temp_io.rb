@@ -8,6 +8,10 @@ class TempIo < ActiveRecord::Base
     update_io() if io_id_changed? && io.present?
   end
 
+  def exchange_rate
+    company.exchange_rate_for(currency: self.curr_cd, at_date: self.created_at)
+  end
+
   def redirect_display_line_items
     display_line_items.each do |display_line_item|
       display_line_item.io_id = io.id

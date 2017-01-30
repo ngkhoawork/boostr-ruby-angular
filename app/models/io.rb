@@ -3,6 +3,7 @@ class Io < ActiveRecord::Base
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
   belongs_to :deal
   belongs_to :company
+  has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   has_many :io_members, dependent: :destroy
   has_many :users, dependent: :destroy, through: :io_members
   has_many :content_fees, dependent: :destroy
@@ -12,6 +13,7 @@ class Io < ActiveRecord::Base
   has_many :print_items, dependent: :destroy
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
+  validate :active_exchange_rate
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
 
   after_update do
@@ -26,7 +28,7 @@ class Io < ActiveRecord::Base
     ActiveRecord::Base.no_touching do
       content_fees.each do |content_fee|
         content_fee.content_fee_product_budgets.destroy_all
-        content_fee.create_content_fee_product_budgets
+        content_fee.generate_content_fee_product_budgets
       end
     end
   end
@@ -58,6 +60,10 @@ class Io < ActiveRecord::Base
     (start_date..end_date).map { |d| [d.year, d.month] }.uniq
   end
 
+  def readable_months
+    TimePeriods.new(start_date..end_date).months_with_names(long_names: false)
+  end
+
   def days_per_month
     array = []
 
@@ -79,8 +85,25 @@ class Io < ActiveRecord::Base
     array
   end
 
+  def exchange_rate
+    company.exchange_rate_for(currency: self.curr_cd, at_date: (self.created_at || Date.today))
+  end
+
+  def active_exchange_rate
+    if curr_cd != 'USD'
+      unless self.exchange_rate
+        errors.add(:curr_cd, "does not have an exchange rate for #{self.curr_cd} at #{self.created_at.strftime("%m/%d/%Y")}")
+      end
+    end
+  end
+
   def update_total_budget
-    update_attributes(budget: (content_fees.sum(:budget) + display_line_items.sum(:budget)))
+    new_budget = (content_fees.sum(:budget) + display_line_items.sum(:budget))
+    new_budget_loc = (content_fees.sum(:budget_loc) + display_line_items.sum(:budget_loc))
+    update_attributes(
+      budget: new_budget,
+      budget_loc: new_budget_loc
+    )
   end
 
   def effective_revenue_budget(member, start_date, end_date)
@@ -125,6 +148,7 @@ class Io < ActiveRecord::Base
   def as_json(options = {})
     super(merge_recursively(options,
         include: {
+            currency: { only: :curr_symbol },
             advertiser: { name: {} },
             agency: { name: {} },
             deal: { name: {} }
@@ -140,6 +164,7 @@ class Io < ActiveRecord::Base
                 :name
             ]
         },
+        currency: {},
         content_fees: {
             include: {
                 content_fee_product_budgets: {}
@@ -154,6 +179,8 @@ class Io < ActiveRecord::Base
             ]
         },
         print_items: {}
-    } )
+      },
+      methods: [:readable_months]
+    )
   end
 end
