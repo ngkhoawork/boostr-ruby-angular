@@ -18,7 +18,8 @@ class DisplayLineItemBudget < ActiveRecord::Base
       :Budget,
       :Start_Date,
       :End_Date,
-      :Revenue_Type
+      :Revenue_Type,
+      :Budget_USD
     ]
 
     CSV.generate(headers: true) do |csv|
@@ -32,11 +33,12 @@ class DisplayLineItemBudget < ActiveRecord::Base
             line << io.io_number
             line << io.name
             line << io.advertiser.try(:name)
-            line << content_fee.product.name
+            line << content_fee.product.try(:name)
             line << (cfpb.budget_loc.try(:round) || 0)
             line << cfpb.start_date
             line << cfpb.end_date
-            line << content_fee.product.revenue_type
+            line << content_fee.product.try(:revenue_type)
+            line << (cfpb.budget.try(:round) || 0)
 
             csv << line
           end
@@ -44,16 +46,18 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
         io.display_line_items.each do |display_line_item|
           display_line_item.display_line_item_budgets.each do |dlib|
-            budget = dlib.budget_loc || (display_line_item.budget_loc.to_f / (display_line_item.end_date - display_line_item.start_date + 1).to_i) * ((dlib.end_date - dlib.start_date + 1).to_i)
+            budget_loc = dlib.budget_loc || (display_line_item.budget_loc.to_f / (display_line_item.end_date - display_line_item.start_date + 1).to_i) * ((dlib.end_date - dlib.start_date + 1).to_i)
+            budget_usd = dlib.budget || (display_line_item.budget.to_f / (display_line_item.end_date - display_line_item.start_date + 1).to_i) * ((dlib.end_date - dlib.start_date + 1).to_i)
             line = []
             line << io.io_number
             line << io.name
             line << io.advertiser.try(:name)
-            line << display_line_item.product.name
-            line << (budget.try(:round) || 0)
+            line << display_line_item.product.try(:name)
+            line << (budget_loc.try(:round) || 0)
             line << dlib.start_date
             line << dlib.end_date
-            line << display_line_item.product.revenue_type
+            line << display_line_item.product.try(:revenue_type)
+            line << (budget_usd.try(:round) || 0)
 
             csv << line
           end
@@ -116,7 +120,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
       budget_loc = nil
       if row[2]
         budget = Float(row[2].strip) rescue false
-        budget_loc = budget * io.exchange_rate
+        budget_loc = budget
         unless budget
           error = { row: row_number, message: ["Budget must be a numeric value"] }
           errors << error
@@ -179,6 +183,8 @@ class DisplayLineItemBudget < ActiveRecord::Base
           end_date: end_date
       }
 
+      display_line_item_budget_params = self.convert_params_currency(io.exchange_rate, display_line_item_budget_params)
+
       display_line_item_budgets = display_line_item.display_line_item_budgets.where("date_part('year', start_date) = ? and date_part('month', start_date) = ?", start_date.year, start_date.month)
       if display_line_item_budgets.count > 0
         display_line_item_budget = display_line_item_budgets[0]
@@ -189,5 +195,12 @@ class DisplayLineItemBudget < ActiveRecord::Base
     end
 
     errors
+  end
+
+  private
+
+  def self.convert_params_currency(exchange_rate, params)
+    params[:budget] = params[:budget_loc] / exchange_rate
+    params
   end
 end

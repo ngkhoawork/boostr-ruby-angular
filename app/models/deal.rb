@@ -580,38 +580,41 @@ class Deal < ActiveRecord::Base
 
   def self.to_csv
     CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]
+      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason", "Budget USD"]
       all.each do |deal|
         agency_name = deal.agency.present? ? deal.agency.name : nil
         advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
         stage_name = deal.stage.present? ? deal.stage.name : nil
         stage_probability = deal.stage.present? ? deal.stage.probability : nil
-        budget = (deal.budget_loc.try(:round) || 0)
+        budget_loc = (deal.budget_loc.try(:round) || 0)
+        budget_usd = (deal.budget.try(:round) || 0)
         member = deal.users.collect{|user| user.name}.join(";")
-        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
+        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget_loc, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason"), budget_usd]
       end
     end
   end
 
   def self.to_zip
     deals_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason"]
+      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason", "Budget USD"]
       all.each do |deal|
         agency_name = deal.agency.present? ? deal.agency.name : nil
         advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
         stage_name = deal.stage.present? ? deal.stage.name : nil
         stage_probability = deal.stage.present? ? deal.stage.probability : nil
-        budget = (deal.budget_loc.try(:round) || 0)
+        budget_loc = (deal.budget_loc.try(:round) || 0)
+        budget_usd = (deal.budget.try(:round) || 0)
         member = deal.users.collect{|user| user.name}.join(";")
-        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
+        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget_loc, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason")]
       end
     end
 
     products_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Product", "Pricing Type", "Product Line", "Product Family", "Budget", "Period"]
+      csv << ["Deal ID", "Name", "Product", "Pricing Type", "Product Line", "Product Family", "Budget", "Period", "Budget USD"]
       all.each do |deal|
         deal.deal_product_budgets.each do |deal_product_budget|
-          budget = (deal_product_budget.budget_loc.try(:round) || 0)
+          budget_loc = (deal_product_budget.budget_loc.try(:round) || 0)
+          budget_usd = (deal_product_budget.budget.try(:round) || 0)
           product = deal_product_budget.deal_product.product
           product_name = ""
           pricing_type = ""
@@ -623,7 +626,7 @@ class Deal < ActiveRecord::Base
             product_line = get_option(product, "Product Line")
             product_family = get_option(product, "Product Family")
           end
-		      csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget, deal_product_budget.start_date.strftime("%B %Y")]
+		      csv << [deal.id, deal.name, product_name, pricing_type, product_line, product_family, budget_loc, deal_product_budget.start_date.strftime("%B %Y"), budget_usd]
         end
       end
     end
@@ -792,7 +795,7 @@ class Deal < ActiveRecord::Base
         next
       end
 
-      if row[8].present?
+      if row[9].present?
         stage = current_user.company.stages.where('name ilike ?', row[9].strip).first
         unless stage
           error = { row: row_number, message: ["Stage #{row[9]} could not be found"] }
@@ -838,7 +841,7 @@ class Deal < ActiveRecord::Base
 
       if row[11].present?
         begin
-          created_at = DateTime.strptime(row[10], '%m/%d/%Y')
+          created_at = DateTime.strptime(row[11], '%m/%d/%Y')
         rescue ArgumentError
           error = {row: row_number, message: ['Deal Creation Date must have valid date format MM/DD/YYYY'] }
           errors << error
@@ -848,7 +851,7 @@ class Deal < ActiveRecord::Base
 
       if row[12].present?
         begin
-          closed_date = DateTime.strptime(row[11], '%m/%d/%Y')
+          closed_date = DateTime.strptime(row[12], '%m/%d/%Y')
         rescue ArgumentError
           error = {row: row_number, message: ['Deal Close Date must have valid date format MM/DD/YYYY'] }
           errors << error

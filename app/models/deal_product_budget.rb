@@ -26,6 +26,7 @@ class DealProductBudget < ActiveRecord::Base
       :Budget,
       :Start_Date,
       :End_Date,
+      :Budget_USD
     ]
 
     CSV.generate(headers: true) do |csv|
@@ -47,6 +48,7 @@ class DealProductBudget < ActiveRecord::Base
             line << (dpb.budget_loc.try(:round) || 0)
             line << dpb.start_date
             line << dpb.end_date
+            line << (dpb.budget.try(:round) || 0)
 
             csv << line
           end

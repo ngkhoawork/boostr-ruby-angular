@@ -59,6 +59,10 @@ class Io < ActiveRecord::Base
     (start_date..end_date).map { |d| [d.year, d.month] }.uniq
   end
 
+  def readable_months
+    TimePeriods.new(start_date..end_date).months_with_names(long_names: false)
+  end
+
   def days_per_month
     array = []
 
@@ -174,6 +178,8 @@ class Io < ActiveRecord::Base
             ]
         },
         print_items: {}
-    } )
+      },
+      methods: [:readable_months]
+    )
   end
 end
