@@ -2,6 +2,7 @@ class TempIo < ActiveRecord::Base
   belongs_to :company
   belongs_to :io
   has_many :display_line_items
+  has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
 
   after_update do
     redirect_display_line_items() if io_id_changed? && io.present?
@@ -31,5 +32,13 @@ class TempIo < ActiveRecord::Base
     end
     io.external_io_number = external_io_number
     io.save
+  end
+
+  def as_json(options = {})
+    super(options.deep_merge(
+      include: {
+        currency: { only: :curr_symbol }
+      }
+    ))
   end
 end
