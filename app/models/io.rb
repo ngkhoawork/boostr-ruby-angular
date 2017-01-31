@@ -92,7 +92,7 @@ class Io < ActiveRecord::Base
   def active_exchange_rate
     if curr_cd != 'USD'
       unless self.exchange_rate
-        errors.add(:curr_cd, "does not have an exchange rate for #{self.curr_cd} at #{self.created_at.strftime("%m/%d/%Y")}")
+        errors.add(:curr_cd, "does not have an exchange rate for #{self.curr_cd} at #{(self.created_at || Date.today).strftime("%m/%d/%Y")}")
       end
     end
   end

@@ -16,6 +16,8 @@
       $scope.submitText = 'Save & Assign'
       $scope.io.name = tempIO.name
       $scope.io.budget = tempIO.budget
+      $scope.io.budget_loc = tempIO.budget_loc
+      $scope.io.curr_cd = tempIO.curr_cd
       $scope.io.external_io_number = tempIO.external_io_number
       $scope.io.start_date = tempIO.start_date
       $scope.io.end_date = tempIO.end_date

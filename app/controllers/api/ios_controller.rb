@@ -38,6 +38,7 @@ class Api::IosController < ApplicationController
       :name,
       :budget,
       :budget_loc,
+      :curr_cd,
       :start_date,
       :end_date,
       :advertiser_id,
