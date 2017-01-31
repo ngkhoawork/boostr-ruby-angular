@@ -34,7 +34,19 @@ class Api::IosController < ApplicationController
   private
 
   def io_params
-    params.require(:io).permit(:name, :budget, :start_date, :end_date, :advertiser_id, :agency_id, :io_number, :external_io_number, :deal_id)
+    params.require(:io).permit(
+      :name,
+      :budget,
+      :budget_loc,
+      :curr_cd,
+      :start_date,
+      :end_date,
+      :advertiser_id,
+      :agency_id,
+      :io_number,
+      :external_io_number,
+      :deal_id
+    )
   end
 
   def ios

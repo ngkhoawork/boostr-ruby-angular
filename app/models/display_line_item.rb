@@ -31,23 +31,30 @@ class DisplayLineItem < ActiveRecord::Base
     if !budget.nil? && !budget_remaining.nil?
       if budget > 0 && start_date < DateTime.now && DateTime.now < end_date
         self.daily_run_rate = ((budget - budget_remaining)/(DateTime.now.to_date-start_date.to_date+1))
+        self.daily_run_rate_loc = ((budget_loc - budget_remaining_loc)/(DateTime.now.to_date-start_date.to_date+1))
         if self.daily_run_rate != 0
           self.num_days_til_out_of_budget = budget_remaining/(self.daily_run_rate)
           self.balance = ((end_date.to_date-DateTime.now.to_date+1)-self.num_days_til_out_of_budget)*(self.daily_run_rate)
+          self.balance_loc = ((end_date.to_date-DateTime.now.to_date+1)-self.num_days_til_out_of_budget)*(self.daily_run_rate_loc)
         else
           self.num_days_til_out_of_budget = 0
           self.balance = 0
+          self.balance_loc = 0
         end
       else
         self.daily_run_rate = 0
+        self.daily_run_rate_loc = 0
         self.num_days_til_out_of_budget = 0
         self.balance = 0
+        self.balance_loc = 0
       end
       self.last_alert_at = DateTime.now
     else
       self.daily_run_rate = 0
+      self.daily_run_rate_loc = 0
       self.num_days_til_out_of_budget = 0
       self.balance = 0
+      self.balance_loc = 0
     end
     self.save if should_save
   end
@@ -55,6 +62,7 @@ class DisplayLineItem < ActiveRecord::Base
   def self.import(file, current_user)
     errors = []
     row_number = 0
+    list_of_currencies = Currency.pluck(:curr_cd)
 
     CSV.parse(file, headers: true) do |row|
       row_number += 1
@@ -143,8 +151,10 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       io_budget = nil
+      io_budget_loc = nil
       if row[4]
         io_budget = Float(row[4].strip) rescue false
+        io_budget_loc = io_budget
         unless io_budget
           error = { row: row_number, message: ["IO Budget must be a numeric value"] }
           errors << error
@@ -156,9 +166,27 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
-      advertiser = nil
+      curr_cd = nil
       if row[5]
-        advertiser = row[5].strip
+        curr_cd = row[5].strip
+        if !(list_of_currencies.include?(curr_cd))
+          error = { row: row_number, message: ["Currency #{curr_cd} is not found"] }
+          errors << error
+          next
+        elsif !(io_id.nil?) && io.curr_cd != curr_cd
+          error = { row: row_number, message: ["IO currency #{io.curr_cd} does not match #{curr_cd}"] }
+          errors << error
+          next
+        end
+      else
+        error = { row: row_number, message: ["Currency code can't be blank"] }
+        errors << error
+        next
+      end
+
+      advertiser = nil
+      if row[6]
+        advertiser = row[6].strip
       else
         error = { row: row_number, message: ["Advertiser can't be blank"] }
         errors << error
@@ -166,14 +194,14 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       agency = nil
-      if row[6]
-        agency = row[6].strip
+      if row[7]
+        agency = row[7].strip
       end
 
       # =========================Display Line Item
       line_number = nil
-      if row[7]
-        line_number = Integer(row[7].strip) rescue false
+      if row[8]
+        line_number = Integer(row[8].strip) rescue false
         unless line_number
           error = { row: row_number, message: ["Line # must be a numeric value"] }
           errors << error
@@ -185,14 +213,14 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
-      ad_server = row[8]
+      ad_server = row[9]
 
       start_date = nil
-      if row[9].present?
+      if row[10].present?
         begin
-          start_date = Date.strptime(row[9].strip, "%m/%d/%Y")
+          start_date = Date.strptime(row[10].strip, "%m/%d/%Y")
           if start_date.year < 100
-            start_date = Date.strptime(row[9].strip, "%m/%d/%y")
+            start_date = Date.strptime(row[10].strip, "%m/%d/%y")
           end
         rescue ArgumentError
           error = {row: row_number, message: ['Start Date must be a valid datetime'] }
@@ -206,11 +234,11 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       end_date = nil
-      if row[10].present?
+      if row[11].present?
         begin
-          end_date = Date.strptime(row[10].strip, "%m/%d/%Y")
+          end_date = Date.strptime(row[11].strip, "%m/%d/%Y")
           if end_date.year < 100
-            end_date = Date.strptime(row[10].strip, "%m/%d/%y")
+            end_date = Date.strptime(row[11].strip, "%m/%d/%y")
           end
         rescue ArgumentError
           error = {row: row_number, message: ['End Date must be a valid datetime'] }
@@ -232,12 +260,12 @@ class DisplayLineItem < ActiveRecord::Base
       product_id = nil
       ad_server_product = nil
 
-      if row[11]
-        products = current_user.company.products.where("name ilike ?", row[11].strip)
+      if row[12]
+        products = current_user.company.products.where("name ilike ?", row[12].strip)
         if products.count > 0
           product_id = products.first.id
         else
-          ad_server_product = row[11].strip
+          ad_server_product = row[12].strip
           products = current_user.company.products.where(revenue_type: 'Display')
           if products.count > 0
             product_id = products.first.id
@@ -250,8 +278,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty = nil
-      if row[12]
-        qty = Integer(row[12].strip) rescue false
+      if row[13]
+        qty = Integer(row[13].strip) rescue false
         unless qty
           error = { row: row_number, message: ["Qty must be a numeric value"] }
           errors << error
@@ -263,12 +291,14 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
-      price = row[13]
-      pricing_type = row[14]
+      price = row[14]
+      pricing_type = row[15]
 
       budget = nil
-      if row[15]
-        budget = Float(row[15].strip) rescue false
+      budget_loc = nil
+      if row[16]
+        budget = Float(row[16].strip) rescue false
+        budget_loc = budget
         unless budget
           error = { row: row_number, message: ["Budget must be a numeric value"] }
           errors << error
@@ -281,8 +311,10 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_delivered = nil
-      if row[16]
-        budget_delivered = Float(row[16].strip) rescue false
+      budget_delivered_loc = nil
+      if row[17]
+        budget_delivered = Float(row[17].strip) rescue false
+        budget_delivered_loc = budget_delivered
         unless budget_delivered
           error = { row: row_number, message: ["Budget Delivered must be a numeric value"] }
           errors << error
@@ -291,8 +323,10 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_remaining = nil
-      if row[17]
-        budget_remaining = Float(row[17].strip) rescue false
+      budget_remaining_loc = nil
+      if row[18]
+        budget_remaining = Float(row[18].strip) rescue false
+        budget_remaining_loc = budget_remaining
         unless budget_remaining
           error = { row: row_number, message: ["Budget Remaining must be a numeric value"] }
           errors << error
@@ -301,8 +335,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered = nil
-      if row[18]
-        qty_delivered = Float(row[18].strip) rescue false
+      if row[19]
+        qty_delivered = Float(row[19].strip) rescue false
         unless qty_delivered
           error = { row: row_number, message: ["Qty Delivered must be a numeric value"] }
           errors << error
@@ -311,8 +345,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining = nil
-      if row[19]
-        qty_remaining = Float(row[19].strip) rescue false
+      if row[20]
+        qty_remaining = Float(row[20].strip) rescue false
         unless qty_remaining
           error = { row: row_number, message: ["Qty Remaining must be a numeric value"] }
           errors << error
@@ -321,8 +355,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_delivered_3p = nil
-      if row[20]
-        qty_delivered_3p = Float(row[20].strip) rescue false
+      if row[21]
+        qty_delivered_3p = Float(row[21].strip) rescue false
         unless qty_delivered_3p
           error = { row: row_number, message: ["3P Qty Delivered must be a numeric value"] }
           errors << error
@@ -331,8 +365,8 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       qty_remaining_3p = nil
-      if row[21]
-        qty_remaining_3p = Float(row[21].strip) rescue false
+      if row[22]
+        qty_remaining_3p = Float(row[22].strip) rescue false
         unless qty_remaining_3p
           error = { row: row_number, message: ["3P Qty Remaining must be a numeric value"] }
           errors << error
@@ -341,8 +375,10 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_delivered_3p = nil
-      if row[22]
-        budget_delivered_3p = Float(row[22].strip) rescue false
+      budget_delivered_3p_loc = nil
+      if row[23]
+        budget_delivered_3p = Float(row[23].strip) rescue false
+        budget_delivered_3p_loc = budget_delivered_3p
         unless budget_delivered_3p
           error = { row: row_number, message: ["3P Budget Delivered must be a numeric value"] }
           errors << error
@@ -351,8 +387,10 @@ class DisplayLineItem < ActiveRecord::Base
       end
 
       budget_remaining_3p = nil
-      if row[23]
-        budget_remaining_3p = Float(row[23].strip) rescue false
+      budget_remaining_3p_loc = nil
+      if row[24]
+        budget_remaining_3p = Float(row[24].strip) rescue false
+        budget_remaining_3p_loc = budget_remaining_3p
         unless budget_remaining_3p
           error = { row: row_number, message: ["3P Budget Remaining must be a numeric value"] }
           errors << error
@@ -365,6 +403,8 @@ class DisplayLineItem < ActiveRecord::Base
           start_date: io_start_date,
           end_date: io_end_date,
           budget: io_budget,
+          budget_loc: io_budget_loc,
+          curr_cd: curr_cd,
           advertiser: advertiser,
           agency: agency,
           external_io_number: external_io_number,
@@ -383,14 +423,19 @@ class DisplayLineItem < ActiveRecord::Base
           price: price,
           pricing_type: pricing_type,
           budget: budget,
+          budget_loc: budget_loc,
           budget_delivered: budget_delivered,
+          budget_delivered_loc: budget_delivered_loc,
           budget_remaining: budget_remaining,
+          budget_remaining_loc: budget_remaining_loc,
           quantity_delivered: qty_delivered,
           quantity_remaining: qty_remaining,
           quantity_delivered_3p: qty_delivered_3p,
           quantity_remaining_3p: qty_remaining_3p,
           budget_delivered_3p: budget_delivered_3p,
-          budget_remaining_3p: budget_remaining_3p
+          budget_delivered_3p_loc: budget_delivered_3p_loc,
+          budget_remaining_3p: budget_remaining_3p,
+          budget_remaining_3p_loc: budget_remaining_3p_loc
       }
 
       if io_id.nil?
@@ -402,8 +447,23 @@ class DisplayLineItem < ActiveRecord::Base
           temp_io.update_attributes(temp_io_params)
         end
 
+        unless temp_io.exchange_rate
+          error = { row: row_number, message: ["No exchange rate for #{temp_io.curr_cd} found at #{temp_io.created_at.strftime("%m/%d/%Y")}"] }
+          errors << error
+          next
+        end
+
         display_line_item_params[:temp_io_id] = temp_io.id
+        display_line_item_params = self.convert_params_currency(temp_io.exchange_rate, display_line_item_params)
       else
+        unless io.exchange_rate
+          error = { row: row_number, message: ["No exchange rate for #{io.curr_cd} found at #{io.created_at.strftime("%m/%d/%Y")}"] }
+          errors << error
+          next
+        end
+
+        display_line_item_params = self.convert_params_currency(io.exchange_rate, display_line_item_params)
+
         if io.content_fees.count == 0
           if io_start_date < io.start_date
             io.start_date = io_start_date
@@ -460,4 +520,15 @@ class DisplayLineItem < ActiveRecord::Base
     )
   end
 
+  private
+
+  def self.convert_params_currency(exchange_rate, params)
+    params[:budget] = params[:budget_loc] / exchange_rate
+    params[:budget_delivered] = params[:budget_delivered_loc] / exchange_rate if params[:budget_delivered_loc]
+    params[:budget_remaining] = params[:budget_remaining_loc] / exchange_rate if params[:budget_remaining_loc]
+    params[:budget_delivered_3p] = params[:budget_delivered_3p_loc] / exchange_rate if params[:budget_delivered_3p_loc]
+    params[:budget_remaining_3p] = params[:budget_remaining_3p_loc] / exchange_rate if params[:budget_remaining_3p_loc]
+
+    params
+  end
 end

@@ -73,6 +73,17 @@ Rails.application.routes.draw do
       get :all_sales_reps
     end
     resources :custom_values, only: [:index]
+    resources :currencies, only: [:index] do
+      collection do
+        get :active_currencies
+        get :exchange_rates_by_currencies
+      end
+    end
+    resources :exchange_rates, only: [:create, :update, :destroy] do
+      collection do
+        get :active_exchange_rates
+      end
+    end
     resources :time_periods, only: [:index, :create, :update, :destroy]
     resources :quotas, only: [:index, :create, :update]
     resources :forecasts, only: [:index, :show]

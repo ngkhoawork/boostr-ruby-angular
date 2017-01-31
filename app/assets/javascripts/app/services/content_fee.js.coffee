@@ -4,7 +4,7 @@
   transformRequest = (original, headers) ->
     send = {}
     send.content_fee =
-      budget: original.content_fee.budget
+      budget_loc: original.content_fee.budget_loc
       content_fee_product_budgets_attributes: original.content_fee.content_fee_product_budgets
     angular.toJson(send)
 
@@ -16,14 +16,24 @@
 
   @create = (params) ->
     deferred = $q.defer()
-    resource.save params, (io) ->
-      deferred.resolve(io)
+    resource.save(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
-    resource.update params, (io) ->
-      deferred.resolve(io)
+    resource.update(
+      params,
+      (data) ->
+        deferred.resolve(data)
+      (resp) ->
+        deferred.reject(resp)
+    )
     deferred.promise
 
   @delete = (params) ->

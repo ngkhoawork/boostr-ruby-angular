@@ -1,0 +1,52 @@
+#exchange-rate-modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      {{ popupTitle }}
+      %span.close-btn{ ng: { click: 'cancel()' } } +
+    .popup-modal-body
+      .col-xs-6.left-column
+        .form-group{ ng: { class: '{error: errors.currency_id}' } }
+          %span.error-text {{ errors.currency_id }}
+          %label
+            Currency
+          %span.star *
+          .dropdown
+            %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button', ng: { disabled: 'dropdown_disabled' }}
+              %span.fwb {{ selectedCurrency.curr_symbol }} {{ selectedCurrency.name }}
+              %span.caret
+            %ul.dropdown-menu
+              %li{ng: { repeat: 'currency in currencies' }}
+                %a{'href': '', ng: { click: 'selectCurrency(currency)' }}
+                  %span.fwb {{ currency.curr_symbol }} {{ currency.name }}
+      .col-xs-6.right-column
+        .form-group{ ng: { class: '{error: errors.rate}' } }
+          %span.error-text {{ errors.rate }}
+          %label
+            Exchange Rate to USD
+          %span.star *
+          %input.form-control{type: 'number', min: '0', step: '.0001', 'placeholder': 'Exchange Rate', ng: { model: 'form.rate' } }
+
+      .col-xs-6.calendar-addon.left-column
+        .form-group{ng: { class: '{ error: errors.start_date }' }}
+          %span.error-text {{ errors.start_date }}
+          %label Start Date
+          %span.star *
+          .input-group
+            %span.input-group-addon
+              %i.fa.fa-calendar
+            %span.bs-datepicker
+              %input.form-control.box.w4{ readonly: true, placeholder: 'Pick start date', name: 'start_date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'form.start_date', required: true, click: 'startDateOpened = true' }, 'is-open': 'startDateOpened' }
+      .col-xs-6.calendar-addon.right-column
+        .form-group{ng: { class: '{ error: errors.end_date }' }}
+          %span.error-text {{ errors.end_date }}
+          %label End Date
+          %span.star *
+          .input-group
+            %span.input-group-addon
+              %i.fa.fa-calendar
+            %span.bs-datepicker
+              %input.form-control.box.w4{ readonly: true, placeholder: 'Pick end date', name: 'end_date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'form.end_date', required: true, click: 'endDateOpened = true' }, 'is-open': 'endDateOpened' }
+
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-warning{'type': 'submit', ng: { disabled: 'buttonDisabled' }} {{submitText}}

@@ -32,10 +32,15 @@
       return
 
     $scope.currentDeal.stage_id = currentDeal.stage_id
-    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then (deal) ->
-      $rootScope.$broadcast 'updated_deal'
-      $modalInstance.close()
-    
+    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
+      (deal) ->
+        $rootScope.$broadcast 'updated_deal'
+        $modalInstance.close()
+      (resp) ->
+        $rootScope.$broadcast 'deal_update_errors', resp.data.errors
+        $modalInstance.close()
+    )
+
   $scope.cancel = ->
     $rootScope.$broadcast 'closeDealCanceled'
     $modalInstance.close()

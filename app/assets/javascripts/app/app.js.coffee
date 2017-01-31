@@ -106,6 +106,9 @@
     .when '/settings/users',
       templateUrl: 'settings/users.html'
       controller: 'SettingsUsersController'
+    .when '/settings/currencies',
+      templateUrl: 'settings/currencies.html'
+      controller: 'SettingsCurrenciesController'
     .when '/settings/data_import',
       templateUrl: 'settings/data_import_export.html'
       controller: 'DataImportExportController'

@@ -1,10 +1,11 @@
-json.extract! deal, :id, :name, :budget, :created_at, :contacts, :updated_at, :next_steps, :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id, :agency_id
+json.extract! deal, :id, :name, :budget_loc, :created_at, :curr_cd, :contacts, :updated_at, :next_steps, :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id, :agency_id
 
 json.start_date deal.start_date.to_datetime
 json.end_date deal.end_date.to_datetime
 json.days deal.days
 json.months deal.months
 json.days_per_month deal.days_per_month
+json.currency deal.currency
 
 json.stage deal.stage, :name, :probability, :color, :open
 if deal.previous_stage
@@ -26,9 +27,11 @@ json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   json.name deal_product.product.name
   json.deal_product_budgets deal_product.deal_product_budgets.order(:start_date) do |deal_product_budget|
     json.id deal_product_budget.id
-    json.budget (deal_product_budget.budget || 0).to_i
+    # json.budget (deal_product_budget.budget || 0).to_i
+    json.budget_loc (deal_product_budget.budget_loc || 0).to_f
   end
-  json.budget (deal_product.budget || 0).to_i
+  # json.budget (deal_product.budget || 0).to_i
+  json.budget_loc (deal_product.budget_loc || 0).to_f
 end
 
 json.members deal.deal_members do |member|

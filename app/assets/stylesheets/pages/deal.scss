@@ -1,4 +1,10 @@
 #deal {
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  }
+
   .return {
     padding-top: 24px;
 //    padding-bottom: 24px;
@@ -260,6 +266,24 @@
     }
   }
 
+  .error-text {
+    display: none;
+    text-transform: none;
+    font-weight: 500;
+    color: $error-color;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-family: "Avenir Next", Arial, serif;
+  }
+  .error {
+    .error-text {
+      display: inline;
+    }
+    input, textarea, .ui-select-container, .ui-select-toggle, button.dropdown-toggle, div.currency {
+      border: 1px solid $error-color;
+    }
+  }
+
   #revenue_schedule {
     .currency-table {
       position: relative;
@@ -269,7 +293,7 @@
         color: #939FA9;
         font-size: 14px;
       }
-      .dollar {
+      .currency {
         position: absolute;
         margin-left: 5px;
         padding-top: 1px;

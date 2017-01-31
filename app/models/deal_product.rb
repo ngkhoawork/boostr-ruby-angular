@@ -4,25 +4,28 @@ class DealProduct < ActiveRecord::Base
   has_many :deal_product_budgets, dependent: :destroy
 
   validates :product, presence: true
+  validate :active_exchange_rate
 
   accepts_nested_attributes_for :deal_product_budgets
-
-  after_update do
-    if deal_product_budgets.sum(:budget) != budget
-      if budget_changed?
-        self.update_product_budgets
-      else
-        self.update_budget
-      end
-    end
-    if budget_changed?
-      deal.update_total_budget
-    end
-  end
 
   after_create do
     if deal_product_budgets.empty?
       self.create_product_budgets
+    end
+  end
+
+  after_update do
+    if deal_product_budgets.sum(:budget_loc) != budget_loc || deal_product_budgets.sum(:budget) != budget
+      if budget_loc_changed? || budget_changed?
+        self.update_product_budgets
+      else
+        self.update_budget
+        should_update_deal_budget = true
+      end
+    end
+
+    if should_update_deal_budget
+      deal.update_total_budget
     end
   end
 
@@ -33,37 +36,76 @@ class DealProduct < ActiveRecord::Base
     budget / (deal.end_date - deal.start_date + 1).to_f
   end
 
+  def daily_budget_loc
+    budget_loc / (deal.end_date - deal.start_date + 1).to_f
+  end
+
+  def local_currency_budget_in_usd
+    budget_loc / deal.exchange_rate
+  end
+
+  def active_exchange_rate
+    if deal && deal.curr_cd != 'USD'
+      unless deal.company.active_currencies.include?(deal.curr_cd)
+        errors.add(:curr_cd, 'does not have an active exchange rate')
+      end
+    end
+  end
+
   def create_product_budgets
     last_index = deal.months.count - 1
     total = 0
+    total_loc = 0
 
     deal.months.each_with_index do |month, index|
       if last_index == index
         monthly_budget = budget - total
+        monthly_budget_loc = budget_loc - total_loc
       else
-        monthly_budget = (daily_budget * deal.days_per_month[index])
+        monthly_budget = (daily_budget * deal.days_per_month[index]).round(0)
         monthly_budget = 0 if monthly_budget.between?(0, 1)
-        total = total + monthly_budget.round(0)
+        total += monthly_budget
+
+        monthly_budget_loc = (daily_budget_loc * deal.days_per_month[index]).round(0)
+        monthly_budget_loc = 0 if monthly_budget_loc.between?(0, 1)
+        total_loc += monthly_budget_loc
       end
       period = Date.new(*month)
-      deal_product_budgets.create(start_date: period, end_date: period.end_of_month, budget: monthly_budget.round(0))
+      deal_product_budgets.create(
+        start_date: period,
+        end_date: period.end_of_month,
+        budget: monthly_budget,
+        budget_loc: monthly_budget_loc
+      )
     end
   end
 
   def update_product_budgets
     last_index = deal_product_budgets.count - 1
     total = 0
+    total_loc = 0
 
     deal_product_budgets.each_with_index do |deal_product_budget, index|
       if last_index == index
         monthly_budget = budget - total
+        monthly_budget_loc = budget_loc - total_loc
       else
         monthly_budget = (daily_budget * deal.days_per_month[index])
         monthly_budget = 0 if monthly_budget.between?(0, 1)
-        total = total + monthly_budget.round(0)
+        total += monthly_budget.round(0)
+
+        monthly_budget_loc = (daily_budget_loc * deal.days_per_month[index])
+        monthly_budget_loc = 0 if monthly_budget_loc.between?(0, 1)
+        total_loc += monthly_budget_loc.round(0)
       end
-      deal_product_budget.update(budget: monthly_budget.round(0))
+      deal_product_budget.update(budget: monthly_budget.round(0), budget_loc: monthly_budget_loc.round(0))
     end
+  end
+
+  def update_budget
+    new_budget = deal_product_budgets.sum(:budget)
+    new_budget_loc = deal_product_budgets.sum(:budget_loc)
+    self.update(budget: new_budget, budget_loc: new_budget_loc)
   end
 
   def update_periods
@@ -72,10 +114,6 @@ class DealProduct < ActiveRecord::Base
       deal_product_budget.start_date = period
       deal_product_budget.end_date = period.end_of_month
     end
-  end
-
-  def update_budget
-    self.update(budget: deal_product_budgets.sum(:budget))
   end
 
   def self.import(file, current_user)
@@ -128,8 +166,10 @@ class DealProduct < ActiveRecord::Base
         next
       end
 
+      budget = nil
       if row[3]
         budget = Float(row[3].strip) rescue false
+        budget_loc = budget
         unless budget
           error = { row: row_number, message: ["Budget must be a numeric value"] }
           errors << error
@@ -141,9 +181,18 @@ class DealProduct < ActiveRecord::Base
         next
       end
 
+      if deal.exchange_rate
+        budget = budget_loc / deal.exchange_rate
+      else
+        error = { row: row_number, message: ["No active exchange rate for #{deal.curr_cd} at #{Date.today.strftime("%m/%d/%Y")}"] }
+        errors << error
+        next
+      end
+
       deal_product_params = {
         deal_id: deal.id,
         budget: budget,
+        budget_loc: budget_loc,
         product_id: product.id
       }
 

@@ -11,6 +11,7 @@ class DealIndexSerializer < ActiveModel::Serializer
     :end_date,
     :name,
     :budget,
+    :curr_cd,
     :deal_type,
     :source_type,
     :next_steps,

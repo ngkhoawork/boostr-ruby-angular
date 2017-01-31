@@ -1,0 +1,91 @@
+#currencies {
+  font-family: "Avenir Next", Arial, serif;
+  color: $main-font-color;
+  a {
+    color: $secondary-color;
+    font-weight: 600;
+  }
+  &.block {
+    margin: 30px 300px 10px 300px;
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-right: 20px;
+    }
+    .small {
+      color: $dark-grayish-blue-1;
+      font-size: 14px;
+    }
+  }
+
+  table {
+    table-layout: fixed;
+    thead {
+      background-color: white;
+      tr {
+        border-bottom: 2px solid #d9dde0;
+        th {
+          color: $secondary-font-color !important;
+          padding: 10px 8px;
+          border-left: none;
+          border-right: none;
+          &:first-child {
+            padding-left: 30px;
+          }
+        }
+      }
+    }
+
+    tr {
+      th, td {
+        text-align: left;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+      td {
+        color: $main-font-color;
+        &:first-child {
+          padding-left: 30px;
+        }
+        a.trashcan {
+          display: none;
+          padding: 0 10px;
+        }
+      }
+      i.toggle-icon {
+        font-size: 13px;
+        margin-left: -20px;
+        margin-right: 4px;
+        cursor: pointer;
+      }
+      &:hover {
+        td {
+          a.trashcan {
+            display: block;
+          }
+        }
+      }
+      &.clickable {
+        cursor: pointer;
+      }
+      &.row-footer {
+        td {
+          color: $main-color;
+        }
+      }
+      &.submenu {
+        background-color: #F6F9FC;
+        td {
+          .subheader {
+            font-weight: 700;
+            color: #818689 !important;
+          }
+          .dashed {
+            font-weight: 600;
+            border-bottom: 1px dashed #2b3c49;
+          }
+        }
+      }
+    }
+  }
+}

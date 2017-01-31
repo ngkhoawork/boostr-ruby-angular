@@ -20,6 +20,23 @@
     .info-value {
       font-weight: bold;
     }
+    .info-error {
+      display: inline-block;
+    }
+  }
+
+  .error-text {
+    display: none;
+    text-transform: none;
+    color: $error-color;
+  }
+  .error {
+    .error-text {
+      display: inline;
+    }
+    input, textarea, .ui-select-container, .ui-select-toggle, button.dropdown-toggle, .info-error {
+      border: 1px solid $error-color;
+    }
   }
 
   .editable-input {

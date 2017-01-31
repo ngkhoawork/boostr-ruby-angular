@@ -1,10 +1,12 @@
 @app.controller 'SettingsUsersController',
-['$scope', '$modal', 'User', 'CurrentUser',
-($scope, $modal, User, CurrentUser) ->
+['$scope', '$modal', 'User', 'Currency', 'CurrentUser',
+($scope, $modal, User, Currency, CurrentUser) ->
   $scope.user_types = User.user_types_list
   $scope.user_statuses = User.user_statuses_list
 
   $scope.init = () ->
+    Currency.active_currencies().then (currencies) ->
+      $scope.currencies = currencies
     User.query().$promise.then (users) ->
       $scope.users = users
     CurrentUser.get().$promise.then (user) ->

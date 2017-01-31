@@ -19,6 +19,7 @@ class Company < ActiveRecord::Base
   has_many :temp_ios
   has_many :bps
   has_many :deal_custom_field_names
+  has_many :exchange_rates
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -120,6 +121,25 @@ class Company < ActiveRecord::Base
       )
       SELECT id FROM team_tree ORDER BY path
     SQL
+  end
+
+  def has_exchange_rate_for(curr_cd)
+    rates = exchange_rates.where(currency: Currency.find_by(curr_cd: curr_cd)).where('start_date <= ? AND end_date >= ?', Date.today, Date.today)
+    return true if rates.length == 1
+  end
+
+  def active_currencies
+    rates = exchange_rates.where('start_date <= ? AND end_date >= ?', Date.today, Date.today).includes(:currency)
+    rates.map(&:currency).map(&:curr_cd) << 'USD'
+  end
+
+  def exchange_rate_for(at_date: Date.today, currency:)
+    return 1 if currency == 'USD'
+    self.exchange_rates
+        .where(currency: Currency.find_by(curr_cd: currency))
+        .where('start_date <= ? AND end_date >= ?', at_date, at_date)
+        .first
+        .try(:rate)
   end
 
   protected

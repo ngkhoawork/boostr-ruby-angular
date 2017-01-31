@@ -102,7 +102,7 @@
             .row
               .col-xs-12
                 %h4#total-amount
-                  {{ currentDeal.budget | currency: '$': 0 }}
+                  {{ currentDeal.budget_loc | currency: currency_symbol : 0 }}
           .col-xs-2.campaign-period.text-center
             .row
               .col-xs-12
@@ -110,7 +110,7 @@
             .row
               .col-xs-12
                 %h4#forecast
-                  {{ currentDeal.budget * currentDeal.stage.probability / 100 | currency: '$' :0 }}
+                  {{ currentDeal.budget_loc * currentDeal.stage.probability / 100 | currency: currency_symbol : 0 }}
           .col-xs-2.campaign-period.text-center
             .row
               .col-xs-12
@@ -122,6 +122,16 @@
                     {{ currentDeal.stage.name }}
                     .small
                       {{ currentDeal.stage.probability }}% probability
+          .col-xs-2.campaign-period.text-center{ ng: { class: '{error: errors.curr_cd}' } }
+            .row
+              .col-xs-12
+                Deal Currency
+            .row
+              .col-xs-12
+                %span.error-text {{ errors.curr_cd }}
+                %h4
+                  .currency{ editable: { select: 'currentDeal.curr_cd' }, 'e-ng-options': 'currency.curr_cd as currency.name for currency in currencies', onaftersave: 'updateDealCurrency()', onshow: 'getCompanyCurrencies()' }
+                    {{ currentDeal.curr_cd }}
       #revenue_schedule.table-wrapper
         %table.table.white-table
           %thead
@@ -139,25 +149,24 @@
                 {{ deal_product.name }}
               %td.text-center.currency-table
                 %div
-                  %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "deal_product.budget", 'on-after-save': 'updateDealProduct(deal_product)'}
+                  %div{'click-to-edit':'click-to-edit', type: "number", 'ng-attr-prefix': "{{currency_symbol}}", 'ng-model': "deal_product.budget_loc", 'on-after-save': 'updateDealProduct(deal_product)'}
                   %span.small.total-budget__percent{ 'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
                     {{deal_product.total_budget_percent + '%'}}
               %td.text-center.currency-table{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
                 %div{'ng-if': '!deal_product_budget.editMode'}
                   %span.editable{ 'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "moneyOnFocus", "saveCopyProduct")' }
-                    {{ deal_product_budget.budget | currency:'$':0 }}
+                    {{ deal_product_budget.budget_loc | currency: currency_symbol : 0 }}
                   %div
                     %span.small.editable{'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "percentOnFocus", "saveCopyProduct")'}
                       {{ deal_product_budget.budget_percent+ '%'}}
                 %div{'ng-if': 'deal_product_budget.editMode'}
-                  %span.symbol.dollar $
-                  %input.currency-table__money{ 'ng-model': 'deal_product_budget.budget',
+                  %input.currency-table__money{ 'ng-model': 'deal_product_budget.budget_loc',
                     'ng-change': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "moneyOnFocus")',
                     'ng-keypress': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "moneyOnFocus")',
                     'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "moneyOnFocus")',
                     id:'{{"deal_product_budget-" + deal_product_budget.id}}',
                     'ng-blur':'disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)',
-                    'numbers-only':'' }
+                    type: 'number', min: '0', step: '.01' }
                   %span.glyphicon.glyphicon-link
                   %input.currency-table__percent{ 'ng-model': 'deal_product_budget.budget_percent',
                     'ng-change': 'changeMonthBudget(deal_product, deal_product_budget, $index, $event, "percentOnFocus")',
@@ -192,7 +201,7 @@
                     .col-xs-12
                       .form-group.new-product-form
                         %label.control-label{ for: 'total_budget' } Total Budget
-                        %input.form-control.total-budget{ 'ng-model': 'deal_product.budget',
+                        %input.form-control.total-budget{ 'ng-model': 'deal_product.budget_loc',
                           'ng-change': 'changeTotalBudget()'}
                         %span.total-percent{'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
                           {{ (deal_product.budget_percent || 0 )+ '%'}}
@@ -201,7 +210,7 @@
                       %button.btn.btn-primary.btn-block{ type: 'submit',
                         'ng-disabled': 'deal_product.isIncorrectTotalBudgetPercent || !deal_product.product_id', } Add Product
                     .col-xs-12
-                      %button.btn.btn-primary.btn-block{ng: { click: 'resetAddProduct()', disabled:'!deal_product.budget || deal_product.budget_percent === 100' }, type: 'button' } Reset
+                      %button.btn.btn-primary.btn-block{ng: { click: 'resetAddProduct()', disabled:'!deal_product.budget_loc || deal_product.budget_percent === 100' }, type: 'button' } Reset
                     .col-xs-12
                       %button#cancel.btn.btn-default.btn-block{ng: { click: 'cancelAddProduct()' }, type: 'button' } Cancel
                 .col-xs-10
@@ -209,14 +218,14 @@
                     .col-xs-2{ ng: { repeat: 'month in deal_product.deal_product_budgets' } }
                       .form-group
                         %label.control-label Month \#{{ $index + 1 }}
-                        %input.form-control.offset-bottom{ 'ng-model': 'month.budget',
-                        'ng-disabled': '!deal_product.budget',
-                        'ng-change': 'changeMonthValue(month.budget, $index)',
-                        'ng-focus': 'cutDollar(month.budget, $index)',
-                        'ng-blur': 'setDollar(month.budget, $index)',
+                        %input.form-control.offset-bottom{ 'ng-model': 'month.budget_loc',
+                        'ng-disabled': '!deal_product.budget_loc',
+                        'ng-change': 'changeMonthValue(month.budget_loc, $index)',
+                        'ng-focus': 'cutCurrencySymbol(month.budget_loc, $index)',
+                        'ng-blur': 'setCurrencySymbol(month.budget_loc, $index)',
                         'numbers-only':''}
                         %input.form-control{ 'ng-model': 'month.percent_value',
-                        'ng-disabled': '!deal_product.budget',
+                        'ng-disabled': '!deal_product.budget_loc',
                         'ng-change': 'changeMonthPercent(month.percent_value, $index)',
                         'ng-focus': 'cutPercent(month.percent_value, $index)',
                         'ng-blur': 'setPercent(month.percent_value, $index)',

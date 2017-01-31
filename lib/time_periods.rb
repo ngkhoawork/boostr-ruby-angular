@@ -58,18 +58,27 @@ class TimePeriods
       }
     end
 
-    month_with_names = []
-    months.each_with_index do |month, index|
-      month_with_names << {
-        name: "#{month.first.strftime("%B")} #{month.first.year}",
-        value: index + 1
-      }
-    end
-
     {
       quarters: quarters_with_names,
-      months: month_with_names
+      months: months_with_names_and_indexes
     }
+  end
+
+  def months_with_names_and_indexes
+    months_with_names(long_names: true).each_with_index do |month, index|
+      month[:value] = index + 1
+    end
+  end
+
+  def months_with_names(long_names: true)
+    months_with_names = []
+    months.each do |month|
+      name = long_names ? "#{month.first.strftime("%B")}" : "#{month.first.strftime("%b")}"
+      months_with_names << {
+        name: "#{name} #{month.first.year}"
+      }
+    end
+    months_with_names
   end
 
   private
