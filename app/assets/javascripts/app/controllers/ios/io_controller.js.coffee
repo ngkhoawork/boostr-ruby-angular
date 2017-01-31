@@ -32,6 +32,13 @@
       $scope.go = (path) ->
         $location.path(path)
 
+      #TODO - set as ngChange in custom-editable directive
+      $scope.updateContentFeeAndBudget = (content_fee) ->
+        content_fee.budget_loc = 0
+        _.each content_fee.content_fee_product_budgets, (cfpb) ->
+          content_fee.budget_loc += Math.round(Number(cfpb.budget_loc))
+        $scope.updateContentFee(content_fee)
+
       $scope.updateContentFee = (data) ->
         $scope.errors = {}
         ContentFee.update(id: data.id, io_id: $scope.currentIO.id, content_fee: data).then(
