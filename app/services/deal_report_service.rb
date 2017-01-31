@@ -61,8 +61,8 @@ class DealReportService < BaseService
   end
 
   def date_range
-    return target_date unless target_date.kind_of? Hash
-    Date.parse(target_date[:start_date]).end_of_day..Date.parse(target_date[:end_date]).end_of_day
+    return target_date.midnight..target_date.end_of_day unless target_date.kind_of? Hash
+    Date.parse(target_date[:start_date]).midnight..Date.parse(target_date[:end_date]).end_of_day
   end
 
   def csv_header

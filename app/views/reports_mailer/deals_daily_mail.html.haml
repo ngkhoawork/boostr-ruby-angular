@@ -1,19 +1,24 @@
+%h1 Won Deals
+- @won_deals.each do |won_deal|
+  %p
+    Deal: #{ won_deal['name'] } - Advertiser: #{ won_deal['advertiser_name'] } - Budget: #{ (Money.new(won_deal['budget']) * 100).format(no_cents: true) } - Start Date: #{ won_deal['start_date'] }
+
 %h1 New Deals
 - @new_deals.each do |new_deal|
   %p
-    #{ new_deal['name'] } - #{ new_deal['advertiser_name'] } - $ #{ new_deal['budget'].try(:to_i) } - #{ new_deal['start_date'] } - #{ new_deal['stage_name'] }
+    Deal: #{ new_deal['name'] } - Advertiser: #{ new_deal['advertiser_name'] } - Budget: #{ (Money.new(new_deal['budget']) * 100).format(no_cents: true) } - Start Date: #{ new_deal['start_date'] } - Current Stage: #{ new_deal['stage_name'] }
+
+%h1 Budget Changed Deals
+- @budget_changed_deals.each do |budget_changed_deal|
+  %p
+    Deal: #{ budget_changed_deal[:name] } - Advertiser: #{ budget_changed_deal[:advertiser_name] } - Budget: #{ (Money.new(budget_changed_deal[:budget]) * 100).format(no_cents: true) } - Budget Change: #{ (Money.new(budget_changed_deal[:budget_change]) * 100).format(no_cents: true) } - Start Date: #{ budget_changed_deal[:start_date] }
 
 %h1 Stage Changed Deals
 - @stage_changed_deals.each do |stage_changed_deal|
   %p
-    #{ stage_changed_deal['name'] } - #{ stage_changed_deal['advertiser_name'] } - $ #{ stage_changed_deal['budget'].try(:to_i) } - #{ stage_changed_deal['start_date'] } - #{ stage_changed_deal['stage_name'] } - From #{ stage_changed_deal['deal_stage_log_previous_stage'] } - To #{ stage_changed_deal['stage_name'] }
-
-%h1 Won Deals
-- @won_deals.each do |won_deal|
-  %p
-    #{ won_deal['name'] } - #{ won_deal['advertiser_name'] } - $ #{ won_deal['budget'].try(:to_i) } - #{ won_deal['start_date'] }
+    Deal: #{ stage_changed_deal[:name] } - Advertiser: #{ stage_changed_deal[:advertiser_name] } - Budget: #{ (Money.new(stage_changed_deal[:budget]) * 100).format(no_cents: true) } - Start Date: #{ stage_changed_deal[:start_date] } - Current Stage: #{ stage_changed_deal[:stage_name] } - Previous stage: #{ stage_changed_deal[:deal_stage_log_previous_stage] }
 
 %h1 Lost Deals
 - @lost_deals.each do |lost_deal|
   %p
-    #{ lost_deal['name'] } - #{ lost_deal['advertiser_name'] } - $ #{ lost_deal['budget'].try(:to_i) } - #{ lost_deal['start_date'] }
+    Deal: #{ lost_deal['name'] } - Advertiser: #{ lost_deal['advertiser_name'] } - Budget: #{ (Money.new(lost_deal['budget']) * 100).format(no_cents: true) } - Start Date: #{ lost_deal['start_date'] }
