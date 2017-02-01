@@ -4,7 +4,6 @@
             formatMoney = $filter('formatMoney')
 
             $scope.selectedDeal = null
-            $scope.showThisYearClosedDeals = true
             $scope.stages = []
             $scope.columns = []
             $scope.allDeals = []
@@ -15,22 +14,18 @@
                 {name: 'My Team\'s Deals', param: 'team'}
                 {name: 'All Deals', param: 'company'}
             ]
+            currentYear = moment().year()
             Selection = ->
                 @owner = ''
                 @advertiser = ''
                 @agency = ''
                 @budget = ''
                 @exchange_rate = ''
+                @yearClosed = currentYear
                 @date =
                     startDate: null
                     endDate: null
                 return
-
-            $scope.$watch 'showThisYearClosedDeals', ->
-                console.log($scope.showThisYearClosedDeals)
-
-            $scope.filterClosedDeals = ->
-                1
 
             $scope.filter =
                 exchange_rates: []
@@ -118,18 +113,22 @@
                             moment(selected.date.endDate).startOf('day').diff(deal.start_date, 'day') < 0
                                 return false
                         deal
+
                     columns = angular.copy $scope.emptyColumns
                     $scope.deals.forEach (deal) ->
                         if !deal || !deal.stage_id then return
                         stage = _.findWhere $scope.stages, id: deal.stage_id
                         if stage
-                            columns[stage.index].push deal
                             columns[stage.index].open = stage.open
+                            columns[stage.index].push deal
                     $scope.columns = columns
-                    $scope.sortingDealsByDate(columns)
+                    sortingDealsByDate(columns)
                     if !reset then this.isOpen = false
                 reset: (key) ->
-                    this.selected[key] = new Selection()[key]
+                    if key is 'yearClosed'
+                        this.selected[key] = ''
+                    else
+                        this.selected[key] = new Selection()[key]
                 resetAll: ->
                     this.selected = new Selection()
                     this.apply(true)
@@ -164,6 +163,7 @@
                     advertisers = []
                     agencies = []
                     columns = []
+                    dealYears = [currentYear]
                     maxBudget = 0
                     $scope.deals = data.deals
                     $scope.stages = data.stages
@@ -184,6 +184,9 @@
                         if deal.agency then agencies.push deal.agency
                         if deal.budget && parseInt(deal.budget) > maxBudget
                             maxBudget = parseInt(deal.budget)
+                        dealYear = moment(deal.start_date).year()
+                        if dealYear && dealYears.indexOf(dealYear) is -1
+                            dealYears.push dealYear
                         stage = _.findWhere $scope.stages, id: deal.stage_id
                         if stage then columns[stage.index].push deal
 
@@ -194,12 +197,10 @@
                     $scope.filter.slider.maxValue = maxBudget
                     $scope.filter.slider.options.ceil = maxBudget
                     $scope.columns = columns
+                    dealYears.sort().reverse()
+                    $scope.filter.dealYears = dealYears
                     getExchangeRates()
-                    $scope.sortingDealsByDate(columns)
-
-#                    for i in [1..15]
-#                        $scope.stages.push {index: 6 + i, name: 'TEST' + i}
-#                        $scope.columns.push []
+                    sortingDealsByDate(columns)
 
             $scope.filterDeals = (filter) ->
                 $scope.selectedType = filter
@@ -210,17 +211,6 @@
 
             $scope.openFilter = ->
                 $scope.isFilterOpen = !$scope.isFilterOpen
-
-            $scope.sortingDealsByDate = (columns) ->
-                _.each columns, (col) ->
-                    col.sort (d1, d2) ->
-                        d1 = new Date(d1.start_date)
-                        d2 = new Date(d2.start_date)
-                        if d1 > d2 then return 1
-                        if d1 < d2 then return -1
-                        return 0
-                    console.log(col.open)
-                    if !col.open then col.reverse()
 
             $scope.onMoved = (dealIndex, columnIndex) ->
                 $scope.lastMoveAction.from =
@@ -236,7 +226,6 @@
             $scope.onDrop = (deal, newStage) ->
                 if deal.stage_id is newStage.id then return
                 deal.stage_id = newStage.id
-                return deal
                 if !newStage.open && newStage.probability == 0
                     $scope.showCloseDealModal(deal)
                 else
@@ -327,6 +316,20 @@
                     }
                     exchange_rates.unshift usd_exchange_rate
                     $scope.filter.exchange_rates = exchange_rates
+
+            sortingDealsByDate = (columns) ->
+                _.each columns, (col, i) ->
+                    col.sort (d1, d2) ->
+                        d1 = new Date(d1.start_date)
+                        d2 = new Date(d2.start_date)
+                        if d1 > d2 then return 1
+                        if d1 < d2 then return -1
+                        return 0
+                    if !col.open then col.reverse()
+                    columns[i] = col.filter (deal) ->
+                        if $scope.filter.selected.yearClosed && col.open is false && $scope.filter.selected.yearClosed != moment(deal.start_date).year()
+                            return false
+                        deal
 
             shadeColor = (color, percent) ->
                 f = parseInt(color.slice(1), 16)

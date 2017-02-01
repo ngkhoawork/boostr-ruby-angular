@@ -86,7 +86,6 @@
 							{{ filter.selected.exchange_rate.currency.name || 'Select a currency' }}
 							%span.caret
 						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
-							%span.dropdown-title Select from list
 							.dropdown-option{'ng-repeat': 'exchange_rate in filter.exchange_rates | filter: filtering | limitTo: 10', role: 'menuitem'}
 								%a{href: '', 'ng-click': 'filter.select("exchange_rate", exchange_rate)'} {{exchange_rate.currency.name}}
 			.filter-row
@@ -102,6 +101,19 @@
 			                                           options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.apply}}'}
 								%span.filter-date {{filter.getDateValue()}}
 							%span.caret
+			.filter-row
+				.filter-name
+					%div
+						Year Closed
+				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.yearClosed', 'ng-click': 'filter.reset("yearClosed")'}
+					%span{ 'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()' }
+						.dropdown-button{ 'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.yearClosed}' }
+							{{ filter.selected.yearClosed || 'Select a year' }}
+							%span.caret
+						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+							.dropdown-option{'ng-repeat': 'year in filter.dealYears | filter: filtering | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("yearClosed", year)'} {{year}}
 		.footer
 			%span.reset{'ng-click': 'filter.resetAll()'} Reset
 			%button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
@@ -117,14 +129,6 @@
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
-				%div.pull-right.switcher
-					.show-hide-remainder-form
-						%span.title-remainder show this year closed deals only
-						%br
-						.switch-remainder-form
-							%input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'showThisYearClosedDeals'}
-							%label{:for => "rem-act-modal-toggle"}
-								%span
 		.row.deals-container
 			.deals-table
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}

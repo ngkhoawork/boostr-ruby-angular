@@ -2,11 +2,12 @@
     $deals-menu-h: 100px;
     $deals-column-header-h: 72px;
     $deals-filter-w: 350px;
+    $deals-dropdown-w: 330px;
 
     font-family: "Avenir Next", Arial, serif;
     color: $main-font-color;
     background-color: #F5F5F5;
-    min-height: calc(100vh - 150px);
+    min-height: calc(100vh - #{$header-height});
     position: relative;
     overflow-x: hidden;
     a {
@@ -132,22 +133,25 @@
                 .dropdown {
                     position: static;
                     .dropdown-menu {
-                        left: -80%;
-                        padding: 0 0 10px;
-                        top: auto;
-                        width: $deals-filter-w;
+                        //left: -80%;
+                        left: auto;
+                        right: 0;
+                        padding: 10px 0;
+                        min-width: 100px;
                         .dropdown-search {
                             position: relative;
-                            padding: 10px;
+                            padding: 0 10px 10px;
                             margin-bottom: 0;
                             input {
                                 background-color: white;
                                 padding-right: 40px;
+                                min-width: $deals-dropdown-w;
+                                width: 100%;
                             }
                             i {
                                 position: absolute;
                                 right: 24px;
-                                top: 24px;
+                                top: 14px;
                                 font-size: 18px;
                                 color: $secondary-font-color;
                                 opacity: 0.7;
@@ -175,6 +179,7 @@
                             }
                         }
                         .dropdown-budget {
+                            width: $deals-dropdown-w + 15;
                             padding: 10px;
                             color: lighten($secondary-font-color, 30%);
                             .budget-range-input {
@@ -266,7 +271,7 @@
         }
     }
     .deals-container {
-        overflow-x: scroll;
+        overflow-x: auto;
         position: relative;
     }
     .deals-table {
