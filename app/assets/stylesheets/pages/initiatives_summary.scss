@@ -1,0 +1,66 @@
+#initiatives-summary-dashboard {
+    color: $main-font-color;
+    background-color: #F5F5F5;
+    min-height: calc(100vh - 150px);
+    .header {
+        margin: 20px -15px 30px;
+        .title {
+            padding-top: 10px;
+            display: inline-block;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-right: 20px;
+        }
+        .filter {
+            display: inline-block;
+            span {
+                display: inline-block;
+                padding: 12px 5px;
+                margin: 0 10px;
+                font-weight: bold;
+                cursor: pointer;
+                &.active {
+                    color: $main-color;
+                    border-bottom: 2px solid $main-color;
+                }
+            }
+        }
+    }
+    .sub-header {
+        margin: 30px -15px 20px;
+        span.title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        span:not(.title) {
+            cursor: pointer;
+            margin-left: 15px;
+            color: $secondary-font-color;
+        }
+    }
+    .initiatives-chart {
+        height: auto;
+        .axis {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #d9dde0;
+            shape-rendering: crispEdges;
+        }
+    }
+    table {
+        td.status {
+            color: $main-color !important;
+        }
+        tr.active-line {
+            td {
+                font-weight: bold !important;
+                text-decoration: underline;
+            }
+        }
+    }
+}

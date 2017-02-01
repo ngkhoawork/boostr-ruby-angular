@@ -1,0 +1,123 @@
+#initiatives-summary-dashboard
+	.container#inactives-dashboard
+		.header
+			%span.title Initiatives Summary
+			%add-button
+				New Initiative
+			.filter.pull-right
+				%span{'ng-class': '{active: filter === "active"}', 'ng-click': 'setFilter("active")'}
+					Active
+				%span{'ng-class': '{active: filter === "complete"}', 'ng-click': 'setFilter("complete")'}
+					Complete
+
+		.row.well.kpi-block
+			%div
+				.col-xs-12.pad
+					%svg#initiatives-summary-chart.initiatives-chart
+				.col-xs-12.table-report.text-center
+					%table.table.table-hover
+						%thead
+							%tr
+								%th Initiative
+								%th Goal
+								%th Pipeline
+								%th Bookings
+								%th % Goal
+								%th Status
+
+						%tbody
+							%tr{'ng-repeat': 'item in initiatives', 'ng-class': '{"active-line": item.status == "Active"}'}
+								%td {{item.name}}
+								%td {{item.numbers[0] | currency : undefined : 0}}
+								%td {{item.numbers[1] | currency : undefined : 0}}
+								%td {{item.numbers[2] | currency : undefined : 0}}
+								%td {{item.percent}}%
+								%td.status {{item.status}}
+		.sub-header
+			%span.title Initiative 1
+			%span Close
+		.row.well.kpi-block
+			%h4.chart-title Open Deals
+			.col-xs-12.table-report.text-center
+				%table.table.table-hover
+					%thead
+						%tr
+							%th Deal
+							%th Advertiser
+							%th Agency
+							%th Budget
+							%th Stage
+							%th %
+							%th Start
+							%th Next Steps
+							%th Last Activity
+
+					%tbody
+						%tr
+							%td deal1
+							%td advertiser1
+							%td agency1
+							%td budget
+							%td stage
+							%td %
+							%td start
+							%td next steps
+							%td last activity
+						%tr
+							%td deal2
+							%td advertiser2
+							%td agency2
+							%td budget
+							%td stage
+							%td %
+							%td start
+							%td next steps
+							%td last activity
+						%tr
+							%td deal3
+							%td advertiser3
+							%td agency3
+							%td budget
+							%td stage
+							%td %
+							%td start
+							%td next steps
+							%td last activity
+
+		.row.well.kpi-block
+			%h4.chart-title Won Deals
+			.col-xs-12.table-report.text-center
+				%table.table.table-hover
+					%thead
+						%tr
+							%th Deal
+							%th Advertiser
+							%th Agency
+							%th Budget
+							%th Stage
+							%th %
+							%th Start
+							%th Next Steps
+							%th Last Activity
+
+					%tbody
+						%tr
+							%td deal1
+							%td advertiser1
+							%td agency1
+							%td budget
+							%td stage
+							%td %
+							%td start
+							%td next steps
+							%td last activity
+						%tr
+							%td deal2
+							%td advertiser2
+							%td agency2
+							%td budget
+							%td stage
+							%td %
+							%td start
+							%td next steps
+							%td last activity

@@ -95,6 +95,9 @@
     .when '/reports/pipeline_summary_reports',
       templateUrl: 'pipeline_summary_reports.html'
       controller: 'PipelineSummaryReportsController'
+    .when '/reports/initiatives_summary',
+      templateUrl: 'initiatives_summary.html'
+      controller: 'InitiativesSummaryController'
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
       controller: 'ActivityDetailReportsController'

@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$window', '$timeout', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter',
-        ($rootScope, $window, $timeout, $document, $scope, $filter, $modal, $q, $location, Deal, Stage, ExchangeRate, DealsFilter) ->
+    ['$rootScope', '$window', '$timeout', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter', 'shadeColor',
+        ($rootScope, $window, $timeout, $document, $scope, $filter, $modal, $q, $location, Deal, Stage, ExchangeRate, DealsFilter, shadeColor) ->
             formatMoney = $filter('formatMoney')
 
             $scope.selectedDeal = null
@@ -389,15 +389,6 @@
                         if $scope.filter.selected.yearClosed && col.open is false && $scope.filter.selected.yearClosed != moment(deal.closed_at).year()
                             return false
                         deal
-
-            shadeColor = (color, percent) ->
-                f = parseInt(color.slice(1), 16)
-                t = if percent < 0 then 0 else 255
-                p = if percent < 0 then percent * -1 else percent
-                R = f >> 16
-                G = f >> 8 & 0x00FF
-                B = f & 0x0000FF
-                '#' + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + Math.round((t - B) * p) + B).toString(16).slice(1)
 
             x = 0
             shift = 0
