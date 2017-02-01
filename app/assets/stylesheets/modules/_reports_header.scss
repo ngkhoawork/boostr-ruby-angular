@@ -1,0 +1,21 @@
+.reports-header {
+    display: table;
+    width: 100%;
+    margin: 10px 0 15px;
+    .header-title {
+        padding: 10px 80px 10px 0;
+        margin: 0;
+    }
+    .header-cell {
+        white-space: nowrap;
+        display: table-cell;
+        vertical-align: middle;
+        &:last-child {
+            width: 100%;
+            .header-cell-right {
+                display: inline-block;
+                vertical-align: middle;
+            }
+        }
+    }
+}

@@ -1,32 +1,37 @@
 #reports
   #nav.transparent
-    .container
+    .container-fluid
       .row
         .col-xs-12
-          %ul.nav.nav-tabs
-            %li.quota-period.pull-right.last{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                %span{ ng: { if: 'year' } }
-                  {{ year }} Quarterly
-                %span{ ng: { if: '!year && currentTimePeriod' } }
-                  {{ currentTimePeriod.name }} ({{ currentTimePeriod.start_date | date: 'shortDate'}} - {{ currentTimePeriod.end_date | date: 'shortDate' }})
-                %span.caret
-              %ul.dropdown-menu.time-periods
-                %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: !year && timePeriod.id == currentTimePeriod.id}' } }
-                  %a{ href: '', ng: { click: 'updateTimePeriod(timePeriod.id)' } }
-                    {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
-                %li{ ng: { repeat: 'y in years', class: '{active: year == y}' } }
-                  %a{ href: '', ng: { click: 'updateYear(y)' } }
-                    {{ y }} Quarterly
-            %li.pull-right
-              %a.export{ href: '', ng: { click: 'exportReports()' } }
-                = inline_svg 'icons/export.svg'
-                Export
+          .reports-header
+            .header-cell
+              .h3.header-title
+                Activity Summary
+            .header-cell
+              .pull-right
+                .header-cell-right
+                  %ul.nav-tabs
+                    %li.quota-period{ dropdown: true }
+                      %a{ href: '', dropdown: { toggle: true } }
+                        %span{ ng: { if: 'year' } }
+                          {{ year }} Quarterly
+                        %span{ ng: { if: '!year && currentTimePeriod' } }
+                          {{ currentTimePeriod.name }} ({{ currentTimePeriod.start_date | date: 'shortDate'}} - {{ currentTimePeriod.end_date | date: 'shortDate' }})
+                        %span.caret
+                      %ul.dropdown-menu.time-periods
+                        %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: !year && timePeriod.id == currentTimePeriod.id}' } }
+                          %a{ href: '', ng: { click: 'updateTimePeriod(timePeriod.id)' } }
+                            {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
+                        %li{ ng: { repeat: 'y in years', class: '{active: year == y}' } }
+                          %a{ href: '', ng: { click: 'updateYear(y)' } }
+                            {{ y }} Quarterly
+                .header-cell-right
+                  %a.export{ href: '', ng: { click: 'exportReports()' } }
+                    = inline_svg 'icons/export.svg'
+                    Export
   .container-fluid.table-report
     .row
       .col-xs-12
-        %h3
-          Activity Summary
 
     .row
       .col-md-12
