@@ -254,6 +254,16 @@
         .btn-main {
             margin-top: 5px;
         }
+        .switcher {
+            margin-top: -25px;
+            margin-right: 30px;
+            text-align: center;
+            .switch-remainder-form {
+                float: none;
+                display: inline-block;
+                margin-left: 0;
+            }
+        }
     }
     .deals-container {
         overflow-x: scroll;
@@ -383,4 +393,5 @@
             display: none;
         }
     }
+
 }

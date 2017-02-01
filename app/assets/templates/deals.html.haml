@@ -117,6 +117,14 @@
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
+				%div.pull-right.switcher
+					.show-hide-remainder-form
+						%span.title-remainder show this year closed deals only
+						%br
+						.switch-remainder-form
+							%input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'showThisYearClosedDeals'}
+							%label{:for => "rem-act-modal-toggle"}
+								%span
 		.row.deals-container
 			.deals-table
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
