@@ -243,6 +243,7 @@
                         $scope.columns[last.from.column].splice(last.from.deal, 0, deal)
 
             $scope.$on 'closeDealCanceled', $scope.undoLastMove
+            $scope.$on 'updated_deals', $scope.init
 
             $scope.filtering = (item) ->
                 if !item then return false
@@ -303,6 +304,21 @@
                     header.css('backgroundColor', color)
                     svgPolygon.css('fill', color)
                 return true
+
+            $scope.showDealEditModal = (deal) ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/deal_form.html'
+                    size: 'md'
+                    controller: 'DealsEditController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        deal: ->
+                            angular.copy deal
+
+            $scope.deleteDeal = (deal) ->
+                if confirm('Are you sure you want to delete "' +  deal.name + '"?')
+                    Deal.delete deal
 
             getExchangeRates = ->
                 ExchangeRate.active_exchange_rates().then (exchange_rates) ->

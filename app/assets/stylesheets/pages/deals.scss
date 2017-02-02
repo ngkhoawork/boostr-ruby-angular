@@ -349,6 +349,46 @@
         //box-shadow: 0 1px 3px gray;
         border-bottom: 2px solid #E4E4E6;
         background-color: white;
+        .block-menu {
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            i {
+                color: lighten($secondary-font-color, 20%);
+                cursor: pointer;
+                border-radius: 3px;
+                padding: 0 4px;
+                line-height: 18px;
+                font-size: 16px;
+                height: 18px;
+                &:hover {
+                    background-color: lighten($secondary-font-color, 10%);
+                    color: white;
+                }
+            }
+            .dropdown {
+                position: static;
+                .dropdown-menu {
+                    left: auto;
+                    right: -3px;
+                    padding: 10px 0;
+                    min-width: 100px;
+                    .dropdown-option {
+                        a {
+                            display: block;
+                            cursor: pointer;
+                            padding: 6px 20px;
+                            color: inherit;
+                            &:hover, &:focus {
+                                background-color: #EDEFF0;
+                                outline: none;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
         .date {
             margin-left: 10px;
             padding-top: 3px;
@@ -369,6 +409,7 @@
             color: #8D98A2;
         }
         span:nth-child(4) {
+            padding-right: 25px;
             i {
                 font-style: normal;
                 font-size: 18px;

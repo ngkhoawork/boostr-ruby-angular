@@ -157,3 +157,11 @@
 								{{deal.budget | convertCurrency: appliedExchangeRate.rate | formatMoney: appliedExchangeRate.currency.curr_symbol }}
 								%i &#183;
 								{{deal.members ? deal.members.join(', ') : '-'}}
+							%div.block-menu
+								%div{'dropdown': '', 'keyboard-nav': ''}
+									%i.fa.fa-ellipsis-h{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
+									.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+										.dropdown-option
+											%a{href: '', 'ng-click': 'showDealEditModal(deal)'} Edit
+										.dropdown-option
+											%a{href: '', 'ng-click': 'deleteDeal(deal)'} Delete
