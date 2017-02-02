@@ -10,7 +10,7 @@ class Address < ActiveRecord::Base
     self.mobile = mobile.gsub(/[^0-9]/, '') if attribute_present?('mobile')
   end
 
-  scope :contacts_by_email, -> email { where(addressable_type: 'Contact').where('email ilike ?', email) }
+  scope :contacts_by_email, -> email { where(addressable_type: 'Contact').where('email ilike ANY (array[?])', email) }
 
   def us_state
     if state.present?
