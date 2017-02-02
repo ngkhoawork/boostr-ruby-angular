@@ -32,7 +32,6 @@
                         %span.error-text {{errors.curr_cd}}
                         %label{ for: 'currency' }
                             Deal Currency
-                            %span.star
                         %ui-select{ name: 'currency', ng: { model: 'deal.curr_cd', required: true } }
                             %ui-select-match
                                 {{ $select.selected.name }}

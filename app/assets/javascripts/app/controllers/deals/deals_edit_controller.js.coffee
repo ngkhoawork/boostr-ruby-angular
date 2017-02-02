@@ -1,6 +1,6 @@
 @app.controller 'DealsEditController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName',
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName', 'Currency', 'CurrentUser'
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, Currency, CurrentUser) ->
   $scope.init = ->
     $scope.formType = 'Edit'
     $scope.submitText = 'Update'
@@ -9,6 +9,17 @@
     $scope.deal = deal
 
     getDealCustomFieldNames()
+
+    $q.all({
+      user: CurrentUser.get().$promise,
+      currencies: Currency.active_currencies()}
+    ).then (data) ->
+      $scope.currentUser = data.user
+      $scope.currencies = data.currencies
+
+      $scope.setDefaultCurrency()
+
+    console.log(deal)
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
@@ -20,6 +31,13 @@
 
     Stage.query().$promise.then (stages) ->
       $scope.stages = stages
+
+  $scope.setDefaultCurrency = ->
+    if $scope.deal.curr_cd then return
+    curr_cd = 'USD'
+    user_currency = _.find($scope.currencies, {curr_cd: $scope.currentUser.default_currency})
+    curr_cd = user_currency.curr_cd if user_currency
+    $scope.deal.curr_cd = curr_cd
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
