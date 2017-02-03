@@ -1,53 +1,55 @@
 #reports
   #nav.transparent
-    .container
+    .container-fluid
       .row
         .col-xs-12
-          %ul.nav.nav-tabs
-            %li.detail-filter.dropdown
-              %span Filter by
-              %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
-              %ul.kpi-block__filter
-                %li{ dropdown: true }
-                  %a{ href: '', dropdown: { toggle: true } }
-                    Creator
+          .reports-header
+            .header-cell
+              .h3.header-title
+                Activity Detail
+            .header-cell
+              %ul.nav.nav-tabs
+                %li.detail-filter.dropdown
+                  %span Filter by
+                  %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
+                  %ul.kpi-block__filter
+                    %li{ dropdown: true }
+                      %a{ href: '', dropdown: { toggle: true } }
+                        Creator
+                        %span.caret
+                      %ul.dropdown-menu
+                        %li{ ng: { repeat: 'member in members', class: '{active: member.id == memberId}' } }
+                          %a{ href: '', ng: { click: 'filterByMember(member.id)' } }
+                            {{ member.name }}
+                  %ul.kpi-block__filter
+                    %li{ dropdown: true }
+                      %a{ href: '', dropdown: { toggle: true } }
+                        Type
+                        %span.caret
+                      %ul.dropdown-menu
+                        %li{ ng: { repeat: 'activityType in activityTypes', class: '{active: activityType.id === activityTypeId}' } }
+                          %a{ href: '', ng: { click: 'filterByActivityType(activityType.id)' } }
+                            {{ activityType.name }}
+                  .date-picker-wrap
+                    %div.date-picker#kpi-date-picker{'date-range-picker': true,
+                                                     'ng-model': 'datePicker',
+                                                     :options => "{locale: {format: 'MMMM D, YYYY',
+                                                                            cancelLabel: 'Clear'},
+                                                                   eventHandlers: {'apply.daterangepicker': datePickerApply,
+                                                                                   'cancel.daterangepicker': datePickerCancel}}"}
+                      Time period
                     %span.caret
-                  %ul.dropdown-menu
-                    %li{ ng: { repeat: 'member in members', class: '{active: member.id == memberId}' } }
-                      %a{ href: '', ng: { click: 'filterByMember(member.id)' } }
-                        {{ member.name }}
-              %ul.kpi-block__filter
-                %li{ dropdown: true }
-                  %a{ href: '', dropdown: { toggle: true } }
-                    Type
-                    %span.caret
-                  %ul.dropdown-menu
-                    %li{ ng: { repeat: 'activityType in activityTypes', class: '{active: activityType.id === activityTypeId}' } }
-                      %a{ href: '', ng: { click: 'filterByActivityType(activityType.id)' } }
-                        {{ activityType.name }}
-              .date-picker-wrap
-                %div.date-picker#kpi-date-picker{'date-range-picker': true,
-                                                 'ng-model': 'datePicker',
-                                                 :options => "{locale: {format: 'MMMM D, YYYY',
-                                                                        cancelLabel: 'Clear'},
-                                                               eventHandlers: {'apply.daterangepicker': datePickerApply,
-                                                                               'cancel.daterangepicker': datePickerCancel}}"}
-                  Time period
-                %span.caret
-              %span#reset-filter{'ng-click': 'resetFilters()'}
-                Reset
-            %li.pull-right
-              %a.export{ href: '', ng: { click: 'exportReports()' } }
-                = inline_svg 'icons/export.svg'
-                Export
-  .container-fluid.table-report
-    .row
-      .col-xs-12
-        %h3.title
-          Activity Detail
-    .row.kpi-block.report
-      .col-xs-12
+                  %span#reset-filter{'ng-click': 'resetFilters()'}
+                    Reset
+            .header-cell
+              .pull-right
+                .header-cell-right
+                .header-cell-right
+                  %a.export{ href: '', ng: { click: 'exportReports()' } }
+                    = inline_svg 'icons/export.svg'
+                    Export
 
+  .container-fluid.table-report
     .row
       .col-md-12
         .table-wrapper
