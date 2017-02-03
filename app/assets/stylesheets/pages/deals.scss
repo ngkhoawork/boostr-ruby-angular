@@ -2,11 +2,12 @@
     $deals-menu-h: 100px;
     $deals-column-header-h: 72px;
     $deals-filter-w: 350px;
+    $deals-dropdown-w: 330px;
 
     font-family: "Avenir Next", Arial, serif;
     color: $main-font-color;
     background-color: #F5F5F5;
-    min-height: calc(100vh - 150px);
+    min-height: calc(100vh - #{$header-height});
     position: relative;
     overflow-x: hidden;
     a {
@@ -132,22 +133,25 @@
                 .dropdown {
                     position: static;
                     .dropdown-menu {
-                        left: -80%;
-                        padding: 0 0 10px;
-                        top: auto;
-                        width: $deals-filter-w;
+                        //left: -80%;
+                        left: auto;
+                        right: 0;
+                        padding: 10px 0;
+                        min-width: 100px;
                         .dropdown-search {
                             position: relative;
-                            padding: 10px;
+                            padding: 0 10px 10px;
                             margin-bottom: 0;
                             input {
                                 background-color: white;
                                 padding-right: 40px;
+                                min-width: $deals-dropdown-w;
+                                width: 100%;
                             }
                             i {
                                 position: absolute;
                                 right: 24px;
-                                top: 24px;
+                                top: 14px;
                                 font-size: 18px;
                                 color: $secondary-font-color;
                                 opacity: 0.7;
@@ -175,6 +179,7 @@
                             }
                         }
                         .dropdown-budget {
+                            width: $deals-dropdown-w + 15;
                             padding: 10px;
                             color: lighten($secondary-font-color, 30%);
                             .budget-range-input {
@@ -254,9 +259,19 @@
         .btn-main {
             margin-top: 5px;
         }
+        .switcher {
+            margin-top: -25px;
+            margin-right: 30px;
+            text-align: center;
+            .switch-remainder-form {
+                float: none;
+                display: inline-block;
+                margin-left: 0;
+            }
+        }
     }
     .deals-container {
-        overflow-x: scroll;
+        overflow-x: auto;
         position: relative;
     }
     .deals-table {
@@ -334,6 +349,46 @@
         //box-shadow: 0 1px 3px gray;
         border-bottom: 2px solid #E4E4E6;
         background-color: white;
+        .block-menu {
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            i {
+                color: lighten($secondary-font-color, 20%);
+                cursor: pointer;
+                border-radius: 3px;
+                padding: 0 4px;
+                line-height: 18px;
+                font-size: 16px;
+                height: 18px;
+                &:hover {
+                    background-color: lighten($secondary-font-color, 10%);
+                    color: white;
+                }
+            }
+            .dropdown {
+                position: static;
+                .dropdown-menu {
+                    left: auto;
+                    right: -3px;
+                    padding: 10px 0;
+                    min-width: 100px;
+                    .dropdown-option {
+                        a {
+                            display: block;
+                            cursor: pointer;
+                            padding: 6px 20px;
+                            color: inherit;
+                            &:hover, &:focus {
+                                background-color: #EDEFF0;
+                                outline: none;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
         .date {
             margin-left: 10px;
             padding-top: 3px;
@@ -354,6 +409,7 @@
             color: #8D98A2;
         }
         span:nth-child(4) {
+            padding-right: 25px;
             i {
                 font-style: normal;
                 font-size: 18px;
@@ -383,4 +439,5 @@
             display: none;
         }
     }
+
 }
