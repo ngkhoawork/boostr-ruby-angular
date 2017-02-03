@@ -184,7 +184,7 @@
                         if deal.agency then agencies.push deal.agency
                         if deal.budget && parseInt(deal.budget) > maxBudget
                             maxBudget = parseInt(deal.budget)
-                        dealYear = moment(deal.start_date).year()
+                        dealYear = moment(deal.closed_at).year()
                         if dealYear && dealYears.indexOf(dealYear) is -1
                             dealYears.push dealYear
                         stage = _.findWhere $scope.stages, id: deal.stage_id
@@ -335,15 +335,22 @@
 
             sortingDealsByDate = (columns) ->
                 _.each columns, (col, i) ->
-                    col.sort (d1, d2) ->
-                        d1 = new Date(d1.start_date)
-                        d2 = new Date(d2.start_date)
-                        if d1 > d2 then return 1
-                        if d1 < d2 then return -1
-                        return 0
-                    if !col.open then col.reverse()
+                    if col.open is false
+                        col.sort (d1, d2) ->
+                            d1 = new Date(d1.closed_at)
+                            d2 = new Date(d2.closed_at)
+                            if d1 > d2 then return -1
+                            if d1 < d2 then return 1
+                            return 0
+                    else
+                        col.sort (d1, d2) ->
+                            d1 = new Date(d1.start_date)
+                            d2 = new Date(d2.start_date)
+                            if d1 > d2 then return 1
+                            if d1 < d2 then return -1
+                            return 0
                     columns[i] = col.filter (deal) ->
-                        if $scope.filter.selected.yearClosed && col.open is false && $scope.filter.selected.yearClosed != moment(deal.start_date).year()
+                        if $scope.filter.selected.yearClosed && col.open is false && $scope.filter.selected.yearClosed != moment(deal.closed_at).year()
                             return false
                         deal
 

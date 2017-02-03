@@ -16,6 +16,7 @@ class DealIndexSerializer < ActiveModel::Serializer
     :source_type,
     :next_steps,
     :created_by,
+    :closed_at,
     :deleted_at,
     :advertiser,
     :agency,
