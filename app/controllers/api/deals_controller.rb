@@ -317,7 +317,7 @@ class Api::DealsController < ApplicationController
     elsif params[:filter] == 'user' && params[:user_id]
       deal_member_filter
     elsif params[:filter] == 'team' && team.present?
-      company.deals.by_deal_team(current_user.teams_tree_members.ids)
+      company.deals.by_deal_team(team.all_members.map(&:id) + team.all_leaders.map(&:id))
     elsif params[:client_id].present?
       company.deals.active
     else
