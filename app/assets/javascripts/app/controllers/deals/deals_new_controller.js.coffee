@@ -9,13 +9,15 @@
     $scope.agencies = []
     $scope.dealCustomFieldNames = []
     getDealCustomFieldNames()
-    CurrentUser.get().$promise.then (user) ->
-      $scope.currentUser = user
 
-    Currency.active_currencies().then (currencies) ->
-      $scope.currencies = currencies
+    $q.all({
+      user: CurrentUser.get().$promise,
+      currencies: Currency.active_currencies()},
+      fields: Field.defaults(deal, 'Deal')
+    ).then (data) ->
+      $scope.currentUser = data.user
+      $scope.currencies = data.currencies
 
-    Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
       $scope.deal = deal
