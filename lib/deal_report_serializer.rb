@@ -33,7 +33,7 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def agency
-    object.agency.serializable_hash(only: [:id, :name]) rescue nil
+    object.agency.serializable_hash(only: [:id, :name], include: { parent_client: { only: [:id, :name] } }) rescue nil
   end
 
   def users

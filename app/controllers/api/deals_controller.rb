@@ -126,6 +126,11 @@ class Api::DealsController < ApplicationController
         filtered_deals = filtered_deals.for_time_period(time_period.start_date, time_period.end_date)
       end
 
+      # Filter by product id
+      if product_filter
+        filtered_deals = filtered_deals.where(deal_products_budgets: { product_id: product_filter })
+      end
+
       filtered_deals = filtered_deals.select do |deal|
         (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
         (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true)
@@ -217,6 +222,10 @@ class Api::DealsController < ApplicationController
   end
 
   private
+
+  def product_filter
+    params[:product_id]
+  end
 
   def deal_params
     params.require(:deal).permit(
