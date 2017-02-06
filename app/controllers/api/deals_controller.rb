@@ -127,7 +127,7 @@ class Api::DealsController < ApplicationController
       end
 
       # Filter by product id
-      if product_filter
+      if product_filter && product_filter != 'all'
         filtered_deals = filtered_deals.joins('LEFT JOIN deal_products on deal_products.deal_id = deals.id').where(deal_products: { product_id: product_filter })
       end
 
