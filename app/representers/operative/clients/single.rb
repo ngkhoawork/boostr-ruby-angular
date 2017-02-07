@@ -1,5 +1,4 @@
 class Operative::Clients::Single < API::Single
-  include Representable::JSON
 
   properties :name, :city, :state, :zip, :phone, :country
 
@@ -15,7 +14,7 @@ class Operative::Clients::Single < API::Single
   end
 
   def type
-    represented.agency? ? 'Agency' : 'Advertiser'
+    represented.agency? ? 'agency' : 'advertiser'
   end
 
   def industry

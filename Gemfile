@@ -36,6 +36,7 @@ gem 'responders'
 gem 'roar'
 gem 'money'
 gem 'countries'
+gem 'faraday'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
