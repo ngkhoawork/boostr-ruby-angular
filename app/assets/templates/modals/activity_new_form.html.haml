@@ -37,11 +37,11 @@
                             or Agency
                         %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
                     %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openAccountModal()'}
-            %div{'ng-if': 'currentContact'}
+            %div{'ng-if': 'currentContact && !isEdit'}
                 .activity-contact
                     {{selectedType.action | firstUppercase}}
                     %span {{currentContact.name}}
-            %div{'ng-if': '!currentContact'}
+            %div{'ng-if': '!(currentContact && !isEdit)'}
                 .form-group.with-add-btn{'ng-class':'{error: errors.contacts}'}
                     %span.error-text {{errors.contacts}}
                     %label

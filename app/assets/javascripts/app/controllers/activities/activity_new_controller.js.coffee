@@ -5,6 +5,7 @@
             $scope.types = []
             $scope.showRelated = true
             $scope.showMeridian = true
+            $scope.isEdit = Boolean activity
             $scope.submitButtonText = 'Add Activity'
             $scope.popupTitle = 'Add New Activity'
             $scope.selectedType =
@@ -28,7 +29,7 @@
 
             #modal source dispatch
             if options
-                $scope.showRelated = false
+                $scope.showRelated = $scope.isEdit
                 switch options.type
                     when 'deal'
                         $scope.form.deal = options.data
@@ -40,6 +41,7 @@
                     when 'contact'
                         $scope.currentContact = options.data
                         $scope.form.contacts.push options.data
+                        if $scope.isEdit then break
                         if options.isAdvertiser
                             $scope.form.advertiser =
                                 id: options.data.client_id
@@ -78,7 +80,6 @@
                                     $scope.form.reminderTime = new Date(reminder.remind_on)
 #                                    $scope.editActivityReminder.remind_on = new Date(reminder.remind_on)
 #                                    $scope.editActivityReminder.completed = reminder.completed
-
 
             $scope.contacts = []
             $scope.showReminderForm = false
