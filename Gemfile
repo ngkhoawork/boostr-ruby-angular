@@ -33,7 +33,7 @@ gem 'griddler'
 gem 'griddler-sendgrid'
 gem 'aws-sdk'
 gem 'responders'
-gem 'roar-rails'
+gem 'roar'
 gem 'money'
 gem 'countries'
 
