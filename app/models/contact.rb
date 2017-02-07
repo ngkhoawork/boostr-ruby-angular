@@ -12,6 +12,8 @@ class Contact < ActiveRecord::Base
 
   has_and_belongs_to_many :activities, after_add: :update_activity_updated_at
 
+  delegate :email, :street1, :street2, :city, :state, :zip, :phone, :mobile, :country, to: :address, allow_nil: true
+
   accepts_nested_attributes_for :address
 
   validates :name, presence: true
