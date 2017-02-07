@@ -8,6 +8,10 @@ class DealMember < ActiveRecord::Base
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
+  delegate :email, to: :user
+
+  scope :ordered_by_share, -> { order(share: :desc) }
+
   def name
     user.name if user.present?
   end
