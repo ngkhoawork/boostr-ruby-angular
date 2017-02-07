@@ -487,4 +487,64 @@ RSpec.describe Deal, type: :model do
       expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'D')).not_to be_nil
     end
   end
+
+  context 'before_create' do
+    let(:won_stage) { create :stage, probability: 100, open: false }
+    let(:lost_stage) { create :stage, probability: 0, open: false }
+    let(:open_stage) { create :stage }
+
+    it 'when create deal with closed won stage set closed_at date as created_at' do
+      deal = build(
+        :deal,
+        stage: won_stage,
+        creator: user,
+        updator: user,
+        stage_updator: user,
+        stage_updated_at: Date.new,
+        company: company
+      )
+
+      deal.save!
+
+      expect(deal.closed_at).to eq deal.created_at.to_date
+    end
+
+    it 'when create deal with closed lost stage set closed_at date as created_at' do
+      deal = build(
+          :deal,
+          stage: lost_stage,
+          creator: user,
+          updator: user,
+          stage_updator: user,
+          stage_updated_at: Date.new,
+          company: company
+      )
+
+      deal.save!
+
+      expect(deal.closed_at).to eq deal.created_at.to_date
+    end
+
+    it 'has not closed_at when create not open deal' do
+      deal = build(
+        :deal,
+        stage: open_stage,
+        creator: user,
+        updator: user,
+        stage_updator: user,
+        stage_updated_at: Date.new,
+        company: company
+      )
+
+      deal.save!
+
+      expect(deal.closed_at).to be_nil
+    end
+  end
+
+  private
+
+  def user
+    @_user ||= create :user
+  end
 end
