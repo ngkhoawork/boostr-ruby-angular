@@ -22,6 +22,10 @@ class Client < ActiveRecord::Base
   belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
   has_one :address, as: :addressable
 
+  delegate :street1, :street2, :city, :state, :zip, :phone, :country, to: :address, allow_nil: true
+  delegate :name, to: :client_category, prefix: :category, allow_nil: true
+  delegate :name, to: :parent_client, prefix: true, allow_nil: true
+
   accepts_nested_attributes_for :address, :values
 
   validates :name, :client_type_id, presence: true
