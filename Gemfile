@@ -35,6 +35,7 @@ gem 'aws-sdk'
 gem 'responders'
 gem 'roar'
 gem 'money'
+gem 'faraday'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
