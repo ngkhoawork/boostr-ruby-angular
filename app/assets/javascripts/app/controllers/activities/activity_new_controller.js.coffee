@@ -1,10 +1,11 @@
 @app.controller "ActivityNewController",
-    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Contact', 'Reminder', 'activity', 'options', '$http'
-        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Contact, Reminder, activity, options, $http) ->
+    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Field', 'Contact', 'Reminder', 'activity', 'options', '$http'
+        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Field, Contact, Reminder, activity, options, $http) ->
 
             $scope.types = []
             $scope.showRelated = true
             $scope.showMeridian = true
+            $scope.isEdit = Boolean activity
             $scope.submitButtonText = 'Add Activity'
             $scope.popupTitle = 'Add New Activity'
             $scope.selectedType =
@@ -28,7 +29,7 @@
 
             #modal source dispatch
             if options
-                $scope.showRelated = false
+                $scope.showRelated = $scope.isEdit
                 switch options.type
                     when 'deal'
                         $scope.form.deal = options.data
@@ -40,6 +41,7 @@
                     when 'contact'
                         $scope.currentContact = options.data
                         $scope.form.contacts.push options.data
+                        if $scope.isEdit then break
                         if options.isAdvertiser
                             $scope.form.advertiser =
                                 id: options.data.client_id
@@ -79,7 +81,6 @@
 #                                    $scope.editActivityReminder.remind_on = new Date(reminder.remind_on)
 #                                    $scope.editActivityReminder.completed = reminder.completed
 
-
             $scope.contacts = []
             $scope.showReminderForm = false
 
@@ -99,6 +100,12 @@
 
             Contact.query().$promise.then (contacts) ->
                 $scope.contacts = contacts
+
+            Field.defaults({}, 'Client').then (fields) ->
+                client_types = Field.findClientTypes(fields)
+                client_types.options.forEach (option) ->
+                    $scope[option.name] = option.id
+
             $scope.onDealSelect = (item, model, label, event) ->
                 if !item then return
                 if item.advertiser_id
@@ -210,10 +217,9 @@
                     activityData.client_id = $scope.form.deal.advertiser_id
                     activityData.agency_id = $scope.form.deal.agency_id
                 else
-                    if $scope.form.advertiser
-                        activityData.client_id = $scope.form.advertiser.id
-                    if $scope.form.agency
-                        activityData.agency_id = $scope.form.agency.id
+                    activityData.deal_id = null
+                    activityData.client_id = $scope.form.advertiser && $scope.form.advertiser.id || null
+                    activityData.agency_id = $scope.form.agency && $scope.form.agency.id || null
 
                 if $scope.form.contacts.length
                     $scope.form.contacts = $scope.form.contacts.map (c) ->
