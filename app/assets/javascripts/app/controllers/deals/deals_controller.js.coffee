@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$window', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate',
-        ($rootScope, $window, $document, $scope, $filter, $modal, $q, $location, Deal, Stage, ExchangeRate) ->
+    ['$rootScope', '$window', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter',
+        ($rootScope, $window, $document, $scope, $filter, $modal, $q, $location, Deal, Stage, ExchangeRate, DealsFilter) ->
             formatMoney = $filter('formatMoney')
 
             $scope.selectedDeal = null
@@ -14,18 +14,18 @@
                 {name: 'My Team\'s Deals', param: 'team'}
                 {name: 'All Deals', param: 'company'}
             ]
-            currentYear = moment().year()
-            Selection = ->
-                @owner = ''
-                @advertiser = ''
-                @agency = ''
-                @budget = ''
-                @exchange_rate = ''
-                @yearClosed = currentYear
-                @date =
-                    startDate: null
-                    endDate: null
-                return
+#            currentYear = moment().year()
+#            Selection = ->
+#                @owner = ''
+#                @advertiser = ''
+#                @agency = ''
+#                @budget = ''
+#                @exchange_rate = ''
+#                @yearClosed = currentYear
+#                @date =
+#                    startDate: null
+#                    endDate: null
+#                return
 
             $scope.filter =
                 exchange_rates: []
@@ -38,7 +38,7 @@
                 search: ''
                 minBudget: null
                 maxBudget: null
-                selected: new Selection()
+                selected: DealsFilter.selected
                 slider:
                     minValue: 0
                     maxValue: 0
@@ -125,12 +125,9 @@
                     sortingDealsByDate(columns)
                     if !reset then this.isOpen = false
                 reset: (key) ->
-                    if key is 'yearClosed'
-                        this.selected[key] = ''
-                    else
-                        this.selected[key] = new Selection()[key]
+                    DealsFilter.reset(key)
                 resetAll: ->
-                    this.selected = new Selection()
+                    DealsFilter.resetAll()
                     this.apply(true)
                 getBudgetValue: ->
                     budget = this.selected.budget
@@ -147,7 +144,7 @@
                         return """#{date.startDate.format('MMMM D, YYYY')} -\n#{date.endDate.format('MMMM D, YYYY')}"""
                     return 'Time period'
                 select: (key, value) ->
-                    this.selected[key] = value
+                    DealsFilter.select(key, value)
                 onDropdownToggle: ->
                     this.search = ''
                 open: (event) ->
@@ -163,7 +160,7 @@
                     advertisers = []
                     agencies = []
                     columns = []
-                    dealYears = [currentYear]
+                    dealYears = [DealsFilter.currentYear]
                     maxBudget = 0
                     $scope.deals = data.deals
                     $scope.stages = data.stages
@@ -201,6 +198,7 @@
                     $scope.filter.dealYears = dealYears
                     getExchangeRates()
                     sortingDealsByDate(columns)
+                    $scope.filter.apply()
 
             $scope.filterDeals = (filter) ->
                 $scope.selectedType = filter
