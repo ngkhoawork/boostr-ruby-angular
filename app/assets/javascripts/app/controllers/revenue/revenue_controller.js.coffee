@@ -26,7 +26,7 @@
         TempIO.all({filter: $scope.revenueFilter.param}).then (tempIOs) ->
           $scope.revenue = tempIOs
       when "upside", "risk"
-        DisplayLineItem.all({filter: $scope.revenueFilter.param}).then (ios) ->
+        DisplayLineItem.all({filter: $scope.revenueFilter.param, io_owner: $routeParams.io_owner}).then (ios) ->
           $scope.revenue = ios
       else
         IO.all({filter: $scope.revenueFilter.param}).then (ios) ->

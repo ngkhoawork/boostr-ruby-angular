@@ -13,6 +13,18 @@
             $scope.loadingMoreActivities = false
             $scope.contactSearch = ""
 
+            $scope.pacingAlertsFilters = [
+              { name: 'My Alerts', value: 'my' }
+              { name: 'My Team\'s Lines', value: 'teammates' }
+              { name: 'All', value: 'all' }
+            ]
+
+            $scope.currentPacingAlertsFilter = { name: 'All', value: 'all' }
+
+            $scope.setPacingAlertsFilter = (filter) ->
+              $scope.currentPacingAlertsFilter = filter
+              $scope.init()
+
             $scope.showSpinners = (reminder) ->
                 reminder.showSpinners = true
 
@@ -69,7 +81,7 @@
                 Contact.query().$promise.then (contacts) ->
                     $scope.contacts = contacts
 
-                Dashboard.get().then (dashboard) ->
+                Dashboard.get({ io_owner: $scope.currentPacingAlertsFilter.value }).then (dashboard) ->
                     $scope.dashboard = dashboard
 
                 Field.defaults({}, 'Client').then (fields) ->

@@ -4,9 +4,10 @@
 
   resource = $resource '/api/dashboard'
 
-  @get = ->
+  @get = (params) ->
     deferred = $q.defer()
-    resource.get {}, (team) ->
+    resource.get params, (team) ->
+#    resource.get params, (team) ->
       deferred.resolve(team)
     deferred.promise
 
