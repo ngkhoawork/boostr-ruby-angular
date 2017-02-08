@@ -1,7 +1,6 @@
 @app.controller 'DealsNewController',
 ['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName', 'Currency', 'CurrentUser'
 ($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, Currency, CurrentUser) ->
-
   $scope.init = ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
@@ -12,9 +11,9 @@
 
     $q.all({
       user: CurrentUser.get().$promise,
-      currencies: Currency.active_currencies()},
+      currencies: Currency.active_currencies(),
       fields: Field.defaults(deal, 'Deal')
-    ).then (data) ->
+    }).then (data) ->
       $scope.currentUser = data.user
       $scope.currencies = data.currencies
 
