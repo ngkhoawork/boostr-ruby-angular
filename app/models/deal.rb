@@ -53,9 +53,6 @@ class Deal < ActiveRecord::Base
   end
 
   after_update do
-    # if stage_id_changed?
-    #   update_close
-    # end
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
@@ -63,6 +60,7 @@ class Deal < ActiveRecord::Base
 
   before_create do
     update_stage
+    self.closed_at = created_at unless stage.open?
   end
 
   after_create do
