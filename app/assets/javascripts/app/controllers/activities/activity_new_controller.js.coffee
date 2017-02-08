@@ -1,6 +1,6 @@
 @app.controller "ActivityNewController",
-    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Contact', 'Reminder', 'activity', 'options', '$http'
-        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Contact, Reminder, activity, options, $http) ->
+    ['$scope', '$rootScope', '$modalInstance', 'Activity', 'ActivityType', 'Deal', 'Client', 'Field', 'Contact', 'Reminder', 'activity', 'options', '$http'
+        ($scope, $rootScope, $modalInstance, Activity, ActivityType, Deal, Client, Field, Contact, Reminder, activity, options, $http) ->
 
             $scope.types = []
             $scope.showRelated = true
@@ -100,6 +100,12 @@
 
             Contact.query().$promise.then (contacts) ->
                 $scope.contacts = contacts
+
+            Field.defaults({}, 'Client').then (fields) ->
+                client_types = Field.findClientTypes(fields)
+                client_types.options.forEach (option) ->
+                    $scope[option.name] = option.id
+
             $scope.onDealSelect = (item, model, label, event) ->
                 if !item then return
                 if item.advertiser_id

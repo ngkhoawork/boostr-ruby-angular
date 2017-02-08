@@ -24,18 +24,18 @@
                     %label
                         Related to Deal
                         %span.star *
-                    %input.form-control{'placeholder': 'Choose Deal', 'ng-model': 'form.deal', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)', 'typeahead-on-select': 'onDealSelect($item, $model, $label, $event)'}
+                    %input.form-control{'placeholder': 'Choose Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)', 'typeahead-on-select': 'onDealSelect($item, $model, $label, $event)'}
                 .advertiser-agency
                     .form-group.advertiser-field{'ng-class':'{error: errors.advertiser}'}
                         %span.error-text {{errors.advertiser}}
                         %label{style: 'display: block'}
                             or Advertiser
-                        %input.form-control{'placeholder': 'Choose Advertiser', 'ng-model': 'form.advertiser', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "advertiser")'}
+                        %input.form-control{'placeholder': 'Choose Advertiser', 'ng-model': 'form.advertiser', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "advertiser")'}
                     .form-group.agency-field{'ng-class':'{error: errors.agency}'}
                         %span.error-text {{errors.agency}}
                         %label{style: 'display: block'}
                             or Agency
-                        %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
+                        %input.form-control{'placeholder': 'Choose Agency', 'ng-model': 'form.agency', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchClients($viewValue, "agency")'}
                     %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openAccountModal()'}
             %div{'ng-if': 'currentContact && !isEdit'}
                 .activity-contact
