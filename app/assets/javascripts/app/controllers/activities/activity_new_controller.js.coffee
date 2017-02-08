@@ -122,6 +122,7 @@
                     name: str
                 if type is 'advertiser' then q.client_type_id = $scope.Advertiser
                 if type is 'agency' then q.client_type_id = $scope.Agency
+                console.log(q)
                 Client.query(q).$promise.then (clients) ->
                     clients
 
@@ -211,10 +212,9 @@
                     activityData.client_id = $scope.form.deal.advertiser_id
                     activityData.agency_id = $scope.form.deal.agency_id
                 else
-                    if $scope.form.advertiser
-                        activityData.client_id = $scope.form.advertiser.id
-                    if $scope.form.agency
-                        activityData.agency_id = $scope.form.agency.id
+                    activityData.deal_id = null
+                    activityData.client_id = $scope.form.advertiser && $scope.form.advertiser.id || null
+                    activityData.agency_id = $scope.form.agency && $scope.form.agency.id || null
 
                 if $scope.form.contacts.length
                     $scope.form.contacts = $scope.form.contacts.map (c) ->
