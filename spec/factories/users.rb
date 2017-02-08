@@ -5,9 +5,11 @@ FactoryGirl.define do
     first_name { FFaker::Name.first_name }
     last_name { FFaker::Name.last_name }
     title { FFaker::Job.title }
+    default_currency 'USD'
 
     before(:create) do |item|
       item.company = Company.first
+      create(:currency)
     end
   end
 
