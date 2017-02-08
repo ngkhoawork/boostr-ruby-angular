@@ -128,7 +128,6 @@
                     name: str
                 if type is 'advertiser' then q.client_type_id = $scope.Advertiser
                 if type is 'agency' then q.client_type_id = $scope.Agency
-                console.log(q)
                 Client.query(q).$promise.then (clients) ->
                     clients
 
