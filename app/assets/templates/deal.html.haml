@@ -10,6 +10,7 @@
         %h3.deal-name
           {{ currentDeal.name }}
           %i.fa.fa-pencil.edit-deal{'ng-click': 'showDealEditModal(currentDeal)'}
+          %i.fa.fa-trash.delete-deal{'ng-click': 'deleteDeal(currentDeal)'}
         .deal-info{ 'ng-if': "currentDeal.agency_id" }
           Agency - {{currentDeal.agency.name}}
         .deal-info{ 'ng-if': "currentDeal.advertiser_id" }
