@@ -9,7 +9,7 @@ FactoryGirl.define do
 
     before(:create) do |item|
       item.company = Company.first
-      create(:currency)
+      create(:currency) if Currency.find_by(curr_cd: 'USD').blank?
     end
   end
 
