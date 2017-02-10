@@ -14,10 +14,13 @@
             $scope.contactSearch = ""
 
             $scope.pacingAlertsFilters = [
-              { name: 'My Alerts', value: 'my' }
-              { name: 'My Team\'s Lines', value: 'teammates' }
-              { name: 'All', value: 'all' }
+              { name: 'My Lines', value: 'my', order: 0 }
+              { name: 'My Team\'s Lines', value: 'teammates', order: 1 }
+              { name: 'All Lines', value: 'all', order: 2 }
             ]
+
+            $scope.unorderedFilters = (values) ->
+              new Object(values)
 
             $scope.currentPacingAlertsFilter = { name: 'All', value: 'all' }
 
