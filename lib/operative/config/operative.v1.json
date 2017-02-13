@@ -1,0 +1,15 @@
+{
+  "resources": [
+    {
+      "name": "create_account",
+      "http": {
+        "method": "create_account",
+        "endpoint": "/operativeone/api/accounts/",
+        "request_type": "post",
+        "description": ""
+      }
+    }
+  ]
+}
+
+//TODO: Add objects for validating input objects
