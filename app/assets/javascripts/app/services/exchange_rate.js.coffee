@@ -36,6 +36,13 @@
     )
     deferred.promise
 
+  @delete = (exchangeRate) ->
+    deferred = $q.defer()
+    resource.delete id: exchangeRate.id, ->
+      deferred.resolve()
+      $rootScope.$broadcast 'exchange_rates_modified'
+    deferred.promise
+
   @active_exchange_rates = (params) ->
     deferred = $q.defer()
     resource.active_exchange_rates params, (data) ->
