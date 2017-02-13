@@ -13,11 +13,14 @@ class Operative::Deals::Single < API::Single
   property :description, exec_context: :decorator
   property :name, exec_context: :decorator
 
-  property :advertiser, decorator: Operative::AdvertiserRepresenter, wrap: :accounts
-  property :agency, decorator: Operative::AgencyRepresenter, wrap: :accounts
+  property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
   property :sales_stage, as: :name, wrap: :salesStage, exec_context: :decorator
   property :primary_sales_person, as: :primarySalesperson, exec_context: :decorator
   property :owner, exec_context: :decorator
+
+  def accounts
+    represented
+  end
 
   def sales_order_type
     represented.agency.present? ? 'Agency Buy' : 'Direct to Advertiser'
