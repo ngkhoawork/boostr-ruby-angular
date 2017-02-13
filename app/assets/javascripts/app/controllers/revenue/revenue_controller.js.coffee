@@ -1,6 +1,6 @@
 @app.controller 'RevenueController',
-['$scope', '$modal', '$filter', '$routeParams', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem',
-($scope, $modal, $filter, $routeParams, $location, $q, IO, TempIO, DisplayLineItem) ->
+['$scope', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem',
+($scope, $modal, $filter, $routeParams, $route, $location, $q, IO, TempIO, DisplayLineItem) ->
 
   $scope.revenueFilters = [
     { name: 'IOs', param: '' }
@@ -19,6 +19,17 @@
 
   $scope.searchText = ''
 
+  $scope.pacingAlertsFilters = [
+    { name: 'My Lines', value: 'my', order: 0 }
+    { name: 'My Team\'s Lines', value: 'teammates', order: 1 }
+    { name: 'All Lines', value: 'all', order: 2 }
+  ]
+
+  $scope.currentPacingAlertsFilterValue =  $routeParams.io_owner || 'all'
+
+  $scope.setPacingAlertsFilter = (filter) ->
+    $location.search({ filter: $scope.revenueFilter.param, io_owner: filter.value })
+
   $scope.init = ->
     $scope.revenue = []
     switch $scope.revenueFilter.param
@@ -26,7 +37,7 @@
         TempIO.all({filter: $scope.revenueFilter.param}).then (tempIOs) ->
           $scope.revenue = tempIOs
       when "upside", "risk"
-        DisplayLineItem.all({filter: $scope.revenueFilter.param, io_owner: $routeParams.io_owner}).then (ios) ->
+        DisplayLineItem.all({ filter: $scope.revenueFilter.param, io_owner: $routeParams.io_owner || $scope.currentPacingAlertsFilterValue }).then (ios) ->
           $scope.revenue = ios
       else
         IO.all({filter: $scope.revenueFilter.param}).then (ios) ->

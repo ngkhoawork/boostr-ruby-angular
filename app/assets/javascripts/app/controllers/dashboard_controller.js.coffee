@@ -19,10 +19,7 @@
               { name: 'All Lines', value: 'all', order: 2 }
             ]
 
-            $scope.unorderedFilters = (values) ->
-              new Object(values)
-
-            $scope.currentPacingAlertsFilter = { name: 'All', value: 'all' }
+            $scope.currentPacingAlertsFilter = { name: 'All', value: 'all', order: 2 }
 
             $scope.setPacingAlertsFilter = (filter) ->
               $scope.currentPacingAlertsFilter = filter

@@ -13,6 +13,11 @@
 
     .row
       .col-md-12
+        .risk-upside-filters{ ng: { if: "revenueFilter.param == 'risk' || revenueFilter.param == 'upside'"} }
+          %span{ ng: { class: '{ active: currentPacingAlertsFilterValue == io_owner_filter.value }', click: 'setPacingAlertsFilter(io_owner_filter)', repeat: 'io_owner_filter in pacingAlertsFilters | orderBy: \'order\'' } }
+            {{io_owner_filter.name}}
+    .row
+      .col-md-12
         .navbar.navbar-white
           %ul.nav.navbar-nav
             %li{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}' } }
