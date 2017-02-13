@@ -1,58 +1,42 @@
+require 'representable/xml'
+
 class Operative::Deals::Single < API::Single
   include Representable::JSON
+  include Representable::XML
   include ActionView::Helpers::NumberHelper
 
-  property :name, exec_context: :decorator
+  self.representation_wrap = :salesOrder
+
+  property :sales_order_type, as: :name, exec_context: :decorator, wrap: :salesOrderType
   property :alternate_id, as: :alternateId, exec_context: :decorator
-  property :accounts, exec_context: :decorator
   property :next_steps, as: :nextSteps
   property :description, exec_context: :decorator
+  property :name, exec_context: :decorator
 
-  nested :salesOrderType, exec_context: :decorator do
-    property :type, as: :name
-  end
-
-  property :stage, as: :salesStage do
-    property :name
-  end
-
+  property :advertiser, decorator: Operative::AdvertiserRepresenter, wrap: :accounts
+  property :agency, decorator: Operative::AgencyRepresenter, wrap: :accounts
+  property :sales_stage, as: :name, wrap: :salesStage, exec_context: :decorator
   property :primary_sales_person, as: :primarySalesperson, exec_context: :decorator
   property :owner, exec_context: :decorator
 
-  def name
-    "#{represented.name}_#{represented.id}"
+  def sales_order_type
+    represented.agency.present? ? 'Agency Buy' : 'Direct to Advertiser'
   end
 
-  def type
-    represented.agency.present? ? 'Agency Buy' : 'Direct to Advertiser'
+  def name
+    "#{represented.name}_#{represented.id}"
   end
 
   def alternate_id
     represented.id
   end
 
+  def sales_stage
+    represented.stage.name
+  end
+
   def description
     "Budget: #{deal_budget}, start date: #{deal_start_date}, end_date: #{deal_end_date}"
-  end
-
-  def accounts
-    [advertiser_account, agency_account].compact
-  end
-
-  def advertiser_account
-    { 'account' => { 'externalId' => advertiser_external_id.to_s } } if advertiser_external_id.present?
-  end
-
-  def agency_account
-    { 'account' => { 'externalId' => agency_external_id.to_s } } if agency_external_id.present?
-  end
-
-  def advertiser_external_id
-    @_advertiser_external_id ||= represented.advertiser_id
-  end
-
-  def agency_external_id
-    @_agency_external_id ||= represented.agency_id
   end
 
   def deal_budget
@@ -72,11 +56,11 @@ class Operative::Deals::Single < API::Single
   end
 
   def primary_sales_person
-    deal_members_emails.last
+    deal_members_emails[0]
   end
 
   def owner
-    deal_members_emails.first
+    deal_members_emails[1]
   end
 
   def deal_members_emails
