@@ -197,7 +197,7 @@
         updateTalkus(user)
 
   updateTalkus = (user) ->
-    talkus('init', 'pWnCYsF52JptADxeQ',
+    talkus('init', 'qu346HQax2ut3MQr4',
       id: user.id
       name: user.name
       email: user.email
