@@ -2,15 +2,16 @@ require 'rails_helper'
 
 describe Operative::Deals::Single do
   it 'has proper mapped value' do
-    expect(deal_mapper['name']).to eq deal_name
-    expect(deal_mapper['alternateId']).to eq deal.id
-    expect(deal_mapper['nextSteps']).to eq deal.next_steps
-    expect(deal_mapper['description']).to eq deal_description
-    expect(deal_mapper['salesOrderType']['name']).to eq 'Agency Buy'
-    expect(deal_mapper['salesStage']['name']).to eq deal.stage.name
-    expect(deal_mapper['accounts']).to eq deal_accounts
-    expect(deal_mapper['owner']).to eq user.email
-    expect(deal_mapper['primarySalesperson']).to eq second_user.email
+    expect(deal_mapper).to include deal_name
+    expect(deal_mapper).to include deal.id.to_s
+    expect(deal_mapper).to include deal.next_steps
+    expect(deal_mapper).to include deal_description
+    expect(deal_mapper).to include 'Agency Buy'
+    expect(deal_mapper).to include deal.stage.name
+    expect(deal_mapper).to include deal_agency
+    expect(deal_mapper).to include deal_advertiser
+    expect(deal_mapper).to include user.email
+    expect(deal_mapper).to include second_user.email
   end
 
   private
@@ -20,7 +21,7 @@ describe Operative::Deals::Single do
   end
 
   def deal_mapper
-    @_deal_mapper ||= described_class.new(deal).to_hash
+    @_deal_mapper ||= described_class.new(deal).to_xml
   end
 
   def deal_name
@@ -39,11 +40,12 @@ describe Operative::Deals::Single do
     "Budget: $20,000.00, start date: #{deal_start_date}, end_date: #{deal_end_date}"
   end
 
-  def deal_accounts
-    [
-      { 'account' => { 'externalId' => "#{deal.advertiser_id}" } },
-      { 'account' => { 'externalId' => "#{deal.agency_id}" } }
-    ]
+  def deal_agency
+    "<externalId>#{deal.agency_id}</externalId>"
+  end
+
+  def deal_advertiser
+    "<externalId>#{deal.advertiser_id}</externalId>"
   end
 
   def deal_start_date
