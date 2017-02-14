@@ -25,7 +25,7 @@
     { name: 'All Lines', value: 'all', order: 2 }
   ]
 
-  $scope.currentPacingAlertsFilterValue =  $routeParams.io_owner || 'all'
+  $scope.currentPacingAlertsFilterValue =  $routeParams.io_owner || 'my'
 
   $scope.setPacingAlertsFilter = (filter) ->
     $location.search({ filter: $scope.revenueFilter.param, io_owner: filter.value })

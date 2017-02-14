@@ -19,7 +19,7 @@
               { name: 'All Lines', value: 'all', order: 2 }
             ]
 
-            $scope.currentPacingAlertsFilter = { name: 'All', value: 'all', order: 2 }
+            $scope.currentPacingAlertsFilter = { name: 'My Lines', value: 'my', order: 2 }
 
             $scope.setPacingAlertsFilter = (filter) ->
               $scope.currentPacingAlertsFilter = filter
