@@ -4,7 +4,10 @@
   $scope.client = client
   $scope.clients = []
   $scope.query = ""
-  $scope.countries = CountriesList
+  $scope.countries = []
+
+  CountriesList.get (data) ->
+    $scope.countries = data.countries
 
   $scope.init = () ->
     $scope.formType = "Edit"

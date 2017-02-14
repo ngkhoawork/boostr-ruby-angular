@@ -6,9 +6,18 @@
   $scope.submitText = "Create"
   $scope.contact = contact || {}
   $scope.query = ""
-  $scope.countries = CountriesList
-  $scope.showAddressFields = Boolean(contact.address && (contact.address.country || contact.address.street1 || contact.address.city || contact.address.state || contact.address.zip))
+  $scope.countries = []
+  $scope.showAddressFields = Boolean(contact.address and
+      (contact.address.country or
+        contact.address.street1 or
+        contact.address.city or
+        contact.address.state or
+        contact.address.zip))
 
+
+  CountriesList.get (data) ->
+    $scope.countries = data.countries
+  
   Client.query({filter: 'all'}).$promise.then (clients) ->
     $scope.clients = clients
 

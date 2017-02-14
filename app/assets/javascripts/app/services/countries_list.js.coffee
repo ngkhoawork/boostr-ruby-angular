@@ -1,13 +1,7 @@
 @service.service 'CountriesList',
-    ['$resource',
-        ($resource) ->
-            countriesList = [
-                'Australia'
-                'Brazil'
-                'Canada'
-                'Denmark'
-                'United States of America'
-            ]
+['$resource', '$q',
+    ($resource, $q) ->
 
-            return countriesList
-    ]
+        resource = $resource '/api/countries', {}
+
+]

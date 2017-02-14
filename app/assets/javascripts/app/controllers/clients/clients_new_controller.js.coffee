@@ -7,7 +7,10 @@
   $scope.client = new Client(client || {})
   $scope.clients = []
   $scope.query = ""
-  $scope.countries = CountriesList
+  $scope.countries = []
+
+  CountriesList.get (data) ->
+    $scope.countries = data.countries
 
   Field.defaults($scope.client, 'Client').then (fields) ->
     if ($scope.client.client_type)
