@@ -62,7 +62,6 @@
     )
 
   $scope.setClient = (client) ->
-    console.log(client)
     $scope.currentClient = client
     $scope.activities = client.activities.concat(client.agency_activities)
 #    $scope.initActivity()

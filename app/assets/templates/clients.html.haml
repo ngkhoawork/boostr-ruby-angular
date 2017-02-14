@@ -91,9 +91,9 @@
                   %strong
                     Address
                 .col-xs-9.detail
-                  {{ currentClient.address.street1 }}
-                  %br
-                  {{ currentClient.address.city }}, {{ currentClient.address.state }}  {{ currentClient.address.zip }}
+                  %div {{ currentClient.address.country }}
+                  %div {{ currentClient.address.street1 }}
+                  %div {{ currentClient.address.city }}, {{ currentClient.address.state }}  {{ currentClient.address.zip }}
             .well
               .row
                 .col-xs-3

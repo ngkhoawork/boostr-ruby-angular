@@ -52,10 +52,10 @@
                 %div{ ng: { bind: { html: 'subcategory.name' } } }
       .form-group
         %label{ for: 'country' } Country
-        %ui-select{ name: 'country', ng: { model: 'client.adress.country', change: 'searchCountries("")', disabled: true } }
+        %ui-select{ name: 'country', ng: { model: 'client.address.country', disabled: true } }
           %ui-select-match{ placeholder: 'Country' }
             {{ $select.selected }}
-          %ui-select-choices{ repeat: 'country in countries' }
+          %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
             %div {{ country }}
       .form-group
         %label{ for: 'street1' } Address

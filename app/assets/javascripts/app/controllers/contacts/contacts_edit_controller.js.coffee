@@ -1,16 +1,21 @@
 @app.controller "ContactsEditController",
-['$scope', '$modalInstance', '$filter', 'Contact', 'Client',
-($scope, $modalInstance, $filter, Contact, Client) ->
+['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'CountriesList'
+($scope, $modalInstance, $filter, Contact, Client, CountriesList) ->
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.contact = Contact.get()
-
-  console.log($scope.contact)
   $scope.query = ""
+  $scope.countries = CountriesList
+  $scope.showAddressFields = Boolean($scope.contact.address and
+          ($scope.contact.address.country or
+              $scope.contact.address.street1 or
+              $scope.contact.address.city or
+              $scope.contact.address.state or
+              $scope.contact.address.zip))
+
   Client.query(filter: 'all').$promise.then (clients) ->
     $scope.clients = clients
-
 
   if $scope.contact && $scope.contact.address
     $scope.contact.address.phone = $filter('tel')($scope.contact.address.phone)

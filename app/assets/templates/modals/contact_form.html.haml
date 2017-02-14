@@ -44,11 +44,18 @@
       .form-group
         %label{ for: 'note' } Note
         %textarea.form-control{'msd-elastic': '', name: 'note', placeholder: 'Type your note here', ng: { model: 'contact.note' } }
-      .form-group.text-center
-        %a.btn.add-btn{ 'ng-click': 'showAddressFields = 1', 'ng-hide': 'showAddressFields' }
+      .form-group.text-center{'ng-hide': 'showAddressFields'}
+        %a.btn.add-btn{ 'ng-click': 'showAddressFields = true'}
           %i.fa.fa-plus
           Add Address
-      %div{ 'ng-show': 'showAddressFields || contact.address.street1 || contact.address.city || contact.address.state || contact.address.zip' }
+      %div{ 'ng-show': 'showAddressFields' }
+        .form-group
+          %label{ for: 'country' } Country
+          %ui-select{ name: 'country', ng: { model: 'contact.address.country', disabled: true } }
+            %ui-select-match{ placeholder: 'Country' }
+              {{ $select.selected }}
+            %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
+              %div {{ country }}
         .form-group
           %label{ for: 'street1' } Address
           %input.form-control{ name: 'street1', placeholder: 'Address', ng: { model: 'contact.address.street1' } }

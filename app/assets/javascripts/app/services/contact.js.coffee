@@ -10,6 +10,7 @@
     address_attributes = {}
     if original.contact.address
       address_attributes =
+        country: original.contact.address.country
         street1: original.contact.address.street1
         street2: original.contact.address.street2
         city: original.contact.address.city
