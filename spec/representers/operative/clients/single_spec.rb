@@ -17,7 +17,7 @@ describe Operative::Clients::Single do
       expect(client_mapper['addressLine1']).to eq client.street1
       expect(client_mapper['addressLine2']).to eq client.street2
       expect(client_mapper['industry']).to eq client.category_name
-      expect(client_mapper['accountType']).to eq 'Advertiser'
+      expect(client_mapper['accountType']).to eq 'advertiser'
       expect(client_mapper['parentAccount']).to eq parent_client.name
     end
 end

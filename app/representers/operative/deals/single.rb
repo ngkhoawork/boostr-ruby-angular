@@ -1,7 +1,6 @@
 require 'representable/xml'
 
 class Operative::Deals::Single < API::Single
-  include Representable::JSON
   include Representable::XML
   include ActionView::Helpers::NumberHelper
 
