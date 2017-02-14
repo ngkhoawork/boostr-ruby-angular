@@ -68,6 +68,7 @@ class Api::ContactsController < ApplicationController
       :client_id,
       address_attributes: [
         :id,
+        :country,
         :street1,
         :street2,
         :city,
