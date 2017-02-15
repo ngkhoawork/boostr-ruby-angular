@@ -50,13 +50,6 @@
           Add Address
       %div{ 'ng-show': 'showAddressFields' }
         .form-group
-          %label{ for: 'country' } Country
-          %ui-select{ name: 'country', ng: { model: 'contact.address.country', disabled: true } }
-            %ui-select-match{ placeholder: 'Country' }
-              {{ $select.selected }}
-            %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
-              %div {{ country }}
-        .form-group
           %label{ for: 'street1' } Address
           %input.form-control{ name: 'street1', placeholder: 'Address', ng: { model: 'contact.address.street1' } }
         .form-group
@@ -72,8 +65,15 @@
                 %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
                   %div{ ng: { bind: { html: 'state.name' } } }
             .col-xs-3
-              %label{ for: 'zip' } Zip
+              %label{ for: 'zip' } Postal
               %input.form-control{ name: 'zip', placeholder: 'Zip', ng: { model: 'contact.address.zip' }  }
+        .form-group
+          %label{ for: 'country' } Country
+          %ui-select{ name: 'country', ng: { model: 'contact.address.country', disabled: true } }
+            %ui-select-match{ placeholder: 'Country' }
+              {{ $select.selected }}
+            %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
+              %div {{ country }}
 
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel

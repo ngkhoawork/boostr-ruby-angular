@@ -122,7 +122,7 @@
               .col-xs-10.detail
                 %div {{ currentContact.address.country }}
                 %div {{ currentContact.address.street1 }}
-                %div {{ currentContact.address.city }}, {{ currentContact.address.state }}  {{ currentContact.address.zip }}
+                %div {{ currentContact.address.city }}{{ currentContact.address.city && currentContact.address.state ? ', ' : '' }}{{ currentContact.address.state }} {{ currentContact.address.zip }}
           .well
             .row
               .col-xs-2
