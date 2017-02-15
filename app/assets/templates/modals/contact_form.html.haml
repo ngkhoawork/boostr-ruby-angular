@@ -65,8 +65,8 @@
                 %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
                   %div{ ng: { bind: { html: 'state.name' } } }
             .col-xs-3
-              %label{ for: 'zip' } Postal
-              %input.form-control{ name: 'zip', placeholder: 'Postal', ng: { model: 'contact.address.zip' }  }
+              %label{ for: 'zip' } Postal code
+              %input.form-control{ name: 'zip', placeholder: 'Postal code', ng: { model: 'contact.address.zip' }  }
         .form-group
           %label{ for: 'country' } Country
           %ui-select{ name: 'country', ng: { model: 'contact.address.country', disabled: true } }

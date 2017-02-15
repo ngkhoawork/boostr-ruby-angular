@@ -104,6 +104,15 @@
     Deal.all({client_id: client.id}).then (deals) ->
       $scope.currentClient.deals = deals
 
+  $scope.concatAddress = (address) ->
+    row = []
+    if address
+      if address.city then row.push address.city
+      if address.state then row.push address.state
+      if address.zip then row.push address.zip
+      if address.country then row.push address.country
+    row.join(', ')
+
   # Prevent multiple extraneous calls to the server as user inputs search term
   searchTimeout = null;
   $scope.searchClients = (query) ->
