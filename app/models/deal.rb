@@ -29,6 +29,7 @@ class Deal < ActiveRecord::Base
   has_many :activities
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable
+  has_many :integrations, as: :integratable
 
   has_one :deal_custom_field, dependent: :destroy
 

@@ -8,6 +8,8 @@ class Operative::Contacts::Single < API::Single
   property :last_name, as: :lastname, exec_context: :decorator
   property :street1, as: :addressline1
   property :street2, as: :addressline2
+  property :type, exec_context: :decorator
+  property :account, exec_context: :decorator
 
   def external_id
     represented.id.to_s
@@ -23,5 +25,14 @@ class Operative::Contacts::Single < API::Single
 
   def full_name
     @_full_name ||= represented.name.partition(' ')
+  end
+
+  def type
+    'Billing'
+  end
+
+  def account
+    'Testik'
+    # Need get here account name
   end
 end
