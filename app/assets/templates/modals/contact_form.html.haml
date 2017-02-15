@@ -66,7 +66,7 @@
                   %div{ ng: { bind: { html: 'state.name' } } }
             .col-xs-3
               %label{ for: 'zip' } Postal
-              %input.form-control{ name: 'zip', placeholder: 'Zip', ng: { model: 'contact.address.zip' }  }
+              %input.form-control{ name: 'zip', placeholder: 'Postal', ng: { model: 'contact.address.zip' }  }
         .form-group
           %label{ for: 'country' } Country
           %ui-select{ name: 'country', ng: { model: 'contact.address.country', disabled: true } }
