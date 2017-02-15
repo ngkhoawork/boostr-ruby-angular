@@ -4,17 +4,21 @@
 %table.table.table-hover.table-striped
   %thead
     %tr
-      %th.left
+      %th.left{ width: '100' }
         Date
       %th.left Account
+      %th.left Deal
       %th.left Type
       %th.left Attendees
+      %th.left Notes
   %tbody
-    %tr{ 'ng-repeat': 'activity in topActivities', 'tooltip': '{{activity.comment}}', 'tooltip-placement': 'left'  }
-      %td.left
+    %tr{ 'ng-repeat': 'activity in topActivities' }
+      %td.left{ width: '100' }
         {{activity.happened_at | date:'MM-dd-yyyy'}}
       %td.left {{activity.client.name}}
+      %td.left {{activity.deal.name}}
       %td.left {{activity.activity_type_name}}
       %td.left
         %div{'ng-repeat': 'contact in activity.contacts'}
           {{contact.name}}
+      %td.left {{activity.comment}}
