@@ -292,6 +292,7 @@
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
+      deal.contact_roles = Field.field(deal, 'Contact Role')
       $scope.currentDeal = deal
       $scope.selectedStageId = deal.stage_id
       $scope.verifyMembersShare()
@@ -622,14 +623,21 @@
         $scope.setCurrentDeal(deal)
 
   $scope.deleteContact = (deletedContact) ->
-    if confirm('Are you sure you want to delete "' +  deletedContact.name + '"?')
+    if confirm('Are you sure you want to delete "' +  deletedContact.contact.name + '"?')
       DealContact.delete({
         deal_id: $scope.currentDeal.id,
         id: deletedContact.id
         }, ->
-        $scope.currentDeal.contacts = _.reject $scope.currentDeal.contacts, (contact) ->
-          contact.id == deletedContact.id
+        $scope.currentDeal.deal_contacts = _.reject $scope.currentDeal.deal_contacts, (deal_contact) ->
+          deal_contact.id == deletedContact.id
       )
+
+  $scope.submitDealContact = (deal_contact) ->
+    DealContact.update(
+      deal_id: $scope.currentDeal.id,
+      id: deal_contact.id,
+      deal_contact: deal_contact
+    )
 
   $scope.deleteDealProduct = (deal_product) ->
     $scope.errors = {}

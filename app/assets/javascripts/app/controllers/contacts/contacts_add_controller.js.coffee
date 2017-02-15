@@ -25,13 +25,14 @@
     )
 
   $scope.checkContact = (contact) ->
-    fliteredContact = deal.contacts.filter (dealContact) ->
-      contact.id == dealContact.id
-    fliteredContact.length == 0;
+    _.findWhere(deal.deal_contacts, contact_id: contact.id)
 
   $scope.addContact = (contact) ->
-    DealContact.save({ deal_id: deal.id, deal_contact: { contact_id: contact.id } }, ->
-      deal.contacts.push contact
+    DealContact.create(deal_id: deal.id, deal_contact: { contact_id: contact.id }).then(
+      (deal_contact) ->
+        deal.deal_contacts.push deal_contact
+      (resp) ->
+        false
     )
 
   $scope.cancel = ->
