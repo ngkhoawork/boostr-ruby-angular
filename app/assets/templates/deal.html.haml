@@ -180,8 +180,6 @@
           %tbody{'ng-if': '!currentDeal.stage.open'}
             %tr{ ng: { repeat: 'deal_product in currentDeal.deal_products' } }
               %td
-                %span.hover-delete{ ng: { click: 'deleteDealProduct(deal_product)' } }
-                  = inline_svg 'icons/trash.svg'
                 {{ deal_product.name }}
               %td.text-center.currency-table
                 %div
