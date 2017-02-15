@@ -5,9 +5,8 @@
   $scope.submitText = "Update"
   $scope.contact = contact
   $scope.searchText = ""
-  DealContact.query({deal_id: deal.id}, (contacts) ->
+  DealContact.all(deal_id: deal.id).then (contacts) ->
     $scope.contacts = contacts
-  )
 
   searchTimeout = null;
   $scope.searchObj = (name) ->
@@ -20,9 +19,8 @@
     )
 
   $scope.searchContacts = (name) ->
-    DealContact.query({deal_id: deal.id, name: name}, (contacts) ->
+    DealContact.all(deal_id: deal.id, name: name).then (contacts) ->
       $scope.contacts = contacts
-    )
 
   $scope.checkContact = (contact) ->
     _.findWhere(deal.deal_contacts, contact_id: contact.id)
@@ -39,9 +37,8 @@
     $modalInstance.close()
 
   $scope.$on 'newContact', (e, contact) ->
-    DealContact.query({deal_id: deal.id}, (contacts) ->
+    DealContact.all(deal_id: deal.id).then (contacts) ->
       $scope.contacts = contacts
-    )
 
   $scope.createContact = () ->
     $scope.modalInstance = $modal.open

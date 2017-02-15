@@ -13,6 +13,12 @@
     delete:
       method: 'DELETE'
 
+  @all = (params) ->
+    deferred = $q.defer()
+    resource.query params, (data) ->
+      deferred.resolve(data)
+    deferred.promise
+
   @create = (params) ->
     deferred = $q.defer()
     resource.save(
@@ -33,6 +39,12 @@
       (resp) ->
         deferred.reject(resp)
     )
+    deferred.promise
+
+  @delete = (params) ->
+    deferred = $q.defer()
+    resource.delete params, () ->
+      deferred.resolve()
     deferred.promise
 
   return
