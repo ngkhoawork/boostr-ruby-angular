@@ -293,6 +293,8 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       $scope.currentDeal = deal
+      console.log(deal)
+
       $scope.selectedStageId = deal.stage_id
       $scope.verifyMembersShare()
       $scope.setBudgetPercent(deal)
