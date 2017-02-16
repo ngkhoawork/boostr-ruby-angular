@@ -8,5 +8,6 @@ FactoryGirl.define do
     phone { FFaker::PhoneNumber.phone_number }
     mobile { FFaker::PhoneNumber.phone_number }
     email { FFaker::Internet.email }
+    country { FFaker::Address.country }
   end
 end
