@@ -13,7 +13,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   property :name, exec_context: :decorator
 
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
-  property :sales_stage, as: :name, wrap: :salesStage, exec_context: :decorator
+  property :sales_stage, as: :name, wrap: :salesStage, exec_context: :decorator, if: -> (options) { options[:create].eql? true }
   property :primary_sales_person, as: :primarySalesperson, exec_context: :decorator
   property :owner, exec_context: :decorator
 

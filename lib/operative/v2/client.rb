@@ -11,7 +11,20 @@ module Operative
       def method_missing(method_name, **options)
         mapping = methods_mapping.select { |mapping| mapping[:name] == method_name.to_s }[0]
         if mapping.any?
-          connection.send(:"#{mapping[:http][:request_type]}", mapping[:http][:endpoint], options[:params])
+          endpoint = mapping[:http][:endpoint]
+          request_type = mapping[:http][:request_type]
+
+          split_endpoint = endpoint.split('/')
+          endpoint_params = split_endpoint.grep(/:/)
+
+          if endpoint_params.any?
+            endpoint_params.each do |req_param|
+              req_param_sym = req_param.gsub(':', '').to_sym
+              raise ArgumentError, "You need to specify #{req_param} option to proceed" unless options.has_key? req_param_sym
+              endpoint.gsub!( req_param, options[req_param_sym].to_s )
+            end
+          end
+          connection.send(:"#{ request_type }", endpoint, options[:params])
         else
           super
         end

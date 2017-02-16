@@ -7,6 +7,14 @@
         "endpoint": "/operativeone/restapi/salesorders/",
         "request_type": "post"
       }
+    },
+    {
+      "name": "update_order",
+      "http": {
+        "method": "update_order",
+        "endpoint": "/operativeone/restapi/salesorders/:id",
+        "request_type": "put"
+      }
     }
   ]
 }

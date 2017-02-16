@@ -530,8 +530,8 @@ ActiveRecord::Schema.define(version: 20170220140438) do
   create_table "integrations", force: :cascade do |t|
     t.integer  "integratable_id"
     t.string   "integratable_type"
-    t.string   "external_id"
-    t.string   "type"
+    t.integer  "external_id"
+    t.string   "external_type"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
   end
