@@ -1,11 +1,11 @@
 module Operative
-  module V1
+  module V2
     class Client
       attr_reader :connection, :config
 
       def initialize(options = {})
-        @connection = Operative::V1::Connection.new(options).init
-        @config = Operative::V1::Configuration.new
+        @connection = Operative::V2::Connection.new(options).init
+        @config = Operative::V2::Configuration.new
       end
 
       def method_missing(method_name, **options)
@@ -29,8 +29,6 @@ module Operative
           super
         end
       end
-
-      private
 
       def methods_mapping
         configuration = config.read.deep_symbolize_keys
