@@ -22,6 +22,11 @@ class Api::ExchangeRatesController < ApplicationController
     render json: company.exchange_rates.where('start_date <= ? AND end_date >= ?', Date.today, Date.today).includes(:currency).as_json(include: :currency)
   end
 
+  def destroy
+    exchange_rate.destroy
+    render nothing: true
+  end
+
   private
 
   def exchange_rate
