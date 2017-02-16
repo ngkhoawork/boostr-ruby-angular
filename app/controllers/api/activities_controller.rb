@@ -167,12 +167,13 @@ class Api::ActivitiesController < ApplicationController
         if current_user.user_type == EXEC && current_user.team_id == nil && (!current_user.leader? || current_user.all_team_members.count == 0)
           company.activities.order("happened_at desc").limit(10).offset(offset)
         elsif current_user.leader?
-          team_members = current_user.all_team_members.collect{|member| member.id}
-          clients = ClientMember.where("user_id in (?)", team_members).collect{|member| member.client_id}
-          company.activities.where("client_id in (?)", clients).order("happened_at desc").limit(10).offset(offset)
+          team_member_ids = team.all_members.map(&:id) + team.all_leaders.map(&:id)
+
+          client_ids = ClientMember.where("user_id in (?)", team_member_ids).collect{|member| member.client_id}
+          company.activities.where('client_id in (?) OR created_by in (?)', client_ids, team_member_ids).order("happened_at desc").limit(10).offset(offset)
         else
-          clients = current_user.clients.collect{|member| member.id}
-          company.activities.where("client_id in (?)", clients).order("happened_at desc").limit(10).offset(offset)
+          client_ids = current_user.clients.collect{|member| member.id}
+          company.activities.where('client_id in (?) OR created_by = ?', client_ids, current_user.id).order("happened_at desc").limit(10).offset(offset)
         end
       else
         current_user.all_activities
