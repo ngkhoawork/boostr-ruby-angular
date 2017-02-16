@@ -36,6 +36,9 @@ class Company < ActiveRecord::Base
     client_type = fields.find_or_initialize_by(subject_type: 'Client', name: 'Client Type', value_type: 'Option', locked: true)
     setup_default_options(client_type, ['Advertiser', 'Agency'])
 
+    contact_role = fields.find_or_initialize_by(subject_type: 'Deal', name: 'Contact Role', value_type: 'Option', locked: true)
+    setup_default_options(contact_role, ['Billing'])
+
     fields.find_or_initialize_by(subject_type: 'Deal', name: 'Deal Type', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Deal', name: 'Deal Source', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Deal', name: 'Close Reason', value_type: 'Option', locked: true)
