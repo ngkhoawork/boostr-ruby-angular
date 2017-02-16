@@ -300,7 +300,7 @@
                 %th.left Role
                 %th.action-column
             %tbody
-              %tr{ ng: { repeat: "deal_contact in currentDeal.deal_contacts"} }
+              %tr{ ng: { repeat: 'deal_contact in currentDeal.deal_contacts'} }
                 %td
                   {{ deal_contact.contact.name }}
                 %td
@@ -309,7 +309,8 @@
                   {{ deal_contact.contact.address.email }}
                 %td
                   {{ deal_contact.contact.primary_client_json.name }}
-                %td
+                %td{ ng: { class: '{error: deal_contact.errors.role}' } }
+                  %span.error-text {{ deal_contact.errors.role }}
                   %ui-select{ name: 'deal_contact-role', ng: { model: 'deal_contact.role' }, 'on-select': 'submitDealContact(deal_contact)' }
                     %ui-select-match{ placeholder: 'Contact Role', 'allow-clear': 'true' }
                       {{ $select.selected.name || deal_contact.role }}
@@ -317,6 +318,8 @@
                       %div{ ng: { bind: { html: 'role.name' } } }
 
                 %td.action-td
+                  %button.btn-link{ ng: { click: 'showContactEditModal(deal_contact.contact)' } }
+                    = inline_svg 'icons/edit.svg'
                   %button.btn-link{ ng: { click: 'deleteContact(deal_contact)' } }
                     = inline_svg 'icons/trash.svg'
 

@@ -130,6 +130,9 @@
       controller: 'ContactsEditController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        contact: ->
+          undefined
 
   $scope.showNewActivityModal = ->
     $scope.modalInstance = $modal.open

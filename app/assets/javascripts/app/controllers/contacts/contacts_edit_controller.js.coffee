@@ -1,10 +1,10 @@
 @app.controller "ContactsEditController",
-['$scope', '$modalInstance', '$filter', 'Contact', 'Client',
-($scope, $modalInstance, $filter, Contact, Client) ->
+['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'contact',
+($scope, $modalInstance, $filter, Contact, Client, contact) ->
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
-  $scope.contact = Contact.get()
+  $scope.contact = contact || Contact.get()
 
   console.log($scope.contact)
   $scope.query = ""
