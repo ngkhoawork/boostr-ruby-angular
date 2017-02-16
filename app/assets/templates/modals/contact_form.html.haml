@@ -44,11 +44,11 @@
       .form-group
         %label{ for: 'note' } Note
         %textarea.form-control{'msd-elastic': '', name: 'note', placeholder: 'Type your note here', ng: { model: 'contact.note' } }
-      .form-group.text-center
-        %a.btn.add-btn{ 'ng-click': 'showAddressFields = 1', 'ng-hide': 'showAddressFields' }
+      .form-group.text-center{'ng-hide': 'showAddressFields'}
+        %a.btn.add-btn{ 'ng-click': 'showAddressFields = true'}
           %i.fa.fa-plus
           Add Address
-      %div{ 'ng-show': 'showAddressFields || contact.address.street1 || contact.address.city || contact.address.state || contact.address.zip' }
+      %div{ 'ng-show': 'showAddressFields' }
         .form-group
           %label{ for: 'street1' } Address
           %input.form-control{ name: 'street1', placeholder: 'Address', ng: { model: 'contact.address.street1' } }
@@ -65,8 +65,15 @@
                 %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
                   %div{ ng: { bind: { html: 'state.name' } } }
             .col-xs-3
-              %label{ for: 'zip' } Zip
-              %input.form-control{ name: 'zip', placeholder: 'Zip', ng: { model: 'contact.address.zip' }  }
+              %label{ for: 'zip' } Postal code
+              %input.form-control{ name: 'zip', placeholder: 'Postal code', ng: { model: 'contact.address.zip' }  }
+        .form-group
+          %label{ for: 'country' } Country
+          %ui-select{ name: 'country', ng: { model: 'contact.address.country', disabled: true } }
+            %ui-select-match{ placeholder: 'Country' }
+              {{ $select.selected }}
+            %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
+              %div {{ country }}
 
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel

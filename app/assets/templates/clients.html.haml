@@ -82,7 +82,7 @@
 
           %br
           .location
-            {{ currentClient.address.city }}, {{ currentClient.address.state}}
+            {{ currentClient.address.city }}{{ currentClient.address.city && currentClient.address.state ? ', ' : '' }}{{ currentClient.address.state}}
         #details
           .wells-group
             .well
@@ -91,9 +91,8 @@
                   %strong
                     Address
                 .col-xs-9.detail
-                  {{ currentClient.address.street1 }}
-                  %br
-                  {{ currentClient.address.city }}, {{ currentClient.address.state }}  {{ currentClient.address.zip }}
+                  %div {{ currentClient.address.street1 }}
+                  %div {{ concatAddress(currentClient.address) }}
             .well
               .row
                 .col-xs-3
