@@ -11,7 +11,7 @@ class Operative::AdvertiserRepresenter < Representable::Decorator
   property :roles, decorator: Operative::AccountRolesRepresenter, exec_context: :decorator
 
   def external_id
-    "boostr_#{represented.id}#"
+    "boostr_#{represented.id}##"
   end
 
   def roles

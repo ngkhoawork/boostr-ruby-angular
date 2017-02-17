@@ -20,7 +20,7 @@ class Operative::ContactsRepresenter < Representable::Decorator
   end
 
   def external_id
-    "boostr_#{represented.id}#"
+    "boostr_#{represented.id}##"
   end
 
   def contact
