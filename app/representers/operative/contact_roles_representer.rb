@@ -1,6 +1,6 @@
 require 'representable/xml'
 
-class Operative::RolesRepresenter < Representable::Decorator
+class Operative::ContactRolesRepresenter < Representable::Decorator
   include Representable::XML
 
   self.representation_wrap = :roles
@@ -8,6 +8,6 @@ class Operative::RolesRepresenter < Representable::Decorator
   property :name, as: :internalName, exec_context: :decorator, wrap: :role
 
   def name
-    represented.agency? ? 'buying_agency' : 'primary_advertiser'
+    'primary_contact'
   end
 end

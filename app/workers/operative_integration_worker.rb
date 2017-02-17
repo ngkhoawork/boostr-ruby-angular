@@ -1,5 +1,5 @@
 class OperativeIntegrationWorker < BaseWorker
-  def perform(deal)
-    Operative::IntegrationService.new(deal).perform
+  def perform(deal_id)
+    Operative::IntegrationService.new(deal_id).perform
   end
 end

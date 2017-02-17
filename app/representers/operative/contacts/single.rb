@@ -9,10 +9,9 @@ class Operative::Contacts::Single < API::Single
   property :street1, as: :addressline1
   property :street2, as: :addressline2
   property :type, exec_context: :decorator
-  property :account, exec_context: :decorator
 
   def external_id
-    represented.id.to_s
+    "boostr_#{represented.id}"
   end
 
   def first_name
@@ -29,10 +28,5 @@ class Operative::Contacts::Single < API::Single
 
   def type
     'Billing'
-  end
-
-  def account
-    'Testik'
-    # Need get here account name
   end
 end
