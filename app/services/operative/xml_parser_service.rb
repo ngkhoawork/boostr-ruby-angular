@@ -1,9 +1,8 @@
 class Operative::XmlParserService
-  attr_reader :response, :element
-
   def initialize(response, options)
     @response = response
     @element = options.fetch(:element)
+    @deal = options.fetch(:deal, false)
   end
 
   def perform
@@ -12,8 +11,14 @@ class Operative::XmlParserService
 
   private
 
+  attr_reader :response, :element, :deal
+
   def get_element_value
-    parsed_xml.xpath("//#{element}").text
+    deal ? get_deal_id : parsed_xml.xpath("//#{element}").text
+  end
+
+  def get_deal_id
+    parsed_xml.remove_namespaces!.xpath("/Collection/salesOrder/#{element}").text
   end
 
   def parsed_xml

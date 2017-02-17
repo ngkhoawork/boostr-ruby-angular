@@ -13,6 +13,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   property :name, exec_context: :decorator
 
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
+  property :contacts, decorator: Operative::ContactsRepresenter, exec_context: :decorator, wrap: :contacts
   property :sales_stage, as: :name, wrap: :salesStage, exec_context: :decorator, if: -> (options) { options[:create].eql? true }
   property :primary_sales_person, as: :primarySalesperson, exec_context: :decorator
   property :owner, exec_context: :decorator
@@ -28,6 +29,10 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
     'http://www.w3.org/2001/XMLSchema-instance'
   end
 
+  def contacts
+    represented
+  end
+
   def accounts
     represented
   end
@@ -41,7 +46,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def alternate_id
-    represented.id
+    "boostr_#{represented.id}"
   end
 
   def sales_stage
@@ -69,13 +74,13 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def primary_sales_person
-    'api_user@kingsandbox.com'
-    # deal_members_emails[0]
+    # 'api_user@kingsandbox.com'
+    deal_members_emails[0]
   end
 
   def owner
-    'api_user@kingsandbox.com'
-    # deal_members_emails[1] || deal_members_emails[0]
+    # 'api_user@kingsandbox.com'
+    deal_members_emails[1] || deal_members_emails[0]
   end
 
   def deal_members_emails

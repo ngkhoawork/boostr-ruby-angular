@@ -1,15 +1,15 @@
 class Operative::AccountsService
-  attr_reader :account, :mapped_object
-
   def initialize(account)
     @account = account
   end
 
   def perform
-    send_account if account
+    send_account
   end
 
   private
+
+  attr_reader :account, :mapped_object
 
   def send_account
     account_integration_blank? ? create_account_and_integration_object : update_account
