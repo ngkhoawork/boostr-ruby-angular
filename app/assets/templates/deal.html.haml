@@ -142,7 +142,7 @@
               %th.text-center{ ng: { repeat: 'month in currentDeal.months' } }
                 {{ month | boDate }}
 
-          %tbody
+          %tbody{'ng-if': 'currentDeal.stage.open'}
             %tr{ ng: { repeat: 'deal_product in currentDeal.deal_products' } }
               %td
                 %span.hover-delete{ ng: { click: 'deleteDealProduct(deal_product)' } }
@@ -177,6 +177,22 @@
                     'ng-blur':'disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)',
                     'numbers-only':'' }
                   %span.symbol.percent %
+
+          %tbody{'ng-if': '!currentDeal.stage.open'}
+            %tr{ ng: { repeat: 'deal_product in currentDeal.deal_products' } }
+              %td
+                {{ deal_product.name }}
+              %td.text-center.currency-table
+                %div
+                  %div {{deal_product.budget_loc | currency: currency_symbol : 0}}
+                  %span.small.total-budget__percent{ 'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
+                    {{deal_product.total_budget_percent + '%'}}
+              %td.text-center.currency-table{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
+                %span
+                  {{ deal_product_budget.budget_loc | currency: currency_symbol : 0 }}
+                %div
+                  %span.small
+                    {{ deal_product_budget.budget_percent+ '%'}}
 
       #new-product.well.dark
         .row{ ng: { hide: 'showProductForm' } }
