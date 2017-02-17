@@ -1,18 +1,29 @@
 @app.controller "ContactsNewController",
-['$scope', '$rootScope', '$modalInstance', 'Contact', 'Client', 'contact',
-($scope, $rootScope, $modalInstance, Contact, Client, contact) ->
+['$scope', '$rootScope', '$modalInstance', 'Contact', 'Client', 'contact', 'CountriesList'
+($scope, $rootScope, $modalInstance, Contact, Client, contact, CountriesList) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.contact = contact || {}
   $scope.query = ""
+  $scope.countries = []
+  $scope.showAddressFields = Boolean(contact.address and
+      (contact.address.country or
+        contact.address.street1 or
+        contact.address.city or
+        contact.address.state or
+        contact.address.zip))
+
+
+  CountriesList.get (data) ->
+    $scope.countries = data.countries
+  
   Client.query({filter: 'all'}).$promise.then (clients) ->
     $scope.clients = clients
 
   $scope.submitForm = () ->
     emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
 
-    console.log($scope.contact)
     $scope.errors = {}
 
     fields = ['name', 'client_id', 'address']

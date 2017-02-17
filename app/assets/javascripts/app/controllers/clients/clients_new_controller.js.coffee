@@ -1,12 +1,16 @@
 @app.controller "ClientsNewController",
-['$scope', '$rootScope', '$modalInstance', 'Client', 'Field', 'client'
-($scope, $rootScope, $modalInstance, Client, Field, client) ->
+['$scope', '$rootScope', '$modalInstance', 'Client', 'Field', 'client', 'CountriesList'
+($scope, $rootScope, $modalInstance, Client, Field, client, CountriesList) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.client = new Client(client || {})
   $scope.clients = []
   $scope.query = ""
+  $scope.countries = []
+
+  CountriesList.get (data) ->
+    $scope.countries = data.countries
 
   Field.defaults($scope.client, 'Client').then (fields) ->
     if ($scope.client.client_type)
