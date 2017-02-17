@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
+    resources :countries, only: [:index]
+
     resources :users, only: [:index, :update] do
       collection do
         post 'starting_page'
@@ -58,7 +60,7 @@ Rails.application.routes.draw do
         get :pipeline_summary_report
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
-      resources :deal_contacts, only: [:index, :create, :destroy]
+      resources :deal_contacts, only: [:index, :create, :update, :destroy]
       resources :deal_assets, only: [:index, :update, :create, :destroy]
     end
     resources :deal_product_budgets, only: [:index, :create]

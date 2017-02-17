@@ -285,6 +285,7 @@ ActiveRecord::Schema.define(version: 20170215121340) do
     t.integer  "contact_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string   "role"
   end
 
   add_index "deal_contacts", ["deal_id", "contact_id"], name: "index_deal_contacts_on_deal_id_and_contact_id", using: :btree

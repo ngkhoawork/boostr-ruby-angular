@@ -1,23 +1,26 @@
 #pacing-alerts.block
-	%div.mb40
-		%span.title My Pacing Alerts
+  %div.mb40
+    %span.title Pacing Alerts
+    .pacing-alerts-filters{ ng: { repeat: 'filter in pacingAlertsFilters | orderBy: \'-order\' ' } }
+      %span{ ng: { class: '{ active: currentPacingAlertsFilter.value == filter.value }', click: 'setPacingAlertsFilter(filter)' } }
+        {{filter.name}}
 
-	%table.deals-table.table.table-hover
-		%thead
-			%tr
-				%th Alert
-				%th # Lines
-				%th Est. Amount
-		%tbody
-			%tr{ng: {show: 'dashboard.current_user.pos_balance_l_cnt > 0'}}
-				%td
-					%a{href: '', ng: {href: '/revenue?filter=upside'}}
-						Revenue Upside Potential
-				%td {{dashboard.current_user.pos_balance_l_cnt}}
-				%td {{dashboard.current_user.pos_balance_l | currency:'$':0}}
-				%tr{ng: {show: 'dashboard.current_user.neg_balance_l_cnt > 0'}}
-					%td
-						%a{href: '', ng: {href: '/revenue?filter=risk'}}
-							Revenue at Risk
-					%td {{dashboard.current_user.neg_balance_l_cnt}}
-					%td {{dashboard.current_user.neg_balance_l | currency:'$':0}}
+  %table.deals-table.table.table-hover
+    %thead
+      %tr
+        %th Alert
+        %th # Lines
+        %th Est. Amount
+    %tbody
+      %tr{ng: {show: 'dashboard.revenue.positive_balance_count > 0'}}
+        %td
+          %a{href: '', ng: {href: '/revenue?filter=upside&io_owner={{currentPacingAlertsFilter.value}}'}}
+            Revenue Upside Potential
+        %td {{dashboard.revenue.positive_balance_count}}
+        %td {{dashboard.revenue.positive_balance | currency:'$':0}}
+        %tr{ng: {show: 'dashboard.revenue.negative_balance_count > 0'}}
+          %td
+            %a{href: '', ng: {href: '/revenue?filter=risk&io_owner={{currentPacingAlertsFilter.value}}'}}
+              Revenue at Risk
+          %td {{dashboard.revenue.negative_balance_count}}
+          %td {{dashboard.revenue.negative_balance | currency:'$':0}}

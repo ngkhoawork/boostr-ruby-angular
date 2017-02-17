@@ -1,16 +1,24 @@
 @app.controller "ContactsEditController",
-['$scope', '$modalInstance', '$filter', 'Contact', 'Client',
-($scope, $modalInstance, $filter, Contact, Client) ->
+['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'CountriesList', 'contact'
+($scope, $modalInstance, $filter, Contact, Client, CountriesList, contact) ->
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
-  $scope.contact = Contact.get()
-
-  console.log($scope.contact)
+  $scope.contact = contact || Contact.get()
   $scope.query = ""
+  $scope.countries = []
+  $scope.showAddressFields = Boolean($scope.contact.address and
+          ($scope.contact.address.country or
+              $scope.contact.address.street1 or
+              $scope.contact.address.city or
+              $scope.contact.address.state or
+              $scope.contact.address.zip))
+
+  CountriesList.get (data) ->
+    $scope.countries = data.countries
+
   Client.query(filter: 'all').$promise.then (clients) ->
     $scope.clients = clients
-
 
   if $scope.contact && $scope.contact.address
     $scope.contact.address.phone = $filter('tel')($scope.contact.address.phone)
@@ -19,7 +27,6 @@
   $scope.submitForm = () ->
     emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
 
-    console.log($scope.contact)
     $scope.errors = {}
 
     fields = ['name', 'client_id', 'address']

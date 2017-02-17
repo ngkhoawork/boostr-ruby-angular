@@ -13,6 +13,18 @@
             $scope.loadingMoreActivities = false
             $scope.contactSearch = ""
 
+            $scope.pacingAlertsFilters = [
+              { name: 'My Lines', value: 'my', order: 0 }
+              { name: 'My Team\'s Lines', value: 'teammates', order: 1 }
+              { name: 'All Lines', value: 'all', order: 2 }
+            ]
+
+            $scope.currentPacingAlertsFilter = { name: 'My Lines', value: 'my', order: 2 }
+
+            $scope.setPacingAlertsFilter = (filter) ->
+              $scope.currentPacingAlertsFilter = filter
+              $scope.init()
+
             $scope.showSpinners = (reminder) ->
                 reminder.showSpinners = true
 
@@ -69,7 +81,7 @@
                 Contact.query().$promise.then (contacts) ->
                     $scope.contacts = contacts
 
-                Dashboard.get().then (dashboard) ->
+                Dashboard.get({ io_owner: $scope.currentPacingAlertsFilter.value }).then (dashboard) ->
                     $scope.dashboard = dashboard
 
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
@@ -173,6 +185,7 @@
                         typeId: ->
                             advertiserTypeId
                 .result.then (updated_contact) ->
+                    if !updated_contact then return
                     $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
                         if (item.id == updated_contact.id)
                             return updated_contact

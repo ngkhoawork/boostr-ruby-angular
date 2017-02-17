@@ -161,6 +161,20 @@
                 }
             }
         }
+        .pacing-alerts-filters {
+            float: right;
+            span {
+                display: inline-block;
+                padding: 12px 5px;
+                margin: 0 10px;
+                font-weight: 600;
+                cursor: pointer;
+                &.active {
+                  color: $main-color;
+                  border-bottom: 2px solid $main-color;
+                }
+            }
+        }
     }
     #reminders {
         .reminder-item {

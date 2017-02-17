@@ -19,7 +19,6 @@
 
       $scope.setDefaultCurrency()
 
-    console.log(deal)
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
       $scope.setClientTypes(client_types)
@@ -30,7 +29,8 @@
         $scope.loadClients(deal.agency.name, $scope.Agency)
 
     Stage.query().$promise.then (stages) ->
-      $scope.stages = stages
+      $scope.stages = stages.filter (stage) ->
+        !(stage.active is false or stage.open is false)
 
   $scope.setDefaultCurrency = ->
     if $scope.deal.curr_cd then return

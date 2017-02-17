@@ -14,7 +14,7 @@
       color: $brand-tertiary;
     }
   }
-  .edit-deal {
+  .edit-deal, .delete-deal {
     color: $secondary-font-color;
     margin-left: 8px;
     cursor: pointer;
@@ -27,6 +27,9 @@
       background-color: $secondary-font-color;
       color: white;
     }
+  }
+  .delete-deal {
+    margin-left: 0
   }
 
   .transform {
@@ -449,6 +452,28 @@
     }
     textarea {
       resize: vertical;
+    }
+  }
+
+  #contacts {
+    overflow: visible;
+    table {
+      table-layout: fixed;
+      tbody {
+        .ui-select-container.dropdown.ui-select-bootstrap {
+          span {
+            font-size: 13px;
+          }
+          input {
+            font-size: 13px;
+          }
+          .ui-select-match {
+            a.btn.btn-xs.btn-link.pull-right {
+              color: #e35500;
+            }
+          }
+        }
+      }
     }
   }
 
