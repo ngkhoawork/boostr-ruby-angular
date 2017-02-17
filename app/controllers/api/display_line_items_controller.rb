@@ -27,20 +27,13 @@ class Api::DisplayLineItemsController < ApplicationController
   end
 
   private
+
   def display_line_items
-    member_ids = [current_user.id]
-    if current_user.leader?
-      member_ids += current_user.teams.first.all_members.collect{|m| m.id}
-      member_ids += current_user.teams.first.all_leaders.collect{|m| m.id}
-    end
-    io_ids = Io.where(company: current_user.company)
-    if params[:filter] == 'upside'
-      DisplayLineItem.where("io_id in (?)", 131)
-    elsif params[:filter] == 'risk'
-      DisplayLineItem.where("io_id in (?)", 131)
-    else
-      DisplayLineItem.where("io_id in (?)", 131)
-    end
+    dashboard_pacing_alert_service.filtered_line_items
+  end
+
+  def dashboard_pacing_alert_service
+    DashboardPacingAlertService.new(current_user: current_user, params: params)
   end
 
   def company
