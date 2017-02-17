@@ -44,7 +44,7 @@ class Operative::AccountsService
   end
 
   def account_integration_blank?
-    account_operative_integration.blank?
+    account_operative_integration.blank? || account_external_id.blank?
   end
 
   def account_external_id
