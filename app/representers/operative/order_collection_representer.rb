@@ -46,7 +46,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def alternate_id
-    "boostr_#{represented.id}"
+    "boostr_#{represented.id}#"
   end
 
   def sales_stage
