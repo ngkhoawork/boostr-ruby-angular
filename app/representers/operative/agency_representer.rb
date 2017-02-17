@@ -6,13 +6,12 @@ class Operative::AgencyRepresenter < Representable::Decorator
   self.representation_wrap = 'v2:account'
 
   property :external_id, as: :externalId, exec_context: :decorator
-  property :operative_id, as: :id, exec_context: :decorator#, if: -> (options) { options[:create].eql? true }
+  property :operative_id, as: :id, exec_context: :decorator, if: -> (options) { options[:create].eql? true }
   property :operative_name, as: :name, exec_context: :decorator
-  property :roles, decorator: Operative::RolesRepresenter, exec_context: :decorator
+  property :roles, decorator: Operative::AccountRolesRepresenter, exec_context: :decorator
 
   def external_id
-    'os_111'
-    # represented.id.to_s
+    "boostr_#{represented.id}"
   end
 
   def roles
@@ -20,11 +19,10 @@ class Operative::AgencyRepresenter < Representable::Decorator
   end
 
   def operative_id
-    14
-    # represented.integrations.operative.external_id
+    represented.integrations.operative.external_id
   end
 
   def operative_name
-    'Ostap'
+    represented.name
   end
 end
