@@ -1,6 +1,6 @@
 @app.controller "ContactsAssignController",
-['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'contact', 'typeId'
-($scope, $modalInstance, $filter, Contact, Client, contact, typeId) ->
+['$scope', '$rootScope', '$modalInstance', '$filter', 'Contact', 'Client', 'contact', 'typeId', 'Field'
+($scope, $rootScope, $modalInstance, $filter, Contact, Client, contact, typeId, Field) ->
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.contact = contact
@@ -36,4 +36,12 @@
 
   $scope.cancel = ->
     $modalInstance.close()
+
+  Field.defaults({}, 'Client').then (fields) ->
+    client_types = Field.findClientTypes(fields)
+    client_types.options.forEach (option) ->
+      $scope[option.name] = option.id
+
+  $scope.openAccountModal = ->
+    $rootScope.$broadcast 'dashboard.openAccountModal'
 ]
