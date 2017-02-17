@@ -1,21 +1,18 @@
-#contact_assign_modal
+#contact_assign_modal.popup-modal
   %form.form-horizontal
-    .modal-header.text-center
-      %a.close{ ng: { click: 'cancel()' } }
-        %span{'aria-hidden' => 'true'}
-          = inline_svg 'icons/close.svg'
-      %h3.modal-title
-        %strong
-          Assign to an Account
-    .modal-body
+    .popup-modal-header
+      Assign to an Account
+      %span.close-btn{'ng-click': 'cancel()'} +
+    .popup-modal-body.modal-body{style: 'padding: 15px'}
       .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
           %i.fa.fa-warning
           <strong style="text-transform: capitalize">{{field}}</strong>
           {{error}}
 
-      .form-group
+      .form-group.with-add-btn
         %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj(searchText)' } }
+        %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openAccountModal()'}
       .form-group
         .row
           .col-xs-12
@@ -23,10 +20,10 @@
               .client-info{ 'ng-repeat': 'client in clients | filter: { name: searchText }' }
                 .name{ ng: { bind: { html: 'client.name' } } }
                 .type
-                  {{client.agency_deals_count > 0 ? " Agency" : " Advertiser"}}
+                  {{client.client_type_id == Advertiser ? 'Advertiser' : (client.client_type_id == Agency ? 'Agency' : '' )}}
                 .action
                   %a{ href: "javascript:void(0)", 'ng-click': "assignClient(client)" }
                     Assign
 
-    .modal-footer
-      %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel

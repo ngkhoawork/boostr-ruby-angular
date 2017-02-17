@@ -185,6 +185,7 @@
                         typeId: ->
                             advertiserTypeId
                 .result.then (updated_contact) ->
+                    if !updated_contact then return
                     $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
                         if (item.id == updated_contact.id)
                             return updated_contact
