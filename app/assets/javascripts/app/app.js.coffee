@@ -100,6 +100,9 @@
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'
+    .when '/settings/api_configurations',
+      templateUrl: 'settings/api_configurations.html'
+      controller: 'ApiConfigurationsController'
     .when '/settings/smart_insights',
       templateUrl: 'settings/smart_insights.html'
       controller: 'SettingsSmartInsightsController'

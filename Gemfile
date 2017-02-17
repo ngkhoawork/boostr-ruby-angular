@@ -36,6 +36,7 @@ gem 'responders'
 gem 'roar'
 gem 'money'
 gem 'faraday'
+gem 'attr_encrypted', '~> 3.0.0'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
+    resources :api_configurations
+
     resources :users, only: [:index, :update] do
       collection do
         post 'starting_page'
