@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170215121340) do
+ActiveRecord::Schema.define(version: 20170217095312) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -118,6 +118,21 @@ ActiveRecord::Schema.define(version: 20170215121340) do
     t.string   "mobile"
     t.string   "country"
   end
+
+  create_table "api_configurations", force: :cascade do |t|
+    t.string   "integration_type"
+    t.boolean  "switched_on"
+    t.integer  "trigger_on_deal_percentage"
+    t.integer  "company_id"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.string   "base_link"
+    t.string   "api_email"
+    t.string   "encrypted_password"
+    t.string   "encrypted_password_iv"
+  end
+
+  add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
 
   create_table "assets", force: :cascade do |t|
     t.integer  "attachable_id"
@@ -848,6 +863,7 @@ ActiveRecord::Schema.define(version: 20170215121340) do
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
+  add_foreign_key "api_configurations", "companies"
   add_foreign_key "bp_estimate_products", "bp_estimates"
   add_foreign_key "bp_estimate_products", "products"
   add_foreign_key "bp_estimates", "bps"
