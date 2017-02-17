@@ -33,9 +33,10 @@ gem 'griddler'
 gem 'griddler-sendgrid'
 gem 'aws-sdk'
 gem 'responders'
-gem 'roar-rails'
+gem 'roar'
 gem 'money'
 gem 'countries'
+gem 'faraday'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
