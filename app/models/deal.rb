@@ -96,7 +96,7 @@ class Deal < ActiveRecord::Base
   scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
 
   def integrate_with_operative
-    OperativeIntegrationWorker.perform_async(self.id) if stage_id_changed? && stage.name.eql?('Closed-Won')
+    OperativeIntegrationWorker.perform_async(self.id) if stage_id_changed? && stage.probability.eql?(100)
   end
 
   def active_exchange_rate
