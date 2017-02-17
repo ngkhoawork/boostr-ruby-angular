@@ -57,6 +57,7 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
+    integrate_with_operative if self.company_id.eql?(22)
   end
 
   before_create do
@@ -93,6 +94,10 @@ class Deal < ActiveRecord::Base
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :by_values, -> (value_ids) { joins(:values).where('values.option_id in (?)', value_ids) unless value_ids.empty? }
   scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
+
+  def integrate_with_operative
+    OperativeIntegrationWorker.perform_async(self.id) if stage_id_changed? && stage.name.eql?('Closed-Won')
+  end
 
   def active_exchange_rate
     if curr_cd != 'USD'
