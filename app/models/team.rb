@@ -100,10 +100,10 @@ class Team < ActiveRecord::Base
   def all_members
     ms = []
     ms += members.all
-    children.each do |child|
+    children.find_each do |child|
       ms += child.all_members
     end
-    return ms
+    ms
   end
 
   def all_sellers
@@ -127,10 +127,10 @@ class Team < ActiveRecord::Base
 
   def all_leaders
     ls = leader.nil? ? []:[leader]
-    children.each do |child|
+    children.find_each do |child|
       ls << child.leader if !child.leader.nil?
     end
-    return ls
+    ls
   end
 
   def sum_pos_balance
