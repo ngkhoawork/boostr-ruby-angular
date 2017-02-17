@@ -44,7 +44,7 @@ class Operative::DealsService
   end
 
   def deal_integration_blank?
-    deal_operative_integration.external_id.blank?
+    deal_operative_integration.blank? || deal_external_id.blank?
   end
 
   def deal_external_id
