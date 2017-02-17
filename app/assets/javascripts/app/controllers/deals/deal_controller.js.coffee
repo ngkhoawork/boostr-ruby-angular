@@ -620,7 +620,9 @@
       DealMember.delete(id: member.id, deal_id: $scope.currentDeal.id).then (deal) ->
         $scope.setCurrentDeal(deal)
 
-  $scope.showContactEditModal = (contact) ->
+  $scope.showContactEditModal = (deal_contact) ->
+    deal_contact.errors = {}
+
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
       size: 'md'
@@ -629,7 +631,7 @@
       keyboard: false
       resolve:
         contact: ->
-          contact
+          deal_contact.contact
 
   $scope.deleteContact = (deletedContact) ->
     if confirm('Are you sure you want to delete "' +  deletedContact.contact.name + '"?')
