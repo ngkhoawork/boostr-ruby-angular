@@ -77,7 +77,6 @@
     if (file && file.id)
       $http.delete('/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id)
       .then (respond) ->
-        console.log('del file', respond)
         $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
           return dealFile.id != file.id
 
@@ -133,7 +132,6 @@
               original_file_name: assemblyJson.results[':original'][0].name
           })
           .then (response) ->
-            console.log(response.data)
 #            $scope.uploadedFiles.push response.data
             $scope.dealFiles.push response.data
 
@@ -609,7 +607,7 @@
       $scope.setCurrentDeal(deal)
 
   $scope.onEditableBlur = () ->
-    console.log("ddd")
+#    console.log("ddd")
   $scope.verifyMembersShare = ->
     share_sum = 0
     _.each $scope.currentDeal.members, (member) ->
@@ -684,7 +682,7 @@
   $scope.$on 'openContactModal', ->
     $scope.createNewContactModal()
 
-  $scope.$on 'updated_deal', ->
+  $scope.$on 'updated_deals', ->
     $scope.init()
 
   $scope.$on 'deal_update_errors', (event, errors) ->
@@ -693,7 +691,6 @@
       $scope.errors[key] = error && error[0]
 
   $scope.$on 'updated_activities', ->
-    console.log('updated_activities')
     $scope.init()
 
   $scope.init()
@@ -765,7 +762,12 @@
       keyboard: false
       resolve:
         deal: ->
-          deal
+          angular.copy deal
+
+  $scope.deleteDeal = (deal) ->
+    if confirm('Are you sure you want to delete "' +  deal.name + '"?')
+      Deal.delete deal
+      $location.path('/deals')
 
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)
