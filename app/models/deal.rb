@@ -57,7 +57,7 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
-    integrate_with_operative if self.company_id.eql?(22)
+    integrate_with_operative #if self.company_id.eql?(22)
   end
 
   before_create do
