@@ -1,4 +1,4 @@
-json.extract! deal, :id, :name, :budget_loc, :created_at, :curr_cd, :contacts, :updated_at, :next_steps, :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id, :agency_id
+json.extract! deal, :id, :name, :budget_loc, :created_at, :curr_cd, :deal_contacts, :updated_at, :next_steps, :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id, :agency_id
 
 json.start_date deal.start_date.to_datetime
 json.end_date deal.end_date.to_datetime
@@ -14,7 +14,7 @@ end
 
 json.creator deal.creator, :first_name, :last_name
 
-json.contacts deal.contacts, :id, :name, :position, :address, :primary_client_json
+json.deal_contacts deal.deal_contacts.order(:created_at), :id, :contact_id, :deal_id, :role, :contact
 
 json.products deal.products
 

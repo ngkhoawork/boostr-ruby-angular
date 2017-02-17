@@ -455,6 +455,28 @@
     }
   }
 
+  #contacts {
+    overflow: visible;
+    table {
+      table-layout: fixed;
+      tbody {
+        .ui-select-container.dropdown.ui-select-bootstrap {
+          span {
+            font-size: 13px;
+          }
+          input {
+            font-size: 13px;
+          }
+          .ui-select-match {
+            a.btn.btn-xs.btn-link.pull-right {
+              color: #e35500;
+            }
+          }
+        }
+      }
+    }
+  }
+
   #contact {
     #add-contact {
       span {
