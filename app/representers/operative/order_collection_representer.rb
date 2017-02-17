@@ -74,13 +74,13 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def primary_sales_person
-    # 'api_user@kingsandbox.com'
-    deal_members_emails[0]
+    'api_user@kingsandbox.com'
+    # deal_members_emails[0]
   end
 
   def owner
-    # 'api_user@kingsandbox.com'
-    deal_members_emails[1] || deal_members_emails[0]
+    'api_user@kingsandbox.com'
+    # deal_members_emails[1] || deal_members_emails[0]
   end
 
   def deal_members_emails

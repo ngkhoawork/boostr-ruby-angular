@@ -47,7 +47,7 @@ class Operative::ContactsService
   end
 
   def contact_integration_blank?
-    contact_operative_integration.blank?
+    contact_operative_integration.blank? || contact_external_id.blank?
   end
 
   def contact_external_id
