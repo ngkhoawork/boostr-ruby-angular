@@ -22,6 +22,7 @@ class Operative::XmlParserService
   end
 
   def parsed_xml
+    puts response
     Nokogiri::XML response.body
   end
 end
