@@ -164,7 +164,7 @@ class Api::ActivitiesController < ApplicationController
       elsif params[:page] && params[:filter] == "client"
         offset = (params[:page].to_i - 1) * 10
 
-        if current_user.user_type == EXEC && current_user.team_id == nil && (!current_user.leader? || current_user.all_team_members.count == 0)
+        if current_user.user_type == EXEC && !(current_user.team.presence) && (!current_user.leader? || current_user.all_team_members.count == 0)
           company.activities.order("happened_at desc").limit(10).offset(offset)
         elsif current_user.leader?
           team_member_ids = team.all_members.map(&:id) + team.all_leaders.map(&:id)
