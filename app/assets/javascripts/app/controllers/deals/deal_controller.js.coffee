@@ -77,7 +77,6 @@
     if (file && file.id)
       $http.delete('/api/deals/'+ $routeParams.id + '/deal_assets/' + file.id)
       .then (respond) ->
-        console.log('del file', respond)
         $scope.dealFiles = $scope.dealFiles.filter (dealFile) ->
           return dealFile.id != file.id
 
@@ -133,7 +132,6 @@
               original_file_name: assemblyJson.results[':original'][0].name
           })
           .then (response) ->
-            console.log(response.data)
 #            $scope.uploadedFiles.push response.data
             $scope.dealFiles.push response.data
 
@@ -292,6 +290,7 @@
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
+      deal.contact_roles = Field.field(deal, 'Contact Role')
       $scope.currentDeal = deal
       $scope.selectedStageId = deal.stage_id
       $scope.verifyMembersShare()
@@ -609,7 +608,7 @@
       $scope.setCurrentDeal(deal)
 
   $scope.onEditableBlur = () ->
-    console.log("ddd")
+#    console.log("ddd")
   $scope.verifyMembersShare = ->
     share_sum = 0
     _.each $scope.currentDeal.members, (member) ->
@@ -621,15 +620,40 @@
       DealMember.delete(id: member.id, deal_id: $scope.currentDeal.id).then (deal) ->
         $scope.setCurrentDeal(deal)
 
+  $scope.showContactEditModal = (deal_contact) ->
+    deal_contact.errors = {}
+
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_form.html'
+      size: 'md'
+      controller: 'ContactsEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          deal_contact.contact
+
   $scope.deleteContact = (deletedContact) ->
-    if confirm('Are you sure you want to delete "' +  deletedContact.name + '"?')
-      DealContact.delete({
-        deal_id: $scope.currentDeal.id,
-        id: deletedContact.id
-        }, ->
-        $scope.currentDeal.contacts = _.reject $scope.currentDeal.contacts, (contact) ->
-          contact.id == deletedContact.id
-      )
+    if confirm('Are you sure you want to delete "' +  deletedContact.contact.name + '"?')
+      DealContact.delete(deal_id: $scope.currentDeal.id, id: deletedContact.id).then (deal_contact) ->
+        $scope.currentDeal.deal_contacts = _.reject $scope.currentDeal.deal_contacts, (deal_contact) ->
+          deal_contact.id == deletedContact.id
+
+  $scope.submitDealContact = (deal_contact) ->
+    deal_contact.errors = {}
+
+    DealContact.update(
+      deal_id: $scope.currentDeal.id,
+      id: deal_contact.id,
+      deal_contact: deal_contact
+    ).then(
+      (deal_contact) ->
+        true
+      (resp) ->
+        deal_contact.role = null
+        for key, error of resp.data.errors
+          deal_contact.errors[key] = error && error[0]
+    )
 
   $scope.deleteDealProduct = (deal_product) ->
     $scope.errors = {}
@@ -684,7 +708,7 @@
   $scope.$on 'openContactModal', ->
     $scope.createNewContactModal()
 
-  $scope.$on 'updated_deal', ->
+  $scope.$on 'updated_deals', ->
     $scope.init()
 
   $scope.$on 'deal_update_errors', (event, errors) ->
@@ -693,7 +717,6 @@
       $scope.errors[key] = error && error[0]
 
   $scope.$on 'updated_activities', ->
-    console.log('updated_activities')
     $scope.init()
 
   $scope.init()
@@ -765,7 +788,12 @@
       keyboard: false
       resolve:
         deal: ->
-          deal
+          angular.copy deal
+
+  $scope.deleteDeal = (deal) ->
+    if confirm('Are you sure you want to delete "' +  deal.name + '"?')
+      Deal.delete deal
+      $location.path('/deals')
 
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)

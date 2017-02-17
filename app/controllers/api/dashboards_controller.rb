@@ -6,7 +6,8 @@ class Api::DashboardsController < ApplicationController
       forecast: DashboardForecastSerializer.new(forecast),
       next_quarter_forecast: DashboardForecastSerializer.new(next_quarter_forecast),
       deals: serialized_deals,
-      current_user: current_user
+      current_user: current_user,
+      revenue: dashboard_pacing_alert_service.display_revenue
     }
   end
 
@@ -15,6 +16,10 @@ class Api::DashboardsController < ApplicationController
   end
 
   protected
+
+  def dashboard_pacing_alert_service
+    DashboardPacingAlertService.new(current_user: current_user, params: params)
+  end
 
   def time_period
     return @time_period if defined?(@time_period)

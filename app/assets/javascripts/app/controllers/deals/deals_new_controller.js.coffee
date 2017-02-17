@@ -27,7 +27,8 @@
       $scope.setClientTypes(client_types)
 
     Stage.query().$promise.then (stages) ->
-      $scope.stages = stages
+      $scope.stages = stages.filter (stage) ->
+        !(stage.active is false or stage.open is false)
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->

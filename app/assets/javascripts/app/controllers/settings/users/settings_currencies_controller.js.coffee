@@ -1,6 +1,6 @@
 @app.controller 'SettingsCurrenciesController',
-['$scope', '$modal', 'Currency',
-($scope, $modal, Currency) ->
+['$scope', '$modal', 'Currency', 'ExchangeRate'
+($scope, $modal, Currency, ExchangeRate) ->
 
   $scope.init = () ->
     $scope.getCurrencies()
@@ -43,7 +43,7 @@
       $scope.toggleId = rowId
 
   $scope.deleteExchangeRate = (exchange_rate) ->
-    console.log exchange_rate
+    ExchangeRate.delete exchange_rate
 
   $scope.init()
 ]

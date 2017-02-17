@@ -25,7 +25,7 @@
               .client-info{ 'ng-repeat': 'contact in contacts | filter: { name: searchText }' }
                 .name{ ng: { bind: { html: 'contact.name' } } }
                 .action
-                  %a{ href: "javascript:void(0)", 'ng-click': "addContact(contact)", 'ng-show': "checkContact(contact)" }
+                  %a{ href: "javascript:void(0)", 'ng-click': "addContact(contact)", 'ng-hide': "checkContact(contact)" }
                     Add
 
     .modal-footer

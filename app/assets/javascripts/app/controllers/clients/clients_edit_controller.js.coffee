@@ -1,9 +1,13 @@
 @app.controller "ClientsEditController",
-['$scope', '$modalInstance', '$filter', 'Client', 'Field', 'client'
-($scope, $modalInstance, $filter, Client, Field, client) ->
+['$scope', '$modalInstance', '$filter', 'Client', 'Field', 'client', 'CountriesList'
+($scope, $modalInstance, $filter, Client, Field, client, CountriesList) ->
   $scope.client = client
   $scope.clients = []
   $scope.query = ""
+  $scope.countries = []
+
+  CountriesList.get (data) ->
+    $scope.countries = data.countries
 
   $scope.init = () ->
     $scope.formType = "Edit"
@@ -39,7 +43,6 @@
           if !field then return $scope.errors[key] = 'Name is required'
         when 'client_type'
           if !field || !field.option_id then return $scope.errors[key] = 'Type is required'
-
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
     $scope.removeCategoriesFromAgency()

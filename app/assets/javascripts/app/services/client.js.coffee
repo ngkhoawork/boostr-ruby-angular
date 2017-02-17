@@ -6,6 +6,7 @@
     send = {}
     original.address = original.address || {}
     address_attributes =
+      country: original.address.country
       street1: original.address.street1
       street2: original.address.street2
       city: original.address.city
