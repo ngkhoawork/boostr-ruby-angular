@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170215110722) do
+ActiveRecord::Schema.define(version: 20170217120842) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -812,6 +812,16 @@ ActiveRecord::Schema.define(version: 20170215110722) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["team_id"], name: "index_users_on_team_id", using: :btree
 
+  create_table "validations", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "factor"
+    t.string   "value_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "validations", ["company_id"], name: "index_validations_on_company_id", using: :btree
+
   create_table "values", force: :cascade do |t|
     t.integer  "company_id"
     t.string   "subject_type"
@@ -827,6 +837,7 @@ ActiveRecord::Schema.define(version: 20170215110722) do
     t.integer  "option_id"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
+    t.boolean  "value_boolean"
   end
 
   add_index "values", ["company_id", "field_id"], name: "index_values_on_company_id_and_field_id", using: :btree
