@@ -20,6 +20,7 @@ class Company < ActiveRecord::Base
   has_many :bps
   has_many :deal_custom_field_names
   has_many :exchange_rates
+  has_many :validations, dependent: :destroy
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -65,6 +66,8 @@ class Company < ActiveRecord::Base
     activity_types.find_or_initialize_by(name:'Campaign Review', action:'reviewed campaign with', icon:'/assets/icons/review.svg')
     activity_types.find_or_initialize_by(name:'QBR', action:'Quarterly Business Review with', icon:'/assets/icons/QBR.svg')
     activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.svg')
+
+    setup_default_validations
   end
 
   def settings
@@ -145,11 +148,20 @@ class Company < ActiveRecord::Base
         .try(:rate)
   end
 
+  def validation_for(factor)
+    factor_string = factor.to_s.humanize.titleize
+    self.validations.find_by(factor: factor_string)
+  end
+
   protected
 
   def setup_default_options(field, names)
     names.each do |name|
       field.options.find_or_initialize_by(name: name, company: self, locked: true)
     end
+  end
+
+  def setup_default_validations
+    validations.find_or_initialize_by(factor: 'Billing Contact', value_type: 'Number')
   end
 end

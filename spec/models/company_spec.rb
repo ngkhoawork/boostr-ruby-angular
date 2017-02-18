@@ -23,4 +23,15 @@ RSpec.describe Company, type: :model do
       expect(billing_contact_option).to be
     end
   end
+
+  describe '#validation_for' do
+    it 'returns validation if company has it' do
+      validation = create :validation, company: company, factor: 'Strong Validation'
+      expect(company.validation_for(:strong_validation)).to eq validation
+    end
+
+    it 'returns nil if company does not have it' do
+      expect(company.validation_for(:no_validation)).to eq nil
+    end
+  end
 end

@@ -5,6 +5,7 @@ class Value < ActiveRecord::Base
   belongs_to :option
   belongs_to :field
   belongs_to :company
+  belongs_to :validation
 
   before_validation :set_value_type, :set_company
 
@@ -20,6 +21,7 @@ class Value < ActiveRecord::Base
     return value_number if value_type == 'Money'
     return value_datetime if value_type == 'Datetime'
     return value_object if value_type == 'Object'
+    return value_boolean if value_type == 'Boolean'
   end
 
   def value=(value)
@@ -30,15 +32,20 @@ class Value < ActiveRecord::Base
     self.value_number = value if value_type == 'Money'
     self.value_datetime = value if value_type == 'Datetime'
     self.value_object = value if value_type == 'Object'
+    self.value_boolean = value if value_type == 'Boolean'
   end
 
   protected
 
   def set_value_type
-    self.value_type = self.field.value_type
+    if field || subject
+      self.value_type = (self.field || self.subject).value_type
+    end
   end
 
   def set_company
-    self.company = self.field.company
+    if field || subject
+      self.company = (self.field || self.subject).company
+    end
   end
 end
