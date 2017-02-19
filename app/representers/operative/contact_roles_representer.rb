@@ -8,6 +8,6 @@ class Operative::ContactRolesRepresenter < Representable::Decorator
   property :name, as: :internalName, exec_context: :decorator, wrap: :role
 
   def name
-    'primary_contact'
+    'billing_contact'
   end
 end
