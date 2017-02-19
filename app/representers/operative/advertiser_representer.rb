@@ -9,6 +9,7 @@ class Operative::AdvertiserRepresenter < Representable::Decorator
   property :operative_id, as: :id, exec_context: :decorator, if: -> (options) { options[:create].eql? false }
   property :operative_name, as: :name, exec_context: :decorator
   property :roles, decorator: Operative::AccountRolesRepresenter, exec_context: :decorator
+  property :contacts, decorator: Operative::ContactsRepresenter, exec_context: :decorator, wrap: :contacts
 
   def external_id
     "boostr_#{represented.id}##"
@@ -24,5 +25,9 @@ class Operative::AdvertiserRepresenter < Representable::Decorator
 
   def operative_name
     represented.name
+  end
+
+  def contacts
+    @_contact ||= represented.contacts.order(:created_at).first
   end
 end

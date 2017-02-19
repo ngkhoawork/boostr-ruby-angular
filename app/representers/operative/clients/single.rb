@@ -6,8 +6,8 @@ class Operative::Clients::Single < API::Single
   property :industry, exec_context: :decorator
   property :type, as: :accountType, exec_context: :decorator
   property :parent_account, as: :parentAccount, exec_context: :decorator
-  property :street1, as: :addressLine1
-  property :street2, as: :addressLine2
+  property :street1, as: :addressline1
+  property :street2, as: :addressline2
 
   def external_id
     "boostr_#{represented.id}##"
