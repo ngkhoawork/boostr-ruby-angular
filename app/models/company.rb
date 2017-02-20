@@ -142,6 +142,10 @@ class Company < ActiveRecord::Base
         .try(:rate)
   end
 
+  def operative_api_config
+    ApiConfiguration.find_by(company_id: self, integration_type: 'operative')
+  end
+
   protected
 
   def setup_default_options(field, names)
