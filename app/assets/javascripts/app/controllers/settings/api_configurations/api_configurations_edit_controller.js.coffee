@@ -4,7 +4,11 @@
 
       $scope.formType = 'Edit'
       $scope.submitText = 'Update'
+
       $scope.need_change_password = false
+
+      $scope.set_neet_set_password = (val) ->
+        $scope.need_change_password = val
 
       $scope.api_configuration = api_configuration
 
