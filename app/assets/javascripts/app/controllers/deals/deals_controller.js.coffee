@@ -230,12 +230,22 @@
 
             $scope.showDealErrors = (id, errors) ->
                 deal = angular.element('#deal-' + id)
-                console.log(deal)
-                height = deal.outerHeight()
-                error = deal.find('.deal-error')
-                error.toggle()
-                error.css('bottom', height + 5)
+                dealOffset = deal.offset()
+                error = angular.element('<div class="deal-error"></div>')
+                angular.element('#deals').append(error)
+                error.outerWidth(deal.outerWidth())
                 error.html(errors.join('<br>'))
+                errorHeight = error.outerHeight()
+                dealOffset.top -= errorHeight + 6
+                error.offset(dealOffset)
+                error.css('opacity', 1)
+                $timeout ->
+                    error.css('opacity', 0)
+                    $timeout ->
+                        error.remove()
+                    , 1000
+                , 10000
+
                 return true
 
             $scope.undoLastMove = ->
@@ -388,6 +398,7 @@
                     x = e.clientX
 
             $scope.onDragStart = ->
+                angular.element('.deal-error').remove()
                 x = 0
                 shift = 0
                 dragDirection = null
