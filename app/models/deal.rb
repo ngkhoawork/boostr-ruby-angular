@@ -114,7 +114,7 @@ class Deal < ActiveRecord::Base
   def active_exchange_rate
     if curr_cd != 'USD'
       unless company.active_currencies.include?(curr_cd)
-        errors.add(:curr_cd, 'does not have an active exchange rate')
+        errors.add(:curr_cd, "#{self.curr_cd} does not have an active exchange rate")
       end
     end
   end
