@@ -349,6 +349,30 @@
         //box-shadow: 0 1px 3px gray;
         border-bottom: 2px solid #E4E4E6;
         background-color: white;
+        .deal-error {
+            display: none;
+            position: absolute;
+            left: 0;
+            background-color: $error-color;
+            color: white;
+            padding: 10px;
+            border-radius: 3px;
+            width: 100%;
+            z-index: 3;
+            &:before {
+                content: '';
+                bottom: -10px;
+                left: 30px;
+                margin-left: -10px;
+                border-width: 10px 10px 0;
+                border-color: transparent;
+                border-style: solid;
+                border-top-color: $error-color;
+                position: absolute;
+                width: 0;
+                height: 0;
+            }
+        }
         .block-menu {
             position: absolute;
             right: 5px;

@@ -144,11 +144,14 @@
 								 'dnd-drop': 'onDrop(item, stage)',
 								 'dnd-inserted': 'onInserted(index, columnIndex)'}
 						.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
+									id: 'deal-{{deal.id}}',
+									'ng-click': 'errorTest(deal.id)',
 									'dnd-draggable': 'deal',
 									'dnd-moved': 'onMoved($index, columnIndex)',
 									'dnd-effect-allowed': 'move',
 									'dnd-dragstart': 'onDragStart()',
 									'dnd-dragend': 'onDragEnd()'}
+							.deal-error
 							.date.pull-right{'ng-class': '{expired: deal.isExpired}'} {{deal.start_date | date: 'mediumDate'}}
 							%span
 								%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}

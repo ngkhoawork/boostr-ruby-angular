@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$window', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter',
-        ($rootScope, $window, $document, $scope, $filter, $modal, $q, $location, Deal, Stage, ExchangeRate, DealsFilter) ->
+    ['$rootScope', '$window', '$timeout', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter',
+        ($rootScope, $window, $timeout, $document, $scope, $filter, $modal, $q, $location, Deal, Stage, ExchangeRate, DealsFilter) ->
             formatMoney = $filter('formatMoney')
 
             $scope.selectedDeal = null
@@ -14,18 +14,6 @@
                 {name: 'My Team\'s Deals', param: 'team'}
                 {name: 'All Deals', param: 'company'}
             ]
-#            currentYear = moment().year()
-#            Selection = ->
-#                @owner = ''
-#                @advertiser = ''
-#                @agency = ''
-#                @budget = ''
-#                @exchange_rate = ''
-#                @yearClosed = currentYear
-#                @date =
-#                    startDate: null
-#                    endDate: null
-#                return
 
             $scope.filter =
                 exchange_rates: []
@@ -227,8 +215,28 @@
                 if !newStage.open && newStage.probability == 0
                     $scope.showCloseDealModal(deal)
                 else
-                    Deal.update(id: deal.id, deal: deal).then (deal) ->
+                    Deal.update(id: deal.id, deal: deal).then (deal) -> ,
+                    (err) ->
+                        if err.data && err.data.errors && Object.keys(err.data.errors).length
+                            errors = err.data.errors
+                            errorsStack = []
+                            for key, error of errors
+                                errorsStack.push error
+                            if errorsStack.length
+                                $scope.undoLastMove()
+                                $timeout ->
+                                    $scope.showDealErrors(deal.id, errorsStack)
                 deal
+
+            $scope.showDealErrors = (id, errors) ->
+                deal = angular.element('#deal-' + id)
+                console.log(deal)
+                height = deal.outerHeight()
+                error = deal.find('.deal-error')
+                error.toggle()
+                error.css('bottom', height + 5)
+                error.html(errors.join('<br>'))
+                return true
 
             $scope.undoLastMove = ->
                 last = $scope.lastMoveAction
