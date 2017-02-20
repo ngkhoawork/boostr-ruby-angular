@@ -18,15 +18,23 @@
                 %ui-select-choices{ repeat: 'day.id as day in days | filter: { name: $select.search }' }
                   %div{ ng: { bind: { html: 'day.name' } } }
 
-
       .col-sm-12
         .panel
           .panel-body
             %h4 Deal Validations
-            %h5 Require Billing Contact on Deals
+            %h5 Require Deal Billing Contact
             .form-group
               %label.control-label{ for: 'validations' } Select a Stage at which point Billing Contact is always required
               %ui-select{ name: 'percentage', ng: { model: 'billing_contact_validation.criterion.value', disabled: true }, 'on-select': 'updateValidation(billing_contact_validation)' }
+                %ui-select-match{ placeholder: 'Select Stage' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'stage.probability as stage in stages | orderBy: "[-active, position]"' }
+                  %div{ ng: { bind: { html: 'stage.name' } } }
+
+            %h5 Require Account Manager
+            .form-group
+              %label.control-label{ for: 'validations' } Select a Stage at which point Account Manager is always required
+              %ui-select{ name: 'percentage', ng: { model: 'account_manager_validation.criterion.value', disabled: true }, 'on-select': 'updateValidation(account_manager_validation)' }
                 %ui-select-match{ placeholder: 'Select Stage' }
                   {{ $select.selected.name }}
                 %ui-select-choices{ repeat: 'stage.probability as stage in stages | orderBy: "[-active, position]"' }

@@ -8,6 +8,10 @@ class Validation < ActiveRecord::Base
 
   accepts_nested_attributes_for :criterion
 
+  after_create do
+    self.create_criterion
+  end
+
   def as_json(options = {})
     super(options.merge(
       include: {

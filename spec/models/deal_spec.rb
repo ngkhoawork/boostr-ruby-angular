@@ -58,7 +58,7 @@ RSpec.describe Deal, type: :model do
   end
 
   context 'validations' do
-    let(:deal) { create :deal }
+    let!(:deal) { create :deal }
 
     context 'billing contact' do
       let(:validation) { deal.company.validation_for(:billing_contact) }
@@ -89,6 +89,43 @@ RSpec.describe Deal, type: :model do
         end
       end
     end
+
+    context 'account manager' do
+      let(:validation) { deal.company.validation_for(:account_manager) }
+      let!(:deal_member) { create :deal_member, deal: deal }
+
+      it 'passes validation if company does not have it' do
+        expect(deal).to be_valid
+      end
+
+      context 'validation active' do
+        before do
+          validation.create_criterion
+        end
+
+        it 'passes validation if stage is less then criterion' do
+          validation.criterion.update(value: 50)
+          expect(deal).to be_valid
+        end
+
+        it 'fails validation when deal does not have deal members' do
+          deal.deal_members.destroy_all
+          validation.criterion.update(value: 10)
+          expect(deal).not_to be_valid
+        end
+
+        it 'fails validation when deal member is not an account manager' do
+          validation.criterion.update(value: 10)
+          expect(deal).not_to be_valid
+        end
+
+        it 'passes validation if deal has an account manager' do
+          validation.criterion.update(value: 10)
+          deal_member.user.update(user_type: ACCOUNT_MANAGER)
+          expect(deal).to be_valid
+        end
+      end
+    end
   end
 
   describe '#has_billing_contact?' do
@@ -108,6 +145,25 @@ RSpec.describe Deal, type: :model do
 
     it 'returns false if no billing contact found' do
       expect(deal.has_billing_contact?).to be false
+    end
+  end
+
+  describe '#has_account_manager_member?' do
+    let!(:deal) { create :deal }
+    let!(:deal_member) { create :deal_member, deal: deal }
+
+    it 'returns true if deal has an account manager member' do
+      deal_member.user.update(user_type: ACCOUNT_MANAGER)
+      expect(deal.has_account_manager_member?).to be true
+    end
+
+    it 'returns false if deal does not have members' do
+      deal.deal_members.destroy_all
+      expect(deal.has_account_manager_member?).to be false
+    end
+
+    it 'returns false if deal member is not an account manager' do
+      expect(deal.has_account_manager_member?).to be false
     end
   end
 
