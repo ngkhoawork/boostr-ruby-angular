@@ -35,6 +35,7 @@ gem 'aws-sdk'
 gem 'responders'
 gem 'roar'
 gem 'money'
+gem 'countries'
 gem 'faraday'
 gem 'attr_encrypted', '~> 3.0.0'
 

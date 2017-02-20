@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :api_configurations
+    resources :countries, only: [:index]
 
     resources :users, only: [:index, :update] do
       collection do
@@ -60,7 +61,7 @@ Rails.application.routes.draw do
         get :pipeline_summary_report
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
-      resources :deal_contacts, only: [:index, :create, :destroy]
+      resources :deal_contacts, only: [:index, :create, :update, :destroy]
       resources :deal_assets, only: [:index, :update, :create, :destroy]
     end
     resources :deal_product_budgets, only: [:index, :create]
@@ -91,6 +92,7 @@ Rails.application.routes.draw do
     resources :forecasts, only: [:index, :show]
     resources :fields, only: [:index]
     resources :options, only: [:create, :update, :destroy]
+    resources :validations, only: [:index, :update]
     resources :tools, only: [:index]
     resources :notifications, only: [:index, :show, :create, :update, :destroy]
     resources :activities, only: [:index, :create, :show, :update, :destroy]

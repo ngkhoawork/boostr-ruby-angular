@@ -4,6 +4,7 @@ FactoryGirl.define do
     name { FFaker::NatoAlphabet.callsign }
     advertiser nil
     agency nil
+    curr_cd nil
     type nil
     source nil
     start_date '01/01/2016'
@@ -24,6 +25,10 @@ FactoryGirl.define do
 
       if item[:agency].nil?
         item[:agency] = Company.first.clients.order(:id).second.name
+      end
+
+      if item[:curr_cd].nil?
+        item[:curr_cd] = 'USD'
       end
 
       if item[:stage].nil?

@@ -66,8 +66,15 @@
               %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'state.name' } } }
           .col-xs-3
-            %label{ for: 'zip' } Zip
-            %input.form-control{ name: 'zip', placeholder: 'Zip', ng: { model: 'client.address.zip' }  }
+            %label{ for: 'zip' } Postal code
+            %input.form-control{ name: 'zip', placeholder: 'Postal code', ng: { model: 'client.address.zip' }  }
+      .form-group
+        %label{ for: 'country' } Country
+        %ui-select{ name: 'country', ng: { model: 'client.address.country', disabled: true } }
+          %ui-select-match{ placeholder: 'Country' }
+            {{ $select.selected }}
+          %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
+            %div {{ country }}
       .form-group
         %label{ for: 'office' } Phone
         %input.form-control{ placeholder: 'Office Number', ng: { model: 'client.address.phone' }, name: 'office' }

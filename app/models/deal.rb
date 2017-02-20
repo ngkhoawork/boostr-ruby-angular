@@ -35,6 +35,7 @@ class Deal < ActiveRecord::Base
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
   validate :active_exchange_rate
+  validate :billing_contact_presence
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
@@ -115,6 +116,20 @@ class Deal < ActiveRecord::Base
         errors.add(:curr_cd, 'does not have an active exchange rate')
       end
     end
+  end
+
+  def billing_contact_presence
+    validation = company.validation_for(:billing_contact)
+    stage_threshold = validation.criterion.try(:value) if validation
+
+    if validation && stage_threshold && stage && stage.probability >= stage_threshold
+      errors.add(:stage, "Current Stage requires a valid Billing Contact with address") unless self.has_billing_contact?
+    end
+  end
+
+  def has_billing_contact?
+    billing_contact = self.deal_contacts.find_by(role: 'Billing')
+    !!(billing_contact) && billing_contact.valid?
   end
 
   def fields

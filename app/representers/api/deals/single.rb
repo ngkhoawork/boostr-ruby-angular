@@ -5,5 +5,4 @@ class API::Deals::Single < API::Single
   def deal_stage_log_previous_stage
     represented.deal_stage_logs.try(:last).try(:previous_stage).try(:name) || ''
   end
-
 end
