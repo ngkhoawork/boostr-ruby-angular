@@ -195,7 +195,7 @@
                     {{ deal_product_budget.budget_percent+ '%'}}
 
       #new-product.well.dark
-        .row{ ng: { hide: 'showProductForm' } }
+        .row{'ng-if': 'currentDeal.stage.open', ng: { hide: 'showProductForm' } }
           .col-xs-12
             %a.add-product{ href: '', ng: { click: 'toggleProductForm()' } }
               = inline_svg 'icons/add.svg'
