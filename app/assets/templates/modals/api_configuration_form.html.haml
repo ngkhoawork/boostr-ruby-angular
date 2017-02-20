@@ -1,0 +1,44 @@
+#notification-modal
+  %form{ name: 'api_configuration_form', ng: { submit: 'submitForm()' } }
+    .modal-header.text-center
+      %a.close{ ng: { click: 'cancel()' } }
+        %span{'aria-hidden' => 'true'}
+          = inline_svg 'icons/close.svg'
+      %h3.modal-title
+        %strong
+          {{ formType }} Api Integration
+    .modal-body
+      .form-group
+        .row
+          .col-xs-12
+            %label.control-label{for: 'switched_on'} Switch on/off integration
+            %input{ ng: { model: 'api_configuration.switched_on' }, type: 'checkbox' }
+        .row
+          .col-xs-12
+            %label.control-label{ for: 'integration_type' } Integration type
+            %input.form-control{ placeholder: 'Operative', ng: { model: 'api_configuration.integration_type', disabled: 'true' }, name: 'integration_type', type: 'text', required: true }
+        .row
+          .col-xs-12
+            %label.control-label{ for: 'trigger_on_deal_percentage' } Triggers on deal percentage
+            %input.form-control{ placeholder: 'Eg. 100', ng: { model: 'api_configuration.trigger_on_deal_percentage' }, name: 'trigger_on_deal_percentage', type: 'number', required: true }
+        .row
+          .col-xs-12
+            %label.control-label{ for: 'base_link' } Base link
+            %input.form-control{ placeholder: 'https://integrations.com/api', ng: { model: 'api_configuration.base_link' }, name: 'base_link', type: 'url', required: true }
+        .row
+          .col-xs-12
+            %label.control-label{ for: 'api_email' } Api email
+            %input.form-control{ placeholder: 'example@email.com', ng: { model: 'api_configuration.api_email' }, name: 'api_email', type: 'email', required: true  }
+
+        .row{ ng: { if: 'formType == \'Edit\'' } }
+          .col-xs-12
+            %label.control-label{for: 'need_change_password'} Need to change password?
+            %input{ ng: { model: 'need_change_password' }, type: 'checkbox', name: 'need_change_password' }
+
+        .row{ ng: { if: 'need_change_password'} }
+          .col-xs-12
+            %label.control-label{ for: 'password' } Api password
+            %input.form-control{ placeholder: 'Please enter new password', ng: { model: 'api_configuration.password' }, name: 'password', type: 'password' }
+    .modal-footer.text-center
+      %button.btn.btn-primary.btn-lg{ type: 'submit' } {{ submitText }}
+      %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel

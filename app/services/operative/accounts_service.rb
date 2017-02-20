@@ -1,6 +1,7 @@
 class Operative::AccountsService
-  def initialize(account)
+  def initialize(account, options)
     @account = account
+    @options = options
   end
 
   def perform
@@ -9,7 +10,7 @@ class Operative::AccountsService
 
   private
 
-  attr_reader :account, :mapped_object
+  attr_reader :account, :mapped_object, :options
 
   def send_account
     account_integration_blank? ? create_account_and_integration_object : update_account
@@ -20,7 +21,7 @@ class Operative::AccountsService
   end
 
   def v1_api_client
-    Operative::V1::Client.new
+    Operative::V1::Client.new(options)
   end
 
   def create_account

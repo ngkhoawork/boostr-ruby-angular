@@ -1,19 +1,18 @@
 module Operative
   module V1
     class Connection
-      BASE_URL = 'https://config.operativeone.com'
-      USERNAME = 'api_user@kingsandbox.com'
-      PASSWORD = 'King2017!'
 
-      attr_reader :base_url
+      attr_reader :base_url, :user_email, :password
 
       def initialize(options = {})
-        @base_url = options[:base_url] || BASE_URL
+        @base_url = options[:base_url]
+        @user_email = options[:user_email]
+        @password = options[:password]
       end
 
       def init
         conn = Faraday.new(url: base_url)
-        conn.basic_auth(USERNAME, PASSWORD)
+        conn.basic_auth(user_email, password)
         conn
       end
     end

@@ -1,14 +1,15 @@
 class Operative::ContactsService
-  def initialize(contact, advertiser_name)
+  def initialize(contact, advertiser_name, options)
     @contact = contact
     @advertiser_name = advertiser_name
+    @options = options
   end
 
   def perform
     send_contact
   end
 
-  attr_reader :contact, :advertiser_name, :mapped_object
+  attr_reader :contact, :advertiser_name, :mapped_object, :options
 
   private
 
@@ -33,7 +34,7 @@ class Operative::ContactsService
   end
 
   def v1_api_client
-    Operative::V1::Client.new
+    Operative::V1::Client.new(options)
   end
 
   def mapped_object
