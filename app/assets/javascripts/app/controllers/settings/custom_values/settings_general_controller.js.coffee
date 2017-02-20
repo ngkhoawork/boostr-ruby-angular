@@ -7,6 +7,7 @@
 
   Validation.query().$promise.then (validations) ->
     $scope.billing_contact_validation = _.findWhere(validations, factor: 'Billing Contact')
+    $scope.account_manager_validation = _.findWhere(validations, factor: 'Account Manager')
 
   $scope.days = [
     { id: 0, name: 'Sunday' }
