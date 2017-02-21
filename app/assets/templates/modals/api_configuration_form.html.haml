@@ -27,7 +27,7 @@
             %input.form-control{ placeholder: 'https://integrations.com/api', ng: { model: 'api_configuration.base_link' }, name: 'base_link', type: 'url', required: true }
         .row
           .col-xs-12
-            %label.control-label{ for: 'api_email' } Api email
+            %label.control-label{ for: 'api_email' } API username
             %input.form-control{ placeholder: 'example@email.com', ng: { model: 'api_configuration.api_email' }, name: 'api_email', type: 'email', required: true  }
 
         .row{ ng: { if: 'formType == \'Edit\'' } }
