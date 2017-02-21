@@ -69,16 +69,20 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def primary_sales_person
-    'api_user@kingsandbox.com'
-    # deal_members_emails[0]
+    # 'api_user@kingsandbox.com'
+    deal_members_emails[0] || owner_email
   end
 
   def owner
-    'api_user@kingsandbox.com'
-    # deal_members_emails[1] || deal_members_emails[0]
+    # 'api_user@kingsandbox.com'
+    owner_email
   end
 
   def deal_members_emails
-    @_deal_members_emails ||= represented.deal_members.ordered_by_share.map(&:email)
+    represented.deal_members.emails_for_users_except_account_manager_user_type
+  end
+
+  def owner_email
+    represented.users.find_by(user_type: ACCOUNT_MANAGER).email
   end
 end
