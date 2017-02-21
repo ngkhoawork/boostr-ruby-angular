@@ -32,10 +32,10 @@
 
         .row{ ng: { if: 'formType == \'Edit\'' } }
           .col-xs-12
-            %label.control-label{for: 'need_change_password'} Need to change password?
-            %input{ ng: { model: 'need_change_password' }, type: 'checkbox', name: 'need_change_password' }
+            %label.control-label{ for: 'need_change_password' } Need to change password?
+            %input{ ng: { model: 'need_change_password', click: 'set_neet_set_password(need_change_password)' }, type: 'checkbox', name: 'need_change_password' }
 
-        .row{ ng: { if: 'need_change_password'} }
+        .row{ ng: { if: 'need_change_password' } }
           .col-xs-12
             %label.control-label{ for: 'password' } Api password
             %input.form-control{ placeholder: 'Please enter new password', ng: { model: 'api_configuration.password' }, name: 'password', type: 'password' }
