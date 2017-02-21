@@ -157,6 +157,10 @@ class Company < ActiveRecord::Base
     self.validations.find_by(factor: factor_string)
   end
 
+  def operative_api_config
+    ApiConfiguration.find_by(company_id: self, integration_type: 'operative')
+  end
+
   protected
 
   def setup_default_options(field, names)

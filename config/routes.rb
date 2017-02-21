@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :api_configurations
     resources :countries, only: [:index]
+    resources :api_configurations
 
     resources :users, only: [:index, :update] do
       collection do
