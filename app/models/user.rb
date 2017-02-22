@@ -68,6 +68,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def authenticate(unencrypted_password)
+    BCrypt::Password.new(encrypted_password).is_password?(unencrypted_password) && self
+  end
+
   def name
     "#{first_name} #{last_name}"
   end
