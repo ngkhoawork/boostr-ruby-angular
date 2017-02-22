@@ -1,3 +1,13 @@
+GIT
+  remote: git@github.com:trizes/knock.git
+  revision: 3ad8aded473d8a50a78c8e06479d9ccf319be3f8
+  branch: master
+  specs:
+    knock (2.1.1.5)
+      bcrypt (~> 3.1)
+      jwt (~> 1.5)
+      rails (>= 4.2)
+
 GEM
   remote: https://rubygems.org/
   remote: https://rails-assets.org/
@@ -229,6 +239,7 @@ GEM
     jquery-ui-rails (5.0.5)
       railties (>= 3.2.16)
     json (1.8.3)
+    jwt (1.5.6)
     kaminari (0.16.3)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -485,6 +496,7 @@ DEPENDENCIES
   jasmine-rails
   jbuilder
   jquery-rails
+  knock!
   launchy
   money
   newrelic_rpm
@@ -530,4 +542,4 @@ RUBY VERSION
    ruby 2.2.2p95
 
 BUNDLED WITH
-   1.13.7
+   1.14.4
