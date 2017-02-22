@@ -1,7 +1,7 @@
 class Api::ApiConfigurationsController < ApplicationController
 
   def index
-    api_configurations = ApiConfiguration.find_by(company_id: current_user.company.id)
+    api_configurations = ApiConfiguration.where(company_id: current_user.company.id)
     render json: API::ApiConfigurations::Collection.new(api_configurations)
   end
 
