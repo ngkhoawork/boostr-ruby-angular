@@ -13,7 +13,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   property :name, exec_context: :decorator
 
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
-  property :sales_stage, as: :name, wrap: :salesStage, exec_context: :decorator, if: -> (options) { options[:create].eql? true }
+  property :sales_stage, as: 'v2:name', wrap: 'v2:salesStage', exec_context: :decorator, if: -> (options) { options[:create].eql? true }
   property :primary_sales_person, as: :primarySalesperson, exec_context: :decorator
   property :owner, exec_context: :decorator
 
@@ -45,7 +45,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def sales_stage
-    represented.stage.name
+    map_stage_name
   end
 
   def description
@@ -84,5 +84,25 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
 
   def owner_email
     represented.users.find_by(user_type: ACCOUNT_MANAGER).email
+  end
+
+  def map_stage_name
+    operative_stages.find { |name| name.include? stage_probability }
+  end
+
+  def stage_probability
+    represented.stage.probability.to_s
+  end
+
+  def operative_stages
+    [
+      '0% - Closed/Lost',
+      '10% - Sales lead',
+      '20% - Discuss Requirements',
+      '50% - Proposal',
+      '60% - Negotiation',
+      '80% - Best Case',
+      '100% - Closing'
+    ]
   end
 end
