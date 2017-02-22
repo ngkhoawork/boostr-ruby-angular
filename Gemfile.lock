@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:trizes/knock.git
+  remote: https://github.com/trizes/knock.git
   revision: 3ad8aded473d8a50a78c8e06479d9ccf319be3f8
   branch: master
   specs:
