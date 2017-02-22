@@ -1,15 +1,16 @@
 class Operative::ContactsService
-  def initialize(contact, account_name, options)
+  def initialize(contact, account_name, options, deal_id)
     @contact = contact
     @account_name = account_name
     @options = options
+    @deal_id = deal_id
   end
 
   def perform
     send_contact
   end
 
-  attr_reader :contact, :account_name, :mapped_object, :options
+  attr_reader :contact, :account_name, :mapped_object, :options, :deal_id
 
   private
 
@@ -18,7 +19,7 @@ class Operative::ContactsService
   end
 
   def create_contact
-    v1_api_client.create_contact(params: mapped_object)
+    v1_api_client.create_contact(params: mapped_object, deal_id: deal_id)
   end
 
   def create_contact_and_integration_object
@@ -32,7 +33,7 @@ class Operative::ContactsService
   end
 
   def update_contact
-    v1_api_client.update_contact(params: mapped_object, id: contact_external_id)
+    v1_api_client.update_contact(params: mapped_object, id: contact_external_id, deal_id: deal_id)
   end
 
   def v1_api_client

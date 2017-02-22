@@ -17,12 +17,12 @@ class Operative::IntegrationService
   attr_reader :deal, :agency, :advertiser, :contact
 
   def send_accounts
-    Operative::AccountsService.new(agency, auth_details).perform if agency
-    Operative::AccountsService.new(advertiser, auth_details).perform
+    Operative::AccountsService.new(agency, auth_details, deal.id).perform if agency
+    Operative::AccountsService.new(advertiser, auth_details, deal.id).perform
   end
 
   def send_contact
-    Operative::ContactsService.new(contact, account_name, auth_details).perform if contact
+    Operative::ContactsService.new(contact, account_name, auth_details, deal.id).perform if contact
   end
 
   def send_deal

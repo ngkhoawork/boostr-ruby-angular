@@ -15,7 +15,8 @@ class Operative::AuthDetailsService
     {
         base_url: api_config.base_link,
         user_email: api_config.api_email,
-        password: api_config.password
+        password: api_config.password,
+        company_id: api_config.company_id,
     }
   end
 end

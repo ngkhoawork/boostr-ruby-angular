@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170220140438) do
+ActiveRecord::Schema.define(version: 20170223232546) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -541,6 +541,25 @@ ActiveRecord::Schema.define(version: 20170220140438) do
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
 
+  create_table "integration_logs", force: :cascade do |t|
+    t.text     "request_body"
+    t.string   "response_code"
+    t.text     "response_body"
+    t.string   "api_endpoint"
+    t.string   "request_type"
+    t.string   "resource_type"
+    t.integer  "company_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.integer  "deal_id"
+    t.boolean  "is_error"
+    t.string   "api_provider"
+    t.string   "object_name"
+    t.text     "error_text"
+  end
+
+  add_index "integration_logs", ["company_id"], name: "index_integration_logs_on_company_id", using: :btree
+
   create_table "integrations", force: :cascade do |t|
     t.integer  "integratable_id"
     t.string   "integratable_type"
@@ -897,6 +916,7 @@ ActiveRecord::Schema.define(version: 20170220140438) do
   add_foreign_key "display_line_items", "temp_ios"
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
+  add_foreign_key "integration_logs", "companies"
   add_foreign_key "io_members", "ios"
   add_foreign_key "io_members", "users"
   add_foreign_key "ios", "companies"

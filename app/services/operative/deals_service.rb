@@ -30,7 +30,7 @@ class Operative::DealsService
   end
 
   def create_deal
-    v2_api_client.create_order(params: mapped_object)
+    v2_api_client.create_order(params: mapped_object, deal_id: deal.id)
   end
 
   def create_deal_and_integration_object
