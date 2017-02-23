@@ -1122,7 +1122,7 @@ class Deal < ActiveRecord::Base
           subject = self.name + ' changed to ' + stage.name + ' - ' + stage.probability.to_s + '%'
           UserMailer.stage_changed_email(recipients, subject, self.id).deliver_later(wait: 10.minutes, queue: "default")
         end
-      end      
+      end
     end
     self.open = should_open.to_s
   end
@@ -1231,4 +1231,7 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def ordered_by_created_at_billing_contacts
+    deal_contacts.where(role: 'Billing').order(:created_at)
+  end
 end
