@@ -66,15 +66,7 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def deal_product_budgets
-    selected_products = object
-                        .deal_products
-                        .reject{|deal_product| deal_product.product_id != @options[:product_filter] if @options[:product_filter]}
-                        .map(&:id)
-
-    object
-    .deal_product_budgets
-    .select{ |budget| selected_products.include?(budget.deal_product_id) }
-    .group_by(&:start_date)
+    object.deal_product_budgets.group_by(&:start_date)
     .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
     # object.deal_product_budgets.map {|deal_product_budget| deal_product_budget.serializable_hash(only: [:id, :budget, :start_date, :end_date]) rescue nil}
   end
