@@ -9,25 +9,30 @@ class Operative::AdvertiserRepresenter < Representable::Decorator
   property :operative_id, as: :id, exec_context: :decorator, if: -> (options) { options[:create].eql? false }
   property :operative_name, as: :name, exec_context: :decorator
   property :roles, decorator: Operative::AccountRolesRepresenter, exec_context: :decorator
-  # property :contacts, decorator: Operative::ContactsRepresenter, exec_context: :decorator, wrap: :contacts
+  property :contact, decorator: Operative::ContactsRepresenter, exec_context: :decorator, wrap: :contacts,
+           if: -> (options) { options[:advertiser].eql? true }
 
   def external_id
-    "boostr_#{represented.id}_#{represented.company.name}_account"
+    "boostr_#{advertiser.id}_#{advertiser.company.name}_account"
   end
 
   def roles
-    represented
+    advertiser
   end
 
   def operative_id
-    represented.integrations.operative.external_id
+    advertiser.integrations.operative.external_id
   end
 
   def operative_name
-    represented.name
+    advertiser.name
   end
 
-  def contacts
-    @_contact ||= represented.contacts.order(:created_at).first
+  def contact
+    represented
+  end
+
+  def advertiser
+    @_advertiser ||= represented.advertiser
   end
 end
