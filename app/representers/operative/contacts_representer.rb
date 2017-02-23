@@ -6,7 +6,7 @@ class Operative::ContactsRepresenter < Representable::Decorator
   self.representation_wrap = :contact
 
   property :roles, decorator: Operative::ContactRolesRepresenter, exec_context: :decorator
-  property :operative_id, as: :id, exec_context: :decorator
+  property :operative_id, as: :id, exec_context: :decorator, if: -> (options) { options[:create].eql? false }
   property :external_id, as: :externalId, exec_context: :decorator
 
   def roles
@@ -18,7 +18,7 @@ class Operative::ContactsRepresenter < Representable::Decorator
   end
 
   def external_id
-    "boostr_#{represented.id}##"
+    "boostr_#{represented.id}_#{represented.company.name}_contact"
   end
 
   def contact

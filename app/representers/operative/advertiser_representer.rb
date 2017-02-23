@@ -12,7 +12,7 @@ class Operative::AdvertiserRepresenter < Representable::Decorator
   # property :contacts, decorator: Operative::ContactsRepresenter, exec_context: :decorator, wrap: :contacts
 
   def external_id
-    "boostr_#{represented.id}##"
+    "boostr_#{represented.id}_#{represented.company.name}_account"
   end
 
   def roles

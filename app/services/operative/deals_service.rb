@@ -29,11 +29,13 @@ class Operative::DealsService
   end
 
   def create_deal_and_integration_object
-    deal.integrations.create!(external_id: external_id_from_response, external_type: Integration::OPERATIVE)
+    if external_id_from_response.present?
+      deal.integrations.create!(external_id: external_id_from_response, external_type: Integration::OPERATIVE)
+    end
   end
 
   def external_id_from_response
-    Operative::XmlParserService.new(create_deal, element: 'id', deal: true).perform
+    @_external_id_from_response ||= Operative::XmlParserService.new(create_deal, element: 'id', deal: true).perform
   end
 
   def update_deal
