@@ -53,4 +53,10 @@ class ApplicationController < ActionController::Base
       'application'
     end
   end
+
+  private
+
+  def unauthorized_entity(entity_name)
+    render json: { error: 'Unauthorized' }, status: :unauthorized
+  end
 end

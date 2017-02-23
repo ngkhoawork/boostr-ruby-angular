@@ -22,7 +22,7 @@ RSpec.describe PagesController, type: :controller do
 
   context 'token auth' do
     def valid_auth
-      @token = Knock::AuthToken.new(payload: { sub: user.id }).token
+      @token = Knock::AuthToken.new(payload: user.to_token_payload).token
       @request.env['HTTP_AUTHORIZATION'] = "Bearer #{@token}"
     end
 
