@@ -18,7 +18,11 @@ class Operative::DealsService
   end
 
   def mapped_object
-    @_mapped_object ||= Operative::Deals::Single.new(deal).to_xml(create: create_deal?, advertiser: advertiser)
+    @_mapped_object ||= Operative::Deals::Single.new(deal).to_xml(
+      create: create_deal?,
+      advertiser: advertiser,
+      agency: agency?
+    )
   end
 
   def v2_api_client
@@ -57,5 +61,9 @@ class Operative::DealsService
 
   def create_deal?
     deal_integration_blank?
+  end
+
+  def agency?
+    deal.agency.present?
   end
 end
