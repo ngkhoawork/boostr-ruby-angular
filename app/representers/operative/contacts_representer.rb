@@ -18,14 +18,10 @@ class Operative::ContactsRepresenter < Representable::Decorator
   end
 
   def external_id
-    "boostr_#{represented.id}_#{represented.company.name}_contact"
+    "boostr_#{contact.id}_#{contact.company.name}_contact"
   end
 
   def contact
-    represented
-  end
-
-  def contact_full_name
-    @_full_name ||= represented.name.partition(' ')
+    @_contact ||= represented.ordered_by_created_at_billing_contacts.first.contact
   end
 end

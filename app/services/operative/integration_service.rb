@@ -22,11 +22,11 @@ class Operative::IntegrationService
   end
 
   def send_contact
-    Operative::ContactsService.new(contact, advertiser.name, auth_details).perform if contact
+    Operative::ContactsService.new(contact, account_name, auth_details).perform if contact
   end
 
   def send_deal
-    Operative::DealsService.new(deal, auth_details).perform
+    Operative::DealsService.new(deal, advertiser?, auth_details).perform
   end
 
   def auth_details
@@ -35,5 +35,17 @@ class Operative::IntegrationService
 
   def api_configuration
     deal.company.operative_api_config
+  end
+
+  def account_name
+    determine_contact_relation_to_client.name
+  end
+
+  def determine_contact_relation_to_client
+    advertiser? ? advertiser : agency
+  end
+
+  def advertiser?
+    advertiser.contacts.include?(contact)
   end
 end

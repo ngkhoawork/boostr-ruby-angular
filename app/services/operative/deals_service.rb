@@ -1,6 +1,7 @@
 class Operative::DealsService
-  def initialize(deal, options)
+  def initialize(deal, advertiser, options)
     @deal = deal
+    @advertiser = advertiser
     @options = options
   end
 
@@ -10,14 +11,14 @@ class Operative::DealsService
 
   private
 
-  attr_reader :deal, :mapped_object, :options
+  attr_reader :deal, :mapped_object, :options, :advertiser
 
   def send_deal
     deal_integration_blank? ? create_deal_and_integration_object : update_deal
   end
 
   def mapped_object
-    @_mapped_object ||= Operative::Deals::Single.new(deal).to_xml(create: create_deal?)
+    @_mapped_object ||= Operative::Deals::Single.new(deal).to_xml(create: create_deal?, advertiser: advertiser)
   end
 
   def v2_api_client

@@ -1,7 +1,7 @@
 class Operative::ContactsService
-  def initialize(contact, advertiser_name, options)
+  def initialize(contact, account_name, options)
     @contact = contact
-    @advertiser_name = advertiser_name
+    @account_name = account_name
     @options = options
   end
 
@@ -9,7 +9,7 @@ class Operative::ContactsService
     send_contact
   end
 
-  attr_reader :contact, :advertiser_name, :mapped_object, :options
+  attr_reader :contact, :account_name, :mapped_object, :options
 
   private
 
@@ -41,7 +41,7 @@ class Operative::ContactsService
 
   def mapped_object
     mapped_object = Operative::Contacts::Single.new(contact).to_hash
-    mapped_object['account'] = advertiser_name
+    mapped_object['account'] = account_name
     mapped_object
   end
 
