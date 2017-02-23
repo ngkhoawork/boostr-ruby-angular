@@ -120,11 +120,11 @@ class Api::DealsController < ApplicationController
       .by_values(deal_type_source_params)
       .includes(
         :advertiser,
-        :agency,
         :latest_happened_activity,
         :stageinfo,
         :deal_product_budgets,
         :deal_custom_field,
+        agency: [:parent_client],
         deal_members: [:username],
         values: [:option]
       )
@@ -147,7 +147,12 @@ class Api::DealsController < ApplicationController
 
       format.json {
         deal_settings_fields = company.fields.where(subject_type: 'Deal').pluck(:id, :name)
-        deal_list = ActiveModel::ArraySerializer.new(filtered_deals, each_serializer: DealReportSerializer, deal_settings_fields: deal_settings_fields)
+        deal_list = ActiveModel::ArraySerializer.new(
+          filtered_deals,
+          each_serializer: DealReportSerializer,
+          deal_settings_fields: deal_settings_fields,
+          product_filter: product_filter
+        )
         deal_ids = filtered_deals.collect{|deal| deal.id}
         range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
         render json: [{deals: deal_list, range: range}].to_json
