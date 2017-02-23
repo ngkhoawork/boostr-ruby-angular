@@ -10,7 +10,7 @@ class Operative::Clients::Single < API::Single
   property :street2, as: :addressline2
 
   def external_id
-    "boostr_#{represented.id}##"
+    "boostr_#{represented.id}_#{represented.company.name}_account"
   end
 
   def type

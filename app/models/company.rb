@@ -149,16 +149,12 @@ class Company < ActiveRecord::Base
   end
 
   def operative_api_config
-    ApiConfiguration.find_by(company_id: self, integration_type: 'operative')
+    ApiConfiguration.find_by(company_id: self, integration_type: Integration::OPERATIVE)
   end
 
   def validation_for(factor)
     factor_string = factor.to_s.humanize.titleize
     self.validations.find_by(factor: factor_string)
-  end
-
-  def operative_api_config
-    ApiConfiguration.find_by(company_id: self, integration_type: 'operative')
   end
 
   protected

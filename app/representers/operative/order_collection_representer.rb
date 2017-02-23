@@ -41,7 +41,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def alternate_id
-    "boostr_#{represented.id}#"
+    "boostr_#{represented.id}_#{represented.company.name}_order"
   end
 
   def sales_stage
@@ -69,12 +69,10 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def primary_sales_person
-    # 'api_user@kingsandbox.com'
     deal_members_emails[0] || owner_email
   end
 
   def owner
-    # 'api_user@kingsandbox.com'
     owner_email
   end
 

@@ -29,11 +29,13 @@ class Operative::AccountsService
   end
 
   def create_account_and_integration_object
-    account.integrations.create!(external_id: external_id_from_response, external_type: Integration::OPERATIVE)
+    if external_id_from_response.present?
+      account.integrations.create!(external_id: external_id_from_response, external_type: Integration::OPERATIVE)
+    end
   end
 
   def external_id_from_response
-    Operative::XmlParserService.new(create_account, element: 'accountId').perform
+    @_external_id_from_response ||= Operative::XmlParserService.new(create_account, element: 'accountId').perform
   end
 
   def update_account

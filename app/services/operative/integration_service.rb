@@ -34,6 +34,6 @@ class Operative::IntegrationService
   end
 
   def api_configuration
-    ApiConfiguration.find_by(company_id: deal.company, integration_type: 'operative')
+    deal.company.operative_api_config
   end
 end

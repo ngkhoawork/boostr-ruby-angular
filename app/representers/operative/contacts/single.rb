@@ -11,7 +11,7 @@ class Operative::Contacts::Single < API::Single
   property :type, exec_context: :decorator
 
   def external_id
-    "boostr_#{represented.id}##"
+    "boostr_#{represented.id}_#{represented.company.name}_contact"
   end
 
   def first_name
