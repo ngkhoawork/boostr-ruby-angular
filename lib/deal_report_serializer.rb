@@ -25,7 +25,7 @@ class DealReportSerializer < ActiveModel::Serializer
   )
 
   def stage
-    object.stage.serializable_hash(only: [:id, :name, :probability, :open]) rescue nil
+    object.stageinfo.serializable_hash rescue nil
   end
 
   def advertiser
@@ -38,45 +38,44 @@ class DealReportSerializer < ActiveModel::Serializer
 
   def users
     users = []
-    object.users.each do |user|
-      deal_member = object.deal_members.where(user_id: user.id).first
-      data = user.serializable_hash(only: [:id, :first_name, :last_name])
+    object.deal_members.each do |deal_member|
+      data = deal_member.username.serializable_hash(only: [:id, :first_name, :last_name])
       data[:share] = deal_member.share
       users << data
     end
+
     users
   end
 
   def latest_activity
-    activities = object.activities.order("happened_at desc")
-    if activities && activities.count > 0
-      last_activity = activities.first
-      data = ""
-      if last_activity.happened_at
-        data = data + "Date: " + last_activity.happened_at.strftime("%m-%d-%Y %H:%M:%S") + "<br/>"
-      end
-      if last_activity.activity_type_name
-        data = data + "Type: " + last_activity.activity_type_name + "<br/>"
-      end
-      if last_activity.comment
-        data = data + "Note: " + last_activity.comment
-      end
-      data
-    else
-      ""
+    if activity = object.latest_happened_activity
+      {
+        date: activity.happened_at.strftime("%m-%d-%Y %H:%M:%S"),
+        type: activity.activity_type_name,
+        note: activity.comment
+      }
     end
   end
 
   def type
-    Deal.get_option(object, "Deal Type")
+    get_deal_value_name 'Deal Type'
   end
 
   def source
-    Deal.get_option(object, "Deal Source")
+    get_deal_value_name 'Deal Source'
   end
 
   def deal_product_budgets
-    object.deal_product_budgets.group("start_date").select("sum(deal_product_budgets.budget) as budget, start_date").collect{|product| product.serializable_hash(only: [:budget, :start_date])}
+    selected_products = object
+                        .deal_products
+                        .reject{|deal_product| deal_product.product_id != @options[:product_filter] if @options[:product_filter]}
+                        .map(&:id)
+
+    object
+    .deal_product_budgets
+    .select{ |budget| selected_products.include?(budget.deal_product_id) }
+    .group_by(&:start_date)
+    .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
     # object.deal_product_budgets.map {|deal_product_budget| deal_product_budget.serializable_hash(only: [:id, :budget, :start_date, :end_date]) rescue nil}
   end
 
@@ -85,7 +84,7 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def close_reason
-    Deal.get_option(object, "Close Reason")
+    get_deal_value_name 'Close Reason'
   end
 
   def cache_key
@@ -94,15 +93,22 @@ class DealReportSerializer < ActiveModel::Serializer
     parts << object.updated_at
     parts << object.advertiser.try(:id)
     parts << object.advertiser.try(:updated_at)
-    parts << object.stage.try(:id)
-    parts << object.stage.try(:updated_at)
+    parts << object.stageinfo.try(:id)
+    parts << object.stageinfo.try(:updated_at)
     parts << object.agency.try(:id)
     parts << object.agency.try(:updated_at)
-    parts << object.users.try(:id)
-    parts << object.users.try(:updated_at)
+    parts << object.deal_members.map(&:id)
+    parts << object.deal_members.map(&:updated_at)
     parts << object.deal_product_budgets.try(:id)
     parts << object.deal_product_budgets.try(:updated_at)
     parts
   end
-end
 
+  private
+
+  def get_deal_value_name field_name
+    if field = @options[:deal_settings_fields].find { |field| field.include? field_name }
+      object.values.find { |value| value.field_id == field[0] }.try(:option).try(:name)
+    end
+  end
+end
