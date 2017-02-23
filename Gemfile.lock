@@ -80,6 +80,9 @@ GEM
       sass (~> 3.4)
       thor
     builder (3.2.2)
+    bullet (5.5.0)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.10.0)
     capybara (2.4.4)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -141,8 +144,10 @@ GEM
     factory_girl_rails (4.5.0)
       factory_girl (~> 4.5.0)
       railties (>= 3.0.0)
+    fast_stack (0.2.0)
     ffaker (2.1.0)
     ffi (1.9.10)
+    flamegraph (0.9.5)
     font-awesome-rails (4.6.2.0)
       railties (>= 3.2, < 5.1)
     formatador (0.2.5)
@@ -232,6 +237,7 @@ GEM
     lumberjack (1.0.9)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
+    memory_profiler (0.9.7)
     method_source (0.8.2)
     mime-types (2.6.1)
     mini_portile (0.6.2)
@@ -268,6 +274,8 @@ GEM
     puma (2.11.2)
       rack (>= 1.1, < 2.0)
     rack (1.6.4)
+    rack-mini-profiler (0.10.2)
+      rack (>= 1.2.0)
     rack-protection (1.5.3)
       rack
     rack-test (0.6.3)
@@ -421,6 +429,7 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
+    stackprof (0.2.10)
     test_xml (0.1.8)
       diffy (~> 3.0)
       nokogiri (>= 1.3.2)
@@ -436,6 +445,7 @@ GEM
     uglifier (2.7.1)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    uniform_notifier (1.10.0)
     warden (1.2.3)
       rack (>= 1.0)
     web-console (2.1.3)
@@ -460,6 +470,7 @@ DEPENDENCIES
   awesome_print
   aws-sdk
   bootstrap-sass (~> 3.3.5)
+  bullet
   capybara
   chronic
   clockwork
@@ -469,7 +480,9 @@ DEPENDENCIES
   devise
   devise_invitable (~> 1.3.4)
   factory_girl_rails
+  fast_stack
   ffaker
+  flamegraph
   font-awesome-rails
   fuubar
   griddler
@@ -481,6 +494,7 @@ DEPENDENCIES
   jbuilder
   jquery-rails
   launchy
+  memory_profiler
   money
   newrelic_rpm
   paranoia (~> 2.0)
@@ -488,6 +502,7 @@ DEPENDENCIES
   poltergeist
   pry-rails
   puma
+  rack-mini-profiler
   rails (= 4.2.3)
   rails-assets-angular!
   rails-assets-angular-bootstrap!
@@ -517,6 +532,7 @@ DEPENDENCIES
   sidekiq
   sinatra (>= 1.3.0)
   spring
+  stackprof
   timecop
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
@@ -525,4 +541,4 @@ RUBY VERSION
    ruby 2.2.2p95
 
 BUNDLED WITH
-   1.13.7
+   1.14.4

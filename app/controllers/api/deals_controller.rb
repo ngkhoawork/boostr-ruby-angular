@@ -120,11 +120,11 @@ class Api::DealsController < ApplicationController
       .by_values(deal_type_source_params)
       .includes(
         :advertiser,
-        :agency,
         :latest_happened_activity,
         :stageinfo,
         :deal_product_budgets,
         :deal_custom_field,
+        agency: [:parent_client],
         deal_members: [:username],
         values: [:option]
       )
