@@ -118,7 +118,16 @@ class Api::DealsController < ApplicationController
 
       filtered_deals = selected_deals
       .by_values(deal_type_source_params)
-      .includes(:advertiser, :agency, :previous_stage, :users, :deal_product_budgets, 'values')
+      .includes(
+        :advertiser,
+        :agency,
+        :latest_happened_activity,
+        :stageinfo,
+        :deal_product_budgets,
+        :deal_custom_field,
+        deal_members: [:username],
+        values: [:option]
+      )
       .active
       .distinct
 
@@ -126,13 +135,19 @@ class Api::DealsController < ApplicationController
         filtered_deals = filtered_deals.for_time_period(time_period.start_date, time_period.end_date)
       end
 
+      # Filter by product id
+      if product_filter
+        filtered_deals = filtered_deals.joins('LEFT JOIN deal_products on deal_products.deal_id = deals.id').where(deal_products: { product_id: product_filter })
+      end
+
       filtered_deals = filtered_deals.select do |deal|
-        (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
-        (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true)
+        (deal_type_filter ? deal.values.map(&:option_id).include?(deal_type_filter) : true) &&
+        (deal_source_filter ? deal.values.map(&:option_id).include?(deal_source_filter) : true)
       end
 
       format.json {
-        deal_list = ActiveModel::ArraySerializer.new(filtered_deals, each_serializer: DealReportSerializer)
+        deal_settings_fields = company.fields.where(subject_type: 'Deal').pluck(:id, :name)
+        deal_list = ActiveModel::ArraySerializer.new(filtered_deals, each_serializer: DealReportSerializer, product_filter: product_filter, deal_settings_fields: deal_settings_fields)
         deal_ids = filtered_deals.collect{|deal| deal.id}
         range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
         render json: [{deals: deal_list, range: range}].to_json
@@ -141,7 +156,7 @@ class Api::DealsController < ApplicationController
         require 'timeout'
         begin
           Timeout::timeout(240) {
-            send_data Deal.to_pipeline_report_csv(filtered_deals, company), filename: "pipeline-report-#{Date.today}.csv"
+            send_data Deal.to_pipeline_report_csv(filtered_deals, company, product_filter), filename: "pipeline-report-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
@@ -217,6 +232,24 @@ class Api::DealsController < ApplicationController
   end
 
   private
+
+  def product_filter
+    if params[:product_id].presence && params[:product_id] != 'all'
+      params[:product_id].to_i
+    end
+  end
+
+  def deal_type_filter
+    if params[:type].presence && params[:type] != 'all'
+      params[:type].to_i
+    end
+  end
+
+  def deal_source_filter
+    if params[:source].presence && params[:source] != 'all'
+      params[:source].to_i
+    end
+  end
 
   def deal_params
     params.require(:deal).permit(
