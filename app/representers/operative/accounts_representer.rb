@@ -5,7 +5,8 @@ class Operative::AccountsRepresenter < Representable::Decorator
 
   self.representation_wrap = :accounts
 
-  property :agency_account, exec_context: :decorator, decorator: Operative::AgencyRepresenter
+  property :agency_account, exec_context: :decorator, decorator: Operative::AgencyRepresenter,
+           if: -> (options) { options[:agency].eql? true }
   property :advertiser_account, exec_context: :decorator, decorator: Operative::AdvertiserRepresenter
 
   def advertiser_account
