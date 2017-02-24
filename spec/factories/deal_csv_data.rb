@@ -20,11 +20,11 @@ FactoryGirl.define do
 
     after(:build) do |item|
       if item[:advertiser].nil?
-        item[:advertiser] = Company.first.clients.order(:id).first.name
+        item[:advertiser] = Company.first.clients.order(:id).second.name
       end
 
       if item[:agency].nil?
-        item[:agency] = Company.first.clients.order(:id).second.name
+        item[:agency] = Company.first.clients.order(:id).fourth.name
       end
 
       if item[:curr_cd].nil?

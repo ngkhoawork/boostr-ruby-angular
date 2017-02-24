@@ -18,7 +18,7 @@ RSpec.describe Client, type: :model do
     let!(:category_field) { user.company.fields.where(name: 'Category').first }
     let!(:category) { create :option, field: category_field, company: user.company }
     let!(:subcategory) { create :option, option: category, company: user.company }
-    let!(:client) { create :client, client_category: category, client_subcategory: subcategory }
+    let!(:client) { create :client, client_category: category, client_subcategory: subcategory, client_type_id: advertiser_type_id(company) }
     let!(:client_member1) { create :client_member, client: client, user: user }
     let!(:client_member2) { create :client_member, client: client, user: user2 }
     let!(:client_member3) { create :client_member, client: client, user: user3 }
@@ -27,8 +27,8 @@ RSpec.describe Client, type: :model do
       build :client_csv_data,
       id: client.id,
       name: client.name,
-      type: client.client_type_id,
-      parent: '',
+      type: 'Advertiser',
+      parent: client.parent_client.name,
       category: client.client_category.name,
       subcategory: client.client_subcategory.name,
       address: client.address.street1,
@@ -42,14 +42,32 @@ RSpec.describe Client, type: :model do
     }
 
     it 'returns correct headers' do
-      data = CSV.parse(Client.to_csv)
+      data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
       data_headers = headers.keys.map(&:capitalize).map(&:to_s)
       expect(data[0]).to eq(data_headers)
     end
 
-    it 'returns correct data for client' do
-      data = CSV.parse(Client.to_csv)
-      client_data = client_ordered_data.values.map(&:to_s).map { |el| el == '' ? nil : el }
+    it 'returns correct data for account' do
+      data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
+      client_data = client_ordered_data.values.map(&:to_s).map(&:presence)
+      expect(data[1]).to eq(client_data)
+    end
+
+    it 'creates CSV with broken parent account link' do
+      client.parent_client.destroy
+      data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
+      client_ordered_data[:parent] = nil
+      client_data = client_ordered_data.values.map(&:to_s).map(&:presence)
+      expect(data[1]).to eq(client_data)
+    end
+
+    it 'creates CSV with broken category and subcategory link' do
+      client.client_category.destroy
+      client.client_subcategory.destroy
+      data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
+      client_ordered_data[:category] = nil
+      client_ordered_data[:subcategory] = nil
+      client_data = client_ordered_data.values.map(&:to_s).map(&:presence)
       expect(data[1]).to eq(client_data)
     end
   end
@@ -138,7 +156,7 @@ RSpec.describe Client, type: :model do
       let(:invalid_subcategory) { build :client_csv_data, subcategory: 'N/A', type: 'Advertiser' }
       let(:invalid_share) { build :client_csv_data, teammembers: 'first;second' }
       let(:invalid_team_member) { build :client_csv_data, teammembers: 'NA/100' }
-      let(:own_parent) { build :client_csv_data, name: client.name }
+      let(:own_parent) { build :client_csv_data, name: client.name, parent: client.name }
       let(:ambigous_match) { build :client_csv_data, name: duplicate1.name }
 
       it 'requires name to be present' do
@@ -153,17 +171,17 @@ RSpec.describe Client, type: :model do
         ).to eq([{:row=>1, :message=>['Type is empty']}])
       end
 
-      it 'validates client type' do
+      it 'validates account type' do
         no_type[:type] = 'test'
         expect(
           Client.import(generate_csv(no_type), user)
         ).to eq([{:row=>1, :message=>['Type is invalid. Use "Agency" or "Advertiser" string']}])
       end
 
-      it 'requires parent client to exist' do
+      it 'requires parent account to exist' do
         expect(
           Client.import(generate_csv(invalid_parent), user)
-        ).to eq([{:row=>1, :message=>["Parent client #{invalid_parent[:parent]} could not be found"]}])
+        ).to eq([{:row=>1, :message=>["Parent account #{invalid_parent[:parent]} could not be found"]}])
       end
 
       it 'requires category to exist' do
@@ -181,25 +199,25 @@ RSpec.describe Client, type: :model do
       it 'validates equality of team member and shares length' do
         expect(
           Client.import(generate_csv(invalid_share), user)
-        ).to eq([{:row=>1, :message=>["Client team member first does not have share"]}])
+        ).to eq([{:row=>1, :message=>["Account team member first does not have share"]}])
       end
 
-      it 'requires client search by name to match no more than 1 client' do
+      it 'requires account search by name to match no more than 1 account' do
         expect(
           Client.import(generate_csv(ambigous_match), user)
-        ).to eq([{:row=>1, :message=>["Client name #{ambigous_match[:name]} matched more than one client record"]}])
+        ).to eq([{:row=>1, :message=>["Account name #{ambigous_match[:name]} matched more than one account record"]}])
       end
 
       it 'validates team member presence' do
         expect(
           Client.import(generate_csv(invalid_team_member), user)
-        ).to eq([{:row=>1, :message=>["Client team member #{invalid_team_member[:teammembers].split('/')[0]} could not be found in the users list"]}])
+        ).to eq([{:row=>1, :message=>["Account team member #{invalid_team_member[:teammembers].split('/')[0]} could not be found in the users list"]}])
       end
 
-      it 'rejects clients set to be parents of themselves' do
+      it 'rejects accounts set to be parents of themselves' do
         expect(
           Client.import(generate_csv(own_parent), user)
-        ).to eq([{:row=>1, :message=>["Clients can't be parents of themselves"]}])
+        ).to eq([{:row=>1, :message=>["Accounts can't be parents of themselves"]}])
       end
     end
   end
