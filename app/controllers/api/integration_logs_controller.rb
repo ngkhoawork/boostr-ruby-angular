@@ -16,6 +16,6 @@ class Api::IntegrationLogsController < ApplicationController
   private
 
   def integration_log
-    @integration_log = IntegrationLog.find_by(params[:id])
+    @integration_log = IntegrationLog.find(params[:id])
   end
 end
