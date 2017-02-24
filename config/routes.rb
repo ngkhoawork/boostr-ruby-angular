@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   # Token Auth
   post 'api/user_token' => 'user_token#create'
   post 'api/forgot_password' => 'forgot_password#create'
+  post 'api/resend_confirmation' => 'forgot_password#create'
 
   root 'pages#index'
   get 'styleguide' => 'pages#styleguide', as: :styleguide
