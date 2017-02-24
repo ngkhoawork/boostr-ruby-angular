@@ -1,0 +1,31 @@
+#integration-logs
+
+  .container
+    %h3 Integration Logs
+
+    .row
+      .table-wrapper
+        %table.table.table-hover.table-striped
+          %thead
+            %tr
+              %th.left ID
+              %th.left Deal ID
+              %th.left Request Type
+              %th.left Response Code
+              %th.left Response Body
+              %th.left URL
+              %th.left Date
+          %tbody
+            %tr{ ng: { repeat: 'log in logs' } }
+              %td {{log.id}}
+              %td {{log.deal_id}}
+              %td {{log.request_type.toUpperCase()}}
+              %td {{log.response_code}}
+              %td
+                %button.btn.activity-email-btn{'ng-if': 'log.response_body.length', 'ng-click': 'showBodyModal(log.response_body)'}
+                  Show Body
+              %td
+                %a{href: '{{log.api_endpoint}}'} endpoint
+              %td {{log.created_at | date: 'medium'}}
+              -#%td {{log.error_text}}
+
