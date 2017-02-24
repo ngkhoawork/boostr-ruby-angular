@@ -44,7 +44,7 @@ class Client < ActiveRecord::Base
   ADVERTISER = 10
   AGENCY = 11
 
-  def self.to_csv
+  def self.to_csv(company)
     header = [
       :Id,
       :Name,
@@ -62,15 +62,26 @@ class Client < ActiveRecord::Base
       :Teammembers
     ]
 
+    agency_type_id = self.agency_type_id(company)
+    advertiser_type_id = self.advertiser_type_id(company)
+
     CSV.generate(headers: true) do |csv|
       csv << header
 
-      all.order(:id).each do |client|
+      all
+      .includes(
+        :parent_client,
+        :address,
+        :client_category,
+        :client_subcategory,
+        client_members: [:user]
+      )
+      .order(:id).each do |client|
         type_id = nil
-        if self.agency_type_id(client.company) == client.client_type_id
-          type_id = 'Agency'
-        elsif self.advertiser_type_id(client.company) == client.client_type_id
+        if advertiser_type_id == client.client_type_id
           type_id = 'Advertiser'
+        elsif agency_type_id == client.client_type_id
+          type_id = 'Agency'
         end
 
         team_members = client.client_members.each_with_object([]) do |member, memo|
@@ -81,9 +92,9 @@ class Client < ActiveRecord::Base
         line << client.id
         line << client.name
         line << type_id
-        line << (client.parent_client_id.nil? ? nil : client.parent_client.name)
-        line << (client.client_category_id.nil? ? nil : client.client_category.name)
-        line << (client.client_subcategory_id.nil? ? nil : client.client_subcategory.name)
+        line << (client.parent_client.try(:name))
+        line << (client.client_category.try(:name))
+        line << (client.client_subcategory.try(:name))
         line << (client.address.nil? ? nil : client.address.street1)
         line << (client.address.nil? ? nil : client.address.city)
         line << (client.address.nil? ? nil : client.address.state)
