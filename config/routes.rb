@@ -1,16 +1,21 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-
   mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   ActiveAdmin.routes(self)
 
+  # Devise Auth
   devise_for :users, skip: 'invitation'
   devise_scope :user do
     get '/users/invitation/accept', to: 'api/invitations#edit',   as: 'accept_user_invitation'
     post '/api/users/invitation', to: 'api/invitations#create', as: nil
     put '/api/users/invitation/accept', to: 'api/invitations#update', as: 'user_invitation'
   end
+
+  # Token Auth
+  post 'api/user_token' => 'user_token#create'
+  post 'api/forgot_password' => 'forgot_password#create'
+  post 'api/resend_confirmation' => 'forgot_password#create'
 
   root 'pages#index'
   get 'styleguide' => 'pages#styleguide', as: :styleguide

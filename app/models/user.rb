@@ -68,6 +68,24 @@ class User < ActiveRecord::Base
     end
   end
 
+  def authenticate(unencrypted_password)
+    BCrypt::Password.new(encrypted_password).is_password?(unencrypted_password) && self
+  end
+
+  def to_token_payload
+    {
+      sub: self.id,
+      refresh: Digest::SHA1.hexdigest(self.encrypted_password.slice(20, 20))
+    }
+  end
+
+  def self.from_token_payload payload
+    # Returns a valid user, `nil` or raise from token payload
+    if user = self.find(payload["sub"])
+      return user if payload["refresh"] && Digest::SHA1.hexdigest(user.encrypted_password.slice(20, 20)) == payload["refresh"]
+    end
+  end
+
   def name
     "#{first_name} #{last_name}"
   end

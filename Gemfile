@@ -12,6 +12,7 @@ gem 'puma'
 gem 'bootstrap-sass', '~> 3.3.5'
 gem 'devise'
 gem 'devise_invitable', '~> 1.3.4'
+gem 'knock', git: 'https://github.com/trizes/knock.git', branch: 'master'
 gem 'rollbar', '~> 1.5.3'
 gem 'activeadmin', '~> 1.0.0.pre1'
 gem 'haml-rails', '~> 0.9'
@@ -62,6 +63,15 @@ group :test do
   gem 'shoulda-matchers', require: false
 end
 
+group :development do
+  gem 'bullet'
+  gem 'rack-mini-profiler'
+  gem 'memory_profiler'
+  gem 'flamegraph'
+  gem 'stackprof'
+  gem 'fast_stack'
+end
+
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
   gem 'factory_girl_rails'
@@ -75,8 +85,6 @@ group :development, :test do
   gem 'fuubar'
   gem 'poltergeist'
   gem 'timecop'
-
-  # Call 'binding.pry' anywhere in the code to stop execution and get a debugger console
   gem 'pry-rails'
   gem 'byebug'
 
