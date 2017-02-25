@@ -27,5 +27,5 @@
       %td {{currentLog.error_text}}
   %button.btn.activity-email-btn{'ng-if': 'currentLog.response_body.length', 'ng-click': 'showBodyModal(currentLog.response_body)'}
     Show Body
-  %button.btn.btn-primary{'ng-if': 'currentLog.is_error', 'ng-click': 'showBodyModal(currentLog.response_body)'}
+  %button.btn.btn-primary{'ng-if': 'currentLog.is_error', 'ng-click': 'resendRequest(currentLog.id)'}
     Resend

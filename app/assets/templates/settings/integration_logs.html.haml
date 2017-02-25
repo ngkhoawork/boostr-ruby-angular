@@ -38,5 +38,5 @@
             %button.btn.activity-email-btn{'ng-if': 'log.response_body.length', 'ng-click': 'showBodyModal(log.response_body)'}
               Show Body
           %td
-            %button.btn.btn-primary{'ng-if': 'log.is_error', 'ng-click': 'showBodyModal(log.response_body)'}
+            %button.btn.btn-primary{'ng-if': 'log.is_error', 'ng-click': 'resendRequest(log.id)'}
               Resend

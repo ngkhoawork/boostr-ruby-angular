@@ -6,15 +6,12 @@
       $scope.filter = 0
       $scope.currentLog = null
 
-      Logs.all().then (logs) ->
-        $scope.logs = logs
-        if $routeParams.id
-          console.log $routeParams.id
-          $scope.currentLog = _.findWhere logs, {id: Number $routeParams.id}
-          console.log $scope.currentLog
-
-#      Logs.get(36).then (log) ->
-#        console.log log
+      if $routeParams.id
+        Logs.get($routeParams.id).then (log) ->
+          $scope.currentLog = log
+      else
+        Logs.all().then (logs) ->
+          $scope.logs = logs
 
       $scope.getHost = (url) ->
         a = document.createElement('a')
@@ -24,6 +21,10 @@
         if split && split.length >= 2
           return split[split.length - 2]
         host
+
+      $scope.resendRequest = (logId) ->
+        Logs.resend(logId).then (data) ->
+          console.log data
 
       $scope.showBodyModal = (body) ->
         $scope.modalInstance = $modal.open

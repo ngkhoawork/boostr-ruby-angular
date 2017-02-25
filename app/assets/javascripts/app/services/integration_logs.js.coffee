@@ -5,8 +5,7 @@
       resource = $resource '/api/integration_logs/:id', { id: '@id' },
         getAll: {
           method: 'GET'
-#          url: '/api/integration_logs'
-          url: '/assets/icons/data.json'
+          url: '/api/integration_logs'
         }
         send: {
           method: 'POST'
@@ -15,9 +14,9 @@
 
       @$resource = resource
 
-      @resend = (log) ->
+      @resend = (logId) ->
         deferred = $q.defer()
-        resource.send id: log.id, () ->
+        resource.send id: logId, () ->
           deferred.resolve()
         deferred.promise
 
