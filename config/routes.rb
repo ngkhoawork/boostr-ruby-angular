@@ -16,9 +16,11 @@ Rails.application.routes.draw do
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
-    resources :api_configurations
     resources :countries, only: [:index]
     resources :api_configurations
+    resources :integration_logs, only: [:index, :show] do
+      post :resend_request, on: :member
+    end
 
     resources :users, only: [:index, :update] do
       collection do

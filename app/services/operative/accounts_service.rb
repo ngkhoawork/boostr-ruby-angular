@@ -1,7 +1,8 @@
 class Operative::AccountsService
-  def initialize(account, options)
+  def initialize(account, options, deal_id)
     @account = account
     @options = options
+    @deal_id = deal_id
   end
 
   def perform
@@ -10,7 +11,7 @@ class Operative::AccountsService
 
   private
 
-  attr_reader :account, :mapped_object, :options
+  attr_reader :account, :mapped_object, :options, :deal_id
 
   def send_account
     account_integration_blank? ? create_account_and_integration_object : update_account
@@ -25,7 +26,7 @@ class Operative::AccountsService
   end
 
   def create_account
-    v1_api_client.create_account(params: mapped_object)
+    v1_api_client.create_account(params: mapped_object, deal_id: deal_id)
   end
 
   def create_account_and_integration_object
@@ -39,7 +40,7 @@ class Operative::AccountsService
   end
 
   def update_account
-    v1_api_client.update_account(params: mapped_object, id: account_external_id)
+    v1_api_client.update_account(params: mapped_object, id: account_external_id, deal_id: deal_id)
   end
 
   def account_operative_integration

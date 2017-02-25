@@ -5,7 +5,8 @@
       "http": {
         "method": "create_order",
         "endpoint": "/operativeone/restapi/salesorders/",
-        "request_type": "post"
+        "request_type": "post",
+        "resource_name": "deal"
       }
     },
     {
@@ -13,7 +14,8 @@
       "http": {
         "method": "update_order",
         "endpoint": "/operativeone/restapi/salesorders/:id",
-        "request_type": "put"
+        "request_type": "put",
+        "resource_name": "deal"
       }
     }
   ]

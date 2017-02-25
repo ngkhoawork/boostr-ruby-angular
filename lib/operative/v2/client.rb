@@ -13,6 +13,7 @@ module Operative
         if mapping.any?
           endpoint = mapping[:http][:endpoint]
           request_type = mapping[:http][:request_type]
+          resource_name = mapping[:http][:resource_name]
 
           split_endpoint = endpoint.split('/')
           endpoint_params = split_endpoint.grep(/:/)
@@ -24,7 +25,10 @@ module Operative
               endpoint.gsub!( req_param, options[req_param_sym].to_s )
             end
           end
-          connection.send(:"#{ request_type }", endpoint, options[:params])
+          connection.send(:"#{ request_type }", endpoint, options[:params]) do |conn|
+            conn.headers['dealId'] = options[:deal_id].to_s
+            conn.headers['resourceName'] = resource_name
+          end
         else
           super
         end
