@@ -24,6 +24,7 @@
   'rzModule'
   'monospaced.elastic'
   'dndLists'
+  'jsonFormatter'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -105,6 +106,9 @@
       controller: 'ApiConfigurationsController'
     .when '/settings/integration_logs',
       templateUrl: 'settings/integration_logs.html'
+      controller: 'IntegrationLogsController'
+    .when '/settings/integration_logs/:id',
+      templateUrl: 'settings/integration_log.html'
       controller: 'IntegrationLogsController'
     .when '/settings/smart_insights',
       templateUrl: 'settings/smart_insights.html'

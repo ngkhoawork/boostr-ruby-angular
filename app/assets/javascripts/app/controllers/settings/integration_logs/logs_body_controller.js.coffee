@@ -1,6 +1,9 @@
 @app.controller 'LogsBodyController',
-    ['$scope', '$modalInstance', '$sce', 'body',
-        ($scope, $modalInstance, $sce, body) ->
+    ['$scope', '$document', '$modalInstance', '$sce', 'body',
+        ($scope, $document, $modalInstance, $sce, body) ->
+
+            $scope.cancel = ->
+                $modalInstance.close()
 
             parseXml = null
             if typeof window.DOMParser != 'undefined'
@@ -19,13 +22,33 @@
             else
                 throw new Error('No XML parser found')
 
-            $scope.body = parseXml(body)
-            console.log typeof $scope.body
-            console.log $scope.body.document
+            xmlToJson = (xml) ->
+                obj = {}
+                if xml.nodeType == 1
+                    if xml.attributes.length > 0
+                        obj['@attributes'] = {}
+                        j = 0
+                        while j < xml.attributes.length
+                            attribute = xml.attributes.item(j)
+                            obj['@attributes'][attribute.nodeName] = attribute.nodeValue
+                            j++
+                else if xml.nodeType == 3
+                    obj = xml.nodeValue
+                if xml.hasChildNodes()
+                    i = 0
+                    while i < xml.childNodes.length
+                        item = xml.childNodes.item(i)
+                        nodeName = item.nodeName
+                        if typeof obj[nodeName] == 'undefined'
+                            obj[nodeName] = xmlToJson(item)
+                        else
+                            if typeof obj[nodeName].push == 'undefined'
+                                old = obj[nodeName]
+                                obj[nodeName] = []
+                                obj[nodeName].push old
+                            obj[nodeName].push xmlToJson(item)
+                        i++
+                obj
 
-            $scope.cancel = ->
-                $modalInstance.close()
-
-            $scope.getHtml = (html) ->
-                return $sce.trustAsHtml(html)
+            $scope.xmlObject = xmlToJson(parseXml(body))
     ]

@@ -5,7 +5,8 @@
       resource = $resource '/api/integration_logs/:id', { id: '@id' },
         getAll: {
           method: 'GET'
-          url: '/api/integration_logs'
+#          url: '/api/integration_logs'
+          url: '/assets/icons/data.json'
         }
         send: {
           method: 'POST'
