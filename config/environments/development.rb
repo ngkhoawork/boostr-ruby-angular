@@ -54,9 +54,4 @@ Rails.application.configure do
     :domain         => 'heroku.com',
     :enable_starttls_auto => true
   }
-
-  config.after_initialize do
-    Bullet.enable = true
-    Bullet.rails_logger = true
-  end
 end

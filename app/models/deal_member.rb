@@ -1,7 +1,6 @@
 class DealMember < ActiveRecord::Base
   belongs_to :deal, touch: true
   belongs_to :user
-  belongs_to :username, -> { select(:id, :first_name, :last_name) }, class_name: 'User', foreign_key: 'user_id'
 
   has_many :values, as: :subject
 

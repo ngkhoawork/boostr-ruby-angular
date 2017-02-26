@@ -68,14 +68,6 @@ RSpec.describe Activity, type: :model do
         expect(activity.contacts.map(&:address).map(&:email).sort).to eq(expected_contacts)
       end
 
-      it 'correctly processes year in YY format' do
-        data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name, id: activity.id, date: '10/11/17'
-        Activity.import(generate_csv(data), user)
-        activity.reload
-
-        expect(activity.happened_at).to eq DateTime.parse('11/10/2017')
-      end
-
       context 'invalid data' do
         let!(:duplicate_advertiser) { create :client, client_type_id: advertiser_type_id(user.company), company: company }
         let!(:duplicate_advertiser2) { create :client, client_type_id: advertiser_type_id(user.company), company: company, name: duplicate_advertiser.name }
@@ -120,11 +112,11 @@ RSpec.describe Activity, type: :model do
           ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} could not be found"]}])
         end
 
-        it 'requires advertiser to match no more than 1 account' do
+        it 'requires advertiser to match no more than 1 client' do
           data = build :activity_csv_data, advertiser: duplicate_advertiser2.name
           expect(
             Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} matched more than one account record"]}])
+          ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} matched more than one client record"]}])
         end
 
         it 'requires agency to exist' do
@@ -138,7 +130,7 @@ RSpec.describe Activity, type: :model do
           data = build :activity_csv_data, agency: duplicate_agency2.name
           expect(
             Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Agency #{data[:agency]} matched more than one account record"]}])
+          ).to eq([{row: 1, message: ["Agency #{data[:agency]} matched more than one client record"]}]) 
         end
 
         it 'requires deal to exist' do

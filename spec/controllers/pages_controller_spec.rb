@@ -19,46 +19,4 @@ RSpec.describe PagesController, type: :controller do
       expect(response).to have_http_status(302)
     end
   end
-
-  context 'token auth' do
-    def valid_auth
-      @token = Knock::AuthToken.new(payload: user.to_token_payload).token
-      @request.env['HTTP_AUTHORIZATION'] = "Bearer #{@token}"
-    end
-
-    def invalid_token_auth
-      @token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
-      @request.env['HTTP_AUTHORIZATION'] = "Bearer #{@token}"
-    end
-
-    def invalid_entity_auth
-      @token = Knock::AuthToken.new(payload: { sub: 0 }).token
-      @request.env['HTTP_AUTHORIZATION'] = "Bearer #{@token}"
-    end
-
-    it "responds with unauthorized to invalid token" do
-      invalid_token_auth
-      get :index
-      expect(response).to have_http_status :unauthorized
-    end
-
-    it "responds with unauthorized to invalid entity" do
-      invalid_entity_auth
-      get :index
-      expect(response).to have_http_status :unauthorized
-    end
-
-    it "responds with success if authenticated" do
-      valid_auth
-      get :index
-      expect(response).to have_http_status :success
-    end
-
-    it "has a current_user after authentication" do
-      valid_auth
-      get :index
-      expect(response).to have_http_status :success
-      assert @controller.current_user.id == user.id
-    end
-  end
 end
