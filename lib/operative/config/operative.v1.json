@@ -1,0 +1,40 @@
+{
+  "resources": [
+    {
+      "name": "create_account",
+      "http": {
+        "method": "create_account",
+        "endpoint": "/operativeone/api/accounts/",
+        "request_type": "post",
+        "resource_name": "account"
+      }
+    },
+    {
+      "name": "update_account",
+      "http": {
+        "method": "update_account",
+        "endpoint": "/operativeone/api/accounts/:id",
+        "request_type": "put",
+        "resource_name": "account"
+      }
+    },
+    {
+      "name": "create_contact",
+      "http": {
+        "method": "create_contact",
+        "endpoint": "/operativeone/api/contacts/",
+        "request_type": "post",
+        "resource_name": "contact"
+      }
+    },
+    {
+      "name": "update_contact",
+      "http": {
+        "method": "update_contact",
+        "endpoint": "/operativeone/api/contacts/:id",
+        "request_type": "put",
+        "resource_name": "contact"
+      }
+    }
+  ]
+}

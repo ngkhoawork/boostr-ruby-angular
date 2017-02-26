@@ -1,13 +1,12 @@
 @app.controller 'DealReportsController',
-  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'CurrentUser', 'DealCustomFieldName',
-    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Product, Seller, Team, TimePeriod, CurrentUser, DealCustomFieldName) ->
+  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Seller', 'Team', 'TimePeriod', 'CurrentUser', 'DealCustomFieldName',
+    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Seller, Team, TimePeriod, CurrentUser, DealCustomFieldName) ->
       $scope.sortType     = 'name'
       $scope.sortReverse  = false
       $scope.filterOpen = false
       $scope.teams = []
       $scope.types = []
       $scope.sources = []
-      $scope.products = []
       $scope.timePeriods = []
 
       defaultUser = {id: 'all', name: 'All', first_name: 'All'}
@@ -17,7 +16,6 @@
         status: {id: 'open', name: 'Open'}
         type: {id: 'all', name: 'All'}
         source: {id: 'all', name: 'All'}
-        product: {id: 'all', name: 'All'}
         seller: defaultUser
         timePeriod: {id: 'all', name: 'All'}
       $scope.selectedTeam = $scope.filter.team
@@ -34,10 +32,6 @@
             currentUser = user
             $scope.filter.seller = user
           getData()
-          Product.all().then (products) ->
-            $scope.products = products
-            $scope.products.unshift({name:'All', id:'all'})
-
           Field.defaults({}, 'Deal').then (fields) ->
             client_types = Field.findDealTypes(fields)
             $scope.types.push({name:'All', id:'all'})
@@ -91,7 +85,6 @@
           status: {id: 'open', name: 'Open'}
           type: {id: 'all', name: 'All'}
           source: {id: 'all', name: 'All'}
-          product: {id: 'all', name: 'All'}
           seller: currentUser || defaultUser
           timePeriod: {id: 'all', name: 'All'}
         $scope.selectedTeam = $scope.filter.team
@@ -104,7 +97,6 @@
           status: f.status.id
           type: f.type.id
           source: f.source.id
-          'product_id': f.product.id
         if f.timePeriod.id != 'all' then query.time_period_id = f.timePeriod.id
         if $scope.filter.seller.id != defaultUser.id
           query.filter = 'user'

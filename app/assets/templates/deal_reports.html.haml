@@ -15,7 +15,6 @@
                     %td Status
                     %td Type
                     %td Source
-                    %td Product
                     %td Team Member
                     %td Time period
                     %td
@@ -54,16 +53,6 @@
                             %li{ ng: { repeat: 'source in sources', class: '{active: source.id === filter.source.id}' } }
                               %a{ href: '', ng: { click: 'setFilter("source", source)' } }
                                 {{ source.name }}
-                    %td
-                      %ul.filter-item
-                        %li{ dropdown: true }
-                          %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.product.name === "All"}' }
-                            {{filter.product.name}}
-                            %span.caret
-                          %ul.dropdown-menu
-                            %li{ ng: { repeat: 'product in products', class: '{active: product.id === filter.product.id}' } }
-                              %a{ href: '', ng: { click: 'setFilter("product", product)' } }
-                                {{ product.name }}
                     %td
                       %ul.filter-item
                         %li{ dropdown: true }
@@ -112,9 +101,6 @@
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("agency.name")'}
                     Agency
                 %th.left{ width: "150" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("agency.parent_client.name")'}
-                    Agency Parent
-                %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("stage.name")'}
                     Stage
                 %th.right{ width: "50" }
@@ -156,21 +142,11 @@
                   %a{ href: '', ng: { click: 'go("/deals/" + deal.id)'  } }
                     {{ deal.name }}
                 %td.left {{ deal.agency.name }}
-                %td.left {{ deal.agency.parent_client.name }}
                 %td.left {{ deal.stage.name }}
                 %td.right {{ deal.stage.probability }}%
                 %td.right ${{ (deal.budget || 0) | number : 0}}
                 %td.left {{ deal.next_steps.substr(0, 30) }}
-                %td.left{ ng: { if: 'deal.latest_activity' } }
-                  %span{ ng: { if: 'deal.latest_activity.date' } }
-                    Date: {{ deal.latest_activity.date }}
-                    %br
-                  %span{ ng: { if: 'deal.latest_activity.type' } }
-                    Type: {{ deal.latest_activity.type }}
-                    %br
-                  %span{ ng: { if: 'deal.latest_activity.note' } }
-                    Note: {{ deal.latest_activity.note }}
-                %td.left{ ng: { if: '!deal.latest_activity' } }
+                %td.left{ 'ng-bind-html': "getHtml(deal.latest_activity)"}
                 %td.left {{ deal.type }}
                 %td.left {{ deal.source }}
                 %td.left {{ deal.start_date | date: 'MM-dd-yyyy' }}

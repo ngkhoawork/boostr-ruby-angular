@@ -1,0 +1,22 @@
+{
+  "resources": [
+    {
+      "name": "create_order",
+      "http": {
+        "method": "create_order",
+        "endpoint": "/operativeone/restapi/salesorders/",
+        "request_type": "post",
+        "resource_name": "deal"
+      }
+    },
+    {
+      "name": "update_order",
+      "http": {
+        "method": "update_order",
+        "endpoint": "/operativeone/restapi/salesorders/:id",
+        "request_type": "put",
+        "resource_name": "deal"
+      }
+    }
+  ]
+}
