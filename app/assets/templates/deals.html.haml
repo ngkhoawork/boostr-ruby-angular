@@ -142,11 +142,11 @@
 							%polygon{points: '-2,-7 15, 36, -2, 79'}
 					.column-body{'dnd-list': 'columns[columnIndex]',
 								 'dnd-drop': 'onDrop(item, stage)',
-								 'dnd-inserted': 'onInserted(index, columnIndex)'}
+								 'dnd-inserted': 'onInserted(item, index, columnIndex)'}
 						.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
 									id: 'deal-{{deal.id}}',
 									'dnd-draggable': 'deal',
-									'dnd-moved': 'onMoved($index, columnIndex)',
+									'dnd-moved': 'onMoved(deal, $index, columnIndex)',
 									'dnd-effect-allowed': 'move',
 									'dnd-dragstart': 'onDragStart()',
 									'dnd-dragend': 'onDragEnd()'}

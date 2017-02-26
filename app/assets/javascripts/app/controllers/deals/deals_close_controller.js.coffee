@@ -42,7 +42,7 @@
     )
 
   $scope.cancel = ->
-    $rootScope.$broadcast 'closeDealCanceled'
+    $rootScope.$broadcast 'closeDealCanceled', currentDeal.id
     $modalInstance.close()
 
   $scope.init()
