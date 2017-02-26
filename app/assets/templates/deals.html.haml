@@ -144,6 +144,7 @@
 								 'dnd-drop': 'onDrop(item, stage)',
 								 'dnd-inserted': 'onInserted(index, columnIndex)'}
 						.deal-block{'ng-repeat': 'deal in columns[columnIndex]',
+									id: 'deal-{{deal.id}}',
 									'dnd-draggable': 'deal',
 									'dnd-moved': 'onMoved($index, columnIndex)',
 									'dnd-effect-allowed': 'move',

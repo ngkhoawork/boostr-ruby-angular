@@ -38,6 +38,8 @@ class Deal < ActiveRecord::Base
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
   validate :active_exchange_rate
+  validate :billing_contact_presence
+  validate :account_manager_presence
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
@@ -100,9 +102,36 @@ class Deal < ActiveRecord::Base
   def active_exchange_rate
     if curr_cd != 'USD'
       unless company.active_currencies.include?(curr_cd)
-        errors.add(:curr_cd, 'does not have an active exchange rate')
+        errors.add(:curr_cd, "#{self.curr_cd} does not have an active exchange rate")
       end
     end
+  end
+
+  def billing_contact_presence
+    validation = company.validation_for(:billing_contact)
+    stage_threshold = validation.criterion.try(:value) if validation
+
+    if validation && stage_threshold && stage && stage.probability >= stage_threshold
+      errors.add(:stage, "#{self.stage.try(:name)} requires a valid Billing Contact with address") unless self.has_billing_contact?
+    end
+  end
+
+  def account_manager_presence
+    validation = company.validation_for(:account_manager)
+    stage_threshold = validation.criterion.try(:value) if validation
+
+    if validation && stage_threshold && stage && stage.probability >= stage_threshold
+      errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+    end
+  end
+
+  def has_billing_contact?
+    billing_contact = self.deal_contacts.find_by(role: 'Billing')
+    !!(billing_contact) && billing_contact.valid?
+  end
+
+  def has_account_manager_member?
+    self.users.exists?(user_type: ACCOUNT_MANAGER)
   end
 
   def fields

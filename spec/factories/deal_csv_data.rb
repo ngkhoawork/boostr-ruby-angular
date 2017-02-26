@@ -27,6 +27,10 @@ FactoryGirl.define do
         item[:agency] = Company.first.clients.order(:id).fourth.name
       end
 
+      if item[:curr_cd].nil?
+        item[:curr_cd] = 'USD'
+      end
+
       if item[:stage].nil?
         item[:stage] = Company.first.stages.sample.name
       end
