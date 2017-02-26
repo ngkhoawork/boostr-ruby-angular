@@ -34,7 +34,7 @@ class Api::ClientsController < ApplicationController
             else
               ordered_clients = current_user.clients
             end
-            send_data ordered_clients.to_csv, filename: "clients-#{Date.today}.csv"
+            send_data ordered_clients.to_csv(current_user.company), filename: "clients-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
