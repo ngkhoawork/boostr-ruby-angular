@@ -8,6 +8,7 @@ class Deal < ActiveRecord::Base
   belongs_to :advertiser, class_name: 'Client', foreign_key: 'advertiser_id', counter_cache: :advertiser_deals_count
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id', counter_cache: :agency_deals_count
   belongs_to :stage, counter_cache: true
+  belongs_to :stageinfo, -> { select(:id, :name, :probability, :open, :updated_at) }, class_name: 'Stage', foreign_key: 'stage_id'
   belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
   belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
@@ -31,6 +32,9 @@ class Deal < ActiveRecord::Base
   has_many :assets, as: :attachable
 
   has_one :deal_custom_field, dependent: :destroy
+  has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
+    order('activities.deal_id', 'activities.happened_at DESC')
+  }, class_name: 'Activity'
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
   validate :active_exchange_rate
@@ -301,26 +305,26 @@ class Deal < ActiveRecord::Base
     return option
   end
 
-  def latest_activity
-    activities = self.activities.order("happened_at desc")
-    if activities && activities.count > 0
-      last_activity = activities.first
-      data = ""
-      if last_activity.happened_at
-        data = data + "Date: " + last_activity.happened_at.strftime("%m-%d-%Y %H:%M:%S") + "\n"
-      end
-      if last_activity.activity_type_name
-        data = data + "Type: " + last_activity.activity_type_name + "\n"
-      end
-      if last_activity.comment
-        data = data + "Note: " + last_activity.comment
-      end
-      data
-    else
-      ""
+  def get_option_value_from_raw_fields(field_data, field_name)
+    if field = field_data.find { |field| field.include? field_name }
+      self.values.find { |value| value.field_id == field[0] }.try(:option).try(:name)
     end
   end
-  def self.to_pipeline_report_csv(deals, company)
+
+  def latest_activity_csv_string
+    if activity = self.latest_happened_activity
+      data = ''
+      data += "Date: #{activity.happened_at.strftime("%m-%d-%Y %H:%M:%S")}\n"
+      data += "Type: #{activity.activity_type_name}\n"
+      data += "Note: #{activity.comment}"
+    else
+      ''
+    end
+  end
+
+  def self.to_pipeline_report_csv(deals, company, product_filter)
+    deal_settings_fields = company.fields.where(subject_type: 'Deal').pluck(:id, :name)
+
     CSV.generate do |csv|
       deal_ids = deals.collect{|deal| deal.id}
 
@@ -330,6 +334,7 @@ class Deal < ActiveRecord::Base
       header << "Advertiser"
       header << "Name"
       header << "Agency"
+      header << 'Agency Parent'
       header << "Stage"
       header << "%"
       header << "Budget"
@@ -350,25 +355,35 @@ class Deal < ActiveRecord::Base
       csv << header
       deals.each do |deal|
         line = [
-            deal.deal_members.collect {|deal_member| deal_member.user.first_name + " " + deal_member.user.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
+            deal.deal_members.collect {|deal_member| deal_member.username.first_name + " " + deal_member.username.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
             deal.advertiser ? deal.advertiser.name : nil,
             deal.name,
             deal.agency ? deal.agency.name : nil,
-            deal.stage.name,
-            deal.stage.probability.nil? ? "" : deal.stage.probability.to_s + "%",
+            deal.agency.try(:parent_client).try(:name),
+            deal.stageinfo.name,
+            deal.stageinfo.probability.nil? ? "" : deal.stageinfo.probability.to_s + "%",
             "$" + (deal.budget.nil? ? 0 : deal.budget).round.to_s
         ]
-        line << deal.latest_activity
-        line << get_option(deal, "Deal Type")
-        line << get_option(deal, "Deal Source")
+        line << deal.latest_activity_csv_string
+        line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Type')
+        line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Source')
         line << deal.next_steps
         line << deal.start_date
         line << deal.end_date
-        range.each do |product_time|
-          deal_product_budgets = deal.deal_product_budgets.where({start_date: product_time}).select("sum(deal_product_budgets.budget) as total_budget").collect{|deal_product_budget| deal_product_budget.total_budget}
 
-          if deal_product_budgets && deal_product_budgets[0]
-            line << "$" + deal_product_budgets[0].round.to_s
+        selected_products = deal
+          .deal_products
+          .reject{ |deal_product| deal_product.product_id != product_filter if product_filter }
+          .map(&:id)
+
+        deal_product_budgets = deal.deal_product_budgets
+          .select{ |budget| selected_products.include?(budget.deal_product_id) }
+          .group_by(&:start_date)
+          .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
+
+        range.each do |product_time|
+          if dpb = deal_product_budgets.find { |dpb| dpb[:start_date] == product_time }
+            line << "$#{dpb[:budget].to_f.round.to_s}"
           else
             line << "$0"
           end
