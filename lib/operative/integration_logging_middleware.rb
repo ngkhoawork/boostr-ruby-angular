@@ -4,40 +4,57 @@ class Operative::IntegrationLoggingMiddleware < Faraday::Middleware
   end
 
   def call(request_env)
+    # hook logger on request complete
     @app.call(request_env).on_complete do |response_env|
 
-      integration_log = IntegrationLog.new
+      detect_errors(response_env)
+      compose_log_object(request_env, response_env)
 
-      puts request_env
-
-      unless response_env.body.kind_of? Hash
-        parsed_xml = Nokogiri::XML response_env.body
-        root_element = parsed_xml.root.name
-        parsed_xml.remove_namespaces!
-
-        if parsed_xml.xpath("//error").length > 0
-          integration_log.is_error = true
-          if root_element == 'GlobalResponse'
-            integration_log.error_text = parsed_xml.xpath("//error/@text").text
-          else
-            integration_log.error_text = parsed_xml.xpath("//error/message").text
-          end
-        else
-          integration_log.is_error = false
-        end
-      end
-
-      integration_log.object_name   = request_env.request_headers['resourceName']
-      integration_log.api_provider  = request_env.request_headers['apiProvider']
-      integration_log.response_code = response_env.response.status
-      integration_log.response_body = response_env.response.body
-      integration_log.api_endpoint  = response_env.response.env.url.to_s
-      integration_log.request_type  = request_env.method.to_s
-      integration_log.response_body = response_env.response.body
-      integration_log.company_id    = request_env.request_headers['companyId']
-      integration_log.deal_id       = request_env.request_headers['dealId']
-
-      integration_log.save
+      integration_log.save!
     end
+  end
+
+  private
+
+  def integration_log
+    @integration_log ||= IntegrationLog.new(log_params)
+  end
+
+  def log_params
+    @log_params ||= {}
+  end
+
+  def detect_errors(response_env)
+    parsed_xml = Nokogiri::XML response_env.body
+    root_element = parsed_xml.root.name
+    # remove namespaces from incoming XML for better v2 parsing
+    parsed_xml.remove_namespaces!
+
+    # detect if response body contains any error tag
+    if parsed_xml.xpath("//error").length > 0
+      log_params[:is_error] = true
+
+      # get error text from v2 response
+      if root_element == 'GlobalResponse'
+        log_params[:error_text] = parsed_xml.xpath("//error/@text").text
+      # get error from v1 response
+      else
+        log_params[:error_text] = parsed_xml.xpath("//error/message").text
+      end
+    else
+      log_params[:is_error] = false
+    end
+  end
+
+  def compose_log_object(request_env, response_env)
+    log_params[:object_name]   = request_env.request_headers['resourceName']
+    log_params[:api_provider]  = request_env.request_headers['apiProvider']
+    log_params[:request_type]  = request_env.method.to_s
+    log_params[:company_id]    = request_env.request_headers['companyId']
+    log_params[:deal_id]       = request_env.request_headers['dealId']
+    log_params[:response_code] = response_env.response.status
+    log_params[:response_body] = response_env.response.body
+    log_params[:api_endpoint]  = response_env.response.env.url.to_s
+    log_params[:response_body] = response_env.response.body
   end
 end

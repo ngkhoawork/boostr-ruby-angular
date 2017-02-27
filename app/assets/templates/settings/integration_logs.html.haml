@@ -15,8 +15,8 @@
           %th.left{width: '100'} Code
           %th.left{width: '120'} URL
           %th.left{width: '180'} Date
-          %th.left Error
           %th.left{width: '100'} Response
+          %th.left Resource
           %th.left Action
 
       %tbody
@@ -33,10 +33,10 @@
           %td
             %a{href: '{{log.api_endpoint}}'} {{getHost(log.api_endpoint)}}
           %td {{log.created_at | date: 'medium'}}
-          %td {{log.error_text}}
           %td
             %button.btn.activity-email-btn{'ng-if': 'log.response_body.length', 'ng-click': 'showBodyModal(log.response_body)'}
               Show Body
+          %td {{log.object_name}}
           %td
             %button.btn.btn-primary{'ng-if': 'log.is_error', 'ng-click': 'resendRequest(log.id)'}
               Resend

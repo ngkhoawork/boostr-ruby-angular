@@ -7,5 +7,6 @@ class API::IntegrationLogs::Single < API::Single
              :request_type,
              :created_at,
              :is_error,
-             :error_text
+             :error_text,
+             :object_name
 end
