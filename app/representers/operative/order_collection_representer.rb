@@ -13,7 +13,10 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   property :name, exec_context: :decorator
 
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
-  property :sales_stage, as: 'v2:name', wrap: 'v2:salesStage', exec_context: :decorator, if: -> (options) { options[:create].eql? true }
+  property :sales_stage_name, as: 'v2:name', wrap: 'v2:salesStage', exec_context: :decorator,
+           if: -> (options) { options[:create].eql?(true) || options[:closed_lost].eql?(false) }
+  property :sales_stage_id, as: 'v2:id', wrap: 'v2:salesStage', exec_context: :decorator,
+           if: -> (options) { options[:closed_lost].eql? true }
   property :primary_sales_person, as: :primarySalesperson, exec_context: :decorator
   property :owner, exec_context: :decorator
 
@@ -32,8 +35,16 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
     represented
   end
 
-  def sales_order_type
+  def determine_type
     represented.agency.present? ? 'Agency Buy' : 'Direct to Advertiser'
+  end
+
+  def sales_order_type
+    deal_type.present? ? deal_type.titleize : determine_type
+  end
+
+  def deal_type
+    @_deal_type ||= Deal.get_option(represented, 'Deal Type')
   end
 
   def name
@@ -44,8 +55,12 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
     "boostr_#{represented.id}_#{represented.company.name}_order"
   end
 
-  def sales_stage
+  def sales_stage_name
     map_stage_name
+  end
+
+  def sales_stage_id
+    7
   end
 
   def description

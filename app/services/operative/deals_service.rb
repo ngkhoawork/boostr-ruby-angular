@@ -21,7 +21,8 @@ class Operative::DealsService
     @_mapped_object ||= Operative::Deals::Single.new(deal).to_xml(
       create: create_deal?,
       advertiser: advertiser,
-      agency: agency?
+      agency: agency?,
+      closed_lost: closed_lost?
     )
   end
 
@@ -65,5 +66,9 @@ class Operative::DealsService
 
   def agency?
     deal.agency.present?
+  end
+
+  def closed_lost?
+    deal.closed_lost?
   end
 end
