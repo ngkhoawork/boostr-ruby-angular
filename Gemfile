@@ -33,9 +33,11 @@ gem 'griddler'
 gem 'griddler-sendgrid'
 gem 'aws-sdk'
 gem 'responders'
-gem 'roar-rails'
+gem 'roar'
 gem 'money'
 gem 'countries'
+gem 'faraday'
+gem 'attr_encrypted', '~> 3.0.0'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -60,6 +62,15 @@ group :test do
   gem 'shoulda-matchers', require: false
 end
 
+group :development do
+  gem 'bullet'
+  gem 'rack-mini-profiler'
+  gem 'memory_profiler'
+  gem 'flamegraph'
+  gem 'stackprof'
+  gem 'fast_stack'
+end
+
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
   gem 'factory_girl_rails'
@@ -73,9 +84,8 @@ group :development, :test do
   gem 'fuubar'
   gem 'poltergeist'
   gem 'timecop'
-
-  # Call 'binding.pry' anywhere in the code to stop execution and get a debugger console
   gem 'pry-rails'
+  gem 'byebug'
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'

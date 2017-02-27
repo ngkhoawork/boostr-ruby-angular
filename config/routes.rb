@@ -17,6 +17,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :countries, only: [:index]
+    resources :api_configurations
+    resources :integration_logs, only: [:index, :show] do
+      post :resend_request, on: :member
+    end
 
     resources :users, only: [:index, :update] do
       collection do
@@ -91,6 +95,7 @@ Rails.application.routes.draw do
     resources :forecasts, only: [:index, :show]
     resources :fields, only: [:index]
     resources :options, only: [:create, :update, :destroy]
+    resources :validations, only: [:index, :update]
     resources :tools, only: [:index]
     resources :notifications, only: [:index, :show, :create, :update, :destroy]
     resources :activities, only: [:index, :create, :show, :update, :destroy]

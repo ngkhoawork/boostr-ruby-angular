@@ -9,8 +9,11 @@ class Contact < ActiveRecord::Base
   has_many :deal_contacts, dependent: :destroy
   has_many :reminders, as: :remindable, dependent: :destroy
   has_one :address, as: :addressable
+  has_many :integrations, as: :integratable
 
   has_and_belongs_to_many :activities, after_add: :update_activity_updated_at
+
+  delegate :email, :street1, :street2, :city, :state, :zip, :phone, :mobile, :country, to: :address, allow_nil: true
 
   accepts_nested_attributes_for :address
 

@@ -1,0 +1,31 @@
+#integration-logs.block
+  %div.mb40
+    %span.title Integration Log {{'#' + currentLog.id}}
+  %table.log-table
+    %tr
+      %td ID
+      %td {{currentLog.id}}
+    %tr
+      %td Deal ID
+      %td
+        %a{href: '', 'ng-href': '/deals/{{currentLog.deal_id}}'} {{currentLog.deal_id}}
+    %tr
+      %td Method
+      %td {{currentLog.request_type.toUpperCase()}}
+    %tr
+      %td Code
+      %td {{currentLog.response_code}}
+    %tr
+      %td URL
+      %td
+        %a{href: '{{currentLog.api_endpoint}}'} {{currentLog.api_endpoint}}
+    %tr
+      %td Date
+      %td {{currentLog.created_at | date: 'medium'}}
+    %tr.error-log{'ng-show': 'currentLog.is_error'}
+      %td Error
+      %td {{currentLog.error_text}}
+  %button.btn.activity-email-btn{'ng-if': 'currentLog.response_body.length', 'ng-click': 'showBodyModal(currentLog.response_body)'}
+    Show Body
+  %button.btn.btn-primary{'ng-if': 'currentLog.is_error', 'ng-click': 'resendRequest(currentLog.id)'}
+    Resend

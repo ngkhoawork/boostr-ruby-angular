@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170215110722) do
+ActiveRecord::Schema.define(version: 20170223232546) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "account_dimensions", force: :cascade do |t|
     t.string  "name"
@@ -118,6 +119,21 @@ ActiveRecord::Schema.define(version: 20170215110722) do
     t.string   "mobile"
     t.string   "country"
   end
+
+  create_table "api_configurations", force: :cascade do |t|
+    t.string   "integration_type"
+    t.boolean  "switched_on"
+    t.integer  "trigger_on_deal_percentage"
+    t.integer  "company_id"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.string   "base_link"
+    t.string   "api_email"
+    t.string   "encrypted_password"
+    t.string   "encrypted_password_iv"
+  end
+
+  add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
 
   create_table "assets", force: :cascade do |t|
     t.integer  "attachable_id"
@@ -526,6 +542,34 @@ ActiveRecord::Schema.define(version: 20170215110722) do
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
 
+  create_table "integration_logs", force: :cascade do |t|
+    t.text     "request_body"
+    t.string   "response_code"
+    t.text     "response_body"
+    t.string   "api_endpoint"
+    t.string   "request_type"
+    t.string   "resource_type"
+    t.integer  "company_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.integer  "deal_id"
+    t.boolean  "is_error"
+    t.string   "api_provider"
+    t.string   "object_name"
+    t.text     "error_text"
+  end
+
+  add_index "integration_logs", ["company_id"], name: "index_integration_logs_on_company_id", using: :btree
+
+  create_table "integrations", force: :cascade do |t|
+    t.integer  "integratable_id"
+    t.string   "integratable_type"
+    t.integer  "external_id"
+    t.string   "external_type"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
   create_table "io_members", force: :cascade do |t|
     t.integer  "io_id"
     t.integer  "user_id"
@@ -812,6 +856,16 @@ ActiveRecord::Schema.define(version: 20170215110722) do
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   add_index "users", ["team_id"], name: "index_users_on_team_id", using: :btree
 
+  create_table "validations", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "factor"
+    t.string   "value_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "validations", ["company_id"], name: "index_validations_on_company_id", using: :btree
+
   create_table "values", force: :cascade do |t|
     t.integer  "company_id"
     t.string   "subject_type"
@@ -827,6 +881,7 @@ ActiveRecord::Schema.define(version: 20170215110722) do
     t.integer  "option_id"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
+    t.boolean  "value_boolean"
   end
 
   add_index "values", ["company_id", "field_id"], name: "index_values_on_company_id_and_field_id", using: :btree
@@ -840,6 +895,7 @@ ActiveRecord::Schema.define(version: 20170215110722) do
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
+  add_foreign_key "api_configurations", "companies"
   add_foreign_key "bp_estimate_products", "bp_estimates"
   add_foreign_key "bp_estimate_products", "products"
   add_foreign_key "bp_estimates", "bps"
@@ -861,6 +917,7 @@ ActiveRecord::Schema.define(version: 20170215110722) do
   add_foreign_key "display_line_items", "temp_ios"
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
+  add_foreign_key "integration_logs", "companies"
   add_foreign_key "io_members", "ios"
   add_foreign_key "io_members", "users"
   add_foreign_key "ios", "companies"

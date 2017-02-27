@@ -8,6 +8,7 @@ class Deal < ActiveRecord::Base
   belongs_to :advertiser, class_name: 'Client', foreign_key: 'advertiser_id', counter_cache: :advertiser_deals_count
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id', counter_cache: :agency_deals_count
   belongs_to :stage, counter_cache: true
+  belongs_to :stageinfo, -> { select(:id, :name, :probability, :open, :updated_at) }, class_name: 'Stage', foreign_key: 'stage_id'
   belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
   belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
@@ -29,11 +30,17 @@ class Deal < ActiveRecord::Base
   has_many :activities
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable
+  has_many :integrations, as: :integratable
 
   has_one :deal_custom_field, dependent: :destroy
+  has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
+    order('activities.deal_id', 'activities.happened_at DESC')
+  }, class_name: 'Activity'
 
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
   validate :active_exchange_rate
+  validate :billing_contact_presence
+  validate :account_manager_presence
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
@@ -56,6 +63,7 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
+    integrate_with_operative if self.company_id.eql?(22)
   end
 
   before_create do
@@ -93,12 +101,57 @@ class Deal < ActiveRecord::Base
   scope :by_values, -> (value_ids) { joins(:values).where('values.option_id in (?)', value_ids) unless value_ids.empty? }
   scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
 
+  def integrate_with_operative
+    if stage_id_changed? && operative_integration_allowed?
+      OperativeIntegrationWorker.perform_async(self.id)
+    end
+  end
+
+  def operative_api_config
+    @_operative_api_config ||= self.company.operative_api_config
+  end
+
+  def operative_integration_allowed?
+    operative_api_config.present? && operative_api_config.switched_on && deal_stage_percentage_eql_api_config_percentage?
+  end
+
+  def deal_stage_percentage_eql_api_config_percentage?
+    stage.probability.eql?(operative_api_config.trigger_on_deal_percentage)
+  end
+
   def active_exchange_rate
     if curr_cd != 'USD'
       unless company.active_currencies.include?(curr_cd)
-        errors.add(:curr_cd, 'does not have an active exchange rate')
+        errors.add(:curr_cd, "#{self.curr_cd} does not have an active exchange rate")
       end
     end
+  end
+
+  def billing_contact_presence
+    validation = company.validation_for(:billing_contact)
+    stage_threshold = validation.criterion.try(:value) if validation
+
+    if validation && stage_threshold && stage && stage.probability >= stage_threshold
+      errors.add(:stage, "#{self.stage.try(:name)} requires a valid Billing Contact with address") unless self.has_billing_contact?
+    end
+  end
+
+  def account_manager_presence
+    validation = company.validation_for(:account_manager)
+    stage_threshold = validation.criterion.try(:value) if validation
+
+    if validation && stage_threshold && stage && stage.probability >= stage_threshold
+      errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+    end
+  end
+
+  def has_billing_contact?
+    billing_contact = self.deal_contacts.find_by(role: 'Billing')
+    !!(billing_contact) && billing_contact.valid?
+  end
+
+  def has_account_manager_member?
+    self.users.exists?(user_type: ACCOUNT_MANAGER)
   end
 
   def fields
@@ -301,26 +354,26 @@ class Deal < ActiveRecord::Base
     return option
   end
 
-  def latest_activity
-    activities = self.activities.order("happened_at desc")
-    if activities && activities.count > 0
-      last_activity = activities.first
-      data = ""
-      if last_activity.happened_at
-        data = data + "Date: " + last_activity.happened_at.strftime("%m-%d-%Y %H:%M:%S") + "\n"
-      end
-      if last_activity.activity_type_name
-        data = data + "Type: " + last_activity.activity_type_name + "\n"
-      end
-      if last_activity.comment
-        data = data + "Note: " + last_activity.comment
-      end
-      data
-    else
-      ""
+  def get_option_value_from_raw_fields(field_data, field_name)
+    if field = field_data.find { |field| field.include? field_name }
+      self.values.find { |value| value.field_id == field[0] }.try(:option).try(:name)
     end
   end
-  def self.to_pipeline_report_csv(deals, company)
+
+  def latest_activity_csv_string
+    if activity = self.latest_happened_activity
+      data = ''
+      data += "Date: #{activity.happened_at.strftime("%m-%d-%Y %H:%M:%S")}\n"
+      data += "Type: #{activity.activity_type_name}\n"
+      data += "Note: #{activity.comment}"
+    else
+      ''
+    end
+  end
+
+  def self.to_pipeline_report_csv(deals, company, product_filter)
+    deal_settings_fields = company.fields.where(subject_type: 'Deal').pluck(:id, :name)
+
     CSV.generate do |csv|
       deal_ids = deals.collect{|deal| deal.id}
 
@@ -330,6 +383,7 @@ class Deal < ActiveRecord::Base
       header << "Advertiser"
       header << "Name"
       header << "Agency"
+      header << 'Agency Parent'
       header << "Stage"
       header << "%"
       header << "Budget"
@@ -350,25 +404,35 @@ class Deal < ActiveRecord::Base
       csv << header
       deals.each do |deal|
         line = [
-            deal.deal_members.collect {|deal_member| deal_member.user.first_name + " " + deal_member.user.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
+            deal.deal_members.collect {|deal_member| deal_member.username.first_name + " " + deal_member.username.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
             deal.advertiser ? deal.advertiser.name : nil,
             deal.name,
             deal.agency ? deal.agency.name : nil,
-            deal.stage.name,
-            deal.stage.probability.nil? ? "" : deal.stage.probability.to_s + "%",
+            deal.agency.try(:parent_client).try(:name),
+            deal.stageinfo.name,
+            deal.stageinfo.probability.nil? ? "" : deal.stageinfo.probability.to_s + "%",
             "$" + (deal.budget.nil? ? 0 : deal.budget).round.to_s
         ]
-        line << deal.latest_activity
-        line << get_option(deal, "Deal Type")
-        line << get_option(deal, "Deal Source")
+        line << deal.latest_activity_csv_string
+        line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Type')
+        line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Source')
         line << deal.next_steps
         line << deal.start_date
         line << deal.end_date
-        range.each do |product_time|
-          deal_product_budgets = deal.deal_product_budgets.where({start_date: product_time}).select("sum(deal_product_budgets.budget) as total_budget").collect{|deal_product_budget| deal_product_budget.total_budget}
 
-          if deal_product_budgets && deal_product_budgets[0]
-            line << "$" + deal_product_budgets[0].round.to_s
+        selected_products = deal
+          .deal_products
+          .reject{ |deal_product| deal_product.product_id != product_filter if product_filter }
+          .map(&:id)
+
+        deal_product_budgets = deal.deal_product_budgets
+          .select{ |budget| selected_products.include?(budget.deal_product_id) }
+          .group_by(&:start_date)
+          .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
+
+        range.each do |product_time|
+          if dpb = deal_product_budgets.find { |dpb| dpb[:start_date] == product_time }
+            line << "$#{dpb[:budget].to_f.round.to_s}"
           else
             line << "$0"
           end
@@ -1058,7 +1122,7 @@ class Deal < ActiveRecord::Base
           subject = self.name + ' changed to ' + stage.name + ' - ' + stage.probability.to_s + '%'
           UserMailer.stage_changed_email(recipients, subject, self.id).deliver_later(wait: 10.minutes, queue: "default")
         end
-      end      
+      end
     end
     self.open = should_open.to_s
   end
@@ -1167,4 +1231,7 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def ordered_by_created_at_billing_contacts
+    deal_contacts.where(role: 'Billing').order(:created_at)
+  end
 end

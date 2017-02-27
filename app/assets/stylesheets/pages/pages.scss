@@ -19,9 +19,11 @@
 @import "settings/quotas";
 @import "settings/users";
 @import "settings/data_import";
+@import "settings/general";
 @import "where_to_pitch";
 @import "deal_reports";
 @import "inactives";
 @import "pipeline_change_report";
+@import "integration_logs";
 
 html,body { height:100%; }

@@ -1,0 +1,42 @@
+#integration-logs.block
+  %div.mb40
+    %span.title Integration Logs
+    .logs-filter
+      %span{'ng-class': '{active: filter == 0}', 'ng-click': 'filter = 0'} All logs
+      %span{'ng-class': '{active: filter == 1}', 'ng-click': 'filter = 1'} Error logs
+
+  .table-report.pad
+    %table.table.table-hover
+      %thead
+        %tr
+          %th.left{width: '100'} ID
+          %th.left{width: '100'} Deal ID
+          %th.left{width: '100'} Method
+          %th.left{width: '100'} Code
+          %th.left{width: '120'} URL
+          %th.left{width: '180'} Date
+          %th.left{width: '100'} Response
+          %th.left Resource
+          %th.left Action
+
+      %tbody
+        %tr{'ng-repeat': 'log in logs | filter: (filter || "") && log.is_error != true', 'ng-class': '{"error-log": log.is_error}' }
+          %td
+            %a{href: '', 'ng-href': '/settings/integration_logs/{{log.id}}'} {{log.id}}
+          %td
+            %a{href: '', 'ng-href': '/deals/{{log.deal_id}}'} {{log.deal_id}}
+            {{log.deal_id ? '' : '-'}}
+          %td
+            %b {{log.request_type.toUpperCase()}}
+          %td
+            %b {{log.response_code || '-'}}
+          %td
+            %a{href: '{{log.api_endpoint}}'} {{getHost(log.api_endpoint)}}
+          %td {{log.created_at | date: 'medium'}}
+          %td
+            %button.btn.activity-email-btn{'ng-if': 'log.response_body.length', 'ng-click': 'showBodyModal(log.response_body)'}
+              Show Body
+          %td {{log.object_name}}
+          %td
+            %button.btn.btn-primary{'ng-if': 'log.is_error', 'ng-click': 'resendRequest(log.id)'}
+              Resend

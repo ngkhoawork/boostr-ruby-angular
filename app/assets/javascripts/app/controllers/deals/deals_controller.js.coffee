@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$window', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter',
-        ($rootScope, $window, $document, $scope, $filter, $modal, $q, $location, Deal, Stage, ExchangeRate, DealsFilter) ->
+    ['$rootScope', '$window', '$timeout', '$document', '$scope', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter',
+        ($rootScope, $window, $timeout, $document, $scope, $filter, $modal, $q, $location, Deal, Stage, ExchangeRate, DealsFilter) ->
             formatMoney = $filter('formatMoney')
 
             $scope.selectedDeal = null
@@ -8,24 +8,21 @@
             $scope.columns = []
             $scope.allDeals = []
             $scope.selectedType = 0
-            $scope.lastMoveAction = {}
             $scope.dealTypes = [
                 {name: 'My Deals', param: ''}
                 {name: 'My Team\'s Deals', param: 'team'}
                 {name: 'All Deals', param: 'company'}
             ]
-#            currentYear = moment().year()
-#            Selection = ->
-#                @owner = ''
-#                @advertiser = ''
-#                @agency = ''
-#                @budget = ''
-#                @exchange_rate = ''
-#                @yearClosed = currentYear
-#                @date =
-#                    startDate: null
-#                    endDate: null
-#                return
+            $scope.history =
+                set: (id, key, value) ->
+                    if !this[id] then this[id] = {locked: false}
+                    if this[id].locked && key is 'from' then return
+                    if value then this[id][key] = value
+                get: (id) ->
+                    return this[id]
+                lock: (id, bool) ->
+                    if !this[id] then this[id] = {}
+                    this[id].locked = bool
 
             $scope.filter =
                 exchange_rates: []
@@ -210,16 +207,18 @@
             $scope.openFilter = ->
                 $scope.isFilterOpen = !$scope.isFilterOpen
 
-            $scope.onMoved = (dealIndex, columnIndex) ->
-                $scope.lastMoveAction.from =
-                    deal: dealIndex
-                    column: columnIndex
+            $scope.onMoved = (deal, dealIndex, columnIndex) ->
+                $scope.history.set deal.id, 'from',
+                        deal: dealIndex
+                        column: columnIndex
+                $scope.history.lock(deal.id, true)
+
                 $scope.columns[columnIndex].splice(dealIndex, 1)
 
-            $scope.onInserted = (dealIndex, columnIndex) ->
-                $scope.lastMoveAction.to =
-                    deal: dealIndex
-                    column: columnIndex
+            $scope.onInserted = (deal, dealIndex, columnIndex) ->
+                $scope.history.set deal.id, 'to',
+                        deal: dealIndex
+                        column: columnIndex
 
             $scope.onDrop = (deal, newStage) ->
                 if deal.stage_id is newStage.id then return
@@ -227,20 +226,59 @@
                 if !newStage.open && newStage.probability == 0
                     $scope.showCloseDealModal(deal)
                 else
+                    if $scope.history[deal.id] && $scope.history[deal.id].locked
+                        return deal
                     Deal.update(id: deal.id, deal: deal).then (deal) ->
+                        $scope.history.lock(deal.id, false)
+                    , (err) ->
+                        if err && err.data && err.data.errors && Object.keys(err.data.errors).length
+                            errors = err.data.errors
+                            errorsStack = []
+                            for key, error of errors
+                                errorsStack.push error
+                        else if err && err.statusText
+                            errorsStack = [err.statusText]
+                        if errorsStack.length
+                            $scope.undoLastMove(deal.id)
+                            $timeout ->
+                                $scope.showDealErrors(deal.id, errorsStack)
                 deal
 
-            $scope.undoLastMove = ->
-                last = $scope.lastMoveAction
+            $scope.showDealErrors = (id, errors) ->
+                deal = angular.element('#deal-' + id)
+                dealOffset = deal.offset()
+                error = angular.element('<div class="deal-error"></div>')
+                angular.element('#deals').append(error)
+                error.outerWidth(deal.outerWidth())
+                error.html(errors.join('<br>'))
+                errorHeight = error.outerHeight()
+                dealOffset.top -= errorHeight + 6
+                error.offset(dealOffset)
+                error.css('opacity', 1)
+                $timeout ->
+                    error.css('opacity', 0)
+                    $timeout ->
+                        error.remove()
+                    , 1000
+                , 10000
+
+                return true
+
+            $scope.undoLastMove = (dealId) ->
+                last = $scope.history.get(dealId)
                 if last.from && last.to && last.from.column != last.to.column
-                    deal = angular.copy $scope.columns[last.to.column][last.to.deal]
+                    columnTo = $scope.columns[last.to.column]
+                    deal = angular.copy _.findWhere columnTo, id: dealId
                     prevStage = $scope.stages[last.from.column]
                     if deal && prevStage
                         deal.stage_id = prevStage.id
-                        $scope.columns[last.to.column].splice(last.to.deal, 1)
+                        columnTo.splice(_.findIndex(columnTo, id: dealId), 1)
                         $scope.columns[last.from.column].splice(last.from.deal, 0, deal)
+                        $scope.history.lock(dealId, false)
 
-            $scope.$on 'closeDealCanceled', $scope.undoLastMove
+            $scope.$on 'closeDealCanceled', (event, id) ->
+                $scope.undoLastMove(id)
+
             $scope.$on 'updated_deals', $scope.init
 
             $scope.filtering = (item) ->
@@ -380,6 +418,7 @@
                     x = e.clientX
 
             $scope.onDragStart = ->
+                angular.element('.deal-error').remove()
                 x = 0
                 shift = 0
                 dragDirection = null

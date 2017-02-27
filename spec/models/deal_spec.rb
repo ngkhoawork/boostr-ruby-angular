@@ -57,6 +57,116 @@ RSpec.describe Deal, type: :model do
     end
   end
 
+  context 'validations' do
+    let!(:deal) { create :deal }
+
+    context 'billing contact' do
+      let(:validation) { deal.company.validation_for(:billing_contact) }
+
+      it 'passes validation if company does not have it' do
+        expect(deal).to be_valid
+      end
+
+      context 'validation active' do
+        before do
+          validation.create_criterion
+        end
+
+        it 'passes validation if stage is less then criterion' do
+          validation.criterion.update(value: 50)
+          expect(deal).to be_valid
+        end
+
+        it 'passes validation if deal has a valid billing contact' do
+          validation.criterion.update(value: 10)
+          create :billing_deal_contact, deal: deal
+          expect(deal).to be_valid
+        end
+
+        it 'fails validation when deal does not have a billing contact' do
+          validation.criterion.update(value: 10)
+          expect(deal).not_to be_valid
+        end
+      end
+    end
+
+    context 'account manager' do
+      let(:validation) { deal.company.validation_for(:account_manager) }
+      let!(:deal_member) { create :deal_member, deal: deal }
+
+      it 'passes validation if company does not have it' do
+        expect(deal).to be_valid
+      end
+
+      context 'validation active' do
+        before do
+          validation.create_criterion
+        end
+
+        it 'passes validation if stage is less then criterion' do
+          validation.criterion.update(value: 50)
+          expect(deal).to be_valid
+        end
+
+        it 'fails validation when deal does not have deal members' do
+          deal.deal_members.destroy_all
+          validation.criterion.update(value: 10)
+          expect(deal).not_to be_valid
+        end
+
+        it 'fails validation when deal member is not an account manager' do
+          validation.criterion.update(value: 10)
+          expect(deal).not_to be_valid
+        end
+
+        it 'passes validation if deal has an account manager' do
+          validation.criterion.update(value: 10)
+          deal_member.user.update(user_type: ACCOUNT_MANAGER)
+          expect(deal).to be_valid
+        end
+      end
+    end
+  end
+
+  describe '#has_billing_contact?' do
+    let!(:deal) { create :deal }
+    let!(:deal_contact) { create :deal_contact, deal: deal }
+
+    it 'returns true if deal has a valid billing contact' do
+      deal_contact.update(role: 'Billing')
+      expect(deal.has_billing_contact?).to be true
+    end
+
+    it 'returns false if deal contact is invalid' do
+      deal_contact.update(role: 'Billing')
+      deal_contact.contact.address.update(country: '')
+      expect(deal.has_billing_contact?).to be false
+    end
+
+    it 'returns false if no billing contact found' do
+      expect(deal.has_billing_contact?).to be false
+    end
+  end
+
+  describe '#has_account_manager_member?' do
+    let!(:deal) { create :deal }
+    let!(:deal_member) { create :deal_member, deal: deal }
+
+    it 'returns true if deal has an account manager member' do
+      deal_member.user.update(user_type: ACCOUNT_MANAGER)
+      expect(deal.has_account_manager_member?).to be true
+    end
+
+    it 'returns false if deal does not have members' do
+      deal.deal_members.destroy_all
+      expect(deal.has_account_manager_member?).to be false
+    end
+
+    it 'returns false if deal member is not an account manager' do
+      expect(deal.has_account_manager_member?).to be false
+    end
+  end
+
   describe '#in_period_amt' do
     let(:deal) { create :deal }
     let(:product) { create :product }
@@ -202,15 +312,16 @@ RSpec.describe Deal, type: :model do
       expect(deal.name).to eq(data[:name])
       expect(deal.advertiser.name).to eq(data[:advertiser])
       expect(deal.agency.name).to eq(data[:agency])
+      expect(deal.curr_cd).to eq(data[:curr_cd])
       expect(deal.creator.email).to eq(user.email)
       expect(deal.updator.email).to eq(user.email)
-      expect(deal.start_date).to eq(Date.parse(data[:start_date]))
-      expect(deal.end_date).to eq(Date.parse(data[:end_date]))
+      expect(deal.start_date).to eq(Date.strptime(data[:start_date], '%m/%d/%Y'))
+      expect(deal.end_date).to eq(Date.strptime(data[:end_date], '%m/%d/%Y'))
       expect(deal.stage.name).to eq(data[:stage])
       expect(deal.users.map(&:email)).to eq([data[:team].split('/')[0]])
       expect(deal.deal_members.map(&:share)).to eq([data[:team].split('/')[1].to_i])
       expect(deal.created_at).to eq(data[:created])
-      expect(deal.closed_at).to eq(Date.parse(data[:closed_date]))
+      expect(deal.closed_at).to eq(Date.strptime(data[:closed_date], '%m/%d/%Y'))
       expect(deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 
@@ -349,6 +460,22 @@ RSpec.describe Deal, type: :model do
         expect(
           Deal.import(generate_csv(data), user)
         ).to eq([{row: 1, message: ["Agency #{data[:agency]} matched more than one account record"]}])
+      end
+
+      it 'requires currency code to be present' do
+        data = build :deal_csv_data
+        data[:curr_cd] = nil
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Currency code can't be blank"]}])
+      end
+
+      it 'requires currency code to exist' do
+        data = build :deal_csv_data
+        data[:curr_cd] = 'N/A'
+        expect(
+          Deal.import(generate_csv(data), user)
+        ).to eq([{row: 1, message: ["Currency N/A is not found"]}])
       end
 
       it 'requires deal type to exist' do

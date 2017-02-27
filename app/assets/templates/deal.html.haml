@@ -112,12 +112,13 @@
               .col-xs-12
                 %h4#forecast
                   {{ currentDeal.budget_loc * currentDeal.stage.probability / 100 | currency: currency_symbol : 0 }}
-          .col-xs-2.campaign-period.text-center
+          .col-xs-2.campaign-period.text-center{ ng: { class: '{error: errors.stage}' } }
             .row
               .col-xs-12
                 Current Stage
             .row
               .col-xs-12
+                %span.error-text {{ errors.stage }}
                 %h5
                   .stage{ editable: { select: 'selectedStageId' }, 'e-ng-options': 'stage.id as stage.name for stage in stages', onaftersave: 'updateDealStage(currentDeal, selectedStageId)', onshow: 'getStages()' }
                     {{ currentDeal.stage.name }}
@@ -195,7 +196,7 @@
                     {{ deal_product_budget.budget_percent+ '%'}}
 
       #new-product.well.dark
-        .row{ ng: { hide: 'showProductForm' } }
+        .row{'ng-if': 'currentDeal.stage.open', ng: { hide: 'showProductForm' } }
           .col-xs-12
             %a.add-product{ href: '', ng: { click: 'toggleProductForm()' } }
               = inline_svg 'icons/add.svg'
