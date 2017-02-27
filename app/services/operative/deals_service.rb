@@ -44,7 +44,7 @@ class Operative::DealsService
   end
 
   def update_deal
-    v2_api_client.update_order(params: mapped_object, id: deal_external_id)
+    v2_api_client.update_order(params: mapped_object, id: deal_external_id, deal_id: deal.id)
   end
 
   def deal_operative_integration
