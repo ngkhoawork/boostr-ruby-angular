@@ -18,6 +18,17 @@
             {{io_owner_filter.name}}
     .row
       .col-md-12
+        %div.year-filter
+          %span Year:
+          %ul
+            %li{ dropdown: true }
+              %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": selectedYear === "All"}' }
+                {{selectedYear || 'All'}}
+                %span.caret
+              %ul.dropdown-menu
+                %li{ ng: { repeat: 'year in years', class: '{active: year === selectedYear}' } }
+                  %a{ href: '', ng: { click: 'filterByYear(year)' } }
+                    {{year}}
         .navbar.navbar-white
           %ul.nav.navbar-nav
             %li{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}' } }
@@ -27,15 +38,24 @@
           %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param == ''"}}
             %thead
               %tr
-                %th.left IO #
-                %th.left External #
-                %th.left Name
-                %th.left Advertiser
-                %th.left Agency
-                %th.right Budget
-                %th.left Start Date
-                %th.left End Date
-                %th.left Deal Name
+                %th.left
+                  %span{'ng-click': 'sortBy("io_number")'} IO #
+                %th.left
+                  %span{'ng-click': 'sortBy("external_io_number")'} External #
+                %th.left
+                  %span{'ng-click': 'sortBy("name")'} Name
+                %th.left
+                  %span{'ng-click': 'sortBy("advertiser.name")'} Advertiser
+                %th.left
+                  %span{'ng-click': 'sortBy("agency.name")'} Agency
+                %th.right
+                  %span{'ng-click': 'sortBy("budget_loc")'} Budget
+                %th.left
+                  %span{'ng-click': 'sortBy("start_date")'} Start Date
+                %th.left
+                  %span{'ng-click': 'sortBy("end_date")'} End Date
+                %th.left
+                  %span{'ng-click': 'sortBy("deal.name")'} Deal Name
                 %th.action-column
                 %th.right
 
@@ -44,13 +64,20 @@
           %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param == 'no-match'"}}
             %thead
               %tr
-                %th.left External #
-                %th.left Name
-                %th.left Advertiser
-                %th.left Agency
-                %th.right Budget
-                %th.left Start Date
-                %th.left End Date
+                %th.left
+                  %span{'ng-click': 'sortBy("external_io_number")'} External #
+                %th.left
+                  %span{'ng-click': 'sortBy("name")'} Name
+                %th.left
+                  %span{'ng-click': 'sortBy("advertiser")'} Advertiser
+                %th.left
+                  %span{'ng-click': 'sortBy("agency")'} Agency
+                %th.right
+                  %span{'ng-click': 'sortBy("budget_loc")'} Budget
+                %th.left
+                  %span{'ng-click': 'sortBy("start_date")'} Start Date
+                %th.left
+                  %span{'ng-click': 'sortBy("end_date")'} End Date
                 %th.right
 
             %tbody{ ng: { repeat: 'row in revenue | filter:searchText', include: "'partials/revenue_no_match_display_rows.html'" } }
@@ -58,29 +85,53 @@
           %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param == 'risk' || revenueFilter.param == 'upside'"}}
             %thead
               %tr
-                %th.left IO name
-                %th.left Ext IO #
-                %th.left Advertiser
-                %th.left Agency
-                %th.right Daily Rate
-                %th.right {{"#DaysNoBud"}}
-                %th.right {{ revenueFilter.param == "risk" ? "Risk Amt" : (revenueFilter.param == "upside" ? "Upside Amt" : "Balance") }}
-                %th.left Line #
-                %th.left AdServer
-                %th.left Start Date
-                %th.left End Date
-                %th.left Product
-                %th.right Qty
-                %th.right Price
-                %th.left Price Type
-                %th.right Budget
-                %th.right Budg Del
-                %th.right Budg Rem
-                %th.right Qty Del
-                %th.right Qty Rem
-                %th.right 3PQtyDel
-                %th.right 3PQtyRem
-                %th.right 3PBudDel
-                %th.right 3PBudRem
+                %th.left
+                  %span{'ng-click': 'sortBy("io.name")'} IO name
+                %th.left
+                  %span{'ng-click': 'sortBy("io.external_io_number")'} Ext IO #
+                %th.left
+                  %span{'ng-click': 'sortBy("io.advertiser.name")'} Advertiser
+                %th.left
+                  %span{'ng-click': 'sortBy("io.agency.name")'} Agency
+                %th.right
+                  %span{'ng-click': 'sortBy("daily_run_rate")'} Daily Rate
+                %th.right
+                  %span{'ng-click': 'sortBy("num_days_til_out_of_budget")'} {{"#DaysNoBud"}}
+                %th.right
+                  %span{'ng-click': 'sortBy("balance")'} {{ revenueFilter.param == "risk" ? "Risk Amt" : (revenueFilter.param == "upside" ? "Upside Amt" : "Balance") }}
+                %th.left
+                  %span{'ng-click': 'sortBy("line_number")'} Line #
+                %th.left
+                  %span{'ng-click': 'sortBy("ad_server")'} AdServer
+                %th.left
+                  %span{'ng-click': 'sortBy("start_date")'} Start Date
+                %th.left
+                  %span{'ng-click': 'sortBy("end_date")'} End Date
+                %th.left
+                  %span{'ng-click': 'sortBy("product.name")'} Product
+                %th.right
+                  %span{'ng-click': 'sortBy("quantity")'} Qty
+                %th.right
+                  %span{'ng-click': 'sortBy("price")'} Price
+                %th.left
+                  %span{'ng-click': 'sortBy("pricing_type")'} Price Type
+                %th.right
+                  %span{'ng-click': 'sortBy("budget_loc")'} Budget
+                %th.right
+                  %span{'ng-click': 'sortBy("budget_delivered_loc")'} Budg Del
+                %th.right
+                  %span{'ng-click': 'sortBy("budget_remaining_loc")'} Budg Rem
+                %th.right
+                  %span{'ng-click': 'sortBy("quantity_delivered")'} Qty Del
+                %th.right
+                  %span{'ng-click': 'sortBy("quantity_remaining")'} Qty Rem
+                %th.right
+                  %span{'ng-click': 'sortBy("quantity_delivered_3p")'} 3PQtyDel
+                %th.right
+                  %span{'ng-click': 'sortBy("quantity_remaining_3p")'} 3PQtyRem
+                %th.right
+                  %span{'ng-click': 'sortBy("budget_delivered_3p_loc")'} 3PBudDel
+                %th.right
+                  %span{'ng-click': 'sortBy("budget_remaining_3p_loc")'} 3PBudRem
 
             %tbody{ ng: { repeat: 'displayLineItem in revenue | filter:searchText', include: "'partials/revenue_display_item_rows.html'"} }
