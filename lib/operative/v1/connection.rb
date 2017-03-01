@@ -19,7 +19,7 @@ module Operative
           connection.request  :url_encoded
           connection.adapter  Faraday.default_adapter
           connection.use Operative::IntegrationLoggingMiddleware
-          connection.response :logger
+          connection.response :logger unless Rails.env.test?
         end
       end
     end
