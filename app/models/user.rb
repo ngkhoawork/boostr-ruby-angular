@@ -164,11 +164,11 @@ class User < ActiveRecord::Base
           if (start_date <= content_fee_product_budget.end_date && end_date >= content_fee_product_budget.start_date)
             in_period_days = [[end_date, content_fee_product_budget.end_date].min - [start_date, content_fee_product_budget.start_date].max + 1, 0].max
             in_period_effective_days = [[end_date, content_fee_product_budget.end_date, io_member.to_date].min - [start_date, content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
-            sum_period_budget += content_fee_product_budget.daily_budget * in_period_days
-            split_period_budget += content_fee_product_budget.daily_budget * in_period_effective_days * share / 100
+            sum_period_budget += content_fee_product_budget.corrected_daily_budget(io.start_date, io.end_date) * in_period_days
+            split_period_budget += content_fee_product_budget.corrected_daily_budget(io.start_date, io.end_date) * in_period_effective_days * share / 100
           end
           effective_days = [[content_fee_product_budget.end_date, io_member.to_date].min - [content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
-          split_budget += content_fee_product_budget.daily_budget * effective_days * share / 100
+          split_budget += content_fee_product_budget.corrected_daily_budget(io.start_date, io.end_date) * effective_days * share / 100
         end
       end
       # io.display_line_items.each do |display_line_item|

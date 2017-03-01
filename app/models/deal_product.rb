@@ -57,6 +57,9 @@ class DealProduct < ActiveRecord::Base
     total = 0
     total_loc = 0
 
+    deal_start_date = deal.start_date
+    deal_end_date = deal.end_date
+
     deal.months.each_with_index do |month, index|
       if last_index == index
         monthly_budget = budget - total
@@ -72,8 +75,8 @@ class DealProduct < ActiveRecord::Base
       end
       period = Date.new(*month)
       deal_product_budgets.create(
-        start_date: period,
-        end_date: period.end_of_month,
+        start_date: [period, deal_start_date].max,
+        end_date: [period.end_of_month, deal_end_date].min,
         budget: monthly_budget,
         budget_loc: monthly_budget_loc
       )
@@ -111,8 +114,8 @@ class DealProduct < ActiveRecord::Base
   def update_periods
     deal_product_budgets.each_with_index do |deal_product_budget, index|
       period = Date.new(*deal.months[index])
-      deal_product_budget.start_date = period
-      deal_product_budget.end_date = period.end_of_month
+      deal_product_budget.start_date = [period, deal.start_date].max
+      deal_product_budget.end_date = [period.end_of_month, deal.end_date].min
     end
   end
 
