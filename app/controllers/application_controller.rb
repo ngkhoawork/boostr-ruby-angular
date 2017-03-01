@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
+  skip_before_action :verify_authenticity_token, if: :xml_http_request?
 
   before_filter :authenticate_visitor
   after_filter :set_csrf_cookie
@@ -58,5 +59,11 @@ class ApplicationController < ActionController::Base
 
   def unauthorized_entity(entity_name)
     render json: { error: 'Unauthorized' }, status: :unauthorized
+  end
+
+  def xml_http_request?
+    unless request.headers['Authorization'].nil?
+      request.headers['X-Requested-With'] == 'XMLHttpRequest'
+    end
   end
 end
