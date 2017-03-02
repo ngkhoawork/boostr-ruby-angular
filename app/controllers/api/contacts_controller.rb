@@ -12,8 +12,8 @@ class Api::ContactsController < ApplicationController
       results = activity_contacts
     else
       results = contacts
-      response.headers['X-Total-Count'] = results.total_count
     end
+    response.headers['X-Total-Count'] = results.total_count
     render json: results
   end
 
@@ -99,7 +99,7 @@ class Api::ContactsController < ApplicationController
   end
 
   def limit
-    params[:per].present? ? params[:per].to_i : 500
+    params[:per].present? ? params[:per].to_i : 20
   end
 
   def offset
@@ -118,9 +118,9 @@ class Api::ContactsController < ApplicationController
     return @search_contacts if defined?(@search_contacts)
 
     if contacts_only
-      @search_contacts = current_user.company.contacts.where('contacts.name ilike ?', "%#{params[:contact_name]}%").limit(10)
+      @search_contacts = current_user.company.contacts.where('contacts.name ilike ?', "%#{params[:contact_name]}%").limit(limit).offset(offset)
     else
-      @search_contacts = current_user.company.contacts.joins("LEFT JOIN clients ON clients.id = contacts.client_id").where('contacts.name ilike ? OR clients.name ilike ?', "%#{params[:name]}%", "%#{params[:name]}%").limit(10)
+      @search_contacts = current_user.company.contacts.joins("LEFT JOIN clients ON clients.id = contacts.client_id").where('contacts.name ilike ? OR clients.name ilike ?', "%#{params[:name]}%", "%#{params[:name]}%").limit(limit).offset(offset)
     end
   end
 
