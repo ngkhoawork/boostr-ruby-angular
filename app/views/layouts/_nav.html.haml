@@ -38,8 +38,9 @@
                   = link_to "Activity Detail", "/reports/activity_detail_reports"
                 %li
                   = link_to "Activity Summary", "/reports/activity_summary"
-                %li
-                  = link_to "Forecast Detail - Annual", "/reports/forecasts"
+                - if current_user.company_id == 5
+                  %li
+                    = link_to "Forecast Detail - Annual", "/reports/forecasts"
                 %li
                   = link_to "Pipeline Change Report", "/reports/pipeline_changes_report"
           - else

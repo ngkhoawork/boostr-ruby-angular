@@ -59,7 +59,7 @@ class RevenueDataWarehouse < BaseWorker
       end
 
       content_fee_product_budgets.each do |content_fee_product_budget|
-        total_budget += content_fee_product_budget.daily_budget * effective_days(start_date, end_date, [content_fee_product_budget])
+        total_budget += content_fee_product_budget.corrected_daily_budget(io.start_date, io.end_date) * effective_days(start_date, end_date, [content_fee_product_budget])
       end
     end
 

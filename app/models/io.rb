@@ -112,7 +112,7 @@ class Io < ActiveRecord::Base
     total_budget = 0
     self.content_fees.each do |content_fee|
       content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
-        total_budget += content_fee_product_budget.daily_budget * effective_days(start_date, end_date, io_member, [content_fee_product_budget]) * (share/100.0)
+        total_budget += content_fee_product_budget.corrected_daily_budget(start_date, end_date) * effective_days(start_date, end_date, io_member, [content_fee_product_budget]) * (share/100.0)
       end
     end
 
