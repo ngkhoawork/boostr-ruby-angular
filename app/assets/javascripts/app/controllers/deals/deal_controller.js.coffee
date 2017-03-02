@@ -264,10 +264,12 @@
   $scope.getCompanyCurrencies = ->
     Currency.active_currencies().then (currencies) ->
       $scope.currencies = currencies
+  $scope.getCompanyCurrencies()
 
-  $scope.updateDealCurrency = ->
+  $scope.updateDealCurrency = (currentDeal, curr_cd)->
     $scope.errors = {}
-    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
+    currentDeal.curr_cd = curr_cd
+    Deal.update(id: currentDeal.id, deal: currentDeal).then(
       (deal) ->
         $scope.setCurrentDeal(deal)
       (resp) ->
@@ -292,6 +294,7 @@
       deal.close_reason = Field.field(deal, 'Close Reason')
       deal.contact_roles = Field.field(deal, 'Contact Role')
       $scope.currentDeal = deal
+      console.log  deal
       $scope.selectedStageId = deal.stage_id
       $scope.verifyMembersShare()
       $scope.setBudgetPercent(deal)
@@ -300,6 +303,7 @@
     Stage.query().$promise.then (stages) ->
       $scope.stages = stages.filter (stage) ->
         stage.active
+  $scope.getStages()
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()

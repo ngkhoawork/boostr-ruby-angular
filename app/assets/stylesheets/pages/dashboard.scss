@@ -1,26 +1,5 @@
 #dashboard {
-    min-height: calc(100vh - 150px);
-    background-color: $main-background-color;
-    padding-top: 30px;
-    font-family: "Avenir Next", Arial, serif;
-    color: $main-font-color;
-    a {
-        color: $secondary-color;
-        font-weight: 600;
-    }
-    .main-title {
-        h2 {
-            margin: 40px 0;
-        }
-    }
-    .block {
-        margin-bottom: 30px;
-        .title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-right: 20px;
-        }
-    }
+
     .time-period {
         float: right;
         span {
@@ -129,38 +108,6 @@
         }
     }
     #open-deals, #pacing-alerts {
-        table {
-            thead {
-                background-color: white;
-                th {
-                    color: $secondary-font-color !important;
-                    border-left: none;
-                    border-right: none;
-                }
-            }
-            tr {
-                &:nth-of-type(even) {
-                    background-color: #fafafb;
-                }
-                th, td {
-                    text-align: left;
-                    padding-left: 10px;
-                    padding-right: 10px;
-                }
-                th:last-child, td:last-child {
-                    text-align: right;
-                }
-                .stage {
-                    select {
-                        height: 40px;
-                        border: none;
-                        background-color: transparent;
-                        cursor: pointer;
-                        outline: none;
-                    }
-                }
-            }
-        }
         .pacing-alerts-filters {
             float: right;
             span {
