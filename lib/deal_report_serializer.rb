@@ -46,13 +46,7 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def latest_activity
-    if activity = object.latest_happened_activity
-      {
-        date: activity.happened_at.strftime("%m-%d-%Y %H:%M:%S"),
-        type: activity.activity_type_name,
-        note: activity.comment
-      }
-    end
+    object.latest_happened_activity.serializable_hash(only: [:happened_at, :activity_type_name, :comment]) rescue nil
   end
 
   def type
