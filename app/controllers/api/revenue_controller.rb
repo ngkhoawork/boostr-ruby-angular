@@ -18,13 +18,7 @@ class Api::RevenueController < ApplicationController
     render json: revenues
   end
 
-  def team
-    if current_user.leader?
-      current_user.teams.first
-    else
-      current_user.team
-    end
-  end
+  private
 
   def quarterly_revenues
     revs = current_user.company.revenues
@@ -194,9 +188,7 @@ class Api::RevenueController < ApplicationController
   end
 
   def time_period
-    return @time_period if defined?(@time_period)
-
-    @time_period = current_user.company.time_periods.find(params[:time_period_id])
+    @time_period ||= current_user.company.time_periods.find(params[:time_period_id])
   end
 
   def year
@@ -243,40 +235,30 @@ class Api::RevenueController < ApplicationController
   end
 
   def member_or_team
-    return @member_or_team if defined?(@member_or_team)
-
-    if params[:member_id]
-      @member_or_team = member
+    @member_or_team ||= if params[:member_id]
+      member
     elsif params[:team_id]
-      @member_or_team = team
+      team
     else
       raise ActiveRecord::RecordNotFound
     end
   end
 
   def member
-    return @member if defined?(@member)
-
-    if current_user.leader?
-      @member = current_user.company.users.find(params[:member_id])
+    @member ||= if current_user.leader?
+      current_user.company.users.find(params[:member_id])
     elsif params[:member_id] == current_user.id.to_s
-      @member = current_user
+      current_user
     else
       raise ActiveRecord::RecordNotFound
     end
   end
 
   def team
-    return @team if defined?(@team)
-
-    @team = current_user.company.teams.find(params[:team_id])
+    @team ||= current_user.company.teams.find(params[:team_id])
   end
 
   def crevenues
-    return @crevenues if defined?(@crevenues)
-
-    @crevenues = member_or_team.crevenues(start_date, end_date)
-    @crevenues
+    @crevenues ||= member_or_team.crevenues(start_date, end_date)
   end
-
 end
