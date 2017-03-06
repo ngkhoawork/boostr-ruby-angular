@@ -3,6 +3,46 @@
 		.deal-stats.block
 			%div.stats-body
 				%div.next-steps.pull-right
+					.show-create-remainders-popup
+						%label{ 'for': 'deal-reminders'}
+							%i.fa.fa-bell-o.reminder-icon
+						%input.show-form-create-reminders#deal-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
+
+						%div.wrap-form{ ng: { show: 'showReminder' } }
+							#reminder_modal.popup-modal
+								.popup-modal-header
+									%label{ 'for': 'deal-reminders'}
+										%span.close-btn{'ng-click': 'cancel()'} +
+								%form{ name: 'dealReminderForm', ng: { submit: 'submitReminderForm()' } }
+									.popup-modal-body
+										.form-group{'ng-class':'{error: reminderOptions.errors.Name}'}
+											%span.error-text {{errors.reminderName}}
+											%label
+												Reminder name
+												%span.star *
+											%input.form-control{'ng-model': 'reminder.name'}
+										.col-xs-6.date
+											.form-group{'ng-class':'{error: reminderOptions.errors.Date}'}
+												%span.error-text {{errors.reminderDate}}
+												%label Date
+												%span.star *
+												.input-group
+													%span.input-group-addon
+														%i.fa.fa-calendar
+													%span.bs-datepicker
+														%input.form-control.box.w4{readonly: true, placeholder: 'Pick date', name: 'reminderDate', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'reminderDateOpened = true' }, 'is-open': 'reminderDateOpened' }
+										.col-xs-6.time
+											.form-group{ ng: { class: '{error: reminderOptions.errors.Time}' } }
+												%label Time
+												%timepicker-pop.wrap-select-time.form-control-time{'input-time': 'reminder._time', 'show-meridian': 'reminderOptions.showMeridian'}
+										.form-group{'ng-class':'{error: errors.reminderComment}'}
+											%span.error-text {{errors.reminderComment}}
+											%label
+												Reminder note
+											%textarea.form-control{rows: '1', 'msd-elastic': '', 'ng-model': 'reminder.comment'}
+
+									.popup-modal-footer
+										%button.btn.btn-warning{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } }  Set Reminder
 					.title Next Steps
 					%textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.next_steps", name: "next_steps", placeholder: 'Enter Next Steps', 'ng-blur': 'updateDeal()' }
 				%div.deal-title
@@ -44,6 +84,7 @@
 					%div.stats-col
 						.col-body-wrap
 							.col-body
+								%span.error-tooltip{'ng-show': 'errors.stage'} {{ errors.stage }}
 								.description Current Stage
 								.dropdown
 									%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -56,6 +97,7 @@
 					%div.stats-col
 						.col-body-wrap
 							.col-body
+								%span.error-tooltip{'ng-show': 'errors.curr_cd'} {{ errors.curr_cd }}
 								.description Deal Currency
 								.dropdown
 									%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -133,6 +175,14 @@
 									{{ deal_product_budget.budget_loc | currency: currency_symbol : 0 }}
 								%div.budget-percent
 									{{ deal_product_budget.budget_percent+ '%'}}
+
+		.col-xs-3
+			%div{'ng-include': '"partials/deal_campaign_details.html"'}
+
+			%upload-file{'deal-files': 'dealFiles'}
+
+		.col-xs-3
+			%div{'ng-include': '"partials/dashboard/activity.html"'}
 
 		.col-xs-6
 			.members.block
@@ -213,11 +263,3 @@
 											%li{'ng-repeat': 'option in currentDeal.contact_roles.options', 'ng-class': '{active: deal_contact.role == option.name}'}
 												%a{'href': '', 'ng-click': 'deal_contact.role = option.name; submitDealContact(deal_contact)'}
 													%span.text {{option.name}}
-
-		.col-xs-3
-			%div{'ng-include': '"partials/dashboard/activity.html"'}
-
-		.col-xs-3
-			%div{'ng-include': '"partials/deal_campaign_details.html"'}
-
-			%upload-file{'deal-files': 'dealFiles'}

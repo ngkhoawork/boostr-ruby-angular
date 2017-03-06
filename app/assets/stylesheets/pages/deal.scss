@@ -48,7 +48,7 @@
             top: calc(100% + 10px);
         }
     }
-    .edit-deal, .delete-deal, .delete-product {
+    .edit-deal, .delete-deal, .delete-product, .reminder-icon {
         color: $secondary-font-color;
         margin-left: 8px;
         cursor: pointer;
@@ -60,6 +60,28 @@
         &:hover {
             background-color: $secondary-font-color;
             color: white;
+        }
+    }
+    .show-create-remainders-popup {
+        .show-form-create-reminders {
+            display: none;
+        }
+        .reminder-icon {
+            padding: 4px 5px;
+        }
+        #reminder_modal {
+            background-color: white;
+            position: absolute;
+            right: 0;
+            width: 400px;
+            z-index: 10;
+            border: 2px solid $separate-line-color;
+            box-shadow: 3px 3px 8px gray;
+            border-radius: 4px;
+            input, textarea {
+                height: 36px;
+                background-color: white;
+            }
         }
     }
     .delete-deal {
@@ -106,6 +128,11 @@
                     }
                 }
             }
+            .error-tooltip {
+                left: 1%;
+                width: 98%;
+                bottom: calc(50% + 30px);
+            }
         }
     }
     .products {
@@ -113,7 +140,7 @@
         .error-tooltip {
             white-space: nowrap;
             bottom: 90%;
-            left: calc(50% - 30px);
+            //left: calc(-50%);
         }
         .has-error {
             color: $error-color;
@@ -263,8 +290,13 @@
                 display: inline-block;
                 .error-tooltip {
                     min-width: 300px;
-                    left: calc(50% - 30px);
+                    right: 0;
+                    left: auto;
                     bottom: calc(100% + 7px);
+                    &:before {
+                        right: 30px;
+                        left: auto;
+                    }
                 }
             }
         }
@@ -329,7 +361,7 @@
         font-size: 14px;
         text-transform: none;
         position: absolute;
-        left: 0;
+        left: calc(-50%);
         bottom: 100%;
         background-color: $error-color;
         color: white;
@@ -340,7 +372,8 @@
         &:before {
             content: '';
             bottom: -10px;
-            left: 30px;
+            left: 50%;
+            //left: 30px;
             margin-left: -10px;
             border-width: 10px 10px 0;
             border-color: transparent;

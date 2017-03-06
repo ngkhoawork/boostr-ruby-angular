@@ -271,6 +271,9 @@
       (deal) ->
         $scope.setCurrentDeal(deal)
       (resp) ->
+        $timeout ->
+          delete $scope.errors.curr_cd
+        , 6000
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
@@ -595,6 +598,9 @@
               else
                 $scope.init()
             (resp) ->
+              $timeout ->
+                delete $scope.errors.stage
+              , 6000
               for key, error of resp.data.errors
                 $scope.errors[key] = error && error[0]
           )
