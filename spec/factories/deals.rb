@@ -8,8 +8,8 @@ FactoryGirl.define do
     association :advertiser, factory: :client
     association :agency, factory: :client
 
-    before(:create) do |item|
-      item.company = Company.first
+    after(:create) do |item|
+      item.company = Company.first if item.company.blank?
     end
 
     factory :deal_with_assets do

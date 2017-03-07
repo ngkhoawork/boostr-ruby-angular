@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: https://config.operativeone.com/operativeone/api/accounts/167
+    body:
+      encoding: UTF-8
+      string: accountType=advertiser&addressline1=058+Carroll+Estates&addressline2=Suite+649&city=North+Tyrese&country=Estonia&externalID=boostr_270_Zulauf+LLC_account&name=Joe+Doe&parentAccount=Swift-Paucek&phone=38093123454&state=NE&zip=12345
+    headers:
+      Companyid:
+      - '139'
+      Apiprovider:
+      - operative
+      Authorization:
+      - Basic YXBpX3VzZXJAa2luZ3NhbmRib3guY29tOktpbmcyMDE3IQ==
+      User-Agent:
+      - Faraday v0.11.0
+      Dealid:
+      - '67'
+      Resourcename:
+      - account
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 28 Feb 2017 14:16:49 GMT
+      Set-Cookie:
+      - JSESSIONID=B2~o1confapi02bk6xqx71zqjf1du4quydnm7n4.o1confapi02;Path=/operativeone
+      - tenant=KINGSANDBOX
+      - userid=api_user@kingsandbox.com
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Content-Language:
+      - en
+      Content-Type:
+      - application/xml;charset=ISO-8859-1
+      Server:
+      - Jetty(7.6.0.v20120127)
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: <account><accountId>167</accountId><name>Joe Doe</name><phone>38093123454</phone><status>active</status><addressline1>058
+        Carroll Estates</addressline1><addressline2>Suite 649</addressline2><city>North
+        Tyrese</city><state>NE</state><zip>12345</zip><country>Estonia</country><accountType
+        id="1" name="advertiser"/><propertyValueList/><createdTime>2017-02-28 13:21:40.0</createdTime><createdUser>api_user@kingsandbox.com</createdUser><updatedTime>2017-02-28
+        14:16:51.808</updatedTime><updatedUser>api_user@kingsandbox.com</updatedUser><externalID>boostr_270_Zulauf
+        LLC_account</externalID><psAdvertiserId>0</psAdvertiserId><psCustomerId>0</psCustomerId><deleted>false</deleted></account>
+    http_version: 
+  recorded_at: Tue, 28 Feb 2017 14:16:52 GMT
+recorded_with: VCR 3.0.3

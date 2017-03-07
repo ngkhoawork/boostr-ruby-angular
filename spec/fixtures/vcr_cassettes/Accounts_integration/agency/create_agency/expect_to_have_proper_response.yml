@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://config.operativeone.com/operativeone/api/accounts/
+    body:
+      encoding: UTF-8
+      string: accountType=agency&addressline1=9124+Madyson+Cliff&addressline2=Apt.+907&city=New+Murphybury&country=Mongolia&externalID=boostr_288_Gerlach+LLC_account&name=Pfannerstill-Oberbrunner&parentAccount=Murphy%2C+Goodwin+and+Predovic&phone=69985740331568&state=WV&zip=85703
+    headers:
+      Companyid:
+      - '149'
+      Apiprovider:
+      - operative
+      Authorization:
+      - Basic YXBpX3VzZXJAa2luZ3NhbmRib3guY29tOktpbmcyMDE3IQ==
+      User-Agent:
+      - Faraday v0.11.0
+      Dealid:
+      - '72'
+      Resourcename:
+      - account
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Tue, 28 Feb 2017 14:33:45 GMT
+      Set-Cookie:
+      - JSESSIONID=B1~o1confapi01ohw9rl5fu4nl1f005lrv41rds.o1confapi01;Path=/operativeone
+      - tenant=KINGSANDBOX
+      - userid=api_user@kingsandbox.com
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Content-Language:
+      - en
+      Content-Type:
+      - application/xml;charset=ISO-8859-1
+      Content-Length:
+      - '703'
+      Server:
+      - Jetty(7.6.0.v20120127)
+    body:
+      encoding: UTF-8
+      string: <account><accountId>169</accountId><name>Pfannerstill-Oberbrunner</name><phone>69985740331568</phone><status>active</status><addressline1>9124
+        Madyson Cliff</addressline1><addressline2>Apt. 907</addressline2><city>New
+        Murphybury</city><state>WV</state><zip>85703</zip><country>Mongolia</country><accountType
+        id="2" name="agency"/><propertyValueList/><createdTime>2017-02-28 14:33:46.69</createdTime><createdUser>api_user@kingsandbox.com</createdUser><updatedTime>2017-02-28
+        14:33:46.69</updatedTime><updatedUser>api_user@kingsandbox.com</updatedUser><externalID>boostr_288_Gerlach
+        LLC_account</externalID><psAdvertiserId>0</psAdvertiserId><psCustomerId>0</psCustomerId><deleted>false</deleted></account>
+    http_version: 
+  recorded_at: Tue, 28 Feb 2017 14:33:46 GMT
+recorded_with: VCR 3.0.3

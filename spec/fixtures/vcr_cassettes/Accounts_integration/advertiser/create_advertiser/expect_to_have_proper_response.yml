@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://config.operativeone.com/operativeone/api/accounts/
+    body:
+      encoding: UTF-8
+      string: accountType=advertiser&addressline1=42935+Huel+Cliffs&addressline2=Suite+931&city=South+Orlando&country=El+Salvador&externalID=boostr_190_Osinski%2C+Boyer+and+Konopelski_account&name=Berge-Cole&parentAccount=Cartwright%2C+Prohaska+and+Mayer&phone=60684764867771&state=PA&zip=43460
+    headers:
+      Companyid:
+      - '93'
+      Apiprovider:
+      - operative
+      Authorization:
+      - Basic YXBpX3VzZXJAa2luZ3NhbmRib3guY29tOktpbmcyMDE3IQ==
+      User-Agent:
+      - Faraday v0.11.0
+      Dealid:
+      - '48'
+      Resourcename:
+      - account
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Tue, 28 Feb 2017 13:21:39 GMT
+      Set-Cookie:
+      - JSESSIONID=B1~o1confapi01gdj9lb5tqd6b1cwrgncvuhf4n.o1confapi01;Path=/operativeone
+      - tenant=KINGSANDBOX
+      - userid=api_user@kingsandbox.com
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Content-Language:
+      - en
+      Content-Type:
+      - application/xml;charset=ISO-8859-1
+      Content-Length:
+      - '715'
+      Server:
+      - Jetty(7.6.0.v20120127)
+    body:
+      encoding: UTF-8
+      string: <account><accountId>167</accountId><name>Berge-Cole</name><phone>60684764867771</phone><status>active</status><addressline1>42935
+        Huel Cliffs</addressline1><addressline2>Suite 931</addressline2><city>South
+        Orlando</city><state>PA</state><zip>43460</zip><country>El Salvador</country><accountType
+        id="1" name="advertiser"/><propertyValueList/><createdTime>2017-02-28 13:21:40.268</createdTime><createdUser>api_user@kingsandbox.com</createdUser><updatedTime>2017-02-28
+        13:21:40.268</updatedTime><updatedUser>api_user@kingsandbox.com</updatedUser><externalID>boostr_190_Osinski,
+        Boyer and Konopelski_account</externalID><psAdvertiserId>0</psAdvertiserId><psCustomerId>0</psCustomerId><deleted>false</deleted></account>
+    http_version: 
+  recorded_at: Tue, 28 Feb 2017 13:21:40 GMT
+recorded_with: VCR 3.0.3

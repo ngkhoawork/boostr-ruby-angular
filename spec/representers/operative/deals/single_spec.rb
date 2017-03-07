@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-describe Operative::Deals::Single do
-  before { create :billing_deal_contact, contact: create(:contact, clients: [deal.advertiser]), deal: deal }
+describe Operative::Deals::Single, operative: true do
+  before { create :billing_deal_contact, deal: deal, contact: contact }
 
   it 'has proper mapped value' do
     expect(deal_mapper).to include deal_name
@@ -21,8 +21,22 @@ describe Operative::Deals::Single do
 
   private
 
+
   def deal
-    @_deal ||= create :deal, creator: account_manager, budget: 20_000, deal_members: [deal_member]
+    @_deal ||= create :deal,
+                      creator: account_manager,
+                      budget: 20_000,
+                      advertiser: advertiser,
+                      agency: agency,
+                      company: company
+  end
+
+  def advertiser
+    @_advertiser ||= create :client, company: company
+  end
+
+  def agency
+    @_agency ||= create :client, company: company
   end
 
   def deal_mapper
@@ -65,20 +79,12 @@ describe Operative::Deals::Single do
     "boostr_#{contact.id}_#{contact.company.name}_contact"
   end
 
-  def contact
-    @_contact ||= deal.contacts.first
-  end
-
   def deal_start_date
     deal.start_date.strftime('%A, %d %b %Y')
   end
 
   def deal_end_date
     deal.end_date.strftime('%A, %d %b %Y')
-  end
-
-  def deal_member
-    create(:deal_member, user: seller)
   end
 
   def deal_stage
@@ -94,18 +100,20 @@ describe Operative::Deals::Single do
   end
 
   def primary_sales_person
-    "<primarySalesperson>#{seller.email}</primarySalesperson>"
+    "<primarySalesperson>#{account_manager.email}</primarySalesperson>"
   end
 
   def owner
     "<owner>#{account_manager.email}</owner>"
   end
 
-  def agency
-    @_agency ||= deal.agency
+  def company
+    @_company ||= create :company
   end
 
-  def advertiser
-    @_advertiser ||= deal.advertiser
+  def contact
+    @_contact ||= create :contact,
+                         clients: [advertiser],
+                         company: company
   end
 end

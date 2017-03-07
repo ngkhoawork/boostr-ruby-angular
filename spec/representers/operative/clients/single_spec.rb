@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Operative::Clients::Single do
+describe Operative::Clients::Single, operative: true do
   let(:company) { create :company }
   let(:parent_client) { create :client }
   let(:client) { create :client, client_type_id: advertiser_type_id(company), name: 'Some client', parent_client: parent_client }

@@ -1,0 +1,138 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: https://config.operativeone.com/operativeone/restapi/salesorders/323
+    body:
+      encoding: UTF-8
+      string: |-
+        <Collection xmlns="http://www.operative.com/api" xmlns:v1="htt0p://www.operative.com/api/v1" xmlns:v2="http://www.operative.com/api/v2">
+          <salesOrder xsi:type="v2:SalesOrderV2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <salesOrderType>
+              <name>Agency Buy</name>
+            </salesOrderType>
+            <alternateId>boostr_202_Zulauf LLC_order</alternateId>
+            <nextSteps>Call Somebody</nextSteps>
+            <description>Budget: $20,000.00, start date: Wednesday, 29 Jul 2015, end_date: Saturday, 29 Aug 2015</description>
+            <name>Deal updated_202</name>
+            <accounts>
+              <v2:account>
+                <externalId>boostr_308_Reilly, Turcotte and D'Amore_account</externalId>
+                <id>169</id>
+                <name>Joe Doe</name>
+                <roles>
+                  <role>
+                    <internalName>buying_agency</internalName>
+                  </role>
+                </roles>
+                <contacts>
+                  <contact>
+                    <roles>
+                      <role>
+                        <internalName>billing_contact</internalName>
+                      </role>
+                    </roles>
+                    <id>82</id>
+                    <externalId>boostr_11_Kassulke LLC_contact</externalId>
+                  </contact>
+                </contacts>
+              </v2:account>
+              <v2:account>
+                <externalId>boostr_270_Zulauf LLC_account</externalId>
+                <id>167</id>
+                <name>Joan Doe</name>
+                <roles>
+                  <role>
+                    <internalName>primary_advertiser</internalName>
+                  </role>
+                </roles>
+              </v2:account>
+            </accounts>
+            <primarySalesperson>jason.parmer@kingsandbox.com</primarySalesperson>
+            <owner>jason.parmer@kingsandbox.com</owner>
+          </salesOrder>
+        </Collection>
+    headers:
+      Companyid:
+      - '401'
+      Content-Type:
+      - application/xml
+      Accept:
+      - application/xml
+      Version:
+      - v2
+      Apiprovider:
+      - operative
+      Authorization:
+      - Basic YXBpX3VzZXJAa2luZ3NhbmRib3guY29tOktpbmcyMDE3IQ==
+      User-Agent:
+      - Faraday v0.11.0
+      Dealid:
+      - '202'
+      Resourcename:
+      - deal
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 01 Mar 2017 19:54:45 GMT
+      Set-Cookie:
+      - JSESSIONID=B1~o1confapi0114j638zn57adkwbya4q13jaug.o1confapi01;Path=/operativeone
+      - tenant=KINGSANDBOX
+      - userid=api_user@kingsandbox.com
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Content-Language:
+      - en
+      Content-Type:
+      - application/xml;charset=UTF-8
+      Server:
+      - Jetty(7.6.0.v20120127)
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Collection
+        xmlns="http://www.operative.com/api" xmlns:v1="http://www.operative.com/api/v1"
+        xmlns:v2="http://www.operative.com/api/v2"><salesOrder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:type="v2:SalesOrderV2"><id>323</id><v2:name>Deal updated_202</v2:name><v2:description>Budget:
+        $20,000.00, start date: Wednesday, 29 Jul 2015, end_date: Saturday, 29 Aug
+        2015</v2:description><v2:currency>USD</v2:currency><v2:status>Proposal Creation</v2:status><v2:eCPM>0.0000</v2:eCPM><v2:lineitemCount>0</v2:lineitemCount><v2:alternateId>boostr_202_Zulauf
+        LLC_order</v2:alternateId><v2:defaultMediaPlanName>Default Media Plan</v2:defaultMediaPlanName><v2:nextSteps>Call
+        Somebody</v2:nextSteps><v2:lineitemDefaultStartDate>2017-04-01</v2:lineitemDefaultStartDate><v2:lineitemDefaultEndDate>2017-04-30</v2:lineitemDefaultEndDate><v2:createdDate>2017-03-01T13:26:51</v2:createdDate><v2:lastModifiedBy>API
+        User</v2:lastModifiedBy><v2:lastModifiedDate>2017-03-01T14:54:46</v2:lastModifiedDate><v2:primaryAdvertiser>Joan
+        Doe</v2:primaryAdvertiser><v2:primarySalesperson>jason.parmer@kingsandbox.com</v2:primarySalesperson><v2:owner>jason.parmer@kingsandbox.com</v2:owner><v2:timeZone><objectName>timeZone</objectName><id>288</id><name>Europe/London
+        - Greenwich Mean Time - (GMT+0.00)</name></v2:timeZone><v2:rateCard>USD UIS
+        Rate Card</v2:rateCard><v2:unreviewedNotes>false</v2:unreviewedNotes><v2:defaultInvoicingOrganization><objectName>invoicingOrganization</objectName><id>3</id><name>Midasplayer
+        Advertising Ltd</name></v2:defaultInvoicingOrganization><v2:billingPeriodScheme><objectName>billingPeriodScheme</objectName><id>1</id><name>Calendar
+        Year</name></v2:billingPeriodScheme><v2:endOfFlight>false</v2:endOfFlight><v2:salesStage><v2:id>1</v2:id><v2:name>10%
+        - Sales lead</v2:name><v2:percentage>10</v2:percentage></v2:salesStage><v2:salesTeam><objectName>salesTeam</objectName><id>8</id><name>EMEA</name></v2:salesTeam><v2:salesOrderType><objectName>salesOrderType</objectName><id>1</id><name>Agency
+        Buy</name></v2:salesOrderType><v2:accounts><v2:account><id>169</id><name>Joe
+        Doe</name><phone>38093123454</phone><type>agency</type><addressline1>89185
+        Kira Crossing</addressline1><addressline2>Apt. 529</addressline2><city>Port
+        Michelemouth</city><state>MS</state><zip>12345</zip><country>China</country><status>active</status><externalId>boostr_308_Reilly,
+        Turcotte and D''Amore_account</externalId><roles><role><name>Buying Agency</name><internalName>buying_agency</internalName></role></roles><contacts><contact><id>82</id><firstName>John</firstName><lastName>Doe</lastName><email>luther_huel@romaguera.ca</email><phone>38093123454</phone><mobile>918528299450685</mobile><addressline1>0069
+        Cartwright Way</addressline1><addressline2>Apt. 877</addressline2><city>South
+        Nicoletteport</city><state>MN</state><zip>12345</zip><country>Cape Verde</country><status>active</status><externalId>boostr_11_Kassulke
+        LLC_contact</externalId><roles><role><name>Billing contact</name><internalName>billing_contact</internalName></role></roles></contact></contacts></v2:account><v2:account><id>167</id><name>Joan
+        Doe</name><email></email><phone>38093123454</phone><fax></fax><type>advertiser</type><addressline1>058
+        Carroll Estates</addressline1><addressline2>Suite 649</addressline2><city>North
+        Tyrese</city><state>NE</state><zip>12345</zip><country>Estonia</country><status>active</status><externalId>boostr_270_Zulauf
+        LLC_account</externalId><roles><role><name>Primary Advertiser</name><internalName>primary_advertiser</internalName></role></roles><contacts/></v2:account></v2:accounts><v2:users><v2:user><id>219</id><userLogin>jason.parmer@kingsandbox.com</userLogin><firstName>Jason</firstName><lastName>Parmar</lastName><email>jason.parmar@king.com</email><status>active</status><roles><role><name>Owner</name><internalName>owner</internalName></role><role><name>Primary
+        Salesperson</name><internalName>primary_salesperson</internalName></role></roles><orderCommissionSplit>1.0000</orderCommissionSplit></v2:user></v2:users><v2:customFields><customField><fieldId>22</fieldId><name>Cancelled</name><apiName>Cancelled</apiName><value>false</value></customField><customField><fieldId>25</fieldId><name>Custom
+        Ts &amp; Cs Attached?</name><apiName>Custom_Ts_Cs_Attached</apiName><value>false</value></customField><customField><fieldId>24</fieldId><name>IO
+        Attached?</name><apiName>IO_Attached</apiName><value>false</value></customField><customField><fieldId>19</fieldId><name>Reason
+        for Loss</name><apiName>Reason_for_Loss</apiName><options/></customField><customField><fieldId>34</fieldId><name>USA
+        Targeting Only?</name><apiName>US_Only</apiName><options/></customField></v2:customFields><v2:discountProfile><objectName>discountProfile</objectName><id>1</id><name>Default
+        Discount Profile</name></v2:discountProfile><v2:lineitemDefaultDiscounts><v2:discount><id>1</id><name>Added
+        Value</name><value>0.000000</value></v2:discount><v2:discount><id>2</id><name>Other
+        Discount</name><value>0.000000</value></v2:discount><v2:discount><id>3</id><name>Agency</name><value>0.000000</value></v2:discount></v2:lineitemDefaultDiscounts><v2:mediaPlans><v2:mediaPlan><v2:id>226</v2:id><v2:name>Default
+        Media Plan</v2:name><v2:default>true</v2:default><v2:namedSections><v2:namedSection><v2:id>227</v2:id><v2:name>Default
+        Section</v2:name><v2:salesOrderLineitems/></v2:namedSection></v2:namedSections></v2:mediaPlan></v2:mediaPlans></salesOrder></Collection>'
+    http_version: 
+  recorded_at: Wed, 01 Mar 2017 19:54:46 GMT
+recorded_with: VCR 3.0.3
