@@ -51,9 +51,9 @@
 
 
   $scope.getDealFiles = () ->
-#    $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
-#    .then (respond) ->
-#      $scope.dealFiles = respond.data
+    $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
+    .then (respond) ->
+      $scope.dealFiles = respond.data
 
   $scope.getIconName = (typeName) ->
     typeName && typeName.split(' ').join('-').toLowerCase()
