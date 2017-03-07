@@ -112,11 +112,23 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_integration_allowed?
-    operative_api_config.present? && operative_api_config.switched_on && deal_stage_percentage_eql_api_config_percentage?
+    operative_api_config.present? && operative_api_config.switched_on && deal_lost_or_won?
+  end
+
+  def deal_lost_or_won?
+    deal_stage_percentage_eql_api_config_percentage? || deal_lost?
   end
 
   def deal_stage_percentage_eql_api_config_percentage?
     stage.probability.eql?(operative_api_config.trigger_on_deal_percentage)
+  end
+
+  def deal_lost?
+    closed_lost? && integrations.operative.present?
+  end
+
+  def closed_lost?
+    stage.probability.eql?(0) && !stage.open?
   end
 
   def active_exchange_rate
