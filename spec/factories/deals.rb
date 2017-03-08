@@ -8,7 +8,7 @@ FactoryGirl.define do
     association :advertiser, factory: :client
     association :agency, factory: :client
 
-    after(:create) do |item|
+    before(:create) do |item|
       item.company = Company.first if item.company.blank?
     end
 
