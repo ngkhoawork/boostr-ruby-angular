@@ -154,9 +154,17 @@ class Api::DealsController < ApplicationController
           product_filter: product_filter
         )
         deal_ids = filtered_deals.collect{|deal| deal.id}
-        range = Deal.where(id: deal_ids).select("MIN(start_date) as start_date, MAX(end_date) as end_date").group_by.first
-        months_in_range = TimePeriods.new(range.start_date.beginning_of_month..range.end_date.end_of_month).months.map(&:first)
-        render json: [{deals: deal_list, range: months_in_range}].to_json
+
+        range = DealProductBudget
+        .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+        .select("distinct(start_date)")
+        .where("deal_products.deal_id in (?)", deal_ids)
+        .order("start_date asc")
+        .collect{|deal_product_budget| deal_product_budget.start_date.try(:beginning_of_month)}
+        .compact
+        .uniq
+
+        render json: [{deals: deal_list, range: range}].to_json
       }
       format.csv {
         require 'timeout'

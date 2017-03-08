@@ -389,8 +389,14 @@ class Deal < ActiveRecord::Base
     CSV.generate do |csv|
       deal_ids = deals.collect{|deal| deal.id}
 
-      range = Deal.where(id: deal_ids).select("MIN(start_date) as start_date, MAX(end_date) as end_date").group_by.first
-      months_in_range = TimePeriods.new(range.start_date.beginning_of_month..range.end_date.end_of_month).months.map(&:first)
+      range = DealProductBudget
+      .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+      .select("distinct(start_date)")
+      .where("deal_products.deal_id in (?)", deal_ids)
+      .order("start_date asc")
+      .collect{|deal_product_budget| deal_product_budget.start_date.try(:beginning_of_month)}
+      .compact
+      .uniq
 
       header = []
       header << "Team Member"
@@ -407,7 +413,7 @@ class Deal < ActiveRecord::Base
       header << "Next Steps"
       header << "Start Date"
       header << "End Date"
-      months_in_range.each do |product_time|
+      range.each do |product_time|
         header << product_time.strftime("%Y-%m")
       end
       deal_custom_field_names = company.deal_custom_field_names.order("position asc")
@@ -444,7 +450,7 @@ class Deal < ActiveRecord::Base
           .group_by(&:start_date)
           .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
 
-        months_in_range.each do |product_time|
+        range.each do |product_time|
           if dpb = deal_product_budgets.find { |dpb| dpb[:start_date].try(:beginning_of_month) == product_time }
             line << "$#{dpb[:budget].to_f.round.to_s}"
           else

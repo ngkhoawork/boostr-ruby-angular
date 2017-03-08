@@ -129,7 +129,6 @@
 
       $scope.findDealProductBudgetBudget = (dealProductBudgets, productTime) ->
         productTimeDate = new Date(productTime)
-        debugger
         result =  _.find dealProductBudgets, (dealProductBudget) ->
           dpbDate = new Date(dealProductBudget.start_date)
           if dpbDate.getFullYear() == productTimeDate.getFullYear() && dpbDate.getMonth() == productTimeDate.getMonth()
