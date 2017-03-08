@@ -6,13 +6,11 @@ FactoryGirl.define do
     association :parent_client, factory: :parent_client
 
     before(:create) do |item|
+      item.company = Company.first if item.company.nil?
+
       if item.client_type_id.nil?
         item.client_type_id = Company.first.fields.find_by(name: 'Client Type').options.ids.sample
       end
-    end
-
-    after(:create) do |item|
-      item.company = Company.first if item.company.nil?
     end
 
     factory :parent_client do

@@ -4,7 +4,7 @@ FactoryGirl.define do
     position { FFaker::Job.title }
     address
 
-    after(:create) do |item|
+    before(:create) do |item|
       item.company = Company.first if item.company.blank?
     end
 
