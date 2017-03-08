@@ -1,8 +1,7 @@
 FactoryGirl.define do
   factory :content_fee_product_budget do
-    content_fee nil
-budget 1
-month "2016-09-28"
+    budget 5
+    start_date "2015-01-01"
+    end_date "2015-03-31"
   end
-
 end

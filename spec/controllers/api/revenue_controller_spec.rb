@@ -18,4 +18,93 @@ RSpec.describe Api::RevenueController, type: :controller do
       expect(response).to be_success
     end
   end
+
+  describe 'GET #index' do
+    context 'user' do
+      before do
+        create(:io_member, user: user, io: io, share: 100)
+        2.times { create :content_fee, io: io, product: product, budget: 20_000 }
+      end
+
+      it 'has proper revenue data' do
+        get :index, format: :json, time_period_id: time_period.id, member_id: user.id.to_s
+        response_json = JSON.parse(response.body)
+
+        expect(response_json[0]['name']).to eq(io.name)
+        expect(response_json[0]['advertiser']).to eq(advertiser.name)
+        expect(response_json[0]['budget']).to eq('40000.0')
+        expect(response_json[0]['sum_period_budget']).to eq(40000.0)
+      end
+    end
+
+    context 'team' do
+      before do
+        create(:io_member, user: another_user, io: io_for_another_user, share: 80)
+        2.times { create :content_fee, io: io_for_another_user, product: product, budget: 10_000 }
+
+        create(:io_member, user: user, io: io, share: 100)
+        2.times { create :content_fee, io: io, product: product, budget: 20_000 }
+      end
+
+      it 'has proper revenue data' do
+        get :index, format: :json, time_period_id: time_period.id, team_id: team.id.to_s
+        response_json = JSON.parse(response.body)
+
+        expect(response_json[0]['name']).to eq(io.name)
+        expect(response_json[0]['advertiser']).to eq(advertiser.name)
+        expect(response_json[0]['budget']).to eq('40000.0')
+        expect(response_json[0]['sum_period_budget']).to eq(40000.0)
+
+        expect(response_json[1]['name']).to eq(io_for_another_user.name)
+        expect(response_json[1]['advertiser']).to eq(advertiser.name)
+        expect(response_json[1]['budget']).to eq('20000.0')
+        expect(response_json[1]['sum_period_budget']).to eq(20000.0)
+      end
+    end
+  end
+
+  private
+
+  def time_period
+    @_time_period ||= create :time_period, start_date: '2017-01-01', end_date: '2017-03-31'
+  end
+
+  def io
+    @_io ||= create :io,
+             advertiser: advertiser,
+             company: user.company,
+             start_date: '2017-01-01',
+             end_date: '2017-03-31',
+             deal: deal
+  end
+
+  def io_for_another_user
+    @_io_for_another_user ||= create :io,
+                              advertiser: advertiser,
+                              company: another_user.company,
+                              start_date: '2017-01-01',
+                              end_date: '2017-03-31',
+                              deal: another_deal
+  end
+
+
+  def advertiser
+    @_advertiser ||= create(:client)
+  end
+
+  def deal
+    @_deal ||= create :deal, products: [product]
+  end
+
+  def another_deal
+    @_another_deal ||= create :deal, products: [product]
+  end
+
+  def product
+    @_product ||= create :product
+  end
+
+  def team
+    @_team ||= create :parent_team, members: [user, another_user]
+  end
 end
