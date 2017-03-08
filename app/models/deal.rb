@@ -40,6 +40,7 @@ class Deal < ActiveRecord::Base
   validates :advertiser_id, :start_date, :end_date, :name, :stage_id, presence: true
   validate :active_exchange_rate
   validate :billing_contact_presence
+  validate :single_billing_contact
   validate :account_manager_presence
 
   accepts_nested_attributes_for :deal_custom_field
@@ -127,6 +128,10 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def single_billing_contact
+    errors.add(:deal, "Only one billing contact allowed") unless no_more_one_billing_contact?
+  end
+
   def billing_contact_presence
     validation = company.validation_for(:billing_contact)
     stage_threshold = validation.criterion.try(:value) if validation
@@ -143,6 +148,10 @@ class Deal < ActiveRecord::Base
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
       errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
     end
+  end
+
+  def no_more_one_billing_contact?
+    self.deal_contacts.where(role: 'Billing').count <= 1
   end
 
   def has_billing_contact?
