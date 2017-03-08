@@ -162,14 +162,14 @@
                 %td.right ${{ (deal.budget || 0) | number : 0}}
                 %td.left {{ deal.next_steps.substr(0, 30) }}
                 %td.left{ ng: { if: 'deal.latest_activity' } }
-                  %span{ ng: { if: 'deal.latest_activity.date' } }
-                    Date: {{ deal.latest_activity.date }}
+                  %span{ ng: { if: 'deal.latest_activity.happened_at' } }
+                    Date: {{ deal.latest_activity.happened_at | date: 'MM-dd-yyyy h:mm a' }}
                     %br
-                  %span{ ng: { if: 'deal.latest_activity.type' } }
-                    Type: {{ deal.latest_activity.type }}
+                  %span{ ng: { if: 'deal.latest_activity.activity_type_name' } }
+                    Type: {{ deal.latest_activity.activity_type_name }}
                     %br
-                  %span{ ng: { if: 'deal.latest_activity.note' } }
-                    Note: {{ deal.latest_activity.note }}
+                  %span{ ng: { if: 'deal.latest_activity.comment' } }
+                    Note: {{ deal.latest_activity.comment }}
                 %td.left{ ng: { if: '!deal.latest_activity' } }
                 %td.left {{ deal.type }}
                 %td.left {{ deal.source }}
