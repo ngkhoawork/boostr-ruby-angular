@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: https://config.operativeone.com/operativeone/api/contacts/82
+    body:
+      encoding: UTF-8
+      string: account=Joe+Doe&addressline1=0069+Cartwright+Way&addressline2=Apt.+877&city=South+Nicoletteport&country=Cape+Verde&email=luther_huel%40romaguera.ca&externalID=boostr_11_Kassulke+LLC_contact&firstname=John&lastname=Doe&mobile=918528299450685&phone=38093123454&state=MN&type=Billing&zip=12345
+    headers:
+      Companyid:
+      - '206'
+      Apiprovider:
+      - operative
+      Authorization:
+      - Basic YXBpX3VzZXJAa2luZ3NhbmRib3guY29tOktpbmcyMDE3IQ==
+      User-Agent:
+      - Faraday v0.11.0
+      Dealid:
+      - '112'
+      Resourcename:
+      - contact
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 01 Mar 2017 10:34:31 GMT
+      Set-Cookie:
+      - JSESSIONID=B1~o1confapi01vhzwpwkkmgmxu6i89uu8vb5k.o1confapi01;Path=/operativeone
+      - tenant=KINGSANDBOX
+      - userid=api_user@kingsandbox.com
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Content-Language:
+      - en
+      Content-Type:
+      - application/xml;charset=ISO-8859-1
+      Server:
+      - Jetty(7.6.0.v20120127)
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: <contact><contactId>82</contactId><account id="169" name="Joe Doe"/><firstname>John</firstname><lastname>Doe</lastname><email>luther_huel@romaguera.ca</email><phone>38093123454</phone><mobile>918528299450685</mobile><status>active</status><addressline1>0069
+        Cartwright Way</addressline1><addressline2>Apt. 877</addressline2><city>South
+        Nicoletteport</city><state>MN</state><zip>12345</zip><country>Cape Verde</country><contactTypes><label
+        id="2" name="billing"/></contactTypes><createdTime>2017-03-01 10:12:42.0</createdTime><createdUser>api_user@kingsandbox.com</createdUser><updatedTime>2017-03-01
+        10:34:32.245</updatedTime><updatedUser>api_user@kingsandbox.com</updatedUser><externalID>boostr_11_Kassulke
+        LLC_contact</externalID><deleted>false</deleted></contact>
+    http_version: 
+  recorded_at: Wed, 01 Mar 2017 10:34:32 GMT
+recorded_with: VCR 3.0.3

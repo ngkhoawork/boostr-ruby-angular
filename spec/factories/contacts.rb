@@ -5,7 +5,7 @@ FactoryGirl.define do
     address
 
     before(:create) do |item|
-      item.company = Company.first
+      item.company = Company.first if item.company.blank?
     end
 
     factory :contact_with_clients do

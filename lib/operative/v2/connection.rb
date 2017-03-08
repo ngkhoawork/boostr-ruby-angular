@@ -17,7 +17,7 @@ module Operative
           faraday.headers['Accept'] = 'application/xml'
           faraday.headers['version'] = 'v2'
           faraday.headers['apiProvider'] = 'operative'
-          faraday.response :logger
+          faraday.response :logger unless Rails.env.test?
           faraday.use Operative::IntegrationLoggingMiddleware
           faraday.adapter  Faraday.default_adapter
           faraday.basic_auth(user_email, password)

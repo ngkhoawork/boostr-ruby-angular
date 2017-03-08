@@ -25,11 +25,16 @@ class Operative::ContactsService
   def create_contact_and_integration_object
     if external_id_from_response.present?
       contact.integrations.create!(external_id: external_id_from_response, external_type: Integration::OPERATIVE)
+      response_from_create
     end
   end
 
   def external_id_from_response
-    @_external_id_from_response ||= Operative::XmlParserService.new(create_contact, element: 'contactId').perform
+    @_external_id_from_response ||= Operative::XmlParserService.new(response_from_create, element: 'contactId').perform
+  end
+
+  def response_from_create
+    @_response_from_create ||= create_contact
   end
 
   def update_contact

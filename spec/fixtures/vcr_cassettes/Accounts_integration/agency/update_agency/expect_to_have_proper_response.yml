@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: https://config.operativeone.com/operativeone/api/accounts/169
+    body:
+      encoding: UTF-8
+      string: accountType=agency&addressline1=89185+Kira+Crossing&addressline2=Apt.+529&city=Port+Michelemouth&country=China&externalID=boostr_308_Reilly%2C+Turcotte+and+D%27Amore_account&name=Joe+Doe&parentAccount=Runte+LLC&phone=38093123454&state=MS&zip=12345
+    headers:
+      Companyid:
+      - '159'
+      Apiprovider:
+      - operative
+      Authorization:
+      - Basic YXBpX3VzZXJAa2luZ3NhbmRib3guY29tOktpbmcyMDE3IQ==
+      User-Agent:
+      - Faraday v0.11.0
+      Dealid:
+      - '77'
+      Resourcename:
+      - account
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 28 Feb 2017 14:44:46 GMT
+      Set-Cookie:
+      - JSESSIONID=B1~o1confapi014bu7qb7r7sky2e55avst1l4z.o1confapi01;Path=/operativeone
+      - tenant=KINGSANDBOX
+      - userid=api_user@kingsandbox.com
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Content-Language:
+      - en
+      Content-Type:
+      - application/xml;charset=ISO-8859-1
+      Server:
+      - Jetty(7.6.0.v20120127)
+      Transfer-Encoding:
+      - chunked
+    body:
+      encoding: ASCII-8BIT
+      string: <account><accountId>169</accountId><name>Joe Doe</name><phone>38093123454</phone><status>active</status><addressline1>89185
+        Kira Crossing</addressline1><addressline2>Apt. 529</addressline2><city>Port
+        Michelemouth</city><state>MS</state><zip>12345</zip><country>China</country><accountType
+        id="2" name="agency"/><propertyValueList/><createdTime>2017-02-28 14:33:47.0</createdTime><createdUser>api_user@kingsandbox.com</createdUser><updatedTime>2017-02-28
+        14:44:47.434</updatedTime><updatedUser>api_user@kingsandbox.com</updatedUser><externalID>boostr_308_Reilly,
+        Turcotte and D&apos;Amore_account</externalID><psAdvertiserId>0</psAdvertiserId><psCustomerId>0</psCustomerId><deleted>false</deleted></account>
+    http_version: 
+  recorded_at: Tue, 28 Feb 2017 14:44:47 GMT
+recorded_with: VCR 3.0.3

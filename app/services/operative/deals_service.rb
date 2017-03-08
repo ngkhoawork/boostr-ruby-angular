@@ -21,7 +21,8 @@ class Operative::DealsService
     @_mapped_object ||= Operative::Deals::Single.new(deal).to_xml(
       create: create_deal?,
       advertiser: advertiser,
-      agency: agency?
+      agency: agency?,
+      closed_lost: closed_lost?
     )
   end
 
@@ -36,11 +37,16 @@ class Operative::DealsService
   def create_deal_and_integration_object
     if external_id_from_response.present?
       deal.integrations.create!(external_id: external_id_from_response, external_type: Integration::OPERATIVE)
+      response_from_create
     end
   end
 
   def external_id_from_response
-    @_external_id_from_response ||= Operative::XmlParserService.new(create_deal, element: 'id', deal: true).perform
+    @_external_id_from_response ||= Operative::XmlParserService.new(response_from_create, element: 'id', deal: true).perform
+  end
+
+  def response_from_create
+    @_response_from_create ||= create_deal
   end
 
   def update_deal
@@ -65,5 +71,9 @@ class Operative::DealsService
 
   def agency?
     deal.agency.present?
+  end
+
+  def closed_lost?
+    deal.closed_lost?
   end
 end

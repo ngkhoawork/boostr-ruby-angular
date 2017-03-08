@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::DealMembersController, type: :controller do
-  let(:company) { create :company }
+  let(:company) { Company.first }
   let(:user) { create :user, company: company }
   let(:stage) { create :stage, company: company, position: 1 }
   let(:client) { create :client }

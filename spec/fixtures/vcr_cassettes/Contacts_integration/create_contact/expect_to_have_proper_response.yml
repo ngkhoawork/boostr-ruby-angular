@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://config.operativeone.com/operativeone/api/contacts/
+    body:
+      encoding: UTF-8
+      string: account=Joe+Doe&addressline1=3212+Gudrun+Junctions&addressline2=Apt.+052&city=Port+Amanihaven&country=Botswana&email=yasmin_jewess%40ritchie.name&externalID=boostr_7_Jones+and+Sons_contact&firstname=Myles&lastname=Huel&mobile=19397917000225&phone=61871375712228&state=NV&type=Billing&zip=41460
+    headers:
+      Companyid:
+      - '198'
+      Apiprovider:
+      - operative
+      Authorization:
+      - Basic YXBpX3VzZXJAa2luZ3NhbmRib3guY29tOktpbmcyMDE3IQ==
+      User-Agent:
+      - Faraday v0.11.0
+      Dealid:
+      - '104'
+      Resourcename:
+      - contact
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Wed, 01 Mar 2017 10:12:41 GMT
+      Set-Cookie:
+      - JSESSIONID=B1~o1confapi011s0lllqrmooyrosu03sky3vjk.o1confapi01;Path=/operativeone
+      - tenant=KINGSANDBOX
+      - userid=api_user@kingsandbox.com
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Content-Language:
+      - en
+      Content-Type:
+      - application/xml;charset=ISO-8859-1
+      Content-Length:
+      - '771'
+      Server:
+      - Jetty(7.6.0.v20120127)
+    body:
+      encoding: UTF-8
+      string: <contact><contactId>82</contactId><account id="169" name="Joe Doe"/><firstname>Myles</firstname><lastname>Huel</lastname><email>yasmin_jewess@ritchie.name</email><phone>61871375712228</phone><mobile>19397917000225</mobile><status>active</status><addressline1>3212
+        Gudrun Junctions</addressline1><addressline2>Apt. 052</addressline2><city>Port
+        Amanihaven</city><state>NV</state><zip>41460</zip><country>Botswana</country><contactTypes><label
+        id="2" name="billing"/></contactTypes><createdTime>2017-03-01 10:12:42.278</createdTime><createdUser>api_user@kingsandbox.com</createdUser><updatedTime>2017-03-01
+        10:12:42.278</updatedTime><updatedUser>api_user@kingsandbox.com</updatedUser><externalID>boostr_7_Jones
+        and Sons_contact</externalID><deleted>false</deleted></contact>
+    http_version: 
+  recorded_at: Wed, 01 Mar 2017 10:12:42 GMT
+recorded_with: VCR 3.0.3
