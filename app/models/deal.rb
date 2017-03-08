@@ -389,7 +389,15 @@ class Deal < ActiveRecord::Base
     CSV.generate do |csv|
       deal_ids = deals.collect{|deal| deal.id}
 
-      range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
+      range = DealProductBudget
+      .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+      .select("distinct(start_date)")
+      .where("deal_products.deal_id in (?)", deal_ids)
+      .order("start_date asc")
+      .collect{|deal_product_budget| deal_product_budget.start_date.try(:beginning_of_month)}
+      .compact
+      .uniq
+
       header = []
       header << "Team Member"
       header << "Advertiser"
@@ -443,7 +451,7 @@ class Deal < ActiveRecord::Base
           .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
 
         range.each do |product_time|
-          if dpb = deal_product_budgets.find { |dpb| dpb[:start_date] == product_time }
+          if dpb = deal_product_budgets.find { |dpb| dpb[:start_date].try(:beginning_of_month) == product_time }
             line << "$#{dpb[:budget].to_f.round.to_s}"
           else
             line << "$0"

@@ -154,7 +154,16 @@ class Api::DealsController < ApplicationController
           product_filter: product_filter
         )
         deal_ids = filtered_deals.collect{|deal| deal.id}
-        range = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("distinct(start_date)").where("deal_products.deal_id in (?)", deal_ids).order("start_date asc").collect{|deal_product_budget| deal_product_budget.start_date}
+
+        range = DealProductBudget
+        .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+        .select("distinct(start_date)")
+        .where("deal_products.deal_id in (?)", deal_ids)
+        .order("start_date asc")
+        .collect{|deal_product_budget| deal_product_budget.start_date.try(:beginning_of_month)}
+        .compact
+        .uniq
+
         render json: [{deals: deal_list, range: range}].to_json
       }
       format.csv {
