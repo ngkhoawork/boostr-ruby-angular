@@ -128,8 +128,11 @@
         $location.path(path)
 
       $scope.findDealProductBudgetBudget = (dealProductBudgets, productTime) ->
+        productTimeDate = new Date(productTime)
+        debugger
         result =  _.find dealProductBudgets, (dealProductBudget) ->
-          if (dealProductBudget.start_date == productTime)
+          dpbDate = new Date(dealProductBudget.start_date)
+          if dpbDate.getFullYear() == productTimeDate.getFullYear() && dpbDate.getMonth() == productTimeDate.getMonth()
             return dealProductBudget
         if result then result.budget else 0
 
