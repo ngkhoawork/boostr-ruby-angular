@@ -1,3 +1,3 @@
 class InitiativeSerializer < ActiveModel::Serializer
-  attributes :name, :goal, :status
+  attributes :id, :name, :goal, :status
 end
