@@ -38,6 +38,7 @@ gem 'money'
 gem 'countries'
 gem 'faraday'
 gem 'attr_encrypted', '~> 3.0.0'
+gem 'net-sftp', require: false
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -83,6 +84,7 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'ffaker'
   gem 'guard-rspec', require: false
+  gem 'libnotify', require: false
   gem 'fuubar'
   gem 'poltergeist'
   gem 'timecop'

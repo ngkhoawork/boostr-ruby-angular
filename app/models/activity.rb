@@ -33,7 +33,6 @@ class Activity < ActiveRecord::Base
     row_number = 0
     CSV.parse(file, headers: true) do |row|
       row_number += 1
-
       if row[1].present?
         begin
           happened_at = DateTime.strptime(row[1].strip, '%m/%d/%Y')
