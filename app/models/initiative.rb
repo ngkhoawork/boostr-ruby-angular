@@ -8,4 +8,18 @@ class Initiative < ActiveRecord::Base
 
   validates :name, :goal, :status, :company_id, presence: true
   validates :status, inclusion: { in: STATUSES }
+
+  scope :by_company, -> (company) { where(company_id: company) }
+
+  def as_json(options = {})
+    super(
+      options.merge(
+        only: [
+          :name,
+          :goal,
+          :status
+        ]
+      )
+    )
+  end
 end
