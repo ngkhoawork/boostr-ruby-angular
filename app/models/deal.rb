@@ -13,6 +13,7 @@ class Deal < ActiveRecord::Base
   belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
+  belongs_to :initiatives
 
   has_one :io, class_name: "Io", foreign_key: 'io_number'
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
