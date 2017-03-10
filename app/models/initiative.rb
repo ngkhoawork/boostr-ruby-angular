@@ -1,5 +1,7 @@
 class Initiative < ActiveRecord::Base
-  STATUSES = %w('Open open Closed closed')
+  OPEN = 'Open'.freeze
+  CLOSED = 'Closed'.freeze
+  STATUSES = [OPEN, CLOSED]
 
   has_many :deals
   belongs_to :company
