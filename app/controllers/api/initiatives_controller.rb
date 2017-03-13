@@ -24,8 +24,12 @@ class Api::InitiativesController < ApplicationController
   end
 
   def destroy
-    initiative.destroy
-    render nothing: true
+    if initiative.deals.blank?
+      initiative.destroy
+      render nothing: true
+    else
+      render json: { errors: 'You can\'t delete initiative which is linked to deal' }, status: :unprocessable_entity
+    end
   end
 
   private

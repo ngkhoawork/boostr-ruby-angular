@@ -277,6 +277,7 @@ class Api::DealsController < ApplicationController
         :agency_id,
         :closed_at,
         :next_steps,
+        :initiative_id,
         {
             values_attributes: [
                 :id,
