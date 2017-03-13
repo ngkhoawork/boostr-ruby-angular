@@ -67,4 +67,7 @@ json.activities deal.activities do |activity|
 end
 
 json.initiatives deal.company.initiatives, :id, :name
-json.initiative deal.initiative, :id, :name
+
+if deal.initiative.present?
+  json.initiative deal.initiative, :id, :name
+end
