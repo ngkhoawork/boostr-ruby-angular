@@ -131,6 +131,8 @@
                   = link_to "IO Feed Logs", "settings/io_feed_logs"
                 %li
                   = link_to "Notifications", "/settings/notifications"
+                %li
+                  = link_to "Initiatives", "/settings/initiatives"
                 - if current_user.is?(:superadmin)
                   %li
                     = link_to " ", "/settings/tools"

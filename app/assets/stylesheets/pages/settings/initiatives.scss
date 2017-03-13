@@ -1,0 +1,74 @@
+#initiatives {
+    font-family: "Avenir Next", Arial, serif;
+    color: $main-font-color;
+    a {
+        color: $secondary-color;
+        font-weight: 600;
+    }
+    &.block {
+        margin: 40px auto;
+        width: 70%;
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+        .small {
+            color: $dark-grayish-blue-1;
+            font-size: 14px;
+        }
+    }
+
+    table {
+        thead {
+            background-color: white;
+            th {
+                color: $secondary-font-color !important;
+                border-left: none;
+                border-right: none;
+            }
+        }
+        tr {
+            &:hover {
+                i.fa {
+                    visibility: visible;
+                }
+            }
+            &:nth-of-type(even) {
+                background-color: #fafafb;
+            }
+            th, td {
+                text-align: left;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .stage {
+                select {
+                    height: 40px;
+                    border: none;
+                    background-color: transparent;
+                    cursor: pointer;
+                    outline: none;
+                }
+            }
+        }
+    }
+    .edit-icon, .delete-icon {
+        visibility: hidden;
+        color: $secondary-font-color;
+        margin-left: 8px;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        padding: 4px 6px;
+        font-size: 20px;
+        border-radius: 5px;
+        &:hover {
+            background-color: $secondary-font-color;
+            color: white;
+        }
+    }
+    .delete-icon {
+        margin-left: 0
+    }
+}

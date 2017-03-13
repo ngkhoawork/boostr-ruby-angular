@@ -131,6 +131,9 @@
     .when '/settings/notifications',
       templateUrl: 'settings/notifications.html'
       controller: 'SettingsNotificationsController'
+    .when '/settings/initiatives',
+      templateUrl: 'settings/initiatives.html'
+      controller: 'SettingsInitiativesController'
     .when '/settings/products',
       templateUrl: 'settings/products.html'
       controller: 'SettingsProductsController'
