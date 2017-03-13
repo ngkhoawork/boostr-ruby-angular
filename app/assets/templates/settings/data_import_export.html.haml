@@ -169,3 +169,23 @@
             -#    Export Activities
             %li.import
               Coming soon...
+
+    .row
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Sales Orders Import
+            %h5 Select a CSV file and upload it using the import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadSalesOrdersModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Sales Orders
+      .col-sm-6
+        .panel
+          .panel-body
+            %h4 Sales Order Line Items Import
+            %h5 Select a CSV file and upload it using the import module
+            %li.import
+              %a.upload{ href: '', ng: { click: 'showUploadSalesOrderLineItemsModal()' } }
+                = inline_svg 'icons/import.svg'
+                Import Sales Order Line Items

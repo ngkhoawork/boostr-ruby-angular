@@ -1,0 +1,53 @@
+#revenue_upload_modal
+  .modal-header.text-center
+    %a.close{ ng: { click: 'cancel()' } }
+      %span{'aria-hidden' => 'true'}
+        = inline_svg 'icons/close.svg'
+    = inline_svg 'icons/csv.svg'
+    %h3.modal-title
+      %strong
+        Import Sales Order Line Items
+      %br
+      %small
+        Please import your Sales Order Line Items from a CSV file into your current system.
+
+  .modal-body.uploader
+    .well.transparent
+      %p.text-center
+        CSV file must have these exact headers but column order can be anything:
+
+      %ol.row.center-block
+        %li Sales_order_id
+        %li Sales_order_line_item_id
+        %li Sales_order_line_item_start_date
+        %li Sales_order_line_item_end_date
+        %li Product_name
+        %li Quantity
+        %li Net_unit_cost
+        %li Cost_type
+        %li Net_cost
+        %li Recognized_revenue
+        %li Cumulative_primary_performance
+        %li Cumulative_third_party_performance
+
+    .well.well-lg.dark
+      .row
+        .col-xs-9
+          .progress
+            .progress-bar.progress-bar-striped{ aria: { valuemax: "100", valuemin: "0", valuenow: "{{ progressPercentage }}" }, role: "progressbar", style: "width: {{ progressPercentage }}%" }
+              %span.sr-only {{ progressPercentage }}% Complete
+              .text{ ng: { show: 'progressPercentage > 0' } }
+                {{ progressPercentage }}%
+            .text{ ng: { hide: 'progressPercentage > 0' } }
+              CSV File
+        .col-xs-3
+          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "uploading" } }
+            Browse
+
+    .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
+      %strong
+        Row {{ error.row }}
+      contains errors: {{ error.message.join(', ') }}
+
+    .modal-footer.text-center{ ng: { hide: 'progressPercentage < 100' } }
+      %button.btn.btn-primary.btn-lg{ ng: { click: 'cancel()' } } Done

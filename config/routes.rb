@@ -51,6 +51,8 @@ Rails.application.routes.draw do
     resources :temp_ios, only: [:index, :update]
     resources :display_line_items, only: [:index, :create]
     resources :display_line_item_budgets, only: [:index, :create]
+    resources :io_csvs, only: [:create]
+    resources :display_line_item_csvs, only: [:create]
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
