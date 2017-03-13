@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :display_line_item do
     io nil
-    line_number ""
+    line_number { rand(1..99) }
     ad_server "MyString"
     quantity 1
     budget ""

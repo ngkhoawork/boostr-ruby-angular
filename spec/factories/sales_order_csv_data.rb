@@ -45,9 +45,9 @@ FactoryGirl.define do
     order_primary_team_id nil
     order_primary_team_name nil
     advertiser_id nil
-    advertiser_name { (build :client).name }
+    advertiser_name nil
     agency_id nil
-    agency_name { (build :client).name }
+    agency_name nil
     sales_order_version nil
     created_by nil
     created_by_id nil
@@ -64,31 +64,7 @@ FactoryGirl.define do
     billing_period_scheme nil
     end_of_flight nil
     time_zone nil
-    # date '01/01/2016'
-    # creator nil
-    # deal { (build :deal).name }
-    # type nil
-    # comment { FFaker::HipsterIpsum.phrase }
-    # contacts nil
 
     initialize_with { attributes }
-
-  #   after(:build) do |item|
-  #     if item[:creator].nil?
-  #       item[:creator] = Company.first.users.first.email
-  #     end
-
-  #     if item[:type].nil?
-  #       item[:type] = Company.first.activity_types.sample.name
-  #     end
-
-  #     if item[:deal].nil?
-  #       item[:deal] = Deal.where(name: 'New Big Deal').first.name
-  #     end
-
-  #     if item[:contacts].nil?
-  #       item[:contacts] = Company.first.contacts.map(&:address).map(&:email).join(';')
-  #     end
-  #   end
   end
 end

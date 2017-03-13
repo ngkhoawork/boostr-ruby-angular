@@ -14,7 +14,7 @@ class Operative::DatafeedService
     @datafeed_files = get_files
     @extracted_files = extract_and_verify
     import_sales_orders
-    # process_sales_order_line_items
+    process_sales_order_line_items
   end
 
   private
@@ -33,11 +33,10 @@ class Operative::DatafeedService
   end
 
   def process_sales_order_line_items
-    
+    Operative::ImportSalesOrderLineItemsService.new(@extracted_files.find { |f| f == "./datafeed/Sales_Order_Line_Item_#{timestamp}.csv" }).perform
   end
 
   def timestamp
-    # Date.today.strftime('%m%d%Y')
-    '03052017'
+    Date.today.strftime('%m%d%Y')
   end
 end

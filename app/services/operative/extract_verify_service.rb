@@ -48,7 +48,6 @@ class Operative::ExtractVerifyService
   end
 
   def timestamp
-    # Date.today.strftime('%m%d%Y')
-    '03052017'
+    Date.today.strftime('%m%d%Y')
   end
 end
