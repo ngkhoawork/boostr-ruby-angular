@@ -16,7 +16,7 @@
 %h1 Stage Changed Deals
 - @stage_changed_deals.each do |stage_changed_deal|
   %p
-    Deal: #{ stage_changed_deal[:name] } - Advertiser: #{ stage_changed_deal[:advertiser_name] } - Budget: #{ (Money.new(stage_changed_deal[:budget]) * 100).format(no_cents: true) } - Start Date: #{ stage_changed_deal[:start_date] } - Current Stage: #{ stage_changed_deal[:stage_name] } - Previous stage: #{ stage_changed_deal[:deal_stage_log_previous_stage] }
+    Deal: #{ stage_changed_deal[:name] } - Advertiser: #{ stage_changed_deal[:advertiser_name] } - Budget: #{ (Money.new(stage_changed_deal[:budget]) * 100).format(no_cents: true) } - Start Date: #{ stage_changed_deal[:start_date] } - Current Stage: #{ stage_changed_deal[:stage_name] } - Previous stage: #{ stage_changed_deal[:previous_stage] }
 
 %h1 Lost Deals
 - @lost_deals.each do |lost_deal|

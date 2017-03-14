@@ -18,7 +18,7 @@ class DealReportService < BaseService
           line << val['budget']
           line << val['start_date']
           line << val['stage_name']
-          line << val['deal_stage_log_previous_stage']
+          line << val['previous_stage']
           csv << line
         end
       end
@@ -32,8 +32,8 @@ class DealReportService < BaseService
 
   # Advanced Deals - (list of deals that changed sales stage on target date -use deal_stage_logs.created_at yesterday)
   def stage_changed_deals
-    deal_stage_logs = DealStageLog.includes(:deal).where(created_at: date_range).where(deals: { company_id: company_id })
-    ActiveModel::ArraySerializer.new(deal_stage_logs, each_serializer: DealChangedSerializer).as_json
+    stage_changed_deal_items = Deal.includes(:deal_stage_logs).where(company_id: company_id).where(deal_stage_logs: { created_at: date_range })
+    ActiveModel::ArraySerializer.new(stage_changed_deal_items, each_serializer: DealChangedSerializer).as_json
   end
 
   # Won Deals - (list of deals that went to 100% yesterday)
@@ -66,6 +66,6 @@ class DealReportService < BaseService
   end
 
   def csv_header
-    [:deal_type, :deal_name, :advertiser_name, :budget, :start_date, :stage_name, :deal_stage_log_previous_stage]
+    [:deal_type, :deal_name, :advertiser_name, :budget, :start_date, :stage_name, :previous_stage]
   end
 end
