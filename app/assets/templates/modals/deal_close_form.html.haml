@@ -7,11 +7,17 @@
       .form-group{'ng-class':'{error: errors.reason}'}
         %span.error-text {{errors.reason}}
         %label{ for: 'close-reason' } Reason
-        %ui-select{ name: 'close-reason', ng: { model: 'currentDeal.close_reason.option_id', disabled: true } }
-          %ui-select-match{ placeholder: 'Reason' }
-            {{ $select.selected.name }}
-          %ui-select-choices{ repeat: 'option.id as option in currentDeal.close_reason.options | filter: { name: $select.search }' }
-            %div{ ng: { bind: { html: 'option.name' } } }
+        .dropdown
+          %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+            %span{'ng-hide': 'selectedReason', style: 'color: #D4CFDA'} Reason
+            %span
+              %b {{selectedReason}}
+            %span.caret
+          %ul.dropdown-menu
+            %li{'ng-repeat': 'option in currentDeal.close_reason.options', 'ng-class': '{active: currentDeal.close_reason.option_id == option.id}'}
+              %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; selectReason(option.name)'}
+                %span
+                  %b {{option.name}}
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel

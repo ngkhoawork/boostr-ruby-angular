@@ -3,12 +3,16 @@
 ($scope, $rootScope, $routeParams, $modalInstance, $q, $location, Deal, Client, Field, currentDeal) ->
 
   $scope.init = ->
+    $scope.selectedReason = null
     $scope.formType = "Closed Reason"
     $scope.submitText = "Submit"
     $scope.currentDeal = {}
     $scope.resetDealProductBudget()
     Deal.get(currentDeal.id).then (deal) ->
       $scope.setCurrentDeal(deal)
+
+  $scope.selectReason = (reason) ->
+    $scope.selectedReason = reason
 
   $scope.setCurrentDeal = (deal) ->
     _.each deal.members, (member) ->
