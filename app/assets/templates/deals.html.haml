@@ -150,7 +150,7 @@
 									'dnd-effect-allowed': 'move',
 									'dnd-dragstart': 'onDragStart()',
 									'dnd-dragend': 'onDragEnd()'}
-							.date.pull-right{'ng-class': '{expired: deal.isExpired}'} {{deal.start_date | date: 'mediumDate'}}
+							.date.pull-right{'ng-class': '{expired: deal.isExpired && deal.stage.open}'} {{deal.start_date | date: 'mediumDate'}}
 							%span
 								%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
 							%span {{(deal.advertiser && deal.advertiser.name || '') + ((deal.advertiser && deal.agency) ? ' | ' : '') + (deal.agency && deal.agency.name || '')}}
