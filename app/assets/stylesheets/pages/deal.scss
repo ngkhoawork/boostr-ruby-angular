@@ -109,8 +109,8 @@
             position: relative;
             display: inline-block;
             width: 16.66%;
-            &:first-child {
-                width: 33.33%;
+            &:nth-child(1), &:nth-child(4) {
+                width: 25%;
             }
             .col-body-wrap {
                 width: 100%;
@@ -119,6 +119,7 @@
                 .col-body {
                     display: table-cell;
                     vertical-align: middle;
+                    white-space: nowrap;
                     .title {
                         font-size: 18px;
                         margin-right: 0;
@@ -195,7 +196,7 @@
         }
         table {
             thead > tr {
-                border-bottom-color: $main-color;
+                background-color: $brand-tertiary;
             }
             tbody {
                 td:first-child {
@@ -209,7 +210,7 @@
                 }
                 tr {
                     &:first-child > td {
-                        border-top: 2px solid lighten($main-color, 35%);
+                        border-top: none;
                     }
                     &:hover {
                         .delete-product {
@@ -219,7 +220,7 @@
                 }
             }
             th {
-                color: $main-color !important;
+                color: white !important;
             }
             th, td {
                 text-align: center;
