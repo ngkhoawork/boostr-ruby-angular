@@ -127,6 +127,9 @@
                     .description {
                         color: $secondary-font-color;
                     }
+                    .error-tooltip {
+                        white-space: normal;
+                    }
                 }
             }
             .error-tooltip {
