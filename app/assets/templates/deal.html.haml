@@ -3,9 +3,12 @@
 		.col-xs-9
 			%div{'ng-include': '"partials/deal/deal_stats.html"'}
 			%div{'ng-include': '"partials/deal/deal_products.html"'}
-			%div{'ng-include': '"partials/deal/deal_members.html"'}
 			%div{'ng-include': '"partials/deal/deal_contacts.html"'}
-			%upload-file{'deal-files': 'dealFiles'}
+			.row
+				.col-xs-6
+					%div{'ng-include': '"partials/deal/deal_members.html"'}
+				.col-xs-6
+					%upload-file{'deal-files': 'dealFiles'}
 		.col-xs-3
 			%div{'ng-include': '"partials/deal/deal_next_steps.html"'}
 			%div{'ng-include': '"partials/deal/deal_campaign_details.html"'}
