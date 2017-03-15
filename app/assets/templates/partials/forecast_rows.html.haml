@@ -143,7 +143,7 @@
             %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("sum_period_budget")' } }
               In-Period Amt
               %i{ ng: { class: "{ 'fa': sort.revenues.column == 'sum_period_budget', 'fa-sort-asc': sort.revenues.column == 'sum_period_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'sum_period_budget' && sort.revenues.direction == 'desc' }" } }
-          %th.right{ ng: { if: "revenues[0].split_period_budget !== 'hide_split_period_budget'" } }
+          %th.right
             %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("split_period_budget")' } }
               Split In-Period Amt
               %i{ ng: { class: "{ 'fa': sort.revenues.column == 'split_period_budget', 'fa-sort-asc': sort.revenues.column == 'split_period_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'split_period_budget' && sort.revenues.direction == 'desc' }" } }
@@ -154,5 +154,4 @@
           %td.right {{ subrow.agency }}
           %td.right {{ subrow.budget | currency: '$': 0 }}
           %td.right {{ subrow.sum_period_budget | currency: '$': 0 }}
-          %td{ ng: { if: "revenues[0].split_period_budget !== 'hide_split_period_budget'" } }
-            .right {{ subrow.split_period_budget | currency: '$': 0 }}
+          %td.right {{ subrow.split_period_budget | currency: '$': 0 }}

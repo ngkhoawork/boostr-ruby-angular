@@ -100,7 +100,7 @@ class Team < ActiveRecord::Base
         advertiser: io.advertiser.name,
         budget: io.budget.to_s,
         sum_period_budget: sum_period_budget,
-        split_period_budget: 'hide_split_period_budget'
+        split_period_budget: split_period_budget
       }
     end
   end
