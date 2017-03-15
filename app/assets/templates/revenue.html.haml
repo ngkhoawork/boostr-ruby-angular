@@ -18,18 +18,25 @@
             {{io_owner_filter.name}}
     .row
       .col-md-12
-        %div.year-filter
-          %span Year created:
-          %ul
-            %li{ dropdown: true }
-              %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": selectedYear === "All"}' }
-                {{selectedYear || 'All'}}
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'year in years', class: '{active: year === selectedYear}' } }
-                  %a{ href: '', ng: { click: 'filterByYear(year)' } }
-                    {{year}}
         .navbar.navbar-white
+          %div.date-filter
+            %span Time period:
+            -#%ul
+              %li{ dropdown: true }
+                %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": selectedYear === "All"}' }
+                  {{selectedYear || 'All'}}
+                  %span.caret
+                %ul.dropdown-menu
+                  %li{ ng: { repeat: 'year in years', class: '{active: year === selectedYear}' } }
+                    %a{ href: '', ng: { click: 'filterByYear(year)' } }
+                      {{year}}
+            .date-picker-wrap
+              %div.date-picker#advertiser-date-picker{'date-range-picker': true,
+                                                             'ng-model': 'datePicker.date',
+                                                             :options => "{locale: {format: 'MMMM D, YYYY'},
+                                                                           eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
+                Time period
+              %span.caret
           %ul.nav.navbar-nav
             %li{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}' } }
               %a{ href: "javascript:void(0);", ng: { click: 'filterRevenues(filter)'} }

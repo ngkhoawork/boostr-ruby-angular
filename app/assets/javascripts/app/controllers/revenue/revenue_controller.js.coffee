@@ -1,12 +1,11 @@
 @app.controller 'RevenueController',
-['$scope', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem',
-($scope, $modal, $filter, $routeParams, $route, $location, $q, IO, TempIO, DisplayLineItem) ->
+['$scope', '$document', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem',
+($scope, $document, $modal, $filter, $routeParams, $route, $location, $q, IO, TempIO, DisplayLineItem) ->
 
   sorting =
     ascending: 1
     key: ''
   currentYear = moment().year()
-  $scope.selectedYear = currentYear
   $scope.revenueFilters = [
     { name: 'IOs', param: '' }
     { name: 'No-Match IOs', param: 'no-match' }
@@ -14,6 +13,30 @@
     { name: 'Upside Revenues', param: 'upside' }
     { name: 'At Risk Revenues', param: 'risk' }
   ]
+  $scope.datePicker =
+    date:
+      startDate: null
+      endDate: null
+    element: $document.find('#advertiser-date-picker')
+    isDateSet: false
+    apply: ->
+      _this = $scope.datePicker
+      if (_this.date.startDate && _this.date.endDate)
+        _this.element.html(_this.date.startDate.format('MMM D, YY') + ' - ' + _this.date.endDate.format('MMM D, YY'))
+        _this.isDateSet = true
+      $scope.filterByDate()
+    cancel: ->
+      _this = $scope.datePicker
+      _this.element.html('Time period')
+      _this.isDateSet = false
+    setDefault: ->
+      _this = $scope.datePicker
+      _this.date.startDate = moment().year(currentYear).startOf('year')
+      _this.date.endDate = moment().year(currentYear).endOf('year')
+      _this.element.html(_this.date.startDate.format('MMM D, YY') + ' - ' + _this.date.endDate.format('MMM D, YY'))
+      _this.isDateSet = true
+
+  $scope.datePicker.setDefault()
 
   if $routeParams.filter
     _.each $scope.revenueFilters, (filter) ->
@@ -37,21 +60,12 @@
 
   $scope.setRevenue = (data) ->
 #    data.map (item) -> item.budget_loc = Number item.budget_loc if item
-    $scope.setYears data
     $scope.data = data
     $scope.revenue = data
-    $scope.filterByYear($scope.selectedYear)
+    $scope.filterByDate()
 
-  $scope.setYears = (data) ->
-    years = ['All', currentYear]
-    _.forEach data, (item) ->
-      year = moment(item.start_date).year()
-      if years.indexOf(year) is -1
-        years.push year
-    $scope.years = years.sort().reverse()
 
   $scope.init = ->
-    $scope.years = []
     $scope.revenue = []
     switch $scope.revenueFilter.param
       when "no-match"
@@ -83,13 +97,10 @@
       if (updated_io)
         $scope.init();
 
-  $scope.filterByYear = (year) ->
-    $scope.selectedYear = year
-    if year != 'All'
-      $scope.revenue = $scope.data.filter (item) ->
-        moment(item.start_date).year() is year
-    else
-      $scope.revenue = $scope.data
+  $scope.filterByDate = () ->
+    date = $scope.datePicker.date
+    $scope.revenue = $scope.data.filter (item) ->
+      moment(item.start_date).isBetween(date.startDate, date.endDate, null, '[]')
 
 
   $scope.showAssignIOModal = (tempIO) ->

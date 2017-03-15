@@ -26,21 +26,14 @@
 
 #revenue {
   font-family: "Avenir Next", Arial, serif;
-  .year-filter {
-    display: inline-block;
-    position: absolute;
-    right: 15px;
-    top: 25px;
-    z-index: 1;
-    & > ul {
-      padding-left: 10px;
-      display: inline-block;
-      li {
-        list-style: none;
-      }
-      ul.dropdown-menu {
-        left: auto;
-        right: 0;
+  .date-filter {
+    float: right;
+    padding: 10px 0;
+    .date-picker-wrap {
+      cursor: pointer;
+      color: $main-color;
+      div {
+        display: inline-block;
       }
     }
   }
