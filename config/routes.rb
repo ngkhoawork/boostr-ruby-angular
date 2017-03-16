@@ -133,7 +133,9 @@ Rails.application.routes.draw do
     resource :weighted_pipelines, only: [:show]
     resource :dashboard, only: [:show]
     resource :company, only: [:show, :update]
-    resources :initiatives, only: [:index, :create, :update, :destroy]
+    resources :initiatives, only: [:index, :create, :update, :destroy] do
+      get 'smart_report', on: :collection
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'

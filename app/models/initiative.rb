@@ -8,4 +8,7 @@ class Initiative < ActiveRecord::Base
 
   validates :name, :goal, :status, :company_id, presence: true
   validates :status, inclusion: { in: STATUSES }
+
+  scope :open, -> { where(status: OPEN) }
+  scope :closed, -> { where(status: CLOSED) }
 end

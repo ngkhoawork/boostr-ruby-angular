@@ -2,7 +2,7 @@ class Api::InitiativesController < ApplicationController
   respond_to :json
 
   def index
-    respond_with company.initiatives
+    respond_with company.initiatives, each_serializer: Initiatives::IndexSerializer
   end
 
   def create
@@ -32,6 +32,10 @@ class Api::InitiativesController < ApplicationController
     end
   end
 
+  def smart_report
+    respond_with open_or_closed_initiatives, each_serializer: Initiatives::SmartReportSerializer
+  end
+
   private
 
   def company
@@ -40,6 +44,14 @@ class Api::InitiativesController < ApplicationController
 
   def initiative
     @_initiative ||= company.initiatives.find(params[:id])
+  end
+
+  def open_or_closed_initiatives
+    if params[:closed].present?
+      company.initiatives.closed
+    else
+      company.initiatives.open
+    end
   end
 
   def initiative_params
