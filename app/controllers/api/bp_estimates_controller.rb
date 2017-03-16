@@ -109,13 +109,13 @@ class Api::BpEstimatesController < ApplicationController
     end
     case params[:filter]
       when 'my'
-        @bp_estimates = bp.bp_estimates.unassigned(unassigned).incomplete(incomplete).where(user_id: current_user.id).collect{ |bp_estimate| bp_estimate.full_json }
+        @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).where(user_id: current_user.id).collect{ |bp_estimate| bp_estimate.full_json }
       when 'team'
         member_ids = current_user.all_team_members.collect{ |member| member.id}
         member_ids << current_user.id
-        @bp_estimates = bp.bp_estimates.unassigned(unassigned).incomplete(incomplete).where("user_id in (?)", member_ids).collect{ |bp_estimate| bp_estimate.full_json }
+        @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).where("user_id in (?)", member_ids).collect{ |bp_estimate| bp_estimate.full_json }
       else
-        @bp_estimates = bp.bp_estimates.unassigned(unassigned).incomplete(incomplete).collect{ |bp_estimate| bp_estimate.full_json }
+        @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).collect{ |bp_estimate| bp_estimate.full_json }
     end
   end
 
