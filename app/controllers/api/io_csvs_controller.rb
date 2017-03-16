@@ -23,18 +23,10 @@ class Api::IoCsvsController < ApplicationController
     CSV.parse(csv_file, { headers: true, header_converters: :symbol }) do |row|
       row_number += 1
 
-      sales_order = IoCsv.new(
-        io_external_number: row[:sales_order_id],
-        io_name: row[:sales_order_name],
-        io_start_date: row[:order_start_date],
-        io_end_date: row[:order_end_date],
-        io_advertiser: row[:advertiser_name],
-        io_agency: row[:agency_name],
-        io_budget: row[:total_order_value],
-        io_budget_loc: row[:total_order_value],
-        io_curr_cd: row[:order_currency_id],
-        company_id: current_user.company.id
-      )
+      if irrelevant_order(row)
+        next
+      end
+      sales_order = create_sales_order(row)
       if sales_order.valid?
         sales_order.perform
       else
@@ -45,5 +37,24 @@ class Api::IoCsvsController < ApplicationController
     end
 
     errors
+  end
+
+  def irrelevant_order(row)
+    row[:sales_stage_percent] != '100' || row[:order_status] == 'deleted'
+  end
+
+  def create_sales_order(row)
+    IoCsv.new(
+      io_external_number: row[:sales_order_id],
+      io_name: row[:sales_order_name],
+      io_start_date: row[:order_start_date],
+      io_end_date: row[:order_end_date],
+      io_advertiser: row[:advertiser_name],
+      io_agency: row[:agency_name],
+      io_budget: row[:total_order_value],
+      io_budget_loc: row[:total_order_value],
+      io_curr_cd: row[:order_currency_id],
+      company_id: current_user.company.id
+    )
   end
 end

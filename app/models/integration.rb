@@ -1,5 +1,6 @@
 class Integration < ActiveRecord::Base
   OPERATIVE = 'operative'
+  OPERATIVE_DATAFEED = 'Operative Datafeed'
 
   validates :external_id, :external_type, presence: true
 

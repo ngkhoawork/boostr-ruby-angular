@@ -6,6 +6,8 @@ class IoCsv
   validates :io_external_number, :io_budget,
   numericality: true
 
+  validate :dates_can_be_parsed
+
   attr_accessor(:io_external_number, :io_name, :io_start_date,
     :io_end_date, :io_advertiser, :io_agency, :io_budget,
     :io_budget_loc, :io_curr_cd, :company_id)
@@ -18,7 +20,7 @@ class IoCsv
 
   def perform
     return self.errors.full_messages unless self.valid?
-    if io
+    if io.present?
       update_io
     else
       upsert_temp_io
@@ -74,12 +76,31 @@ class IoCsv
     io_name.try(:split, '_').try(:last)
   end
 
+  def parse_date(str)
+    date_string = str.strip
+    d = Date.parse date_string rescue nil
+    d ||= Date.strptime(date_string, "%m/%d/%Y") rescue nil
+    if d.present? && d.year < 100
+      d = Date.strptime(date_string, "%m/%d/%y")
+    end
+    d
+  end
+
+  def dates_can_be_parsed
+    unless io_start_date.present? && start_date
+      errors.add(:io_start_date, 'failed to be parsed correctly')
+    end
+    unless io_end_date.present? && end_date
+      errors.add(:io_end_date, 'failed to be parsed correctly')
+    end
+  end
+
   def start_date
-    Date.parse(io_start_date) rescue nil
+    parse_date(io_start_date)
   end
 
   def end_date
-    Date.parse(io_end_date) rescue nil
+    parse_date(io_end_date)
   end
 
   def persisted?

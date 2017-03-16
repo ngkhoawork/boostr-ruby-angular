@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :countries, only: [:index]
     resources :api_configurations
+    resources :integration_types, only: [:index]
     resources :integration_logs, only: [:index, :show] do
       post :resend_request, on: :member
     end

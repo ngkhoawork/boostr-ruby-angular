@@ -17,33 +17,21 @@ RSpec.describe DisplayLineItemCsv, type: :model do
   it { should validate_numericality_of(:quantity_delivered_3p) }
 
   context 'custom validations' do
-    # context 'product validation' do
-    #   it 'is valid if product exists' do
-    #     line_item_csv(external_io_number: io.external_io_number, product_name: product.name)
-    #     expect(line_item_csv.valid?).to be true
-    #   end
-
-    #   it 'is invalid if product does not exist' do
-    #     line_item_csv(external_io_number: io.external_io_number, product_name: 'La-La-Land')
-    #     binding.pry
-    #     expect(line_item_csv.valid?).to be false
-    #   end
-    # end
     context 'io or temp_io presence' do
       it 'validates io presence' do
         line_item_csv(external_io_number: io.external_io_number)
-        expect(line_item_csv.valid?).to be true
+        expect(line_item_csv).to be_valid
       end
 
       it 'validates temp_io presence' do
         line_item_csv(external_io_number: temp_io.external_io_number)
-        expect(line_item_csv.valid?).to be true
+        expect(line_item_csv).to be_valid
       end
 
       it 'fails if io and temp_io are not found via external_number' do
         line_item_csv(external_io_number: 123)
-        expect(line_item_csv.valid?).to be false
-        expect(line_item_csv.errors.full_messages).to eql(["Io or TempIo not found"])
+        expect(line_item_csv).not_to be_valid
+        expect(line_item_csv.errors.full_messages).to eql(["Io or tempio not found"])
       end
     end
 
@@ -52,14 +40,14 @@ RSpec.describe DisplayLineItemCsv, type: :model do
         exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
         io(curr_cd: 'GBP')
         line_item_csv(external_io_number: io.external_io_number)
-        expect(line_item_csv.valid?).to be true
+        expect(line_item_csv).to be_valid
       end
 
       it 'is valid if temp_io has exchange rate' do
         exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
         temp_io(curr_cd: 'GBP')
         line_item_csv(external_io_number: temp_io.external_io_number)
-        expect(line_item_csv.valid?).to be true
+        expect(line_item_csv).to be_valid
       end
 
       it 'fails if io has no exchange rate' do
@@ -67,7 +55,7 @@ RSpec.describe DisplayLineItemCsv, type: :model do
         io(curr_cd: 'GBP')
         exchange_rate.destroy
         line_item_csv(external_io_number: io.external_io_number)
-        expect(line_item_csv.valid?).to be false
+        expect(line_item_csv).not_to be_valid
         expect(line_item_csv.errors.full_messages).to eql(["Budget has no exchange rate for GBP found at #{io.created_at.strftime("%m/%d/%Y")}"])
       end
 
@@ -76,8 +64,27 @@ RSpec.describe DisplayLineItemCsv, type: :model do
         temp_io(curr_cd: 'GBP')
         exchange_rate.destroy
         line_item_csv(external_io_number: temp_io.external_io_number)
-        expect(line_item_csv.valid?).to be false
+        expect(line_item_csv).not_to be_valid
         expect(line_item_csv.errors.full_messages).to eql(["Budget has no exchange rate for GBP found at #{temp_io.created_at.strftime("%m/%d/%Y")}"])
+      end
+    end
+
+    context 'date parse error' do
+      it 'validates that date can be parsed' do
+        line_item_csv(external_io_number: io.external_io_number, start_date: '2017-11-11')
+        expect(line_item_csv).to be_valid
+      end
+
+      it 'rejects inavlid start date' do
+        line_item_csv(external_io_number: io.external_io_number, start_date: '43-34-1424')
+        expect(line_item_csv).not_to be_valid
+        expect(line_item_csv.errors.full_messages).to eql(["Start date failed to be parsed correctly"])
+      end
+
+      it 'rejects inavlid end date' do
+        line_item_csv(external_io_number: io.external_io_number, end_date: '43-34-1424')
+        expect(line_item_csv).not_to be_valid
+        expect(line_item_csv.errors.full_messages).to eql(["End date failed to be parsed correctly"])
       end
     end
   end
@@ -119,8 +126,32 @@ RSpec.describe DisplayLineItemCsv, type: :model do
     expect(DisplayLineItem.last.start_date).to eql Date.new(2017, 12, 15)
   end
 
+  it 'sets start date in American format' do
+    line_item_csv(external_io_number: io.external_io_number, start_date: '12/15/2017')
+    line_item_csv.perform
+    expect(DisplayLineItem.last.start_date).to eql Date.new(2017, 12, 15)
+  end
+
+  it 'sets start date in YY format' do
+    line_item_csv(external_io_number: io.external_io_number, start_date: '12/15/17')
+    line_item_csv.perform
+    expect(DisplayLineItem.last.start_date).to eql Date.new(2017, 12, 15)
+  end
+
   it 'sets end date' do
     line_item_csv(external_io_number: io.external_io_number, end_date: '2017-12-15')
+    line_item_csv.perform
+    expect(DisplayLineItem.last.end_date).to eql Date.new(2017, 12, 15)
+  end
+
+  it 'sets end date in American format' do
+    line_item_csv(external_io_number: io.external_io_number, end_date: '12/15/2017')
+    line_item_csv.perform
+    expect(DisplayLineItem.last.end_date).to eql Date.new(2017, 12, 15)
+  end
+
+  it 'sets start date in YY format' do
+    line_item_csv(external_io_number: io.external_io_number, end_date: '12/15/17')
     line_item_csv.perform
     expect(DisplayLineItem.last.end_date).to eql Date.new(2017, 12, 15)
   end
@@ -201,6 +232,26 @@ RSpec.describe DisplayLineItemCsv, type: :model do
     line_item_csv(external_io_number: io.external_io_number, quantity_delivered_3p: '10000')
     line_item_csv.perform
     expect(DisplayLineItem.last.quantity_delivered_3p).to eql 10000
+  end
+
+  it 'sets ad_server_product' do
+    line_item_csv(external_io_number: io.external_io_number, product_name: 'More Ads')
+    line_item_csv.perform
+    expect(DisplayLineItem.last.ad_server_product).to eql 'More Ads'
+  end
+
+  it 'does not match missing product' do
+    line_item_csv(external_io_number: io.external_io_number, product_name: 'More Ads')
+    line_item_csv.perform
+    expect(DisplayLineItem.last.product).to be nil
+  end
+
+  it 'matches display product from deal' do
+    product = create :product, revenue_type: 'Display', name: 'WoW'
+    create :deal_product, deal: io.deal, product: product
+    line_item_csv(external_io_number: io.external_io_number, product_name: 'More Ads')
+    line_item_csv.perform
+    expect(DisplayLineItem.last.product).to eql product
   end
 
   context 'multicurrency Io' do

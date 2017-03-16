@@ -1,22 +1,24 @@
 class Operative::ImportSalesOrderLineItemsService
-  def initialize(company_id, sales_order_line_items, invoice_line_items)
+  def initialize(company_id, files)
     @company_id = company_id
-    @sales_order_line_items = sales_order_line_items
-    @invoice_line_items = invoice_line_items
+    @sales_order_line_items = files.fetch(:sales_order_line_items)
+    @invoice_line_items = files.fetch(:invoice_line_items)
   end
 
   def perform
     @sales_order_csv_file = open_file(sales_order_line_items)
     @invoice_csv_file = open_file(invoice_line_items)
-    parse_invoices
-    parse_line_items
+    if @sales_order_csv_file && @invoice_csv_file
+      parse_invoices
+      parse_line_items
+    end
   end
 
   private
   attr_reader :company_id, :sales_order_line_items, :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file
 
   def open_file(file)
-    File.open(file, 'r:ISO-8859-1')
+    File.open(file, 'r:ISO-8859-1') rescue nil
   end
 
   def parse_invoices
