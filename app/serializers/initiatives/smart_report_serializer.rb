@@ -18,7 +18,7 @@ class Initiatives::SmartReportSerializer < ActiveModel::Serializer
   end
 
   def chart_data
-    [open_budget.merge(closed_won_budget)]
+    open_budget.merge(closed_won_budget)
   end
 
   def closed_won_budget
