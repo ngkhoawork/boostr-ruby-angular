@@ -5,10 +5,10 @@
 			%add-button
 				Add
 			.filter.pull-right
-				%span{'ng-class': '{active: filter === "active"}', 'ng-click': 'setFilter("active")'}
-					Active
-				%span{'ng-class': '{active: filter === "complete"}', 'ng-click': 'setFilter("complete")'}
-					Complete
+				%span{'ng-class': '{active: filter === "open"}', 'ng-click': 'setFilter("open")'}
+					Open
+				%span{'ng-class': '{active: filter === "closed"}', 'ng-click': 'setFilter("closed")'}
+					Closed
 
 		.row.well.kpi-block
 			%div
@@ -21,18 +21,16 @@
 								%th Initiative
 								%th Goal
 								%th Pipeline
-								%th Bookings
+								%th Won
 								%th % Goal
-								%th Status
 
 						%tbody
-							%tr{'ng-repeat': 'item in initiatives', 'ng-class': '{"active-line": item.status == "Active"}'}
+							%tr{'ng-repeat': 'item in initiatives', 'ng-class': '{"active-line": item.status == "Open"}'}
 								%td {{item.name}}
 								%td {{item.numbers[0] | currency : undefined : 0}}
 								%td {{item.numbers[1] | currency : undefined : 0}}
 								%td {{item.numbers[2] | currency : undefined : 0}}
 								%td {{item.percent}}%
-								%td.status {{item.status}}
 		.sub-header
 			%span.title Initiative 1
 			%span Close

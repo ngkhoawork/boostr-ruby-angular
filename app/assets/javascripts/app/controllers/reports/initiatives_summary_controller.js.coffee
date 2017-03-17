@@ -1,11 +1,17 @@
 @app.controller 'InitiativesSummaryController',
-    ['$scope', '$filter', 'shadeColor',
-        ($scope, $filter, shadeColor) ->
+    ['$scope', '$filter', 'Initiatives', 'shadeColor',
+        ($scope, $filter, Initiatives, shadeColor) ->
             colors = ['#8CC135', '#FF7200']
 
-            $scope.filter = 'active'
+            $scope.filter = 'open'
             $scope.setFilter = (v) ->
                 $scope.filter = v
+
+            Initiatives.summaryOpen().then (data) ->
+                console.log data
+
+            Initiatives.summaryClosed().then (data) ->
+                console.log data
 
             #==================================================
             data = []
