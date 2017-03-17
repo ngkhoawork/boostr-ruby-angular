@@ -135,6 +135,7 @@ Rails.application.routes.draw do
     resource :company, only: [:show, :update]
     resources :initiatives, only: [:index, :create, :update, :destroy] do
       get 'smart_report', on: :collection
+      get 'smart_report_deals', on: :member
     end
   end
 

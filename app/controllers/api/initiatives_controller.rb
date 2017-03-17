@@ -36,6 +36,14 @@ class Api::InitiativesController < ApplicationController
     respond_with open_or_closed_initiatives, each_serializer: Initiatives::SmartReportSerializer
   end
 
+  def smart_report_deals
+    render json: {
+      open_deals: ActiveModel::ArraySerializer.new(initiative.deals.open, each_serializer: Initiatives::SmartReportDealsSerializer),
+      won_deals: ActiveModel::ArraySerializer.new(initiative.deals.won, each_serializer: Initiatives::SmartReportDealsSerializer),
+      lost_deals: ActiveModel::ArraySerializer.new(initiative.deals.lost, each_serializer: Initiatives::SmartReportDealsSerializer)
+    }
+  end
+
   private
 
   def company
