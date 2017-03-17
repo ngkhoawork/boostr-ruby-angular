@@ -26,30 +26,30 @@
       .field-value{ 'e-id': 'deal-initiative', editable: { select: 'currentDeal.initiative_id' }, 'e-ng-options': 'initiative.id as initiative.name for initiative in currentDeal.initiatives', onaftersave: 'updateDeal()' }
         {{ currentDeal.initiative.name }}
 
-    %div.custom-field-item{ng:{repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', if: "!dealCustomFieldName.disabled", init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", class:'{error: dealCustomFieldName.is_required == true && !currentDeal.deal_custom_field[fieldName]}'}}
-      %div.custom-field-item-label
-        %span.error-text is required.
-        %label{ for: '{{fieldName}}' }
-          {{dealCustomFieldName.field_label}}
-          %span.star{ 'ng-if': "dealCustomFieldName.is_required == true" }
-            *
-      %div.custom-field-item-field
-        .text-field{ ng: { if: "dealCustomFieldName.field_type == 'text'" } }
-          %input.editable-control{ 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
-        .text-area{ ng: { if: "dealCustomFieldName.field_type == 'note'" } }
-          %textarea.editable-control{ rows: 4, 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
-        .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'number'" } }
-          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
-        .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'integer'" } }
-          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
-        .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'currency'" } }
-          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: 'US$ ', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
-        .percentage-field{ ng: { if: "dealCustomFieldName.field_type == 'percentage'" } }
-          %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
-        .datetime-field.bs-datepicker{ ng: { if: "dealCustomFieldName.field_type == 'datetime' " } }
-          %input.editable-control{readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentDeal.deal_custom_field[fieldName]', required: true, click: 'dateOpened[fieldName] = true', change: "updateDeal()" }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
-        .boolean-field.show-hide-remainder-form{ ng: { if: "dealCustomFieldName.field_type == 'boolean' " } }
-          .switch-remainder-form
-            %input.cmn-toggle.cmn-toggle-round-flat{id: '{{fieldName}}', type: 'checkbox', 'ng-model': 'currentDeal.deal_custom_field[fieldName]', 'ng-change': "updateDeal()"}
-            %label{:for => "{{fieldName}}"}
-              %span
+  %div.custom-field-item{ng:{repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', if: "!dealCustomFieldName.disabled", init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", class:'{error: dealCustomFieldName.is_required == true && !currentDeal.deal_custom_field[fieldName]}'}}
+    %div.custom-field-item-label
+      %span.error-text is required.
+      %label{ for: '{{fieldName}}' }
+        {{dealCustomFieldName.field_label}}
+        %span.star{ 'ng-if': "dealCustomFieldName.is_required == true" }
+          *
+    %div.custom-field-item-field
+      .text-field{ ng: { if: "dealCustomFieldName.field_type == 'text'" } }
+        %input.editable-control{ 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
+      .text-area{ ng: { if: "dealCustomFieldName.field_type == 'note'" } }
+        %textarea.editable-control{ rows: 4, 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
+      .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'number'" } }
+        %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+      .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'integer'" } }
+        %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+      .currency-field{ ng: { if: "dealCustomFieldName.field_type == 'currency'" } }
+        %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: 'US$ ', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+      .percentage-field{ ng: { if: "dealCustomFieldName.field_type == 'percentage'" } }
+        %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+      .datetime-field.bs-datepicker{ ng: { if: "dealCustomFieldName.field_type == 'datetime' " } }
+        %input.editable-control{readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'currentDeal.deal_custom_field[fieldName]', required: true, click: 'dateOpened[fieldName] = true', change: "updateDeal()" }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
+      .boolean-field.show-hide-remainder-form{ ng: { if: "dealCustomFieldName.field_type == 'boolean' " } }
+        .switch-remainder-form
+          %input.cmn-toggle.cmn-toggle-round-flat{id: '{{fieldName}}', type: 'checkbox', 'ng-model': 'currentDeal.deal_custom_field[fieldName]', 'ng-change': "updateDeal()"}
+          %label{:for => "{{fieldName}}"}
+            %span
