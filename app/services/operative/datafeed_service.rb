@@ -1,15 +1,8 @@
 class Operative::DatafeedService
-  def initialize(config)
-    @company = Company.find config.company_id
-    @auth_details = {
-      company_name: @company.name,
-      login: config.api_email,
-      password: config.password,
-      host: config.base_link
-    }
+  def initialize(api_config)
+    @api_config = api_config
   end
 
-  # TODO LIMIT TO ONE COMPANY
   def perform
     get_files
     extract_and_verify
@@ -18,10 +11,10 @@ class Operative::DatafeedService
   end
 
   private
-  attr_reader :auth_details, :datafeed_archive, :extracted_files
+  attr_reader :api_config, :datafeed_archive, :extracted_files
 
   def get_files
-    @datafeed_archive = Operative::GetFileService.new(auth_details).perform
+    @datafeed_archive = Operative::GetFileService.new(api_config).perform
   end
 
   def extract_and_verify
@@ -30,15 +23,15 @@ class Operative::DatafeedService
 
   def import_sales_orders
     Operative::ImportSalesOrdersService.new(
-      company.id,
+      api_config.company_id,
       @extracted_files.slice(:sales_order, :currency)
     ).perform
   end
 
   def process_sales_order_line_items
     Operative::ImportSalesOrderLineItemsService.new(
-      company.id,
-      @extracted_files.slice(:sales_order_line_item, :invoice_line_item, :currency)
+      api_config.company_id,
+      @extracted_files.slice(:sales_order_line_items, :invoice_line_item, :currency)
     ).perform
   end
 

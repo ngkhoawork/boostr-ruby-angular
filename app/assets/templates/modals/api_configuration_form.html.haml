@@ -24,11 +24,11 @@
         .row
           .col-xs-12
             %label.control-label{ for: 'base_link' } Base link
-            %input.form-control{ placeholder: 'https://integrations.com/api', ng: { model: 'api_configuration.base_link' }, name: 'base_link', type: 'url', required: true }
+            %input.form-control{ placeholder: 'https://integrations.com/api', ng: { model: 'api_configuration.base_link' }, name: 'base_link', required: true }
         .row
           .col-xs-12
             %label.control-label{ for: 'api_email' } API username
-            %input.form-control{ placeholder: 'example@email.com', ng: { model: 'api_configuration.api_email' }, name: 'api_email', type: 'email', required: true  }
+            %input.form-control{ placeholder: 'example@email.com', ng: { model: 'api_configuration.api_email' }, name: 'api_email', required: true  }
 
         .row{ ng: { if: 'formType == \'Edit\'' } }
           .col-xs-12

@@ -22,14 +22,15 @@ class Operative::ExtractVerifyService
     tar_extract.each do |entry|
       if entry.file? && datafeed_payload.include?(entry.full_name)
         dest = File.join FOLDER, entry.full_name
+        extracted_files[to_table_name(entry.full_name)] = dest
         File.open dest, "wb" do |f|
           f.print entry.read
         end
       end
-      extracted_files[to_table_name(entry.full_name)] == dest
     end
 
     tar_extract.close
+    extracted_files
   end
 
   def datafeed_payload
@@ -46,6 +47,6 @@ class Operative::ExtractVerifyService
   end
 
   def to_table_name(name)
-    name.split('_03052017').first.downcase.to_sym
+    name.split("_#{timestamp}").first.downcase.to_sym
   end
 end

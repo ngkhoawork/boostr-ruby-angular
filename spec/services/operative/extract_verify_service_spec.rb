@@ -16,24 +16,4 @@ RSpec.describe Operative::ExtractVerifyService, datafeed: :true do
       subject.perform
     end
   end
-
-  def sales_orders
-    @_sales_orders ||= double('sales_orders', full_name: 'Sales_Order_03052017.csv')
-    # allow(@_sales_orders).to receive(:full_name).and_return('Sales_Order_03052017.csv')
-  end
-
-  def sales_order_items
-    @_sales_order_items ||= double('sales_order_items', full_name:'Sales_Order_Line_Items_03052017.csv') 
-    # allow(@_sales_order_items).to receive(:full_name).and_return('Sales_Order_Line_Items_03052017.csv')
-  end
-
-  def invoice_items
-    @_invoice_items ||= double('invoice_items', full_name: 'Invoice_Line_Item_03052017.csv')
-    # allow(@_invoice_items).to receive(:full_name).and_return('Invoice_Line_Item_03052017.csv')
-  end
-
-  def extra_file
-    @_extra_file ||= double('extra_file', full_name: 'Extra_File_03052017.csv')
-    # allow(@_extra_file).to receive(:full_name).and_return('Extra_File_03052017.csv')
-  end
 end

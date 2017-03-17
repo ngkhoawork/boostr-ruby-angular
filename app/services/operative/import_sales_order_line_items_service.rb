@@ -2,7 +2,7 @@ class Operative::ImportSalesOrderLineItemsService
   def initialize(company_id, files)
     @company_id = company_id
     @sales_order_line_items = files.fetch(:sales_order_line_items)
-    @invoice_line_items = files.fetch(:invoice_line_items)
+    @invoice_line_items = files.fetch(:invoice_line_item)
   end
 
   def perform

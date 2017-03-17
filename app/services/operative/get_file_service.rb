@@ -4,10 +4,10 @@ class Operative::GetFileService
   FOLDER = 'datafeed'
 
   def initialize(auth_details)
-    @company_name = auth_details.fetch(:company_name).try(:upcase)
-    @host = auth_details.fetch(:host)
-    @login = auth_details.fetch(:login)
-    @password = auth_details.fetch(:password)
+    @company_name = auth_details.company.name
+    @host = auth_details.base_link
+    @login = auth_details.api_email
+    @password = auth_details.password
   end
 
   def perform
@@ -26,11 +26,11 @@ class Operative::GetFileService
   end
 
   def data_filename_remote
-    "./#{FOLDER}/#{company_name}_DataFeed_#{timestamp}_v3.tar.gz"
+    "./#{FOLDER}/#{company_name.upcase}_DataFeed_#{timestamp}_v3.tar.gz"
   end
 
   def data_filename_local
-    "./#{Dir.tmpdir}/#{FOLDER}/#{company_name}_DataFeed_#{timestamp}_v3.tar.gz"
+    ".#{Dir.tmpdir}/#{company_name.upcase}_DataFeed_#{timestamp}_v3.tar.gz"
   end
 
   def timestamp
