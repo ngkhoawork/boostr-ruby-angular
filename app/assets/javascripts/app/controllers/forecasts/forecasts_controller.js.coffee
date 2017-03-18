@@ -106,7 +106,7 @@
       column: "name",
       compareFn: (column, a, b) ->
         switch (column)
-          when "name"
+          when "name", "agency", "advertiser"
             a[column].localeCompare(b[column])
           else
             a[column] - b[column]
@@ -260,7 +260,7 @@
           column: "name",
           compareFn: (column, a, b) ->
             switch (column)
-              when "name"
+              when "name", "agency", "advertiser"
                 a[column].localeCompare(b[column])
               else
                 a[column] - b[column]

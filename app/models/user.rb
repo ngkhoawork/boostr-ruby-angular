@@ -149,74 +149,20 @@ class User < ActiveRecord::Base
   end
 
   def crevenues(start_date, end_date)
-    return @crevenues if defined?(@crevenues)
-    @crevenues = []
-    sum_budget = 0
-    sum_period_budget = 0
-    split_budget = 0
-    split_period_budget = 0
-    self.all_ios_for_time_period(start_date, end_date).each do |io|
-      io_member = io.io_members.find_by(user_id: self.id)
-      share = io_member.share
-      io.content_fees.each do |content_fee|
-        content_fee.content_fee_product_budgets.each do |content_fee_product_budget|
-          sum_budget += content_fee_product_budget.budget
-          if (start_date <= content_fee_product_budget.end_date && end_date >= content_fee_product_budget.start_date)
-            in_period_days = [[end_date, content_fee_product_budget.end_date].min - [start_date, content_fee_product_budget.start_date].max + 1, 0].max
-            in_period_effective_days = [[end_date, content_fee_product_budget.end_date, io_member.to_date].min - [start_date, content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
-            sum_period_budget += content_fee_product_budget.corrected_daily_budget(io.start_date, io.end_date) * in_period_days
-            split_period_budget += content_fee_product_budget.corrected_daily_budget(io.start_date, io.end_date) * in_period_effective_days * share / 100
-          end
-          effective_days = [[content_fee_product_budget.end_date, io_member.to_date].min - [content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
-          split_budget += content_fee_product_budget.corrected_daily_budget(io.start_date, io.end_date) * effective_days * share / 100
-        end
-      end
-      # io.display_line_items.each do |display_line_item|
-      #   sum_budget += display_line_item.budget
-      #   if (start_date <= display_line_item.end_date && end_date >= display_line_item.start_date)
-      #     in_period_days = [[end_date, display_line_item.end_date].min - [start_date, display_line_item.start_date].max + 1, 0].max
-      #     in_period_effective_days = [[end_date, display_line_item.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
-      #     sum_period_budget += display_line_item.ave_run_rate * in_period_days
-      #     split_period_budget += display_line_item.ave_run_rate * in_period_effective_days * share / 100
-      #   end
-      #   effective_days = [[display_line_item.end_date, io_member.to_date].min - [display_line_item.start_date, io_member.from_date].max + 1, 0].max
-      #   split_budget += display_line_item.ave_run_rate * effective_days * share / 100
-      # end
-      io.display_line_items.each do |display_line_item|
-        sum_budget += display_line_item.budget
-        in_budget_in_period_days = 0
-        in_budget_in_period_total = 0
-        in_budget_in_period_effective_days = 0
-        in_budget_in_period_effective_total = 0
-        in_budget_effective_days = 0
-        in_budget_effective_total = 0
-        display_line_item.display_line_item_budgets.each do |display_line_item_budget|
-          if (start_date <= display_line_item_budget.end_date && end_date >= display_line_item_budget.start_date)
-            in_budget_in_period_days += [[end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
-            in_budget_in_period_effective_days += [[end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
-            in_budget_in_period_total += display_line_item_budget.daily_budget * in_budget_in_period_days
-            in_budget_in_period_effective_total += display_line_item_budget.daily_budget * in_budget_in_period_effective_days * share / 100
-          end
-          in_budget_effective_days += [[display_line_item.end_date, io_member.to_date, display_line_item_budget.end_date].min - [display_line_item.start_date, io_member.from_date, display_line_item_budget.start_date].max + 1, 0].max
-          in_budget_effective_total += display_line_item_budget.daily_budget * in_budget_in_period_days * share / 100
-        end
-        if (start_date <= display_line_item.end_date && end_date >= display_line_item.start_date)
-          in_period_days = [[end_date, display_line_item.end_date].min - [start_date, display_line_item.start_date].max + 1, 0].max
-          in_period_effective_days = [[end_date, display_line_item.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
-          sum_period_budget += in_budget_in_period_effective_days + display_line_item.ave_run_rate * (in_period_days - in_budget_in_period_days)
-          split_period_budget += in_budget_in_period_effective_total + display_line_item.ave_run_rate * (in_period_effective_days - in_budget_in_period_effective_days) * share / 100
-        end
-        effective_days = [[display_line_item.end_date, io_member.to_date].min - [display_line_item.start_date, io_member.from_date].max + 1, 0].max
-        split_budget += in_budget_effective_total + display_line_item.ave_run_rate * (effective_days - in_budget_effective_days) * share / 100
-      end
+    ios_for_period = self.all_ios_for_time_period(start_date, end_date)
+
+    @crevenues ||= ios_for_period.each_with_object([]) do |io, memo|
+      sum_period_budget, split_period_budget = io.for_forecast_page(start_date, end_date, self)
+
+      memo << {
+          name: io.name,
+          agency: io.get_agency,
+          advertiser: io.advertiser.name,
+          budget: io.budget.to_s,
+          sum_period_budget: sum_period_budget,
+          split_period_budget: split_period_budget
+      }
     end
-    @crevenues = [{
-        name: self.name,
-        sum_budget: sum_budget,
-        sum_period_budget: sum_period_budget,
-        split_budget: split_budget,
-        split_period_budget: split_period_budget
-    }]
   end
 
   def all_revenues_for_time_period(start_date, end_date)
