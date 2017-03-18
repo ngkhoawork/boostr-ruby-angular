@@ -10,18 +10,26 @@
                 url: 'api/initiatives/smart_report'
                 method: 'GET'
                 isArray: true
+            getDeals:
+                url: 'api/initiatives/:id/smart_report_deals'
+                method: 'GET'
             update:
                 method: 'PUT'
 
-        @all = () ->
+        @all = (type) ->
             deferred = $q.defer()
-            resource.get null, (data) ->
-                deferred.resolve(data)
+            if type
+                type = {closed: true} if type is 'closed'
+                resource.getSummary type, (data) ->
+                    deferred.resolve(data)
+            else
+                resource.get null, (data) ->
+                    deferred.resolve(data)
             deferred.promise
 
-        @summaryOpen = ->
+        @deals = (initiativeId) ->
             deferred = $q.defer()
-            resource.getSummary null, (data) ->
+            resource.getDeals id: initiativeId, (data) ->
                 deferred.resolve(data)
             deferred.promise
 
@@ -33,7 +41,7 @@
 
         @create = (initiative) ->
             deferred = $q.defer()
-            resource.save initiative, (data) ->
+            resource.save initiative: initiative, (data) ->
                 deferred.resolve(data)
                 $rootScope.$broadcast 'initiatives_updated'
             deferred.promise

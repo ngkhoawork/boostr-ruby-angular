@@ -2,33 +2,44 @@
     ['$scope', '$filter', 'Initiatives', 'shadeColor',
         ($scope, $filter, Initiatives, shadeColor) ->
             colors = ['#8CC135', '#FF7200']
-
             $scope.filter = 'open'
+            $scope.selectedInitiative = null
             $scope.setFilter = (v) ->
                 $scope.filter = v
+                $scope.init()
 
-            Initiatives.summaryOpen().then (data) ->
-                console.log data
+            $scope.init = () ->
+                Initiatives.all($scope.filter).then (data) ->
+                    stages = []
+                    _.forEach data, (initiative) ->
+                        if initiative.chart_data
+                            for stage, value of initiative.chart_data
+                                if stages.indexOf(stage) == -1 then stages.push stage
+                    console.log data
+                    stages.sort (n1, n2) ->
+                        if Number n1 < Number n2 then return 1
+                        if Number n1 > Number n2 then return -1
+                        return 0
 
-            Initiatives.summaryClosed().then (data) ->
-                console.log data
+                    data.stages = stages
+                    console.log 'stages', stages
+                    drawChart(data, '#initiatives-summary-chart')
+                    $scope.initiatives = data
+            $scope.init()
 
-            #==================================================
-            data = []
-            for i in [1..Math.round(Math.random() * 8) + 2]
-                arr = []
-                for j in [1..Math.round(Math.random() * 4) + 2]
-                    arr.push Math.round(Math.random() * 2000000) + 100000
-                arr[0] *= 1.5
-                statuses = ['Active', 'Complete']
-                data.push
-                    name: 'Initiative ' + i
-                    numbers: arr
-                    percent: Math.round(Math.random() * 100)
-                    status: statuses[Math.round(Math.random())]
+            $scope.selectInitiative = (initiative) ->
+                if !initiative then return
+                if $scope.selectedInitiative && initiative.id == $scope.selectedInitiative.id
+                    $scope.selectedInitiative = null
+                else
+                    $scope.selectedInitiative = initiative
+                    getDeals(initiative)
 
-            $scope.initiatives = data
-            #======================================================
+
+            getDeals = (initiative) ->
+                Initiatives.deals(initiative.id).then (data) ->
+                    initiative.deals = data
+                    console.log $scope.selectedInitiative.deals
 
             drawChart = (data, chartId) ->
                 delay = 500
@@ -46,13 +57,15 @@
 
                 dataset = []
                 data.forEach (initiative, i) ->
-                    initiative.numbers.forEach (number, j) ->
+                    data.stages.forEach (stage, j) ->
+                        number = initiative.chart_data[stage]
                         if !Array.isArray dataset[j] then dataset[j] = []
+                        if number is undefined then return
                         dataset[j][i] =
                             x: initiative.name
                             y: number
                         for item, k in data
-                            if item.numbers[j] is undefined
+                            if item.chart_data[stage] is undefined
                                 dataset[j][k] =
                                     x: item.name
                                     y: 0
@@ -69,6 +82,7 @@
                 svg = d3.select(chartId)
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.top + margin.bottom + legendHeight)
+                    .html('')
                     .append('g')
                     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
                 xMax = d3.max(dataset, (group) ->
@@ -97,6 +111,7 @@
                     .append('g')
                     .style 'fill', (d, i) ->
                         if i is 0 then colors[0] else shadeColor colors[1], 0.15 * (i - 1)
+
                 rects = groups.selectAll('rect').data((d) -> d)
                 .enter().append('rect')
                 .attr 'x', 0
@@ -110,41 +125,79 @@
                 .attr 'width', (d) ->
                     x d.x
 
+                goalLines = svg.append('g')
+                goalLines.selectAll('line')
+                    .data(data)
+                    .enter()
+                    .append('line')
+                    .attr('class', 'goal-line')
+                    .attr 'y1', (d) ->
+                        (y d.name) + y.rangeBand() / 2 - barHeight / 1.3
+                    .attr 'y2', (d) ->
+                        (y d.name) + y.rangeBand() / 2 - barHeight / 1.3
+                    .attr 'x1', (d) ->
+                        x d.goal
+                    .attr 'x2', (d) ->
+                        x d.goal
+                    .transition().delay(delay * 2).duration(duration / 2)
+                    .attr 'y2', (d) ->
+                        (y d.name) + y.rangeBand() / 2 + barHeight / 1.3
+
+
                 svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')').call xAxis
                 svg.append('g').attr('class', 'axis').call yAxis
 
-                legendData = [
-                    {color: colors[0], label: 'Goal'}
-                    {color: colors[1], label: '?'}
-                ]
-
                 #legend
+                legendData = [
+                    {color: 'gray', label: 'Gaol'}
+                ]
+                _.forEach data.stages, (stage, i) ->
+                    if i is 0
+                     legendData.push {color: colors[0], label: 'Won'}
+                    else
+                     legendData.push {color: shadeColor(colors[1], 0.15 * (i - 1)), label: stage + '%'}
+
                 legend = svg.append("g")
                     .attr("transform", "translate(0, " + (height + 50) + ")")
                     .attr("class", "legendTable")
-                    .selectAll('#inactive-chart' + ' .legend')
+
+                goalLegend = legend
+                    .append('g')
+                    .attr('class', 'legend')
+                goalLegend
+                    .append('line')
+                        .attr('class', 'goal-line')
+                        .attr 'x1', 0
+                        .attr('y1', 5)
+                        .attr("x2", 26)
+                        .attr("y2", 5)
+                goalLegend
+                    .append('text')
+                        .attr 'x', 34
+                        .attr('y', 10)
+                        .attr('height', 30)
+                        .attr('width', 150)
+                        .text legendData[0].label
+
+                legendWithData = legend
+                    .selectAll('.legend')
                     .data(legendData)
                     .enter()
                     .append('g')
                     .attr('class', 'legend')
                     .attr('transform', (d, i) -> 'translate(' + (i % 6) * 100 + ', 0)')
-                legend.append('rect')
+                legendWithData.append('rect')
                     .attr 'x', 0
-#                    .attr('x', (d, i) -> (i % 6) * 70)
                     .attr('y', (d, i) -> Math.floor(i / 6) * 20)
                     .attr('width', 13)
                     .attr('height', 13)
                     .attr("rx", 4)
                     .attr("ry", 4)
                     .style 'fill', (d) -> d.color
-                legend.append('text')
+                legendWithData.append('text')
                     .attr 'x', 20
-#                    .attr('x', (d, i) -> (i % 6) * 70 + 20)
                     .attr('y', (d, i) -> Math.floor(i / 6) * 20 + 10)
                     .attr('height', 30)
                     .attr('width', 150)
                     .text (d) -> d.label
-
-
-            drawChart(data, '#initiatives-summary-chart')
     ]

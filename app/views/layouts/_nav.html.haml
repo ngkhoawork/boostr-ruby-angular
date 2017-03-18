@@ -38,8 +38,6 @@
                   = link_to "Activity Detail", "/reports/activity_detail_reports"
                 %li
                   = link_to "Activity Summary", "/reports/activity_summary"
-                %li
-                  = link_to "Initiatives Summary", "/reports/initiatives_summary"
                 - if current_user.company_id == 5
                   %li
                     = link_to "Forecast Detail - Annual", "/reports/forecasts"
@@ -57,8 +55,6 @@
                   = link_to "Activity Detail", "/reports/activity_detail_reports"
                 %li
                   = link_to "Activity Summary", "/reports/activity_summary"
-                %li
-                  = link_to "Initiatives Summary", "/reports/initiatives_summary"
           - if current_user.leader?
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -75,6 +71,8 @@
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
                 %li
                   = link_to "Inactives", "/smart_reports/inactives"
+                %li
+                  = link_to "Initiatives", "/smart_reports/initiatives"
           - else
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -91,6 +89,8 @@
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
                 %li
                   = link_to "Inactives", "/smart_reports/inactives"
+                %li
+                  = link_to "Initiatives", "/smart_reports/initiatives"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
             %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }

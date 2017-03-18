@@ -2,6 +2,9 @@
     color: $main-font-color;
     background-color: #F5F5F5;
     min-height: calc(100vh - 150px);
+    a {
+        color: $secondary-color;
+    }
     .header {
         margin: 20px -15px 30px;
         .title {
@@ -51,6 +54,12 @@
             stroke: #d9dde0;
             shape-rendering: crispEdges;
         }
+        .goal-line {
+            stroke: $secondary-font-color;
+            stroke-width: 2;
+            stroke-dasharray: 6, 4;
+            shape-rendering: crispEdges;
+        }
     }
     table {
         td.status {
@@ -58,8 +67,7 @@
         }
         tr.active-line {
             td {
-                font-weight: bold !important;
-                text-decoration: underline;
+                background-color: $separate-line-color;
             }
         }
     }

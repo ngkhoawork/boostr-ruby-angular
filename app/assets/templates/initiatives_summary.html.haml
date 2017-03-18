@@ -2,8 +2,6 @@
 	.container#inactives-dashboard
 		.header
 			%span.title Initiatives Summary
-			%add-button
-				Add
 			.filter.pull-right
 				%span{'ng-class': '{active: filter === "open"}', 'ng-click': 'setFilter("open")'}
 					Open
@@ -18,104 +16,111 @@
 					%table.table.table-hover
 						%thead
 							%tr
-								%th Initiative
+								%th Initiative Name
 								%th Goal
-								%th Pipeline
+								%th Pipeline (W)
 								%th Won
-								%th % Goal
+								%th % Goals
 
 						%tbody
-							%tr{'ng-repeat': 'item in initiatives', 'ng-class': '{"active-line": item.status == "Open"}'}
-								%td {{item.name}}
-								%td {{item.numbers[0] | currency : undefined : 0}}
-								%td {{item.numbers[1] | currency : undefined : 0}}
-								%td {{item.numbers[2] | currency : undefined : 0}}
-								%td {{item.percent}}%
-		.sub-header
-			%span.title Initiative 1
-			%span Close
-		.row.well.kpi-block
-			%h4.chart-title Open Deals
-			.col-xs-12.table-report.text-center
-				%table.table.table-hover
-					%thead
-						%tr
-							%th Deal
-							%th Advertiser
-							%th Agency
-							%th Budget
-							%th Stage
-							%th %
-							%th Start
-							%th Next Steps
-							%th Last Activity
+							%tr{'ng-repeat': 'item in initiatives', 'ng-class': '{"active-line": item.id == selectedInitiative.id}'}
+								%td
+									%a{href: '', 'ng-click': 'selectInitiative(item)'} {{item.name}}
+								%td {{item.goal | currency : undefined : 0}}
+								%td {{item.pipeline | currency : undefined : 0}}
+								%td {{item.won | currency : undefined : 0}}
+								%td {{item.goal_probability}}%
 
-					%tbody
-						%tr
-							%td deal1
-							%td advertiser1
-							%td agency1
-							%td budget
-							%td stage
-							%td %
-							%td start
-							%td next steps
-							%td last activity
-						%tr
-							%td deal2
-							%td advertiser2
-							%td agency2
-							%td budget
-							%td stage
-							%td %
-							%td start
-							%td next steps
-							%td last activity
-						%tr
-							%td deal3
-							%td advertiser3
-							%td agency3
-							%td budget
-							%td stage
-							%td %
-							%td start
-							%td next steps
-							%td last activity
+		%div{'ng-if': 'selectedInitiative'}
+			.sub-header
+				%span.title {{selectedInitiative.name}}
+			.row.well.kpi-block{'ng-if': 'selectedInitiative.deals.open_deals.length'}
+				%h4.chart-title Open Deals
+				.col-xs-12.table-report.text-center
+					%table.table.table-hover
+						%thead
+							%tr
+								%th{width: '150px'} Deal
+								%th Advertiser
+								%th Agency
+								%th Budget
+								%th Stage
+								%th %
+								%th Start Date
+								%th Next Steps
+								%th Last Activity
 
-		.row.well.kpi-block
-			%h4.chart-title Won Deals
-			.col-xs-12.table-report.text-center
-				%table.table.table-hover
-					%thead
-						%tr
-							%th Deal
-							%th Advertiser
-							%th Agency
-							%th Budget
-							%th Stage
-							%th %
-							%th Start
-							%th Next Steps
-							%th Last Activity
+						%tbody
+							%tr{'ng-repeat': 'deal in selectedInitiative.deals.open_deals'}
+								%td
+									%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
+								%td {{deal.advertiser_name}}
+								%td {{deal.agency_name}}
+								%td {{deal.budget | currency : undefined : 0}}
+								%td {{deal.stage}}
+								%td {{deal.probability}}%
+								%td {{deal.start_date | date}}
+								%td {{deal.next_steps}}
+								%td {{deal.last_activity}}
 
-					%tbody
-						%tr
-							%td deal1
-							%td advertiser1
-							%td agency1
-							%td budget
-							%td stage
-							%td %
-							%td start
-							%td next steps
-							%td last activity
-						%tr
-							%td deal2
-							%td advertiser2
-							%td agency2
-							%td budget
-							%td stage
-							%td %
-							%td start
-							%td next steps
-							%td last activity
+			.row.well.kpi-block{'ng-if': 'selectedInitiative.deals.won_deals.length'}
+				%h4.chart-title Won Deals
+				.col-xs-12.table-report.text-center
+					%table.table.table-hover
+						%thead
+							%tr
+								%th{width: '150px'} Deal
+								%th Advertiser
+								%th Agency
+								%th Budget
+								%th Stage
+								%th %
+								%th Start Date
+								%th Next Steps
+								%th Last Activity
+								%th Closed Reason
+
+						%tbody
+							%tr{'ng-repeat': 'deal in selectedInitiative.deals.won_deals'}
+								%td
+									%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
+								%td {{deal.advertiser_name}}
+								%td {{deal.agency_name}}
+								%td {{deal.budget | currency : undefined : 0}}
+								%td {{deal.stage}}
+								%td {{deal.probability}}%
+								%td {{deal.start_date | date}}
+								%td {{deal.next_steps}}
+								%td {{deal.last_activity}}
+								%td {{deal.closed_reason}}
+
+			.row.well.kpi-block{'ng-if': 'selectedInitiative.deals.lost_deals.length'}
+				%h4.chart-title Lost Deals
+				.col-xs-12.table-report.text-center
+					%table.table.table-hover
+						%thead
+							%tr
+								%th{width: '150px'} Deal
+								%th Advertiser
+								%th Agency
+								%th Budget
+								%th Stage
+								%th %
+								%th Start Date
+								%th Next Steps
+								%th Last Activity
+								%th Closed Reason
+
+						%tbody
+							%tr{'ng-repeat': 'deal in selectedInitiative.deals.lost_deals'}
+								%td
+									%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
+								%td {{deal.advertiser_name}}
+								%td {{deal.agency_name}}
+								%td {{deal.budget | currency : undefined : 0}}
+								%td {{deal.stage}}
+								%td {{deal.probability}}%
+								%td {{deal.start_date | date}}
+								%td {{deal.next_steps}}
+								%td {{deal.last_activity}}
+								%td {{deal.closed_reason}}
