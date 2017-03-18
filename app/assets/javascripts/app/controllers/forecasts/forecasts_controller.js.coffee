@@ -229,8 +229,6 @@
         $scope.sort.weighted_pipeline = new McSort(
           column: "name",
           compareFn: (column, a, b) ->
-            console.log(a[column])
-            console.log(b[column])
             switch (column)
               when "name", "client_name", "agency_name", "start_date", "end_date"
                 a[column].localeCompare(b[column])
@@ -238,7 +236,6 @@
                 a[column] - b[column]
           dataset: $scope.weighted_pipeline
         )
-        console.log($scope.sort.weighted_pipeline)
         $scope.weightedPipelineDetail = row
 
   $scope.toggleRevenueDetail = (row) ->
