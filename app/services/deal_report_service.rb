@@ -32,7 +32,7 @@ class DealReportService < BaseService
 
   # Advanced Deals - (list of deals that changed sales stage on target date -use deal_stage_logs.created_at yesterday)
   def stage_changed_deals
-    stage_changed_deal_items = Deal.includes(:deal_stage_logs).where(company_id: company_id).where(deal_stage_logs: { created_at: date_range })
+    stage_changed_deal_items = Deal.includes(:deal_stage_logs, :previous_stage, :stage, :advertiser).where(company_id: company_id).where(deal_stage_logs: { created_at: date_range })
     ActiveModel::ArraySerializer.new(stage_changed_deal_items, each_serializer: DealChangedSerializer).as_json
   end
 
@@ -62,7 +62,7 @@ class DealReportService < BaseService
 
   def date_range
     return target_date.midnight..target_date.end_of_day unless target_date.kind_of? Hash
-    Date.parse(target_date[:start_date]).midnight..Date.parse(target_date[:end_date]).end_of_day
+    DateTime.parse(target_date[:start_date])..DateTime.parse(target_date[:end_date])
   end
 
   def csv_header
