@@ -25,8 +25,24 @@
 }
 
 #revenue {
+  font-family: "Avenir Next", Arial, serif;
+  .date-filter {
+    float: right;
+    padding: 10px 0;
+    .date-picker-wrap {
+      cursor: pointer;
+      color: $main-color;
+      div {
+        display: inline-block;
+      }
+    }
+  }
   .table.table-striped {
     thead {
+      span {
+        cursor: pointer;
+        padding: 10px 0;
+      }
       .action-column {
         width: 50px;
       }
