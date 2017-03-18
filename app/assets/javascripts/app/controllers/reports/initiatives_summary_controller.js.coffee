@@ -15,14 +15,12 @@
                         if initiative.chart_data
                             for stage, value of initiative.chart_data
                                 if stages.indexOf(stage) == -1 then stages.push stage
-                    console.log data
                     stages.sort (n1, n2) ->
                         if Number n1 < Number n2 then return 1
                         if Number n1 > Number n2 then return -1
                         return 0
 
                     data.stages = stages
-                    console.log 'stages', stages
                     drawChart(data, '#initiatives-summary-chart')
                     $scope.initiatives = data
             $scope.init()
@@ -39,7 +37,6 @@
             getDeals = (initiative) ->
                 Initiatives.deals(initiative.id).then (data) ->
                     initiative.deals = data
-                    console.log $scope.selectedInitiative.deals
 
             drawChart = (data, chartId) ->
                 delay = 500
@@ -89,6 +86,9 @@
                     d3.max group, (d) ->
                         d.x + d.x0
                 )
+                _.forEach data, (d) ->
+                    if d.goal > xMax then xMax = d.goal
+
                 x = d3.scale.linear().domain([
                     0
                     xMax
