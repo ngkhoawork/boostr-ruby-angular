@@ -1,8 +1,16 @@
 #deal {
+    overflow-x: auto;
+    #deal-inner {
+        min-width: 1280px;
+    }
     .caret {
         color: $secondary-font-color;
-        position: relative;
-        top: -2px;
+        //position: relative;
+        //top: -2px;
+    }
+    .no-wrap-line {
+        display: inline-block;
+        white-space: nowrap;
     }
     textarea.editable {
         resize: none;
@@ -119,7 +127,7 @@
                 .col-body {
                     display: table-cell;
                     vertical-align: middle;
-                    white-space: nowrap;
+                    //white-space: nowrap;
                     .title {
                         font-size: 18px;
                         margin-right: 0;
@@ -128,6 +136,9 @@
                         color: $secondary-font-color;
                     }
                     .error-tooltip {
+                        white-space: normal;
+                    }
+                    button {
                         white-space: normal;
                     }
                 }
@@ -413,6 +424,18 @@
         }
         .not-selected {
             color: lighten($secondary-font-color, 15%);
+        }
+    }
+    #reminder_modal {
+        .popup-modal-header {
+            height: 0;
+            margin: 0;
+            padding: 0;
+            border-bottom: none;
+            .close-btn {
+                top: -18px;
+                right: -16px;
+            }
         }
     }
 }
