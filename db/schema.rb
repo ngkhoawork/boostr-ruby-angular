@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170223232546) do
+ActiveRecord::Schema.define(version: 20170318114540) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "account_dimensions", force: :cascade do |t|
     t.string  "name"
@@ -450,7 +449,7 @@ ActiveRecord::Schema.define(version: 20170223232546) do
     t.string   "next_steps"
     t.integer  "created_by"
     t.datetime "deleted_at"
-    t.date     "closed_at"
+    t.datetime "closed_at"
     t.integer  "stage_updated_by"
     t.datetime "stage_updated_at"
     t.integer  "updated_by"
