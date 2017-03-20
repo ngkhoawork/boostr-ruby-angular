@@ -1,5 +1,5 @@
 class Initiatives::SmartReportDealsSerializer < ActiveModel::Serializer
-  attributes :name, :advertiser_name, :agency_name, :budget, :stage, :probability, :start_date, :next_steps,
+  attributes :id, :name, :advertiser_name, :agency_name, :budget, :stage, :probability, :start_date, :next_steps,
              :last_activity
   attribute :closed_reason, if: :deal_lost?
 

@@ -38,9 +38,9 @@ class Api::InitiativesController < ApplicationController
 
   def smart_report_deals
     render json: {
-      open_deals: ActiveModel::ArraySerializer.new(initiative.deals.open, each_serializer: Initiatives::SmartReportDealsSerializer),
-      won_deals: ActiveModel::ArraySerializer.new(initiative.deals.won, each_serializer: Initiatives::SmartReportDealsSerializer),
-      lost_deals: ActiveModel::ArraySerializer.new(initiative.deals.lost, each_serializer: Initiatives::SmartReportDealsSerializer)
+      open_deals: initiative_smart_report_serializer_for(initiative.deals.open),
+      won_deals: initiative_smart_report_serializer_for(initiative.deals.won),
+      lost_deals: initiative_smart_report_serializer_for(initiative.deals.lost)
     }
   end
 
@@ -64,5 +64,9 @@ class Api::InitiativesController < ApplicationController
 
   def initiative_params
     params.require(:initiative).permit(:name, :goal, :status)
+  end
+
+  def initiative_smart_report_serializer_for(deals)
+    ActiveModel::ArraySerializer.new(deals, each_serializer: Initiatives::SmartReportDealsSerializer)
   end
 end
