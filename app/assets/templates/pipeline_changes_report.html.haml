@@ -45,7 +45,7 @@
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("stage_name")'}
                     Stage name
                 %th.left{ width: "200" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_stage_log_previous_stage")'}
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("previous_stage")'}
                     Previous stage
                 %th.left{ width: "200" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
@@ -66,6 +66,6 @@
                 %td.left
                   {{ deal.stage_name }}
                 %td.left
-                  {{ deal.deal_stage_log_previous_stage }}
+                  {{ deal.previous_stage }}
                 %td.left
                   {{ deal.budget_change | currency:'$':0 }}

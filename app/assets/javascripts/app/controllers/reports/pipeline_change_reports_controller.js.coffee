@@ -47,7 +47,6 @@
         if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
           query.start_date = $filter('date')($scope.datePicker.startDate)
           query.end_date = $filter('date')($scope.datePicker.endDate)
-
         PipelineChangeReportService.get(query).$promise.then (data)->
           $scope.report_data_items = data.report_data
 

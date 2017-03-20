@@ -125,28 +125,35 @@
         %tr
           %th.left
             %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("name")' } }
-              Member
+              Io name
               %i{ ng: { class: "{ 'fa': sort.revenues.column == 'name', 'fa-sort-asc': sort.revenues.column == 'name' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'name' && sort.revenues.direction == 'desc' }" } }
           %th.right
-            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("sum_budget")' } }
+            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("advertiser")' } }
+              Advertiser
+              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'advertiser', 'fa-sort-asc': sort.revenues.column == 'advertiser' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'advertiser' && sort.revenues.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("agency")' } }
+              Agency
+              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'agency', 'fa-sort-asc': sort.revenues.column == 'agency' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'agency' && sort.revenues.direction == 'desc' }" } }
+          %th.right
+            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("budget")' } }
               Total Budget
-              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'sum_budget', 'fa-sort-asc': sort.revenues.column == 'sum_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'sum_budget' && sort.revenues.direction == 'desc' }" } }
+              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'budget', 'fa-sort-asc': sort.revenues.column == 'budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'budget' && sort.revenues.direction == 'desc' }" } }
           %th.right
             %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("sum_period_budget")' } }
               In-Period Amt
               %i{ ng: { class: "{ 'fa': sort.revenues.column == 'sum_period_budget', 'fa-sort-asc': sort.revenues.column == 'sum_period_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'sum_period_budget' && sort.revenues.direction == 'desc' }" } }
-          %th.right
-            %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("split_budget")' } }
-              Split Budget
-              %i{ ng: { class: "{ 'fa': sort.revenues.column == 'split_budget', 'fa-sort-asc': sort.revenues.column == 'split_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'split_budget' && sort.revenues.direction == 'desc' }" } }
           %th.right
             %a.sort{ href: '', ng: { click: 'sort.revenues.toggle("split_period_budget")' } }
               Split In-Period Amt
               %i{ ng: { class: "{ 'fa': sort.revenues.column == 'split_period_budget', 'fa-sort-asc': sort.revenues.column == 'split_period_budget' && sort.revenues.direction == 'asc', 'fa-sort-desc': sort.revenues.column == 'split_period_budget' && sort.revenues.direction == 'desc' }" } }
       %tbody
         %tr{ ng: { repeat: 'subrow in revenues' } }
-          %td.left {{ subrow.name }}
-          %td.right {{ subrow.sum_budget | currency: '$': 0 }}
+          %td.left
+            %a{ href: '', ng: { href: '/ios/{{subrow.id}}' } }
+              {{ subrow.name }}
+          %td.right {{ subrow.advertiser }}
+          %td.right {{ subrow.agency }}
+          %td.right {{ subrow.budget | currency: '$': 0 }}
           %td.right {{ subrow.sum_period_budget | currency: '$': 0 }}
-          %td.right {{ subrow.split_budget | currency: '$': 0 }}
           %td.right {{ subrow.split_period_budget | currency: '$': 0 }}

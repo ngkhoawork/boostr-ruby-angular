@@ -239,6 +239,9 @@
             $scope.$on 'updated_activities', ->
                 $scope.init()
 
+            $scope.$on 'updated_contacts', ->
+                $scope.init()
+
             $scope.init()
 
             $scope.setActiveTab = (tab) ->

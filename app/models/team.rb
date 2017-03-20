@@ -89,12 +89,21 @@ class Team < ActiveRecord::Base
   end
 
   def crevenues(start_date, end_date)
-    return @crevenues if defined?(@crevenues)
-    @crevenues = []
-    all_members.each do |member|
-      @crevenues += member.crevenues(start_date, end_date)
+    ios = all_members.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq
+
+    @crevenues ||= ios.each_with_object([]) do |io, memo|
+      sum_period_budget, split_period_budget = io.for_forecast_page(start_date, end_date)
+
+      memo << {
+        id: io.id,
+        name: io.name,
+        agency: io.get_agency,
+        advertiser: io.advertiser.name,
+        budget: io.budget.to_s,
+        sum_period_budget: sum_period_budget,
+        split_period_budget: split_period_budget
+      }
     end
-    @crevenues
   end
 
   def all_members

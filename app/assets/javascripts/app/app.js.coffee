@@ -197,6 +197,23 @@
   $rootScope.userType = userType
 ]
 
+@app.run ['$rootScope', 'CurrentUser', ($rootScope, CU) ->
+  $rootScope.$on '$routeChangeSuccess', (scope, next, current) ->
+    if $rootScope.currentUser
+      updateTalkus($rootScope.currentUser)
+    else
+      CU.get().$promise.then (user) ->
+        $rootScope.currentUser = user
+        updateTalkus(user)
+
+  updateTalkus = (user) ->
+    talkus('init', 'qu346HQax2ut3MQr4',
+      id: user.id
+      name: user.name
+      email: user.email
+    )
+]
+
 @service = angular.module 'services', ['ngResource']
 @directives = angular.module 'directives', []
 @filters = angular.module 'filters', []

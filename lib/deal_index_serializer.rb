@@ -11,6 +11,7 @@ class DealIndexSerializer < ActiveModel::Serializer
     :end_date,
     :name,
     :budget,
+    :budget_loc,
     :curr_cd,
     :deal_type,
     :source_type,
@@ -22,7 +23,9 @@ class DealIndexSerializer < ActiveModel::Serializer
     :agency,
     :deal_custom_field,
     :stage_id,
-    :stage)
+    :stage,
+    :curr_symbol
+  )
 
 
   def advertiser
@@ -39,6 +42,10 @@ class DealIndexSerializer < ActiveModel::Serializer
 
   def deal_members
     object.users.as_json(override: true, only: [:id], methods: :name)
+  end
+
+  def curr_symbol
+    object.try(:currency).try(:curr_symbol) rescue '$'
   end
 
   def cache_key

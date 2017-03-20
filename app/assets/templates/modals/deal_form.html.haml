@@ -101,7 +101,7 @@
                     %span.star{ 'ng-if': "dealCustomFieldName.is_required == true" }
                         *
                 %input.form-control{ 'ng-if': "dealCustomFieldName.field_type != 'note' && dealCustomFieldName.field_type != 'datetime' && dealCustomFieldName.field_type != 'boolean'", placeholder: 'Enter {{dealCustomFieldName.field_label}}', ng: { model: 'deal.deal_custom_field[fieldName]' }, name: '{{fieldName}}' }
-                %textarea.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'note'", rows: 4, 'ng-model': "deal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}' }
+                %textarea.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "deal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}' }
                 .bs-datepicker
                     %input.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.deal_custom_field[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
                 .show-hide-remainder-form{ ng: { if: "dealCustomFieldName.field_type == 'boolean' " } }
