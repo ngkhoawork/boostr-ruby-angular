@@ -1,8 +1,7 @@
 FactoryGirl.define do
   factory :initiative do
-    name "MyString"
-    goal 1
-    status "MyString"
-    company_id 1
+    sequence(:name) { |n| "Initiative #{n}" }
+    goal 100000
+    status 'Open'
   end
 end
