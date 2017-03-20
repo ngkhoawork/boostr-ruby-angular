@@ -20,6 +20,7 @@ class IoCsv
 
   def perform
     return self.errors.full_messages unless self.valid?
+    close_deal_from_io_number
     if io.present?
       update_io
     else
@@ -28,6 +29,13 @@ class IoCsv
   end
 
   private
+
+  def close_deal_from_io_number
+    deal = Deal.find_by(id: io_number, company_id: company_id)
+    if deal.present?
+      deal.update(stage: Stage.closed_won(company_id))
+    end
+  end
 
   def io
     @_io ||= Io.find_by(company_id: company_id, external_io_number: io_external_number)
@@ -73,7 +81,7 @@ class IoCsv
   end
 
   def io_number
-    io_name.try(:split, '_').try(:last)
+    @_io_number ||= io_name.split('_').last.to_i rescue nil
   end
 
   def parse_date(str)

@@ -33,6 +33,24 @@ RSpec.describe IoCsv, type: :model do
     end
   end
 
+  context 'io_number deal should be updated as closed won' do
+    before(:each) do
+      closed_stage
+    end
+
+    it 'closes the deal ID received as IO number' do
+      io_csv(io_external_number: 8989, io_name: "EVE Mattress - Performance Test - March 2017_#{deal.id}").perform
+      expect(deal.reload.stage).to eq closed_stage
+    end
+
+    it 'maps the incoming order to the freshly generated IO' do
+      io_csv(io_external_number: 8989, io_name: "EVE Mattress - Performance Test - March 2017_#{deal.id}").perform
+      expect(deal.io.name).to eq deal.name
+      expect(deal.io.io_number).to eq deal.id
+      expect(deal.io.external_io_number).to eq 8989
+    end
+  end
+
   context 'IO is found' do
     it 'matches via io_number and updates external_io_number' do
       io_csv(io_external_number: 123, io_name: "Test_Order_#{io.io_number}").perform
@@ -78,7 +96,7 @@ RSpec.describe IoCsv, type: :model do
     end
   end
 
-  context 'IO is not found' do
+  context 'IO is not found and TempIO is used instead' do
     context 'TempIO does not exist' do
       it 'creates a new TempIO' do
         expect {
@@ -90,46 +108,6 @@ RSpec.describe IoCsv, type: :model do
         io_csv(io_external_number: 123).perform
         expect(TempIo.last.external_io_number).to be 123
       end
-
-      it 'sets temp_io name' do
-        io_csv(io_external_number: 123, io_name: 'Stest_321').perform
-        expect(TempIo.last.name).to eql 'Stest_321'
-      end
-
-      it 'sets temp_io start_date' do
-        io_csv(io_external_number: 123, io_start_date: '2017-01-01').perform
-        expect(TempIo.last.start_date).to eql Date.new(2017,01,01)
-      end
-
-      it 'sets temp_io end_date' do
-        io_csv(io_external_number: 123, io_end_date: '2017-01-01').perform
-        expect(TempIo.last.end_date).to eql Date.new(2017,01,01)
-      end
-
-      it 'sets temp_io advertiser name' do
-        io_csv(io_external_number: 123, io_advertiser: 'Test').perform
-        expect(TempIo.last.advertiser).to eql 'Test'
-      end
-
-      it 'sets temp_io agency name' do
-        io_csv(io_external_number: 123, io_agency: 'Test').perform
-        expect(TempIo.last.agency).to eql 'Test'
-      end
-
-      it 'sets temp_io budget' do
-        io_csv(io_external_number: 123, io_budget: 450000.00).perform
-        expect(TempIo.last.budget).to eql 450000.00
-      end
-
-      it 'sets temp_io budget_loc' do
-        io_csv(io_external_number: 123, io_budget_loc: 450000.00).perform
-        expect(TempIo.last.budget_loc).to eql 450000.00
-      end
-
-      it 'sets temp_io currency code' do
-        io_csv(io_external_number: 123, io_curr_cd: 'GBP').perform
-        expect(TempIo.last.curr_cd).to eql 'GBP'
-      end
     end
 
     context 'TempIO exists' do
@@ -139,67 +117,76 @@ RSpec.describe IoCsv, type: :model do
           io_csv(io_external_number: temp_io.external_io_number).perform
         }.not_to change(TempIo, :count)
       end
-
-      it 'sets temp_io name' do
-        io_csv(io_external_number: temp_io.external_io_number, io_name: 'Stest_321').perform
-        expect(temp_io.reload.name).to eql 'Stest_321'
-      end
-
-      it 'sets temp_io start_date' do
-        io_csv(io_external_number: temp_io.external_io_number, io_start_date: '2017-01-01').perform
-        expect(temp_io.reload.start_date).to eql Date.new(2017,01,01)
-      end
-
-      it 'sets start date in American format' do
-        io_csv(io_external_number: temp_io.external_io_number, io_start_date: '12/15/2017').perform
-        expect(temp_io.reload.start_date).to eql Date.new(2017, 12, 15)
-      end
-
-      it 'sets start date in YY format' do
-        io_csv(io_external_number: temp_io.external_io_number, io_start_date: '12/15/17').perform
-        expect(temp_io.reload.start_date).to eql Date.new(2017, 12, 15)
-      end
-
-      it 'sets temp_io end_date' do
-        io_csv(io_external_number: temp_io.external_io_number, io_end_date: '2017-01-01').perform
-        expect(temp_io.reload.end_date).to eql Date.new(2017,01,01)
-      end
-
-      it 'sets end date in American format' do
-        io_csv(io_external_number: temp_io.external_io_number, io_end_date: '12/15/2017').perform
-        expect(temp_io.reload.end_date).to eql Date.new(2017, 12, 15)
-      end
-
-      it 'sets start date in YY format' do
-        io_csv(io_external_number: temp_io.external_io_number, io_end_date: '12/15/17').perform
-        expect(temp_io.reload.end_date).to eql Date.new(2017, 12, 15)
-      end
-
-      it 'sets temp_io advertiser name' do
-        io_csv(io_external_number: temp_io.external_io_number, io_advertiser: 'Test').perform
-        expect(temp_io.reload.advertiser).to eql 'Test'
-      end
-
-      it 'sets temp_io agency name' do
-        io_csv(io_external_number: temp_io.external_io_number, io_agency: 'Test').perform
-        expect(temp_io.reload.agency).to eql 'Test'
-      end
-
-      it 'sets temp_io budget' do
-        io_csv(io_external_number: temp_io.external_io_number, io_budget: 450000.00).perform
-        expect(temp_io.reload.budget).to eql 450000.00
-      end
-
-      it 'sets temp_io budget_loc' do
-        io_csv(io_external_number: temp_io.external_io_number, io_budget_loc: 450000.00).perform
-        expect(temp_io.reload.budget_loc).to eql 450000.00
-      end
-
-      it 'sets temp_io currency code' do
-        io_csv(io_external_number: temp_io.external_io_number, io_curr_cd: 'GBP').perform
-        expect(temp_io.reload.curr_cd).to eql 'GBP'
-      end
     end
+
+    it 'sets temp_io name' do
+      io_csv(io_external_number: temp_io.external_io_number, io_name: 'Stest_321').perform
+      expect(temp_io.reload.name).to eql 'Stest_321'
+    end
+
+    it 'sets temp_io start_date' do
+      io_csv(io_external_number: temp_io.external_io_number, io_start_date: '2017-01-01').perform
+      expect(temp_io.reload.start_date).to eql Date.new(2017,01,01)
+    end
+
+    it 'sets start date in American format' do
+      io_csv(io_external_number: temp_io.external_io_number, io_start_date: '12/15/2017').perform
+      expect(temp_io.reload.start_date).to eql Date.new(2017, 12, 15)
+    end
+
+    it 'sets start date in YY format' do
+      io_csv(io_external_number: temp_io.external_io_number, io_start_date: '12/15/17').perform
+      expect(temp_io.reload.start_date).to eql Date.new(2017, 12, 15)
+    end
+
+    it 'sets temp_io end_date' do
+      io_csv(io_external_number: temp_io.external_io_number, io_end_date: '2017-01-01').perform
+      expect(temp_io.reload.end_date).to eql Date.new(2017,01,01)
+    end
+
+    it 'sets end date in American format' do
+      io_csv(io_external_number: temp_io.external_io_number, io_end_date: '12/15/2017').perform
+      expect(temp_io.reload.end_date).to eql Date.new(2017, 12, 15)
+    end
+
+    it 'sets start date in YY format' do
+      io_csv(io_external_number: temp_io.external_io_number, io_end_date: '12/15/17').perform
+      expect(temp_io.reload.end_date).to eql Date.new(2017, 12, 15)
+    end
+
+    it 'sets temp_io advertiser name' do
+      io_csv(io_external_number: temp_io.external_io_number, io_advertiser: 'Test').perform
+      expect(temp_io.reload.advertiser).to eql 'Test'
+    end
+
+    it 'sets temp_io agency name' do
+      io_csv(io_external_number: temp_io.external_io_number, io_agency: 'Test').perform
+      expect(temp_io.reload.agency).to eql 'Test'
+    end
+
+    it 'sets temp_io budget' do
+      io_csv(io_external_number: temp_io.external_io_number, io_budget: 450000.00).perform
+      expect(temp_io.reload.budget).to eql 450000.00
+    end
+
+    it 'sets temp_io budget_loc' do
+      io_csv(io_external_number: temp_io.external_io_number, io_budget_loc: 450000.00).perform
+      expect(temp_io.reload.budget_loc).to eql 450000.00
+    end
+
+    it 'sets temp_io currency code' do
+      io_csv(io_external_number: temp_io.external_io_number, io_curr_cd: 'GBP').perform
+      expect(temp_io.reload.curr_cd).to eql 'GBP'
+    end
+  end
+
+  def deal(opts={})
+    opts[:company_id] = company.id
+    @_deal ||= create :deal, opts
+  end
+
+  def closed_stage
+    @_closed_stage ||= create :closed_won_stage, company_id: company.id
   end
 
   def io(opts={})
