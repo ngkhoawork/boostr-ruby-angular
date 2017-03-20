@@ -28,18 +28,28 @@ class Initiatives::SmartReportDealsSerializer < ActiveModel::Serializer
   end
 
   def last_activity
-    activities.first.activity_type_name if activities.any?
-  end
-
-  def activities
-    @_activities ||= object.activities.order('happened_at desc')
+    "#{activity_happened_at} - #{activity_type_name}" if activities.any?
   end
 
   def closed_reason
     Deal.get_option(object, 'Close Reason')
   end
 
+  private
+
   def deal_lost?
     object.closed_lost?
+  end
+
+  def activity_happened_at
+    activities.first.happened_at.strftime('%-m/%-d')
+  end
+
+  def activity_type_name
+    activities.first.activity_type_name
+  end
+
+  def activities
+    @_activities ||= object.activities.order('happened_at desc')
   end
 end

@@ -101,7 +101,7 @@ class Deal < ActiveRecord::Base
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :by_values, -> (value_ids) { joins(:values).where('values.option_id in (?)', value_ids) unless value_ids.empty? }
   scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
-  scope :won, -> { includes(:stage).where(stages: { probability: 100 }) }
+  scope :won, -> { closed.includes(:stage).where(stages: { probability: 100 }) }
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
 
