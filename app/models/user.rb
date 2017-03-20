@@ -155,6 +155,7 @@ class User < ActiveRecord::Base
       sum_period_budget, split_period_budget = io.for_forecast_page(start_date, end_date, self)
 
       memo << {
+          id: io.id,
           name: io.name,
           agency: io.get_agency,
           advertiser: io.advertiser.name,
