@@ -8,7 +8,9 @@
 				%span{'ng-class': '{active: filter === "closed"}', 'ng-click': 'setFilter("closed")'}
 					Closed
 
-		.row.well.kpi-block
+		.row.well.kpi-block{'ng-show': '!initiatives.length && !dataLoading'}
+			%h4 No data available
+		.row.well.kpi-block{'ng-show': 'initiatives && initiatives.length'}
 			%div
 				.col-xs-12.pad
 					%svg#initiatives-summary-chart.initiatives-chart
@@ -31,7 +33,7 @@
 								%td {{item.won | currency : undefined : 0}}
 								%td {{item.goal_probability}}%
 
-		%div{'ng-if': 'selectedInitiative'}
+		%div#selected-initiative{'ng-if': 'selectedInitiative'}
 			.sub-header
 				%span.title {{selectedInitiative.name}}
 			.row.well.kpi-block{'ng-if': 'selectedInitiative.deals.open_deals.length'}

@@ -1,15 +1,18 @@
 @app.controller 'InitiativesSummaryController',
-    ['$scope', '$filter', 'Initiatives', 'shadeColor',
-        ($scope, $filter, Initiatives, shadeColor) ->
+    ['$scope', '$timeout', '$filter', 'Initiatives', 'shadeColor',
+        ($scope, $timeout, $filter, Initiatives, shadeColor) ->
             colors = ['#8CC135', '#FF7200']
             $scope.filter = 'open'
             $scope.selectedInitiative = null
+            $scope.dataLoading = false
             $scope.setFilter = (v) ->
                 $scope.filter = v
                 $scope.init()
 
             $scope.init = () ->
+                $scope.dataLoading = true
                 Initiatives.all($scope.filter).then (data) ->
+                    $scope.initiatives = data
                     stages = []
                     _.forEach data, (initiative) ->
                         if initiative.chart_data
@@ -22,7 +25,7 @@
 
                     data.stages = stages
                     drawChart(data, '#initiatives-summary-chart')
-                    $scope.initiatives = data
+                    $scope.dataLoading = false
             $scope.init()
 
             $scope.selectInitiative = (initiative) ->
@@ -31,14 +34,18 @@
                     $scope.selectedInitiative = null
                 else
                     $scope.selectedInitiative = initiative
-                    getDeals(initiative)
+                    getDeals initiative, () ->
+                        $timeout () ->
+                            angular.element('html, body').scrollTop angular.element("#selected-initiative").offset().top
 
 
-            getDeals = (initiative) ->
+            getDeals = (initiative, callback) ->
                 Initiatives.deals(initiative.id).then (data) ->
                     initiative.deals = data
+                    callback()
 
             drawChart = (data, chartId) ->
+                if !data || !data.length then return
                 delay = 500
                 duration = 1000
                 margin =

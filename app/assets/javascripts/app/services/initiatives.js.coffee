@@ -48,7 +48,7 @@
 
         @update = (initiative) ->
             deferred = $q.defer()
-            resource.update id: initiative.id, initiative, (data) ->
+            resource.update {id: initiative.id, initiative: initiative}, (data) ->
                 deferred.resolve(data)
                 $rootScope.$broadcast 'initiatives_updated'
             deferred.promise
