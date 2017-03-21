@@ -51,11 +51,11 @@ class IoCsv
 
   def update_io
     if io.content_fees.count == 0 && io_start_date && start_date < io.start_date
-      io.start_date = io_start_date
+      io.start_date = start_date
     end
 
     if io.content_fees.count == 0 && io_end_date && end_date < io.end_date
-      io.end_date = io_end_date
+      io.end_date = end_date
     end
 
     io.external_io_number = io_external_number
