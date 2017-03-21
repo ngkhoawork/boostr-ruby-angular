@@ -16,6 +16,8 @@ RSpec.describe DisplayLineItemCsv, type: :model do
   it { should validate_numericality_of(:quantity_delivered) }
   it { should validate_numericality_of(:quantity_delivered_3p) }
 
+  it { should allow_value("", nil).for(:quantity_delivered_3p) }
+
   context 'custom validations' do
     context 'io or temp_io presence' do
       it 'validates io presence' do

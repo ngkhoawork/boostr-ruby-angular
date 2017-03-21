@@ -1,7 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
-  subject(:subject) { Operative::ImportSalesOrderLineItemsService.new(company.id, line_item_file, invoice_file) }
+  subject(:subject) {
+    Operative::ImportSalesOrderLineItemsService.new(
+      company.id,
+      { sales_order_line_items: line_item_file, invoice_line_item: invoice_file }
+    )
+  }
   let(:company) { Company.first }
   let(:line_item_file) { './datafeed/sales_order_line_item_file.csv' }
   let(:invoice_file) { './datafeed/invoice_line_item_file.csv' }
@@ -44,7 +49,16 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     subject.perform
   end
 
-  def line_item_csv_file
+  it 'skips a row when line_item_status is not production' do
+    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1')
+    .and_return(line_item_csv_file(line_item_status: 'deleted'))
+    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1')
+    .and_return(invoice_csv_file)
+    expect(DisplayLineItemCsv).not_to receive(:new)
+    subject.perform
+  end
+
+  def line_item_csv_file(opts = {})
     @_line_item_csv_file ||= generate_csv({
       sales_order_id: '1',
       sales_order_line_item_id: '2',
@@ -54,8 +68,9 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       quantity: '1000',
       net_unit_cost: '100',
       cost_type: 'PPC',
-      net_cost: '100000'
-    })
+      net_cost: '100000',
+      line_item_status: 'Sent_to_production'
+    }.merge(opts))
   end
 
   def invoice_csv_file

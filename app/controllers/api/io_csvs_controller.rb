@@ -40,7 +40,7 @@ class Api::IoCsvsController < ApplicationController
   end
 
   def irrelevant_order(row)
-    row[:sales_stage_percent] != '100' || row[:order_status] == 'deleted'
+    row[:sales_stage_percent] != '100' || row[:order_status].try(:downcase) == 'deleted'
   end
 
   def create_sales_order(row)

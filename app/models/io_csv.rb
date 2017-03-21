@@ -32,7 +32,7 @@ class IoCsv
 
   def close_deal_from_io_number
     deal = Deal.find_by(id: io_number, company_id: company_id)
-    if deal.present?
+    if deal.present? && deal.closed_won? == false
       deal.update(stage: Stage.closed_won(company_id))
     end
   end

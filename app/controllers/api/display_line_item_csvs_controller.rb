@@ -23,6 +23,10 @@ class Api::DisplayLineItemCsvsController < ApplicationController
     CSV.parse(csv_file, { headers: true, header_converters: :symbol }) do |row|
       row_number += 1
 
+      if irrelevant_line_item(row)
+        next
+      end
+
       display_line_item = DisplayLineItemCsv.new(
         external_io_number: row[:sales_order_id],
         line_number: row[:sales_order_line_item_id],
@@ -49,5 +53,9 @@ class Api::DisplayLineItemCsvsController < ApplicationController
     end
 
     errors
+  end
+
+  def irrelevant_line_item(row)
+    row[:line_item_status].try(:downcase) != 'sent_to_production'
   end
 end

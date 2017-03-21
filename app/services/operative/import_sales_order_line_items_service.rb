@@ -35,6 +35,9 @@ class Operative::ImportSalesOrderLineItemsService
 
   def parse_line_items
     CSV.parse(sales_order_csv_file, { headers: true, header_converters: :symbol }) do |row|
+      if irrelevant_line_item(row)
+        next
+      end
       invoice = find_in_invoices(row[:sales_order_line_item_id])
       sales_order_line_item = DisplayLineItemCsv.new(
         external_io_number: row[:sales_order_id],
@@ -54,6 +57,10 @@ class Operative::ImportSalesOrderLineItemsService
       )
       sales_order_line_item.perform
     end
+  end
+
+  def irrelevant_line_item(row)
+    row[:line_item_status].try(:downcase) != 'sent_to_production'
   end
 
   def find_in_invoices(id)
