@@ -278,6 +278,7 @@ class Api::DealsController < ApplicationController
         :agency_id,
         :closed_at,
         :next_steps,
+        :closed_reason_text,
         {
             values_attributes: [
                 :id,

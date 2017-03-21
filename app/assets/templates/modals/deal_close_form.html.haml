@@ -18,6 +18,8 @@
               %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; selectReason(option.name)'}
                 %span
                   %b {{option.name}}
+      .form-group
+        %input.form-control{'ng-model': 'currentDeal.closed_reason_text'}
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
