@@ -4,7 +4,7 @@ class Initiatives::SmartReportDealsSerializer < ActiveModel::Serializer
   attribute :closed_reason, if: :deal_lost?
 
   def advertiser_name
-    object.advertiser.name
+    object.advertiser.name if object.advertiser.present?
   end
 
   def agency_name
