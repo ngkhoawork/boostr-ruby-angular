@@ -3,7 +3,7 @@ class Initiatives::SmartReportSerializer < ActiveModel::Serializer
 
   def pipeline
     @_pipeline ||= deals.open.inject(0) do |budgets_sum, deal|
-      budgets_sum += deal.budget * deal.stage.probability
+      budgets_sum += deal.budget * deal.stage.probability / 100
     end.to_i
   end
 
