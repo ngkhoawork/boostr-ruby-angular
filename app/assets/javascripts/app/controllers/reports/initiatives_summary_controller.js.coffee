@@ -156,7 +156,7 @@
 
                 #legend
                 legendData = [
-                    {color: 'gray', label: 'Gaol'}
+                    {color: 'gray', label: 'Goal'}
                 ]
                 _.forEach data.stages, (stage, i) ->
                     if i is 0

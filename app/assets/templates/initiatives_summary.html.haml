@@ -22,7 +22,7 @@
 								%th Goal
 								%th Pipeline (W)
 								%th Won
-								%th % Goals
+								%th % Goal
 
 						%tbody
 							%tr{'ng-repeat': 'item in initiatives', 'ng-class': '{"active-line": item.id == selectedInitiative.id}'}
@@ -80,7 +80,6 @@
 								%th Start Date
 								%th Next Steps
 								%th Last Activity
-								%th Closed Reason
 
 						%tbody
 							%tr{'ng-repeat': 'deal in selectedInitiative.deals.won_deals'}
@@ -94,7 +93,6 @@
 								%td {{deal.start_date | date}}
 								%td {{deal.next_steps}}
 								%td {{deal.last_activity}}
-								%td {{deal.closed_reason}}
 
 			.row.well.kpi-block{'ng-if': 'selectedInitiative.deals.lost_deals.length'}
 				%h4.chart-title Lost Deals
@@ -110,7 +108,6 @@
 								%th %
 								%th Start Date
 								%th Next Steps
-								%th Last Activity
 								%th Closed Reason
 
 						%tbody
@@ -124,5 +121,4 @@
 								%td {{deal.probability}}%
 								%td {{deal.start_date | date}}
 								%td {{deal.next_steps}}
-								%td {{deal.last_activity}}
 								%td {{deal.closed_reason}}
