@@ -14,7 +14,7 @@ class Initiatives::SmartReportSerializer < ActiveModel::Serializer
   end
 
   def goal_probability
-    (pipeline + won) / goal
+    (pipeline + won) / (goal / 100)
   end
 
   def chart_data
