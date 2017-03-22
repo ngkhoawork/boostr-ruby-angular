@@ -1,17 +1,37 @@
 require 'rails_helper'
 
 RSpec.describe Operative::GetFileService, datafeed: :true do
-  subject(:subject) { Operative::GetFileService.new(api_config) }
+  subject(:subject) { Operative::GetFileService.new(api_config, timestamp) }
 
-  describe '#perform' do
-    it 'downloads file via SFTP' do
-      expect(Net::SFTP).to receive(:start).with('ftpprod.operativeftphost.com', 'email', password: 'password')
+  it 'downloads file via SFTP' do
+    expect(Net::SFTP).to receive(:start).with('ftpprod.operativeftphost.com', 'email', password: 'password')
+    subject.perform
+  end
+
+  it 'returns array of downloaded filenames' do
+    allow(Net::SFTP).to receive(:start).and_return(:success)
+    subject.perform
+    expect(subject.data_filename_local).to eql "./tmp/KING_DataFeed_#{timestamp}_v3.tar.gz"
+  end
+
+  it 'returns success status' do
+    expect(subject.success).to be false
+    allow(Net::SFTP).to receive(:start).and_return(:success)
+    subject.perform
+    expect(subject.success).to be true
+  end
+
+  context 'download errors' do
+    it 'returns false on errors' do
+      allow(Net::SFTP).to receive(:start).and_raise(SocketError, 'getaddrinfo: Name or service not known')
       subject.perform
+      expect(subject.success).to be false
     end
 
-    it 'returns array of downloaded filenames' do
-      allow(Net::SFTP).to receive(:start).and_return(:success)
-      expect(subject.perform).to eql "./tmp/datafeed/KING_DataFeed_#{timestamp}_v3.tar.gz"
+    it 'returns error message on error' do
+      allow(Net::SFTP).to receive(:start).and_raise(SocketError, 'getaddrinfo: Name or service not known')
+      subject.perform
+      expect(subject.error).to eql ['SocketError', 'getaddrinfo: Name or service not known']
     end
   end
 

@@ -1,6 +1,7 @@
 class Operative::DatafeedService
-  def initialize(api_config)
+  def initialize(api_config, date)
     @api_config = api_config
+    @date = date
   end
 
   def perform
@@ -11,14 +12,21 @@ class Operative::DatafeedService
   end
 
   private
-  attr_reader :api_config, :datafeed_archive, :extracted_files
+  attr_reader :api_config, :datafeed_archive, :extracted_files, :date
 
   def get_files
-    @datafeed_archive = Operative::GetFileService.new(api_config).perform
+    file_service = Operative::GetFileService.new(api_config, timestamp)
+    file_service.perform
+    if file_service.error.present?
+      log_general_error(file_service)
+    else
+      @datafeed_archive = file_service.data_filename_local
+    end
   end
 
   def extract_and_verify
-    @extracted_files = Operative::ExtractVerifyService.new(datafeed_archive).perform
+    return unless datafeed_archive
+    @extracted_files = Operative::ExtractVerifyService.new(datafeed_archive, timestamp).perform
   end
 
   def import_sales_orders
@@ -36,6 +44,13 @@ class Operative::DatafeedService
   end
 
   def timestamp
-    Date.today.strftime('%m%d%Y')
+    date.strftime('%m%d%Y')
+  end
+
+  def log_general_error(file_service)
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'io')
+    import_log.log_error(file_service.error)
+    import_log.set_file_source(file_service.data_filename_local)
+    import_log.save
   end
 end

@@ -34,29 +34,54 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def parse_line_items
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item')
+    import_log.set_file_source(sales_order_line_items)
+
     CSV.parse(sales_order_csv_file, { headers: true, header_converters: :symbol }) do |row|
+      import_log.count_processed
+
       if irrelevant_line_item(row)
+        import_log.count_skipped
         next
       end
-      invoice = find_in_invoices(row[:sales_order_line_item_id])
-      sales_order_line_item = DisplayLineItemCsv.new(
-        external_io_number: row[:sales_order_id],
-        line_number: row[:sales_order_line_item_id],
-        ad_server: 'O1',
-        start_date: row[:sales_order_line_item_start_date],
-        end_date: row[:sales_order_line_item_end_date],
-        product_name: row[:product_name],
-        quantity: row[:quantity],
-        price: row[:net_unit_cost],
-        pricing_type: row[:cost_type],
-        budget: row[:net_cost],
-        budget_delivered: invoice[:recognized_revenue],
-        quantity_delivered: invoice[:cumulative_primary_performance],
-        quantity_delivered_3p: invoice[:cumulative_third_party_performance],
-        company_id: company_id
-      )
-      sales_order_line_item.perform
+      dli_csv = build_dli_csv(row)
+
+      if dli_csv.valid?
+        begin
+          dli_csv.perform
+          import_log.count_imported
+        rescue Exception => e
+          import_log.count_failed
+          import_log.log_error ['Internal Server Error', row.to_h.compact.to_s]
+          next
+        end
+      else
+        import_log.count_failed
+        import_log.log_error dli_csv.errors.full_messages
+      end
     end
+
+    import_log.save
+  end
+
+  def build_dli_csv(row)
+    invoice = find_in_invoices(row[:sales_order_line_item_id])
+    DisplayLineItemCsv.new(
+      external_io_number: row[:sales_order_id],
+      line_number: row[:sales_order_line_item_id],
+      ad_server: 'O1',
+      start_date: row[:sales_order_line_item_start_date],
+      end_date: row[:sales_order_line_item_end_date],
+      product_name: row[:product_name],
+      quantity: row[:quantity],
+      price: row[:net_unit_cost],
+      pricing_type: row[:cost_type],
+      budget: row[:net_cost],
+      budget_delivered: invoice[:recognized_revenue],
+      quantity_delivered: invoice[:cumulative_primary_performance],
+      quantity_delivered_3p: invoice[:cumulative_third_party_performance],
+      company_id: company_id
+    )
   end
 
   def irrelevant_line_item(row)

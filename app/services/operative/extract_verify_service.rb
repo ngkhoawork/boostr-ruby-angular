@@ -4,8 +4,9 @@ require 'zlib'
 class Operative::ExtractVerifyService
   FOLDER = './tmp/'
 
-  def initialize(archive)
+  def initialize(archive, timestamp)
     @archive = archive
+    @timestamp = timestamp
   end
 
   def perform
@@ -13,7 +14,7 @@ class Operative::ExtractVerifyService
   end
 
   private
-  attr_reader :archive
+  attr_reader :archive, :timestamp
 
   def extract_from_archive
     extracted_files = {}
@@ -40,10 +41,6 @@ class Operative::ExtractVerifyService
       "Sales_Order_Line_Items_#{timestamp}.csv",
       "Currency_#{timestamp}.csv"
     ]
-  end
-
-  def timestamp
-    Date.today.strftime('%m%d%Y')
   end
 
   def to_table_name(name)

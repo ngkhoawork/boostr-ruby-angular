@@ -1,12 +1,13 @@
 class IoCsv
   include ActiveModel::Validations
-  validates :io_external_number, :io_start_date, :io_end_date, :io_budget,
-  :io_curr_cd, :io_advertiser, :company_id, presence: true
+  validates :io_external_number, :io_name, :io_start_date, :io_end_date, :io_budget,
+            :io_curr_cd, :io_advertiser, :company_id, presence: true
 
   validates :io_external_number, :io_budget,
   numericality: true
 
   validate :dates_can_be_parsed
+  validate :record_has_exchange_rate
 
   attr_accessor(:io_external_number, :io_name, :io_start_date,
     :io_end_date, :io_advertiser, :io_agency, :io_budget,
@@ -100,6 +101,12 @@ class IoCsv
     end
     unless io_end_date.present? && end_date
       errors.add(:io_end_date, 'failed to be parsed correctly')
+    end
+  end
+
+  def record_has_exchange_rate
+    unless exchange_rate.present?
+      errors.add(:io_curr_cd, "#{io_curr_cd} does not have an exchange rate available at the moment")
     end
   end
 

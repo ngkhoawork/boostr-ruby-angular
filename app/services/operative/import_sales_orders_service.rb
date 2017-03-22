@@ -1,8 +1,8 @@
 class Operative::ImportSalesOrdersService
   def initialize(company_id, files)
     @company_id = company_id
-    @sales_order = files.fetch(:sales_order)
-    @currency = files.fetch(:currency)
+    @sales_order = files[:sales_order]
+    @currency = files[:currency]
   end
 
   def perform
@@ -33,24 +33,41 @@ class Operative::ImportSalesOrdersService
   end
 
   def parse_sales_order
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'io')
+    import_log.set_file_source(sales_order)
+
     CSV.parse(sales_order_file, { headers: true, header_converters: :symbol }) do |row|
+      import_log.count_processed
+
       if irrelevant_order(row)
+        import_log.count_skipped
         next
       end
-      sales_order = create_sales_order(row)
-      if sales_order.valid?
-        sales_order.perform
+      io_csv = build_io_csv(row)
+      if io_csv.valid?
+        begin
+          io_csv.perform
+          import_log.count_imported
+        rescue Exception => e
+          import_log.count_failed
+          import_log.log_error ['Internal Server Error', row.to_h.compact.to_s]
+          next
+        end
       else
+        import_log.count_failed
+        import_log.log_error io_csv.errors.full_messages
         next
       end
     end
+
+    import_log.save
   end
 
   def irrelevant_order(row)
     row[:sales_stage_percent] != '100' || row[:order_status].try(:downcase) == 'deleted'
   end
 
-  def create_sales_order(row)
+  def build_io_csv(row)
     IoCsv.new(
       io_external_number: row[:sales_order_id],
       io_name: row[:sales_order_name],

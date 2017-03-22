@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe IoCsv, type: :model do
   it { should validate_presence_of(:io_external_number) }
+  it { should validate_presence_of(:io_name) }
   it { should validate_presence_of(:io_start_date) }
   it { should validate_presence_of(:io_end_date) }
   it { should validate_presence_of(:io_budget) }

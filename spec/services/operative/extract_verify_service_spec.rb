@@ -4,7 +4,7 @@ RSpec.describe Operative::ExtractVerifyService, datafeed: :true do
   let(:company) { Company.first }
   let(:files) { './testfile_4148282_v3.tar.gz' }
   let(:tar_archive) { double() }
-  subject(:subject) { Operative::ExtractVerifyService.new(files) }
+  subject(:subject) { Operative::ExtractVerifyService.new(files, timestamp) }
 
   describe '#perform' do
     it 'requests to download files' do
@@ -15,5 +15,9 @@ RSpec.describe Operative::ExtractVerifyService, datafeed: :true do
       expect(tar_archive).to receive(:close)
       subject.perform
     end
+  end
+
+  def timestamp
+    Date.today.strftime('%m%d%Y')
   end
 end
