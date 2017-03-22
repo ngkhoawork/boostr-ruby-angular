@@ -1,0 +1,221 @@
+#billing
+	.billing-inner.container-fluid
+		.row
+			.main-title.mb20 Billing Summary
+		.row.mb40
+			.filter-text.mb10
+				Select a Month to View Billing Details
+			%form.form-inline.filter-form
+				%div.form-group
+					%label
+						Year
+						%span.star *
+					.dropdown.form-control
+						.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+							%span {{selectedYear || 'Select'}}
+							%span.caret
+						%ul.dropdown-menu
+							%li{'ng-repeat': 'year in years', 'ng-class': '{active: selectedYear == year}'}
+								%a{'href': '', 'ng-click': 'selectYear(year)'}
+									%span {{year}}
+
+				%div.form-group
+					%label
+						Month
+						%span.star *
+					.dropdown.form-control
+						.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+							%span {{selectedMonth || 'Select'}}
+							%span.caret
+						%ul.dropdown-menu
+							%li{'ng-repeat': 'month in months', 'ng-class': '{active: selectedMonth == month}'}
+								%a{'href': '', 'ng-click': 'selectMonth(month)'}
+									%span {{month}}
+
+		.row.block.mb20
+			%div.mb20
+				%span.title IO's for Approval
+			%table.table.table-hover
+				%thead
+					%tr
+						%th IO #
+						%th Line #
+						%th Name
+						%th Advertiser
+						%th Agency
+						%th Currency
+						%th Billing Contact
+						%th Product
+						%th Ad Server Product
+						%th Revenue Type
+						%th Amount
+						%th Billing Status
+						%th VAT
+				%tbody
+					%tr
+						%td
+							%b 188198
+						%td
+							%b 4444
+						%td Logan Release
+						%td Warner Brothers
+						%td Mindshare
+						%td USD
+						%td
+							%a{href: '', ng: {href: '/'}}
+								Joe Billing
+						%td Video
+						%td Elven Sports | Singapore | Mobile | 320x50
+						%td Display
+						%td $55,000
+						%td.pending-status Pending
+						%td $5,000
+					%tr
+						%td
+							%b 188198
+						%td
+							%b 4444
+						%td Logan Release
+						%td Warner Brothers
+						%td Mindshare
+						%td USD
+						%td
+							%a{href: '', ng: {href: '/'}}
+								Joe Billing
+						%td Video
+						%td Elven Sports | Singapore | Mobile | 320x50
+						%td Display
+						%td $55,000
+						%td.approved-status Approved
+						%td $5,000
+					%tr
+						%td
+							%b 188198
+						%td
+							%b 4444
+						%td Logan Release
+						%td Warner Brothers
+						%td Mindshare
+						%td USD
+						%td
+							%a{href: '', ng: {href: '/'}}
+								Joe Billing
+						%td Video
+						%td Elven Sports | Singapore | Mobile | 320x50
+						%td Display
+						%td $55,000
+						%td.approved-status Approved
+						%td $5,000
+
+
+		.row.block.mb20
+			%div.mb20
+				%span.title IO's Missing Display Line Items
+			%table.table.table-hover
+				%thead
+					%tr
+						%th IO #
+						%th Name
+						%th Advertiser
+						%th Agency
+						%th Currency
+						%th Billing Contact
+						%th Product
+						%th Details
+				%tbody
+					%tr
+						%td
+							%b 188198
+						%td Logan Release
+						%td Warner Brothers
+						%td Mindshare
+						%td USD
+						%td
+							%a{href: '', ng: {href: '/'}}
+								Joe Billing
+						%td Video
+						%td Missing data from Ad Server
+					%tr
+						%td
+							%b 188198
+						%td Logan Release
+						%td Warner Brothers
+						%td Mindshare
+						%td USD
+						%td
+							%a{href: '', ng: {href: '/'}}
+								Joe Billing
+						%td Video
+						%td Missing data from Ad Server
+					%tr
+						%td
+							%b 188198
+						%td Logan Release
+						%td Warner Brothers
+						%td Mindshare
+						%td USD
+						%td
+							%a{href: '', ng: {href: '/'}}
+								Joe Billing
+						%td Video
+						%td Missing data from Ad Server
+
+
+		.row.block.mb20
+			%div.mb20
+				%span.title IO's Missing Monthly Actuals
+			%table.table.table-hover
+				%thead
+					%tr
+						%th IO #
+						%th Line #
+						%th Name
+						%th Advertiser
+						%th Agency
+						%th Currency
+						%th Billing Contact
+						%th Product
+						%th Ad Server Product
+				%tbody
+					%tr
+						%td
+							%b 188198
+						%td
+							%b 4444
+						%td Logan Release
+						%td Warner Brothers
+						%td Mindshare
+						%td USD
+						%td
+							%a{href: '', ng: {href: '/'}}
+								Joe Billing
+						%td Video
+						%td Elven Sports | Singapore | Mobile | 320x50
+					%tr
+						%td
+							%b 188198
+						%td
+							%b 4444
+						%td Logan Release
+						%td Warner Brothers
+						%td Mindshare
+						%td USD
+						%td
+							%a{href: '', ng: {href: '/'}}
+								Joe Billing
+						%td Video
+						%td Elven Sports | Singapore | Mobile | 320x50
+					%tr
+						%td
+							%b 188198
+						%td
+							%b 4444
+						%td Logan Release
+						%td Warner Brothers
+						%td Mindshare
+						%td USD
+						%td
+							%a{href: '', ng: {href: '/'}}
+								Joe Billing
+						%td Video
+						%td Elven Sports | Singapore | Mobile | 320x50

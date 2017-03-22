@@ -1,0 +1,101 @@
+#billing {
+    font-family: "Avenir Next", Arial, serif;
+    min-height: 100vh;
+    background-color: $main-background-color;
+    color: $main-font-color;
+    overflow-x: auto;
+    .billing-inner {
+        padding: 20px 55px;
+        min-width: $content-min-width;
+
+    }
+    .main-title {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .filter-text {
+        color: $secondary-font-color;
+    }
+    .filter-form {
+        color: $secondary-font-color;
+        label {
+            margin-right: 30px;
+            font-weight: normal;
+            .star {
+                color: $error-color;
+            }
+        }
+        .dropdown {
+            margin-right: 30px;
+            padding: 0;
+            height: 40px;
+            min-width: 120px;
+            border-color: lighten($secondary-font-color, 30%);
+            .dropdown-toggle {
+                cursor: pointer;
+                border: none;
+                height: 100%;
+                width: 100%;
+                padding: 9px 0 0 10px;
+                position: relative;
+                .caret {
+                    position: absolute;
+                    top: 17px;
+                    right: 9px;
+                    color: $secondary-font-color;
+                }
+            }
+        }
+    }
+    table.table {
+        thead {
+            background-color: white;
+            th {
+                color: $secondary-font-color !important;
+                border-left: none;
+                border-right: none;
+                text-transform: none;
+                font-weight: 500;
+                font-size: 12px;
+            }
+        }
+        tbody {
+            td {
+                color: lighten($main-font-color, 15%);
+                font-size: 13px;
+                &.pending-status {
+                    color: #FF7301;
+                    font-weight: bold;
+                }
+                &.approved-status {
+                    color: #16A085;
+                    font-weight: bold;
+                }
+                a {
+                    color: $secondary-color;
+                    font-weight: bold;
+                }
+            }
+        }
+        tr:first-child {
+            td {
+                border-top-width: 2px;
+            }
+        }
+        tr {
+            th, td {
+                text-align: left;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            //th:last-child, td:last-child {
+            //    text-align: center;
+            //}
+        }
+    }
+
+}
