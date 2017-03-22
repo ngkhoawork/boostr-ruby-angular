@@ -8,14 +8,23 @@ class Operative::ImportSalesOrdersService
   def perform
     @sales_order_file = open_file(@sales_order)
     @currency_file = open_file(@currency)
-    parse_and_process_rows
+    if @sales_order_file && @currency_file
+      parse_and_process_rows
+    end
   end
 
   private
   attr_reader :company_id, :sales_order, :sales_order_file, :currency, :currency_file, :currencies_list
 
   def open_file(file)
-    File.open(file, 'r:ISO-8859-1')
+    begin
+      File.open(file, 'r:ISO-8859-1')
+    rescue Exception => e
+      import_log = CsvImportLog.new(company_id: company_id, object_name: 'io')
+      import_log.set_file_source(file)
+      import_log.log_error [e.class.to_s, e.message]
+      import_log.save
+    end
   end
 
   def parse_and_process_rows

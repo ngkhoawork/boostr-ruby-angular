@@ -18,7 +18,14 @@ class Operative::ImportSalesOrderLineItemsService
   attr_reader :company_id, :sales_order_line_items, :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file
 
   def open_file(file)
-    File.open(file, 'r:ISO-8859-1') rescue nil
+    begin
+      File.open(file, 'r:ISO-8859-1')
+    rescue Exception => e
+      import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item')
+      import_log.set_file_source(file)
+      import_log.log_error [e.class.to_s, e.message]
+      import_log.save
+    end
   end
 
   def parse_invoices

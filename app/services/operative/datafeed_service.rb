@@ -30,6 +30,7 @@ class Operative::DatafeedService
   end
 
   def import_sales_orders
+    return unless @extracted_files
     Operative::ImportSalesOrdersService.new(
       api_config.company_id,
       @extracted_files.slice(:sales_order, :currency)
@@ -37,6 +38,7 @@ class Operative::DatafeedService
   end
 
   def process_sales_order_line_items
+    return unless @extracted_files
     Operative::ImportSalesOrderLineItemsService.new(
       api_config.company_id,
       @extracted_files.slice(:sales_order_line_items, :invoice_line_item, :currency)
