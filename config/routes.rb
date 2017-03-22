@@ -181,6 +181,7 @@ Rails.application.routes.draw do
       get 'smart_report', on: :collection
       get 'smart_report_deals', on: :member
     end
+    resources :billing_summary, only: [:index]
   end
 
   mount Sidekiq::Web => '/sidekiq'
