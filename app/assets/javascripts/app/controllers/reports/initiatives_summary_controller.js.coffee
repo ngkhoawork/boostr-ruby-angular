@@ -41,6 +41,10 @@
 
             getDeals = (initiative, callback) ->
                 Initiatives.deals(initiative.id).then (data) ->
+                    data.open_deals.sort (d1, d2) ->
+                        if d1.probability < d2.probability then return 1
+                        if d1.probability > d2.probability then return -1
+                        return 0
                     initiative.deals = data
                     callback()
 
@@ -56,7 +60,7 @@
                 barHeight = 35
                 barMargin = 25
                 legendHeight = 50
-                width = 980
+                width = 1350
                 height = data.length * (barHeight + barMargin)
 
                 dataset = []
