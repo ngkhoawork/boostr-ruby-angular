@@ -2,6 +2,8 @@ class CsvImportLog < ActiveRecord::Base
   belongs_to :company
   serialize :error_messages, JSON
 
+  default_scope { order(created_at: :desc) }
+
   def count_processed
     self.rows_processed += 1
   end

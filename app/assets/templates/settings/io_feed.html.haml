@@ -1,0 +1,38 @@
+#integration-logs.block
+  %div.mb40
+    %span.title Io Feed
+
+  .table-report.pad
+    %table.table.table-hover
+      %thead
+        %tr
+          %th.left Date
+          %th.left Processed
+          %th.left Imported
+          %th.left Failed
+          %th.left Skipped
+          %th.left Error Messages
+          %th.left File Source
+          %th.left Object Name
+
+      %tbody
+        %tr{'ng-repeat': 'log in logs' }
+          %td {{log.created_at | date: 'medium' }}
+          %td
+            %b {{log.rows_processed}}
+          %td
+            %b {{log.rows_imported}}
+          %td
+            %b {{log.rows_failed}}
+          %td
+            %b {{log.rows_skipped}}
+          %td
+            %button.btn.activity-email-btn{'ng-click': 'showBodyModal(log.error_messages)'}
+              Show Errors
+          %td
+            %b {{ log.file_source }}
+          %td
+            %b {{ log.object_name }}
+          %td
+            %button.btn.activity-email-btn{'ng-if': 'log.response_body.length', 'ng-click': 'showBodyModal(log.response_body)'}
+              Show Body
