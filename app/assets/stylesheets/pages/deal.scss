@@ -210,7 +210,12 @@
         }
         table {
             thead > tr {
-                background-color: $brand-tertiary;
+                //background-color: $brand-tertiary;
+                background-color: lighten($main-color, 35%);
+                th {
+                    //color: white !important;
+                    color:lighten($main-color, 5%) !important;
+                }
             }
             tbody {
                 td:first-child {
@@ -232,9 +237,6 @@
                         }
                     }
                 }
-            }
-            th {
-                color: white !important;
             }
             th, td {
                 text-align: center;
