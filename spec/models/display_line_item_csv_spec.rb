@@ -16,6 +16,7 @@ RSpec.describe DisplayLineItemCsv, type: :model do
   it { should validate_numericality_of(:quantity_delivered) }
   it { should validate_numericality_of(:quantity_delivered_3p) }
 
+  it { should allow_value("", nil).for(:quantity_delivered) }
   it { should allow_value("", nil).for(:quantity_delivered_3p) }
 
   context 'custom validations' do
@@ -228,6 +229,12 @@ RSpec.describe DisplayLineItemCsv, type: :model do
     line_item_csv(external_io_number: io.external_io_number, quantity: '10000', quantity_delivered: '150')
     line_item_csv.perform
     expect(DisplayLineItem.last.quantity_remaining).to eql 9850
+  end
+
+  it 'sets quantity_remaining to quantity if quantity_delivered is empty' do
+    line_item_csv(external_io_number: io.external_io_number, quantity: '10000', quantity_delivered: nil)
+    line_item_csv.perform
+    expect(DisplayLineItem.last.quantity_remaining).to eql 10000
   end
 
   it 'sets quantity_delivered_3p' do

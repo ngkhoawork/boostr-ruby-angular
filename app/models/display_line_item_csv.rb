@@ -3,9 +3,8 @@ class DisplayLineItemCsv
 
   validates_presence_of     :line_number, :start_date, :end_date, :product_name,
                             :quantity, :budget, :company_id
-  validates_numericality_of :line_number, :quantity, :budget, :budget_delivered,
-                            :quantity_delivered, numericality: true
-  validates_numericality_of :quantity_delivered_3p, allow_blank: true
+  validates_numericality_of :line_number, :quantity, :budget, :budget_delivered, numericality: true
+  validates_numericality_of :quantity_delivered, :quantity_delivered_3p, allow_blank: true
 
   validates :io_or_tempio, presence: { message: 'not found' }
 
