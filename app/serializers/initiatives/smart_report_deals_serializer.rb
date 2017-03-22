@@ -1,6 +1,6 @@
 class Initiatives::SmartReportDealsSerializer < ActiveModel::Serializer
   attributes :id, :name, :advertiser_name, :agency_name, :budget, :stage, :probability, :start_date, :next_steps,
-             :last_activity
+             :last_activity, :seller_names
   attribute :closed_reason, if: :deal_lost?
 
   def advertiser_name
@@ -33,6 +33,10 @@ class Initiatives::SmartReportDealsSerializer < ActiveModel::Serializer
 
   def closed_reason
     Deal.get_option(object, 'Close Reason')
+  end
+
+  def seller_names
+    object.deal_members.with_not_zero_share.map(&:name)
   end
 
   private
