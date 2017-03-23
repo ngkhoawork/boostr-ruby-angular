@@ -4,10 +4,15 @@ class Stage < ActiveRecord::Base
 
   default_scope { order('active, position') }
   scope :active, -> { where(active: true) }
+  scope :closed_won_for_company, -> (company_id) { where(company_id: company_id, active: true, open: false, probability: 100) }
 
   validates :name, presence: true
 
   before_create :set_position
+
+  def self.closed_won(company_id)
+    self.closed_won_for_company(company_id).first
+  end
 
   def color
     attributes[:color] || color_for_probability

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170318114540) do
+ActiveRecord::Schema.define(version: 20170321223541) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -288,6 +288,21 @@ ActiveRecord::Schema.define(version: 20170318114540) do
   end
 
   add_index "content_fees", ["io_id"], name: "index_content_fees_on_io_id", using: :btree
+
+  create_table "csv_import_logs", force: :cascade do |t|
+    t.integer  "rows_processed", default: 0
+    t.integer  "rows_imported",  default: 0
+    t.integer  "rows_failed",    default: 0
+    t.integer  "rows_skipped",   default: 0
+    t.text     "error_messages"
+    t.string   "file_source"
+    t.string   "object_name"
+    t.integer  "company_id"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
+
+  add_index "csv_import_logs", ["company_id"], name: "index_csv_import_logs_on_company_id", using: :btree
 
   create_table "currencies", force: :cascade do |t|
     t.string "curr_cd"
@@ -905,6 +920,7 @@ ActiveRecord::Schema.define(version: 20170318114540) do
   add_foreign_key "clients", "clients", column: "parent_client_id"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
+  add_foreign_key "csv_import_logs", "companies"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_fields", "companies"
   add_foreign_key "deal_custom_fields", "deals"

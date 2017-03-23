@@ -1,0 +1,75 @@
+FactoryGirl.define do
+  factory :sales_order_line_item_csv_data, class: Hash do
+    sales_order_line_item_id nil
+    sales_order_line_item_name nil
+    product_id nil
+    product_name nil
+    package_id nil
+    package_name nil
+    media_plan_id nil
+    media_plan_name nil
+    is_default_media_plan nil
+    sales_order_line_item_start_date nil
+    sales_order_line_item_end_date nil
+    sales_order_line_item_version nil
+    sales_order_id nil
+    parent_line_item_id nil
+    line_item_status nil
+    net_unit_cost nil
+    cost_type nil
+    quantity nil
+    unit_type nil
+    production_quantity nil
+    net_cost nil
+    is_makegood nil
+    makegood_note nil
+    can_output nil
+    can_produce nil
+    can_invoice nil
+    booking_type nil
+    has_performance_data nil
+    can_delete nil
+    can_discount nil
+    can_commission nil
+    rate_card_id nil
+    goal_price nil
+    floor_price nil
+    rate_card_price nil
+    agency_commission_rate nil
+    gross_unit_cost nil
+    gross_cost nil
+    forecast_category nil
+    organization_id nil
+    is_reserved nil
+    reservation_expiration_date nil
+    billable_third_party nil
+    other_third_party nil
+    rich_media_vendor nil
+    tax_profile_id nil
+    tax_profile_name nil
+    created_by nil
+    created_by_id nil
+    created_on nil
+    last_modified_by nil
+    last_modified_by_id nil
+    last_modified_on nil
+    total_discounts nil
+    discount_profile_id nil
+    discount_profile_name nil
+    preset_schedule_id nil
+    preset_schedule_name nil
+    issue_id nil
+    issue_name nil
+    unit_cost_before_discounts nil
+    premium_for_ucbd nil
+    ucbd_with_premium nil
+    section_id nil
+    section_name nil
+    primary_mdsp_id nil
+    primary_mdsp_name nil
+    thirdparty_mdsp_id nil
+    thirdparty_mdsp_name nil
+
+    initialize_with { attributes }
+  end
+end

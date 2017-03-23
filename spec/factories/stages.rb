@@ -7,7 +7,14 @@ FactoryGirl.define do
     color '#ffe630'
 
     before(:create) do |item|
-      item.company = Company.first
+      item.company = Company.first if item.company.blank?
+    end
+
+    factory :closed_won_stage do
+      name 'Closed Won'
+      probability 100
+      open false
+      active true
     end
   end
 end

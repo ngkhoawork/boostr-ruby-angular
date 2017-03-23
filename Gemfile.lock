@@ -243,6 +243,8 @@ GEM
       activesupport (>= 3.0.0)
     launchy (2.4.3)
       addressable (~> 2.3)
+    libnotify (0.9.3)
+      ffi (>= 1.0.11)
     listen (3.0.3)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
@@ -262,6 +264,9 @@ GEM
     multi_json (1.11.1)
     multipart-post (2.0.0)
     nenv (0.2.0)
+    net-sftp (2.1.2)
+      net-ssh (>= 2.6.5)
+    net-ssh (4.1.0)
     newrelic_rpm (3.12.0.288)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
@@ -510,8 +515,10 @@ DEPENDENCIES
   jbuilder
   jquery-rails
   launchy
+  libnotify
   memory_profiler
   money
+  net-sftp
   newrelic_rpm
   paranoia (~> 2.0)
   pg

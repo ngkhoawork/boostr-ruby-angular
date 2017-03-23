@@ -14,9 +14,7 @@ class Api::ApiConfigurationsController < ApplicationController
   end
 
   def create
-    api_configuration_params.merge!(company_id: current_user.company.id )
-
-    api_configuration = ApiConfiguration.new(api_configuration_params)
+    api_configuration = current_user.company.api_configurations.new(api_configuration_params)
 
     if api_configuration.save!
       render json: API::ApiConfigurations::Single.new(api_configuration)

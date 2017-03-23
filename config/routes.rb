@@ -18,9 +18,11 @@ Rails.application.routes.draw do
   namespace :api do
     resources :countries, only: [:index]
     resources :api_configurations
+    resources :integration_types, only: [:index]
     resources :integration_logs, only: [:index, :show] do
       post :resend_request, on: :member
     end
+    resources :csv_import_logs, only: [:index]
 
     resources :users, only: [:index, :update] do
       collection do
@@ -51,6 +53,8 @@ Rails.application.routes.draw do
     resources :temp_ios, only: [:index, :update]
     resources :display_line_items, only: [:index, :create]
     resources :display_line_item_budgets, only: [:index, :create]
+    resources :io_csvs, only: [:create]
+    resources :display_line_item_csvs, only: [:create]
     resources :contacts, only: [:index, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
