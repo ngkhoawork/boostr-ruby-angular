@@ -12,6 +12,10 @@ every(1.day, 'Deal Report Generator', at: '12:00', tz: 'UTC') do
   DealReportGenerator.perform_async
 end
 
+every(1.day, 'Operative DataFeed', at: '4:00', tz: 'UTC') do
+  OperativeDatafeedWorker.perform_async
+end
+
 every(1.day, 'Account Dimension Synchronizer', at: '4:50', tz: 'UTC') do
   AccountSynchronizer.perform_async
 end
