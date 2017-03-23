@@ -110,6 +110,9 @@
     .when '/settings/integration_logs/:id',
       templateUrl: 'settings/integration_log.html'
       controller: 'IntegrationLogsController'
+    .when '/settings/io_feed_logs',
+      templateUrl: 'settings/io_feed_logs.html'
+      controller: 'CsvImportLogsController'
     .when '/settings/smart_insights',
       templateUrl: 'settings/smart_insights.html'
       controller: 'SettingsSmartInsightsController'

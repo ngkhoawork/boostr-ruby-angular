@@ -22,7 +22,8 @@ class Operative::DealsService
       create: create_deal?,
       advertiser: advertiser,
       agency: agency?,
-      closed_lost: closed_lost?
+      closed_lost: closed_lost?,
+      contact: contact?
     )
   end
 
@@ -75,5 +76,9 @@ class Operative::DealsService
 
   def closed_lost?
     deal.closed_lost?
+  end
+
+  def contact?
+    deal.ordered_by_created_at_billing_contacts.any?
   end
 end

@@ -40,7 +40,7 @@ describe Operative::Deals::Single, operative: true do
   end
 
   def deal_mapper
-    @_deal_mapper ||= described_class.new(deal).to_xml(create: true, advertiser: true, agency: true)
+    @_deal_mapper ||= described_class.new(deal).to_xml(create: true, advertiser: true, agency: true, contact: true)
   end
 
   def deal_name

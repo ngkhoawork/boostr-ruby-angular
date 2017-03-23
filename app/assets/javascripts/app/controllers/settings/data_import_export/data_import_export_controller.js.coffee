@@ -93,6 +93,25 @@
     $window.open('/api/deal_product_budgets.csv')
     return true
 
+
+  # TEMPORARY UPLOADERS
+  $scope.showUploadSalesOrdersModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/sales_orders_upload.html'
+      size: 'lg'
+      controller: 'SalesOrdersUploadController'
+      backdrop: 'static'
+      keyboard: false
+
+  $scope.showUploadSalesOrderLineItemsModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/sales_order_lineitems_upload.html'
+      size: 'lg'
+      controller: 'SalesOrderLineItemsUploadController'
+      backdrop: 'static'
+      keyboard: false
+
+
 #  $scope.exportContacts = ->
 #    $window.open('/api/contacts.zip')
 #    return true

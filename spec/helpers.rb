@@ -91,4 +91,13 @@ module Helpers
       csv << data.values
     end
   end
+
+  def generate_multiline_csv(headers, values)
+    CSV.generate do |csv|
+      csv << headers
+      values.each do |values_arr|
+        csv << values_arr
+      end
+    end
+  end
 end
