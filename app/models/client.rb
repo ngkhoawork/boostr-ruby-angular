@@ -17,7 +17,7 @@ class Client < ActiveRecord::Base
   has_many :activities
   has_many :agency_activities, class_name: 'Activity', foreign_key: 'agency_id'
   has_many :reminders, as: :remindable, dependent: :destroy
-  has_many :account_dimensions, foreign_key: 'id'
+  has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
 
   belongs_to :client_category, class_name: 'Option', foreign_key: 'client_category_id'
   belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
