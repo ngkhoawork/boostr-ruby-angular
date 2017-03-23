@@ -140,8 +140,8 @@
                         .html($filter('currency')(d.x, undefined , 0) + ' (' + d.stage + '%)')
                 .on 'mousemove', () ->
                     tooltip
-                        .style('left', (d3.event.clientX + 10) + 'px')
-                        .style('top', (d3.event.clientY - tooltip.node().clientHeight - 10) + 'px');
+                        .style('left', (d3.event.clientX + 6) + 'px')
+                        .style('top', (d3.event.clientY - tooltip.node().clientHeight - 6) + 'px');
                 .on 'mouseleave', () ->
                     d3.select(this).classed 'hovered', false
                     tooltip.classed 'active', false
