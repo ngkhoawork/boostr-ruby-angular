@@ -1,8 +1,14 @@
 #initiatives-summary-dashboard {
     color: $main-font-color;
     background-color: #F5F5F5;
-    //min-height: calc(100vh - 150px);
-    //height: auto;
+    min-height: calc(100vh - 150px);
+    overflow-x: auto;
+    .initiatives-inner {
+        padding: 0 40px;
+        width: 85%;
+        margin: 0 auto;
+        min-width: $content-min-width;
+    }
     a {
         color: $secondary-color;
     }
@@ -43,10 +49,32 @@
             color: $secondary-font-color;
         }
     }
+    .chart-tooltip {
+        background-color: black;
+        border-radius: 4px;
+        position: fixed;
+        padding: 15px;
+        color: white;
+        opacity: 0;
+        transition: opacity 250ms;
+        pointer-events: none;
+        &.active {
+            opacity: 1;
+        }
+    }
     .initiatives-chart {
         height: auto;
         .axis {
             font: 10px sans-serif;
+        }
+        .data-rect {
+            stroke-width: 2;
+            stroke: rgba(255, 255, 255, 0);
+            transition: stroke 350ms;
+        }
+        .hovered {
+            stroke: #737075;
+            cursor: help;
         }
 
         .axis path,

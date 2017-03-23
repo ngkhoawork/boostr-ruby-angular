@@ -50,17 +50,19 @@
 
             drawChart = (data, chartId) ->
                 if !data || !data.length then return
+                chartContainer = angular.element('#chart-container')
+                tooltip = d3.select(chartId + '-tooltip')
                 delay = 500
                 duration = 1000
                 margin =
                     top: 50
                     left: 100
-                    right: 24
+                    right: 80
                     bottom: 24
                 barHeight = 35
                 barMargin = 25
                 legendHeight = 50
-                width = 1350
+                width = chartContainer.width() - margin.left - margin.right || 800
                 height = data.length * (barHeight + barMargin)
 
                 dataset = []
@@ -72,6 +74,7 @@
                         dataset[j][i] =
                             x: initiative.name
                             y: number
+                            stage: stage
                         for item, k in data
                             if item.chart_data[stage] is undefined
                                 dataset[j][k] =
@@ -86,6 +89,7 @@
                             x: d.y
                             y: d.x
                             x0: d.y0
+                            stage: d.stage
 
                 svg = d3.select(chartId)
                     .attr('width', width + margin.left + margin.right)
@@ -116,15 +120,31 @@
                     .tickFormat (v) ->
                         $filter('formatMoney')(v)
                 yAxis = d3.svg.axis().scale(y).orient('left')
-                groups = svg.selectAll('g')
+
+                groups = svg.selectAll('g:not(.axis)')
                     .data(dataset)
                     .enter()
                     .append('g')
                     .style 'fill', (d, i) ->
                         if i is 0 then colors[0] else shadeColor colors[1], 0.15 * (i - 1)
 
+
                 rects = groups.selectAll('rect').data((d) -> d)
-                .enter().append('rect')
+                .enter()
+                .append('rect')
+                .attr('class', 'data-rect')
+                .on 'mouseenter', (d, i) ->
+                    d3.select(this).classed 'hovered', true
+                    tooltip
+                        .classed 'active', true
+                        .html($filter('currency')(d.x, undefined , 0) + ' (' + d.stage + '%)')
+                .on 'mousemove', () ->
+                    tooltip
+                        .style('left', (d3.event.clientX + 10) + 'px')
+                        .style('top', (d3.event.clientY - tooltip.node().clientHeight - 10) + 'px');
+                .on 'mouseleave', () ->
+                    d3.select(this).classed 'hovered', false
+                    tooltip.classed 'active', false
                 .attr 'x', 0
                 .attr 'y', (d, i) ->
                     (y d.y) + y.rangeBand() / 2 - barHeight / 2
@@ -154,11 +174,16 @@
                     .attr 'y2', (d) ->
                         (y d.name) + y.rangeBand() / 2 + barHeight / 1.3
 
-
                 svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')').call xAxis
-                svg.append('g').attr('class', 'axis').call yAxis
+                svg.append('g')
+                    .attr('class', 'axis')
+                    .call yAxis
+                    .each () ->
+                        firstChild = this.parentNode.firstChild
+                        if firstChild
+                            this.parentNode.insertBefore(this, firstChild)
 
-                #legend
+            #legend
                 legendData = [
                     {color: 'gray', label: 'Goal'}
                 ]
