@@ -88,4 +88,9 @@
                     %li{'ng-repeat': 'option in currentDeal.close_reason.options', 'ng-class': '{active: currentDeal.close_reason.option.name == option.name}'}
                         %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; updateDeal()'}
                             %span.text {{option.name}}
+    %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
+        %div.custom-field-item-label
+            %label Closed text
+        %div.custom-field-item-field
+            %input.editable{ 'ng-model': "currentDeal.closed_reason_text", name: "closed_reason_text", placeholder: 'Enter text', 'ng-blur': 'updateDeal()' }
 
