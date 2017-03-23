@@ -49,6 +49,7 @@
   $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
 
+
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
     .then (respond) ->
@@ -88,7 +89,6 @@
       return
 
     $scope.fileToUploadTst = file
-    # console.log 'file', file
     $scope.progressBarCur = 0
     $scope.uploadFile.status = 'LOADING'
     $scope.uploadFile.name = file.name
@@ -136,8 +136,6 @@
             $scope.dealFiles.push response.data
 
         $scope.uploadFile.status = 'SUCCESS'
-        # console.log "$scope.uploadFile.status", $scope.uploadFile.status
-        # console.log('uploaded', assemblyJson)
         $timeout (->
           $scope.progressBarCur = 0
           return
@@ -264,13 +262,18 @@
   $scope.getCompanyCurrencies = ->
     Currency.active_currencies().then (currencies) ->
       $scope.currencies = currencies
+  $scope.getCompanyCurrencies()
 
-  $scope.updateDealCurrency = ->
+  $scope.updateDealCurrency = (currentDeal, curr_cd)->
     $scope.errors = {}
-    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
+    currentDeal.curr_cd = curr_cd
+    Deal.update(id: currentDeal.id, deal: currentDeal).then(
       (deal) ->
         $scope.setCurrentDeal(deal)
       (resp) ->
+        $timeout ->
+          delete $scope.errors.curr_cd
+        , 6000
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
@@ -300,6 +303,7 @@
     Stage.query().$promise.then (stages) ->
       $scope.stages = stages.filter (stage) ->
         stage.active
+  $scope.getStages()
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()
@@ -428,6 +432,11 @@
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
+  $scope.$on 'deal_product_added', (e, deal) ->
+    $scope.currentDeal = deal
+    $scope.selectedStageId = deal.stage_id
+    $scope.setBudgetPercent(deal)
+
   $scope.resetDealProduct = ->
     $scope.deal_product = {
       deal_product_budgets: []
@@ -589,6 +598,9 @@
               else
                 $scope.init()
             (resp) ->
+              $timeout ->
+                delete $scope.errors.stage
+              , 6000
               for key, error of resp.data.errors
                 $scope.errors[key] = error && error[0]
           )
@@ -603,12 +615,14 @@
           $scope.errors[key] = error && error[0]
     )
 
+  $scope.findById = (arr, id)->
+    _.findWhere arr, id: id
+
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.setCurrentDeal(deal)
 
   $scope.onEditableBlur = () ->
-#    console.log("ddd")
   $scope.verifyMembersShare = ->
     share_sum = 0
     _.each $scope.currentDeal.members, (member) ->
@@ -650,6 +664,9 @@
       (deal_contact) ->
         true
       (resp) ->
+        $timeout ->
+          delete deal_contact.errors.role
+        , 6000
         deal_contact.role = null
         for key, error of resp.data.errors
           deal_contact.errors[key] = error && error[0]
@@ -687,6 +704,17 @@
         currentDeal: ->
           currentDeal
 
+  $scope.showNewProductModal = (currentDeal) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_new_product_form.html'
+      size: 'lg'
+      controller: 'DealNewProductController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        currentDeal: ->
+          currentDeal
+
   $scope.addContact = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_add_form.html'
@@ -709,6 +737,7 @@
     $scope.createNewContactModal()
 
   $scope.$on 'updated_deals', ->
+    console.log 'UPDATED'
     $scope.init()
 
   $scope.$on 'deal_update_errors', (event, errors) ->

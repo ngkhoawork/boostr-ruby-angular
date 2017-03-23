@@ -1,0 +1,68 @@
+.deal-stats.block
+	%div.stats-body
+		%div.deal-title
+			%span.main-title
+				{{currentDeal.name}}
+				%i.fa.fa-pencil.edit-deal{'ng-click': 'showDealEditModal(currentDeal)'}
+				%i.fa.fa-trash.delete-deal{'ng-click': 'deleteDeal(currentDeal)'}
+			.deal-info
+				{{currentDeal.advertiser.name || ''}}
+				{{currentDeal.advertiser.name && currentDeal.agency.name && '|'}}
+				{{currentDeal.agency.name || ''}}
+
+		.clearfix
+		%div.stats-numbers
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Campaign Period
+						.title.bs-datepicker
+							%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.start_date', click: 'startOpened = !startOpened', change: 'updateDeal()' }, 'is-open': 'startOpened' }
+								{{currentDeal.start_date | date}}
+							{{'-'}}
+							%span.no-wrap-line
+								%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentDeal.end_date', click: 'endOpened = !endOpened', change: 'updateDeal()' }, 'is-open': 'endOpened' }
+									{{currentDeal.end_date | date}}
+								%span.caret
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Total Amount
+						.title {{currentDeal.budget_loc | currency: currency_symbol : 0}}
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Forecast Amount
+						.title {{currentDeal.budget_loc * currentDeal.stage.probability / 100 | currency: currency_symbol : 0}}
+
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						%span.error-tooltip{'ng-show': 'errors.stage'} {{ errors.stage }}
+						.description Current Stage
+						.dropdown
+							%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+								%span.title.editable
+									{{currentDeal.stage.probability + '%'}} -
+									%span.no-wrap-line
+										{{currentDeal.stage.name}}
+										%span.caret
+							%ul.dropdown-menu
+								%li{'ng-repeat': 'stage in stages', 'ng-class': '{active: currentDeal.stage.name == stage.name}'}
+									%a{'href': '', 'ng-click': 'updateDealStage(currentDeal, stage.id)'}
+										%span.text {{stage.name}}
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						%span.error-tooltip{'ng-show': 'errors.curr_cd'} {{ errors.curr_cd }}
+						.description Deal Currency
+						.dropdown
+							%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+								%span.title.editable {{currentDeal.curr_cd}}
+								%span.caret
+							%ul.dropdown-menu
+								%li{'ng-repeat': 'currency in currencies', 'ng-class': '{active: currentDeal.curr_cd == currency.curr_cd}'}
+									%a{'href': '', 'ng-click': 'updateDealCurrency(currentDeal, currency.curr_cd)'}
+										%span.text {{currency.name}}

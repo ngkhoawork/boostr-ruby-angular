@@ -483,6 +483,37 @@
       color: $main-font-color;
     }
   }
+  .product-budget {
+    .total-budget-wrap {
+      position: relative;
+    }
+    input {
+      padding-right: 55px;
+    }
+    .total-percent {
+      color: $secondary-font-color;
+      font-weight: bold;
+      top: 14px;
+      right: 15px;
+      position: absolute;
+      &.has-error {
+        color: $error-color;
+        right: 65px;
+      }
+    }
+    .reset-budget {
+      font-size: 30px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: none;
+      cursor: pointer;
+      &.has-error {
+        color: $error-color;
+        display: inline-block;
+      }
+    }
+  }
 }
 .modal-backdrop.in {
   height: 100%;
