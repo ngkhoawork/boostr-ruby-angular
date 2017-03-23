@@ -10,7 +10,7 @@ class Operative::AdvertiserRepresenter < Representable::Decorator
   property :operative_name, as: :name, exec_context: :decorator
   property :roles, decorator: Operative::AccountRolesRepresenter, exec_context: :decorator
   property :contact, decorator: Operative::ContactsRepresenter, exec_context: :decorator, wrap: :contacts,
-           if: -> (options) { options[:advertiser].eql? true }
+           if: -> (options) { options[:advertiser].eql?(true) && options[:contact].eql?(true) }
 
   def external_id
     "boostr_#{advertiser.id}_#{advertiser.company.name}_account"
