@@ -176,9 +176,19 @@ RSpec.describe IoCsv, type: :model do
     end
 
     it 'sets temp_io currency code' do
+      exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
       io_csv(io_external_number: temp_io.external_io_number, io_curr_cd: 'GBP').perform
       expect(temp_io.reload.curr_cd).to eql 'GBP'
     end
+  end
+
+  def currency(opts={})
+    @_currency ||= create :currency, opts
+  end
+
+  def exchange_rate(opts={})
+    opts[:company_id] = company.id
+    @_exchange_rate ||= create :exchange_rate, opts
   end
 
   def deal(opts={})
