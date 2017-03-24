@@ -64,7 +64,9 @@
                 legendHeight = 50
                 width = chartContainer.width() - margin.left - margin.right || 800
                 height = data.length * (barHeight + barMargin)
-
+                
+                getColor = (i) -> if i is 0 then colors[0] else shadeColor colors[1], 0.15 * (i - 1)
+                
                 dataset = []
                 data.forEach (initiative, i) ->
                     data.stages.forEach (stage, j) ->
@@ -75,6 +77,7 @@
                             x: initiative.name
                             y: number
                             stage: stage
+                            color: getColor(j)
                         for item, k in data
                             if item.chart_data[stage] is undefined
                                 dataset[j][k] =
@@ -89,7 +92,8 @@
                             x: d.y
                             y: d.x
                             x0: d.y0
-                            stage: d.stage
+                            stage: if d.stage == '100' then 'Won' else d.stage + '%'
+                            color: d.color
 
                 svg = d3.select(chartId)
                     .attr('width', width + margin.left + margin.right)
@@ -121,13 +125,11 @@
                         $filter('formatMoney')(v)
                 yAxis = d3.svg.axis().scale(y).orient('left')
 
-                groups = svg.selectAll('g:not(.axis)')
+                groups = svg.selectAll('g')
                     .data(dataset)
                     .enter()
                     .append('g')
-                    .style 'fill', (d, i) ->
-                        if i is 0 then colors[0] else shadeColor colors[1], 0.15 * (i - 1)
-
+                    .style 'fill', (d, i) -> getColor(i)
 
                 rects = groups.selectAll('rect').data((d) -> d)
                 .enter()
@@ -137,7 +139,12 @@
                     d3.select(this).classed 'hovered', true
                     tooltip
                         .classed 'active', true
-                        .html($filter('currency')(d.x, undefined , 0) + ' (' + d.stage + '%)')
+                        .html("""
+                            <div><b>#{d.y}</b></div>
+                            <span class="legend" style="background-color: #{d.color}"></span>
+                            <span>#{d.stage}</span>
+                            <span><b>#{$filter('currency')(d.x, undefined , 0)}</b></span>
+                        """)
                 .on 'mousemove', () ->
                     tooltip
                         .style('left', (d3.event.clientX + 6) + 'px')

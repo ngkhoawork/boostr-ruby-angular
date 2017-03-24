@@ -50,14 +50,27 @@
         }
     }
     .chart-tooltip {
-        background-color: black;
+        background-color: white;
         border-radius: 4px;
         position: fixed;
         padding: 8px 12px;
-        color: white;
+        color: $main-font-color;
         opacity: 0;
         transition: opacity 250ms;
         pointer-events: none;
+        border: 1px solid black;
+        span:nth-child(3) {
+            margin-right: 8px;
+        }
+        .legend {
+            margin-right: 4px;
+            width: 13px;
+            height: 13px;
+            border-radius: 3px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-bottom: 2px;
+        }
         &.active {
             opacity: 1;
         }
