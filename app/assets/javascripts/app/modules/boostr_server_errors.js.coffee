@@ -33,6 +33,8 @@ angular.module('boostrServerErrors', [])
                             showError(res.statusText)
                         when 500
                             showError(res.statusText)
+                        when 503
+                            showError(res.statusText)
                         when 422
                             console.log res.data.errors
                             if res.data && res.data.errors then showError(res.data.errors)
