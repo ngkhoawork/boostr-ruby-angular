@@ -180,7 +180,7 @@ RSpec.describe Deal, type: :model do
       single_month_deal = create :deal, start_date: '2015-01-01', end_date: '2015-01-31'
       create :deal_product, deal: single_month_deal, product: product, budget: 1000
 
-      expect(single_month_deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(1000)
+      expect(single_month_deal.in_period_amt(time_period.start_date, time_period.end_date).round).to eq(1000)
     end
 
     it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
@@ -321,7 +321,7 @@ RSpec.describe Deal, type: :model do
       expect(deal.users.map(&:email)).to eq([data[:team].split('/')[0]])
       expect(deal.deal_members.map(&:share)).to eq([data[:team].split('/')[1].to_i])
       expect(deal.created_at).to eq(data[:created])
-      expect(deal.closed_at).to eq(Date.strptime(data[:closed_date], '%m/%d/%Y'))
+      expect(deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y'))
       expect(deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 
@@ -633,7 +633,7 @@ RSpec.describe Deal, type: :model do
 
       deal.save!
 
-      expect(deal.closed_at).to eq deal.created_at.to_date
+      expect(deal.closed_at).to eq deal.created_at
     end
 
     it 'when create deal with closed lost stage set closed_at date as created_at' do
@@ -649,7 +649,7 @@ RSpec.describe Deal, type: :model do
 
       deal.save!
 
-      expect(deal.closed_at).to eq deal.created_at.to_date
+      expect(deal.closed_at).to eq deal.created_at
     end
 
     it 'has not closed_at when create not open deal' do

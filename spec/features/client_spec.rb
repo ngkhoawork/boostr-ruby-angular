@@ -5,8 +5,8 @@ feature 'Clients' do
   let(:user) { create :user }
 
   describe 'showing client details' do
-    let!(:client) { create :client, created_by: user.id }
-    let!(:agency) { create :client, created_by: user.id }
+    let!(:client) { create :client, created_by: user.id, name: 'Arstozka' }
+    let!(:agency) { create :client, created_by: user.id, name: 'Blitz' }
     let!(:contacts) { create_list :contact, 2, clients: [client, agency] }
     let!(:deal) { create_list :deal, 2, advertiser: client, agency: agency }
     let!(:agency_deal) { create :deal, agency: agency }
@@ -31,7 +31,7 @@ feature 'Clients' do
           expect(page).to have_css('.well', count: 2)
         end
 
-        within '#deals' do
+        within '#client-deals' do
           expect(page).to have_css('.well', count: 2)
         end
 
@@ -50,7 +50,7 @@ feature 'Clients' do
     end
 
     scenario 'pops up a new client modal and creates a new client', js: true do
-      find_link('New Client').trigger('click')
+      find_link('New Account').trigger('click')
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
@@ -77,7 +77,7 @@ feature 'Clients' do
         expect(find('#details')).to have_text('Agency')
       end
 
-      find_link('New Client').trigger('click')
+      find_link('New Account').trigger('click')
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
@@ -191,7 +191,7 @@ feature 'Clients' do
         fill_in 'name', with: 'Bobby'
         fill_in 'email', with: 'bobby123@boostrcrm.com'
         fill_in 'position', with: 'CEO'
-        find('.add-address-btn').trigger('click')
+        find('.btn.add-btn').trigger('click')
         fill_in 'street1', with: '123 Any Street'
         fill_in 'city', with: 'Boise'
         ui_select('state', 'Idaho')
@@ -279,6 +279,7 @@ feature 'Clients' do
         fill_in 'end-date', with: '12/31/15'
 
         find_button('Create').trigger('click')
+        expect(page).not_to have_css('.error-text')
       end
 
       expect(page).to have_no_css('#deal_modal')
