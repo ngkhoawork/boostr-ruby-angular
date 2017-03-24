@@ -34,8 +34,13 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def ios_for_time_period
-    company.ios.for_time_period(params[:date].beginning_of_month, params[:date].end_of_month)
-           .includes(:content_fee_product_budgets, :display_line_item_budgets, :agency, :advertiser, deal: { deal_contacts: :contact })
+    company.ios.for_time_period(date.beginning_of_month, date.end_of_month)
+      .includes(:content_fee_product_budgets, :display_line_item_budgets, :agency,
+                :advertiser, deal: { deal_contacts: :contact })
+  end
+
+  def date
+    @_date ||= [params[:year], params[:month]].join(' ').to_date
   end
 
   def company
