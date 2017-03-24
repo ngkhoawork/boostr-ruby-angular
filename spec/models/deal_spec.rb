@@ -180,7 +180,7 @@ RSpec.describe Deal, type: :model do
       single_month_deal = create :deal, start_date: '2015-01-01', end_date: '2015-01-31'
       create :deal_product, deal: single_month_deal, product: product, budget: 1000
 
-      expect(single_month_deal.in_period_amt(time_period.start_date, time_period.end_date).round).to eq(1000)
+      expect(single_month_deal.in_period_amt(time_period.start_date, time_period.end_date)).to eq(1000)
     end
 
     it 'returns the whole budget of a deal product when the deal product is wholly within the same time period' do
