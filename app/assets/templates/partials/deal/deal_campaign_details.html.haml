@@ -90,7 +90,7 @@
                             %span.text {{option.name}}
     %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
         %div.custom-field-item-label
-            %label Closed text
+            %label Closed Comment
         %div.custom-field-item-field
-            %input.editable{ 'ng-model': "currentDeal.closed_reason_text", name: "closed_reason_text", placeholder: 'Enter text', 'ng-blur': 'updateDeal()' }
+            %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.closed_reason_text", name: "closed_reason_text", placeholder: 'Enter comment', 'ng-blur': 'updateDeal()' }
 

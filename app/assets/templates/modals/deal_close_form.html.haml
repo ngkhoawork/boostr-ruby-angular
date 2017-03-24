@@ -19,7 +19,8 @@
                 %span
                   %b {{option.name}}
       .form-group
-        %input.form-control{'ng-model': 'currentDeal.closed_reason_text'}
+        %label Comment
+        %textarea.form-control{'msd-elastic': '', rows: '1', 'ng-model': 'currentDeal.closed_reason_text', placeholder: 'Enter comment'}
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
