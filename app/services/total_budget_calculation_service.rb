@@ -31,7 +31,7 @@ class TotalBudgetCalculationService
     from = [time_dim.start_date.to_date, deal_prod_bud.start_date.to_date].max
     to = [time_dim.end_date.to_date, deal_prod_bud.end_date.to_date].min
     days = [(to - from) + 1, 0].max
-    (daily_budget * days * (probability / 100.0)).to_f.round
+    (daily_budget * days * (probability / 100.0)).to_f
   end
 
   def calculate_daily_budget(deal_product_budget)

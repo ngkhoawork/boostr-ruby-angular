@@ -10,14 +10,14 @@ describe AccountPipelineCalculatorService do
     end
     let(:deal) { create(:deal, advertiser: advertiser, company: company) }
     let(:time_dimension_out_of_bounds) { create(:time_dimension) }
-    let(:deal_product) { create(:deal_product, deal: deal, open: false) }
-
+    let(:deal_product) { create(:deal_product, deal: deal, open: true) }
 
     context 'when there are existing records in account pipeline table' do
       let!(:account_pipeline_fact) do
         create(:account_pipeline_fact,
                company_id: company.id,
-               account_dimension_id: account_dimension.id, time_dimension_id: time_dimension_out_of_bounds.id )
+               account_dimension_id: account_dimension.id,
+               time_dimension_id: time_dimension_out_of_bounds.id)
       end
 
       it 'destroys records if nothing to recalculate' do
