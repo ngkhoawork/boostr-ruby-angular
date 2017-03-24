@@ -221,7 +221,6 @@ class Api::DealsController < ApplicationController
       deal.created_by = current_user.id
       deal.updated_by = current_user.id
       # deal.set_user_currency
-
       if deal.save
         render json: deal, status: :created
       else

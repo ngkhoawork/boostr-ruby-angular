@@ -3,7 +3,7 @@ FactoryGirl.define do
     sequence(:name) { |n| "Team #{n}" }
 
     before(:create) do |item|
-      item.company = Company.first
+      item.company = Company.first if item.company.blank?
     end
   end
 
@@ -12,7 +12,7 @@ FactoryGirl.define do
     sequence(:name) { |n| "Child Team #{n}" }
 
     before(:create) do |item|
-      item.company = Company.first
+      item.company = Company.first if item.company.blank?
     end
   end
 end
