@@ -4,5 +4,4 @@ FactoryGirl.define do
     start_date "2016-10-05"
     end_date "2016-10-05"
   end
-
 end
