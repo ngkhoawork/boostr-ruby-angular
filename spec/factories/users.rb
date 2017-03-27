@@ -8,7 +8,7 @@ FactoryGirl.define do
     default_currency 'USD'
 
     before(:create) do |item|
-      item.company = Company.first
+      item.company = Company.first if item.company.blank?
       create(:currency) if Currency.find_by(curr_cd: 'USD').blank?
     end
   end

@@ -255,7 +255,7 @@ class Deal < ActiveRecord::Base
       from = [start_date, deal_product_budget.start_date].max
       to = [end_date, deal_product_budget.end_date].min
       num_days = (to.to_date - from.to_date) + 1
-      deal_product_budget.daily_budget * num_days
+      deal_product_budget.daily_budget.to_f * num_days
     end
   end
 

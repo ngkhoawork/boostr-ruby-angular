@@ -23,12 +23,6 @@ RSpec.describe Api::DealsController, type: :controller do
     let(:another_user) { create :user, company: company, team: team }
     let!(:another_deal_member) { create :deal_member, deal: team_deal, user: another_user  }
 
-    it 'returns a list of deals and products csv in zip' do
-      get :index, format: :zip
-      expect(response).to be_success
-      expect(response.body).to_not be_nil
-    end
-
     it 'returns a list of deals for the current_user' do
       get :index, format: :json
       expect(response).to be_success
@@ -61,7 +55,7 @@ RSpec.describe Api::DealsController, type: :controller do
         expect(response).to be_success
         response_json = JSON.parse(response.body)
         expect(response_json['created_by']).to eq(user.id)
-        expect(response_json['budget']).to eq(3_100_000)
+        expect(response_json['budget']).to eq('31000.0')
         expect(response_json['advertiser_id']).to eq(advertiser.id)
         expect(response_json['next_steps']).to eq(deal_params[:next_steps])
         expect(response_json['stage_id']).to eq(stage.id)

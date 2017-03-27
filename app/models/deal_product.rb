@@ -203,11 +203,10 @@ class DealProduct < ActiveRecord::Base
 
       if !(deal_product)
         deal_product = deal.deal_products.new
-        deal_product_is_new = true
       end
 
       if deal_product.update_attributes(deal_product_params)
-        deal_product.deal.update_total_budget if deal_product_is_new
+        deal_product.deal.update_total_budget
       else
         error = { row: row_number, message: deal_product.errors.full_messages }
         errors << error

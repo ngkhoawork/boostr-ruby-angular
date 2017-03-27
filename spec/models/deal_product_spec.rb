@@ -19,8 +19,8 @@ RSpec.describe DealProduct, type: :model do
       deal_product = create :deal_product, deal: deal, product: product, budget: 1_000
       deal_product_budgets = deal_product.deal_product_budgets
       expect(deal_product_budgets.count).to eq(2)
-      expect(deal_product_budgets.map(&:start_date)).to eq([Date.new(2015, 7, 1), Date.new(2015, 8, 1)])
-      expect(deal_product_budgets.map(&:end_date)).to eq([Date.new(2015, 7, 31), Date.new(2015, 8, 31)])
+      expect(deal_product_budgets.map(&:start_date)).to eq([deal.start_date, Date.new(2015, 8, 1)])
+      expect(deal_product_budgets.map(&:end_date)).to eq([Date.new(2015, 7, 31), deal.end_date])
       expect(deal_product_budgets.map(&:budget)).to eq([94, 906])
     end
   end
@@ -47,7 +47,7 @@ RSpec.describe DealProduct, type: :model do
 
     it 'updates total deal budget' do
       deal_product.update(budget: 8888)
-      expect(deal_product.deal.budget).to eq(8888)
+      expect(deal.reload.budget).to eq(8888)
     end
 
     context 'when sum of deal product budgets is not equal to the total budget' do
@@ -106,8 +106,8 @@ RSpec.describe DealProduct, type: :model do
       existing_deal_product.reload
 
       expect(deal_with_product.deal_products.count).to be 1
-      expect(deal_with_product.budget).to be (data[:budget])
-      expect(existing_deal_product.budget).to be (data[:budget])
+      expect(deal_with_product.budget.to_f).to eq (data[:budget])
+      expect(existing_deal_product.budget.to_f).to eq (data[:budget])
       expect(existing_deal_product.deal_product_budgets.count).to be 2
     end
 

@@ -22,7 +22,7 @@ feature 'Contacts' do
         fill_in 'email', with: 'abc12345@boostrcrm.com'
         fill_in 'position', with: 'CEO'
         ui_select('client', client.name)
-        find('.add-address-btn').trigger('click')
+        find('.btn.add-btn').trigger('click')
         fill_in 'street1', with: '123 Any Street'
         fill_in 'city', with: 'Boise'
         ui_select('state', 'Idaho')
@@ -53,7 +53,7 @@ feature 'Contacts' do
         fill_in 'email', with: 'abc123@boostrcrm.com'
         fill_in 'position', with: 'CFO'
         ui_select('client', client.name)
-        find('.add-address-btn').trigger('click')
+        find('.btn.add-btn').trigger('click')
         fill_in 'street1', with: '123 Any Road'
         fill_in 'city', with: 'Seattle'
         ui_select('state', 'Washington')
@@ -95,7 +95,6 @@ feature 'Contacts' do
         fill_in 'name', with: 'Bobby'
         fill_in 'email', with: 'abc123@boostrcrm.com'
         fill_in 'position', with: 'CEO'
-        find('.add-address-btn').trigger('click')
         fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Boise'
         ui_select('state', 'Idaho')

@@ -13,7 +13,8 @@ RSpec.describe ForecastTeam do
     let!(:member_quota) { create :quota, user: member, value: 2000, time_period: time_period }
     let(:stage) { create :stage, probability: 50 }
     let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
-    let!(:deal_product_budget) { create_list :deal_product_budget, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
+    let(:deal_product) { create :deal_product, deal: deal, budget: 10000 }
+    let!(:deal_product_budget) { create_list :deal_product_budget, 4, deal_product: deal_product, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
     let!(:deal_member1) { create :deal_member, deal: deal, user: leader, share: 50 }
     let!(:deal_member2) { create :deal_member, deal: deal, user: member, share: 50 }
     let(:forecast) { ForecastTeam.new(team, time_period.start_date, time_period.end_date) }
@@ -95,7 +96,8 @@ RSpec.describe ForecastTeam do
     context 'weighted_pipeline' do
       let(:stage) { create :stage, probability: 50 }
       let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
-      let!(:deal_product_budget) { create_list :deal_product_budget, 4, deal: deal, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
+      let(:deal_product) { create :deal_product, deal: deal, budget: 10000 }
+      let!(:deal_product_budget) { create_list :deal_product_budget, 4, deal_product: deal_product, budget: 2500, start_date: "2015-01-01", end_date: "2015-01-31" }
 
       it 'sums the weighted_pipeline' do
         create :deal_member, deal: deal, user: member, share: 50
