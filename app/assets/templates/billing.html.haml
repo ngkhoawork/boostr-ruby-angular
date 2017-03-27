@@ -31,191 +31,101 @@
 							%li{'ng-repeat': 'month in months', 'ng-class': '{active: selectedMonth == month}'}
 								%a{'href': '', 'ng-click': 'selectMonth(month)'}
 									%span {{month}}
+		%div{'ng-show': 'selectedMonth && selectedYear'}
+			.row.block.mb20
+				%div.mb20
+					%span.title IO's for Approval
+				%div{'ng-hide': 'iosForApproval.length'}
+					%h3 No Data Available
+				%table.table.table-hover{'ng-show': 'iosForApproval.length'}
+					%thead
+						%tr
+							%th IO #
+							%th Line #
+							%th Name
+							%th Advertiser
+							%th Agency
+							%th Currency
+							%th Billing Contact
+							%th Product
+							%th Ad Server Product
+							%th Revenue Type
+							%th Amount
+							%th Billing Status
+							%th VAT
+					%tbody
+						%tr{'ng-repeat': 'item in iosForApproval'}
+							%td
+								%b {{item.io_id}}
+							%td
+								%b {{item.line}}
+							%td {{item.io_name}}
+							%td {{item.advertiser_name}}
+							%td {{item.agency_name}}
+							%td {{item.currency}}
+							%td {{item.billing_contact_name}}
+							%td {{item.product_name}}
+							%td {{item.ad_server}}
+							%td {{item.revenue_type}}
+							%td {{item.amount | currency:'$':0 }}
+							%td{'ng-class': '{"pending-status": item.billing_status == "Pending"}'} {{item.billing_status}}
+							%td {{item.vat | currency:'$':0 }}
 
-		.row.block.mb20
-			%div.mb20
-				%span.title IO's for Approval
-			%table.table.table-hover
-				%thead
-					%tr
-						%th IO #
-						%th Line #
-						%th Name
-						%th Advertiser
-						%th Agency
-						%th Currency
-						%th Billing Contact
-						%th Product
-						%th Ad Server Product
-						%th Revenue Type
-						%th Amount
-						%th Billing Status
-						%th VAT
-				%tbody
-					%tr
-						%td
-							%b 188198
-						%td
-							%b 4444
-						%td Logan Release
-						%td Warner Brothers
-						%td Mindshare
-						%td USD
-						%td
-							%a{href: '', ng: {href: '/'}}
-								Joe Billing
-						%td Video
-						%td Elven Sports | Singapore | Mobile | 320x50
-						%td Display
-						%td $55,000
-						%td.pending-status Pending
-						%td $5,000
-					%tr
-						%td
-							%b 188198
-						%td
-							%b 4444
-						%td Logan Release
-						%td Warner Brothers
-						%td Mindshare
-						%td USD
-						%td
-							%a{href: '', ng: {href: '/'}}
-								Joe Billing
-						%td Video
-						%td Elven Sports | Singapore | Mobile | 320x50
-						%td Display
-						%td $55,000
-						%td.approved-status Approved
-						%td $5,000
-					%tr
-						%td
-							%b 188198
-						%td
-							%b 4444
-						%td Logan Release
-						%td Warner Brothers
-						%td Mindshare
-						%td USD
-						%td
-							%a{href: '', ng: {href: '/'}}
-								Joe Billing
-						%td Video
-						%td Elven Sports | Singapore | Mobile | 320x50
-						%td Display
-						%td $55,000
-						%td.approved-status Approved
-						%td $5,000
+			.row.block.mb20
+				%div.mb20
+					%span.title IO's Missing Display Line Items
+				%div{'ng-hide': 'iosMissingDisplayLineItems.length'}
+					%h3 No Data Available
+				%table.table.table-hover{'ng-show': 'iosMissingDisplayLineItems.length'}
+					%thead
+						%tr
+							%th IO #
+							%th Name
+							%th Advertiser
+							%th Agency
+							%th Currency
+							%th Billing Contact
+							%th Product
+							%th Details
+					%tbody
+						%tr{'ng-repeat': 'item in iosMissingDisplayLineItems'}
+							%td
+								%b {{item.id}}
+							%td {{item.name}}
+							%td {{item.advertiser_name}}
+							%td {{item.agency_name}}
+							%td {{item.currency}}
+							%td {{item.billing_contact_name}}
+							%td ---
+							%td {{item.details}}
 
-
-		.row.block.mb20
-			%div.mb20
-				%span.title IO's Missing Display Line Items
-			%table.table.table-hover
-				%thead
-					%tr
-						%th IO #
-						%th Name
-						%th Advertiser
-						%th Agency
-						%th Currency
-						%th Billing Contact
-						%th Product
-						%th Details
-				%tbody
-					%tr
-						%td
-							%b 188198
-						%td Logan Release
-						%td Warner Brothers
-						%td Mindshare
-						%td USD
-						%td
-							%a{href: '', ng: {href: '/'}}
-								Joe Billing
-						%td Video
-						%td Missing data from Ad Server
-					%tr
-						%td
-							%b 188198
-						%td Logan Release
-						%td Warner Brothers
-						%td Mindshare
-						%td USD
-						%td
-							%a{href: '', ng: {href: '/'}}
-								Joe Billing
-						%td Video
-						%td Missing data from Ad Server
-					%tr
-						%td
-							%b 188198
-						%td Logan Release
-						%td Warner Brothers
-						%td Mindshare
-						%td USD
-						%td
-							%a{href: '', ng: {href: '/'}}
-								Joe Billing
-						%td Video
-						%td Missing data from Ad Server
-
-
-		.row.block.mb20
-			%div.mb20
-				%span.title IO's Missing Monthly Actuals
-			%table.table.table-hover
-				%thead
-					%tr
-						%th IO #
-						%th Line #
-						%th Name
-						%th Advertiser
-						%th Agency
-						%th Currency
-						%th Billing Contact
-						%th Product
-						%th Ad Server Product
-				%tbody
-					%tr
-						%td
-							%b 188198
-						%td
-							%b 4444
-						%td Logan Release
-						%td Warner Brothers
-						%td Mindshare
-						%td USD
-						%td
-							%a{href: '', ng: {href: '/'}}
-								Joe Billing
-						%td Video
-						%td Elven Sports | Singapore | Mobile | 320x50
-					%tr
-						%td
-							%b 188198
-						%td
-							%b 4444
-						%td Logan Release
-						%td Warner Brothers
-						%td Mindshare
-						%td USD
-						%td
-							%a{href: '', ng: {href: '/'}}
-								Joe Billing
-						%td Video
-						%td Elven Sports | Singapore | Mobile | 320x50
-					%tr
-						%td
-							%b 188198
-						%td
-							%b 4444
-						%td Logan Release
-						%td Warner Brothers
-						%td Mindshare
-						%td USD
-						%td
-							%a{href: '', ng: {href: '/'}}
-								Joe Billing
-						%td Video
-						%td Elven Sports | Singapore | Mobile | 320x50
+			.row.block.mb20
+				%div.mb20
+					%span.title IO's Missing Monthly Actuals
+				%div{'ng-hide': 'iosMissingMonthlyActual.length'}
+					%h3 No Data Available
+				%table.table.table-hover{'ng-show': 'iosMissingMonthlyActual.length'}
+					%thead
+						%tr
+							%th IO #
+							%th Line #
+							%th Name
+							%th Advertiser
+							%th Agency
+							%th Currency
+							%th Billing Contact
+							%th Product
+							%th Ad Server Product
+					%tbody
+						%tr{'ng-repeat': 'item in iosMissingMonthlyActual'}
+							%td
+								%b {{item.io_id}}
+							%td
+								%b {{item.line_number}}
+							%td {{item.io_name}}
+							%td {{item.advertiser_name}}
+							%td {{item.agency_name}}
+							%td {{item.currency}}
+							%td {{item.billing_contact_name}}
+							%td {{item.product_name}}
+							%td {{item.ad_server}}
