@@ -11,21 +11,6 @@ class Api::BillingSummaryController < ApplicationController
 
   private
 
-  def ios_for_missing_display_line_items
-    ios_for_time_period
-      .with_won_deals
-      .with_open_deal_products
-      .with_display_revenue_type
-      .without_display_line_items
-  end
-
-  def ios_for_missing_display_line_items_serializer
-    ActiveModel::ArraySerializer.new(
-      ios_for_missing_display_line_items,
-      each_serializer: BillingSummary::IosForMissingDisplayLineItemsSerializer
-    )
-  end
-
   def ios_for_approval_serializer
     ActiveModel::ArraySerializer.new(
       ios_for_time_period,
@@ -39,6 +24,21 @@ class Api::BillingSummaryController < ApplicationController
     ActiveModel::ArraySerializer.new(
       ios_missing_monthly_actual,
       each_serializer: BillingSummary::IosMissingMonthlyActualSerializer
+    )
+  end
+
+  def ios_for_missing_display_line_items
+    ios_for_time_period
+      .with_won_deals
+      .with_open_deal_products
+      .with_display_revenue_type
+      .without_display_line_items
+  end
+
+  def ios_for_missing_display_line_items_serializer
+    ActiveModel::ArraySerializer.new(
+      ios_for_missing_display_line_items,
+      each_serializer: BillingSummary::IosForMissingDisplayLineItemsSerializer
     )
   end
 
