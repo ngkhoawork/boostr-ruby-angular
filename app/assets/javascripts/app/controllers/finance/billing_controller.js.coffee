@@ -8,6 +8,7 @@
             $scope.iosForApproval = []
             $scope.iosMissingDisplayLineItems = []
             $scope.iosMissingMonthlyActual = []
+            $scope.dataIsLoading = false
 
             $scope.selectMonth = (month) ->
                 $scope.selectedMonth = month
@@ -22,8 +23,8 @@
                     filter =
                         month: $scope.selectedMonth
                         year: $scope.selectedYear
+                    $scope.dataIsLoading = true
                     Billing.all(filter).then (data) ->
-                        console.log data
                         iosForApproval = _.map data.ios_for_approval, (item) ->
                             if item.content_fee_product_budgets[0]
                                 return item.content_fee_product_budgets[0]
@@ -33,5 +34,6 @@
                         $scope.iosForApproval =_.filter iosForApproval
                         $scope.iosMissingDisplayLineItems = data.ios_missing_display_line_items
                         $scope.iosMissingMonthlyActual = data.ios_missing_monthly_actual
+                        $scope.dataIsLoading = false
 
     ]

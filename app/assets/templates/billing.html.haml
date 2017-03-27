@@ -31,13 +31,14 @@
 							%li{'ng-repeat': 'month in months', 'ng-class': '{active: selectedMonth == month}'}
 								%a{'href': '', 'ng-click': 'selectMonth(month)'}
 									%span {{month}}
-		%div{'ng-show': 'selectedMonth && selectedYear'}
+
+		%div{'ng-if': 'selectedMonth && selectedYear'}
 			.row.block.mb20
 				%div.mb20
 					%span.title IO's for Approval
-				%div{'ng-hide': 'iosForApproval.length'}
-					%h3 No Data Available
-				%table.table.table-hover{'ng-show': 'iosForApproval.length'}
+				%div{'ng-show': '!iosForApproval.length && !dataIsLoading'}
+					%h4 No Data Available
+				%table.table.table-hover{'ng-hide': '!iosForApproval.length && !dataIsLoading'}
 					%thead
 						%tr
 							%th IO #
@@ -74,9 +75,9 @@
 			.row.block.mb20
 				%div.mb20
 					%span.title IO's Missing Display Line Items
-				%div{'ng-hide': 'iosMissingDisplayLineItems.length'}
-					%h3 No Data Available
-				%table.table.table-hover{'ng-show': 'iosMissingDisplayLineItems.length'}
+				%div{'ng-show': '!iosMissingDisplayLineItems.length && !dataIsLoading'}
+					%h4 No Data Available
+				%table.table.table-hover{'ng-hide': '!iosMissingDisplayLineItems.length && !dataIsLoading'}
 					%thead
 						%tr
 							%th IO #
@@ -85,8 +86,7 @@
 							%th Agency
 							%th Currency
 							%th Billing Contact
-							%th Product
-							%th Details
+							%th Detsails
 					%tbody
 						%tr{'ng-repeat': 'item in iosMissingDisplayLineItems'}
 							%td
@@ -96,15 +96,14 @@
 							%td {{item.agency_name}}
 							%td {{item.currency}}
 							%td {{item.billing_contact_name}}
-							%td ---
 							%td {{item.details}}
 
 			.row.block.mb20
 				%div.mb20
 					%span.title IO's Missing Monthly Actuals
-				%div{'ng-hide': 'iosMissingMonthlyActual.length'}
-					%h3 No Data Available
-				%table.table.table-hover{'ng-show': 'iosMissingMonthlyActual.length'}
+				%div{'ng-show': '!iosMissingMonthlyActual.length && !dataIsLoading'}
+					%h4 No Data Available
+				%table.table.table-hover{'ng-hide': '!iosMissingMonthlyActual.length && !dataIsLoading'}
 					%thead
 						%tr
 							%th IO #
