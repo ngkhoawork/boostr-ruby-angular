@@ -20,10 +20,10 @@ class Api::BillingSummaryController < ApplicationController
     )
   end
 
-  def ios_missing_monthly_actual_serializer
+  def ios_for_missing_display_line_items_serializer
     ActiveModel::ArraySerializer.new(
-      ios_missing_monthly_actual,
-      each_serializer: BillingSummary::IosMissingMonthlyActualSerializer
+      ios_for_missing_display_line_items,
+      each_serializer: BillingSummary::IosForMissingDisplayLineItemsSerializer
     )
   end
 
@@ -35,10 +35,10 @@ class Api::BillingSummaryController < ApplicationController
       .without_display_line_items
   end
 
-  def ios_for_missing_display_line_items_serializer
+  def ios_missing_monthly_actual_serializer
     ActiveModel::ArraySerializer.new(
-      ios_for_missing_display_line_items,
-      each_serializer: BillingSummary::IosForMissingDisplayLineItemsSerializer
+      ios_missing_monthly_actual,
+      each_serializer: BillingSummary::IosMissingMonthlyActualSerializer
     )
   end
 
