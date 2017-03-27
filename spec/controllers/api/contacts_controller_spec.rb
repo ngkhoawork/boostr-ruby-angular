@@ -15,7 +15,7 @@ RSpec.describe Api::ContactsController, type: :controller do
   end
 
   describe "GET #index" do
-    let!(:contacts) { create_list :contact, 15, company: user.company }
+    let!(:contacts) { create_list :contact, 15, company: user.company, created_by: user.id }
     let!(:client_contacts) { create_list :contact, 5, company: user.company, clients: [client] }
     let!(:team_contacts) { create_list :contact, 7, company: user.company, clients: [team_client] }
 
@@ -43,6 +43,13 @@ RSpec.describe Api::ContactsController, type: :controller do
       expect(response.headers['X-Total-Count']).to eq(user.company.contacts.count.to_s)
       response_json = JSON.parse(response.body)
       expect(response_json.length).to eq(limit)
+    end
+
+    it 'lists unassigned contacts' do
+      get :index, unassigned: 'yes', format: :json
+      expect(response).to be_success
+      response_json = JSON.parse(response.body)
+      expect(response_json.length).to eq 15
     end
 
     context 'filters' do
@@ -77,7 +84,7 @@ RSpec.describe Api::ContactsController, type: :controller do
 
     it 'returns errors if the contact is invalid' do
       expect{
-        post :create, contact: { addresses_attributes: address_params }, format: :json
+        post :create, contact: { client_id: client2.id, addresses_attributes: address_params }, format: :json
         expect(response.status).to eq(422)
         response_json = JSON.parse(response.body)
         expect(response_json['errors']['name']).to eq(["can't be blank"])
@@ -86,10 +93,10 @@ RSpec.describe Api::ContactsController, type: :controller do
   end
 
   describe "PUT #update" do
-    let(:contact) { create :contact, clients: [client] }
+    let(:contact) { create :contact, clients: [client], client_id: client.id }
 
     it 'updates a contact successfully' do
-      put :update, id: contact.id, contact: { name: 'New Name' }, format: :json
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json['name']).to eq('New Name')
