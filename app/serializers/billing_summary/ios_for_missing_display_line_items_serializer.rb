@@ -1,5 +1,6 @@
 class BillingSummary::IosForMissingDisplayLineItemsSerializer < ActiveModel::Serializer
-  attributes :id, :name, :advertiser_name, :agency_name, :curr_cd, :billing_contact_name, :billing_contact_id, :details
+  attributes :id, :name, :advertiser_name, :agency_name, :curr_cd, :billing_contact_name, :billing_contact_id,
+             :details
 
   def advertiser_name
     object.advertiser.name if object.advertiser.present?

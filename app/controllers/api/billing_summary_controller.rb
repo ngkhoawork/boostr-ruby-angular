@@ -44,7 +44,7 @@ class Api::BillingSummaryController < ApplicationController
 
   def ios_missing_monthly_actual
     DisplayLineItem.where(io: ios_for_time_period)
-                   .joins(:display_line_item_budgets).without_budgets_by_date(start_date, end_date)
+                   .joins(:display_line_item_budgets).without_budgets_by_date(start_date, end_date).uniq
   end
 
   def ios_for_time_period
