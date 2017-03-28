@@ -10,6 +10,9 @@
 				.col-xs-6
 					%upload-file{'deal-files': 'dealFiles'}
 		.col-xs-3
+			%div.block.warning-message{'ng-class': '{"show-warning": showShareWarning}'}
+				%i.fa.fa-times.pull-right{'ng-click': 'splitWarning($event)'}
+				%div Warning - you have 0% split share on this Deal.  Update your split % if incorrect.
 			%div{'ng-include': '"partials/deal/deal_next_steps.html"'}
 			%div{'ng-include': '"partials/deal/deal_campaign_details.html"'}
 			%div{'ng-include': '"partials/dashboard/activity.html"'}

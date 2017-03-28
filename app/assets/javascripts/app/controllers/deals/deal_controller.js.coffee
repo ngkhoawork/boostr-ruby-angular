@@ -24,9 +24,11 @@
   'Transloadit',
   'DealCustomFieldName',
   'Currency',
-($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, Currency) ->
+  'CurrentUser'
+($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, Currency, CurrentUser) ->
 
   $scope.showMeridian = true
+  $scope.showShareWarning = false
   $scope.feedName = 'Deal Updates'
   $scope.types = []
   $scope.contacts = []
@@ -49,6 +51,18 @@
   $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
 
+  $scope.checkCurrentUserDealShare = (members) ->
+    CurrentUser.get().$promise.then (currentUser) ->
+      _.forEach members, (member) ->
+          if member.user_id == currentUser.id
+            $scope.showShareWarning = !(member.share > 0)
+
+  $scope.splitWarning = (e) ->
+    $scope.showShareWarning = false
+#    angular.element(e.currentTarget)
+#      .parent()
+#      .animate {height: 0, opacity: 0, padding: 0, margin: 0}, 300
+    return
 
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
@@ -158,12 +172,13 @@
    * END FileUpload
   ###
 
-  $scope.init = ->
+  $scope.init = (initialLoad) ->
     $scope.actRemColl = false;
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal)
+      if initialLoad then $scope.checkCurrentUserDealShare(deal.members)
       $scope.activities = deal.activities.map (activity) ->
         activity.activity_type_name = activity.activity_type && activity.activity_type.name
         activity
@@ -621,6 +636,7 @@
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.setCurrentDeal(deal)
+      $scope.checkCurrentUserDealShare(deal.members)
 
   $scope.onEditableBlur = () ->
   $scope.verifyMembersShare = ->
@@ -748,7 +764,7 @@
   $scope.$on 'updated_activities', ->
     $scope.init()
 
-  $scope.init()
+  $scope.init(true)
 
   $scope.setActiveTab = (tab) ->
     $scope.activeTab = tab

@@ -1,5 +1,28 @@
 #deal {
     overflow-x: auto;
+    .warning-message {
+        background-color: $error-color;
+        color: white;
+        transition: all 500ms;
+        opacity: 0;
+        height: 0;
+        margin: 0;
+        padding: 0;
+        &.show-warning {
+            opacity: 1;
+            padding: 20px;
+            margin: 0 0 30px 0;
+            height: auto;
+        }
+        .fa {
+            position: relative;
+            top: -8px;
+            right: -8px;
+            cursor: pointer;
+        }
+
+
+    }
     #deal-inner {
         min-width: 1280px;
     }
