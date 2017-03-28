@@ -33,6 +33,8 @@ class Api::BillingSummaryController < ApplicationController
       .with_open_deal_products
       .with_display_revenue_type
       .without_display_line_items
+      .includes(content_fees: [:content_fee_product_budgets], display_line_items: [:display_line_item_budgets],
+                agency: [:address], advertiser: [:address], deal: { deal_contacts: :contact })
   end
 
   def ios_missing_monthly_actual_serializer
@@ -50,8 +52,6 @@ class Api::BillingSummaryController < ApplicationController
   def ios_for_time_period
     @_ios_for_time_period ||=
       company.ios.for_time_period(start_date, end_date)
-      .includes(content_fees: [:content_fee_product_budgets], display_line_items: [:display_line_item_budgets],
-                agency: [:address], advertiser: [:address], deal: { deal_contacts: :contact })
   end
 
   def date

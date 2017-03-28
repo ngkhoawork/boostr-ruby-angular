@@ -1,4 +1,6 @@
 class DisplayLineItemBudget < ActiveRecord::Base
+  PENDING = 'Pending'.freeze
+
   belongs_to :display_line_item
 
   scope :by_date, -> (start_date, end_date) do

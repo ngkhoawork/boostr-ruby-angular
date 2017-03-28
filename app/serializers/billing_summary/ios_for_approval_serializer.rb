@@ -3,7 +3,7 @@ class BillingSummary::IosForApprovalSerializer < ActiveModel::Serializer
   has_many :display_line_item_budgets, serializer: BillingSummary::DisplayLineItemBudgetsSerializer
 
   def content_fee_product_budgets
-    object.content_fee_product_budgets.for_time_period(start_date, end_date)
+    object.content_fee_product_budgets.for_time_period(start_date, end_date).includes(content_fee: [:io, :product])
   end
 
   def display_line_item_budgets
