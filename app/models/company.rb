@@ -22,6 +22,7 @@ class Company < ActiveRecord::Base
   has_many :exchange_rates
   has_many :validations, dependent: :destroy
   has_many :api_configurations, dependent: :destroy
+  has_many :initiatives, dependent: :destroy
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'

@@ -13,6 +13,7 @@ class DealMember < ActiveRecord::Base
 
   scope :ordered_by_share, -> { order(share: :desc) }
   scope :not_account_manager_users, -> { includes(:user).where.not(users: {user_type: ACCOUNT_MANAGER}) }
+  scope :with_not_zero_share, -> { where('share > ?', 0) }
 
   def name
     user.name if user.present?

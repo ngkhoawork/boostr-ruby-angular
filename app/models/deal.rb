@@ -13,6 +13,7 @@ class Deal < ActiveRecord::Base
   belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
   belongs_to :stage_updator, class_name: 'User', foreign_key: 'stage_updated_by'
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
+  belongs_to :initiative
 
   has_one :io, class_name: "Io", foreign_key: 'io_number'
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
@@ -100,6 +101,9 @@ class Deal < ActiveRecord::Base
   scope :more_than_percent, -> (percentage)  { joins(:stage).where('stages.probability >= ?', percentage) }
   scope :by_values, -> (value_ids) { joins(:values).where('values.option_id in (?)', value_ids) unless value_ids.empty? }
   scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
+  scope :won, -> { closed.includes(:stage).where(stages: { probability: 100 }) }
+  scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
+  scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
 
   def integrate_with_operative
     if stage_id_changed? && operative_integration_allowed?

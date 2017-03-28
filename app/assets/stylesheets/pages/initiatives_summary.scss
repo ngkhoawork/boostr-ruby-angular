@@ -1,0 +1,115 @@
+#initiatives-summary-dashboard {
+    color: $main-font-color;
+    background-color: #F5F5F5;
+    min-height: calc(100vh - 150px);
+    overflow-x: auto;
+    .initiatives-inner {
+        padding: 0 40px;
+        width: 85%;
+        margin: 0 auto;
+        min-width: $content-min-width;
+    }
+    a {
+        color: $secondary-color;
+    }
+    .header {
+        margin: 20px -15px 30px;
+        .title {
+            padding-top: 10px;
+            display: inline-block;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-right: 20px;
+        }
+        .filter {
+            display: inline-block;
+            span {
+                display: inline-block;
+                padding: 12px 5px;
+                margin: 0 10px;
+                font-weight: bold;
+                cursor: pointer;
+                &.active {
+                    color: $main-color;
+                    border-bottom: 2px solid $main-color;
+                }
+            }
+        }
+    }
+    .sub-header {
+        margin: 30px -15px 20px;
+        span.title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        span:not(.title) {
+            cursor: pointer;
+            margin-left: 15px;
+            color: $secondary-font-color;
+        }
+    }
+    .chart-tooltip {
+        background-color: white;
+        border-radius: 4px;
+        position: fixed;
+        padding: 8px 12px;
+        color: $main-font-color;
+        opacity: 0;
+        transition: opacity 250ms;
+        pointer-events: none;
+        border: 1px solid black;
+        span:nth-child(3) {
+            margin-right: 8px;
+        }
+        .legend {
+            margin-right: 4px;
+            width: 13px;
+            height: 13px;
+            border-radius: 3px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-bottom: 2px;
+        }
+        &.active {
+            opacity: 1;
+        }
+    }
+    .initiatives-chart {
+        height: auto;
+        .axis {
+            font: 10px sans-serif;
+        }
+        .data-rect {
+            stroke-width: 2;
+            stroke: rgba(255, 255, 255, 0);
+            transition: stroke 350ms;
+        }
+        .hovered {
+            stroke: #847f85;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #d9dde0;
+            shape-rendering: crispEdges;
+        }
+        .goal-line {
+            stroke: $secondary-font-color;
+            stroke-width: 2;
+            stroke-dasharray: 6, 4;
+            shape-rendering: crispEdges;
+        }
+    }
+    table {
+        td.status {
+            color: $main-color !important;
+        }
+        tr.active-line {
+            td {
+                background-color: $separate-line-color;
+            }
+        }
+    }
+}

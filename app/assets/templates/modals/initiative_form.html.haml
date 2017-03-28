@@ -1,0 +1,39 @@
+#activity-form-modal.popup-modal
+    %form{'ng-submit': 'submitForm()'}
+        .popup-modal-header
+            {{headerPrefix}} Initiative
+            %span.close-btn{'ng-click': 'cancel()'} +
+        .popup-modal-body
+            .form-group{'ng-class':'{error: errors.name}'}
+                %span.error-text {{errors.name}}
+                %label
+                    Name
+                    %span.star *
+                %input.form-control{'placeholder': 'Initiative', 'ng-model': 'initiative.name'}
+            .col-xs-6.date
+                .form-group{'ng-class':'{error: errors.reminderDate}'}
+                    %span.error-text {{errors.reminderDate}}
+                    %label Goal
+                    %span.star *
+                    .input-group
+                        %span.input-group-addon
+                            %i.fa.fa-usd
+                        %input.form-control{'placeholder': '100', 'ng-model': 'initiative.goal', 'numbers-only': 'true'}
+            .col-xs-6.time
+                .form-group
+                    %label Status
+                    .dropdown
+                        %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                            %span
+                                %b {{initiative.status}}
+                            %span.caret
+                        %ul.dropdown-menu
+                            %li{'ng-repeat': 'status in statuses', 'ng-class': '{active: status == initiative.status}'}
+                                %a{'href': '', 'ng-click': 'setStatus(status)'}
+                                    %span
+                                        %b {{status}}
+            .clearfix
+
+        .popup-modal-footer
+            %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
+            %button.btn.btn-warning{'type': 'submit'} {{submitButtonText}}

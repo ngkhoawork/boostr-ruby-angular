@@ -50,7 +50,6 @@
       $scope.userReportValues.push(fullReport)
 
     _.each $scope.types, (type) ->
-      console.log(type.name)
       $scope.total_activities[type.name] = 0 if $scope.total_activities[type.name] == undefined
 
   $scope.updateTimePeriod = (time_period_id) ->
