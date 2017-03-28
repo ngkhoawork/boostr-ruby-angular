@@ -9,6 +9,33 @@ class Api::BillingSummaryController < ApplicationController
     }
   end
 
+  def update_quantity
+    if display_line_item_budget.update(display_line_item_budget_params)
+      display_line_item_budget.update({ budget: calculate_budget })
+      display_line_item.update(manual_override: true)
+
+      render json: { budget: display_line_item_budget.budget, quantity: display_line_item_budget.quantity}
+    else
+      render json: { errors: display_line_item_budget.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  def update_display_line_item_budget_billing_status
+    if display_line_item_budget.update(display_line_item_budget_params)
+      render json: { billing_status: display_line_item_budget.billing_status }
+    else
+      render json: { errors: display_line_item_budget.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  def update_content_fee_product_budget
+    if content_fee_product_budget.update(content_fee_product_budget_params)
+      render json: { billing_status: content_fee_product_budget.billing_status, budget: content_fee_product_budget.budget }
+    else
+      render json: { errors: content_fee_product_budget.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def ios_for_approval_serializer
@@ -68,5 +95,29 @@ class Api::BillingSummaryController < ApplicationController
 
   def company
     @_company ||= current_user.company
+  end
+
+  def display_line_item
+    @_display_line_item ||= display_line_item_budget.display_line_item
+  end
+
+  def display_line_item_budget
+    @_display_line_item_budget ||= DisplayLineItemBudget.find(params[:id])
+  end
+
+  def content_fee_product_budget
+    ContentFeeProductBudget.find(params[:id])
+  end
+
+  def display_line_item_budget_params
+    params.require(:display_line_item_budget).permit(:billing_status, :quantity)
+  end
+
+  def content_fee_product_budget_params
+    params.require(:content_fee_product_budget).permit(:billing_status, :budget)
+  end
+
+  def calculate_budget
+    (display_line_item_budget.quantity / 1000) * display_line_item.price.to_f
   end
 end

@@ -1,5 +1,10 @@
 class BillingSummary::DisplayLineItemBudgetsSerializer < BillingSummary::BasicFieldsIosForApprovalSerializer
-  attributes :line, :ad_server, :amount, :billing_status
+  attributes :id, :display_line_item_id, :line, :ad_server, :amount, :billing_status, :ad_server_budget,
+             :ad_server_quantity, :quantity
+
+  def display_line_item_id
+    display_line_item.id
+  end
 
   def line
     display_line_item.line_number
@@ -14,7 +19,7 @@ class BillingSummary::DisplayLineItemBudgetsSerializer < BillingSummary::BasicFi
   end
 
   def billing_status
-    'Pending'
+    object.billing_status || 'Pending'
   end
 
   private
