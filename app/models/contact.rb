@@ -45,14 +45,6 @@ class Contact < ActiveRecord::Base
     end
   end
 
-  def formatted_name
-    name
-  end
-
-  def primary_client_json
-    primary_client.as_json(override: true, only: [:id, :name, :client_type_id])
-  end
-
   def update_primary_client
     primary = self.primary_client
     if primary && primary.id != self.client_id

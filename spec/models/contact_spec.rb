@@ -121,14 +121,6 @@ RSpec.describe Contact, type: :model do
     end
   end
 
-  describe '#primary_client_json' do
-    let!(:contact) { create :contact, client_id: client.id }
-
-    it 'returns the primary client' do
-      expect(contact.primary_client_json).to eq({ id: client.id, name: client.name, client_type_id: client.client_type_id }.as_json)
-    end
-  end
-
   describe 'update_primary_client' do
     let!(:contact) { create :contact, client_id: client.id }
 

@@ -47,9 +47,9 @@ RSpec.describe Api::ContactsController, type: :controller do
 
     it 'lists unassigned contacts' do
       get :index, unassigned: 'yes', format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq 15
+      expect(response_json(response).length).to eq 15
     end
 
     context 'filters' do
@@ -98,8 +98,14 @@ RSpec.describe Api::ContactsController, type: :controller do
     it 'updates a contact successfully' do
       put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['name']).to eq('New Name')
+
+      expect(response_json(response)['name']).to eq('New Name')
+    end
+
+    it 'lists contact clients' do
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
+
+      expect(response_json(response)['clients'].length).to be 1
     end
 
     it 'sets the primary contact' do
