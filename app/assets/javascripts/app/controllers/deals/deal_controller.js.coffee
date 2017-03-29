@@ -163,7 +163,6 @@
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
-      console.log  deal
       $scope.setCurrentDeal(deal)
       $scope.activities = deal.activities.map (activity) ->
         activity.activity_type_name = activity.activity_type && activity.activity_type.name
