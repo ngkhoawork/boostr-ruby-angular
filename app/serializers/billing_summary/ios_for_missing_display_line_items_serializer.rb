@@ -1,5 +1,5 @@
 class BillingSummary::IosForMissingDisplayLineItemsSerializer < ActiveModel::Serializer
-  attributes :id, :name, :advertiser_name, :agency_name, :curr_cd, :billing_contact_name, :billing_contact_id,
+  attributes :id, :name, :advertiser_name, :agency_name, :currency, :billing_contact_name, :billing_contact_id,
              :details
 
   def advertiser_name
@@ -20,6 +20,10 @@ class BillingSummary::IosForMissingDisplayLineItemsSerializer < ActiveModel::Ser
 
   def billing_contacts
     @_billing_contacts ||= object.deal.ordered_by_created_at_billing_contacts
+  end
+
+  def currency
+    object.curr_cd
   end
 
   def details
