@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ForgotPasswordController, type: :controller do
+RSpec.describe Api::V1::ForgotPasswordController, type: :controller do
 
   let(:user) { create :user }
 

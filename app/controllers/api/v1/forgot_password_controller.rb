@@ -1,7 +1,6 @@
-class ForgotPasswordController < ApplicationController
+class Api::V1::ForgotPasswordController < ApiController
   respond_to :json
-  skip_before_action :authenticate_visitor, only: :create
-  skip_before_action :verify_authenticity_token, only: :create
+  skip_before_action :authenticate_token_user, only: :create
 
   def create
     if forgot_password_params.presence

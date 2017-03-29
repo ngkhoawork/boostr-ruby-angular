@@ -1,4 +1,4 @@
-class UserTokenController < Knock::AuthTokenController
+class Api::V1::UserTokenController < Knock::AuthTokenController
   rescue_from Knock.not_found_exception_class, with: :user_not_found
 
   def user_not_found

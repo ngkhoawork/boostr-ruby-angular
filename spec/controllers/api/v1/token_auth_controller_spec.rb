@@ -1,19 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe Api::RemindersController, type: :controller do
+RSpec.describe Api::V1::RemindersController, type: :controller do
   let(:company) { create :company }
   let(:team) { create :parent_team, company: company }
   let(:user) { create :user, company: company, team: team }
   let(:reminder_params) { attributes_for(:reminder, remindable_id: 130, remindable_type: "Deal") }
   let!(:reminder) { create(:reminder, remindable_id: 130, remindable_type: "Deal", user_id: user.id) }
-
-  before(:each) do
-    ActionController::Base.allow_forgery_protection = true
-  end
-
-  after(:all) do
-    ActionController::Base.allow_forgery_protection = false
-  end
 
   describe 'GET #index' do
     it 'returns json for all user\'s reminders' do
@@ -70,13 +62,6 @@ RSpec.describe Api::RemindersController, type: :controller do
         expect(response_json['errors']['remindable_id']).to eq(["can't be blank"])
       end.not_to change(Reminder, :count)
     end
-
-    it 'receives xsrf error if XHR header is not set' do
-      token_auth_wo_xhr_header(user)
-      expect do
-        post :create, reminder: {malformed: true}, format: :json
-      end.to raise_error(ActionController::InvalidAuthenticityToken)
-    end
   end
 
   describe 'PUT #update' do
@@ -108,13 +93,6 @@ RSpec.describe Api::RemindersController, type: :controller do
         expect(response_json['errors']['remindable_id']).to eq(["can't be blank"])
       end.not_to change(Reminder, :count)
     end
-
-    it 'receives xsrf error if XHR header is not set' do
-      token_auth_wo_xhr_header(user)
-      expect do
-        put :update, id: reminder.id, reminder: invalid_reminder, format: :json
-      end.to raise_error(ActionController::InvalidAuthenticityToken)
-    end
   end
 
   describe 'DELETE #destroy' do
@@ -126,12 +104,32 @@ RSpec.describe Api::RemindersController, type: :controller do
       expect(response).to be_success
       expect(reminder.reload.deleted_at).not_to be_nil
     end
+  end
 
-    it 'receives xsrf error if XHR header is not set' do
-      token_auth_wo_xhr_header(user)
-      expect do
-        delete :destroy, id: reminder.id, format: :json
-      end.to raise_error(ActionController::InvalidAuthenticityToken)
+  context 'token auth' do
+    it "responds with unauthorized to invalid token" do
+      invalid_token_auth
+      get :index
+      expect(response).to have_http_status :unauthorized
+    end
+
+    it "responds with unauthorized to invalid entity" do
+      invalid_entity_auth
+      get :index
+      expect(response).to have_http_status :unauthorized
+    end
+
+    it "responds with success if authenticated" do
+      valid_token_auth(user)
+      get :index
+      expect(response).to have_http_status :success
+    end
+
+    it "has a current_user after authentication" do
+      valid_token_auth(user)
+      get :index
+      expect(response).to have_http_status :success
+      assert @controller.current_user.id == user.id
     end
   end
 end

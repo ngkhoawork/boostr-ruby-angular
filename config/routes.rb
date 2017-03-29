@@ -12,15 +12,24 @@ Rails.application.routes.draw do
     put '/api/users/invitation/accept', to: 'api/invitations#update', as: 'user_invitation'
   end
 
-  # Token Auth
-  post 'api/user_token' => 'user_token#create'
-  post 'api/forgot_password' => 'forgot_password#create'
-  post 'api/resend_confirmation' => 'forgot_password#create'
-
   root 'pages#index'
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
+    scope module: :v1, constraints: ApiConstraints.new(version: 1) do
+      post 'forgot_password' => 'forgot_password#create'
+      post 'resend_confirmation' => 'forgot_password#create'
+
+      resources :user_token, only: [:create]
+      resources :states, only: [:index]
+      resources :forgot_password, only: [:create]
+      resources :activity_types, only: [:index]
+      resources :reminders, only: [:index, :show, :create, :update, :destroy]
+      resources :remindable, only: [] do
+        get '/:remindable_type', to: 'reminders#remindable'
+      end
+    end
+
     resources :countries, only: [:index]
     resources :api_configurations
     resources :integration_types, only: [:index]

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe UserTokenController, type: :controller do
+RSpec.describe Api::V1::UserTokenController, type: :controller do
   let(:user) { create :user, password: 'password' }
 
   describe "POST #create" do
