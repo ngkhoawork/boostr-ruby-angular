@@ -1,4 +1,4 @@
-#user_quota_modal
+#custom-fields-modal
   %form.form-horizontal{ ng: { submit: 'submitForm()' } }
     .modal-header.text-center
       %a.close{ ng: { click: 'cancel()' } }
@@ -25,6 +25,17 @@
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'fieldType.value as fieldType in fieldTypes | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'fieldType.name' } } }
+      .form-group{ ng: { if: 'dealCustomFieldName.field_type == "dropdown"', class:'{error: errors.field_type}' } }
+        .row
+          .col-xs-12
+            %label.control-label{ for: 'field_type' }
+              Dropdown Options
+              %span.star *
+            .dropdown-options
+              .dropdown-option{ ng: { repeat: 'customFieldOption in customFieldOptions track by $index', init: "customFieldOptionIndex = $index" } }
+                %input.form-control.option-field{ placeholder: "{{'Value ' + (customFieldOptionIndex + 1)}}", ng: { model: 'customFieldOptions[customFieldOptionIndex]["value"]' } }
+                %i.fa.fa-plus{ "aria-hidden": "true", "ng-click": "addCustomFieldOption()", "ng-if": "customFieldOptions.length == customFieldOptionIndex + 1" }
+                %i.fa.fa-times{ "aria-hidden": "true", "ng-click": "removeCustomFieldOption(customFieldOptionIndex)", "ng-if": "customFieldOptions.length > customFieldOptionIndex + 1" }
       .form-group{ ng: { class:'{error: errors.field_type}'} }
         .row
           .col-xs-12

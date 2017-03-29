@@ -1,5 +1,9 @@
 class DealCustomFieldName < ActiveRecord::Base
   belongs_to :company
+  has_many :deal_custom_field_options, dependent: :destroy
+
+  accepts_nested_attributes_for :deal_custom_field_options
+
   scope :by_type, -> type { where(field_type: type) if type.present? }
 
   def self.get_field_limit(type)
@@ -13,7 +17,8 @@ class DealCustomFieldName < ActiveRecord::Base
         "number" => 7,
         "integer" => 7,
         "boolean" => 3,
-        "percentage" => 5
+        "percentage" => 5,
+        "dropdown" => 7
     }
     field_limits[type]
   end

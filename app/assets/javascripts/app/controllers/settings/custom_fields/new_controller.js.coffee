@@ -7,12 +7,20 @@
     $scope.submitText = "Create"
     $scope.dealCustomFieldName = dealCustomFieldName
     $scope.fieldTypes = DealCustomFieldName.field_type_list
+    $scope.customFieldOptions = [ {id: null, value: ""} ]
     $scope.errors = {}
     $scope.responseErrors = {}
     $scope.requiredChoices = [
       {name: "Yes", value: true},
       {name: "No", value: false}
     ]
+
+  $scope.addCustomFieldOption = () ->
+    $scope.customFieldOptions.push({id: null, value: ""})
+
+  $scope.removeCustomFieldOption = (index) ->
+    $scope.customFieldOptions.splice(index, 1)
+
 
   $scope.submitForm = () ->
     $scope.errors = {}
@@ -30,6 +38,12 @@
           if !field then return $scope.errors[key] = 'Position is required'
 
     if Object.keys($scope.errors).length > 0 then return
+
+    $scope.dealCustomFieldName.dealCustomFieldOptions = []
+    $scope.customFieldOptions.forEach (item) ->
+      if (item['value'].trim() != "")
+        $scope.dealCustomFieldName.dealCustomFieldOptions.push(item)
+
 
     $scope.buttonDisabled = true
     DealCustomFieldName.create(deal_custom_field_name: $scope.dealCustomFieldName).then(

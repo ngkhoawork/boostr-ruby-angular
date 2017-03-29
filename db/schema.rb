@@ -11,7 +11,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170321223541) do
+ActiveRecord::Schema.define(version: 20170327163823) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -334,6 +335,15 @@ ActiveRecord::Schema.define(version: 20170321223541) do
 
   add_index "deal_custom_field_names", ["company_id"], name: "index_deal_custom_field_names_on_company_id", using: :btree
 
+  create_table "deal_custom_field_options", force: :cascade do |t|
+    t.integer  "deal_custom_field_name_id"
+    t.string   "value"
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
+  add_index "deal_custom_field_options", ["deal_custom_field_name_id"], name: "index_deal_custom_field_options_on_deal_custom_field_name_id", using: :btree
+
   create_table "deal_custom_fields", force: :cascade do |t|
     t.integer  "company_id"
     t.integer  "deal_id"
@@ -389,6 +399,13 @@ ActiveRecord::Schema.define(version: 20170321223541) do
     t.decimal  "percentage5",    precision: 5,  scale: 2
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
+    t.string   "dropdown1"
+    t.string   "dropdown2"
+    t.string   "dropdown3"
+    t.string   "dropdown4"
+    t.string   "dropdown5"
+    t.string   "dropdown6"
+    t.string   "dropdown7"
   end
 
   add_index "deal_custom_fields", ["company_id"], name: "index_deal_custom_fields_on_company_id", using: :btree
@@ -931,6 +948,7 @@ ActiveRecord::Schema.define(version: 20170321223541) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "csv_import_logs", "companies"
   add_foreign_key "deal_custom_field_names", "companies"
+  add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
   add_foreign_key "deal_custom_fields", "companies"
   add_foreign_key "deal_custom_fields", "deals"
   add_foreign_key "deal_logs", "deals"

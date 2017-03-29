@@ -2,7 +2,13 @@ class Api::DealCustomFieldNamesController < ApplicationController
   respond_to :json
 
   def index
-    render json: deal_custom_field_names.order("position asc")
+    render json: deal_custom_field_names.order("position asc").as_json({
+        include: {
+            deal_custom_field_options: {
+                only: [:id, :value]
+            }
+        }
+    })
   end
 
   def show
@@ -10,6 +16,13 @@ class Api::DealCustomFieldNamesController < ApplicationController
   end
 
   def update
+    if !deal_custom_field_name_params[:deal_custom_field_options_attributes].nil? && deal_custom_field_name_params[:deal_custom_field_options_attributes].count > 0
+      option_ids = deal_custom_field_name_params[:deal_custom_field_options_attributes].map{ |option| option[:id] }
+      deal_custom_field_name.deal_custom_field_options.where('id NOT IN (?)', option_ids).destroy_all
+    else
+      deal_custom_field_name.deal_custom_field_options.destroy_all
+    end
+
     if deal_custom_field_name.update_attributes(deal_custom_field_name_params)
       render json: deal_custom_field_name, status: :accepted
     else
@@ -54,7 +67,12 @@ class Api::DealCustomFieldNamesController < ApplicationController
   end
 
   def deal_custom_field_name_params
-    params.require(:deal_custom_field_name).permit(:field_type, :field_label, :is_required, :position, :show_on_modal, :disabled)
+    params.require(:deal_custom_field_name).permit(
+        :field_type, :field_label, :is_required, :position, :show_on_modal, :disabled,
+        {
+            deal_custom_field_options_attributes: [:id, :value]
+        }
+    )
   end
 
   def deal_custom_field_names

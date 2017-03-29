@@ -5,6 +5,7 @@
       transformRequest = (original, headers) ->
         console.log(original)
         original.deal_custom_field_name.values_attributes = original.deal_custom_field_name.values
+        original.deal_custom_field_name.deal_custom_field_options_attributes = original.deal_custom_field_name.dealCustomFieldOptions
         angular.toJson(original)
 
       transformAddContactRequest = (original, headers) ->
@@ -33,6 +34,7 @@
         { name: 'Integer', value: 'integer' }
         { name: 'Boolean', value: 'boolean' }
         { name: 'Percentage', value: 'percentage' }
+        { name: 'Dropdown', value: 'dropdown' }
       ]
 
       @all = (params) ->
