@@ -342,7 +342,14 @@ class Api::DealsController < ApplicationController
                 :percentage2,
                 :percentage3,
                 :percentage4,
-                :percentage5
+                :percentage5,
+                :dropdown1,
+                :dropdown2,
+                :dropdown3,
+                :dropdown4,
+                :dropdown5,
+                :dropdown6,
+                :dropdown7
             ]
         }
     )
