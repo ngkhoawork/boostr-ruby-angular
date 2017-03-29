@@ -3,7 +3,7 @@ class Api::ContactsController < ApplicationController
 
   def index
     if params[:unassigned] == "yes"
-      results = current_user.company.contacts.unassigned(current_user.id)
+      results = unassigned_contacts
     elsif params[:name].present?
       results = suggest_contacts
     elsif params[:contact_name].present?
@@ -14,7 +14,7 @@ class Api::ContactsController < ApplicationController
       results = contacts
       response.headers['X-Total-Count'] = results.total_count
     end
-    render json: results
+    render json: results.includes(:primary_client, :address)
   end
 
   def create
@@ -43,7 +43,7 @@ class Api::ContactsController < ApplicationController
     if contact_params[:client_id].present? || params[:unassign] == true
       if contact.update_attributes(contact_params)
         contact.update_primary_client if params[:contact][:set_primary_client]
-        render json: contact.as_json(include: {clients: {}}), status: :accepted
+        render json: contact, serializer: ContactUpdateSerializer, status: :accepted
       else
         render json: { errors: contact.errors.messages }, status: :unprocessable_entity
       end
@@ -99,7 +99,7 @@ class Api::ContactsController < ApplicationController
   end
 
   def limit
-    params[:per].present? ? params[:per].to_i : 500
+    params[:per].present? ? params[:per].to_i : 50
   end
 
   def offset
@@ -112,6 +112,10 @@ class Api::ContactsController < ApplicationController
     else
       current_user.team
     end
+  end
+
+  def unassigned_contacts
+    current_user.company.contacts.unassigned(current_user.id).limit(limit)
   end
 
   def suggest_contacts(contacts_only = false)

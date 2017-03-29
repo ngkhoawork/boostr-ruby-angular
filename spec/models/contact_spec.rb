@@ -129,7 +129,7 @@ RSpec.describe Contact, type: :model do
       contact.client_id = client2.id
       contact.save
       contact.update_primary_client
-      expect(contact.primary_client).to eq(client2)
+      expect(contact.reload.primary_client).to eq(client2)
       expect(contact.clients).to eq([client2])
     end
   end

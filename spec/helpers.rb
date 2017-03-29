@@ -100,4 +100,8 @@ module Helpers
       end
     end
   end
+
+  def response_json(response)
+    JSON.parse response.body
+  end
 end
