@@ -192,3 +192,5 @@
                     {{ deal.deal_custom_field[fieldName] ? "Yes" : "No" }}
                   %span{'ng-if': 'dealCustomFieldName.field_type == "datetime"'}
                     {{ deal.deal_custom_field[fieldName] ? (deal.deal_custom_field[fieldName] | date: 'MM-dd-yyyy') : "N/A" }}
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "dropdown"'}
+                    {{deal.deal_custom_field[fieldName] || "N/A"}}
