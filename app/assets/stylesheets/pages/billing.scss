@@ -51,6 +51,14 @@
             }
         }
     }
+    .table-wrap {
+        overflow-x: auto;
+    }
+    .editable {
+        border: none;
+        border-bottom: 1px dashed $secondary-font-color;
+        white-space: nowrap;
+    }
     table.table {
         thead {
             background-color: white;
@@ -65,19 +73,38 @@
         }
         tbody {
             td {
+                //border: 2px solid red;
+                width: 100px;
                 color: lighten($main-font-color, 15%);
                 font-size: 13px;
-                &.pending-status {
+                &.pending-status .dropdown-toggle .text {
                     color: #FF7301;
                     font-weight: bold;
                 }
-                &.approved-status {
+                &.approved-status .dropdown-toggle .text {
                     color: #16A085;
+                    font-weight: bold;
+                }
+                &.ignore-status .dropdown-toggle .text {
+                    color: #ff2e2e;
                     font-weight: bold;
                 }
                 a {
                     color: $secondary-color;
                     font-weight: bold;
+                }
+                .dropdown {
+                    white-space: nowrap;
+                    padding: 3px 10px;
+                    cursor: pointer;
+                    border-bottom: 1px dashed $secondary-font-color;
+                    li:hover {
+                        background-color: $main-color;
+                        color: white
+                    }
+                    a {
+                        color: inherit;
+                    }
                 }
             }
         }

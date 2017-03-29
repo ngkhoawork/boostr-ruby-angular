@@ -38,93 +38,113 @@
 					%span.title IO's for Approval
 				%div{'ng-show': '!iosForApproval.length && !dataIsLoading'}
 					%h4 No Data Available
-				%table.table.table-hover{'ng-hide': '!iosForApproval.length && !dataIsLoading'}
-					%thead
-						%tr
-							%th IO #
-							%th Line #
-							%th Name
-							%th Advertiser
-							%th Agency
-							%th Currency
-							%th Billing Contact
-							%th Product
-							%th Ad Server Product
-							%th Revenue Type
-							%th Amount
-							%th Billing Status
-							%th VAT
-					%tbody
-						%tr{'ng-repeat': 'item in iosForApproval'}
-							%td
-								%b {{item.io_id}}
-							%td
-								%b {{item.line}}
-							%td {{item.io_name}}
-							%td {{item.advertiser_name}}
-							%td {{item.agency_name}}
-							%td {{item.currency}}
-							%td {{item.billing_contact_name}}
-							%td {{item.product_name}}
-							%td {{item.ad_server}}
-							%td {{item.revenue_type}}
-							%td {{item.amount | currency:'$':0 }}
-							%td{'ng-class': '{"pending-status": item.billing_status == "Pending"}'} {{item.billing_status}}
-							%td {{item.vat | currency:'$':0 }}
+				%div.table-wrap{'ng-hide': '!iosForApproval.length && !dataIsLoading'}
+					%table.table.table-hover
+						%thead
+							%tr
+								%th IO #
+								%th Line #
+								%th Name
+								%th Advertiser
+								%th Agency
+								%th Currency
+								%th Billing Contact
+								%th Product
+								%th Ad Server Product
+								%th Ad Server Budget
+								%th Ad Server Quantity
+								%th Budget
+								%th Quantity
+								%th Billing Status
+								%th VAT
+						%tbody
+							%tr{'ng-repeat': 'item in iosForApproval'}
+								%td
+									%b {{item.io_id}}
+								%td
+									%b {{item.line}}
+								%td {{item.io_name}}
+								%td {{item.advertiser_name}}
+								%td {{item.agency_name}}
+								%td {{item.currency}}
+								%td {{item.billing_contact_name}}
+								%td {{item.product_name}}
+								%td {{item.ad_server}}
+								%td {{item.ad_server_budget | currency:'$':0}}
+								%td {{item.ad_server_quantity}}
+								%td
+									%div.editable
+										{{item.amount | currency:'$':0}}
+								%td
+									%div.editable
+										{{item.quantity || 'Enter quantity'}}
+								%td{class: '{{item.billing_status.toLowerCase() + "-status"}}'}
+									.dropdown
+										%div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+											%span.text
+												{{item.billing_status || 'Select status'}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-repeat': 'status in billingStatuses'}
+												%a{'href': '', 'ng-click': 'updateBillingStatus(item, status)'}
+													%span.text {{status}}
+								%td {{item.vat | currency:'$':0}}
 
 			.row.block.mb20
 				%div.mb20
 					%span.title IO's Missing Display Line Items
 				%div{'ng-show': '!iosMissingDisplayLineItems.length && !dataIsLoading'}
 					%h4 No Data Available
-				%table.table.table-hover{'ng-hide': '!iosMissingDisplayLineItems.length && !dataIsLoading'}
-					%thead
-						%tr
-							%th IO #
-							%th Name
-							%th Advertiser
-							%th Agency
-							%th Currency
-							%th Billing Contact
-							%th Detsails
-					%tbody
-						%tr{'ng-repeat': 'item in iosMissingDisplayLineItems'}
-							%td
-								%b {{item.id}}
-							%td {{item.name}}
-							%td {{item.advertiser_name}}
-							%td {{item.agency_name}}
-							%td {{item.currency}}
-							%td {{item.billing_contact_name}}
-							%td {{item.details}}
+				%div.table-wrap{'ng-hide': '!iosMissingDisplayLineItems.length && !dataIsLoading'}
+					%table.table.table-hover
+						%thead
+							%tr
+								%th IO #
+								%th Name
+								%th Advertiser
+								%th Agency
+								%th Currency
+								%th Billing Contact
+								%th Detsails
+						%tbody
+							%tr{'ng-repeat': 'item in iosMissingDisplayLineItems'}
+								%td
+									%b {{item.id}}
+								%td {{item.name}}
+								%td {{item.advertiser_name}}
+								%td {{item.agency_name}}
+								%td {{item.currency}}
+								%td {{item.billing_contact_name}}
+								%td {{item.details}}
 
 			.row.block.mb20
 				%div.mb20
 					%span.title IO's Missing Monthly Actuals
 				%div{'ng-show': '!iosMissingMonthlyActual.length && !dataIsLoading'}
 					%h4 No Data Available
-				%table.table.table-hover{'ng-hide': '!iosMissingMonthlyActual.length && !dataIsLoading'}
-					%thead
-						%tr
-							%th IO #
-							%th Line #
-							%th Name
-							%th Advertiser
-							%th Agency
-							%th Currency
-							%th Billing Contact
-							%th Product
-							%th Ad Server Product
-					%tbody
-						%tr{'ng-repeat': 'item in iosMissingMonthlyActual'}
-							%td
-								%b {{item.io_id}}
-							%td
-								%b {{item.line_number}}
-							%td {{item.io_name}}
-							%td {{item.advertiser_name}}
-							%td {{item.agency_name}}
-							%td {{item.currency}}
-							%td {{item.billing_contact_name}}
-							%td {{item.product_name}}
-							%td {{item.ad_server}}
+				%div.table-wrap{'ng-hide': '!iosMissingMonthlyActual.length && !dataIsLoading'}
+					%table.table.table-hover
+						%thead
+							%tr
+								%th IO #
+								%th Line #
+								%th Name
+								%th Advertiser
+								%th Agency
+								%th Currency
+								%th Billing Contact
+								%th Product
+								%th Ad Server Product
+						%tbody
+							%tr{'ng-repeat': 'item in iosMissingMonthlyActual'}
+								%td
+									%b {{item.io_id}}
+								%td
+									%b {{item.line_number}}
+								%td {{item.io_name}}
+								%td {{item.advertiser_name}}
+								%td {{item.agency_name}}
+								%td {{item.currency}}
+								%td {{item.billing_contact_name}}
+								%td {{item.product_name}}
+								%td {{item.ad_server}}

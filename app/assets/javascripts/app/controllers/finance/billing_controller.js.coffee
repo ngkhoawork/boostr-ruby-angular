@@ -9,6 +9,7 @@
             $scope.iosMissingDisplayLineItems = []
             $scope.iosMissingMonthlyActual = []
             $scope.dataIsLoading = false
+            $scope.billingStatuses = ['Pending', 'Approved', 'Ignore']
 
             $scope.selectMonth = (month) ->
                 $scope.selectedMonth = month
@@ -25,15 +26,25 @@
                         year: $scope.selectedYear
                     $scope.dataIsLoading = true
                     Billing.all(filter).then (data) ->
-                        iosForApproval = _.map data.ios_for_approval, (item) ->
-                            if item.content_fee_product_budgets[0]
-                                return item.content_fee_product_budgets[0]
-                            else if item.display_line_item_budgets[0]
-                                return item.display_line_item_budgets[0]
-                            return null
-                        $scope.iosForApproval =_.filter iosForApproval
+                        iosForApproval = []
+                        _.forEach data.ios_for_approval, (item) ->
+                            console.log item
+                            iosForApproval = iosForApproval.concat item.content_fee_product_budgets, item.display_line_item_budgets
+                        $scope.iosForApproval = iosForApproval
+                        console.log iosForApproval
                         $scope.iosMissingDisplayLineItems = data.ios_missing_display_line_items
                         $scope.iosMissingMonthlyActual = data.ios_missing_monthly_actual
                         $scope.dataIsLoading = false
+
+            $scope.selectedMonth = 'January'
+            $scope.selectedYear = '2017'
+            getData()
+
+            $scope.updateBillingStatus = (item, status) ->
+                item.billing_status = status
+                Billing.updateApproval(item).then (resp) ->
+                    console.log 'RESPONSE'
+                , (err) ->
+                    console.log err
 
     ]
