@@ -16,6 +16,10 @@ class Api::TimePeriodsController < ApplicationController
     render json: time_periods
   end
 
+  def current_year_quarters
+    render json: TimePeriod.current_year_quarters(current_user.company_id)
+  end
+
   def create
     time_period = current_user.company.time_periods.new(time_period_params)
     if time_period.save

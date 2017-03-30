@@ -44,5 +44,17 @@ class ForecastTeamSerializer < ActiveModel::Serializer
     end
   end
 
-end
+  def quarter
+    object.quarter || quarter_number rescue nil
+  end
 
+  def year
+    object.year || object.start_date.year rescue nil
+  end
+
+  def quarter_number
+    if (object.end_date - object.start_date).to_i < 100
+      1 + ((object.start_date.month - 1)/3).to_i
+    end
+  end
+end
