@@ -73,15 +73,16 @@
 								%td {{item.ad_server_budget | currency:'$':0}}
 								%td {{item.ad_server_quantity}}
 								%td
-									%div.editable
+									%span{'ng-if': 'item.revenue_type == "Content-Fee"', 'editable-number': 'item.amount', blur: 'submit', onbeforesave: 'updateBudget(item, $data)'}
 										{{item.amount | currency:'$':0}}
+									%span.not-editable{'ng-if': 'item.revenue_type != "Content-Fee"'} {{item.amount | currency:'$':0}}
 								%td
-									%div.editable
+									%span{'ng-if': 'item.revenue_type == "Display"', 'editable-number': 'item.quantity', blur: 'submit', onbeforesave: 'updateQuantity(item, $data)'}
 										{{item.quantity || 'Enter quantity'}}
 								%td{class: '{{item.billing_status.toLowerCase() + "-status"}}'}
-									.dropdown
+									.dropdown{'ng-click': 'fixingDropdownPosition($event)'}
 										%div.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-											%span.text
+											%span.text.editable
 												{{item.billing_status || 'Select status'}}
 											%span.caret
 										%ul.dropdown-menu
