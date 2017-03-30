@@ -28,7 +28,6 @@
 ($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, Currency, CurrentUser) ->
 
   $scope.showMeridian = true
-  $scope.showShareWarning = false
   $scope.feedName = 'Deal Updates'
   $scope.types = []
   $scope.contacts = []
@@ -54,15 +53,8 @@
   $scope.checkCurrentUserDealShare = (members) ->
     CurrentUser.get().$promise.then (currentUser) ->
       _.forEach members, (member) ->
-          if member.user_id == currentUser.id
-            $scope.showShareWarning = !(member.share > 0)
-
-  $scope.splitWarning = (e) ->
-    $scope.showShareWarning = false
-#    angular.element(e.currentTarget)
-#      .parent()
-#      .animate {height: 0, opacity: 0, padding: 0, margin: 0}, 300
-    return
+          if member.user_id == currentUser.id && !(member.share > 0)
+            $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
 
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
@@ -719,6 +711,16 @@
       resolve:
         currentDeal: ->
           currentDeal
+
+  $scope.showWarningModal = (message) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_warning.html'
+      size: 'md'
+      controller: 'DealWarningController'
+      backdrop: 'static'
+      keyboard: true
+      resolve:
+        message: -> message
 
   $scope.showNewProductModal = (currentDeal) ->
     $scope.modalInstance = $modal.open

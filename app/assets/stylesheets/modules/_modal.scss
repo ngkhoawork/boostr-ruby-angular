@@ -370,6 +370,9 @@
       }
     }
   }
+  .warning-text {
+    color: $error-color;
+  }
   .error-text {
     display: none;
     color: $error-color;
