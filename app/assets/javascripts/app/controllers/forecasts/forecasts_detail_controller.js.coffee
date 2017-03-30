@@ -98,24 +98,24 @@
             }
           $scope.stagesById[stage.id] = stage
 
-      return if not team or not team.year or not team.quarter
+      return if not team or not team.year_value or not team.quarter_number
 
-      $scope.revenuesByQuarter[team.year][team.quarter] += team.revenue
-      $scope.forecastsByQuarter[team.year][team.quarter] += team.revenue
-      $scope.forecastsByYear[team.year] += team.revenue
-      $scope.unweightedByQuarter[team.year][team.quarter] += team.revenue
-      $scope.unweightedByYear[team.year] += team.revenue
+      $scope.revenuesByQuarter[team.year_value][team.quarter_number] += team.revenue
+      $scope.forecastsByQuarter[team.year_value][team.quarter_number] += team.revenue
+      $scope.forecastsByYear[team.year_value] += team.revenue
+      $scope.unweightedByQuarter[team.year_value][team.quarter_number] += team.revenue
+      $scope.unweightedByYear[team.year_value] += team.revenue
 
-      $scope.quotasByQuarter[team.year][team.quarter] += parseFloat(team.quota)
-      $scope.quotasByYear[team.year] += parseFloat(team.quota)
+      $scope.quotasByQuarter[team.year_value][team.quarter_number] += parseFloat(team.quota)
+      $scope.quotasByYear[team.year_value] += parseFloat(team.quota)
       for stageId, pipeline of team.weighted_pipeline_by_stage
-        $scope.forecastsByStage[team.year].stages[stageId][team.quarter] += pipeline
-        $scope.forecastsByQuarter[team.year][team.quarter] += pipeline
-        $scope.forecastsByYear[team.year] += pipeline
+        $scope.forecastsByStage[team.year_value].stages[stageId][team.quarter_number] += pipeline
+        $scope.forecastsByQuarter[team.year_value][team.quarter_number] += pipeline
+        $scope.forecastsByYear[team.year_value] += pipeline
       for stageId, pipeline of team.unweighted_pipeline_by_stage
-        $scope.unweightedByStage[team.year].stages[stageId][team.quarter] += pipeline
-        $scope.unweightedByQuarter[team.year][team.quarter] += pipeline
-        $scope.unweightedByYear[team.year] += pipeline
+        $scope.unweightedByStage[team.year_value].stages[stageId][team.quarter_number] += pipeline
+        $scope.unweightedByQuarter[team.year_value][team.quarter_number] += pipeline
+        $scope.unweightedByYear[team.year_value] += pipeline
 
   processRevenueResponse = (revenues) ->
     revenues.forEach (revenue) ->
