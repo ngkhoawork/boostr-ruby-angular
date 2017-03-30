@@ -94,7 +94,11 @@ Rails.application.routes.draw do
         get :active_exchange_rates
       end
     end
-    resources :time_periods, only: [:index, :create, :update, :destroy]
+    resources :time_periods, only: [:index, :create, :update, :destroy] do
+      collection do
+        get :current_year_quarters
+      end
+    end
     resources :quotas, only: [:index, :create, :update]
     resources :forecasts, only: [:index, :show]
     resources :fields, only: [:index]
