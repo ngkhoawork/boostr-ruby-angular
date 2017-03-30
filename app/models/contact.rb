@@ -1,9 +1,13 @@
 class Contact < ActiveRecord::Base
   acts_as_paranoid
 
+  belongs_to :company
+
+  has_one :primary_client, through: :primary_client_contact, source: :client
+  has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
+
   has_many :clients, -> { uniq }, through: :client_contacts
   has_many :client_contacts, dependent: :destroy
-  belongs_to :company
 
   has_many :deals, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
@@ -41,35 +45,13 @@ class Contact < ActiveRecord::Base
     end
   end
 
-  def as_json(options = {})
-    super(options.deep_merge(
-      include: {
-        address: {}
-      },
-      methods: [:formatted_name, :primary_client_json]
-    ))
-  end
-
-  def formatted_name
-    name
-  end
-
-  def primary_client
-    Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id")
-          .where("client_contacts.contact_id = ?", self.id)
-          .where("client_contacts.primary = 't'").first
-  end
-
-  def primary_client_json
-    primary_client.as_json(override: true, only: [:id, :name, :client_type_id])
-  end
-
   def update_primary_client
     primary = self.primary_client
     if primary && primary.id != self.client_id
       self.clients.delete(primary.id)
       client_contacts.where(client_id: self.client_id).update_all(primary: true)
     end
+    self.reload
   end
 
   def self.import(file, current_user)

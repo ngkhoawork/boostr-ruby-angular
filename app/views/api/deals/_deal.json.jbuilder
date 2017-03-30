@@ -1,4 +1,6 @@
-json.extract! deal, :id, :name, :budget_loc, :created_at, :curr_cd, :deal_contacts, :updated_at, :next_steps, :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id, :agency_id
+json.extract! deal, :id, :name, :budget_loc, :created_at, :curr_cd, :deal_contacts, :updated_at, :next_steps,
+                    :stage_id, :previous_stage_id, :stage_updated_at, :closed_at, :advertiser_id, :agency_id,
+                    :initiative_id
 
 json.start_date deal.start_date.to_datetime
 json.end_date deal.end_date.to_datetime
@@ -62,4 +64,10 @@ json.activities deal.activities do |activity|
   json.deal activity.deal
   json.client activity.client
   json.contacts activity.contacts
+end
+
+json.initiatives deal.company.initiatives, :id, :name
+
+if deal.initiative.present?
+  json.initiative deal.initiative, :id, :name
 end

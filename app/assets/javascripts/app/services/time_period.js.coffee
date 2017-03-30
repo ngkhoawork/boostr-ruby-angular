@@ -8,16 +8,18 @@
 #  resource = $resource '/api/time_periods/:id', { id: '@id' }
 
   resource = $resource '/api/time_periods/:id', { id: '@id' },
-    save: {
+    save:
       method: 'POST'
       url: '/api/time_periods'
       transformRequest: transformRequest
-    },
-    update: {
+    update:
       method: 'PUT'
       url: '/api/time_periods/:id'
       transformRequest: transformRequest
-    }
+    current_year_quarters:
+      method: 'GET'
+      isArray: true
+      url: '/api/time_periods/current_year_quarters'
 
   allTimePeriods = []
 
@@ -29,6 +31,12 @@
         deferred.resolve(time_periods)
     else
       deferred.resolve(allTimePeriods)
+    deferred.promise
+
+  @current_year_quarters = (params) ->
+    deferred = $q.defer()
+    resource.current_year_quarters params, (data) ->
+      deferred.resolve(data)
     deferred.promise
 
   @create = (params, errorCallback) ->

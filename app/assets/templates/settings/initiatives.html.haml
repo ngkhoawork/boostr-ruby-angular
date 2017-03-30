@@ -1,0 +1,21 @@
+#initiatives.block
+	%div.mb40
+		%span.title Initiatives
+		%add-button.plus-btn{ ng: { click: 'showInitiativeModal()'} }
+			Add
+
+	%table.table.table-hover
+		%thead
+			%tr
+				%th Name
+				%th Goal
+				%th Status
+				%th
+		%tbody
+			%tr{ ng: { repeat: 'initiative in initiatives' } }
+				%td {{initiative.name}}
+				%td {{initiative.goal | currency : undefined : 0}}
+				%td {{initiative.status}}
+				%td{width: '100px'}
+					%i.fa.fa-pencil.edit-icon{'ng-click': 'showInitiativeModal(initiative)'}
+					%i.fa.fa-trash.delete-icon{'ng-click': 'deleteInitiative(initiative)'}

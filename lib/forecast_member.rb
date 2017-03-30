@@ -222,7 +222,7 @@ class ForecastMember
       share = io_member.share
       io.content_fees.each do |content_fee_item|
         content_fee_item.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget_item|
-          @monthly_revenue[content_fee_product_budget_item.start_date.strftime("%b-%y")] += content_fee_product_budget_item.daily_budget * effective_days(io_member, [content_fee_product_budget_item]) * (share/100.0)
+          @monthly_revenue[content_fee_product_budget_item.start_date.strftime("%b-%y")] += content_fee_product_budget_item.corrected_daily_budget(io.start_date, io.end_date) * effective_days(io_member, [content_fee_product_budget_item]) * (share/100.0)
         end
       end
       io.display_line_items.each do |display_line_item|

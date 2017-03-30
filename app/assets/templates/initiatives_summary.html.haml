@@ -1,0 +1,135 @@
+#initiatives-summary-dashboard
+	.initiatives-inner
+		#chart-container.container-fluid
+			.header
+				%span.title Initiatives Summary
+				.filter.pull-right
+					%span{'ng-class': '{active: filter === "open"}', 'ng-click': 'setFilter("open")'}
+						Open
+					%span{'ng-class': '{active: filter === "closed"}', 'ng-click': 'setFilter("closed")'}
+						Closed
+
+			.row.block.mb20{'ng-show': '!initiatives.length && !dataLoading'}
+				%h4 No data available
+			.row.block.mb20{'ng-show': 'initiatives && initiatives.length'}
+				%div
+					.col-xs-12.pad
+						%div#initiatives-summary-chart-tooltip.chart-tooltip
+						%svg#initiatives-summary-chart.initiatives-chart
+					.col-xs-12.table-report.text-center
+						%table.table.table-hover
+							%thead
+								%tr
+									%th Initiative Name
+									%th Goal
+									%th Pipeline (W)
+									%th Won
+									%th % Goal
+
+							%tbody
+								%tr{'ng-repeat': 'item in initiatives', 'ng-class': '{"active-line": item.id == selectedInitiative.id}'}
+									%td
+										%a{href: '', 'ng-click': 'selectInitiative(item)'} {{item.name}}
+									%td {{item.goal | currency : undefined : 0}}
+									%td {{item.pipeline | currency : undefined : 0}}
+									%td {{item.won | currency : undefined : 0}}
+									%td {{item.goal_probability}}%
+
+			%div#selected-initiative{'ng-if': 'selectedInitiative'}
+				.sub-header
+					%span.title {{selectedInitiative.name}}
+				.row.block.mb20{'ng-if': 'selectedInitiative.deals.open_deals.length'}
+					%h4.chart-title Open Deals
+					.col-xs-12.table-report.text-center
+						%table.table.table-hover
+							%thead
+								%tr
+									%th{width: '150px'} Deal
+									%th Advertiser
+									%th Seller
+									%th Agency
+									%th Budget
+									%th Stage
+									%th %
+									%th Start Date
+									%th Last Activity
+									%th Next Steps
+
+							%tbody
+								%tr{'ng-repeat': 'deal in selectedInitiative.deals.open_deals'}
+									%td
+										%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
+									%td {{deal.advertiser_name}}
+									%td
+										%div{'ng-repeat': 'seller in deal.seller_names'} {{seller}}
+									%td {{deal.agency_name}}
+									%td {{deal.budget | currency : undefined : 0}}
+									%td {{deal.stage}}
+									%td {{deal.probability}}%
+									%td {{deal.start_date | date}}
+									%td {{deal.last_activity}}
+									%td {{deal.next_steps}}
+
+				.row.block.mb20{'ng-if': 'selectedInitiative.deals.won_deals.length'}
+					%h4.chart-title Won Deals
+					.col-xs-12.table-report.text-center
+						%table.table.table-hover
+							%thead
+								%tr
+									%th{width: '150px'} Deal
+									%th Advertiser
+									%th Seller
+									%th Agency
+									%th Budget
+									%th Stage
+									%th %
+									%th Start Date
+									%th Last Activity
+									%th Next Steps
+
+							%tbody
+								%tr{'ng-repeat': 'deal in selectedInitiative.deals.won_deals'}
+									%td
+										%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
+									%td {{deal.advertiser_name}}
+									%td
+										%div{'ng-repeat': 'seller in deal.seller_names'} {{seller}}
+									%td {{deal.agency_name}}
+									%td {{deal.budget | currency : undefined : 0}}
+									%td {{deal.stage}}
+									%td {{deal.probability}}%
+									%td {{deal.start_date | date}}
+									%td {{deal.last_activity}}
+									%td {{deal.next_steps}}
+
+				.row.block.mb20{'ng-if': 'selectedInitiative.deals.lost_deals.length'}
+					%h4.chart-title Lost Deals
+					.col-xs-12.table-report.text-center
+						%table.table.table-hover
+							%thead
+								%tr
+									%th{width: '150px'} Deal
+									%th Advertiser
+									%th Seller
+									%th Agency
+									%th Budget
+									%th Stage
+									%th %
+									%th Start Date
+									%th Closed Reason
+									%th Next Steps
+
+							%tbody
+								%tr{'ng-repeat': 'deal in selectedInitiative.deals.lost_deals'}
+									%td
+										%a{'ng-href': '{{"/deals/" + deal.id}}'} {{deal.name}}
+									%td {{deal.advertiser_name}}
+									%td
+										%div{'ng-repeat': 'seller in deal.seller_names'} {{seller}}
+									%td {{deal.agency_name}}
+									%td {{deal.budget | currency : undefined : 0}}
+									%td {{deal.stage}}
+									%td {{deal.probability}}%
+									%td {{deal.start_date | date}}
+									%td {{deal.closed_reason}}
+									%td {{deal.next_steps}}

@@ -86,6 +86,9 @@
     .when '/smart_reports/inactives',
       templateUrl: 'inactives.html'
       controller: 'InactivesController'
+    .when '/smart_reports/initiatives',
+      templateUrl: 'initiatives_summary.html'
+      controller: 'InitiativesSummaryController'
     .when '/reports/deal_reports',
       templateUrl: 'deal_reports.html'
       controller: 'DealReportsController'
@@ -128,6 +131,9 @@
     .when '/settings/notifications',
       templateUrl: 'settings/notifications.html'
       controller: 'SettingsNotificationsController'
+    .when '/settings/initiatives',
+      templateUrl: 'settings/initiatives.html'
+      controller: 'SettingsInitiativesController'
     .when '/settings/products',
       templateUrl: 'settings/products.html'
       controller: 'SettingsProductsController'

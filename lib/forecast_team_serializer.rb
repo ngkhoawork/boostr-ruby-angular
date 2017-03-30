@@ -26,7 +26,10 @@ class ForecastTeamSerializer < ActiveModel::Serializer
     :all_teammembers,
     :year,
     :new_deals_needed,
-    :quarter)
+    :quarter,
+    :quarter_number,
+    :year_value
+  )
 
   def teams
     @teams ||= object.teams.map do |team|
@@ -44,5 +47,13 @@ class ForecastTeamSerializer < ActiveModel::Serializer
     end
   end
 
-end
+  def year_value
+    object.year || object.start_date.year rescue nil
+  end
 
+  def quarter_number
+    if object.start_date.present? && object.end_date.present? && (object.end_date - object.start_date).to_i < 100
+      1 + ((object.start_date.month - 1)/3).to_i
+    end
+  end
+end

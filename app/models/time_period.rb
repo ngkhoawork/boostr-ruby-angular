@@ -14,6 +14,10 @@ class TimePeriod < ActiveRecord::Base
     end
   end
 
+  scope :current_year_quarters, -> (company_id) {
+    where(company_id: company_id).where("date(end_date) - date(start_date) < 100").where("extract(year from start_date) = ?", Date.current.year)
+  }
+
   def self.now
     where('start_date <= ? AND end_date >= ?', Time.now, Time.now).first
   end

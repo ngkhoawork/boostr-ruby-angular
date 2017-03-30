@@ -10,15 +10,19 @@ class Api::DealsController < ApplicationController
           render json: activity_deals
         elsif params[:year].present?
           response_deals = company.deals
-            .includes(:deal_members)
+            .includes(
+              :deal_members,
+              :advertiser,
+              :agency,
+              :stage,
+              :creator,
+              :values,
+              :deal_custom_field
+            )
             .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
+            .less_than(100)
             .as_json
 
-          #deal_sums = company.deals
-          #  .select("advertiser_id, sum(budget) AS budget")
-          #  .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
-          #  .group('deals.advertiser_id')
-          #  .as_json
           response_deals = response_deals.map do |deal|
             range = deal['start_date'] .. deal['end_date']
 
@@ -277,6 +281,7 @@ class Api::DealsController < ApplicationController
         :agency_id,
         :closed_at,
         :next_steps,
+        :initiative_id,
         {
             values_attributes: [
                 :id,

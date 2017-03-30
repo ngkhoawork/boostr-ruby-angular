@@ -71,6 +71,8 @@
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
                 %li
                   = link_to "Inactives", "/smart_reports/inactives"
+                %li
+                  = link_to "Initiatives", "/smart_reports/initiatives"
           - else
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -87,6 +89,8 @@
                   = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
                 %li
                   = link_to "Inactives", "/smart_reports/inactives"
+                %li
+                  = link_to "Initiatives", "/smart_reports/initiatives"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
             %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -127,6 +131,8 @@
                   = link_to "IO Feed Logs", "settings/io_feed_logs"
                 %li
                   = link_to "Notifications", "/settings/notifications"
+                %li
+                  = link_to "Initiatives", "/settings/initiatives"
                 - if current_user.is?(:superadmin)
                   %li
                     = link_to " ", "/settings/tools"
