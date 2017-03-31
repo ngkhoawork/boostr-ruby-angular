@@ -77,7 +77,6 @@
                 item.quantity = newValue
                 Billing.updateQuantity(item).then (resp) ->
                     item.quantity = resp.quantity
-                    item.amount = resp.budget
                 , (err) ->
                     console.log err
                     item.quantity = oldValue

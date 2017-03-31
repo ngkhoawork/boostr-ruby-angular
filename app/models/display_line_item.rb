@@ -5,12 +5,16 @@ class DisplayLineItem < ActiveRecord::Base
 
   has_many :display_line_item_budgets
 
-  scope :without_budgets_by_date, -> (start_date, end_date) {
+  scope :without_budgets_by_date, -> (start_date, end_date) do
     joins(:display_line_item_budgets)
       .where.not('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?',
                  start_date,
                  end_date)
-  }
+  end
+
+  scope :without_display_line_item_budgets, -> do
+    includes(:display_line_item_budgets).where(display_line_item_budgets: { id: nil })
+  end
 
   before_create :set_alert
   before_update :set_alert

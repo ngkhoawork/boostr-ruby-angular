@@ -13,7 +13,7 @@ class Api::BillingSummaryController < ApplicationController
     if display_line_item_budget.update(display_line_item_budget_params)
       display_line_item_budget.update({ budget: calculate_budget, manual_override: true })
 
-      render json: { budget: display_line_item_budget.budget, quantity: display_line_item_budget.quantity}
+      render json: { quantity: display_line_item_budget.quantity}
     else
       render json: { errors: display_line_item_budget.errors.messages }, status: :unprocessable_entity
     end
@@ -31,7 +31,8 @@ class Api::BillingSummaryController < ApplicationController
     if content_fee_product_budget.update(content_fee_product_budget_params)
       update_manual_override
 
-      render json: { billing_status: content_fee_product_budget.billing_status, budget: content_fee_product_budget.budget }
+      render json: { billing_status: content_fee_product_budget.billing_status,
+                     budget: content_fee_product_budget.budget }
     else
       render json: { errors: content_fee_product_budget.errors.messages }, status: :unprocessable_entity
     end
@@ -73,8 +74,10 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def ios_missing_monthly_actual
-    DisplayLineItem.where(io: ios_for_time_period).without_budgets_by_date(start_date, end_date).uniq +
-      DisplayLineItem.where(io: ios_for_time_period).includes(:display_line_item_budgets).where(display_line_item_budgets: {id: nil}).uniq
+    DisplayLineItem.includes(:product, io: [:deal, :advertiser, :agency])
+                   .where(io: ios_for_time_period).without_budgets_by_date(start_date, end_date).uniq +
+      DisplayLineItem.includes(:product, io: [:deal, :advertiser, :agency])
+                     .where(io: ios_for_time_period).without_display_line_item_budgets.uniq
   end
 
   def ios_for_time_period
@@ -119,7 +122,7 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def calculate_budget
-    (display_line_item_budget.quantity / 1000) * display_line_item.price.to_f
+    ((display_line_item_budget.quantity / 1000) * display_line_item.price.to_f) * display_line_item.io.exchange_rate
   end
 
   def update_manual_override

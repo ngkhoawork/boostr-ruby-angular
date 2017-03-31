@@ -626,7 +626,7 @@ ActiveRecord::Schema.define(version: 20170403131822) do
     t.decimal  "budget_loc",           precision: 15, scale: 2, default: 0.0
     t.string   "billing_status",                                default: "Pending"
     t.boolean  "manual_override",                               default: false
-    t.decimal  "ad_server_budget",     precision: 2
+    t.decimal  "ad_server_budget",     precision: 15, scale: 2
     t.integer  "ad_server_quantity"
     t.integer  "quantity"
     t.integer  "clicks"
