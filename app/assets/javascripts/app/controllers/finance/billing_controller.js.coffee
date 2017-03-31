@@ -77,6 +77,7 @@
                 item.quantity = newValue
                 Billing.updateQuantity(item).then (resp) ->
                     item.quantity = resp.quantity
+                    item.budget_loc = resp.budget_loc
                 , (err) ->
                     console.log err
                     item.quantity = oldValue

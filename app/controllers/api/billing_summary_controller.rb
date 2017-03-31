@@ -11,9 +11,9 @@ class Api::BillingSummaryController < ApplicationController
 
   def update_quantity
     if display_line_item_budget.update(display_line_item_budget_params)
-      display_line_item_budget.update({ budget: calculate_budget, manual_override: true })
+      update_display_line_item_budget
 
-      render json: { quantity: display_line_item_budget.quantity}
+      render json: { quantity: display_line_item_budget.quantity, budget_loc: display_line_item_budget.budget_loc.to_f }
     else
       render json: { errors: display_line_item_budget.errors.messages }, status: :unprocessable_entity
     end
@@ -122,10 +122,20 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def calculate_budget
-    ((display_line_item_budget.quantity / 1000) * display_line_item.price.to_f) * display_line_item.io.exchange_rate
+    @_budget ||= (display_line_item_budget.quantity / 1000) * display_line_item.price.to_f
   end
 
   def update_manual_override
     content_fee_product_budget.update(manual_override: true) if content_fee_product_budget_params[:budget].present?
+  end
+
+  def update_display_line_item_budget
+    display_line_item_budget.update(
+      {
+        budget_loc: (calculate_budget * display_line_item.io.exchange_rate),
+        budget: calculate_budget,
+        manual_override: true
+      }
+    )
   end
 end
