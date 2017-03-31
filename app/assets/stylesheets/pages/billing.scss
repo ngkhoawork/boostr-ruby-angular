@@ -4,15 +4,23 @@
     background-color: $main-background-color;
     color: $main-font-color;
     overflow-x: auto;
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        margin: 0;
-    }
-    input[type=number] {
-        -moz-appearance:textfield;
+    .billing-header {
+        display: flex;
+        align-items: flex-end;
+        .billing-header-col {
+            &:not(:first-child) {
+                padding: 0 40px;
+            }
+            .col-number {
+                font-size: 20px;
+                font-weight: 600;
+                text-align: center;
+            }
+            .col-text {
+                color: $secondary-font-color;
+                text-align: center;
+            }
+        }
     }
     .billing-inner {
         padding: 20px 55px;

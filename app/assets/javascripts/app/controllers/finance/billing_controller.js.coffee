@@ -10,6 +10,9 @@
             $scope.iosMissingMonthlyActual = []
             $scope.dataIsLoading = false
             $scope.billingStatuses = ['Pending', 'Approved', 'Ignore']
+            $scope.iosNeedingApproval = 0
+            $scope.missingLineItems = 0
+            $scope.missingActuals = 0
 
             $scope.selectMonth = (month) ->
                 $scope.selectedMonth = month
@@ -33,12 +36,25 @@
                         $scope.iosMissingDisplayLineItems = data.ios_missing_display_line_items
                         $scope.iosMissingMonthlyActual = data.ios_missing_monthly_actual
                         $scope.dataIsLoading = false
+                        updateBillingStats()
+
+#            $scope.selectedMonth = 'January'
+#            $scope.selectedYear = '2017'
+#            getData()
+
+            updateBillingStats = () ->
+                $scope.iosNeedingApproval = _.filter($scope.iosForApproval, (item) -> item.billing_status == 'Pending').length
+                $scope.missingLineItems = $scope.iosMissingDisplayLineItems.length
+                $scope.missingActuals = $scope.iosMissingMonthlyActual.length
+
 
             $scope.updateBillingStatus = (item, newValue) ->
+                if item.billing_status == newValue then return
                 oldValue = item.billing_status
                 item.billing_status = newValue
                 Billing.updateStatus(item).then (resp) ->
                     item.billing_status = resp.billing_status
+                    updateBillingStats()
                 , (err) ->
                     console.log err
                     item.billing_status = oldValue
