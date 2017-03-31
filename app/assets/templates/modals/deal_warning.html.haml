@@ -1,0 +1,10 @@
+#deal-warning-modal.popup-modal
+    .popup-modal-header.warning-text
+        %i.fa.fa-exclamation-triangle
+        Warning
+        %span.close-btn{'ng-click': 'cancel()'} +
+    .popup-modal-body
+        %h5 {{message}}
+
+    .popup-modal-footer
+        %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Ok

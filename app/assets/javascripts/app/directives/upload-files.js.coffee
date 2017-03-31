@@ -155,8 +155,6 @@
             $scope.uploading.cancel()
           , 0
 
-
-
       isValidFileName = (file) ->
         name = file.name.toLowerCase() # (/\.(gif|jpg|jpeg|tiff|png)$/i).test(filename)
         return !(/\.(exe|bat|msi|msc|cmd|js|jse|reg)$/i).test(name)
