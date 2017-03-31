@@ -1,6 +1,6 @@
 @app.controller 'BillingController',
-    ['$scope', '$timeout', 'Billing',
-        ($scope, $timeout, Billing) ->
+    ['$scope', '$window', '$timeout', 'Billing',
+        ($scope, $window, $timeout, Billing) ->
             $scope.years = [2016...moment().year() + 5]
             $scope.months = moment.months()
             $scope.selectedYear = ''
@@ -89,5 +89,9 @@
                 buttonOffset.top += button.outerHeight()
                 $timeout () ->
                     menu.offset buttonOffset
+                return
+
+            $scope.exportBilling = ->
+                $window.open("""/api/billing/report.csv?year=#{$scope.selectedYear}&month=#{$scope.selectedMonth}""")
                 return
     ]
