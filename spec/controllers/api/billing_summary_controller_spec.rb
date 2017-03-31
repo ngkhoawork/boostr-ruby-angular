@@ -4,6 +4,8 @@ describe Api::BillingSummaryController do
   before { sign_in user }
 
   describe 'PUT #update_quantity' do
+    before { create_io }
+
     it 'update quantity successfully' do
       put :update_quantity,
           id: display_line_item_budget,
@@ -66,7 +68,7 @@ describe Api::BillingSummaryController do
     @_user ||= create :user, company: company
   end
 
-  def io
+  def create_io
     @_io ||= create(
       :io,
       company: company,
@@ -100,7 +102,7 @@ describe Api::BillingSummaryController do
   end
 
   def content_fee
-    @_content_fee ||= create :content_fee, content_fee_product_budgets: [content_fee_product_budget], io: io
+    @_content_fee ||= create :content_fee, content_fee_product_budgets: [content_fee_product_budget], io: create_io
   end
 
   def content_fee_product_budget

@@ -8,7 +8,7 @@ describe BillingSummary::IosForApprovalSerializer do
   end
 
   it 'has proper serialized data' do
-    expect(display_line_item_serializer_budget[:io_id]).to eql io.id
+    expect(display_line_item_serializer_budget[:io_number]).to eql io.io_number
     expect(display_line_item_serializer_budget[:io_name]).to eql io.name
     expect(display_line_item_serializer_budget[:advertiser_name]).to eql advertiser.name
     expect(display_line_item_serializer_budget[:currency]).to eql io.curr_cd
@@ -18,10 +18,10 @@ describe BillingSummary::IosForApprovalSerializer do
     expect(display_line_item_serializer_budget[:vat]).to eql calculate_line_item_vat
     expect(display_line_item_serializer_budget[:line]).to eql display_line_item.line_number
     expect(display_line_item_serializer_budget[:ad_server]).to eql display_line_item.ad_server
-    expect(display_line_item_serializer_budget[:amount]).to eql display_line_item_budget.budget
+    expect(display_line_item_serializer_budget[:budget_loc]).to eql display_line_item_budget.budget_loc.to_f
     expect(display_line_item_serializer_budget[:billing_status]).to eql 'Pending'
 
-    expect(content_fee_product_budget_serializer[:io_id]).to eql io.id
+    expect(content_fee_product_budget_serializer[:io_number]).to eql io.io_number
     expect(content_fee_product_budget_serializer[:io_name]).to eql io.name
     expect(content_fee_product_budget_serializer[:advertiser_name]).to eql advertiser.name
     expect(content_fee_product_budget_serializer[:currency]).to eql io.curr_cd
@@ -87,7 +87,8 @@ describe BillingSummary::IosForApprovalSerializer do
       :display_line_item_budget,
       start_date: start_date,
       end_date: end_date,
-      budget: 20_000
+      budget: 20_000,
+      budget_loc: 20_000
     )
   end
 

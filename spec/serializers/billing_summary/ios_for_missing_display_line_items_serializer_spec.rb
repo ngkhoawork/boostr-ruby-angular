@@ -4,10 +4,10 @@ describe BillingSummary::IosForMissingDisplayLineItemsSerializer do
   before { create :billing_deal_contact, deal: deal, contact: contact }
 
   it 'has proper serialized data' do
-    expect(serializer[:id]).to eql io.id
+    expect(serializer[:io_number]).to eql io.io_number
     expect(serializer[:name]).to eql io.name
     expect(serializer[:advertiser_name]).to eql advertiser.name
-    expect(serializer[:curr_cd]).to eql io.curr_cd
+    expect(serializer[:currency]).to eql io.curr_cd
     expect(serializer[:billing_contact_name]).to eql contact.name
     expect(serializer[:billing_contact_id]).to eql contact.id
   end

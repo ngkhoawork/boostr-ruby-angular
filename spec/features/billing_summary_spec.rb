@@ -18,14 +18,13 @@ feature 'BillingSummary' do
 
     select_year_and_month
 
-    expect(ios_for_approval_table).to include io.id.to_s
+    expect(ios_for_approval_table).to include io.io_number.to_s
     expect(ios_for_approval_table).to include io.name
     expect(ios_for_approval_table).to include display_line_item.line_number.to_s
     expect(ios_for_approval_table).to include advertiser.name
     expect(ios_for_approval_table).to include contact.name
     expect(ios_for_approval_table).to include display_line_item_product.name
     expect(ios_for_approval_table).to include display_line_item.ad_server
-    expect(ios_for_approval_table).to include display_line_item_product.revenue_type
     expect(ios_for_approval_table).to include io.curr_cd
 
     expect(ios_missing_display_line_items_table).to include io_with_missing_display_line_items.id.to_s
