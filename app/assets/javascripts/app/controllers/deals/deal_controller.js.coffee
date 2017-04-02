@@ -760,7 +760,6 @@
 
   $scope.$on 'updated_reminders', ->
     $scope.initReminder()
-    console.log $scope.showReminder
 
   $scope.$on 'deal_update_errors', (event, errors) ->
     $scope.errors = {}
