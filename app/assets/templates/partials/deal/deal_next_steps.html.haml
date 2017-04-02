@@ -1,4 +1,4 @@
-%div.next-steps.block
+%div.next-steps.block{'ng-controller': 'DealController'}
 	.show-create-remainders-popup
 		%label{ 'for': 'deal-reminders'}
 			%i.fa.fa-bell-o.reminder-icon
@@ -8,7 +8,7 @@
 			#reminder_modal.popup-modal
 				.popup-modal-header
 					%label{ 'for': 'deal-reminders'}
-						%span.close-btn{'ng-click': 'cancel()'} +
+						%span.close-btn +
 				%form{ name: 'dealReminderForm', ng: { submit: 'submitReminderForm()' } }
 					.popup-modal-body
 						.form-group{'ng-class':'{error: reminderOptions.errors.Name}'}
