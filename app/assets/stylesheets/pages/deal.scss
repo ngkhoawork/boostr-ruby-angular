@@ -394,6 +394,14 @@
                 border-left: 3px solid $error-color;
             }
         }
+        .status-error {
+            color: $error-color;
+        }
+        .status-success {
+            //background-color: #2ca02c;
+            //color: white;
+            color: #2ca02c;
+        }
     }
     .error-tooltip {
         font-family: "Avenir Next", Arial, serif;

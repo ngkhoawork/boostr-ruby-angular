@@ -1,31 +1,6 @@
 @app.controller 'DealController',
-[
-  '$scope',
-  '$routeParams',
-  '$modal',
-  '$filter',
-  '$timeout',
-  '$location',
-  '$anchorScroll',
-  '$sce',
-  'Deal',
-  'Product',
-  'DealProduct',
-  'DealMember',
-  'DealContact',
-  'Stage',
-  'User',
-  'Field',
-  'Activity',
-  'Contact',
-  'ActivityType',
-  'Reminder',
-  '$http',
-  'Transloadit',
-  'DealCustomFieldName',
-  'Currency',
-  'CurrentUser'
-($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, Currency, CurrentUser) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'IntegrationLogs'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   Currency,   CurrentUser,   ApiConfiguration,   IntegrationLogs) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -38,6 +13,9 @@
   $scope.selectedStageId = null
   $scope.currency_symbol = '$'
   $anchorScroll()
+  $scope.operativeIntegration =
+    isEnabled: false
+    status: 'None'
 
   ###*
    * FileUpload
@@ -49,12 +27,6 @@
   $scope.uploadedFiles = []
   $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
-
-  $scope.checkCurrentUserDealShare = (members) ->
-    CurrentUser.get().$promise.then (currentUser) ->
-      _.forEach members, (member) ->
-          if member.user_id == currentUser.id && !(member.share > 0)
-            $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
 
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
@@ -170,7 +142,9 @@
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal)
-      if initialLoad then $scope.checkCurrentUserDealShare(deal.members)
+      if initialLoad
+        checkCurrentUserDealShare(deal.members)
+        getOperativeIntegration(deal.id)
       $scope.activities = deal.activities.map (activity) ->
         activity.activity_type_name = activity.activity_type && activity.activity_type.name
         activity
@@ -917,4 +891,21 @@
 
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
+
+  getOperativeIntegration = (dealId) ->
+    ApiConfiguration.all().then (data) ->
+      operative = _.findWhere data.api_configurations, integration_type: 'operative'
+      if operative.switched_on
+        $scope.operativeIntegration.isEnabled = operative.switched_on
+        IntegrationLogs.all().then (data) ->
+          logs = _.filter data, (log) -> log.deal_id == dealId
+          lastLog = _.last _.sortBy logs, 'created_at'
+          if lastLog
+            $scope.operativeIntegration.status = if lastLog.is_error then 'Error' else 'Success'
+
+  checkCurrentUserDealShare = (members) ->
+    CurrentUser.get().$promise.then (currentUser) ->
+      _.forEach members, (member) ->
+        if member.user_id == currentUser.id && !(member.share > 0)
+          $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
 ]

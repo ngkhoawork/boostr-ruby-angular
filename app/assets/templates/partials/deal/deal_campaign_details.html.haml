@@ -88,4 +88,8 @@
                     %li{'ng-repeat': 'option in currentDeal.close_reason.options', 'ng-class': '{active: currentDeal.close_reason.option.name == option.name}'}
                         %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; updateDeal()'}
                             %span.text {{option.name}}
-
+    %div.custom-field-item{ 'ng-if': 'operativeIntegration.isEnabled' }
+        %div.custom-field-item-label
+            %label Operative Status
+        %div.custom-field-item-field{'ng-class': '{"status-error": operativeIntegration.status == "Errror", "status-success": operativeIntegration.status == "Success"}'}
+            %b {{operativeIntegration.status}}
