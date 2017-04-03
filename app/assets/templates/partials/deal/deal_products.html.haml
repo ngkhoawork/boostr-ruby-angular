@@ -131,8 +131,8 @@
 								%div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "deal_product.deal_product_cf[fieldName]", 'on-after-save': 'updateDealProduct(deal_product)'}
 					%td.product-budget
 						%div
-							%div.budget-value.total-budget {{deal_product.budget_loc | currency: currency_symbol : 0}}
-							%span.budget-percent
+							%span.budget-value.total-budget {{deal_product.budget_loc | currency: currency_symbol : 0}}
+							%div.budget-percent
 								{{deal_product.total_budget_percent + '%'}}
 					%td.text-center.month-budget{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
 						%span.budget-value
