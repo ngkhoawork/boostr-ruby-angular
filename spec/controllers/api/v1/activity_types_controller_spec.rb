@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::ActivityTypesController, type: :controller do
   before do
-    sign_in user
+    valid_token_auth user
   end
   
   it 'returns successful login' do
@@ -11,10 +11,10 @@ RSpec.describe Api::V1::ActivityTypesController, type: :controller do
     expect(response).to be_success
   end
 
-  xit 'lists activity types' do
+  it 'returns 11 activity types' do
     get :index
 
-    expect(response).to eq true
+    expect(json_response.length).to be 11
   end
 
   def company

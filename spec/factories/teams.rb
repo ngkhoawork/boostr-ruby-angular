@@ -1,4 +1,9 @@
 FactoryGirl.define do
+  factory :team do
+    name { FFaker::HipsterIpsum.word }
+    company
+  end
+
   factory :parent_team, class: Team do
     sequence(:name) { |n| "Team #{n}" }
 

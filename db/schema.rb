@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20170321223541) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "account_dimensions", force: :cascade do |t|
     t.string  "name"
@@ -473,6 +474,7 @@ ActiveRecord::Schema.define(version: 20170321223541) do
     t.boolean  "open",                                         default: true
     t.string   "curr_cd",                                      default: "USD"
     t.decimal  "budget_loc",          precision: 15, scale: 2, default: 0.0
+    t.integer  "initiative_id"
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
@@ -555,6 +557,15 @@ ActiveRecord::Schema.define(version: 20170321223541) do
   add_index "fields", ["company_id"], name: "index_fields_on_company_id", using: :btree
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
+
+  create_table "initiatives", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "goal"
+    t.string   "status"
+    t.integer  "company_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "integration_logs", force: :cascade do |t|
     t.text     "request_body"
