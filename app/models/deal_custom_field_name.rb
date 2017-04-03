@@ -16,6 +16,7 @@ class DealCustomFieldName < ActiveRecord::Base
         "note" => 2,
         "datetime" => 7,
         "number" => 7,
+        "number_4_dec" => 7,
         "integer" => 7,
         "boolean" => 3,
         "percentage" => 5,

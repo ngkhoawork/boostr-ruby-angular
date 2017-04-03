@@ -356,7 +356,14 @@ class Api::DealsController < ApplicationController
                 :sum4,
                 :sum5,
                 :sum6,
-                :sum7
+                :sum7,
+                :number_4_dec1,
+                :number_4_dec2,
+                :number_4_dec3,
+                :number_4_dec4,
+                :number_4_dec5,
+                :number_4_dec6,
+                :number_4_dec7
             ]
         }
     )

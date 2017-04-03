@@ -31,6 +31,7 @@
         { name: 'Notes', value: 'note' }
         { name: 'Date/Time', value: 'datetime' }
         { name: 'Number', value: 'number' }
+        { name: 'Number - 4 decimal', value: 'number_4_dec' }
         { name: 'Integer', value: 'integer' }
         { name: 'Boolean', value: 'boolean' }
         { name: 'Percentage', value: 'percentage' }

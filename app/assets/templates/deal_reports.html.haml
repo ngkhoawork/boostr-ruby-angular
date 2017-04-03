@@ -182,6 +182,8 @@
                     {{deal.deal_custom_field[fieldName] || 0}}%
                   %span{'ng-if': 'dealCustomFieldName.field_type == "number"'}
                     {{ (deal.deal_custom_field[fieldName] || 0) | number : 2}}
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "number_4_dec"'}
+                    {{ (deal.deal_custom_field[fieldName] || 0) | number : 4}}
                   %span{'ng-if': 'dealCustomFieldName.field_type == "currency"'}
                     ${{ (deal.deal_custom_field[fieldName] || 0) | number : 2}}
                   %span{'ng-if': 'dealCustomFieldName.field_type == "text" || dealCustomFieldName.field_type == "note"'}
@@ -194,3 +196,5 @@
                     {{ deal.deal_custom_field[fieldName] ? (deal.deal_custom_field[fieldName] | date: 'MM-dd-yyyy') : "N/A" }}
                   %span{'ng-if': 'dealCustomFieldName.field_type == "dropdown"'}
                     {{deal.deal_custom_field[fieldName] || "N/A"}}
+                  %span{'ng-if': 'dealCustomFieldName.field_type == "sum"'}
+                    {{ (deal.deal_custom_field[fieldName] || 0) | number : 0 }}

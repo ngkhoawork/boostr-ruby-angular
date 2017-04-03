@@ -45,6 +45,8 @@
                 %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
             .currency-field{ ng: { 'switch-when': 'number' } }
                 %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+            .currency-field{ ng: { 'switch-when': 'number_4_dec' } }
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '4', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
             .currency-field{ ng: { 'switch-when': 'integer' } }
                 %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
             .currency-field{ ng: { 'switch-when': 'currency' } }

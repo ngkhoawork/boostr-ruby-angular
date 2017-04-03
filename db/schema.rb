@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170403042443) do
+ActiveRecord::Schema.define(version: 20170403131822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -413,6 +413,13 @@ ActiveRecord::Schema.define(version: 20170403042443) do
     t.integer  "sum5"
     t.integer  "sum6"
     t.integer  "sum7"
+    t.decimal  "number_4_dec1",  precision: 15, scale: 4
+    t.decimal  "number_4_dec2",  precision: 15, scale: 4
+    t.decimal  "number_4_dec3",  precision: 15, scale: 4
+    t.decimal  "number_4_dec4",  precision: 15, scale: 4
+    t.decimal  "number_4_dec5",  precision: 15, scale: 4
+    t.decimal  "number_4_dec6",  precision: 15, scale: 4
+    t.decimal  "number_4_dec7",  precision: 15, scale: 4
   end
 
   add_index "deal_custom_fields", ["company_id"], name: "index_deal_custom_fields_on_company_id", using: :btree
@@ -541,6 +548,13 @@ ActiveRecord::Schema.define(version: 20170403042443) do
     t.datetime "created_at",                               null: false
     t.datetime "updated_at",                               null: false
     t.integer  "deal_product_id"
+    t.decimal  "number_4_dec1",   precision: 15, scale: 4
+    t.decimal  "number_4_dec2",   precision: 15, scale: 4
+    t.decimal  "number_4_dec3",   precision: 15, scale: 4
+    t.decimal  "number_4_dec4",   precision: 15, scale: 4
+    t.decimal  "number_4_dec5",   precision: 15, scale: 4
+    t.decimal  "number_4_dec6",   precision: 15, scale: 4
+    t.decimal  "number_4_dec7",   precision: 15, scale: 4
   end
 
   add_index "deal_product_cfs", ["company_id"], name: "index_deal_product_cfs_on_company_id", using: :btree
