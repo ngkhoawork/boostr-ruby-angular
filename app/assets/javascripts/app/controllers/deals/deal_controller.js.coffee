@@ -895,7 +895,7 @@
   getOperativeIntegration = (dealId) ->
     ApiConfiguration.all().then (data) ->
       operative = _.findWhere data.api_configurations, integration_type: 'operative'
-      if operative.switched_on
+      if operative && operative.switched_on
         $scope.operativeIntegration.isEnabled = operative.switched_on
         IntegrationLogs.all().then (data) ->
           logs = _.filter data, (log) -> log.object_name == 'deal' && log.deal_id == dealId
