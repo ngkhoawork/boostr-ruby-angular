@@ -15,7 +15,7 @@
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
-    status: 'None'
+    status: ''
 
   ###*
    * FileUpload
@@ -898,10 +898,12 @@
       if operative.switched_on
         $scope.operativeIntegration.isEnabled = operative.switched_on
         IntegrationLogs.all().then (data) ->
-          logs = _.filter data, (log) -> log.deal_id == dealId
+          logs = _.filter data, (log) -> log.object_name == 'deal' && log.deal_id == dealId
           lastLog = _.last _.sortBy logs, 'created_at'
           if lastLog
             $scope.operativeIntegration.status = if lastLog.is_error then 'Error' else 'Success'
+          else
+            $scope.operativeIntegration.status = 'None'
 
   checkCurrentUserDealShare = (members) ->
     CurrentUser.get().$promise.then (currentUser) ->

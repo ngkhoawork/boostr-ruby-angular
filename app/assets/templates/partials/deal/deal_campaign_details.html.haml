@@ -91,5 +91,5 @@
     %div.custom-field-item{ 'ng-if': 'operativeIntegration.isEnabled' }
         %div.custom-field-item-label
             %label Operative Status
-        %div.custom-field-item-field{'ng-class': '{"status-error": operativeIntegration.status == "Errror", "status-success": operativeIntegration.status == "Success"}'}
+        %div.custom-field-item-field{'ng-class': '{"status-error": operativeIntegration.status == "Error", "status-success": operativeIntegration.status == "Success"}'}
             %b {{operativeIntegration.status}}
