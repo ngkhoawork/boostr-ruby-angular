@@ -30,11 +30,19 @@ class Api::BillingSummaryController < ApplicationController
   def update_content_fee_product_budget
     if content_fee_product_budget.update(content_fee_product_budget_params)
       update_manual_override
+      update_io_budget
 
       render json: { billing_status: content_fee_product_budget.billing_status,
                      budget: content_fee_product_budget.budget }
     else
       render json: { errors: content_fee_product_budget.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  def export
+    respond_to do |format|
+      format.csv { send_data billing_summary_csv_report,
+                   filename: "billing-summary-#{params[:month]}-#{params[:year]}.csv" }
     end
   end
 
@@ -110,7 +118,11 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def content_fee_product_budget
-    ContentFeeProductBudget.find(params[:id])
+    @_content_fee_product_budget ||= ContentFeeProductBudget.find(params[:id])
+  end
+
+  def content_fee
+    @_content_fee ||= content_fee_product_budget.content_fee
   end
 
   def display_line_item_budget_params
@@ -137,5 +149,47 @@ class Api::BillingSummaryController < ApplicationController
         manual_override: true
       }
     )
+  end
+
+  def update_io_budget
+    content_fee_product_budget.update(
+      { budget_loc: content_fee_product_budget.budget * content_fee_product_budget.io.exchange_rate }
+    )
+
+    content_fee.update(
+      { budget: content_fee.content_fee_product_budgets.pluck(:budget).sum }
+    )
+
+    content_fee.io.update(
+      { budget: (content_fee.io.content_fees.pluck(:budget).sum +
+                 content_fee.io.display_line_item_budgets.pluck(:budget).sum) }
+    )
+  end
+
+  def csv_data
+    @_csv_data ||= JSON.parse ios_for_approval_serializer.to_json
+  end
+
+  def billing_summary_csv_report
+    headers = ['Io#', 'Line#', 'Name', 'Advertiser', 'Agency', 'Currency', 'Billing Contact', 'Product',
+               'Ad Server Product', 'Revenue Type', 'Amount', 'Billing Status', 'VAT']
+
+    CSV.generate do |csv|
+      csv << headers
+
+      csv_data.each do |obj|
+        obj['content_fee_product_budgets'].each do |fee|
+          csv << fee.values_at('io_number', 'line', 'io_name', 'advertiser_name', 'agency_name', 'currency',
+                               'billing_contact_name', 'product_name', 'ad_server', 'revenue_type', 'amount',
+                               'billing_status', 'vat')
+        end
+
+        obj['display_line_item_budgets'].each do |item|
+          csv << item.values_at('io_number', 'line', 'io_name', 'advertiser_name', 'agency_name', 'currency',
+                                'billing_contact_name', 'product_name', 'ad_server', 'revenue_type', 'amount',
+                                'billing_status', 'vat')
+        end
+      end
+    end
   end
 end

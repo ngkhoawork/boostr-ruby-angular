@@ -187,6 +187,8 @@ Rails.application.routes.draw do
         put :update_content_fee_product_budget
         put :update_display_line_item_budget_billing_status
       end
+
+      get :export, on: :collection
     end
   end
 

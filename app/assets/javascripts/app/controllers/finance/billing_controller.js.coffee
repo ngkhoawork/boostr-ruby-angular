@@ -99,6 +99,6 @@
                 return
 
             $scope.exportBilling = ->
-                $window.open("""/api/billing/report.csv?year=#{$scope.selectedYear}&month=#{$scope.selectedMonth}""")
+                $window.open("""/api/billing_summary/export.csv?year=#{$scope.selectedYear}&month=#{$scope.selectedMonth}""")
                 return
     ]
