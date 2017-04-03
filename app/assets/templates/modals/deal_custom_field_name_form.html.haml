@@ -48,7 +48,7 @@
                 %input.form-control.option-field{ placeholder: "{{'Value ' + (customFieldOptionIndex + 1)}}", ng: { model: 'customFieldOptions[customFieldOptionIndex]["value"]' } }
                 %i.fa.fa-plus{ "aria-hidden": "true", "ng-click": "addCustomFieldOption()", "ng-if": "customFieldOptions.length == customFieldOptionIndex + 1" }
                 %i.fa.fa-times{ "aria-hidden": "true", "ng-click": "removeCustomFieldOption(customFieldOptionIndex)", "ng-if": "customFieldOptions.length > customFieldOptionIndex + 1" }
-      .form-group{ ng: { class:'{error: errors.field_type}'} }
+      .form-group{ ng: { class:'{error: errors.field_label}'} }
         .row
           .col-xs-12
             %span.error-text {{errors.field_label}}
@@ -56,7 +56,7 @@
               Field Label
               %span.star *
             %input.form-control{ name: 'field_label', placeholder: 'Enter Field Label', ng: { model: 'customFieldName.field_label' } }
-      .form-group{ ng: { class:'{error: errors.field_type}'} }
+      .form-group{ ng: { class:'{error: errors.position}'} }
         .row
           .col-xs-12
             %span.error-text {{errors.position}}

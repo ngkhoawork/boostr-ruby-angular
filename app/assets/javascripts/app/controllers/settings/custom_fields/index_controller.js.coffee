@@ -58,7 +58,9 @@
 
   $scope.$on 'updated_deal_custom_field_names', ->
     getDealCustomFieldNames()
+    getDealProductCfNames()
   $scope.$on 'updated_deal_product_cf_names', ->
+    getDealCustomFieldNames()
     getDealProductCfNames()
 
   $scope.init()

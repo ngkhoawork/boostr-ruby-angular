@@ -23,9 +23,10 @@
   '$http',
   'Transloadit',
   'DealCustomFieldName',
+  'DealProductCfName',
   'Currency',
   'CurrentUser'
-($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, Currency, CurrentUser) ->
+($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, DealProductCfName, Currency, CurrentUser) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -49,6 +50,7 @@
   $scope.uploadedFiles = []
   $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
+  $scope.dealProductCfNames = []
 
   $scope.checkCurrentUserDealShare = (members) ->
     CurrentUser.get().$promise.then (currentUser) ->
@@ -187,10 +189,15 @@
     $scope.getDealFiles()
     $scope.initActivity()
     getDealCustomFieldNames()
+    getDealProductCfNames()
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
+
+  getDealProductCfNames = () ->
+    DealProductCfName.all().then (dealProductCfNames) ->
+      $scope.dealProductCfNames = dealProductCfNames
 
   $scope.initReminder = ->
 
@@ -613,6 +620,7 @@
           )
 
   $scope.updateDealProduct = (data) ->
+    console.log(data)
     $scope.errors = {}
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then(
       (deal) ->

@@ -29,10 +29,9 @@
   $scope.submitForm = () ->
     $scope.errors = {}
 
-    console.log()
-
     fields = ['field_type', 'field_label', 'position']
 
+    console.log($scope.customFieldName)
     fields.forEach (key) ->
       field = $scope.customFieldName[key]
       switch key
@@ -43,6 +42,7 @@
         when 'position'
           if !field then return $scope.errors[key] = 'Position is required'
 
+    console.log($scope.errors)
     if Object.keys($scope.errors).length > 0 then return
 
     $scope.customFieldName.customFieldOptions = []

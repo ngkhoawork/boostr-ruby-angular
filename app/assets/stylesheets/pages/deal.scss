@@ -199,6 +199,37 @@
                 font-weight: bold;
             }
         }
+
+        .custom-field-item-field {
+            .text-area {
+                textarea {
+                    margin-top: 10px;
+                    width: 100px;
+                }
+            }
+            .editable {
+                display: inline-block;
+                min-width: 100px;
+                max-width: 100%;
+                background: none;
+                &:focus {
+                    outline: none;
+                    border: 1px dashed $secondary-font-color;
+                    &:hover {
+                        background-color: inherit;
+                    }
+                }
+            }
+            .datetime-field {
+                width: 130px;
+                table {
+                    tr {
+                        height: auto !important;
+                    }
+                }
+            }
+        }
+
         .editable-wrap {
             white-space: nowrap;
             .budget-value, .budget-percent {
@@ -236,17 +267,17 @@
                 }
             }
         }
-        table {
-            thead > tr {
+        > table {
+            > thead > tr {
                 background-color: $brand-tertiary;
                 //background-color: lighten($main-color, 35%);
-                th {
+                > th {
                     color: white !important;
                     //color:lighten($main-color, 5%) !important;
                 }
             }
-            tbody {
-                td:first-child {
+            > tbody {
+                > td:first-child {
                     white-space: nowrap;
                     font-size: 18px;
                     font-weight: bold;
@@ -255,7 +286,7 @@
                         visibility: hidden;
                     }
                 }
-                tr {
+                > tr {
                     &:first-child > td {
                         border-top: none;
                     }
@@ -266,11 +297,12 @@
                     }
                 }
             }
-            th, td {
+            > thead > tr > th, > tbody > tr > td {
                 text-align: center;
                 width: 100px;
                 &:first-child {
                     text-align: left;
+                    width: 200px;
                 }
             }
         }

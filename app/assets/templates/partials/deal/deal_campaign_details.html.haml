@@ -69,6 +69,8 @@
                     %li{'ng-repeat': 'customFieldOption in dealCustomFieldName.deal_custom_field_options', 'ng-class': '{active: currentDeal.deal_custom_field[fieldName] == customFieldOption.value}'}
                         %a{'href': '', 'ng-click': 'currentDeal.deal_custom_field[fieldName] = customFieldOption.value; updateDeal()'}
                             %span.text {{customFieldOption.value}}
+            .currency-field{ ng: { 'switch-when': 'sum' } }
+                {{ (currentDeal.deal_custom_field[fieldName] || 0) | number : 0 }}
     .mb30
     %div.custom-field-item
         %div.custom-field-item-label

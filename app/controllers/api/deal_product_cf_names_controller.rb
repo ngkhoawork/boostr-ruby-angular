@@ -47,6 +47,12 @@ class Api::DealProductCfNamesController < ApplicationController
     deal_product_cf_name = deal_product_cf_names.new(deal_product_cf_name_params)
     deal_product_cf_name.field_index = field_index
 
+    if deal_product_cf_name_params[:field_type] == 'sum'
+      deal_custom_field_name = deal_custom_field_names.new(deal_product_cf_name_params)
+      deal_custom_field_name.field_index = field_index
+      deal_custom_field_name.save
+    end
+
     if deal_product_cf_name.save
       render json: deal_product_cf_name, status: :created
     else
@@ -55,7 +61,12 @@ class Api::DealProductCfNamesController < ApplicationController
   end
 
   def destroy
+    if deal_product_cf_name.field_type == 'sum'
+      deal_custom_field_names.by_type('sum').by_index(deal_product_cf_name.field_index).destroy_all
+    end
+
     deal_product_cf_name.destroy
+
     render nothing: true
   end
 
@@ -76,6 +87,10 @@ class Api::DealProductCfNamesController < ApplicationController
 
   def deal_product_cf_names
     @deal_product_cf_names ||= company.deal_product_cf_names
+  end
+
+  def deal_custom_field_names
+    @deal_custom_field_names ||= company.deal_custom_field_names
   end
 
   def company

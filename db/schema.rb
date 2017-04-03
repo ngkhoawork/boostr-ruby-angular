@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170331120546) do
+ActiveRecord::Schema.define(version: 20170403042443) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -474,7 +474,6 @@ ActiveRecord::Schema.define(version: 20170331120546) do
 
   create_table "deal_product_cfs", force: :cascade do |t|
     t.integer  "company_id"
-    t.integer  "deal_id"
     t.decimal  "currency1"
     t.decimal  "currency2"
     t.decimal  "currency3"
@@ -539,12 +538,12 @@ ActiveRecord::Schema.define(version: 20170331120546) do
     t.integer  "sum5"
     t.integer  "sum6"
     t.integer  "sum7"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "deal_product_id"
   end
 
   add_index "deal_product_cfs", ["company_id"], name: "index_deal_product_cfs_on_company_id", using: :btree
-  add_index "deal_product_cfs", ["deal_id"], name: "index_deal_product_cfs_on_deal_id", using: :btree
 
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
@@ -1062,7 +1061,6 @@ ActiveRecord::Schema.define(version: 20170331120546) do
   add_foreign_key "deal_product_cf_names", "companies"
   add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
   add_foreign_key "deal_product_cfs", "companies"
-  add_foreign_key "deal_product_cfs", "deals"
   add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"

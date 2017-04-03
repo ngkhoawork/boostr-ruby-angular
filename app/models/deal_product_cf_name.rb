@@ -5,6 +5,7 @@ class DealProductCfName < ActiveRecord::Base
   accepts_nested_attributes_for :deal_product_cf_options
 
   scope :by_type, -> type { where(field_type: type) if type.present? }
+  scope :by_index, -> field_index { where(field_index: field_index) if field_index.present? }
 
   def self.get_field_limit(type)
     puts "====="
@@ -18,7 +19,8 @@ class DealProductCfName < ActiveRecord::Base
         "integer" => 7,
         "boolean" => 3,
         "percentage" => 5,
-        "dropdown" => 7
+        "dropdown" => 7,
+        "sum" => 7
     }
     field_limits[type]
   end
