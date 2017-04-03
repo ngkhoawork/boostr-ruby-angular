@@ -18,6 +18,7 @@ class DealProductCf < ActiveRecord::Base
       total6 = 0
       total7 = 0
       deal_custom_field = deal.deal_custom_field
+      deal_custom_field = DealCustomField.new(deal_id: deal.id) if deal_custom_field.nil?
       deal.deal_products.each do |deal_product|
         total1 += (deal_product.deal_product_cf.sum1 || 0)
         total2 += (deal_product.deal_product_cf.sum2 || 0)
