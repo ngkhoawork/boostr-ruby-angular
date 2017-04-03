@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170327163823) do
+ActiveRecord::Schema.define(version: 20170331120546) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -406,6 +406,13 @@ ActiveRecord::Schema.define(version: 20170327163823) do
     t.string   "dropdown5"
     t.string   "dropdown6"
     t.string   "dropdown7"
+    t.integer  "sum1"
+    t.integer  "sum2"
+    t.integer  "sum3"
+    t.integer  "sum4"
+    t.integer  "sum5"
+    t.integer  "sum6"
+    t.integer  "sum7"
   end
 
   add_index "deal_custom_fields", ["company_id"], name: "index_deal_custom_fields_on_company_id", using: :btree
@@ -440,6 +447,104 @@ ActiveRecord::Schema.define(version: 20170327163823) do
     t.integer  "deal_product_id"
     t.decimal  "budget_loc",      precision: 15, scale: 2, default: 0.0
   end
+
+  create_table "deal_product_cf_names", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "field_index"
+    t.string   "field_type"
+    t.string   "field_label"
+    t.boolean  "is_required"
+    t.integer  "position"
+    t.boolean  "show_on_modal"
+    t.boolean  "disabled"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "deal_product_cf_names", ["company_id"], name: "index_deal_product_cf_names_on_company_id", using: :btree
+
+  create_table "deal_product_cf_options", force: :cascade do |t|
+    t.integer  "deal_product_cf_name_id"
+    t.string   "value"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "deal_product_cf_options", ["deal_product_cf_name_id"], name: "index_deal_product_cf_options_on_deal_product_cf_name_id", using: :btree
+
+  create_table "deal_product_cfs", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "deal_id"
+    t.decimal  "currency1"
+    t.decimal  "currency2"
+    t.decimal  "currency3"
+    t.decimal  "currency4"
+    t.decimal  "currency5"
+    t.decimal  "currency6"
+    t.decimal  "currency7"
+    t.string   "currency_code1"
+    t.string   "currency_code2"
+    t.string   "currency_code3"
+    t.string   "currency_code4"
+    t.string   "currency_code5"
+    t.string   "currency_code6"
+    t.string   "currency_code7"
+    t.string   "text1"
+    t.string   "text2"
+    t.string   "text3"
+    t.string   "text4"
+    t.string   "text5"
+    t.text     "note1"
+    t.text     "note2"
+    t.datetime "datetime1"
+    t.datetime "datetime2"
+    t.datetime "datetime3"
+    t.datetime "datetime4"
+    t.datetime "datetime5"
+    t.datetime "datetime6"
+    t.datetime "datetime7"
+    t.decimal  "number1"
+    t.decimal  "number2"
+    t.decimal  "number3"
+    t.decimal  "number4"
+    t.decimal  "number5"
+    t.decimal  "number6"
+    t.decimal  "number7"
+    t.decimal  "integer1"
+    t.decimal  "integer2"
+    t.decimal  "integer3"
+    t.decimal  "integer4"
+    t.decimal  "integer5"
+    t.decimal  "integer6"
+    t.decimal  "integer7"
+    t.boolean  "boolean1"
+    t.boolean  "boolean2"
+    t.boolean  "boolean3"
+    t.decimal  "percentage1"
+    t.decimal  "percentage2"
+    t.decimal  "percentage3"
+    t.decimal  "percentage4"
+    t.decimal  "percentage5"
+    t.string   "dropdown1"
+    t.string   "dropdown2"
+    t.string   "dropdown3"
+    t.string   "dropdown4"
+    t.string   "dropdown5"
+    t.string   "dropdown6"
+    t.string   "dropdown7"
+    t.integer  "sum1"
+    t.integer  "sum2"
+    t.integer  "sum3"
+    t.integer  "sum4"
+    t.integer  "sum5"
+    t.integer  "sum6"
+    t.integer  "sum7"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "deal_product_cfs", ["company_id"], name: "index_deal_product_cfs_on_company_id", using: :btree
+  add_index "deal_product_cfs", ["deal_id"], name: "index_deal_product_cfs_on_deal_id", using: :btree
 
   create_table "deal_products", force: :cascade do |t|
     t.integer  "deal_id"
@@ -490,6 +595,7 @@ ActiveRecord::Schema.define(version: 20170327163823) do
     t.string   "curr_cd",                                      default: "USD"
     t.decimal  "budget_loc",          precision: 15, scale: 2, default: 0.0
     t.integer  "initiative_id"
+    t.string   "closed_reason_text"
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
@@ -953,6 +1059,10 @@ ActiveRecord::Schema.define(version: 20170327163823) do
   add_foreign_key "deal_custom_fields", "deals"
   add_foreign_key "deal_logs", "deals"
   add_foreign_key "deal_product_budgets", "deal_products"
+  add_foreign_key "deal_product_cf_names", "companies"
+  add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
+  add_foreign_key "deal_product_cfs", "companies"
+  add_foreign_key "deal_product_cfs", "deals"
   add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"

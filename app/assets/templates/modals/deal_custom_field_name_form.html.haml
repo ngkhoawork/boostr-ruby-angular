@@ -13,6 +13,18 @@
           %i.fa.fa-warning
           <strong style="text-transform: capitalize">{{field}}</strong>
           {{error}}
+      .form-group{ ng: { if: 'formType == "New"' } }
+        .row
+          .col-xs-12
+            -#%span.error-text {{errors.field_type}}
+            %label.control-label{ for: 'field_object' }
+              Custom Field Object
+              %span.star *
+            %ui-select{ name: 'field_object', ng: { model: 'customFieldName.field_object', disabled: true } }
+              %ui-select-match{ placeholder: 'Select A Object' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'customFieldObjectType.value as customFieldObjectType in customFieldObjectTypes | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'customFieldObjectType.name' } } }
       .form-group{ ng: { if: 'formType == "New"', class:'{error: errors.field_type}' } }
         .row
           .col-xs-12
@@ -20,12 +32,12 @@
             %label.control-label{ for: 'field_type' }
               Field Type
               %span.star *
-            %ui-select{ name: 'field_type', ng: { model: 'dealCustomFieldName.field_type', disabled: true } }
+            %ui-select{ name: 'field_type', ng: { model: 'customFieldName.field_type', disabled: true } }
               %ui-select-match{ placeholder: 'Select A Field Type' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'fieldType.value as fieldType in fieldTypes | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'fieldType.name' } } }
-      .form-group{ ng: { if: 'dealCustomFieldName.field_type == "dropdown"', class:'{error: errors.field_type}' } }
+      .form-group{ ng: { if: 'customFieldName.field_type == "dropdown"', class:'{error: errors.field_type}' } }
         .row
           .col-xs-12
             %label.control-label{ for: 'field_type' }
@@ -43,7 +55,7 @@
             %label.control-label{ for: 'field_label' }
               Field Label
               %span.star *
-            %input.form-control{ name: 'field_label', placeholder: 'Enter Field Label', ng: { model: 'dealCustomFieldName.field_label' } }
+            %input.form-control{ name: 'field_label', placeholder: 'Enter Field Label', ng: { model: 'customFieldName.field_label' } }
       .form-group{ ng: { class:'{error: errors.field_type}'} }
         .row
           .col-xs-12
@@ -51,14 +63,14 @@
             %label.control-label{ for: 'position' }
               Position
               %span.star *
-            %input.form-control{ name: 'position', placeholder: 'Enter Position', ng: { model: 'dealCustomFieldName.position' } }
+            %input.form-control{ name: 'position', placeholder: 'Enter Position', ng: { model: 'customFieldName.position' } }
       .form-group
         .row
           .col-xs-12
             %label.control-label{ for: 'is_required' } Required
             .show-hide-remainder-form
               .switch-remainder-form
-                %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'dealCustomFieldName.is_required'}
+                %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'customFieldName.is_required'}
                 %label{:for => "rem-act-modal-toggle"}
                   %span
       .form-group
@@ -67,7 +79,7 @@
             %label.control-label{ for: 'is_required' } Show on Modal
             .show-hide-remainder-form
               .switch-remainder-form
-                %input#rem-act-modal-toggle1.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'dealCustomFieldName.show_on_modal'}
+                %input#rem-act-modal-toggle1.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'customFieldName.show_on_modal'}
                 %label{:for => "rem-act-modal-toggle1"}
                   %span
       .form-group
@@ -76,7 +88,7 @@
             %label.control-label{ for: 'disabled' } Disabled
             .show-hide-remainder-form
               .switch-remainder-form
-                %input#rem-act-modal-toggle2.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'dealCustomFieldName.disabled'}
+                %input#rem-act-modal-toggle2.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'customFieldName.disabled'}
                 %label{:for => "rem-act-modal-toggle2"}
                   %span
 

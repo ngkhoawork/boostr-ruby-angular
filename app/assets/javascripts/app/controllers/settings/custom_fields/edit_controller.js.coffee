@@ -1,13 +1,14 @@
 @app.controller "SettingsDealCustomFieldNamesEditController",
-['$scope', '$modalInstance', '$q', '$filter', 'DealCustomFieldName', 'User', 'TimePeriod', 'dealCustomFieldName',
-($scope, $modalInstance, $q, $filter, DealCustomFieldName, User, TimePeriod, dealCustomFieldName) ->
+['$scope', '$modalInstance', '$q', '$filter', 'DealCustomFieldName', 'DealProductCfName', 'User', 'TimePeriod', 'customFieldName', 'objectType',
+($scope, $modalInstance, $q, $filter, DealCustomFieldName, DealProductCfName, User, TimePeriod, customFieldName, objectType) ->
 
   $scope.init = () ->
     $scope.formType = "Edit"
     $scope.submitText = "Update"
-    $scope.dealCustomFieldName = dealCustomFieldName
-    $scope.customFieldOptions = dealCustomFieldName.deal_custom_field_options
-    if $scope.customFieldOptions.length == 0
+    $scope.customFieldName = customFieldName
+    $scope.customFieldName.field_object = objectType
+    $scope.customFieldOptions = customFieldName.deal_custom_field_options
+    if !$scope.customFieldOptions || $scope.customFieldOptions.length == 0
       $scope.customFieldOptions = [ {id: null, value: ""} ]
     $scope.fieldTypes = DealCustomFieldName.field_type_list
     $scope.requiredChoices = [
@@ -24,13 +25,19 @@
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
 
-    $scope.dealCustomFieldName.dealCustomFieldOptions = []
+    $scope.customFieldName.customFieldOptions = []
     $scope.customFieldOptions.forEach (item) ->
       if (item['value'].trim() != "")
-        $scope.dealCustomFieldName.dealCustomFieldOptions.push(item)
+        $scope.customFieldName.customFieldOptions.push(item)
 
-    DealCustomFieldName.update(id: dealCustomFieldName.id, deal_custom_field_name: $scope.dealCustomFieldName).then (dealCustomFieldName) ->
-      $modalInstance.close()
+    if $scope.customFieldName.field_object == 'deal'
+      DealCustomFieldName.update(id: customFieldName.id, deal_custom_field_name: $scope.customFieldName).then (customFieldName) ->
+        $modalInstance.close()
+
+    if $scope.customFieldName.field_object == 'deal_product'
+      DealProductCfName.update(id: customFieldName.id, deal_product_cf_name: $scope.customFieldName).then (customFieldName) ->
+        $modalInstance.close()
+
 
   $scope.cancel = ->
     $modalInstance.close()

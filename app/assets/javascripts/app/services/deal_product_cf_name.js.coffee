@@ -1,29 +1,29 @@
-@service.service 'DealCustomFieldName',
+@service.service 'DealProductCfName',
   ['$resource', '$q', '$rootScope',
     ($resource, $q, $rootScope) ->
 
       transformRequest = (original, headers) ->
         console.log(original)
-        original.deal_custom_field_name.values_attributes = original.deal_custom_field_name.values
-        original.deal_custom_field_name.deal_custom_field_options_attributes = original.deal_custom_field_name.customFieldOptions
+        original.deal_product_cf_name.values_attributes = original.deal_product_cf_name.values
+        original.deal_product_cf_name.deal_product_cf_options_attributes = original.deal_product_cf_name.customFieldOptions
         angular.toJson(original)
 
       transformAddContactRequest = (original, headers) ->
-        # original.deal_custom_field_name.values_attributes = original.deal_custom_field_name.values
+        # original.deal_product_cf_name.values_attributes = original.deal_product_cf_name.values
         console.log 'original:', original
         angular.toJson(original.params)
 
-      resource = $resource '/api/deal_custom_field_names/:id', { id: '@id' },
+      resource = $resource '/api/deal_product_cf_names/:id', { id: '@id' },
         save:
           method: 'POST'
-          url: '/api/deal_custom_field_names'
+          url: '/api/deal_product_cf_names'
           transformRequest: transformRequest
         update:
           method: 'PUT'
-          url: '/api/deal_custom_field_names/:id'
+          url: '/api/deal_product_cf_names/:id'
           transformRequest: transformRequest
 
-      currentDealCustomFieldName = undefined
+      currentDealProductCfName = undefined
 
       @field_type_list = [
         { name: 'Currency', value: 'currency' }
@@ -40,17 +40,17 @@
 
       @all = (params) ->
         deferred = $q.defer()
-        resource.query params, (deal_custom_field_names) ->
-          deferred.resolve(deal_custom_field_names)
+        resource.query params, (deal_product_cf_names) ->
+          deferred.resolve(deal_product_cf_names)
         deferred.promise
 
       @create = (params) ->
         deferred = $q.defer()
         resource.save(
           params,
-          (deal_custom_field_name) ->
-            deferred.resolve(deal_custom_field_name)
-            $rootScope.$broadcast 'updated_deal_custom_field_names'
+          (deal_product_cf_name) ->
+            deferred.resolve(deal_product_cf_name)
+            $rootScope.$broadcast 'updated_deal_product_cf_names'
           (resp) ->
             deferred.reject(resp)
         )
@@ -60,26 +60,26 @@
         deferred = $q.defer()
         resource.update(
           params,
-          (deal_custom_field_name) ->
-            deferred.resolve(deal_custom_field_name)
-            $rootScope.$broadcast 'updated_deal_custom_field_names'
+          (deal_product_cf_name) ->
+            deferred.resolve(deal_product_cf_name)
+            $rootScope.$broadcast 'updated_deal_product_cf_names'
           (resp) ->
             deferred.reject(resp)
         )
         deferred.promise
 
 
-      @get = (deal_custom_field_name_id) ->
+      @get = (deal_product_cf_name_id) ->
         deferred = $q.defer()
-        resource.get id: deal_custom_field_name_id, (deal_custom_field_name) ->
-          deferred.resolve(deal_custom_field_name)
+        resource.get id: deal_product_cf_name_id, (deal_product_cf_name) ->
+          deferred.resolve(deal_product_cf_name)
         deferred.promise
 
-      @delete = (deletedDealCustomFieldName) ->
+      @delete = (deletedDealProductCfName) ->
         deferred = $q.defer()
-        resource.delete id: deletedDealCustomFieldName.id, () ->
+        resource.delete id: deletedDealProductCfName.id, () ->
           deferred.resolve()
-          $rootScope.$broadcast 'updated_deal_custom_field_names'
+          $rootScope.$broadcast 'updated_deal_product_cf_names'
         deferred.promise
 
       return

@@ -349,7 +349,14 @@ class Api::DealsController < ApplicationController
                 :dropdown4,
                 :dropdown5,
                 :dropdown6,
-                :dropdown7
+                :dropdown7,
+                :sum1,
+                :sum2,
+                :sum3,
+                :sum4,
+                :sum5,
+                :sum6,
+                :sum7
             ]
         }
     )
