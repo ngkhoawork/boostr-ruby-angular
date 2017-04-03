@@ -1,10 +1,10 @@
-%div.next-steps.block{'ng-controller': 'DealController'}
+%div.next-steps.block
 	.show-create-remainders-popup
 		%label{ 'for': 'deal-reminders'}
 			%i.fa.fa-bell-o.reminder-icon
-		%input.show-form-create-reminders#deal-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
+		%input.show-form-create-reminders#deal-reminders{ type: 'checkbox', ng: { model: 'reminderOptions.showReminder' } }
 
-		%div{ ng: { show: 'showReminder' } }
+		%div{ ng: { show: 'reminderOptions.showReminder' } }
 			#reminder_popup_modal.popup-modal
 				.popup-modal-header
 					%label{ 'for': 'deal-reminders'}

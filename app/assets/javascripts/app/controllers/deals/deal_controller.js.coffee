@@ -165,7 +165,7 @@
   ###
 
   $scope.init = (initialLoad) ->
-    $scope.actRemColl = false;
+    $scope.actRemColl = false
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
@@ -193,7 +193,6 @@
       $scope.dealCustomFieldNames = dealCustomFieldNames
 
   $scope.initReminder = ->
-    $scope.showReminder = false
 
     $scope.reminder = {
       name: '',
@@ -207,6 +206,7 @@
     }
 
     $scope.reminderOptions = {
+      showReminder: false
       editMode: false,
       errors: {},
       buttonDisabled: false,
