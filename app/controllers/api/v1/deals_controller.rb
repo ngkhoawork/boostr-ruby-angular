@@ -2,103 +2,81 @@ class Api::V1::DealsController < ApiController
   respond_to :json, :zip
 
   def index
-    respond_to do |format|
-      format.json {
-        if params[:name].present?
-          render json: suggest_deals
-        elsif params[:activity].present?
-          render json: activity_deals
-        elsif params[:year].present?
-          response_deals = company.deals
-            .includes(:deal_members)
-            .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
-            .as_json
+    if params[:name].present?
+      render json: suggest_deals
+    elsif params[:activity].present?
+      render json: activity_deals
+    elsif params[:year].present?
+      response_deals = company.deals
+        .includes(:deal_members)
+        .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
+        .as_json
 
-          #deal_sums = company.deals
-          #  .select("advertiser_id, sum(budget) AS budget")
-          #  .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
-          #  .group('deals.advertiser_id')
-          #  .as_json
-          response_deals = response_deals.map do |deal|
-            range = deal['start_date'] .. deal['end_date']
+      #deal_sums = company.deals
+      #  .select("advertiser_id, sum(budget) AS budget")
+      #  .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", params[:year], params[:year])
+      #  .group('deals.advertiser_id')
+      #  .as_json
+      response_deals = response_deals.map do |deal|
+        range = deal['start_date'] .. deal['end_date']
 
-            deal['month_amounts'] = []
-            monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue").where("deal_products.deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
+        deal['month_amounts'] = []
+        monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue").where("deal_products.deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('month', start_date)").order("date_part('month', start_date) asc").collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
 
-            index = 0
-            monthly_revenues.each do |monthly_revenue|
-              for i in index..(monthly_revenue[:month]-2)
-                deal['month_amounts'].push 0
-              end
-              deal['month_amounts'].push monthly_revenue[:revenue]
-              index = monthly_revenue[:month]
-            end
-            for i in index..11
-              deal['month_amounts'].push 0
-            end
-
-            deal['months'] = []
-            month = Date.parse("#{year-1}1201")
-            while month = month.next_month and month.year == year do
-              month_range = month.at_beginning_of_month..month.at_end_of_month
-              if month_range.overlaps? range
-                overlap = [deal['start_date'], month_range.begin].max..[deal['end_date'], month_range.end].min
-                deal['months'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
-                deal
-              else
-                deal['months'].push 0
-              end
-            end
-
-            deal['quarter_amounts'] = []
-            quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
-            index = 0
-            quarterly_revenues.each do |quarterly_revenue|
-              for i in index..(quarterly_revenue[:quarter]-2)
-                deal['quarter_amounts'].push 0
-              end
-              deal['quarter_amounts'].push quarterly_revenue[:revenue]
-              index = quarterly_revenue[:quarter]
-            end
-            for i in index..3
-              deal['quarter_amounts'].push 0
-            end
-
-            deal['quarters'] = []
-            quarters.each do |quarter|
-              if quarter[:range].overlaps? range
-                overlap = [deal['start_date'], quarter[:start_date]].max..[deal['end_date'], quarter[:end_date]].min
-                deal['quarters'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
-                deal
-              else
-                deal['quarters'].push 0
-              end
-            end
-            deal
+        index = 0
+        monthly_revenues.each do |monthly_revenue|
+          for i in index..(monthly_revenue[:month]-2)
+            deal['month_amounts'].push 0
           end
-          render json: response_deals
-        else
-          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users, :currency).distinct , each_serializer: DealIndexSerializer).to_json
+          deal['month_amounts'].push monthly_revenue[:revenue]
+          index = monthly_revenue[:month]
         end
-      }
-      format.csv {
-        require 'timeout'
-        begin
-          status = Timeout::timeout(120) {
-            # Something that should be interrupted if it takes too much time...
-            if current_user.leader?
-              deals = company.deals
-            elsif team.present?
-              deals = team.deals
-            else
-              deals = current_user.deals
-            end
-            send_data deals.to_csv, filename: "deals-#{Date.today}.csv"
-          }
-        rescue Timeout::Error
-          return
+        for i in index..11
+          deal['month_amounts'].push 0
         end
-      }
+
+        deal['months'] = []
+        month = Date.parse("#{year-1}1201")
+        while month = month.next_month and month.year == year do
+          month_range = month.at_beginning_of_month..month.at_end_of_month
+          if month_range.overlaps? range
+            overlap = [deal['start_date'], month_range.begin].max..[deal['end_date'], month_range.end].min
+            deal['months'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
+            deal
+          else
+            deal['months'].push 0
+          end
+        end
+
+        deal['quarter_amounts'] = []
+        quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id").select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue").where("deal_id=? and date_part('year', start_date) = ?", deal['id'], params[:year]).group("date_part('quarter', start_date)").order("date_part('quarter', start_date) asc").collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
+        index = 0
+        quarterly_revenues.each do |quarterly_revenue|
+          for i in index..(quarterly_revenue[:quarter]-2)
+            deal['quarter_amounts'].push 0
+          end
+          deal['quarter_amounts'].push quarterly_revenue[:revenue]
+          index = quarterly_revenue[:quarter]
+        end
+        for i in index..3
+          deal['quarter_amounts'].push 0
+        end
+
+        deal['quarters'] = []
+        quarters.each do |quarter|
+          if quarter[:range].overlaps? range
+            overlap = [deal['start_date'], quarter[:start_date]].max..[deal['end_date'], quarter[:end_date]].min
+            deal['quarters'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
+            deal
+          else
+            deal['quarters'].push 0
+          end
+        end
+        deal
+      end
+      render json: response_deals
+    else
+      render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users, :currency).distinct , each_serializer: DealIndexSerializer).to_json
     end
   end
 

@@ -2,45 +2,23 @@ class Api::V1::ClientsController < ApiController
   respond_to :json, :csv
 
   def index
-    respond_to do |format|
-      format.json {
-        if params[:name].present?
-          results = suggest_clients
-        elsif params[:activity].present?
-          results = activity_clients
-        else
-          results = clients
-                      .by_type_id(params[:client_type_id])
-                      .order(:name)
-                      .includes(:address)
-                      .distinct
-        end
-
-        response.headers['X-Total-Count'] = results.count.to_s
-        results = results.limit(limit).offset(offset)
-        render json: results.as_json(
-          methods: [:deals_count, :fields]
-        )
-      }
-
-      format.csv {
-        require 'timeout'
-        begin
-          status = Timeout::timeout(120) {
-            if current_user.leader?
-              ordered_clients = company.clients
-            elsif team.present?
-              ordered_clients = team.clients
-            else
-              ordered_clients = current_user.clients
-            end
-            send_data ordered_clients.to_csv(current_user.company), filename: "clients-#{Date.today}.csv"
-          }
-        rescue Timeout::Error
-          return
-        end
-      }
+    if params[:name].present?
+      results = suggest_clients
+    elsif params[:activity].present?
+      results = activity_clients
+    else
+      results = clients
+                  .by_type_id(params[:client_type_id])
+                  .order(:name)
+                  .includes(:address)
+                  .distinct
     end
+
+    response.headers['X-Total-Count'] = results.count.to_s
+    results = results.limit(limit).offset(offset)
+    render json: results.as_json(
+      methods: [:deals_count, :fields]
+    )
   end
 
   def show
