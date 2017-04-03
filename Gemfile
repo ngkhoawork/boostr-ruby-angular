@@ -40,6 +40,7 @@ gem 'countries'
 gem 'faraday'
 gem 'attr_encrypted', '~> 3.0.0'
 gem 'net-sftp', require: false
+gem 'google-dfp-api'
 gem 'clean_pagination'
 
 source 'https://rails-assets.org' do
