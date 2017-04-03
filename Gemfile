@@ -67,11 +67,6 @@ end
 
 group :development do
   gem 'bullet'
-  gem 'rack-mini-profiler'
-  gem 'memory_profiler'
-  gem 'flamegraph'
-  gem 'stackprof'
-  gem 'fast_stack'
 end
 
 group :development, :test do
