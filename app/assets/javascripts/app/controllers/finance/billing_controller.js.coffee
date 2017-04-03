@@ -34,7 +34,14 @@
                             iosForApproval = iosForApproval.concat item.content_fee_product_budgets, item.display_line_item_budgets
                         $scope.iosForApproval = iosForApproval
                         $scope.iosMissingDisplayLineItems = data.ios_missing_display_line_items
-                        $scope.iosMissingMonthlyActual = data.ios_missing_monthly_actual
+                        $scope.iosMissingMonthlyActual = data.ios_missing_monthly_actual &&
+                            data.ios_missing_monthly_actual.sort (item1, item2) ->
+                                if item1.io_number > item2.io_number then return 1
+                                if item1.io_number < item2.io_number then return -1
+                                if item1.line_number > item2.line_number then return 1
+                                if item1.line_number < item2.line_number then return -1
+                                return 0
+
                         $scope.dataIsLoading = false
                         updateBillingStats()
 
