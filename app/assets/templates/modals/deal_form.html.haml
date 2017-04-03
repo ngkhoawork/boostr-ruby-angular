@@ -2,7 +2,7 @@
     %form{ ng: { submit: 'submitForm()' } }
         .popup-modal-header
             {{formType}} Deal
-            %span.close-btn{'ng-click': 'cancel()'} +
+            %span.close-btn{'ng-click': 'cancel()'}
         .popup-modal-body
             .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
                 .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }

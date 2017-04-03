@@ -3,3 +3,10 @@
 @import "avenir_next_fonts";
 @import "variables";
 @import "boostr_icons";
+
+.main-page-container {
+    overflow-x: auto;
+    & > div {
+        min-width: $content-min-width;
+    }
+}

@@ -2,7 +2,7 @@
   %form{ ng: { submit: 'submitForm()' } }
     .popup-modal-header
       {{ formType }}
-      %span.close-btn{'ng-click': 'cancel()'} +
+      %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body
       .form-group{'ng-class':'{error: errors.reason}'}
         %span.error-text {{errors.reason}}

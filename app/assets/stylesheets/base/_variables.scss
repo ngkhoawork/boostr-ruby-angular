@@ -66,6 +66,9 @@ $brand-tertiary-lighten: lighten($brand-tertiary, 5%) !default;
 // Header
 $header-height: 151px;
 
+// Content min-width
+$content-min-width: 1280px;
+
 // Progress bar
 $progress-bar-background: $gray-darker1;
 $progress-bar-success: #8ac039;

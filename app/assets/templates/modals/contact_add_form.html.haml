@@ -2,7 +2,7 @@
   %form.form-horizontal
     .popup-modal-header
       Add Contact
-      %span.close-btn{'ng-click': 'cancel()'} +
+      %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body.modal-body{style: 'padding: 15px'}
       .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
