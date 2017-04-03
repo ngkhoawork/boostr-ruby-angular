@@ -3,7 +3,7 @@
     min-height: 100vh;
     background-color: $main-background-color;
     color: $main-font-color;
-    overflow-x: auto;
+    padding: 20px 55px;
     .billing-header {
         display: flex;
         align-items: flex-end;
@@ -21,11 +21,6 @@
                 text-align: center;
             }
         }
-    }
-    .billing-inner {
-        padding: 20px 55px;
-        min-width: $content-min-width;
-
     }
     .main-title {
         font-size: 24px;
