@@ -7,7 +7,7 @@ class DealCustomFieldName < ActiveRecord::Base
   scope :by_type, -> type { where(field_type: type) if type.present? }
   scope :by_index, -> field_index { where(field_index: field_index) if field_index.present? }
 
-  before_destroy do
+  after_create do
     field_name = self.field_type + self.field_index.to_s
     self.company.deal_custom_fields.update_all(field_name => nil)
   end
