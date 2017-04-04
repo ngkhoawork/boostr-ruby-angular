@@ -4,34 +4,23 @@ class Api::V1::ActivitiesController < ApiController
   end
 
   def create
-    if params[:file].present?
-      require 'timeout'
-      begin
-        csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-        activities = Activity.import(csv_file, current_user)
-        render json: activities
-      rescue Timeout::Error
-        return
-      end
+    @activity = company.activities.build(activity_params)
+    @activity.user_id = current_user.id
+    @activity.created_by = current_user.id
+    @activity.updated_by = current_user.id
+
+    if @activity.save
+      current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+
+      activity_contacts = []
+      activity_contacts += params[:contacts] if params[:contacts]
+      activity_contacts += process_raw_contact_data if params[:guests]
+
+      contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
+      @activity.contacts = contacts
+      render json: activity, status: :created
     else
-      @activity = company.activities.build(activity_params)
-      @activity.user_id = current_user.id
-      @activity.created_by = current_user.id
-      @activity.updated_by = current_user.id
-
-      if @activity.save
-        current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
-
-        activity_contacts = []
-        activity_contacts += params[:contacts] if params[:contacts]
-        activity_contacts += process_raw_contact_data if params[:guests]
-
-        contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
-        @activity.contacts = contacts
-        render json: activity, status: :created
-      else
-        render json: { errors: activity.errors.messages }, status: :unprocessable_entity
-      end
+      render json: { errors: activity.errors.messages }, status: :unprocessable_entity
     end
   end
 

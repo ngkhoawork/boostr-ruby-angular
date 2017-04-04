@@ -15,9 +15,9 @@ RSpec.describe Api::V1::StagesController, type: :controller do
       create_list :stage, 3, company: company
 
       get :index, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(3)
+      expect(json_response.length).to eq(3)
     end
   end
 
@@ -25,6 +25,7 @@ RSpec.describe Api::V1::StagesController, type: :controller do
     it 'creates a new stage and returns success' do
       expect do
         post :create, stage: stage_params, format: :json
+
         expect(response).to be_success
       end.to change(Stage, :count).by(1)
     end
@@ -32,9 +33,9 @@ RSpec.describe Api::V1::StagesController, type: :controller do
     it 'returns errors if the stage is invalid' do
       expect do
         post :create, stage: { name: '' }, format: :json
+
         expect(response.status).to eq(422)
-        response_json = JSON.parse(response.body)
-        expect(response_json['errors']['name']).to eq(["can't be blank"])
+        expect(json_response['errors']['name']).to eq(["can't be blank"])
       end.to_not change(Stage, :count)
     end
   end
@@ -42,6 +43,7 @@ RSpec.describe Api::V1::StagesController, type: :controller do
   describe 'PUT #update' do
     it 'updates the stage and returns success' do
       put :update, id: stage.id, stage: { name: 'Stage 2' }, format: :json
+
       expect(response).to be_success
     end
   end

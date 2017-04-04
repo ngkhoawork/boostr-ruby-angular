@@ -16,17 +16,17 @@ RSpec.describe Api::V1::DashboardsController, type: :controller do
     it 'returns json for the dashboard' do
       allow(controller).to receive(:time_period).and_return(time_period)
       get :show, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['forecast']['amount']).to_not be_nil
-      expect(response_json['deals'].length).to eq(1)
+      expect(json_response['forecast']['amount']).to_not be_nil
+      expect(json_response['deals'].length).to eq(1)
     end
 
     it 'returns a nil forecast if there is no current time_period' do
       get :show, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['forecast']).to be_nil
+      expect(json_response['forecast']).to be_nil
     end
   end
 end

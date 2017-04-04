@@ -21,10 +21,10 @@ RSpec.describe Api::ContactsController, type: :controller do
 
     it 'returns a list of contacts' do
       get :index, format: :json
+
       expect(response).to be_success
       expect(response.headers['X-Total-Count']).to eq(user.company.contacts.count.to_s)
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(user.company.contacts.count)
+      expect(json_response.length).to be 20
     end
 
     it 'accepts limit parameter' do
@@ -80,7 +80,7 @@ RSpec.describe Api::ContactsController, type: :controller do
         post :create, contact: { addresses_attributes: address_params }, format: :json
         expect(response.status).to eq(422)
         response_json = JSON.parse(response.body)
-        expect(response_json['errors']['name']).to eq(["can't be blank"])
+        expect(response_json['errors']['primary account']).to eq(["can't be blank"])
       }.to_not change(Contact, :count)
     end
   end
@@ -89,7 +89,7 @@ RSpec.describe Api::ContactsController, type: :controller do
     let(:contact) { create :contact, clients: [client] }
 
     it 'updates a contact successfully' do
-      put :update, id: contact.id, contact: { name: 'New Name' }, format: :json
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
       expect(response).to be_success
       response_json = JSON.parse(response.body)
       expect(response_json['name']).to eq('New Name')

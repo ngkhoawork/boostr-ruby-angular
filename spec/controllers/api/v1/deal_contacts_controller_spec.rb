@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::DealContactsController, type: :controller do
+RSpec.describe Api::V1::DealContactsController, type: :controller do
   let!(:user) { create :user }
   let!(:agency) { create :client }
   let!(:advertiser) { create :client }
@@ -9,23 +9,23 @@ RSpec.describe Api::DealContactsController, type: :controller do
   let!(:deal) { create :deal, advertiser: advertiser, agency: agency }
 
   before do
-    sign_in user
+    valid_token_auth user
   end
 
   describe 'GET #index' do
     it 'returns a list of possible contacts' do
       get :index, deal_id: deal.id, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(10)
+      expect(json_response.length).to eq(10)
     end
 
     it 'accepts name attribute' do
       get :index, deal_id: deal.id, name: agency_contact.name, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(1)
-      expect(response_json[0]).to eq(JSON.parse(agency_contact.to_json))
+      expect(json_response.length).to eq(1)
+      expect(json_response[0]).to eq(JSON.parse(agency_contact.to_json))
     end
   end
 
@@ -35,9 +35,9 @@ RSpec.describe Api::DealContactsController, type: :controller do
     it 'creates new deal contact' do
       expect do
         post :create, deal_id: deal.id, deal_contact: { contact_id: new_contact.id } , format: :json
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json['contact_id']).to eq(new_contact.id)
+        expect(json_response['contact_id']).to eq(new_contact.id)
       end.to change(DealContact, :count).by(1)
     end
   end
@@ -48,6 +48,7 @@ RSpec.describe Api::DealContactsController, type: :controller do
     it 'removes contacts from a deal' do
       expect do
         delete :destroy, id: deal.deal_contacts.first.id, deal_id: deal.id, format: :json
+
         expect(response).to be_success
       end.to change(DealContact, :count).by(-1)
     end

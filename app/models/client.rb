@@ -14,8 +14,8 @@ class Client < ActiveRecord::Base
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
   has_many :values, as: :subject
-  has_many :activities
-  has_many :agency_activities, class_name: 'Activity', foreign_key: 'agency_id'
+  has_many :activities, -> { order(happened_at: :desc) }
+  has_many :agency_activities, -> { order(happened_at: :desc) }, class_name: 'Activity', foreign_key: 'agency_id'
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
 

@@ -13,10 +13,10 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       create_list :user, 3
 
       get :index, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(4)
-      expect(response_json[0]['name']).to_not be_nil
+      expect(json_response.length).to eq(4)
+      expect(json_response[0]['name']).to_not be_nil
     end
   end
 
@@ -25,18 +25,18 @@ RSpec.describe Api::V1::UsersController, type: :controller do
 
     it 'updates a user successfully' do
       put :update, id: new_user.id, user: { first_name: 'New', last_name: 'Name', title: 'Boss' }, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['first_name']).to eq('New')
-      expect(response_json['last_name']).to eq('Name')
-      expect(response_json['title']).to eq('Boss')
+      expect(json_response['first_name']).to eq('New')
+      expect(json_response['last_name']).to eq('Name')
+      expect(json_response['title']).to eq('Boss')
     end
 
     it 'does not allow user to disable itself' do
       put :update, id: user.id, user: { is_active: false }, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['is_active']).to be(true)
+      expect(json_response['is_active']).to be(true)
     end
   end
 end

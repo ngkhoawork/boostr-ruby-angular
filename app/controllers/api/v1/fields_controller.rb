@@ -1,5 +1,5 @@
 class Api::V1::FieldsController < ApiController
-  respond_to :json, :csv
+  respond_to :json
 
   def index
     render json: fields

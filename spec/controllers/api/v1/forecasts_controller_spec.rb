@@ -17,9 +17,9 @@ RSpec.describe Api::V1::ForecastsController, type: :controller do
         create_list :parent_team, 2
 
         get :index, { format: :json, time_period_id: time_period.id }
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json[0]['teams'].length).to eq(3)
+        expect(json_response[0]['teams'].length).to eq(3)
       end
     end
 
@@ -28,9 +28,9 @@ RSpec.describe Api::V1::ForecastsController, type: :controller do
         create_list :parent_team, 2
 
         get :index, { format: :json, time_period_id: time_period.id }
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json[0]['name']).to eq(user.name)
+        expect(json_response[0]['name']).to eq(user.name)
       end
     end
   end
@@ -40,9 +40,9 @@ RSpec.describe Api::V1::ForecastsController, type: :controller do
 
     it 'returns json for a team' do
       get :show, { id: child_team.id, format: :json, time_period_id: time_period.id }
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['name']).to eq(child_team.name)
+      expect(json_response['name']).to eq(child_team.name)
     end
   end
 end

@@ -95,9 +95,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           activity: activity_params,
           contacts: contacts.map(&:id)
         }, format: :json
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json['contacts'].length).to eq 10
+        expect(json_response['contacts'].length).to eq 10
       }.to change(Activity, :count).by(1)
     end
 
@@ -106,9 +106,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
         activity: activity_params,
         contacts: contacts.map(&:id) + [user_contact.id]
       }, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['contacts'].length).to eq 10
+      expect(json_response['contacts'].length).to eq 10
     end
 
     context 'when contacts are sent as objects' do
@@ -132,9 +132,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             activity: activity_params,
             guests: existing_contacts
           }, format: :json
+
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
-          expect(response_json['contacts'].length).to eq 10
+          expect(json_response['contacts'].length).to eq 10
         }.to change(Activity, :count).by(1)
       end
 
@@ -145,9 +145,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             contacts: contacts.map(&:id),
             guests: existing_contacts
           }, format: :json
+
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
-          expect(response_json['contacts'].length).to eq 10
+          expect(json_response['contacts'].length).to eq 10
         }.to change(Activity, :count).by(1)
       end
 
@@ -159,12 +159,14 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             contacts: contacts.map(&:id),
             guests: existing_contacts
           }, format: :json
+
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
-          expect(response_json['contacts'].length).to eq 12
-          new_contacts = response_json['contacts'].select do |contact|
+          expect(json_response['contacts'].length).to eq 12
+
+          new_contacts = json_response['contacts'].select do |contact|
             contact["name"] == 'Peggy M. Castle' || contact["name"] == 'William Bernard'
           end
+
           expect(new_contacts.length).to eq 2
           expect(new_contacts.map {|c| c['created_by']}).to eq [user.id, user.id]
         }.to change(Activity, :count).by(1)
@@ -172,13 +174,14 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
 
       it 'filters out current user from contacts' do
         existing_contacts << {name: user_contact.name, address: {email: user_contact.address.email}}
+
         post :create, {
           activity: activity_params,
           guests: existing_contacts
         }, format: :json
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json['contacts'].length).to eq 10
+        expect(json_response['contacts'].length).to eq 10
       end
 
       context 'when there are contacts with same email in other companies' do
@@ -193,9 +196,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
               activity: activity_params,
               guests: existing_contacts
             }, format: :json
+
             expect(response).to be_success
-            response_json = JSON.parse(response.body)
-            expect(response_json['contacts'].length).to eq 10
+            expect(json_response['contacts'].length).to eq 10
           }.to change(Activity, :count).by(1)
         end
 
@@ -204,6 +207,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             name: 'New Duplicate',
             address_attributes: { email: 'new_duplicate@example.org' }
           )
+
           existing_contacts << {
             name: duplicate_contact.name,
             address: { email: duplicate_contact.address.email }
@@ -214,10 +218,12 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
               activity: activity_params,
               guests: existing_contacts
             }, format: :json
+
             expect(response).to be_success
-            response_json = JSON.parse(response.body)
-            expect(response_json['contacts'].length).to eq 11
-            new_contact = response_json['contacts'].find {|c| c["name"] == duplicate_contact.name}
+            expect(json_response['contacts'].length).to eq 11
+
+            new_contact = json_response['contacts'].find {|c| c["name"] == duplicate_contact.name}
+
             expect(new_contact['name']).to eq duplicate_contact.name
             expect(new_contact['created_by']).to eq user.id
           }.to change(Activity, :count).by(1)
@@ -233,9 +239,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
         activity: activity_params,
         contacts: contacts.map(&:id)
       }, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['contacts'].length).to eq 10
+      expect(json_response['contacts'].length).to eq 10
     end
 
     it 'filters out current user from contacts' do
@@ -244,9 +250,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
         activity: activity_params,
         contacts: contacts.map(&:id) + [user_contact.id]
       }, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['contacts'].length).to eq 10
+      expect(json_response['contacts'].length).to eq 10
     end
 
     context 'when contacts are sent as objects' do
@@ -270,9 +276,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           activity: activity_params,
           guests: existing_contacts
         }, format: :json
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json['contacts'].length).to eq 10
+        expect(json_response['contacts'].length).to eq 10
       end
 
       it 'does not add duplicates to the activity' do
@@ -282,9 +288,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           contacts: contacts.map(&:id),
           guests: existing_contacts
         }, format: :json
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json['contacts'].length).to eq 10
+        expect(json_response['contacts'].length).to eq 10
       end
 
       it 'creates new contacts out of raw data' do
@@ -295,12 +301,14 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           contacts: contacts.map(&:id),
           guests: existing_contacts
         }, format: :json
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json['contacts'].length).to eq 12
-        new_contacts = response_json['contacts'].select do |contact|
+        expect(json_response['contacts'].length).to eq 12
+
+        new_contacts = json_response['contacts'].select do |contact|
           contact["name"] == 'Peggy M. Castle' || contact["name"] == 'William Bernard'
         end
+
         expect(new_contacts.length).to eq 2
         expect(new_contacts.map {|c| c['created_by']}).to eq [user.id, user.id]
       end
@@ -313,9 +321,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           activity: activity_params,
           guests: existing_contacts
         }, format: :json
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json['contacts'].length).to eq 10
+        expect(json_response['contacts'].length).to eq 10
       end
 
       context 'when there are contacts with same email in other companies' do
@@ -330,9 +338,9 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             activity: activity_params,
             guests: existing_contacts
           }, format: :json
+
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
-          expect(response_json['contacts'].length).to eq 10
+          expect(json_response['contacts'].length).to eq 10
         end
 
         it 'creates new company contacts when email is already added in other companies' do
@@ -340,6 +348,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             name: 'New Duplicate',
             address_attributes: { email: 'new_duplicate@example.org' }
           )
+
           existing_contacts << {
             name: duplicate_contact.name,
             address: { email: duplicate_contact.address.email }
@@ -350,10 +359,12 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             activity: activity_params,
             guests: existing_contacts
           }, format: :json
+
           expect(response).to be_success
-          response_json = JSON.parse(response.body)
-          expect(response_json['contacts'].length).to eq 11
-          new_contact = response_json['contacts'].find {|c| c["name"] == duplicate_contact.name}
+          expect(json_response['contacts'].length).to eq 11
+
+          new_contact = json_response['contacts'].find {|c| c["name"] == duplicate_contact.name}
+
           expect(new_contact['name']).to eq duplicate_contact.name
           expect(new_contact['created_by']).to eq user.id
         end

@@ -14,9 +14,9 @@ RSpec.describe Api::V1::TimePeriodsController, type: :controller do
       create_list :time_period, 2
 
       get :index, format: :json
+
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(2)
+      expect(json_response.length).to eq(2)
     end
   end
 end

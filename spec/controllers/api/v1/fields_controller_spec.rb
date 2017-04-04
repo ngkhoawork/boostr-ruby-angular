@@ -12,15 +12,13 @@ RSpec.describe Api::V1::FieldsController, type: :controller do
     it 'returns a list of Deal fields in json' do
       get :index, { format: :json, subject: 'Deal' }
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(3)
+      expect(json_response.length).to eq(4)
     end
 
     it 'returns a list of Client fields in json' do
       get :index, { format: :json, subject: 'Client' }
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(3)
+      expect(json_response.length).to eq(3)
     end
   end
 end
