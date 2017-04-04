@@ -248,6 +248,15 @@ class Api::DealsController < ApplicationController
     render nothing: true
   end
 
+  def send_to_operative
+    if deal.operative_integration_allowed?
+      OperativeIntegrationWorker.perform_async(deal.id)
+      render json: { message: 'deal was sent to operative' }
+    else
+      render json: { message: 'cannot send this deal to operative please recheck a deal and try again later' }
+    end
+  end
+
   private
 
   def product_filter
