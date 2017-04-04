@@ -194,7 +194,7 @@ class Api::BillingSummaryController < ApplicationController
 
         obj['display_line_item_budgets'].each do |item|
           csv << item.values_at('io_number', 'line', 'io_name', 'advertiser_name', 'agency_name', 'currency',
-                                'billing_contact_name', 'product_name', 'ad_server', 'revenue_type', 'amount',
+                                'billing_contact_name', 'product_name', 'ad_server', 'revenue_type', 'budget_loc',
                                 'billing_status', 'vat')
         end
       end
