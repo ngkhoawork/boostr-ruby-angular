@@ -81,11 +81,17 @@ class Api::BillingSummaryController < ApplicationController
     )
   end
 
+  def display_line_items_without_budgets_by_date
+    DisplayLineItem.by_period_without_budgets(start_date, end_date, ios_for_time_period.ids)
+  end
+
+  def display_line_items_with_budgets_by_date
+    DisplayLineItem.by_period_with_budgets(start_date, end_date, ios_for_time_period.ids)
+  end
+
   def ios_missing_monthly_actual
-    DisplayLineItem.includes(:product, io: [:deal, :advertiser, :agency])
-                   .where(io: ios_for_time_period).without_budgets_by_date(start_date, end_date).uniq +
-      DisplayLineItem.includes(:product, io: [:deal, :advertiser, :agency])
-                     .where(io: ios_for_time_period).without_display_line_item_budgets.uniq
+    (display_line_items_without_budgets_by_date - display_line_items_with_budgets_by_date) +
+    DisplayLineItem.by_period_without_display_line_item_budgets(start_date, end_date, ios_for_time_period.ids)
   end
 
   def ios_for_time_period
