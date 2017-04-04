@@ -253,7 +253,8 @@ class Api::DealsController < ApplicationController
       OperativeIntegrationWorker.perform_async(deal.id)
       render json: { message: 'deal was sent to operative' }
     else
-      render json: { message: 'cannot send this deal to operative please recheck a deal and try again later' }
+      render json: { message: 'cannot send this deal to operative please recheck a deal and try again later' },
+             status: :unprocessable_entity
     end
   end
 
