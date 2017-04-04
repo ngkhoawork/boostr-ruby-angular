@@ -602,7 +602,7 @@
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.setCurrentDeal(deal)
-      $scope.checkCurrentUserDealShare(deal.members)
+      checkCurrentUserDealShare(deal.members)
 
   $scope.onEditableBlur = () ->
   $scope.verifyMembersShare = ->
