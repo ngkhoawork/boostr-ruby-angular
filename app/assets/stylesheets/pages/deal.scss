@@ -228,6 +228,15 @@
                     }
                 }
             }
+
+            .dropdown {
+                position: static;
+
+                .dropdown-menu {
+                    top: auto;
+                    left: auto;
+                }
+            }
         }
 
         .editable-wrap {
