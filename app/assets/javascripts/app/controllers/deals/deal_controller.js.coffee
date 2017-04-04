@@ -893,12 +893,8 @@
     return $sce.trustAsHtml(html)
 
   $scope.sendToOperative = ->
-    if !$scope.currentDeal then return
     Deal.send_to_operative(id: $scope.currentDeal.id).then (resp) ->
-      console.log 'RESPONSE', resp
-      updateOperativeStatus($scope.currentDeal.id)
-    , (err) ->
-      console.log 'ERROR', err
+#      console.log resp
 
   updateOperativeStatus = (dealId) ->
     IntegrationLogs.all().then (data) ->
