@@ -16,6 +16,9 @@
       method: 'PUT'
       url: '/api/deals/:id'
       transformRequest: transformRequest
+    send_to_operative:
+      method: 'POST'
+      url: '/api/deals/:id/send_to_operative'
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
@@ -32,6 +35,15 @@
     deferred = $q.defer()
     pipeline_report_resource.query params, (response) ->
       deferred.resolve(response)
+    deferred.promise
+
+  @send_to_operative = (params) ->
+    deferred = $q.defer()
+    resource.send_to_operative params,
+      (resp) ->
+        deferred.resolve(resp)
+      (err) ->
+        deferred.reject(err)
     deferred.promise
 
   @pipeline_summary_report = (params) ->

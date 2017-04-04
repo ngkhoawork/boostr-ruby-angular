@@ -93,3 +93,5 @@
             %label Operative Status
         %div.custom-field-item-field{'ng-class': '{"status-error": operativeIntegration.status == "Error", "status-success": operativeIntegration.status == "Success"}'}
             %b {{operativeIntegration.status}}
+            |
+            %a{href: '', 'ng-click': 'sendToOperative()'} Send to Operative

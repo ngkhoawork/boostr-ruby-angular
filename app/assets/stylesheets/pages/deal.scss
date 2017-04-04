@@ -79,7 +79,7 @@
             top: calc(100% + 10px);
         }
     }
-    .edit-deal, .delete-deal, .delete-product, .reminder-icon {
+    .edit-deal, .delete-deal, .delete-product, .reminder-icon, .send-icon {
         color: $secondary-font-color;
         margin-left: 8px;
         cursor: pointer;
@@ -92,6 +92,10 @@
             background-color: $secondary-font-color;
             color: white;
         }
+    }
+    .send-icon {
+        vertical-align: middle;
+        margin-left: 2px;
     }
     .show-create-remainders-popup {
         .show-form-create-reminders {

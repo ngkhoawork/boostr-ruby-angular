@@ -892,18 +892,30 @@
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
 
+  $scope.sendToOperative = ->
+    if !$scope.currentDeal then return
+    Deal.send_to_operative(id: $scope.currentDeal.id).then (resp) ->
+      console.log 'RESPONSE', resp
+      updateOperativeStatus($scope.currentDeal.id)
+    , (err) ->
+      console.log 'ERROR', err
+
+  updateOperativeStatus = (dealId) ->
+    IntegrationLogs.all().then (data) ->
+      logs = _.filter data, (log) -> log.object_name == 'deal' && log.deal_id == dealId
+      lastLog = _.last _.sortBy logs, 'created_at'
+      if lastLog
+        $scope.operativeIntegration.status = if lastLog.is_error then 'Error' else 'Success'
+      else
+        $scope.operativeIntegration.status = 'Not sent'
+
   getOperativeIntegration = (dealId) ->
     ApiConfiguration.all().then (data) ->
       operative = _.findWhere data.api_configurations, integration_type: 'operative'
       if operative && operative.switched_on
         $scope.operativeIntegration.isEnabled = operative.switched_on
-        IntegrationLogs.all().then (data) ->
-          logs = _.filter data, (log) -> log.object_name == 'deal' && log.deal_id == dealId
-          lastLog = _.last _.sortBy logs, 'created_at'
-          if lastLog
-            $scope.operativeIntegration.status = if lastLog.is_error then 'Error' else 'Success'
-          else
-            $scope.operativeIntegration.status = 'None'
+        updateOperativeStatus(dealId)
+
 
   checkCurrentUserDealShare = (members) ->
     CurrentUser.get().$promise.then (currentUser) ->
