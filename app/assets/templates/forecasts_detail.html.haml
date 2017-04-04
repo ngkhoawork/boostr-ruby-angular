@@ -1,266 +1,242 @@
-.container
-  .row
-    .col-xs-12
-      .panel
-        .panel-body
-          %h3 Forecast Detail
-          .table-wrapper
-            %table.table.table-striped{ 'ng-repeat': '(year, forecast) in forecastsByStage' }
-              %thead
-                %tr
-                  %th{colspan: 6}
-                    {{year}}
-                %tr.subheading
-                  %th{ width: '25%' }
-                    Stage Probability
-                  %th.right{ width: '15%' }
-                    Q1-{{year}}
-                  %th.right{ width: '15%' }
-                    Q2-{{year}}
-                  %th.right{ width: '15%' }
-                    Q3-{{year}}
-                  %th.right{ width: '15%' }
-                    Q4-{{year}}
-                  %th.right{ width: '15%' }
-                    FY-{{year}}
-              %tbody
-                %tr
-                  %td.text-right
-                    Revenue
-                  %td.text-right
-                    {{ revenuesByQuarter[year][1] | humanReadableMoney }}
-                  %td.text-right
-                    {{ revenuesByQuarter[year][2] | humanReadableMoney }}
-                  %td.text-right
-                    {{ revenuesByQuarter[year][3] | humanReadableMoney }}
-                  %td.text-right
-                    {{ revenuesByQuarter[year][4] | humanReadableMoney }}
-                  %td.text-right
-                    {{ revenuesByQuarter[year][1] + revenuesByQuarter[year][2] + revenuesByQuarter[year][3] + revenuesByQuarter[year][4] | humanReadableMoney }}
-                %tr{ 'ng-repeat': 'stage in forecast.stages | orderHashBy:"probability":true' }
-                  %td.text-right
-                    {{ stagesById[stage.key].probability }}%
-                  %td.text-right
-                    {{ stage[1] | humanReadableMoney }}
-                  %td.text-right
-                    {{ stage[2] | humanReadableMoney }}
-                  %td.text-right
-                    {{ stage[3] | humanReadableMoney }}
-                  %td.text-right
-                    {{ stage[4] | humanReadableMoney }}
-                  %td.text-right
-                    {{ stage[1] + stage[2] + stage[3] + stage[4] | humanReadableMoney }}
-                %tr
-                  %td.text-right
-                    {{year}} Forecast
-                  %td.text-right{ 'ng-repeat': '(quarter, pipeline) in forecastsByQuarter[year]' }
-                    {{ pipeline | humanReadableMoney }}
-                  %td.text-right
-                    {{ forecastsByYear[year] | humanReadableMoney }}
-                %tr
-                  %td.text-right
-                    {{year}} Quota
-                  %td.text-right{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
-                    {{ quota | humanReadableMoney }}
-                  %td.text-right
-                    {{ quotasByYear[year] | humanReadableMoney }}
-                %tr
-                  %td.text-right
-                    Gap to Quota
-                  %td.text-right{ 'ng-repeat': '(quarter, pipeline) in forecastsByQuarter[year]' }
-                    {{ (quotasByQuarter[year][quarter] - pipeline) | humanReadableMoney }}
-                  %td.text-right
-                    {{ (quotasByYear[year] - forecastsByYear[year]) | humanReadableMoney }}
-                %tr
-                  %td.text-right
-                    Percentage of Annual Quota
-                  %td.text-right{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
-                    {{ (((quota || 0) / (quotasByYear[year] || 1)) * 100).toFixed(1) }}%
-                  %td.text-right
+#forecast-detail.z-styles
+	.container-fluid
+		.row.mb20
+			.reports-header
+				.header-cell.main-title
+					Forecast Detail
+				.header-cell.filters-block
+					%table
+						%tr.filter-title
+							%td Team
+							%td Team Member
+							%td Time period
+						%tr
+							%td
+								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'ng-class': '{"empty": selectedTeam.name === "All"}'}
 
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.seller.name === "All"}' }
+											{{(filter.seller.first_name && filter.seller.first_name + ' ' + filter.seller.last_name) || 'All'}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
+													{{ seller.first_name + ' ' + seller.last_name}}
 
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.timePeriod.name === "All"}' }
+											{{filter.timePeriod.name || 'All'}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
+													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
 
-      .panel
-        .panel-body
-          %h3 Unweighted Forecast
-          .table-wrapper
-            %table.table.table-striped{ 'ng-repeat': '(year, forecast) in unweightedByStage' }
-              %thead
-                %tr
-                  %th{colspan: 6}
-                    {{year}}
-                %tr.subheading
-                  %th{ width: '25%' }
-                    Stage Probability
-                  %th.right{ width: '15%' }
-                    Q1-{{year}}
-                  %th.right{ width: '15%' }
-                    Q2-{{year}}
-                  %th.right{ width: '15%' }
-                    Q3-{{year}}
-                  %th.right{ width: '15%' }
-                    Q4-{{year}}
-                  %th.right{ width: '15%' }
-                    FY-{{year}}
-              %tbody
-                %tr
-                  %td.text-right
-                    Revenue
-                  %td.text-right
-                    {{ revenuesByQuarter[year][1] | humanReadableMoney }}
-                  %td.text-right
-                    {{ revenuesByQuarter[year][2] | humanReadableMoney }}
-                  %td.text-right
-                    {{ revenuesByQuarter[year][3] | humanReadableMoney }}
-                  %td.text-right
-                    {{ revenuesByQuarter[year][4] | humanReadableMoney }}
-                  %td.text-right
-                    {{ revenuesByQuarter[year][1] + revenuesByQuarter[year][2] + revenuesByQuarter[year][3] + revenuesByQuarter[year][4] | humanReadableMoney }}
-                %tr{ 'ng-repeat': 'stage in forecast.stages | orderHashBy:"probability":true' }
-                  %td.text-right
-                    {{ stagesById[stage.key].probability }}%
-                  %td.text-right
-                    {{ stage[1] | humanReadableMoney }}
-                  %td.text-right
-                    {{ stage[2] | humanReadableMoney }}
-                  %td.text-right
-                    {{ stage[3] | humanReadableMoney }}
-                  %td.text-right
-                    {{ stage[4] | humanReadableMoney }}
-                  %td.text-right
-                    {{ stage[1] + stage[2] + stage[3] + stage[4] | humanReadableMoney }}
-                %tr
-                  %td.text-right
-                    {{year}} Forecast
-                  %td.text-right{ 'ng-repeat': '(quarter, pipeline) in unweightedByQuarter[year]' }
-                    {{ pipeline | humanReadableMoney }}
-                  %td.text-right
-                    {{ unweightedByYear[year] | humanReadableMoney }}
-                %tr
-                  %td.text-right
-                    {{year}} Quota
-                  %td.text-right{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
-                    {{ quota | humanReadableMoney }}
-                  %td.text-right
-                    {{ quotasByYear[year] | humanReadableMoney }}
-                %tr
-                  %td.text-right
-                    Percentage of Annual Quota
-                  %td.text-right{ 'ng-repeat': '(quarter, quota) in quotasByQuarter[year]' }
-                    {{ (((quota || 0) / (quotasByYear[year] || 1)) * 100).toFixed(1) }}%
-                  %td.text-right
-                %tr
-                  %td.text-right
-                    Gap to Quota
-                  %td.text-right{ 'ng-repeat': '(quarter, pipeline) in unweightedByQuarter[year]' }
-                    {{ (quotasByQuarter[year][quarter] - pipeline) | humanReadableMoney }}
-                  %td.text-right
-                    {{ (quotasByYear[year] - unweightedByYear[year]) | humanReadableMoney }}
+		.row
+			.col-xs-6
+				.block
+					%div.mb20
+						%span.title Weighted Forecast
+					%table.table.table-hover
+						%thead
+							%tr
+								%th IO Name
+								%th Q1-2017
+								%th Q2-2017
+								%th Q3-2017
+								%th Q4-2017
+						%tbody
+							%tr
+								%td
+									%b Revenue
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+							%tr
+								%td
+									%b Forecast
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
 
+							%tr
+								%td
+									%b Quota
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
 
+							%tr
+								%td
+									%b Gap to Quota
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+							%tr
+								%td
+									%b % of Annual Quota
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
 
-      .panel
-        .panel-body
-          .period-toggle.pull-right
-            %select.form-control{ 'ng-model': 'showQuarterlyDeals', 'ng-options': "o.v as o.n for o in [{ n: 'Quarterly', v: true }, { n: 'Monthly', v: false }]" }
-          %h3 Revenue
+			.col-xs-6
+				.block
+					%div.mb20
+						%span.title Unweighted Forecast
+					%table.table.table-hover
+						%thead
+							%tr
+								%th IO Name
+								%th Q1-2017
+								%th Q2-2017
+								%th Q3-2017
+								%th Q4-2017
+						%tbody
+							%tr
+								%td
+									%b Revenue
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+							%tr
+								%td
+									%b Forecast
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
 
-          .table-wrapper
-            %table.table.table-striped{ 'ng-repeat': '(year, year_revenues) in revenues', 'ng-class': "{'fixed-revenue-width':!showQuarterlyDeals}" }
-              %thead
-                %tr{ 'ng-show': 'showQuarterlyDeals' }
-                  %th{colspan: 7}
-                    {{year}}
-                %tr{ 'ng-hide': 'showQuarterlyDeals' }
-                  %th{colspan: 15}
-                    {{year}}
-                %tr.subheading{ 'ng-show': 'showQuarterlyDeals' }
-                  %th.left Account
-                  %th.right{ style: 'width: 12.5%' } Deal Value
-                  %th.right{ style: 'width: 12.5%' } Probability
-                  %th.right{ style: 'width: 12.5%' } Revenue Q1
-                  %th.right{ style: 'width: 12.5%' } Revenue Q2
-                  %th.right{ style: 'width: 12.5%' } Revenue Q3
-                  %th.right{ style: 'width: 12.5%' } Revenue Q4
-                %tr.subheading{ 'ng-hide': 'showQuarterlyDeals' }
-                  %th.left{ style: 'width: 200px' } Account
-                  %th.right{ style: 'width: 100px' } Deal Value
-                  %th.right{ style: 'width: 100px' } Probability
-                  %th.right{ style: 'width: 75px' } Jan
-                  %th.right{ style: 'width: 75px' } Feb
-                  %th.right{ style: 'width: 75px' } Mar
-                  %th.right{ style: 'width: 75px' } Apr
-                  %th.right{ style: 'width: 75px' } May
-                  %th.right{ style: 'width: 75px' } Jun
-                  %th.right{ style: 'width: 75px' } Jul
-                  %th.right{ style: 'width: 75px' } Aug
-                  %th.right{ style: 'width: 75px' } Sep
-                  %th.right{ style: 'width: 75px' } Oct
-                  %th.right{ style: 'width: 75px' } Nov
-                  %th.right{ style: 'width: 75px' } Dec
-              %tbody
-                %tr{ 'ng-repeat': 'revenue in year_revenues' }
-                  %td.left
-                    {{revenue.advertiser.name}}
-                  %td.right
-                    {{ revenue.budget | humanReadableMoney }}
-                  %td.right
-                    100%
-                  %td.right{ 'ng-repeat': 'quarter in revenue.quarter_amounts track by $index', 'ng-show': 'showQuarterlyDeals' }
-                    {{ quarter | humanReadableMoney }}
-                  %td.right{ 'ng-repeat': 'month in revenue.month_amounts track by $index', 'ng-hide': 'showQuarterlyDeals' }
-                    {{ month | humanReadableMoney }}
+							%tr
+								%td
+									%b Quota
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
 
-      .panel
-        .panel-body
-          .period-toggle.pull-right
-            %select.form-control{ 'ng-model': 'showQuarterlyDeals', 'ng-options': "o.v as o.n for o in [{ n: 'Quarterly', v: true }, { n: 'Monthly', v: false }]" }
-          %h3 Deals
+							%tr
+								%td
+									%b Gap to Quota
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+							%tr
+								%td
+									%b % of Annual Quota
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
+								%td {{450000 | currency : '$' : 0}}
 
-          .table-wrapper
-            %table.table.table-striped
-              %thead
-                %tr{ 'ng-show': 'showQuarterlyDeals' }
-                  %th.left Account
-                  %th.left Seller
-                  %th.right Deal Value
-                  %th.right Probability
-                  %th.left Next Steps
-                  %th.right Revenue Q1
-                  %th.right Revenue Q2
-                  %th.right Revenue Q3
-                  %th.right Revenue Q4
-                %tr{ 'ng-hide': 'showQuarterlyDeals' }
-                  %th.left Account
-                  %th.left Seller
-                  %th.right Deal Value
-                  %th.right Probability
-                  %th.left Next Steps
-                  %th.right Jan
-                  %th.right Feb
-                  %th.right Mar
-                  %th.right Apr
-                  %th.right May
-                  %th.right Jun
-                  %th.right Jul
-                  %th.right Aug
-                  %th.right Sep
-                  %th.right Oct
-                  %th.right Nov
-                  %th.right Dec
-              %tbody
-                %tr{ 'ng-repeat': 'deal in deals' }
-                  %td.left
-                    {{deal.advertiser.name}}
-                  %td.left
-                    {{deal.deal_members[0].name}}
-                  %td.right
-                    {{ (deal.budget || 0) | humanReadableMoney }}
-                  %td.right
-                    {{deal.stage.probability}}%
-                  %td.left
-                    {{deal.next_steps}}
-                  %td.right{ 'ng-repeat': 'quarter in deal.quarter_amounts track by $index', 'ng-show': 'showQuarterlyDeals' }
-                    {{ quarter | humanReadableMoney }}
-                  %td.right{ 'ng-repeat': 'month in deal.month_amounts track by $index', 'ng-hide': 'showQuarterlyDeals' }
-                    {{ month | humanReadableMoney }}
+		.row
+			.col-xs-12
+				.block
+					.switch-row.pull-right
+						%span{'ng-class': '{active: switch.revenue == 1}', 'ng-click': 'switch.set("revenue", 1)'} Quarterly
+						%span{'ng-class': '{active: switch.revenue == 2}', 'ng-click': 'switch.set("revenue", 2)'} Monthly
+					%div.mb20
+						%span.title Revenue Details
+					%table.table.table-hover
+						%thead
+							%tr
+								%th IO Name
+								%th IO Advertiser Name
+								%th IO Agency Name
+								%th IO Team
+								%th IO Total Budget
+								%th Start Date
+								%th End Date
+								%th Detailed Amounts
+						%tbody
+							%tr
+								%td
+									%b Test Name
+								%td advertiser
+								%td agency
+								%td team name 50%
+								%td {{5000000 | currency : '$' : 0}}
+								%td 05/07/2017
+								%td 05/07/2017
+								%td {{3000000 | currency : '$' : 0}}
+							%tr
+								%td
+									%b Test Name
+								%td advertiser
+								%td agency
+								%td team name 50%
+								%td {{5000000 | currency : '$' : 0}}
+								%td 05/07/2017
+								%td 05/07/2017
+								%td {{3000000 | currency : '$' : 0}}
+							%tr
+								%td
+									%b Test Name
+								%td advertiser
+								%td agency
+								%td team name 50%
+								%td {{5000000 | currency : '$' : 0}}
+								%td 05/07/2017
+								%td 05/07/2017
+								%td {{3000000 | currency : '$' : 0}}
+
+		.row
+			.col-xs-12
+				.block
+					.switch-row.pull-right
+						%span{'ng-class': '{active: switch.deals == 1}', 'ng-click': 'switch.set("deals", 1)'} Quarterly
+						%span{'ng-class': '{active: switch.deals == 2}', 'ng-click': 'switch.set("deals", 2)'} Monthly
+					%div.mb20
+						%span.title Deals
+					%table.table.table-hover
+						%thead
+							%tr
+								%th Deal Name
+								%th Advertiser
+								%th Agency
+								%th Deal Team
+								%th Total Budget
+								%th %
+								%th Next Steps
+								%th Detailed Amounts
+						%tbody
+							%tr
+								%td
+									%a{href: '', 'ng-href': '/deals/100'} test deal
+								%td advertiser
+								%td agency
+								%td test team 50%
+								%td {{10000000 | currency : '$' : 0}}
+								%td 100%
+								%td next steps
+								%td {{20000000 | currency : '$' : 0}}
+							%tr
+								%td
+									%a{href: '', 'ng-href': '/deals/100'} test deal
+								%td advertiser
+								%td agency
+								%td test team 50%
+								%td {{10000000 | currency : '$' : 0}}
+								%td 100%
+								%td next steps
+								%td {{20000000 | currency : '$' : 0}}
+							%tr
+								%td
+									%a{href: '', 'ng-href': '/deals/100'} test deal
+								%td advertiser
+								%td agency
+								%td test team 50%
+								%td {{10000000 | currency : '$' : 0}}
+								%td 100%
+								%td next steps
+								%td {{20000000 | currency : '$' : 0}}
