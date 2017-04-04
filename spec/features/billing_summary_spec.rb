@@ -158,13 +158,12 @@ feature 'BillingSummary' do
   end
 
   def display_line_item_with_missing_monthly_actual
-    create(
+    @_display_line_item_with_missing_monthly_actual ||= create(
       :display_line_item,
-      start_date: start_date - 1.month,
-      end_date: end_date - 1.month,
+      start_date: start_date,
+      end_date: end_date,
       product: display_line_item_product,
-      line_number: 30,
-      display_line_item_budgets: [display_line_item_budget_with_missing_monthly_actual]
+      line_number: 30
     )
   end
 
@@ -182,15 +181,6 @@ feature 'BillingSummary' do
       start_date: start_date,
       end_date: end_date,
       budget: 20_000
-    )
-  end
-
-  def display_line_item_budget_with_missing_monthly_actual
-    create(
-      :display_line_item_budget,
-      start_date: start_date - 1.month,
-      end_date: end_date - 1.month,
-      budget: 40_000
     )
   end
 

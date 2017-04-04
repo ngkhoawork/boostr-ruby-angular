@@ -30,7 +30,7 @@ describe BillingSummary::IosForApprovalSerializer do
     expect(content_fee_product_budget_serializer[:revenue_type]).to eql content_fee_product.revenue_type
     expect(content_fee_product_budget_serializer[:vat]).to eql calculate_content_fee_vat
     expect(content_fee_product_budget_serializer[:line]).to eql content_fee.id
-    expect(content_fee_product_budget_serializer[:amount]).to eql content_fee_product_budget.budget.to_f
+    expect(content_fee_product_budget_serializer[:amount]).to eql content_fee_product_budget.budget_loc.to_f
     expect(content_fee_product_budget_serializer[:billing_status]).to eql 'Pending'
   end
 

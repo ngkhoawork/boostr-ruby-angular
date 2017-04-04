@@ -144,7 +144,7 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def update_manual_override
-    content_fee_product_budget.update(manual_override: true) if content_fee_product_budget_params[:budget].present?
+    content_fee_product_budget.update(manual_override: true) if content_fee_product_budget_params[:budget_loc].present?
   end
 
   def update_display_line_item_budget

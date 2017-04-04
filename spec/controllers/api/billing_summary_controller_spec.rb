@@ -34,6 +34,8 @@ describe Api::BillingSummaryController do
   end
 
   describe 'PUT #update_content_fee_product_budget' do
+    before { create_content_fee }
+
     it 'update billing status successfully' do
       put :update_content_fee_product_budget,
           id: content_fee_product_budget,
@@ -48,12 +50,12 @@ describe Api::BillingSummaryController do
     it 'update budget successfully' do
       put :update_content_fee_product_budget,
           id: content_fee_product_budget,
-          content_fee_product_budget: { budget: 20_000 },
+          content_fee_product_budget: { budget_loc: 20_000 },
           format: :json
 
       content_fee_product_budget.reload
 
-      expect(content_fee_product_budget.budget).to eql 20_000
+      expect(content_fee_product_budget.budget_loc.to_i).to eql 20_000
       expect(content_fee_product_budget.manual_override).to eql true
     end
   end
@@ -101,7 +103,7 @@ describe Api::BillingSummaryController do
     @_display_line_item_budget ||= create :display_line_item_budget, display_line_item: display_line_item
   end
 
-  def content_fee
+  def create_content_fee
     @_content_fee ||= create :content_fee, content_fee_product_budgets: [content_fee_product_budget], io: create_io
   end
 
