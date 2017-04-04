@@ -197,9 +197,9 @@ class Io < ActiveRecord::Base
 
     content_fees.each do |content_fee|
       content_fee.content_fee_product_budgets.each do |content_fee_product_budget|
-        if (self.start_date <= content_fee_product_budget.end_date && self.end_date >= content_fee_product_budget.start_date)
-          in_period_days = [[self.end_date, content_fee_product_budget.end_date].min - [self.start_date, content_fee_product_budget.start_date].max + 1, 0].max
-          in_period_effective_days = [[self.end_date, content_fee_product_budget.end_date, io_member.to_date].min - [self.start_date, content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
+        if (start_date <= content_fee_product_budget.end_date && end_date >= content_fee_product_budget.start_date)
+          in_period_days = [[self.end_date, end_date, content_fee_product_budget.end_date].min - [self.start_date, start_date, content_fee_product_budget.start_date].max + 1, 0].max
+          in_period_effective_days = [[self.end_date, end_date, content_fee_product_budget.end_date, io_member.to_date].min - [self.start_date, start_date, content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
           sum_period_budget += content_fee_product_budget.corrected_daily_budget(self.start_date, self.end_date) * in_period_days
           split_period_budget += content_fee_product_budget.corrected_daily_budget(self.start_date, self.end_date) * in_period_effective_days * share / 100
         end
@@ -213,17 +213,17 @@ class Io < ActiveRecord::Base
       budget_in_period_for_display_line_item_budget_with_share = 0
 
       display_line_item.display_line_item_budgets.each do |display_line_item_budget|
-        if (self.start_date <= display_line_item_budget.end_date && self.end_date >= display_line_item_budget.start_date)
-          display_line_item_budget_overlapped_days += [[self.end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [self.start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
-          display_line_item_budget_with_io_member_overlapped_days += [[self.end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [self.start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
+        if (start_date <= display_line_item_budget.end_date && end_date >= display_line_item_budget.start_date)
+          display_line_item_budget_overlapped_days += [[end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
+          display_line_item_budget_with_io_member_overlapped_days += [[end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
           budget_in_period_for_display_line_item_budget += display_line_item_budget.daily_budget * display_line_item_budget_overlapped_days
           budget_in_period_for_display_line_item_budget_with_share += display_line_item_budget.daily_budget * display_line_item_budget_with_io_member_overlapped_days / 100 * share
         end
       end
 
-      if (self.start_date <= display_line_item.end_date && self.end_date >= display_line_item.start_date)
-        in_period_days = [[self.end_date, display_line_item.end_date].min - [self.start_date, display_line_item.start_date].max + 1, 0].max
-        in_period_effective_days = [[self.end_date, display_line_item.end_date, io_member.to_date].min - [self.start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
+      if (start_date <= display_line_item.end_date && end_date >= display_line_item.start_date)
+        in_period_days = [[self.end_date, end_date, display_line_item.end_date].min - [self.start_date, start_date, display_line_item.start_date].max + 1, 0].max
+        in_period_effective_days = [[self.end_date, end_date, display_line_item.end_date, io_member.to_date].min - [self.start_date, start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
         sum_period_budget += budget_in_period_for_display_line_item_budget + display_line_item.ave_run_rate * (in_period_days - display_line_item_budget_overlapped_days)
         split_period_budget += budget_in_period_for_display_line_item_budget_with_share + display_line_item.ave_run_rate * (in_period_effective_days - display_line_item_budget_with_io_member_overlapped_days) * share / 100
       end
