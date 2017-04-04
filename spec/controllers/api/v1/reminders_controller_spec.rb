@@ -13,7 +13,7 @@ RSpec.describe Api::V1::RemindersController, type: :controller do
 
   describe 'GET #index' do
     it 'returns json for all user\'s reminders' do
-      get :index, format: :json
+      get :index
 
       expect(response).to be_success
       expect(json_response.length).to eq 1
@@ -23,7 +23,7 @@ RSpec.describe Api::V1::RemindersController, type: :controller do
 
   describe 'GET #show' do
     it 'returns json for a reminder' do
-      get :show, id: reminder.remindable_id, format: :json
+      get :show, id: reminder.remindable_id
 
       expect(response).to be_success
     end
@@ -31,7 +31,7 @@ RSpec.describe Api::V1::RemindersController, type: :controller do
 
   describe 'GET #remindable' do
     it 'returns json for a reminder' do
-      get :remindable, remindable_id: reminder.remindable_id, remindable_type: reminder.remindable_type, format: :json
+      get :remindable, remindable_id: reminder.remindable_id, remindable_type: reminder.remindable_type
 
       expect(response).to be_success
       expect(json_response.length).to eq(1)
@@ -54,7 +54,7 @@ RSpec.describe Api::V1::RemindersController, type: :controller do
 
     it 'returns errors if the reminder is invalid' do
       expect do
-        post :create, reminder: {malformed: true}, format: :json
+        post :create, reminder: {malformed: true}
 
         expect(response.status).to eq(422)
         expect(json_response['errors']['name']).to eq(["can't be blank"])
@@ -69,7 +69,7 @@ RSpec.describe Api::V1::RemindersController, type: :controller do
     let(:invalid_reminder) { attributes_for(:reminder, remindable_id: nil, name: nil, remind_on: nil) }
 
     it 'returns success' do
-      put :update, id: reminder.id, reminder: { remind_on: new_time }, format: :json
+      put :update, id: reminder.id, reminder: { remind_on: new_time }
 
       expect(response).to be_success
     end
@@ -82,7 +82,7 @@ RSpec.describe Api::V1::RemindersController, type: :controller do
 
     it 'returns an error if the reminder is invalid' do
       expect do
-        put :update, id: reminder.id, reminder: invalid_reminder, format: :json
+        put :update, id: reminder.id, reminder: invalid_reminder
 
         expect(response.status).to eq(422)
         expect(json_response['errors']['name']).to eq(["can't be blank"])
@@ -96,7 +96,7 @@ RSpec.describe Api::V1::RemindersController, type: :controller do
     let!(:reminder) { create(:reminder, remindable_id: 160, remindable_type: "Deal", user_id: user.id) }
 
     it 'marks the deal as deleted' do
-      delete :destroy, id: reminder.id, format: :json
+      delete :destroy, id: reminder.id
 
       expect(response).to be_success
       expect(reminder.reload.deleted_at).not_to be_nil

@@ -24,7 +24,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
     let!(:another_deal_member) { create :deal_member, deal: team_deal, user: another_user  }
 
     it 'returns a list of deals for the current_user' do
-      get :index, format: :json
+      get :index
 
       expect(response).to be_success
       expect(json_response.length).to eq(1)
@@ -32,7 +32,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
     end
 
     it 'returns a list of the deals for the current_user team' do
-      get :index, filter: 'team', format: :json
+      get :index, filter: 'team'
 
       expect(response).to be_success
       expect(json_response.length).to eq(2)
@@ -41,7 +41,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
     it 'returns a list of deals for the current_user company if they are a leader' do
       team.update_attributes(leader: user)
 
-      get :index, filter: 'company', format: :json
+      get :index, filter: 'company'
 
       expect(response).to be_success
       expect(json_response.length).to eq(3)
@@ -51,7 +51,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
   describe 'POST #create' do
     it 'creates a new deal and returns success' do
       expect do
-        post :create, deal: deal_params, format: :json
+        post :create, deal: deal_params
 
         expect(response).to be_success
         expect(json_response['created_by']).to eq(user.id)
@@ -64,7 +64,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
 
     it 'returns errors if the deal is invalid' do
       expect do
-        post :create, deal: attributes_for(:deal), format: :json
+        post :create, deal: attributes_for(:deal)
 
         expect(response.status).to eq(422)
         expect(json_response['errors']['advertiser_id']).to eq(["can't be blank"])
@@ -83,7 +83,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
 
   describe 'PUT #update' do
     it 'updates the deal and returns success' do
-      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, format: :json
+      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }
 
       expect(response).to be_success
     end
@@ -92,7 +92,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
       expect(controller).to receive(:deal).and_return(deal).at_least(:once)
       expect(deal).to_not receive(:touch)
 
-      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, format: :json
+      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }
 
       expect(response).to be_success
     end
@@ -102,7 +102,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
     let!(:deal) { create :deal, company: company, advertiser: advertiser }
 
     it 'marks the deal as deleted' do
-      delete :destroy, id: deal.id, format: :json
+      delete :destroy, id: deal.id
 
       expect(response).to be_success
       expect(deal.reload.deleted_at).to_not be_nil

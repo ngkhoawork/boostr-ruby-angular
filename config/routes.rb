@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
-    scope module: :v1, constraints: ApiConstraints.new(version: 1) do
+    scope module: :v1, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 1) do
       post 'forgot_password' => 'forgot_password#create'
       post 'resend_confirmation' => 'forgot_password#create'
 

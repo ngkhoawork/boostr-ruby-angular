@@ -39,7 +39,7 @@ RSpec.describe Api::V1::ForecastsController, type: :controller do
     let(:child_team) { create :child_team, parent: parent_team }
 
     it 'returns json for a team' do
-      get :show, { id: child_team.id, format: :json, time_period_id: time_period.id }
+      get :show, { id: child_team.id, time_period_id: time_period.id }
 
       expect(response).to be_success
       expect(json_response['name']).to eq(child_team.name)

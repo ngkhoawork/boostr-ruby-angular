@@ -15,7 +15,7 @@ RSpec.describe Api::V1::DashboardsController, type: :controller do
   describe 'GET #show' do
     it 'returns json for the dashboard' do
       allow(controller).to receive(:time_period).and_return(time_period)
-      get :show, format: :json
+      get :show
 
       expect(response).to be_success
       expect(json_response['forecast']['amount']).to_not be_nil
@@ -23,7 +23,7 @@ RSpec.describe Api::V1::DashboardsController, type: :controller do
     end
 
     it 'returns a nil forecast if there is no current time_period' do
-      get :show, format: :json
+      get :show
 
       expect(response).to be_success
       expect(json_response['forecast']).to be_nil

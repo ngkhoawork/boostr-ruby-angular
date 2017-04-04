@@ -14,14 +14,14 @@ RSpec.describe Api::V1::DealContactsController, type: :controller do
 
   describe 'GET #index' do
     it 'returns a list of possible contacts' do
-      get :index, deal_id: deal.id, format: :json
+      get :index, deal_id: deal.id
 
       expect(response).to be_success
       expect(json_response.length).to eq(10)
     end
 
     it 'accepts name attribute' do
-      get :index, deal_id: deal.id, name: agency_contact.name, format: :json
+      get :index, deal_id: deal.id, name: agency_contact.name
 
       expect(response).to be_success
       expect(json_response.length).to eq(1)
@@ -34,7 +34,7 @@ RSpec.describe Api::V1::DealContactsController, type: :controller do
 
     it 'creates new deal contact' do
       expect do
-        post :create, deal_id: deal.id, deal_contact: { contact_id: new_contact.id } , format: :json
+        post :create, deal_id: deal.id, deal_contact: { contact_id: new_contact.id } 
 
         expect(response).to be_success
         expect(json_response['contact_id']).to eq(new_contact.id)
@@ -47,7 +47,7 @@ RSpec.describe Api::V1::DealContactsController, type: :controller do
 
     it 'removes contacts from a deal' do
       expect do
-        delete :destroy, id: deal.deal_contacts.first.id, deal_id: deal.id, format: :json
+        delete :destroy, id: deal.deal_contacts.first.id, deal_id: deal.id
 
         expect(response).to be_success
       end.to change(DealContact, :count).by(-1)

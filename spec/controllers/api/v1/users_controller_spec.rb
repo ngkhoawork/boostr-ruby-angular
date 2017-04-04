@@ -12,7 +12,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     it 'returns a list of users' do
       create_list :user, 3
 
-      get :index, format: :json
+      get :index
 
       expect(response).to be_success
       expect(json_response.length).to eq(4)
@@ -24,7 +24,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     let(:new_user) { create :user }
 
     it 'updates a user successfully' do
-      put :update, id: new_user.id, user: { first_name: 'New', last_name: 'Name', title: 'Boss' }, format: :json
+      put :update, id: new_user.id, user: { first_name: 'New', last_name: 'Name', title: 'Boss' }
 
       expect(response).to be_success
       expect(json_response['first_name']).to eq('New')
@@ -33,7 +33,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     end
 
     it 'does not allow user to disable itself' do
-      put :update, id: user.id, user: { is_active: false }, format: :json
+      put :update, id: user.id, user: { is_active: false }
 
       expect(response).to be_success
       expect(json_response['is_active']).to be(true)

@@ -13,7 +13,7 @@ RSpec.describe Api::V1::ClientMembersController, type: :controller do
   describe 'GET #index' do
     let!(:client_member) { create :client_member, client_id: client.id, user_id: user.id, values: [create_member_role(company)] }
     it 'returns a list of client_members' do
-      get :index, client_id: client.id, format: :json
+      get :index, client_id: client.id
 
       expect(response).to be_success
       expect(json_response.length).to eq(1)
@@ -23,7 +23,7 @@ RSpec.describe Api::V1::ClientMembersController, type: :controller do
   describe 'POST #create' do
     it 'creates a new client_member and returns success' do
       expect do
-        post :create, client_id: client.id, client_member: client_member_params, format: :json
+        post :create, client_id: client.id, client_member: client_member_params
 
         expect(response).to be_success
         expect(json_response['user_id']).to eq(user.id)
@@ -33,7 +33,7 @@ RSpec.describe Api::V1::ClientMembersController, type: :controller do
 
     it 'returns errors if the client_member is invalid' do
       expect do
-        post :create, client_id: client.id, client_member: { bad: 'param' }, format: :json
+        post :create, client_id: client.id, client_member: { bad: 'param' }
 
         expect(response.status).to eq(422)
         expect(json_response['errors']['share']).to eq(["can't be blank"])
@@ -45,7 +45,7 @@ RSpec.describe Api::V1::ClientMembersController, type: :controller do
     let!(:client_member) { create :client_member, client_id: client.id, user_id: user.id, values: [create_member_role(company)] }
 
     it 'updates a client_member successfully' do
-      put :update, id: client_member.id, client_id: client.id, client_member: { share: '62' }, format: :json
+      put :update, id: client_member.id, client_id: client.id, client_member: { share: '62' }
 
       expect(response).to be_success
       expect(json_response['share']).to eq(62)

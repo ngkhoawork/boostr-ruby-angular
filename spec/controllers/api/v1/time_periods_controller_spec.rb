@@ -13,7 +13,7 @@ RSpec.describe Api::V1::TimePeriodsController, type: :controller do
     it 'returns a list of time periods' do
       create_list :time_period, 2
 
-      get :index, format: :json
+      get :index
 
       expect(response).to be_success
       expect(json_response.length).to eq(2)

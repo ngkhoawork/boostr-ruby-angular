@@ -14,7 +14,7 @@ RSpec.describe Api::V1::DealAssetsController, type: :controller do
 
   describe 'GET #index' do
     it 'returns deal assets' do
-      get :index, deal_id: deal.id, format: :json
+      get :index, deal_id: deal.id
 
       expect(response).to be_success
       expect(json_response.length).to eq(5)
@@ -25,7 +25,7 @@ RSpec.describe Api::V1::DealAssetsController, type: :controller do
   describe 'POST #create' do
     it 'creates deal asset' do
       expect {
-        post :create, deal_id: deal.id, asset: asset_params, format: :json
+        post :create, deal_id: deal.id, asset: asset_params
 
         expect(response).to be_success
         expect(json_response).to eq(JSON.parse(deal.assets.last.to_json))
@@ -38,7 +38,7 @@ RSpec.describe Api::V1::DealAssetsController, type: :controller do
 
     it 'deletes the deal member' do
       expect {
-        delete :destroy, id: deal_asset.id, deal_id: deal.id, format: :json
+        delete :destroy, id: deal_asset.id, deal_id: deal.id
 
         expect(response).to be_success
       }.to change(Asset, :count).by(-1)

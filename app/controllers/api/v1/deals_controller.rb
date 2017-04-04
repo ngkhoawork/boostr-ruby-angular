@@ -1,5 +1,5 @@
 class Api::V1::DealsController < ApiController
-  respond_to :json, :zip
+  respond_to :json
 
   def index
     if params[:name].present?
@@ -85,26 +85,15 @@ class Api::V1::DealsController < ApiController
   end
 
   def create
-    if params[:file].present?
-      require 'timeout'
-      begin
-        csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-        errors = Deal.import(csv_file, current_user)
-        render json: errors
-      rescue Timeout::Error
-        return
-      end
-    else
-      @deal = company.deals.new(deal_params)
+    @deal = company.deals.new(deal_params)
 
-      deal.created_by = current_user.id
-      deal.updated_by = current_user.id
-      # deal.set_user_currency
-      if deal.save
-        render json: deal, status: :created
-      else
-        render json: { errors: deal.errors.messages }, status: :unprocessable_entity
-      end
+    deal.created_by = current_user.id
+    deal.updated_by = current_user.id
+    # deal.set_user_currency
+    if deal.save
+      render json: deal, status: :created
+    else
+      render json: { errors: deal.errors.messages }, status: :unprocessable_entity
     end
   end
 

@@ -20,7 +20,7 @@ RSpec.describe Api::V1::ContactsController, type: :controller do
     let!(:team_contacts) { create_list :contact, 7, company: user.company, clients: [team_client] }
 
     it 'returns a list of contacts' do
-      get :index, format: :json
+      get :index
 
       expect(response).to be_success
       expect(response.headers['X-Total-Count']).to eq(user.company.contacts.count.to_s)
@@ -29,7 +29,7 @@ RSpec.describe Api::V1::ContactsController, type: :controller do
 
     it 'accepts limit parameter' do
       limit = 10
-      get :index, per: limit, format: :json
+      get :index, per: limit
 
       expect(response).to be_success
       expect(response.headers['X-Total-Count']).to eq(user.company.contacts.count.to_s)
@@ -39,7 +39,7 @@ RSpec.describe Api::V1::ContactsController, type: :controller do
     it 'accepts page parameter' do
       limit = 10
 
-      get :index, per: limit, page: 2, format: :json
+      get :index, per: limit, page: 2
 
       expect(response).to be_success
       expect(response.headers['X-Total-Count']).to eq(user.company.contacts.count.to_s)
@@ -48,7 +48,7 @@ RSpec.describe Api::V1::ContactsController, type: :controller do
 
     context 'filters' do
       it 'returns contacts assigned to client where user is on client\'s team' do
-        get :index, filter: 'my_contacts', format: :json
+        get :index, filter: 'my_contacts'
 
         expect(response).to be_success
         expect(response.headers['X-Total-Count']).to eq(client_contacts.count.to_s)
@@ -56,7 +56,7 @@ RSpec.describe Api::V1::ContactsController, type: :controller do
       end
 
       it 'returns contacts assigned to clients where user\'s team members are on client\'s team' do
-        get :index, filter: 'team', format: :json
+        get :index, filter: 'team'
 
         expect(response).to be_success
 
@@ -71,7 +71,7 @@ RSpec.describe Api::V1::ContactsController, type: :controller do
   describe "POST #create" do
     it 'creates a new contact and returns success' do
       expect{
-        post :create, contact: contact_params, format: :json
+        post :create, contact: contact_params
 
         expect(response).to be_success
         expect(json_response['created_by']).to eq(user.id)
@@ -80,7 +80,7 @@ RSpec.describe Api::V1::ContactsController, type: :controller do
 
     it 'returns errors if the contact is invalid' do
       expect{
-        post :create, contact: { addresses_attributes: address_params }, format: :json
+        post :create, contact: { addresses_attributes: address_params }
 
         expect(response.status).to eq(422)
         expect(json_response['errors']['primary account']).to eq(["can't be blank"])
@@ -92,26 +92,26 @@ RSpec.describe Api::V1::ContactsController, type: :controller do
     let(:contact) { create :contact, clients: [client] }
 
     it 'updates a contact successfully' do
-      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }
 
       expect(response).to be_success
       expect(json_response['name']).to eq('New Name')
     end
 
     it 'sets the primary contact' do
-      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }
 
       expect(response).to be_success
       expect(json_response['primary_client_json']['name']).to eq(client.name)
     end
 
     it 'updates the primary contact' do
-      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }, format: :json
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client.id }
 
       expect(response).to be_success
       expect(json_response['primary_client_json']['name']).to eq(client.name)
 
-      put :update, id: contact.id, contact: { name: 'New Name', client_id: client2.id, set_primary_client: true }, format: :json
+      put :update, id: contact.id, contact: { name: 'New Name', client_id: client2.id, set_primary_client: true }
       expect(response).to be_success
       expect(json_response['primary_client_json']['name']).to eq(client2.name)
     end
@@ -121,7 +121,7 @@ RSpec.describe Api::V1::ContactsController, type: :controller do
     let!(:contact) { create :contact, clients: [client] }
 
     it 'marks the contact as deleted' do
-      delete :destroy, id: contact.id, format: :json
+      delete :destroy, id: contact.id
 
       expect(response).to be_success
       expect(contact.reload.deleted_at).to_not be_nil

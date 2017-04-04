@@ -94,7 +94,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
         post :create, {
           activity: activity_params,
           contacts: contacts.map(&:id)
-        }, format: :json
+        }
 
         expect(response).to be_success
         expect(json_response['contacts'].length).to eq 10
@@ -105,7 +105,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
       post :create, {
         activity: activity_params,
         contacts: contacts.map(&:id) + [user_contact.id]
-      }, format: :json
+      }
 
       expect(response).to be_success
       expect(json_response['contacts'].length).to eq 10
@@ -131,7 +131,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           post :create, {
             activity: activity_params,
             guests: existing_contacts
-          }, format: :json
+          }
 
           expect(response).to be_success
           expect(json_response['contacts'].length).to eq 10
@@ -144,7 +144,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             activity: activity_params,
             contacts: contacts.map(&:id),
             guests: existing_contacts
-          }, format: :json
+          }
 
           expect(response).to be_success
           expect(json_response['contacts'].length).to eq 10
@@ -158,7 +158,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             activity: activity_params,
             contacts: contacts.map(&:id),
             guests: existing_contacts
-          }, format: :json
+          }
 
           expect(response).to be_success
           expect(json_response['contacts'].length).to eq 12
@@ -178,7 +178,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
         post :create, {
           activity: activity_params,
           guests: existing_contacts
-        }, format: :json
+        }
 
         expect(response).to be_success
         expect(json_response['contacts'].length).to eq 10
@@ -195,7 +195,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             post :create, {
               activity: activity_params,
               guests: existing_contacts
-            }, format: :json
+            }
 
             expect(response).to be_success
             expect(json_response['contacts'].length).to eq 10
@@ -217,7 +217,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             post :create, {
               activity: activity_params,
               guests: existing_contacts
-            }, format: :json
+            }
 
             expect(response).to be_success
             expect(json_response['contacts'].length).to eq 11
@@ -238,7 +238,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
         id: existing_activity.id,
         activity: activity_params,
         contacts: contacts.map(&:id)
-      }, format: :json
+      }
 
       expect(response).to be_success
       expect(json_response['contacts'].length).to eq 10
@@ -249,7 +249,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
         id: existing_activity.id,
         activity: activity_params,
         contacts: contacts.map(&:id) + [user_contact.id]
-      }, format: :json
+      }
 
       expect(response).to be_success
       expect(json_response['contacts'].length).to eq 10
@@ -275,7 +275,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           id: existing_activity.id,
           activity: activity_params,
           guests: existing_contacts
-        }, format: :json
+        }
 
         expect(response).to be_success
         expect(json_response['contacts'].length).to eq 10
@@ -287,7 +287,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           activity: activity_params,
           contacts: contacts.map(&:id),
           guests: existing_contacts
-        }, format: :json
+        }
 
         expect(response).to be_success
         expect(json_response['contacts'].length).to eq 10
@@ -300,7 +300,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           activity: activity_params,
           contacts: contacts.map(&:id),
           guests: existing_contacts
-        }, format: :json
+        }
 
         expect(response).to be_success
         expect(json_response['contacts'].length).to eq 12
@@ -320,7 +320,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
           id: existing_activity.id,
           activity: activity_params,
           guests: existing_contacts
-        }, format: :json
+        }
 
         expect(response).to be_success
         expect(json_response['contacts'].length).to eq 10
@@ -337,7 +337,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             id: existing_activity.id,
             activity: activity_params,
             guests: existing_contacts
-          }, format: :json
+          }
 
           expect(response).to be_success
           expect(json_response['contacts'].length).to eq 10
@@ -358,7 +358,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
             id: existing_activity.id,
             activity: activity_params,
             guests: existing_contacts
-          }, format: :json
+          }
 
           expect(response).to be_success
           expect(json_response['contacts'].length).to eq 11

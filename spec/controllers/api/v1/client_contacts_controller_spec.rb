@@ -15,7 +15,7 @@ RSpec.describe Api::V1::ClientContactsController, type: :controller do
 
   describe 'GET #index' do
     it 'returns a list of related contacts' do
-      get :index, client_id: client.id, format: :json
+      get :index, client_id: client.id
 
       expect(response).to be_success
       expect(json_response.length).to eq(2)
@@ -24,7 +24,7 @@ RSpec.describe Api::V1::ClientContactsController, type: :controller do
 
   describe 'GET #related_clients' do
     it 'returns a list of related clients through contacts' do
-      get :related_clients, client_id: client.id, format: :json
+      get :related_clients, client_id: client.id
 
       expect(response).to be_success
       expect(json_response.length).to eq(3)
