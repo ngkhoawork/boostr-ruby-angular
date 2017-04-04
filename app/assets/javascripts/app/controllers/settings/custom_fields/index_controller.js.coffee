@@ -50,7 +50,7 @@
           objectType
 
   $scope.delete = (customFieldName, objectType) ->
-    if confirm('Are you sure you want to delete "' +  customFieldName.field_label + '"?')
+    if confirm('Deleting a custom field will delete all values on records.  Click Ok to delete or Cancel.')
       if objectType == 'deal'
         DealCustomFieldName.delete(id: customFieldName.id)
       else

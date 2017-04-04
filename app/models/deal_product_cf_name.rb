@@ -7,6 +7,11 @@ class DealProductCfName < ActiveRecord::Base
   scope :by_type, -> type { where(field_type: type) if type.present? }
   scope :by_index, -> field_index { where(field_index: field_index) if field_index.present? }
 
+  before_destroy do
+    field_name = self.field_type + self.field_index.to_s
+    self.company.deal_product_cfs.update_all(field_name => nil)
+  end
+
   def self.get_field_limit(type)
     puts "====="
     puts type
