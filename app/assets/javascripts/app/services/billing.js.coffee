@@ -40,7 +40,7 @@
                 resource.updateContentFee {
                         id: data.id
                         content_fee_product_budget:
-                            budget: data.amount
+                            budget_loc: data.amount
                     },
                     (resp) -> deferred.resolve(resp)
                     (resp) -> deferred.reject(resp)

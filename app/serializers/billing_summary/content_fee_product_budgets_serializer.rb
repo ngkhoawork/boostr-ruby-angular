@@ -10,7 +10,7 @@ class BillingSummary::ContentFeeProductBudgetsSerializer < BillingSummary::Basic
   end
 
   def amount
-    object.budget.to_f
+    object.budget_loc.to_f
   end
 
   def billing_status

@@ -33,7 +33,7 @@ class Api::BillingSummaryController < ApplicationController
       update_io_budget
 
       render json: { billing_status: content_fee_product_budget.billing_status,
-                     budget: content_fee_product_budget.budget }
+                     budget_loc: content_fee_product_budget.budget_loc }
     else
       render json: { errors: content_fee_product_budget.errors.messages }, status: :unprocessable_entity
     end
@@ -136,7 +136,7 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def content_fee_product_budget_params
-    params.require(:content_fee_product_budget).permit(:billing_status, :budget)
+    params.require(:content_fee_product_budget).permit(:billing_status, :budget_loc)
   end
 
   def calculate_budget
@@ -159,16 +159,18 @@ class Api::BillingSummaryController < ApplicationController
 
   def update_io_budget
     content_fee_product_budget.update(
-      { budget_loc: content_fee_product_budget.budget * content_fee_product_budget.io.exchange_rate }
+      { budget: content_fee_product_budget.budget_loc * content_fee.io.exchange_rate }
     )
 
-    content_fee.update(
-      { budget: content_fee.content_fee_product_budgets.pluck(:budget).sum }
-    )
+    content_fee.update_column(:budget, content_fee.content_fee_product_budgets.pluck(:budget).sum)
+    content_fee.update_column(:budget_loc, content_fee.content_fee_product_budgets.pluck(:budget_loc).sum)
 
     content_fee.io.update(
       { budget: (content_fee.io.content_fees.pluck(:budget).sum +
-                 content_fee.io.display_line_item_budgets.pluck(:budget).sum) }
+                 content_fee.io.display_line_item_budgets.pluck(:budget).sum),
+        budget_loc: (content_fee.io.content_fees.pluck(:budget_loc).sum +
+                     content_fee.io.display_line_item_budgets.pluck(:budget_loc).sum)
+      }
     )
   end
 
