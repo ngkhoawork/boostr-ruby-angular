@@ -409,4 +409,21 @@ class Client < ActiveRecord::Base
       end
     end
   end
+
+  def last_advertiser_deal
+    advertiser_deals.order('created_at desc').limit(1).first.created_at
+  end
+
+  def last_agency_deal
+    agency_deals.order('created_at desc').limit(1).first.created_at
+  end
+
+  def win_advertiser_rate
+    advertiser_deals.won.count.to_f / (advertiser_deals.won.count + advertiser_deals.lost.count).to_f * 100
+  end
+
+  def win_agency_rate
+    return 0 if (agency_deals.won.count + agency_deals.lost.count).zero?
+    agency_deals.won.count.to_f / (agency_deals.won.count + agency_deals.lost.count).to_f * 100
+  end
 end

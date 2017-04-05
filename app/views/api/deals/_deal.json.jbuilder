@@ -71,3 +71,19 @@ json.initiatives deal.company.initiatives, :id, :name
 if deal.initiative.present?
   json.initiative deal.initiative, :id, :name
 end
+
+if deal.advertiser
+  json.advertiser_stats do
+    json.deals_count deal.advertiser.advertiser_deals_count
+    json.win_rate deal.advertiser.win_advertiser_rate.to_i
+    json.last_deal_date deal.advertiser.last_advertiser_deal
+  end
+end
+
+if deal.agency
+  json.agency_stats do
+    json.deals_count deal.agency.agency_deals_count
+    json.win_rate deal.agency.win_agency_rate.to_i
+    json.last_deal_date deal.agency.last_agency_deal
+  end
+end
