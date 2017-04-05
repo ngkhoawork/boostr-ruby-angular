@@ -302,7 +302,6 @@
       deal.close_reason = Field.field(deal, 'Close Reason')
       deal.contact_roles = Field.field(deal, 'Contact Role')
       $scope.currentDeal = deal
-      console.log deal
       $scope.selectedStageId = deal.stage_id
       $scope.verifyMembersShare()
       $scope.setBudgetPercent(deal)
