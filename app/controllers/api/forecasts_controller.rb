@@ -2,7 +2,13 @@ class Api::ForecastsController < ApplicationController
   respond_to :json
 
   def index
-    if current_user.leader?
+    if user.present?
+      render json: forecast_member
+    elsif team.present?
+      render json: [ForecastTeam.new(team, time_period.start_date, time_period.end_date)]
+    elsif params[:id] == 'all'
+      render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
+    elsif current_user.leader?
       render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
     else
       render json: forecast_member
@@ -21,7 +27,12 @@ class Api::ForecastsController < ApplicationController
         ForecastMember.new(current_user, dates[:start_date], dates[:end_date], dates[:quarter], year)
       end
     else
-      [ForecastMember.new(current_user, time_period.start_date, time_period.end_date)]
+      if user.present?
+        [ForecastMember.new(user, time_period.start_date, time_period.end_date)]
+      else
+        [ForecastMember.new(current_user, time_period.start_date, time_period.end_date)]
+      end
+
     end
   end
 
@@ -59,7 +70,18 @@ class Api::ForecastsController < ApplicationController
 
   def team
     return @team if defined?(@team)
-    @team = company.teams.find(params[:id])
+    @team = nil
+    if params[:id] && params[:id] != 'all'
+      @team = company.teams.find(params[:id])
+    end
+  end
+
+  def user
+    return @user if defined?(@user)
+    @user = nil
+    if params[:user_id] && params[:user_id] != 'all'
+      @user = company.users.find(params[:user_id])
+    end
   end
 
   def company
