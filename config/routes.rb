@@ -21,7 +21,6 @@ Rails.application.routes.draw do
     resources :integration_types, only: [:index]
     resources :integration_logs, only: [:index, :show] do
       post :resend_request, on: :member
-      get :latest_log, param: :deal_id, on: :collection
     end
     resources :csv_import_logs, only: [:index]
 
@@ -74,6 +73,7 @@ Rails.application.routes.draw do
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create, :update, :destroy]
       resources :deal_assets, only: [:index, :update, :create, :destroy]
+      get 'latest_log', to: 'integrations#latest_log'
     end
     resources :deal_product_budgets, only: [:index, :create]
     resources :deal_products, only: [:create]
