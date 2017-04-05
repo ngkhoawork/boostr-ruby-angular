@@ -1,6 +1,6 @@
 @app.controller 'ForecastsDetailController',
-    ['$scope', 'Team', 'Seller', 'TimePeriod', 'CurrentUser'
-    ( $scope,   Team,   Seller,   TimePeriod,   CurrentUser) ->
+    ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast'
+    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast) ->
         $scope.teams = []
         $scope.sellers = []
         $scope.timePeriods = []
@@ -30,32 +30,29 @@
             $scope.filter[key] = value
             getData()
 
-        CurrentUser.get().$promise.then (user) ->
-            if user.user_type is 1 || user.user_type is 2
-                currentUser = user
-                $scope.filter.seller = user
+        $q.all(
+            user: CurrentUser.get().$promise
+            teams: Team.all(all_teams: true)
+            sellers: Seller.query({id: 'all'}).$promise
+            timePeriods: TimePeriod.all()
+        ).then (data) ->
+            if data.user.user_type is 1 || data.user.user_type is 2
+                currentUser = data.user
+                $scope.filter.seller = data.user
+            $scope.teams = data.teams
+            $scope.teams.unshift {id: null, name: 'All'}
+            $scope.sellers = data.sellers
+            $scope.sellers.unshift(defaultUser)
+            $scope.timePeriods = angular.copy data.timePeriods
+            $scope.filter.timePeriod = _.first $scope.timePeriods
             getData()
-            Seller.query({id: 'all'}).$promise.then (sellers) ->
-                $scope.sellers = sellers
-                $scope.sellers.unshift(defaultUser)
-
-            TimePeriod.all().then (timePeriods) ->
-                $scope.timePeriods = angular.copy timePeriods
-                $scope.timePeriods.unshift({name:'All', id:'all'})
-
-            Team.all(all_teams: true).then (teams) ->
-                $scope.teams = teams
-                $scope.teams.unshift {id: null, name: 'All'}
 
         getData = ->
-            f = $scope.filter
-            query = {}
-            if f.timePeriod.id != 'all' then query.time_period_id = f.timePeriod.id
-            if $scope.filter.seller.id != defaultUser.id
-                query.filter = 'user'
-                query.user_id = f.seller.id
-            else
-                query.filter = 'selected_team'
-                query.team_id = f.team.id || 'all'
+            query =
+                id: $scope.filter.team.id || 'all'
+                user_id: $scope.filter.seller.id || 'all'
+                time_period_id: $scope.filter.timePeriod.id || 'all'
+            Forecast.forecast_detail(query).$promise.then (data) ->
+                console.log data[0]
 
     ]
