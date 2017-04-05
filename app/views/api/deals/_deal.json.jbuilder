@@ -48,11 +48,11 @@ json.members deal.deal_members do |member|
 end
 
 if deal.advertiser
-  json.advertiser deal.advertiser, :id, :name
+  json.advertiser deal.advertiser, :id, :name, :advertiser_deals_count, :advertiser_win_rate, :advertiser_last_deal
 end
 
 if deal.agency
-  json.agency deal.agency, :id, :name
+  json.agency deal.agency, :id, :name, :agency_deals_count, :agency_win_rate, :agency_last_deal
 end
 
 json.values deal.values
@@ -70,20 +70,4 @@ json.initiatives deal.company.initiatives, :id, :name
 
 if deal.initiative.present?
   json.initiative deal.initiative, :id, :name
-end
-
-if deal.advertiser
-  json.advertiser_stats do
-    json.deals_count deal.advertiser.advertiser_deals_count
-    json.win_rate deal.advertiser.win_advertiser_rate.to_i
-    json.last_deal_date deal.advertiser.last_advertiser_deal
-  end
-end
-
-if deal.agency
-  json.agency_stats do
-    json.deals_count deal.agency.agency_deals_count
-    json.win_rate deal.agency.win_agency_rate.to_i
-    json.last_deal_date deal.agency.last_agency_deal
-  end
 end
