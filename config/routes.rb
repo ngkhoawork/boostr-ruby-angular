@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     resources :integration_types, only: [:index]
     resources :integration_logs, only: [:index, :show] do
       post :resend_request, on: :member
+      get :latest_log, param: :deal_id, on: :collection
     end
     resources :csv_import_logs, only: [:index]
 

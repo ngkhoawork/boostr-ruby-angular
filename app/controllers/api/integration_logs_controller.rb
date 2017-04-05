@@ -1,7 +1,6 @@
 class Api::IntegrationLogsController < ApplicationController
   def index
-    integration_logs = IntegrationLog.where(company_id: current_user.company_id)
-    render json: API::IntegrationLogs::Collection.new(integration_logs).to_hash
+    render json: API::IntegrationLogs::Collection.new(current_user_integration_logs).to_hash
   end
 
   def show
@@ -13,7 +12,20 @@ class Api::IntegrationLogsController < ApplicationController
     render json: { message: 'triggered request resend' }
   end
 
+  def latest_log
+    latest_log = current_user_integration_logs.where(deal_id: params[:deal_id]).last
+    render json: API::IntegrationLogs::Single.new(latest_log).to_hash
+  end
+
   private
+
+  def current_user_integration_logs
+    current_user_company.integration_logs
+  end
+
+  def current_user_company
+    @current_user_company ||= current_user.company
+  end
 
   def integration_log
     @integration_log = IntegrationLog.find(params[:id])
