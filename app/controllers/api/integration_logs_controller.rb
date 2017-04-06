@@ -13,7 +13,7 @@ class Api::IntegrationLogsController < ApplicationController
   end
 
   def latest_log
-    latest_log = current_user_integration_logs.where(deal_id: params[:deal_id]).last
+    latest_log = current_user_integration_logs.where(deal_id: params[:deal_id], object_name: 'deal').last
     if latest_log
       render json: API::IntegrationLogs::Single.new(latest_log).to_hash
     else
