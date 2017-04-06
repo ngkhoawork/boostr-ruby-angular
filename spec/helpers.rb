@@ -124,4 +124,8 @@ module Helpers
   def json_response
     JSON.parse @response.body
   end
+
+  def window_size_for_screenshot(width, height)
+    page.driver.resize_window(width, height)
+  end
 end

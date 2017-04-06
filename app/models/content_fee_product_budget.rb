@@ -1,4 +1,6 @@
 class ContentFeeProductBudget < ActiveRecord::Base
+  PENDING = 'Pending'.freeze
+
   belongs_to :content_fee
   delegate :io, to: :content_fee
 

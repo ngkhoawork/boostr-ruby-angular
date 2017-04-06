@@ -1,5 +1,11 @@
 class DisplayLineItemBudget < ActiveRecord::Base
+  PENDING = 'Pending'.freeze
+
   belongs_to :display_line_item
+
+  scope :by_date, -> (start_date, end_date) do
+    where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', start_date, end_date)
+  end
 
   def daily_budget
     budget.to_f / (end_date - start_date + 1).to_i

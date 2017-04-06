@@ -14,7 +14,13 @@ class Io < ActiveRecord::Base
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
   validate :active_exchange_rate
+
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
+  scope :without_display_line_items, -> { includes(:display_line_items).where(display_line_items: { id: nil }) }
+  scope :with_won_deals, -> { joins(deal: [:stage]).where(stages: { probability: 100 }) }
+  scope :with_open_deal_products, -> { joins(deal: [:deal_products]).where(deal_products: { open: true }) }
+  scope :with_display_revenue_type, -> { joins(deal: {deal_products: [:product]})
+                                          .where(products: { revenue_type: 'Display' }) }
 
   after_update do
     if (start_date_changed? || end_date_changed?)
