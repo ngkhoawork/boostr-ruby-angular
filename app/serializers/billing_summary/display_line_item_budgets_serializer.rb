@@ -1,6 +1,6 @@
 class BillingSummary::DisplayLineItemBudgetsSerializer < BillingSummary::BasicFieldsIosForApprovalSerializer
   attributes :id, :display_line_item_id, :line, :ad_server, :budget_loc, :billing_status, :ad_server_budget,
-             :ad_server_quantity, :quantity, :price
+             :ad_server_quantity, :quantity, :price, :type
 
   def display_line_item_id
     display_line_item.id
@@ -24,6 +24,10 @@ class BillingSummary::DisplayLineItemBudgetsSerializer < BillingSummary::BasicFi
 
   def price
     display_line_item.price
+  end
+
+  def type
+    'DisplayLineItemBudget'
   end
 
   private
