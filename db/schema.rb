@@ -11,7 +11,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170403131822) do
+ActiveRecord::Schema.define(version: 20170406114223) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pg_stat_statements"
@@ -957,9 +958,11 @@ ActiveRecord::Schema.define(version: 20170403131822) do
     t.integer  "company_id"
     t.date     "start_date"
     t.date     "end_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
     t.datetime "deleted_at"
+    t.string   "period_type"
+    t.boolean  "visible",     default: true
   end
 
   add_index "time_periods", ["deleted_at"], name: "index_time_periods_on_deleted_at", using: :btree
