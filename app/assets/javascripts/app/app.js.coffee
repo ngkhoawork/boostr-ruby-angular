@@ -25,6 +25,7 @@
   'monospaced.elastic'
   'dndLists'
   'jsonFormatter'
+  'boostrServerErrors'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
