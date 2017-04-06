@@ -56,7 +56,11 @@ Rails.application.routes.draw do
     resources :io_csvs, only: [:create]
     resources :display_line_item_csvs, only: [:create]
     resources :contacts, only: [:index, :create, :update, :destroy]
-    resources :revenue, only: [:index, :create]
+    resources :revenue, only: [:index, :create] do
+      collection do
+        get :forecast_detail
+      end
+    end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]

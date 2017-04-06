@@ -1,6 +1,8 @@
 class DisplayLineItemBudget < ActiveRecord::Base
   belongs_to :display_line_item
 
+  scope :for_time_period, -> (start_date, end_date) { where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', end_date, start_date) }
+
   def daily_budget
     budget.to_f / (end_date - start_date + 1).to_i
   end

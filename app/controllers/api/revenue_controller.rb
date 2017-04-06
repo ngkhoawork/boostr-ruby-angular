@@ -11,6 +11,10 @@ class Api::RevenueController < ApplicationController
     end
   end
 
+  def forecast_detail
+    render json: quarterly_ios
+  end
+
   def create
     csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
     revenues = Revenue.import(csv_file, current_user.company.id)
@@ -21,6 +25,7 @@ class Api::RevenueController < ApplicationController
   private
 
   def quarterly_revenues
+
     revs = current_user.company.revenues
       .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year)
       .as_json
@@ -56,55 +61,66 @@ class Api::RevenueController < ApplicationController
   end
 
   def quarterly_ios
-    ios = current_user.company.ios
-    .where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year)
-    .as_json
-    ios.map do |io|
-      io_obj = Io.find(io['id'])
-      io[:quarters] = [0, 0, 0, 0]
-      io[:year] = year
-      io[:months] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-      total = 0
-      if io['end_date'] == io['start_date']
-        io['end_date'] += 1.day
-      end
+    if params[:team_id] == 'all'
+      ios = current_user.company.ios
+                    .for_time_period(start_date, end_date)
+                    .as_json
+      year = start_date.year
+      ios.map do |io|
+        io_obj = Io.find(io['id'])
+        io[:quarters] = [0, 0, 0, 0]
+        # io[:year] = year
+        io[:months] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        total = 0
+        io[:members] = io_obj.io_members
+        share = io_obj.io_members.pluck(:share).sum
 
-      io_obj.content_fee_product_budgets.where("date_part('year', start_date) = ?", year).each do |content_fee_product_budget|
-        month = content_fee_product_budget.start_date.mon
-        io[:months][month - 1] += content_fee_product_budget.budget
-        io[:quarters][(month - 1) / 3] += content_fee_product_budget.budget
-        total += content_fee_product_budget.budget
-      end
-
-      io_obj.display_line_items.where("date_part('year', start_date) <= ? AND date_part('year', end_date) >= ?", year, year).each do |display_line_item|
-        # year = display_line_item.start_date.year
-        display_line_item_budgets = display_line_item.display_line_item_budgets.to_a
-
-        for index in 1..12
-          month = index.to_s
-          if index < 10
-            month = '0' + index.to_s
-          end
-          first_date = Date.parse("#{year}#{month}01")
-          num_of_days = [[first_date.end_of_month, display_line_item.end_date].min - [first_date, display_line_item.start_date].max + 1, 0].max.to_f
-          in_budget_days = 0
-          in_budget_total = 0
-          display_line_item_budgets.each do |display_line_item_budget|
-            in_from = [first_date, display_line_item.start_date, display_line_item_budget.start_date].max
-            in_to = [first_date.end_of_month, display_line_item.end_date, display_line_item_budget.end_date].min
-            in_days = [(in_to.to_date - in_from.to_date) + 1, 0].max
-            in_budget_days += in_days
-            in_budget_total += display_line_item_budget.daily_budget * in_days
-          end
-          io[:months][index - 1] += in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
-          io[:quarters][(index - 1) / 3] += in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
+        if io['end_date'] == io['start_date']
+          io['end_date'] += 1.day
         end
+
+        io_obj.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+          month = content_fee_product_budget.start_date.mon
+          io[:months][month - 1] += content_fee_product_budget.budget
+          io[:quarters][(month - 1) / 3] += content_fee_product_budget.budget
+          total += content_fee_product_budget.budget
+        end
+
+        io_obj.display_line_items.for_time_period(start_date, end_date).each do |display_line_item|
+          display_line_item_budgets = display_line_item.display_line_item_budgets.to_a
+
+          for index in start_date.mon..end_date.mon
+            month = index.to_s
+            if index < 10
+              month = '0' + index.to_s
+            end
+            first_date = Date.parse("#{year}#{month}01")
+
+            num_of_days = [[first_date.end_of_month, display_line_item.end_date].min - [first_date, display_line_item.start_date].max + 1, 0].max.to_f
+            in_budget_days = 0
+            in_budget_total = 0
+            display_line_item_budgets.each do |display_line_item_budget|
+              in_from = [first_date, display_line_item.start_date, display_line_item_budget.start_date].max
+              in_to = [first_date.end_of_month, display_line_item.end_date, display_line_item_budget.end_date].min
+              in_days = [(in_to.to_date - in_from.to_date) + 1, 0].max
+              in_budget_days += in_days
+              in_budget_total += display_line_item_budget.daily_budget * in_days
+            end
+            budget = in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
+            io[:months][index - 1] += budget
+            io[:quarters][(index - 1) / 3] += budget
+            total += budget
+          end
+        end
+
+        io['in_period_amt'] = total
+        io['in_period_split_amt'] = total * share / 100
       end
 
-      io['budget'] = total
+      ios
+    else
+      member_or_team.quarterly_ios(time_period.start_date, time_period.end_date)
     end
-
-    ios
   end
 
   def revenues
@@ -235,7 +251,9 @@ class Api::RevenueController < ApplicationController
   end
 
   def member_or_team
-    @member_or_team ||= if params[:member_id]
+    @member_or_team ||= if params[:user_id].present? && params[:user_id] != 'all'
+      member
+    elsif params[:member_id]
       member
     elsif params[:team_id]
       team
@@ -245,7 +263,9 @@ class Api::RevenueController < ApplicationController
   end
 
   def member
-    @member ||= if current_user.leader?
+    @member ||= if params[:user_id]
+      current_user.company.users.find(params[:user_id])
+    elsif current_user.leader?
       current_user.company.users.find(params[:member_id])
     elsif params[:member_id] == current_user.id.to_s
       current_user
