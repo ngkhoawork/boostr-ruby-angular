@@ -6,24 +6,22 @@ RSpec.describe Api::ClientsController, type: :controller do
   let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
   let(:address_params) { attributes_for :address }
-  let(:client_params) { attributes_for(:client, address_attributes: address_params) }
+  let(:client_params) { attributes_for(:client, address_attributes: address_params, client_type_id: client_type_id(company), company: company) }
 
   before do
     sign_in user
   end
 
   describe "GET #index" do
-    let!(:leader_client) { create :client }
+    let!(:leader_client) { create :client, parent_client: nil }
 
-    let!(:user_client) { create :client, created_by: user.id }
+    let!(:user_client) { create :client, created_by: user.id, parent_client: nil }
 
     let(:another_user) { create :user, team: team }
-    let!(:team_client) { create :client, created_by: another_user.id }
+    let!(:team_client) { create :client, created_by: another_user.id, parent_client: nil }
 
     before do
-      30.times do
-        create :client, created_by: user.id
-      end
+      create_list :client, 30, created_by: user.id, parent_client: nil
     end
 
     it 'returns a list of clients in csv' do
@@ -85,6 +83,7 @@ RSpec.describe Api::ClientsController, type: :controller do
     it 'creates a new client and returns success' do
       expect{
         post :create, client: client_params, format: :json
+
         expect(response).to be_success
         response_json = JSON.parse(response.body)
         expect(response_json['company_id']).to eq(company.id)
@@ -97,7 +96,7 @@ RSpec.describe Api::ClientsController, type: :controller do
         post :create, client: { addresses_attributes: address_params }, format: :json
         expect(response.status).to eq(422)
         response_json = JSON.parse(response.body)
-        expect(response_json['errors']['name']).to eq(["can't be blank"])
+        expect(response_json['errors']['name']).to eq(["Name can't be blank"])
       }.to_not change(Client, :count)
     end
   end
@@ -130,5 +129,9 @@ RSpec.describe Api::ClientsController, type: :controller do
       expect(response).to be_success
       expect(client.reload.deleted_at).to_not be_nil
     end
+  end
+
+  def client_type_id(company)
+    company.fields.find_by(name: 'Client Type').options.ids.sample
   end
 end

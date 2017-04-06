@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20170403131822) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "account_dimensions", force: :cascade do |t|
     t.string  "name"
@@ -607,11 +608,8 @@ ActiveRecord::Schema.define(version: 20170403131822) do
     t.boolean  "open",                                         default: true
     t.string   "curr_cd",                                      default: "USD"
     t.decimal  "budget_loc",          precision: 15, scale: 2, default: 0.0
-<<<<<<< HEAD
-    t.integer  "initiative_id"
-=======
->>>>>>> feature/add-closed-reason-input-text
     t.string   "closed_reason_text"
+    t.integer  "initiative_id"
   end
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree

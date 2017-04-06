@@ -1,10 +1,10 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-
   mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   ActiveAdmin.routes(self)
 
+  # Devise Auth
   devise_for :users, skip: 'invitation'
   devise_scope :user do
     get '/users/invitation/accept', to: 'api/invitations#edit',   as: 'accept_user_invitation'
@@ -16,6 +16,45 @@ Rails.application.routes.draw do
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
+    scope module: :v1, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 1) do
+      post 'forgot_password' => 'forgot_password#create'
+      post 'resend_confirmation' => 'forgot_password#create'
+
+      resources :user_token, only: [:create]
+
+      resource :dashboard, only: [:show]
+      resources :states, only: [:index]
+      resources :forgot_password, only: [:create]
+      resources :activity_types, only: [:index]
+      resources :activities, only: [:index, :create, :show, :update, :destroy]
+      resources :contacts, only: [:index, :create, :update, :destroy]
+      resources :deals, only: [:index, :create, :update, :show, :destroy] do
+        resources :deal_products, only: [:create, :update, :destroy]
+        resources :deal_assets, only: [:index, :update, :create, :destroy]
+        resources :deal_contacts, only: [:index, :create, :update, :destroy]
+      end
+      resources :stages, only: [:index, :create, :show, :update]
+      resources :clients, only: [:index, :show, :create, :update, :destroy] do
+        get :sellers
+        resources :client_members, only: [:index, :create, :update, :destroy]
+        resources :client_contacts, only: [:index] do
+          collection do
+            get :related_clients
+          end
+        end
+      end
+
+      resources :reminders, only: [:index, :show, :create, :update, :destroy]
+      resources :remindable, only: [] do
+        get '/:remindable_type', to: 'reminders#remindable'
+      end
+      resources :forecasts, only: [:index, :show]
+      resources :time_periods, only: [:index]
+      resources :countries, only: [:index]
+      resources :fields, only: [:index]
+      resources :users, only: [:index, :update]
+    end
+
     resources :countries, only: [:index]
     resources :api_configurations
     resources :integration_types, only: [:index]

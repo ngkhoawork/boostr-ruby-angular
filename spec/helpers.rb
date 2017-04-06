@@ -104,4 +104,24 @@ module Helpers
   def response_json(response)
     JSON.parse response.body
   end
+
+  def valid_token_auth(user)
+    @token = Knock::AuthToken.new(payload: user.to_token_payload).token
+    @request.env['HTTP_AUTHORIZATION'] = "Bearer #{@token}"
+    @request.headers['X-Requested-With'] = 'XMLHttpRequest'
+  end
+
+  def invalid_token_auth
+    @token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
+    @request.env['HTTP_AUTHORIZATION'] = "Bearer #{@token}"
+  end
+
+  def invalid_entity_auth
+    @token = Knock::AuthToken.new(payload: { sub: 0 }).token
+    @request.env['HTTP_AUTHORIZATION'] = "Bearer #{@token}"
+  end
+
+  def json_response
+    JSON.parse @response.body
+  end
 end

@@ -27,6 +27,9 @@ class Activity < ActiveRecord::Base
     end
   end
 
+  scope :for_company, -> (id) { where(company_id: id) }
+  scope :for_contact, -> (id) { joins(:activities_contacts).where('activities_contacts.contact_id = ?', id) }
+
   def self.import(file, current_user)
     errors = []
 
