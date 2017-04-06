@@ -897,12 +897,19 @@
     Deal.send_to_operative(id: dealId).then () ->
       currentLog = $scope.operativeIntegration.dealLog
       $scope.operativeIntegration.isLoading = true
+      attempts = 30
       interval = $interval ->
+        attempts--
+        if attempts <= 0
+          $interval.cancel(interval)
+          $scope.operativeIntegration.isLoading = false
+          return console.error('Updating operative deal status: the maximum number of attempts is reached')
         Deal.latest_log(id: dealId).then (log) ->
+
           if (currentLog && (log && log.id != currentLog.id)) || (!currentLog && log && log.id)
-              $interval.cancel(interval)
-              $scope.operativeIntegration.dealLog = log
-              $scope.operativeIntegration.isLoading = false
+            $interval.cancel(interval)
+            $scope.operativeIntegration.dealLog = log
+            $scope.operativeIntegration.isLoading = false
       , 2000
 
   getOperativeIntegration = (dealId) ->
