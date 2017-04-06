@@ -79,3 +79,5 @@ json.initiatives deal.company.initiatives, :id, :name
 if deal.initiative.present?
   json.initiative deal.initiative, :id, :name
 end
+
+json.closed_reason_text deal.closed_reason_text

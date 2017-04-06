@@ -607,7 +607,10 @@ ActiveRecord::Schema.define(version: 20170403131822) do
     t.boolean  "open",                                         default: true
     t.string   "curr_cd",                                      default: "USD"
     t.decimal  "budget_loc",          precision: 15, scale: 2, default: 0.0
+<<<<<<< HEAD
     t.integer  "initiative_id"
+=======
+>>>>>>> feature/add-closed-reason-input-text
     t.string   "closed_reason_text"
   end
 

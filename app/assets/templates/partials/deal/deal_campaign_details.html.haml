@@ -91,7 +91,7 @@
             {{ currentDeal.closed_at | date }}
     %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
         %div.custom-field-item-label
-            %label Closed Reason
+            %label Loss Reason
         %div.custom-field-item-field
             .dropdown
                 %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -101,4 +101,9 @@
                     %li{'ng-repeat': 'option in currentDeal.close_reason.options', 'ng-class': '{active: currentDeal.close_reason.option.name == option.name}'}
                         %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; updateDeal()'}
                             %span.text {{option.name}}
+    %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
+        %div.custom-field-item-label
+            %label Loss Comments
+        %div.custom-field-item-field
+            %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.closed_reason_text", name: "closed_reason_text", placeholder: 'Enter comments', 'ng-blur': 'updateDeal()' }
 
