@@ -19,6 +19,9 @@
     send_to_operative:
       method: 'POST'
       url: '/api/deals/:id/send_to_operative'
+    get_latest_operative_log:
+      method: 'GET'
+      url: 'api/deals/:id/latest_log'
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
@@ -40,6 +43,15 @@
   @send_to_operative = (params) ->
     deferred = $q.defer()
     resource.send_to_operative params,
+      (resp) ->
+        deferred.resolve(resp)
+      (err) ->
+        deferred.reject(err)
+    deferred.promise
+
+  @latest_log = (params) ->
+    deferred = $q.defer()
+    resource.get_latest_operative_log params,
       (resp) ->
         deferred.resolve(resp)
       (err) ->

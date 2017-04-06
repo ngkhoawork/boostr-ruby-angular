@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'IntegrationLogs'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   Currency,   CurrentUser,   ApiConfiguration,   IntegrationLogs) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'IntegrationLogs'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   Currency,   CurrentUser,   ApiConfiguration,   IntegrationLogs) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -15,7 +15,8 @@
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
-    status: ''
+    isLoading: false
+    dealLog: null
 
   ###*
    * FileUpload
@@ -892,25 +893,25 @@
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
 
-  $scope.sendToOperative = ->
-    Deal.send_to_operative(id: $scope.currentDeal.id).then (resp) ->
-#      console.log resp
-
-  updateOperativeStatus = (dealId) ->
-    IntegrationLogs.all().then (data) ->
-      logs = _.filter data, (log) -> log.object_name == 'deal' && log.deal_id == dealId
-      lastLog = _.last _.sortBy logs, 'created_at'
-      if lastLog
-        $scope.operativeIntegration.status = if lastLog.is_error then 'Error' else 'Success'
-      else
-        $scope.operativeIntegration.status = 'Not sent'
+  $scope.sendToOperative = (dealId)->
+    Deal.send_to_operative(id: dealId).then () ->
+      currentLog = $scope.operativeIntegration.dealLog
+      $scope.operativeIntegration.isLoading = true
+      interval = $interval ->
+        Deal.latest_log(id: dealId).then (log) ->
+          if (currentLog && (log && log.id != currentLog.id)) || (!currentLog && log && log.id)
+              $interval.cancel(interval)
+              $scope.operativeIntegration.dealLog = log
+              $scope.operativeIntegration.isLoading = false
+      , 2000
 
   getOperativeIntegration = (dealId) ->
     ApiConfiguration.all().then (data) ->
       operative = _.findWhere data.api_configurations, integration_type: 'operative'
       if operative && operative.switched_on
         $scope.operativeIntegration.isEnabled = operative.switched_on
-        updateOperativeStatus(dealId)
+        Deal.latest_log(id: dealId).then (log) ->
+          $scope.operativeIntegration.dealLog = log if log && log.id
 
 
   checkCurrentUserDealShare = (members) ->
