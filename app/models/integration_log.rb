@@ -4,6 +4,8 @@ class IntegrationLog < ActiveRecord::Base
 
   after_create :send_notification
 
+  default_scope { order(created_at: :desc) }
+
   private
 
   def send_notification
