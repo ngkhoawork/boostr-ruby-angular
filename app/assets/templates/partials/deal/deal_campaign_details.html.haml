@@ -1,0 +1,119 @@
+.campaign-details.block
+    %div.pull-right
+        %span.star
+            *
+            %span{style: 'font-size: 12px'} is required
+    %div.mb20
+        %span.title Campaign Details
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label{ for: 'type' }
+                Type
+        %div.custom-field-item-field
+            .dropdown
+                %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable{'ng-class': '{"not-selected": !currentDeal.deal_type.option_id}'}
+                        {{findById(currentDeal.deal_type.options, currentDeal.deal_type.option_id).name || 'Select type'}}
+                    %span.caret
+                %ul.dropdown-menu
+                    %li{'ng-repeat': 'option in currentDeal.deal_type.options', 'ng-class': '{active: currentDeal.deal_type.option_id == option.id}'}
+                        %a{'href': '', 'ng-click': 'currentDeal.deal_type.option_id = option.id; updateDeal()'}
+                            %span.text {{option.name}}
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label{ for: 'source' }
+                Source
+        %div.custom-field-item-field
+            .dropdown
+                %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable{'ng-class': '{"not-selected": !currentDeal.source_type.option_id}'}
+                        {{findById(currentDeal.source_type.options, currentDeal.source_type.option_id).name || 'Select source'}}
+                    %span.caret
+                %ul.dropdown-menu
+                    %li{'ng-repeat': 'option in currentDeal.source_type.options', 'ng-class': '{active: currentDeal.source_type.option_id == option.id}'}
+                        %a{'href': '', 'ng-click': 'currentDeal.source_type.option_id = option.id; updateDeal()'}
+                            %span.text {{option.name}}
+    %div.custom-field-item{ng:{repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', if: "!dealCustomFieldName.disabled", class: '{"required-field": dealCustomFieldName.is_required}', init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index"}}
+        %div.custom-field-item-label
+            %label{ for: '{{fieldName}}' }
+                {{dealCustomFieldName.field_label}}
+                %span.star *
+        %div.custom-field-item-field{'ng-switch': 'dealCustomFieldName.field_type', 'ng-class': '{"has-error": !currentDeal.deal_custom_field[fieldName]}'}
+            .text-field{ ng: { 'switch-when': 'text' } }
+                %input.editable{ 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
+            .text-area{ ng: { 'switch-when': 'note' } }
+                %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
+            .currency-field{ ng: { 'switch-when': 'number' } }
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+            .currency-field{ ng: { 'switch-when': 'number_4_dec' } }
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '4', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+            .currency-field{ ng: { 'switch-when': 'integer' } }
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+            .currency-field{ ng: { 'switch-when': 'currency' } }
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: '{{currency_symbol}}', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+            .percentage-field{ ng: { 'switch-when': 'percentage' } }
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+            .datetime-field.bs-datepicker{ ng: { 'switch-when': 'datetime' } }
+                %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !currentDeal.deal_custom_field[fieldName]}', model: 'currentDeal.deal_custom_field[fieldName]', click: 'dateOpened[fieldName] = !dateOpened[fieldName]', change: 'updateDeal()' }, 'is-open': 'dateOpened[fieldName]' }
+                    {{(currentDeal.deal_custom_field[fieldName] | date) || 'Select date'}}
+                    %span.caret
+            .boolean-field.show-hide-remainder-form{ ng: { 'switch-when': 'boolean' } }
+                .switch-remainder-form
+                    %input.cmn-toggle.cmn-toggle-round-flat{id: '{{fieldName}}', type: 'checkbox', 'ng-model': 'currentDeal.deal_custom_field[fieldName]', 'ng-change': "updateDeal()"}
+                    %label{:for => "{{fieldName}}"}
+                        %span
+            .dropdown{ ng: { 'switch-when': 'dropdown' } }
+                %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable{'ng-class': '{"not-selected": !currentDeal.deal_custom_field[fieldName]}'}
+                        {{currentDeal.deal_custom_field[fieldName] || 'Select value'}}
+                    %span.caret
+                %ul.dropdown-menu
+                    %li{'ng-repeat': 'customFieldOption in dealCustomFieldName.deal_custom_field_options', 'ng-class': '{active: currentDeal.deal_custom_field[fieldName] == customFieldOption.value}'}
+                        %a{'href': '', 'ng-click': 'currentDeal.deal_custom_field[fieldName] = customFieldOption.value; updateDeal()'}
+                            %span.text {{customFieldOption.value}}
+            .currency-field{ ng: { 'switch-when': 'sum' } }
+                {{ (currentDeal.deal_custom_field[fieldName] || 0) | number : 0 }}
+    .mb30
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label Created by
+        %div.custom-field-item-field
+            {{ currentDeal.creator.first_name }} {{ currentDeal.creator.last_name }}
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label Created at
+        %div.custom-field-item-field
+            {{ currentDeal.created_at | date}} @ {{ currentDeal.created_at | date: 'shortTime'}}
+    %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
+        %div.custom-field-item-label
+            %label Closed at
+        %div.custom-field-item-field
+            {{ currentDeal.closed_at | date }}
+    %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
+        %div.custom-field-item-label
+            %label Loss Reason
+        %div.custom-field-item-field
+            .dropdown
+                %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable{'ng-class': '{"not-selected": !currentDeal.close_reason.option.name}'} {{currentDeal.close_reason.option.name || 'Select reason'}}
+                    %span.caret
+                %ul.dropdown-menu
+                    %li{'ng-repeat': 'option in currentDeal.close_reason.options', 'ng-class': '{active: currentDeal.close_reason.option.name == option.name}'}
+                        %a{'href': '', 'ng-click': 'currentDeal.close_reason.option_id = option.id; updateDeal()'}
+                            %span.text {{option.name}}
+    %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
+        %div.custom-field-item-label
+            %label Loss Comments
+        %div.custom-field-item-field
+            %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.closed_reason_text", name: "closed_reason_text", placeholder: 'Enter comments', 'ng-blur': 'updateDeal()' }
+
+    %div.custom-field-item{ 'ng-if': 'operativeIntegration.isEnabled' }
+        %div.custom-field-item-label
+            %label Operative Status
+        %div.custom-field-item-field{'ng-show': 'operativeIntegration.isLoading'}
+            %div.loading-pulse
+        %div.custom-field-item-field{'ng-hide': 'operativeIntegration.isLoading'}
+            %b{'ng-class': '{"status-error": operativeIntegration.dealLog.is_error == true, "status-success": operativeIntegration.dealLog.is_error == false}'}
+                {{operativeIntegration.dealLog ? (operativeIntegration.dealLog.is_error ? 'Error' : 'Success') : 'Not sent'}}
+            |
+            %a{href: '', 'ng-click': 'sendToOperative(currentDeal.id)'} Send to Operative

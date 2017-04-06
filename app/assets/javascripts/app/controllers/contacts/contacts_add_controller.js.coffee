@@ -3,7 +3,6 @@
 ($scope, $modal, $modalInstance, $filter, Contact, Deal, DealContact, deal) ->
   $scope.formType = "Edit"
   $scope.submitText = "Update"
-  $scope.contact = contact
   $scope.searchText = ""
   DealContact.all(deal_id: deal.id).then (contacts) ->
     $scope.contacts = contacts

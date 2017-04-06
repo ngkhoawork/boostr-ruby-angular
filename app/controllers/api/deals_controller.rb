@@ -248,6 +248,16 @@ class Api::DealsController < ApplicationController
     render nothing: true
   end
 
+  def send_to_operative
+    if deal.operative_switched_on?
+      OperativeIntegrationWorker.perform_async(deal.id)
+      render json: { message: 'deal was sent to operative' }
+    else
+      render json: { errors: 'cannot send this deal to operative please recheck a deal and try again later' },
+             status: :unprocessable_entity
+    end
+  end
+
   private
 
   def product_filter
@@ -282,6 +292,7 @@ class Api::DealsController < ApplicationController
         :closed_at,
         :next_steps,
         :initiative_id,
+        :closed_reason_text,
         {
             values_attributes: [
                 :id,
@@ -342,7 +353,28 @@ class Api::DealsController < ApplicationController
                 :percentage2,
                 :percentage3,
                 :percentage4,
-                :percentage5
+                :percentage5,
+                :dropdown1,
+                :dropdown2,
+                :dropdown3,
+                :dropdown4,
+                :dropdown5,
+                :dropdown6,
+                :dropdown7,
+                :sum1,
+                :sum2,
+                :sum3,
+                :sum4,
+                :sum5,
+                :sum6,
+                :sum7,
+                :number_4_dec1,
+                :number_4_dec2,
+                :number_4_dec3,
+                :number_4_dec4,
+                :number_4_dec5,
+                :number_4_dec6,
+                :number_4_dec7
             ]
         }
     )

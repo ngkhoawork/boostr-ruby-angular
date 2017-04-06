@@ -1,5 +1,10 @@
 .talkus-body {
-   svg {
+    svg {
        fill: white;
-   }
+    }
+    .talkus-bubble-close {
+        svg {
+            fill: $secondary-font-color;
+        }
+    }
 }

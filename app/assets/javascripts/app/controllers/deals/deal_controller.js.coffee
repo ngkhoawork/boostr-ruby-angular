@@ -1,30 +1,6 @@
 @app.controller 'DealController',
-[
-  '$scope',
-  '$routeParams',
-  '$modal',
-  '$filter',
-  '$timeout',
-  '$location',
-  '$anchorScroll',
-  '$sce',
-  'Deal',
-  'Product',
-  'DealProduct',
-  'DealMember',
-  'DealContact',
-  'Stage',
-  'User',
-  'Field',
-  'Activity',
-  'Contact',
-  'ActivityType',
-  'Reminder',
-  '$http',
-  'Transloadit',
-  'DealCustomFieldName',
-  'Currency',
-($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, Currency) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -37,6 +13,10 @@
   $scope.selectedStageId = null
   $scope.currency_symbol = '$'
   $anchorScroll()
+  $scope.operativeIntegration =
+    isEnabled: false
+    isLoading: false
+    dealLog: null
 
   ###*
    * FileUpload
@@ -48,6 +28,7 @@
   $scope.uploadedFiles = []
   $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
+  $scope.dealProductCfNames = []
 
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
@@ -88,7 +69,6 @@
       return
 
     $scope.fileToUploadTst = file
-    # console.log 'file', file
     $scope.progressBarCur = 0
     $scope.uploadFile.status = 'LOADING'
     $scope.uploadFile.name = file.name
@@ -136,8 +116,6 @@
             $scope.dealFiles.push response.data
 
         $scope.uploadFile.status = 'SUCCESS'
-        # console.log "$scope.uploadFile.status", $scope.uploadFile.status
-        # console.log('uploaded', assemblyJson)
         $timeout (->
           $scope.progressBarCur = 0
           return
@@ -160,12 +138,15 @@
    * END FileUpload
   ###
 
-  $scope.init = ->
-    $scope.actRemColl = false;
+  $scope.init = (initialLoad) ->
+    $scope.actRemColl = false
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
       $scope.setCurrentDeal(deal)
+      if initialLoad
+        checkCurrentUserDealShare(deal.members)
+        getOperativeIntegration(deal.id)
       $scope.activities = deal.activities.map (activity) ->
         activity.activity_type_name = activity.activity_type && activity.activity_type.name
         activity
@@ -182,13 +163,17 @@
     $scope.getDealFiles()
     $scope.initActivity()
     getDealCustomFieldNames()
+    getDealProductCfNames()
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
 
+  getDealProductCfNames = () ->
+    DealProductCfName.all().then (dealProductCfNames) ->
+      $scope.dealProductCfNames = dealProductCfNames
+
   $scope.initReminder = ->
-    $scope.showReminder = false;
 
     $scope.reminder = {
       name: '',
@@ -202,6 +187,7 @@
     }
 
     $scope.reminderOptions = {
+      showReminder: false
       editMode: false,
       errors: {},
       buttonDisabled: false,
@@ -264,13 +250,18 @@
   $scope.getCompanyCurrencies = ->
     Currency.active_currencies().then (currencies) ->
       $scope.currencies = currencies
+  $scope.getCompanyCurrencies()
 
-  $scope.updateDealCurrency = ->
+  $scope.updateDealCurrency = (currentDeal, curr_cd)->
     $scope.errors = {}
-    Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
+    currentDeal.curr_cd = curr_cd
+    Deal.update(id: currentDeal.id, deal: currentDeal).then(
       (deal) ->
         $scope.setCurrentDeal(deal)
       (resp) ->
+        $timeout ->
+          delete $scope.errors.curr_cd
+        , 6000
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
@@ -300,6 +291,7 @@
     Stage.query().$promise.then (stages) ->
       $scope.stages = stages.filter (stage) ->
         stage.active
+  $scope.getStages()
 
   $scope.toggleProductForm = ->
     $scope.resetDealProduct()
@@ -428,6 +420,11 @@
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
+  $scope.$on 'deal_product_added', (e, deal) ->
+    $scope.currentDeal = deal
+    $scope.selectedStageId = deal.stage_id
+    $scope.setBudgetPercent(deal)
+
   $scope.resetDealProduct = ->
     $scope.deal_product = {
       deal_product_budgets: []
@@ -589,11 +586,15 @@
               else
                 $scope.init()
             (resp) ->
+              $timeout ->
+                delete $scope.errors.stage
+              , 6000
               for key, error of resp.data.errors
                 $scope.errors[key] = error && error[0]
           )
 
   $scope.updateDealProduct = (data) ->
+    console.log(data)
     $scope.errors = {}
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then(
       (deal) ->
@@ -603,12 +604,15 @@
           $scope.errors[key] = error && error[0]
     )
 
+  $scope.findById = (arr, id)->
+    _.findWhere arr, id: id
+
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
       $scope.setCurrentDeal(deal)
+      checkCurrentUserDealShare(deal.members)
 
   $scope.onEditableBlur = () ->
-#    console.log("ddd")
   $scope.verifyMembersShare = ->
     share_sum = 0
     _.each $scope.currentDeal.members, (member) ->
@@ -650,6 +654,9 @@
       (deal_contact) ->
         true
       (resp) ->
+        $timeout ->
+          delete deal_contact.errors.role
+        , 6000
         deal_contact.role = null
         for key, error of resp.data.errors
           deal_contact.errors[key] = error && error[0]
@@ -687,6 +694,27 @@
         currentDeal: ->
           currentDeal
 
+  $scope.showWarningModal = (message) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_warning.html'
+      size: 'md'
+      controller: 'DealWarningController'
+      backdrop: 'static'
+      keyboard: true
+      resolve:
+        message: -> message
+
+  $scope.showNewProductModal = (currentDeal) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/deal_new_product_form.html'
+      size: 'lg'
+      controller: 'DealNewProductController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        currentDeal: ->
+          currentDeal
+
   $scope.addContact = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_add_form.html'
@@ -709,7 +737,11 @@
     $scope.createNewContactModal()
 
   $scope.$on 'updated_deals', ->
+    console.log 'UPDATED'
     $scope.init()
+
+  $scope.$on 'updated_reminders', ->
+    $scope.initReminder()
 
   $scope.$on 'deal_update_errors', (event, errors) ->
     $scope.errors = {}
@@ -719,7 +751,7 @@
   $scope.$on 'updated_activities', ->
     $scope.init()
 
-  $scope.init()
+  $scope.init(true)
 
   $scope.setActiveTab = (tab) ->
     $scope.activeTab = tab
@@ -851,7 +883,6 @@
       Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
       .then (reminder) ->
         $scope.reminderOptions.buttonDisabled = false
-        $scope.showReminder = false;
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
@@ -860,7 +891,6 @@
     else
       Reminder.create(reminder: $scope.reminder).then (reminder) ->
         $scope.reminderOptions.buttonDisabled = false
-        $scope.showReminder = false;
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
@@ -870,4 +900,38 @@
 
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
+
+  $scope.sendToOperative = (dealId)->
+    Deal.send_to_operative(id: dealId).then () ->
+      currentLog = $scope.operativeIntegration.dealLog
+      $scope.operativeIntegration.isLoading = true
+      attempts = 30
+      interval = $interval ->
+        attempts--
+        if attempts <= 0
+          $interval.cancel(interval)
+          $scope.operativeIntegration.isLoading = false
+          return console.error('Updating operative deal status: the maximum number of attempts is reached')
+        Deal.latest_log(id: dealId).then (log) ->
+
+          if (currentLog && (log && log.id != currentLog.id)) || (!currentLog && log && log.id)
+            $interval.cancel(interval)
+            $scope.operativeIntegration.dealLog = log
+            $scope.operativeIntegration.isLoading = false
+      , 2000
+
+  getOperativeIntegration = (dealId) ->
+    ApiConfiguration.all().then (data) ->
+      operative = _.findWhere data.api_configurations, integration_type: 'operative'
+      if operative && operative.switched_on
+        $scope.operativeIntegration.isEnabled = operative.switched_on
+        Deal.latest_log(id: dealId).then (log) ->
+          $scope.operativeIntegration.dealLog = log if log && log.id
+
+
+  checkCurrentUserDealShare = (members) ->
+    CurrentUser.get().$promise.then (currentUser) ->
+      _.forEach members, (member) ->
+        if member.user_id == currentUser.id && !(member.share > 0)
+          $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
 ]

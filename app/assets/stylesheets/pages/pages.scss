@@ -14,6 +14,7 @@
 @import "io";
 @import "settings/team";
 @import "settings/currencies";
+@import "settings/custom_fields";
 @import "settings/custom_values";
 @import "settings/teams";
 @import "settings/quotas";
@@ -27,5 +28,6 @@
 @import "pipeline_change_report";
 @import "initiatives_summary";
 @import "integration_logs";
+@import "billing";
 
 html,body { height:100%; }

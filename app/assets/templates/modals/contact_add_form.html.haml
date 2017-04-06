@@ -1,13 +1,9 @@
-#contact_assign_modal.contacts-modal
+#contact_assign_modal.contacts-modal.popup-modal
   %form.form-horizontal
-    .modal-header.text-center
-      %a.close{ ng: { click: 'cancel()' } }
-        %span{'aria-hidden' => 'true'}
-          = inline_svg 'icons/close.svg'
-      %h3.modal-title
-        %strong
-          Add Contact
-    .modal-body
+    .popup-modal-header
+      Add Contact
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body.modal-body{style: 'padding: 15px'}
       .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
           %i.fa.fa-warning
@@ -17,7 +13,6 @@
       .form-group.with-add-btn
         %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj(searchText)' } }
         %button.add-btn.plus-btn{type: 'button', 'ng-click': 'createContact()'}
-          %span +
       .form-group
         .row
           .col-xs-12
@@ -28,5 +23,5 @@
                   %a{ href: "javascript:void(0)", 'ng-click': "addContact(contact)", 'ng-hide': "checkContact(contact)" }
                     Add
 
-    .modal-footer
-      %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Close
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close

@@ -6,6 +6,7 @@
     send.deal_product =
       budget_loc: original.deal_product.budget_loc
       deal_product_budgets_attributes: original.deal_product.deal_product_budgets
+      deal_product_cf_attributes: original.deal_product.deal_product_cf
       product_id: original.deal_product.product_id
     angular.toJson(send)
 

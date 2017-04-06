@@ -87,6 +87,15 @@ RSpec.describe Deal, type: :model do
           validation.criterion.update(value: 10)
           expect(deal).not_to be_valid
         end
+
+        it 'fails validation when deal has more than one billing contact' do
+          validation.criterion.update(value: 10)
+          create :billing_deal_contact, deal: deal
+
+          expect{
+            create :billing_deal_contact, deal: deal
+          }.to raise_error(ActiveRecord::RecordInvalid)
+        end
       end
     end
 
@@ -145,6 +154,19 @@ RSpec.describe Deal, type: :model do
 
     it 'returns false if no billing contact found' do
       expect(deal.has_billing_contact?).to be false
+    end
+  end
+
+  describe '#no_more_one_billing_contact?' do
+    let!(:deal) { create :deal }
+
+    it 'is true if deal has no billing contacts' do
+      expect(deal.no_more_one_billing_contact?).to be true
+    end
+
+    it 'is true if deal has one billing contact' do
+      create :deal_contact, deal: deal, role: 'Billing'
+      expect(deal.no_more_one_billing_contact?).to be true
     end
   end
 

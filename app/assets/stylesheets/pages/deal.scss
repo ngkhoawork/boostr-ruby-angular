@@ -1,797 +1,512 @@
 #deal {
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
-  }
-
-  .return {
-    padding-top: 24px;
-//    padding-bottom: 24px;
-
-    a {
-      font-size: 12px;
-      color: $brand-tertiary;
-    }
-  }
-  .edit-deal, .delete-deal {
-    color: $secondary-font-color;
-    margin-left: 8px;
-    cursor: pointer;
-    width: 28px;
-    height: 28px;
-    padding: 4px 6px;
-    font-size: 20px;
-    border-radius: 5px;
-    &:hover {
-      background-color: $secondary-font-color;
-      color: white;
-    }
-  }
-  .delete-deal {
-    margin-left: 0
-  }
-
-  .transform {
-    transform: rotate(180deg);
-    height: 12px;
-    width: 12px;
-  }
-
-  .hover-delete {
-    opacity: 0;
-    position: absolute;
-    left: 5px;
-    cursor: pointer;
-  }
-
-  .panel {
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-    background-color: transparent;
-    margin-bottom: 0;
-    margin-top: -55px;
-
-    .panel-heading {
-      border: 1px solid $light-grayish-blue-2;
-      padding-top: 7px;
-      padding-bottom: 5px;
-
-      .panel-title {
-        text-transform: uppercase;
-        font-size: 11px;
-      }
-    }
-
-    .panel-body {
-      padding-top: 0;
-      padding-bottom: 0;
-      border-left: 1px;
-      border-right: 1px;
-      border-bottom: 1px;
-      border-top: 0;
-      border-color: $light-grayish-blue-2;
-      border-style: solid;
-
-      .details {
-        border-right: 1px solid $light-grayish-blue-2;
-        padding-top: 15px;
-        padding-bottom: 15px;
-        margin-left: -14px;
-
-        .type {
-          font-size: 15px;
-          font-family: $font-family-sans-serif;
-          text-transform: capitalize;
-        }
-
-        .probability {
-          font: normal normal 11px $font-family-medium;
-          text-transform: uppercase;
-        }
-      }
-    }
-  }
-
-  .campaign {
-    .deal-name {
-      word-break: break-all;
-      font-size: 20px;
-      font-weight: 500;
-      padding-bottom: 5px;
-      padding-top: 5px;
-      color: #2C3C49;
-      margin-left: -10px;
-      margin-top: 10px;
-    }
-    .deal-info {
-      font-size: 13px;
-      font-weight: normal;
-      color: #9FA6AD;
-      .field-value{
-        display: inline-block;
-        width: 200px;
-        padding-top: 3px;
-        padding-bottom: 3px;
-      }
-      .form-inline {
-        display: inline-block;
-        width: 200px;
-      }
-    }
-
-    line-height: 22.78px;
-
-    h3 {
-      font-size: 25px;
-      font-family: $font-family-bold;
-      color: $very-dark-greyish-blue;
-    }
-  }
-
-  .proposal {
-    border: transparent;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 50%;
-    width: 12px;
-    height: 12px;
-  }
-
-  #nav {
-    border-bottom-color: $gray-light;
-
-    .nav-tabs {
-      .active {
-        a {
-          background-color: transparent;
-          color: $brand-primary;
-
-          &:after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 0;
-            left: 0;
-            bottom: 0;
-            border-bottom: 2px solid $brand-primary;
-          }
-        }
-      }
-
-      .nav-text {
-        color: $grayish-blue-1;
-        margin-top: 20px;
-        font-size: 12px;
-      }
-
-      li {
-        a {
-          font-size: 13px;
-          font-family: $table-headings-font-family;
-          text-transform: uppercase;
-          color: $grayish-blue-1;
-          padding-bottom: 0;
-          border-bottom-width: 0;
-
-          &:hover,
-          &:focus {
-            color: $brand-primary;
-          }
-        }
-      }
-    }
-  }
-
-  .campaign-period {
-    font-family: $font-family-medium;
-    border-right: 1px solid $very-light-gray;
-    font-size: 13px;
-    text-transform: uppercase;
-
-    &:last-child {
-      border-right: none;
-    }
-  }
-
-  .well {
-    padding-bottom: 5px;
-    border-bottom: 1px solid $light-grayish-blue-2;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    margin-top: 0;
-
-    &.dark {
-      padding-bottom: 19px;
-      background-color: $brand-tertiary;
-      border-radius: 0;
-
-      input {
-        background-color: $brand-tertiary-lighten;
-        border-color: transparent;
-        color: $white;
-
-        &:focus {
-          background-color: transparent;
-          border-color: $dark-grayish-blue-1;
-        }
-      }
-
-      .btn-default {
-        background-color: $brand-tertiary-lighten;
-        border-color: $brand-tertiary-lighten;
-      }
-
-      #cancel {
-        background-color: $brand-secondary-lighten;
-        border-color: $brand-secondary-lighten;
-        color: $white;
-        outline: none;
-      }
-
-      .ui-select-match .ui-select-match-text {
-        color: $white;
-      }
-
-      .bordered {
-        border-right: 1px solid $dark-grayish-blue-1;
-      }
-
-      .btn-block {
-        margin-top: 15px;
-      }
-    }
-
-    h5 {
-      margin-top: 5px;
-    }
-  }
-
-  .new-product-form {
-    .has-error{
-      color: red;
-    }
-
-    .offset-bottom{
-      margin-bottom: 4px;
-    }
-
-    .legend {
-      label {
+    .warning-message {
+        background-color: $error-color;
+        color: white;
+        transition: all 500ms;
         opacity: 0;
-      }
-
-      input {
-        cursor: default!important;
-      }
-
-    }
-  }
-
-  .error-text {
-    display: none;
-    text-transform: none;
-    font-weight: 500;
-    color: $error-color;
-    margin-bottom: 5px;
-    font-size: 14px;
-    font-family: "Avenir Next", Arial, serif;
-  }
-  .error {
-    .error-text {
-      display: inline;
-    }
-    input, textarea, .ui-select-container, .ui-select-toggle, button.dropdown-toggle, div.currency {
-      border: 1px solid $error-color;
-    }
-  }
-
-  #revenue_schedule {
-    .currency-table {
-      position: relative;
-      .symbol {
-        width: 0;
-        display: inline-block;
-        color: #939FA9;
-        font-size: 14px;
-      }
-      .currency {
-        position: absolute;
-        margin-left: 5px;
-        padding-top: 1px;
-      }
-      .percent{
-        position: relative;
-        right: 60px;
-      }
-
-      .total-budget__percent {
-        display: block;
-      }
-
-      .has-error{
-        color: red;
-      }
-      &__money {
-        height: 30px;
-        width: 110px;
-        display: inline-block;
-        padding: 7px 10px 7px 15px;
-        border-radius: 4px;
-        border: 1px solid #ff8e4a;
-        outline: none;
-        &:focus{
-          box-shadow: inset 0 0 5px #ff8034;
+        height: 0;
+        margin: 0;
+        padding: 0 20px;
+        &.show-warning {
+            opacity: 1;
+            padding: 20px;
+            margin: 0 0 30px 0;
+            height: auto;
         }
-      }
-      &__percent {
-        width: 60px;
-        height: 30px;
-        display: inline-block;
-        border:1px solid #ff8e4a;
-        outline: none;
-        padding: 7px 10px 7px 20px;
-        border-radius: 4px;
-        &:focus{
-          box-shadow: inset 0 0 5px #ff8034;
-        }
-      }
-
-      .glyphicon-link {
-        font-size: 12px;
-        color: #aaa;
-      }
-    }
-
-    table {
-      thead {
-        th.text-left {
-          text-align: left;
-        }
-        th:not(.no-pad) {
-          padding-right: 19px;
-        }
-      }
-
-      tbody {
-        tr {
-          td {
+        .fa {
             position: relative;
-
-            svg {
-              width: 14px;
-              height: 14px;
+            top: -8px;
+            right: -8px;
+            cursor: pointer;
+        }
+    }
+    .caret {
+        color: $secondary-font-color;
+        //position: relative;
+        //top: -2px;
+    }
+    .no-wrap-line {
+        display: inline-block;
+        white-space: nowrap;
+    }
+    textarea.editable {
+        resize: none;
+        width: 100%;
+        padding: 5px 8px;
+        &:focus {
+            outline: none;
+            border: 1px dashed $secondary-font-color;
+            &:hover {
+                cursor: text;
+                background-color: inherit;
             }
-          }
-
-          &:hover,
-          &:focus {
-            .hover-delete {
-              opacity: 1;
+        }
+    }
+    .editable {
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 4px;
+        border-bottom: 1px dashed $secondary-font-color;
+        &:hover {
+            border-color: transparent;
+            border-bottom-color: $secondary-font-color;
+            background-color: $separate-line-color;
+        }
+    }
+    .editable-field {
+        padding: 5px 8px;
+        border: 1px dashed $secondary-font-color;
+    }
+    .dropdown {
+        display: inline-block;
+        button:not(.add-btn) {
+            background-color: inherit;
+            border: none;
+            color: inherit;
+            padding: 0;
+            &:active {
+                outline: none;
+                box-shadow: none;
             }
-          }
         }
-      }
+        .dropdown-menu {
+            top: calc(100% + 10px);
+        }
     }
-  }
-
-  #new-product {
-    .add-product {
-      color: $brand-secondary;
-      text-transform: uppercase;
-      font-size: 12px;
-
-      svg {
-        margin-bottom: -7px;
-      }
+    .edit-deal, .delete-deal, .delete-product, .reminder-icon, .send-icon {
+        color: $secondary-font-color;
+        margin-left: 8px;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        padding: 4px 6px;
+        font-size: 20px;
+        border-radius: 5px;
+        &:hover {
+            background-color: $secondary-font-color;
+            color: white;
+        }
     }
-    .product-controls {
-      .total-budget {
-        margin-bottom: 5px;
-      }
-      .total-percent {
-        padding-left: 12px;
-      }
+    .send-icon {
+        vertical-align: middle;
+        margin-left: 2px;
     }
-    .ui-select-match-text {
-      width: 110px;
-    }
-    .ui-select-match-text, .ui-select-choices-row-inner {
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-    .ui-select-bootstrap .ui-select-choices-row > a {
-      padding: 3px;
-    }
-  }
-
-  .header {
-    padding-top: 30px;
-    padding-bottom: 11px;
-    line-height: 1;
-    height: auto;
-  }
-  .title-header {
-    margin-top: 10px;
-    margin-left: 15px;
-    font-size: 20px !important;
-    line-height: 1;
-    height: auto;
-    float: left;
-  }
-
-  #members {
-    .share-alert {
-      margin-bottom: 0
-    }
-    span {
-      margin-top: 45px;
-    }
-    padding-top: 15px;
-  }
-
-  #teamsplits {
-    table {
-      tbody {
-        tr {
-          td {
-            span {
-              margin-left: -10px;
+    .show-create-remainders-popup {
+        margin: 0;
+        .show-form-create-reminders {
+            display: none;
+        }
+        .reminder-icon {
+            padding: 4px 5px;
+        }
+        #reminder_popup_modal {
+            background-color: white;
+            position: absolute;
+            right: 0;
+            width: 400px;
+            z-index: 10;
+            border: 2px solid $separate-line-color;
+            box-shadow: 3px 3px 8px gray;
+            border-radius: 4px;
+            input, textarea {
+                height: 36px;
+                background-color: white;
             }
-          }
-        }
-      }
-    }
-  }
-  #attachments {
-    padding-top: 15px;
-    .file-uploader__drop-area {
-      padding-bottom: 5px;
-    }
-    textarea {
-      resize: vertical;
-    }
-  }
-
-  #contacts {
-    overflow: visible;
-    table {
-      table-layout: fixed;
-      tbody {
-        .ui-select-container.dropdown.ui-select-bootstrap {
-          span {
-            font-size: 13px;
-          }
-          input {
-            font-size: 13px;
-          }
-          .ui-select-match {
-            a.btn.btn-xs.btn-link.pull-right {
-              color: #e35500;
+            .popup-modal-header {
+                height: 0;
+                margin: 0;
+                padding: 0;
+                border-bottom: none;
+                .close-btn {
+                    top: -18px;
+                    right: -16px;
+                }
             }
-          }
         }
-      }
     }
-  }
-
-  #contact {
-    #add-contact {
-      span {
-        margin-top: 45px;
-      }
-      padding-top: 15px;
+    .delete-deal {
+        margin-left: 0
     }
-    .add-contact {
-      // color: $link-color;
-
-      &:hover,
-      &:focus {
-        // color: $link-hover-color;
-        background: transparent;
-        outline: none;
-
-        svg {
-          // fill: $link-hover-color;
+    .deal-stats {
+        textarea.editable {
+            margin-left: 10px;
         }
-      }
-
-      svg {
-        // fill: $link-color;
-      }
-    }
-
-    .table.table-striped {
-      thead > tr {
-        &:nth-child(2) {
-          background-color: $body-bg;
+        .deal-info {
+            color: $secondary-font-color;
+            .dropdown {
+                position: relative;
+                top: -3px;
+                .edit {
+                    color: $main-font-color;
+                    font-weight: bold;
+                }
+            }
         }
-      }
+        .stats-col {
+            margin-right: -4px;
+            text-align: center;
+            height: 120px;
+            position: relative;
+            display: inline-block;
+            width: 16.66%;
+            &:nth-child(1), &:nth-child(4) {
+                width: 25%;
+            }
+            .col-body-wrap {
+                width: 100%;
+                height: 100%;
+                display: table;
+                .col-body {
+                    display: table-cell;
+                    vertical-align: middle;
+                    //white-space: nowrap;
+                    .title {
+                        font-size: 18px;
+                        margin-right: 0;
+                    }
+                    .description {
+                        color: $secondary-font-color;
+                    }
+                    .error-tooltip {
+                        white-space: normal;
+                    }
+                    button {
+                        white-space: normal;
+                    }
+                }
+            }
+            .error-tooltip {
+                left: 1%;
+                width: 98%;
+                bottom: calc(50% + 30px);
+            }
+        }
     }
-  }
+    .products {
+        overflow-x: auto;
+        .error-tooltip {
+            white-space: nowrap;
+            bottom: 90%;
+            //left: calc(-50%);
+        }
+        .has-error {
+            color: $error-color;
+        }
+        .total-budget {
+            word-spacing: -0.25em;
+            white-space: nowrap;
+            display: inline-block;
+        }
+        .product-budget {
+            position: relative;
+            .budget-value {
+                font-weight: bold;
+            }
+        }
 
-  #info {
-    padding-top: 15px;
+        .custom-field-item-field {
+            .text-area {
+                textarea {
+                    margin-top: 10px;
+                    width: 100px;
+                }
+            }
+            .editable {
+                display: inline-block;
+                min-width: 100px;
+                max-width: 100%;
+                background: none;
+                &:focus {
+                    outline: none;
+                    border: 1px dashed $secondary-font-color;
+                    &:hover {
+                        background-color: inherit;
+                    }
+                }
+            }
+            .datetime-field {
+                width: 130px;
+                table {
+                    tr {
+                        height: auto !important;
+                    }
+                }
+            }
 
-    .new-field {
-      margin-top: -35px;
-      text-transform: uppercase;
+            .dropdown {
+                position: static;
 
-      a {
-        font-size: 11px;
-        color: $grayish-blue-1;
-        font-family: $font-family-medium;
-      }
+                .dropdown-menu {
+                    top: auto;
+                    left: auto;
+                }
+            }
+        }
 
-      svg {
-        padding-right: 5px;
-        fill: $grayish-blue-1;
-        float: left;
-        margin-top: -4px;
-      }
+        .editable-wrap {
+            white-space: nowrap;
+            .budget-value, .budget-percent {
+                display: inline-block;
+                border: 1px dashed $secondary-font-color;
+                padding: 0 5px;
+                border-radius: 4px;
+                input {
+                    background-color: inherit;
+                    cursor: text;
+                    border: none;
+                    padding: 0;
+                    width: 100px;
+                    &:focus {
+                        outline: none;
+                    }
+                }
+            }
+            .budget-percent {
+                input {
+                    width: 50px;
+                }
+            }
+        }
+        .total-budget-wrap {
+            input {
+                padding: 5px 10px;
+                border-radius: 4px;
+                border: 1px dashed $secondary-font-color;
+                background-color: inherit;
+                cursor: text;
+                width: 180px;
+                &:focus {
+                    outline: none;
+                }
+            }
+        }
+        > table {
+            > thead > tr {
+                background-color: $brand-tertiary;
+                //background-color: lighten($main-color, 35%);
+                > th {
+                    color: white !important;
+                    //color:lighten($main-color, 5%) !important;
+                }
+            }
+            > tbody {
+                > td:first-child {
+                    white-space: nowrap;
+                    font-size: 18px;
+                    font-weight: bold;
+                    .delete-product {
+                        font-size: 18px;
+                        visibility: hidden;
+                    }
+                }
+                > tr {
+                    &:first-child > td {
+                        border-top: none;
+                    }
+                    &:hover {
+                        .delete-product {
+                            visibility: visible;
+                        }
+                    }
+                }
+            }
+            > thead > tr > th, > tbody > tr > td {
+                text-align: center;
+                width: 100px;
+                &:first-child {
+                    text-align: left;
+                    width: 200px;
+                }
+            }
+        }
     }
-
-    .field {
-      padding-bottom: 25px;
-
-      .field-label {
-        font-size: 15px;
-        font-family: $font-family-medium;
-      }
-
-      .editable {
-        margin-left: 5px;
-      }
-
-      .editable-input {
-        margin-left: 5px;
-      }
+    .members, .contacts {
+        table {
+            tr {
+                .fa {
+                    visibility: hidden;
+                    margin-left: 10px;
+                }
+                &:hover {
+                    .fa {
+                        visibility: visible;
+                    }
+                }
+            }
+            th, td {
+                text-align: left;
+            }
+        }
+        .member-share, .contact-role-dropdown {
+            position: relative;
+        }
+        .editable {
+            display: inline-block;
+            min-width: 100px;
+        }
+        .editable-field {
+            width: 100px;
+        }
+        .dropdown {
+            .editable {
+                min-width: 0;
+            }
+            .dropdown-menu {
+                li {
+                    a {
+                        color: $main-font-color;
+                        &:hover {
+                            color: $main-color;
+                        }
+                    }
+                    &.active > a {
+                        color: white;
+                    }
+                }
+            }
+        }
+        .not-selected {
+            color: lighten($secondary-font-color, 15%);
+        }
     }
-  }
-
-  .editable {
-    &.stage {
-      margin-top: -5px;
+    .contacts {
+        table {
+            tr {
+                .delete-deal {
+                    margin-left: 0;
+                }
+            }
+            .contact-role-dropdown {
+                display: inline-block;
+                .error-tooltip {
+                    min-width: 300px;
+                    right: 0;
+                    left: auto;
+                    bottom: calc(100% + 7px);
+                    &:before {
+                        right: 30px;
+                        left: auto;
+                    }
+                }
+            }
+        }
     }
-  }
-
-  .pad3 {
-    width: 310px;
-  }
-
-  .pad4 {
-    padding: 15px 0 0 0;
-  }
-
-  #reminder_modal .modal-body div.form-group.error .error,
-  #reminder_modal .modal-body div.form-group.error .error input {
-    border-color: red;
-  }
-
-}
-
-#deal_overview {
-  .share-alert {
-    margin-bottom: 0;
-    margin-top: 10px;
-  }
-  .next-steps {
-    padding-top: 20px;
-    .editable-control {
-      margin-right: -10px;
-      background: none;
+    .campaign-details {
+        .star {
+            color: $error-color;
+        }
+        .custom-field-item {
+            margin-bottom: 5px;
+            .star {
+                display: none;
+            }
+            .custom-field-item-label {
+                display: inline-block;
+                vertical-align: top;
+                width: 39%
+            }
+            .custom-field-item-field {
+                padding-left: 10px;
+                display: inline-block;
+                width: 59%;
+                .editable {
+                    display: inline-block;
+                    min-width: 100px;
+                    max-width: 100%;
+                    &:focus {
+                        outline: none;
+                        border: 1px dashed $secondary-font-color;
+                        &:hover {
+                            background-color: inherit;
+                        }
+                    }
+                }
+                .boolean-field {
+                    margin: 5px 0 0;
+                    height: 15px;
+                    .switch-remainder-form {
+                        margin-left: 0;
+                        label > span {
+                            height: 15px;
+                        }
+                    }
+                }
+                .not-selected {
+                    color: lighten($secondary-font-color, 15%);
+                }
+            }
+        }
+        .required-field {
+            .star {
+                display: inline;
+            }
+            .custom-field-item-field.has-error {
+                border-left: 3px solid $error-color;
+            }
+        }
+        .status-error {
+            color: $error-color;
+        }
+        .status-success {
+            //background-color: #2ca02c;
+            //color: white;
+            color: #2ca02c;
+        }
     }
-  }
-
-  .icon-show-popup-wrapper {
-    height: 20px;
-    float: right;
-  }
-  .show-create-remainders-popup {
-    display: table;
-    height: 20px;
-    margin: 0;
-    padding: 0;
-    top: 0;
-  }
-  .show-create-remainders-popup > label {
-    display: table-cell;
-    margin: 0;
-    vertical-align: middle;
-    line-height: 0;
-  }
+    .error-tooltip {
+        font-family: "Avenir Next", Arial, serif;
+        font-weight: normal;
+        font-size: 14px;
+        text-transform: none;
+        position: absolute;
+        left: calc(-50%);
+        bottom: 100%;
+        background-color: $error-color;
+        color: white;
+        padding: 10px;
+        border-radius: 4px;
+        width: auto;
+        z-index: 3;
+        &:before {
+            content: '';
+            bottom: -10px;
+            left: 50%;
+            //left: 30px;
+            margin-left: -10px;
+            border-width: 10px 10px 0;
+            border-color: transparent;
+            border-style: solid;
+            border-top-color: $error-color;
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+    }
+    .attachments {
+        &.active {
+            margin: -2px -2px 28px;
+            border: 2px solid #66afe9;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+        }
+        .files-uploader__describe {
+            padding-left: 20px;
+            &:before {
+                top: 4px;
+                left: -4px
+            }
+        }
+        .files-uploader {
+            textarea.form-control {
+                background-color: inherit;
+                resize: none !important;
+            }
+            .files-uploader__drop-area {
+                padding: 10px 0 0;
+            }
+        }
+        .not-selected {
+            color: lighten($secondary-font-color, 15%);
+        }
+    }
 }
-
-#activities h3{
-  height:auto;
-  margin-bottom: 10px;
-  margin-top: 20px;
-  line-height: 1.1;
-}
-/*popup create remainder styles*/
-#reminder_modal{
-
-  .wrap-form .modal-header.text-center {
-    border: medium none;
-    min-height: 20px;
-    padding: 10px;
-  }
-
-  .form-group > label {
-    clear: both;
-    display: block;
-  }
-
-  .reminder-name,
-  .reminder-date,
-  .reminder-on-time input,
-  .reminder-note {
-    background-color: $silver-background;
-    border: 1px solid $silver-border;
-    border-radius: 4px;
-    height: 36px;
-    color: $dark-grayish-blue-1;
-    padding-left: 5px;
-  }
-
-  div.modal-body {
-    padding: 20px;
-  }
-
-  .btn.btn-add-remainder{
-    border-radius: 5px;
-  }
-
-  span.bs-datepicker input {
-    display: block;
-    height: 36px;
-    width: 100%;
-  }
-
-  .reminder-on-time-wrap timepicker-pop {
-    width: 100%;
-  }
-
-  .input-group.reminder-on-time {
-    width: 100%;
-  }
-
-  .box1.ng-pristine {
-    display: block;
-    height: 36px;
-    width: 100%;
-  }
-
-  .form-control.reminder-note {
-    display: block;
-    height: 80px;
-    resize: none;
-  }
-
-  .form-control.reminder-name {
-    height: 36px;
-  }
-}
-
-.show-hide-remainder-form-wrap {
-  .form-group .reminder-note,
-  .form-group .reminder-on-time-wrap .reminder-on-time-wrap input,
-  .form-group .reminder-date span input,
-  .form-group.reminder-name-wrap input{
-    color: $dark-grayish-blue-1;
-  }
-}
-
-  .icon-show-popup-wrapper .deal-name {
-    float: left;
-  }
-
-  .show-create-remainders-popup {
-    display: table;
-    float: left;
-  }
-
-  .icon-show-popup-wrapper .deal-name {
-    float: left;
-  }
-
-  .show-create-remainders-popup > label > svg {
-    cursor: pointer;
-  }
-
-  .show-create-remainders-popup {
-    display: block;
-    float: right;
-    height: inherit;
-    margin-right: 5px;
-    margin-top: 28px;
-    position:relative;
-  }
-
-  .wrap-form .modal-header.text-center > label {
-    cursor: pointer;
-    float: right;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 11;
-    opacity: 0.5;
-  }
-
-  .wrap-form .modal-header.text-center > label:hover {
-    opacity: 1;
-  }
-
-  .wrap-form .modal-header.text-center {
-    border-bottom: medium none;
-    height: 16px;
-    min-height: 20px;
-    padding: 0;
-    position: relative;
-  }
-
-  .show-form-create-reminders {
-    display: none;
-  }
-
-  .panel-default > .panel-heading + .panel-collapse > .panel-body {
-    border-top-color: transparent;
-  }
-
-  .panel-body.details {
-    border-bottom: 1px solid #ddd;
-  }
-
-  .show-create-remainders-popup .wrap-form::before {
-    content: "";
-    display: block;
-    position: absolute;
-    border-color: rgba(0,0,0,0);
-    border-bottom-color: #fff;
-    border-width: 0px 9px 9px;
-    top: -8px;
-    left: 249px;
-    width: 0;
-    height: 0;
-    border-style: solid;
-  }
-
-  .show-create-remainders-popup .wrap-form {
-    background: #fff none repeat scroll 0 0;
-    border-radius: 5px;
-    box-shadow: 0 5px 15px #9591a9;
-    left: -249px;
-    position: absolute;
-    width: 316px;
-    z-index: 10;
-    top: 40px;
-  }
-
-  div.modal-footer.text-center {
-    border-top: medium none;
-    padding: 10px 10px 20px;
-  }
-
-  #reminder_modal .btn.btn-add-remainder {
-    border-radius: 5px;
-    display: block;
-    margin: 0 auto;
-    padding: 10px 24px;
-  }
-
-  #reminder_modal .modal-body {
-    color: $dark-grayish-blue-1;
-  }
-
-  #reminder_modal .reminder-name:hover,
-  #reminder_modal .reminder-date:hover,
-  #reminder_modal .reminder-on-time input:hover,
-  #reminder_modal .reminder-note:hover,
-  #reminder_modal .reminder-name:focus,
-  #reminder_modal .reminder-date:focus,
-  #reminder_modal .reminder-on-time input:focus,
-  #reminder_modal .reminder-note:focus{
-    background-color: #fff;
-  }

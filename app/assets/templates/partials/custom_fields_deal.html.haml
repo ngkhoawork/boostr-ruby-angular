@@ -53,3 +53,7 @@
           %input.cmn-toggle.cmn-toggle-round-flat{id: '{{fieldName}}', type: 'checkbox', 'ng-model': 'currentDeal.deal_custom_field[fieldName]', 'ng-change': "updateDeal()"}
           %label{:for => "{{fieldName}}"}
             %span
+      .drop-down{ ng: { if: "dealCustomFieldName.field_type == 'dropdown'" } }
+        %div.custom-field-item-field
+          .field-value{ 'e-id': '{{fieldName}}', editable: { select: 'currentDeal.deal_custom_field[fieldName]' }, 'e-ng-options': 'customFieldOption.value as customFieldOption.value for customFieldOption in dealCustomFieldName.deal_custom_field_options', onaftersave: 'updateDeal()' }
+            {{ currentDeal.deal_custom_field[fieldName] }}

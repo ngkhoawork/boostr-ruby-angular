@@ -1,5 +1,5 @@
 #pacing-alerts.block
-  %div.mb40
+  %div.mb20
     %span.title Pacing Alerts
     .pacing-alerts-filters{ ng: { repeat: 'filter in pacingAlertsFilters | orderBy: \'-order\' ' } }
       %span{ ng: { class: '{ active: currentPacingAlertsFilter.value == filter.value }', click: 'setPacingAlertsFilter(filter)' } }

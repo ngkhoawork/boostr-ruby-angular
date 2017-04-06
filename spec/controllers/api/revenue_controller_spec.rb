@@ -69,7 +69,7 @@ RSpec.describe Api::RevenueController, type: :controller do
   end
 
   def time_period
-    @_time_period ||= create :time_period, start_date: '2017-01-01', end_date: '2017-03-31'
+    @_time_period ||= create :time_period, start_date: '2017-01-01', end_date: '2017-03-31', company: company
   end
 
   def io
@@ -108,6 +108,6 @@ RSpec.describe Api::RevenueController, type: :controller do
   end
 
   def team
-    @_team ||= create :parent_team, members: [user, another_user]
+    @_team ||= create :parent_team, members: [user, another_user], company: company
   end
 end
