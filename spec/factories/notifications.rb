@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :notification do
-    company_id 1
+    company
     name "MyString"
     subject "MyString"
     message "MyText"

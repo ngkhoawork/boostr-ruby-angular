@@ -1,6 +1,8 @@
 class CsvImportLog < ActiveRecord::Base
-  belongs_to :company
+  belongs_to :company, required: true
   serialize :error_messages, JSON
+
+  after_create :send_notification
 
   default_scope { order(created_at: :desc) }
 
@@ -27,5 +29,26 @@ class CsvImportLog < ActiveRecord::Base
 
   def set_file_source(path)
     self.file_source = File.basename(path)
+  end
+
+  def is_error?
+    self.rows_failed > 0
+  end
+
+  private
+
+  def send_notification
+    if is_error? && error_log_recipients.any?
+      CsvImportLogNotificationMailer.send_email(error_log_recipients, id).deliver_later(queue: "default")
+    end
+  end
+
+  def error_log_recipients
+    return [] unless active_company_notifications.any?
+    active_company_notifications.first.recipients_arr
+  end
+
+  def active_company_notifications
+    Notification.active_error_log_notifications.where(company: company)
   end
 end
