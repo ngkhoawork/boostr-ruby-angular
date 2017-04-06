@@ -204,25 +204,38 @@
     border-bottom: 1px solid $separate-line-color;
     position: relative;
     .close-btn {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      line-height: 25px;
       position: absolute;
-      font-size: 35px;
-      color: $secondary-font-color;
-      font-weight: normal;
       right: 0;
       top: -10px;
       transform: rotate(45deg);
       cursor: pointer;
-      &:hover {
-        background-color: #ebebeb;
-        //color: white
+      &:before, &:after {
+        content: '';
+        position: absolute;
+        display: block;
+        background-color: $secondary-font-color;
+        height: 16px;
+        width: 16px;
+        top: 5px;
+        left: 5px;
       }
-      //&:active {
-      //  color: darken($secondary-font-color, 25%)
-      //}
+      &:before {
+        left: 12px;
+        width: 2px;
+      }
+      &:after {
+        top: 12px;
+        height: 2px;
+      }
+      &:hover {
+        background-color: $secondary-font-color;
+        &:before, &:after {
+          background-color: white;
+        }
+      }
     }
   }
   .popup-modal-subtitle {
@@ -239,13 +252,6 @@
     margin-bottom: 20px;
     .reminder-form {
       padding-top: 10px;
-    //  overflow: hidden;
-    //  height: auto;
-    //  transition: height 1s, margin-bottom 1s;
-    //  &.hidden-form {
-    //    height: 0;
-    //    margin-bottom: 0;
-    //  }
     }
   }
   .popup-modal-footer {

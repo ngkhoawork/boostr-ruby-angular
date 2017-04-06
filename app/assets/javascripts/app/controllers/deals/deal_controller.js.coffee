@@ -165,7 +165,7 @@
   ###
 
   $scope.init = (initialLoad) ->
-    $scope.actRemColl = false;
+    $scope.actRemColl = false
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
@@ -193,7 +193,6 @@
       $scope.dealCustomFieldNames = dealCustomFieldNames
 
   $scope.initReminder = ->
-    $scope.showReminder = false;
 
     $scope.reminder = {
       name: '',
@@ -207,6 +206,7 @@
     }
 
     $scope.reminderOptions = {
+      showReminder: false
       editMode: false,
       errors: {},
       buttonDisabled: false,
@@ -758,6 +758,9 @@
     console.log 'UPDATED'
     $scope.init()
 
+  $scope.$on 'updated_reminders', ->
+    $scope.initReminder()
+
   $scope.$on 'deal_update_errors', (event, errors) ->
     $scope.errors = {}
     for key, error of errors
@@ -898,7 +901,6 @@
       Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
       .then (reminder) ->
         $scope.reminderOptions.buttonDisabled = false
-        $scope.showReminder = false;
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
@@ -907,7 +909,6 @@
     else
       Reminder.create(reminder: $scope.reminder).then (reminder) ->
         $scope.reminderOptions.buttonDisabled = false
-        $scope.showReminder = false;
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)

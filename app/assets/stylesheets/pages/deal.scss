@@ -1,5 +1,4 @@
 #deal {
-    overflow-x: auto;
     .warning-message {
         background-color: $error-color;
         color: white;
@@ -20,11 +19,6 @@
             right: -8px;
             cursor: pointer;
         }
-
-
-    }
-    #deal-inner {
-        min-width: 1280px;
     }
     .caret {
         color: $secondary-font-color;
@@ -37,7 +31,7 @@
     }
     textarea.editable {
         resize: none;
-        width: 200px;
+        width: 100%;
         padding: 5px 8px;
         &:focus {
             outline: none;
@@ -94,13 +88,14 @@
         }
     }
     .show-create-remainders-popup {
+        margin: 0;
         .show-form-create-reminders {
             display: none;
         }
         .reminder-icon {
             padding: 4px 5px;
         }
-        #reminder_modal {
+        #reminder_popup_modal {
             background-color: white;
             position: absolute;
             right: 0;
@@ -112,6 +107,16 @@
             input, textarea {
                 height: 36px;
                 background-color: white;
+            }
+            .popup-modal-header {
+                height: 0;
+                margin: 0;
+                padding: 0;
+                border-bottom: none;
+                .close-btn {
+                    top: -18px;
+                    right: -16px;
+                }
             }
         }
     }
@@ -233,11 +238,11 @@
         }
         table {
             thead > tr {
-                //background-color: $brand-tertiary;
-                background-color: lighten($main-color, 35%);
+                background-color: $brand-tertiary;
+                //background-color: lighten($main-color, 35%);
                 th {
-                    //color: white !important;
-                    color:lighten($main-color, 5%) !important;
+                    color: white !important;
+                    //color:lighten($main-color, 5%) !important;
                 }
             }
             tbody {
@@ -449,18 +454,6 @@
         }
         .not-selected {
             color: lighten($secondary-font-color, 15%);
-        }
-    }
-    #reminder_modal {
-        .popup-modal-header {
-            height: 0;
-            margin: 0;
-            padding: 0;
-            border-bottom: none;
-            .close-btn {
-                top: -18px;
-                right: -16px;
-            }
         }
     }
 }
