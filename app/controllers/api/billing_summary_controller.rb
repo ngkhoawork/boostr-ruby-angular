@@ -150,8 +150,8 @@ class Api::BillingSummaryController < ApplicationController
   def update_display_line_item_budget
     display_line_item_budget.update(
       {
-        budget_loc: (calculate_budget / display_line_item.io.exchange_rate),
-        budget: calculate_budget,
+        budget_loc: calculate_budget,
+        budget: (calculate_budget / display_line_item.io.exchange_rate),
         manual_override: true
       }
     )
