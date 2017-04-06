@@ -1,6 +1,6 @@
 class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Serializer
   attributes :io_number, :io_name, :advertiser_name, :agency_name, :currency, :billing_contact_name, :product_name,
-             :revenue_type, :vat
+             :revenue_type, :vat, :currency_symbol
 
   def io_number
     io.io_number
@@ -20,6 +20,10 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
 
   def currency
     io.curr_cd
+  end
+
+  def currency_symbol
+    io.curr_symbol
   end
 
   def billing_contact_name
