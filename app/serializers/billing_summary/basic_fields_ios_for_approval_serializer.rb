@@ -23,7 +23,7 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
   end
 
   def currency_symbol
-    io.curr_symbol
+    io.currency.curr_symbol
   end
 
   def billing_contact_name

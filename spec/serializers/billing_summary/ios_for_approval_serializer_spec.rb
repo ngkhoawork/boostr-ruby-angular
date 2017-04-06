@@ -12,6 +12,7 @@ describe BillingSummary::IosForApprovalSerializer do
     expect(display_line_item_serializer_budget[:io_name]).to eql io.name
     expect(display_line_item_serializer_budget[:advertiser_name]).to eql advertiser.name
     expect(display_line_item_serializer_budget[:currency]).to eql io.curr_cd
+    expect(display_line_item_serializer_budget[:currency_symbol]).to eql io.currency.curr_symbol
     expect(display_line_item_serializer_budget[:billing_contact_name]).to eql contact.name
     expect(display_line_item_serializer_budget[:product_name]).to eql display_line_item_product.name
     expect(display_line_item_serializer_budget[:revenue_type]).to eql display_line_item_product.revenue_type
@@ -25,6 +26,7 @@ describe BillingSummary::IosForApprovalSerializer do
     expect(content_fee_product_budget_serializer[:io_name]).to eql io.name
     expect(content_fee_product_budget_serializer[:advertiser_name]).to eql advertiser.name
     expect(content_fee_product_budget_serializer[:currency]).to eql io.curr_cd
+    expect(content_fee_product_budget_serializer[:currency_symbol]).to eql io.currency.curr_symbol
     expect(content_fee_product_budget_serializer[:billing_contact_name]).to eql contact.name
     expect(content_fee_product_budget_serializer[:product_name]).to eql content_fee_product.name
     expect(content_fee_product_budget_serializer[:revenue_type]).to eql content_fee_product.revenue_type
