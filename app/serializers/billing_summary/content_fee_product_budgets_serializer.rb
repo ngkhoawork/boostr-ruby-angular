@@ -1,5 +1,5 @@
 class BillingSummary::ContentFeeProductBudgetsSerializer < BillingSummary::BasicFieldsIosForApprovalSerializer
-  attributes :id, :line, :ad_server, :amount, :billing_status
+  attributes :id, :line, :ad_server, :amount, :billing_status, :type
 
   def line
     content_fee.id
@@ -15,6 +15,10 @@ class BillingSummary::ContentFeeProductBudgetsSerializer < BillingSummary::Basic
 
   def billing_status
     object.billing_status || 'Pending'
+  end
+
+  def type
+    'ContentFeeProductBudget'
   end
 
   private
