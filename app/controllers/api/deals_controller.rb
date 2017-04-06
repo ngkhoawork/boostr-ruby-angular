@@ -254,7 +254,7 @@ class Api::DealsController < ApplicationController
 
   def forecast_deals
     response_deals = []
-    if params[:user_id].present?
+    if params[:user_id].present? && params[:user_id] != 'all'
       response_deals = user.deals
     elsif params[:team_id].present? && params[:team_id] == 'all'
       response_deals = company.deals
