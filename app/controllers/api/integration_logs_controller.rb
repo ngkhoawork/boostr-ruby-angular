@@ -14,7 +14,11 @@ class Api::IntegrationLogsController < ApplicationController
 
   def latest_log
     latest_log = current_user_integration_logs.where(deal_id: params[:deal_id]).last
-    render json: API::IntegrationLogs::Single.new(latest_log).to_hash
+    if latest_log
+      render json: API::IntegrationLogs::Single.new(latest_log).to_hash
+    else
+      render json: { message: 'No logs found for this deal' }
+    end
   end
 
   private
