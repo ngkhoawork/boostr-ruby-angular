@@ -42,15 +42,19 @@ RSpec.describe DealProduct, type: :model do
   end
 
   context 'after_update' do
-    let!(:deal) { create :deal, start_date: Date.new(2015, 7, 29), end_date: Date.new(2015, 8, 29) }
-    let!(:deal_product) { create :deal_product, deal: deal, product: product, budget: 1_000 }
-
     it 'updates total deal budget' do
-      deal_product.update(budget: 8888)
-      expect(deal.reload.budget).to eq(8888)
+      deal = create :deal, start_date: Date.new(2015, 7, 1), end_date: Date.new(2015, 7, 29)
+      deal_product = create :deal_product, deal: deal, product: product, budget: 1_000
+      deal_product_budget = deal_product.deal_product_budgets.first
+
+      deal_product.update(deal_product_budgets_attributes: { id: deal_product_budget.id, budget: 8888 })
+      expect(deal.reload.budget.to_i).to eq(8888)
     end
 
     context 'when sum of deal product budgets is not equal to the total budget' do
+      let!(:deal) { create :deal, start_date: Date.new(2015, 7, 29), end_date: Date.new(2015, 8, 29) }
+      let!(:deal_product) { create :deal_product, deal: deal, product: product, budget: 1_000 }
+
       it 'updates deal products if budget was updated' do
         deal_product.update(budget: 8888)
         expect(deal_product.deal_product_budgets.sum(:budget)).to eq(8888)
@@ -64,6 +68,9 @@ RSpec.describe DealProduct, type: :model do
     end
 
     context 'when sum of deal product budgets is equal to the total budget' do
+      let!(:deal) { create :deal, start_date: Date.new(2015, 7, 29), end_date: Date.new(2015, 8, 29) }
+      let!(:deal_product) { create :deal_product, deal: deal, product: product, budget: 1_000 }
+
       it 'does not modify total budget or product budgets' do
         deal_product_budget = deal_product.deal_product_budgets.first
         deal_product.update(deal_product_budgets_attributes: {id: deal_product_budget.id, budget: 95_000})
