@@ -248,6 +248,16 @@ class Api::DealsController < ApplicationController
     render nothing: true
   end
 
+  def send_to_operative
+    if deal.operative_switched_on?
+      OperativeIntegrationWorker.perform_async(deal.id)
+      render json: { message: 'deal was sent to operative' }
+    else
+      render json: { errors: 'cannot send this deal to operative please recheck a deal and try again later' },
+             status: :unprocessable_entity
+    end
+  end
+
   private
 
   def product_filter

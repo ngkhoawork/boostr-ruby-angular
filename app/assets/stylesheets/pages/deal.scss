@@ -73,7 +73,7 @@
             top: calc(100% + 10px);
         }
     }
-    .edit-deal, .delete-deal, .delete-product, .reminder-icon {
+    .edit-deal, .delete-deal, .delete-product, .reminder-icon, .send-icon {
         color: $secondary-font-color;
         margin-left: 8px;
         cursor: pointer;
@@ -86,6 +86,10 @@
             background-color: $secondary-font-color;
             color: white;
         }
+    }
+    .send-icon {
+        vertical-align: middle;
+        margin-left: 2px;
     }
     .show-create-remainders-popup {
         margin: 0;
@@ -439,6 +443,14 @@
             .custom-field-item-field.has-error {
                 border-left: 3px solid $error-color;
             }
+        }
+        .status-error {
+            color: $error-color;
+        }
+        .status-success {
+            //background-color: #2ca02c;
+            //color: white;
+            color: #2ca02c;
         }
     }
     .error-tooltip {

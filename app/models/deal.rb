@@ -117,7 +117,11 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_integration_allowed?
-    operative_api_config.present? && operative_api_config.switched_on && deal_lost_or_won?
+    operative_switched_on? && deal_lost_or_won?
+  end
+
+  def operative_switched_on?
+    operative_api_config.present? && operative_api_config.switched_on
   end
 
   def deal_lost_or_won?

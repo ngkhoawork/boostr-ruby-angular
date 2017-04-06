@@ -107,9 +107,13 @@ Rails.application.routes.draw do
         get :pipeline_report
         get :pipeline_summary_report
       end
+      member do
+        post :send_to_operative
+      end
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create, :update, :destroy]
       resources :deal_assets, only: [:index, :update, :create, :destroy]
+      get 'latest_log', to: 'integration_logs#latest_log'
     end
     resources :deal_product_budgets, only: [:index, :create]
     resources :deal_products, only: [:create]

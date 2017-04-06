@@ -107,3 +107,13 @@
         %div.custom-field-item-field
             %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.closed_reason_text", name: "closed_reason_text", placeholder: 'Enter comments', 'ng-blur': 'updateDeal()' }
 
+    %div.custom-field-item{ 'ng-if': 'operativeIntegration.isEnabled' }
+        %div.custom-field-item-label
+            %label Operative Status
+        %div.custom-field-item-field{'ng-show': 'operativeIntegration.isLoading'}
+            %div.loading-pulse
+        %div.custom-field-item-field{'ng-hide': 'operativeIntegration.isLoading'}
+            %b{'ng-class': '{"status-error": operativeIntegration.dealLog.is_error == true, "status-success": operativeIntegration.dealLog.is_error == false}'}
+                {{operativeIntegration.dealLog ? (operativeIntegration.dealLog.is_error ? 'Error' : 'Success') : 'Not sent'}}
+            |
+            %a{href: '', 'ng-click': 'sendToOperative(currentDeal.id)'} Send to Operative
