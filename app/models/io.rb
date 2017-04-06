@@ -15,6 +15,8 @@ class Io < ActiveRecord::Base
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
   validate :active_exchange_rate
 
+  scope :for_company, -> (company_id) { where(company_id: company_id) }
+  scope :for_io_members, -> (user_ids) { joins(:io_members).where('io_members.user_id in (?)', user_ids) }
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
   scope :without_display_line_items, -> { includes(:display_line_items).where(display_line_items: { id: nil }) }
   scope :with_won_deals, -> { joins(deal: [:stage]).where(stages: { probability: 100 }) }
