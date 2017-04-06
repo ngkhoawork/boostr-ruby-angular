@@ -41,6 +41,7 @@ json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   end
   # json.budget (deal_product.budget || 0).to_i
   json.budget_loc (deal_product.budget_loc || 0).to_f
+  json.deal_product_cf deal_product.deal_product_cf
 end
 
 json.members deal.deal_members do |member|

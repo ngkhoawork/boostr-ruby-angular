@@ -7,6 +7,7 @@
     $scope.advertisers = []
     $scope.agencies = []
     $scope.dealCustomFieldNames = []
+    $scope.customFieldOptions = [ {id: null, value: ""} ]
     getDealCustomFieldNames()
 
     $q.all({

@@ -342,7 +342,28 @@ class Api::DealsController < ApplicationController
                 :percentage2,
                 :percentage3,
                 :percentage4,
-                :percentage5
+                :percentage5,
+                :dropdown1,
+                :dropdown2,
+                :dropdown3,
+                :dropdown4,
+                :dropdown5,
+                :dropdown6,
+                :dropdown7,
+                :sum1,
+                :sum2,
+                :sum3,
+                :sum4,
+                :sum5,
+                :sum6,
+                :sum7,
+                :number_4_dec1,
+                :number_4_dec2,
+                :number_4_dec3,
+                :number_4_dec4,
+                :number_4_dec5,
+                :number_4_dec6,
+                :number_4_dec7
             ]
         }
     )

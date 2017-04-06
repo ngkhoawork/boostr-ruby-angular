@@ -45,6 +45,8 @@
                 %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
             .currency-field{ ng: { 'switch-when': 'number' } }
                 %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
+            .currency-field{ ng: { 'switch-when': 'number_4_dec' } }
+                %div{'click-to-edit':'click-to-edit', type: "number", decimal: '4', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
             .currency-field{ ng: { 'switch-when': 'integer' } }
                 %div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "currentDeal.deal_custom_field[fieldName]", 'on-after-save': 'updateDeal()'}
             .currency-field{ ng: { 'switch-when': 'currency' } }
@@ -60,6 +62,17 @@
                     %input.cmn-toggle.cmn-toggle-round-flat{id: '{{fieldName}}', type: 'checkbox', 'ng-model': 'currentDeal.deal_custom_field[fieldName]', 'ng-change': "updateDeal()"}
                     %label{:for => "{{fieldName}}"}
                         %span
+            .dropdown{ ng: { 'switch-when': 'dropdown' } }
+                %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable{'ng-class': '{"not-selected": !currentDeal.deal_custom_field[fieldName]}'}
+                        {{currentDeal.deal_custom_field[fieldName] || 'Select value'}}
+                    %span.caret
+                %ul.dropdown-menu
+                    %li{'ng-repeat': 'customFieldOption in dealCustomFieldName.deal_custom_field_options', 'ng-class': '{active: currentDeal.deal_custom_field[fieldName] == customFieldOption.value}'}
+                        %a{'href': '', 'ng-click': 'currentDeal.deal_custom_field[fieldName] = customFieldOption.value; updateDeal()'}
+                            %span.text {{customFieldOption.value}}
+            .currency-field{ ng: { 'switch-when': 'sum' } }
+                {{ (currentDeal.deal_custom_field[fieldName] || 0) | number : 0 }}
     .mb30
     %div.custom-field-item
         %div.custom-field-item-label
