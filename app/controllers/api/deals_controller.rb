@@ -249,7 +249,7 @@ class Api::DealsController < ApplicationController
   end
 
   def send_to_operative
-    if deal.operative_integration_allowed?
+    if deal.operative_switched_on?
       OperativeIntegrationWorker.perform_async(deal.id)
       render json: { message: 'deal was sent to operative' }
     else
