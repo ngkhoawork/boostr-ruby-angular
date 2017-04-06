@@ -5,6 +5,7 @@
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.time_period = time_period
+  $scope.periodTypes = TimePeriod.period_types
 
   $scope.submitForm = (form) ->
     $scope.buttonDisabled = true
