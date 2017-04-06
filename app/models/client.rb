@@ -419,6 +419,8 @@ class Client < ActiveRecord::Base
   end
 
   def advertiser_win_rate
+    return 0 if (advertiser_deals.won.count + advertiser_deals.lost.count).zero?
+
     (advertiser_deals.won.count.to_f / (advertiser_deals.won.count + advertiser_deals.lost.count).to_f * 100).to_i
   end
 
