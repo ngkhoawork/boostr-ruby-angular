@@ -100,7 +100,7 @@ class Api::BillingSummaryController < ApplicationController
   end
 
   def date
-    @_date ||= [params[:year],params[:month]].join(' ').to_date
+    @_date ||= [params[:year], params[:month]].join(' ').to_date
   end
 
   def start_date
@@ -150,7 +150,7 @@ class Api::BillingSummaryController < ApplicationController
   def update_display_line_item_budget
     display_line_item_budget.update(
       {
-        budget_loc: (calculate_budget * display_line_item.io.exchange_rate),
+        budget_loc: (calculate_budget / display_line_item.io.exchange_rate),
         budget: calculate_budget,
         manual_override: true
       }
@@ -159,7 +159,7 @@ class Api::BillingSummaryController < ApplicationController
 
   def update_io_budget
     content_fee_product_budget.update(
-      { budget: content_fee_product_budget.budget_loc * content_fee.io.exchange_rate }
+      { budget: (content_fee_product_budget.budget_loc / content_fee.io.exchange_rate).to_i }
     )
 
     content_fee.update_column(:budget, content_fee.content_fee_product_budgets.pluck(:budget).sum)
