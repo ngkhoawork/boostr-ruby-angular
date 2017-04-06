@@ -50,7 +50,7 @@ class Api::BillingSummaryController < ApplicationController
 
   def ios_for_approval_serializer
     ActiveModel::ArraySerializer.new(
-      ios_for_time_period,
+      company.ios,
       each_serializer: BillingSummary::IosForApprovalSerializer,
       start_date: start_date,
       end_date: end_date
