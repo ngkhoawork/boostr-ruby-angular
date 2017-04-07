@@ -2,24 +2,18 @@ module DFP
   class IntegrationErrors < StandardError
   end
 
-  class DfpLogger
-    def initialize(dfp_client)
-      @dfp_client = dfp_client
-    end
-  end
-
-  class DfpReportsService
+  class DfpReportsService < BaseService
     API_VERSION = :v201702
     MAX_RETRIES = 5
     RETRY_INTERVAL = 1
 
     # networkCode=122003474
 
-    def initialize(credentials, network_code)
-      @credentials = credentials
-      @network_code = network_code
+    def initialize(options = {})
+      super(options)
       authenticate_with_credentials
-      apply_logger
+      apply_stdout_logger
+      set_logger_interceptor
     end
 
     def generate_report_by_saved_query(query_id)
@@ -87,18 +81,26 @@ module DFP
       end
     end
 
+    def set_logger_interceptor
+      GoogleAdsSavon.config.hooks.define(:logger_hook, :soap_request) do |callback, req|
+        response = callback.call
+        DFP::DfpLoggerService.new(request: req, response: response, company_id: company_id).create_log!
+        response
+      end
+    end
+
     def report_service
       @report_service ||= dfp_client.service(:ReportService, API_VERSION)
     end
 
-    def apply_logger
+    def apply_stdout_logger
       logger = Logger.new("#{Rails.root}/log/dfp.log")
       logger.level = Logger::DEBUG
       dfp_client.logger = logger
     end
 
     def dfp_client
-      @dfp ||= DfpApi::Api.new(authentication: { method: 'OAUTH2_SERVICE_ACCOUNT', oauth2_hash: @credentials, application_name: 'boostr', network_code: @network_code}, service: { environment: 'PRODUCTION' })
+      @dfp ||= DfpApi::Api.new(authentication: { method: 'OAUTH2_SERVICE_ACCOUNT', oauth2_hash: credentials, application_name: 'boostr', network_code: network_code}, service: { environment: 'PRODUCTION' })
     end
   end
 end
