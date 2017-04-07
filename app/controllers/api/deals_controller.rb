@@ -97,7 +97,8 @@ class Api::DealsController < ApplicationController
             else
               deals = current_user.deals
             end
-            send_data deals.to_csv, filename: "deals-#{Date.today}.csv"
+            # send_data deals.to_csv, filename: "deals-#{Date.today}.csv"
+            send_data Deal.to_csv(deals, company), filename: "deals-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return

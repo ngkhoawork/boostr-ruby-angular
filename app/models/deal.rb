@@ -437,7 +437,7 @@ class Deal < ActiveRecord::Base
       range.each do |product_time|
         header << product_time.strftime("%Y-%m")
       end
-      deal_custom_field_names = company.deal_custom_field_names.order("position asc")
+      deal_custom_field_names = company.deal_custom_field_names.where("disabled IS NOT TRUE").order("position asc")
       deal_custom_field_names.each do |deal_custom_field_name|
         header << deal_custom_field_name.field_label
       end
@@ -496,9 +496,9 @@ class Deal < ActiveRecord::Base
             when "number", "integer"
               line << (value || 0)
             when "datetime"
-              line << (value.present? ? (value.strftime("%Y-%m-%d")) : value)
+              line << (value.present? ? (value.strftime("%Y-%m-%d")) : 'N/A')
             else
-              line << value
+              line << (value || 'N/A')
           end
         end
 
@@ -684,18 +684,48 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  def self.to_csv
+  def self.to_csv(deals, company)
     CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason", "Budget USD"]
-      all.each do |deal|
+      header = ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason", "Budget USD"]
+
+      deal_custom_field_names = company.deal_custom_field_names.where("disabled IS NOT TRUE").order("position asc")
+      deal_custom_field_names.each do |deal_custom_field_name|
+        header << deal_custom_field_name.field_label
+      end
+      csv << header
+      deals.each do |deal|
         agency_name = deal.agency.present? ? deal.agency.name : nil
         advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
         stage_name = deal.stage.present? ? deal.stage.name : nil
         stage_probability = deal.stage.present? ? deal.stage.probability : nil
         budget_loc = (deal.budget_loc.try(:round) || 0)
         budget_usd = (deal.budget.try(:round) || 0)
-        member = deal.users.collect{|user| user.name}.join(";")
-        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget_loc, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason"), budget_usd]
+        # member = deal.users.collect{|user| user.name + '/' + user.deal_member.share.to_s}.join(";")
+        member = deal.deal_members.collect {|deal_member| deal_member.email + " (" + deal_member.share.to_s + "%)"}.join("\n")
+        line = [deal.id, deal.name, advertiser_name, agency_name, member, budget_loc, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason"), budget_usd]
+        deal_custom_field = deal.deal_custom_field.as_json
+        deal_custom_field_names.each do |deal_custom_field_name|
+          field_name = deal_custom_field_name.field_type + deal_custom_field_name.field_index.to_s
+          value = nil
+          if deal_custom_field.present?
+            value = deal_custom_field[field_name]
+          end
+          # line << value
+
+          case deal_custom_field_name.field_type
+            when "currency"
+              line << '$' + (value || 0).to_s
+            when "percentage"
+              line << (value || 0).to_s + "%"
+            when "number", "integer"
+              line << (value || 0)
+            when "datetime"
+              line << (value.present? ? (value.strftime("%Y-%m-%d")) : 'N/A')
+            else
+              line << (value || 'N/A')
+          end
+        end
+        csv << line
       end
     end
   end
