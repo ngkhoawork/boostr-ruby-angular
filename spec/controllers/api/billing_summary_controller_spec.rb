@@ -1,21 +1,41 @@
 require 'rails_helper'
 
 describe Api::BillingSummaryController do
-  before { sign_in user }
+  before do
+    create_gbp_currency
+    sign_in user
+  end
 
   describe 'PUT #update_quantity' do
-    before { create_io }
+    it 'update quantity with usd currency successfully' do
+      create_io
 
-    it 'update quantity successfully' do
       put :update_quantity,
           id: display_line_item_budget,
-          display_line_item_budget: { quantity: 20_000 },
+          display_line_item_budget: { quantity: 200_000 },
           format: :json
 
       display_line_item_budget.reload
 
-      expect(display_line_item_budget.quantity).to eql 20_000
-      expect(display_line_item_budget.budget.to_i).to eql 400
+      expect(display_line_item_budget.quantity).to eql 200_000
+      expect(display_line_item_budget.budget.to_i).to eql 2_000
+      expect(display_line_item_budget.budget_loc.to_i).to eql 2_000
+      expect(display_line_item_budget.manual_override).to eql true
+    end
+
+    it 'update quantity with gbp currency successfully' do
+      create_io_with_gbp_currency
+
+      put :update_quantity,
+          id: display_line_item_budget,
+          display_line_item_budget: { quantity: 200_000 },
+          format: :json
+
+      display_line_item_budget.reload
+
+      expect(display_line_item_budget.quantity).to eql 200_000
+      expect(display_line_item_budget.budget.to_i).to eql 1_666
+      expect(display_line_item_budget.budget_loc.to_i).to eql 2_000
       expect(display_line_item_budget.manual_override).to eql true
     end
   end
@@ -34,9 +54,9 @@ describe Api::BillingSummaryController do
   end
 
   describe 'PUT #update_content_fee_product_budget' do
-    before { create_content_fee }
-
     it 'update billing status successfully' do
+      create_content_fee
+
       put :update_content_fee_product_budget,
           id: content_fee_product_budget,
           content_fee_product_budget: { billing_status: 'Approved' },
@@ -47,7 +67,9 @@ describe Api::BillingSummaryController do
       expect(content_fee_product_budget.billing_status).to eql 'Approved'
     end
 
-    it 'update budget successfully' do
+    it 'update budget with usd successfully' do
+      create_content_fee
+
       put :update_content_fee_product_budget,
           id: content_fee_product_budget,
           content_fee_product_budget: { budget_loc: 20_000 },
@@ -55,7 +77,31 @@ describe Api::BillingSummaryController do
 
       content_fee_product_budget.reload
 
+      expect(content_fee_product_budget.budget.to_i).to eql 20_000
       expect(content_fee_product_budget.budget_loc.to_i).to eql 20_000
+      expect(content_fee_product_budget.content_fee.budget.to_i).to eql 20_010
+      expect(content_fee_product_budget.content_fee.budget_loc.to_i).to eql 20_000
+      expect(content_fee_product_budget.content_fee.io.budget.to_i).to eql 20_010
+      expect(content_fee_product_budget.content_fee.io.budget_loc.to_i).to eql 20_000
+      expect(content_fee_product_budget.manual_override).to eql true
+    end
+
+    it 'update budget with gbp successfully' do
+      create_content_fee_with_gbp_currency
+
+      put :update_content_fee_product_budget,
+          id: content_fee_product_budget,
+          content_fee_product_budget: { budget_loc: 20_000 },
+          format: :json
+
+      content_fee_product_budget.reload
+
+      expect(content_fee_product_budget.budget.to_i).to eql 16_666
+      expect(content_fee_product_budget.budget_loc.to_i).to eql 20_000
+      expect(content_fee_product_budget.content_fee.budget.to_i).to eql 16_676
+      expect(content_fee_product_budget.content_fee.budget_loc.to_i).to eql 20_000
+      expect(content_fee_product_budget.content_fee.io.budget.to_i).to eql 16_676
+      expect(content_fee_product_budget.content_fee.io.budget_loc.to_i).to eql 20_000
       expect(content_fee_product_budget.manual_override).to eql true
     end
   end
@@ -80,6 +126,18 @@ describe Api::BillingSummaryController do
     )
   end
 
+  def create_io_with_gbp_currency
+    @_io_with_gbp ||= create(
+        :io,
+        curr_cd: 'GBP',
+        company: company,
+        advertiser: advertiser,
+        deal: deal,
+        display_line_items: [display_line_item]
+    )
+  end
+
+
   def advertiser
     @_advertiser ||= create :client, company: company
   end
@@ -95,7 +153,7 @@ describe Api::BillingSummaryController do
   def display_line_item
     @_display_line_item ||= create(
       :display_line_item,
-      price: 20
+      price: 10
     )
   end
 
@@ -107,7 +165,21 @@ describe Api::BillingSummaryController do
     @_content_fee ||= create :content_fee, content_fee_product_budgets: [content_fee_product_budget], io: create_io
   end
 
+  def create_content_fee_with_gbp_currency
+    @_content_fee ||= create :content_fee,
+                             content_fee_product_budgets: [content_fee_product_budget],
+                             io: create_io_with_gbp_currency
+  end
+
   def content_fee_product_budget
     @_content_fee_product_budget ||= create :content_fee_product_budget
+  end
+
+  def create_gbp_currency
+    create(:currency, curr_cd: 'GBP', curr_symbol: '£', name: 'Great Britain Pound', exchange_rates: [exchange_rate])
+  end
+
+  def exchange_rate
+    create(:exchange_rate, company: company, rate: 1.2)
   end
 end
