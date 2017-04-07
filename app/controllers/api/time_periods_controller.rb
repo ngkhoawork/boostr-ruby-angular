@@ -45,7 +45,7 @@ class Api::TimePeriodsController < ApplicationController
   private
 
   def time_period_params
-    params.require(:time_period).permit(:name, :start_date, :end_date)
+    params.require(:time_period).permit(:name, :start_date, :end_date, :period_type, :visible)
   end
 
   def time_period
