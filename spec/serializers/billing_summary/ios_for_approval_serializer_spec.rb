@@ -30,7 +30,6 @@ describe BillingSummary::IosForApprovalSerializer do
     expect(content_fee_product_budget_serializer[:billing_contact_name]).to eql contact.name
     expect(content_fee_product_budget_serializer[:product_name]).to eql content_fee_product.name
     expect(content_fee_product_budget_serializer[:revenue_type]).to eql content_fee_product.revenue_type
-    expect(content_fee_product_budget_serializer[:vat]).to eql calculate_content_fee_vat
     expect(content_fee_product_budget_serializer[:line]).to eql content_fee.id
     expect(content_fee_product_budget_serializer[:amount]).to eql content_fee_product_budget.budget_loc.to_f
     expect(content_fee_product_budget_serializer[:billing_status]).to eql 'Pending'
@@ -137,7 +136,8 @@ describe BillingSummary::IosForApprovalSerializer do
   def contact
     @_contact ||= create :contact,
                          clients: [advertiser],
-                         company: company
+                         company: company,
+                         address: address
   end
 
   def address
@@ -146,9 +146,5 @@ describe BillingSummary::IosForApprovalSerializer do
 
   def calculate_line_item_vat
     display_line_item_budget.budget * 20 / 100
-  end
-
-  def calculate_content_fee_vat
-    content_fee_product_budget.budget.to_f * 20 / 100
   end
 end
