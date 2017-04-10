@@ -78,6 +78,6 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
   end
 
   def calculate_vat
-    object.budget.to_f * 20 / 100 if country.eql?('United Kingdom') if billing_contact_present?
+    object.budget_loc.to_f * 20 / 100 if country.eql?('United Kingdom') if billing_contact_present?
   end
 end
