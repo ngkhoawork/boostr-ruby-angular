@@ -24,10 +24,10 @@
                     {{ row.end_date | date: 'shortDate' }}
                 %td
                     %span
-                    {{ (row.period_type || 'N/A') | date: 'shortDate' }}
+                    {{ (row.period_type || 'N/A') }}
                 %td
                     %span
-                    {{ (row.visible ? 'Yes' : 'No') | date: 'shortDate' }}
+                    {{ (row.visible ? 'Yes' : 'No') }}
                     %a.trashcan.pull-right{ href: '', ng: { click: 'delete(row); $event.stopPropagation()' } }
                         = inline_svg 'icons/trash.svg'
 
