@@ -1,0 +1,33 @@
+.modal-open .boostr-server-errors-container {
+    right: 18px;
+}
+.boostr-server-errors-container {
+    position: fixed;
+    z-index: 2000;
+    width: 400px;
+    height: 100vh;
+    //background-color: blue;
+    right: 0;
+    pointer-events: none;
+    .boostr-server-error {
+        pointer-events: auto;
+        background-color: $error-color;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        margin: 10px 10px 0 0;
+        position: relative;
+        top: -100%;
+        opacity: 1;
+        transition: top 500ms;
+        .boostr-server-error-title {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        ul {
+            list-style: none;
+            li {
+            }
+        }
+    }
+}

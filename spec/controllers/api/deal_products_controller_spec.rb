@@ -15,11 +15,10 @@ RSpec.describe Api::DealProductsController, type: :controller do
 
     it 'updates the budget amount of the deal_product_budget and the deal budget as well' do
       put :update, id: deal_product.id, deal_id: deal.id, deal_product: { budget_loc: '62000' }, format: :json
-      response_json = JSON.parse(response.body)
 
       expect(response).to be_success
-      expect(response_json['deal_products'][0]['budget_loc']).to eq(62_000)
-      expect(response_json['budget_loc'].to_i).to eq(62_000)
+      expect(json_response['deal_products'][0]['budget_loc']).to eq(62_000)
+      expect(json_response['budget_loc'].to_i).to eq(62_000)
     end
   end
 

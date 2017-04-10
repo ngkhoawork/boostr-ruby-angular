@@ -1,7 +1,6 @@
 @app.controller "DashboardReminderEditController",
     ['$scope', '$rootScope', '$modalInstance', 'Reminder', 'reminder',
         ($scope, $rootScope, $modalInstance, Reminder, reminder) ->
-            console.log(reminder)
 
             if reminder
                 $scope.reminder = angular.copy reminder

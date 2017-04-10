@@ -25,6 +25,7 @@
   'monospaced.elastic'
   'dndLists'
   'jsonFormatter'
+  'boostrServerErrors'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -65,6 +66,9 @@
     .when '/activity_types',
       templateUrl: 'activity_types.html'
       controller: 'ActivityTypesController'
+    .when '/finance/billing',
+      templateUrl: 'billing.html'
+      controller: 'BillingController'
     .when '/reports/activity_summary',
       templateUrl: 'reports.html'
       controller: 'ReportsController'

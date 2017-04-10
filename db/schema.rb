@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20170406114223) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "account_dimensions", force: :cascade do |t|
     t.string  "name"
@@ -268,12 +269,14 @@ ActiveRecord::Schema.define(version: 20170406114223) do
 
   create_table "content_fee_product_budgets", force: :cascade do |t|
     t.integer  "content_fee_id"
-    t.decimal  "budget",         precision: 15, scale: 2
+    t.decimal  "budget",          precision: 15, scale: 2
     t.date     "start_date"
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
+    t.datetime "created_at",                                                   null: false
+    t.datetime "updated_at",                                                   null: false
     t.date     "end_date"
-    t.decimal  "budget_loc",     precision: 15, scale: 2, default: 0.0
+    t.decimal  "budget_loc",      precision: 15, scale: 2, default: 0.0
+    t.string   "billing_status",                           default: "Pending"
+    t.boolean  "manual_override",                          default: false
   end
 
   add_index "content_fee_product_budgets", ["content_fee_id"], name: "index_content_fee_product_budgets_on_content_fee_id", using: :btree
@@ -607,6 +610,7 @@ ActiveRecord::Schema.define(version: 20170406114223) do
     t.boolean  "open",                                         default: true
     t.string   "curr_cd",                                      default: "USD"
     t.decimal  "budget_loc",          precision: 15, scale: 2, default: 0.0
+    t.string   "closed_reason_text"
     t.integer  "initiative_id"
     t.string   "closed_reason_text"
   end
@@ -619,9 +623,16 @@ ActiveRecord::Schema.define(version: 20170406114223) do
     t.float    "budget"
     t.date     "start_date"
     t.date     "end_date"
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
+    t.datetime "created_at",                                                        null: false
+    t.datetime "updated_at",                                                        null: false
     t.decimal  "budget_loc",           precision: 15, scale: 2, default: 0.0
+    t.string   "billing_status",                                default: "Pending"
+    t.boolean  "manual_override",                               default: false
+    t.decimal  "ad_server_budget",     precision: 15, scale: 2
+    t.integer  "ad_server_quantity"
+    t.integer  "quantity"
+    t.integer  "clicks"
+    t.decimal  "ctr",                  precision: 2
   end
 
   add_index "display_line_item_budgets", ["display_line_item_id"], name: "index_display_line_item_budgets_on_display_line_item_id", using: :btree

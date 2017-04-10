@@ -36,8 +36,8 @@
             svg {
                 position: absolute;
                 margin: 0 auto;
-                left: 0;
-                right: 0;
+                left: -50%;
+                right: -50%;
                 g {
                     path:last-child {
                         fill: $main-color

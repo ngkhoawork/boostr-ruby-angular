@@ -23,6 +23,13 @@
 
   allTimePeriods = []
 
+  @period_types = [
+      {name: 'Year', value: 'year'}
+      {name: 'Quarter', value: 'quarter'}
+      {name: 'Month', value: 'month'}
+      {name: 'Other', value: 'other'}
+  ]
+
   @all = ->
     deferred = $q.defer()
     if allTimePeriods.length == 0

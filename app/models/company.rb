@@ -4,6 +4,7 @@ class Company < ActiveRecord::Base
   has_many :contacts, inverse_of: :company
   has_many :revenues
   has_many :deals
+  has_many :deal_products, through: :deals
   has_many :stages
   has_many :distinct_stages, -> {distinct}, class_name: "Stage"
   has_many :products
@@ -19,6 +20,9 @@ class Company < ActiveRecord::Base
   has_many :temp_ios
   has_many :bps
   has_many :deal_custom_field_names
+  has_many :deal_product_cf_names
+  has_many :deal_custom_fields, through: :deals
+  has_many :deal_product_cfs, through: :deal_products
   has_many :exchange_rates
   has_many :validations, dependent: :destroy
   has_many :api_configurations, dependent: :destroy
@@ -58,16 +62,17 @@ class Company < ActiveRecord::Base
     notifications.find_or_initialize_by(name: 'New Deal', active: true)
     notifications.find_or_initialize_by(name: 'Pipeline Changes Reports', active: true)
 
-    activity_types.find_or_initialize_by(name:'Initial Meeting', action:'had initial meeting with', icon:'/assets/icons/meeting.svg')
-    activity_types.find_or_initialize_by(name:'Pitch', action:'pitched to', icon:'/assets/icons/pitch.svg')
-    activity_types.find_or_initialize_by(name:'Proposal', action:'sent proposal to', icon:'/assets/icons/proposal.svg')
-    activity_types.find_or_initialize_by(name:'Feedback', action:'received feedback from', icon:'/assets/icons/feedback.svg')
-    activity_types.find_or_initialize_by(name:'Agency Meeting', action:'had agency meeting with', icon:'/assets/icons/meeting.svg')
-    activity_types.find_or_initialize_by(name:'Client Meeting', action:'had client meeting with', icon:'/assets/icons/meeting.svg')
-    activity_types.find_or_initialize_by(name:'Entertainment', action:'had client entertainment with', icon:'/assets/icons/entertainment.svg')
-    activity_types.find_or_initialize_by(name:'Campaign Review', action:'reviewed campaign with', icon:'/assets/icons/review.svg')
-    activity_types.find_or_initialize_by(name:'QBR', action:'Quarterly Business Review with', icon:'/assets/icons/QBR.svg')
-    activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.svg')
+    activity_types.find_or_initialize_by(name:'Initial Meeting', action:'had initial meeting with', icon:'/assets/icons/meeting.png')
+    activity_types.find_or_initialize_by(name:'Pitch', action:'pitched to', icon:'/assets/icons/pitch.png')
+    activity_types.find_or_initialize_by(name:'Proposal', action:'sent proposal to', icon:'/assets/icons/proposal.png')
+    activity_types.find_or_initialize_by(name:'Feedback', action:'received feedback from', icon:'/assets/icons/feedback.png')
+    activity_types.find_or_initialize_by(name:'Agency Meeting', action:'had agency meeting with', icon:'/assets/icons/agency-meeting.png')
+    activity_types.find_or_initialize_by(name:'Client Meeting', action:'had client meeting with', icon:'/assets/icons/client-meeting.png')
+    activity_types.find_or_initialize_by(name:'Entertainment', action:'had client entertainment with', icon:'/assets/icons/entertainment.png')
+    activity_types.find_or_initialize_by(name:'Campaign Review', action:'reviewed campaign with', icon:'/assets/icons/campaign-review.png')
+    activity_types.find_or_initialize_by(name:'QBR', action:'Quarterly Business Review with', icon:'/assets/icons/qbr.png')
+    activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.png')
+    activity_types.find_or_initialize_by(name:'Post Sale Meeting', action:'had post sale meeting with', icon:'/assets/icons/post-sale.png')
 
     setup_default_validations
   end

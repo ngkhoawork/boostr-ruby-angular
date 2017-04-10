@@ -23,9 +23,10 @@
   '$http',
   'Transloadit',
   'DealCustomFieldName',
+  'DealProductCfName',
   'Currency',
   'CurrentUser'
-($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, Currency, CurrentUser) ->
+($scope, $routeParams, $modal, $filter, $timeout, $location, $anchorScroll, $sce, Deal, Product, DealProduct, DealMember, DealContact, Stage, User, Field, Activity, Contact, ActivityType, Reminder, $http, Transloadit, DealCustomFieldName, DealProductCfName, Currency, CurrentUser) ->
 
   $scope.showMeridian = true
   $scope.feedName = 'Deal Updates'
@@ -49,6 +50,7 @@
   $scope.uploadedFiles = []
   $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
+  $scope.dealProductCfNames = []
 
   $scope.checkCurrentUserDealShare = (members) ->
     CurrentUser.get().$promise.then (currentUser) ->
@@ -165,7 +167,7 @@
   ###
 
   $scope.init = (initialLoad) ->
-    $scope.actRemColl = false;
+    $scope.actRemColl = false
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
@@ -187,13 +189,17 @@
     $scope.getDealFiles()
     $scope.initActivity()
     getDealCustomFieldNames()
+    getDealProductCfNames()
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
 
+  getDealProductCfNames = () ->
+    DealProductCfName.all().then (dealProductCfNames) ->
+      $scope.dealProductCfNames = dealProductCfNames
+
   $scope.initReminder = ->
-    $scope.showReminder = false;
 
     $scope.reminder = {
       name: '',
@@ -207,6 +213,7 @@
     }
 
     $scope.reminderOptions = {
+      showReminder: false
       editMode: false,
       errors: {},
       buttonDisabled: false,
@@ -613,6 +620,7 @@
           )
 
   $scope.updateDealProduct = (data) ->
+    console.log(data)
     $scope.errors = {}
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then(
       (deal) ->
@@ -758,6 +766,9 @@
     console.log 'UPDATED'
     $scope.init()
 
+  $scope.$on 'updated_reminders', ->
+    $scope.initReminder()
+
   $scope.$on 'deal_update_errors', (event, errors) ->
     $scope.errors = {}
     for key, error of errors
@@ -898,7 +909,6 @@
       Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder)
       .then (reminder) ->
         $scope.reminderOptions.buttonDisabled = false
-        $scope.showReminder = false;
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)
@@ -907,7 +917,6 @@
     else
       Reminder.create(reminder: $scope.reminder).then (reminder) ->
         $scope.reminderOptions.buttonDisabled = false
-        $scope.showReminder = false;
         $scope.reminder = reminder
         $scope.reminder._date = new Date($scope.reminder.remind_on)
         $scope.reminder._time = new Date($scope.reminder.remind_on)

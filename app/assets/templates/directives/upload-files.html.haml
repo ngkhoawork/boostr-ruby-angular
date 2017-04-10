@@ -70,22 +70,23 @@
               -#%btn.btn-link{ ng: { click: 'deleteFile(file)' } }
                 = inline_svg 'icons/trash.svg'
           %footer.files-uploader__list-elem__details.form-horizontal{"ng-show" => "showDetails"}
-            .form-group
-              %label.col-xs-2.control-label{ for: 'comment' } Notes:
-              .col-xs-10
-                %textarea.form-control{'msd-elastic': '', name: 'comment', rows: '1', 'ng-model': 'file.comment' }
-            .form-group
-              %label.col-xs-2.control-label{ for: 'sub-type' } File Type:
-              .col-xs-4
-                .dropdown
-                  %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-                    %span.editable{'ng-class': '{"not-selected": !file.subtype}'} {{file.subtype.name || 'File Type'}}
-                    %span.caret
-                  %ul.dropdown-menu
-                    %li{'ng-repeat': 'option in subTypes', 'ng-class': '{active: file.subtype.id == option.id}'}
-                      %a{'href': '', 'ng-click': 'file.subtype = option'}
-                        %span.text {{option.name}}
+            %form{'ng-submit': 'saveOnServer(file)'}
+              .form-group
+                %label.col-xs-2.control-label{ for: 'comment' } Notes:
+                .col-xs-10
+                  %textarea.form-control{'msd-elastic': '', name: 'comment', rows: '1', 'ng-model': 'file.comment', 'ng-blur': 'saveOnServer(file)'}
+              .form-group
+                %label.col-xs-2.control-label{ for: 'sub-type' } File Type:
+                .col-xs-4
+                  .dropdown
+                    %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                      %span.editable{'ng-class': '{"not-selected": !file.subtype}'} {{file.subtype.name || 'File Type'}}
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li{'ng-repeat': 'option in subTypes', 'ng-class': '{active: file.subtype.id == option.id}'}
+                        %a{'href': '', 'ng-click': 'file.subtype = option; saveOnServer(file)'}
+                          %span.text {{option.name}}
 
-              .col-xs-4.col-xs-offset-2
-                %button.btn.btn-primary.btn-block{'ng-click': 'saveOnServer(file); showDetails = !showDetails;'}
-                  Save
+                -#.col-xs-4.col-xs-offset-2
+                  %button.btn.btn-primary.btn-block{'ng-click': 'saveOnServer(file); showDetails = !showDetails;'}
+                    Save

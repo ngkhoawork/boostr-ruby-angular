@@ -14,9 +14,9 @@ FactoryGirl.define do
     contacts { build_list :contact, 1 }
 
     before(:create) do |activity|
-      activity.company = Company.first
-      activity.updated_by = activity.user
-      activity.created_by = activity.user
+      activity.company = Company.first if activity.company.blank?
+      activity.updator = activity.user
+      activity.creator = activity.user
     end
   end
 end

@@ -17,7 +17,7 @@
   line-height: 15px;
 }
 
-.add-btn {
+.add-btn, .download-btn {
   outline: none;
   font-weight: bold;
   background-color: transparent;
@@ -28,6 +28,9 @@
   position: relative;
   top: -3px;
   transition: background-color 300ms, color 300ms;
+  i.fa {
+    vertical-align: middle;
+  }
   svg {
     width: 14px;
     path {

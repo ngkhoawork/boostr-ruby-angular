@@ -1,13 +1,9 @@
-#time-period-modal
+#time-period-modal.popup-modal
   %form{ name: 'timePeriodForm', ng: { submit: 'submitForm(timePeriodForm)' }, novalidate: true }
-    .modal-header.text-center
-      %a.close{ ng: { click: 'cancel()' } }
-        %span{'aria-hidden' => 'true'}
-          = inline_svg 'icons/close.svg'
-      %h3.modal-title
-        %strong
-          {{ formType }} Time Period
-    .modal-body
+    .popup-modal-header
+      {{ formType }} Time Period
+      %span.close-btn{ ng: { click: 'cancel()' } }
+    .popup-modal-body
       .form-group
         %label.control-label{ for: 'name' } Name
         %input.form-control{ placeholder: 'Name', ng: { model: 'time_period.name' }, name: 'name', required: true, server: true }
@@ -28,6 +24,24 @@
             %label.control-label{ for: 'end-date' } End Date
             %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'time_period.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
 
-    .modal-footer.text-center
-      %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
-      %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel
+      .form-group
+        .row
+          .col-md-6.bs-datepicker
+            %label.control-label{ for: 'period-type' } Type
+            %ui-select{ name: 'period-type', ng: { model: 'time_period.period_type', disabled: true } }
+              %ui-select-match{ placeholder: 'Select period type' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'periodType.value as periodType in periodTypes | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'periodType.name' } } }
+
+          .col-md-6.bs-datepicker
+            %label.control-label{ for: 'visible' } Visible
+            .show-hide-remainder-form
+              .switch-remainder-form
+                %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'time_period.visible'}
+                %label{:for => "rem-act-modal-toggle"}
+                  %span
+
+    .popup-modal-footer
+      %button.btn.btn-warning{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
+      %button.btn.btn-default{ ng: { click: 'cancel()' } } Cancel
