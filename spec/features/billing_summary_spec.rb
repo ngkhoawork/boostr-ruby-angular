@@ -11,13 +11,13 @@ feature 'BillingSummary' do
     create :billing_deal_contact, deal: deal_with_missing_monthly_actual, contact: contact
 
     login_as user, scope: :user
-  end
 
-  it 'has all data in page', js: true do
     visit '/finance/billing'
 
     select_year_and_month
+  end
 
+  it 'has all data in page', js: true do
     expect(ios_for_approval_table).to include io.io_number.to_s
     expect(ios_for_approval_table).to include io.name
     expect(ios_for_approval_table).to include display_line_item.line_number.to_s
@@ -43,6 +43,18 @@ feature 'BillingSummary' do
     expect(io_with_with_missing_monthly_actual_table).to include display_line_item_with_missing_monthly_actual.ad_server
   end
 
+  it 'update content fee product budget successfully', js: true do
+    expect(find('.display-line-budget').text).to eq('$20,000')
+
+    find('.display-line-quantity').click
+    find('form.editable-number .editable-input').set(100_000)
+    find('.ios-for-approval').click
+
+    wait_for_ajax 1
+
+    expect(find('.display-line-budget').text).to eq('$1,000')
+  end
+
   private
 
   def company
@@ -54,7 +66,7 @@ feature 'BillingSummary' do
   end
 
   def create_io
-    create(
+    @_io ||= create(
       :io,
       company: company,
       start_date: start_date - 1.month,
@@ -89,7 +101,7 @@ feature 'BillingSummary' do
   end
 
   def io
-    @_io ||= deal.io
+    create_io
   end
 
   def io_with_missing_display_line_items
@@ -153,6 +165,7 @@ feature 'BillingSummary' do
       end_date: end_date,
       product: display_line_item_product,
       line_number: 20,
+      price: 10,
       display_line_item_budgets: [display_line_item_budget]
     )
   end
@@ -180,7 +193,8 @@ feature 'BillingSummary' do
       :display_line_item_budget,
       start_date: start_date,
       end_date: end_date,
-      budget: 20_000
+      budget: 20_000,
+      budget_loc: 20_000,
     )
   end
 

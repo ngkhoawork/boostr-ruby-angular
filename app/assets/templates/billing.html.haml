@@ -97,9 +97,9 @@
               %td.text-right
                 %span{'ng-if': 'item.type == "ContentFeeProductBudget"', 'editable-number': 'item.amount', blur: 'submit', onbeforesave: 'updateBudget(item, $data)'}
                   {{item.amount | currency : item.currency_symbol : 0}}
-                %span.not-editable{'ng-if': 'item.type == "DisplayLineItemBudget"'} {{item.budget_loc | currency : item.currency_symbol : 0}}
+                %span.not-editable.display-line-budget{'ng-if': 'item.type == "DisplayLineItemBudget"'} {{item.budget_loc | currency : item.currency_symbol : 0}}
               %td.text-right
-                %span{'ng-if': 'item.type == "DisplayLineItemBudget"', 'editable-number': 'item.quantity', blur: 'submit', onbeforesave: 'updateQuantity(item, $data)'}
+                %span.display-line-quantity{'ng-if': 'item.type == "DisplayLineItemBudget"', 'editable-number': 'item.quantity', blur: 'submit', onbeforesave: 'updateQuantity(item, $data)'}
                   {{(item.quantity | number : 0) || 'Enter quantity'}}
               %td{class: '{{item.billing_status.toLowerCase() + "-status"}}'}
                 .dropdown{'ng-click': 'fixingDropdownPosition($event)'}

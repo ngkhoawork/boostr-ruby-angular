@@ -28,6 +28,10 @@ class DealProductBudget < ActiveRecord::Base
       :End_Date,
       :Budget_USD
     ]
+    deal_product_cf_names = Company.find(company_id).deal_product_cf_names.where("disabled IS NOT TRUE").order("position asc")
+    deal_product_cf_names.each do |deal_product_cf_name|
+      header << deal_product_cf_name.field_label
+    end
 
     CSV.generate(headers: true) do |csv|
       csv << header
@@ -38,6 +42,29 @@ class DealProductBudget < ActiveRecord::Base
 
       deals.each do |deal|
         deal.deal_products.each do |deal_product|
+          custom_field_line = []
+          deal_product_cf = deal_product.deal_product_cf.as_json
+          deal_product_cf_names.each do |deal_product_cf_name|
+            field_name = deal_product_cf_name.field_type + deal_product_cf_name.field_index.to_s
+            value = nil
+            if deal_product_cf.present?
+              value = deal_product_cf[field_name]
+            end
+            # line << value
+
+            case deal_product_cf_name.field_type
+              when "currency"
+                custom_field_line << '$' + (value || 0).to_s
+              when "percentage"
+                custom_field_line << (value || 0).to_s + "%"
+              when "number", "integer"
+                custom_field_line << (value || 0)
+              when "datetime"
+                custom_field_line << (value.present? ? (value.strftime("%Y-%m-%d")) : 'N/A')
+              else
+                custom_field_line << (value || 'N/A')
+            end
+          end
           deal_product.deal_product_budgets.each do |dpb|
             line = []
             line << deal.id
@@ -49,7 +76,7 @@ class DealProductBudget < ActiveRecord::Base
             line << dpb.start_date
             line << dpb.end_date
             line << (dpb.budget.try(:round) || 0)
-
+            line += custom_field_line
             csv << line
           end
         end
