@@ -24,7 +24,7 @@ class BillingSummary::ContentFeeProductBudgetsSerializer < BillingSummary::Basic
   private
 
   def billing_contact
-    billing_contacts.find_by(contact: advertiser.contacts) if billing_contacts.present?
+    billing_contacts.first if billing_contacts.present?
   end
 
   def billing_contacts
@@ -49,17 +49,5 @@ class BillingSummary::ContentFeeProductBudgetsSerializer < BillingSummary::Basic
 
   def product
     @_product ||= content_fee.product
-  end
-
-  def calculate_vat
-    object.budget.to_f * 20 / 100 if [country_agency, country_advertiser].include?('United Kingdom')
-  end
-
-  def country_agency
-    agency.country if agency.present?
-  end
-
-  def country_advertiser
-    advertiser.country if advertiser.present?
   end
 end

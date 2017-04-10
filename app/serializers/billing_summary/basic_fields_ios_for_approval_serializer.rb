@@ -1,7 +1,7 @@
 class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Serializer
   attributes :io_number, :io_name, :advertiser_name, :agency_name, :currency, :billing_contact_name, :product_name,
              :revenue_type, :vat, :currency_symbol, :billing_contact_email, :street1, :city, :state, :country,
-             :postal_code, :billing_instructions
+             :postal_code
 
   def io_number
     io.io_number
@@ -67,12 +67,6 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
     address.zip if billing_contact_present?
   end
 
-  def billing_instructions
-    if deal_custom_field_names.present? && deal.deal_custom_field.present?
-      deal.deal_custom_field.send(deal_custom_field_type)
-    end
-  end
-
   private
 
   def address
@@ -83,15 +77,7 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
     @_billing_contact_present ||= billing_contact.present?
   end
 
-  def deal
-    @_deal ||= io.deal
-  end
-
-  def deal_custom_field_names
-    @_deal_custom_field_names ||= deal.company.deal_custom_field_names.find_by(field_label: 'Billing Instructions')
-  end
-
-  def deal_custom_field_type
-    "#{deal_custom_field_names.field_type}#{deal_custom_field_names.field_index}"
+  def calculate_vat
+    object.budget.to_f * 20 / 100 if country.eql?('United Kingdom') if billing_contact_present?
   end
 end

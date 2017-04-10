@@ -182,8 +182,7 @@ class Api::BillingSummaryController < ApplicationController
     headers = [
       'Io#', 'Line#', 'Name', 'Advertiser', 'Agency', 'Currency', 'Billing Contact Name', 'Billing Contact Email',
       'Billing Contact Address1', 'Billing Contact City', 'Billing Contact State', 'Billing Contact Country',
-      'Billing Contact Postal Code', 'Product', 'Ad Server Product', 'Revenue Type', 'Amount', 'Billing Status', 'VAT',
-      'Billing Instructions'
+      'Billing Contact Postal Code', 'Product', 'Ad Server Product', 'Revenue Type', 'Amount', 'Billing Status', 'VAT'
     ]
 
     CSV.generate do |csv|
@@ -194,14 +193,14 @@ class Api::BillingSummaryController < ApplicationController
           csv << fee.values_at('io_number', 'line', 'io_name', 'advertiser_name', 'agency_name', 'currency',
                                'billing_contact_name', 'billing_contact_email', 'street1', 'city', 'state', 'country',
                                'postal_code', 'product_name', 'ad_server', 'revenue_type', 'amount', 'billing_status',
-                               'vat', 'billing_instructions')
+                               'vat')
         end
 
         obj['display_line_item_budgets'].each do |item|
           csv << item.values_at('io_number', 'line', 'io_name', 'advertiser_name', 'agency_name', 'currency',
                                 'billing_contact_name', 'billing_contact_email', 'street1', 'city', 'state', 'country',
                                 'postal_code', 'product_name', 'ad_server', 'revenue_type', 'budget_loc',
-                                'billing_status', 'vat', 'billing_instructions')
+                                'billing_status', 'vat')
         end
       end
     end
