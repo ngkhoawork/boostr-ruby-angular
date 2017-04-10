@@ -29,4 +29,22 @@ class Api::DisplayLineItemBudgetsController < ApplicationController
       end
     end
   end
+
+  def update
+    if display_line_item_budget.update(display_line_item_budget_params)
+      render json: { budget: display_line_item_budget.budget }
+    else
+      render json: { errors: display_line_item_budget.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def display_line_item_budget
+    DisplayLineItemBudget.find(params[:id])
+  end
+
+  def display_line_item_budget_params
+    params.require(:display_line_item_budget).permit(:budget)
+  end
 end
