@@ -32,12 +32,9 @@
 
   @all = ->
     deferred = $q.defer()
-    if allTimePeriods.length == 0
-      resource.query {}, (time_periods) =>
-        allTimePeriods = time_periods
-        deferred.resolve(time_periods)
-    else
-      deferred.resolve(allTimePeriods)
+    resource.query {}, (time_periods) =>
+      allTimePeriods = time_periods
+      deferred.resolve(time_periods)
     deferred.promise
 
   @current_year_quarters = (params) ->

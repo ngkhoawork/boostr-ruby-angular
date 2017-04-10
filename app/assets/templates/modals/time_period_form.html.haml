@@ -4,30 +4,40 @@
       {{ formType }} Time Period
       %span.close-btn{ ng: { click: 'cancel()' } }
     .popup-modal-body
-      .form-group
+      .form-group{ ng: { class: '{error: errors.name || (timePeriodForm.name.$error && timePeriodForm.submitted)}' } }
+        %span.error-text{'ng-if': "errors.name"}
+          {{ errors.name }}
+        .messages{ ng: { messages: "timePeriodForm.name.$error", if: "timePeriodForm.name.$error && timePeriodForm.submitted" }, role: "alert"}
+          %span.error-text{ ng: { message: "required", if: "timePeriodForm.name.$error.required"  }}
+            You did not enter a name
+          %span.error-text{ ng: { message: "server", if: "timePeriodForm.name.$error.server"  }}
+            Sorry that name is already taken
         %label.control-label{ for: 'name' } Name
+        %span.star *
         %input.form-control{ placeholder: 'Name', ng: { model: 'time_period.name' }, name: 'name', required: true, server: true }
 
-      .messages{ ng: { messages: "timePeriodForm.name.$error", if: "timePeriodForm.name.$error && timePeriodForm.submitted" }, role: "alert"}
-        .required{ ng: { message: "required", if: "timePeriodForm.name.$error.required"  }}
-          You did not enter a name
-        .required{ ng: { message: "server", if: "timePeriodForm.name.$error.server"  }}
-          Sorry that name is already taken
-
       .form-group
         .row
-          .col-md-6.bs-datepicker
-            %label.control-label{ for: 'start-date' } Start Date
+          .col-md-6.bs-datepicker{ ng: { class: '{error: errors.start_date}' } }
+            %span.error-text {{ errors.start_date }}
+            %label{ for: 'start-date' } Start Date
+            %span.star *
+            -#%label.control-label{ for: 'start-date' } Start Date
             %input.form-control{ name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'time_period.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
 
-          .col-md-6.bs-datepicker
-            %label.control-label{ for: 'end-date' } End Date
+          .col-md-6.bs-datepicker{ ng: { class: '{error: errors.end_date}' } }
+            %span.error-text {{ errors.end_date }}
+            %label{ for: 'end-date' } End Date
+            %span.star *
+            -#%label.control-label{ for: 'end-date' } End Date
             %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'time_period.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
 
-      .form-group
+      .form-group{ ng: { class: '{error: errors.period_type}' } }
         .row
           .col-md-6.bs-datepicker
-            %label.control-label{ for: 'period-type' } Type
+            %span.error-text {{ errors.period_type }}
+            %label{ for: 'period-type' } Type
+            -#%label.control-label{ for: 'period-type' } Type
             %ui-select{ name: 'period-type', ng: { model: 'time_period.period_type', disabled: true } }
               %ui-select-match{ placeholder: 'Select period type' }
                 {{ $select.selected.name }}
@@ -44,4 +54,4 @@
 
     .popup-modal-footer
       %button.btn.btn-warning{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
-      %button.btn.btn-default{ ng: { click: 'cancel()' } } Cancel
+      %a.btn.btn-default{ ng: { click: 'cancel()' } } Cancel
