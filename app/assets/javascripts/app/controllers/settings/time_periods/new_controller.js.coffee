@@ -5,6 +5,7 @@
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.time_period = {}
+  $scope.periodTypes = TimePeriod.period_types
 
   $scope.submitForm = (form) ->
     $scope.buttonDisabled = true
