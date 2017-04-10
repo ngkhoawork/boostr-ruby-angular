@@ -81,9 +81,15 @@ class User < ActiveRecord::Base
 
   def self.from_token_payload payload
     # Returns a valid user, `nil` or raise from token payload
-    if user = self.find(payload["sub"])
+    if user = self.find_by(id: payload["sub"], is_active: true)
       return user if payload["refresh"] && Digest::SHA1.hexdigest(user.encrypted_password.slice(20, 20)) == payload["refresh"]
     end
+  end
+
+  def self.from_token_request request
+    # Finds user from token request
+    email = request.params["auth"] && request.params["auth"]["email"]
+    self.find_by(email: email, is_active: true)
   end
 
   def name
