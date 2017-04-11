@@ -1,5 +1,5 @@
 class DisplayLineItemBudgetSerializer < ActiveModel::Serializer
-  attributes :id, :budget, :budget_loc, :month
+  attributes :id, :budget_loc, :month
 
   def month
     object.start_date.strftime('%b %Y')

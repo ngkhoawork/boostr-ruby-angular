@@ -1,29 +1,54 @@
 require 'rails_helper'
 
 describe Api::DisplayLineItemBudgetsController, type: :controller do
-  before { sign_in user }
+  before do
+    create_gbp_currency
+    sign_in user
+  end
 
   describe 'PUT #update' do
-    before { create :io_member, user: user, io: create_io }
+    context 'with usd currency' do
+      before { create :io_member, user: user, io: create_io }
 
-    it 'update display line item budget with valid params successfully' do
-      expect(display_line_item_budget.budget.to_i).to eq 10_000
+      it 'update display line item budget with valid params successfully' do
+        expect(display_line_item_budget.budget.to_i).to eq 10_000
+        expect(display_line_item_budget.budget_loc.to_i).to eq 10_000
 
-      put :update, id: display_line_item_budget.id, display_line_item_budget: valid_budget_params, format: :json
+        put :update, id: display_line_item_budget.id, display_line_item_budget: valid_budget_params, format: :json
 
-      display_line_item_budget.reload
+        display_line_item_budget.reload
 
-      expect(display_line_item_budget.budget.to_i).to eq 5_000
+        expect(display_line_item_budget.budget.to_i).to eq 5_000
+        expect(display_line_item_budget.budget_loc.to_i).to eq 5_000
+      end
+
+      it 'failed to update display line item budget with invalid params' do
+        expect(display_line_item_budget.budget.to_i).to eq 10_000
+        expect(display_line_item_budget.budget_loc.to_i).to eq 10_000
+
+        put :update, id: display_line_item_budget.id, display_line_item_budget: invalid_budget_params, format: :json
+
+        display_line_item_budget.reload
+
+        expect(display_line_item_budget.budget.to_i).to eq 10_000
+        expect(display_line_item_budget.budget_loc.to_i).to eq 10_000
+      end
     end
 
-    it 'failed to update display line item budget with invalid params' do
-      expect(display_line_item_budget.budget.to_i).to eq 10_000
+    context 'with gbp currency' do
+      before { create :io_member, user: user, io: create_io_with_gbp_currency }
 
-      put :update, id: display_line_item_budget.id, display_line_item_budget: invalid_budget_params, format: :json
+      it 'update display line item budget with valid params successfully' do
+        expect(display_line_item_budget.budget.to_i).to eq 10_000
+        expect(display_line_item_budget.budget_loc.to_i).to eq 10_000
 
-      display_line_item_budget.reload
+        put :update, id: display_line_item_budget.id, display_line_item_budget: valid_budget_params, format: :json
 
-      expect(display_line_item_budget.budget.to_i).to eq 10_000
+        display_line_item_budget.reload
+
+        expect(display_line_item_budget.budget.to_i).to eq 4_166
+        expect(display_line_item_budget.budget_loc.to_i).to eq 5_000
+      end
     end
   end
 
@@ -47,6 +72,17 @@ describe Api::DisplayLineItemBudgetsController, type: :controller do
     )
   end
 
+  def create_io_with_gbp_currency
+    @_io_with_gbp ||= create(
+      :io,
+      curr_cd: 'GBP',
+      company: company,
+      advertiser: advertiser,
+      deal: deal,
+      display_line_items: [display_line_item]
+    )
+  end
+
   def advertiser
     @_advertiser ||= create :client, company: company
   end
@@ -55,6 +91,7 @@ describe Api::DisplayLineItemBudgetsController, type: :controller do
     @_deal ||= create :deal,
                       creator: user,
                       budget: 20_000,
+                      budget_loc: 20_000,
                       advertiser: advertiser,
                       company: company
   end
@@ -63,7 +100,8 @@ describe Api::DisplayLineItemBudgetsController, type: :controller do
     @_display_line_item ||= create(
         :display_line_item,
         price: 10,
-        budget: 20_000
+        budget: 20_000,
+        budget_loc: 20_000
     )
   end
 
@@ -75,10 +113,22 @@ describe Api::DisplayLineItemBudgetsController, type: :controller do
   end
 
   def valid_budget_params
-    { budget: 5_000 }
+    { budget_loc: 5_000 }
   end
 
   def invalid_budget_params
-    { budget: 40_000 }
+    { budget_loc: 40_000 }
+  end
+
+  def create_gbp_currency
+    @_gbp_currency ||= create :currency,
+                              curr_cd: 'GBP',
+                              curr_symbol: '£',
+                              name: 'Great Britain Pound',
+                              exchange_rates: [exchange_rate]
+  end
+
+  def exchange_rate
+    @_exchange_rate ||= create(:exchange_rate, company: company, rate: 1.2)
   end
 end
