@@ -15,6 +15,20 @@ class Api::ForecastsController < ApplicationController
     end
   end
 
+  def detail
+    start_date = time_period.start_date
+    end_date = time_period.end_date
+
+    quarters = (start_date.to_date..end_date.to_date).map { |d| 'q' + ((d.month - 1) / 3 + 1).to_s + '-' + d.year.to_s }.uniq
+    if user.present?
+      render json: { forecast: QuarterlyForecastMemberSerializer.new(ForecastMember.new(user, start_date, end_date, nil, nil)), quarters: quarters }
+    elsif team.present?
+      render json: { forecast: QuarterlyForecastTeamSerializer.new(ForecastTeam.new(team, start_date, end_date, nil, nil)), quarters: quarters }
+    else
+      render json: { forecast: QuarterlyForecastSerializer.new(Forecast.new(company, teams, start_date, end_date, nil)), quarters: quarters }
+    end
+  end
+
   def show
     render json: ForecastTeam.new(team, time_period.start_date, time_period.end_date, nil, year)
   end
