@@ -1,0 +1,2 @@
+class OperativeDatafeedConfiguration < ApiConfiguration
+end

@@ -1,7 +1,6 @@
 class Api::ApiConfigurationsController < ApplicationController
 
   def index
-    api_configurations = ApiConfiguration.where(company_id: current_user.company.id)
     render json: API::ApiConfigurations::Collection.new(api_configurations)
   end
 
@@ -32,6 +31,10 @@ class Api::ApiConfigurationsController < ApplicationController
 
   def api_configuration
     @_api_configuration ||= ApiConfiguration.find(params[:id])
+  end
+
+  def api_configurations
+    @_api_configurations ||= ApiConfiguration.where(company_id: current_user.company.id)
   end
 
   def api_configuration_params
