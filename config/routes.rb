@@ -149,6 +149,8 @@ Rails.application.routes.draw do
       get 'smart_report', on: :collection
       get 'smart_report_deals', on: :member
     end
+
+    get 'teams/by_user/:id', to: 'teams#by_user', as: :team_by_user
   end
 
   mount Sidekiq::Web => '/sidekiq'

@@ -61,6 +61,7 @@ class Api::TeamsController < ApplicationController
 
   def create
     team = current_user.company.teams.new(team_params)
+
     if team.save
       render json: team, status: :created
     else
@@ -82,7 +83,12 @@ class Api::TeamsController < ApplicationController
 
   def destroy
     team.destroy
+
     render nothing: true
+  end
+
+  def by_user
+    render json: team_by_user.as_json(override: true, only: [:id, :name])
   end
 
   private
@@ -109,5 +115,17 @@ class Api::TeamsController < ApplicationController
 
   def company
     @company ||= current_user.company
+  end
+
+  def user
+    @_user ||= company.users.find(params[:id])
+  end
+
+  def team_by_user
+    if user.leader?
+      user.teams
+    else
+      [user.team]
+    end
   end
 end
