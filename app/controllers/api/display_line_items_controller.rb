@@ -27,9 +27,7 @@ class Api::DisplayLineItemsController < ApplicationController
   end
 
   def show
-    # modified_hash
-    # binding.pry
-    render json: modified_hash
+    render json: display_line_item_budget_months_service.perform
   end
 
   private
@@ -54,24 +52,10 @@ class Api::DisplayLineItemsController < ApplicationController
     ActiveModel::ArraySerializer.new(
       display_line_item.display_line_item_budgets,
       each_serializer: DisplayLineItemBudgetSerializer
-    ).as_json
+    )
   end
 
-  def io_months
-    display_line_item.io.readable_months.map { |obj| obj[:name] }
-  end
-
-  def existed_months
-    display_line_item_budget_serializer.map { |obj| obj[:month] }
-  end
-
-  def months_without_display_line_item_budgets
-    io_months - existed_months
-  end
-
-  def modified_hash
-    months_without_display_line_item_budgets.each_with_object(display_line_item_budget_serializer) do |month, sum|
-      sum << { month: month }
-    end.sort_by { |obj| month_data[:obj].to_date  }
+  def display_line_item_budget_months_service
+    DisplayLineItemBudgetMonthsService.new(display_line_item, display_line_item_budget_serializer)
   end
 end

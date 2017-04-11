@@ -38,6 +38,10 @@ class Api::DisplayLineItemBudgetsController < ApplicationController
     end
   end
 
+  def add
+
+  end
+
   private
 
   def display_line_item_budget
