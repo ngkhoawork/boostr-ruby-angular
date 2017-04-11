@@ -75,10 +75,10 @@ class Api::DisplayLineItemsController < ApplicationController
 
   def budget_attributes
     {
-      budget: display_line_item_budget_params.budget,
-      budget_loc: display_line_item_budget_params.budget,
-      start_date: display_line_item_budget_params.month.to_date.beginning_of_month,
-      end_date: display_line_item_budget_params.month.to_date.end_of_month
+      budget: display_line_item_budget_params['budget'],
+      budget_loc: display_line_item_budget_params['budget'],
+      start_date: display_line_item_budget_params['month'].to_date.beginning_of_month,
+      end_date: display_line_item_budget_params['month'].to_date.end_of_month
     }
   end
 end

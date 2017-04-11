@@ -213,7 +213,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def budget_need_to_be_less_than_display_line_item_budget
-    if budget > display_line_item.budget
+    if budget.to_i > display_line_item.budget.to_i
       errors.add(:budget, 'can\'t be more then line item budget')
     end
   end
