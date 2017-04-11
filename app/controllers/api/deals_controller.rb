@@ -262,18 +262,39 @@ class Api::DealsController < ApplicationController
       response_deals = all_team_deals
     end
     response_deals = response_deals
-     .includes(
-       :deal_members,
-       :advertiser,
-       :agency,
-       :stage,
-       :creator,
-       :values,
-       :deal_custom_field
-     )
      .for_time_period(time_period.start_date, time_period.end_date)
      .less_than(100)
-     .as_json
+     .as_json({override: true, options: {
+                      only: [
+                              :id,
+                              :name,
+                              :stage_id,
+                              :budget,
+                              :budget_loc,
+                              :curr_cd,
+                              :next_steps,
+                              :open,
+                              :start_date,
+                              :end_date
+                      ],
+                      include: {
+
+                              stage: {
+                                      only: [:id, :probability, :open, :active]
+                              },
+                              deal_members: {
+                                      only: [:id, :share, :user_id],
+                                      methods: [:name]
+                              },
+                              advertiser: {
+                                      only: [:id, :name]
+                              },
+                              agency: {
+                                      only: [:id, :name]
+                              }
+                      }
+              }}
+     )
 
     year = time_period.start_date.year
 
@@ -291,25 +312,18 @@ class Api::DealsController < ApplicationController
       index = 0
       monthly_revenues.each do |monthly_revenue|
         for i in index..(monthly_revenue[:month]-2)
-          deal['month_amounts'].push 0
+          if i + 1 >= time_period.start_date.month && i + 1 <= time_period.end_date.month
+            deal['month_amounts'].push 0
+          end
         end
-        deal['month_amounts'].push monthly_revenue[:revenue]
+        if monthly_revenue[:month] >= time_period.start_date.month && monthly_revenue[:month] <= time_period.end_date.month
+          deal['month_amounts'].push monthly_revenue[:revenue]
+        end
         index = monthly_revenue[:month]
       end
       for i in index..11
-        deal['month_amounts'].push 0
-      end
-
-      deal['months'] = []
-      month = Date.parse("#{year-1}1201")
-      while month = month.next_month and month.year == year do
-        month_range = month.at_beginning_of_month..month.at_end_of_month
-        if month_range.overlaps? range
-          overlap = [deal['start_date'], month_range.begin].max..[deal['end_date'], month_range.end].min
-          deal['months'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
-          deal
-        else
-          deal['months'].push 0
+        if i + 1 >= time_period.start_date.month && i + 1 <= time_period.end_date.month
+          deal['month_amounts'].push 0
         end
       end
 
@@ -324,23 +338,18 @@ class Api::DealsController < ApplicationController
       index = 0
       quarterly_revenues.each do |quarterly_revenue|
         for i in index..(quarterly_revenue[:quarter]-2)
-          deal['quarter_amounts'].push 0
+          if (i * 3 + 1) >= time_period.start_date.month && (i * 3 + 1) <= time_period.end_date.month
+            deal['quarter_amounts'].push 0
+          end
         end
-        deal['quarter_amounts'].push quarterly_revenue[:revenue]
+        if ((quarterly_revenue[:quarter] - 1) * 3 + 1) >= time_period.start_date.month && ((quarterly_revenue[:quarter] - 1) * 3 + 1) <= time_period.end_date.month
+          deal['quarter_amounts'].push quarterly_revenue[:revenue]
+        end
         index = quarterly_revenue[:quarter]
       end
       for i in index..3
-        deal['quarter_amounts'].push 0
-      end
-
-      deal['quarters'] = []
-      quarters.each do |quarter|
-        if quarter[:range].overlaps? range
-          overlap = [deal['start_date'], quarter[:start_date]].max..[deal['end_date'], quarter[:end_date]].min
-          deal['quarters'].push((overlap.end.to_time - overlap.begin.to_time) / (deal['end_date'].to_time - deal['start_date'].to_time))
-          deal
-        else
-          deal['quarters'].push 0
+        if (i * 3 + 1) >= time_period.start_date.month && (i * 3 + 1) <= time_period.end_date.month
+          deal['quarter_amounts'].push 0
         end
       end
       deal

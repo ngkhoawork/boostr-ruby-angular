@@ -185,9 +185,11 @@ class User < ActiveRecord::Base
     year = start_date.year
     ios.map do |io|
       io_obj = Io.find(io['id'])
-      io[:quarters] = [0, 0, 0, 0]
+      start_month = time_period.start_date.month
+      end_month = time_period.end_date.month
+      io[:quarters] = Array.new((end_month - start_month + 1) / 3, 0)
       # io[:year] = year
-      io[:months] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      io[:months] = Array.new(end_month - start_month + 1, 0)
       total = 0
       io[:members] = io_obj.io_members
       share = io_members.find_by(user_id: self.id).share
@@ -198,8 +200,8 @@ class User < ActiveRecord::Base
 
       io_obj.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
         month = content_fee_product_budget.start_date.mon
-        io[:months][month - 1] += content_fee_product_budget.budget
-        io[:quarters][(month - 1) / 3] += content_fee_product_budget.budget
+        io[:months][month - start_month] += content_fee_product_budget.budget
+        io[:quarters][(month - start_month) / 3] += content_fee_product_budget.budget
         total += content_fee_product_budget.budget
       end
 
@@ -224,8 +226,8 @@ class User < ActiveRecord::Base
             in_budget_total += display_line_item_budget.daily_budget * in_days
           end
           budget = in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
-          io[:months][index - 1] += budget
-          io[:quarters][(index - 1) / 3] += budget
+          io[:months][index - start_month] += budget
+          io[:quarters][(index - start_month) / 3] += budget
           total += budget
         end
       end
