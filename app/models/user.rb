@@ -94,16 +94,12 @@ class User < ActiveRecord::Base
     teams.count > 0
   end
 
-  def leader
-    teams.count > 0
-  end
-
   def as_json(options = {})
     if options[:override]
       super(options)
     else
       super(options.merge(
-        methods: [:name, :leader?, :leader]
+        methods: [:name, :leader?]
       ).except(:override))
     end
   end
