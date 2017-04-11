@@ -701,7 +701,7 @@ class Deal < ActiveRecord::Base
         budget_loc = (deal.budget_loc.try(:round) || 0)
         budget_usd = (deal.budget.try(:round) || 0)
         # member = deal.users.collect{|user| user.name + '/' + user.deal_member.share.to_s}.join(";")
-        member = deal.deal_members.collect {|deal_member| deal_member.email + " (" + deal_member.share.to_s + "%)"}.join("\n")
+        member = deal.deal_members.collect {|deal_member| deal_member.email + "/" + deal_member.share.to_s}.join(";")
         line = [deal.id, deal.name, advertiser_name, agency_name, member, budget_loc, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason"), budget_usd]
         deal_custom_field = deal.deal_custom_field.as_json
         deal_custom_field_names.each do |deal_custom_field_name|
