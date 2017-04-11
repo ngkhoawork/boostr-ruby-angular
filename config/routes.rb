@@ -104,7 +104,11 @@ Rails.application.routes.draw do
       end
     end
     resources :quotas, only: [:index, :create, :update]
-    resources :forecasts, only: [:index, :show]
+    resources :forecasts, only: [:index, :show] do
+      collection do
+        get :detail
+      end
+    end
     resources :fields, only: [:index]
     resources :options, only: [:create, :update, :destroy]
     resources :validations, only: [:index, :update]
