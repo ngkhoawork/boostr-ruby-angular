@@ -5,6 +5,7 @@ describe BillingSummary::IosForApprovalSerializer do
     create :billing_deal_contact, deal: deal, contact: contact
     content_fee = create :content_fee, product: content_fee_product, budget: 50_000, io: io
     io.content_fees << content_fee
+    display_line_item_budget
   end
 
   it 'has proper serialized data' do
@@ -79,7 +80,8 @@ describe BillingSummary::IosForApprovalSerializer do
       end_date: end_date,
       product: display_line_item_product,
       line_number: 20,
-      display_line_item_budgets: [display_line_item_budget]
+      budget: 30_000,
+      budget_loc: 30_000
     )
   end
 
@@ -89,7 +91,8 @@ describe BillingSummary::IosForApprovalSerializer do
       start_date: start_date,
       end_date: end_date,
       budget: 20_000,
-      budget_loc: 20_000
+      budget_loc: 20_000,
+      display_line_item: display_line_item
     )
   end
 
