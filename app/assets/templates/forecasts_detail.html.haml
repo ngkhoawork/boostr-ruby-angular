@@ -12,7 +12,7 @@
 							%td Time period
 						%tr
 							%td
-								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'ng-class': '{"empty": selectedTeam.name === "All"}'}
+								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'onChange': 'test()', 'ng-class': '{"empty": selectedTeam.name === "All"}'}
 
 							%td
 								%ul.filter-item
@@ -28,7 +28,7 @@
 							%td
 								%ul.filter-item
 									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.timePeriod.name === "All"}' }
+										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
 											{{filter.timePeriod.name || 'All'}}
 											%span.caret
 										%ul.dropdown-menu
@@ -36,207 +36,159 @@
 												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
 													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
 
-		.row
-			.col-xs-6
-				.block
-					%div.mb20
-						%span.title Weighted Forecast
-					%table.table.table-hover
-						%thead
-							%tr
-								%th IO Name
-								%th Q1-2017
-								%th Q2-2017
-								%th Q3-2017
-								%th Q4-2017
-						%tbody
-							%tr
-								%td
-									%b Revenue
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-							%tr
-								%td
-									%b Forecast
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
+		%div{'ng-show': 'filter.timePeriod.id'}
+			.row
+				.col-xs-6
+					.block
+						%div.mb20
+							%span.title Weighted Forecast
+						%table.table.table-hover
+							%thead
+								%tr
+									%th IO Name
+									%th{'ng-repeat': 'quarter in quarters'}
+										{{quarter.toUpperCase()}}
+							%tbody
+								%tr
+									%td
+										%b Revenue
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
+								%tr{'ng-repeat': 'stage in forecast.stages'}
+									%td
+										%b {{stage.probability}}%
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+								%tr
+									%td
+										%b Forecast
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_weighted_forecast[quarter] | currency : '$' : 0}}
 
-							%tr
-								%td
-									%b Quota
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
+								%tr
+									%td
+										%b Quota
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_quota[quarter] | currency : '$' : 0}}
 
-							%tr
-								%td
-									%b Gap to Quota
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-							%tr
-								%td
-									%b % of Annual Quota
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
+								%tr
+									%td
+										%b Gap to Quota
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_weighted_gap_to_quota[quarter] | currency : '$' : 0}}
+								%tr
+									%td
+										%b % of Annual Quota
+									%td{'ng-repeat': 'quarter in quarters', 'ng-init': 'annualQuota = forecast.quarterly_percentage_of_annual_quota[quarter]'}
+										{{annualQuota ? annualQuota + '%' : 'N/A'}}
 
-			.col-xs-6
-				.block
-					%div.mb20
-						%span.title Unweighted Forecast
-					%table.table.table-hover
-						%thead
-							%tr
-								%th IO Name
-								%th Q1-2017
-								%th Q2-2017
-								%th Q3-2017
-								%th Q4-2017
-						%tbody
-							%tr
-								%td
-									%b Revenue
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-							%tr
-								%td
-									%b Forecast
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
+				.col-xs-6
+					.block
+						%div.mb20
+							%span.title Unweighted Forecast
+						%table.table.table-hover
+							%thead
+								%tr
+									%th IO Name
+									%th{'ng-repeat': 'quarter in quarters'}
+										{{quarter.toUpperCase()}}
+							%tbody
+								%tr
+									%td
+										%b Revenue
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
+								%tr{'ng-repeat': 'stage in forecast.stages'}
+									%td
+										%b {{stage.probability}}%
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+								%tr
+									%td
+										%b Forecast
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_unweighted_forecast[quarter] | currency : '$' : 0}}
 
-							%tr
-								%td
-									%b Quota
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
+								%tr
+									%td
+										%b Quota
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_quota[quarter] | currency : '$' : 0}}
 
-							%tr
-								%td
-									%b Gap to Quota
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-							%tr
-								%td
-									%b % of Annual Quota
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
-								%td {{450000 | currency : '$' : 0}}
+								%tr
+									%td
+										%b Gap to Quota
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_unweighted_gap_to_quota[quarter] | currency : '$' : 0}}
+								%tr
+									%td
+										%b % of Annual Quota
+									%td{'ng-repeat': 'quarter in quarters', 'ng-init': 'annualQuota = forecast.quarterly_percentage_of_annual_quota[quarter]'}
+										{{annualQuota ? annualQuota + '%' : 'N/A'}}
+			.row
+				.col-xs-12
+					.block
+						.switch-row.pull-right
+							%span{'ng-class': '{active: switch.revenue == 1}', 'ng-click': 'switch.set("revenue", 1)'} Quarterly
+							%span{'ng-class': '{active: switch.revenue == 2}', 'ng-click': 'switch.set("revenue", 2)'} Monthly
+						%div.mb20
+							%span.title Revenue Details
+						%div.table-wrapper
+							%table.table.table-hover
+								%thead
+									%tr
+										%th IO Name
+										%th IO Advertiser Name
+										%th IO Agency Name
+										%th IO Team
+										%th IO Total Budget
+										%th Start Date
+										%th End Date
+										%th{'ng-repeat': 'key in switch[switch.revenue]'} {{key}}
+								%tbody
+									%tr{'ng-repeat': 'revenue in revenues'}
+										%td
+											%b {{revenue.name}}
+										%td {{revenue.advertiser.name}}
+										%td {{revenue.agency.name}}
+										%td
+											%div{'ng-repeat': 'member in revenue.members'} {{member.user.first_name + ' ' + member.user.last_name}} {{member.share}}%
+										%td {{revenue.budget | currency : '$' : 0}}
+										%td {{revenue.start_date | date : 'MM/dd/yyyy'}}
+										%td {{revenue.end_date | date : 'MM/dd/yyyy'}}
+										%td{'ng-if': 'switch.revenue == 1', 'ng-repeat': 'value in revenue.quarters track by $index'} {{value | currency : '$' : 0}}
+										%td{'ng-if': 'switch.revenue == 2', 'ng-repeat': 'value in revenue.months track by $index'} {{value | currency : '$' : 0}}
 
-		.row
-			.col-xs-12
-				.block
-					.switch-row.pull-right
-						%span{'ng-class': '{active: switch.revenue == 1}', 'ng-click': 'switch.set("revenue", 1)'} Quarterly
-						%span{'ng-class': '{active: switch.revenue == 2}', 'ng-click': 'switch.set("revenue", 2)'} Monthly
-					%div.mb20
-						%span.title Revenue Details
-					%table.table.table-hover
-						%thead
-							%tr
-								%th IO Name
-								%th IO Advertiser Name
-								%th IO Agency Name
-								%th IO Team
-								%th IO Total Budget
-								%th Start Date
-								%th End Date
-								%th Detailed Amounts
-						%tbody
-							%tr
-								%td
-									%b Test Name
-								%td advertiser
-								%td agency
-								%td team name 50%
-								%td {{5000000 | currency : '$' : 0}}
-								%td 05/07/2017
-								%td 05/07/2017
-								%td {{3000000 | currency : '$' : 0}}
-							%tr
-								%td
-									%b Test Name
-								%td advertiser
-								%td agency
-								%td team name 50%
-								%td {{5000000 | currency : '$' : 0}}
-								%td 05/07/2017
-								%td 05/07/2017
-								%td {{3000000 | currency : '$' : 0}}
-							%tr
-								%td
-									%b Test Name
-								%td advertiser
-								%td agency
-								%td team name 50%
-								%td {{5000000 | currency : '$' : 0}}
-								%td 05/07/2017
-								%td 05/07/2017
-								%td {{3000000 | currency : '$' : 0}}
-
-		.row
-			.col-xs-12
-				.block
-					.switch-row.pull-right
-						%span{'ng-class': '{active: switch.deals == 1}', 'ng-click': 'switch.set("deals", 1)'} Quarterly
-						%span{'ng-class': '{active: switch.deals == 2}', 'ng-click': 'switch.set("deals", 2)'} Monthly
-					%div.mb20
-						%span.title Deals
-					%table.table.table-hover
-						%thead
-							%tr
-								%th Deal Name
-								%th Advertiser
-								%th Agency
-								%th Deal Team
-								%th Total Budget
-								%th %
-								%th Next Steps
-								%th Detailed Amounts
-						%tbody
-							%tr
-								%td
-									%a{href: '', 'ng-href': '/deals/100'} test deal
-								%td advertiser
-								%td agency
-								%td test team 50%
-								%td {{10000000 | currency : '$' : 0}}
-								%td 100%
-								%td next steps
-								%td {{20000000 | currency : '$' : 0}}
-							%tr
-								%td
-									%a{href: '', 'ng-href': '/deals/100'} test deal
-								%td advertiser
-								%td agency
-								%td test team 50%
-								%td {{10000000 | currency : '$' : 0}}
-								%td 100%
-								%td next steps
-								%td {{20000000 | currency : '$' : 0}}
-							%tr
-								%td
-									%a{href: '', 'ng-href': '/deals/100'} test deal
-								%td advertiser
-								%td agency
-								%td test team 50%
-								%td {{10000000 | currency : '$' : 0}}
-								%td 100%
-								%td next steps
-								%td {{20000000 | currency : '$' : 0}}
+			.row
+				.col-xs-12
+					.block
+						.switch-row.pull-right
+							%span{'ng-class': '{active: switch.deals == 1}', 'ng-click': 'switch.set("deals", 1)'} Quarterly
+							%span{'ng-class': '{active: switch.deals == 2}', 'ng-click': 'switch.set("deals", 2)'} Monthly
+						%div.mb20
+							%span.title Deals
+						%div.table-wrapper
+							%table.table.table-hover
+								%thead
+									%tr
+										%th Deal Name
+										%th Advertiser
+										%th Agency
+										%th Deal Team
+										%th Total Budget
+										%th %
+										%th{width: '300px'} Next Steps
+										%th{'ng-repeat': 'key in switch[switch.deals]'} {{key}}
+								%tbody
+									%tr{'ng-repeat': 'deal in deals'}
+										%td
+											%a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
+										%td {{deal.advertiser.name}}
+										%td {{deal.agency.name}}
+										%td
+											%div{'ng-repeat': 'member in deal.deal_members'} {{member.name}} {{member.share}}%
+										%td {{deal.budget | currency : '$' : 0}}
+										%td {{deal.stage.probability}}%
+										%td {{deal.next_steps}}
+										%td{'ng-if': 'switch.deals == 1', 'ng-repeat': 'value in deal.quarter_amounts track by $index'} {{value | currency : '$' : 0}}
+										%td{'ng-if': 'switch.deals == 2', 'ng-repeat': 'value in deal.month_amounts track by $index'} {{value | currency : '$' : 0}}

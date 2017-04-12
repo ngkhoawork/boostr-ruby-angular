@@ -16,6 +16,11 @@
       method: 'PUT'
       url: '/api/deals/:id'
       transformRequest: transformRequest
+    forecast_detail:
+      method: 'GET'
+      url: 'api/deals.json'
+      isArray: true
+
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
@@ -31,6 +36,12 @@
   @pipeline_report = (params) ->
     deferred = $q.defer()
     pipeline_report_resource.query params, (response) ->
+      deferred.resolve(response)
+    deferred.promise
+
+  @forecast_detail = (params) ->
+    deferred = $q.defer()
+    resource.forecast_detail params, (response) ->
       deferred.resolve(response)
     deferred.promise
 

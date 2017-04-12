@@ -4,7 +4,6 @@
   resource = $resource '/api/forecasts/:id', { id: '@id' },
     forecast_detail:
       method: 'GET'
-      url: '/api/forecasts/'
-      isArray: true
+      url: '/api/forecasts/detail'
   return resource
 ]
