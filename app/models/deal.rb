@@ -394,11 +394,11 @@ class Deal < ActiveRecord::Base
   end
 
   def latest_activity_csv_string
-    if activity = self.latest_happened_activity
+    if latest_happened_activity.present? && !latest_happened_activity.activity_type_name.eql?('Email')
       data = ''
-      data += "Date: #{activity.happened_at.strftime("%m-%d-%Y %H:%M:%S")}\n"
-      data += "Type: #{activity.activity_type_name}\n"
-      data += "Note: #{activity.comment}"
+      data += "Date: #{latest_happened_activity.happened_at.strftime("%m-%d-%Y %H:%M:%S")}\n"
+      data += "Type: #{latest_happened_activity.activity_type_name}\n"
+      data += "Note: #{latest_happened_activity.comment}"
     else
       ''
     end
