@@ -187,9 +187,14 @@ class User < ActiveRecord::Base
       io_obj = Io.find(io['id'])
       start_month = start_date.month
       end_month = end_date.month
-      io[:quarters] = Array.new((end_month - start_month + 1) / 3, 0)
-      # io[:year] = year
-      io[:months] = Array.new(end_month - start_month + 1, 0)
+      io[:quarters] = Array.new(4, nil)
+      io[:months] = Array.new(12, nil)
+      for i in start_month..end_month
+        io[:months][i - 1] = 0
+      end
+      for i in ((start_month - 1) / 3)..((end_month - 1) / 3)
+        io[:quarters][i] = 0
+      end
       total = 0
       io[:members] = io_obj.io_members
       share = io_members.find_by(user_id: self.id).share

@@ -314,6 +314,8 @@ class Api::DealsController < ApplicationController
         for i in index..(monthly_revenue[:month]-2)
           if i + 1 >= time_period.start_date.month && i + 1 <= time_period.end_date.month
             deal['month_amounts'].push 0
+          else
+            deal['month_amounts'].push nil
           end
         end
         if monthly_revenue[:month] >= time_period.start_date.month && monthly_revenue[:month] <= time_period.end_date.month
@@ -324,6 +326,8 @@ class Api::DealsController < ApplicationController
       for i in index..11
         if i + 1 >= time_period.start_date.month && i + 1 <= time_period.end_date.month
           deal['month_amounts'].push 0
+        else
+          deal['month_amounts'].push nil
         end
       end
 
@@ -340,6 +344,8 @@ class Api::DealsController < ApplicationController
         for i in index..(quarterly_revenue[:quarter]-2)
           if (i * 3 + 1) >= time_period.start_date.month && (i * 3 + 1) <= time_period.end_date.month
             deal['quarter_amounts'].push 0
+          else
+            deal['quarter_amounts'].push nil
           end
         end
         if ((quarterly_revenue[:quarter] - 1) * 3 + 1) >= time_period.start_date.month && ((quarterly_revenue[:quarter] - 1) * 3 + 1) <= time_period.end_date.month
@@ -350,6 +356,8 @@ class Api::DealsController < ApplicationController
       for i in index..3
         if (i * 3 + 1) >= time_period.start_date.month && (i * 3 + 1) <= time_period.end_date.month
           deal['quarter_amounts'].push 0
+        else
+          deal['quarter_amounts'].push nil
         end
       end
       deal
