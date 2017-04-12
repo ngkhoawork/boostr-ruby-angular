@@ -263,6 +263,18 @@ RSpec.describe DisplayLineItemCsv, type: :model do
     expect(DisplayLineItem.last.product).to eql product
   end
 
+  it 'sets ctr' do
+    line_item_csv(external_io_number: io.external_io_number, ctr: 0.51)
+    line_item_csv.perform
+    expect(DisplayLineItem.last.ctr).to eql 0.51
+  end
+
+  it 'sets clicks' do
+    line_item_csv(external_io_number: io.external_io_number, clicks: 951)
+    line_item_csv.perform
+    expect(DisplayLineItem.last.clicks).to eql 951
+  end
+
   context 'multicurrency Io' do
     it 'sets local currency values according to exchange rate' do
       exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)

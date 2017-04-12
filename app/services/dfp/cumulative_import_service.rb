@@ -31,6 +31,7 @@ class DFP::CumulativeImportService
     import_log.set_file_source(report_file)
 
     CSV.parse(report_csv, { headers: true, header_converters: :symbol }) do |row|
+      import_log.count_processed
       dli_csv = build_dli_csv(row)
 
       if dli_csv.valid?

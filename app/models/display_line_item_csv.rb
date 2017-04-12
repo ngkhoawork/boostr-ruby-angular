@@ -14,7 +14,7 @@ class DisplayLineItemCsv
   attr_accessor(
     :external_io_number, :line_number, :ad_server, :start_date, :end_date,
     :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
-    :quantity_delivered, :quantity_delivered_3p, :company_id
+    :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks
   )
 
   def initialize(attributes = {})
@@ -45,6 +45,8 @@ class DisplayLineItemCsv
         quantity_delivered: quantity_delivered,
         quantity_remaining: quantity_remaining,
         quantity_delivered_3p: quantity_delivered_3p,
+        ctr: ctr,
+        clicks: clicks
       )
     end
   end
