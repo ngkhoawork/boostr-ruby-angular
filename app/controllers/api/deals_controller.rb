@@ -9,7 +9,11 @@ class Api::DealsController < ApplicationController
         elsif params[:activity].present?
           render json: activity_deals
         elsif params[:time_period_id].present?
-          render json: forecast_deals
+          if valid_time_period?
+            render json: forecast_deals
+          else
+            render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
+          end
         elsif params[:year].present?
           response_deals = company.deals
             .includes(
@@ -499,6 +503,20 @@ class Api::DealsController < ApplicationController
   def time_period
     if params[:time_period_id]
       @time_period = company.time_periods.find(params[:time_period_id])
+    end
+  end
+
+  def valid_time_period?
+    if params[:time_period_id].present? && time_period.present?
+      if time_period.start_date == time_period.start_date.beginning_of_year && time_period.end_date == time_period.start_date.end_of_year
+        return true
+      elsif time_period.start_date == time_period.start_date.beginning_of_quarter && time_period.end_date == time_period.start_date.end_of_quarter
+        return true
+      else
+        return false
+      end
+    else
+      return false
     end
   end
 

@@ -12,7 +12,12 @@ class Api::RevenueController < ApplicationController
   end
 
   def forecast_detail
-    render json: quarterly_ios
+    if valid_time_period?
+      render json: quarterly_ios
+    else
+      render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
+    end
+
   end
 
   def create
@@ -88,8 +93,8 @@ class Api::RevenueController < ApplicationController
 
         io_obj.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
           month = content_fee_product_budget.start_date.mon
-          io[:months][month - start_month] += content_fee_product_budget.budget
-          io[:quarters][(month - start_month) / 3] += content_fee_product_budget.budget
+          io[:months][month - 1] += content_fee_product_budget.budget
+          io[:quarters][(month - 1) / 3] += content_fee_product_budget.budget
           total += content_fee_product_budget.budget
         end
 
@@ -114,8 +119,8 @@ class Api::RevenueController < ApplicationController
               in_budget_total += display_line_item_budget.daily_budget * in_days
             end
             budget = in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
-            io[:months][index - start_month] += budget
-            io[:quarters][(index - start_month) / 3] += budget
+            io[:months][index - 1] += budget
+            io[:quarters][(index - 1) / 3] += budget
             total += budget
           end
         end
@@ -212,6 +217,20 @@ class Api::RevenueController < ApplicationController
 
   def time_period
     @time_period ||= current_user.company.time_periods.find(params[:time_period_id])
+  end
+
+  def valid_time_period?
+    if params[:time_period_id].present? && time_period.present?
+      if time_period.start_date == time_period.start_date.beginning_of_year && time_period.end_date == time_period.start_date.end_of_year
+        return true
+      elsif time_period.start_date == time_period.start_date.beginning_of_quarter && time_period.end_date == time_period.start_date.end_of_quarter
+        return true
+      else
+        return false
+      end
+    else
+      return false
+    end
   end
 
   def year
