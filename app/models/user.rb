@@ -167,8 +167,8 @@ class User < ActiveRecord::Base
     year = start_date.year
     ios.map do |io|
       io_obj = Io.find(io['id'])
-      start_month = time_period.start_date.month
-      end_month = time_period.end_date.month
+      start_month = start_date.month
+      end_month = end_date.month
       io[:quarters] = Array.new((end_month - start_month + 1) / 3, 0)
       # io[:year] = year
       io[:months] = Array.new(end_month - start_month + 1, 0)
