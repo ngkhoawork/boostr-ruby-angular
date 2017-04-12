@@ -255,9 +255,9 @@ class Api::RevenueController < ApplicationController
   def member_or_team
     @member_or_team ||= if params[:user_id].present? && params[:user_id] != 'all'
       member
-    elsif params[:member_id]
+    elsif params[:member_id] && params[:member_id] != 'all'
       member
-    elsif params[:team_id]
+    elsif params[:team_id] && params[:team_id] != 'all'
       team
     else
       raise ActiveRecord::RecordNotFound
