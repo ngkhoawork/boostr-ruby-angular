@@ -14,5 +14,6 @@
       {{ row.deal.name }}
   %td.action-td
     %i.fa.fa-pencil.z-icon{ ng: { click: 'showIOEditModal(row, $event)' } }
+    %i.fa.fa-trash.z-icon{ ng: { click: 'deleteIo(row, $event)' } }
   %td.right
     %i.fa.fa-angle-right
