@@ -13,5 +13,7 @@
   %td.action-td
     %a.edit-deal{ href: '', ng: { click: 'showIOEditModal(row, $event)' } }
       = inline_svg 'icons/pencil.svg'
+    %a.delete-deal{ href: '', ng: { click: 'deleteIo(row, $event)' } }
+      = inline_svg 'icons/trash.svg'
   %td.right
     %i.fa.fa-angle-right
