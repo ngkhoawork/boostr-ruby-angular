@@ -720,7 +720,7 @@ class Deal < ActiveRecord::Base
             when "number", "integer"
               line << (value || 0)
             when "datetime"
-              line << (value.present? ? (value.strftime("%Y-%m-%d")) : 'N/A')
+              line << (value.present? ? (value.strftime("%Y-%m-%d %H:%M:%S")) : 'N/A')
             else
               line << (value || 'N/A')
           end
