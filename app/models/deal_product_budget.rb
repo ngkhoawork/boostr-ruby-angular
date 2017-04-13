@@ -60,7 +60,7 @@ class DealProductBudget < ActiveRecord::Base
               when "number", "integer"
                 custom_field_line << (value || 0)
               when "datetime"
-                custom_field_line << (value.present? ? (value.strftime("%Y-%m-%d")) : 'N/A')
+                custom_field_line << (value.present? ? (value.strftime("%Y-%m-%d %H:%M:%S")) : 'N/A')
               else
                 custom_field_line << (value || 'N/A')
             end
