@@ -19,7 +19,7 @@ class BillingSummary::IosForMissingDisplayLineItemsSerializer < ActiveModel::Ser
   end
 
   def billing_contacts
-    @_billing_contacts ||= object.deal.ordered_by_created_at_billing_contacts
+    @_billing_contacts ||= object.deal.ordered_by_created_at_billing_contacts if object.deal.present?
   end
 
   def currency

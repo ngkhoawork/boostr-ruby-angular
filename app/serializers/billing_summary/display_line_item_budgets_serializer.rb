@@ -37,7 +37,7 @@ class BillingSummary::DisplayLineItemBudgetsSerializer < BillingSummary::BasicFi
   end
 
   def billing_contacts
-    @_billing_contacts ||= io.deal.ordered_by_created_at_billing_contacts
+    @_billing_contacts ||= io.deal.ordered_by_created_at_billing_contacts if io.deal.present?
   end
 
   def advertiser
