@@ -86,14 +86,14 @@
                         %label{ for: 'start-date' }
                             Start Date
                             %span.star *
-                        %input.form-control{readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+                        %input.form-control{'datepicker-timezone': '', readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
 
                     .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.end_date}'}
                         %span.error-text {{errors.end_date}}
                         %label{ for: 'end-date' }
                             End Date
                             %span.star *
-                        %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+                        %input.form-control{'datepicker-timezone': '', readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
             .form-group{ng: {repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", if: "dealCustomFieldName.show_on_modal && !dealCustomFieldName.disabled", class:'{error: errors[fieldName]}'}}
                 %span.error-text {{errors[fieldName]}}
                 %label{ for: '{{fieldName}}', ng: { if: "dealCustomFieldName.field_type != 'sum'" } }
