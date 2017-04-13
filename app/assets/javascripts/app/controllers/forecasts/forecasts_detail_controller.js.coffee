@@ -11,10 +11,8 @@
             timePeriod: {id: null, name: 'Select'}
         $scope.selectedTeam = $scope.filter.team
         $scope.switch =
-            '1': ['Q1', 'Q2', 'Q3', 'Q4']
-            '2': ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-            revenue: 1
-            deals: 1
+            revenues: 'quarters'
+            deals: 'quarters'
             set: (key, val) ->
                 this[key] = val
 
@@ -108,6 +106,25 @@
                     else null
             forecast.stages.sort (stage1, stage2) -> stage2.probability - stage1.probability
 
+        qs = ['Q1', 'Q2', 'Q3', 'Q4']
+        ms = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+        addDetailAmounts = (data, type) ->
+            suffix = if type == 'revenues' then 's' else if type == 'deals' then '_amounts'
+            quarters = []
+            months = []
+            for q, i in qs
+                for item in data
+                    if item['quarter' + suffix][i] != null
+                        quarters.push q
+                        break
+            for m, i in ms
+                for item in data
+                    if item['month' + suffix][i] != null
+                        months.push m
+                        break
+            data.detail_amounts =
+                quarters: quarters
+                months: months
 
         getData = ->
             if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
@@ -122,8 +139,10 @@
             query.team_id = query.id
             delete query.id
             Revenue.forecast_detail(query).$promise.then (data) ->
+                addDetailAmounts data, 'revenues'
                 $scope.revenues = data
             Deal.forecast_detail(query).then (data) ->
+                addDetailAmounts data, 'deals'
                 $scope.deals = data
 
     ]

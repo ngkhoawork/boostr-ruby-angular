@@ -129,8 +129,8 @@
 				.col-xs-12
 					.block
 						.switch-row.pull-right
-							%span{'ng-class': '{active: switch.revenue == 1}', 'ng-click': 'switch.set("revenue", 1)'} Quarterly
-							%span{'ng-class': '{active: switch.revenue == 2}', 'ng-click': 'switch.set("revenue", 2)'} Monthly
+							%span{'ng-class': '{active: switch.revenues == "quarters"}', 'ng-click': 'switch.set("revenues", "quarters")'} Quarterly
+							%span{'ng-class': '{active: switch.revenues == "months"}', 'ng-click': 'switch.set("revenues", "months")'} Monthly
 						%div.mb20
 							%span.title Revenue Details
 						%div.table-wrapper
@@ -144,7 +144,7 @@
 										%th IO Total Budget
 										%th Start Date
 										%th End Date
-										%th{'ng-repeat': 'key in switch[switch.revenue]'} {{key}}
+										%th{'ng-repeat': 'key in revenues.detail_amounts[switch.revenues]'} {{key}}
 								%tbody
 									%tr{'ng-repeat': 'revenue in revenues'}
 										%td
@@ -156,15 +156,17 @@
 										%td {{revenue.budget | currency : '$' : 0}}
 										%td {{revenue.start_date | date : 'MM/dd/yyyy'}}
 										%td {{revenue.end_date | date : 'MM/dd/yyyy'}}
-										%td{'ng-if': 'switch.revenue == 1', 'ng-repeat': 'value in revenue.quarters track by $index'} {{value | currency : '$' : 0}}
-										%td{'ng-if': 'switch.revenue == 2', 'ng-repeat': 'value in revenue.months track by $index'} {{value | currency : '$' : 0}}
+										%td{'ng-repeat': 'amount in revenue.quarters track by $index', 'ng-if': 'switch.revenues == "quarters" && amount != null'}
+											{{amount | currency : '$' : 0}}
+										%td{'ng-repeat': 'amount in revenue.months track by $index', 'ng-if': 'switch.revenues == "months" && amount != null'}
+											{{amount | currency : '$' : 0}}
 
 			.row
 				.col-xs-12
 					.block
 						.switch-row.pull-right
-							%span{'ng-class': '{active: switch.deals == 1}', 'ng-click': 'switch.set("deals", 1)'} Quarterly
-							%span{'ng-class': '{active: switch.deals == 2}', 'ng-click': 'switch.set("deals", 2)'} Monthly
+							%span{'ng-class': '{active: switch.deals == "quarters"}', 'ng-click': 'switch.set("deals", "quarters")'} Quarterly
+							%span{'ng-class': '{active: switch.deals == "months"}', 'ng-click': 'switch.set("deals", "months")'} Monthly
 						%div.mb20
 							%span.title Deals
 						%div.table-wrapper
@@ -178,7 +180,7 @@
 										%th Total Budget
 										%th %
 										%th{width: '300px'} Next Steps
-										%th{'ng-repeat': 'key in switch[switch.deals]'} {{key}}
+										%th{'ng-repeat': 'key in deals.detail_amounts[switch.deals]'} {{key}}
 								%tbody
 									%tr{'ng-repeat': 'deal in deals'}
 										%td
@@ -190,5 +192,7 @@
 										%td {{deal.budget | currency : '$' : 0}}
 										%td {{deal.stage.probability}}%
 										%td {{deal.next_steps}}
-										%td{'ng-if': 'switch.deals == 1', 'ng-repeat': 'value in deal.quarter_amounts track by $index'} {{value | currency : '$' : 0}}
-										%td{'ng-if': 'switch.deals == 2', 'ng-repeat': 'value in deal.month_amounts track by $index'} {{value | currency : '$' : 0}}
+										%td{'ng-repeat': 'amount in deal.quarter_amounts track by $index', 'ng-if': 'switch.deals == "quarters" && amount != null'}
+											{{amount | currency : '$' : 0}}
+										%td{'ng-repeat': 'amount in deal.month_amounts track by $index', 'ng-if': 'switch.deals == "months" && amount != null'}
+											{{amount | currency : '$' : 0}}
