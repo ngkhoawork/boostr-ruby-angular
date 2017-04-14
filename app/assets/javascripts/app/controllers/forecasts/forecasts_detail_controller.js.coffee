@@ -15,6 +15,8 @@
             deals: 'quarters'
             set: (key, val) ->
                 this[key] = val
+        $scope.isYear = -> $scope.filter.timePeriod.period_type is 'year'
+        $scope.isNumber = (number) -> angular.isNumber number
 
 
         $scope.quarters = []
@@ -38,6 +40,12 @@
             $scope.filter[key] = value
             getData()
 
+        $scope.getAnnualSum = (data) ->
+            sum = 0
+            _.each $scope.quarters, (quarter) ->
+                sum += Number data[quarter]
+            sum
+
         $q.all(
             user: CurrentUser.get().$promise
             teams: Team.all(all_teams: true)
@@ -47,7 +55,7 @@
             $scope.teams = data.teams
             $scope.teams.unshift {id: null, name: 'All'}
             data.timePeriods = data.timePeriods.filter (period) ->
-                period.period_type is 'quarter' or period.period_type is 'year'
+                period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
             $scope.timePeriods = data.timePeriods
             $scope.sellers = data.sellers
             $scope.sellers.unshift(defaultUser)
@@ -89,26 +97,23 @@
             forecast.quarterly_weighted_gap_to_quota = {}
             forecast.quarterly_unweighted_gap_to_quota = {}
             forecast.quarterly_percentage_of_annual_quota = {}
-            quotaSum = _.reduce forecast.quarterly_quota, (result, val) -> result + val
+            quotaSum = _.reduce forecast.quarterly_quota, (result, val) -> result + Number val
             _.each data.quarters, (quarter) ->
-                weighted = forecast.quarterly_revenue[quarter]
-                unweighted = forecast.quarterly_revenue[quarter]
+                weighted = Number forecast.quarterly_revenue[quarter]
+                unweighted = Number forecast.quarterly_revenue[quarter]
                 _.each forecast.stages, (stage) ->
-                    weighted += forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter]
-                    unweighted += forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
+                    weighted += Number forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter]
+                    unweighted += Number forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
                 forecast.quarterly_weighted_forecast[quarter] = weighted
                 forecast.quarterly_unweighted_forecast[quarter] = unweighted
                 forecast.quarterly_weighted_gap_to_quota[quarter] = forecast.quarterly_quota[quarter] - weighted
                 forecast.quarterly_unweighted_gap_to_quota[quarter] = forecast.quarterly_quota[quarter] - unweighted
-                forecast.quarterly_percentage_of_annual_quota[quarter] =
-                    if $scope.filter.timePeriod.period_type is 'year'
-                        Math.round(forecast.quarterly_quota[quarter] / quotaSum * 100)
-                    else null
-            forecast.stages.sort (stage1, stage2) -> stage2.probability - stage1.probability
+                forecast.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(forecast.quarterly_quota[quarter]) / quotaSum * 100) else null
+            forecast.stages.sort (s1, s2) -> s1.probability - s2.probability
 
-        qs = ['Q1', 'Q2', 'Q3', 'Q4']
-        ms = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
         addDetailAmounts = (data, type) ->
+            qs = ['Q1', 'Q2', 'Q3', 'Q4']
+            ms = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
             suffix = if type == 'revenues' then 's' else if type == 'deals' then '_amounts'
             quarters = []
             months = []

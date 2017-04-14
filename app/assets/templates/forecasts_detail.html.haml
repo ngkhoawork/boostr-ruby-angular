@@ -45,42 +45,54 @@
 						%table.table.table-hover
 							%thead
 								%tr
-									%th IO Name
+									%th
 									%th{'ng-repeat': 'quarter in quarters'}
 										{{quarter.toUpperCase()}}
+									%th{'ng-if': 'isYear()'} Total
 							%tbody
-								%tr
-									%td
-										%b Revenue
-									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
 								%tr{'ng-repeat': 'stage in forecast.stages'}
 									%td
 										%b {{stage.probability}}%
 									%td{'ng-repeat': 'quarter in quarters'}
 										{{forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_weighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
+								%tr
+									%td
+										%b Revenue
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Forecast
 									%td{'ng-repeat': 'quarter in quarters'}
 										{{forecast.quarterly_weighted_forecast[quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_weighted_forecast) | currency : '$' : 0}}
 
 								%tr
 									%td
 										%b Quota
 									%td{'ng-repeat': 'quarter in quarters'}
 										{{forecast.quarterly_quota[quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_quota) | currency : '$' : 0}}
 
 								%tr
 									%td
 										%b Gap to Quota
 									%td{'ng-repeat': 'quarter in quarters'}
 										{{forecast.quarterly_weighted_gap_to_quota[quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_weighted_gap_to_quota) | currency : '$' : 0}}
 								%tr
 									%td
 										%b % of Annual Quota
-									%td{'ng-repeat': 'quarter in quarters', 'ng-init': 'annualQuota = forecast.quarterly_percentage_of_annual_quota[quarter]'}
-										{{annualQuota ? annualQuota + '%' : 'N/A'}}
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{isNumber(forecast.quarterly_percentage_of_annual_quota[quarter]) ? forecast.quarterly_percentage_of_annual_quota[quarter] + '%' : 'N/A'}}
+									%td{'ng-if': 'isYear()'}
 
 				.col-xs-6
 					.block
@@ -89,42 +101,54 @@
 						%table.table.table-hover
 							%thead
 								%tr
-									%th IO Name
+									%th
 									%th{'ng-repeat': 'quarter in quarters'}
 										{{quarter.toUpperCase()}}
+									%th{'ng-if': 'isYear()'} Total
 							%tbody
-								%tr
-									%td
-										%b Revenue
-									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
 								%tr{'ng-repeat': 'stage in forecast.stages'}
 									%td
 										%b {{stage.probability}}%
 									%td{'ng-repeat': 'quarter in quarters'}
 										{{forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_unweighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
+								%tr
+									%td
+										%b Revenue
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Forecast
 									%td{'ng-repeat': 'quarter in quarters'}
 										{{forecast.quarterly_unweighted_forecast[quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_unweighted_forecast) | currency : '$' : 0}}
 
 								%tr
 									%td
 										%b Quota
 									%td{'ng-repeat': 'quarter in quarters'}
 										{{forecast.quarterly_quota[quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_quota) | currency : '$' : 0}}
 
 								%tr
 									%td
 										%b Gap to Quota
 									%td{'ng-repeat': 'quarter in quarters'}
 										{{forecast.quarterly_unweighted_gap_to_quota[quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_unweighted_gap_to_quota) | currency : '$' : 0}}
 								%tr
 									%td
 										%b % of Annual Quota
-									%td{'ng-repeat': 'quarter in quarters', 'ng-init': 'annualQuota = forecast.quarterly_percentage_of_annual_quota[quarter]'}
-										{{annualQuota ? annualQuota + '%' : 'N/A'}}
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{isNumber(forecast.quarterly_percentage_of_annual_quota[quarter]) ? forecast.quarterly_percentage_of_annual_quota[quarter] + '%' : 'N/A'}}
+									%td{'ng-if': 'isYear()'}
 			.row
 				.col-xs-12
 					.block
@@ -148,7 +172,7 @@
 								%tbody
 									%tr{'ng-repeat': 'revenue in revenues'}
 										%td
-											%b {{revenue.name}}
+											%a{href: '', 'ng-href': '/ios/{{revenue.id}}'} {{revenue.name}}
 										%td {{revenue.advertiser.name}}
 										%td {{revenue.agency.name}}
 										%td
