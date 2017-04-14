@@ -6,7 +6,7 @@
           = inline_svg 'icons/close.svg'
       %h3.modal-title
         %strong
-          {{ formType }} Api Integration
+          {{ formType }} Operative Datafeed Integration
     .modal-body
       .form-group
         .row
@@ -15,12 +15,8 @@
             %input{ ng: { model: 'api_configuration.switched_on' }, type: 'checkbox' }
         .row
           .col-xs-12
-            %label.control-label{ for: 'integration_type' } Integration type
-            %select.form-control{ ng: {model: 'api_configuration.integration_type', options: 'type for type in integration_types', disabled: 'formType == "Edit"'} }
-        .row{ng: {if: "api_configuration.integration_type == 'operative'"}}
-          .col-xs-12
-            %label.control-label{ for: 'trigger_on_deal_percentage' } Triggers on deal percentage
-            %input.form-control{ placeholder: 'Eg. 100', ng: { model: 'api_configuration.trigger_on_deal_percentage' }, name: 'trigger_on_deal_percentage', type: 'number', required: true }
+            %label.control-label{ for: 'integration_provider' } Integration type
+            %input.form-control{ ng: { model: 'api_configuration.integration_provider' }, disabled: 'true' }
         .row
           .col-xs-12
             %label.control-label{ for: 'base_link' } Base link
@@ -33,7 +29,7 @@
         .row{ ng: { if: 'formType == \'Edit\'' } }
           .col-xs-12
             %label.control-label{ for: 'need_change_password' } Need to change password?
-            %input{ ng: { model: 'need_change_password', click: 'set_neet_set_password(need_change_password)' }, type: 'checkbox', name: 'need_change_password' }
+            %input{ ng: { model: 'need_change_password', click: 'set_need_set_password(need_change_password)' }, type: 'checkbox', name: 'need_change_password' }
 
         .row{ ng: { if: 'need_change_password' } }
           .col-xs-12

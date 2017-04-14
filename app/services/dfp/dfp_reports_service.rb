@@ -23,7 +23,6 @@ module DFP
       get_report_by_id(job[:id])
     end
 
-
     def get_report_by_id(report_job_id)
       report_service.get_report_download_url_with_options(report_job_id, report_download_options)
     end
