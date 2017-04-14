@@ -27,9 +27,9 @@
 									%span.caret
 						%div{'ng-if': '!currentDeal.stage.open'}
 							.title
-								%span {{currentDeal.start_date | date}}
+								%span {{currentDeal.start_date | date : 'mediumDate' : 'UTC'}}
 								{{'-'}}
-								%span {{currentDeal.end_date | date}}
+								%span {{currentDeal.end_date | date : 'mediumDate' : 'UTC'}}
 			%div.stats-col
 				.col-body-wrap
 					.col-body
