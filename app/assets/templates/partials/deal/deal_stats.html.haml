@@ -6,26 +6,9 @@
 				%i.fa.fa-pencil.edit-deal{'ng-click': 'showDealEditModal(currentDeal)'}
 				%i.fa.fa-trash.delete-deal{'ng-click': 'deleteDeal(currentDeal)'}
 			.deal-info
-				%div{'ng-show': 'currentDeal.advertiser'}
-					%b {{currentDeal.advertiser.name}} -
-					%b {{currentDeal.advertiser.advertiser_deals_count}}
-					Deals
-					|
-					%b {{currentDeal.advertiser.advertiser_win_rate}}%
-					Win Rate
-					|
-					%b {{currentDeal.advertiser.advertiser_last_deal | date: 'M/d/yy'}}
-					Last Deal Added
-				%div{'ng-show': 'currentDeal.agency'}
-					%b {{currentDeal.agency.name}} -
-					%b {{currentDeal.agency.agency_deals_count}}
-					Deals
-					|
-					%b {{currentDeal.agency.agency_win_rate}}%
-					Win Rate
-					|
-					%b {{currentDeal.agency.agency_last_deal | date: 'M/d/yy'}}
-					Last Deal Added
+				{{currentDeal.advertiser.name || ''}}
+				{{currentDeal.advertiser.name && currentDeal.agency.name && '|'}}
+				{{currentDeal.agency.name || ''}}
 
 		.clearfix
 		%div.stats-numbers

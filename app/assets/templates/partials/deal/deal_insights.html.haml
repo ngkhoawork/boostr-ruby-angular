@@ -1,0 +1,42 @@
+%div.deal-insights.block
+	.title.mb20 Deal Insights
+	%div.insights-row{'ng-if': 'currentDeal.advertiser'}
+		.sub-title<
+			%div> Advertiser Name
+			%div {{currentDeal.advertiser.name}}
+		%div.deal-stats
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Deals
+						.title {{currentDeal.advertiser.advertiser_deals_count}}
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Win Rate
+						.title {{currentDeal.advertiser.advertiser_win_rate}}%
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Last Deal Added
+						.title {{currentDeal.advertiser.advertiser_last_deal | date}}
+	%div.insights-row{'ng-if': 'currentDeal.agency'}
+		.sub-title<
+			%div> Agency Name
+			%div {{currentDeal.agency.name}}
+		%div.deal-stats
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Deals
+						.title {{currentDeal.agency.agency_deals_count}}
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Win Rate
+						.title {{currentDeal.agency.agency_win_rate}}%
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Last Deal Added
+						.title {{currentDeal.agency.agency_last_deal | date}}
