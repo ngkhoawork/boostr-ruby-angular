@@ -161,13 +161,25 @@
 							%table.table.table-hover
 								%thead
 									%tr
-										%th IO Name
+										%th
+											%span.clickable{'ng-click': 'sortRevenuesBy("name")'}
+												IO Name
+												%i.fa{'ng-class': '{"fa-caret-down": revenueSorting.name == true, "fa-caret-up": revenueSorting.name == false}'}
 										%th IO Advertiser Name
 										%th IO Agency Name
 										%th IO Team
-										%th IO Total Budget
-										%th Start Date
-										%th End Date
+										%th
+											%span.clickable{'ng-click': 'sortRevenuesBy("budget")'}
+												IO Total Budget
+												%i.fa{'ng-class': '{"fa-caret-down": revenueSorting.budget == true, "fa-caret-up": revenueSorting.budget == false}'}
+										%th
+											%span.clickable{'ng-click': 'sortRevenuesBy("start_date")'}
+												Start Date
+												%i.fa{'ng-class': '{"fa-caret-down": revenueSorting.start_date == true, "fa-caret-up": revenueSorting.start_date == false}'}
+										%th
+											%span.clickable{'ng-click': 'sortRevenuesBy("end_date")'}
+												End Date
+												%i.fa{'ng-class': '{"fa-caret-down": revenueSorting.end_date == true, "fa-caret-up": revenueSorting.end_date == false}'}
 										%th{'ng-repeat': 'key in revenues.detail_amounts[switch.revenues]'} {{key}}
 								%tbody
 									%tr{'ng-repeat': 'revenue in revenues'}
@@ -203,10 +215,10 @@
 										%th Deal Team
 										%th Total Budget
 										%th %
-										%th{width: '300px'} Next Steps
+										-#%th{width: '300px'} Next Steps
 										%th{'ng-repeat': 'key in deals.detail_amounts[switch.deals]'} {{key}}
 								%tbody
-									%tr{'ng-repeat': 'deal in deals'}
+									%tr{'ng-repeat': 'deal in deals', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
 										%td
 											%a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
 										%td {{deal.advertiser.name}}
@@ -215,7 +227,7 @@
 											%div{'ng-repeat': 'member in deal.deal_members'} {{member.name}} {{member.share}}%
 										%td {{deal.budget | currency : '$' : 0}}
 										%td {{deal.stage.probability}}%
-										%td {{deal.next_steps}}
+										-#%td {{deal.next_steps}}
 										%td{'ng-repeat': 'amount in deal.quarter_amounts track by $index', 'ng-if': 'switch.deals == "quarters" && amount != null'}
 											{{amount | currency : '$' : 0}}
 										%td{'ng-repeat': 'amount in deal.month_amounts track by $index', 'ng-if': 'switch.deals == "months" && amount != null'}

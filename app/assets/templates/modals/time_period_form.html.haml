@@ -18,11 +18,11 @@
         .row
           .col-md-6.bs-datepicker
             %label.control-label{ for: 'start-date' } Start Date
-            %input.form-control{ name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'time_period.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+            %input.form-control{ name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'time_period.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
 
           .col-md-6.bs-datepicker
             %label.control-label{ for: 'end-date' } End Date
-            %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'time_period.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+            %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'time_period.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
 
       .form-group
         .row

@@ -15,6 +15,7 @@
             deals: 'quarters'
             set: (key, val) ->
                 this[key] = val
+        $scope.revenueSorting = {}
         $scope.isYear = -> $scope.filter.timePeriod.period_type is 'year'
         $scope.isNumber = (number) -> angular.isNumber number
 
@@ -45,6 +46,27 @@
             _.each $scope.quarters, (quarter) ->
                 sum += Number data[quarter]
             sum
+
+        $scope.sortRevenuesBy = (key) ->
+            if typeof $scope.revenueSorting[key] != 'undefined'
+                $scope.revenueSorting[key] = !$scope.revenueSorting[key]
+            else
+                $scope.revenueSorting = {}
+                $scope.revenueSorting[key] = true
+            $scope.revenues.sort (r1, r2) ->
+                switch key
+                    when 'name'
+                        r1 = r1[key].toLowerCase()
+                        r2 = r2[key].toLowerCase()
+                    when 'budget'
+                        r1 = Number r1[key]
+                        r2 = Number r2[key]
+                    when 'start_date', 'end_date'
+                        r1 = new Date r1[key]
+                        r2 = new Date r2[key]
+                return if r1 > r2 then 1 else if r1 < r2 then -1 else 0
+            if $scope.revenueSorting[key] == false then $scope.revenues.reverse()
+
 
         $q.all(
             user: CurrentUser.get().$promise
@@ -146,6 +168,7 @@
             Revenue.forecast_detail(query).$promise.then (data) ->
                 addDetailAmounts data, 'revenues'
                 $scope.revenues = data
+                $scope.sortRevenuesBy('budget')
             Deal.forecast_detail(query).then (data) ->
                 addDetailAmounts data, 'deals'
                 $scope.deals = data
