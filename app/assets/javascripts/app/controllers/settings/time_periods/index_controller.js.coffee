@@ -32,7 +32,7 @@
       keyboard: false
       resolve:
         time_period: ->
-          time_period
+          angular.copy(time_period)
 
   $scope.init()
 
