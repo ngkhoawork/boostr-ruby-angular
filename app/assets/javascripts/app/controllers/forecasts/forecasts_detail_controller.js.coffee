@@ -113,25 +113,26 @@
                         return $scope.filter.timePeriod = period
 
         handleForecast = (data) ->
-            forecast = data.forecast
-            forecast.quarterly_weighted_forecast = {}
-            forecast.quarterly_unweighted_forecast = {}
-            forecast.quarterly_weighted_gap_to_quota = {}
-            forecast.quarterly_unweighted_gap_to_quota = {}
-            forecast.quarterly_percentage_of_annual_quota = {}
-            quotaSum = _.reduce forecast.quarterly_quota, (result, val) -> result + Number val
+            fc = data.forecast
+            fc.quarterly_weighted_forecast = {}
+            fc.quarterly_unweighted_forecast = {}
+            fc.quarterly_weighted_gap_to_quota = {}
+            fc.quarterly_unweighted_gap_to_quota = {}
+            fc.quarterly_percentage_of_annual_quota = {}
+            fc.stages = _.filter fc.stages, (stage) -> stage.active
+            quotaSum = _.reduce fc.quarterly_quota, (result, val) -> result + Number val
             _.each data.quarters, (quarter) ->
-                weighted = Number forecast.quarterly_revenue[quarter]
-                unweighted = Number forecast.quarterly_revenue[quarter]
-                _.each forecast.stages, (stage) ->
-                    weighted += Number forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter]
-                    unweighted += Number forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
-                forecast.quarterly_weighted_forecast[quarter] = weighted
-                forecast.quarterly_unweighted_forecast[quarter] = unweighted
-                forecast.quarterly_weighted_gap_to_quota[quarter] = forecast.quarterly_quota[quarter] - weighted
-                forecast.quarterly_unweighted_gap_to_quota[quarter] = forecast.quarterly_quota[quarter] - unweighted
-                forecast.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(forecast.quarterly_quota[quarter]) / quotaSum * 100) else null
-            forecast.stages.sort (s1, s2) -> s1.probability - s2.probability
+                weighted = Number fc.quarterly_revenue[quarter]
+                unweighted = Number fc.quarterly_revenue[quarter]
+                _.each fc.stages, (stage) ->
+                    weighted += Number fc.quarterly_weighted_pipeline_by_stage[stage.id][quarter]
+                    unweighted += Number fc.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
+                fc.quarterly_weighted_forecast[quarter] = weighted
+                fc.quarterly_unweighted_forecast[quarter] = unweighted
+                fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
+                fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
+                fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
+            fc.stages.sort (s1, s2) -> s1.probability - s2.probability
 
         addDetailAmounts = (data, type) ->
             qs = ['Q1', 'Q2', 'Q3', 'Q4']
