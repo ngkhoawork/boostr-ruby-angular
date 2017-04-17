@@ -45,6 +45,10 @@
       method: "GET"
       url: 'api/clients/:id/sellers'
       isArray: true
+    },
+    filter_options: {
+      method: "GET"
+      url: 'api/clients/filter_options'
     }
 
   resource.allClients = []
@@ -69,6 +73,12 @@
     deferred = $q.defer()
     resource.sellers params, (sellers) ->
       deferred.resolve(sellers)
+    deferred.promise
+
+  resource.__filter_options = (params) ->
+    deferred = $q.defer()
+    resource.filter_options params, (response) ->
+      deferred.resolve(response)
     deferred.promise
 
   resource.__update = (params) ->

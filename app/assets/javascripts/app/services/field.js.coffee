@@ -63,7 +63,14 @@
   @findClientTypes = (fields) ->
     $filter('filter')(fields, { name: 'Client Type' })[0]
 
-  @findDealTypes = (fields) ->
+  @findFieldOptions = (fields, name) ->
+    field = $filter('filter')(fields, { name: name })[0]
+    if field
+      return field.options
+    else
+      return []
+
+    @findDealTypes = (fields) ->
     $filter('filter')(fields, { name: 'Deal Type' })[0]
 
   @findSources = (fields) ->

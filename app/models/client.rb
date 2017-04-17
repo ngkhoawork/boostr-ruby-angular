@@ -42,6 +42,9 @@ class Client < ActiveRecord::Base
   scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
   scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(10) }
+  scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
+  scope :by_ids, -> ids { where(id: ids) if ids.present?}
+  scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }
 
   ADVERTISER = 10
   AGENCY = 11
@@ -165,6 +168,15 @@ class Client < ActiveRecord::Base
           values: {
             methods: [:value],
             include: [:option]
+          },
+          client_members: {
+                  include: {
+                          user: {
+                                  only: [],
+                                  methods: [:name]
+                          }
+                  },
+                  only: [:id, :share, :user_id]
           },
           activities: {
             include: {
@@ -399,6 +411,15 @@ class Client < ActiveRecord::Base
 
   def self.advertiser_type_id(company)
     client_type_field(company).options.where(name: "Advertiser").first.id
+  end
+
+  def client_type
+    company.fields.where(name: 'Client Type').first.options.find(self.client_type_id)
+  end
+
+  def client_category
+    company.fields.where(name: 'Category').first.options.where(self.client_category_id) if self.client_category_id.present?
+    nil
   end
 
   def global_type_id

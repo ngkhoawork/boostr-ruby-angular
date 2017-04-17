@@ -36,6 +36,9 @@ Rails.application.routes.draw do
       resources :stages, only: [:index, :create, :show, :update]
       resources :clients, only: [:index, :show, :create, :update, :destroy] do
         get :sellers
+        collection do
+          get :filter_options
+        end
         resources :client_members, only: [:index, :create, :update, :destroy]
         resources :client_contacts, only: [:index] do
           collection do
@@ -71,6 +74,9 @@ Rails.application.routes.draw do
     end
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
       get :sellers
+      collection do
+        get :filter_options
+      end
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index] do
         collection do

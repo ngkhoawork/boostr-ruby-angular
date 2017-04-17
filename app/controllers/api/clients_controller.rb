@@ -11,9 +11,16 @@ class Api::ClientsController < ApplicationController
         else
           results = clients
                       .by_type_id(params[:client_type_id])
+                      .by_category(params[:client_category_id])
+                      .by_city(params[:city])
+                      .by_last_touch(params[:start_date], params[:end_date])
                       .order(:name)
                       .includes(:address)
                       .distinct
+        end
+        if params[:owner_id]
+          client_ids = Client.joins("INNER JOIN client_members ON clients.id = client_members.client_id").where("clients.company_id = ? AND client_members.user_id = ?", company.id, params[:owner_id]).pluck(:client_id)
+          results = results.by_ids(client_ids)
         end
 
         response.headers['X-Total-Count'] = results.count.to_s
@@ -39,6 +46,17 @@ class Api::ClientsController < ApplicationController
         end
       }
     end
+  end
+
+  def filter_options
+    client_ids = clients.select("id").collect { |client_row| client_row.id }
+
+    user_ids = ClientMember.where("client_id in (?)", client_ids).select("user_id").collect { |client_member| client_member.user_id }
+    owners = User.where("id in (?)", user_ids).select("id, first_name, last_name").collect { |user| {id: user.id, name: user.first_name + " " + user.last_name} }
+
+    cities = Address.where("addressable_id in (?) and addressable_type='Client'", client_ids).pluck(:city).uniq.reject { |c| c.nil? || c.blank? }
+
+    render json: {owners: owners, cities: cities}
   end
 
   def show
