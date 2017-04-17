@@ -64,7 +64,6 @@
     $scope.revenue = data
     $scope.filterByDate()
 
-
   $scope.init = ->
     $scope.revenue = []
     switch $scope.revenueFilter.param
@@ -82,11 +81,10 @@
     $scope.revenueFilter = filter
     $scope.init()
 
-  $scope.showIOEditModal = (io, $event) ->
-    $event.stopPropagation();
+  $scope.showIOEditModal = (io) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/io_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'IOEditController'
       backdrop: 'static'
       keyboard: false

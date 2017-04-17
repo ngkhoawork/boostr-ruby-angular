@@ -29,6 +29,7 @@
   .date-filter {
     float: right;
     padding: 10px 0;
+    font-weight: bold;
     .date-picker-wrap {
       cursor: pointer;
       color: $main-color;
@@ -37,46 +38,39 @@
       }
     }
   }
-  .table.table-striped {
+  *[ng-click] {
+    cursor: pointer;
+  }
+  .table {
     thead {
-      span {
-        cursor: pointer;
-        padding: 10px 0;
-      }
       .action-column {
-        width: 50px;
+        width: auto;
       }
     }
     tbody {
       tr {
-        cursor: pointer;
-        td {
-          &:nth-child(3) {
-            word-break: break-all;
-          }
-          &:nth-child(9) {
-            word-break: break-all;
-          }
-        }
         td.action-td {
-          width: 50px;
+          width: auto;
         }
       }
     }
-
   }
-}
-
-.risk-upside-filters {
-  span {
-    display: inline-block;
-    padding: 12px 5px;
-    margin: 0 10px;
-    font-weight: 600;
-    cursor: pointer;
-    &.active {
-      color: $main-color;
-      border-bottom: 2px solid $main-color;
+  .filter-row {
+    span {
+      display: inline-block;
+      padding: 12px 5px;
+      margin: 0 10px;
+      font-weight: 600;
+      cursor: pointer;
+      &.active {
+        color: $main-color;
+        border-bottom: 2px solid $main-color;
+      }
     }
   }
+  .sub-filter {
+    transform: scale(0.9);
+    transform-origin: 0 0;
+  }
 }
+

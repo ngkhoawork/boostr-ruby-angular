@@ -8,6 +8,19 @@
         color: $secondary-color;
         font-weight: 600;
     }
+    .z-icon {
+        color: $secondary-font-color;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        padding: 4px 6px;
+        font-size: 20px;
+        border-radius: 5px;
+        &:hover {
+            background-color: $secondary-font-color;
+            color: white;
+        }
+    }
     .main-title {
         font-size: 24px;
         font-weight: bold;
@@ -30,11 +43,19 @@
                 color: $secondary-font-color !important;
                 border-left: none;
                 border-right: none;
+                //border-bottom: 2px solid $separate-line-color;
+            }
+        }
+        tbody {
+            tr:first-child {
+                td {
+                    border-top-width: 2px;
+                }
             }
         }
         tr {
             &:nth-of-type(even) {
-                background-color: #fafafb;
+                //background-color: #fafafb;
             }
             th, td {
                 text-align: left;

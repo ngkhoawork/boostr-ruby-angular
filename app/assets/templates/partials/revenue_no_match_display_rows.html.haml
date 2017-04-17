@@ -1,4 +1,4 @@
-%tr{ ng: { click: "showAssignIOModal(row)" } }
+%tr{ ng: { repeat: 'row in revenue | filter:searchText', click: "showAssignIOModal(row)" } }
   %td.left {{row.external_io_number}}
   %td.left {{row.name}}
   %td.left {{row.advertiser}}

@@ -76,24 +76,51 @@
 
   $scope.submitForm = () ->
     $scope.errors = {}
-    if (!$scope.ioMember.user_id)
-      $scope.errors['IO Member'] = ["can't be blank"]
-    if (!$scope.ioMember.share)
-      $scope.errors['Share'] = ["can't be blank"]
-    if (!$scope.ioMember.from_date)
-      $scope.errors['From Date'] = ["can't be blank"]
-    if (!$scope.ioMember.to_date)
-      $scope.errors['End Date'] = ["can't be blank"]
-    console.log(Object.keys($scope.errors).length);
-    if (Object.keys($scope.errors).length == 0)
-      IO.create(io: $scope.io).then(
-        (io) ->
-          IOMember.create(io_id: io.id, io_member: $scope.ioMember).then (ioMember) ->
-            $modalInstance.close(io)
-        (resp) ->
-          $scope.errors = resp.data.errors
-          $scope.buttonDisabled = false
-      )
+
+    IOValidations =
+      name: (value) ->
+        if !value then return 'is required'
+      budget: (value) ->
+        if !value then return 'is required'
+        if isNaN value then return 'should be a number'
+      advertiser_id: (value) ->
+        if !value then return 'is not selected'
+      start_date: (value) ->
+        console.log value
+        if !value then return 'is required'
+      end_date: (value) ->
+        if !value then return 'is required'
+
+    IOMemberValidations =
+      user_id: (value) ->
+        if !value then return 'is not selected'
+      share: (value) ->
+        if !value then return 'is required'
+        if isNaN value then return 'should be a number'
+        if value < 0 or value > 100 then return 'should be 0 - 100'
+      from_date: (value) ->
+        if !value then return 'is required'
+      to_date: (value) ->
+        if !value then return 'is required'
+
+    for key, validation of IOValidations
+      error = validation($scope.io[key])
+      $scope.errors[key] = error if error
+    for key, validation of IOMemberValidations
+      error = validation($scope.ioMember[key])
+      $scope.errors[key] = error if error
+
+    console.log $scope.errors
+    if Object.keys($scope.errors).length > 0 then return
+
+    IO.create(io: $scope.io).then(
+      (io) ->
+        IOMember.create(io_id: io.id, io_member: $scope.ioMember).then (ioMember) ->
+          $modalInstance.close(io)
+      (resp) ->
+        $scope.errors = resp.data.errors
+        $scope.buttonDisabled = false
+    )
   $scope.cancel = ->
     $modalInstance.close()
 
