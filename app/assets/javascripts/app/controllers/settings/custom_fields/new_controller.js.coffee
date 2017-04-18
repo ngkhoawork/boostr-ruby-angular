@@ -1,14 +1,16 @@
 @app.controller "SettingsDealCustomFieldNamesNewController",
-['$scope', '$modalInstance', '$q', '$filter', 'DealCustomFieldName', 'DealProductCfName', 'User', 'TimePeriod', 'customFieldName',
-($scope, $modalInstance, $q, $filter, DealCustomFieldName, DealProductCfName, User, TimePeriod, customFieldName) ->
+['$scope', '$modalInstance', '$q', '$filter', 'DealCustomFieldName', 'DealProductCfName', 'AccountCfName', 'User', 'TimePeriod', 'customFieldName',
+($scope, $modalInstance, $q, $filter, DealCustomFieldName, DealProductCfName, AccountCfName, User, TimePeriod, customFieldName) ->
 
   $scope.init = () ->
     $scope.formType = "New"
     $scope.submitText = "Create"
     $scope.customFieldName = customFieldName
+    $scope.customFieldName.field_object = 'deal'
     $scope.customFieldObjectTypes = [
       { name: 'Deal', value: 'deal' }
       { name: 'Deal Product', value: 'deal_product' }
+      { name: 'Account', value: 'account' }
     ]
     $scope.fieldTypes = DealCustomFieldName.field_type_list
     $scope.customFieldOptions = [ {id: null, value: ""} ]
@@ -25,13 +27,18 @@
   $scope.removeCustomFieldOption = (index) ->
     $scope.customFieldOptions.splice(index, 1)
 
+  $scope.$watch 'customFieldName.field_object', ->
+    $scope.customFieldName.field_type = ''
+    if $scope.customFieldName.field_object == 'deal' || $scope.customFieldName.field_object == 'deal_product'
+      $scope.fieldTypes = DealCustomFieldName.field_type_list
+    else
+      $scope.fieldTypes = AccountCfName.field_type_list
 
   $scope.submitForm = () ->
     $scope.errors = {}
 
     fields = ['field_type', 'field_label', 'position']
 
-    console.log($scope.customFieldName)
     fields.forEach (key) ->
       field = $scope.customFieldName[key]
       switch key
@@ -42,7 +49,6 @@
         when 'position'
           if !field then return $scope.errors[key] = 'Position is required'
 
-    console.log($scope.errors)
     if Object.keys($scope.errors).length > 0 then return
 
     $scope.customFieldName.customFieldOptions = []
@@ -64,6 +70,14 @@
       )
     if $scope.customFieldName.field_object == 'deal_product'
       DealProductCfName.create(deal_product_cf_name: $scope.customFieldName).then(
+        (customFieldName) ->
+          $modalInstance.close()
+        (resp) ->
+          $scope.responseErrors = resp.data.errors
+          $scope.buttonDisabled = false
+      )
+    if $scope.customFieldName.field_object == 'account'
+      AccountCfName.create(account_cf_name: $scope.customFieldName).then(
         (customFieldName) ->
           $modalInstance.close()
         (resp) ->

@@ -21,8 +21,10 @@ class Company < ActiveRecord::Base
   has_many :bps
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names
+  has_many :account_cf_names
   has_many :deal_custom_fields, through: :deals
   has_many :deal_product_cfs, through: :deal_products
+  has_many :account_cfs, through: :clients
   has_many :exchange_rates
   has_many :validations, dependent: :destroy
   has_many :api_configurations, dependent: :destroy

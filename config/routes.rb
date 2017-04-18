@@ -86,6 +86,7 @@ Rails.application.routes.draw do
     end
     resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy]
+    resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
     
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
