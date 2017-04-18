@@ -1,6 +1,10 @@
 class Api::V1::ActivitiesController < ApiController
   def index
-    render json: activities
+    render json: activities.includes(:creator, :client, :deal), each_serializer: Api::V1::ActivityListSerializer
+  end
+
+  def show
+    render json: activity
   end
 
   def create
@@ -48,11 +52,11 @@ class Api::V1::ActivitiesController < ApiController
   private
 
   def offset
-    (params[:page].to_i - 1) * 10
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 
   def limit
-    10
+    params[:per].present? ? params[:per].to_i : 10
   end
 
   def activity

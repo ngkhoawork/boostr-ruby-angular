@@ -22,7 +22,7 @@ class Api::V1::ClientsController < ApiController
   end
 
   def show
-    render json: client
+    render json: client, serializer: Api::V1::ClientSerializer
   end
 
   def create
