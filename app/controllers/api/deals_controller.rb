@@ -267,7 +267,7 @@ class Api::DealsController < ApplicationController
     end
     response_deals = response_deals
      .for_time_period(time_period.start_date, time_period.end_date)
-     .less_than(100)
+     .open_partial
      .as_json({override: true, options: {
                       only: [
                               :id,
@@ -562,7 +562,7 @@ class Api::DealsController < ApplicationController
       all_members_list = selected_team.all_members.collect{|member| member.id}
       all_members_list += selected_team.all_leaders.collect{|member| member.id}
     end
-    company.deals.by_deal_team(all_members_list)
+    company.deals.by_deal_team(all_members_list).uniq
   end
 
   def team
