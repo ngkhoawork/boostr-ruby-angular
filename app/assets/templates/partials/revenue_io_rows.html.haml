@@ -1,4 +1,4 @@
-%tr{'ng-repeat': 'row in revenue | filter:searchText'}
+%tr{'ng-repeat': 'row in revenue | orderBy : sorting.key : sorting.reverse | filter:searchText'}
   %td.left {{row.io_number}}
   %td.left {{row.external_io_number}}
   %td.left

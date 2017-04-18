@@ -1,4 +1,4 @@
-%tr{'ng-repeat': 'displayLineItem in revenue | filter:searchText'}
+%tr{'ng-repeat': 'displayLineItem in revenue | orderBy : sorting.key : sorting.reverse | filter:searchText'}
   %td.left
     {{ displayLineItem.io.name }}
   %td.left

@@ -26,8 +26,24 @@
 
 #revenue {
   font-family: "Avenir Next", Arial, serif;
+  .container-fluid {
+    margin: 0 25px;
+  }
+  .revenue-header {
+    display: flex;
+    //align-items: center;
+    .header-item {
+      white-space: nowrap;
+      margin-right: 30px;
+      &:last-child {
+        margin: 0 0 0 auto;
+      }
+    }
+    .search {
+      width: 30%;
+    }
+  }
   .date-filter {
-    float: right;
     padding: 10px 0;
     font-weight: bold;
     .date-picker-wrap {
@@ -57,6 +73,7 @@
     }
   }
   .filter-row {
+    margin-top: -2px;
     span {
       display: inline-block;
       padding: 12px 5px;

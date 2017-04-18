@@ -2,9 +2,9 @@
 ['$scope', '$document', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem',
 ($scope, $document, $modal, $filter, $routeParams, $route, $location, $q, IO, TempIO, DisplayLineItem) ->
 
-  sorting =
-    ascending: 1
+  $scope.sorting =
     key: ''
+    reverse: false
   currentYear = moment().year()
   $scope.revenueFilters = [
     { name: 'IOs', param: '' }
@@ -118,33 +118,11 @@
     $location.path(path)
 
   $scope.sortBy = (key) ->
-    if sorting.key != key
-      sorting.key = key
-      sorting.order = 1
+    if $scope.sorting.key != key
+      $scope.sorting.key = key
+      $scope.sorting.reverse = false
     else
-      sorting.order *= -1
-
-    getVal = (obj, path) ->
-      path = path || ''
-      objKey = (obj, key) -> if obj then obj[key] else null
-      path.split('.').reduce(objKey, obj)
-
-
-    $scope.revenue.sort (a, b) ->
-      v1 = getVal a, key
-      v2 = getVal b, key
-      if typeof v1 is 'string' then v1 = v1.toLowerCase()
-      if typeof v2 is 'string' then v2 = v2.toLowerCase()
-      if key.indexOf('budget') != -1 || key == 'price'
-        v1 = Number v1
-        v2 = Number v2
-      if v1 == null || v1 == undefined || v1 == ''
-       return -1 * sorting.order
-      if v2 == null || v2 == undefined || v1 == ''
-        return 1 * sorting.order
-      if v1 > v2 then return 1 * sorting.order
-      if v1 < v2 then return -1 * sorting.order
-      return 0
+      $scope.sorting.reverse = !$scope.sorting.reverse
 
   $scope.$on 'updated_ios', ->
     $scope.init()
