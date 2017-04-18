@@ -66,7 +66,7 @@ class Api::RevenueController < ApplicationController
   end
 
   def quarterly_ios
-    if params[:team_id] == 'all'
+    if params[:team_id] == 'all' && params[:user_id] == 'all'
       ios = current_user.company.ios
                     .for_time_period(start_date, end_date)
                     .as_json
