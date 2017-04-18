@@ -162,27 +162,34 @@
 								%thead
 									%tr
 										%th
-											%span.clickable{'ng-click': 'sortRevenuesBy("name")'}
+											%span.clickable{'ng-click': 'sortRevenues.by("name")'}
 												IO Name
-												%i.fa{'ng-class': '{"fa-caret-down": revenueSorting.name == true, "fa-caret-up": revenueSorting.name == false}'}
-										%th IO Advertiser Name
-										%th IO Agency Name
-										%th IO Team
+												%i{'ng-show': 'sortRevenues.field == "name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
 										%th
-											%span.clickable{'ng-click': 'sortRevenuesBy("budget")'}
+											%span.clickable{'ng-click': 'sortRevenues.by("advertiser.name")'}
+												IO Advertiser Name
+												%i{'ng-show': 'sortRevenues.field == "advertiser.name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+										%th
+											%span.clickable{'ng-click': 'sortRevenues.by("agency.name")'}
+												IO Agency Name
+												%i{'ng-show': 'sortRevenues.field == "agency.name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+										%th 
+											IO Team
+										%th
+											%span.clickable{'ng-click': 'sortRevenues.by("budget")'}
 												IO Total Budget
-												%i.fa{'ng-class': '{"fa-caret-down": revenueSorting.budget == true, "fa-caret-up": revenueSorting.budget == false}'}
+												%i{'ng-show': 'sortRevenues.field == "budget"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
 										%th
-											%span.clickable{'ng-click': 'sortRevenuesBy("start_date")'}
+											%span.clickable{'ng-click': 'sortRevenues.by("start_date")'}
 												Start Date
-												%i.fa{'ng-class': '{"fa-caret-down": revenueSorting.start_date == true, "fa-caret-up": revenueSorting.start_date == false}'}
+												%i{'ng-show': 'sortRevenues.field == "start_date"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
 										%th
-											%span.clickable{'ng-click': 'sortRevenuesBy("end_date")'}
+											%span.clickable{'ng-click': 'sortRevenues.by("end_date")'}
 												End Date
-												%i.fa{'ng-class': '{"fa-caret-down": revenueSorting.end_date == true, "fa-caret-up": revenueSorting.end_date == false}'}
+												%i{'ng-show': 'sortRevenues.field == "end_date"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
 										%th{'ng-repeat': 'key in revenues.detail_amounts[switch.revenues]'} {{key}}
 								%tbody
-									%tr{'ng-repeat': 'revenue in revenues'}
+									%tr{'ng-repeat': 'revenue in revenues | orderBy : sortRevenues.field : sortRevenues.reverse'}
 										%td
 											%a{href: '', 'ng-href': '/ios/{{revenue.id}}'} {{revenue.name}}
 										%td {{revenue.advertiser.name}}
@@ -209,16 +216,32 @@
 							%table.table.table-hover
 								%thead
 									%tr
-										%th Deal Name
-										%th Advertiser
-										%th Agency
-										%th Deal Team
-										%th Total Budget
-										%th %
+										%th
+											%span.clickable{'ng-click': 'sortDeals.by("name")'}
+												Deal Name
+												%i{'ng-show': 'sortDeals.field == "name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+										%th
+											%span.clickable{'ng-click': 'sortDeals.by("advertiser.name")'}
+												Advertiser
+												%i{'ng-show': 'sortDeals.field == "advertiser.name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+										%th
+											%span.clickable{'ng-click': 'sortDeals.by("agency.name")'}
+												Agency
+												%i{'ng-show': 'sortDeals.field == "agency.name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+										%th 
+											Deal Team
+										%th
+											%span.clickable{'ng-click': 'sortDeals.by("budget")'}
+												Total Budget
+												%i{'ng-show': 'sortDeals.field == "budget"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+										%th
+											%span.clickable{'ng-click': 'sortDeals.by("stage.probability")'}
+												\%
+												%i{'ng-show': 'sortDeals.field == "stage.probability"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
 										-#%th{width: '300px'} Next Steps
 										%th{'ng-repeat': 'key in deals.detail_amounts[switch.deals]'} {{key}}
 								%tbody
-									%tr{'ng-repeat': 'deal in deals', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
+									%tr{'ng-repeat': 'deal in deals | orderBy : sortDeals.field : sortDeals.reverse', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
 										%td
 											%a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
 										%td {{deal.advertiser.name}}
