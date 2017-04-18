@@ -1,6 +1,6 @@
 @app.controller "SettingsDealCustomFieldNamesNewController",
-['$scope', '$modalInstance', '$q', '$filter', 'DealCustomFieldName', 'DealProductCfName', 'User', 'TimePeriod', 'customFieldName',
-($scope, $modalInstance, $q, $filter, DealCustomFieldName, DealProductCfName, User, TimePeriod, customFieldName) ->
+['$scope', '$modalInstance', '$q', '$filter', 'DealCustomFieldName', 'DealProductCfName', 'ContactCfName', 'User', 'TimePeriod', 'customFieldName',
+($scope, $modalInstance, $q, $filter, DealCustomFieldName, DealProductCfName, ContactCfName, User, TimePeriod, customFieldName) ->
 
   $scope.init = () ->
     $scope.formType = "New"
@@ -9,8 +9,9 @@
     $scope.customFieldObjectTypes = [
       { name: 'Deal', value: 'deal' }
       { name: 'Deal Product', value: 'deal_product' }
+      { name: 'Contact', value: 'contact' }
     ]
-    $scope.fieldTypes = DealCustomFieldName.field_type_list
+
     $scope.customFieldOptions = [ {id: null, value: ""} ]
     $scope.errors = {}
     $scope.responseErrors = {}
@@ -25,6 +26,13 @@
   $scope.removeCustomFieldOption = (index) ->
     $scope.customFieldOptions.splice(index, 1)
 
+  $scope.getfieldTypes = (field_object) ->
+    if field_object == 'deal'
+      DealCustomFieldName.field_type_list
+    else if field_object == 'deal_product'
+      DealProductCfName.field_type_list
+    else if field_object == 'contact'
+      ContactCfName.field_type_list
 
   $scope.submitForm = () ->
     $scope.errors = {}
@@ -53,7 +61,6 @@
 
     $scope.buttonDisabled = true
 
-
     if $scope.customFieldName.field_object == 'deal'
       DealCustomFieldName.create(deal_custom_field_name: $scope.customFieldName).then(
         (customFieldName) ->
@@ -62,8 +69,18 @@
           $scope.responseErrors = resp.data.errors
           $scope.buttonDisabled = false
       )
+
     if $scope.customFieldName.field_object == 'deal_product'
       DealProductCfName.create(deal_product_cf_name: $scope.customFieldName).then(
+        (customFieldName) ->
+          $modalInstance.close()
+        (resp) ->
+          $scope.responseErrors = resp.data.errors
+          $scope.buttonDisabled = false
+      )
+
+    if $scope.customFieldName.field_object == 'contact'
+      ContactCfName.create(contact_cf_name: $scope.customFieldName).then(
         (customFieldName) ->
           $modalInstance.close()
         (resp) ->

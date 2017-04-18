@@ -1,17 +1,23 @@
 @app.controller "SettingsDealCustomFieldNamesController",
-['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName',
-($scope, $routeParams, $location, $modal, DealCustomFieldName, DealProductCfName) ->
+['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName', 'ContactCfName',
+($scope, $routeParams, $location, $modal, DealCustomFieldName, DealProductCfName, ContactCfName) ->
   $scope.tables = ['Deal', 'Client', 'DealProduct']
   $scope.init = () ->
     getDealCustomFieldNames()
     getDealProductCfNames()
+    getContactCfNames()
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
+
   getDealProductCfNames = () ->
     DealProductCfName.all().then (dealProductCustomFieldNames) ->
       $scope.dealProductCustomFieldNames = dealProductCustomFieldNames
+
+  getContactCfNames = () ->
+    ContactCfName.all().then (results) ->
+      $scope.contact_cf_names = results
 
   $scope.updateTimePeriod = (time_period_id) ->
     $location.path("/settings/deal_custom_field_names/#{time_period_id}")
@@ -53,8 +59,10 @@
     if confirm('Deleting a custom field will delete all values on records.  Click Ok to delete or Cancel.')
       if objectType == 'deal'
         DealCustomFieldName.delete(id: customFieldName.id)
-      else
-        DealProductCfName.delete(id: customFieldName.id)
+      else if objectType == 'deal_product'
+        DealProductCfName.delete(id: customFieldName.id)        
+      else if objectType == 'contact'
+        ContactCfName.delete(id: customFieldName.id)
 
   $scope.$on 'updated_deal_custom_field_names', ->
     getDealCustomFieldNames()
@@ -62,6 +70,8 @@
   $scope.$on 'updated_deal_product_cf_names', ->
     getDealCustomFieldNames()
     getDealProductCfNames()
+  $scope.$on 'updated_contact_cf_names', ->
+    getContactCfNames()
 
   $scope.init()
 

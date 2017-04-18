@@ -5,6 +5,7 @@ class Contact < ActiveRecord::Base
 
   has_one :primary_client, through: :primary_client_contact, source: :client
   has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
+  has_one :contact_cf, dependent: :destroy
 
   has_many :clients, -> { uniq }, through: :client_contacts
   has_many :client_contacts, dependent: :destroy
@@ -19,6 +20,7 @@ class Contact < ActiveRecord::Base
 
   delegate :email, :street1, :street2, :city, :state, :zip, :phone, :mobile, :country, to: :address, allow_nil: true
 
+  accepts_nested_attributes_for :contact_cf
   accepts_nested_attributes_for :address
 
   validates :name, presence: true

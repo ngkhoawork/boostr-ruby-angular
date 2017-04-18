@@ -7,6 +7,12 @@ RSpec.describe Contact, type: :model do
   let(:address) { create :address, email: 'abc123@boostrcrm.com' }
   let(:address2) { create :address, email: 'abc1234@boostrcrm.com' }
 
+  context 'associations' do
+    it { should have_many(:deals).through(:deal_contacts) }
+    it { should have_many(:deal_contacts) }
+    it { should have_one :contact_cf }
+  end
+
   context 'after_save' do
     let(:contact) { build :contact, client_id: client.id }
 
@@ -50,10 +56,6 @@ RSpec.describe Contact, type: :model do
     end
   end
 
-  context 'associations' do
-    it { should have_many(:deals).through(:deal_contacts) }
-    it { should have_many(:deal_contacts) }
-  end
 
   context 'scopes' do
     context 'unassigned' do

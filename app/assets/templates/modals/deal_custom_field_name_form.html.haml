@@ -6,7 +6,7 @@
           = inline_svg 'icons/close.svg'
       %h3.modal-title
         %strong
-          {{ formType }} Deal Custom Field
+          {{ formType }} Custom Field
     .modal-body
       .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
@@ -21,7 +21,7 @@
               Custom Field Object
               %span.star *
             %ui-select{ name: 'field_object', ng: { model: 'customFieldName.field_object', disabled: true } }
-              %ui-select-match{ placeholder: 'Select A Object' }
+              %ui-select-match{ placeholder: 'Select an Object' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'customFieldObjectType.value as customFieldObjectType in customFieldObjectTypes | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'customFieldObjectType.name' } } }
@@ -35,7 +35,7 @@
             %ui-select{ name: 'field_type', ng: { model: 'customFieldName.field_type', disabled: true } }
               %ui-select-match{ placeholder: 'Select A Field Type' }
                 {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'fieldType.value as fieldType in fieldTypes | filter: { name: $select.search }' }
+              %ui-select-choices{ repeat: 'fieldType.value as fieldType in getfieldTypes(customFieldName.field_object) | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'fieldType.name' } } }
       .form-group{ ng: { if: 'customFieldName.field_type == "dropdown"', class:'{error: errors.field_type}' } }
         .row
