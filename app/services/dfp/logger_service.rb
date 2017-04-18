@@ -1,4 +1,4 @@
-class DFP::DfpLoggerService < BaseService
+class DFP::LoggerService < BaseService
 
   def create_log!
     IntegrationLog.create!(

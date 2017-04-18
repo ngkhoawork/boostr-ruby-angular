@@ -881,6 +881,8 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.decimal  "budget_remaining_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.integer  "balance_loc",                limit: 8
     t.integer  "daily_run_rate_loc"
+    t.decimal  "ctr",                                  precision: 3,  scale: 2
+    t.integer  "clicks"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
@@ -1312,6 +1314,7 @@ ActiveRecord::Schema.define(version: 20170502230011) do
   add_foreign_key "deal_product_cf_names", "companies"
   add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
   add_foreign_key "deal_product_cfs", "companies"
+  add_foreign_key "dfp_report_queries", "api_configurations"
   add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"
