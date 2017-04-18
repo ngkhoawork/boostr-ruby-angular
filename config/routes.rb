@@ -63,7 +63,14 @@ Rails.application.routes.draw do
       resources :countries, only: [:index]
       resources :fields, only: [:index]
       resources :users, only: [:index, :update]
-    end
+
+      resources :currencies, only: [:index] do
+        collection do
+          get :active_currencies
+          get :exchange_rates_by_currencies
+        end
+      end
+    end # API V1 END
 
     resources :countries, only: [:index]
     resources :api_configurations

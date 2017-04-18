@@ -1,5 +1,5 @@
 class Api::V1::ClientsController < ApiController
-  respond_to :json, :csv
+  respond_to :json
 
   def index
     if params[:name].present?
@@ -10,15 +10,15 @@ class Api::V1::ClientsController < ApiController
       results = clients
                   .by_type_id(params[:client_type_id])
                   .order(:name)
-                  .includes(:address)
                   .distinct
     end
 
     response.headers['X-Total-Count'] = results.count.to_s
     results = results.limit(limit).offset(offset)
-    render json: results.as_json(
-      methods: [:deals_count, :fields]
-    )
+    render json: results,
+      each_serializer: Api::V1::ClientListSerializer,
+        advertiser: Client.advertiser_type_id(company),
+        agency: Client.agency_type_id(company)
   end
 
   def show
