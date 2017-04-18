@@ -24,7 +24,8 @@ class Api::V1::ClientSerializer < ActiveModel::Serializer
     :agency_activities,
     :client_contacts,
     :deals,
-    :client_members
+    :client_members,
+    :reminder
   )
 
   def type_name
@@ -59,5 +60,9 @@ class Api::V1::ClientSerializer < ActiveModel::Serializer
 
   def deals
     object.company.deals.active.for_client(object.id).includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users, :currency).distinct
+  end
+
+  def reminder
+    object.reminders.where(completed: false).first
   end
 end
