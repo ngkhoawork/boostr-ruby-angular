@@ -7,4 +7,6 @@ class ApiConfiguration < ActiveRecord::Base
 
   validates :company_id, presence: true
 
+  scope :switched_on, -> { where(switched_on: true) }
+
 end
