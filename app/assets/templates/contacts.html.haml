@@ -1,134 +1,40 @@
-#contacts
-  #nav.transparent
-    .container
-      .row
-        .col-xs-12
-          %ul.nav.nav-tabs
-            %li{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                {{ contactFilter.name }}
-                %span.caret
-              %ul.dropdown-menu
-                %li{ ng: { repeat: 'filter in contactFilters', class: '{active: filter.name == contactFilter.name}' } }
-                  %a{ href: '', ng: { click: 'filterContacts(filter)' } }
-                    {{ filter.name }}
-
-            %li.pull-right
-              %a.upload{ href: '', ng: { click: 'showModal()' } }
-                = inline_svg 'icons/add.svg'
-                New Contact
-
-
-  -##
-  -# Main content
-  -##
-  .container
-    .row
-
-
-      -##
-      -# List and search
-      -##
-      #contact-list.col-xs-4
-        %script{ type: 'text/ng-template', id: 'partials/contact_list_item.html' }
-          %h4
-            {{ item.name }}
-          .subtitle{ 'ng-show': 'item.primary_client_json && item.position' }
-            {{ item.primary_client_json.name }}, {{ item.position }}
-          .subtitle{ 'ng-show': 'item.primary_client_json && !item.position' }
-            {{ item.primary_client_json.name }}
-          .subtitle{ 'ng-show': '!item.primary_client_json && item.position' }
-            {{ item.position }}
-        %div{ 'object-list': true, items: 'contacts', query: 'query', 'on-search': 'searchContacts', 'on-select': 'showContact', 'on-load-more': 'loadMoreContacts', selected: 'currentContact', template: 'partials/contact_list_item.html' }
-
-
-      -##
-      -# Detail view
-      -##
-      #contact-detail.col-xs-8
-        .tools.pull-right
-          %a#delete-contact{ href: '', ng: { click: 'delete()' } }
-            = inline_svg 'icons/trash.svg'
-          %a#edit-contact{ href: '', ng: { click: 'showEditModal()' } }
-            = inline_svg 'icons/edit.svg'
-        %h2.contact-name.icon-show-popup-wrapper
-          %span.contact-name-text
-            {{ currentContact.name }}
-          .show-create-remainders-popup
-            %label.clock{ 'for': 'reminders-contacts'}
-              = inline_svg 'icons/reminder-icon-clock.svg'
-            %input#reminders-contacts.show-form-create-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
-
-            %div.wrap-form{ ng: { show: 'showReminder' } }
-              #reminder_modal
-                .modal-header.text-center
-                  %label{'aria-hidden' => 'true', 'for' => 'reminders-contacts',  ng: { click: 'cancel()' }}
-                    = inline_svg 'icons/close.svg'
-                %form{ name: 'contactReminderForm',  ng: { submit: 'submitReminderForm()' } }
-                  .modal-body
-                    .form-group.reminder-name-wrap{ ng: { class: '{error: reminderOptions.errors.Name}' } }
-                      %label.control-label{ for: 'name', ng: { class: '{error: reminderOptions.errors.Name}' }  } Reminder name*
-                      %input.form-control.reminder-name{ placeholder: '', ng: { model: 'reminder.name', class: '{error: reminderOptions.errors.Name}' }, name: 'name'}
-
-                    .form-group.reminder-date-wrap{ ng: { class: '{error: reminderOptions.errors.Date}' } }
-                      %label.control-label{ for: 'date', ng: { class: '{error: reminderOptions.errors.Date}' } } Remind on date*
-                      %span.bs-datepicker
-                        %input.box.w4.reminder-date{ name: 'date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'callDateOpened = true', class: '{error: reminderOptions.errors.Date}' }, 'is-open': 'callDateOpened' }
-
-                    .form-group.reminder-on-time-wrap{ ng: { class: '{error: reminderOptions.errors.Time}' } }
-                      %label.control-label{ for: 'stage', ng: { class: '{error: reminderOptions.errors.Time}' }  } Remind on time*
-                      %timepicker-pop.input-group.reminder-on-time{"input-time" => "reminder._time", "show-meridian" => "reminderOptions.showMeridian", ng: { class: '{ error: reminderOptions.errors.Time }' }}
-
-                    .form-group.reminder-note-wrap
-                      %label.control-label{ for: 'comment' } Reminder note
-                      %textarea.form-control.reminder-note{ placeholder: '', ng: { model: 'reminder.comment' }, name: 'comment' }
-
-                  .modal-footer.text-center
-                    %button.btn.btn-primary.btn-lg.btn-add-remainder{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } } Set Reminder
-
-          %br
-          .position{ 'ng-show': 'currentContact.primary_client_json && currentContact.position' }
-            {{ currentContact.position }}, {{ currentContact.primary_client_json.name }}
-          .position{ 'ng-show': 'currentContact.primary_client_json && !currentContact.position' }
-            {{ currentContact.primary_client_json.name }}
-          .position{ 'ng-show': '!currentContact.primary_client_json && currentContact.position' }
-            {{ currentContact.position }}
-        #details
-        .wells-group
-          .well
-            .row
-              .col-xs-2
-                %strong
-                  Mobile
-              .col-xs-10.detail
-                {{ currentContact.address.mobile | tel }}
-            .row
-              .col-xs-2
-                %strong
-                  Office
-              .col-xs-10.detail
-                {{ currentContact.address.phone | tel }}
-            .row
-              .col-xs-2
-                %strong
-                  Email
-              .col-xs-10.detail
-                {{ currentContact.address.email }}
-          .well
-            .row
-              .col-xs-2
-                %strong
-                  Address
-              .col-xs-10.detail
-                %div {{ currentContact.address.street1 }}
-                %div {{ concatAddress(currentContact.address) }}
-          .well
-            .row
-              .col-xs-2
-                %strong
-                  Notes
-              .col-xs-10.detail
-                {{ currentContact.note }}
-
-        #activities.section
-          %div{'ng-include': '"partials/dashboard/activity.html"'}
+#contacts.z-styles
+	.container-fluid.contacts-inner
+		.row.contacts-header.mb30
+			.header-item
+				.main-title Contacts
+			.header-item
+				%add-button{'ng-click': 'showModal()'}
+					Add Contact
+			.header-item.switch-row
+				%span{ng: {repeat: 'filter in contactFilters', class: '{active: filter.name == contactFilter.name}', click: 'filterContacts(filter)'}}
+					{{filter.name}}
+			.header-item.contact-search
+				%i.fa.fa-search
+				%input.form-control{placeholder: 'Search', ng: {model: 'query', 'model-options': '{debounce: 500}' }}
+			.header-item
+				%button.btn-main{'ng-click': 'filter.open($event)'}
+					%i.fa.fa-filter
+					Add filter
+		.row.block
+			.table-wrapper
+				%table.table.table-hover
+					%thead
+						%tr
+							%th Name
+							%th Position
+							%th Job Level
+							%th Related Accounts
+							%th Email
+							%th Phone
+							%th Last Touch
+					%tbody
+						%tr{'ng-repeat': 'contact in contacts'}
+							%td
+								%a{href: '', 'ng-href': '#'} {{contact.name}}
+							%td {{contact.position}}
+							%td Job Level
+							%td Related Accounts
+							%td {{contact.address.email}}
+							%td {{contact.address.phone}}
+							%td {{contact.activity_updated_at | date}}

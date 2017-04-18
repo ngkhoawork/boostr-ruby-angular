@@ -67,6 +67,10 @@
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
 
+
+  $scope.$watch 'query', (oldValue, newValue) ->
+    if oldValue != newValue then $scope.getContacts()
+
   $scope.getContacts = ->
     $scope.isLoading = true
     params = {
@@ -77,6 +81,7 @@
     if $scope.query.trim().length
       params.name = $scope.query.trim()
     Contact.all1(params).then (contacts) ->
+      console.log contacts[0]
       if $scope.page > 1
         $scope.contacts = $scope.contacts.concat(contacts)
       else
@@ -95,16 +100,16 @@
       $scope.isLoading = false
 
   # Prevent multiple extraneous calls to the server as user inputs search term
-  searchTimeout = null;
-  $scope.searchContacts = (query) ->
-    $scope.page = 1
-    if searchTimeout
-      clearTimeout(searchTimeout)
-      searchTimeout = null
-    searchTimeout = setTimeout(
-      -> $scope.getContacts()
-      250
-    )
+#  searchTimeout = null;
+#  $scope.searchContacts = (query) ->
+#    $scope.page = 1
+#    if searchTimeout
+#      clearTimeout(searchTimeout)
+#      searchTimeout = null
+#    searchTimeout = setTimeout(
+#      -> $scope.getContacts()
+#      250
+#    )
 
   $scope.isLoading = false
   $scope.loadMoreContacts = ->
