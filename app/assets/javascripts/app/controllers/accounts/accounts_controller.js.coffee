@@ -132,7 +132,10 @@
 
   $scope.getClientType = (client) ->
     clientType = Field.field(client, 'Client Type')
-    return clientType.option.name
+    if clientType && clientType.option
+      return clientType.option.name
+    else
+      return ""
 
   $scope.getClientCategory = (client) ->
     clientCategory = Field.getOption(client, 'Category', client.client_category_id)
