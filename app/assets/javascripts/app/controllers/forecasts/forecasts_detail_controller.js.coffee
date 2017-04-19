@@ -150,6 +150,12 @@
                 quarters: quarters
                 months: months
 
+        parseBudget = (data) ->
+            data = _.map data, (item) ->
+                item.budget = parseInt item.budget if item.budget
+                item.budget_loc = parseInt item.budget_loc if item.budget_loc
+                item
+
         getData = ->
             if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
             query =
@@ -163,9 +169,11 @@
             query.team_id = query.id
             delete query.id
             Revenue.forecast_detail(query).$promise.then (data) ->
+                parseBudget data
                 addDetailAmounts data, 'revenues'
                 $scope.revenues = data
             Deal.forecast_detail(query).then (data) ->
+                parseBudget data
                 addDetailAmounts data, 'deals'
                 $scope.deals = data
 

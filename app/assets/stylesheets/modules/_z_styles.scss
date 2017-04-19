@@ -52,6 +52,15 @@
                 font-size: 12px;
             }
         }
+        tbody {
+            tr {
+                td:first-child {
+                    a:hover, a:focus {
+                        color: $secondary-color;
+                    }
+                }
+            }
+        }
         tr {
             //&:nth-of-type(even) {
             //    background-color: #fafafb;
