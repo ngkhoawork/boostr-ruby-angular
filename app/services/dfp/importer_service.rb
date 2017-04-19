@@ -24,7 +24,7 @@ class DFP::ImporterService < BaseService
   end
 
   def current_day
-    DateTime.current
+    DateTime.current.in_time_zone("Pacific Time (US & Canada)")
   end
 
   def make_cumulative_import
