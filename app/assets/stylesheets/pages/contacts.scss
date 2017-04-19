@@ -1,6 +1,11 @@
 #contacts {
+    overflow-x: hidden;
+    position: relative;
     .contacts-inner {
-        margin: 0 40px;
+        margin: 0 25px;
+    }
+    .z-sliding-filter {
+        top: 0
     }
     .contacts-header {
         display: flex;

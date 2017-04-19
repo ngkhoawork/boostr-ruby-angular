@@ -11,11 +11,101 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170413223048) do
+ActiveRecord::Schema.define(version: 20170417170015) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
+
+  create_table "account_cf_names", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "field_index"
+    t.string   "field_type"
+    t.string   "field_label"
+    t.boolean  "is_required"
+    t.integer  "position"
+    t.boolean  "show_on_modal"
+    t.boolean  "disabled"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "account_cf_names", ["company_id"], name: "index_account_cf_names_on_company_id", using: :btree
+
+  create_table "account_cf_options", force: :cascade do |t|
+    t.integer  "account_cf_name_id"
+    t.string   "value"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "account_cf_options", ["account_cf_name_id"], name: "index_account_cf_options_on_account_cf_name_id", using: :btree
+
+  create_table "account_cfs", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "client_id"
+    t.decimal  "currency1",      precision: 15, scale: 2
+    t.decimal  "currency2",      precision: 15, scale: 2
+    t.decimal  "currency3",      precision: 15, scale: 2
+    t.decimal  "currency4",      precision: 15, scale: 2
+    t.decimal  "currency5",      precision: 15, scale: 2
+    t.decimal  "currency6",      precision: 15, scale: 2
+    t.decimal  "currency7",      precision: 15, scale: 2
+    t.string   "currency_code1"
+    t.string   "currency_code2"
+    t.string   "currency_code3"
+    t.string   "currency_code4"
+    t.string   "currency_code5"
+    t.string   "currency_code6"
+    t.string   "currency_code7"
+    t.string   "text1"
+    t.string   "text2"
+    t.string   "text3"
+    t.string   "text4"
+    t.string   "text5"
+    t.text     "note1"
+    t.text     "note2"
+    t.datetime "datetime1"
+    t.datetime "datetime2"
+    t.datetime "datetime3"
+    t.datetime "datetime4"
+    t.datetime "datetime5"
+    t.datetime "datetime6"
+    t.datetime "datetime7"
+    t.decimal  "number1",        precision: 15, scale: 2
+    t.decimal  "number2",        precision: 15, scale: 2
+    t.decimal  "number3",        precision: 15, scale: 2
+    t.decimal  "number4",        precision: 15, scale: 2
+    t.decimal  "number5",        precision: 15, scale: 2
+    t.decimal  "number6",        precision: 15, scale: 2
+    t.decimal  "number7",        precision: 15, scale: 2
+    t.decimal  "integer1",       precision: 15
+    t.decimal  "integer2",       precision: 15
+    t.decimal  "integer3",       precision: 15
+    t.decimal  "integer4",       precision: 15
+    t.decimal  "integer5",       precision: 15
+    t.decimal  "integer6",       precision: 15
+    t.decimal  "integer7",       precision: 15
+    t.boolean  "boolean1"
+    t.boolean  "boolean2"
+    t.boolean  "boolean3"
+    t.decimal  "percentage1",    precision: 5,  scale: 2
+    t.decimal  "percentage2",    precision: 5,  scale: 2
+    t.decimal  "percentage3",    precision: 5,  scale: 2
+    t.decimal  "percentage4",    precision: 5,  scale: 2
+    t.decimal  "percentage5",    precision: 5,  scale: 2
+    t.string   "dropdown1"
+    t.string   "dropdown2"
+    t.string   "dropdown3"
+    t.string   "dropdown4"
+    t.string   "dropdown5"
+    t.string   "dropdown6"
+    t.string   "dropdown7"
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+  end
+
+  add_index "account_cfs", ["client_id"], name: "index_account_cfs_on_client_id", using: :btree
+  add_index "account_cfs", ["company_id"], name: "index_account_cfs_on_company_id", using: :btree
 
   create_table "account_dimensions", force: :cascade do |t|
     t.string  "name"
@@ -131,8 +221,6 @@ ActiveRecord::Schema.define(version: 20170413223048) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
-    t.text     "encrypted_json_api_key"
-    t.text     "encrypted_json_api_key_iv"
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -770,8 +858,6 @@ ActiveRecord::Schema.define(version: 20170413223048) do
     t.decimal  "budget_remaining_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.integer  "balance_loc",                limit: 8
     t.integer  "daily_run_rate_loc"
-    t.decimal  "ctr",                                  precision: 3,  scale: 2
-    t.integer  "clicks"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
@@ -1162,6 +1248,10 @@ ActiveRecord::Schema.define(version: 20170413223048) do
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
+  add_foreign_key "account_cf_names", "companies"
+  add_foreign_key "account_cf_options", "account_cf_names"
+  add_foreign_key "account_cfs", "clients"
+  add_foreign_key "account_cfs", "companies"
   add_foreign_key "account_pipeline_facts", "account_dimensions"
   add_foreign_key "account_pipeline_facts", "companies"
   add_foreign_key "account_pipeline_facts", "time_dimensions"
