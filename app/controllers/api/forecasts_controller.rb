@@ -2,10 +2,34 @@ class Api::ForecastsController < ApplicationController
   respond_to :json
 
   def index
-    if current_user.leader?
+    if user.present?
+      render json: forecast_member
+    elsif team.present?
+      render json: [ForecastTeam.new(team, time_period.start_date, time_period.end_date)]
+    elsif params[:id] == 'all'
+      render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
+    elsif current_user.leader?
       render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
     else
       render json: forecast_member
+    end
+  end
+
+  def detail
+    if valid_time_period?
+      start_date = time_period.start_date
+      end_date = time_period.end_date
+
+      quarters = (start_date.to_date..end_date.to_date).map { |d| 'q' + ((d.month - 1) / 3 + 1).to_s + '-' + d.year.to_s }.uniq
+      if user.present?
+        render json: { forecast: QuarterlyForecastMemberSerializer.new(ForecastMember.new(user, start_date, end_date, nil, nil)), quarters: quarters }
+      elsif team.present?
+        render json: { forecast: QuarterlyForecastTeamSerializer.new(ForecastTeam.new(team, start_date, end_date, nil, nil)), quarters: quarters }
+      else
+        render json: { forecast: QuarterlyForecastSerializer.new(Forecast.new(company, teams, start_date, end_date, nil)), quarters: quarters }
+      end
+    else
+      render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
     end
   end
 
@@ -21,7 +45,12 @@ class Api::ForecastsController < ApplicationController
         ForecastMember.new(current_user, dates[:start_date], dates[:end_date], dates[:quarter], year)
       end
     else
-      [ForecastMember.new(current_user, time_period.start_date, time_period.end_date)]
+      if user.present?
+        [ForecastMember.new(user, time_period.start_date, time_period.end_date)]
+      else
+        [ForecastMember.new(current_user, time_period.start_date, time_period.end_date)]
+      end
+
     end
   end
 
@@ -52,6 +81,20 @@ class Api::ForecastsController < ApplicationController
     end
   end
 
+  def valid_time_period?
+    if params[:time_period_id].present? && time_period.present?
+      if time_period.start_date == time_period.start_date.beginning_of_year && time_period.end_date == time_period.start_date.end_of_year
+        return true
+      elsif time_period.start_date == time_period.start_date.beginning_of_quarter && time_period.end_date == time_period.start_date.end_of_quarter
+        return true
+      else
+        return false
+      end
+    else
+      return false
+    end
+  end
+
   def teams
     return @teams if defined?(@teams)
     @teams = company.teams.roots(true)
@@ -59,7 +102,18 @@ class Api::ForecastsController < ApplicationController
 
   def team
     return @team if defined?(@team)
-    @team = company.teams.find(params[:id])
+    @team = nil
+    if params[:id] && params[:id] != 'all'
+      @team = company.teams.find(params[:id])
+    end
+  end
+
+  def user
+    return @user if defined?(@user)
+    @user = nil
+    if params[:user_id] && params[:user_id] != 'all'
+      @user = company.users.find(params[:user_id])
+    end
   end
 
   def company

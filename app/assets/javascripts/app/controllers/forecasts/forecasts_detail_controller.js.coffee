@@ -1,139 +1,180 @@
 @app.controller 'ForecastsDetailController',
-['$scope', '$q', 'Forecast', 'Revenue', 'DealResource', 'CurrentUser', 'TimePeriod'
-($scope, $q, Forecast, Revenue, DealResource, CurrentUser, TimePeriod) ->
-  $scope.years = [2017]
-  $scope.deals = []
-  $scope.stagesById = {}
-  $scope.revenueRequests = []
+    ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal'
+    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal) ->
+        $scope.teams = []
+        $scope.sellers = []
+        $scope.timePeriods = []
+        defaultUser = {id: 'all', name: 'All', first_name: 'All'}
+        $scope.filter =
+            team: {id: null, name: 'All'}
+            seller: defaultUser
+            timePeriod: {id: null, name: 'Select'}
+        $scope.selectedTeam = $scope.filter.team
+        $scope.switch =
+            revenues: 'quarters'
+            deals: 'quarters'
+            set: (key, val) ->
+                this[key] = val
+        $scope.sortRevenues =
+            field: 'budget'
+            reverse: false
+            by: (key) ->
+                if this.field == key
+                    this.reverse = !this.reverse
+                else
+                    this.field = key
+                    this.reverse = false
+        $scope.sortDeals =
+            field: 'budget'
+            reverse: false
+            by: (key) ->
+                if this.field == key
+                    this.reverse = !this.reverse
+                else
+                    this.field = key
+                    this.reverse = false
+        $scope.isYear = -> $scope.filter.timePeriod.period_type is 'year'
+        $scope.isNumber = (number) -> angular.isNumber number
 
-  $scope.quotasByQuarter = {}
-  $scope.quotasByYear = {}
-  $scope.revenues = {}
-  $scope.revenuesByQuarter = {}
-  $scope.unweightedByStage = {}
-  $scope.unweightedByQuarter = {}
-  $scope.unweightedByYear = {}
-  $scope.forecastsByStage = {}
-  $scope.forecastsByQuarter = {}
-  $scope.forecastsByYear = {}
 
-  $scope.showQuarterlyDeals = true
+        $scope.quarters = []
+        $scope.forecast = {}
+        $scope.revenues = []
+        $scope.deals = []
 
-  $scope.years.forEach (year) ->
-    $scope.revenues[year] = {}
-    $scope.quotasByQuarter[year] = {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0
-    }
-    $scope.quotasByYear[year] = 0
-    $scope.revenuesByQuarter[year] = {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0
-    }
-    $scope.unweightedByStage[year] = { stages: {} }
-    $scope.unweightedByQuarter[year] = {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0
-    }
-    $scope.unweightedByYear[year] = 0
-    $scope.forecastsByStage[year] = { stages: {} }
-    $scope.forecastsByQuarter[year] = {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0
-    }
-    $scope.forecastsByYear[year] = 0
+        isTeamFound = false
+        $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->
+            if nextTeam.id && !isTeamFound
+                $scope.filter.seller = defaultUser
+                $scope.setFilter('team', nextTeam)
+            isTeamFound = false
+            Seller.query({id: nextTeam.id || 'all'}).$promise.then (sellers) ->
+                $scope.sellers = sellers
+                $scope.sellers.unshift(defaultUser)
 
-  TimePeriod.current_year_quarters().then (timePeriods) ->
-    $scope.forecast_time_periods = timePeriods
+        $scope.setFilter = (key, value) ->
+            if $scope.filter[key]is value
+                return
+            $scope.filter[key] = value
+            getData()
 
-    CurrentUser.get().$promise.then (user) ->
-      if user.company_id is 5
-        $scope.executeRequests()
+        $scope.getAnnualSum = (data) ->
+            sum = 0
+            _.each $scope.quarters, (quarter) ->
+                sum += Number data[quarter]
+            sum
 
-  $scope.executeRequests = () ->
-    Forecast.query({ time_period_id: $scope.forecast_time_periods[0].id }).$promise.then (response) ->
-      processForecastResponse(response)
-      Forecast.query({ time_period_id: $scope.forecast_time_periods[1].id }).$promise.then (response) ->
-        processForecastResponse(response)
-        Forecast.query({ time_period_id: $scope.forecast_time_periods[2].id }).$promise.then (response) ->
-          processForecastResponse(response)
-          Forecast.query({ time_period_id: $scope.forecast_time_periods[3].id }).$promise.then (response) ->
-            processForecastResponse(response)
+        $q.all(
+            user: CurrentUser.get().$promise
+            teams: Team.all(all_teams: true)
+            sellers: Seller.query({id: 'all'}).$promise
+            timePeriods: TimePeriod.all()
+        ).then (data) ->
+            $scope.teams = data.teams
+            $scope.teams.unshift {id: null, name: 'All'}
+            data.timePeriods = data.timePeriods.filter (period) ->
+                period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
+            $scope.timePeriods = data.timePeriods
+            $scope.sellers = data.sellers
+            $scope.sellers.unshift(defaultUser)
+            switch data.user.user_type
+                when 1 #seller
+                    $scope.filter.seller = data.user
+                    searchAndSetUserTeam data.teams, data.user.id
+                    searchAndSetTimePeriod data.timePeriods
+                when 2 #managet
+                    searchAndSetUserTeam data.teams, data.user.id
+                    searchAndSetTimePeriod data.timePeriods
+                when 5 #admin
+                    searchAndSetTimePeriod data.timePeriods
+            getData()
 
-            DealResource.query(year: $scope.years[0]).$promise.then (deals) ->
-              deals.sort (a, b) ->
-                b.stage.probability - a.stage.probability
-              $scope.deals = deals
+        searchAndSetUserTeam = (teams, user_id) ->
+            for team in teams
+                if team.leader_id is user_id or _.findWhere team.members, {id: user_id}
+                    isTeamFound = true
+                    $scope.filter.team = team
+                    return $scope.selectedTeam = team
+                if team.children && team.children.length
+                    searchAndSetUserTeam team.children, user_id
 
-    $scope.years.forEach (year) ->
-      Revenue.get(year: year).$promise.then (revenues) ->
-        processRevenueResponse(revenues)
+        searchAndSetTimePeriod = (timePeriods) ->
+            for period in timePeriods
+                if period.period_type is 'quarter' and
+                    moment().isBetween(period.start_date, period.end_date, 'days', '[]')
+                        return $scope.filter.timePeriod = period
+            for period in timePeriods
+                if period.period_type is 'year' and
+                    moment().isBetween(period.start_date, period.end_date, 'days', '[]')
+                        return $scope.filter.timePeriod = period
 
-  processForecastResponse = (response) ->
-    response[0].teams.forEach (team) ->
-      team.stages.forEach (stage) ->
-        if not $scope.stagesById[stage.id]
-          $scope.years.forEach (year) ->
-            $scope.forecastsByStage[year].stages[stage.id] = {
-              1: 0,
-              2: 0,
-              3: 0,
-              4: 0,
-              probability: stage.probability
-            }
-            $scope.unweightedByStage[year].stages[stage.id] = {
-              1: 0,
-              2: 0,
-              3: 0,
-              4: 0,
-              probability: stage.probability
-            }
-          $scope.stagesById[stage.id] = stage
+        handleForecast = (data) ->
+            fc = data.forecast
+            fc.quarterly_weighted_forecast = {}
+            fc.quarterly_unweighted_forecast = {}
+            fc.quarterly_weighted_gap_to_quota = {}
+            fc.quarterly_unweighted_gap_to_quota = {}
+            fc.quarterly_percentage_of_annual_quota = {}
+            fc.stages = _.filter fc.stages, (stage) -> stage.active
+            quotaSum = _.reduce fc.quarterly_quota, (result, val) -> result + Number val
+            _.each data.quarters, (quarter) ->
+                weighted = Number fc.quarterly_revenue[quarter]
+                unweighted = Number fc.quarterly_revenue[quarter]
+                _.each fc.stages, (stage) ->
+                    weighted += Number fc.quarterly_weighted_pipeline_by_stage[stage.id][quarter]
+                    unweighted += Number fc.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
+                fc.quarterly_weighted_forecast[quarter] = weighted
+                fc.quarterly_unweighted_forecast[quarter] = unweighted
+                fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
+                fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
+                fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
+            fc.stages.sort (s1, s2) -> s1.probability - s2.probability
 
-      return if not team or not team.year_value or not team.quarter_number
+        addDetailAmounts = (data, type) ->
+            qs = ['Q1', 'Q2', 'Q3', 'Q4']
+            ms = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+            suffix = if type == 'revenues' then 's' else if type == 'deals' then '_amounts'
+            quarters = []
+            months = []
+            for q, i in qs
+                for item in data
+                    if item['quarter' + suffix][i] != null
+                        quarters.push q
+                        break
+            for m, i in ms
+                for item in data
+                    if item['month' + suffix][i] != null
+                        months.push m
+                        break
+            data.detail_amounts =
+                quarters: quarters
+                months: months
 
-      $scope.revenuesByQuarter[team.year_value][team.quarter_number] += team.revenue
-      $scope.forecastsByQuarter[team.year_value][team.quarter_number] += team.revenue
-      $scope.forecastsByYear[team.year_value] += team.revenue
-      $scope.unweightedByQuarter[team.year_value][team.quarter_number] += team.revenue
-      $scope.unweightedByYear[team.year_value] += team.revenue
+        parseBudget = (data) ->
+            data = _.map data, (item) ->
+                item.budget = parseInt item.budget if item.budget
+                item.budget_loc = parseInt item.budget_loc if item.budget_loc
+                item
 
-      $scope.quotasByQuarter[team.year_value][team.quarter_number] += parseFloat(team.quota)
-      $scope.quotasByYear[team.year_value] += parseFloat(team.quota)
-      for stageId, pipeline of team.weighted_pipeline_by_stage
-        $scope.forecastsByStage[team.year_value].stages[stageId][team.quarter_number] += pipeline
-        $scope.forecastsByQuarter[team.year_value][team.quarter_number] += pipeline
-        $scope.forecastsByYear[team.year_value] += pipeline
-      for stageId, pipeline of team.unweighted_pipeline_by_stage
-        $scope.unweightedByStage[team.year_value].stages[stageId][team.quarter_number] += pipeline
-        $scope.unweightedByQuarter[team.year_value][team.quarter_number] += pipeline
-        $scope.unweightedByYear[team.year_value] += pipeline
+        getData = ->
+            if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
+            query =
+                id: $scope.filter.team.id || 'all'
+                user_id: $scope.filter.seller.id || 'all'
+                time_period_id: $scope.filter.timePeriod.id
+            Forecast.forecast_detail(query).$promise.then (data) ->
+                handleForecast data
+                $scope.forecast = data.forecast
+                $scope.quarters = data.quarters
+            query.team_id = query.id
+            delete query.id
+            Revenue.forecast_detail(query).$promise.then (data) ->
+                parseBudget data
+                addDetailAmounts data, 'revenues'
+                $scope.revenues = data
+            Deal.forecast_detail(query).then (data) ->
+                parseBudget data
+                addDetailAmounts data, 'deals'
+                $scope.deals = data
 
-  processRevenueResponse = (revenues) ->
-    revenues.forEach (revenue) ->
-      if $scope.revenues[revenue.year] && $scope.revenues[revenue.year][revenue.advertiser.id]
-        $scope.revenues[revenue.year][revenue.advertiser.id].budget += revenue.budget
-      else
-        $scope.revenues[revenue.year][revenue.advertiser.id] = revenue
-        $scope.revenues[revenue.year][revenue.advertiser.id].month_amounts = []
-        $scope.revenues[revenue.year][revenue.advertiser.id].quarter_amounts = []
-        for n in [1..12]
-          $scope.revenues[revenue.year][revenue.advertiser.id].month_amounts[n-1] = 0
-        for n in [1..4]
-          $scope.revenues[revenue.year][revenue.advertiser.id].quarter_amounts[n-1] = 0
-
-      for n in [1..12]
-        budget = parseFloat(revenue.months[n-1])
-        $scope.revenues[revenue.year][revenue.advertiser.id].month_amounts[n-1] += budget
-      for n in [1..4]
-        budget = parseFloat(revenue.quarters[n-1])
-        $scope.revenues[revenue.year][revenue.advertiser.id].quarter_amounts[n-1] += budget
-]
+    ]

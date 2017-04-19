@@ -45,9 +45,8 @@
                   = link_to "Activity Detail", "/reports/activity_detail_reports"
                 %li
                   = link_to "Activity Summary", "/reports/activity_summary"
-                - if current_user.company_id == 5
-                  %li
-                    = link_to "Forecast Detail - Annual", "/reports/forecasts"
+                %li
+                  = link_to "Forecast Detail", "/reports/forecasts"
                 %li
                   = link_to "Pipeline Change Report", "/reports/pipeline_changes_report"
           - else
@@ -62,6 +61,8 @@
                   = link_to "Activity Detail", "/reports/activity_detail_reports"
                 %li
                   = link_to "Activity Summary", "/reports/activity_summary"
+                %li
+                  = link_to "Forecast Detail", "/reports/forecasts"
           - if current_user.leader?
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }

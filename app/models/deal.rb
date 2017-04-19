@@ -198,34 +198,38 @@ class Deal < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
-              include: [
-                  :creator,
-                  :advertiser,
-                  :agency,
-                  :stage,
-                  :values,
-                  :deal_custom_field,
-                  deal_members: {
-                      methods: [:name]
-                  },
-                  activities: {
-                      include: {
-                          creator: {},
-                          contacts: {},
-                          assets: {
-                              methods: [
-                                  :presigned_url
-                              ]
-                          }
-                      }
-                  }
-              ],
-              methods: [
-                  :formatted_name
-              ]
-          )
-    )
+    if options[:override].present? && options[:override] == true
+      super(options[:options])
+    else
+      super(options.merge(
+                    include: [
+                            :creator,
+                            :advertiser,
+                            :agency,
+                            :stage,
+                            :values,
+                            :deal_custom_field,
+                            deal_members: {
+                                    methods: [:name]
+                            },
+                            activities: {
+                                    include: {
+                                            creator: {},
+                                            contacts: {},
+                                            assets: {
+                                                    methods: [
+                                                            :presigned_url
+                                                    ]
+                                            }
+                                    }
+                            }
+                    ],
+                    methods: [
+                            :formatted_name
+                    ]
+            )
+      )
+    end
   end
 
   def as_weighted_pipeline(start_date, end_date)

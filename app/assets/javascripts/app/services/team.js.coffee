@@ -12,6 +12,11 @@
       url: '/api/teams/:id'
       transformRequest: transformRequest
     }
+    by_user: {
+      method: 'GET'
+      url: '/api/teams/by_user/:id'
+      isArray: true
+    }
     members: {
       method: 'GET'
       url: '/api/teams/:id/members'
@@ -48,6 +53,12 @@
     deferred = $q.defer()
     resource.get id: team_id, (team) ->
       deferred.resolve(team)
+    deferred.promise
+
+  @getByUser = (user_id) ->
+    deferred = $q.defer()
+    resource.by_user id: user_id, (teams) ->
+      deferred.resolve(teams)
     deferred.promise
 
   @update = (params) ->

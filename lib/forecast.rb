@@ -105,6 +105,21 @@ class Forecast
     @monthly_weighted_pipeline_by_stage
   end
 
+  def quarterly_weighted_pipeline_by_stage
+    return @quarterly_weighted_pipeline_by_stage if defined?(@quarterly_weighted_pipeline_by_stage)
+    @quarterly_weighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.quarterly_weighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @quarterly_weighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |quarter, total|
+          @quarterly_weighted_pipeline_by_stage[stage_id][quarter] ||= 0
+          @quarterly_weighted_pipeline_by_stage[stage_id][quarter] += total
+        end
+      end
+    end
+    @quarterly_weighted_pipeline_by_stage
+  end
+
   def monthly_unweighted_pipeline_by_stage
     return @monthly_unweighted_pipeline_by_stage if defined?(@monthly_unweighted_pipeline_by_stage)
     @monthly_unweighted_pipeline_by_stage = {}
@@ -120,6 +135,21 @@ class Forecast
     @monthly_unweighted_pipeline_by_stage
   end
 
+  def quarterly_unweighted_pipeline_by_stage
+    return @quarterly_unweighted_pipeline_by_stage if defined?(@quarterly_unweighted_pipeline_by_stage)
+    @quarterly_unweighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.quarterly_unweighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @quarterly_unweighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |quarter, total|
+          @quarterly_unweighted_pipeline_by_stage[stage_id][quarter] ||= 0
+          @quarterly_unweighted_pipeline_by_stage[stage_id][quarter] += total
+        end
+      end
+    end
+    @quarterly_unweighted_pipeline_by_stage
+  end
+
   def monthly_revenue
     return @monthly_revenue if defined?(@monthly_revenue)
     @monthly_revenue = {}
@@ -130,6 +160,18 @@ class Forecast
       end
     end
     @monthly_revenue
+  end
+
+  def quarterly_revenue
+    return @quarterly_revenue if defined?(@quarterly_revenue)
+    @quarterly_revenue = {}
+    teams.each do |t|
+      t.quarterly_revenue.each do |quarter, total|
+        @quarterly_revenue[quarter] ||= 0
+        @quarterly_revenue[quarter] += total
+      end
+    end
+    @quarterly_revenue
   end
 
   def amount
@@ -152,6 +194,21 @@ class Forecast
 
   def quota
     teams.sum(&:quota)
+  end
+
+  def quarterly_quota
+    return @quarterly_quota if defined?(@quarterly_quota)
+
+    @quarterly_quota = {}
+    teams.each do |team|
+      team.quarterly_quota.each do |quarter, value|
+        @quarterly_quota[quarter] ||= 0
+        @quarterly_quota[quarter] += value
+      end
+    end
+
+    @quarterly_quota
+    # teams.sum(&:quota)
   end
 
   def quarters

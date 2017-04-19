@@ -23,14 +23,14 @@
             %label{ for: 'start-date' } Start Date
             %span.star *
             -#%label.control-label{ for: 'start-date' } Start Date
-            %input.form-control{ name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'time_period.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+            %input.form-control{ name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'time_period.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
 
           .col-md-6.bs-datepicker{ ng: { class: '{error: errors.end_date}' } }
             %span.error-text {{ errors.end_date }}
             %label{ for: 'end-date' } End Date
             %span.star *
             -#%label.control-label{ for: 'end-date' } End Date
-            %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'time_period.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+            %input.form-control{ name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'time_period.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
 
       .form-group{ ng: { class: '{error: errors.period_type}' } }
         .row
@@ -53,5 +53,5 @@
                   %span
 
     .popup-modal-footer
-      %button.btn.btn-warning{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
       %a.btn.btn-default{ ng: { click: 'cancel()' } } Cancel
+      %button.btn.btn-warning{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
