@@ -79,6 +79,8 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
     end
   end
 
+  private
+
   def parsed_row
     CSV.parse(report_csv, { headers: true, header_converters: :symbol }).first.to_h.compact.to_s
   end
