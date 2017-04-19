@@ -382,7 +382,7 @@ class ForecastTeam
   end
 
   def quarterly_quota
-    leader.try(:quarterly_quota) || 0
+    leader.try(:quarterly_quota) || {}
   end
 
   def win_rate
