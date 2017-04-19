@@ -10,4 +10,6 @@ class DfpApiConfiguration < ApiConfiguration
   accepts_nested_attributes_for :cpm_budget_adjustment
   accepts_nested_attributes_for :dfp_report_queries
 
+  delegate :percentage, to: :cpm_budget_adjustment, prefix: true
+
 end

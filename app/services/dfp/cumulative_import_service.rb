@@ -62,7 +62,7 @@ class DFP::CumulativeImportService
       end_date: row[:dimensionattributeline_item_end_date_time],
       pricing_type: row[:dimensionattributeline_item_cost_type],
       price: row[:dimensionattributeline_item_cost_per_unit],
-      quantity: row[:dimensionattributeline_item_goal_quantity],
+      quantity: adjustment_service.perform(row[:dimensionattributeline_item_goal_quantity]),
       budget: row[:dimensionattributeline_item_non_cpd_booked_revenue],
       quantity_delivered: row[:columntotal_line_item_level_impressions],
       clicks: row[:columntotal_line_item_level_clicks],
@@ -72,4 +72,9 @@ class DFP::CumulativeImportService
       company_id: company_id
     )
   end
+
+  def adjustment_service
+    @adjustment_service ||= DFP::CpmBudgetAdjustmentService.new(company_id: company_id)
+  end
+
 end

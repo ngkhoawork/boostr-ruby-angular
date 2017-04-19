@@ -1,7 +1,6 @@
 FactoryGirl.define do
   factory :cpm_budget_adjustment do
-    percentage 1.5
-company nil
+    percentage 10.00
   end
 
 end
