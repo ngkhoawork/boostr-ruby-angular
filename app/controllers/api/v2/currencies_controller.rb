@@ -1,4 +1,4 @@
-class Api::V1::CurrenciesController < ApiController
+class Api::V2::CurrenciesController < ApiController
   respond_to :json
 
   def index

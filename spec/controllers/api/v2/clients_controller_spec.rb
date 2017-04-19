@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::ClientsController, type: :controller do
+RSpec.describe Api::V2::ClientsController, type: :controller do
   let(:company) { Company.first }
   let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
@@ -21,13 +21,6 @@ RSpec.describe Api::V1::ClientsController, type: :controller do
 
     before do
       create_list :client, 30, created_by: user.id, parent_client: nil
-    end
-
-    it 'returns a list of clients in csv' do
-      get :index, format: :csv
-
-      expect(response).to be_success
-      expect(response.body).to_not be_nil
     end
 
     it 'returns a paginated list of clients for the current_user' do
@@ -103,10 +96,16 @@ RSpec.describe Api::V1::ClientsController, type: :controller do
   describe 'GET #show' do
     let(:client) { create :client, created_by: user.id }
 
-    it 'returns json for a client' do
+    it 'responds' do
       get :show, id: client.id
 
       expect(response).to be_success
+    end
+
+    it 'returns json for client' do
+      get :show, id: client.id
+
+      expect(json_response['name']).to eql client.name
     end
   end
 

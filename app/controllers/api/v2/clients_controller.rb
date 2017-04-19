@@ -1,5 +1,5 @@
-class Api::V1::ClientsController < ApiController
-  respond_to :json, :csv
+class Api::V2::ClientsController < ApiController
+  respond_to :json
 
   def index
     if params[:name].present?
@@ -10,19 +10,19 @@ class Api::V1::ClientsController < ApiController
       results = clients
                   .by_type_id(params[:client_type_id])
                   .order(:name)
-                  .includes(:address)
                   .distinct
     end
 
     response.headers['X-Total-Count'] = results.count.to_s
     results = results.limit(limit).offset(offset)
-    render json: results.as_json(
-      methods: [:deals_count, :fields]
-    )
+    render json: results,
+      each_serializer: Api::V2::ClientListSerializer,
+        advertiser: Client.advertiser_type_id(company),
+        agency: Client.agency_type_id(company)
   end
 
   def show
-    render json: client
+    render json: client, serializer: Api::V2::ClientSerializer
   end
 
   def create
@@ -83,7 +83,7 @@ class Api::V1::ClientsController < ApiController
   def client_params
     params.require(:client).permit(
       :name, :website, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id,
-      { 
+      {
         address_attributes: [:country, :street1, :street2, :city, :state, :zip, :phone, :email],
         values_attributes: [:id, :field_id, :option_id, :value]
       }

@@ -1,4 +1,4 @@
-class Api::V1::ActivityListSerializer < ActiveModel::Serializer
+class Api::V2::ActivityListSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :activity_type_name,
@@ -11,11 +11,11 @@ class Api::V1::ActivityListSerializer < ActiveModel::Serializer
   )
 
   def contacts
-    object.contacts.serializable_hash(only: [:id, :name]) rescue nil
+    object.contacts_info
   end
 
   def creator
-    object.creator.serializable_hash(only: [:id, :first_name, :last_name]) rescue nil
+    object.creator.serializable_hash(only: [:id], methods: :name) rescue nil
   end
 
   def client

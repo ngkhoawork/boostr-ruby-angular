@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::DealContactsController, type: :controller do
+RSpec.describe Api::V2::DealContactsController, type: :controller do
   let!(:user) { create :user }
   let!(:agency) { create :client }
   let!(:advertiser) { create :client }

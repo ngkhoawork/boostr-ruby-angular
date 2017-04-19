@@ -1,4 +1,4 @@
-class Api::V1::ClientListSerializer < ActiveModel::Serializer
+class Api::V2::ClientListSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :name,

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::ActivitiesController, type: :controller do
+RSpec.describe Api::V2::ActivitiesController, type: :controller do
   let(:new_company) { create :company }
   let(:activity_params) {
     attributes_for(:activity)
@@ -85,6 +85,22 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
 
       expect(user.activities.count).to be 0
       expect(json_response.length).to be 5
+    end
+  end
+
+  describe 'GET #show' do
+    it 'responds' do
+      get :show, id: existing_activity.id
+
+      expect(response).to be_success
+    end
+
+    it 'returns activity details' do
+      new_activty = create :activity, company: user.company, activity_type_name: 'Testing it', deal: nil, client: nil
+
+      get :show, id: new_activty.id
+
+      expect(json_response['activity_type_name']).to eql 'Testing it'
     end
   end
 

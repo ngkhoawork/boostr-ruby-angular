@@ -1,4 +1,4 @@
-class Api::V1::ClientSerializer < ActiveModel::Serializer
+class Api::V2::ClientSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :name,
@@ -40,7 +40,7 @@ class Api::V1::ClientSerializer < ActiveModel::Serializer
 
   def parent_client
     if object.parent_client.present?
-      object.parent_client.select(:id, :name)
+      object.parent_client.serializable_hash(only: [:id, :name]) rescue nil
     else
       nil
     end
