@@ -429,4 +429,12 @@ class Client < ActiveRecord::Base
 
     (agency_deals.won.count.to_f / (agency_deals.won.count + agency_deals.lost.count).to_f * 100).to_i
   end
+
+  def advertiser_avg_deal_size
+    advertiser_deals.won.map(&:budget).sum / advertiser_deals.won.count if advertiser_deals.won.any?
+  end
+
+  def agency_avg_deal_size
+    agency_deals.won.map(&:budget).sum / agency_deals.won.count if agency_deals.won.any?
+  end
 end
