@@ -48,6 +48,22 @@ RSpec.describe Team, type: :model do
       expect(crevenue[:split_period_budget]).to be 150_000.0
     end
 
+    it 'does not duplicate ios' do
+      parent.leader = leader_user
+      time_period(start_date: Date.new(2017, 1, 1), end_date: Date.new(2017, 3, 31))
+      io(start_date: time_period.start_date, end_date: time_period.end_date)
+      content_fee(io: io, budget: 200_000)
+      io_member(io: io, user: user, share: 10, from_date: time_period.start_date, to_date: time_period.end_date)
+      io_member(io: io, user: another_user, share: 20, from_date: time_period.start_date, to_date: time_period.end_date)
+      io_member(io: io, user: leader_user, share: 70, from_date: time_period.start_date, to_date: time_period.end_date)
+
+      crevenues = parent.crevenues(time_period.start_date, time_period.end_date)
+
+      expect(crevenues.count).to be 1
+      expect(crevenues.first[:sum_period_budget]).to be 200_000.0
+      expect(crevenues.first[:split_period_budget]).to be 160_000.0
+    end
+
     #TODO NEED MORE TESTS HERE
   end
 
@@ -58,6 +74,10 @@ RSpec.describe Team, type: :model do
   def another_user#(opts={})
     # opts.merge!(company: company)
     @_another_user ||= create :user, company: company
+  end
+
+  def leader_user
+    @_leader_user ||= create :user, company: company
   end
 
   def io(opts={})
