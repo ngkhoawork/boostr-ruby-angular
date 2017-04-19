@@ -57,4 +57,33 @@ RSpec.describe Api::TeamsController, type: :controller do
       expect(response).to be_success
     end
   end
+
+  describe 'GET #by_user' do
+    it 'returns json with team for user as member' do
+      team = create :parent_team, company: company, members: [user]
+
+      get :by_user, id: user.id, format: :json
+
+      response_json = response_json(response)
+
+      expect(response).to be_success
+      expect(response_json.first['id']).to eq team.id
+      expect(response_json.first['name']).to eq team.name
+    end
+
+    it 'returns json with team for user as leader' do
+      team = create :parent_team, company: company, leader: user
+      team2 = create :parent_team, company: company, leader: user
+
+      get :by_user, id: user.id, format: :json
+
+      response_json = response_json(response)
+
+      expect(response).to be_success
+      expect(response_json.first['id']).to eq team.id
+      expect(response_json.last['id']).to eq team2.id
+      expect(response_json.first['name']).to eq team.name
+      expect(response_json.last['name']).to eq team2.name
+    end
+  end
 end

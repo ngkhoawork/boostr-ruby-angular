@@ -8,6 +8,12 @@ class Api::DealsController < ApplicationController
           render json: suggest_deals
         elsif params[:activity].present?
           render json: activity_deals
+        elsif params[:time_period_id].present?
+          if valid_time_period?
+            render json: forecast_deals
+          else
+            render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
+          end
         elsif params[:year].present?
           response_deals = company.deals
             .includes(
@@ -261,6 +267,120 @@ class Api::DealsController < ApplicationController
 
   private
 
+  def forecast_deals
+    response_deals = []
+    if params[:user_id].present? && params[:user_id] != 'all'
+      response_deals = user.deals
+    elsif params[:team_id].present? && params[:team_id] == 'all'
+      response_deals = company.deals
+    else
+      response_deals = all_team_deals
+    end
+    response_deals = response_deals
+     .for_time_period(time_period.start_date, time_period.end_date)
+     .open_partial
+     .as_json({override: true, options: {
+                      only: [
+                              :id,
+                              :name,
+                              :stage_id,
+                              :budget,
+                              :budget_loc,
+                              :curr_cd,
+                              :next_steps,
+                              :open,
+                              :start_date,
+                              :end_date
+                      ],
+                      include: {
+
+                              stage: {
+                                      only: [:id, :probability, :open, :active]
+                              },
+                              deal_members: {
+                                      only: [:id, :share, :user_id],
+                                      methods: [:name]
+                              },
+                              advertiser: {
+                                      only: [:id, :name]
+                              },
+                              agency: {
+                                      only: [:id, :name]
+                              }
+                      }
+              }}
+     )
+
+    year = time_period.start_date.year
+
+    response_deals = response_deals.map do |deal|
+      range = deal['start_date'] .. deal['end_date']
+
+      deal['month_amounts'] = []
+      monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+                                 .select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue")
+                                 .for_time_period(time_period.start_date, time_period.end_date)
+                                 .where("deal_products.deal_id = ?", deal['id'])
+                                 .group("date_part('month', start_date)").order("date_part('month', start_date) asc")
+                                 .collect {|deal| {month: deal.month.to_i, revenue: deal.revenue.to_i}}
+
+      index = 0
+      monthly_revenues.each do |monthly_revenue|
+        for i in index..(monthly_revenue[:month]-2)
+          if i + 1 >= time_period.start_date.month && i + 1 <= time_period.end_date.month
+            deal['month_amounts'].push 0
+          else
+            deal['month_amounts'].push nil
+          end
+        end
+        if monthly_revenue[:month] >= time_period.start_date.month && monthly_revenue[:month] <= time_period.end_date.month
+          deal['month_amounts'].push monthly_revenue[:revenue]
+        end
+        index = monthly_revenue[:month]
+      end
+      for i in index..11
+        if i + 1 >= time_period.start_date.month && i + 1 <= time_period.end_date.month
+          deal['month_amounts'].push 0
+        else
+          deal['month_amounts'].push nil
+        end
+      end
+
+      deal['quarter_amounts'] = []
+      quarterly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
+                                   .select("date_part('quarter', start_date) as quarter, sum(deal_product_budgets.budget) as revenue")
+                                   .for_time_period(time_period.start_date, time_period.end_date)
+                                   .where("deal_id = ?", deal['id'])
+                                   .group("date_part('quarter', start_date)")
+                                   .order("date_part('quarter', start_date) asc")
+                                   .collect {|deal| {quarter: deal.quarter.to_i, revenue: deal.revenue.to_i}}
+      index = 0
+      quarterly_revenues.each do |quarterly_revenue|
+        for i in index..(quarterly_revenue[:quarter]-2)
+          if (i * 3 + 1) >= time_period.start_date.month && (i * 3 + 1) <= time_period.end_date.month
+            deal['quarter_amounts'].push 0
+          else
+            deal['quarter_amounts'].push nil
+          end
+        end
+        if ((quarterly_revenue[:quarter] - 1) * 3 + 1) >= time_period.start_date.month && ((quarterly_revenue[:quarter] - 1) * 3 + 1) <= time_period.end_date.month
+          deal['quarter_amounts'].push quarterly_revenue[:revenue]
+        end
+        index = quarterly_revenue[:quarter]
+      end
+      for i in index..3
+        if (i * 3 + 1) >= time_period.start_date.month && (i * 3 + 1) <= time_period.end_date.month
+          deal['quarter_amounts'].push 0
+        else
+          deal['quarter_amounts'].push nil
+        end
+      end
+      deal
+    end
+
+    response_deals
+  end
+
   def product_filter
     if params[:product_id].presence && params[:product_id] != 'all'
       params[:product_id].to_i
@@ -385,6 +505,10 @@ class Api::DealsController < ApplicationController
     [params[:type], params[:source]].reject{|el| el.nil? || el == 'all'}
   end
 
+  def user
+    @user ||= company.users.find(params[:user_id])
+  end
+
   def deal
     @deal ||= company.deals.find(params[:id])
   end
@@ -415,6 +539,20 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def valid_time_period?
+    if params[:time_period_id].present? && time_period.present?
+      if time_period.start_date == time_period.start_date.beginning_of_year && time_period.end_date == time_period.start_date.end_of_year
+        return true
+      elsif time_period.start_date == time_period.start_date.beginning_of_quarter && time_period.end_date == time_period.start_date.end_of_quarter
+        return true
+      else
+        return false
+      end
+    else
+      return false
+    end
+  end
+
   def deal_member_filter
     user = company.users.find params[:user_id]
     if user.user_type == SELLER
@@ -435,11 +573,13 @@ class Api::DealsController < ApplicationController
       all_members_list = selected_team.all_members.collect{|member| member.id}
       all_members_list += selected_team.all_leaders.collect{|member| member.id}
     end
-    company.deals.by_deal_team(all_members_list)
+    company.deals.by_deal_team(all_members_list).uniq
   end
 
   def team
-    if current_user.leader?
+    if params[:team_id].present?
+      company.teams.find(params[:team_id])
+    elsif current_user.leader?
       company.teams.where(leader: current_user).first
     else
       current_user.team
@@ -474,8 +614,12 @@ class Api::DealsController < ApplicationController
   end
 
   def year
-    return nil if params[:year].blank?
-
-    params[:year].to_i
+    @year ||= if params[:year].present?
+      params[:year].to_i
+    elsif params[:time_period_id].present?
+      time_period.start_date.year
+    else
+      nil
+    end
   end
 end

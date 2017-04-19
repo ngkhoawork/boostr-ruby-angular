@@ -34,6 +34,9 @@
 .fwb {
   font-weight: bold;
 }
+.clickable {
+  cursor: pointer;
+}
 
 .hide-input-arrows {
   input[type=number]::-webkit-inner-spin-button,

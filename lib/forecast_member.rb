@@ -177,6 +177,31 @@ class ForecastMember
     @monthly_weighted_pipeline_by_stage
   end
 
+  def quarterly_weighted_pipeline_by_stage
+    return @weighted_quarterly_pipeline_by_stage if defined?(@weighted_quarterly_pipeline_by_stage)
+
+    deal_shares = {}
+    member.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+
+
+    @quarterly_weighted_pipeline_by_stage = {}
+
+    open_deals.each do |deal|
+      @quarterly_weighted_pipeline_by_stage[deal.stage.id] ||= {}
+      quarters.each do |quarter_row|
+        @quarterly_weighted_pipeline_by_stage[deal.stage.id]['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] ||= 0
+      end
+      deal.deal_products.open.each do |deal_product|
+        deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+          @quarterly_weighted_pipeline_by_stage[deal.stage.id]['q' + ((deal_product_budget.start_date.month - 1) / 3 + 1).to_s + '-' + deal_product_budget.start_date.year.to_s] += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0) * (deal.stage.probability / 100.0)
+        end
+      end
+    end
+    @quarterly_weighted_pipeline_by_stage
+  end
+
   def monthly_unweighted_pipeline_by_stage
     return @monthly_unweighted_pipeline_by_stage if defined?(@monthly_unweighted_pipeline_by_stage)
 
@@ -200,6 +225,31 @@ class ForecastMember
 
     end
     @monthly_unweighted_pipeline_by_stage
+  end
+
+  def quarterly_unweighted_pipeline_by_stage
+    return @quarterly_unweighted_pipeline_by_stage if defined?(@quarterly_unweighted_pipeline_by_stage)
+
+    deal_shares = {}
+    member.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+
+    @quarterly_unweighted_pipeline_by_stage = {}
+
+    open_deals.each do |deal|
+      @quarterly_unweighted_pipeline_by_stage[deal.stage.id] ||= {}
+      quarters.each do |quarter_row|
+        @quarterly_unweighted_pipeline_by_stage[deal.stage.id]['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] ||= 0
+      end
+      deal.deal_products.open.each do |deal_product|
+        deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+          @quarterly_unweighted_pipeline_by_stage[deal.stage.id]['q' + ((deal_product_budget.start_date.month - 1) / 3 + 1).to_s + '-' + deal_product_budget.start_date.year.to_s] += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+        end
+      end
+
+    end
+    @quarterly_unweighted_pipeline_by_stage
   end
 
   def revenue
@@ -248,6 +298,44 @@ class ForecastMember
     @monthly_revenue
   end
 
+  def quarterly_revenue
+    return @quarterly_revenue if defined?(@quarterly_revenue)
+
+    @quarterly_revenue = {}
+    quarters.each do |quarter_row|
+      @quarterly_revenue['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] = 0
+    end
+    ios.each do |io|
+      io_member = io.io_members.find_by(user_id: member.id)
+      share = io_member.share
+      io.content_fees.each do |content_fee_item|
+        content_fee_item.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget_item|
+          @quarterly_revenue['q' + ((content_fee_product_budget_item.start_date.month - 1) / 3 + 1).to_s + '-' + content_fee_product_budget_item.start_date.year.to_s] += content_fee_product_budget_item.corrected_daily_budget(io.start_date, io.end_date) * effective_days(io_member, [content_fee_product_budget_item]) * (share/100.0)
+        end
+      end
+      io.display_line_items.each do |display_line_item|
+        ave_run_rate = display_line_item.ave_run_rate
+        quarters.each do |quarter_row|
+          from = [start_date, display_line_item.start_date, io_member.from_date, quarter_row[:start_date]].max
+          to = [end_date, display_line_item.end_date, io_member.to_date, quarter_row[:end_date]].min
+          no_of_days = [(to.to_date - from.to_date) + 1, 0].max
+          in_budget_days = 0
+          in_budget_total = 0
+          display_line_item.display_line_item_budgets.each do |display_line_item_budget|
+            in_from = [start_date, display_line_item.start_date, io_member.from_date, display_line_item_budget.start_date, quarter_row[:start_date]].max
+            in_to = [end_date, display_line_item.end_date, io_member.to_date, display_line_item_budget.end_date, quarter_row[:end_date]].min
+            in_days = [(in_to.to_date - in_from.to_date) + 1, 0].max
+            in_budget_days += in_days
+            in_budget_total += display_line_item_budget.daily_budget * in_days * (share/100.0)
+          end
+          @quarterly_revenue['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] += in_budget_total + ave_run_rate * (no_of_days - in_budget_days) * (share/100.0)
+        end
+      end
+    end
+
+    @quarterly_revenue
+  end
+
   def wow_weighted_pipeline
     snapshots.first.weighted_pipeline - snapshots.last.weighted_pipeline rescue 0
   end
@@ -278,6 +366,17 @@ class ForecastMember
 
   def quota
     @quota ||= member.quotas.for_time_period(start_date, end_date).sum(:value)
+  end
+
+  def quarterly_quota
+    return @quarterly_quota if defined?(@quarterly_quota)
+
+    @quarterly_quota = {}
+    quarters.each do |quarter_row|
+      @quarterly_quota['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] = member.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+    end
+
+    @quarterly_quota
   end
 
   def win_rate
@@ -375,5 +474,11 @@ class ForecastMember
 
     @months = (start_date.to_date..end_date.to_date).map { |d| { start_date: d.beginning_of_month, end_date: d.end_of_month } }.uniq
     @months
+  end
+
+  def quarters
+    return @quarters if defined?(@quarters)
+    @quarters = (start_date.to_date..end_date.to_date).map { |d| { start_date: d.beginning_of_quarter, end_date: d.end_of_quarter } }.uniq
+    @quarters
   end
 end

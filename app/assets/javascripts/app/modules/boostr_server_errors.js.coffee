@@ -11,6 +11,9 @@ angular.module('boostrServerErrors', [])
                     list = angular.element('<div class="boostr-server-errors-list"></div>')
                     list.append(error.map((text) -> '<div class="boostr-server-error-message"> - ' + text + '</div>'))
                     errorEl.append([title, list])
+            else if typeof errors == 'object' && Array.isArray(errors)
+                for error in errors
+                    errorEl.append('<div class="boostr-server-error-message">' + error + '</div>')
             else if typeof errors == 'string'
                 errorEl.append('<span class="boostr-server-error-message">' + errors + '</span>')
             else
@@ -28,7 +31,7 @@ angular.module('boostrServerErrors', [])
                 'responseError': (res) ->
                     switch res.status
                         when 404
-                            console.log res.statusText
+                            console.error res.statusText
                         when 400
                             showError(res.statusText)
                         when 500
@@ -36,7 +39,6 @@ angular.module('boostrServerErrors', [])
                         when 503
                             showError(res.statusText)
                         when 422
-                            console.log res.data.errors
                             if res.data && res.data.errors then showError(res.data.errors)
                     $q.reject res
 

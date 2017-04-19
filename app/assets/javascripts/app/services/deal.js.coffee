@@ -22,6 +22,11 @@
     get_latest_operative_log:
       method: 'GET'
       url: 'api/deals/:id/latest_log'
+    forecast_detail:
+      method: 'GET'
+      url: 'api/deals.json'
+      isArray: true
+
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
@@ -56,6 +61,11 @@
         deferred.resolve(resp)
       (err) ->
         deferred.reject(err)
+    deferred.promise
+  @forecast_detail = (params) ->
+    deferred = $q.defer()
+    resource.forecast_detail params, (response) ->
+      deferred.resolve(response)
     deferred.promise
 
   @pipeline_summary_report = (params) ->
