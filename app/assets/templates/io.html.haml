@@ -1,229 +1,244 @@
-#io
-  .container
-    .row.return
-      .col-xs-12
-        %a{ href:'/revenue' }
-          %i.fa.fa-arrow-left
-          Back to Revenue
-    .row.campaign
-      .col-xs-12
-        %h3.io-name
-          {{ currentIO.name }}
-        .info
-          Status:
-          %span.info-value
-            Active
-        .info
-          Advertiser:
-          %span.info-value
-            {{ currentIO.advertiser.name }}
-        .info
-          Agency:
-          %span.info-value
-            {{ currentIO.agency.name }}
-        .info
-          Budget:
-          %span.info-value
-            {{currentIO.budget_loc | currency:currency_symbol:0 }}
-        .info{ ng: { class: '{error: errors.curr_cd}' } }
-          .info-error
-            Currency:
-            %span.info-value
-              {{ currentIO.curr_cd }}
-          %span.error-text {{ errors.curr_cd }}
-        .info
-          Start-End Dates:
-          %span.info-value.small-datepicker
-            &nbsp;from
-            %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'currentIO.start_date', click: 'startOpened = true', class: '{ editing: startOpened }', change: 'updateIO()' }, 'is-open': 'startOpened' }
-              {{currentIO.start_date | date : 'M/d/yyyy'}}
-            %span{ ng: { if: "currentUser.user_type != 5" } }
-              {{currentIO.start_date | date : 'M/d/yyyy'}}
-            &nbsp;to
-            %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'currentIO.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
-              {{currentIO.end_date | date: 'M/d/yyyy'}}
-            %span{ ng: { if: "currentUser.user_type != 5" } }
-              {{currentIO.end_date | date : 'M/d/yyyy'}}
-    .row.io-content
-      .col-xs-12
-        #members.section{ ng: { show: "currentUser.user_type == 5" } }
-          %span.pull-right{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
-            %a.add-member{ href: '', dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } }
-              = inline_svg 'icons/add.svg'
-            %ul.dropdown-menu.new-member-options
-              %li.existing-user-options
-                %ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
-                  %ui-select-match{ placeholder: 'start typing their name here' }
-                    {{ $select.selected.name }}
-                  %ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
-                    %div{ ng: { bind: { html: 'user.name' } } }
-        %h3
-          Team & Split
-        .table-wrapper.small-datepicker
-          %table.table.table-striped.black-table.sec
-            %thead
-              %tr
-                %th.left Member
-                %th.left From
-                %th.left To
-                %th.left Share
-                %th.action-column{ng:{if: "currentUser.user_type == 5"}}
-            %tbody
-              %tr{ ng: { repeat: "io_member in currentIO.io_members | orderBy: 'name'"} }
-                %td
-                  {{ io_member.name }}
-                %td
-                  %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.from_date', click: 'startOpened1 = true', class: '{ editing: startOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'startOpened1' }
-                    {{ io_member.from_date | date: 'M/d/yyyy' }}
-                  %span{ ng: { if: "currentUser.user_type != 5" } }
-                    {{ io_member.from_date | date: 'M/d/yyyy' }}
-                %td
-                  %span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.to_date', click: 'endOpened1 = true', class: '{ editing: endOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'endOpened1' }
-                    {{ io_member.to_date | date: 'M/d/yyyy' }}
-                  %span{ ng: { if: "currentUser.user_type != 5" } }
-                    {{ io_member.to_date | date: 'M/d/yyyy' }}
-                %td
-                  %span{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "io_member.share", 'on-after-save': 'updateIOMember(io_member)', 'ng-if': "currentUser.user_type == 5" }
-                  %span{ ng: { if: "currentUser.user_type != 5" } }
-                    {{ io_member.share }}%
-                %td.action-td{ng:{if: "currentUser.user_type == 5"}}
-                  %a.delete-member{ href: '', ng: { click: 'deleteMember(io_member)' } }
-                    = inline_svg 'icons/trash.svg'
-    .row.io-content
-      .col-xs-12
-        %h3
-          Line Items - content & fees
-        .table-wrapper
-          %table.table.table-striped.orange-table.sec
-            %thead
-              %tr
-                %th.left Product
-                %th.left Start Date
-                %th.left End Date
-                %th.left Total Budget
-                %th.left{ ng: { repeat: "range in currentIO.readable_months" } }
-                  {{ range.name }}
-            %tbody
-              %tr{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0', repeat: "content_fee in currentIO.content_fees"} }
-                %td
-                  {{ content_fee.product.name }}
-                %td
-                  {{ currentIO.start_date | date: 'M/d/yyyy' }}
-                %td
-                  {{ currentIO.end_date | date: 'M/d/yyyy' }}
-                %td
-                  %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.user_type == 5" }
-                  %span{ ng: { if: "currentUser.user_type != 5" } }
-                    {{ content_fee.budget_loc | currency:currency_symbol:0 }}
-                %td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
-                  %span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFeeAndBudget(content_fee)', 'ng-if': "currentUser.user_type == 5" }
-                  %span{ ng: { if: "currentUser.user_type != 5" } }
-                    {{ product_budget.budget_loc | currency:currency_symbol:0 }}
-              %tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
-                %td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
-                  No data available
-    .row.io-content
-      .col-xs-12
-        %h3
-          Line Items - display
-        .table-wrapper
-          %table.table.table-striped.orange-table.sec
-            %thead
-              %tr
-                %th.left Line #
-                %th.left AdServer
-                %th.left Start Date
-                %th.left End Date
-                %th.left
-                  .product Product
-                %th.left Ad Server Product
-                %th.right Qty
-                %th.right Price
-                %th.left Price Type
-                %th.right Budget
-                %th.right Budg Del
-                %th.right Budg Rem
-                %th.right Qty Del
-                %th.right Qty Rem
-                %th.right 3PQtyDel
-                %th.right 3PQtyRem
-                %th.right 3PBudDel
-                %th.right 3PBudRem
-                %th.right Daily Rate
-                %th.right {{"#DaysNoBud"}}
-            %tbody
-              %tr{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items | orderBy: 'line_number'"} }
-                %td.left
-                  {{ displayLineItem.line_number }}
-                %td.left
-                  {{ displayLineItem.ad_server }}
-                %td.left
-                  {{ displayLineItem.start_date | date: 'M/d/yyyy' }}
-                %td.left
-                  {{ displayLineItem.end_date | date: 'M/d/yyyy' }}
-                %td.left
-                  {{ displayLineItem.product.name }}
-                %td.left
-                  {{ displayLineItem.ad_server_product }}
-                %td.right
-                  {{ displayLineItem.quantity }}
-                %td.right
-                  {{ displayLineItem.price | currency:currency_symbol:0 }}
-                %td.left
-                  {{ displayLineItem.pricing_type }}
-                %td.right
-                  {{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
-                %td.right
-                  {{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
-                %td.right
-                  {{ displayLineItem.budget_remaining_loc | currency:currency_symbol:0 }}
-                %td.right
-                  {{ displayLineItem.quantity_delivered }}
-                %td.right
-                  {{ displayLineItem.quantity_remaining }}
-                %td.right
-                  {{ displayLineItem.quantity_delivered_3p }}
-                %td.right
-                  {{ displayLineItem.quantity_remaining_3p }}
-                %td.right
-                  {{ displayLineItem.budget_delivered_3p_loc | currency:currency_symbol:0 }}
-                %td.right
-                  {{ displayLineItem.budget_remaining_3p_loc | currency:currency_symbol:0 }}
-                %td.right
-                  {{ displayLineItem.daily_run_rate | currency:currency_symbol:0 }}
-                %td.right
-                  {{ displayLineItem.num_days_til_out_of_budget }}
-              %tr{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
-                %td.center{ 'colspan': '19' }
-                  No data available
-    .row.io-content
-      .col-xs-12
-        %h3
-          Line Items - print
-        .table-wrapper
-          %table.table.table-striped.orange-table.sec
-            %thead
-              %tr
-                %th.left Ad Unit
-                %th.left Type
-                %th.right Rate
-                %th.left Market
-                %th.left Start Date
-                %th.left End Date
-            %tbody
-              %tr{ ng: { if: 'currentIO.print_items && currentIO.print_items.length > 0', repeat: "printItem in currentIO.print_items"} }
-                %td.left
-                  {{ printItem.ad_unit }}
-                %td.left
-                  {{ printItem.ad_type }}
-                %td.right
-                  {{ printItem.rate | currency:currency_symbol:0 }}
-                %td.left
-                  {{ printItem.market }}
-                %td.left
-                  {{ printItem.start_date | date: 'M/d/yyyy' }}
-                %td.left
-                  {{ printItem.end_date | date: 'M/d/yyyy' }}
-              %tr{ ng: { if: '!currentIO.print_items || currentIO.print_items.length == 0' } }
-                %td.center{ 'colspan': '{{4+2}}' }
-                  No data available
+#io.z-styles.z-detail-page
+	.container-fluid
+		.row
+			.col-xs-8
+				.block.detail-stats
+					%div.stats-body
+						%div
+							%span.main-title
+								%span.mr8 {{ currentIO.name }}
+								%i.fa.fa-pencil.z-icon{'ng-click': 'showDealEditModal(currentDeal)'}
+								%i.fa.fa-trash.z-icon{'ng-click': 'deleteDeal(currentDeal)'}
+							.detail-info
+								{{currentIO.advertiser.name || ''}}
+								{{currentIO.advertiser.name && currentIO.agency.name && '|'}}
+								{{currentIO.agency.name || ''}}
+
+						.clearfix
+						%div.stats-numbers
+							%div.stats-col
+								.col-body-wrap
+									.col-body
+										.description Status
+										.title Active
+							%div.stats-col
+								.col-body-wrap
+									.col-body
+										.description Budget
+										.title {{currentIO.budget_loc | currency:currency_symbol:0 }}
+
+							%div.stats-col
+								.col-body-wrap
+									.col-body
+										.description Currency
+										.title {{ currentIO.curr_cd }}
+
+							%div.stats-col
+								.col-body-wrap
+									.col-body
+										.description Start-End Dates
+										%div{'ng-if': 'currentUser.user_type == 5'}
+											.title.bs-datepicker
+												%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.start_date', click: 'startOpened = true', class: '{ editing: startOpened }', change: 'updateIO()' }, 'is-open': 'startOpened' }
+													{{currentIO.start_date | date : 'mediumDate'}}
+												{{'-'}}
+												%span.no-wrap-line
+													%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
+														{{currentIO.end_date | date : 'mediumDate'}}
+													%span.caret
+										%div{'ng-if': 'currentUser.user_type != 5'}
+											.title
+												%span {{currentIO.start_date | date : 'mediumDate'}}
+												{{'-'}}
+												%span {{currentIO.end_date | date : 'mediumDate'}}
+				.block#line-content-fees
+					%div.mb20
+						%span.title Line Items - content & fees
+
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th.left Product
+									%th.left Start Date
+									%th.left End Date
+									%th.left Total Budget
+									%th.left{ ng: { repeat: "range in currentIO.readable_months" } }
+										{{ range.name }}
+							%tbody
+								%tr{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0', repeat: "content_fee in currentIO.content_fees"} }
+									%td
+										{{ content_fee.product.name }}
+									%td
+										{{ currentIO.start_date | date: 'M/d/yyyy' }}
+									%td
+										{{ currentIO.end_date | date: 'M/d/yyyy' }}
+									%td
+										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.user_type == 5" }
+										%span{ ng: { if: "currentUser.user_type != 5" } }
+											{{ content_fee.budget_loc | currency:currency_symbol:0 }}
+									%td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
+										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFeeAndBudget(content_fee)', 'ng-if': "currentUser.user_type == 5" }
+										%span{ ng: { if: "currentUser.user_type != 5" } }
+											{{ product_budget.budget_loc | currency:currency_symbol:0 }}
+								%tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
+									%td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
+										No data available
+				.block#line-display.products
+					%div.mb20
+						%span.title Line Items - display
+					%div.display-line-table-wrapper
+						%div#display-line-budgets.hide-budgets-row
+							%div.title Monthly Budgets {{activeBudgetsRow.id}}
+							%div.line-budget{'ng-repeat': 'month in months'}
+								{{month}}
+						.table-wrapper
+							%table.table.table-hover
+								%thead
+									%tr
+										%th.left Line #
+										%th.left AdServer
+										%th.left Start Date
+										%th.left End Date
+										%th.left
+											.product Product
+										%th.left Ad Server Product
+										%th.right Qty
+										%th.right Price
+										%th.left Price Type
+										%th.right Budget
+										%th.right Budg Del
+										%th.right Budg Rem
+										%th.right Qty Del
+										%th.right Qty Rem
+										%th.right 3PQtyDel
+										%th.right 3PQtyRem
+										%th.right 3PBudDel
+										%th.right 3PBudRem
+										%th.right Daily Rate
+										%th.right {{"#DaysNoBud"}}
+								%tbody{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items | orderBy: 'line_number'"} }
+									%tr
+										%td.left
+											{{ displayLineItem.line_number }}
+										%td.left
+											{{ displayLineItem.ad_server }}
+										%td.left
+											{{ displayLineItem.start_date | date: 'M/d/yyyy' }}
+										%td.left
+											{{ displayLineItem.end_date | date: 'M/d/yyyy' }}
+										%td.left
+											{{ displayLineItem.product.name }}
+										%td.left
+											{{ displayLineItem.ad_server_product }}
+										%td.right
+											{{ displayLineItem.quantity }}
+										%td.right
+											{{ displayLineItem.price | currency:currency_symbol:0 }}
+										%td.left
+											{{ displayLineItem.pricing_type }}
+										%td.right
+											%div
+												%a{href: '', 'ng-click': 'showBudgetRow(displayLineItem, $event)'}
+													{{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
+											%div.active-budget
+										%td.right
+											{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
+										%td.right
+											{{ displayLineItem.budget_remaining_loc | currency:currency_symbol:0 }}
+										%td.right
+											{{ displayLineItem.quantity_delivered }}
+										%td.right
+											{{ displayLineItem.quantity_remaining }}
+										%td.right
+											{{ displayLineItem.quantity_delivered_3p }}
+										%td.right
+											{{ displayLineItem.quantity_remaining_3p }}
+										%td.right
+											{{ displayLineItem.budget_delivered_3p_loc | currency:currency_symbol:0 }}
+										%td.right
+											{{ displayLineItem.budget_remaining_3p_loc | currency:currency_symbol:0 }}
+										%td.right
+											{{ displayLineItem.daily_run_rate | currency:currency_symbol:0 }}
+										%td.right
+											{{ displayLineItem.num_days_til_out_of_budget }}
+									-#%tr.display-line-budgets
+										%td{colspan: 20}
+											%div{style: 'width: 100%; height: 50px; background-color: red; border: 10px solid green'}
+											-#{{month}}
+
+								%tbody{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
+									%tr
+										%td.center{ 'colspan': '19' }
+											No data available
+				.block#line-print
+					%div.mb20
+						%span.title Line Items - print
+
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th.left Ad Unit
+									%th.left Type
+									%th.right Rate
+									%th.left Market
+									%th.left Start Date
+									%th.left End Date
+							%tbody
+								%tr{ ng: { if: 'currentIO.print_items && currentIO.print_items.length > 0', repeat: "printItem in currentIO.print_items"} }
+									%td.left
+										{{ printItem.ad_unit }}
+									%td.left
+										{{ printItem.ad_type }}
+									%td.right
+										{{ printItem.rate | currency:currency_symbol:0 }}
+									%td.left
+										{{ printItem.market }}
+									%td.left
+										{{ printItem.start_date | date: 'M/d/yyyy' }}
+									%td.left
+										{{ printItem.end_date | date: 'M/d/yyyy' }}
+								%tr{ ng: { if: '!currentIO.print_items || currentIO.print_items.length == 0' } }
+									%td.center{ 'colspan': '{{4+2}}' }
+										No data available
+			.col-xs-4
+				.block#team-split
+					%div.mb20
+						%span.title Team & Split
+						%span{ dropdown: true, 'dropdown-append-to-body': true, 'auto-close': 'outsideClick'  }
+							%add-button{ dropdown: { toggle: true }, ng: { click: 'showLinkExistingUser()' } } Add
+							%ul.dropdown-menu.new-member-options
+								%li.existing-user-options
+									%ui-select{ name: 'user-list', ng: { model: 'userToLink', disabled: true }, 'append-to-body': 'true', 'on-select': 'linkExistingUser($item)' }
+										%ui-select-match{ placeholder: 'start typing their name here' }
+											{{ $select.selected.name }}
+										%ui-select-choices{ repeat: 'user in users | filter: { name: $select.search }' }
+											%div{ ng: { bind: { html: 'user.name' } } }
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th.left Member
+									%th.left From
+									%th.left To
+									%th.left Share
+							%tbody
+								%tr{ ng: { repeat: "io_member in currentIO.io_members | orderBy: 'name'"} }
+									%td
+										%span.mr8 {{ io_member.name }}
+										%i.fa.fa-trash.z-icon{ href: '', ng: { if: "currentUser.user_type == 5", click: 'deleteMember(io_member)' } }
+									%td
+										%span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.from_date', click: 'startOpened1 = true', class: '{ editing: startOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'startOpened1' }
+											{{ io_member.from_date | date: 'M/d/yyyy' }}
+										%span{ ng: { if: "currentUser.user_type != 5" } }
+											{{ io_member.from_date | date: 'M/d/yyyy' }}
+									%td
+										%span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.to_date', click: 'endOpened1 = true', class: '{ editing: endOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'endOpened1' }
+											{{ io_member.to_date | date: 'M/d/yyyy' }}
+										%span{ ng: { if: "currentUser.user_type != 5" } }
+											{{ io_member.to_date | date: 'M/d/yyyy' }}
+									%td
+										%span{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "io_member.share", 'on-after-save': 'updateIOMember(io_member)', 'ng-if': "currentUser.user_type == 5" }
+										%span{ ng: { if: "currentUser.user_type != 5" } }
+											{{ io_member.share }}%

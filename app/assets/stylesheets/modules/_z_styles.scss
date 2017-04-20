@@ -46,7 +46,7 @@
                 //border-bottom: 2px solid $separate-line-color;
             }
         }
-        tbody {
+        tbody:nth-child(2) {
             tr:first-child {
                 td {
                     border-top-width: 2px;
@@ -54,6 +54,14 @@
             }
         }
         tr {
+            .z-icon {
+                visibility: hidden;
+            }
+            &:hover {
+                .z-icon {
+                    visibility: visible;
+                }
+            }
             &:nth-of-type(even) {
                 //background-color: #fafafb;
             }

@@ -1,4 +1,4 @@
-#deal {
+#deal, .z-detail-page {
     .warning-message {
         background-color: $error-color;
         color: white;
@@ -127,11 +127,11 @@
     .delete-deal {
         margin-left: 0
     }
-    .deal-stats {
+    .detail-stats {
         textarea.editable {
             margin-left: 10px;
         }
-        .deal-info {
+        .detail-info {
             color: $secondary-font-color;
             .dropdown {
                 position: relative;

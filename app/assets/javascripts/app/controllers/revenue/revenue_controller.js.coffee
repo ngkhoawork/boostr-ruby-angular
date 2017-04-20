@@ -58,8 +58,15 @@
   $scope.setPacingAlertsFilter = (filter) ->
     $location.search({ filter: $scope.revenueFilter.param, io_owner: filter.value })
 
+  parseBudget = (data) ->
+    data = _.map data, (item) ->
+      item.budget = parseInt item.budget  if item.budget
+      item.budget_loc = parseInt item.budget_loc  if item.budget_loc
+      item
+
   $scope.setRevenue = (data) ->
 #    data.map (item) -> item.budget_loc = Number item.budget_loc if item
+    parseBudget data
     $scope.data = data
     $scope.revenue = data
     $scope.filterByDate()
