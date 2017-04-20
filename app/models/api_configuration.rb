@@ -1,7 +1,7 @@
 class ApiConfiguration < ActiveRecord::Base
   self.inheritance_column = :integration_type
 
-  INTEGRATION_PROVIDERS = { dfp: 'google', operative: 'operative', operative_datafeed: 'operative datafeed' }
+  INTEGRATION_PROVIDERS = { dfp: 'google', operative: 'operative', operative_datafeed: 'Operative Datafeed' }
 
   belongs_to :company
 
