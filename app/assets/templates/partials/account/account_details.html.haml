@@ -1,0 +1,104 @@
+.campaign-details.block
+    %div.pull-right
+        %span.star
+            *
+            %span{style: 'font-size: 12px'} is required
+    %div.mb20
+        %span.title Campaign Details
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label{ for: 'type' }
+                Type
+        %div.custom-field-item-field
+            %div {{ currentClient.address.street1 }}
+            %div {{ concatAddress(currentClient.address) }}
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label{ for: 'type' }
+                Website
+        %div.custom-field-item-field
+            {{ currentClient.website }}
+    %div.custom-field-item{'ng-if':'currentClient.client_type.option.name == "Advertiser"'}
+        %div.custom-field-item-label
+            %label{ for: 'type' }
+                Parent
+        %div.custom-field-item-field
+            {{ currentClient.parent_client.name }}
+    %div.custom-field-item
+        %div.custom-field-item-label
+            %label{ for: 'type' }
+                Type
+        %div.custom-field-item-field
+            {{ currentClient.client_type.option.name }}
+    %div.custom-field-item{'ng-if':'currentClient.client_type.option.name == "Advertiser"'}
+        %div.custom-field-item-label
+            %label{ for: 'type' }
+                Category
+        %div.custom-field-item-field
+            {{ currentClient.client_category.name }}
+    %div.custom-field-item{'ng-if':'currentClient.client_type.option.name == "Advertiser"'}
+        %div.custom-field-item-label
+            %label{ for: 'type' }
+                Sub Category
+        %div.custom-field-item-field
+            {{ currentClient.client_subcategory.name }}
+    -#%div.custom-field-item
+    -#    %div.custom-field-item-label
+    -#        %label{ for: 'type' }
+    -#            Region
+    -#    %div.custom-field-item-field
+    -#        {{ currentClient.region }}
+    -#%div.custom-field-item
+    -#    %div.custom-field-item-label
+    -#        %label{ for: 'type' }
+    -#            Segment
+    -#    %div.custom-field-item-field
+    -#        {{ currentClient.segment }}
+    %div.custom-field-item{ng:{repeat: 'accountCfName in accountCfNames | orderBy: "position"', if: "!accountCfName.disabled", class: '{"required-field": accountCfName.is_required}', init: "fieldName = accountCfName.field_type + accountCfName.field_index"}}
+        %div.custom-field-item-label
+            %label{ for: '{{fieldName}}' }
+                {{accountCfName.field_label}}
+                %span.star *
+        %div.custom-field-item-field{'ng-switch': 'accountCfName.field_type', 'ng-class': '{"has-error": !currentClient.account_cf[fieldName]}'}
+            .text-field{ ng: { 'switch-when': 'text' } }
+                {{currentClient.account_cf[fieldName]}}
+                -#%input.editable{ 'ng-model': "currentClient.account_cf[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{accountCfName.field_label}}', 'ng-blur': 'updateDeal()' }
+            .text-area{ ng: { 'switch-when': 'note' } }
+                {{currentClient.account_cf[fieldName]}}
+                -#%textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentClient.account_cf[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{accountCfName.field_label}}', 'ng-blur': 'updateDeal()' }
+            .currency-field{ ng: { 'switch-when': 'number' } }
+                {{currentClient.account_cf[fieldName] | number:2}}
+                -#%div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', 'ng-model': "currentClient.account_cf[fieldName]", 'on-after-save': 'updateDeal()'}
+            .currency-field{ ng: { 'switch-when': 'number_4_dec' } }
+                {{currentClient.account_cf[fieldName] | number:4}}
+                -#%div{'click-to-edit':'click-to-edit', type: "number", decimal: '4', 'ng-model': "currentClient.account_cf[fieldName]", 'on-after-save': 'updateDeal()'}
+            .currency-field{ ng: { 'switch-when': 'integer' } }
+                {{currentClient.account_cf[fieldName] | number:0}}
+                -#%div{'click-to-edit':'click-to-edit', type: "number", decimal: '0', 'ng-model': "currentClient.account_cf[fieldName]", 'on-after-save': 'updateDeal()'}
+            .currency-field{ ng: { 'switch-when': 'currency' } }
+                {{currentClient.account_cf[fieldName] | currency:'$':0}}
+                -#%div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: '{{currency_symbol}}', 'ng-model': "currentClient.account_cf[fieldName]", 'on-after-save': 'updateDeal()'}
+            .percentage-field{ ng: { 'switch-when': 'percentage' } }
+                {{currentClient.account_cf[fieldName] ? (currentClient.account_cf[fieldName] + '%') : ''}}
+                -#%div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "currentClient.account_cf[fieldName]", 'on-after-save': 'updateDeal()'}
+            .datetime-field.bs-datepicker{ ng: { 'switch-when': 'datetime' } }
+                {{currentClient.account_cf[fieldName] | date: 'M/d/yyyy'}}
+                -#%span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !currentClient.account_cf[fieldName]}', model: 'currentClient.account_cf[fieldName]', click: 'dateOpened[fieldName] = !dateOpened[fieldName]', change: 'updateDeal()' }, 'is-open': 'dateOpened[fieldName]' }
+                    {{(currentClient.account_cf[fieldName] | date) || 'Select date'}}
+                    %span.caret
+            .boolean-field.show-hide-remainder-form{ ng: { 'switch-when': 'boolean' } }
+                {{currentClient.account_cf[fieldName] ? 'Yes' : 'No'}}
+                -#.switch-remainder-form
+                    %input.cmn-toggle.cmn-toggle-round-flat{id: '{{fieldName}}', type: 'checkbox', 'ng-model': 'currentClient.account_cf[fieldName]', 'ng-change': "updateDeal()"}
+                    %label{:for => "{{fieldName}}"}
+                        %span
+            .dropdown{ ng: { 'switch-when': 'dropdown' } }
+                {{currentClient.account_cf[fieldName]}}
+                -#%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable{'ng-class': '{"not-selected": !currentClient.account_cf[fieldName]}'}
+                        {{currentClient.account_cf[fieldName] || 'Select value'}}
+                    %span.caret
+                -#%ul.dropdown-menu
+                    %li{'ng-repeat': 'customFieldOption in accountCfName.account_cf_options', 'ng-class': '{active: currentClient.account_cf[fieldName] == customFieldOption.value}'}
+                        %a{'href': '', 'ng-click': 'currentClient.account_cf[fieldName] = customFieldOption.value; updateDeal()'}
+                            %span.text {{customFieldOption.value}}

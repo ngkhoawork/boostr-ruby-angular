@@ -1,6 +1,6 @@
 @app.controller "AccountsNewController",
-['$scope', '$rootScope', '$modalInstance', 'Client', 'Field', 'client', 'CountriesList'
-($scope, $rootScope, $modalInstance, Client, Field, client, CountriesList) ->
+['$scope', '$rootScope', '$modalInstance', 'Client', 'Field', 'AccountCfName', 'client', 'CountriesList'
+($scope, $rootScope, $modalInstance, Client, Field, AccountCfName, client, CountriesList) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -11,6 +11,9 @@
 
   CountriesList.get (data) ->
     $scope.countries = data.countries
+
+  AccountCfName.all().then (accountCfNames) ->
+    $scope.accountCfNames = accountCfNames
 
   Field.defaults($scope.client, 'Client').then (fields) ->
     if ($scope.client.client_type)
@@ -63,6 +66,10 @@
           if !field then return $scope.errors[key] = 'Name is required'
         when 'client_type'
           if !field || !field.option_id then return $scope.errors[key] = 'Type is required'
+
+    $scope.accountCfNames.forEach (item) ->
+      if item.show_on_modal == true && item.is_required == true && (!$scope.client.account_cf || !$scope.client.account_cf[item.field_type + item.field_index])
+        $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170417170015) do
+ActiveRecord::Schema.define(version: 20170420121007) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -102,6 +102,13 @@ ActiveRecord::Schema.define(version: 20170417170015) do
     t.string   "dropdown7"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
+    t.decimal  "number_4_dec1",  precision: 15, scale: 4
+    t.decimal  "number_4_dec2",  precision: 15, scale: 4
+    t.decimal  "number_4_dec3",  precision: 15, scale: 4
+    t.decimal  "number_4_dec4",  precision: 15, scale: 4
+    t.decimal  "number_4_dec5",  precision: 15, scale: 4
+    t.decimal  "number_4_dec6",  precision: 15, scale: 4
+    t.decimal  "number_4_dec7",  precision: 15, scale: 4
   end
 
   add_index "account_cfs", ["client_id"], name: "index_account_cfs_on_client_id", using: :btree
@@ -278,6 +285,15 @@ ActiveRecord::Schema.define(version: 20170417170015) do
 
   add_index "bps", ["company_id"], name: "index_bps_on_company_id", using: :btree
   add_index "bps", ["time_period_id"], name: "index_bps_on_time_period_id", using: :btree
+
+  create_table "client_connections", force: :cascade do |t|
+    t.integer  "agency_id"
+    t.integer  "advertiser_id"
+    t.boolean  "primary",       default: false
+    t.boolean  "active",        default: true
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
 
   create_table "client_contacts", force: :cascade do |t|
     t.integer  "client_id"

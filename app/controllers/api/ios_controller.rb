@@ -60,7 +60,11 @@ class Api::IosController < ApplicationController
   end
 
   def ios
-    if params[:page] && params[:page].to_i > 0
+    if params[:agency_id]
+      company.ios.where("agency_id = ?", params[:agency_id])
+    elsif params[:advertiser_id]
+      company.ios.where("advertiser_id = ?", params[:advertiser_id])
+    elsif params[:page] && params[:page].to_i > 0
       offset = (params[:page].to_i - 1) * 10
       if params[:name]
         company.ios.where("name ilike ?", "%#{params[:name]}%").limit(10).offset(offset)

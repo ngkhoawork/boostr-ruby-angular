@@ -36,10 +36,13 @@ Rails.application.routes.draw do
       resources :stages, only: [:index, :create, :show, :update]
       resources :clients, only: [:index, :show, :create, :update, :destroy] do
         get :sellers
+        get :connected_contacts
+        get :child_clients
         collection do
           get :filter_options
         end
         resources :client_members, only: [:index, :create, :update, :destroy]
+        resources :client_connections, only: [:index, :create, :update, :destroy]
         resources :client_contacts, only: [:index] do
           collection do
             get :related_clients
@@ -74,10 +77,13 @@ Rails.application.routes.draw do
     end
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
       get :sellers
+      get :connected_contacts
+      get :child_clients
       collection do
         get :filter_options
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
+      resources :client_connections, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index] do
         collection do
           get :related_clients

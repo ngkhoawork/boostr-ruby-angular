@@ -1,0 +1,25 @@
+.contacts.block
+    %div.mb20
+        %span.title Agency Contacts
+        %add-button{'ng-click': 'createNewContactModal()'} Add
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left Name
+                %th.left Agency
+                %th.left Position
+                %th.left Email
+                %th.left Phone
+        %tbody
+            %tr{ ng: { repeat: 'connected_contact in currentClient.connected_contacts'} }
+                %td
+                    {{ connected_contact.name }}
+                %td
+                    {{ connected_contact.client.name }}
+                %td
+                    {{ connected_contact.position }}
+                %td
+                    {{ connected_contact.address.email }}
+                %td
+                    {{ connected_contact.address.phone }}

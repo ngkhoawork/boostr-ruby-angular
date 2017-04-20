@@ -45,6 +45,9 @@
     .when '/accounts',
       templateUrl: 'accounts.html'
       controller: 'AccountsController'
+    .when '/accounts/:id',
+      templateUrl: 'account.html'
+      controller: 'AccountController'
     .when '/clients',
       templateUrl: 'clients.html'
       controller: 'ClientsController'

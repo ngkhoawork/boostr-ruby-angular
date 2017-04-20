@@ -1,0 +1,20 @@
+.contacts.block
+    %div.mb20
+        %span.title Brands/Child Accounts
+        %add-button{'ng-click': 'createNewContactModal()'} Add
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left Name
+                %th.left Category
+                %th.left Team
+        %tbody
+            %tr{ ng: { repeat: 'child_client in currentClient.child_clients'} }
+                %td
+                    {{ child_client.name }}
+                %td
+                    {{ getClientCategory(child_client) }}
+                %td
+                    %div{ 'ng-repeat': 'client_member in child_client.client_members'}
+                        {{ client_member.user.name + ' (' + client_member.share + '%)' }}

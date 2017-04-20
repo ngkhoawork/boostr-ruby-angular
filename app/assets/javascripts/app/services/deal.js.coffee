@@ -91,6 +91,7 @@
       (deal) ->
         deferred.resolve(deal)
         $rootScope.$broadcast 'updated_deals'
+        $rootScope.$broadcast 'newDeal', deal.id
       (resp) ->
         deferred.reject(resp)
     )

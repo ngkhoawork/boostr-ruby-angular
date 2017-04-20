@@ -24,6 +24,7 @@
       parent_client_id: original.parent_client_id || null
       address_attributes: address_attributes
       values_attributes: values_attributes
+      account_cf_attributes: original.account_cf
     angular.toJson(send)
 
   resource = $resource '/api/clients/:id', { id: '@id' },
@@ -44,6 +45,16 @@
     sellers: {
       method: "GET"
       url: 'api/clients/:id/sellers'
+      isArray: true
+    },
+    connected_contacts: {
+      method: "GET"
+      url: 'api/clients/:id/connected_contacts'
+      isArray: true
+    },
+    child_clients: {
+      method: "GET"
+      url: 'api/clients/:id/child_clients'
       isArray: true
     },
     filter_options: {
@@ -73,6 +84,18 @@
     deferred = $q.defer()
     resource.sellers params, (sellers) ->
       deferred.resolve(sellers)
+    deferred.promise
+
+  resource.__connected_contacts = (params) ->
+    deferred = $q.defer()
+    resource.connected_contacts params, (connected_contacts) ->
+      deferred.resolve(connected_contacts)
+    deferred.promise
+
+  resource.__child_clients = (params) ->
+    deferred = $q.defer()
+    resource.child_clients params, (child_clients) ->
+      deferred.resolve(child_clients)
     deferred.promise
 
   resource.__filter_options = (params) ->

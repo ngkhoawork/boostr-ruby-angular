@@ -1,6 +1,6 @@
 @app.controller "AccountsEditController",
-['$scope', '$modalInstance', '$filter', 'Client', 'Field', 'client', 'CountriesList'
-($scope, $modalInstance, $filter, Client, Field, client, CountriesList) ->
+['$scope', '$modalInstance', '$filter', 'Client', 'Field', 'AccountCfName', 'client', 'CountriesList'
+($scope, $modalInstance, $filter, Client, Field, AccountCfName, client, CountriesList) ->
   $scope.client = client
   $scope.clients = []
   $scope.query = ""
@@ -8,6 +8,9 @@
 
   CountriesList.get (data) ->
     $scope.countries = data.countries
+
+  AccountCfName.all().then (accountCfNames) ->
+    $scope.accountCfNames = accountCfNames
 
   $scope.init = () ->
     $scope.formType = "Edit"
@@ -43,6 +46,11 @@
           if !field then return $scope.errors[key] = 'Name is required'
         when 'client_type'
           if !field || !field.option_id then return $scope.errors[key] = 'Type is required'
+
+    $scope.accountCfNames.forEach (item) ->
+      if item.show_on_modal == true && item.is_required == true && (!$scope.client.account_cf || !$scope.client.account_cf[item.field_type + item.field_index])
+        $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
+
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
     $scope.removeCategoriesFromAgency()

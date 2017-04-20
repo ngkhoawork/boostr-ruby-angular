@@ -95,8 +95,7 @@
 
     Deal.create(deal: $scope.deal).then(
       (deal) ->
-        $modalInstance.close()
-        $location.path('/deals/' + deal.id)
+        $modalInstance.close(deal)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

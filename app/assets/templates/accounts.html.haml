@@ -112,7 +112,7 @@
                                 %th City
                                 %th Last Touch
                         %tbody{'infinite-scroll': "loadMoreClients()"}
-                            %tr{ ng: { repeat: 'client in clients' } }
+                            %tr{ ng: { repeat: 'client in clients', click: "go(client.id)" } }
                                 %td
                                     {{client.name}}
                                 %td {{getClientType(client)}}

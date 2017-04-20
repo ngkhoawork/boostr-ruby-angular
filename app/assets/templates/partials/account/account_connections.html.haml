@@ -1,0 +1,29 @@
+.deals.block
+    %div.mb20
+        %span.title{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
+            Advertisers
+        %span.title{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
+            Agencies
+        %add-button{'ng-click': 'showNewClientConnectionModal()'} Add
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left Primary
+                %th.left Name
+                %th.left Status
+                %th.left City
+        %tbody
+            %tr{ ng: { repeat: 'client_connection in currentClient.client_connections'} }
+                %td
+                    {{ client_connection.primary ? 'Yes' : 'No' }}
+                %td{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
+                    {{ client_connection.advertiser.name }}
+                %td{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
+                    {{ client_connection.agency.name }}
+                %td
+                    {{ client_connection.active ? 'Active' : 'Inactive' }}
+                %td{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
+                    {{ client_connection.advertiser.city }}
+                %td{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
+                    {{ client_connection.agency.city }}

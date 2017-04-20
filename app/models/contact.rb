@@ -2,6 +2,7 @@ class Contact < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
+  belongs_to :client
 
   has_one :primary_client, through: :primary_client_contact, source: :client
   has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'

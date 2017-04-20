@@ -154,13 +154,14 @@
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
       size: 'md'
-      controller: 'ClientsNewController'
+      controller: 'AccountsNewController'
       backdrop: 'static'
       keyboard: false
       resolve:
         client: ->
           {}
-
+  $scope.go = (client_id) ->
+    $location.path('/accounts/' + client_id)
   $scope.$on 'newClient', ->
     $scope.init()
   $scope.init()

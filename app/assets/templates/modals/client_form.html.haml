@@ -81,7 +81,26 @@
       .form-group
         %label{ for: 'website' } Website
         %input.form-control{ placeholder: 'Website', ng: { model: 'client.website' }, name: 'website' }
-
+      .form-group{ng: {repeat: 'accountCfName in accountCfNames | orderBy: "position"', init: "fieldName = accountCfName.field_type + accountCfName.field_index", if: "accountCfName.show_on_modal && !accountCfName.disabled", class:'{error: errors[fieldName]}'}}
+        %span.error-text {{errors[fieldName]}}
+        %label{ for: '{{fieldName}}', ng: { if: "accountCfName.field_type != 'sum'" } }
+          {{accountCfName.field_label}}
+          %span.star{ 'ng-if': "accountCfName.is_required == true" }
+            *
+        %input.form-control{ 'ng-if': "accountCfName.field_type != 'note' && accountCfName.field_type != 'datetime' && accountCfName.field_type != 'boolean' && accountCfName.field_type != 'dropdown' && accountCfName.field_type != 'sum'", placeholder: 'Enter {{accountCfName.field_label}}', ng: { model: 'client.account_cf[fieldName]' }, name: '{{fieldName}}' }
+        %textarea.form-control{ 'ng-if': "accountCfName.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "client.account_cf[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{accountCfName.field_label}}' }
+        .bs-datepicker
+          %input.form-control{ 'ng-if': "accountCfName.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'client.account_cf[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{accountCfName.field_label}}' }
+        .show-hide-remainder-form{ ng: { if: "accountCfName.field_type == 'boolean' " } }
+          .switch-remainder-form
+            %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'client.account_cf[fieldName]'}
+            %label{:for => "{{fieldName}}"}
+              %span
+        %ui-select{ name: '{{fieldName}}', ng: { if: "accountCfName.field_type == 'dropdown'", model: 'client.account_cf[fieldName]', disabled: true } }
+          %ui-select-match{ placeholder: 'Select value' }
+            {{ $select.selected.value }}
+          %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in accountCfName.account_cf_options | filter: { value: $select.search }' }
+            %div{ ng: { bind: { html: 'customFieldOption.value' } } }
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
       %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

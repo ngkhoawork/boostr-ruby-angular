@@ -13,6 +13,17 @@ class Client < ActiveRecord::Base
   has_many :revenues
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
+
+  has_many :agency_connections, class_name: :ClientConnection,
+           foreign_key: :agency_id, dependent: :destroy
+  has_many :advertiser_connections, class_name: :ClientConnection,
+           foreign_key: :advertiser_id, dependent: :destroy
+  has_many :agencies, through: :agency_connections, source: :advertiser
+  has_many :advertisers, through: :advertiser_connections, source: :agency
+
+  has_many :agency_contacts, -> { uniq }, through: :agencies, source: :contacts
+  has_many :advertiser_contacts, -> { uniq }, through: :advertisers, source: :contacts
+
   has_many :values, as: :subject
   has_many :activities, -> { order(happened_at: :desc) }
   has_many :agency_activities, -> { order(happened_at: :desc) }, class_name: 'Activity', foreign_key: 'agency_id'
@@ -30,6 +41,7 @@ class Client < ActiveRecord::Base
   delegate :name, to: :parent_client, prefix: true, allow_nil: true
 
   accepts_nested_attributes_for :address, :values
+  accepts_nested_attributes_for :account_cf
 
   validates :name, :client_type_id, presence: true
 
@@ -166,6 +178,7 @@ class Client < ActiveRecord::Base
         include: {
           address: {},
           parent_client: { only: [:id, :name] },
+          account_cf: {},
           values: {
             methods: [:value],
             include: [:option]
@@ -173,11 +186,11 @@ class Client < ActiveRecord::Base
           client_members: {
                   include: {
                           user: {
-                                  only: [],
+                                  only: [:id],
                                   methods: [:name]
                           }
                   },
-                  only: [:id, :share, :user_id]
+                  only: [:id, :share, :user_id, :role]
           },
           activities: {
             include: {
