@@ -9,7 +9,7 @@ class Io < ActiveRecord::Base
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
   has_many :display_line_items, dependent: :destroy
-  has_many :display_line_item_budgets, through: :display_line_items
+  has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true

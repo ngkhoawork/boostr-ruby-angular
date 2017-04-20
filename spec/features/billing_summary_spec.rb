@@ -27,7 +27,7 @@ feature 'BillingSummary' do
     expect(ios_for_approval_table).to include display_line_item.ad_server
     expect(ios_for_approval_table).to include io.curr_cd
 
-    expect(ios_missing_display_line_items_table).to include io_with_missing_display_line_items.id.to_s
+    expect(ios_missing_display_line_items_table).to include io_with_missing_display_line_items.io_number.to_s
     expect(ios_missing_display_line_items_table).to include io_with_missing_display_line_items.name
     expect(ios_missing_display_line_items_table).to include advertiser.name
     expect(ios_missing_display_line_items_table).to include io_with_missing_display_line_items.curr_cd

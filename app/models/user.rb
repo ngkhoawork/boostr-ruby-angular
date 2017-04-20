@@ -341,4 +341,8 @@ class User < ActiveRecord::Base
 
     return @all_activities
   end
+
+  def admin?
+    user_type == ADMIN
+  end
 end
