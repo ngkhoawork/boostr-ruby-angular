@@ -28,7 +28,7 @@ angular.module('boostrServerErrors', [])
                 'responseError': (res) ->
                     switch res.status
                         when 404
-                            console.log res.statusText
+                            showError(res.statusText)
                         when 400
                             showError(res.statusText)
                         when 500

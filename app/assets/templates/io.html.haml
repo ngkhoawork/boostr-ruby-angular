@@ -7,8 +7,8 @@
 						%div
 							%span.main-title
 								%span.mr8 {{ currentIO.name }}
-								%i.fa.fa-pencil.z-icon{'ng-click': 'showDealEditModal(currentDeal)'}
-								%i.fa.fa-trash.z-icon{'ng-click': 'deleteDeal(currentDeal)'}
+								%i.fa.fa-pencil.z-icon{'ng-click': 'showIOEditModal(currentIO)'}
+								%i.fa.fa-trash.z-icon{'ng-click': 'deleteIo(currentIO)'}
 							.detail-info
 								{{currentIO.advertiser.name || ''}}
 								{{currentIO.advertiser.name && currentIO.agency.name && '|'}}
@@ -39,11 +39,11 @@
 										.description Start-End Dates
 										%div{'ng-if': 'currentUser.user_type == 5'}
 											.title.bs-datepicker
-												%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.start_date', click: 'startOpened = true', class: '{ editing: startOpened }', change: 'updateIO()' }, 'is-open': 'startOpened' }
+												%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.start_date', click: 'startOpened = !startOpened', class: '{ editing: startOpened }', change: 'updateIO()' }, 'is-open': 'startOpened' }
 													{{currentIO.start_date | date : 'mediumDate'}}
 												{{'-'}}
 												%span.no-wrap-line
-													%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.end_date', click: 'endOpened = true', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
+													%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.end_date', click: 'endOpened = !endOpened', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
 														{{currentIO.end_date | date : 'mediumDate'}}
 													%span.caret
 										%div{'ng-if': 'currentUser.user_type != 5'}
@@ -84,14 +84,24 @@
 								%tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
 									%td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
 										No data available
-				.block#line-display.products
+				.block#line-display
 					%div.mb20
 						%span.title Line Items - display
 					%div.display-line-table-wrapper
 						%div#display-line-budgets.hide-budgets-row
-							%div.title Monthly Budgets {{activeBudgetsRow.id}}
-							%div.line-budget{'ng-repeat': 'month in months'}
-								{{month}}
+							%div.title Monthly Budgets
+							%div.line-budget{'ng-if': 'currentUser.user_type == 5', 'ng-repeat': 'budget in budgets'}
+								.month {{budget.month}}
+								.budget{'ng-if': '!isNaN(budget.budget_loc)'}
+									%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "budget.budget_loc", 'on-after-save': 'updateBudget(budget)'}
+										{{budget.budget_loc | currency:currency_symbol:0}}
+								.budget{'ng-if': 'isNaN(budget.budget_loc)'}
+									%a.add-budget{href: '', 'ng-click': 'addBudget(budget, $index)'} Add
+								-#.budget{'ng-if': 'budget.budget_loc == undefined'}
+									%a.add-budget{href: '', 'ng-click': 'addBudget(budget)'} Add
+							%div.line-budget{'ng-if': 'currentUser.user_type != 5', 'ng-repeat': 'budget in budgets'}
+								.month {{budget.month}}
+								.budget {{budget.budget_loc | currency : currency_symbol : 0}}
 						.table-wrapper
 							%table.table.table-hover
 								%thead
@@ -137,11 +147,12 @@
 											{{ displayLineItem.price | currency:currency_symbol:0 }}
 										%td.left
 											{{ displayLineItem.pricing_type }}
-										%td.right
+										%td.right.display-line-table-budget
 											%div
 												%a{href: '', 'ng-click': 'showBudgetRow(displayLineItem, $event)'}
 													{{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
-											%div.active-budget
+											%div.budget-arrow{'ng-class': '{"active-budget": displayLineItem.id == activeBudgetsRow.id}'}
+												.fa.fa-caret-up
 										%td.right
 											{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
 										%td.right
@@ -229,13 +240,15 @@
 										%span.mr8 {{ io_member.name }}
 										%i.fa.fa-trash.z-icon{ href: '', ng: { if: "currentUser.user_type == 5", click: 'deleteMember(io_member)' } }
 									%td
-										%span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.from_date', click: 'startOpened1 = true', class: '{ editing: startOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'startOpened1' }
-											{{ io_member.from_date | date: 'M/d/yyyy' }}
-										%span{ ng: { if: "currentUser.user_type != 5" } }
-											{{ io_member.from_date | date: 'M/d/yyyy' }}
+										.bs-datepicker
+											%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.from_date', click: 'startOpened1 = !startOpened1', class: '{ editing: startOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'startOpened1' }
+												{{ io_member.from_date | date: 'M/d/yyyy' }}
+											%span{ ng: { if: "currentUser.user_type != 5" } }
+												{{ io_member.from_date | date: 'M/d/yyyy' }}
 									%td
-										%span.edit{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.to_date', click: 'endOpened1 = true', class: '{ editing: endOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'endOpened1' }
-											{{ io_member.to_date | date: 'M/d/yyyy' }}
+										.bs-datepicker
+											%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.to_date', click: 'endOpened1 = !endOpened1', class: '{ editing: endOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'endOpened1' }
+												{{ io_member.to_date | date: 'M/d/yyyy' }}
 										%span{ ng: { if: "currentUser.user_type != 5" } }
 											{{ io_member.to_date | date: 'M/d/yyyy' }}
 									%td

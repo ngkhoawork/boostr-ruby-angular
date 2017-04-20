@@ -1,28 +1,41 @@
 @app.controller 'IOController',
-    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser'
-    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser) ->
+    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'DisplayLineItem'
+    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   DisplayLineItem) ->
             $scope.currentIO = {}
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
             $scope.activeBudgetsRow = null
-            # TEST //////////////////////////////////////////////////////////////////////////////////////////////////////
-            $scope.months = moment.months().map (m) -> m.substr(0, 3)
-            # TEST //////////////////////////////////////////////////////////////////////////////////////////////////////
+            $scope.budgets = []
+            $scope.isNaN = (val) -> isNaN val
+
             $scope.init = ->
                 CurrentUser.get().$promise.then (user) ->
                     $scope.currentUser = user
                 IO.get($routeParams.id).then (io) ->
-                    # TEST //////////////////////////////////////////////////////////////////////////////////////////////////////
-                    copy1 = angular.copy io.display_line_items[0]
-                    copy1.id += 1
-                    copy2 = angular.copy copy1
-                    copy2.id += 1
-                    io.display_line_items.push copy1, copy2
-                    # TEST //////////////////////////////////////////////////////////////////////////////////////////////////////
+
                     $scope.currentIO = io
                     if io.currency
                         if io.currency.curr_symbol
                             $scope.currency_symbol = io.currency.curr_symbol
+
+            $scope.showIOEditModal = (io) ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/io_form.html'
+                    size: 'md'
+                    controller: 'IOEditController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        io: ->
+                            io
+                .result.then (updated_io) ->
+                    if (updated_io)
+                        $scope.init();
+
+            $scope.deleteIo = (io) ->
+                if confirm('Are you sure you want to delete "' +  io.name + '"?')
+                    IO.delete io, ->
+                        $location.path('/revenue')
 
             $scope.showLinkExistingUser = ->
                 User.query().$promise.then (users) ->
@@ -41,13 +54,34 @@
                     $scope.activeBudgetsRow = null
                     budgetsRow.toggleClass 'hide-budgets-row'
                 else
-                    $scope.activeBudgetsRow = item
-                    budgetsRow.removeClass 'hide-budgets-row'
+                    $scope.activeBudgetsRow = null
+                    budgetsRow.addClass 'hide-budgets-row'
+                    DisplayLineItem.get(item.id).then (data) ->
+                        $scope.activeBudgetsRow = item
+                        $scope.budgets = data
+                        budgetsRow.removeClass 'hide-budgets-row'
 #                    budgetsRow.addClass 'hide-budgets-row'
 #                    $timeout () ->
 #                    , 500
-
                 return
+
+            $scope.addBudget = (budget, index) ->
+                if $scope.activeBudgetsRow
+                    DisplayLineItem.add_budget(
+                        id: $scope.activeBudgetsRow.id
+                        display_line_item_budget:
+                            budget_loc: 0
+                            month: budget.month
+                    ).then (resp) ->
+                        $scope.budgets[index] = resp
+
+            $scope.updateBudget = (budget) ->
+                DisplayLineItem.update_budget(
+                    id: budget.id
+                    display_line_item_budget:
+                        budget_loc: budget.budget_loc
+                ).then (resp) ->
+                    budget.budget_loc = resp.budget_loc
 
             $scope.linkExistingUser = (item) ->
                 $scope.userToLink = undefined
