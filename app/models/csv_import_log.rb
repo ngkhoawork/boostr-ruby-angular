@@ -2,7 +2,7 @@ class CsvImportLog < ActiveRecord::Base
   belongs_to :company, required: true
   serialize :error_messages, JSON
 
-  after_create :send_notification
+  after_create :send_notification, :send_dfp_report_notification
 
   default_scope { order(created_at: :desc) }
 
@@ -39,13 +39,28 @@ class CsvImportLog < ActiveRecord::Base
 
   def send_notification
     if is_error? && error_log_recipients.any?
-      CsvImportLogNotificationMailer.send_email(error_log_recipients, id).deliver_later(queue: "default")
+      CsvImportLogNotificationMailer.send_email(error_log_recipients, id).deliver_later(queue: 'default')
+    end
+  end
+
+  def send_dfp_report_notification
+    if dfp_notification_recipients.any?
+      ReportsMailer.dfp_report_mail(dfp_notification_recipients, object_name, count_processed, count_failed).deliver_later(queue: 'default')
     end
   end
 
   def error_log_recipients
     return [] unless active_company_notifications.any?
     active_company_notifications.first.recipients_arr
+  end
+
+  def dfp_notification_recipients
+    return [] unless active_dfp_notifications.any?
+    active_dfp_notifications.first.recipients_arr
+  end
+
+  def active_dfp_notifications
+    Notification.active_dfp_notifications.where(company: company)
   end
 
   def active_company_notifications

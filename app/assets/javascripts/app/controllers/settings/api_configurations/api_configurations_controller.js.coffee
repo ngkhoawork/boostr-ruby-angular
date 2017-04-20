@@ -17,8 +17,8 @@
           },
           operative_datafeed: {
             actions: {
-              create: { templateUrl: 'modals/operative_datafeed_configuration_form.html', controller: 'DatafeedConfigurationsCreateController' },
-              update: { templateUrl: 'modals/operative_datafeed_configuration_form.html', controller: 'DatafeedConfigurationsEditController' },
+              create: { templateUrl: 'modals/operative_datafeed_configuration_form.html', controller: 'DataFeedConfigurationsCreateController' },
+              update: { templateUrl: 'modals/operative_datafeed_configuration_form.html', controller: 'DataFeedConfigurationsCreateController' },
             }
           }
         }

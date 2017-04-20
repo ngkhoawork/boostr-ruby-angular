@@ -16,7 +16,7 @@ class DFP::ImporterService < BaseService
   end
 
   def current_day_name
-    current_day.strftime("%A")
+    current_day.strftime('%A')
   end
 
   def current_day_of_month_value
@@ -24,7 +24,7 @@ class DFP::ImporterService < BaseService
   end
 
   def current_day
-    DateTime.current.in_time_zone("Pacific Time (US & Canada)")
+    DateTime.current.in_time_zone('Pacific Time (US & Canada)')
   end
 
   def make_cumulative_import

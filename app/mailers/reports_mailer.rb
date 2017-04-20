@@ -10,4 +10,11 @@ class ReportsMailer < ApplicationMailer
     @budget_changed_deals = report_data[:budget_changed]
     mail(to: recipients, subject: 'Boostr Daily Pipeline Changes')
   end
+
+  def dfp_report_mail(recipients, report_type, tot_rows_imported, tot_rows_with_errors)
+    @tot_rows_imported = tot_rows_imported
+    @tot_rows_with_errors = tot_rows_with_errors
+    mail(to: recipients, subject: "Boostr DFP #{ report_type } import completed")
+  end
+
 end
