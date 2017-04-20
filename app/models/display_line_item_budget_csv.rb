@@ -2,10 +2,10 @@ class DisplayLineItemBudgetCsv
   include ActiveModel::Validations
 
   validates :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
-            :video_avg_view_rate, :video_completion_rate, presence: true
+            :video_avg_view_rate, :video_completion_rate, :budget_loc, presence: true
 
   attr_accessor :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
-                :video_avg_view_rate, :video_completion_rate
+                :video_avg_view_rate, :video_completion_rate, :budget_loc
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -37,7 +37,7 @@ class DisplayLineItemBudgetCsv
       quantity: impressions,
       ad_server_quantity: impressions,
       budget: budget,
-      budget_loc: budget,
+      budget_loc: budget_loc,
       video_avg_view_rate: video_avg_view_rate,
       video_completion_rate: video_completion_rate
     )
@@ -77,11 +77,19 @@ class DisplayLineItemBudgetCsv
     @_start_date ||= Date.strptime(month_and_year, '%Y-%m')
   end
 
+  def dfp_end_date
+    @_dfp_end_date ||= start_date.end_of_month
+  end
+
   def end_date
-    start_date.end_of_month
+    dfp_end_date > display_line_item.end_date ? display_line_item.end_date : dfp_end_date
   end
 
   def budget
     display_line_item.price * impressions.to_i
+  end
+
+  def calculate_budget_loc
+    display_line_item.price * budget_loc
   end
 end

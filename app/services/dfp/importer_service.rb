@@ -28,11 +28,19 @@ class DFP::ImporterService < BaseService
   end
 
   def make_cumulative_import
-    DFP::CumulativeImportService.new(dfp_api_configuration.company_id, report_file: get_cumulative_report_file).perform
+    DFP::CumulativeImportService.new(
+      dfp_api_configuration.company_id,
+      'dfp_cumulative',
+      report_file: get_cumulative_report_file
+    ).perform
   end
 
   def make_monthly_import
-    #TODO: Implement after Ostap's changes
+    DFP::MonthlyImportService.new(
+        dfp_api_configuration.company_id,
+        'dfp_monthly',
+        report_file: get_cumulative_report_file
+    ).perform
   end
 
   def get_cumulative_report_file

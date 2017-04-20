@@ -3,6 +3,7 @@ require 'rails_helper'
 describe DFP::MonthlyImportService, dfp: :true do
   before do
     create_io
+    create :dfp_api_configuration, company: company, cpm_budget_adjustment: cpm_budget_adjustment
 
     allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_csv)
   end
@@ -23,9 +24,22 @@ describe DFP::MonthlyImportService, dfp: :true do
     expect(display_line_item_budget.quantity).to eq 10000
     expect(display_line_item_budget.ad_server_quantity).to eq 10000
     expect(display_line_item_budget.budget.to_i).to eq 50000
-    expect(display_line_item_budget.budget_loc.to_i).to eq 50000
+    expect(display_line_item_budget.budget_loc.to_i).to eq 9000
     expect(display_line_item_budget.video_avg_view_rate).to eq 0.0120
     expect(display_line_item_budget.video_completion_rate).to eq 0.0034
+  end
+
+  it 'create new display line item budget successfully with end date from display line item' do
+    display_line_item.update_column(:end_date, Date.new(2017, 03, 20))
+
+    expect{
+      monthly_import = described_class.new(company.id, 'dfp_monthly', report_file: report_file)
+      monthly_import.perform
+    }.to change(DisplayLineItemBudget, :count).by(1)
+
+    display_line_item_budget = DisplayLineItemBudget.last
+
+    expect(display_line_item_budget.end_date).to eq Date.new(2017, 03, 20)
   end
 
   it 'update display line item budget successfully' do
@@ -41,6 +55,10 @@ describe DFP::MonthlyImportService, dfp: :true do
 
   def company
     @_company ||= create :company
+  end
+
+  def cpm_budget_adjustment
+    create :cpm_budget_adjustment
   end
 
   def create_io
@@ -67,6 +85,8 @@ describe DFP::MonthlyImportService, dfp: :true do
       :display_line_item,
       price: 5,
       line_number: 4321,
+      start_date: Date.new(2017, 02),
+      end_date: Date.new(2017, 04).end_of_month,
       product: display_line_item_product
     )
   end

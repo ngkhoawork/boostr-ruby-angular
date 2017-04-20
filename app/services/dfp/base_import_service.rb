@@ -51,4 +51,8 @@ class DFP::BaseImportService
 
     import_log.save
   end
+
+  def adjustment_service
+    @adjustment_service ||= DFP::CpmBudgetAdjustmentService.new(company_id: company_id)
+  end
 end

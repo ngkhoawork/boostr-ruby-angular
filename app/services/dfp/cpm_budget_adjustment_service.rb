@@ -1,7 +1,7 @@
 class DFP::CpmBudgetAdjustmentService < BaseService
 
   def perform(field)
-    cpm_budget_adjustment_factor * field
+    cpm_budget_adjustment_factor * field.to_i
   end
 
   private

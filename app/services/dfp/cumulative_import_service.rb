@@ -3,7 +3,7 @@ module DFP
 
     private
 
-    def build_dli_csv(row)
+    def build_csv(row)
       DisplayLineItemCsv.new(
         external_io_number: row[:dimensionorder_id],
         product_name: row[:dimensionline_item_name],
@@ -22,10 +22,6 @@ module DFP
 
         company_id: company_id
       )
-    end
-
-    def adjustment_service
-      @adjustment_service ||= DFP::CpmBudgetAdjustmentService.new(company_id: company_id)
     end
   end
 end
