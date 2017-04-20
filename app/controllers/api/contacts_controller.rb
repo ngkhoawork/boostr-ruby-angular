@@ -14,8 +14,16 @@ class Api::ContactsController < ApplicationController
       results = contacts
     end
 
+    results = apply_search_criteria(results)
+
     response.headers['X-Total-Count'] = results.total_count
-    render json: results.includes(:primary_client, :address)
+    render json: results.includes(:primary_client, :latest_happened_activity)
+      .limit(limit)
+      .offset(offset)
+  end
+
+  def show
+    render json: contact
   end
 
   def create
@@ -88,15 +96,18 @@ class Api::ContactsController < ApplicationController
 
   def contacts
     if params[:filter] == 'my_contacts'
-      Contact.by_client_ids(limit, offset, current_user.clients.ids)
+      Contact.by_client_ids(current_user.clients.ids)
     elsif params[:filter] == 'team' && team
-      Contact.by_client_ids(limit, offset, team.clients.ids)
+      Contact.by_client_ids(team.clients.ids)
     else
-      current_user.company.contacts
-        .order(:name)
-        .limit(limit)
-        .offset(offset)
+      current_user.company.contacts.order(:name)
     end
+  end
+
+  def apply_search_criteria(rel)
+    rel
+    .by_primary_client_name(primary_client_criteria)
+    .by_city(city_criteria)
   end
 
   def limit
@@ -133,5 +144,13 @@ class Api::ContactsController < ApplicationController
     return @activity_contacts if defined?(@activity_contacts)
 
     @activity_contacts = current_user.company.contacts.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
+  end
+
+  def primary_client_criteria
+    params[:workplace]
+  end
+
+  def city_criteria
+    params[:city]
   end
 end

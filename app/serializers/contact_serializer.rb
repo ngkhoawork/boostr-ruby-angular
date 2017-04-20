@@ -1,7 +1,21 @@
 class ContactSerializer < ActiveModel::Serializer
-  attributes :id, :name, :position, :client_id, :created_by, :updated_by,
-             :created_at, :updated_at, :company_id, :activity_updated_at,
-             :note, :formatted_name, :primary_client_json, :address
+  attributes(
+    :id,
+    :name,
+    :position,
+    :client_id,
+    :created_by,
+    :updated_by,
+    :created_at,
+    :updated_at,
+    :company_id,
+    :activity_updated_at,
+    :note,
+    :formatted_name,
+    :primary_client_json,
+    :address,
+    :last_touched
+  )
 
   def primary_client_json
     object.primary_client.serializable_hash(only: [:id, :name, :client_type_id]) rescue nil
@@ -9,5 +23,9 @@ class ContactSerializer < ActiveModel::Serializer
 
   def formatted_name
     name
+  end
+
+  def last_touched
+    object.latest_happened_activity.first.try(:happened_at)
   end
 end

@@ -16,6 +16,10 @@ class Contact < ActiveRecord::Base
   has_one :address, as: :addressable
   has_many :integrations, as: :integratable
 
+  has_and_belongs_to_many :latest_happened_activity, -> {
+    order('activities.happened_at DESC').limit(1)
+  }, class_name: 'Activity'
+
   has_and_belongs_to_many :activities, after_add: :update_activity_updated_at
 
   delegate :email, :street1, :street2, :city, :state, :zip, :phone, :mobile, :country, to: :address, allow_nil: true
@@ -33,9 +37,20 @@ class Contact < ActiveRecord::Base
     Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email ilike ? and contacts.company_id=?", email, company_id)
   }
   scope :total_count, -> { except(:order, :limit, :offset).count.to_s }
-  scope :by_client_ids, -> limit, offset, ids { Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).limit(limit).offset(offset).distinct }
-
+  scope :by_client_ids, -> ids do
+    Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).distinct
+  end
   scope :by_name, -> name { where('contacts.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_primary_client_name, -> client_name do
+    Contact.joins(
+      "INNER JOIN client_contacts as primary_client_contact ON contacts.id=primary_client_contact.contact_id and (primary_client_contact.primary = #{true})"
+      ).joins(
+      'INNER JOIN clients ON clients.id = primary_client_contact.client_id'
+      ).where('clients.name ilike ?', client_name) if client_name.present?
+  end
+  scope :by_city, -> city_name do
+    Contact.joins(:address).where("addresses.city ilike ?", city_name) if city_name.present?
+  end
 
   after_save do
     if client_id_changed? && !client_id.nil?
@@ -206,7 +221,7 @@ class Contact < ActiveRecord::Base
   end
 
   def update_activity_updated_at(activity)
-    activity_updated_at = activity.happened_at
+    self.activity_updated_at = activity.happened_at
     save
   end
 end

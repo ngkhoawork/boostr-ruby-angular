@@ -11,6 +11,15 @@ RSpec.describe Contact, type: :model do
     it { should have_many(:deals).through(:deal_contacts) }
     it { should have_many(:deal_contacts) }
     it { should have_one :contact_cf }
+
+    it 'has one latest_happened_activity' do
+      contact = create :contact
+      create :activity, contacts: [contact], happened_at: DateTime.now - 1.month
+      activity = create :activity, contacts: [contact], happened_at: DateTime.now
+
+      expect(contact.latest_happened_activity.count).to be 1
+      expect(contact.latest_happened_activity.first).to eq activity
+    end
   end
 
   context 'after_save' do
@@ -56,7 +65,6 @@ RSpec.describe Contact, type: :model do
     end
   end
 
-
   context 'scopes' do
     context 'unassigned' do
       let!(:contact) { create :contact, clients: [client], address: address }
@@ -93,8 +101,55 @@ RSpec.describe Contact, type: :model do
       let!(:client_contacts) { create_list :contact, 3, clients: [client, client2] }
 
       it 'returns contacts that have given clients ids assigned as clients' do
-        contacts = Contact.by_client_ids(10, 0, [client.id, client2.id])
+        contacts = Contact.by_client_ids([client.id, client2.id])
         expect(contacts.length).to eq(client_contacts.count)
+      end
+    end
+
+    context 'by_primary_client' do
+      let(:client) { create :client, name: 'Flipboard' }
+      let!(:some_contacts) { create_list :contact, 3 }
+      let!(:client_contacts) { create_list :contact, 3, clients: [client], client_id: client.id }
+
+      it 'returns contacts working at given client name' do
+        contacts = Contact.by_primary_client_name('Flipboard')
+
+        expect(contacts.length).to be 3
+      end
+
+      it 'does case insensitive search' do
+        contacts = Contact.by_primary_client_name('flipboard')
+
+        expect(contacts.length).to be 3
+      end
+
+      it 'skips the scope if parameter is empty' do
+        contacts = Contact.by_primary_client_name('')
+
+        expect(contacts.length).to be 6
+      end
+    end
+
+    context 'by_city' do
+      let!(:luxury_contact) { create :contact, address_attributes: { city: 'Palm Beach', email: FFaker::Internet.email } }
+      let!(:misc_contacts) { create_list :contact, 3, clients: [client], client_id: client.id }
+
+      it 'finds contacts by city' do
+        contacts = Contact.by_city('Palm Beach')
+
+        expect(contacts.length).to be 1
+      end
+
+      it 'does case insensitive search' do
+        contacts = Contact.by_city('palm beach')
+
+        expect(contacts.length).to be 1
+      end
+
+      it 'skips the scope if parameter is empty' do
+        contacts = Contact.by_city('')
+
+        expect(contacts.length).to be 4
       end
     end
   end

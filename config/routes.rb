@@ -96,7 +96,7 @@ Rails.application.routes.draw do
     resources :display_line_item_budgets, only: [:index, :create]
     resources :io_csvs, only: [:create]
     resources :display_line_item_csvs, only: [:create]
-    resources :contacts, only: [:index, :create, :update, :destroy]
+    resources :contacts, only: [:index, :show, :create, :update, :destroy]
     resources :revenue, only: [:index, :create]
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
       resources :content_fees, only: [:create, :update, :destroy]

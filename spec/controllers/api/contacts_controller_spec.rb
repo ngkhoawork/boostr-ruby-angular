@@ -70,6 +70,56 @@ RSpec.describe Api::ContactsController, type: :controller do
         expect(response_json.length).to eq(team_contacts_count)
       end
     end
+
+    context 'search criterions' do
+      it 'filters by workplace' do
+        client_criteria = create :client, name: 'Flipboard', company: user.company, created_by: user.id
+        create :contact, company: user.company, clients: [client_criteria], client_id: client_criteria.id
+
+        get :index, filter: 'my_contacts', workplace: 'flipboard'
+
+        expect(json_response.length).to be 1
+        expect(json_response.first['primary_client_json']['name']).to eql 'Flipboard'
+      end
+
+      it 'filters by city' do
+        address_criteria = attributes_for :address, city: 'Palm Beach'
+        user_client = create :client, company: user.company, created_by: user.id
+        create :contact, company: user.company, address_attributes: address_criteria, created_by: user.id, clients: [user_client]
+
+        get :index, filter: 'my_contacts', city: 'palm beach'
+
+        expect(json_response.length).to be 1
+        expect(json_response.first['address']['city']).to eql 'Palm Beach'
+      end
+
+      it 'filters by date of latest happened activity' do
+        user_client = create :client, company: user.company, created_by: user.id
+        active_contact = create :contact, company: user.company, created_by: user.id, clients: [user_client]
+        stale_contact = create :contact, company: user.company, created_by: user.id, clients: [user_client]
+
+        recent_activity = create :activity, company: user.company, contacts: [active_contact], happened_at: DateTime.now - 1.day
+        old_activity = create :activity, company: user.company, contacts: [stale_contact], happened_at: DateTime.now - 1.month
+
+        start_date = old_activity.happened_at - 1.day
+        end_date = old_activity.happened_at + 1.day
+
+        get :index, filter: 'my_contacts', last_touch_start: start_date, last_touch_end: end_date
+
+        expect(json_response.length).to be 1
+        expect(json_response.first['name']).to eql active_contact.name
+      end
+    end
+  end
+
+  describe 'GET #show' do
+    let!(:contact) { create :contact, clients: [client], name: 'Testy test' }
+
+    it 'returns contact info' do
+      get :show, id: contact.id
+
+      expect(json_response['name']).to eql 'Testy test'
+    end
   end
 
   describe "POST #create" do
@@ -84,9 +134,10 @@ RSpec.describe Api::ContactsController, type: :controller do
 
     it 'returns errors if the contact is invalid' do
       expect{
-        post :create, contact: { client_id: client2.id, addresses_attributes: address_params }, format: :json
+        post :create, contact: { addresses_attributes: address_params }, format: :json
         expect(response.status).to eq(422)
         response_json = JSON.parse(response.body)
+
         expect(response_json['errors']['primary account']).to eq(["can't be blank"])
       }.to_not change(Contact, :count)
     end
