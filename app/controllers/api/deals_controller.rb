@@ -258,12 +258,18 @@ class Api::DealsController < ApplicationController
 
   def forecast_deals
     response_deals = []
+    all_users = []
     if params[:user_id].present? && params[:user_id] != 'all'
       response_deals = user.deals
+      all_users << user.id
     elsif params[:team_id].present? && params[:team_id] == 'all'
       response_deals = company.deals
+      all_users = company.users.pluck(:id)
     else
       response_deals = all_team_deals
+      selected_team = Team.find(params[:team_id])
+      all_users = selected_team.all_members.map(&:id)
+      all_users += selected_team.all_leaders.map(&:id)
     end
     response_deals = response_deals
      .for_time_period(time_period.start_date, time_period.end_date)
@@ -305,6 +311,19 @@ class Api::DealsController < ApplicationController
     response_deals = response_deals.map do |deal|
       range = deal['start_date'] .. deal['end_date']
 
+      deal_object = Deal.find(deal['id'])
+      sum_period_budget, split_period_budget = 0, 0
+
+      deal_users = deal_object.users.pluck(:id)
+      deal_filtered_users = all_users & deal_users
+      result = deal_object.in_period_open_amt(time_period.start_date, time_period.end_date)
+      sum_period_budget += result
+      deal_object.deal_members.where("user_id in (?)", deal_filtered_users).each do |deal_member|
+        split_period_budget += result * deal_member.share / 100.0
+      end
+
+      deal['period_budget'] = sum_period_budget
+      deal['split_period_budget'] = split_period_budget
       deal['month_amounts'] = []
       monthly_revenues = DealProductBudget.joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
                                  .select("date_part('month', start_date) as month, sum(deal_product_budgets.budget) as revenue")

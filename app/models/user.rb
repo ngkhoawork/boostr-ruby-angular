@@ -185,6 +185,9 @@ class User < ActiveRecord::Base
     year = start_date.year
     ios.map do |io|
       io_obj = Io.find(io['id'])
+
+      sum_period_budget, split_period_budget = io_obj.for_forecast_page(start_date, end_date, self)
+
       start_month = start_date.month
       end_month = end_date.month
       io[:quarters] = Array.new(4, nil)
@@ -195,9 +198,7 @@ class User < ActiveRecord::Base
       for i in ((start_month - 1) / 3)..((end_month - 1) / 3)
         io[:quarters][i] = 0
       end
-      total = 0
       io[:members] = io_obj.io_members
-      share = io_members.find_by(user_id: self.id).share
 
       if io['end_date'] == io['start_date']
         io['end_date'] += 1.day
@@ -207,7 +208,6 @@ class User < ActiveRecord::Base
         month = content_fee_product_budget.start_date.mon
         io[:months][month - 1] += content_fee_product_budget.budget
         io[:quarters][(month - 1) / 3] += content_fee_product_budget.budget
-        total += content_fee_product_budget.budget
       end
 
       io_obj.display_line_items.for_time_period(start_date, end_date).each do |display_line_item|
@@ -233,12 +233,11 @@ class User < ActiveRecord::Base
           budget = in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
           io[:months][index - 1] += budget
           io[:quarters][(index - 1) / 3] += budget
-          total += budget
         end
       end
 
-      io['in_period_amt'] = total
-      io['in_period_split_amt'] = total * share / 100
+      io['in_period_amt'] = sum_period_budget
+      io['in_period_split_amt'] = split_period_budget
     end
 
     ios

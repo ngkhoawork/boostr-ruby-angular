@@ -107,11 +107,24 @@ class Team < ActiveRecord::Base
   end
 
   def quarterly_ios(start_date, end_date)
+    all_users = all_members + all_leaders
     ios = all_members.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq.as_json
-    members_id = all_members.map{ |user| user.id }
     year = start_date.year
     ios.map do |io|
       io_obj = Io.find(io['id'])
+      sum_period_budget, split_period_budget = 0, 0
+
+      io_users = io_obj.users.pluck(:id)
+      io_team_users = all_users.select do |user|
+        io_users.include?(user.id)
+      end
+
+      io_team_users.each do |user|
+        result = io_obj.for_forecast_page(start_date, end_date, user)
+        sum_period_budget += result[0] if sum_period_budget == 0
+        split_period_budget += result[1]
+      end
+
       start_month = start_date.month
       end_month = end_date.month
       io[:quarters] = Array.new(4, nil)
@@ -122,9 +135,8 @@ class Team < ActiveRecord::Base
       for i in ((start_month - 1) / 3)..((end_month - 1) / 3)
         io[:quarters][i] = 0
       end
-      total = 0
+
       io[:members] = io_obj.io_members
-      share = io_obj.io_members.where("user_id in (?)", members_id).pluck(:share).sum
 
       if io['end_date'] == io['start_date']
         io['end_date'] += 1.day
@@ -134,7 +146,6 @@ class Team < ActiveRecord::Base
         month = content_fee_product_budget.start_date.mon
         io[:months][month - 1] += content_fee_product_budget.budget
         io[:quarters][(month - 1) / 3] += content_fee_product_budget.budget
-        total += content_fee_product_budget.budget
       end
 
       io_obj.display_line_items.for_time_period(start_date, end_date).each do |display_line_item|
@@ -160,12 +171,11 @@ class Team < ActiveRecord::Base
           budget = in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
           io[:months][index - 1] += budget
           io[:quarters][(index - 1) / 3] += budget
-          total += budget
         end
       end
 
-      io['in_period_amt'] = total
-      io['in_period_split_amt'] = total * share / 100
+      io['in_period_amt'] = sum_period_budget
+      io['in_period_split_amt'] = split_period_budget
     end
 
     ios
