@@ -43,7 +43,7 @@ class Api::DisplayLineItemBudgetsController < ApplicationController
   private
 
   def display_line_item_budget
-    DisplayLineItemBudget.find(params[:id])
+    @_display_line_item_budget ||= DisplayLineItemBudget.find(params[:id])
   end
 
   def display_line_item_budget_params
