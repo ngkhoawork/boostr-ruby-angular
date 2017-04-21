@@ -71,7 +71,7 @@
                         budget_loc: budget.budget_loc
                 ).then (resp) ->
                     budget.budget_loc = resp.budget_loc
-#                    budget.display_line_item_budget_loc = resp.display_line_item_budget_loc
+                    $scope.selectedIORow.budget_loc = resp.display_line_item_budget_loc
 
             $scope.linkExistingUser = (item) ->
                 $scope.userToLink = undefined

@@ -48,7 +48,7 @@
         border: 0 solid #DDDDDD;
         background-color: #FBFCFD;
         transform-origin: 0 0;
-        transition: height 400ms, opacity 400ms;
+        transition: height 400ms, opacity 400ms, border-width 400ms;
         .budgets-inner {
             padding: 15px;
         }
