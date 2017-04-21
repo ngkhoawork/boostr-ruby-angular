@@ -15,6 +15,7 @@ class Contact < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_one :address, as: :addressable
   has_many :integrations, as: :integratable
+  has_many :values, as: :subject
 
   has_and_belongs_to_many :latest_happened_activity, -> {
     order('activities.happened_at DESC').limit(1)
@@ -26,6 +27,7 @@ class Contact < ActiveRecord::Base
 
   accepts_nested_attributes_for :contact_cf
   accepts_nested_attributes_for :address
+  accepts_nested_attributes_for :values
 
   validates :name, presence: true
   validate :email_is_present?
@@ -50,6 +52,9 @@ class Contact < ActiveRecord::Base
   end
   scope :by_city, -> city_name do
     Contact.joins(:address).where("addresses.city ilike ?", city_name) if city_name.present?
+  end
+  scope :by_job_level, -> job_level do
+    Contact.joins(:values).where('values.option_id in (?)', Option.by_name(job_level).ids) if job_level.present?
   end
 
   after_save do
@@ -196,6 +201,14 @@ class Contact < ActiveRecord::Base
     end
     # end
     errors
+  end
+
+  def self.metadata(company_id)
+    {
+      workplaces: Contact.where(company_id: company_id).joins(:primary_client).distinct.pluck('clients.name'),
+      job_levels: Field.where(company_id: company_id, subject_type: 'Contact').joins(:options).pluck('options.name'),
+      cities: Contact.where(company_id: company_id).joins(:address).where.not(addresses: {city: nil}).pluck('addresses.city').uniq
+    }
   end
 
   private

@@ -8,6 +8,21 @@ RSpec.describe Option, type: :model do
   let(:deal) { create :deal, company: company }
   let(:value) { create :value, company: company, field: field, subject: deal, option: option }
 
+
+  context 'scopes' do
+    it 'finds option by name' do
+      create :option, name: 'Testy test', field: field
+
+      expect(Option.by_name('Testy test').length).to be 1
+    end
+
+    it 'finds option by company id' do
+      opt = create :option, name: 'Testy test', field: field
+
+      expect(Option.for_company(opt.company_id)).to include opt
+    end
+  end
+
   context 'validating' do
     context 'option' do
       it "ignores itself" do

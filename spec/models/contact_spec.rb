@@ -152,6 +152,20 @@ RSpec.describe Contact, type: :model do
         expect(contacts.length).to be 4
       end
     end
+
+    context 'by job level' do
+      let!(:field) { company.fields.find_by(subject_type: 'Contact') }
+      let!(:pro) { create :option, name: 'Pro', field: field }
+      let!(:rookie) { create :option, name: 'Rookie', field: field }
+      let!(:new_contacts) { create_list :contact, 3, values_attributes: [{ field_id: field.id, option_id: rookie.id }]}
+      let!(:pro_contacts) { create_list :contact, 3, values_attributes: [{ field_id: field.id, option_id: pro.id }]}
+
+      it 'finds contacts by job level' do
+        contacts = Contact.by_job_level('Rookie')
+
+        expect(contacts.length).to be 3
+      end
+    end
   end
 
   context 'validation' do
@@ -189,5 +203,40 @@ RSpec.describe Contact, type: :model do
       expect(contact.reload.primary_client).to eq(client2)
       expect(contact.clients).to eq([client2])
     end
+  end
+
+  describe 'metadata' do
+    let(:client) { create :client, name: 'Flipboard' }
+    let(:client2) { create :client, name: 'Facebook' }
+
+    let!(:field) { company.fields.find_by(subject_type: 'Contact') }
+    let!(:pro) { create :option, name: 'CEO', field: field }
+    let!(:rookie) { create :option, name: 'Seller', field: field }
+
+    let!(:pro_contact) { create :contact,
+      clients: [client], client_id: client.id,
+      values_attributes: [{ field_id: field.id, option_id: rookie.id }],
+      address_attributes: (attributes_for :address, city: 'Palm Beach')
+    }
+
+    let!(:rookie_contact) { create :contact,
+      clients: [client2], client_id: client2.id,
+      values_attributes: [{ field_id: field.id, option_id: pro.id }],
+      address_attributes: (attributes_for :address, city: 'New York')
+    }
+
+    it 'returns information about possible contact filters' do
+      metadata = Contact.metadata(company.id)
+
+      expect(metadata).to eq(
+        workplaces: ['Flipboard', 'Facebook'],
+        job_levels: ['CEO', 'Seller'],
+        cities: ['Palm Beach', 'New York']
+      )
+    end
+  end
+
+  def company
+    @_company ||= Company.first
   end
 end

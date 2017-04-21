@@ -93,21 +93,23 @@ RSpec.describe Api::ContactsController, type: :controller do
         expect(json_response.first['address']['city']).to eql 'Palm Beach'
       end
 
-      it 'filters by date of latest happened activity' do
+      it 'filters by contact job level' do
+        field = user.company.fields.find_by(subject_type: 'Contact')
+        ceo_option = create :option, name: 'CEO', field: field
+        seller_option = create :option, name: 'Seller', field: field
+
         user_client = create :client, company: user.company, created_by: user.id
-        active_contact = create :contact, company: user.company, created_by: user.id, clients: [user_client]
-        stale_contact = create :contact, company: user.company, created_by: user.id, clients: [user_client]
+        ceo_contact = create :contact, company: user.company,
+          created_by: user.id, clients: [user_client],
+          values_attributes: [field: field, option: ceo_option]
+        seller_contact = create :contact, company: user.company,
+          created_by: user.id, clients: [user_client],
+          values_attributes: [field: field, option: seller_option]
 
-        recent_activity = create :activity, company: user.company, contacts: [active_contact], happened_at: DateTime.now - 1.day
-        old_activity = create :activity, company: user.company, contacts: [stale_contact], happened_at: DateTime.now - 1.month
-
-        start_date = old_activity.happened_at - 1.day
-        end_date = old_activity.happened_at + 1.day
-
-        get :index, filter: 'my_contacts', last_touch_start: start_date, last_touch_end: end_date
+        get :index, filter: 'my_contacts', job_level: 'CEO'
 
         expect(json_response.length).to be 1
-        expect(json_response.first['name']).to eql active_contact.name
+        expect(json_response.first['name']).to eql ceo_contact.name
       end
     end
   end
@@ -189,4 +191,37 @@ RSpec.describe Api::ContactsController, type: :controller do
     end
   end
 
+  describe 'GET #metadata' do
+    it 'returns contacts metadata' do
+      prepare_contact_metadata
+
+      get :metadata
+
+      expect(json_response).to eql(
+        workplaces: ['Fidelity', 'Fliboard'],
+        job_levels: ['CEO', 'Seller'],
+        cities: ['Palm Beach', 'New York']
+      )
+    end
+  end
+
+  def prepare_contact_metadata
+    field = user.company.fields.find_by(subject_type: 'Contact')
+    ceo_option = create :option, name: 'CEO', field: field
+    seller_option = create :option, name: 'Seller', field: field
+
+    user_client = create :client, name: 'Fidelity', company: user.company, created_by: user.id
+    user_client2 = create :client, name: 'Fliboard', company: user.company, created_by: user.id
+
+    ceo_contact = create :contact, company: user.company,
+      created_by: user.id, clients: [user_client],
+      values_attributes: [field: field, option: ceo_option],
+      address_attributes: (attributes_for :address, city: 'Palm Beach')
+
+    seller_contact = create :contact, company: user.company,
+      created_by: user.id, clients: [user_client],
+      values_attributes: [field: field, option: seller_option],
+      address_attributes: (attributes_for :address, city: 'New York')
+
+  end
 end

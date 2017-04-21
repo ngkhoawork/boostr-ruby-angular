@@ -67,6 +67,10 @@ class Api::ContactsController < ApplicationController
     render nothing: true
   end
 
+  def metadata
+    render json: Contact.metadata(current_user.company_id)
+  end
+
   private
 
   def contact_params
@@ -108,6 +112,7 @@ class Api::ContactsController < ApplicationController
     rel
     .by_primary_client_name(primary_client_criteria)
     .by_city(city_criteria)
+    .by_job_level(job_level_criteria)
   end
 
   def limit
@@ -152,5 +157,9 @@ class Api::ContactsController < ApplicationController
 
   def city_criteria
     params[:city]
+  end
+
+  def job_level_criteria
+    params[:job_level]
   end
 end
