@@ -33,9 +33,8 @@ class Api::DisplayLineItemBudgetsController < ApplicationController
   def update
     if display_line_item_budget.update(display_line_item_budget_params)
       update_budget
-      update_display_line_item
 
-      render json: { budget_loc: display_line_item_budget.budget_loc, display_line_item_budget_loc: display_line_item.budget_loc }
+      render json: { budget_loc: display_line_item_budget.budget_loc }
     else
       render json: { errors: display_line_item_budget.errors.messages }, status: :unprocessable_entity
     end
@@ -47,10 +46,6 @@ class Api::DisplayLineItemBudgetsController < ApplicationController
     DisplayLineItemBudget.find(params[:id])
   end
 
-  def display_line_item
-    display_line_item_budget.display_line_item
-  end
-
   def display_line_item_budget_params
     params.require(:display_line_item_budget).permit(:budget_loc)
   end
@@ -58,13 +53,6 @@ class Api::DisplayLineItemBudgetsController < ApplicationController
   def update_budget
     display_line_item_budget.update(
       budget: (display_line_item_budget.budget_loc / display_line_item_budget.display_line_item.io.exchange_rate)
-    )
-  end
-
-  def update_display_line_item
-    display_line_item.update(
-      budget: display_line_item.display_line_item_budgets.sum(:budget_loc) / display_line_item_budget.display_line_item.io.exchange_rate,
-      budget_loc: display_line_item.display_line_item_budgets.sum(:budget_loc)
     )
   end
 end
