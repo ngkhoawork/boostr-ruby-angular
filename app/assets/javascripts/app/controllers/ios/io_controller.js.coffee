@@ -4,7 +4,7 @@
             $scope.currentIO = {}
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
-            $scope.activeBudgetsRow = null
+            $scope.selectedIORow = null
             $scope.budgets = []
             $scope.isNaN = (val) -> isNaN val
 
@@ -12,7 +12,6 @@
                 CurrentUser.get().$promise.then (user) ->
                     $scope.currentUser = user
                 IO.get($routeParams.id).then (io) ->
-
                     $scope.currentIO = io
                     if io.currency
                         if io.currency.curr_symbol
@@ -42,33 +41,23 @@
                     $scope.users = $filter('notIn')(users, $scope.currentIO.io_members, 'user_id')
 
             $scope.showBudgetRow = (item, e)->
-                currentRow = angular.element(e.target).closest('tr')
-                rowOffset = currentRow.offset()
-                budgetsRow = angular.element('#display-line-budgets')
-                wrapper = angular.element('.display-line-table-wrapper')
-                offset =
-                    top: rowOffset.top + currentRow.height()
-                    left: wrapper.offset().left
-                budgetsRow.offset(offset)
-                if $scope.activeBudgetsRow == item
-                    $scope.activeBudgetsRow = null
-                    budgetsRow.toggleClass 'hide-budgets-row'
+                budgetsRow = angular.element("[data-displayID='#{item.id}']")
+                innerDiv = budgetsRow.children()
+                angular.element('.display-line-budgets').outerHeight(0)
+                if $scope.selectedIORow == item
+                    $scope.selectedIORow = null
                 else
-                    $scope.activeBudgetsRow = null
-                    budgetsRow.addClass 'hide-budgets-row'
+                    $scope.selectedIORow = null
                     DisplayLineItem.get(item.id).then (data) ->
-                        $scope.activeBudgetsRow = item
+                        $scope.selectedIORow = item
                         $scope.budgets = data
-                        budgetsRow.removeClass 'hide-budgets-row'
-#                    budgetsRow.addClass 'hide-budgets-row'
-#                    $timeout () ->
-#                    , 500
+                        $timeout -> budgetsRow.height innerDiv.outerHeight()
                 return
 
             $scope.addBudget = (budget, index) ->
-                if $scope.activeBudgetsRow
+                if $scope.selectedIORow
                     DisplayLineItem.add_budget(
-                        id: $scope.activeBudgetsRow.id
+                        id: $scope.selectedIORow.id
                         display_line_item_budget:
                             budget_loc: 0
                             month: budget.month

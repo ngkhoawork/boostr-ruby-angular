@@ -87,101 +87,97 @@
 				.block#line-display
 					%div.mb20
 						%span.title Line Items - display
-					%div.display-line-table-wrapper
-						%div#display-line-budgets.hide-budgets-row
-							%div.title Monthly Budgets
-							%div.line-budget{'ng-if': 'currentUser.user_type == 5', 'ng-repeat': 'budget in budgets'}
-								.month {{budget.month}}
-								.budget{'ng-if': '!isNaN(budget.budget_loc)'}
-									%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "budget.budget_loc", 'on-after-save': 'updateBudget(budget)'}
-										{{budget.budget_loc | currency:currency_symbol:0}}
-								.budget{'ng-if': 'isNaN(budget.budget_loc)'}
-									%a.add-budget{href: '', 'ng-click': 'addBudget(budget, $index)'} Add
-								-#.budget{'ng-if': 'budget.budget_loc == undefined'}
-									%a.add-budget{href: '', 'ng-click': 'addBudget(budget)'} Add
-							%div.line-budget{'ng-if': 'currentUser.user_type != 5', 'ng-repeat': 'budget in budgets'}
-								.month {{budget.month}}
-								.budget {{budget.budget_loc | currency : currency_symbol : 0}}
-						.table-wrapper
-							%table.table.table-hover
-								%thead
-									%tr
-										%th.left Line #
-										%th.left AdServer
-										%th.left Start Date
-										%th.left End Date
-										%th.left
-											.product Product
-										%th.left Ad Server Product
-										%th.right Qty
-										%th.right Price
-										%th.left Price Type
-										%th.right Budget
-										%th.right Budg Del
-										%th.right Budg Rem
-										%th.right Qty Del
-										%th.right Qty Rem
-										%th.right 3PQtyDel
-										%th.right 3PQtyRem
-										%th.right 3PBudDel
-										%th.right 3PBudRem
-										%th.right Daily Rate
-										%th.right {{"#DaysNoBud"}}
-								%tbody{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items | orderBy: 'line_number'"} }
-									%tr
-										%td.left
-											{{ displayLineItem.line_number }}
-										%td.left
-											{{ displayLineItem.ad_server }}
-										%td.left
-											{{ displayLineItem.start_date | date: 'M/d/yyyy' }}
-										%td.left
-											{{ displayLineItem.end_date | date: 'M/d/yyyy' }}
-										%td.left
-											{{ displayLineItem.product.name }}
-										%td.left
-											{{ displayLineItem.ad_server_product }}
-										%td.right
-											{{ displayLineItem.quantity }}
-										%td.right
-											{{ displayLineItem.price | currency:currency_symbol:0 }}
-										%td.left
-											{{ displayLineItem.pricing_type }}
-										%td.right.display-line-table-budget
-											%div
-												%a{href: '', 'ng-click': 'showBudgetRow(displayLineItem, $event)'}
-													{{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
-											%div.budget-arrow{'ng-class': '{"active-budget": displayLineItem.id == activeBudgetsRow.id}'}
-												.fa.fa-caret-up
-										%td.right
-											{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
-										%td.right
-											{{ displayLineItem.budget_remaining_loc | currency:currency_symbol:0 }}
-										%td.right
-											{{ displayLineItem.quantity_delivered }}
-										%td.right
-											{{ displayLineItem.quantity_remaining }}
-										%td.right
-											{{ displayLineItem.quantity_delivered_3p }}
-										%td.right
-											{{ displayLineItem.quantity_remaining_3p }}
-										%td.right
-											{{ displayLineItem.budget_delivered_3p_loc | currency:currency_symbol:0 }}
-										%td.right
-											{{ displayLineItem.budget_remaining_3p_loc | currency:currency_symbol:0 }}
-										%td.right
-											{{ displayLineItem.daily_run_rate | currency:currency_symbol:0 }}
-										%td.right
-											{{ displayLineItem.num_days_til_out_of_budget }}
-									-#%tr.display-line-budgets
-										%td{colspan: 20}
-											%div{style: 'width: 100%; height: 50px; background-color: red; border: 10px solid green'}
-											-#{{month}}
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th.left Line #
+									%th.left AdServer
+									%th.left Start Date
+									%th.left End Date
+									%th.left
+										.product Product
+									%th.left Ad Server Product
+									%th.right Qty
+									%th.right Price
+									%th.left Price Type
+									%th.right Budget
+									%th.right Budg Del
+									%th.right Budg Rem
+									%th.right Qty Del
+									%th.right Qty Rem
+									%th.right 3PQtyDel
+									%th.right 3PQtyRem
+									%th.right 3PBudDel
+									%th.right 3PBudRem
+									%th.right Daily Rate
+									%th.right {{"#DaysNoBud"}}
+							%tbody{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items | orderBy: 'line_number'"} }
+								%tr
+									%td.left
+										{{ displayLineItem.line_number }}
+									%td.left
+										{{ displayLineItem.ad_server }}
+									%td.left
+										{{ displayLineItem.start_date | date: 'M/d/yyyy' }}
+									%td.left
+										{{ displayLineItem.end_date | date: 'M/d/yyyy' }}
+									%td.left
+										{{ displayLineItem.product.name }}
+									%td.left
+										{{ displayLineItem.ad_server_product }}
+									%td.right
+										{{ displayLineItem.quantity }}
+									%td.right
+										{{ displayLineItem.price | currency:currency_symbol:0 }}
+									%td.left
+										{{ displayLineItem.pricing_type }}
+									%td.right.display-line-table-budget
+										%div
+											%a{href: '', 'ng-click': 'showBudgetRow(displayLineItem, $event)'}
+												{{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
+										%div.budget-arrow{'ng-class': '{"active": displayLineItem == selectedIORow}'}
+											.fa.fa-caret-up
+									%td.right
+										{{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
+									%td.right
+										{{ displayLineItem.budget_remaining_loc | currency:currency_symbol:0 }}
+									%td.right
+										{{ displayLineItem.quantity_delivered }}
+									%td.right
+										{{ displayLineItem.quantity_remaining }}
+									%td.right
+										{{ displayLineItem.quantity_delivered_3p }}
+									%td.right
+										{{ displayLineItem.quantity_remaining_3p }}
+									%td.right
+										{{ displayLineItem.budget_delivered_3p_loc | currency:currency_symbol:0 }}
+									%td.right
+										{{ displayLineItem.budget_remaining_3p_loc | currency:currency_symbol:0 }}
+									%td.right
+										{{ displayLineItem.daily_run_rate | currency:currency_symbol:0 }}
+									%td.right
+										{{ displayLineItem.num_days_til_out_of_budget }}
+								%tr.display-line-budgets-row
+									%td.left{colspan: 20}
+										%div.display-line-budgets{'data-displayID': '{{displayLineItem.id}}', 'ng-class': '{active: selectedIORow == displayLineItem }'}
+											%div.budgets-inner
+												%div.title Monthly Budgets
+												%div.line-budget{'ng-if': 'currentUser.user_type == 5', 'ng-repeat': 'budget in budgets'}
+													.month {{budget.month}}
+													.budget{'ng-if': '!isNaN(budget.budget_loc)'}
+														%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "budget.budget_loc", 'on-after-save': 'updateBudget(budget)', 'submit-on-enter': true}
+															{{budget.budget_loc | currency:currency_symbol:0}}
+													.budget{'ng-if': 'isNaN(budget.budget_loc)'}
+														%a.add-budget{href: '', 'ng-click': 'addBudget(budget, $index)'} Add
+												%div.line-budget{'ng-if': 'currentUser.user_type != 5', 'ng-repeat': 'budget in budgets'}
+													.month {{budget.month}}
+													.budget {{budget.budget_loc | currency : currency_symbol : 0}}
 
-								%tbody{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
-									%tr
-										%td.center{ 'colspan': '19' }
-											No data available
+							%tbody{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
+								%tr
+									%td.center{ 'colspan': '19' }
+										No data available
 				.block#line-print
 					%div.mb20
 						%span.title Line Items - print

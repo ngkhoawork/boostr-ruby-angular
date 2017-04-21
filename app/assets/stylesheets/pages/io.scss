@@ -31,46 +31,37 @@
             }
         }
     }
-    .display-line-table-wrapper {
-        position: relative;
-        //tr {
-        //    td {
-        //        transition: padding 300ms;
-        //        padding-bottom: 8px;
-        //    }
-        //    &.active-budget {
-        //        td {
-        //            padding-bottom: 150px;
-        //        }
-        //    }
-        //}
+    .display-line-budgets-row {
+        height: auto !important;
+        max-height: none !important;
+        td {
+            padding: 0;
+            border-top: none;
+        }
     }
-    #display-line-budgets {
+    .display-line-budgets {
         width: 100%;
-        transform: scaleY(1);
-        opacity: 1;
-        position: absolute;
-        border: solid #DDDDDD;
-        border-width: 1px;
-        box-shadow: 2px 2px 8px gray;
-        padding: 15px;
+        height: 0;
+        overflow: hidden;
+        box-sizing: border-box;
+        opacity: 0;
+        border: 0 solid #DDDDDD;
         background-color: #FBFCFD;
-        //background-color: #bababa;
         transform-origin: 0 0;
-        transition: opacity 500ms, box-shadow 200ms, color 200ms, transform 300ms;
-        &.hide-budgets-row {
-            pointer-events: none;
-            opacity: 0;
-            transform: scaleY(0);
-            box-shadow: 0 0 0;
-            color: transparent;
+        transition: height 400ms, opacity 400ms;
+        .budgets-inner {
+            padding: 15px;
+        }
+        &.active {
+            border-width: 2px 0 1px;
+            opacity: 1;
         }
         .title {
             font-size: 16px;
         }
         .line-budget {
             display: inline-block;
-            width: 140px;
+            width: calc(100% / 12);
             text-align: center;
             padding: 15px 15px;
             .editable-field {
@@ -99,7 +90,7 @@
                 left: 40%;
                 top: -2px;
             }
-            &.active-budget {
+            &.active {
                 .fa {
                     opacity: 1;
 
