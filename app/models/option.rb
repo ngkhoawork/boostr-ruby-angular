@@ -16,7 +16,7 @@ class Option < ActiveRecord::Base
 
   validate :unique_name
 
-  scope :by_name, -> name { where(name: name) }
+  scope :by_name, -> name { where('name ilike ?', name) }
   scope :for_company, -> (id) { where(company_id: id) }
 
   before_create :set_position

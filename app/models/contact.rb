@@ -206,7 +206,7 @@ class Contact < ActiveRecord::Base
   def self.metadata(company_id)
     {
       workplaces: Contact.where(company_id: company_id).joins(:primary_client).distinct.pluck('clients.name'),
-      job_levels: Field.where(company_id: company_id, subject_type: 'Contact').joins(:options).pluck('options.name'),
+      job_levels: Field.where(company_id: company_id, subject_type: 'Contact', name: 'Job Level').joins(:options).pluck('options.name'),
       cities: Contact.where(company_id: company_id).joins(:address).where.not(addresses: {city: nil}).pluck('addresses.city').uniq
     }
   end

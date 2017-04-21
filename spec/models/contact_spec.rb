@@ -154,7 +154,7 @@ RSpec.describe Contact, type: :model do
     end
 
     context 'by job level' do
-      let!(:field) { company.fields.find_by(subject_type: 'Contact') }
+      let!(:field) { company.fields.find_by(subject_type: 'Contact', name: 'Job Level') }
       let!(:pro) { create :option, name: 'Pro', field: field }
       let!(:rookie) { create :option, name: 'Rookie', field: field }
       let!(:new_contacts) { create_list :contact, 3, values_attributes: [{ field_id: field.id, option_id: rookie.id }]}
@@ -209,7 +209,7 @@ RSpec.describe Contact, type: :model do
     let(:client) { create :client, name: 'Flipboard' }
     let(:client2) { create :client, name: 'Facebook' }
 
-    let!(:field) { company.fields.find_by(subject_type: 'Contact') }
+    let!(:field) { company.fields.find_by(subject_type: 'Contact', name: 'Job Level') }
     let!(:pro) { create :option, name: 'CEO', field: field }
     let!(:rookie) { create :option, name: 'Seller', field: field }
 

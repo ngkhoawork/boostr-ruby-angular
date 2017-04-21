@@ -94,7 +94,7 @@ RSpec.describe Api::ContactsController, type: :controller do
       end
 
       it 'filters by contact job level' do
-        field = user.company.fields.find_by(subject_type: 'Contact')
+        field = user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level')
         ceo_option = create :option, name: 'CEO', field: field
         seller_option = create :option, name: 'Seller', field: field
 

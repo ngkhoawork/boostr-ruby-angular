@@ -17,9 +17,9 @@ class Api::ContactsController < ApplicationController
     results = apply_search_criteria(results)
 
     response.headers['X-Total-Count'] = results.total_count
-    render json: results.includes(:primary_client, :latest_happened_activity)
+    render json: results.includes(:primary_client, :latest_happened_activity).preload(:values, :address)
       .limit(limit)
-      .offset(offset)
+      .offset(offset), each_searilizer: ContactSerializer, contact_options: company_job_level_options
   end
 
   def show
@@ -161,5 +161,9 @@ class Api::ContactsController < ApplicationController
 
   def job_level_criteria
     params[:job_level]
+  end
+
+  def company_job_level_options
+    current_user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level').options.select(:id, :field_id, :name)
   end
 end
