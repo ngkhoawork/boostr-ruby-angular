@@ -280,6 +280,19 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def in_period_open_amt(start_date, end_date)
+    deal_product_budgets.for_time_period(start_date, end_date).to_a.sum do |deal_product_budget|
+      if deal_product_budget.deal_product.open == false
+        return 0
+      else
+        from = [start_date, deal_product_budget.start_date].max
+        to = [end_date, deal_product_budget.end_date].min
+        num_days = (to.to_date - from.to_date) + 1
+        return deal_product_budget.daily_budget.to_f * num_days
+      end
+    end
+  end
+
   def days
     (end_date - start_date + 1).to_i
   end
