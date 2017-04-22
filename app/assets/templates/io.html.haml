@@ -4,7 +4,7 @@
 			.col-xs-8
 				.block.detail-stats
 					%div.stats-body
-						%div
+						%div.mb30
 							%span.main-title
 								%span.mr8 {{ currentIO.name }}
 								%i.fa.fa-pencil.z-icon{'ng-click': 'showIOEditModal(currentIO)'}
@@ -15,7 +15,7 @@
 								{{currentIO.agency.name || ''}}
 
 						.clearfix
-						%div.stats-numbers
+						%div.stats-numbers.mb30
 							%div.stats-col
 								.col-body-wrap
 									.col-body
