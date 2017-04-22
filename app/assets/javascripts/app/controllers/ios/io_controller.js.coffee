@@ -40,6 +40,12 @@
                 User.query().$promise.then (users) ->
                     $scope.users = $filter('notIn')(users, $scope.currentIO.io_members, 'user_id')
 
+            calcRestBudget = () ->
+                sum = _.reduce($scope.budgets, (res, budget) ->
+                    res += Number(budget.budget_loc) || 0
+                , 0)
+                $scope.budgets && $scope.budgets.rest = $scope.selectedIORow.budget_loc - sum
+
             $scope.showBudgetRow = (item, e)->
                 budgetsRow = angular.element("[data-displayID='#{item.id}']")
                 innerDiv = budgetsRow.children()
@@ -48,9 +54,10 @@
                     $scope.selectedIORow = null
                 else
                     $scope.selectedIORow = null
-                    DisplayLineItem.get(item.id).then (data) ->
+                    DisplayLineItem.get(item.id).then (budgets) ->
                         $scope.selectedIORow = item
-                        $scope.budgets = data
+                        $scope.budgets = budgets
+                        calcRestBudget()
                         $timeout -> budgetsRow.height innerDiv.outerHeight()
                 return
 
@@ -69,8 +76,13 @@
                     id: budget.id
                     display_line_item_budget:
                         budget_loc: budget.budget_loc
-                ).then (resp) ->
-                    budget.budget_loc = resp.budget_loc
+                ).then(
+                    (resp) ->
+                        budget.budget_loc = resp.budget_loc
+                        calcRestBudget()
+                    (err) -> budget.budget_loc = budget.old_budget
+                )
+
 
             $scope.linkExistingUser = (item) ->
                 $scope.userToLink = undefined

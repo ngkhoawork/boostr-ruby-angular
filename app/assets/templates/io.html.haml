@@ -162,11 +162,13 @@
 									%td.left{colspan: 20}
 										%div.display-line-budgets{'data-displayID': '{{displayLineItem.id}}', 'ng-class': '{active: selectedIORow == displayLineItem }'}
 											%div.budgets-inner
-												%div.title Monthly Budgets
+												%div.title
+													Monthly Budgets
+													%span ( {{ budgets.rest | currency:currency_symbol:0 }} remaining )
 												%div.line-budget{'ng-if': 'currentUser.user_type == 5', 'ng-repeat': 'budget in budgets'}
 													.month {{budget.month}}
 													.budget{'ng-if': '!isNaN(budget.budget_loc)'}
-														%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "budget.budget_loc", 'on-after-save': 'updateBudget(budget)', 'submit-on-enter': true}
+														%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-init': 'budget.old_budget = budget.budget_loc', 'ng-model': 'budget.budget_loc', 'on-after-save': 'updateBudget(budget)', 'submit-on-enter': true}
 															{{budget.budget_loc | currency:currency_symbol:0}}
 													.budget{'ng-if': 'isNaN(budget.budget_loc)'}
 														%a.add-budget{href: '', 'ng-click': 'addBudget(budget, $index)'} Add
