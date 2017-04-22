@@ -1,6 +1,6 @@
 .deal-stats.block
 	%div.stats-body
-		%div.deal-title
+		%div.deal-title.mb30
 			%span.main-title
 				{{currentDeal.name}}
 				%i.fa.fa-pencil.edit-deal{'ng-click': 'showDealEditModal(currentDeal)'}
@@ -11,7 +11,7 @@
 				{{currentDeal.agency.name || ''}}
 
 		.clearfix
-		%div.stats-numbers
+		%div.stats-numbers.mb30
 			%div.stats-col
 				.col-body-wrap
 					.col-body

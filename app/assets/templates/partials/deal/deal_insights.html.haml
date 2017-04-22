@@ -13,6 +13,11 @@
 			%div.stats-col
 				.col-body-wrap
 					.col-body
+						.description Ave Deal Size
+						.title {{currentDeal.advertiser.advertiser_avg_deal_size || 0 | currency : '$' : 0}}
+			%div.stats-col
+				.col-body-wrap
+					.col-body
 						.description Win Rate
 						.title {{currentDeal.advertiser.advertiser_win_rate}}%
 			%div.stats-col
@@ -30,6 +35,11 @@
 					.col-body
 						.description Deals
 						.title {{currentDeal.agency.agency_deals_count}}
+			%div.stats-col
+				.col-body-wrap
+					.col-body
+						.description Ave Deal Size
+						.title {{currentDeal.agency.agency_avg_deal_size || 0 | currency : '$' : 0}}
 			%div.stats-col
 				.col-body-wrap
 					.col-body
