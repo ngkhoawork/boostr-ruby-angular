@@ -17,10 +17,15 @@ module DFP
     end
 
     def generate_report_by_saved_query(query_id)
-      query = fetch_saved_query_by_id(query_id)
-      job = run_report_job_by_query(query)
-      check_report_status
-      get_report_by_id(job[:id])
+      begin
+        query = fetch_saved_query_by_id(query_id)
+        job = run_report_job_by_query(query)
+        check_report_status
+        get_report_by_id(job[:id])
+        #TODO: Find the right exception class
+      rescue Exception => e
+        puts e.class
+      end
     end
 
     def get_report_by_id(report_job_id)
@@ -81,10 +86,12 @@ module DFP
     end
 
     def set_logger_interceptor
-      GoogleAdsSavon.config.hooks.define(:logger_hook, :soap_request) do |callback, req|
-        response = callback.call
-        DFP::LoggerService.new(request: req, response: response, company_id: company_id).create_log!
-        response
+      if GoogleAdsSavon.config.hooks.empty?
+        GoogleAdsSavon.config.hooks.define(:logger_hook, :soap_request) do |callback, req|
+          response = callback.call
+          DFP::LoggerService.new(request: req, response: response, company_id: company_id, dfp_query_type: dfp_query_type).create_log!
+          response
+        end
       end
     end
 
@@ -99,7 +106,7 @@ module DFP
     end
 
     def dfp_client
-      @dfp ||= DfpApi::Api.new(authentication: { method: 'OAUTH2_SERVICE_ACCOUNT', oauth2_hash: credentials, application_name: 'boostr', network_code: network_code}, service: { environment: 'PRODUCTION' })
+      @dfp ||= DfpApi::Api.new(authentication: { method: 'OAUTH2_SERVICE_ACCOUNT', oauth2_json_string: credentials, application_name: 'boostr', network_code: network_code}, service: { environment: 'PRODUCTION' })
     end
   end
 end

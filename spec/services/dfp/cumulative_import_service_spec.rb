@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe DFP::CumulativeImportService, dfp: :true do
   subject(:subject) {
-    DFP::CumulativeImportService.new(company.id, 'dfp_cumulative', report_file: report_file)
+    DFP::CumulativeImportService.new(company.id, 'dfp_cumulative', report_file: 'https://some.link')
   }
 
   before do

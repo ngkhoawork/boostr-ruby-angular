@@ -14,9 +14,11 @@ class DFP::BaseImportService
 
   attr_reader :company_id, :report_file, :report_csv, :import_type
 
-  def open_file(file)
+  def open_file(file_url)
     begin
-      File.open(file, 'r:ISO-8859-1')
+      file = open(file_url)
+      IO.copy_stream(file, './tmp/temp.csv')
+      File.open('./tmp/temp.csv', 'r:ISO-8859-1')
     rescue Exception => e
       puts e
       import_log = CsvImportLog.new(company_id: company_id, object_name: import_type)
@@ -48,7 +50,7 @@ class DFP::BaseImportService
         import_log.log_error object_from_csv.errors.full_messages
       end
     end
-
+    File.delete('./tmp/temp.csv')
     import_log.save
   end
 

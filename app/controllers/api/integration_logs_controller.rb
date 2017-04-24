@@ -8,7 +8,11 @@ class Api::IntegrationLogsController < ApplicationController
   end
 
   def resend_request
-    OperativeIntegrationWorker.perform_async(integration_log.deal_id)
+    if integration_log.dfp_query_type
+      ManualDfpImportWorker.new.perform(dfp_api_configuration.id, integration_log.dfp_query_type)
+    else
+      OperativeIntegrationWorker.perform_async(integration_log.deal_id)
+    end
     render json: { message: 'triggered request resend' }
   end
 
@@ -29,6 +33,10 @@ class Api::IntegrationLogsController < ApplicationController
 
   def current_user_company
     @current_user_company ||= current_user.company
+  end
+
+  def dfp_api_configuration
+    @dfp_api_configuration ||= DfpApiConfiguration.find_by(company: current_user_company)
   end
 
   def integration_log

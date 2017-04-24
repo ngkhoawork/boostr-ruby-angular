@@ -16,17 +16,12 @@ module AdsCommon
           raise AdsCommon::Errors::AuthError, 'No credentials supplied.'
         end
 
-        if credentials[:oauth2_hash] && !credentials[:oauth2_hash].kind_of?(Hash)
-          raise AdsCommon::Errors::AuthError,
-                'You should provide Hash instead of ' + credentials[:oauth2_hash].class.to_s
-        end
-
-        if credentials[:oauth2_key].nil? && credentials[:oauth2_keyfile].nil? && credentials[:oauth2_hash].nil?
+        if credentials[:oauth2_key].nil? && credentials[:oauth2_keyfile].nil? && credentials[:oauth2_json_string].nil?
           raise AdsCommon::Errors::AuthError, 'Either key or key file must ' +
               'be provided for OAuth2 service account.'
         end
 
-        if credentials[:oauth2_key] && credentials[:oauth2_keyfile] && credentials[:oauth2_hash]
+        if credentials[:oauth2_key] && credentials[:oauth2_keyfile] && credentials[:oauth2_json_string]
         raise AdsCommon::Errors::AuthError, 'Both service account key and ' +
             'key file provided, only one can be used.'
         end
@@ -53,11 +48,11 @@ module AdsCommon
 
 
       def load_oauth2_service_account_credentials(credentials)
-        return credentials unless credentials.include?(:oauth2_keyfile) || credentials[:oauth2_hash]
+        return credentials unless credentials.include?(:oauth2_keyfile) || credentials[:oauth2_json_string]
         json_content = if credentials[:oauth2_keyfile]
                          File.read(credentials[:oauth2_keyfile])
                        else
-                         credentials[:oauth2_hash].to_json
+                         credentials[:oauth2_json_string]
                        end
         parsed_json = JSON.parse(json_content, :symbolize_names => true)
         key = OpenSSL::PKey::RSA.new(parsed_json[:private_key])
