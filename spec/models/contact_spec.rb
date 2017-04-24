@@ -20,6 +20,12 @@ RSpec.describe Contact, type: :model do
       expect(contact.latest_happened_activity.count).to be 1
       expect(contact.latest_happened_activity.first).to eq activity
     end
+
+    it 'has many workplaces' do
+      contact = create :contact, clients: [client, client2]
+
+      expect(contact.workplaces).to eq(contact.clients.select(:id, :name))
+    end
   end
 
   context 'after_save' do

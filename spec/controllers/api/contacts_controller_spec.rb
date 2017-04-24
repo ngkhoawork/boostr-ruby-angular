@@ -198,10 +198,23 @@ RSpec.describe Api::ContactsController, type: :controller do
       get :metadata
 
       expect(json_response).to eql(
-        workplaces: ['Fidelity', 'Fliboard'],
-        job_levels: ['CEO', 'Seller'],
-        cities: ['Palm Beach', 'New York']
+        'workplaces' => ['Fidelity', 'Fliboard'],
+        'job_levels' => ['CEO', 'Seller'],
+        'cities'     => ['Palm Beach', 'New York']
       )
+    end
+  end
+
+  describe 'GET #related_clients' do
+    it 'returns related clients information' do
+      user_client = create :client, name: 'Fidelity', company: user.company, created_by: user.id, client_type_id: advertiser_type_id(user.company)
+      user_client2 = create :client, name: 'Fliboard', company: user.company, created_by: user.id, client_type_id: advertiser_type_id(user.company)
+      user_client3 = create :client, name: 'Test', company: user.company, created_by: user.id, client_type_id: agency_type_id(user.company)
+      contact = create :contact, company: user.company, created_by: user.id, clients: [user_client, user_client2], client_id: user_client3.id
+
+      get :related_clients, id: contact.id
+
+      expect(json_response.map{|el| el['name'] } ).to eq(['Fidelity', 'Fliboard'])
     end
   end
 
@@ -214,12 +227,12 @@ RSpec.describe Api::ContactsController, type: :controller do
     user_client2 = create :client, name: 'Fliboard', company: user.company, created_by: user.id
 
     ceo_contact = create :contact, company: user.company,
-      created_by: user.id, clients: [user_client],
+      created_by: user.id, clients: [user_client], client_id: user_client.id,
       values_attributes: [field: field, option: ceo_option],
       address_attributes: (attributes_for :address, city: 'Palm Beach')
 
     seller_contact = create :contact, company: user.company,
-      created_by: user.id, clients: [user_client],
+      created_by: user.id, clients: [user_client2], client_id: user_client2.id,
       values_attributes: [field: field, option: seller_option],
       address_attributes: (attributes_for :address, city: 'New York')
 

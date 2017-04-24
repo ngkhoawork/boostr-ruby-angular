@@ -17,13 +17,19 @@ class Api::ContactsController < ApplicationController
     results = apply_search_criteria(results)
 
     response.headers['X-Total-Count'] = results.total_count
-    render json: results.includes(:primary_client, :latest_happened_activity).preload(:values, :address)
+    render json: results.includes(:primary_client, :latest_happened_activity).preload(:values, :address, :workplaces)
       .limit(limit)
-      .offset(offset), each_searilizer: ContactSerializer, contact_options: company_job_level_options
+      .offset(offset), each_serializer: ContactSerializer,
+                         contact_options: company_job_level_options,
+                         advertiser: Client.advertiser_type_id(current_user.company),
+                         agency: Client.agency_type_id(current_user.company)
   end
 
   def show
-    render json: contact
+    render json: contact, serializer: Api::ContactDetailSerializer,
+                            contact_options: company_job_level_options,
+                            advertiser: Client.advertiser_type_id(current_user.company),
+                            agency: Client.agency_type_id(current_user.company)
   end
 
   def create
@@ -69,6 +75,16 @@ class Api::ContactsController < ApplicationController
 
   def metadata
     render json: Contact.metadata(current_user.company_id)
+  end
+
+  def related_clients
+    render json: contact.workplaces.by_type_id(Client.advertiser_type_id(current_user.company)).as_json(
+      override: true,
+      only: [:id, :name ],
+      include: {
+        address: {}
+      }
+    )
   end
 
   private

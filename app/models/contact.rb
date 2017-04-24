@@ -10,6 +10,9 @@ class Contact < ActiveRecord::Base
   has_many :clients, -> { uniq }, through: :client_contacts
   has_many :client_contacts, dependent: :destroy
 
+  has_many :workplaces, -> { select(:id, :name) }, through: :workplace_clients, source: :client
+  has_many :workplace_clients, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
+
   has_many :deals, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :reminders, as: :remindable, dependent: :destroy
