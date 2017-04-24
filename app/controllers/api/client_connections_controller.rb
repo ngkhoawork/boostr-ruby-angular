@@ -14,11 +14,11 @@ class Api::ClientConnectionsController < ApplicationController
   end
 
   def create
-    client_connection = client.client_connections.build(client_connection_params)
-    if client_connection.save
-      render json: client_connection, status: :created
+    new_client_connection = ClientConnection.new(client_connection_params)
+    if new_client_connection.save
+      render json: new_client_connection, status: :created
     else
-      render json: { errors: client_connection.errors.messages }, status: :unprocessable_entity
+      render json: { errors: new_client_connection.errors.messages }, status: :unprocessable_entity
     end
   end
 

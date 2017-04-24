@@ -4,7 +4,7 @@
 
   $scope.formType = "New"
   $scope.submitText = "Create"
-  $scope.client = new Client(client || {})
+  $scope.client = new Client(client) || {}
   $scope.clients = []
   $scope.query = ""
   $scope.countries = []
@@ -21,9 +21,11 @@
     $scope.client.client_type = Field.field($scope.client, 'Client Type')
     if (selectedOption)
       $scope.client.client_type.options.forEach (option) ->
-        if option.name == selectedOption
+        if option.name == selectedOption.name
           $scope.client.client_type.option_id = option.id
     $scope.setClientTypes()
+    if $scope.client.client_type
+      $scope.getClients()
 
   $scope.getClients = (query) ->
     $scope.isLoading = true

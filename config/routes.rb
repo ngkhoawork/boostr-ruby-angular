@@ -42,13 +42,14 @@ Rails.application.routes.draw do
           get :filter_options
         end
         resources :client_members, only: [:index, :create, :update, :destroy]
-        resources :client_connections, only: [:index, :create, :update, :destroy]
         resources :client_contacts, only: [:index] do
           collection do
             get :related_clients
           end
         end
       end
+
+      resources :client_connections, only: [:index, :create, :update, :destroy]
 
       resources :reminders, only: [:index, :show, :create, :update, :destroy]
       resources :remindable, only: [] do
@@ -83,13 +84,13 @@ Rails.application.routes.draw do
         get :filter_options
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
-      resources :client_connections, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index] do
         collection do
           get :related_clients
         end
       end
     end
+    resources :client_connections, only: [:index, :create, :update, :destroy]
     resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]

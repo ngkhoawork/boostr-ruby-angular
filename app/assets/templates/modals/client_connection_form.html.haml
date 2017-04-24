@@ -1,0 +1,52 @@
+#client_onnection_modal.popup-modal
+    %form{ ng: { submit: 'submitForm()' } }
+        .popup-modal-header
+            Assign {{clientConnection.assignee_type}}
+            %span.close-btn{'ng-click': 'cancel()'}
+        .popup-modal-body
+            .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
+                .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+                    %i.fa.fa-warning
+                    <strong style="text-transform: capitalize">{{field}}</strong>
+                    {{error}}
+            .advertiser-agency
+                .form-group.advertiser-field-fluid{'ng-class':'{error: errors.advertiser_id}', 'ng-if': "clientConnection.assignee_type=='Advertiser'"}
+                    %span.error-text {{errors.advertiser_id}}
+                    %label{style: 'display: block'}
+                        Advertiser
+                        %span.star *
+                    %ui-select{ name: 'advertiser', ng: { model: 'clientConnection.advertiser_id', disabled: true, keyup: 'searchClients($select.search, Advertiser)' }, 'on-select': "advertiserSelected($model)" }
+                        %ui-select-match{ placeholder: 'Advertiser' }
+                            {{ $select.selected.name }}
+                        %ui-select-choices{ repeat: 'advertiser.id as advertiser in advertisers' }
+                            %div{ ng: { bind: { html: 'advertiser.name' } } }
+                .form-group.agency-field-fluid{'ng-class':'{error: errors.agency}', 'ng-if': "clientConnection.assignee_type=='Agency'"}
+                    %span.error-text {{errors.agency}}
+                    %label{style: 'display: block'}
+                        Agency
+                    %ui-select{ name: 'agency', ng: { model: 'clientConnection.agency_id', disabled: true, keyup: 'searchClients($select.search, Agency)' }, 'on-select': 'agencySelected($model)' }
+                        %ui-select-match{ placeholder: 'Agency' }
+                            {{ $select.selected.name }}
+                        %ui-select-choices{ repeat: 'agency.id as agency in agencies' }
+                            %div{ ng: { bind: { html: 'agency.name' } } }
+                %button.add-btn.plus-btn{type: 'button', 'ng-click': 'createNewClientModal()'}
+            .form-group{ ng: {if: "formType == 'New'"}}
+                .row
+                    .col-xs-6
+                        %label{ for: 'primary' } Primary
+                        .show-hide-remainder-form
+                            .switch-remainder-form
+                                %input.cmn-toggle.cmn-toggle-round-flat{id: 'primary', type: 'checkbox', 'ng-model': 'clientConnection.primary'}
+                                %label{:for => "primary"}
+                                    %span
+                    .col-xs-6
+                        %label{ for: 'source-type' } Active
+                        .show-hide-remainder-form
+                            .switch-remainder-form
+                                %input.cmn-toggle.cmn-toggle-round-flat{id: 'active', type: 'checkbox', 'ng-model': 'clientConnection.active'}
+                                %label{:for => "active"}
+                                    %span
+
+        .popup-modal-footer
+            %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+            %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

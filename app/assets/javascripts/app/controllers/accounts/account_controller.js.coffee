@@ -1,6 +1,6 @@
 @app.controller 'AccountController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes'
-($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientsTypes'
+($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, Reminder, BpEstimate, $http, ClientContacts, ClientsTypes) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -73,6 +73,7 @@
     $scope.getClientConnections()
     $scope.initReminder()
     $scope.initRelatedContacts()
+    $scope.getBPEstimates()
     $scope.$emit('updated_current_client')
 
   $scope.getIOs = () ->
@@ -82,12 +83,30 @@
         IO.all(agency_id: $scope.currentClient.id)
         .then (response) ->
           $scope.currentClient.ios = response
-#          console.log(response.data)
-#          if (response && response.data && response.data.length)
       else if $scope.currentClient.client_type.option.name == "Advertiser"
         IO.all(advertiser_id: $scope.currentClient.id)
         .then (response) ->
           $scope.currentClient.ios = response
+
+  $scope.getBPEstimates = () ->
+    if ($scope.currentClient && $scope.currentClient.id)
+      filters = { bp_id: 0, client_id: $scope.currentClient.id }
+      BpEstimate.all(filters).then (response) ->
+        $scope.currentClient.revenues = response.revenues
+        $scope.currentClient.bp_estimates = _.map response.bp_estimates, buildBPEstimate
+
+  buildBPEstimate = (item) ->
+    data = angular.copy(item)
+    revenue = _.find $scope.currentClient.revenues, (o) ->
+      return o.time_dimension_id == item.time_dimension.id
+
+    data.revenue = 0
+
+    if (revenue)
+      data.revenue = revenue.revenue_amount
+
+    return data
+
   $scope.getContacts = (clientId) ->
     if ($scope.currentClient && $scope.currentClient.id)
       $scope.currentClient.contacts = []
@@ -247,6 +266,30 @@
       resolve:
         deal: $scope.setupNewDeal
 
+  $scope.showNewAccountConnectionModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/client_connection_form.html'
+      size: 'md'
+      controller: 'AccountConnectionsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        deal: $scope.setupNewDeal
+        clientConnection: $scope.setupNewClientConnection
+
+  $scope.setupNewClientConnection = ->
+    clientConnection = {}
+    if $scope.currentClient.client_type && $scope.currentClient.client_type.option
+      if $scope.currentClient.client_type.option.name == 'Advertiser'
+        clientConnection.advertiser_id = $scope.currentClient.id
+        clientConnection.assignee_type = 'Agency'
+      else if $scope.currentClient.client_type.option.name == 'Agency'
+        clientConnection.agency_id = $scope.currentClient.id
+        clientConnection.assignee_type = 'Advertiser'
+      clientConnection.primary = false
+      clientConnection.active = true
+    clientConnection
+
   $scope.setupNewDeal = ->
     deal = {}
     if $scope.currentClient.client_type && $scope.currentClient.client_type.option
@@ -344,6 +387,9 @@
     Field.defaults(args.clientMember, 'Client').then (fields) ->
       args.clientMember.role = Field.field(args.clientMember, 'Member Role')
       $scope.client_members.push(args.clientMember)
+
+  $scope.$on 'new_client_connection', ->
+    $scope.getClientConnections()
 
   $scope.init()
 
@@ -458,8 +504,9 @@
       $scope.populateContact = false
 
   $scope.$on 'newClient', (event, client) ->
-    $scope.setClient(client)
-    $scope.clients.push(client)
+    $scope.getChildClients()
+#    $scope.setClient(client)
+#    $scope.clients.push(client)
 
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
@@ -553,6 +600,23 @@
       .then (respond) ->
         if (respond && respond.data && respond.data.length)
           $scope.currentClient.relatedContacts = respond.data
+
+  $scope.showNewChildAccountModal = ->
+    if ($scope.currentClient && $scope.currentClient.id)
+      newClient = {}
+      newClient.parent_client_id = $scope.currentClient.id
+      newClient.client_type = $scope.currentClient.client_type
+      newClient.client_type_id = $scope.currentClient.client_type_id
+      newClient.parent_client = {id: 90, name: $scope.currentClient.name}
+      $scope.modalInstance = $modal.open
+        templateUrl: 'modals/client_form.html'
+        size: 'md'
+        controller: 'AccountsNewController'
+        backdrop: 'static'
+        keyboard: false
+        resolve:
+          client: ->
+            newClient
 
   $scope.showAssignContactModal = (contact) ->
     advertiserTypeId = 0

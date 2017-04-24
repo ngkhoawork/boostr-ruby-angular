@@ -6,15 +6,15 @@
 #    original.client_connection.values_attributes = original.client_connection.values
     angular.toJson(original)
 
-  resource = $resource '/api/clients/:client_id/client_connections/:id', { client_id: '@client_id', id: '@id' },
+  resource = $resource '/api/client_connections/:id', { client_id: '@client_id', id: '@id' },
     save: {
       method: 'POST'
-      url: '/api/clients/:client_id/client_connections'
+      url: '/api/client_connections'
       transformRequest: transformRequest
     },
     update: {
       method: 'PUT'
-      url: '/api/clients/:client_id/client_connections/:id'
+      url: '/api/client_connections/:id'
       transformRequest: transformRequest
     }
 
