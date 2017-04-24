@@ -20,7 +20,7 @@ FactoryGirl.define do
     columntotal_line_item_level_all_revenue "1700020000"
     columntotal_line_item_level_ctr "0.0115"
     columnvideo_viewership_average_view_rate "0.1677"
-    columnvideo_viewership_completion_rat "0.0040"
+    columnvideo_viewership_completion_rate "0.5998"
 
     initialize_with { attributes }
   end
