@@ -28,8 +28,7 @@ class Api::DealProductsController < ApplicationController
   def update
     exchange_rate = deal.exchange_rate
     converted_params = ConvertCurrency.call(exchange_rate, deal_product_params)
-    puts "============="
-    puts converted_params
+
     if deal_product.update_attributes(converted_params)
       deal.update_total_budget
       render deal
