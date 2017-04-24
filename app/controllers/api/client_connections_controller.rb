@@ -32,7 +32,7 @@ class Api::ClientConnectionsController < ApplicationController
 
   def destroy
     client_connection.destroy
-    render json: true
+    render nothing: true
   end
 
   private

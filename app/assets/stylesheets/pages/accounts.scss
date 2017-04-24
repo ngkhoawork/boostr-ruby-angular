@@ -253,6 +253,7 @@
     .accounts-menu {
         height: $accounts-menu-h;
         padding: 30px 30px 30px 30px;
+        display: flex;
         .title {
             color: #2B3C49;
             font-family: "Avenir Next";
@@ -263,6 +264,7 @@
         }
         .btn-main {
             margin-top: 5px;
+            margin: 0 0 0 auto;
         }
         .switcher {
             margin-top: -25px;
@@ -273,6 +275,10 @@
                 display: inline-block;
                 margin-left: 0;
             }
+        }
+        .search {
+            margin-left: 30px;
+            width: 30%;
         }
     }
     .deal-error {

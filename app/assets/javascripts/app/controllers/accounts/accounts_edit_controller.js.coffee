@@ -104,7 +104,7 @@
       $scope[option.name] = option.id
 
   $scope.removeCategoriesFromAgency = () ->
-    if $scope.client.client_type.option.name == 'Agency'
+    if $scope.client.client_type.option && $scope.client.client_type.option.name == 'Agency'
       $scope.client.client_category_id = null
       $scope.client.client_subcategory_id = null
 

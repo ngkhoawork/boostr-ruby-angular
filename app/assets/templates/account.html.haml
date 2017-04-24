@@ -7,6 +7,8 @@
 					Back to Accounts List
 			.title
 				{{currentClient.name}}
+				%i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
+				%i.fa.fa-trash.delete-deal{'ng-click': 'delete(currentClient)'}
 		.col-xs-9
 			%div{ng: { include: '"partials/account/account_contacts.html"'}}
 			%div{ng: { if: 'currentClient.client_type.option.name == "Advertiser"' , include: '"partials/account/account_child_clients.html"'}}

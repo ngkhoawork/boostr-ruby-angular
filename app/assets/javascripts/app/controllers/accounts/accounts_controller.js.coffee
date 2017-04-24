@@ -64,6 +64,11 @@
 #                    event.stopPropagation()
       this.isOpen = false
 
+  $scope.handleSearch = () ->
+    $scope.page = 1;
+    $scope.getClients()
+    console.log($scope.searchText)
+
   $scope.filtering = (item) ->
     if !item then return false
     if item.name
@@ -97,6 +102,7 @@
     $scope.isLoading = true
     params = {
       filter: $scope.selectedType.param,
+      search: $scope.searchText,
       page: $scope.page
     }
     if $scope.filter.selected.category
@@ -145,8 +151,11 @@
       return ""
 
   $scope.getLastTouch = (client) ->
-    if client.activities.length > 0
-      return client.activities[0].happened_at
+    activities = client.activities
+    if $scope.getClientType(client) == 'Agency'
+      activities = client.agency_activities
+    if activities.length > 0
+      return activities[0].happened_at
     else
       return ""
 

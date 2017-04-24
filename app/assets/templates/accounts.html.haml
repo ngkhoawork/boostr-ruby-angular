@@ -92,10 +92,17 @@
         .row
             .col-xs-12.accounts-menu
                 %span.title Accounts
+
                 %add-button{'ng-click': 'showNewAccountModal()'} Add Account
                 .accounts-types
                     %span{'ng-repeat': 'type in accountTypes', 'ng-class': '{active: type === selectedType}', 'ng-click': 'filterAccounts(type)'}
                         {{type.name}}
+                .search{'ng-submit': 'handleSearch()'}
+                    %form
+                        .input-group
+                            .input-group-addon
+                                %i.glyphicon.glyphicon-search
+                            %input.form-control{ ng: { model: 'searchText', change: '' }, placeholder: "Search by Name" }
                 %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
                     %i.fa.fa-filter
                     Add filter
@@ -112,9 +119,10 @@
                                 %th City
                                 %th Last Touch
                         %tbody{'infinite-scroll': "loadMoreClients()"}
-                            %tr{ ng: { repeat: 'client in clients', click: "go(client.id)" } }
+                            %tr{ ng: { repeat: 'client in clients'} }
                                 %td
-                                    {{client.name}}
+                                    %a{'ng-href': '/accounts/{{client.id}}'}
+                                        {{client.name}}
                                 %td {{getClientType(client)}}
                                 %td {{getClientCategory(client)}}
                                 %td

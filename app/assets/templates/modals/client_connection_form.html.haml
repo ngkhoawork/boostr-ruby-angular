@@ -30,7 +30,7 @@
                         %ui-select-choices{ repeat: 'agency.id as agency in agencies' }
                             %div{ ng: { bind: { html: 'agency.name' } } }
                 %button.add-btn.plus-btn{type: 'button', 'ng-click': 'createNewClientModal()'}
-            .form-group{ ng: {if: "formType == 'New'"}}
+            .form-group
                 .row
                     .col-xs-6
                         %label{ for: 'primary' } Primary

@@ -12,7 +12,8 @@
         %tbody
             %tr{ ng: { repeat: 'child_client in currentClient.child_clients'} }
                 %td
-                    {{ child_client.name }}
+                    %a{'ng-href': '/accounts/{{child_client.id}}'} {{ child_client.name }}
+                    %i.fa.fa-pencil.edit-deal{'ng-click': 'showAccountEditModal(child_client)'}
                 %td
                     {{ getClientCategory(child_client) }}
                 %td

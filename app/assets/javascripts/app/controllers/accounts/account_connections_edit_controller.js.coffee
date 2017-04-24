@@ -1,11 +1,11 @@
-@app.controller 'AccountConnectionsNewController',
-['$rootScope', '$scope', '$modal', '$modalInstance', '$q', '$location', 'ClientConnection', 'clientConnection', 'Client', 'Field'
-($rootScope, $scope, $modal, $modalInstance, $q, $location, ClientConnection, clientConnection, Client, Field) ->
+@app.controller 'AccountConnectionsEditController',
+['$rootScope', '$scope', '$modal', '$modalInstance', '$q', '$location', 'ClientConnection', 'Client', 'Field', 'clientConnection'
+($rootScope, $scope, $modal, $modalInstance, $q, $location, ClientConnection, Client, Field, clientConnection) ->
   $scope.init = ->
-    $scope.formType = 'New'
-    $scope.submitText = 'Create'
-    $scope.advertisers = []
-    $scope.agencies = []
+    $scope.formType = 'Edit'
+    $scope.submitText = 'Update'
+    $scope.advertisers = [clientConnection.advertiser]
+    $scope.agencies = [clientConnection.agency]
     $scope.clientConnection = clientConnection
 
     Field.defaults({}, 'Client').then (fields) ->
@@ -54,10 +54,9 @@
 
     if Object.keys($scope.errors).length > 0 then return
 
-    console.log($scope.clientConnection)
-    ClientConnection.create(client_connection: $scope.clientConnection).then(
+    ClientConnection.update(id: $scope.clientConnection.id, client_connection: $scope.clientConnection).then(
       (client_connection) ->
-        $rootScope.$broadcast("new_client_connection")
+        $rootScope.$broadcast("updated_client_connections")
         $modalInstance.close(client_connection)
       (resp) ->
         for key, error of resp.data.errors

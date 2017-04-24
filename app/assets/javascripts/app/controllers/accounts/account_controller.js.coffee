@@ -183,6 +183,9 @@
         client: ->
           {}
 
+  $scope.deleteAccountConnection = (clientConnection) ->
+
+
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
@@ -193,6 +196,17 @@
       resolve:
         client: ->
           $scope.currentClient
+
+  $scope.showAccountEditModal = (client) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/client_form.html'
+      size: 'md'
+      controller: 'AccountsEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        client: ->
+          angular.copy(client)
 
   $scope.showNewActivityModal = ->
     $scope.modalInstance = $modal.open
@@ -274,8 +288,24 @@
       backdrop: 'static'
       keyboard: false
       resolve:
-        deal: $scope.setupNewDeal
         clientConnection: $scope.setupNewClientConnection
+
+  $scope.showEditAccountConnectionModal = (clientConnection) ->
+    clientConnectionObj = angular.copy(clientConnection)
+    if $scope.currentClient.client_type && $scope.currentClient.client_type.option
+      if $scope.currentClient.client_type.option.name == 'Advertiser'
+        clientConnectionObj.assignee_type = 'Agency'
+      else if $scope.currentClient.client_type.option.name == 'Agency'
+        clientConnectionObj.assignee_type = 'Advertiser'
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/client_connection_form.html'
+      size: 'md'
+      controller: 'AccountConnectionsEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        clientConnection: ->
+          clientConnectionObj
 
   $scope.setupNewClientConnection = ->
     clientConnection = {}
@@ -288,6 +318,7 @@
         clientConnection.assignee_type = 'Advertiser'
       clientConnection.primary = false
       clientConnection.active = true
+    console.log(clientConnection)
     clientConnection
 
   $scope.setupNewDeal = ->
@@ -333,19 +364,17 @@
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the account "' +  $scope.currentClient.name + '"?')
-      $scope.clients = $scope.clients.filter (el) ->
-        el.id != $scope.currentClient.id
       $scope.currentClient.$delete()
-      if $scope.clients.length
-        $scope.setClient $scope.clients[0]
-      else
-        $scope.currentClient = null
-      $location.path('/clients')
+      $location.path('/accounts')
 
   $scope.deleteActivity = (activity) ->
     if confirm('Are you sure you want to delete the activity?')
       Activity.delete activity, ->
         $scope.$emit('updated_activities')
+
+  $scope.deleteAccountConnection = (clientConnection) ->
+    if confirm('Are you sure you want to delete the account connection?')
+      ClientConnection.delete clientConnection
 
   $scope.go = (path) ->
     $location.path(path)
@@ -374,8 +403,16 @@
   $scope.$on 'updated_clients', ->
     $scope.init()
 
+  $scope.$on 'updated_contacts', ->
+    $scope.getContacts()
+    $scope.getClientConnectedContacts()
+
   $scope.$on 'updated_activities', ->
     $scope.init()
+
+  $scope.$on 'updated_client_connections', ->
+    $scope.getClientConnections()
+    $scope.getClientConnectedContacts()
 
   $scope.$on 'updated_current_contact', ->
     $scope.currentClient.contacts.push(Contact.get())
@@ -390,6 +427,7 @@
 
   $scope.$on 'new_client_connection', ->
     $scope.getClientConnections()
+    $scope.getClientConnectedContacts()
 
   $scope.init()
 
@@ -494,6 +532,18 @@
       resolve:
         contact: ->
           client_id: $scope.currentClient.id
+
+  $scope.showEditContactModal = (contact) ->
+    $scope.populateContact = true
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/contact_form.html'
+      size: 'md'
+      controller: 'ContactsEditController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          angular.copy(contact)
 
   $scope.cancelActivity = () ->
     $scope.initActivity()

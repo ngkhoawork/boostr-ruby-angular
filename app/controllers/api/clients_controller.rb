@@ -14,6 +14,7 @@ class Api::ClientsController < ApplicationController
                       .by_category(params[:client_category_id])
                       .by_city(params[:city])
                       .by_last_touch(params[:start_date], params[:end_date])
+                      .by_name(params[:search])
                       .order(:name)
                       .includes(:address)
                       .distinct

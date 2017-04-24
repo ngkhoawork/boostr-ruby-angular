@@ -15,7 +15,7 @@
         %tbody
             %tr{ ng: { repeat: 'client_deal in currentClient.deals'} }
                 %td
-                    {{ client_deal.name }}
+                    %a{'ng-href': '/deals/{{client_deal.id}}'} {{ client_deal.name }}
                 %td
                     {{ client_deal.budget }}
                 %td

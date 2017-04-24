@@ -14,7 +14,8 @@
         %tbody
             %tr{ ng: { repeat: 'connected_contact in currentClient.connected_contacts'} }
                 %td
-                    {{ connected_contact.name }}
+                    %a{'ng-href': '/contacts/{{connected_contact.id}}'} {{ connected_contact.name }}
+                    %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(connected_contact)'}
                 %td
                     {{ connected_contact.client.name }}
                 %td

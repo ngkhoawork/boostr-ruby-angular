@@ -36,10 +36,12 @@
       deferred.resolve(client_connection)
     deferred.promise
 
-  @delete = (params) ->
+  @delete = (deletedClientConnection) ->
     deferred = $q.defer()
-    resource.delete { client_id: params.client_id, id: params.id }, (client) ->
-      deferred.resolve(client)
+    resource.delete id: deletedClientConnection.id, () ->
+      $rootScope.$broadcast 'updated_client_connections'
+      deferred.resolve()
+
     deferred.promise
 
   return
