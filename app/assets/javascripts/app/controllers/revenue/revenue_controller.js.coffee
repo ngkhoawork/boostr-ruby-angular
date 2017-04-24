@@ -150,7 +150,6 @@
 
   $scope.$on 'updated_ios', ->
     $scope.init()
-    IO.query().$promise
 
   $scope.deleteIo = (io, $event) ->
     $event.stopPropagation();

@@ -26,7 +26,10 @@
       method: 'GET'
       url: 'api/deals.json'
       isArray: true
-
+    won_deals:
+      method: 'GET'
+      url: '/api/deals/won_deals'
+      isArray: true
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
@@ -36,6 +39,12 @@
   @all = (params) ->
     deferred = $q.defer()
     resource.query params, (deals) ->
+      deferred.resolve(deals)
+    deferred.promise
+
+  @won_deals = (params) ->
+    deferred = $q.defer()
+    resource.won_deals params, (deals) ->
       deferred.resolve(deals)
     deferred.promise
 
@@ -62,6 +71,7 @@
       (err) ->
         deferred.reject(err)
     deferred.promise
+
   @forecast_detail = (params) ->
     deferred = $q.defer()
     resource.forecast_detail params, (response) ->
