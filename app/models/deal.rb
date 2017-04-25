@@ -105,6 +105,7 @@ class Deal < ActiveRecord::Base
   scope :won, -> { closed.includes(:stage).where(stages: { probability: 100 }) }
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
+  scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
 
   def integrate_with_operative
     if stage_id_changed? && operative_integration_allowed?
@@ -117,7 +118,11 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_integration_allowed?
-    operative_api_config.present? && operative_api_config.switched_on && deal_lost_or_won?
+    operative_switched_on? && deal_lost_or_won?
+  end
+
+  def operative_switched_on?
+    operative_api_config.present? && operative_api_config.switched_on
   end
 
   def deal_lost_or_won?
@@ -194,34 +199,38 @@ class Deal < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
-              include: [
-                  :creator,
-                  :advertiser,
-                  :agency,
-                  :stage,
-                  :values,
-                  :deal_custom_field,
-                  deal_members: {
-                      methods: [:name]
-                  },
-                  activities: {
-                      include: {
-                          creator: {},
-                          contacts: {},
-                          assets: {
-                              methods: [
-                                  :presigned_url
-                              ]
-                          }
-                      }
-                  }
-              ],
-              methods: [
-                  :formatted_name
-              ]
-          )
-    )
+    if options[:override].present? && options[:override] == true
+      super(options[:options])
+    else
+      super(options.merge(
+                    include: [
+                            :creator,
+                            :advertiser,
+                            :agency,
+                            :stage,
+                            :values,
+                            :deal_custom_field,
+                            deal_members: {
+                                    methods: [:name]
+                            },
+                            activities: {
+                                    include: {
+                                            creator: {},
+                                            contacts: {},
+                                            assets: {
+                                                    methods: [
+                                                            :presigned_url
+                                                    ]
+                                            }
+                                    }
+                            }
+                    ],
+                    methods: [
+                            :formatted_name
+                    ]
+            )
+      )
+    end
   end
 
   def as_weighted_pipeline(start_date, end_date)
@@ -390,11 +399,11 @@ class Deal < ActiveRecord::Base
   end
 
   def latest_activity_csv_string
-    if activity = self.latest_happened_activity
+    if latest_happened_activity.present? && !latest_happened_activity.activity_type_name.eql?('Email')
       data = ''
-      data += "Date: #{activity.happened_at.strftime("%m-%d-%Y %H:%M:%S")}\n"
-      data += "Type: #{activity.activity_type_name}\n"
-      data += "Note: #{activity.comment}"
+      data += "Date: #{latest_happened_activity.happened_at.strftime("%m-%d-%Y %H:%M:%S")}\n"
+      data += "Type: #{latest_happened_activity.activity_type_name}\n"
+      data += "Note: #{latest_happened_activity.comment}"
     else
       ''
     end
@@ -433,7 +442,7 @@ class Deal < ActiveRecord::Base
       range.each do |product_time|
         header << product_time.strftime("%Y-%m")
       end
-      deal_custom_field_names = company.deal_custom_field_names.order("position asc")
+      deal_custom_field_names = company.deal_custom_field_names.where("disabled IS NOT TRUE").order("position asc")
       deal_custom_field_names.each do |deal_custom_field_name|
         header << deal_custom_field_name.field_label
       end
@@ -492,9 +501,9 @@ class Deal < ActiveRecord::Base
             when "number", "integer"
               line << (value || 0)
             when "datetime"
-              line << (value.present? ? (value.strftime("%Y-%m-%d")) : value)
+              line << (value.present? ? (value.strftime("%Y-%m-%d")) : 'N/A')
             else
-              line << value
+              line << (value || 'N/A')
           end
         end
 
@@ -680,18 +689,48 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  def self.to_csv
+  def self.to_csv(deals, company)
     CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason", "Budget USD"]
-      all.each do |deal|
+      header = ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason", "Budget USD"]
+
+      deal_custom_field_names = company.deal_custom_field_names.where("disabled IS NOT TRUE").order("position asc")
+      deal_custom_field_names.each do |deal_custom_field_name|
+        header << deal_custom_field_name.field_label
+      end
+      csv << header
+      deals.each do |deal|
         agency_name = deal.agency.present? ? deal.agency.name : nil
         advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
         stage_name = deal.stage.present? ? deal.stage.name : nil
         stage_probability = deal.stage.present? ? deal.stage.probability : nil
         budget_loc = (deal.budget_loc.try(:round) || 0)
         budget_usd = (deal.budget.try(:round) || 0)
-        member = deal.users.collect{|user| user.name}.join(";")
-        csv << [deal.id, deal.name, advertiser_name, agency_name, member, budget_loc, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason"), budget_usd]
+        # member = deal.users.collect{|user| user.name + '/' + user.deal_member.share.to_s}.join(";")
+        member = deal.deal_members.collect {|deal_member| deal_member.email + "/" + deal_member.share.to_s}.join(";")
+        line = [deal.id, deal.name, advertiser_name, agency_name, member, budget_loc, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason"), budget_usd]
+        deal_custom_field = deal.deal_custom_field.as_json
+        deal_custom_field_names.each do |deal_custom_field_name|
+          field_name = deal_custom_field_name.field_type + deal_custom_field_name.field_index.to_s
+          value = nil
+          if deal_custom_field.present?
+            value = deal_custom_field[field_name]
+          end
+          # line << value
+
+          case deal_custom_field_name.field_type
+            when "currency"
+              line << '$' + (value || 0).to_s
+            when "percentage"
+              line << (value || 0).to_s + "%"
+            when "number", "integer"
+              line << (value || 0)
+            when "datetime"
+              line << (value.present? ? (value.strftime("%Y-%m-%d %H:%M:%S")) : 'N/A')
+            else
+              line << (value || 'N/A')
+          end
+        end
+        csv << line
       end
     end
   end

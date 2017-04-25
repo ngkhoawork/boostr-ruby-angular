@@ -1,38 +1,37 @@
-#time-periods
-  #nav.transparent
-    .container
-      .row
-        .col-xs-12
-          %ul.nav.nav-tabs
-            %li.pull-right.last
-              %a.add-time-period{ href: '', ng: { click: 'showModal()' } }
-                = inline_svg 'icons/add.svg'
-                Add Time Period
+#time-periods.block
+    %div.mb20
+        %span.title Time Periods
+        %add-button.plus-btn{ ng: { click: 'showModal()'} }
+            Add
 
-  .container
-    .row
-      .col-xs-12
-        %h3
-          Time Periods
+    %table.time-period-table.table
+        %thead
+            %tr
+                %th Name
+                %th Start Date
+                %th End Date
+                %th Type
+                %th Visible
+        %tbody{ ng: { if: 'time_periods.length > 0' } }
+            %tr{ ng: { repeat: 'row in time_periods | orderBy: "start_date"', click: 'editModal(row); $event.stopPropagation()'  } }
+                %td
+                    {{ row.name }}
+                %td
+                    %span
+                        {{ row.start_date | date: 'shortDate' }}
+                %td
+                    %span
+                    {{ row.end_date | date: 'shortDate' }}
+                %td
+                    %span
+                    {{ (row.period_type || 'N/A') }}
+                %td
+                    %span
+                    {{ (row.visible ? 'Yes' : 'No') }}
+                    %a.trashcan.pull-right{ href: '', ng: { click: 'delete(row); $event.stopPropagation()' } }
+                        = inline_svg 'icons/trash.svg'
 
-        .table-wrapper
-          %table.table.table-hover.table-striped
-            %thead
-              %tr
-                %th.left Name
-                %th.right Start Date
-                %th.right End Date
-                %th.action-column
-            %tbody
-              %tr{ ng: { repeat: 'row in time_periods | orderBy: "start_date"', click: 'editModal(row)'  } }
-                %td.left {{ row.name }}
-                %td.right {{ row.start_date | date: 'shortDate' }}
-                %td.right {{ row.end_date | date: 'shortDate' }}
-                / %td.action-column.info-td
-                /   .empty
-                %td.action-td
-                  %a.edit-time-period{ href: '', ng: { click: 'editModal(row); $event.stopPropagation()' } }
-                    = inline_svg 'icons/pencil.svg'
-                  %a.delete-time-period{ href: '', ng: { click: 'delete(row); $event.stopPropagation()' } }
-                    = inline_svg 'icons/trash.svg'
-
+        %tbody{ ng: { if: 'time_periods.length == 0' } }
+            %tr
+                %td.center{ colspan: '3' }
+                    No data available

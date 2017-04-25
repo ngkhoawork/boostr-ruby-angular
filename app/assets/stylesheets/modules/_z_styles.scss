@@ -12,6 +12,23 @@
         font-size: 24px;
         font-weight: bold;
     }
+    .switch-row {
+        span {
+            display: inline-block;
+            padding: 3px 5px 8px;
+            margin: 0 10px;
+            font-weight: 600;
+            cursor: pointer;
+            &.title {
+                color: $secondary-font-color;
+                cursor: default;
+            }
+            &.active {
+                color: $main-color;
+                border-bottom: 2px solid $main-color;
+            }
+        }
+    }
     .block {
         margin-bottom: 30px;
         .title {
@@ -30,11 +47,28 @@
                 color: $secondary-font-color !important;
                 border-left: none;
                 border-right: none;
+                text-transform: none;
+                font-weight: 500;
+                font-size: 12px;
+            }
+        }
+        tbody {
+            tr {
+                td:first-child {
+                    a:hover, a:focus {
+                        color: $secondary-color;
+                    }
+                }
             }
         }
         tr {
-            &:nth-of-type(even) {
-                background-color: #fafafb;
+            //&:nth-of-type(even) {
+            //    background-color: #fafafb;
+            //}
+            &:first-child {
+                td {
+                    border-top-width: 2px;
+                }
             }
             th, td {
                 text-align: left;

@@ -9,12 +9,18 @@ class Io < ActiveRecord::Base
   has_many :content_fees, dependent: :destroy
   has_many :content_fee_product_budgets, dependent: :destroy, through: :content_fees
   has_many :display_line_items, dependent: :destroy
-  has_many :display_line_item_budgets, through: :display_line_items
+  has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
   validate :active_exchange_rate
+
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
+  scope :without_display_line_items, -> { includes(:display_line_items).where(display_line_items: { id: nil }) }
+  scope :with_won_deals, -> { joins(deal: [:stage]).where(stages: { probability: 100 }) }
+  scope :with_open_deal_products, -> { joins(deal: [:deal_products]).where(deal_products: { open: true }) }
+  scope :with_display_revenue_type, -> { joins(deal: {deal_products: [:product]})
+                                          .where(products: { revenue_type: 'Display' }) }
 
   after_update do
     if (start_date_changed? || end_date_changed?)
@@ -198,8 +204,8 @@ class Io < ActiveRecord::Base
     content_fees.each do |content_fee|
       content_fee.content_fee_product_budgets.each do |content_fee_product_budget|
         if (start_date <= content_fee_product_budget.end_date && end_date >= content_fee_product_budget.start_date)
-          in_period_days = [[end_date, content_fee_product_budget.end_date].min - [start_date, content_fee_product_budget.start_date].max + 1, 0].max
-          in_period_effective_days = [[end_date, content_fee_product_budget.end_date, io_member.to_date].min - [start_date, content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
+          in_period_days = [[self.end_date, end_date, content_fee_product_budget.end_date].min - [self.start_date, start_date, content_fee_product_budget.start_date].max + 1, 0].max
+          in_period_effective_days = [[self.end_date, end_date, content_fee_product_budget.end_date, io_member.to_date].min - [self.start_date, start_date, content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
           sum_period_budget += content_fee_product_budget.corrected_daily_budget(self.start_date, self.end_date) * in_period_days
           split_period_budget += content_fee_product_budget.corrected_daily_budget(self.start_date, self.end_date) * in_period_effective_days * share / 100
         end
@@ -222,8 +228,8 @@ class Io < ActiveRecord::Base
       end
 
       if (start_date <= display_line_item.end_date && end_date >= display_line_item.start_date)
-        in_period_days = [[end_date, display_line_item.end_date].min - [start_date, display_line_item.start_date].max + 1, 0].max
-        in_period_effective_days = [[end_date, display_line_item.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
+        in_period_days = [[self.end_date, end_date, display_line_item.end_date].min - [self.start_date, start_date, display_line_item.start_date].max + 1, 0].max
+        in_period_effective_days = [[self.end_date, end_date, display_line_item.end_date, io_member.to_date].min - [self.start_date, start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
         sum_period_budget += budget_in_period_for_display_line_item_budget + display_line_item.ave_run_rate * (in_period_days - display_line_item_budget_overlapped_days)
         split_period_budget += budget_in_period_for_display_line_item_budget_with_share + display_line_item.ave_run_rate * (in_period_effective_days - display_line_item_budget_with_io_member_overlapped_days) * share / 100
       end

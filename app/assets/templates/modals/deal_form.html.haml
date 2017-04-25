@@ -2,7 +2,7 @@
     %form{ ng: { submit: 'submitForm()' } }
         .popup-modal-header
             {{formType}} Deal
-            %span.close-btn{'ng-click': 'cancel()'} +
+            %span.close-btn{'ng-click': 'cancel()'}
         .popup-modal-body
             .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
                 .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
@@ -86,21 +86,21 @@
                         %label{ for: 'start-date' }
                             Start Date
                             %span.star *
-                        %input.form-control{readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
+                        %input.form-control{readonly: true, name: 'start-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'deal.start_date', required: true, click: 'startOpened = true' }, 'is-open': 'startOpened' }
 
                     .form-group.col-md-6.bs-datepicker{'ng-class':'{error: errors.end_date}'}
                         %span.error-text {{errors.end_date}}
                         %label{ for: 'end-date' }
                             End Date
                             %span.star *
-                        %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
+                        %input.form-control{readonly: true, name: 'end-date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'deal.end_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened' }
             .form-group{ng: {repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: "fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index", if: "dealCustomFieldName.show_on_modal && !dealCustomFieldName.disabled", class:'{error: errors[fieldName]}'}}
                 %span.error-text {{errors[fieldName]}}
-                %label{ for: '{{fieldName}}' }
+                %label{ for: '{{fieldName}}', ng: { if: "dealCustomFieldName.field_type != 'sum'" } }
                     {{dealCustomFieldName.field_label}}
                     %span.star{ 'ng-if': "dealCustomFieldName.is_required == true" }
                         *
-                %input.form-control{ 'ng-if': "dealCustomFieldName.field_type != 'note' && dealCustomFieldName.field_type != 'datetime' && dealCustomFieldName.field_type != 'boolean'", placeholder: 'Enter {{dealCustomFieldName.field_label}}', ng: { model: 'deal.deal_custom_field[fieldName]' }, name: '{{fieldName}}' }
+                %input.form-control{ 'ng-if': "dealCustomFieldName.field_type != 'note' && dealCustomFieldName.field_type != 'datetime' && dealCustomFieldName.field_type != 'boolean' && dealCustomFieldName.field_type != 'dropdown' && dealCustomFieldName.field_type != 'sum'", placeholder: 'Enter {{dealCustomFieldName.field_label}}', ng: { model: 'deal.deal_custom_field[fieldName]' }, name: '{{fieldName}}' }
                 %textarea.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "deal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}' }
                 .bs-datepicker
                     %input.form-control{ 'ng-if': "dealCustomFieldName.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'deal.deal_custom_field[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{dealCustomFieldName.field_label}}' }
@@ -109,6 +109,11 @@
                         %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'deal.deal_custom_field[fieldName]'}
                         %label{:for => "{{fieldName}}"}
                             %span
+                %ui-select{ name: '{{fieldName}}', ng: { if: "dealCustomFieldName.field_type == 'dropdown'", model: 'deal.deal_custom_field[fieldName]', disabled: true } }
+                    %ui-select-match{ placeholder: 'Select value' }
+                        {{ $select.selected.value }}
+                    %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in dealCustomFieldName.deal_custom_field_options | filter: { value: $select.search }' }
+                        %div{ ng: { bind: { html: 'customFieldOption.value' } } }
         .popup-modal-footer
             %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
             %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

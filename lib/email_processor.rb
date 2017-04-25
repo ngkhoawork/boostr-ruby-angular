@@ -44,7 +44,7 @@ class EmailProcessor
       end
       if contacts.count > 0
         comment = "<div><strong>Email Subject - " + @email.subject + "</strong></div>"
-        comment = comment + "<div><strong>Email Body - </strong></div>" + @email.raw_html
+        comment = comment + "<div><strong>Email Body - </strong></div>" + (@email.raw_html || @email.raw_text || '')
         activity = Activity.create({
             company_id: user.company_id,
             user_id: user.id,

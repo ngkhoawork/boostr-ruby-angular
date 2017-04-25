@@ -2,13 +2,13 @@
 	.show-create-remainders-popup
 		%label{ 'for': 'deal-reminders'}
 			%i.fa.fa-bell-o.reminder-icon
-		%input.show-form-create-reminders#deal-reminders{ type: 'checkbox', ng: { model: 'showReminder' } }
+		%input.show-form-create-reminders#deal-reminders{ type: 'checkbox', ng: { model: 'reminderOptions.showReminder' } }
 
-		%div.wrap-form{ ng: { show: 'showReminder' } }
-			#reminder_modal.popup-modal
+		%div{ ng: { show: 'reminderOptions.showReminder' } }
+			#reminder_popup_modal.popup-modal
 				.popup-modal-header
 					%label{ 'for': 'deal-reminders'}
-						%span.close-btn{'ng-click': 'cancel()'} +
+						%span.close-btn
 				%form{ name: 'dealReminderForm', ng: { submit: 'submitReminderForm()' } }
 					.popup-modal-body
 						.form-group{'ng-class':'{error: reminderOptions.errors.Name}'}

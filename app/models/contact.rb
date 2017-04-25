@@ -45,6 +45,14 @@ class Contact < ActiveRecord::Base
     end
   end
 
+  def primary_client_json
+    self.primary_client.serializable_hash(only: [:id, :name, :client_type_id]) rescue nil
+  end
+
+  def formatted_name
+    name
+  end
+
   def update_primary_client
     primary = self.primary_client
     if primary && primary.id != self.client_id

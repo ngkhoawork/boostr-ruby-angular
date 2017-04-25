@@ -51,6 +51,7 @@ class Operative::DatafeedService
 
   def log_general_error(file_service)
     import_log = CsvImportLog.new(company_id: api_config.company_id, object_name: 'io')
+    import_log.count_failed
     import_log.log_error(file_service.error)
     import_log.set_file_source(file_service.data_filename_local)
     import_log.save

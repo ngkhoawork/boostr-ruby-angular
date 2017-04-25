@@ -204,6 +204,39 @@ class ForecastTeam
     @monthly_weighted_pipeline_by_stage
   end
 
+  def quarterly_weighted_pipeline_by_stage
+    return @quarterly_weighted_pipeline_by_stage if defined?(@quarterly_weighted_pipeline_by_stage)
+    @quarterly_weighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.quarterly_weighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @quarterly_weighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |quarter, total|
+          @quarterly_weighted_pipeline_by_stage[stage_id][quarter] ||= 0
+          @quarterly_weighted_pipeline_by_stage[stage_id][quarter] += total.to_f
+        end
+      end
+    end
+    members.each do |m|
+      m.quarterly_weighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @quarterly_weighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |quarter, total|
+          @quarterly_weighted_pipeline_by_stage[stage_id][quarter] ||= 0
+          @quarterly_weighted_pipeline_by_stage[stage_id][quarter] += total.to_f
+        end
+      end
+    end
+    if leader
+      leader.quarterly_weighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @quarterly_weighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |quarter, total|
+          @quarterly_weighted_pipeline_by_stage[stage_id][quarter] ||= 0
+          @quarterly_weighted_pipeline_by_stage[stage_id][quarter] += total.to_f
+        end
+      end
+    end
+    @quarterly_weighted_pipeline_by_stage
+  end
+
   def monthly_unweighted_pipeline_by_stage
     return @monthly_unweighted_pipeline_by_stage if defined?(@monthly_unweighted_pipeline_by_stage)
     @monthly_unweighted_pipeline_by_stage = {}
@@ -237,6 +270,39 @@ class ForecastTeam
     @monthly_unweighted_pipeline_by_stage
   end
 
+  def quarterly_unweighted_pipeline_by_stage
+    return @quarterly_unweighted_pipeline_by_stage if defined?(@quarterly_unweighted_pipeline_by_stage)
+    @quarterly_unweighted_pipeline_by_stage = {}
+    teams.each do |t|
+      t.quarterly_unweighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @quarterly_unweighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |quarter, total|
+          @quarterly_unweighted_pipeline_by_stage[stage_id][quarter] ||= 0
+          @quarterly_unweighted_pipeline_by_stage[stage_id][quarter] += total.to_f
+        end
+      end
+    end
+    members.each do |m|
+      m.quarterly_unweighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @quarterly_unweighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |quarter, total|
+          @quarterly_unweighted_pipeline_by_stage[stage_id][quarter] ||= 0
+          @quarterly_unweighted_pipeline_by_stage[stage_id][quarter] += total.to_f
+        end
+      end
+    end
+    if leader
+      leader.quarterly_unweighted_pipeline_by_stage.each do |stage_id, stage_data|
+        @quarterly_unweighted_pipeline_by_stage[stage_id] ||= {}
+        stage_data.each do |quarter, total|
+          @quarterly_unweighted_pipeline_by_stage[stage_id][quarter] ||= 0
+          @quarterly_unweighted_pipeline_by_stage[stage_id][quarter] += total.to_f
+        end
+      end
+    end
+    @quarterly_unweighted_pipeline_by_stage
+  end
+
   def monthly_revenue
     return @monthly_revenue if defined?(@monthly_revenue)
     @monthly_revenue = {}
@@ -259,6 +325,30 @@ class ForecastTeam
       end
     end
     @monthly_revenue
+  end
+
+  def quarterly_revenue
+    return @quarterly_revenue if defined?(@quarterly_revenue)
+    @quarterly_revenue = {}
+    teams.each do |t|
+      t.quarterly_revenue.each do |quarter, total|
+        @quarterly_revenue[quarter] ||= 0
+        @quarterly_revenue[quarter] += total.to_f
+      end
+    end
+    members.each do |m|
+      m.quarterly_revenue.each do |quarter, total|
+        @quarterly_revenue[quarter] ||= 0
+        @quarterly_revenue[quarter] += total.to_f
+      end
+    end
+    if leader
+      leader.quarterly_revenue.each do |quarter, total|
+        @quarterly_revenue[quarter] ||= 0
+        @quarterly_revenue[quarter] += total.to_f
+      end
+    end
+    @quarterly_revenue
   end
 
   def wow_weighted_pipeline
@@ -289,6 +379,10 @@ class ForecastTeam
 
   def quota
     leader.try(:quota) || 0
+  end
+
+  def quarterly_quota
+    leader.try(:quarterly_quota) || {}
   end
 
   def win_rate

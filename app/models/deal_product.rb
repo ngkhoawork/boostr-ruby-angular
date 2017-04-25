@@ -2,11 +2,13 @@ class DealProduct < ActiveRecord::Base
   belongs_to :deal, touch: true
   belongs_to :product
   has_many :deal_product_budgets, dependent: :destroy
+  has_one :deal_product_cf, dependent: :destroy
 
   validates :product, presence: true
   validate :active_exchange_rate
 
   accepts_nested_attributes_for :deal_product_budgets
+  accepts_nested_attributes_for :deal_product_cf
 
   after_create do
     if deal_product_budgets.empty?

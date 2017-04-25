@@ -36,6 +36,7 @@ RSpec.configure do |config|
   config.include Devise::TestHelpers, type: :controller
   config.include Warden::Test::Helpers
   config.include Helpers
+  config.include WaitForAjax
   config.before :suite do
     Warden.test_mode!
   end

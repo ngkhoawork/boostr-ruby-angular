@@ -1,10 +1,10 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
-
   mount JasmineRails::Engine => '/specs' if defined?(JasmineRails)
   ActiveAdmin.routes(self)
 
+  # Devise Auth
   devise_for :users, skip: 'invitation'
   devise_scope :user do
     get '/users/invitation/accept', to: 'api/invitations#edit',   as: 'accept_user_invitation'
@@ -16,6 +16,45 @@ Rails.application.routes.draw do
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
   namespace :api do
+    scope module: :v1, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 1) do
+      post 'forgot_password' => 'forgot_password#create'
+      post 'resend_confirmation' => 'forgot_password#create'
+
+      resources :user_token, only: [:create]
+
+      resource :dashboard, only: [:show]
+      resources :states, only: [:index]
+      resources :forgot_password, only: [:create]
+      resources :activity_types, only: [:index]
+      resources :activities, only: [:index, :create, :show, :update, :destroy]
+      resources :contacts, only: [:index, :create, :update, :destroy]
+      resources :deals, only: [:index, :create, :update, :show, :destroy] do
+        resources :deal_products, only: [:create, :update, :destroy]
+        resources :deal_assets, only: [:index, :update, :create, :destroy]
+        resources :deal_contacts, only: [:index, :create, :update, :destroy]
+      end
+      resources :stages, only: [:index, :create, :show, :update]
+      resources :clients, only: [:index, :show, :create, :update, :destroy] do
+        get :sellers
+        resources :client_members, only: [:index, :create, :update, :destroy]
+        resources :client_contacts, only: [:index] do
+          collection do
+            get :related_clients
+          end
+        end
+      end
+
+      resources :reminders, only: [:index, :show, :create, :update, :destroy]
+      resources :remindable, only: [] do
+        get '/:remindable_type', to: 'reminders#remindable'
+      end
+      resources :forecasts, only: [:index, :show]
+      resources :time_periods, only: [:index]
+      resources :countries, only: [:index]
+      resources :fields, only: [:index]
+      resources :users, only: [:index, :update]
+    end
+
     resources :countries, only: [:index]
     resources :api_configurations
     resources :integration_types, only: [:index]
@@ -40,6 +79,7 @@ Rails.application.routes.draw do
       end
     end
     resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy]
+    resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
     
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
@@ -56,7 +96,11 @@ Rails.application.routes.draw do
     resources :io_csvs, only: [:create]
     resources :display_line_item_csvs, only: [:create]
     resources :contacts, only: [:index, :create, :update, :destroy]
-    resources :revenue, only: [:index, :create]
+    resources :revenue, only: [:index, :create] do
+      collection do
+        get :forecast_detail
+      end
+    end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
@@ -66,10 +110,15 @@ Rails.application.routes.draw do
       collection do
         get :pipeline_report
         get :pipeline_summary_report
+        get :won_deals
+      end
+      member do
+        post :send_to_operative
       end
       resources :deal_members, only: [:index, :create, :update, :destroy]
       resources :deal_contacts, only: [:index, :create, :update, :destroy]
       resources :deal_assets, only: [:index, :update, :create, :destroy]
+      get 'latest_log', to: 'integration_logs#latest_log'
     end
     resources :deal_product_budgets, only: [:index, :create]
     resources :deal_products, only: [:create]
@@ -100,7 +149,11 @@ Rails.application.routes.draw do
       end
     end
     resources :quotas, only: [:index, :create, :update]
-    resources :forecasts, only: [:index, :show]
+    resources :forecasts, only: [:index, :show] do
+      collection do
+        get :detail
+      end
+    end
     resources :fields, only: [:index]
     resources :options, only: [:create, :update, :destroy]
     resources :validations, only: [:index, :update]
@@ -141,6 +194,17 @@ Rails.application.routes.draw do
       get 'smart_report', on: :collection
       get 'smart_report_deals', on: :member
     end
+    resources :billing_summary, only: [:index] do
+      member do
+        put :update_quantity
+        put :update_content_fee_product_budget
+        put :update_display_line_item_budget_billing_status
+      end
+
+      get :export, on: :collection
+    end
+
+    get 'teams/by_user/:id', to: 'teams#by_user', as: :team_by_user
   end
 
   mount Sidekiq::Web => '/sidekiq'

@@ -19,6 +19,9 @@
 .mr20 {
   margin-right: 20px;
 }
+.mb10 {
+  margin-bottom: 10px;
+}
 .mb20 {
   margin-bottom: 20px;
 }
@@ -30,4 +33,20 @@
 }
 .fwb {
   font-weight: bold;
+}
+.clickable {
+  cursor: pointer;
+}
+
+.hide-input-arrows {
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+  input[type=number] {
+    -moz-appearance:textfield;
+  }
 }

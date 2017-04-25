@@ -4,6 +4,28 @@ RSpec.describe Address, type: :model do
   let(:company) { Company.first }
   let(:user) { create :user }
 
+  context 'validations' do
+    it 'validates state in address' do
+      subject.state = 'WY'
+
+      expect(subject).to be_valid
+    end
+
+    it 'returns failure for invalid state' do
+      subject.state = 'WKK'
+
+      expect(subject).not_to be_valid
+    end
+
+    it 'returns an error message' do
+      subject.state = 'WKK'
+
+      subject.valid?
+
+      expect(subject.errors.messages).to eq state: ['has the wrong format']
+    end
+  end
+
   context 'phone number' do
     it 'is stripped and stored as an integer' do
       address = Address.create(phone: '(208) 867-5309')

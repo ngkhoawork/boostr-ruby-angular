@@ -1,0 +1,16 @@
+#custom-fields-modal {
+  .dropdown-option {
+    margin-top: 10px;
+    //margin-bottom: 10px;
+    .option-field {
+      display: inline-block;
+      height: 30px;
+      width: calc(100% - 20px);
+      margin-right: 5px;
+    }
+    i.fa {
+      cursor: pointer;
+    }
+  }
+
+}

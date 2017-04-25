@@ -16,7 +16,14 @@ end
 
 json.creator deal.creator, :first_name, :last_name
 
-json.deal_contacts deal.deal_contacts.order(:created_at), :id, :contact_id, :deal_id, :role, :contact
+json.deal_contacts(deal.deal_contacts.order(:created_at)) do |deal_contact|
+  json.id deal_contact.id
+  json.contact_id deal_contact.contact_id
+  json.deal_id deal_contact.deal_id
+  json.role deal_contact.role
+  json.contact deal_contact.contact, :id, :name, :position, :client_id, :note, :formatted_name, :primary_client_json, :address
+end
+
 
 json.products deal.products
 
@@ -34,6 +41,7 @@ json.deal_products deal.deal_products.order(:created_at) do |deal_product|
   end
   # json.budget (deal_product.budget || 0).to_i
   json.budget_loc (deal_product.budget_loc || 0).to_f
+  json.deal_product_cf deal_product.deal_product_cf
 end
 
 json.members deal.deal_members do |member|
@@ -89,3 +97,5 @@ json.initiatives deal.company.initiatives, :id, :name
 if deal.initiative.present?
   json.initiative deal.initiative, :id, :name
 end
+
+json.closed_reason_text deal.closed_reason_text

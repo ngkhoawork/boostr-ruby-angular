@@ -9,7 +9,7 @@
   $scope.showModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/time_period_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'SettingsTimePeriodsNewController'
       backdrop: 'static'
       keyboard: false
@@ -26,13 +26,13 @@
   $scope.editModal = (time_period) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/time_period_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'SettingsTimePeriodsEditController'
       backdrop: 'static'
       keyboard: false
       resolve:
         time_period: ->
-          time_period
+          angular.copy(time_period)
 
   $scope.init()
 

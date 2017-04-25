@@ -5,11 +5,55 @@ class DisplayLineItem < ActiveRecord::Base
 
   has_many :display_line_item_budgets
 
+  scope :without_budgets_by_date, -> (start_date, end_date) do
+    joins(:display_line_item_budgets)
+    .where
+    .not('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', start_date, end_date)
+  end
+
+  scope :with_budgets_by_date, -> (start_date, end_date) do
+    joins(:display_line_item_budgets)
+    .where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?',
+           start_date,
+           end_date)
+  end
+
+  scope :without_display_line_item_budgets, -> do
+    includes(:display_line_item_budgets).where(display_line_item_budgets: { id: nil })
+  end
+
+  scope :by_period, -> (start_date, end_date) do
+    where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', start_date, end_date)
+  end
+
+  scope :by_period_without_budgets, -> (start_date, end_date, io_ids) do
+    includes(:product, io: [:deal, :advertiser, :agency])
+    .by_period(start_date, end_date)
+    .where(io: io_ids)
+    .without_budgets_by_date(start_date, end_date).uniq
+  end
+
+  scope :by_period_with_budgets, -> (start_date, end_date, io_ids) do
+    includes(:product, io: [:deal, :advertiser, :agency])
+    .by_period(start_date, end_date)
+    .where(io: io_ids)
+    .with_budgets_by_date(start_date, end_date).uniq
+  end
+
+  scope :by_period_without_display_line_item_budgets, -> (start_date, end_date, io_ids) do
+    includes(:product, io: [:deal, :advertiser, :agency])
+    .where(io: io_ids)
+    .by_period(start_date, end_date)
+    .without_display_line_item_budgets
+  end
+
   before_create :set_alert
   before_update :set_alert
 
   after_create :update_io_budget
   after_update :update_io_budget
+
+  scope :for_time_period, -> (start_date, end_date) { where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', end_date, start_date) }
 
   def update_io_budget
     if io.present?

@@ -1,5 +1,4 @@
 #deal {
-    overflow-x: auto;
     .warning-message {
         background-color: $error-color;
         color: white;
@@ -20,11 +19,6 @@
             right: -8px;
             cursor: pointer;
         }
-
-
-    }
-    #deal-inner {
-        min-width: 1280px;
     }
     .caret {
         color: $secondary-font-color;
@@ -37,7 +31,7 @@
     }
     textarea.editable {
         resize: none;
-        width: 200px;
+        width: 100%;
         padding: 5px 8px;
         &:focus {
             outline: none;
@@ -79,7 +73,7 @@
             top: calc(100% + 10px);
         }
     }
-    .edit-deal, .delete-deal, .delete-product, .reminder-icon {
+    .edit-deal, .delete-deal, .delete-product, .reminder-icon, .send-icon {
         color: $secondary-font-color;
         margin-left: 8px;
         cursor: pointer;
@@ -93,14 +87,19 @@
             color: white;
         }
     }
+    .send-icon {
+        vertical-align: middle;
+        margin-left: 2px;
+    }
     .show-create-remainders-popup {
+        margin: 0;
         .show-form-create-reminders {
             display: none;
         }
         .reminder-icon {
             padding: 4px 5px;
         }
-        #reminder_modal {
+        #reminder_popup_modal {
             background-color: white;
             position: absolute;
             right: 0;
@@ -112,6 +111,16 @@
             input, textarea {
                 height: 36px;
                 background-color: white;
+            }
+            .popup-modal-header {
+                height: 0;
+                margin: 0;
+                padding: 0;
+                border-bottom: none;
+                .close-btn {
+                    top: -18px;
+                    right: -16px;
+                }
             }
         }
     }
@@ -240,6 +249,46 @@
                 font-weight: bold;
             }
         }
+
+        .custom-field-item-field {
+            .text-area {
+                textarea {
+                    margin-top: 10px;
+                    width: 100px;
+                }
+            }
+            .editable {
+                display: inline-block;
+                min-width: 100px;
+                max-width: 100%;
+                background: none;
+                &:focus {
+                    outline: none;
+                    border: 1px dashed $secondary-font-color;
+                    &:hover {
+                        background-color: inherit;
+                    }
+                }
+            }
+            .datetime-field {
+                width: 130px;
+                table {
+                    tr {
+                        height: auto !important;
+                    }
+                }
+            }
+
+            .dropdown {
+                position: static;
+
+                .dropdown-menu {
+                    top: auto;
+                    left: auto;
+                }
+            }
+        }
+
         .editable-wrap {
             white-space: nowrap;
             .budget-value, .budget-percent {
@@ -277,8 +326,9 @@
                 }
             }
         }
-        table {
-            thead > tr {
+        > table {
+            > thead > tr {
+
                 background-color: $brand-tertiary;
                 //background-color: lighten($main-color, 35%);
                 > th {
@@ -286,8 +336,8 @@
                     //color:lighten($main-color, 5%) !important;
                 }
             }
-            tbody {
-                td:first-child {
+            > tbody {
+                > td:first-child {
                     white-space: nowrap;
                     font-size: 18px;
                     font-weight: bold;
@@ -296,7 +346,7 @@
                         visibility: hidden;
                     }
                 }
-                tr {
+                > tr {
                     &:first-child > td {
                         border-top: none;
                     }
@@ -307,11 +357,12 @@
                     }
                 }
             }
-            th, td {
+            > thead > tr > th, > tbody > tr > td {
                 text-align: center;
                 width: 100px;
                 &:first-child {
                     text-align: left;
+                    width: 200px;
                 }
             }
         }
@@ -440,6 +491,14 @@
                 border-left: 3px solid $error-color;
             }
         }
+        .status-error {
+            color: $error-color;
+        }
+        .status-success {
+            //background-color: #2ca02c;
+            //color: white;
+            color: #2ca02c;
+        }
     }
     .error-tooltip {
         font-family: "Avenir Next", Arial, serif;
@@ -495,18 +554,6 @@
         }
         .not-selected {
             color: lighten($secondary-font-color, 15%);
-        }
-    }
-    #reminder_modal {
-        .popup-modal-header {
-            height: 0;
-            margin: 0;
-            padding: 0;
-            border-bottom: none;
-            .close-btn {
-                top: -18px;
-                right: -16px;
-            }
         }
     }
 }
