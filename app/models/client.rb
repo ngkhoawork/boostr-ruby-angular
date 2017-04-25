@@ -410,12 +410,20 @@ class Client < ActiveRecord::Base
     end
   end
 
-  def advertiser_last_deal
-    advertiser_deals.order('created_at desc').limit(1).first.created_at
+  def last_advertiser_deal(deal)
+    (last_two_advertiser_deals.first.eql?(deal) ? last_two_advertiser_deals.last : last_two_advertiser_deals.first).created_at
   end
 
-  def agency_last_deal
-    agency_deals.order('created_at desc').limit(1).first.created_at
+  def last_two_advertiser_deals
+    @_last_two_advertiser_deals ||= advertiser_deals.order('created_at desc').limit(2)
+  end
+
+  def last_agency_deal(deal)
+    (last_two_agency_deals.first.eql?(deal) ? last_two_agency_deals.last : last_two_agency_deals.first).created_at
+  end
+
+  def last_two_agency_deals
+    @_last_two_agency_deals ||= agency_deals.order('created_at desc').limit(2)
   end
 
   def advertiser_win_rate
