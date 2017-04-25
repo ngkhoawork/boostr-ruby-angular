@@ -265,6 +265,10 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def won_deals
+    render json: company_won_deals.as_json(override: true, options: { only: [:id, :name] })
+  end
+
   private
 
   def forecast_deals
@@ -587,15 +591,11 @@ class Api::DealsController < ApplicationController
   end
 
   def suggest_deals
-    return @search_deals if defined?(@search_deals)
-
-    @search_deals = company.deals.where('deals.name ilike ?', "%#{params[:name]}%").limit(10)
+    @_search_deals ||= company.deals.by_name(params[:name]).limit(10)
   end
 
   def activity_deals
-    return @activity_deals if defined?(@activity_deals)
-
-    @activity_deals = company.deals.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
+    @_activity_deals ||= company.deals.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
   end
 
   def quarters
@@ -621,5 +621,9 @@ class Api::DealsController < ApplicationController
     else
       nil
     end
+  end
+
+  def company_won_deals
+    company.deals.won.by_name(params[:name])
   end
 end

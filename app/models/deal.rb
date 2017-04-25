@@ -105,6 +105,7 @@ class Deal < ActiveRecord::Base
   scope :won, -> { closed.includes(:stage).where(stages: { probability: 100 }) }
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
+  scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
 
   def integrate_with_operative
     if stage_id_changed? && operative_integration_allowed?

@@ -110,6 +110,7 @@ Rails.application.routes.draw do
       collection do
         get :pipeline_report
         get :pipeline_summary_report
+        get :won_deals
       end
       member do
         post :send_to_operative

@@ -41,6 +41,7 @@ class Client < ActiveRecord::Base
   scope :by_category, -> category_id { where(client_category_id: category_id) if category_id.present? }
   scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
   scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(10) }
 
   ADVERTISER = 10
   AGENCY = 11
@@ -166,26 +167,26 @@ class Client < ActiveRecord::Base
             include: [:option]
           },
           activities: {
-              include: {
-                  creator: {},
-                  contacts: {},
-                  assets: {
-                      methods: [
-                          :presigned_url
-                      ]
-                  }
+            include: {
+              creator: {},
+              contacts: {},
+              assets: {
+                methods: [
+                  :presigned_url
+                ]
               }
+            }
           },
           agency_activities: {
-              include: {
-                  creator: {},
-                  contacts: {},
-                  assets: {
-                      methods: [
-                          :presigned_url
-                      ]
-                  }
+            include: {
+              creator: {},
+              contacts: {},
+              assets: {
+                methods: [
+                  :presigned_url
+                ]
               }
+            }
           }},
         methods: [:deals_count, :fields, :formatted_name]
       ).except(:override))

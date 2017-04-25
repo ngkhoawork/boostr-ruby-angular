@@ -18,9 +18,7 @@ class Api::ClientsController < ApplicationController
 
         response.headers['X-Total-Count'] = results.count.to_s
         results = results.limit(limit).offset(offset)
-        render json: results.as_json(
-          methods: [:deals_count, :fields]
-        )
+        render json: results.as_json
       }
 
       format.csv {
@@ -142,17 +140,10 @@ class Api::ClientsController < ApplicationController
   end
 
   def suggest_clients
-    return @search_clients if defined?(@search_clients)
-
-    @search_clients = company.clients
-                        .where('name ilike ?', "%#{params[:name]}%")
-                        .by_type_id(params[:client_type_id])
-                        .limit(10)
+    @_suggest_clients ||= company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
   end
 
   def activity_clients
-    return @activity_clients if defined?(@activity_clients)
-
-    @activity_clients = company.clients.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
+    @_activity_clients ||= company.clients.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
   end
 end
