@@ -222,10 +222,14 @@ class Io < ActiveRecord::Base
 
       display_line_item.display_line_item_budgets.each do |display_line_item_budget|
         if (start_date <= display_line_item_budget.end_date && end_date >= display_line_item_budget.start_date)
-          display_line_item_budget_overlapped_days += [[end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
-          display_line_item_budget_with_io_member_overlapped_days += [[end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
-          budget_in_period_for_display_line_item_budget += display_line_item_budget.daily_budget * display_line_item_budget_overlapped_days
-          budget_in_period_for_display_line_item_budget_with_share += display_line_item_budget.daily_budget * display_line_item_budget_with_io_member_overlapped_days / 100 * share
+          in_period_days = [[end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
+          in_period_effective_days = [[end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
+
+          display_line_item_budget_overlapped_days += in_period_days
+          display_line_item_budget_with_io_member_overlapped_days += in_period_effective_days
+
+          budget_in_period_for_display_line_item_budget += display_line_item_budget.daily_budget * in_period_days
+          budget_in_period_for_display_line_item_budget_with_share += display_line_item_budget.daily_budget * in_period_effective_days / 100 * share
         end
       end
 
