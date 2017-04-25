@@ -56,11 +56,29 @@ json.members deal.deal_members do |member|
 end
 
 if deal.advertiser
-  json.advertiser deal.advertiser, :id, :name
+  json.advertiser do
+    json.extract! deal.advertiser, :id, :name
+
+    json.stats do
+      json.deals_count deal.advertiser.advertiser_deals_count
+      json.win_rate deal.advertiser.advertiser_win_rate
+      json.avg_deal_size deal.advertiser.advertiser_avg_deal_size
+      json.last_deal deal.advertiser.last_advertiser_deal(deal)
+    end
+  end
 end
 
 if deal.agency
-  json.agency deal.agency, :id, :name
+  json.agency do
+    json.extract! deal.agency, :id, :name
+
+    json.stats do
+      json.deals_count deal.agency.agency_deals_count
+      json.win_rate deal.agency.agency_win_rate
+      json.avg_deal_size deal.agency.agency_avg_deal_size
+      json.last_deal deal.agency.last_agency_deal(deal)
+    end
+  end
 end
 
 json.values deal.values

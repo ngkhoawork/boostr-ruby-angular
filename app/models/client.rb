@@ -410,4 +410,40 @@ class Client < ActiveRecord::Base
       end
     end
   end
+
+  def last_advertiser_deal(deal)
+    (last_two_advertiser_deals.first.eql?(deal) ? last_two_advertiser_deals.last : last_two_advertiser_deals.first).created_at
+  end
+
+  def last_two_advertiser_deals
+    @_last_two_advertiser_deals ||= advertiser_deals.order('created_at desc').limit(2)
+  end
+
+  def last_agency_deal(deal)
+    (last_two_agency_deals.first.eql?(deal) ? last_two_agency_deals.last : last_two_agency_deals.first).created_at
+  end
+
+  def last_two_agency_deals
+    @_last_two_agency_deals ||= agency_deals.order('created_at desc').limit(2)
+  end
+
+  def advertiser_win_rate
+    return 0 if (advertiser_deals.won.count + advertiser_deals.lost.count).zero?
+
+    (advertiser_deals.won.count.to_f / (advertiser_deals.won.count + advertiser_deals.lost.count).to_f * 100).to_i
+  end
+
+  def agency_win_rate
+    return 0 if (agency_deals.won.count + agency_deals.lost.count).zero?
+
+    (agency_deals.won.count.to_f / (agency_deals.won.count + agency_deals.lost.count).to_f * 100).to_i
+  end
+
+  def advertiser_avg_deal_size
+    advertiser_deals.won.map(&:budget).sum / advertiser_deals.won.count if advertiser_deals.won.any?
+  end
+
+  def agency_avg_deal_size
+    agency_deals.won.map(&:budget).sum / agency_deals.won.count if agency_deals.won.any?
+  end
 end
