@@ -22,8 +22,7 @@ module DFP
         job = run_report_job_by_query(query)
         check_report_status
         get_report_by_id(job[:id])
-        #TODO: Find the right exception class
-      rescue Exception => e
+      rescue DfpApi::V201702::ReportService::ApiException => e
         puts e.class
       end
     end
@@ -86,7 +85,8 @@ module DFP
     end
 
     def set_logger_interceptor
-      if GoogleAdsSavon.config.hooks.empty?
+      unless GoogleAdsSavon.config.hooks.empty?
+        GoogleAdsSavon.config.hooks.reject(:logger_hook)
         GoogleAdsSavon.config.hooks.define(:logger_hook, :soap_request) do |callback, req|
           response = callback.call
           DFP::LoggerService.new(request: req, response: response, company_id: company_id, dfp_query_type: dfp_query_type).create_log!

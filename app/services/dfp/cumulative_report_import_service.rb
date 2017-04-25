@@ -13,12 +13,13 @@ class DFP::CumulativeReportImportService < BaseService
   end
 
   def make_cumulative_import
-    return unless get_cumulative_report_file
+    return unless get_report_file
     DFP::CumulativeImportService.new(
         dfp_api_configuration.company_id,
         'dfp_cumulative',
-        report_file: get_cumulative_report_file
+        report_file: get_report_file
     ).perform
+    File.delete(report_file_path)
   end
 
   def current_day_name
@@ -29,8 +30,20 @@ class DFP::CumulativeReportImportService < BaseService
     DateTime.current.in_time_zone('Pacific Time (US & Canada)')
   end
 
-  def get_cumulative_report_file
-    dfp_reports_service.generate_report_by_saved_query(cumulative_query.report_id)
+  def get_report_file
+    file_url = get_report_link
+    return unless file_url
+    file = open(file_url)
+    IO.copy_stream(file, report_file_path)
+    report_file_path
+  end
+
+  def report_file_path
+    @report_file_name ||= './tmp/' + DateTime.now.to_s + '_cumulative_report.csv'
+  end
+
+  def get_report_link
+    @report_link ||= dfp_reports_service.generate_report_by_saved_query(cumulative_query.report_id)
   end
 
   def cumulative_query
