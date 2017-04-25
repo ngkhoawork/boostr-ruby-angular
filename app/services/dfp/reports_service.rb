@@ -85,13 +85,11 @@ module DFP
     end
 
     def set_logger_interceptor
-      unless GoogleAdsSavon.config.hooks.empty?
-        GoogleAdsSavon.config.hooks.reject(:logger_hook)
-        GoogleAdsSavon.config.hooks.define(:logger_hook, :soap_request) do |callback, req|
-          response = callback.call
-          DFP::LoggerService.new(request: req, response: response, company_id: company_id, dfp_query_type: dfp_query_type).create_log!
-          response
-        end
+      GoogleAdsSavon.config.hooks.reject(:logger_hook)
+      GoogleAdsSavon.config.hooks.define(:logger_hook, :soap_request) do |callback, req|
+        response = callback.call
+        DFP::LoggerService.new(request: req, response: response, company_id: company_id, dfp_query_type: dfp_query_type).create_log!
+        response
       end
     end
 
