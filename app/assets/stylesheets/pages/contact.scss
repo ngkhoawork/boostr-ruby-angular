@@ -1,0 +1,27 @@
+#contact {
+    .contact-stats {
+        display: flex;
+        .stats-body {
+            display: flex;
+            flex: 1;
+            justify-content: space-around;
+            align-items: center;
+            .stats-col {
+                width: auto;
+                height: auto;
+            }
+            .col-body-wrap {
+                display: block;
+                .col-body {
+                   display: block;
+                }
+            }
+        }
+    }
+    .contact-info {
+        .custom-field-item-label {
+            font-weight: bold;
+        }
+
+    }
+}

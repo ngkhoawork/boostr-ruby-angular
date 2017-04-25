@@ -80,8 +80,8 @@
 				%add-button{'ng-click': 'showModal()'}
 					Add Contact
 			.header-item.switch-row
-				%span{ng: {repeat: 'filter in contactFilters', class: '{active: filter.name == contactFilter.name}', click: 'filterContacts(filter)'}}
-					{{filter.name}}
+				%span{ng: {repeat: 'switch in switches', class: '{active: switch.name == selectedSwitch.name}', click: 'switchContacts(switch)'}}
+					{{switch.name}}
 			.header-item.contact-search
 				%i.fa.fa-search
 				%input.form-control{placeholder: 'Search', ng: {model: 'query', 'model-options': '{debounce: 500}' }}
@@ -91,7 +91,7 @@
 					Add filter
 		.row.block
 			.table-wrapper
-				%table.table.table-hover{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading'}}
+				%table.table.table-hover
 					%thead
 						%tr
 							%th Name
@@ -102,14 +102,14 @@
 							%th Email
 							%th Phone
 							%th Last Touch
-					%tbody
+					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading'}}
 						%tr{'ng-repeat': 'contact in contacts'}
 							%td
-								%a{href: '', 'ng-href': '#'} {{contact.name}}
+								%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
 							%td {{contact.position}}
-							%td Job Level
+							%td {{contact.job_level}}
 							%td {{contact.primary_client_json.name}}
 							%td Related Accounts
 							%td {{contact.address.email}}
 							%td {{contact.address.phone}}
-							%td {{contact.activity_updated_at | date}}
+							%td {{contact.last_touched | date}}

@@ -9,11 +9,12 @@
             $scope.types = []
             $scope.errors = {}
             $scope.itemType = 'Contact'
-            $scope.contactFilters = [
+            $scope.switches = [
                 {name: 'My Contacts', param: 'my_contacts'}
                 {name: 'My Team\'s Contacts', param: 'team'}
                 {name: 'All Contacts', param: ''}
             ]
+            $scope.selectedSwitch = $scope.switches[0]
 
             $scope.filter =
                 owners: []
@@ -57,11 +58,6 @@
                     this.search = ''
                 open: -> this.isOpen = true
                 close: -> this.isOpen = false
-
-            $scope.contactFilter = $scope.contactFilters[0]
-
-            $scope.getIconName = (typeName) ->
-                typeName && typeName.split(' ').join('-').toLowerCase()
 
             $scope.activityReminderInit = ->
                 $scope.activityReminder = {
@@ -117,7 +113,7 @@
                 $scope.isLoading = true
                 params = {
                     page: $scope.page,
-                    filter: $scope.contactFilter.param,
+                    filter: $scope.selectedSwitch.param,
                     per: 20
                 }
                 if $scope.query.trim().length
@@ -128,13 +124,13 @@
                         $scope.contacts = $scope.contacts.concat(contacts)
                     else
                         $scope.contacts = contacts
-                        if contacts.length > 0
-                            if $scope.currentContact
-                                Contact.set($scope.currentContact.id || contacts[0].id)
-                            else
-                                Contact.set(contacts[0].id)
-                        else
-                            $scope.currentContact = null
+#                        if contacts.length > 0
+#                            if $scope.currentContact
+#                                Contact.set($scope.currentContact.id || contacts[0].id)
+#                            else
+#                                Contact.set(contacts[0].id)
+#                        else
+#                            $scope.currentContact = null
 
 #                    _.each $scope.contacts, (contact) ->
 #                        $scope.initActivity(contact, $scope.types)
@@ -181,46 +177,46 @@
                         contact: ->
                             undefined
 
-            $scope.showNewActivityModal = ->
-                $scope.modalInstance = $modal.open
-                    templateUrl: 'modals/activity_new_form.html'
-                    size: 'md'
-                    controller: 'ActivityNewController'
-                    backdrop: 'static'
-                    keyboard: false
-                    resolve:
-                        activity: ->
-                            null
-                        options: ->
-                            type: 'contact'
-                            data: $scope.currentContact
-                            isAdvertiser: $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
-
-            $scope.showActivityEditModal = (activity) ->
-                $scope.modalInstance = $modal.open
-                    templateUrl: 'modals/activity_new_form.html'
-                    size: 'md'
-                    controller: 'ActivityNewController'
-                    backdrop: 'static'
-                    keyboard: false
-                    resolve:
-                        activity: ->
-                            activity
-                        options: ->
-                            type: 'contact'
-                            data: $scope.currentContact
-                            isAdvertiser: $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
-
-            $scope.showEmailsModal = (activity) ->
-                $scope.modalInstance = $modal.open
-                    templateUrl: 'modals/activity_emails.html'
-                    size: 'lg'
-                    controller: 'ActivityEmailsController'
-                    backdrop: 'static'
-                    keyboard: false
-                    resolve:
-                        activity: ->
-                            activity
+#            $scope.showNewActivityModal = ->
+#                $scope.modalInstance = $modal.open
+#                    templateUrl: 'modals/activity_new_form.html'
+#                    size: 'md'
+#                    controller: 'ActivityNewController'
+#                    backdrop: 'static'
+#                    keyboard: false
+#                    resolve:
+#                        activity: ->
+#                            null
+#                        options: ->
+#                            type: 'contact'
+#                            data: $scope.currentContact
+#                            isAdvertiser: $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
+#
+#            $scope.showActivityEditModal = (activity) ->
+#                $scope.modalInstance = $modal.open
+#                    templateUrl: 'modals/activity_new_form.html'
+#                    size: 'md'
+#                    controller: 'ActivityNewController'
+#                    backdrop: 'static'
+#                    keyboard: false
+#                    resolve:
+#                        activity: ->
+#                            activity
+#                        options: ->
+#                            type: 'contact'
+#                            data: $scope.currentContact
+#                            isAdvertiser: $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
+#
+#            $scope.showEmailsModal = (activity) ->
+#                $scope.modalInstance = $modal.open
+#                    templateUrl: 'modals/activity_emails.html'
+#                    size: 'lg'
+#                    controller: 'ActivityEmailsController'
+#                    backdrop: 'static'
+#                    keyboard: false
+#                    resolve:
+#                        activity: ->
+#                            activity
 
             $scope.delete = ->
                 if confirm('Are you sure you want to delete "' + $scope.currentContact.name + '"?')
@@ -240,22 +236,22 @@
                         console.log (err)
                     )
 
-            $scope.deleteActivity = (activity) ->
-                if confirm('Are you sure you want to delete the activity?')
-                    Activity.delete activity, ->
-                        $scope.$emit('updated_current_contact')
+#            $scope.deleteActivity = (activity) ->
+#                if confirm('Are you sure you want to delete the activity?')
+#                    Activity.delete activity, ->
+#                        $scope.$emit('updated_current_contact')
 
-            $scope.showContact = (contact) ->
-                Contact.set(contact.id) if contact
-                $scope.initReminder()
+#            $scope.showContact = (contact) ->
+#                Contact.set(contact.id) if contact
+#                $scope.initReminder()
+#
+#            $scope.loadActivities = (contact_id) ->
+#                Activity.all(contact_id: contact_id).then (activities) ->
+#                    $scope.currentActivities = activities
+#                    $scope.activities = activities
 
-            $scope.loadActivities = (contact_id) ->
-                Activity.all(contact_id: contact_id).then (activities) ->
-                    $scope.currentActivities = activities
-                    $scope.activities = activities
-
-            $scope.filterContacts = (filter) ->
-                $scope.contactFilter = filter;
+            $scope.switchContacts = (swch) ->
+                $scope.selectedSwitch = swch
                 $scope.init();
 
             $scope.$on 'updated_current_contact', ->
@@ -271,60 +267,60 @@
 
             $scope.init()
 
-            $scope.submitForm = () ->
-                $scope.errors = {}
-                $scope.buttonDisabled = true
-                if !$scope.currentContact.activity.comment
-                    $scope.buttonDisabled = false
-                    $scope.errors['Comment'] = ["can't be blank."]
-                if !$scope.currentContact.activity.activeTab
-                    $scope.buttonDisabled = false
-                    $scope.errors['Activity Type'] = ["can't be blank."]
-                if $scope.actRemColl
-                    if !($scope.activityReminder && $scope.activityReminder.name)
-                        $scope.buttonDisabled = false
-                        $scope.errors['Activity Reminder Name'] = ["can't be blank."]
-                    if !($scope.activityReminder && $scope.activityReminder._date)
-                        $scope.buttonDisabled = false
-                        $scope.errors['Activity Reminder Date'] = ["can't be blank."]
-                    if !($scope.activityReminder && $scope.activityReminder._time)
-                        $scope.buttonDisabled = false
-                        $scope.errors['Activity Reminder Time'] = ["can't be blank."]
-                if !$scope.buttonDisabled
-                    return
-
-                if $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
-                    $scope.activity.client_id = $scope.currentContact.client_id
-                    $scope.activity.agency_id = null
-                else
-                    $scope.activity.client_id = null
-                    $scope.activity.agency_id = $scope.currentContact.client_id
-
-                $scope.activity.comment = $scope.currentContact.activity.comment
-                $scope.activity.activity_type_id = $scope.currentContact.activeType.id
-                $scope.activity.activity_type_name = $scope.currentContact.activeType.name
-                contactDate = new Date($scope.currentContact.selected[$scope.currentContact.activeType.name].date)
-                if $scope.currentContact.selected[$scope.currentContact.activeType.name].time != undefined
-                    contactTime = new Date($scope.currentContact.selected[$scope.currentContact.activeType.name].time)
-                    contactDate.setHours(contactTime.getHours(), contactTime.getMinutes(), 0, 0)
-                    $scope.activity.timed = true
-                $scope.activity.happened_at = contactDate
-                Activity.create({activity: $scope.activity, contacts: [$scope.currentContact.id]}, (response) ->
-                    $scope.buttonDisabled = false
-                ).then (activity) ->
-                    if (activity && activity.id && $scope.actRemColl)
-                        reminder_date = new Date($scope.activityReminder._date)
-                        $scope.activityReminder.remindable_id = activity.id
-                        if $scope.activityReminder._time != undefined
-                            reminder_time = new Date($scope.activityReminder._time)
-                            reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
-                        $scope.activityReminder.remind_on = reminder_date
-                        Reminder.create(reminder: $scope.activityReminder)
-                    #        .then (reminder) ->
-                    #        , (err) ->
-
-                    $scope.buttonDisabled = false
-                    $scope.init()
+#            $scope.submitForm = () ->
+#                $scope.errors = {}
+#                $scope.buttonDisabled = true
+#                if !$scope.currentContact.activity.comment
+#                    $scope.buttonDisabled = false
+#                    $scope.errors['Comment'] = ["can't be blank."]
+#                if !$scope.currentContact.activity.activeTab
+#                    $scope.buttonDisabled = false
+#                    $scope.errors['Activity Type'] = ["can't be blank."]
+#                if $scope.actRemColl
+#                    if !($scope.activityReminder && $scope.activityReminder.name)
+#                        $scope.buttonDisabled = false
+#                        $scope.errors['Activity Reminder Name'] = ["can't be blank."]
+#                    if !($scope.activityReminder && $scope.activityReminder._date)
+#                        $scope.buttonDisabled = false
+#                        $scope.errors['Activity Reminder Date'] = ["can't be blank."]
+#                    if !($scope.activityReminder && $scope.activityReminder._time)
+#                        $scope.buttonDisabled = false
+#                        $scope.errors['Activity Reminder Time'] = ["can't be blank."]
+#                if !$scope.buttonDisabled
+#                    return
+#
+#                if $scope.currentContact.primary_client_json.client_type_id == $scope.Advertiser
+#                    $scope.activity.client_id = $scope.currentContact.client_id
+#                    $scope.activity.agency_id = null
+#                else
+#                    $scope.activity.client_id = null
+#                    $scope.activity.agency_id = $scope.currentContact.client_id
+#
+#                $scope.activity.comment = $scope.currentContact.activity.comment
+#                $scope.activity.activity_type_id = $scope.currentContact.activeType.id
+#                $scope.activity.activity_type_name = $scope.currentContact.activeType.name
+#                contactDate = new Date($scope.currentContact.selected[$scope.currentContact.activeType.name].date)
+#                if $scope.currentContact.selected[$scope.currentContact.activeType.name].time != undefined
+#                    contactTime = new Date($scope.currentContact.selected[$scope.currentContact.activeType.name].time)
+#                    contactDate.setHours(contactTime.getHours(), contactTime.getMinutes(), 0, 0)
+#                    $scope.activity.timed = true
+#                $scope.activity.happened_at = contactDate
+#                Activity.create({activity: $scope.activity, contacts: [$scope.currentContact.id]}, (response) ->
+#                    $scope.buttonDisabled = false
+#                ).then (activity) ->
+#                    if (activity && activity.id && $scope.actRemColl)
+#                        reminder_date = new Date($scope.activityReminder._date)
+#                        $scope.activityReminder.remindable_id = activity.id
+#                        if $scope.activityReminder._time != undefined
+#                            reminder_time = new Date($scope.activityReminder._time)
+#                            reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+#                        $scope.activityReminder.remind_on = reminder_date
+#                        Reminder.create(reminder: $scope.activityReminder)
+#                    #        .then (reminder) ->
+#                    #        , (err) ->
+#
+#                    $scope.buttonDisabled = false
+#                    $scope.init()
 
             $scope.cancelActivity = (contact) ->
                 $scope.initActivity(contact, $scope.types)
@@ -341,81 +337,81 @@
                     if address.country then row.push address.country
                 row.join(', ')
 
-            $scope.initReminder = ->
-                $scope.showReminder = false;
+#            $scope.initReminder = ->
+#                $scope.showReminder = false;
+#
+#                if ($scope.currentContact && $scope.currentContact.id)
+#
+#                    $scope.reminder = {
+#                        name: '',
+#                        comment: '',
+#                        completed: false,
+#                        remind_on: '',
+#                        remindable_id: $scope.currentContact.id,
+#                        remindable_type: 'Contact' # "Activity", "Client", "Contact", "Deal"
+#                        _date: new Date(),
+#                        _time: new Date()
+#                    }
+#
+#                    $scope.reminderOptions = {
+#                        editMode: false,
+#                        errors: {},
+#                        buttonDisabled: false,
+#                        showMeridian: true
+#                    }
+#
+#                #    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
+#                $http.get('/api/remindable/' + $scope.reminder.remindable_id + '/' + $scope.reminder.remindable_type).then (respond) ->
+#                    if (respond && respond.data && respond.data.length)
+#                        _.each respond.data, (reminder) ->
+#                            if (reminder && reminder.id && !reminder.completed && !reminder.deleted_at)
+#                                $scope.reminder.id = reminder.id
+#                                $scope.reminder.name = reminder.name
+#                                $scope.reminder.comment = reminder.comment
+#                                $scope.reminder.completed = reminder.completed
+#                                $scope.reminder._date = new Date(reminder.remind_on)
+#                                $scope.reminder._time = new Date(reminder.remind_on)
+#                                $scope.reminderOptions.editMode = true
 
-                if ($scope.currentContact && $scope.currentContact.id)
-
-                    $scope.reminder = {
-                        name: '',
-                        comment: '',
-                        completed: false,
-                        remind_on: '',
-                        remindable_id: $scope.currentContact.id,
-                        remindable_type: 'Contact' # "Activity", "Client", "Contact", "Deal"
-                        _date: new Date(),
-                        _time: new Date()
-                    }
-
-                    $scope.reminderOptions = {
-                        editMode: false,
-                        errors: {},
-                        buttonDisabled: false,
-                        showMeridian: true
-                    }
-
-                #    Reminder.get($scope.reminder.remindable_id, $scope.reminder.remindable_type).then (reminder) ->
-                $http.get('/api/remindable/' + $scope.reminder.remindable_id + '/' + $scope.reminder.remindable_type).then (respond) ->
-                    if (respond && respond.data && respond.data.length)
-                        _.each respond.data, (reminder) ->
-                            if (reminder && reminder.id && !reminder.completed && !reminder.deleted_at)
-                                $scope.reminder.id = reminder.id
-                                $scope.reminder.name = reminder.name
-                                $scope.reminder.comment = reminder.comment
-                                $scope.reminder.completed = reminder.completed
-                                $scope.reminder._date = new Date(reminder.remind_on)
-                                $scope.reminder._time = new Date(reminder.remind_on)
-                                $scope.reminderOptions.editMode = true
-
-            $scope.submitReminderForm = () ->
-                $scope.reminderOptions.errors = {}
-                $scope.reminderOptions.buttonDisabled = true
-                if !($scope.reminder && $scope.reminder.name)
-                    $scope.reminderOptions.buttonDisabled = false
-                    $scope.reminderOptions.errors['Name'] = "can't be blank."
-                if !($scope.reminder && $scope.reminder._date)
-                    $scope.reminderOptions.buttonDisabled = false
-                    $scope.reminderOptions.errors['Date'] = "can't be blank."
-                if !($scope.reminder && $scope.reminder._time)
-                    $scope.reminderOptions.buttonDisabled = false
-                    $scope.reminderOptions.errors['Time'] = "can't be blank."
-                if !$scope.reminderOptions.buttonDisabled
-                    return
-
-                reminder_date = new Date($scope.reminder._date)
-                if $scope.reminder._time != undefined
-                    reminder_time = new Date($scope.reminder._time)
-                    reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
-                $scope.reminder.remind_on = reminder_date
-                if ($scope.reminderOptions.editMode)
-                    Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder).then (reminder) ->
-                        $scope.reminderOptions.buttonDisabled = false
-                        $scope.showReminder = false;
-                        $scope.reminder = reminder
-                        $scope.reminder._date = new Date($scope.reminder.remind_on)
-                        $scope.reminder._time = new Date($scope.reminder.remind_on)
-                        $scope.reminderOptions.editMode = true
-                    , (err) ->
-                        $scope.reminderOptions.buttonDisabled = false
-                else
-                    Reminder.create(reminder: $scope.reminder).then (reminder) ->
-                        $scope.reminderOptions.buttonDisabled = false
-                        $scope.showReminder = false;
-                        $scope.reminder = reminder
-                        $scope.reminder._date = new Date($scope.reminder.remind_on)
-                        $scope.reminder._time = new Date($scope.reminder.remind_on)
-                        $scope.reminderOptions.editMode = true
-                    , (err) ->
-                        $scope.reminderOptions.buttonDisabled = false
+#            $scope.submitReminderForm = () ->
+#                $scope.reminderOptions.errors = {}
+#                $scope.reminderOptions.buttonDisabled = true
+#                if !($scope.reminder && $scope.reminder.name)
+#                    $scope.reminderOptions.buttonDisabled = false
+#                    $scope.reminderOptions.errors['Name'] = "can't be blank."
+#                if !($scope.reminder && $scope.reminder._date)
+#                    $scope.reminderOptions.buttonDisabled = false
+#                    $scope.reminderOptions.errors['Date'] = "can't be blank."
+#                if !($scope.reminder && $scope.reminder._time)
+#                    $scope.reminderOptions.buttonDisabled = false
+#                    $scope.reminderOptions.errors['Time'] = "can't be blank."
+#                if !$scope.reminderOptions.buttonDisabled
+#                    return
+#
+#                reminder_date = new Date($scope.reminder._date)
+#                if $scope.reminder._time != undefined
+#                    reminder_time = new Date($scope.reminder._time)
+#                    reminder_date.setHours(reminder_time.getHours(), reminder_time.getMinutes(), 0, 0)
+#                $scope.reminder.remind_on = reminder_date
+#                if ($scope.reminderOptions.editMode)
+#                    Reminder.update(id: $scope.reminder.id, reminder: $scope.reminder).then (reminder) ->
+#                        $scope.reminderOptions.buttonDisabled = false
+#                        $scope.showReminder = false;
+#                        $scope.reminder = reminder
+#                        $scope.reminder._date = new Date($scope.reminder.remind_on)
+#                        $scope.reminder._time = new Date($scope.reminder.remind_on)
+#                        $scope.reminderOptions.editMode = true
+#                    , (err) ->
+#                        $scope.reminderOptions.buttonDisabled = false
+#                else
+#                    Reminder.create(reminder: $scope.reminder).then (reminder) ->
+#                        $scope.reminderOptions.buttonDisabled = false
+#                        $scope.showReminder = false;
+#                        $scope.reminder = reminder
+#                        $scope.reminder._date = new Date($scope.reminder.remind_on)
+#                        $scope.reminder._time = new Date($scope.reminder.remind_on)
+#                        $scope.reminderOptions.editMode = true
+#                    , (err) ->
+#                        $scope.reminderOptions.buttonDisabled = false
 
     ]

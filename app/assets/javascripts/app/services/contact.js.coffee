@@ -47,6 +47,9 @@
     delete:
       method: 'DELETE'
       url: '/api/contacts/:id'
+    get_contact:
+      method: 'GET'
+      url: '/api/contacts/:id'
 
   # @TODO: Replace all of this with just returning resource
   allContacts = []
@@ -106,6 +109,12 @@
     currentContact = _.find allContacts, (contact) ->
       return parseInt(contact_id) == contact.id
     $rootScope.$broadcast 'updated_current_contact'
+
+  resource.getContact = (id) ->
+    deferred = $q.defer()
+    resource.get_contact id: id, (contact) =>
+      deferred.resolve(contact)
+    deferred.promise
 
   return resource
 ]

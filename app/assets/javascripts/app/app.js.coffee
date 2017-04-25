@@ -46,8 +46,8 @@
       templateUrl: 'clients.html'
       controller: 'ClientsController'
     .when '/contacts/:id',
-      templateUrl: 'contacts.html'
-      controller: 'ContactsController'
+      templateUrl: 'contact.html'
+      controller: 'ContactController'
     .when '/contacts',
       templateUrl: 'contacts.html'
       controller: 'ContactsController'
