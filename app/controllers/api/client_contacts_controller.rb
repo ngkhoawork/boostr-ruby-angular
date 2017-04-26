@@ -1,8 +1,13 @@
 class Api::ClientContactsController < ApplicationController
+  include CleanPagination
   respond_to :json
 
   def index
-    render json: client.contacts.order(:name).includes(:address)
+    contacts = client.contacts.order(:name).includes(:address)
+    max_per_page = 100
+    paginate contacts.count, max_per_page do |limit, offset|
+      render json: contacts.limit(limit).offset(offset)
+    end
   end
 
   def related_clients

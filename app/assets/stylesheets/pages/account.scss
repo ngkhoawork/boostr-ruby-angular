@@ -448,6 +448,19 @@
                 }
             }
         }
+        .pagination {
+            vertical-align: middle;
+            .links {
+                display: inline-block;
+                margin-right: 30px;
+            }
+            .per-page {
+                display: inline-block;
+                select {
+                    margin-right: 10px;
+                }
+            }
+        }
     }
     .campaign-details {
         .star {

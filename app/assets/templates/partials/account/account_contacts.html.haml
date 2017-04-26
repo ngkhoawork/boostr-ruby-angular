@@ -9,15 +9,26 @@
                 %th.left Name
                 %th.left Position
                 %th.left Email
-                %th.left Role
+                %th.left Status
+                %th.left Job Level
         %tbody
             %tr{ ng: { repeat: 'client_contact in currentClient.contacts'} }
-                %td
+                %td.left
                     %a{'ng-href': '/contacts/{{client_contact.id}}'} {{ client_contact.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(client_contact)'}
-                %td
+                %td.left
                     {{ client_contact.position }}
-                %td
+                %td.left
                     {{ client_contact.address.email }}
-                %td
-                    {{ client_contact.role }}
+                %td.left
+                    {{ client_contact.status }}
+                %td.left
+                    {{ client_contact.job_level }}
+
+
+    .pagination{'bgf-pagination': 'bgf-pagination',
+        'collection': 'currentClient.contacts',
+        'per-page': '10',
+        'link-group-size': "2",
+        'client-limit': "100",
+        'url': 'clientContactUrl'}

@@ -26,6 +26,7 @@
   'dndLists'
   'jsonFormatter'
   'boostrServerErrors'
+  'bgf.paginateAnything'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->

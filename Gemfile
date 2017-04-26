@@ -40,6 +40,7 @@ gem 'countries'
 gem 'faraday'
 gem 'attr_encrypted', '~> 3.0.0'
 gem 'net-sftp', require: false
+gem 'clean_pagination'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -58,6 +59,7 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-inflection'
   gem 'rails-assets-ngInflection'
   gem 'rails-assets-ngInfiniteScroll'
+  gem 'rails-assets-angular-paginate-anything'
 end
 
 group :test do

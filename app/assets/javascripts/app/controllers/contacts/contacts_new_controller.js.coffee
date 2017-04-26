@@ -20,6 +20,10 @@
   
   Client.query({filter: 'all'}).$promise.then (clients) ->
     $scope.clients = clients
+    console.log($scope.contact)
+    if contact.primary_client
+      $scope.clients = $scope.clients.concat([contact.primary_client])
+    console.log($scope.clients)
 
   $scope.submitForm = () ->
     emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)

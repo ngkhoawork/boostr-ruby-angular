@@ -123,6 +123,7 @@ GEM
     childprocess (0.5.6)
       ffi (~> 1.0, >= 1.0.11)
     chronic (0.10.2)
+    clean_pagination (1.0.0)
     cliver (0.3.2)
     clockwork (1.2.0)
       activesupport
@@ -326,6 +327,8 @@ GEM
       rails-assets-angular (= 1.4.1)
     rails-assets-angular-mocks (1.4.1)
       rails-assets-angular (= 1.4.1)
+    rails-assets-angular-paginate-anything (4.2.0)
+      rails-assets-angular
     rails-assets-angular-resource (1.4.1)
       rails-assets-angular (= 1.4.1)
     rails-assets-angular-route (1.4.1)
@@ -497,6 +500,7 @@ DEPENDENCIES
   byebug
   capybara
   chronic
+  clean_pagination
   clockwork
   coffee-rails (~> 4.1.0)
   countries
@@ -534,6 +538,7 @@ DEPENDENCIES
   rails-assets-angular-loading-bar!
   rails-assets-angular-messages!
   rails-assets-angular-mocks!
+  rails-assets-angular-paginate-anything!
   rails-assets-angular-resource!
   rails-assets-angular-route!
   rails-assets-angular-sanitize!
@@ -567,4 +572,4 @@ RUBY VERSION
    ruby 2.2.2p95
 
 BUNDLED WITH
-   1.14.5
+   1.14.6

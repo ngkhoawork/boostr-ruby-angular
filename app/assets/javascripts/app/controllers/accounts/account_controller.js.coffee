@@ -11,6 +11,8 @@
   $scope.page = 1
   $scope.errors = {}
   $scope.contactSearchText = ""
+  $scope.clientContactUrl = 'api/clients/' + $routeParams.id + '/client_contacts/'
+  $scope.url = 'api/resources';
 
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
@@ -68,7 +70,7 @@
     $scope.currentClient = client
     $scope.activities = client.activities.concat(client.agency_activities)
 #    $scope.initActivity()
-    $scope.getContacts()
+#    $scope.getContacts()
     $scope.getDeals($scope.currentClient)
     $scope.getClientConnections()
     $scope.initReminder()
@@ -584,6 +586,7 @@
 
   $scope.createNewContactModal = ->
     $scope.populateContact = true
+
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
       size: 'md'
@@ -592,7 +595,10 @@
       keyboard: false
       resolve:
         contact: ->
-          client_id: $scope.currentClient.id
+          {
+            client_id: $scope.currentClient.id,
+            primary_client: $scope.currentClient
+          }
 
   $scope.showEditContactModal = (contact) ->
     $scope.populateContact = true
