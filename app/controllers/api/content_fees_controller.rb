@@ -15,7 +15,10 @@ class Api::ContentFeesController < ApplicationController
   def update
     exchange_rate = io.exchange_rate
     converted_params = ConvertCurrency.call(exchange_rate, content_fee_params)
+
     if content_fee.update_attributes(converted_params)
+      content_fee.io.update_total_budget
+
       render json: io.full_json
     else
       render json: { errors: content_fee.errors.messages }, status: :unprocessable_entity
