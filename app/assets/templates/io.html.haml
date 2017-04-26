@@ -13,6 +13,10 @@
 								{{currentIO.advertiser.name || ''}}
 								{{currentIO.advertiser.name && currentIO.agency.name && '|'}}
 								{{currentIO.agency.name || ''}}
+							.detail-info
+								%span.mr8 IO # {{currentIO.io_number}}
+								-#{{currentIO.io_number && currentIO.external_io_number && '|'}}
+								%span External IO # {{currentIO.external_io_number}}
 
 						.clearfix
 						%div.stats-numbers.mb30
