@@ -27,6 +27,7 @@
       address_attributes: address_attributes
       client_id: original.contact.client_id
       set_primary_client: !!(original.contact.set_primary_client)
+      contact_cf: original.contact.contact_cf
     send.unassign = true if original.unassign
     angular.toJson(send)
 
@@ -50,6 +51,9 @@
     get_contact:
       method: 'GET'
       url: '/api/contacts/:id'
+    metadata:
+      method: 'GET'
+      url: 'api/contacts/metadata'
 
   # @TODO: Replace all of this with just returning resource
   allContacts = []

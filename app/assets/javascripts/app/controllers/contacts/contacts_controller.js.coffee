@@ -17,8 +17,9 @@
             $scope.selectedSwitch = $scope.switches[0]
 
             $scope.filter =
-                owners: []
-                advertisers: []
+                workPlaces: []
+                jobLevels: []
+                cities: []
                 isOpen: false
                 search: ''
                 selected: ContactsFilter.selected
@@ -31,7 +32,15 @@
                         if (_this.date.startDate && _this.date.endDate)
                             $scope.filter.selected.date = _this.date
                 apply: (reset) ->
-                    selected = this.selected
+                    s = this.selected
+                    filter = {}
+                    filter.workplace = s.workPlace if s.workPlace
+                    filter.job_level = s.jobLevel if s.jobLevel
+                    filter.city = s.city if s.city
+                    if s.date.startDate && s.date.endDate
+                        filter.srart_date = s.date.startDate.toDate()
+                        filter.end_date = s.date.endDate.toDate()
+                    $scope.getContacts filter
 #                    $scope.contacts = $scope.allDeals.filter (contact) ->
 #                        if selected.owner && contact.members.indexOf(selected.owner) is -1
 #                            return false
@@ -40,8 +49,13 @@
 #                        if selected.agency && (!contact.agency || contact.agency.id != selected.agency.id)
 #                            return false
 #                        contact
-
                     if !reset then this.isOpen = false
+                searching: (item) ->
+                    if !item then return false
+                    if item.name
+                        return item.name.toString().toUpperCase().indexOf($scope.filter.search.toUpperCase()) > -1
+                    else
+                        return item.toString().toUpperCase().indexOf($scope.filter.search.toUpperCase()) > -1
                 reset: (key) ->
                     ContactsFilter.reset(key)
                 resetAll: ->
@@ -56,8 +70,10 @@
                     ContactsFilter.select(key, value)
                 onDropdownToggle: ->
                     this.search = ''
-                open: -> this.isOpen = true
-                close: -> this.isOpen = false
+                open: ->
+                    this.isOpen = true
+                close: ->
+                    this.isOpen = false
 
             $scope.activityReminderInit = ->
                 $scope.activityReminder = {
@@ -91,35 +107,42 @@
                 $scope.activityReminderInit()
 
             $scope.init = ->
+                $scope.getContacts()
                 ActivityType.all().then (activityTypes) ->
                     $scope.types = activityTypes
-                    $scope.getContacts()
                 Field.defaults({}, 'Client').then (fields) ->
                     client_types = Field.findClientTypes(fields)
                     $scope.setClientTypes(client_types)
+                Contact.metadata().$promise.then (metadata) ->
+                    console.log metadata
+                    $scope.filter.workPlaces = metadata.workplaces
+                    $scope.filter.jobLevels = metadata.job_levels
+                    $scope.filter.cities = metadata.cities
 
             $scope.setClientTypes = (client_types) ->
                 client_types.options.forEach (option) ->
                     $scope[option.name] = option.id
 
-            $scope.getHtml = (html) ->
-                return $sce.trustAsHtml(html)
+#            $scope.getHtml = (html) ->
+#                return $sce.trustAsHtml(html)
 
 
             $scope.$watch 'query', (oldValue, newValue) ->
                 if oldValue != newValue then $scope.getContacts()
 
-            $scope.getContacts = ->
+            $scope.getContacts = (extraFilter) ->
                 $scope.isLoading = true
                 params = {
                     page: $scope.page,
                     filter: $scope.selectedSwitch.param,
                     per: 20
                 }
+                params = _.extend params, extraFilter if extraFilter
                 if $scope.query.trim().length
                     params.name = $scope.query.trim()
                 Contact.all1(params).then (contacts) ->
                     console.log contacts[0]
+                    console.log contacts.length
                     if $scope.page > 1
                         $scope.contacts = $scope.contacts.concat(contacts)
                     else
@@ -322,20 +345,20 @@
 #                    $scope.buttonDisabled = false
 #                    $scope.init()
 
-            $scope.cancelActivity = (contact) ->
-                $scope.initActivity(contact, $scope.types)
+#            $scope.cancelActivity = (contact) ->
+#                $scope.initActivity(contact, $scope.types)
+#
+#            $scope.getType = (type) ->
+#                _.findWhere($scope.types, name: type)
 
-            $scope.getType = (type) ->
-                _.findWhere($scope.types, name: type)
-
-            $scope.concatAddress = (address) ->
-                row = []
-                if address
-                    if address.city then row.push address.city
-                    if address.state then row.push address.state
-                    if address.zip then row.push address.zip
-                    if address.country then row.push address.country
-                row.join(', ')
+#            $scope.concatAddress = (address) ->
+#                row = []
+#                if address
+#                    if address.city then row.push address.city
+#                    if address.state then row.push address.state
+#                    if address.zip then row.push address.zip
+#                    if address.country then row.push address.country
+#                row.join(', ')
 
 #            $scope.initReminder = ->
 #                $scope.showReminder = false;

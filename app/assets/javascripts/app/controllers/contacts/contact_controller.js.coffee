@@ -1,19 +1,47 @@
 @app.controller 'ContactController',
-    ['$scope', '$modal', '$location', '$routeParams', 'Contact', 'Activity', 'Reminder'
-    ( $scope,   $modal,   $location,  $routeParams,   Contact,   Activity,   Reminder ) ->
+    ['$scope', '$modal', '$location', '$routeParams', '$sce', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'ContactCfName'
+    ( $scope,   $modal,   $location,  $routeParams,    $sce,   Contact,   Activity,    ActivityType,  Reminder,   ContactCfName) ->
 
         $scope.currentContact = null
-        loadActivities = (contact_id) ->
-            Activity.all(contact_id: contact_id).then (activities) ->
-                console.log activities
+        $scope.activities = []
+        $scope.types = []
+        $scope.contactCfNames = []
+
+        (loadActivities = ->
+            Activity.all(contact_id: $routeParams.id).then (activities) ->
                 $scope.currentActivities = activities
                 $scope.activities = activities
+        )()
 
-        init = ->
+        (getContact = ->
             Contact.getContact($routeParams.id).then (contact) ->
                 console.log $scope.currentContact = contact
-            loadActivities($routeParams.id)
-        init()
+#                $scope.activities = contact.activities
+        )()
+
+        ContactCfName.all().then (contactCfNames) ->
+            console.log contactCfNames
+            $scope.contactCfNames = contactCfNames
+
+        ActivityType.all().then (activityTypes) ->
+            $scope.types = activityTypes
+
+        # Activity icon
+        $scope.getIconName = (typeName) ->
+            typeName && typeName.split(' ').join('-').toLowerCase()
+
+        # Activity type
+        $scope.getType = (type) ->
+            _.findWhere($scope.types, name: type)
+
+        # Activity comment
+        $scope.getHtml = (html) ->
+            $sce.trustAsHtml(html)
+
+        $scope.updateContact = ->
+            if !$scope.currentContact then return console.error 'no current contact'
+            Contact._update(id: $scope.currentContact.id, contact: $scope.currentContact).then (contact) ->
+                console.log 'UPDATE RESP', contact
 
         $scope.showModal = ->
             $scope.modalInstance = $modal.open
@@ -102,9 +130,6 @@
                 if address.country then row.push address.country
             row.join(', ')
 
-        $scope.$on 'updated_activities', ->
-            loadActivities($scope.currentContact.id)
-
-        $scope.$on 'updated_contacts', ->
-            init()
+        $scope.$on 'updated_activities', loadActivities
+        $scope.$on 'updated_contacts', getContact
     ]

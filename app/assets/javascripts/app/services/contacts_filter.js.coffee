@@ -1,6 +1,6 @@
 @service.service 'ContactsFilter', ->
     Selection = ->
-        @workedAt = ''
+        @workPlace = ''
         @jobLevel = ''
         @city = ''
         @date =

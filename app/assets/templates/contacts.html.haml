@@ -9,52 +9,52 @@
 					%div
 						Worked At
 				.filter-dropdown
-					%i.fa.fa-close{'ng-show': 'filter.selected.owner', 'ng-click': 'filter.reset("owner")'}
+					%i.fa.fa-close{'ng-show': 'filter.selected.workPlace', 'ng-click': 'filter.reset("workPlace")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
-						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.owner}'}
-							{{filter.selected.owner || 'Select an owner'}}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.workPlace}'}
+							{{filter.selected.workPlace || 'Select a place'}}
 							%span.caret
 						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
 							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
 								%i.fa.fa-search
 								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
 							%span.dropdown-title Select from list
-							.dropdown-option{'ng-repeat': 'owner in filter.owners | filter: filtering | limitTo: 10', role: 'menuitem'}
-								%a{href: '', 'ng-click': 'filter.select("owner", owner)'} {{owner}}
+							.dropdown-option{'ng-repeat': 'workPlace in filter.workPlaces | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("workPlace", workPlace)'} {{workPlace}}
 			.filter-row
 				.filter-name
 					%div
 						Job Level
 				.filter-dropdown
-					%i.fa.fa-close{'ng-show': 'filter.selected.advertiser', 'ng-click': 'filter.reset("advertiser")'}
+					%i.fa.fa-close{'ng-show': 'filter.selected.jobLevel', 'ng-click': 'filter.reset("jobLevel")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
-						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}
-							{{filter.selected.advertiser.name || 'Select an advertiser'}}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.jobLevel}'}
+							{{filter.selected.jobLevel || 'Select a job level'}}
 							%span.caret
 						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
 							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
 								%i.fa.fa-search
 								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
 							%span.dropdown-title Select from list
-							.dropdown-option{'ng-repeat': 'advertiser in filter.advertisers | filter: filtering | limitTo: 10', role: 'menuitem'}
-								%a{href: '', 'ng-click': 'filter.select("advertiser", advertiser)'} {{advertiser.name}}
+							.dropdown-option{'ng-repeat': 'jobLevel in filter.jobLevels | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("jobLevel", jobLevel)'} {{jobLevel}}
 			.filter-row
 				.filter-name
 					%div
 						City
 				.filter-dropdown
-					%i.fa.fa-close{'ng-show': 'filter.selected.agency', 'ng-click': 'filter.reset("agency")'}
+					%i.fa.fa-close{'ng-show': 'filter.selected.city', 'ng-click': 'filter.reset("city")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
-						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.agency}'}
-							{{filter.selected.agency.name || 'Select an agency'}}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.city}'}
+							{{filter.selected.city || 'Select a city'}}
 							%span.caret
 						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
 							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
 								%i.fa.fa-search
 								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
 							%span.dropdown-title Select from list
-							.dropdown-option{'ng-repeat': 'agency in filter.agencies | filter: filtering | limitTo: 10', role: 'menuitem'}
-								%a{href: '', 'ng-click': 'filter.select("agency", agency)'} {{agency.name}}
+							.dropdown-option{'ng-repeat': 'city in filter.cities | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("city", city)'} {{city}}
 			.filter-row
 				.filter-name
 					%div
@@ -89,7 +89,10 @@
 				%button.btn-main{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
-		.row.block
+
+		.row.block{'ng-if': '!contacts.length'}
+			.title No Data Available
+		.row.block{'ng-if': 'contacts.length'}
 			.table-wrapper
 				%table.table.table-hover
 					%thead
