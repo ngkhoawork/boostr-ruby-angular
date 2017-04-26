@@ -33,6 +33,8 @@ class Client < ActiveRecord::Base
 
   belongs_to :client_category, class_name: 'Option', foreign_key: 'client_category_id'
   belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
+  belongs_to :client_region, class_name: 'Option', foreign_key: 'client_region_id'
+  belongs_to :client_segment, class_name: 'Option', foreign_key: 'client_segment_id'
   has_one :address, as: :addressable
   has_many :integrations, as: :integratable
 
@@ -53,6 +55,8 @@ class Client < ActiveRecord::Base
   scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
   scope :by_category, -> category_id { where(client_category_id: category_id) if category_id.present? }
   scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
+  scope :by_region, -> region_id { where(client_region_id: region_id) if region_id.present? }
+  scope :by_segment, -> segment_id { where(client_segment_id: segment_id) if segment_id.present? }
   scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(10) }
   scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }

@@ -74,6 +74,10 @@
     $scope.initReminder()
     $scope.initRelatedContacts()
     $scope.getBPEstimates()
+    $scope.getClients()
+    $scope.categoryOptions = Field.findFieldOptions($scope.currentClient.fields, 'Category')
+    $scope.segmentOptions = Field.findFieldOptions($scope.currentClient.fields, 'Segment')
+    $scope.regionOptions = Field.findFieldOptions($scope.currentClient.fields, 'Region')
     $scope.$emit('updated_current_client')
 
   $scope.getIOs = () ->
@@ -147,10 +151,25 @@
       clearTimeout(searchTimeout)
       searchTimeout = null
     searchTimeout = setTimeout(
-      -> $scope.getClients()
+      -> $scope.getClients(query)
       250
     )
 
+  $scope.getClients = (query = '') ->
+    $scope.isLoading = true
+    params = {
+      page: $scope.page
+      client_type_id: $scope.currentClient.client_type_id
+      filter: "all"
+    }
+    if query.trim().length
+      params.name = query
+    Client.query(params).$promise.then (clients) ->
+      if $scope.page > 1
+        $scope.clients = $scope.clients.concat(clients)
+      else
+        $scope.clients = clients
+      $scope.isLoading = false
   $scope.isLoading = false
   $scope.loadMoreClients = ->
     if !$scope.isLoading && $scope.clients && $scope.clients.length < Client.totalCount
@@ -318,7 +337,6 @@
         clientConnection.assignee_type = 'Advertiser'
       clientConnection.primary = false
       clientConnection.active = true
-    console.log(clientConnection)
     clientConnection
 
   $scope.setupNewDeal = ->
@@ -389,6 +407,8 @@
         $scope.currentClient.client_type = Field.field($scope.currentClient, 'Client Type')
         $scope.currentClient.client_category = Field.getOption($scope.currentClient, 'Category', $scope.currentClient.client_category_id)
         $scope.currentClient.client_subcategory = Field.getSuboption($scope.currentClient, $scope.currentClient.client_category, $scope.currentClient.client_subcategory_id)
+        $scope.currentClient.client_region = Field.getOption($scope.currentClient, 'Region', $scope.currentClient.client_region_id)
+        $scope.currentClient.client_segment = Field.getOption($scope.currentClient, 'Segment', $scope.currentClient.client_segment_id)
         $scope.getIOs()
         if $scope.currentClient.client_type.option.name == "Advertiser"
           $scope.getChildClients()
@@ -428,6 +448,47 @@
   $scope.$on 'new_client_connection', ->
     $scope.getClientConnections()
     $scope.getClientConnectedContacts()
+
+  $scope.updateClientType = (option) ->
+    $scope.currentClient.client_type.option_id = option.id
+    $scope.currentClient.$update(
+      ->
+        $scope.init()
+    )
+
+  $scope.updateClientCategory = (category) ->
+    $scope.currentClient.client_category_id = category.id
+    $scope.currentClient.$update(
+      ->
+        $scope.init()
+    )
+
+  $scope.updateClientSubcategory = (category) ->
+    $scope.currentClient.client_subcategory_id = category.id
+    $scope.currentClient.$update(
+      ->
+        $scope.init()
+    )
+
+  $scope.updateClientRegion = (region) ->
+    $scope.currentClient.client_region_id = region.id
+    $scope.currentClient.$update(
+      ->
+        $scope.init()
+    )
+
+  $scope.updateClientSegment = (segment) ->
+    $scope.currentClient.client_segment_id = segment.id
+    $scope.currentClient.$update(
+      ->
+        $scope.init()
+    )
+
+  $scope.updateClient = (client) ->
+    client.$update(
+      ->
+        $scope.init()
+    )
 
   $scope.init()
 

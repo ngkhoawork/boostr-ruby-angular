@@ -12,6 +12,8 @@ class Api::ClientsController < ApplicationController
           results = clients
                       .by_type_id(params[:client_type_id])
                       .by_category(params[:client_category_id])
+                      .by_region(params[:client_region_id])
+                      .by_segment(params[:client_segment_id])
                       .by_city(params[:city])
                       .by_last_touch(params[:start_date], params[:end_date])
                       .by_name(params[:search])
@@ -143,7 +145,7 @@ class Api::ClientsController < ApplicationController
 
   def client_params
     params.require(:client).permit(
-      :name, :website, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id,
+      :name, :website, :client_type_id, :client_category_id, :client_subcategory_id, :parent_client_id, :client_region_id, :client_segment_id,
       { 
         address_attributes: [:country, :street1, :street2, :city, :state, :zip, :phone, :email],
         values_attributes: [:id, :field_id, :option_id, :value],

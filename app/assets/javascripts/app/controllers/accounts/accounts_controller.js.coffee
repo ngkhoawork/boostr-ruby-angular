@@ -14,6 +14,8 @@
   $scope.filter =
     owners: []
     categories: []
+    regions: []
+    segments: []
     types: []
     isOpen: false
     isEndDateOpen: false
@@ -64,10 +66,16 @@
 #                    event.stopPropagation()
       this.isOpen = false
 
+  searchTimeout = null
   $scope.handleSearch = () ->
-    $scope.page = 1;
-    $scope.getClients()
-    console.log($scope.searchText)
+    $scope.page = 1
+    if searchTimeout
+      clearTimeout(searchTimeout)
+      searchTimeout = null
+    searchTimeout = setTimeout(
+      -> $scope.getClients()
+      400
+    )
 
   $scope.filtering = (item) ->
     if !item then return false
@@ -97,6 +105,8 @@
     Field.defaults({}, 'Client').then (fields) ->
       $scope.filter.types = Field.findFieldOptions(fields, 'Client Type')
       $scope.filter.categories = Field.findFieldOptions(fields, 'Category')
+      $scope.filter.regions = Field.findFieldOptions(fields, 'Region')
+      $scope.filter.segments = Field.findFieldOptions(fields, 'Segment')
 
   $scope.getClients = ->
     $scope.isLoading = true
@@ -107,6 +117,10 @@
     }
     if $scope.filter.selected.category
       params.client_category_id = $scope.filter.selected.category.id
+    if $scope.filter.selected.region
+      params.client_region_id = $scope.filter.selected.region.id
+    if $scope.filter.selected.segment
+      params.client_segment_id = $scope.filter.selected.segment.id
     if $scope.filter.selected.type
       params.client_type_id = $scope.filter.selected.type.id
     if $scope.filter.selected.city

@@ -5,6 +5,8 @@
     @category = ''
     @city = ''
     @type = ''
+    @region = ''
+    @segment = ''
 #    @exchange_rate = ''
     @date =
       startDate: null

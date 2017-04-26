@@ -17,7 +17,8 @@
                     %a{'ng-href': '/contacts/{{connected_contact.id}}'} {{ connected_contact.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(connected_contact)'}
                 %td
-                    {{ connected_contact.client.name }}
+                    %a{'ng-href': '/accounts/{{connected_contact.client.id}}'}
+                        {{ connected_contact.client.name }}
                 %td
                     {{ connected_contact.position }}
                 %td

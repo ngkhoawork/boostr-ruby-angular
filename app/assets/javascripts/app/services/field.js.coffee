@@ -70,7 +70,7 @@
     else
       return []
 
-    @findDealTypes = (fields) ->
+  @findDealTypes = (fields) ->
     $filter('filter')(fields, { name: 'Deal Type' })[0]
 
   @findSources = (fields) ->
