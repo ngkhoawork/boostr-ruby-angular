@@ -55,7 +55,7 @@ class Api::DisplayLineItemsController < ApplicationController
   end
 
   def display_line_item
-    @_display_line_item ||= current_user.display_line_items.find(params[:id])
+    @_display_line_item ||= DisplayLineItem.find(params[:id])
   end
 
   def display_line_item_budget_serializer
