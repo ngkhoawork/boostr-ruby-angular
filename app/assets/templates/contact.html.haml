@@ -38,7 +38,8 @@
 
 				.block
 					%div.mb20
-						%span.title Related Advertisers
+						%span.title{'ng-if': 'currentContact.primary_client_type == "Agency"'} Related Advertisers
+						%span.title{'ng-if': 'currentContact.primary_client_type == "Advertiser"'} Related Brands/Child Accounts
 						%add-button{'ng-click': ''} Add
 					.table-wrapper
 						%table.table.table-hover
