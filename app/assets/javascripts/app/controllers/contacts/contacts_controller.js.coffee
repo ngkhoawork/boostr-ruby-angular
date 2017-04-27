@@ -38,19 +38,11 @@
                     filter.job_level = s.jobLevel if s.jobLevel
                     filter.city = s.city if s.city
                     if s.date.startDate && s.date.endDate
-                        filter.srart_date = s.date.startDate.toDate()
-                        filter.end_date = s.date.endDate.toDate()
+                        filter.srart_date = s.date.startDate.format('YYYY-MM-DD')
+                        filter.end_date = s.date.endDate.format('YYYY-MM-DD')
                     filter
                 apply: (reset) ->
                     $scope.getContacts()
-#                    $scope.contacts = $scope.allDeals.filter (contact) ->
-#                        if selected.owner && contact.members.indexOf(selected.owner) is -1
-#                            return false
-#                        if selected.advertiser && (!contact.advertiser || contact.advertiser.id != selected.advertiser.id)
-#                            return false
-#                        if selected.agency && (!contact.agency || contact.agency.id != selected.agency.id)
-#                            return false
-#                        contact
                     if !reset then this.isOpen = false
                 searching: (item) ->
                     if !item then return false
