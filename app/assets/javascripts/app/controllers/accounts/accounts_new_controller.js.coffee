@@ -77,9 +77,9 @@
     $scope.buttonDisabled = true
     $scope.removeCategoriesFromAgency()
     $scope.client.$save(
-      ->
+      (client)->
         $rootScope.$broadcast 'newClient', $scope.client
-        $modalInstance.close()
+        $modalInstance.close(client)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

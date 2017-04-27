@@ -9,12 +9,12 @@
                 %th.left Time Period
                 %th.left Seller Estimate
                 %th.left Manager Estimate
-                %th.left Actuals
+                %th.left Revenue
                 %th.left Objectives
                 %th.left Assumptions
                 %th.left Owner
         %tbody
-            %tr{ ng: { repeat: 'bp_estimate in currentClient.bp_estimates'} }
+            %tr{ ng: { repeat: 'bp_estimate in bp_estimates'} }
                 %td
                     {{ bp_estimate.bp.time_period.name }}
                 %td

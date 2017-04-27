@@ -38,6 +38,7 @@ Rails.application.routes.draw do
         get :sellers
         get :connected_contacts
         get :child_clients
+        get :stats
         collection do
           get :filter_options
         end
@@ -80,6 +81,7 @@ Rails.application.routes.draw do
       get :sellers
       get :connected_contacts
       get :child_clients
+      get :stats
       collection do
         get :filter_options
       end

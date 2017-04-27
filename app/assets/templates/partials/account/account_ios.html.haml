@@ -12,14 +12,14 @@
                 %th.left Start Date
                 %th.left End Date
         %tbody
-            %tr{ ng: { repeat: 'io in currentClient.ios'} }
+            %tr{ ng: { repeat: 'io in ios'} }
                 %td
-                    {{ io.name }}
+                    %a{'ng-href': '/ios/{{io.id}}'} {{ io.name }}
                 %td
                     {{ io.advertiser.name }}
                 %td
-                    {{ io.budget | currency:'$':0  }}
+                    {{ io.budget | currency:io.currency.curr_symbol:0  }}
                 %td
-                    {{ io.start_date }}
-                %td
-                    {{ io.end_date }}
+                    {{ io.start_date | date: 'MM/dd/yyyy' }}
+                %td.left
+                    {{ io.end_date | date: 'MM/dd/yyyy' }}

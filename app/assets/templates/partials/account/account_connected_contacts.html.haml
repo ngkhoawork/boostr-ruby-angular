@@ -12,7 +12,7 @@
                 %th.left Email
                 %th.left Phone
         %tbody
-            %tr{ ng: { repeat: 'connected_contact in currentClient.connected_contacts'} }
+            %tr{ ng: { repeat: 'connected_contact in connected_contacts'} }
                 %td
                     %a{'ng-href': '/contacts/{{connected_contact.id}}'} {{ connected_contact.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(connected_contact)'}

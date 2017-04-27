@@ -1,21 +1,13 @@
 #account.z-styles
 	.container-fluid.pad
-		.col-xs-12
-			.return
-				%a{ href:'/accounts' }
-					%i.fa.fa-arrow-left
-					Back to Accounts List
-			.title
-				{{currentClient.name}}
-				%i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
-				%i.fa.fa-trash.delete-deal{'ng-click': 'delete(currentClient)'}
 		.col-xs-9
+			%div{ng: { include: '"partials/account/account_stats.html"'}}
 			%div{ng: { include: '"partials/account/account_contacts.html"'}}
 			%div{ng: { if: 'currentClient.client_type.option.name == "Advertiser"' , include: '"partials/account/account_child_clients.html"'}}
 			%div{ng: { include: '"partials/account/account_connections.html"'}}
 			%div{ng: { if: 'currentClient.client_type.option.name == "Advertiser"' , include: '"partials/account/account_connected_contacts.html"'}}
 			%div{'ng-include': '"partials/account/account_members.html"'}
-			%div{'ng-include': '"partials/account/account_bp_estimates.html"'}
+			%div{ng: { if: 'currentClient.client_type.option.name == "Advertiser"' , include: '"partials/account/account_bp_estimates.html"'}}
 			%div{'ng-include': '"partials/account/account_deals.html"'}
 			%div{'ng-include': '"partials/account/account_ios.html"'}
 		.col-xs-3

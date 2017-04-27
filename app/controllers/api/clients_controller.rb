@@ -111,6 +111,32 @@ class Api::ClientsController < ApplicationController
     end
   end
 
+  def stats
+    client = company.clients.find(params[:client_id])
+    if client.present?
+      deals = company.deals.active.for_client(params[:client_id])
+      total_count = deals.count
+      won_deal_count = deals.won.count
+      lost_deal_count = deals.lost.count
+      agency_type_id = Client.agency_type_id(company)
+      advertiser_type_id = Client.advertiser_type_id(company)
+      interaction_count = 0
+      if client.client_type_id == agency_type_id
+        interaction_count = client.agency_activities.count
+      elsif client.client_type_id == advertiser_type_id
+        interaction_count = client.activities.count
+      end
+      render json: {
+                     won: won_deal_count,
+                     lost: lost_deal_count,
+                     open: (total_count - won_deal_count - lost_deal_count),
+                     interaction: interaction_count
+             }
+    else
+      render json: "Client not found", status: :not_found
+    end
+  end
+
   def connected_contacts
     client = company.clients.find(params[:client_id])
     if client && client.client_type

@@ -59,6 +59,10 @@
       url: 'api/clients/:id/child_clients'
       isArray: true
     },
+    stats: {
+      method: "GET"
+      url: 'api/clients/:id/stats'
+    },
     filter_options: {
       method: "GET"
       url: 'api/clients/filter_options'
@@ -98,6 +102,12 @@
     deferred = $q.defer()
     resource.child_clients params, (child_clients) ->
       deferred.resolve(child_clients)
+    deferred.promise
+
+  resource.__stats = (params) ->
+    deferred = $q.defer()
+    resource.stats params, (data) ->
+      deferred.resolve(data)
     deferred.promise
 
   resource.__filter_options = (params) ->

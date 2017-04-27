@@ -46,17 +46,21 @@
             client_member.role = Field.field(client_member, 'Member Role')
             $scope.client_members.push(client_member)
 
+  $scope.getClientStats = ->
+    Client.stats({id: $scope.currentClient.id}).$promise.then (data) ->
+      $scope.clientStats = data
+
   $scope.getClientConnections = ->
     ClientConnection.all({client_id: $scope.currentClient.id}).then (client_connections) ->
-      $scope.currentClient.client_connections = client_connections
+      $scope.client_connections = client_connections
 
   $scope.getClientConnectedContacts = ->
     Client.connected_contacts({id: $scope.currentClient.id}).$promise.then (connected_contacts) ->
-      $scope.currentClient.connected_contacts = connected_contacts
+      $scope.connected_contacts = connected_contacts
 
   $scope.getChildClients = ->
     Client.child_clients({id: $scope.currentClient.id}).$promise.then (child_clients) ->
-      $scope.currentClient.child_clients = child_clients
+      $scope.child_clients = child_clients
 
   $scope.removeClientMember = (clientMember) ->
     clientMember.$delete(
@@ -75,6 +79,7 @@
     $scope.getClientConnections()
     $scope.initReminder()
     $scope.initRelatedContacts()
+    $scope.getClientStats()
     $scope.getBPEstimates()
     $scope.getClients()
     $scope.categoryOptions = Field.findFieldOptions($scope.currentClient.fields, 'Category')
@@ -84,22 +89,22 @@
 
   $scope.getIOs = () ->
     if ($scope.currentClient && $scope.currentClient.id)
-      $scope.currentClient.contacts = []
+      $scope.client_contacts = []
       if $scope.currentClient.client_type.option.name == "Agency"
         IO.all(agency_id: $scope.currentClient.id)
         .then (response) ->
-          $scope.currentClient.ios = response
+          $scope.ios = response
       else if $scope.currentClient.client_type.option.name == "Advertiser"
         IO.all(advertiser_id: $scope.currentClient.id)
         .then (response) ->
-          $scope.currentClient.ios = response
+          $scope.ios = response
 
   $scope.getBPEstimates = () ->
     if ($scope.currentClient && $scope.currentClient.id)
       filters = { bp_id: 0, client_id: $scope.currentClient.id }
       BpEstimate.all(filters).then (response) ->
         $scope.currentClient.revenues = response.revenues
-        $scope.currentClient.bp_estimates = _.map response.bp_estimates, buildBPEstimate
+        $scope.bp_estimates = _.map response.bp_estimates, buildBPEstimate
 
   buildBPEstimate = (item) ->
     data = angular.copy(item)
@@ -115,11 +120,11 @@
 
   $scope.getContacts = (clientId) ->
     if ($scope.currentClient && $scope.currentClient.id)
-      $scope.currentClient.contacts = []
+      $scope.client_contacts = []
       ClientContacts.list($scope.currentClient.id)
       .then (response) ->
         if (response && response.data && response.data.length)
-          $scope.currentClient.contacts = response.data
+          $scope.client_contacts = response.data
 
   $scope.getClient = (clientId) ->
     Client.get({ id: clientId }).$promise.then (client) ->
@@ -127,12 +132,54 @@
 
   $scope.getDeals = (client) ->
     Deal.all({client_id: client.id}).then (deals) ->
-      $scope.currentClient.deals = deals
+      $scope.deals = deals
+      $scope.openDealsCount = 0
+      $scope.wonDealsCount = 0
+      $scope.closedDealsCount = 0
+      $scope.interactionsCount = 0
+      _.each deals, (deal) ->
+        if deal.stage.probability == 100
+          $scope.wonDealsCount += 1
+        else if deal.stage.probability == 0
+          $scope.closedDealsCount += 1
+        else
+          $scope.openDealsCount += 1
 
   $scope.getClientCategory = (client) ->
     clientCategory = Field.getOption(client, 'Category', client.client_category_id)
     if clientCategory
       return clientCategory.name
+    else
+      return ""
+
+  $scope.getLastTouch = (client) ->
+    if client
+      activities = client.activities
+      if $scope.getClientType(client) == 'Agency'
+        activities = client.agency_activities
+      if activities.length > 0
+        return activities[0].happened_at
+      else
+        return ""
+    else
+      return ""
+
+  $scope.getActivitiesCount = (client) ->
+    if client
+      activities = client.activities
+      if $scope.getClientType(client) == 'Agency'
+        activities = client.agency_activities
+      if activities.length > 0
+        return activities.length
+      else
+        return 0
+    else
+      return 0
+
+  $scope.getClientType = (client) ->
+    clientType = Field.field(client, 'Client Type')
+    if clientType && clientType.option
+      return clientType.option.name
     else
       return ""
 
@@ -371,9 +418,9 @@
     $scope.showContactList = false
     item.client_id = $scope.currentClient.id
     Contact._update(id: item.id, contact: item).then (contact) ->
-      if !$scope.currentClient.contacts
-        $scope.currentClient.contacts = []
-      $scope.currentClient.contacts.unshift(contact)
+      if !$scope.client_contacts
+        $scope.client_contacts = []
+      $scope.client_contacts.unshift(contact)
 
   $scope.updateClientMember = (clientMember) ->
     clientMember.$update(
@@ -437,7 +484,7 @@
     $scope.getClientConnectedContacts()
 
   $scope.$on 'updated_current_contact', ->
-    $scope.currentClient.contacts.push(Contact.get())
+    $scope.client_contacts.push(Contact.get())
 
   $scope.$on 'updated_deals', ->
     $scope.getDeals($scope.currentClient)
@@ -720,20 +767,15 @@
 
   $scope.showNewChildAccountModal = ->
     if ($scope.currentClient && $scope.currentClient.id)
-      newClient = {}
-      newClient.parent_client_id = $scope.currentClient.id
-      newClient.client_type = $scope.currentClient.client_type
-      newClient.client_type_id = $scope.currentClient.client_type_id
-      newClient.parent_client = {id: 90, name: $scope.currentClient.name}
       $scope.modalInstance = $modal.open
-        templateUrl: 'modals/client_form.html'
+        templateUrl: 'modals/accounts_child_assign_form.html'
         size: 'md'
-        controller: 'AccountsNewController'
+        controller: 'AccountsChildAssignController'
         backdrop: 'static'
         keyboard: false
         resolve:
-          client: ->
-            newClient
+          parentClient: ->
+            $scope.currentClient
 
   $scope.showAssignContactModal = (contact) ->
     advertiserTypeId = 0

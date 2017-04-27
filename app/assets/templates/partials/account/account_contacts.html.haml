@@ -12,7 +12,7 @@
                 %th.left Status
                 %th.left Job Level
         %tbody
-            %tr{ ng: { repeat: 'client_contact in currentClient.contacts'} }
+            %tr{ ng: { repeat: 'client_contact in client_contacts'} }
                 %td.left
                     %a{'ng-href': '/contacts/{{client_contact.id}}'} {{ client_contact.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(client_contact)'}
@@ -27,7 +27,7 @@
 
 
     .pagination{'bgf-pagination': 'bgf-pagination',
-        'collection': 'currentClient.contacts',
+        'collection': 'client_contacts',
         'per-page': '10',
         'link-group-size': "2",
         'client-limit': "100",

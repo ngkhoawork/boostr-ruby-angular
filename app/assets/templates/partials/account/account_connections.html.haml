@@ -14,7 +14,7 @@
                 %th.left Status
                 %th.left City
         %tbody
-            %tr{ ng: { repeat: 'client_connection in currentClient.client_connections'} }
+            %tr{ ng: { repeat: 'client_connection in client_connections'} }
                 %td{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
                     %a{'ng-href': '/accounts/{{client_connection.advertiser.id}}'} {{ client_connection.advertiser.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditAccountConnectionModal(client_connection)'}
@@ -28,6 +28,6 @@
                 %td
                     {{ client_connection.active ? 'Active' : 'Inactive' }}
                 %td{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
-                    {{ client_connection.advertiser.city }}
+                    {{ client_connection.advertiser.address.city }}
                 %td{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
-                    {{ client_connection.agency.city }}
+                    {{ client_connection.agency.address.city }}
