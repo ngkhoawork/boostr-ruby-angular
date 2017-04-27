@@ -31,7 +31,7 @@
                         _this = $scope.filter.datePicker
                         if (_this.date.startDate && _this.date.endDate)
                             $scope.filter.selected.date = _this.date
-                apply: (reset) ->
+                get: ->
                     s = this.selected
                     filter = {}
                     filter.workplace = s.workPlace if s.workPlace
@@ -40,7 +40,9 @@
                     if s.date.startDate && s.date.endDate
                         filter.srart_date = s.date.startDate.toDate()
                         filter.end_date = s.date.endDate.toDate()
-                    $scope.getContacts filter
+                    filter
+                apply: (reset) ->
+                    $scope.getContacts()
 #                    $scope.contacts = $scope.allDeals.filter (contact) ->
 #                        if selected.owner && contact.members.indexOf(selected.owner) is -1
 #                            return false
@@ -130,14 +132,14 @@
             $scope.$watch 'query', (oldValue, newValue) ->
                 if oldValue != newValue then $scope.getContacts()
 
-            $scope.getContacts = (extraFilter) ->
+            $scope.getContacts = ->
                 $scope.isLoading = true
                 params = {
                     page: $scope.page,
                     filter: $scope.selectedSwitch.param,
                     per: 20
                 }
-                params = _.extend params, extraFilter if extraFilter
+                params = _.extend params, $scope.filter.get()
                 if $scope.query.trim().length
                     params.name = $scope.query.trim()
                 Contact.all1(params).then (contacts) ->

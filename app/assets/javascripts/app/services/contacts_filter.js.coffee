@@ -3,6 +3,7 @@
         @workPlace = ''
         @jobLevel = ''
         @city = ''
+        @country = ''
         @date =
             startDate: null
             endDate: null
