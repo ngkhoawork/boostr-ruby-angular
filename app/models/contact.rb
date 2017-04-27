@@ -47,17 +47,20 @@ class Contact < ActiveRecord::Base
   end
   scope :by_name, -> name { where('contacts.name ilike ?', "%#{name}%") if name.present? }
   scope :by_primary_client_name, -> client_name do
-    Contact.joins(
+    joins(
       "INNER JOIN client_contacts as primary_client_contact ON contacts.id=primary_client_contact.contact_id and (primary_client_contact.primary = #{true})"
-      ).joins(
+    ).joins(
       'INNER JOIN clients ON clients.id = primary_client_contact.client_id'
-      ).where('clients.name ilike ?', client_name) if client_name.present?
+    ).where('clients.name ilike ?', client_name) if client_name.present?
   end
   scope :by_city, -> city_name do
-    Contact.joins(:address).where("addresses.city ilike ?", city_name) if city_name.present?
+    joins(:address).where("addresses.city ilike ?", city_name) if city_name.present?
   end
   scope :by_job_level, -> job_level do
-    Contact.joins(:values).where('values.option_id in (?)', Option.by_name(job_level).ids) if job_level.present?
+    joins(:values).where('values.option_id in (?)', Option.by_name(job_level).ids) if job_level.present?
+  end
+  scope :by_country, -> country do
+    joins(:address).where("addresses.country ilike ?", country) if country.present?
   end
 
   after_save do
@@ -210,7 +213,8 @@ class Contact < ActiveRecord::Base
     {
       workplaces: Contact.where(company_id: company_id).joins(:primary_client).distinct.pluck('clients.name'),
       job_levels: Field.where(company_id: company_id, subject_type: 'Contact', name: 'Job Level').joins(:options).pluck('options.name'),
-      cities: Contact.where(company_id: company_id).joins(:address).where.not(addresses: {city: nil}).pluck('addresses.city').uniq
+      cities: Contact.where(company_id: company_id).joins(:address).where.not(addresses: {city: nil}).pluck('addresses.city').uniq,
+      countries: ISO3166::Country.all_translated
     }
   end
 

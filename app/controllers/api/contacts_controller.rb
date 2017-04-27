@@ -2,16 +2,16 @@ class Api::ContactsController < ApplicationController
   respond_to :json
 
   def index
-    if params[:unassigned] == "yes"
-      results = unassigned_contacts
+    results = if params[:unassigned] == "yes"
+      unassigned_contacts
     elsif params[:name].present?
-      results = suggest_contacts
+      suggest_contacts
     elsif params[:contact_name].present?
-      results = suggest_contacts(true)
+      suggest_contacts(true)
     elsif params[:activity].present?
-      results = activity_contacts
+      activity_contacts
     else
-      results = contacts
+      contacts
     end
 
     results = apply_search_criteria(results)
@@ -195,9 +195,10 @@ class Api::ContactsController < ApplicationController
 
   def apply_search_criteria(rel)
     rel
-    .by_primary_client_name(primary_client_criteria)
-    .by_city(city_criteria)
-    .by_job_level(job_level_criteria)
+      .by_primary_client_name(primary_client_criteria)
+      .by_city(city_criteria)
+      .by_job_level(job_level_criteria)
+      .by_country(country_criteria)
   end
 
   def limit
@@ -246,6 +247,10 @@ class Api::ContactsController < ApplicationController
 
   def job_level_criteria
     params[:job_level]
+  end
+
+  def country_criteria
+    params[:country]
   end
 
   def company_job_level_options
