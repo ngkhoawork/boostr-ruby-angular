@@ -38,9 +38,7 @@ class Value < ActiveRecord::Base
   protected
 
   def set_value_type
-    if field || subject
-      self.value_type = (self.field || self.subject).value_type
-    end
+    self.value_type = self.field.value_type
   end
 
   def set_company
