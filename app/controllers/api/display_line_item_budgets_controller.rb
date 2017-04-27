@@ -51,6 +51,8 @@ class Api::DisplayLineItemBudgetsController < ApplicationController
   end
 
   def update_budget
+    return unless display_line_item_budget.budget_loc.present?
+
     display_line_item_budget.update(
       budget: (display_line_item_budget.budget_loc / display_line_item_budget.display_line_item.io.exchange_rate),
       manual_override: true

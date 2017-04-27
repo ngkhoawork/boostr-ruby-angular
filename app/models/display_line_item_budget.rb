@@ -214,12 +214,16 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def budget_less_than_display_line_item_budget
+    return unless budget_loc.present?
+
     if budget_loc > display_line_item.budget_loc
       errors.add(:budget, 'can\'t be more then line item budget')
     end
   end
 
   def sum_of_budgets_less_than_line_item_budget
+    return unless budget_loc.present?
+
     if sum_of_monthly_budgets > display_line_item.budget_loc
       errors.add(:budget, 'sum of monthly budgets can\'t be more then line item budget')
     end
