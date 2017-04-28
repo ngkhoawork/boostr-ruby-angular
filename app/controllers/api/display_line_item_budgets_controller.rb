@@ -40,6 +40,11 @@ class Api::DisplayLineItemBudgetsController < ApplicationController
     end
   end
 
+  def destroy
+    display_line_item_budget.destroy
+    render nothing: true
+  end
+
   private
 
   def display_line_item_budget
