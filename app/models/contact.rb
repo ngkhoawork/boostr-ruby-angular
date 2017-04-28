@@ -62,6 +62,9 @@ class Contact < ActiveRecord::Base
   scope :by_country, -> country do
     joins(:address).where("addresses.country ilike ?", country) if country.present?
   end
+  scope :by_last_touch, -> start_date, end_date do
+    joins(:latest_happened_activity).where(activities: { happened_at: start_date.to_date..end_date.to_date }) if (start_date && end_date).present?
+  end
 
   after_save do
     if client_id_changed? && !client_id.nil?

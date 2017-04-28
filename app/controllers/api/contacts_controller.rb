@@ -17,19 +17,19 @@ class Api::ContactsController < ApplicationController
     results = apply_search_criteria(results)
 
     response.headers['X-Total-Count'] = results.total_count
-    render json: results.includes(:primary_client, :latest_happened_activity).preload(:values, :address, :workplaces)
+    render json: results.includes(:primary_client).preload(:values, :address, :workplaces)
       .limit(limit)
       .offset(offset), each_serializer: ContactSerializer,
-                         contact_options: company_job_level_options,
-                         advertiser: Client.advertiser_type_id(current_user.company),
-                         agency: Client.agency_type_id(current_user.company)
+                       contact_options: company_job_level_options,
+                       advertiser: Client.advertiser_type_id(current_user.company),
+                       agency: Client.agency_type_id(current_user.company)
   end
 
   def show
     render json: contact, serializer: Api::ContactDetailSerializer,
-                            contact_options: company_job_level_options,
-                            advertiser: Client.advertiser_type_id(current_user.company),
-                            agency: Client.agency_type_id(current_user.company)
+                          contact_options: company_job_level_options,
+                          advertiser: Client.advertiser_type_id(current_user.company),
+                          agency: Client.agency_type_id(current_user.company)
   end
 
   def create
@@ -199,6 +199,7 @@ class Api::ContactsController < ApplicationController
       .by_city(city_criteria)
       .by_job_level(job_level_criteria)
       .by_country(country_criteria)
+      .by_last_touch(params[:start_date], params[:end_date])
   end
 
   def limit
