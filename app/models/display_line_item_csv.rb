@@ -14,7 +14,8 @@ class DisplayLineItemCsv
   attr_accessor(
     :external_io_number, :line_number, :ad_server, :start_date, :end_date,
     :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
-    :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks
+    :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks,
+    :io_name
   )
 
   def initialize(attributes = {})
@@ -67,11 +68,24 @@ class DisplayLineItemCsv
   end
 
   def io
-    @_io ||= Io.find_by(company_id: company_id, external_io_number: external_io_number)
+    return io_by_io_num unless io_by_io_num.nil?
+    io_by_ext_num
+  end
+
+  def io_by_ext_num
+    @_io_by_ext_num ||= Io.find_by(company_id: company_id, external_io_number: external_io_number)
+  end
+
+  def io_by_io_num
+    @_io_by_io_num ||= Io.find_by(company_id: company_id, io_number: io_number)
   end
 
   def tempio
-    @_temp_io ||= TempIo.find_by(company_id: company_id, external_io_number: external_io_number)
+    @_temp_io ||= TempIo.find_or_initialize_by(company_id: company_id, external_io_number: external_io_number)
+  end
+
+  def io_number
+    io_name.gsub(/[^\d]/, '')
   end
 
   def product
@@ -80,7 +94,7 @@ class DisplayLineItemCsv
   end
 
   def budget_loc
-    budget
+    budget.to_i
   end
 
   def budget_delivered_loc
