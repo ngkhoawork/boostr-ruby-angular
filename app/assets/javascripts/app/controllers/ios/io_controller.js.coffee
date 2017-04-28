@@ -5,13 +5,28 @@
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
             $scope.selectedIORow = null
+            $scope.showBudgetWarning = true
             $scope.budgets = []
             $scope.isNaN = (val) -> isNaN val
+
+            $scope.testPopover = ->
+                $scope.showBudgetWarning = !$scope.showBudgetWarning
+                console.log $scope.showBudgetWarning
 
             $scope.init = ->
                 CurrentUser.get().$promise.then (user) ->
                     $scope.currentUser = user
                 IO.get($routeParams.id).then (io) ->
+                    # ==========================================================
+                    arr = []
+                    for i in  [1...10]
+                        copy = angular.copy io.display_line_items[0]
+                        if copy
+                            copy.id += i
+                            arr.push copy
+                    io.display_line_items = io.display_line_items.concat arr
+                    console.log io.display_line_items
+                    # ==========================================================
                     $scope.currentIO = io
                     if io.currency
                         if io.currency.curr_symbol
@@ -71,18 +86,63 @@
                     ).then (resp) ->
                         $scope.budgets[index] = resp
 
-            $scope.updateBudget = (budget) ->
-                DisplayLineItem.update_budget(
-                    id: budget.id
-                    display_line_item_budget:
-                        budget_loc: budget.budget_loc
-                ).then(
-                    (resp) ->
-                        budget.budget_loc = resp.budget_loc
-                        calcRestBudget()
-                    (err) -> budget.budget_loc = budget.old_budget
-                )
+            $scope.createOrUpdateBudget = (budget, value, index) ->
+                $scope.showBudgetWarning = true
+                if !(!isNaN(parseInt(value)) && isFinite(value)) then return false
+                prevValue = budget.budget_loc
+                defer = $q.defer()
+                if $scope.selectedIORow && budget.budget_loc == undefined
+                    DisplayLineItem.add_budget(
+                        id: $scope.selectedIORow.id
+                        display_line_item_budget:
+                            budget_loc: value
+                            month: budget.month
+                    ).then(
+                        (resp) ->
+#                            if resp.budget_loc == 0
+#                                $scope.showBudgetWarning = true
+#                                $timeout ->
+#                                    console.log 'OFF C'
+#                                    $scope.showBudgetWarning = false
+#                                , 1000
+                            $scope.budgets[index] = resp
+                            calcRestBudget()
+                            defer.resolve()
+                        (err) ->
+                            console.log 'CREATE ERROR', err
+                            budget.budget_loc = prevValue
+                            defer.reject()
+#                        budget.budget_loc = budget.old_budget
+                    )
+                else
+                    DisplayLineItem.update_budget(
+                        id: budget.id
+                        display_line_item_budget:
+                            budget_loc: value
+                    ).then(
+                        (resp) ->
+#                            budget.budget_loc = parseInt resp.budget_loc
+#                            if budget.budget_loc == 0
+#                                $scope.showBudgetWarning = true
+#                                $timeout ->
+#                                    console.log 'OFF U'
+#                                    $scope.showBudgetWarning = false
+#                                , 1000
 
+                            calcRestBudget()
+                            defer.resolve()
+                        (err) ->
+                            console.log 'UPDATE ERROR', err
+                            budget.budget_loc = prevValue
+                            defer.reject()
+                    )
+                defer
+
+            $scope.deleteBudget = (budget, e) ->
+                e.stopPropagation()
+                DisplayLineItem.delete_budget(id: budget.id).then (resp) ->
+                    budget.budget_loc = undefined
+                    calcRestBudget()
 
             $scope.linkExistingUser = (item) ->
                 $scope.userToLink = undefined

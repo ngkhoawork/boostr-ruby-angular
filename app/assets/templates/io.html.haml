@@ -171,10 +171,16 @@
 													%span ( {{ budgets.rest | currency:currency_symbol:0 }} remaining )
 												%div.line-budget{'ng-if': 'currentUser.user_type == 5', 'ng-repeat': 'budget in budgets'}
 													.month {{budget.month}}
-													.budget{'ng-if': '!isNaN(budget.budget_loc)'}
-														%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-init': 'budget.old_budget = budget.budget_loc', 'ng-model': 'budget.budget_loc', 'on-after-save': 'updateBudget(budget)', 'submit-on-enter': true}
-															{{budget.budget_loc | currency:currency_symbol:0}}
-													.budget{'ng-if': 'isNaN(budget.budget_loc)'}
+													.budget.hide-input-arrows
+														%span.editable-budget{'editable-number': 'budget.budget_loc', 'blur': 'submit', 'onbeforesave': 'createOrUpdateBudget(budget, $data, $index)'}
+															%span{'ng-if': '!isNaN(budget.budget_loc)'}
+																{{ budget.budget_loc | currency : currency_symbol : 0 }}
+																%i.fa.fa-close.budget-delete{'ng-click': 'deleteBudget(budget, $event)'}
+															%span{'ng-if': 'isNaN(budget.budget_loc)'}
+																%b.add-budget Add
+														-#%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-init': 'budget.old_budget = budget.budget_loc', 'ng-model': 'budget.budget_loc', 'on-after-save': 'updateBudget(budget)', 'submit-on-enter': true}
+														-#%i.fa.fa-close.budget-delete
+													-#.budget
 														%a.add-budget{href: '', 'ng-click': 'addBudget(budget, $index)'} Add
 												%div.line-budget{'ng-if': 'currentUser.user_type != 5', 'ng-repeat': 'budget in budgets'}
 													.month {{budget.month}}

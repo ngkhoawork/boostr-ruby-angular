@@ -28,6 +28,10 @@
           method: 'PUT'
           url: '/api/display_line_item_budgets/:id'
 
+        delete_budget:
+          method: 'DELETE'
+          url: 'api/display_line_item_budgets/:id'
+
       currentTempIO = undefined
 
       @all = (params) ->
@@ -45,13 +49,21 @@
 
       @add_budget = (params) ->
         deferred = $q.defer()
-        resource.add_budget params, (budget) ->
-          deferred.resolve(budget)
+        resource.add_budget params,
+          (resp) -> deferred.resolve(resp)
+          (err) -> deferred.reject(err)
         deferred.promise
 
       @update_budget = (params) ->
         deferred = $q.defer()
         resource.update_budget params,
+          (resp) -> deferred.resolve(resp)
+          (err) -> deferred.reject(err)
+        deferred.promise
+
+      @delete_budget = (params) ->
+        deferred = $q.defer()
+        resource.delete_budget params,
           (resp) -> deferred.resolve(resp)
           (err) -> deferred.reject(err)
         deferred.promise

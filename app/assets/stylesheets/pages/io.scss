@@ -49,6 +49,18 @@
         background-color: #FBFCFD;
         transform-origin: 0 0;
         transition: height 400ms, opacity 400ms, border-width 400ms;
+        .budget {
+            .editable-budget {
+                position: relative;
+            }
+            .budget-delete {
+                position: absolute;
+                right: -8px;
+                top: 6px;
+                color: $error-color;
+                cursor: pointer;
+            }
+        }
         .budgets-inner {
             padding: 15px;
         }
@@ -74,6 +86,16 @@
                     background-color: inherit;
                     border-color: $secondary-font-color;
                 }
+            }
+            .editable-wrap {
+            }
+            .editable-input {
+                margin-top: -3px;
+                background-color: transparent;
+                height: 28px;
+                max-width: 100px;
+                box-sizing: border-box;
+                border: 1px dashed $secondary-font-color;
             }
             .add-budget {
                 color: $main-color;
