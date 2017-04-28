@@ -17,16 +17,6 @@
                 CurrentUser.get().$promise.then (user) ->
                     $scope.currentUser = user
                 IO.get($routeParams.id).then (io) ->
-                    # ==========================================================
-                    arr = []
-                    for i in  [1...10]
-                        copy = angular.copy io.display_line_items[0]
-                        if copy
-                            copy.id += i
-                            arr.push copy
-                    io.display_line_items = io.display_line_items.concat arr
-                    console.log io.display_line_items
-                    # ==========================================================
                     $scope.currentIO = io
                     if io.currency
                         if io.currency.curr_symbol
