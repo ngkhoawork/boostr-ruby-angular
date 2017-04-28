@@ -102,7 +102,11 @@ Rails.application.routes.draw do
       resources :time_periods, only: [:index]
       resources :countries, only: [:index]
       resources :fields, only: [:index]
-      resources :users, only: [:index, :update]
+      resources :users, only: [:index, :update] do
+        collection do
+          get :signed_in_user
+        end
+      end
 
       resources :currencies, only: [:index] do
         collection do
