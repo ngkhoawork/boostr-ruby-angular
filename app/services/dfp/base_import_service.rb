@@ -39,7 +39,6 @@ class DFP::BaseImportService
           object_from_csv.perform
           import_log.count_imported
         rescue Exception => e
-          byebug
           import_log.count_failed
           import_log.log_error ['Internal Server Error', row.to_h.compact.to_s]
           next
