@@ -39,11 +39,11 @@ class Contact < ActiveRecord::Base
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
   scope :unassigned, -> user_id { where(created_by: user_id).where('id NOT IN (SELECT DISTINCT(contact_id) from client_contacts)') }
   scope :by_email, -> email, company_id {
-    Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email ilike ? and contacts.company_id=?", email, company_id)
+    joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email ilike ? and contacts.company_id=?", email, company_id)
   }
   scope :total_count, -> { except(:order, :limit, :offset).count.to_s }
   scope :by_client_ids, -> ids do
-    Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).distinct
+    joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).distinct
   end
   scope :by_name, -> name { where('contacts.name ilike ?', "%#{name}%") if name.present? }
   scope :by_primary_client_name, -> client_name do
@@ -63,7 +63,12 @@ class Contact < ActiveRecord::Base
     joins(:address).where("addresses.country ilike ?", country) if country.present?
   end
   scope :by_last_touch, -> start_date, end_date do
+    # binding.pry
     joins(:latest_happened_activity).where(activities: { happened_at: start_date.to_date..end_date.to_date }) if (start_date && end_date).present?
+  end
+  scope :for_time_period, -> (start_date, end_date) do
+    # binding.pry
+    joins(:latest_happened_activity).where('activities.happened_at >= ? AND activities.happened_at <= ?', start_date, end_date) if start_date.present? && end_date.present?
   end
 
   after_save do

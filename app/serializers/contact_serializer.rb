@@ -41,7 +41,9 @@ class ContactSerializer < ActiveModel::Serializer
   end
 
   def last_touched
-    object.latest_happened_activity.first.try(:happened_at)
+    if object.latest_happened_activity.any?
+      object.latest_happened_activity.first.happened_at.to_date
+    end
   end
 
   def job_level

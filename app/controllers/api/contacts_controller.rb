@@ -2,16 +2,16 @@ class Api::ContactsController < ApplicationController
   respond_to :json
 
   def index
-    results = if params[:unassigned] == "yes"
-      unassigned_contacts
+    if params[:unassigned] == "yes"
+      results = unassigned_contacts
     elsif params[:name].present?
-      suggest_contacts
+      results = suggest_contacts
     elsif params[:contact_name].present?
-      suggest_contacts(true)
+      results = suggest_contacts(true)
     elsif params[:activity].present?
-      activity_contacts
+      results = activity_contacts
     else
-      contacts
+      results = contacts
     end
 
     results = apply_search_criteria(results)
