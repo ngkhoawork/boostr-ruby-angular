@@ -63,8 +63,7 @@ class Contact < ActiveRecord::Base
     joins(:address).where("addresses.country ilike ?", country) if country.present?
   end
   scope :by_last_touch, -> start_date, end_date do
-    # binding.pry
-    joins(:latest_happened_activity).where(activities: { happened_at: start_date.to_date..end_date.to_date }) if (start_date && end_date).present?
+    joins(:latest_happened_activity).where(activities: { happened_at: DateTime.parse(end_date).beginning_of_day..DateTime.parse(end_date).end_of_day}) if (start_date && end_date).present?
   end
   scope :for_time_period, -> (start_date, end_date) do
     # binding.pry
