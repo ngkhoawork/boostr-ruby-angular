@@ -81,7 +81,9 @@ class Client < ActiveRecord::Base
       :Phone,
       :Website,
       :Replace_team,
-      :Teammembers
+      :Teammembers,
+      :Region,
+      :Segment
     ]
 
     agency_type_id = self.agency_type_id(company)
@@ -96,6 +98,8 @@ class Client < ActiveRecord::Base
         :address,
         :client_category,
         :client_subcategory,
+        :client_region,
+        :client_segment,
         client_members: [:user]
       )
       .order(:id).each do |client|
@@ -125,6 +129,8 @@ class Client < ActiveRecord::Base
         line << client.website
         line << nil
         line << team_members.join(';')
+        line << (client.client_region.try(:name))
+        line << (client.client_segment.try(:name))
 
         csv << line
       end
@@ -327,6 +333,30 @@ class Client < ActiveRecord::Base
         end
       end
 
+      if row[14].present?
+        region_field = current_user.company.fields.where(name: 'Region').first
+        region = region_field.options.where('name ilike ?', row[14]).first
+        unless region
+          error = { row: row_number, message: ["Region #{row[14]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        region = nil
+      end
+
+      if row[15].present?
+        segment_field = current_user.company.fields.where(name: 'Segment').first
+        segment = segment_field.options.where('name ilike ?', row[15]).first
+        unless segment
+          error = { row: row_number, message: ["Segment #{row[15]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        segment = nil
+      end
+
       address_params = {
         street1: row[6].nil? ? nil : row[6].strip,
         city: row[7].nil? ? nil : row[7].strip,
@@ -360,6 +390,22 @@ class Client < ActiveRecord::Base
         company_id: current_user.company.id
       }
 
+      region_value_params = {
+        value_type: 'Option',
+        subject_type: 'Client',
+        field_id: current_user.company.fields.where(name: 'Region').first.id,
+        option_id: (region ? region.id : nil),
+        company_id: current_user.company.id
+      }
+
+      segment_value_params = {
+        value_type: 'Option',
+        subject_type: 'Client',
+        field_id: current_user.company.fields.where(name: 'Segment').first.id,
+        option_id: (segment ? segment.id : nil),
+        company_id: current_user.company.id
+      }
+
       if row[0]
         begin
           client = current_user.company.clients.find(row[0])
@@ -388,6 +434,8 @@ class Client < ActiveRecord::Base
         client_params[:id] = client.id
         type_value_params[:subject_id] = client.id
         category_value_params[:subject_id] = client.id
+        region_value_params[:subject_id] = client.id
+        segment_value_params[:subject_id] = client.id
 
         if client_type_field = client.values.where(field_id: type_value_params[:field_id]).first
           type_value_params[:id] = client_type_field.id
@@ -396,13 +444,21 @@ class Client < ActiveRecord::Base
         if client_category_field = client.values.where(field_id: category_value_params[:field_id]).first
           category_value_params[:id] = client.values.where(field_id: category_value_params[:field_id]).first.id
         end
+
+        if client_region_field = client.values.where(field_id: region_value_params[:field_id]).first
+          region_value_params[:id] = client.values.where(field_id: region_value_params[:field_id]).first.id
+        end
+
+        if client_segment_field = client.values.where(field_id: segment_value_params[:field_id]).first
+          segment_value_params[:id] = client.values.where(field_id: segment_value_params[:field_id]).first.id
+        end
       else
         client = current_user.company.clients.create(name: row[1].strip)
         client.update_attributes(created_by: current_user.id)
       end
 
       client_params[:address_attributes] = address_params
-      client_params[:values_attributes] = [type_value_params, category_value_params]
+      client_params[:values_attributes] = [type_value_params, category_value_params, region_value_params, segment_value_params]
 
       if client.update_attributes(client_params)
         client.client_members.delete_all if row[12] == 'Y'
@@ -437,6 +493,16 @@ class Client < ActiveRecord::Base
 
   def client_category
     company.fields.where(name: 'Category').first.options.where(self.client_category_id) if self.client_category_id.present?
+    nil
+  end
+
+  def client_region
+    company.fields.where(name: 'Region').first.options.where(self.client_region_id) if self.client_region_id.present?
+    nil
+  end
+
+  def client_segment
+    company.fields.where(name: 'Segment').first.options.where(self.client_segment_id) if self.client_segment_id.present?
     nil
   end
 

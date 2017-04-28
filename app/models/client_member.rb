@@ -9,8 +9,8 @@ class ClientMember < ActiveRecord::Base
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
   def as_json(options = {})
-    super(options.merge(include: [
-                                :client,
+    super(options.merge(include: {
+                                client: {},
                                 user: {
                                         methods: [:name]
                                 },
@@ -18,7 +18,7 @@ class ClientMember < ActiveRecord::Base
                                         include: [:option],
                                         methods: [:value]
                                 }
-                        ]))
+                        }))
   end
 
   def defaults

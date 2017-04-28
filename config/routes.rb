@@ -43,7 +43,7 @@ Rails.application.routes.draw do
           get :filter_options
         end
         resources :client_members, only: [:index, :create, :update, :destroy]
-        resources :client_contacts, only: [:index] do
+        resources :client_contacts, only: [:index, :create, :update, :destroy] do
           collection do
             get :related_clients
           end
@@ -86,7 +86,7 @@ Rails.application.routes.draw do
         get :filter_options
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
-      resources :client_contacts, only: [:index] do
+      resources :client_contacts, only: [:index, :create, :update, :destroy] do
         collection do
           get :related_clients
         end

@@ -7,6 +7,7 @@
     $scope.advertisers = []
     $scope.agencies = []
     $scope.clientConnection = clientConnection
+    console.log($scope.clientConnection)
 
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)

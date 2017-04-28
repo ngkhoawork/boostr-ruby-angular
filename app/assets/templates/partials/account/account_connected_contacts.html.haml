@@ -1,7 +1,7 @@
 .contacts.block
     %div.mb20
         %span.title Agency Contacts
-        %add-button{'ng-click': 'showNewAccountConnectionModal()'} Add
+        %add-button{'ng-click': 'showNewAccountConnectionContactModal()'} Add
 
     %table.table.table-striped
         %thead
@@ -11,11 +11,12 @@
                 %th.left Position
                 %th.left Email
                 %th.left Phone
+                %th.left Status
         %tbody
             %tr{ ng: { repeat: 'connected_contact in connected_contacts'} }
                 %td
                     %a{'ng-href': '/contacts/{{connected_contact.id}}'} {{ connected_contact.name }}
-                    %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(connected_contact)'}
+                    %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnectionContact(connected_contact)'}
                 %td
                     %a{'ng-href': '/accounts/{{connected_contact.client.id}}'}
                         {{ connected_contact.client.name }}
@@ -25,3 +26,5 @@
                     {{ connected_contact.address.email }}
                 %td
                     {{ connected_contact.address.phone }}
+                %td.left
+                    {{ connected_contact.status }}

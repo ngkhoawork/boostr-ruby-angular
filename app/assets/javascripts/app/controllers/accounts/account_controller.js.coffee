@@ -1,6 +1,6 @@
 @app.controller 'AccountController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientsTypes'
-($scope, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, Reminder, BpEstimate, $http, ClientContacts, ClientsTypes) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientsTypes'
+($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, Reminder, BpEstimate, $http, ClientContacts, ClientsTypes) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -82,19 +82,26 @@
     $scope.getClientStats()
     $scope.getBPEstimates()
     $scope.getClients()
+    $scope.getClientMembers()
+
+    account_type = Field.field($scope.currentClient, 'Client Type')
+    $scope.getIOs(account_type.option.name)
+    if account_type.option && account_type.option.name == "Advertiser"
+      $scope.getChildClients()
+      $scope.getClientConnectedContacts()
     $scope.categoryOptions = Field.findFieldOptions($scope.currentClient.fields, 'Category')
     $scope.segmentOptions = Field.findFieldOptions($scope.currentClient.fields, 'Segment')
     $scope.regionOptions = Field.findFieldOptions($scope.currentClient.fields, 'Region')
     $scope.$emit('updated_current_client')
 
-  $scope.getIOs = () ->
+  $scope.getIOs = (type) ->
     if ($scope.currentClient && $scope.currentClient.id)
       $scope.client_contacts = []
-      if $scope.currentClient.client_type.option.name == "Agency"
+      if type == "Agency"
         IO.all(agency_id: $scope.currentClient.id)
         .then (response) ->
           $scope.ios = response
-      else if $scope.currentClient.client_type.option.name == "Advertiser"
+      else if type == "Advertiser"
         IO.all(advertiser_id: $scope.currentClient.id)
         .then (response) ->
           $scope.ios = response
@@ -103,12 +110,12 @@
     if ($scope.currentClient && $scope.currentClient.id)
       filters = { bp_id: 0, client_id: $scope.currentClient.id }
       BpEstimate.all(filters).then (response) ->
-        $scope.currentClient.revenues = response.revenues
+        $scope.revenues = response.revenues
         $scope.bp_estimates = _.map response.bp_estimates, buildBPEstimate
 
   buildBPEstimate = (item) ->
     data = angular.copy(item)
-    revenue = _.find $scope.currentClient.revenues, (o) ->
+    revenue = _.find $scope.revenues, (o) ->
       return o.time_dimension_id == item.time_dimension.id
 
     data.revenue = 0
@@ -252,6 +259,12 @@
           {}
 
   $scope.deleteAccountConnection = (clientConnection) ->
+    return
+
+  $scope.deleteAccountConnectionContact = (connectedContact) ->
+    connectedContact.client_id = null
+    Contact._update(id: connectedContact.id, contact: connectedContact, unassign: true).then (contact) ->
+      $scope.getClientConnectedContacts()
 
 
   $scope.showEditModal = ->
@@ -348,6 +361,20 @@
       resolve:
         deal: $scope.setupNewDeal
 
+  $scope.showNewAccountConnectionContactModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/client_connection_contact_form.html'
+      size: 'md'
+      controller: 'AccountConnectionContactsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        client: ->
+          $scope.currentClient
+    .result.then (updated_contact) ->
+      if updated_contact
+        $scope.getClientConnectedContacts()
+
   $scope.showNewAccountConnectionModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_connection_form.html'
@@ -408,6 +435,24 @@
         client: ->
           $scope.currentClient
 
+  $scope.showLinkExistingUser = ->
+    User.query().$promise.then (users) ->
+      $scope.users = $filter('notIn')(users, $scope.currentClient.client_members, 'user_id')
+
+  $scope.linkExistingUser = (item) ->
+    $scope.userToLink = undefined
+    ClientMember.save(client_id: $scope.currentClient.id, client_member: { user_id: item.id, share: 0, values: [] }).$promise.then (client_member) ->
+      $scope.getClientMembers()
+
+  $scope.deleteMember = (member) ->
+    if confirm('Are you sure you want to delete "' +  member.name + '"?')
+      ClientMember.delete(id: member.id, client_id: $scope.currentClient.id).$promise.then (client) ->
+        $scope.getClientMembers()
+
+  $scope.updateClientMember = (data) ->
+    ClientMember.update(id: data.id, client_id: $scope.currentClient.id, client_member: data).$promise.then (client) ->
+      $scope.getClientMembers()
+
   $scope.showLinkExistingPerson = ->
     $scope.showContactList = true
     Contact.all (contacts) ->
@@ -422,12 +467,12 @@
         $scope.client_contacts = []
       $scope.client_contacts.unshift(contact)
 
-  $scope.updateClientMember = (clientMember) ->
-    clientMember.$update(
-      ->
-        Field.defaults(clientMember, 'Client').then (fields) ->
-          clientMember.role = Field.field(clientMember, 'Member Role')
-    )
+#  $scope.updateClientMember = (clientMember) ->
+#    clientMember.$update(
+#      ->
+#        Field.defaults(clientMember, 'Client').then (fields) ->
+#          clientMember.role = Field.field(clientMember, 'Member Role')
+#    )
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the account "' +  $scope.currentClient.name + '"?')
@@ -458,12 +503,6 @@
         $scope.currentClient.client_subcategory = Field.getSuboption($scope.currentClient, $scope.currentClient.client_category, $scope.currentClient.client_subcategory_id)
         $scope.currentClient.client_region = Field.getOption($scope.currentClient, 'Region', $scope.currentClient.client_region_id)
         $scope.currentClient.client_segment = Field.getOption($scope.currentClient, 'Segment', $scope.currentClient.client_segment_id)
-        $scope.getIOs()
-        if $scope.currentClient.client_type.option.name == "Advertiser"
-          $scope.getChildClients()
-          $scope.getClientConnectedContacts()
-      $scope.getDeals($scope.currentClient)
-      $scope.getClientMembers()
 
 
   $scope.$on 'openContactModal', ->
@@ -509,34 +548,34 @@
     $scope.currentClient.client_category_id = category.id
     $scope.currentClient.$update(
       ->
-        $scope.init()
+        $scope.$emit('updated_current_client')
     )
 
   $scope.updateClientSubcategory = (category) ->
     $scope.currentClient.client_subcategory_id = category.id
     $scope.currentClient.$update(
       ->
-        $scope.init()
+        $scope.$emit('updated_current_client')
     )
 
   $scope.updateClientRegion = (region) ->
     $scope.currentClient.client_region_id = region.id
     $scope.currentClient.$update(
       ->
-        $scope.init()
+        $scope.$emit('updated_current_client')
     )
 
   $scope.updateClientSegment = (segment) ->
     $scope.currentClient.client_segment_id = segment.id
     $scope.currentClient.$update(
       ->
-        $scope.init()
+        $scope.$emit('updated_current_client')
     )
 
-  $scope.updateClient = (client) ->
-    client.$update(
+  $scope.updateClient = ->
+    $scope.currentClient.$update(
       ->
-        $scope.init()
+        $scope.$emit('updated_current_client')
     )
 
   $scope.init()
