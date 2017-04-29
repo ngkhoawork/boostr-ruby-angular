@@ -1,6 +1,6 @@
 @app.controller "AccountsNewController",
-['$scope', '$rootScope', '$modalInstance', 'Client', 'Field', 'AccountCfName', 'client', 'CountriesList'
-($scope, $rootScope, $modalInstance, Client, Field, AccountCfName, client, CountriesList) ->
+['$scope', '$rootScope', '$modalInstance', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList'
+($scope, $rootScope, $modalInstance, Client, HoldingCompany, Field, AccountCfName, client, CountriesList) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -14,6 +14,9 @@
 
   AccountCfName.all().then (accountCfNames) ->
     $scope.accountCfNames = accountCfNames
+
+  HoldingCompany.all({}).then (holdingCompanies) ->
+    $scope.holdingCompanies = holdingCompanies
 
   Field.defaults($scope.client, 'Client').then (fields) ->
     if ($scope.client.client_type)

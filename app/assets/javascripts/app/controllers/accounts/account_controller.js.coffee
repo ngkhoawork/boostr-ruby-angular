@@ -1,6 +1,6 @@
 @app.controller 'AccountController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientsTypes'
-($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, Reminder, BpEstimate, $http, ClientContacts, ClientsTypes) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientsTypes'
+($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientsTypes) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -20,6 +20,7 @@
     $scope.getClient($routeParams.id)
     $scope.showContactList = false
     getAccountCfNames()
+    getHoldingCompanies()
     Contact.query().$promise.then (contacts) ->
       $scope.contacts = contacts
     Field.defaults({}, 'Client').then (fields) ->
@@ -226,6 +227,11 @@
       else
         $scope.clients = clients
       $scope.isLoading = false
+
+  getHoldingCompanies = ->
+    HoldingCompany.all({}).then (holdingCompanies) ->
+      $scope.holdingCompanies = holdingCompanies
+
   $scope.isLoading = false
   $scope.loadMoreClients = ->
     if !$scope.isLoading && $scope.clients && $scope.clients.length < Client.totalCount
@@ -537,6 +543,9 @@
     $scope.getClientConnections()
     $scope.getClientConnectedContacts()
 
+  $scope.$on 'updated_reminders', ->
+    $scope.initReminder()
+
   $scope.updateClientType = (option) ->
     $scope.currentClient.client_type.option_id = option.id
     $scope.currentClient.$update(
@@ -815,6 +824,9 @@
         resolve:
           parentClient: ->
             $scope.currentClient
+      .result.then (data) ->
+        if data
+          $scope.getChildClients()
 
   $scope.showAssignContactModal = (contact) ->
     advertiserTypeId = 0

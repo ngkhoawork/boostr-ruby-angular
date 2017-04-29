@@ -18,12 +18,14 @@
     send.client =
       name: original.name
       website: original.website
+      note: original.note
       client_type_id: original.client_type.option_id
       client_category_id: original.client_category_id
       client_subcategory_id: original.client_subcategory_id
       client_region_id: original.client_region_id
       client_segment_id: original.client_segment_id
       parent_client_id: original.parent_client_id || null
+      holding_company_id: original.holding_company_id
       address_attributes: address_attributes
       values_attributes: values_attributes
       account_cf_attributes: original.account_cf

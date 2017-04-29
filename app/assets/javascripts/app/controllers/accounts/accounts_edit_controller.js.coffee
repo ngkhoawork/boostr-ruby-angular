@@ -1,6 +1,6 @@
 @app.controller "AccountsEditController",
-['$scope', '$modalInstance', '$filter', 'Client', 'Field', 'AccountCfName', 'client', 'CountriesList'
-($scope, $modalInstance, $filter, Client, Field, AccountCfName, client, CountriesList) ->
+['$scope', '$modalInstance', '$filter', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList'
+($scope, $modalInstance, $filter, Client, HoldingCompany, Field, AccountCfName, client, CountriesList) ->
   $scope.client = client
   $scope.clients = []
   $scope.query = ""
@@ -16,6 +16,7 @@
     $scope.formType = "Edit"
     $scope.submitText = "Update"
 
+    getHoldingCompanies()
     Field.defaults($scope.client, 'Client').then (fields) ->
       if ($scope.client.client_type)
         selectedOption = $scope.client.client_type.option || null
@@ -33,6 +34,10 @@
 
     if $scope.client && $scope.client.address
       $scope.client.address.phone = $filter('tel')($scope.client.address.phone)
+
+  getHoldingCompanies = ->
+    HoldingCompany.all({}).then (holdingCompanies) ->
+      $scope.holdingCompanies = holdingCompanies
 
   $scope.submitForm = () ->
     $scope.errors = {}

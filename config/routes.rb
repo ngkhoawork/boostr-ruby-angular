@@ -26,6 +26,7 @@ Rails.application.routes.draw do
       resources :states, only: [:index]
       resources :forgot_password, only: [:create]
       resources :activity_types, only: [:index]
+      resources :holding_companies, only: [:index]
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
@@ -177,6 +178,7 @@ Rails.application.routes.draw do
     resources :notifications, only: [:index, :show, :create, :update, :destroy]
     resources :activities, only: [:index, :create, :show, :update, :destroy]
     resources :activity_types, only: [:index, :create, :show, :update, :destroy]
+    resources :holding_companies, only: [:index]
     resources :reports, only: [:index, :show]
     resources :sales_execution_dashboard, only: [:index] do
       collection do

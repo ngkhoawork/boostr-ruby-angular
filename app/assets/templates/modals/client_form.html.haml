@@ -28,12 +28,20 @@
         .row
           .col-xs-6
             %label{ for: 'parent-client' }
-              {{ client.client_type.option_id === Agency ? 'Holding Company' : 'Global Parent' }}
+              Global Parent
             %ui-select{ parent_client: 'parent-client', ng: { model: 'client.parent_client_id', disabled: 'client.client_type.option_id === undefined', keyup: 'searchClients($select.search)'} }
               %ui-select-match{ placeholder: 'Pick from list or search', "allow-clear": 'true' }
                 {{ $select.selected.name || client.parent_client.name }}
               %ui-select-choices{ repeat: 'parent.id as parent in clients | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'parent.name' } } }
+          .col-xs-6
+            %label{ for: 'holding-company' }
+              Holding Company
+            %ui-select{ parent_client: 'holding-company', ng: { model: 'client.holding_company_id', disabled: 'client.client_type.option_id === undefined'} }
+              %ui-select-match{ placeholder: 'Pick from list', "allow-clear": 'true' }
+                {{ $select.selected.name || client.parent_client.name }}
+              %ui-select-choices{ repeat: 'option.id as option in holdingCompanies | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'option.name' } } }
       .form-group{ ng: {if: 'client.client_type.option_id === Advertiser'} }
         .row
           .col-xs-6
@@ -117,6 +125,9 @@
             {{ $select.selected.value }}
           %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in accountCfName.account_cf_options | filter: { value: $select.search }' }
             %div{ ng: { bind: { html: 'customFieldOption.value' } } }
+      .form-group
+        %label{ for: 'note' } Note
+        %textarea.form-control{ 'msd-elastic': '', rows: 1, 'ng-model': "client.note", name: "note", placeholder: 'Enter note' }
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
       %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

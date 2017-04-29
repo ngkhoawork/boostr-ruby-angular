@@ -476,8 +476,7 @@
                 }
             }
         }
-        .pagination {
-            vertical-align: middle;
+        .custom-pagination {
             .links {
                 display: inline-block;
                 margin-right: 30px;
@@ -488,11 +487,24 @@
                     margin-right: 10px;
                 }
             }
+            .pagination {
+                vertical-align: middle;
+            }
+
+            .pagination > li > a{
+                color: #2B3C49;
+            }
+            .pagination > li.active > a {
+                color: #ffffff;
+                background-color: #2B3C49;
+                border-color: #2B3C49;
+            }
         }
     }
     .campaign-details {
         .star {
             color: $error-color;
+            text-align: right;
         }
         .custom-field-item {
             margin-bottom: 5px;
@@ -532,6 +544,16 @@
                 }
                 .not-selected {
                     color: lighten($secondary-font-color, 15%);
+                }
+            }
+            .address-field {
+                i.edit-deal {
+                    display: none;
+                }
+                &:hover {
+                    i.edit-deal {
+                        display: inline-block;
+                    }
                 }
             }
         }

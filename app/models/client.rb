@@ -35,6 +35,7 @@ class Client < ActiveRecord::Base
   belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
   belongs_to :client_region, class_name: 'Option', foreign_key: 'client_region_id'
   belongs_to :client_segment, class_name: 'Option', foreign_key: 'client_segment_id'
+  belongs_to :holding_company
   has_one :address, as: :addressable
   has_many :integrations, as: :integratable
 
@@ -189,6 +190,7 @@ class Client < ActiveRecord::Base
           address: {},
           parent_client: { only: [:id, :name] },
           account_cf: {},
+          holding_company: {},
           values: {
             methods: [:value],
             include: [:option]
