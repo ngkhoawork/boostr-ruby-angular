@@ -9,6 +9,8 @@ class Client < ActiveRecord::Base
   has_many :users, through: :client_members
   # has_many :contacts
   has_many :contacts, -> { uniq }, through: :client_contacts
+  has_many :primary_client_contacts, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
+  has_many :primary_contacts, -> { uniq }, through: :primary_client_contacts, source: :contact
   has_many :client_contacts, dependent: :destroy
   has_many :revenues
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
@@ -21,8 +23,8 @@ class Client < ActiveRecord::Base
   has_many :agencies, through: :agency_connections, source: :advertiser
   has_many :advertisers, through: :advertiser_connections, source: :agency
 
-  has_many :agency_contacts, -> { uniq }, through: :agencies, source: :contacts
-  has_many :advertiser_contacts, -> { uniq }, through: :advertisers, source: :contacts
+  has_many :agency_contacts, -> { uniq }, through: :agencies, source: :primary_contacts
+  has_many :advertiser_contacts, -> { uniq }, through: :advertisers, source: :primary_contacts
 
   has_many :values, as: :subject
   has_many :activities, -> { order(happened_at: :desc) }
@@ -132,6 +134,14 @@ class Client < ActiveRecord::Base
         line << team_members.join(';')
         line << (client.client_region.try(:name))
         line << (client.client_segment.try(:name))
+        if client.id == 290
+          puts "=======region"
+          puts client
+          puts client.client_region_id
+          puts client.client_region
+          puts client.client_region.try(:name)
+          puts client.client_category.try(:name)
+        end
 
         csv << line
       end
@@ -340,7 +350,7 @@ class Client < ActiveRecord::Base
         region = region_field.options.where('name ilike ?', row[14]).first
         unless region
           error = { row: row_number, message: ["Region #{row[14]} could not be found"] }
-          errors << error
+          errors << error∂
           next
         end
       else
@@ -373,6 +383,8 @@ class Client < ActiveRecord::Base
         client_type_id: type_id,
         client_category: category,
         client_subcategory: subcategory,
+        client_region: region,
+        client_segment: segment,
         parent_client: parent
       }
 
@@ -492,21 +504,21 @@ class Client < ActiveRecord::Base
   def client_type
     company.fields.where(name: 'Client Type').first.options.find(self.client_type_id)
   end
-
-  def client_category
-    company.fields.where(name: 'Category').first.options.where(self.client_category_id) if self.client_category_id.present?
-    nil
-  end
-
-  def client_region
-    company.fields.where(name: 'Region').first.options.where(self.client_region_id) if self.client_region_id.present?
-    nil
-  end
-
-  def client_segment
-    company.fields.where(name: 'Segment').first.options.where(self.client_segment_id) if self.client_segment_id.present?
-    nil
-  end
+  #
+  # def client_category
+  #   company.fields.where(name: 'Category').first.options.where(self.client_category_id) if self.client_category_id.present?
+  #   nil
+  # end
+  #
+  # def client_region
+  #   company.fields.where(name: 'Region').first.options.where(self.client_region_id) if self.client_region_id.present?
+  #   nil
+  # end
+  #
+  # def client_segment
+  #   company.fields.where(name: 'Segment').first.options.where(self.client_segment_id) if self.client_segment_id.present?
+  #   nil
+  # end
 
   def global_type_id
     if self.client_type_id

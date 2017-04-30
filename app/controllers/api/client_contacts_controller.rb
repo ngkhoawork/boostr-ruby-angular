@@ -3,7 +3,11 @@ class Api::ClientContactsController < ApplicationController
   respond_to :json
 
   def index
-    contacts = client.contacts.order(:name).includes(:address)
+    if params[:primary]
+      contacts = client.primary_contacts.order(:name).includes(:address)
+    else
+      contacts = client.contacts.order(:name).includes(:address)
+    end
     max_per_page = 100
     paginate contacts.count, max_per_page do |limit, offset|
       render json: contacts.limit(limit).offset(offset)

@@ -13,13 +13,13 @@
                 %th.left Phone
                 %th.left Status
         %tbody
-            %tr{ ng: { repeat: 'connected_contact in connected_contacts'} }
+            %tr{ ng: { repeat: 'connected_contact in connected_client_contacts'} }
                 %td
                     %a{'ng-href': '/contacts/{{connected_contact.id}}'} {{ connected_contact.name }}
                     %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnectionContact(connected_contact)'}
                 %td
                     %a{'ng-href': '/accounts/{{connected_contact.client.id}}'}
-                        {{ connected_contact.client.name }}
+                        {{ connected_contact.primary_client_json.name }}
                 %td
                     {{ connected_contact.position }}
                 %td

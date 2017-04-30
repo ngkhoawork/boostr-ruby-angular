@@ -14,7 +14,7 @@
                         %span.error-text {{errors.client}}
                         %label{ for: 'client' }
                             Account
-                        %ui-select{ client: 'client', ng: { model: 'object.client_id'} }
+                        %ui-select{ client: 'client', ng: { model: 'object.client_id', keyup: 'searchClients($select.search)'} }
                             %ui-select-match{ placeholder: 'Pick from list or search', "allow-clear": 'true' }
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'client.id as client in clients | filter: { name: $select.search }' }
@@ -23,7 +23,7 @@
                         %span.error-text {{errors.contact}}
                         %label{ for: 'contact' }
                             Contact
-                        %ui-select{ contact: 'contact', ng: { model: 'object.contact_id', change: 'setContact($select.selected)', keyup: 'searchObj($select.search)'} }
+                        %ui-select{ contact: 'contact', ng: { model: 'object.contact_id', change: 'setContact($select.selected)'} }
                             %ui-select-match{ placeholder: 'Pick from list or search', "allow-clear": 'true' }
                                 {{ $select.selected.name }}
                             %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }

@@ -10,6 +10,12 @@
     $scope.customFieldOptions = [ {id: null, value: ""} ]
     getDealCustomFieldNames()
 
+    if deal.advertiser
+      $scope.advertisers = [deal.advertiser]
+
+    if deal.agency
+      $scope.agencies = [deal.agency]
+
     $q.all({
       user: CurrentUser.get().$promise,
       currencies: Currency.active_currencies(),

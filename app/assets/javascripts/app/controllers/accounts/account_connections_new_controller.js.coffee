@@ -7,7 +7,6 @@
     $scope.advertisers = []
     $scope.agencies = []
     $scope.clientConnection = clientConnection
-    console.log($scope.clientConnection)
 
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
@@ -55,7 +54,6 @@
 
     if Object.keys($scope.errors).length > 0 then return
 
-    console.log($scope.clientConnection)
     ClientConnection.create(client_connection: $scope.clientConnection).then(
       (client_connection) ->
         $rootScope.$broadcast("new_client_connection")

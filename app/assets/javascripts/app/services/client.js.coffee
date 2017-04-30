@@ -56,6 +56,11 @@
       url: 'api/clients/:id/connected_contacts'
       isArray: true
     },
+    connected_client_contacts: {
+      method: "GET"
+      url: 'api/clients/:id/connected_client_contacts'
+      isArray: true
+    },
     child_clients: {
       method: "GET"
       url: 'api/clients/:id/child_clients'
@@ -98,6 +103,13 @@
     deferred = $q.defer()
     resource.connected_contacts params, (connected_contacts) ->
       deferred.resolve(connected_contacts)
+    deferred.promise
+    deferred.promise
+
+  resource.__connected_client_contacts = (params) ->
+    deferred = $q.defer()
+    resource.connected_client_contacts params, (connected_client_contacts) ->
+      deferred.resolve(connected_client_contacts)
     deferred.promise
 
   resource.__child_clients = (params) ->

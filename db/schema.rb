@@ -25,6 +25,9 @@ ActiveRecord::Schema.define(version: 20170428095200) do
     t.integer  "position"
     t.boolean  "show_on_modal"
     t.boolean  "disabled"
+
+
+
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
   end

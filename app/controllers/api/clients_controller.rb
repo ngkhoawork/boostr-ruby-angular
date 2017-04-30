@@ -141,9 +141,22 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        render json: client.agency_contacts
+        render json: client.agency_contacts.where("contacts.client_id != ?", client.id)
       elsif client.client_type.name == "Advertiser"
-        render json: client.advertiser_contacts
+        render json: client.advertiser_contacts.where("contacts.client_id != ?", client.id)
+      end
+    else
+      render json: []
+    end
+  end
+
+  def connected_client_contacts
+    client = company.clients.find(params[:client_id])
+    if client && client.client_type
+      if client.client_type.name == "Agency"
+        render json: client.agency_contacts.for_client(client.id)
+      elsif client.client_type.name == "Advertiser"
+        render json: client.advertiser_contacts.for_client(client.id)
       end
     else
       render json: []

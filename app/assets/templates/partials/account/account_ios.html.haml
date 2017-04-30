@@ -8,16 +8,16 @@
             %tr
                 %th.left Name
                 %th.left Advertiser
-                %th.right Budget
+                %th.right.budget-field Budget
                 %th.left Start Date
                 %th.left End Date
         %tbody
             %tr{ ng: { repeat: 'io in ios'} }
                 %td
-                    %a{'ng-href': '/ios/{{io.id}}'} {{ io.name }}
+                    %a{'ng-href': 'revenue/ios/{{io.id}}'} {{ io.name }}
                 %td
                     {{ io.advertiser.name }}
-                %td.right
+                %td.right.budget-field
                     {{ io.budget | currency:io.currency.curr_symbol:0  }}
                 %td
                     {{ io.start_date | date: 'MM/dd/yyyy' }}

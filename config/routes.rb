@@ -38,6 +38,7 @@ Rails.application.routes.draw do
       resources :clients, only: [:index, :show, :create, :update, :destroy] do
         get :sellers
         get :connected_contacts
+        get :connected_client_contacts
         get :child_clients
         get :stats
         collection do
@@ -81,6 +82,7 @@ Rails.application.routes.draw do
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
       get :sellers
       get :connected_contacts
+      get :connected_client_contacts
       get :child_clients
       get :stats
       collection do

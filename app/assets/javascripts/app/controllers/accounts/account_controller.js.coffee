@@ -11,7 +11,7 @@
   $scope.page = 1
   $scope.errors = {}
   $scope.contactSearchText = ""
-  $scope.clientContactUrl = 'api/clients/' + $routeParams.id + '/client_contacts/'
+  $scope.clientContactUrl = 'api/clients/' + $routeParams.id + '/client_contacts?primary=true'
   $scope.url = 'api/resources';
 
   $scope.init = ->
@@ -59,6 +59,10 @@
     Client.connected_contacts({id: $scope.currentClient.id}).$promise.then (connected_contacts) ->
       $scope.connected_contacts = connected_contacts
 
+  $scope.getClientConnectedClientContacts = ->
+    Client.connected_client_contacts({id: $scope.currentClient.id}).$promise.then (connected_client_contacts) ->
+      $scope.connected_client_contacts = connected_client_contacts
+
   $scope.getChildClients = ->
     Client.child_clients({id: $scope.currentClient.id}).$promise.then (child_clients) ->
       $scope.child_clients = child_clients
@@ -89,7 +93,7 @@
     $scope.getIOs(account_type.option.name)
     if account_type.option && account_type.option.name == "Advertiser"
       $scope.getChildClients()
-      $scope.getClientConnectedContacts()
+      $scope.getClientConnectedClientContacts()
     $scope.categoryOptions = Field.findFieldOptions($scope.currentClient.fields, 'Category')
     $scope.segmentOptions = Field.findFieldOptions($scope.currentClient.fields, 'Segment')
     $scope.regionOptions = Field.findFieldOptions($scope.currentClient.fields, 'Region')
@@ -269,9 +273,11 @@
 
   $scope.deleteAccountConnectionContact = (connectedContact) ->
     connectedContact.client_id = null
+    client_id = connectedContact.primary_client_json.id
     Contact._update(id: connectedContact.id, contact: connectedContact, unassign: true).then (contact) ->
-      $scope.getClientConnectedContacts()
-
+      connectedContact.client_id = client_id
+      Contact._update(id: connectedContact.id, contact: connectedContact, unassign: true).then (contact) ->
+        $scope.getClientConnectedClientContacts()
 
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
@@ -379,7 +385,7 @@
           $scope.currentClient
     .result.then (updated_contact) ->
       if updated_contact
-        $scope.getClientConnectedContacts()
+        $scope.getClientConnectedClientContacts()
 
   $scope.showNewAccountConnectionModal = ->
     $scope.modalInstance = $modal.open
@@ -426,8 +432,10 @@
     if $scope.currentClient.client_type && $scope.currentClient.client_type.option
       if $scope.currentClient.client_type.option.name == 'Advertiser'
         deal.advertiser_id = $scope.currentClient.id
+        deal.advertiser = $scope.currentClient
       else if $scope.currentClient.client_type.option.name == 'Agency'
         deal.agency_id = $scope.currentClient.id
+        deal.agency = $scope.currentClient
     deal
 
   $scope.showNewMemberModal = ->
@@ -519,14 +527,14 @@
 
   $scope.$on 'updated_contacts', ->
     $scope.getContacts()
-    $scope.getClientConnectedContacts()
+    $scope.getClientConnectedClientContacts()
 
   $scope.$on 'updated_activities', ->
     $scope.init()
 
   $scope.$on 'updated_client_connections', ->
     $scope.getClientConnections()
-    $scope.getClientConnectedContacts()
+    $scope.getClientConnectedClientContacts()
 
   $scope.$on 'updated_current_contact', ->
     $scope.client_contacts.push(Contact.get())
@@ -540,11 +548,13 @@
       $scope.client_members.push(args.clientMember)
 
   $scope.$on 'new_client_connection', ->
-    $scope.getClientConnections()
-    $scope.getClientConnectedContacts()
+    $scope.getClientConnectedClientContacts()
 
   $scope.$on 'updated_reminders', ->
     $scope.initReminder()
+
+  $scope.$on 'newDeal', (event, id) ->
+    $location.path('/deals/' + id)
 
   $scope.updateClientType = (option) ->
     $scope.currentClient.client_type.option_id = option.id
