@@ -38,8 +38,8 @@
                     filter.job_level = s.jobLevel if s.jobLevel
                     filter.city = s.city if s.city
                     if s.date.startDate && s.date.endDate
-                        filter.start_date = s.date.startDate.format('YYYY-MM-DD')
-                        filter.end_date = s.date.endDate.format('YYYY-MM-DD')
+                        filter.start_date = s.date.startDate.toDate()
+                        filter.end_date = s.date.endDate.toDate()
                     filter
                 apply: (reset) ->
                     $scope.getContacts()
