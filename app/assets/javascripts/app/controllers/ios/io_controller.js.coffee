@@ -8,10 +8,6 @@
             $scope.budgets = []
             $scope.isNaN = (val) -> isNaN val
 
-            $scope.testPopover = ->
-                $scope.showBudgetWarning = !$scope.showBudgetWarning
-                console.log $scope.showBudgetWarning
-
             $scope.init = ->
                 CurrentUser.get().$promise.then (user) ->
                     $scope.currentUser = user
@@ -86,9 +82,8 @@
                         $scope.budgets[index] = resp
 
             $scope.createOrUpdateBudget = (budget, value, index) ->
-                $scope.showBudgetWarning = true
-                if !(!isNaN(parseInt(value)) && isFinite(value)) then return false
                 prevValue = budget.budget_loc
+                if !(!isNaN(parseInt(value)) && isFinite(value)) || prevValue == value then return false
                 defer = $q.defer()
                 if $scope.selectedIORow && budget.budget_loc == undefined
                     DisplayLineItem.add_budget(
@@ -99,7 +94,7 @@
                     ).then(
                         (resp) ->
                             if resp.budget_loc == 0
-                                $scope.showWarningModal "Zero will be credited for #{resp.month}. To not credit zero click ❌ to delete"
+                                $scope.showWarningModal "Zero will be credited for #{resp.month || 'this month'}. To not credit zero click ❌ to delete"
                             $scope.budgets[index] = resp
                             calcRestBudget()
                             defer.resolve()
@@ -118,7 +113,7 @@
                         (resp) ->
 #                            budget.budget_loc = parseInt resp.budget_loc
                             if budget.budget_loc == 0
-                                $scope.showWarningModal "Zero will be credited for #{budget.month}. To not credit zero click ❌ to delete"
+                                $scope.showWarningModal "Zero will be credited for #{budget.month || 'this month'}. To not credit zero click ❌ to delete"
                             calcRestBudget()
                             defer.resolve()
                         (err) ->
