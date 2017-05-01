@@ -80,11 +80,15 @@ class Api::ContactsController < ApplicationController
   def related_clients
     render json: contact.workplaces.by_type_id(Client.advertiser_type_id(current_user.company)).as_json(
       override: true,
-      only: [:id, :name ],
+      only: [:id, :name],
       include: {
         address: {}
       }
     )
+  end
+
+  def advertisers
+    render json: current_user.company.contacts.limit(limit).as_json(ovveride: true, only: [:id, :name])
   end
 
   private
@@ -233,9 +237,7 @@ class Api::ContactsController < ApplicationController
   end
 
   def activity_contacts
-    return @activity_contacts if defined?(@activity_contacts)
-
-    @activity_contacts = current_user.company.contacts.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
+    @_activity_contacts ||= current_user.company.contacts.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
   end
 
   def primary_client_criteria
