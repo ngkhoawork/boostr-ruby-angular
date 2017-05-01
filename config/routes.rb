@@ -97,7 +97,10 @@ Rails.application.routes.draw do
     resources :io_csvs, only: [:create]
     resources :display_line_item_csvs, only: [:create]
     resources :contacts, only: [:index, :show, :create, :update, :destroy] do
-      get :related_clients, on: :member
+      member do
+        post :assign_account
+        get :related_clients
+      end
       collection do
         get :advertisers
         get :metadata

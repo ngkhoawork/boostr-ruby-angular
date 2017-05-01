@@ -88,7 +88,15 @@ class Api::ContactsController < ApplicationController
   end
 
   def advertisers
-    render json: current_user.company.contacts.limit(limit).as_json(ovveride: true, only: [:id, :name])
+    render json: current_user.company
+                             .contacts
+                             .with_advertisers_by_name(params[:name])
+                             .limit(limit)
+                             .as_json(ovveride: true, only: [:id, :name])
+  end
+
+  def assign_account
+
   end
 
   private

@@ -53,17 +53,25 @@ class Contact < ActiveRecord::Base
       'INNER JOIN clients ON clients.id = primary_client_contact.client_id'
     ).where('clients.name ilike ?', client_name) if client_name.present?
   end
+
   scope :by_city, -> city_name do
     joins(:address).where("addresses.city ilike ?", city_name) if city_name.present?
   end
+
   scope :by_job_level, -> job_level do
     joins(:values).where('values.option_id in (?)', Option.by_name(job_level).ids) if job_level.present?
   end
+
   scope :by_country, -> country do
     joins(:address).where("addresses.country ilike ?", country) if country.present?
   end
+
   scope :by_last_touch, -> start_date, end_date do
     joins(:latest_happened_activity).where(activities: { happened_at: start_date..end_date }) if (start_date && end_date).present?
+  end
+
+  scope :with_advertisers_by_name, -> name do
+    joins(:clients).where(clients: { client_type_id: Client::ADVERTISER_CLIENT_TYPE }).by_name(name)
   end
 
   after_save do
