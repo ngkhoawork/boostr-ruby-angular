@@ -37,9 +37,10 @@
                     filter.workplace = s.workPlace if s.workPlace
                     filter.job_level = s.jobLevel if s.jobLevel
                     filter.city = s.city if s.city
+                    filter.country = s.country if s.country
                     if s.date.startDate && s.date.endDate
-                        filter.start_date = s.date.startDate.toDate()
-                        filter.end_date = s.date.endDate.toDate()
+                        filter.sart_date = s.date.startDate.format('YYYY-MM-DD')
+                        filter.end_date = s.date.endDate.format('YYYY-MM-DD')
                     filter
                 apply: (reset) ->
                     $scope.getContacts()
@@ -112,6 +113,7 @@
                     $scope.filter.workPlaces = metadata.workplaces
                     $scope.filter.jobLevels = metadata.job_levels
                     $scope.filter.cities = metadata.cities
+                    $scope.filter.countries = metadata.countries
 
             $scope.setClientTypes = (client_types) ->
                 client_types.options.forEach (option) ->

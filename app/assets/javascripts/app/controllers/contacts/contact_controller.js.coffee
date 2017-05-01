@@ -26,6 +26,9 @@
         ActivityType.all().then (activityTypes) ->
             $scope.types = activityTypes
 
+        Contact.get_related().$promise.then (data) ->
+            console.log 'RELATED', data
+
         # Activity icon
         $scope.getIconName = (typeName) ->
             typeName && typeName.split(' ').join('-').toLowerCase()
@@ -105,6 +108,16 @@
                 resolve:
                     activity: ->
                         activity
+
+        $scope.showAssignModal = ->
+            $scope.modalInstance = $modal.open
+                templateUrl: 'modals/contact_assign_form.html'
+                size: 'md'
+                controller: 'ContactsAssignController'
+                backdrop: 'static'
+                keyboard: false
+                resolve:
+                    contact: -> $scope.currentContact
 
         $scope.deleteContact = (contact) ->
             if confirm('Are you sure you want to delete "' + contact.name + '"?')

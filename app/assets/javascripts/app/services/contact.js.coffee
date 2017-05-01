@@ -27,7 +27,7 @@
       address_attributes: address_attributes
       client_id: original.contact.client_id
       set_primary_client: !!(original.contact.set_primary_client)
-      contact_cf: original.contact.contact_cf
+      contact_cf_attributes: original.contact.contact_cf
     send.unassign = true if original.unassign
     angular.toJson(send)
 
@@ -54,6 +54,12 @@
     metadata:
       method: 'GET'
       url: 'api/contacts/metadata'
+    get_related:
+      method: 'GET'
+      url: '/api/contacts/:id/related_clients'
+    get_advertisers:
+      method: 'GET'
+      url: '/api/contacts/advertiser'
 
   # @TODO: Replace all of this with just returning resource
   allContacts = []

@@ -58,6 +58,23 @@
 			.filter-row
 				.filter-name
 					%div
+						Country
+				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.country', 'ng-click': 'filter.reset("country")'}
+					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.country}'}
+							{{filter.selected.country || 'Select a country'}}
+							%span.caret
+						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+								%i.fa.fa-search
+								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+							%span.dropdown-title Select from list
+							.dropdown-option{'ng-repeat': 'country in filter.countries | filter: filter.searching | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("country", country)'} {{country}}
+			.filter-row
+				.filter-name
+					%div
 						Last Touch
 				.filter-dropdown
 					%i.fa.fa-close{'ng-show': 'filter.selected.date.startDate && filter.selected.date.endDate', 'ng-click': 'filter.reset("date")'}
