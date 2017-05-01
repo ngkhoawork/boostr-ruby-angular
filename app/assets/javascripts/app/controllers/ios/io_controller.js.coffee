@@ -5,7 +5,6 @@
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
             $scope.selectedIORow = null
-            $scope.showBudgetWarning = true
             $scope.budgets = []
             $scope.isNaN = (val) -> isNaN val
 
@@ -35,6 +34,16 @@
                 .result.then (updated_io) ->
                     if (updated_io)
                         $scope.init();
+
+            $scope.showWarningModal = (message) ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/deal_warning.html'
+                    size: 'md'
+                    controller: 'DealWarningController'
+                    backdrop: 'static'
+                    keyboard: true
+                    resolve:
+                        message: -> message
 
             $scope.deleteIo = (io) ->
                 if confirm('Are you sure you want to delete "' +  io.name + '"?')
@@ -89,12 +98,8 @@
                             month: budget.month
                     ).then(
                         (resp) ->
-#                            if resp.budget_loc == 0
-#                                $scope.showBudgetWarning = true
-#                                $timeout ->
-#                                    console.log 'OFF C'
-#                                    $scope.showBudgetWarning = false
-#                                , 1000
+                            if resp.budget_loc == 0
+                                $scope.showWarningModal "Zero will be credited for #{resp.month}. To not credit zero click ❌ to delete"
                             $scope.budgets[index] = resp
                             calcRestBudget()
                             defer.resolve()
@@ -112,13 +117,8 @@
                     ).then(
                         (resp) ->
 #                            budget.budget_loc = parseInt resp.budget_loc
-#                            if budget.budget_loc == 0
-#                                $scope.showBudgetWarning = true
-#                                $timeout ->
-#                                    console.log 'OFF U'
-#                                    $scope.showBudgetWarning = false
-#                                , 1000
-
+                            if budget.budget_loc == 0
+                                $scope.showWarningModal "Zero will be credited for #{budget.month}. To not credit zero click ❌ to delete"
                             calcRestBudget()
                             defer.resolve()
                         (err) ->
