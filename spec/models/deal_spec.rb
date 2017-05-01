@@ -307,7 +307,7 @@ RSpec.describe Deal, type: :model do
     end
   end
 
-  describe '#import' do
+  describe '#import', focus: true do
     let!(:user) { create :user }
     let!(:another_user) { create :user }
     let!(:company) { user.company }
@@ -342,8 +342,8 @@ RSpec.describe Deal, type: :model do
       expect(deal.stage.name).to eq(data[:stage])
       expect(deal.users.map(&:email)).to eq([data[:team].split('/')[0]])
       expect(deal.deal_members.map(&:share)).to eq([data[:team].split('/')[1].to_i])
-      expect(deal.created_at).to eq(data[:created])
-      expect(deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y'))
+      expect(deal.created_at).to eq(DateTime.strptime(data[:created], '%m/%d/%Y') + 8.hours)
+      expect(deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y') + 8.hours)
       expect(deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 
@@ -373,7 +373,6 @@ RSpec.describe Deal, type: :model do
       expect(existing_deal.stage.name).to eq(data[:stage])
       expect(existing_deal.users.map(&:email)).to include(data[:team].split('/')[0])
       expect(existing_deal.deal_members.map(&:share)).to include(data[:team].split('/')[1].to_i)
-      expect(existing_deal.created_at).to eq(data[:created])
       expect(existing_deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 
@@ -383,7 +382,7 @@ RSpec.describe Deal, type: :model do
         expect(Deal.import(generate_csv(data), user)).to eq([])
       end.not_to change(Deal, :count)
       existing_deal.reload
-      expect(existing_deal.closed_at).to eq(Date.parse(data[:closed_date]))
+      expect(existing_deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y') + 8.hours)
     end
 
     it 'allows creation date to be nil' do
