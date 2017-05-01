@@ -13,6 +13,7 @@
   $scope.contactSearchText = ""
   $scope.clientContactUrl = 'api/clients/' + $routeParams.id + '/client_contacts?primary=true'
   $scope.url = 'api/resources';
+  $scope.object = { userToLink: null }
 
   $scope.init = ->
     ActivityType.all().then (activityTypes) ->
@@ -93,7 +94,7 @@
     $scope.getIOs(account_type.option.name)
     if account_type.option && account_type.option.name == "Advertiser"
       $scope.getChildClients()
-      $scope.getClientConnectedClientContacts()
+    $scope.getClientConnectedClientContacts()
     $scope.categoryOptions = Field.findFieldOptions($scope.currentClient.fields, 'Category')
     $scope.segmentOptions = Field.findFieldOptions($scope.currentClient.fields, 'Segment')
     $scope.regionOptions = Field.findFieldOptions($scope.currentClient.fields, 'Region')
@@ -268,16 +269,24 @@
         client: ->
           {}
 
-  $scope.deleteAccountConnection = (clientConnection) ->
-    return
+  $scope.deleteChildClient = (client) ->
+    if confirm("Click Ok to remove the child account or Cancel")
+      client.parent_client_id = null
+      client.client_type = $scope.currentClient.client_type
+      client.$update(
+        (data) ->
+          $scope.getChildClients()
+      )
 
   $scope.deleteAccountConnectionContact = (connectedContact) ->
-    connectedContact.client_id = null
-    client_id = connectedContact.primary_client_json.id
-    Contact._update(id: connectedContact.id, contact: connectedContact, unassign: true).then (contact) ->
-      connectedContact.client_id = client_id
+    if confirm("Click Ok to remove the account or Cancel")
+      connectedContact.client_id = null
+      client_id = connectedContact.primary_client_json.id
       Contact._update(id: connectedContact.id, contact: connectedContact, unassign: true).then (contact) ->
-        $scope.getClientConnectedClientContacts()
+        connectedContact.client_id = client_id
+        Contact._update(id: connectedContact.id, contact: connectedContact, unassign: true).then (contact) ->
+          $scope.getClientConnectedClientContacts()
+
 
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
@@ -451,21 +460,29 @@
 
   $scope.showLinkExistingUser = ->
     User.query().$promise.then (users) ->
-      $scope.users = $filter('notIn')(users, $scope.currentClient.client_members, 'user_id')
+      $scope.users = $filter('notIn')(users, $scope.client_members, 'user_id')
 
   $scope.linkExistingUser = (item) ->
-    $scope.userToLink = undefined
+    $scope.object.userToLink = undefined
     ClientMember.save(client_id: $scope.currentClient.id, client_member: { user_id: item.id, share: 0, values: [] }).$promise.then (client_member) ->
-      $scope.getClientMembers()
+      Field.defaults(client_member, 'Client').then (fields) ->
+        client_member.role = Field.field(client_member, 'Member Role')
+        $scope.client_members.push(client_member)
 
   $scope.deleteMember = (member) ->
-    if confirm('Are you sure you want to delete "' +  member.name + '"?')
+    if confirm('Are you sure you want to delete "' +  member.user.name + '"?')
       ClientMember.delete(id: member.id, client_id: $scope.currentClient.id).$promise.then (client) ->
-        $scope.getClientMembers()
+        $scope.client_members = $filter('notIn')($scope.client_members, [member], 'id')
 
   $scope.updateClientMember = (data) ->
-    ClientMember.update(id: data.id, client_id: $scope.currentClient.id, client_member: data).$promise.then (client) ->
-      $scope.getClientMembers()
+    ClientMember.update(id: data.id, client_id: $scope.currentClient.id, client_member: data).$promise.then (client_member) ->
+      Field.defaults(client_member, 'Client').then (fields) ->
+        client_member.role = Field.field(client_member, 'Member Role')
+        $scope.client_members = _.map $scope.client_members, (item) ->
+          if item.id == client_member.id
+            return client_member
+          else
+            return item
 
   $scope.showLinkExistingPerson = ->
     $scope.showContactList = true
@@ -481,12 +498,6 @@
         $scope.client_contacts = []
       $scope.client_contacts.unshift(contact)
 
-#  $scope.updateClientMember = (clientMember) ->
-#    clientMember.$update(
-#      ->
-#        Field.defaults(clientMember, 'Client').then (fields) ->
-#          clientMember.role = Field.field(clientMember, 'Member Role')
-#    )
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the account "' +  $scope.currentClient.name + '"?')
@@ -526,7 +537,8 @@
     $scope.init()
 
   $scope.$on 'updated_contacts', ->
-    $scope.getContacts()
+#    $scope.getContacts()
+    $scope.$broadcast('pagination:reload');
     $scope.getClientConnectedClientContacts()
 
   $scope.$on 'updated_activities', ->
@@ -543,9 +555,9 @@
     $scope.getDeals($scope.currentClient)
 
   $scope.$on 'new_client_member', (_event, args) ->
-    Field.defaults(args.clientMember, 'Client').then (fields) ->
-      args.clientMember.role = Field.field(args.clientMember, 'Member Role')
-      $scope.client_members.push(args.clientMember)
+#    Field.defaults(args.clientMember, 'Client').then (fields) ->
+#      args.clientMember.role = Field.field(args.clientMember, 'Member Role')
+#      $scope.client_members.push(args.clientMember)
 
   $scope.$on 'new_client_connection', ->
     $scope.getClientConnectedClientContacts()
@@ -721,9 +733,7 @@
     $scope.initActivity()
 
   $scope.$on 'newContact', (event, contact) ->
-    if $scope.populateContact
-      $scope.contacts.push contact
-      $scope.populateContact = false
+    $scope.$broadcast('pagination:reload');
 
   $scope.$on 'newClient', (event, client) ->
     $scope.getChildClients()

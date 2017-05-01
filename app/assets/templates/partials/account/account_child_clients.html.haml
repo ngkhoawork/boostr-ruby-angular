@@ -14,6 +14,7 @@
                 %td
                     %a{'ng-href': '/accounts/{{child_client.id}}'} {{ child_client.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showAccountEditModal(child_client)'}
+                    %i.fa.fa-trash.delete-deal{'ng-click': 'deleteChildClient(child_client)'}
                 %td
                     {{ getClientCategory(child_client) }}
                 %td

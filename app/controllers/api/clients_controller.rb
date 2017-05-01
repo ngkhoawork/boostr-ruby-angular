@@ -141,10 +141,17 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        render json: client.agency_contacts.where("contacts.client_id != ?", client.id)
+        contacts = client.agency_contacts.where("contacts.client_id != ?", client.id)
       elsif client.client_type.name == "Advertiser"
-        render json: client.advertiser_contacts.where("contacts.client_id != ?", client.id)
+        contacts = client.advertiser_contacts.where("contacts.client_id != ?", client.id)
       end
+      if params[:name]
+        contacts = contacts.where('contacts.name ilike ?', "%#{params[:name]}%")
+      end
+      if params[:page] && params[:per]
+        contacts = contacts.limit(limit).offset(offset)
+      end
+      render json: contacts
     else
       render json: []
     end

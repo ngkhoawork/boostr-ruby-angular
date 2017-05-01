@@ -1,33 +1,23 @@
-#client_modal.popup-modal
-    %form{ ng: { submit: 'submitForm()' } }
+#contact_assign_modal.popup-modal
+    %form.form-horizontal
         .popup-modal-header
             Assign Contact to {{subjectType}}
             %span.close-btn{'ng-click': 'cancel()'}
-        .popup-modal-body
+        .popup-modal-body.modal-body{style: 'padding: 15px'}
             .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
                 .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
                     %i.fa.fa-warning
                     {{error}}
             .form-group
+                %input.form-control{ name: 'contact', placeholder: 'Select', ng: { model: 'searchText', change: 'searchContacts(searchText)' } }
+            .form-group
                 .row
-                    .col-xs-6{'ng-class':'{error: errors.client}'}
-                        %span.error-text {{errors.client}}
-                        %label{ for: 'client' }
-                            Account
-                        %ui-select{ client: 'client', ng: { model: 'object.client_id', keyup: 'searchClients($select.search)'} }
-                            %ui-select-match{ placeholder: 'Pick from list or search', "allow-clear": 'true' }
-                                {{ $select.selected.name }}
-                            %ui-select-choices{ repeat: 'client.id as client in clients | filter: { name: $select.search }' }
-                                %div{ ng: { bind: { html: 'client.name' } } }
-                    .col-xs-6{'ng-class':'{error: errors.contact}'}
-                        %span.error-text {{errors.contact}}
-                        %label{ for: 'contact' }
-                            Contact
-                        %ui-select{ contact: 'contact', ng: { model: 'object.contact_id', change: 'setContact($select.selected)'} }
-                            %ui-select-match{ placeholder: 'Pick from list or search', "allow-clear": 'true' }
-                                {{ $select.selected.name }}
-                            %ui-select-choices{ repeat: 'contact.id as contact in contacts | filter: { name: $select.search }' }
-                                %div{ ng: { bind: { html: 'contact.name' } } }
+                    .col-xs-12
+                        .client-list
+                            .client-info{ 'ng-repeat': 'contact in contacts | filter: { name: searchText }' }
+                                .name{ ng: { bind: { html: 'contact.name' } } }
+                                .action
+                                    %a{ href: "javascript:void(0)", 'ng-click': "assignContact(contact)" }
+                                        Assign
         .popup-modal-footer
             %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
-            %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{submitText}}

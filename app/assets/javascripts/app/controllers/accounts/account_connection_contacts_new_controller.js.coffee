@@ -24,34 +24,26 @@
 #          return item.advertiser
 
 
-    Client.connected_contacts({id: $scope.currentClient.id}).$promise.then (connected_contacts) ->
+    Client.connected_contacts({ id: $scope.currentClient.id, page: 1, per: 10 }).$promise.then (connected_contacts) ->
       $scope.contacts = connected_contacts
 
   searchTimeout = null;
-  $scope.searchClients = (query) ->
+  $scope.searchContacts = (query) ->
     if searchTimeout
       clearTimeout(searchTimeout)
       searchTimeout = null
     searchTimeout = setTimeout(
-      -> $scope.loadClients(query)
+      -> searchObj(query)
       400
     )
 
-  $scope.loadClients = (query) ->
-    if $scope.currentClient.client_type.option.name == 'Advertiser'
-      type_id = $scope.Advertiser
-    else if $scope.currentClient.client_type.option.name == 'Agency'
-      type_id = $scope.Agency
-    Client.query({ filter: 'all', name: query, per: 10, client_type_id: type_id }).$promise.then (clients) ->
-      $scope.clients = clients
-
-  $scope.searchObj = (name) ->
+  searchObj = (name) ->
     if name.trim() == ""
-      Client.all1({ page: 1, per: 10, filter: "all" }).then (contacts) ->
-        $scope.contacts = contacts
+      Client.connected_contacts({ id: $scope.currentClient.id, page: 1, per: 10 }).$promise.then (connected_contacts) ->
+        $scope.contacts = connected_contacts
     else
-      Contact.all1({ page: 1, per: 10, filter: "all", name: name.trim() }).then (contacts) ->
-        $scope.contacts = contacts
+      Client.connected_contacts({ id: $scope.currentClient.id, page: 1, per: 10, name: name.trim() }).$promise.then (connected_contacts) ->
+        $scope.contacts = connected_contacts
 
   $scope.setContact = (contact) ->
     $scope.contact = contact
@@ -60,29 +52,11 @@
     client_types.options.forEach (option) ->
       $scope[option.name] = option.id
 
-  $scope.submitForm = () ->
-    $scope.errors = {}
-
-    if !$scope.object.client_id
-      $scope.errors['client'] = 'Client is required'
-
-    if !$scope.object.contact_id
-      $scope.errors['contact'] = 'Contact is required'
-
-    if Object.keys($scope.errors).length > 0 then return
-
-    $scope.contact.client_id = $scope.object.client_id
-    Contact._update(id: $scope.contact.id, contact: $scope.contact).then(
+  $scope.assignContact = (contact) ->
+    contact.client_id = $scope.currentClient.id
+    Contact._update(id: contact.id, contact: contact).then(
       (contact) ->
-        clientConnection = {agency_id: contact.primary_client_json.id, advertiser_id: contact.client_id, primary: false, active: true}
-        ClientConnection.create(client_connection: clientConnection).then(
-          (client_connection) ->
-            $modalInstance.close(contact)
-          (resp) ->
-            for key, error of resp.data.errors
-              $scope.errors[key] = error && error[0]
-            $scope.buttonDisabled = false
-        )
+        $modalInstance.close(contact)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
