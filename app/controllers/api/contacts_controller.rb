@@ -96,7 +96,13 @@ class Api::ContactsController < ApplicationController
   end
 
   def assign_account
+    client_contact = contact.client_contacts.new(client_id: params[:client_id], primary: false)
 
+    if client_contact.save
+      render nothing: true
+    else
+      render json: { errors: client_contact.errors.messages }, status: :unprocessable_entity
+    end
   end
 
   private
@@ -192,7 +198,7 @@ class Api::ContactsController < ApplicationController
   end
 
   def contact
-    @contact ||= current_user.company.contacts.where(id: params[:id]).first
+    @contact ||= current_user.company.contacts.find(params[:id])
   end
 
   def contacts

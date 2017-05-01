@@ -218,6 +218,16 @@ RSpec.describe Api::ContactsController, type: :controller do
     end
   end
 
+  describe 'GET #assign_account' do
+    it 'should assign client to contact' do
+      contact = create :contact
+
+      expect{
+        post :assign_account, id: contact.id, client_id: client.id
+      }.to change(ClientContact, :count).by(1)
+    end
+  end
+
   def prepare_contact_metadata
     field = user.company.fields.find_by(subject_type: 'Contact')
     ceo_option = create :option, name: 'CEO', field: field
