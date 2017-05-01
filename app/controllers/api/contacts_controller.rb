@@ -21,14 +21,14 @@ class Api::ContactsController < ApplicationController
       .limit(limit)
       .offset(offset), each_serializer: ContactSerializer,
                        contact_options: company_job_level_options,
-                       advertiser: Client.advertiser_type_id(current_user.company),
+                       advertiser: advertiser_type_id,
                        agency: Client.agency_type_id(current_user.company)
   end
 
   def show
     render json: contact, serializer: Api::ContactDetailSerializer,
                           contact_options: company_job_level_options,
-                          advertiser: Client.advertiser_type_id(current_user.company),
+                          advertiser: advertiser_type_id,
                           agency: Client.agency_type_id(current_user.company)
   end
 
@@ -78,7 +78,7 @@ class Api::ContactsController < ApplicationController
   end
 
   def related_clients
-    render json: contact.workplaces.by_type_id(Client.advertiser_type_id(current_user.company)).as_json(
+    render json: contact.workplaces.by_type_id(advertiser_type_id).as_json(
       override: true,
       only: [:id, :name],
       include: {
@@ -88,11 +88,10 @@ class Api::ContactsController < ApplicationController
   end
 
   def advertisers
-    render json: current_user.company
-                             .contacts
-                             .with_advertisers_by_name(params[:name])
-                             .limit(limit)
-                             .as_json(ovveride: true, only: [:id, :name])
+    render json: current_user.clients.by_type_id(advertiser_type_id)
+                                     .by_name(params[:name])
+                                     .limit(limit)
+                                     .as_json(override: true, only: [:id, :name])
   end
 
   def assign_account
@@ -272,5 +271,9 @@ class Api::ContactsController < ApplicationController
 
   def company_job_level_options
     current_user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level').options.select(:id, :field_id, :name)
+  end
+
+  def advertiser_type_id
+    Client.advertiser_type_id(current_user.company)
   end
 end

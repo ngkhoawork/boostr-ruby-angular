@@ -70,10 +70,6 @@ class Contact < ActiveRecord::Base
     joins(:latest_happened_activity).where(activities: { happened_at: start_date..end_date }) if (start_date && end_date).present?
   end
 
-  scope :with_advertisers_by_name, -> name do
-    joins(:clients).where(clients: { client_type_id: Client::ADVERTISER_CLIENT_TYPE }).by_name(name)
-  end
-
   after_save do
     if client_id_changed? && !client_id.nil?
       relation = ClientContact.find_or_initialize_by(contact_id: id, client_id: client_id)

@@ -29,14 +29,9 @@ class Api::ActivitiesController < ApplicationController
       @activity.updated_by = current_user.id
 
       if @activity.save
-        current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+        @activity.contacts = add_contacts_to_activity
+        @activity.contacts.where('activity_updated_at < ? OR activity_updated_at is null', @activity.happened_at).update_all(activity_updated_at: @activity.happened_at)
 
-        activity_contacts = []
-        activity_contacts += params[:contacts] if params[:contacts]
-        activity_contacts += process_raw_contact_data if params[:guests]
-
-        contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
-        @activity.contacts = contacts
         render json: activity, status: :created
       else
         render json: { errors: activity.errors.messages }, status: :unprocessable_entity
@@ -46,14 +41,9 @@ class Api::ActivitiesController < ApplicationController
 
   def update
     if activity.update_attributes(activity_params)
-      current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+      activity.contacts = add_contacts_to_activity
+      activity.contacts.where('activity_updated_at < ? OR activity_updated_at is null', activity.happened_at).update_all(activity_updated_at: activity.happened_at)
 
-      activity_contacts = []
-      activity_contacts += params[:contacts] if params[:contacts]
-      activity_contacts += process_raw_contact_data if params[:guests]
-
-      contacts = company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
-      activity.contacts = contacts
       render json: activity, status: :accepted
     else
       render json: { errors: client.errors.messages }, status: :unprocessable_entity
@@ -236,5 +226,15 @@ class Api::ActivitiesController < ApplicationController
     else
       current_user.team
     end
+  end
+
+  def add_contacts_to_activity
+    current_user_contact = Contact.by_email(current_user.email, current_user.company_id)
+
+    activity_contacts = []
+    activity_contacts += params[:contacts] if params[:contacts]
+    activity_contacts += process_raw_contact_data if params[:guests]
+
+    company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
   end
 end

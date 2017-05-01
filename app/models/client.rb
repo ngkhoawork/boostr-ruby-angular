@@ -44,7 +44,6 @@ class Client < ActiveRecord::Base
 
   ADVERTISER = 10
   AGENCY = 11
-  ADVERTISER_CLIENT_TYPE = 111
 
   def self.to_csv(company)
     header = [
