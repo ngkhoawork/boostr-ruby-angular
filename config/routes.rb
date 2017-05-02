@@ -89,6 +89,7 @@ Rails.application.routes.draw do
       get :unassigned_clients
       post :add_client
       post :add_all_clients
+      post :add_all_clients
       resources :bp_estimates, only: [:index, :create, :update, :show, :destroy]
     end
     resources :temp_ios, only: [:index, :update]
@@ -100,9 +101,9 @@ Rails.application.routes.draw do
       member do
         post :assign_account
         get :related_clients
+        get :advertisers
       end
       collection do
-        get :advertisers
         get :metadata
       end
     end

@@ -200,7 +200,8 @@ RSpec.describe Api::ContactsController, type: :controller do
       expect(json_response).to eql(
         'workplaces' => ['Fidelity', 'Fliboard'],
         'job_levels' => ['CEO', 'Seller'],
-        'cities'     => ['Palm Beach', 'New York']
+        'cities'     => ['Palm Beach', 'New York'],
+        'countries'  => ISO3166::Country.all_translated
       )
     end
   end

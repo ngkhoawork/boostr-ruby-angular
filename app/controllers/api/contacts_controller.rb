@@ -90,6 +90,7 @@ class Api::ContactsController < ApplicationController
   def advertisers
     render json: current_user.clients.by_type_id(advertiser_type_id)
                                      .by_name(params[:name])
+                                     .without_related_clients(params[:id])
                                      .limit(limit)
                                      .as_json(override: true, only: [:id, :name])
   end
