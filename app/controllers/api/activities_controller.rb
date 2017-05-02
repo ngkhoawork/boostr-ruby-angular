@@ -239,10 +239,16 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def update_all_activity_updated_at
-    if activity.contacts.greater_than_happened_at(activity_happened_at).blank?
-      activity.contacts.less_than_happened_at(activity_happened_at).update_all(activity_updated_at: activity_happened_at)
+    if activity.contacts.greater_than_happened_at(activity_happened_at).any?
+      update_contact_activity_updated_at_field
     else
       activity.contacts.less_than(activity_happened_at).update_all(activity_updated_at: activity_happened_at)
+    end
+  end
+
+  def update_contact_activity_updated_at_field
+    activity.contacts.less_than_happened_at(activity_happened_at).each do |contact|
+      contact.update(activity_updated_at: contact.latest_happened_activity.first.happened_at)
     end
   end
 

@@ -325,6 +325,16 @@ describe Api::ActivitiesController, type: :controller do
         expect(contact.reload.activity_updated_at).to eq activity_params[:happened_at]
       end
 
+      it 'update activity updated at field when value is less than activity happened at but contact has activity with happened at greater then we send' do
+        contact = create :contact, activity_updated_at: '2016-04-11 23:15:03'
+        first_activity = create :activity, happened_at: '2016-04-11 23:15:03'
+        second_activity = create :activity, contacts: [contact], happened_at: '2016-04-01 23:15:03'
+
+        put :update, id: first_activity.id, activity: activity_params, contacts: [contact.id], format: :json
+
+        expect(contact.reload.activity_updated_at).to eq second_activity.happened_at
+      end
+
       it 'does not update activity updated at field when value is greater than activity happened at' do
         contact = create :contact, activity_updated_at: '2016-04-11 23:15:03'
         activity = create :activity
