@@ -9,6 +9,8 @@ class Contact < ActiveRecord::Base
 
   has_many :clients, -> { uniq }, through: :client_contacts
   has_many :client_contacts, dependent: :destroy
+  has_many :non_primary_client_contacts, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
+  has_many :non_primary_clients, -> { uniq }, through: :non_primary_client_contacts, source: :client
 
   has_many :deals, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
@@ -26,7 +28,8 @@ class Contact < ActiveRecord::Base
   validate :email_is_present?
   validate :email_unique?
 
-  scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
+  scope :for_client, -> client_id { Contact.joins("INNER JOIN client_contacts as cc1 ON contacts.id=cc1.contact_id").where("cc1.client_id = ?", client_id) if client_id.present? }
+  scope :not_for_client, -> client_id { Contact.joins("INNER JOIN client_contacts as cc1 ON contacts.id=cc1.contact_id").where("cc1.client_id = ?", client_id) if client_id.present? }
   scope :for_primary_client, -> client_id { Contact.joins("INNER JOIN client_contacts as cc ON cc.contact_id = contacts.id").where("cc.client_id = ? and cc.primary IS TRUE", client_id) if client_id.present? }
   scope :unassigned, -> user_id { where(created_by: user_id).where('id NOT IN (SELECT DISTINCT(contact_id) from client_contacts)') }
   scope :by_email, -> email, company_id {
@@ -44,6 +47,11 @@ class Contact < ActiveRecord::Base
       relation.save
     elsif client_id_changed? && client_id.nil?
       self.clients = []
+    elsif client_id.present?
+      relation = ClientContact.find_or_initialize_by(contact_id: id, client_id: client_id)
+      relations = ClientContact.where(contact_id: id)
+      relation.primary = true if relations.count == 0
+      relation.save
     end
   end
 

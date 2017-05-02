@@ -23,6 +23,9 @@ class Client < ActiveRecord::Base
   has_many :agencies, through: :agency_connections, source: :advertiser
   has_many :advertisers, through: :advertiser_connections, source: :agency
 
+  has_many :agency_client_contacts, through: :agencies, source: :client_contacts
+  has_many :advertiser_client_contacts, -> { uniq }, through: :advertisers, source: :primary_client_contacts
+
   has_many :agency_contacts, through: :agencies, source: :contacts
   has_many :advertiser_contacts, -> { uniq }, through: :advertisers, source: :primary_contacts
 
@@ -134,14 +137,6 @@ class Client < ActiveRecord::Base
         line << team_members.join(';')
         line << (client.client_region.try(:name))
         line << (client.client_segment.try(:name))
-        if client.id == 290
-          puts "=======region"
-          puts client
-          puts client.client_region_id
-          puts client.client_region
-          puts client.client_region.try(:name)
-          puts client.client_category.try(:name)
-        end
 
         csv << line
       end

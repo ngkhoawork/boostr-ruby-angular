@@ -29,5 +29,5 @@
                     {{ client_connection.active ? 'Active' : 'Inactive' }}
                 %td{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
                     {{ client_connection.advertiser.address.city }}
-                %td{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
+                %td.left{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
                     {{ client_connection.agency.address.city }}

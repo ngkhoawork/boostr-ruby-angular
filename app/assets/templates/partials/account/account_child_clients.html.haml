@@ -17,6 +17,6 @@
                     %i.fa.fa-trash.delete-deal{'ng-click': 'deleteChildClient(child_client)'}
                 %td
                     {{ getClientCategory(child_client) }}
-                %td
+                %td.left
                     %div{ 'ng-repeat': 'client_member in child_client.client_members'}
                         {{ client_member.user.name + ' (' + client_member.share + '%)' }}
