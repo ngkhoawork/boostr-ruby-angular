@@ -149,4 +149,5 @@
 
         $scope.$on 'updated_activities', loadActivities
         $scope.$on 'updated_contacts', getContact
+        $scope.$on 'contact_client_assigned', getRelated
     ]

@@ -19,6 +19,7 @@
                    id: contact.id
                    client_id: client.id
                ).$promise.then (resp) ->
+                   $rootScope.$broadcast 'contact_client_assigned'
                    $scope.clients = _.without $scope.clients, _.findWhere($scope.clients, id: client.id)
 
             $scope.cancel = ->
