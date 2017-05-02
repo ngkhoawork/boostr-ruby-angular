@@ -67,7 +67,19 @@ class Contact < ActiveRecord::Base
   end
 
   scope :by_last_touch, -> start_date, end_date do
-    joins(:latest_happened_activity).where(activities: { happened_at: start_date..end_date }) if (start_date && end_date).present?
+    where(activity_updated_at: start_date..end_date) if (start_date && end_date).present?
+  end
+
+  scope :less_than, -> activity_updated_at do
+    where('activity_updated_at < ? OR activity_updated_at is null', activity_updated_at)
+  end
+
+  scope :greater_than_happened_at, -> happened_at do
+    joins(:activities).where('activities.happened_at > ?', happened_at)
+  end
+
+  scope :less_than_happened_at, -> happened_at do
+    joins(:activities).where('activities.happened_at < ? OR activities.happened_at is null', happened_at)
   end
 
   after_save do

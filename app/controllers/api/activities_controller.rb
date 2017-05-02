@@ -30,7 +30,7 @@ class Api::ActivitiesController < ApplicationController
 
       if @activity.save
         @activity.contacts = add_contacts_to_activity
-        @activity.contacts.where('activity_updated_at < ? OR activity_updated_at is null', @activity.happened_at).update_all(activity_updated_at: @activity.happened_at)
+        @activity.contacts.less_than(@activity.happened_at).update_all(activity_updated_at: @activity.happened_at)
 
         render json: activity, status: :created
       else
@@ -42,7 +42,7 @@ class Api::ActivitiesController < ApplicationController
   def update
     if activity.update_attributes(activity_params)
       activity.contacts = add_contacts_to_activity
-      activity.contacts.where('activity_updated_at < ? OR activity_updated_at is null', activity.happened_at).update_all(activity_updated_at: activity.happened_at)
+      update_all_activity_updated_at
 
       render json: activity, status: :accepted
     else
@@ -236,5 +236,17 @@ class Api::ActivitiesController < ApplicationController
     activity_contacts += process_raw_contact_data if params[:guests]
 
     company.contacts.where(id: activity_contacts).where.not(id: current_user_contact.ids)
+  end
+
+  def update_all_activity_updated_at
+    if activity.contacts.greater_than_happened_at(activity_happened_at).blank?
+      activity.contacts.less_than_happened_at(activity_happened_at).update_all(activity_updated_at: activity_happened_at)
+    else
+      activity.contacts.less_than(activity_happened_at).update_all(activity_updated_at: activity_happened_at)
+    end
+  end
+
+  def activity_happened_at
+    @_activity_happened_at ||= activity.happened_at
   end
 end
