@@ -57,9 +57,14 @@
     get_related:
       method: 'GET'
       url: '/api/contacts/:id/related_clients'
+      isArray: true
     get_advertisers:
       method: 'GET'
-      url: '/api/contacts/advertiser'
+      url: '/api/contacts/:id/advertisers'
+      isArray: true
+    assign_account:
+      method: 'POST'
+      url: '/api/contacts/:id/assign_account'
 
   # @TODO: Replace all of this with just returning resource
   allContacts = []

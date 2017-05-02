@@ -39,8 +39,8 @@
                     filter.city = s.city if s.city
                     filter.country = s.country if s.country
                     if s.date.startDate && s.date.endDate
-                        filter.sart_date = s.date.startDate.format('YYYY-MM-DD')
-                        filter.end_date = s.date.endDate.format('YYYY-MM-DD')
+                        filter.start_date = s.date.startDate.format('YYYY-MM-DD') + 'T00:00:00.000Z'
+                        filter.end_date = s.date.endDate.format('YYYY-MM-DD') + 'T23:59:59.999Z'
                     filter
                 apply: (reset) ->
                     $scope.getContacts()

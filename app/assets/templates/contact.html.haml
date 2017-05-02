@@ -40,7 +40,7 @@
 					%div.mb20
 						%span.title{'ng-if': 'currentContact.primary_client_type == "Agency"'} Related Advertisers
 						%span.title{'ng-if': 'currentContact.primary_client_type == "Advertiser"'} Related Brands/Child Accounts
-						%add-button{'ng-click': ''} Add
+						%add-button{'ng-click': 'showAssignModal(currentContact)'} Add
 					.table-wrapper
 						%table.table.table-hover
 							%thead
@@ -49,26 +49,14 @@
 									%th Status
 									%th City
 							%tbody
-								%tr
-									%td name...
-									%td status...
-									%td city...
-								%tr
-									%td name...
-									%td status...
-									%td city...
-								%tr
-									%td name...
-									%td status...
-									%td city...
-								%tr
-									%td name...
-									%td status...
-									%td city...
-
+								%tr{'ng-repeat': 'account in relatedAccounts'}
+									%td {{account.name}}
+									%td {{account.status}}
+									%td {{account.address.city}}
 
 			.col-xs-3
 				.block.contact-info.campaign-details
+					%div.pull-right{'ng-include': '"partials/reminder_form.html"'}
 					%div.pull-right
 						%span.star
 							*

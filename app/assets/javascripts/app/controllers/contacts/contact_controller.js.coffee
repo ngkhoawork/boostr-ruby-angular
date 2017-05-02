@@ -6,6 +6,7 @@
         $scope.activities = []
         $scope.types = []
         $scope.contactCfNames = []
+        $scope.relatedAccounts = []
 
         (loadActivities = ->
             Activity.all(contact_id: $routeParams.id).then (activities) ->
@@ -19,15 +20,18 @@
 #                $scope.activities = contact.activities
         )()
 
+        (getRelated = ->
+            Contact.get_related(id: $routeParams.id).$promise.then (data) ->
+                console.log 'RELATED', data
+                $scope.relatedAccounts = data
+        )()
+
         ContactCfName.all().then (contactCfNames) ->
             console.log contactCfNames
             $scope.contactCfNames = contactCfNames
 
         ActivityType.all().then (activityTypes) ->
             $scope.types = activityTypes
-
-        Contact.get_related().$promise.then (data) ->
-            console.log 'RELATED', data
 
         # Activity icon
         $scope.getIconName = (typeName) ->
@@ -109,15 +113,15 @@
                     activity: ->
                         activity
 
-        $scope.showAssignModal = ->
+        $scope.showAssignModal = (contact) ->
             $scope.modalInstance = $modal.open
                 templateUrl: 'modals/contact_assign_form.html'
                 size: 'md'
-                controller: 'ContactsAssignController'
+                controller: 'ContactDetailAssignController'
                 backdrop: 'static'
                 keyboard: false
                 resolve:
-                    contact: -> $scope.currentContact
+                    contact: -> contact
 
         $scope.deleteContact = (contact) ->
             if confirm('Are you sure you want to delete "' + contact.name + '"?')
