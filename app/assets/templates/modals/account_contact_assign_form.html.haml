@@ -1,0 +1,30 @@
+#contact_assign_modal
+  %form.form-horizontal
+    .modal-header.text-center
+      %a.close{ ng: { click: 'cancel()' } }
+        %span{'aria-hidden' => 'true'}
+          = inline_svg 'icons/close.svg'
+      %h3.modal-title
+        %strong
+          Assign to an Account
+    .modal-body
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          <strong style="text-transform: capitalize">{{field}}</strong>
+          {{error}}
+
+      .form-group
+        %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText' } }
+      .form-group
+        .row
+          .col-xs-12
+            .client-list
+              .client-info{ 'ng-repeat': 'client in clients | filter: { name: searchText }' }
+                .name{ ng: { bind: { html: 'client.name' } } }
+                .action
+                  %a{ href: "javascript:void(0)", 'ng-click': "assignClient(client)" }
+                    Assign
+
+    .modal-footer
+      %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel

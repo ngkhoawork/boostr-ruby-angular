@@ -161,7 +161,7 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        render json: client.agency_contacts.for_client(client.id)
+        render json: client.agency_contacts.for_primary_client(client.id)
       elsif client.client_type.name == "Advertiser"
         render json: client.advertiser_contacts.for_client(client.id)
       end

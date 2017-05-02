@@ -23,7 +23,7 @@ class Client < ActiveRecord::Base
   has_many :agencies, through: :agency_connections, source: :advertiser
   has_many :advertisers, through: :advertiser_connections, source: :agency
 
-  has_many :agency_contacts, -> { uniq }, through: :agencies, source: :primary_contacts
+  has_many :agency_contacts, through: :agencies, source: :contacts
   has_many :advertiser_contacts, -> { uniq }, through: :advertisers, source: :primary_contacts
 
   has_many :values, as: :subject

@@ -421,11 +421,28 @@
                         visibility: visible;
                     }
                 }
-            }
-            th, td {
-                text-align: left;
+
+                button {
+                    height: 36px;
+                    padding: 5px 16px;
+                    visibility: hidden;
+                    svg {
+                        width: 15px;
+                        margin-right: 5px;
+                        vertical-align: middle;
+                        path {
+                            fill: white;
+                        }
+                    }
+                }
+                &:hover {
+                    button {
+                        visibility: visible;
+                    }
+                }
             }
         }
+
         .member-share, .contact-role-dropdown {
             position: relative;
         }

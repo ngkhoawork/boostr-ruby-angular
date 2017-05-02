@@ -405,6 +405,9 @@
       keyboard: false
       resolve:
         clientConnection: $scope.setupNewClientConnection
+    .result.then (response) ->
+      $scope.getClientConnections()
+
 
   $scope.showEditAccountConnectionModal = (clientConnection) ->
     clientConnectionObj = angular.copy(clientConnection)
@@ -849,33 +852,20 @@
           $scope.getChildClients()
 
   $scope.showAssignContactModal = (contact) ->
-    advertiserTypeId = 0
-    ClientsTypes.list().then (clientDefaultTypes) ->
-      if clientDefaultTypes && clientDefaultTypes.types && clientDefaultTypes.types.length
-        _.each clientDefaultTypes.types, (typeObject) ->
-          if typeObject.name == 'Advertiser'
-            advertiserTypeId = typeObject.typeId
-      $scope.modalInstance = $modal.open
-        templateUrl: 'modals/contact_assign_form_copy_for_clients.html'
-        size: 'md'
-        controller: 'ContactsAssignController'
-        backdrop: 'static'
-        keyboard: false
-        resolve:
-          contact: ->
-            contact
-          typeId: ->
-            advertiserTypeId
-      .result.then (updated_contact) ->
-        $scope.initRelatedContacts()
-        $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->
-          if (item.id == updated_contact.id)
-            return updated_contact
-          else
-            return item
-        $scope.contactNotification[updated_contact.id] = "Assigned to " + updated_contact.clients[0].name
-        $scope.contactActionLog.push({
-          previousContact: contact,
-          message: updated_contact.clients[0].name
-        })
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/account_contact_assign_form.html'
+      size: 'md'
+      controller: 'AccountContactsAssignController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        contact: ->
+          contact
+        client: ->
+          $scope.currentClient
+        typeId: ->
+          $scope.Advertiser
+    .result.then (updated_contact) ->
+      if (updated_contact)
+        $scope.getClientConnectedClientContacts()
 ]
