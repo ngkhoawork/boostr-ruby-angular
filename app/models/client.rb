@@ -42,7 +42,7 @@ class Client < ActiveRecord::Base
   scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
   scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :without_related_clients, -> contact_id do
-    joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id })
+    joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id }).distinct
   end
 
   ADVERTISER = 10
