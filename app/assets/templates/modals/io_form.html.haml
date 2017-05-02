@@ -24,13 +24,13 @@
             %label{ for: 'external_io_number' }
               External IO #
             %input.form-control{ placeholder: 'External IO #', ng: { model: 'io.external_io_number', required: true }, name: 'external_io_number' }
-	  .form-group
-		  %label{ for: 'deal' } Deal
-		  %ui-select{ name: 'deal', ng: { model: 'io.deal_id', disabled: true, keyup: 'searchDeals($select.search)' }, 'on-select': "dealSelected($model)" }
-			  %ui-select-match{ placeholder: 'Deal' }
-				  {{ $select.selected.name }}
-			  %ui-select-choices{ repeat: 'deal.id as deal in deals' }
-				  %div{ ng: { bind: { html: 'deal.name' } } }
+      .form-group
+        %label{ for: 'deal' } Deal
+        %ui-select{ name: 'deal', ng: { model: 'io.deal_id', disabled: true, keyup: 'searchDeals($select.search)' }, 'on-select': "dealSelected($model)" }
+          %ui-select-match{ placeholder: 'Deal' }
+            {{ $select.selected.name }}
+          %ui-select-choices{ repeat: 'deal.id as deal in deals' }
+            %div{ ng: { bind: { html: 'deal.name' } } }
       .advertiser-agency
         .form-group.advertiser-field{'ng-class':'{error: errors.advertiser_id}'}
           %span.error-text {{errors.advertiser_id}}
