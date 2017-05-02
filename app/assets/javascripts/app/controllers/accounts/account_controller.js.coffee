@@ -1,6 +1,6 @@
 @app.controller 'AccountController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientsTypes'
-($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientsTypes) ->
+['$scope', '$rootScope', '$modal', '$routeParams', '$filter', '$location', '$window', '$sce', 'Client', 'User', 'ClientMember', 'ClientConnection', 'Contact', 'Deal', 'IO', 'AccountCfName', 'Field', 'Activity', 'ActivityType', 'HoldingCompany', 'Reminder', 'BpEstimate', '$http', 'ClientContacts', 'ClientContact', 'ClientsTypes'
+($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes) ->
 
   $scope.showMeridian = true
   $scope.types = []
@@ -62,7 +62,17 @@
 
   $scope.getClientConnectedClientContacts = ->
     Client.connected_client_contacts({id: $scope.currentClient.id}).$promise.then (connected_client_contacts) ->
-      $scope.connected_client_contacts = connected_client_contacts
+      if ($scope.currentClient.client_type.option.name == 'Advertiser')
+        $scope.connected_client_contacts = connected_client_contacts
+      else
+        $scope.connected_client_contacts = []
+        _.each connected_client_contacts, (connected_client_contact) ->
+          object = angular.copy(connected_client_contact)
+          _.each connected_client_contact.non_primary_client_contacts, (primary_client_contact) ->
+            new_object = angular.copy(object)
+            new_object.non_primary_client_contact = primary_client_contact
+            $scope.connected_client_contacts.push(new_object)
+
 
   $scope.getChildClients = ->
     Client.child_clients({id: $scope.currentClient.id}).$promise.then (child_clients) ->
@@ -278,14 +288,16 @@
           $scope.getChildClients()
       )
 
-  $scope.deleteAccountConnectionContact = (connectedContact) ->
+  $scope.deleteAccountConnectionContact = (contact) ->
     if confirm("Click Ok to remove the account or Cancel")
-      connectedContact.client_id = null
-      client_id = connectedContact.primary_client_json.id
-      Contact._update(id: connectedContact.id, contact: connectedContact, unassign: true).then (contact) ->
-        connectedContact.client_id = client_id
-        Contact._update(id: connectedContact.id, contact: connectedContact, unassign: true).then (contact) ->
+      if ($scope.currentClient.client_type.option.name == 'Agency')
+        ClientContact.delete(client_id: contact.non_primary_client_contact.client_id, id: contact.non_primary_client_contact.id).$promise.then (client) ->
           $scope.getClientConnectedClientContacts()
+      else if ($scope.currentClient.client_type.option.name == 'Advertiser')
+        _.each contact.non_primary_client_contacts, (client_contact) ->
+          if client_contact.contact_id == contact.id
+            ClientContact.delete(client_id: $scope.currentClient.id, id: client_contact.id).$promise.then (client) ->
+              $scope.getClientConnectedClientContacts()
 
 
   $scope.showEditModal = ->

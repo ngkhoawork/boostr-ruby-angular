@@ -46,7 +46,7 @@ class Api::ClientContactsController < ApplicationController
     @client ||= current_user.company.clients.find(params[:client_id])
   end
   def client_contact_params
-    params.require(:client_contact).permit(:contact_id, :primary, { values_attributes: [:id, :field_id, :option_id, :value] })
+    params.require(:client_contact).permit(:contact_id, :primary)
   end
 
   def client_contact

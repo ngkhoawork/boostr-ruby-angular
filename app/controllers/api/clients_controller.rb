@@ -141,9 +141,9 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        contacts = client.agency_contacts.where("contacts.client_id != ?", client.id)
+        contacts = client.agency_contacts
       elsif client.client_type.name == "Advertiser"
-        contacts = client.advertiser_contacts.where("contacts.client_id != ?", client.id)
+        contacts = client.advertiser_contacts
       end
       if params[:name]
         contacts = contacts.where('contacts.name ilike ?', "%#{params[:name]}%")
@@ -161,9 +161,9 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        render json: client.agency_contacts.for_primary_client(client.id)
+        render json: client.agency_contacts.for_primary_client(client.id).uniq
       elsif client.client_type.name == "Advertiser"
-        render json: client.advertiser_contacts.for_client(client.id)
+        render json: client.advertiser_contacts.for_client(client.id).uniq
       end
     else
       render json: []
