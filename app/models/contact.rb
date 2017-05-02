@@ -79,7 +79,7 @@ class Contact < ActiveRecord::Base
   end
 
   scope :less_than_happened_at, -> happened_at do
-    joins(:activities).where('activities.happened_at < ? OR activities.happened_at is null', happened_at)
+    joins(:activities).where('activities.happened_at <= ? OR activities.happened_at is null', happened_at)
   end
 
   after_save do
