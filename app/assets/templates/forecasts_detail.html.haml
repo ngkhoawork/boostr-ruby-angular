@@ -180,6 +180,14 @@
 												Total Budget
 												%i{'ng-show': 'sortRevenues.field == "budget"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
 										%th
+											%span.clickable{'ng-click': 'sortRevenues.by("in_period_amt")'}
+												In-Period Amt
+												%i{'ng-show': 'sortRevenues.field == "in_period_amt"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+										%th
+											%span.clickable{'ng-click': 'sortRevenues.by("in_period_split_amt")'}
+												Split In-Period Amt
+												%i{'ng-show': 'sortRevenues.field == "in_period_split_amt"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+										%th
 											%span.clickable{'ng-click': 'sortRevenues.by("start_date")'}
 												Start Date
 												%i{'ng-show': 'sortRevenues.field == "start_date"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
@@ -197,6 +205,8 @@
 										%td
 											%div{'ng-repeat': 'member in revenue.members'} {{member.user.first_name + ' ' + member.user.last_name}} {{member.share}}%
 										%td {{revenue.budget | currency : '$' : 0}}
+										%td {{revenue.in_period_amt | currency : '$' : 0}}
+										%td {{revenue.in_period_split_amt | currency : '$' : 0}}
 										%td {{revenue.start_date | date : 'MM/dd/yyyy'}}
 										%td {{revenue.end_date | date : 'MM/dd/yyyy'}}
 										%td{'ng-repeat': 'amount in revenue.quarters track by $index', 'ng-if': 'switch.revenues == "quarters" && amount != null'}
@@ -235,6 +245,14 @@
 												Total Budget
 												%i{'ng-show': 'sortDeals.field == "budget"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
 										%th
+											%span.clickable{'ng-click': 'sortDeals.by("period_budget")'}
+												In-Period Amt
+												%i{'ng-show': 'sortDeals.field == "period_budget"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+										%th
+											%span.clickable{'ng-click': 'sortDeals.by("split_period_budget")'}
+												Split In-Period Amt
+												%i{'ng-show': 'sortDeals.field == "split_period_budget"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+										%th
 											%span.clickable{'ng-click': 'sortDeals.by("stage.probability")'}
 												\%
 												%i{'ng-show': 'sortDeals.field == "stage.probability"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
@@ -257,6 +275,8 @@
 										%td
 											%div{'ng-repeat': 'member in deal.deal_members'} {{member.name}} {{member.share}}%
 										%td {{deal.budget | currency : '$' : 0}}
+										%td {{deal.period_budget | currency : '$' : 0}}
+										%td {{deal.split_period_budget | currency : '$' : 0}}
 										%td {{deal.stage.probability}}%
 										%td {{deal.start_date | date : 'MM/dd/yyyy'}}
 										%td {{deal.end_date | date : 'MM/dd/yyyy'}}
