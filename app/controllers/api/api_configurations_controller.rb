@@ -1,11 +1,12 @@
 class Api::ApiConfigurationsController < ApplicationController
+  respond_to :json
 
   def index
     render json: API::ApiConfigurations::Collection.new(api_configurations)
   end
 
   def update
-    if api_configuration.update!(api_configuration_params)
+    if api_configuration.update(api_configuration_params)
       render json: API::ApiConfigurations::Single.new(api_configuration)
     else
       render json: { errors: api_configuration.errors.messages }, status: :unprocessable_entity

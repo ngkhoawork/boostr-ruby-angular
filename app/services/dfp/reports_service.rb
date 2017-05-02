@@ -7,8 +7,6 @@ module DFP
     MAX_RETRIES = 5
     RETRY_INTERVAL = 1
 
-    # networkCode=122003474
-
     def initialize(options = {})
       super(options)
       authenticate_with_credentials

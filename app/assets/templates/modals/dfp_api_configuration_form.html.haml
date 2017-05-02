@@ -37,11 +37,11 @@
           .col-xs-12
             %label.control-label{ for: 'report_id' } Query id
             %input.form-control{ ng: { model: 'cumulative_dfp_report_query.report_id' }, name: 'report_id', required: 'true' }
-          .col-xs-12{ng: { hide: 'cumulative_dfp_report_query.is_daily_recurrent' } }
+          .col-xs-12
             %label.control-label{ for: 'weekly_recurrence_day' } Day of week to fetch report
             %select.form-control{ ng: { model: 'cumulative_dfp_report_query.weekly_recurrence_day', options: 'day for day in weekdays' }, name: 'weekly_recurrence_day', required: 'true', option: '' }
-          .col-xs-12{ng: { hide: 'cumulative_dfp_report_query.weekly_recurrence_day' } }
-            %label.control-label{ for: 'is_daily_recurrent' } Is daily recurrent?
+          .col-xs-12
+            %label.control-label{ for: 'is_daily_recurrent' } Daily run?
             %input{ ng: { model: 'cumulative_dfp_report_query.is_daily_recurrent' }, name: 'is_daily_recurrent', type: 'checkbox' }
 
         .row
