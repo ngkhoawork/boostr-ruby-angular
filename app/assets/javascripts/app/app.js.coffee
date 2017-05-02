@@ -64,7 +64,7 @@
     .when '/revenue',
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
-    .when '/ios/:id',
+    .when '/revenue/ios/:id',
       templateUrl: 'io.html'
       controller: 'IOController'
     .when '/activities',

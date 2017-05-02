@@ -153,7 +153,9 @@ describe Api::BillingSummaryController do
   def display_line_item
     @_display_line_item ||= create(
       :display_line_item,
-      price: 10
+      price: 10,
+      budget: 20_000,
+      budget_loc: 20_000
     )
   end
 

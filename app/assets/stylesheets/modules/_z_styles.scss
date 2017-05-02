@@ -8,6 +8,19 @@
         color: $secondary-color;
         font-weight: 600;
     }
+    .z-icon {
+        color: $secondary-font-color;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        padding: 4px 6px;
+        font-size: 20px;
+        border-radius: 5px;
+        &:hover {
+            background-color: $secondary-font-color;
+            color: white;
+        }
+    }
     .main-title {
         font-size: 24px;
         font-weight: bold;
@@ -50,6 +63,14 @@
                 text-transform: none;
                 font-weight: 500;
                 font-size: 12px;
+                //border-bottom: 2px solid $separate-line-color;
+            }
+        }
+        tbody:nth-child(2) {
+            tr:first-child {
+                td {
+                    border-top-width: 2px;
+                }
             }
         }
         tbody {
@@ -62,13 +83,16 @@
             }
         }
         tr {
-            //&:nth-of-type(even) {
-            //    background-color: #fafafb;
-            //}
-            &:first-child {
-                td {
-                    border-top-width: 2px;
+            .z-icon {
+                visibility: hidden;
+            }
+            &:hover {
+                .z-icon {
+                    visibility: visible;
                 }
+            }
+            &:nth-of-type(even) {
+                //background-color: #fafafb;
             }
             th, td {
                 text-align: left;

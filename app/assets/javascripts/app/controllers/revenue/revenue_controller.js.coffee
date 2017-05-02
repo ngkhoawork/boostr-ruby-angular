@@ -2,9 +2,9 @@
 ['$scope', '$document', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem',
 ($scope, $document, $modal, $filter, $routeParams, $route, $location, $q, IO, TempIO, DisplayLineItem) ->
 
-  sorting =
-    ascending: 1
+  $scope.sorting =
     key: ''
+    reverse: false
   currentYear = moment().year()
   $scope.revenueFilters = [
     { name: 'IOs', param: '' }
@@ -58,12 +58,18 @@
   $scope.setPacingAlertsFilter = (filter) ->
     $location.search({ filter: $scope.revenueFilter.param, io_owner: filter.value })
 
+  parseBudget = (data) ->
+    data = _.map data, (item) ->
+      item.budget = parseInt item.budget  if item.budget
+      item.budget_loc = parseInt item.budget_loc  if item.budget_loc
+      item
+
   $scope.setRevenue = (data) ->
 #    data.map (item) -> item.budget_loc = Number item.budget_loc if item
+    parseBudget data
     $scope.data = data
     $scope.revenue = data
     $scope.filterByDate()
-
 
   $scope.init = ->
     $scope.revenue = []
@@ -82,11 +88,10 @@
     $scope.revenueFilter = filter
     $scope.init()
 
-  $scope.showIOEditModal = (io, $event) ->
-    $event.stopPropagation();
+  $scope.showIOEditModal = (io) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/io_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'IOEditController'
       backdrop: 'static'
       keyboard: false
@@ -120,36 +125,15 @@
     $location.path(path)
 
   $scope.sortBy = (key) ->
-    if sorting.key != key
-      sorting.key = key
-      sorting.order = 1
+    if $scope.sorting.key != key
+      $scope.sorting.key = key
+      $scope.sorting.reverse = false
     else
-      sorting.order *= -1
-
-    getVal = (obj, path) ->
-      path = path || ''
-      objKey = (obj, key) -> if obj then obj[key] else null
-      path.split('.').reduce(objKey, obj)
-
-
-    $scope.revenue.sort (a, b) ->
-      v1 = getVal a, key
-      v2 = getVal b, key
-      if typeof v1 is 'string' then v1 = v1.toLowerCase()
-      if typeof v2 is 'string' then v2 = v2.toLowerCase()
-      if key.indexOf('budget') != -1 || key == 'price'
-        v1 = Number v1
-        v2 = Number v2
-      if v1 == null || v1 == undefined || v1 == ''
-       return -1 * sorting.order
-      if v2 == null || v2 == undefined || v1 == ''
-        return 1 * sorting.order
-      if v1 > v2 then return 1 * sorting.order
-      if v1 < v2 then return -1 * sorting.order
-      return 0
+      $scope.sorting.reverse = !$scope.sorting.reverse
 
   $scope.$on 'updated_ios', ->
     $scope.init()
+    IO.query().$promise
 
   $scope.deleteIo = (io, $event) ->
     $event.stopPropagation();

@@ -80,7 +80,7 @@
   $scope.cancel = ->
     $modalInstance.close()
 
-  $scope.createEditClientModal = (option, target) ->
+  $scope.createNewClientModal = (option, target) ->
     $scope.populateClient = true
     $scope.populateClientTarget = target
     $scope.modalInstance = $modal.open

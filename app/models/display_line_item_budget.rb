@@ -9,6 +9,9 @@ class DisplayLineItemBudget < ActiveRecord::Base
     where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', start_date, end_date)
   end
 
+  validate :budget_less_than_display_line_item_budget
+  validate :sum_of_budgets_less_than_line_item_budget
+
   def daily_budget
     budget.to_f / (end_date - start_date + 1).to_i
   end
@@ -210,5 +213,25 @@ class DisplayLineItemBudget < ActiveRecord::Base
   def self.convert_params_currency(exchange_rate, params)
     params[:budget] = params[:budget_loc] / exchange_rate
     params
+  end
+
+  def budget_less_than_display_line_item_budget
+    return unless budget_loc.present?
+
+    if budget_loc > display_line_item.budget_loc
+      errors.add(:budget, 'can\'t be more then line item budget')
+    end
+  end
+
+  def sum_of_budgets_less_than_line_item_budget
+    return unless budget_loc.present?
+
+    if sum_of_monthly_budgets > display_line_item.budget_loc
+      errors.add(:budget, 'sum of monthly budgets can\'t be more then line item budget')
+    end
+  end
+
+  def sum_of_monthly_budgets
+    (display_line_item.display_line_item_budgets.where.not(id: self.id).sum(:budget_loc) + budget_loc)
   end
 end
