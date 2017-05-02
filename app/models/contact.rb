@@ -50,8 +50,8 @@ class Contact < ActiveRecord::Base
     joins(
       "INNER JOIN client_contacts as primary_client_contact ON contacts.id=primary_client_contact.contact_id and (primary_client_contact.primary = #{true})"
     ).joins(
-      'INNER JOIN clients ON clients.id = primary_client_contact.client_id'
-    ).where('clients.name ilike ?', client_name) if client_name.present?
+      'INNER JOIN clients as primary_clients ON primary_clients.id = primary_client_contact.client_id'
+    ).where('primary_clients.name ilike ?', client_name) if client_name.present?
   end
 
   scope :by_city, -> city_name do
