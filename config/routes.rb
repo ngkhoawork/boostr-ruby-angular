@@ -26,6 +26,7 @@ Rails.application.routes.draw do
       resources :states, only: [:index]
       resources :forgot_password, only: [:create]
       resources :activity_types, only: [:index]
+      resources :holding_companies, only: [:index]
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
@@ -36,13 +37,22 @@ Rails.application.routes.draw do
       resources :stages, only: [:index, :create, :show, :update]
       resources :clients, only: [:index, :show, :create, :update, :destroy] do
         get :sellers
+        get :connected_contacts
+        get :connected_client_contacts
+        get :child_clients
+        get :stats
+        collection do
+          get :filter_options
+        end
         resources :client_members, only: [:index, :create, :update, :destroy]
-        resources :client_contacts, only: [:index] do
+        resources :client_contacts, only: [:index, :create, :update, :destroy] do
           collection do
             get :related_clients
           end
         end
       end
+
+      resources :client_connections, only: [:index, :create, :update, :destroy]
 
       resources :reminders, only: [:index, :show, :create, :update, :destroy]
       resources :remindable, only: [] do
@@ -71,15 +81,24 @@ Rails.application.routes.draw do
     end
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
       get :sellers
+      get :connected_contacts
+      get :connected_client_contacts
+      get :child_clients
+      get :stats
+      collection do
+        get :filter_options
+      end
       resources :client_members, only: [:index, :create, :update, :destroy]
-      resources :client_contacts, only: [:index] do
+      resources :client_contacts, only: [:index, :create, :update, :destroy] do
         collection do
           get :related_clients
         end
       end
     end
+    resources :client_connections, only: [:index, :create, :update, :destroy]
     resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy]
+    resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
     
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
@@ -161,6 +180,7 @@ Rails.application.routes.draw do
     resources :notifications, only: [:index, :show, :create, :update, :destroy]
     resources :activities, only: [:index, :create, :show, :update, :destroy]
     resources :activity_types, only: [:index, :create, :show, :update, :destroy]
+    resources :holding_companies, only: [:index]
     resources :reports, only: [:index, :show]
     resources :sales_execution_dashboard, only: [:index] do
       collection do

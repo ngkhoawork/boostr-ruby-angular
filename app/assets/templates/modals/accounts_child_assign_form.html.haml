@@ -1,0 +1,29 @@
+#contact_assign_modal.popup-modal
+    %form.form-horizontal
+        .popup-modal-header
+            Assign to an Account
+            %span.close-btn{'ng-click': 'cancel()'}
+        .popup-modal-body.modal-body{style: 'padding: 15px'}
+            .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+                .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+                    %i.fa.fa-warning
+                    <strong style="text-transform: capitalize">{{field}}</strong>
+                    {{error}}
+
+            .form-group.with-add-btn
+                %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj(searchText)' } }
+                %button.add-btn.plus-btn{type: 'button', 'ng-click': 'showClientNewModal()'}
+            .form-group
+                .row
+                    .col-xs-12
+                        .client-list
+                            .client-info{ 'ng-repeat': 'client in clients | filter: { name: searchText }' }
+                                .name{ ng: { bind: { html: 'client.name' } } }
+                                .type
+                                    {{client.client_type_id == Advertiser ? 'Advertiser' : (client.client_type_id == Agency ? 'Agency' : '' )}}
+                                .action
+                                    %a{ href: "javascript:void(0)", 'ng-click': "assignClient(client)" }
+                                        Assign
+
+        .popup-modal-footer
+            %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel

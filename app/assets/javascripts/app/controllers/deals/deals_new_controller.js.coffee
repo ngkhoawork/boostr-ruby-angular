@@ -10,6 +10,12 @@
     $scope.customFieldOptions = [ {id: null, value: ""} ]
     getDealCustomFieldNames()
 
+    if deal.advertiser
+      $scope.advertisers = [deal.advertiser]
+
+    if deal.agency
+      $scope.agencies = [deal.agency]
+
     $q.all({
       user: CurrentUser.get().$promise,
       currencies: Currency.active_currencies(),
@@ -95,8 +101,7 @@
 
     Deal.create(deal: $scope.deal).then(
       (deal) ->
-        $modalInstance.close()
-        $location.path('/deals/' + deal.id)
+        $modalInstance.close(deal)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

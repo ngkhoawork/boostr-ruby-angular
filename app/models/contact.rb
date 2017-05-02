@@ -2,6 +2,7 @@ class Contact < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
+  belongs_to :client
 
   has_one :primary_client, through: :primary_client_contact, source: :client
   has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
@@ -26,6 +27,7 @@ class Contact < ActiveRecord::Base
   validate :email_unique?
 
   scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
+  scope :for_primary_client, -> client_id { Contact.joins("INNER JOIN client_contacts as cc ON cc.contact_id = contacts.id").where("cc.client_id = ? and cc.primary IS TRUE", client_id) if client_id.present? }
   scope :unassigned, -> user_id { where(created_by: user_id).where('id NOT IN (SELECT DISTINCT(contact_id) from client_contacts)') }
   scope :by_email, -> email, company_id {
     Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email ilike ? and contacts.company_id=?", email, company_id)

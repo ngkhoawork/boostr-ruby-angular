@@ -145,6 +145,12 @@
       display: inline-block;
       width: calc(50% - 30px);
     }
+
+    .advertiser-field-fluid, .agency-field-fluid {
+      vertical-align: middle;
+      display: inline-block;
+      width: calc(100% - 60px);
+    }
     .advertiser-field {
       padding-right: 10px;
     }

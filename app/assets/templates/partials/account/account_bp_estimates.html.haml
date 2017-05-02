@@ -1,0 +1,31 @@
+.contacts.block
+    %div.mb20
+        %span.title Business Plans
+        -#%add-button{'ng-click': 'showNewChildAccountModal()'} Add
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left Time Period
+                %th.left Seller Estimate
+                %th.left Manager Estimate
+                %th.left Revenue
+                %th.left Objectives
+                %th.left Assumptions
+                %th.left Owner
+        %tbody
+            %tr{ ng: { repeat: 'bp_estimate in bp_estimates'} }
+                %td
+                    {{ bp_estimate.bp.time_period.name }}
+                %td
+                    {{ bp_estimate.estimate_seller | currency:'$':0 }}
+                %td
+                    {{ bp_estimate.estimate_mgr | currency:'$':0 }}
+                %td
+                    {{bp_estimate.revenue | currency:'$':0 }}
+                %td
+                    {{ bp_estimate.objectives }}
+                %td
+                    {{ bp_estimate.assumptions }}
+                %td
+                    {{ bp_estimate.user.first_name + ' ' + bp_estimate.user.last_name }}

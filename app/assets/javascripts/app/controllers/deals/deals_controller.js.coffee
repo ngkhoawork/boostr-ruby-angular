@@ -279,6 +279,10 @@
             $scope.$on 'closeDealCanceled', (event, id) ->
                 $scope.undoLastMove(id)
 
+            $scope.$on 'newDeal', (event, id) ->
+                console.log(id)
+                $location.path('/deals/' + id)
+
             $scope.$on 'updated_deals', $scope.init
 
             $scope.filtering = (item) ->

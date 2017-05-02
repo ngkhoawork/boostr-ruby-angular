@@ -26,6 +26,7 @@
   'dndLists'
   'jsonFormatter'
   'boostrServerErrors'
+  'bgf.paginateAnything'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -42,6 +43,12 @@
     .when '/clients/:id',
       templateUrl: 'clients.html'
       controller: 'ClientsController'
+    .when '/accounts',
+      templateUrl: 'accounts.html'
+      controller: 'AccountsController'
+    .when '/accounts/:id',
+      templateUrl: 'account.html'
+      controller: 'AccountController'
     .when '/clients',
       templateUrl: 'clients.html'
       controller: 'ClientsController'

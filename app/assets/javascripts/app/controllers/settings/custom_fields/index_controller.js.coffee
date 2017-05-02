@@ -1,10 +1,11 @@
 @app.controller "SettingsDealCustomFieldNamesController",
-['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName',
-($scope, $routeParams, $location, $modal, DealCustomFieldName, DealProductCfName) ->
+['$scope', '$routeParams', '$location', '$modal', 'DealCustomFieldName', 'DealProductCfName', 'AccountCfName',
+($scope, $routeParams, $location, $modal, DealCustomFieldName, DealProductCfName, AccountCfName) ->
   $scope.tables = ['Deal', 'Client', 'DealProduct']
   $scope.init = () ->
     getDealCustomFieldNames()
     getDealProductCfNames()
+    getAccountCfNames()
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -12,6 +13,9 @@
   getDealProductCfNames = () ->
     DealProductCfName.all().then (dealProductCustomFieldNames) ->
       $scope.dealProductCustomFieldNames = dealProductCustomFieldNames
+  getAccountCfNames = () ->
+    AccountCfName.all().then (accountCustomFieldNames) ->
+      $scope.accountCustomFieldNames = accountCustomFieldNames
 
   $scope.updateTimePeriod = (time_period_id) ->
     $location.path("/settings/deal_custom_field_names/#{time_period_id}")
@@ -57,11 +61,11 @@
         DealProductCfName.delete(id: customFieldName.id)
 
   $scope.$on 'updated_deal_custom_field_names', ->
-    getDealCustomFieldNames()
-    getDealProductCfNames()
+    $scope.init()
   $scope.$on 'updated_deal_product_cf_names', ->
-    getDealCustomFieldNames()
-    getDealProductCfNames()
+    $scope.init()
+  $scope.$on 'updated_account_cf_names', ->
+    $scope.init()
 
   $scope.init()
 

@@ -9,18 +9,35 @@ class Client < ActiveRecord::Base
   has_many :users, through: :client_members
   # has_many :contacts
   has_many :contacts, -> { uniq }, through: :client_contacts
+  has_many :primary_client_contacts, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
+  has_many :primary_contacts, -> { uniq }, through: :primary_client_contacts, source: :contact
   has_many :client_contacts, dependent: :destroy
   has_many :revenues
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
+
+  has_many :agency_connections, class_name: :ClientConnection,
+           foreign_key: :agency_id, dependent: :destroy
+  has_many :advertiser_connections, class_name: :ClientConnection,
+           foreign_key: :advertiser_id, dependent: :destroy
+  has_many :agencies, through: :agency_connections, source: :advertiser
+  has_many :advertisers, through: :advertiser_connections, source: :agency
+
+  has_many :agency_contacts, through: :agencies, source: :contacts
+  has_many :advertiser_contacts, -> { uniq }, through: :advertisers, source: :primary_contacts
+
   has_many :values, as: :subject
   has_many :activities, -> { order(happened_at: :desc) }
   has_many :agency_activities, -> { order(happened_at: :desc) }, class_name: 'Activity', foreign_key: 'agency_id'
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
+  has_one :account_cf, dependent: :destroy
 
   belongs_to :client_category, class_name: 'Option', foreign_key: 'client_category_id'
   belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
+  belongs_to :client_region, class_name: 'Option', foreign_key: 'client_region_id'
+  belongs_to :client_segment, class_name: 'Option', foreign_key: 'client_segment_id'
+  belongs_to :holding_company
   has_one :address, as: :addressable
   has_many :integrations, as: :integratable
 
@@ -29,6 +46,7 @@ class Client < ActiveRecord::Base
   delegate :name, to: :parent_client, prefix: true, allow_nil: true
 
   accepts_nested_attributes_for :address, :values
+  accepts_nested_attributes_for :account_cf
 
   validates :name, :client_type_id, presence: true
 
@@ -40,8 +58,13 @@ class Client < ActiveRecord::Base
   scope :by_contact_ids, -> ids { Client.joins("INNER JOIN client_contacts ON clients.id=client_contacts.client_id").where("client_contacts.contact_id in (:q)", {q: ids}).order(:name).distinct }
   scope :by_category, -> category_id { where(client_category_id: category_id) if category_id.present? }
   scope :by_subcategory, -> subcategory_id { where(client_subcategory_id: subcategory_id) if subcategory_id.present? }
+  scope :by_region, -> region_id { where(client_region_id: region_id) if region_id.present? }
+  scope :by_segment, -> segment_id { where(client_segment_id: segment_id) if segment_id.present? }
   scope :by_name, -> name { where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :by_name_and_type_with_limit, -> (name, type) { by_name(name).by_type_id(type).limit(10) }
+  scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
+  scope :by_ids, -> ids { where(id: ids) if ids.present?}
+  scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }
 
   ADVERTISER = 10
   AGENCY = 11
@@ -61,7 +84,9 @@ class Client < ActiveRecord::Base
       :Phone,
       :Website,
       :Replace_team,
-      :Teammembers
+      :Teammembers,
+      :Region,
+      :Segment
     ]
 
     agency_type_id = self.agency_type_id(company)
@@ -76,6 +101,8 @@ class Client < ActiveRecord::Base
         :address,
         :client_category,
         :client_subcategory,
+        :client_region,
+        :client_segment,
         client_members: [:user]
       )
       .order(:id).each do |client|
@@ -105,6 +132,16 @@ class Client < ActiveRecord::Base
         line << client.website
         line << nil
         line << team_members.join(';')
+        line << (client.client_region.try(:name))
+        line << (client.client_segment.try(:name))
+        if client.id == 290
+          puts "=======region"
+          puts client
+          puts client.client_region_id
+          puts client.client_region
+          puts client.client_region.try(:name)
+          puts client.client_category.try(:name)
+        end
 
         csv << line
       end
@@ -162,9 +199,20 @@ class Client < ActiveRecord::Base
         include: {
           address: {},
           parent_client: { only: [:id, :name] },
+          account_cf: {},
+          holding_company: {},
           values: {
             methods: [:value],
             include: [:option]
+          },
+          client_members: {
+                  include: {
+                          user: {
+                                  only: [:id],
+                                  methods: [:name]
+                          }
+                  },
+                  only: [:id, :share, :user_id, :role]
           },
           activities: {
             include: {
@@ -297,6 +345,30 @@ class Client < ActiveRecord::Base
         end
       end
 
+      if row[14].present?
+        region_field = current_user.company.fields.where(name: 'Region').first
+        region = region_field.options.where('name ilike ?', row[14]).first
+        unless region
+          error = { row: row_number, message: ["Region #{row[14]} could not be found"] }
+          errors << error∂
+          next
+        end
+      else
+        region = nil
+      end
+
+      if row[15].present?
+        segment_field = current_user.company.fields.where(name: 'Segment').first
+        segment = segment_field.options.where('name ilike ?', row[15]).first
+        unless segment
+          error = { row: row_number, message: ["Segment #{row[15]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        segment = nil
+      end
+
       address_params = {
         street1: row[6].nil? ? nil : row[6].strip,
         city: row[7].nil? ? nil : row[7].strip,
@@ -311,6 +383,8 @@ class Client < ActiveRecord::Base
         client_type_id: type_id,
         client_category: category,
         client_subcategory: subcategory,
+        client_region: region,
+        client_segment: segment,
         parent_client: parent
       }
 
@@ -327,6 +401,22 @@ class Client < ActiveRecord::Base
         subject_type: 'Client',
         field_id: current_user.company.fields.where(name: 'Category').first.id,
         option_id: (category ? category.id : nil),
+        company_id: current_user.company.id
+      }
+
+      region_value_params = {
+        value_type: 'Option',
+        subject_type: 'Client',
+        field_id: current_user.company.fields.where(name: 'Region').first.id,
+        option_id: (region ? region.id : nil),
+        company_id: current_user.company.id
+      }
+
+      segment_value_params = {
+        value_type: 'Option',
+        subject_type: 'Client',
+        field_id: current_user.company.fields.where(name: 'Segment').first.id,
+        option_id: (segment ? segment.id : nil),
         company_id: current_user.company.id
       }
 
@@ -358,6 +448,8 @@ class Client < ActiveRecord::Base
         client_params[:id] = client.id
         type_value_params[:subject_id] = client.id
         category_value_params[:subject_id] = client.id
+        region_value_params[:subject_id] = client.id
+        segment_value_params[:subject_id] = client.id
 
         if client_type_field = client.values.where(field_id: type_value_params[:field_id]).first
           type_value_params[:id] = client_type_field.id
@@ -366,13 +458,21 @@ class Client < ActiveRecord::Base
         if client_category_field = client.values.where(field_id: category_value_params[:field_id]).first
           category_value_params[:id] = client.values.where(field_id: category_value_params[:field_id]).first.id
         end
+
+        if client_region_field = client.values.where(field_id: region_value_params[:field_id]).first
+          region_value_params[:id] = client.values.where(field_id: region_value_params[:field_id]).first.id
+        end
+
+        if client_segment_field = client.values.where(field_id: segment_value_params[:field_id]).first
+          segment_value_params[:id] = client.values.where(field_id: segment_value_params[:field_id]).first.id
+        end
       else
         client = current_user.company.clients.create(name: row[1].strip)
         client.update_attributes(created_by: current_user.id)
       end
 
       client_params[:address_attributes] = address_params
-      client_params[:values_attributes] = [type_value_params, category_value_params]
+      client_params[:values_attributes] = [type_value_params, category_value_params, region_value_params, segment_value_params]
 
       if client.update_attributes(client_params)
         client.client_members.delete_all if row[12] == 'Y'
@@ -400,6 +500,25 @@ class Client < ActiveRecord::Base
   def self.advertiser_type_id(company)
     client_type_field(company).options.where(name: "Advertiser").first.id
   end
+
+  def client_type
+    company.fields.where(name: 'Client Type').first.options.find(self.client_type_id)
+  end
+  #
+  # def client_category
+  #   company.fields.where(name: 'Category').first.options.where(self.client_category_id) if self.client_category_id.present?
+  #   nil
+  # end
+  #
+  # def client_region
+  #   company.fields.where(name: 'Region').first.options.where(self.client_region_id) if self.client_region_id.present?
+  #   nil
+  # end
+  #
+  # def client_segment
+  #   company.fields.where(name: 'Segment').first.options.where(self.client_segment_id) if self.client_segment_id.present?
+  #   nil
+  # end
 
   def global_type_id
     if self.client_type_id
