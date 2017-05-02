@@ -116,6 +116,7 @@ Rails.application.routes.draw do
       end
 
       resources :deal_custom_field_names, only: [:index]
+      resources :products, only: [:index]
     end # API V2 END
 
     resources :countries, only: [:index]
