@@ -195,7 +195,7 @@
 								%tbody
 									%tr{'ng-repeat': 'revenue in revenues | orderBy : sortRevenues.field : sortRevenues.reverse'}
 										%td
-											%a{href: '', 'ng-href': '/ios/{{revenue.id}}'} {{revenue.name}}
+											%a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}'} {{revenue.name}}
 										%td {{revenue.advertiser.name}}
 										%td {{revenue.agency.name}}
 										%td
