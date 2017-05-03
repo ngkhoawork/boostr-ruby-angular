@@ -26,6 +26,7 @@ class Api::ContactDetailSerializer < ActiveModel::Serializer
   has_one :contact_cf
   has_many :workplaces
   has_many :activities
+  has_many :job_levels, serializer: Contacts::JobLevelSerializer
 
   def primary_client_json
     if object.primary_client.present?
@@ -86,5 +87,9 @@ class Api::ContactDetailSerializer < ActiveModel::Serializer
 
   def interactions
     object.activities.count
+  end
+
+  def job_levels
+    Field.where(company_id: object.company_id, subject_type: 'Contact', name: 'Job Level').joins(:options)
   end
 end

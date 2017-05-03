@@ -20,6 +20,7 @@ class ContactSerializer < ActiveModel::Serializer
 
   has_one :address
   has_many :workplaces
+  has_many :clients, serializer: Contacts::ClientSerializer
 
   def primary_client_json
     object.primary_client.serializable_hash(only: [:id, :name, :client_type_id]) rescue nil
@@ -42,7 +43,7 @@ class ContactSerializer < ActiveModel::Serializer
 
   def last_touched
     if object.latest_happened_activity.any?
-      object.latest_happened_activity.first.happened_at.to_date
+      object.latest_happened_activity.first.happened_at
     end
   end
 
