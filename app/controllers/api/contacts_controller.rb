@@ -132,6 +132,12 @@ class Api::ContactsController < ApplicationController
         :mobile,
         :email
       ],
+      values_attributes: [
+        :id,
+        :field_id,
+        :option_id,
+        :value
+      ],
       contact_cf_attributes: [
         :id,
         :company_id,
