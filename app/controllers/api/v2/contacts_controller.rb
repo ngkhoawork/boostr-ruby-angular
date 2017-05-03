@@ -87,9 +87,9 @@ class Api::V2::ContactsController < ApiController
 
   def contacts
     if params[:filter] == 'my_contacts'
-      Contact.by_client_ids(limit, offset, current_user.clients.ids)
+      Contact.by_client_ids(current_user.clients.ids)
     elsif params[:filter] == 'team' && team
-      Contact.by_client_ids(limit, offset, team.clients.ids)
+      Contact.by_client_ids(team.clients.ids)
     else
       current_user.company.contacts
         .order(:name)
