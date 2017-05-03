@@ -65,14 +65,33 @@
                 font-size: 12px;
             }
         }
-        tr {
-            //&:nth-of-type(even) {
-            //    background-color: #fafafb;
-            //}
-            &:first-child {
+        tbody:nth-child(2) {
+            tr:first-child {
                 td {
                     border-top-width: 2px;
                 }
+            }
+        }
+        tbody {
+            tr {
+                td:first-child {
+                    a:hover, a:focus {
+                        color: $secondary-color;
+                    }
+                }
+            }
+        }
+        tr {
+            .z-icon {
+                visibility: hidden;
+            }
+            &:hover {
+                .z-icon {
+                    visibility: visible;
+                }
+            }
+            &:nth-of-type(even) {
+                //background-color: #fafafb;
             }
             th, td {
                 text-align: left;
