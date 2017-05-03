@@ -59,8 +59,20 @@
                 ).$promise.then getRelated
 
         $scope.updateContact = ->
-            if !$scope.currentContact then return console.error 'no current contact'
-            Contact._update(id: $scope.currentContact.id, contact: $scope.currentContact)
+            contact = $scope.currentContact
+            if !contact then return console.error 'no current contact'
+            if contact.job_level && contact.job_level.id
+                jobLevelValue = _.findWhere contact.values, field_id: contact.job_level.field_id
+                if jobLevelValue
+                    jobLevelValue.option_id = contact.job_level.id
+                else
+                    contact.values = [
+                        {
+                            option_id: contact.job_level.id
+                            field_id: contact.job_level.field_id
+                        }
+                    ].concat(contact.values || [])
+            Contact._update(id: contact.id, contact: contact)
 
         $scope.showModal = ->
             $scope.modalInstance = $modal.open

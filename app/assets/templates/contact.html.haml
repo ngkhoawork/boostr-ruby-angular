@@ -90,11 +90,11 @@
 							.dropdown
 								%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
 									%span.editable{'ng-class': '{"not-selected": !currentContact.job_level}'}
-										{{currentContact.job_level || 'Select value'}}
+										{{currentContact.job_level.name || currentContact.job_level || 'Select value'}}
 									%span.caret
 								%ul.dropdown-menu
 									%li{'ng-repeat': 'jobLevel in currentContact.job_levels', 'ng-class': '{active: currentContact.job_level == jobLevel.name}'}
-										%a{'href': '', 'ng-click': 'currentContact.job_level = jobLevel.name; updateContact()'}
+										%a{'href': '', 'ng-click': 'currentContact.job_level = jobLevel; updateContact()'}
 											%span.text {{jobLevel.name}}
 					%div.custom-field-item
 						%div.custom-field-item-label Position
