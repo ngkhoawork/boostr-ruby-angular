@@ -52,10 +52,11 @@
             row.join(', ')
 
         $scope.unassignClient = (client) ->
-            Contact.unassign_account(
-                id: $scope.currentContact.id
-                client_id: client.id
-            ).$promise.then getRelated
+            if confirm('Are you sure you want to unassign "' + client.name + '"?')
+                Contact.unassign_account(
+                    id: $scope.currentContact.id
+                    client_id: client.id
+                ).$promise.then getRelated
 
         $scope.updateContact = ->
             if !$scope.currentContact then return console.error 'no current contact'
