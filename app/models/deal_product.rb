@@ -218,4 +218,43 @@ class DealProduct < ActiveRecord::Base
 
     errors
   end
+
+  def self.to_csv
+    header = [
+      :Deal_id,
+      :Deal_name,
+      :Advertiser,
+      :Agency,
+      :Deal_stage,
+      :Deal_probability,
+      :Deal_start_date,
+      :Deal_end_date,
+      :Product_name,
+      :Product_budget
+    ]
+
+    CSV.generate(headers: true) do |csv|
+      csv << header
+
+      all.includes(
+        :product,
+        deal: [:advertiser, :agency, :stage]
+      )
+      .order(:deal_id, :id).each do |deal_product|
+        line = []
+        line << deal_product.deal.id
+        line << deal_product.deal.name
+        line << deal_product.deal.advertiser.try(:name)
+        line << deal_product.deal.agency.try(:name)
+        line << deal_product.deal.stage.try(:name)
+        line << deal_product.deal.stage.try(:probability)
+        line << deal_product.deal.start_date
+        line << deal_product.deal.end_date
+        line << deal_product.product.try(:name)
+        line << deal_product.budget_loc
+
+        csv << line
+      end
+    end
+  end
 end

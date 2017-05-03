@@ -142,7 +142,7 @@ Rails.application.routes.draw do
       get 'latest_log', to: 'integration_logs#latest_log'
     end
     resources :deal_product_budgets, only: [:index, :create]
-    resources :deal_products, only: [:create]
+    resources :deal_products, only: [:index, :create]
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
     resources :teams, only: [:index, :create, :show, :update, :destroy] do

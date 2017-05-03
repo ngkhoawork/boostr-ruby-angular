@@ -182,4 +182,74 @@ RSpec.describe DealProduct, type: :model do
       end
     end
   end
+
+  describe '#to_csv' do
+    let!(:product) { create :product, company: company }
+    let!(:deal) { create :deal, start_date: Date.new(2015, 7, 29), end_date: Date.new(2015, 8, 29), company: company }
+    let!(:deal_product) { create :deal_product, deal: deal, product: product, budget_loc: 100_000, budget: 100_000 }
+
+    it 'returns correct headers' do
+      data = CSV.parse(user.company.deal_products.to_csv)
+
+      expect(data[0]).to eq([
+        "Deal_id",
+        "Deal_name",
+        "Advertiser",
+        "Agency",
+        "Deal_stage",
+        "Deal_probability",
+        "Deal_start_date",
+        "Deal_end_date",
+        "Product_name",
+        "Product_budget"
+      ])
+    end
+
+    it 'returns correct data' do
+      data = CSV.parse(user.company.deal_products.to_csv)
+
+      expect(data[1]).to eq([
+        deal_product.deal.id,
+        deal_product.deal.name,
+        deal_product.deal.advertiser.name,
+        deal_product.deal.agency.name,
+        deal_product.deal.stage.name,
+        deal_product.deal.stage.probability,
+        deal_product.deal.start_date,
+        deal_product.deal.end_date,
+        deal_product.product.name,
+        deal_product.budget_loc
+      ].map(&:to_s))
+    end
+
+    it 'does not fail when data is missing' do
+      deal_product.deal.advertiser.destroy
+      deal_product.deal.agency.destroy
+      deal_product.deal.stage.destroy
+      deal_product.product.destroy
+
+      deal_product_csv = CSV.parse(user.company.deal_products.to_csv)[1].to_csv
+
+      expect(deal_product_csv).to eq([
+        deal_product.deal.id,
+        deal_product.deal.name,
+        nil,
+        nil,
+        nil,
+        nil,
+        deal_product.deal.start_date,
+        deal_product.deal.end_date,
+        nil,
+        deal_product.budget_loc
+      ].to_csv)
+    end
+  end
+
+  def user
+    @_user ||= create :user, company: company
+  end
+
+  def company
+    @_company ||= create :company
+  end
 end
