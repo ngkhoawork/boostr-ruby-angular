@@ -7,7 +7,7 @@
 			.filter-row
 				.filter-name
 					%div
-						Worked At
+						Works At
 				.filter-dropdown
 					%i.fa.fa-close{'ng-show': 'filter.selected.workPlace', 'ng-click': 'filter.reset("workPlace")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
@@ -129,7 +129,8 @@
 							%td {{contact.position}}
 							%td {{contact.job_level}}
 							%td {{contact.primary_client_json.name}}
-							%td Related Accounts
+							%td
+								%div{'ng-repeat': 'client in contact.clients'} {{client.name}}
 							%td {{contact.address.email}}
 							%td {{contact.address.phone}}
 							%td {{contact.last_touched | date}}

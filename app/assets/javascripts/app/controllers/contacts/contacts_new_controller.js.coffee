@@ -1,12 +1,13 @@
 @app.controller "ContactsNewController",
-['$scope', '$rootScope', '$modalInstance', 'Contact', 'Client', 'contact', 'CountriesList'
-($scope, $rootScope, $modalInstance, Contact, Client, contact, CountriesList) ->
+['$scope', '$rootScope', '$modalInstance', 'Contact', 'Client', 'contact', 'CountriesList', 'ContactCfName'
+($scope, $rootScope, $modalInstance, Contact, Client, contact, CountriesList, ContactCfName) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.contact = contact || {}
   $scope.query = ""
   $scope.countries = []
+  $scope.contactCfNames = []
   $scope.showAddressFields = Boolean(contact.address and
       (contact.address.country or
         contact.address.street1 or
@@ -20,6 +21,9 @@
   
   Client.query({filter: 'all'}).$promise.then (clients) ->
     $scope.clients = clients
+
+  ContactCfName.all().then (contactCfNames) ->
+    $scope.contactCfNames = contactCfNames
 
   $scope.submitForm = () ->
     emailRegExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
@@ -38,6 +42,10 @@
         when 'address'
           if !field || !field.email then return $scope.errors.email = 'Email is required'
           if !emailRegExp.test(field.email) then return $scope.errors.email = 'Email is not valid'
+
+    $scope.contactCfNames.forEach (item) ->
+      if item.show_on_modal == true && item.is_required == true && (!$scope.contact.contact_cf || !$scope.contact.contact_cf[item.field_type + item.field_index])
+        $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true

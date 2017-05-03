@@ -50,19 +50,28 @@
 									%th City
 							%tbody
 								%tr{'ng-repeat': 'account in relatedAccounts'}
-									%td {{account.name}}
+									%td
+										{{account.name}}
+										%i.fa.fa-trash.z-icon{'ng-click': 'unassignClient(account)'}
 									%td {{account.status}}
 									%td {{account.address.city}}
 
 			.col-xs-3
 				.block.contact-info.campaign-details
-					-#%div.pull-right{'ng-include': '"partials/reminder_form.html"'}
+					%div.pull-right{'ng-include': '"partials/reminder_form.html"'}
 					%div.pull-right
 						%span.star
 							*
 							%span{style: 'font-size: 12px'} is required
 					%div.mb20
 						%span.title Info
+						%i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentContact)'}
+					%div.custom-field-item
+						%div.custom-field-item-label Address
+						%div.custom-field-item-field.address-field
+							%div {{currentContact.address.street1}}
+							%div {{currentContact.address.street2}}
+							%div {{ concatAddress(currentContact.address) }}
 					%div.custom-field-item{'ng-if': 'currentContact.primary_client_json.name'}
 						%div.custom-field-item-label Works At
 						%div.custom-field-item-field {{currentContact.primary_client_json.name}}
@@ -75,26 +84,28 @@
 					%div.custom-field-item{'ng-if': 'currentContact.address.phone'}
 						%div.custom-field-item-label Phone
 						%div.custom-field-item-field {{currentContact.address.phone}}
-					%div.custom-field-item{'ng-if': 'currentContact.address.street1 || currentContact.address.street2'}
-						%div.custom-field-item-label Address
+					%div.custom-field-item
+						%div.custom-field-item-label Job Level
 						%div.custom-field-item-field
-							%div {{currentContact.address.street1}}
-							%div {{currentContact.address.street2}}
-					%div.custom-field-item{'ng-if': 'currentContact.address.city'}
-						%div.custom-field-item-label City
-						%div.custom-field-item-field {{currentContact.address.city}}
-					%div.custom-field-item{'ng-if': 'currentContact.address.state'}
-						%div.custom-field-item-label State
-						%div.custom-field-item-field {{currentContact.address.state}}
-					%div.custom-field-item{'ng-if': 'currentContact.address.zip'}
-						%div.custom-field-item-label Postal Code
-						%div.custom-field-item-field {{currentContact.address.zip}}
-					%div.custom-field-item{'ng-if': 'currentContact.address.country'}
-						%div.custom-field-item-label Country
-						%div.custom-field-item-field {{currentContact.address.country}}
-					%div.custom-field-item{'ng-if': 'currentContact.note'}
+							.dropdown
+								%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+									%span.editable{'ng-class': '{"not-selected": !currentContact.job_level}'}
+										{{currentContact.job_level || 'Select value'}}
+									%span.caret
+								%ul.dropdown-menu
+									%li{'ng-repeat': 'jobLevel in currentContact.job_levels', 'ng-class': '{active: currentContact.job_level == jobLevel.name}'}
+										%a{'href': '', 'ng-click': 'currentContact.job_level = jobLevel.name; updateContact()'}
+											%span.text {{jobLevel.name}}
+					%div.custom-field-item
+						%div.custom-field-item-label Position
+						%div.custom-field-item-field
+							.text-field
+								%input.editable{ 'ng-model': "currentContact.position", name: "position", placeholder: 'Enter position', 'ng-blur': 'updateContact()' }
+					%div.custom-field-item
 						%div.custom-field-item-label Notes
-						%div.custom-field-item-field {{currentContact.note}}
+						%div.custom-field-item-field
+							.text-area
+								%textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentContact.note", name: "note", placeholder: 'Enter note', 'ng-blur': 'updateContact()' }
 					.mb20
 
 					%div.custom-field-item{ng:{repeat: 'contactCfName in contactCfNames | orderBy: "position"', if: "!contactCfName.disabled", class: '{"required-field": contactCfName.is_required}', init: "fieldName = contactCfName.field_type + contactCfName.field_index"}}

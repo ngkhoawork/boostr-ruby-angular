@@ -27,6 +27,7 @@
       address_attributes: address_attributes
       client_id: original.contact.client_id
       set_primary_client: !!(original.contact.set_primary_client)
+      job_level: original.contact.job_level
       contact_cf_attributes: original.contact.contact_cf
     send.unassign = true if original.unassign
     angular.toJson(send)
@@ -65,6 +66,9 @@
     assign_account:
       method: 'POST'
       url: '/api/contacts/:id/assign_account'
+    unassign_account:
+      method: 'DELETE'
+      url: '/api/contacts/:id/unassign_account'
 
   # @TODO: Replace all of this with just returning resource
   allContacts = []
