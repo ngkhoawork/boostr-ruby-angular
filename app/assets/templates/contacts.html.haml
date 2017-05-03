@@ -130,7 +130,7 @@
 							%td {{contact.job_level}}
 							%td {{contact.primary_client_json.name}}
 							%td
-								%div{'ng-repeat': 'client in contact.clients'} {{client.name}}
+								%div{'ng-repeat': 'client in contact.workplaces'} {{client.name}}
 							%td {{contact.address.email}}
 							%td {{contact.address.phone}}
 							%td {{contact.last_touched | date}}

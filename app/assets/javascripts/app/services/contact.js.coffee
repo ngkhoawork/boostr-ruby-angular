@@ -27,7 +27,7 @@
       address_attributes: address_attributes
       client_id: original.contact.client_id
       set_primary_client: !!(original.contact.set_primary_client)
-      job_level: original.contact.job_level
+      values_attributes: original.contact.values
       contact_cf_attributes: original.contact.contact_cf
     send.unassign = true if original.unassign
     angular.toJson(send)
