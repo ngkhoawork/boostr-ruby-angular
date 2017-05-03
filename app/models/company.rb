@@ -23,9 +23,11 @@ class Company < ActiveRecord::Base
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names
   has_many :account_cf_names
+  has_many :contact_cf_names
   has_many :deal_custom_fields, through: :deals
   has_many :deal_product_cfs, through: :deal_products
   has_many :account_cfs, through: :clients
+  has_many :contact_cfs, through: :contacts
   has_many :exchange_rates
   has_many :validations, dependent: :destroy
   has_many :api_configurations, dependent: :destroy
@@ -60,6 +62,7 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Category', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Region', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Segment', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true)
 
     fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Attachment Type', value_type: 'Option', locked: true)
 
@@ -85,10 +88,11 @@ class Company < ActiveRecord::Base
 
   def settings
     [
-      { name: 'Deals', fields: fields.where(subject_type: 'Deal')},
-      { name: 'Clients', fields: fields.where(subject_type: 'Client')},
-      { name: 'Products', fields: fields.where(subject_type: 'Product')},
-      { name: 'Multiple', fields: fields.where(subject_type: 'Multiple')}
+      { name: 'Deals', fields: fields.where(subject_type: 'Deal')        },
+      { name: 'Clients', fields: fields.where(subject_type: 'Client')    },
+      { name: 'Products', fields: fields.where(subject_type: 'Product')  },
+      { name: 'Contacts', fields: fields.where(subject_type: 'Contact')  },
+      { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') }
     ]
   end
 

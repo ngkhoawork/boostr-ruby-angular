@@ -3,6 +3,17 @@ require 'rails_helper'
 RSpec.describe Company, type: :model do
   let(:company) { create :company }
 
+  context 'associations' do
+    it { should have_many(:contact_cf_names) }
+    it { should have_many(:contact_cfs).through(:contacts) }
+
+    it { should have_many(:deal_custom_field_names) }
+    it { should have_many(:deal_custom_fields).through(:deals) }
+
+    it { should have_many(:deal_product_cf_names) }
+    it { should have_many(:deal_product_cfs).through(:deal_products) }
+  end
+
   context 'before create' do
     it 'creates default fields' do
       expect {

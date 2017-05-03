@@ -99,6 +99,7 @@ Rails.application.routes.draw do
     resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]
+    resources :contact_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
     
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
@@ -106,6 +107,7 @@ Rails.application.routes.draw do
       get :account_total_estimates
       get :unassigned_clients
       post :add_client
+      post :add_all_clients
       post :add_all_clients
       resources :bp_estimates, only: [:index, :create, :update, :show, :destroy]
     end
@@ -116,7 +118,17 @@ Rails.application.routes.draw do
     resources :display_line_item_budgets, only: [:index, :create, :update, :destroy]
     resources :io_csvs, only: [:create]
     resources :display_line_item_csvs, only: [:create]
-    resources :contacts, only: [:index, :create, :update, :destroy]
+    resources :contacts, only: [:index, :show, :create, :update, :destroy] do
+      member do
+        post :assign_account
+        delete :unassign_account
+        get :related_clients
+        get :advertisers
+      end
+      collection do
+        get :metadata
+      end
+    end
     resources :revenue, only: [:index, :create] do
       collection do
         get :forecast_detail

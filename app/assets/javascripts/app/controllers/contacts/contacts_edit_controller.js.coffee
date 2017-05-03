@@ -1,12 +1,13 @@
 @app.controller "ContactsEditController",
-['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'CountriesList', 'contact'
-($scope, $modalInstance, $filter, Contact, Client, CountriesList, contact) ->
+['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'CountriesList', 'contact', 'ContactCfName'
+($scope, $modalInstance, $filter, Contact, Client, CountriesList, contact, ContactCfName) ->
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.contact = contact || Contact.get()
   $scope.query = ""
   $scope.countries = []
+  $scope.contactCfNames = []
   $scope.showAddressFields = Boolean($scope.contact.address and
           ($scope.contact.address.country or
               $scope.contact.address.street1 or
@@ -19,6 +20,9 @@
 
   Client.query(filter: 'all').$promise.then (clients) ->
     $scope.clients = clients
+
+  ContactCfName.all().then (contactCfNames) ->
+    $scope.contactCfNames = contactCfNames
 
   if $scope.contact && $scope.contact.address
     $scope.contact.address.phone = $filter('tel')($scope.contact.address.phone)
@@ -41,6 +45,10 @@
         when 'address'
           if !field || !field.email then return $scope.errors.email = 'Email is required'
           if !emailRegExp.test(field.email) then return $scope.errors.email = 'Email is not valid'
+
+    $scope.contactCfNames.forEach (item) ->
+      if item.show_on_modal == true && item.is_required == true && (!$scope.contact.contact_cf || !$scope.contact.contact_cf[item.field_type + item.field_index])
+        $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true

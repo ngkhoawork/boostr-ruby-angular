@@ -11,7 +11,7 @@
           {{error}}
 
       .form-group.with-add-btn
-        %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj(searchText)' } }
+        %input.form-control{ name: 'client', placeholder: 'Select', ng: { model: 'searchText', change: 'searchObj(searchText)', 'model-options': '{debounce: 500}' } }
         %button.add-btn.plus-btn{type: 'button', 'ng-click': 'openAccountModal()'}
       .form-group
         .row

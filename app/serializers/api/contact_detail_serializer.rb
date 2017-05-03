@@ -1,4 +1,4 @@
-class ContactSerializer < ActiveModel::Serializer
+class Api::ContactDetailSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :name,
@@ -14,21 +14,27 @@ class ContactSerializer < ActiveModel::Serializer
     :formatted_name,
     :primary_client_json,
     :primary_client_type,
-    :client,
-    :non_primary_client_contacts,
     :last_touched,
-    :job_level
+    :job_level,
+    :won_deals,
+    :lost_deals,
+    :open_deals,
+    :interactions
   )
 
   has_one :address
+  has_one :contact_cf
   has_many :workplaces
+  has_many :activities
+  has_many :job_levels, serializer: Contacts::JobLevelSerializer
+  has_many :values
 
   def primary_client_json
-    object.primary_client.serializable_hash(only: [:id, :name, :client_type_id]) rescue nil
-  end
-
-  def client
-    object.client.serializable_hash(only: [:id, :name, :client_type_id]) rescue nil
+    if object.primary_client.present?
+      object.primary_client.serializable_hash(only: [:id, :name, :client_type_id])
+    else
+      nil
+    end
   end
 
   def primary_client_type
@@ -47,9 +53,7 @@ class ContactSerializer < ActiveModel::Serializer
   end
 
   def last_touched
-    if object.latest_happened_activity.any?
-      object.latest_happened_activity.first.happened_at
-    end
+    object.latest_happened_activity.first.try(:happened_at)
   end
 
   def job_level
@@ -68,5 +72,25 @@ class ContactSerializer < ActiveModel::Serializer
     else
       nil
     end
+  end
+
+  def won_deals
+    object.deals.won.count
+  end
+
+  def lost_deals
+    object.deals.lost.count
+  end
+
+  def open_deals
+    object.deals.open.count
+  end
+
+  def interactions
+    object.activities.count
+  end
+
+  def job_levels
+    @options[:contact_options]
   end
 end
