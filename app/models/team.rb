@@ -89,10 +89,23 @@ class Team < ActiveRecord::Base
   end
 
   def crevenues(start_date, end_date)
-    ios = all_members.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq
+    all_users = all_members + all_leaders
+
+    ios = Io.for_company(company_id).for_io_members(all_users.map(&:id)).for_time_period(start_date, end_date).distinct
 
     @crevenues ||= ios.each_with_object([]) do |io, memo|
-      sum_period_budget, split_period_budget = io.for_forecast_page(start_date, end_date)
+      sum_period_budget, split_period_budget = 0, 0
+
+      io_users = io.users.pluck(:id)
+      io_team_users = all_users.select do |user|
+        io_users.include?(user.id)
+      end
+
+      io_team_users.each do |user|
+        result = io.for_forecast_page(start_date, end_date, user)
+        sum_period_budget += result[0] if sum_period_budget == 0
+        split_period_budget += result[1]
+      end
 
       memo << {
         id: io.id,
