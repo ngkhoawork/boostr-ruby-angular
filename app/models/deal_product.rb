@@ -229,8 +229,10 @@ class DealProduct < ActiveRecord::Base
       :Deal_probability,
       :Deal_start_date,
       :Deal_end_date,
+      :Deal_currency,
       :Product_name,
-      :Product_budget
+      :Product_budget,
+      :Product_budget_USD
     ]
 
     CSV.generate(headers: true) do |csv|
@@ -250,7 +252,9 @@ class DealProduct < ActiveRecord::Base
         line << deal_product.deal.stage.try(:probability)
         line << deal_product.deal.start_date
         line << deal_product.deal.end_date
+        line << deal_product.deal.curr_cd
         line << deal_product.product.try(:name)
+        line << deal_product.budget
         line << deal_product.budget_loc
 
         csv << line

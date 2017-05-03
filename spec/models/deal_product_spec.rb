@@ -200,8 +200,10 @@ RSpec.describe DealProduct, type: :model do
         "Deal_probability",
         "Deal_start_date",
         "Deal_end_date",
+        "Deal_currency",
         "Product_name",
-        "Product_budget"
+        "Product_budget",
+        "Product_budget_USD"
       ])
     end
 
@@ -217,7 +219,9 @@ RSpec.describe DealProduct, type: :model do
         deal_product.deal.stage.probability,
         deal_product.deal.start_date,
         deal_product.deal.end_date,
+        deal_product.deal.curr_cd,
         deal_product.product.name,
+        deal_product.budget,
         deal_product.budget_loc
       ].map(&:to_s))
     end
@@ -239,7 +243,9 @@ RSpec.describe DealProduct, type: :model do
         nil,
         deal_product.deal.start_date,
         deal_product.deal.end_date,
+        deal_product.deal.curr_cd,
         nil,
+        deal_product.budget,
         deal_product.budget_loc
       ].to_csv)
     end
