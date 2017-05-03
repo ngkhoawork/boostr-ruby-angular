@@ -78,7 +78,8 @@ class Api::DisplayLineItemsController < ApplicationController
       budget: (display_line_item_budget_params['budget_loc'] / display_line_item.io.exchange_rate),
       budget_loc: display_line_item_budget_params['budget_loc'],
       start_date: display_line_item_budget_params['month'].to_date.beginning_of_month,
-      end_date: display_line_item_budget_params['month'].to_date.end_of_month
+      end_date: display_line_item_budget_params['month'].to_date.end_of_month,
+      manual_override: true
     }
   end
 end
