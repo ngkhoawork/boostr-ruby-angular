@@ -17,6 +17,8 @@ class Activity < ActiveRecord::Base
   validates :company_id, presence: true
   validates_uniqueness_of :google_event_id, allow_nil: true, allow_blank: true
 
+  default_scope { order(:created_at) }
+
   after_create do
     if !deal_id.nil?
       deal = company.deals.find(deal_id)
