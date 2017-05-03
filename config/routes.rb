@@ -100,6 +100,7 @@ Rails.application.routes.draw do
     resources :contacts, only: [:index, :show, :create, :update, :destroy] do
       member do
         post :assign_account
+        delete :unassign_account
         get :related_clients
         get :advertisers
       end

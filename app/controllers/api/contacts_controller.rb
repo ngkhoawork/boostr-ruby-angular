@@ -82,7 +82,7 @@ class Api::ContactsController < ApplicationController
       override: true,
       only: [:id, :name],
       include: {
-        address: {}
+        address: { only: :city }
       }
     )
   end
@@ -103,6 +103,13 @@ class Api::ContactsController < ApplicationController
     else
       render json: { errors: client_contact.errors.messages }, status: :unprocessable_entity
     end
+  end
+
+  def unassign_account
+    client_contact = contact.client_contacts.find_by(client_id: params[:client_id])
+
+    client_contact.destroy
+    render nothing: true
   end
 
   private

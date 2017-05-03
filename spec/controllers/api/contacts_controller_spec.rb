@@ -219,13 +219,23 @@ RSpec.describe Api::ContactsController, type: :controller do
     end
   end
 
-  describe 'GET #assign_account' do
+  describe 'POST #assign_account' do
     it 'should assign client to contact' do
       contact = create :contact
 
       expect{
         post :assign_account, id: contact.id, client_id: client.id
       }.to change(ClientContact, :count).by(1)
+    end
+  end
+
+  describe 'DELETE #unassign_account' do
+    it 'should unassign client from contact' do
+      contact = create :contact, clients: [client]
+
+      expect{
+        delete :unassign_account, id: contact.id, client_id: client.id
+      }.to change(ClientContact, :count).by(-1)
     end
   end
 
