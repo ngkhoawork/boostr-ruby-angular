@@ -89,7 +89,8 @@ class Client < ActiveRecord::Base
       :Replace_team,
       :Teammembers,
       :Region,
-      :Segment
+      :Segment,
+      :Holding_Company
     ]
 
     agency_type_id = self.agency_type_id(company)
@@ -137,6 +138,7 @@ class Client < ActiveRecord::Base
         line << team_members.join(';')
         line << (client.client_region.try(:name))
         line << (client.client_segment.try(:name))
+        line << (client.holding_company.try(:name))
 
         csv << line
       end
@@ -364,6 +366,17 @@ class Client < ActiveRecord::Base
         segment = nil
       end
 
+      if row[16].present? && row[2] == 'agency'
+        holding_company = HoldingCompany.where("name ilike ?", row[16].strip.downcase).first
+        unless holding_company
+          error = { row: row_number, message: ["Holding company #{row[16]} could not be found"] }
+          errors << error
+          next
+        end
+      else
+        holding_company = nil
+      end
+
       address_params = {
         street1: row[6].nil? ? nil : row[6].strip,
         city: row[7].nil? ? nil : row[7].strip,
@@ -380,7 +393,8 @@ class Client < ActiveRecord::Base
         client_subcategory: subcategory,
         client_region: region,
         client_segment: segment,
-        parent_client: parent
+        parent_client: parent,
+        holding_company: holding_company
       }
 
       type_value_params = {
