@@ -84,11 +84,15 @@ class Api::ContactsController < ApplicationController
   end
 
   def related_clients
-    render json: contact.workplaces.by_type_id(advertiser_type_id).as_json(
-      override: true,
-      only: [:id, :name],
+    render json: contact.non_primary_client_contacts.joins(:client).where('clients.client_type_id = ?', advertiser_type_id)
+    .preload(client: [:address])
+    .as_json(
       include: {
-        address: { only: :city }
+        client: {
+          include: {
+            address: { only: :city }
+          }
+        }
       }
     )
   end

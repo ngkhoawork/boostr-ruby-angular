@@ -215,7 +215,7 @@ RSpec.describe Api::ContactsController, type: :controller do
 
       get :related_clients, id: contact.id
 
-      expect(json_response.map{|el| el['name'] } ).to eq(['Fidelity', 'Fliboard'])
+      expect(json_response.map{|el| el['client']['name'] } ).to eq(['Fidelity', 'Fliboard'])
     end
   end
 
