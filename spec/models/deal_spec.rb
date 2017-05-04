@@ -13,7 +13,7 @@ RSpec.describe Deal, type: :model do
       let!(:deal_product) { create :deal_product, deal: deal, budget: 100_000 }
       let(:won_stage) { create :stage, name: 'Closed Won', probability: 100, open: false, active: true }
 
-      it 'restricts deleting deal with IO', focus: true do
+      it 'restricts deleting deal with IO' do
         deal.update(stage: won_stage)
         deal.update_stage
         deal.update_close

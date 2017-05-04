@@ -95,7 +95,7 @@ RSpec.describe Api::DealsController, type: :controller do
     end
   end
 
-  describe 'DELETE #destroy', focus: true do #DELETE FOCUS YO
+  describe 'DELETE #destroy' do
     let!(:deal) { create :deal, company: company, advertiser: advertiser }
     let(:won_stage) { create :stage, name: 'Closed Won', probability: 100, open: false, active: true }
 
