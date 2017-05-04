@@ -129,7 +129,7 @@
 
                 %add-button{'ng-click': 'showNewAccountModal()'} Add Account
                 .accounts-types
-                    %span{'ng-repeat': 'type in accountTypes', 'ng-class': '{active: type === selectedType}', 'ng-click': 'filterAccounts(type)'}
+                    %span{'ng-repeat': 'type in accountTypes', 'ng-class': '{active: type.name == teamFilter().name}', 'ng-click': 'filterAccounts(type)'}
                         {{type.name}}
                 .search
                     %form

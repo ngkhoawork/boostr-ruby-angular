@@ -97,7 +97,7 @@
 				%add-button{'ng-click': 'showModal()'}
 					Add Contact
 			.header-item.switch-row
-				%span{ng: {repeat: 'switch in switches', class: '{active: switch.name == getTeamFilter().name}', click: 'switchContacts(switch)'}}
+				%span{ng: {repeat: 'switch in switches', class: '{active: switch.name == teamFilter().name}', click: 'switchContacts(switch)'}}
 					{{switch.name}}
 			.header-item.contact-search
 				%i.fa.fa-search

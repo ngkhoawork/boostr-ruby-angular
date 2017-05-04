@@ -16,9 +16,10 @@
                 {name: 'All Contacts', param: ''}
             ]
 
-            $scope.getTeamFilter = -> ContactsFilter.teamFilter
-            $scope.setTeamFilter = (value) -> ContactsFilter.teamFilter = value
-            $scope.setTeamFilter $scope.switches[0] if !$scope.getTeamFilter()
+            $scope.teamFilter = (value) ->
+                if value then ContactsFilter.teamFilter = value else ContactsFilter.teamFilter
+
+            if !$scope.teamFilter() then $scope.teamFilter $scope.switches[0]
 
             $scope.filter =
                 workPlaces: []
@@ -130,7 +131,7 @@
                 $scope.isLoading = true
                 params = {
                     page: $scope.page,
-                    filter: $scope.getTeamFilter().param,
+                    filter: $scope.teamFilter().param,
                     per: 20
                 }
                 params = _.extend params, $scope.filter.get()
@@ -173,7 +174,7 @@
 
 
             $scope.switchContacts = (swch) ->
-                $scope.setTeamFilter swch
+                $scope.teamFilter swch
                 $scope.init();
 
             $scope.$on 'updated_contacts', ->
