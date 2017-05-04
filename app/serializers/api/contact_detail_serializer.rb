@@ -19,12 +19,12 @@ class Api::ContactDetailSerializer < ActiveModel::Serializer
     :won_deals,
     :lost_deals,
     :open_deals,
-    :interactions
+    :interactions,
+    :non_primary_client_contacts
   )
 
   has_one :address
   has_one :contact_cf
-  has_many :workplaces
   has_many :activities
   has_many :job_levels, serializer: Contacts::JobLevelSerializer
   has_many :values

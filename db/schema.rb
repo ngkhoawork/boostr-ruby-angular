@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170428095200) do
+ActiveRecord::Schema.define(version: 20170504120934) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -305,6 +305,7 @@ ActiveRecord::Schema.define(version: 20170428095200) do
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.boolean  "primary",    default: false, null: false
+    t.boolean  "is_active",  default: true,  null: false
   end
 
   add_index "client_contacts", ["client_id", "contact_id"], name: "index_client_contacts_on_client_id_and_contact_id", using: :btree
@@ -1216,12 +1217,12 @@ ActiveRecord::Schema.define(version: 20170428095200) do
   add_index "time_periods", ["deleted_at"], name: "index_time_periods_on_deleted_at", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                  default: "",    null: false
-    t.string   "encrypted_password",     default: ""
+    t.string   "email",                            default: "",    null: false
+    t.string   "encrypted_password",               default: ""
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0,     null: false
+    t.integer  "sign_in_count",                    default: 0,     null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.inet     "current_sign_in_ip"
@@ -1232,7 +1233,7 @@ ActiveRecord::Schema.define(version: 20170428095200) do
     t.string   "unconfirmed_email"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "roles_mask",             default: 1
+    t.integer  "roles_mask",                       default: 1
     t.integer  "company_id"
     t.string   "first_name"
     t.string   "last_name"
@@ -1243,28 +1244,28 @@ ActiveRecord::Schema.define(version: 20170428095200) do
     t.integer  "invitation_limit"
     t.integer  "invited_by_id"
     t.string   "invited_by_type"
-    t.integer  "invitations_count",      default: 0
+    t.integer  "invitations_count",                default: 0
     t.string   "title"
     t.integer  "team_id"
-    t.boolean  "notify",                 default: false
-    t.integer  "neg_balance"
+    t.boolean  "notify",                           default: false
+    t.integer  "neg_balance",            limit: 8
     t.integer  "pos_balance"
     t.datetime "last_alert_at"
-    t.integer  "neg_balance_cnt"
-    t.integer  "pos_balance_cnt"
-    t.integer  "neg_balance_lcnt"
-    t.integer  "pos_balance_lcnt"
-    t.integer  "neg_balance_l"
-    t.integer  "pos_balance_l"
-    t.integer  "neg_balance_l_cnt"
-    t.integer  "pos_balance_l_cnt"
+    t.integer  "neg_balance_cnt",        limit: 8
+    t.integer  "pos_balance_cnt",        limit: 8
+    t.integer  "neg_balance_lcnt",       limit: 8
+    t.integer  "pos_balance_lcnt",       limit: 8
+    t.integer  "neg_balance_l",          limit: 8
+    t.integer  "pos_balance_l",          limit: 8
+    t.integer  "neg_balance_l_cnt",      limit: 8
+    t.integer  "pos_balance_l_cnt",      limit: 8
     t.decimal  "win_rate"
     t.decimal  "average_deal_size"
     t.float    "cycle_time"
-    t.integer  "user_type",              default: 0,     null: false
-    t.boolean  "is_active",              default: true
+    t.integer  "user_type",                        default: 0,     null: false
+    t.boolean  "is_active",                        default: true
     t.string   "starting_page"
-    t.string   "default_currency",       default: "USD"
+    t.string   "default_currency",                 default: "USD"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree

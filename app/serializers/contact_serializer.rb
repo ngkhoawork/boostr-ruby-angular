@@ -21,7 +21,6 @@ class ContactSerializer < ActiveModel::Serializer
   )
 
   has_one :address
-  has_many :workplaces
 
   def primary_client_json
     object.primary_client.serializable_hash(only: [:id, :name, :client_type_id]) rescue nil
