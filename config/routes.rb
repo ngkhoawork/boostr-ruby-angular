@@ -63,7 +63,61 @@ Rails.application.routes.draw do
       resources :countries, only: [:index]
       resources :fields, only: [:index]
       resources :users, only: [:index, :update]
-    end
+    end # API V1 END
+
+    scope module: :v2, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 2) do
+      post 'forgot_password' => 'forgot_password#create'
+      post 'resend_confirmation' => 'forgot_password#create'
+
+      resources :user_token, only: [:create]
+
+      resource :dashboard, only: [:show]
+      resources :states, only: [:index]
+      resources :forgot_password, only: [:create]
+      resources :activity_types, only: [:index]
+      resources :activities, only: [:index, :create, :show, :update, :destroy]
+      resources :contacts, only: [:index, :create, :update, :destroy]
+      resources :deals, only: [:index, :create, :update, :show, :destroy] do
+        resources :deal_products, only: [:create, :update, :destroy]
+        resources :deal_assets, only: [:index, :update, :create, :destroy]
+        resources :deal_contacts, only: [:index, :create, :update, :destroy]
+        resources :deal_members, only: [:index, :create, :update, :destroy]
+      end
+      resources :stages, only: [:index, :create, :show, :update]
+      resources :clients, only: [:index, :show, :create, :update, :destroy] do
+        get :sellers
+        resources :client_members, only: [:index, :create, :update, :destroy]
+        resources :client_contacts, only: [:index] do
+          collection do
+            get :related_clients
+          end
+        end
+      end
+
+      resources :reminders, only: [:index, :show, :create, :update, :destroy]
+      resources :remindable, only: [] do
+        get '/:remindable_type', to: 'reminders#remindable'
+      end
+      resources :forecasts, only: [:index, :show]
+      resources :time_periods, only: [:index]
+      resources :countries, only: [:index]
+      resources :fields, only: [:index]
+      resources :users, only: [:index, :update] do
+        collection do
+          get :signed_in_user
+        end
+      end
+
+      resources :currencies, only: [:index] do
+        collection do
+          get :active_currencies
+          get :exchange_rates_by_currencies
+        end
+      end
+
+      resources :deal_custom_field_names, only: [:index]
+      resources :products, only: [:index]
+    end # API V2 END
 
     resources :countries, only: [:index]
     resources :api_configurations

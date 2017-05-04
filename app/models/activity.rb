@@ -10,6 +10,7 @@ class Activity < ActiveRecord::Base
   belongs_to :activity_type
 
   has_and_belongs_to_many :contacts
+  has_and_belongs_to_many :contacts_info, -> { select(:id, :name) }, class_name: 'Contact'#, foreign_key: 'stage_id'
 
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable

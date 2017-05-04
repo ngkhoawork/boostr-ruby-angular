@@ -322,23 +322,18 @@ class User < ActiveRecord::Base
   end
 
   def all_activities
-    @all_activities = []
-    @all_activities += activities
-
     members = teams_tree_members
+    activity_ids = self.activities.pluck(:id)
 
-    Deal.joins(:deal_members).includes(:activities).where(:deal_members => { :user_id => members }).each do |as|
-      as.activities.each do |a|
-        @all_activities += [a] if !@all_activities.include?(a)
-      end
-    end
-    Client.joins(:client_members).includes(:activities).where(:client_members => { :user_id => members }).each do |as|
-      as.activities.each do |a|
-        @all_activities += [a] if !@all_activities.include?(a)
-      end
-    end
+    activity_ids += Activity.where(company_id: self.company_id).where(
+      deal_id: Deal.joins(:deal_members).where(:deal_members => { :user_id => members })
+    ).pluck(:id)
 
-    return @all_activities
+    activity_ids += Activity.where(company_id: self.company_id).where(
+      client_id: Client.joins(:client_members).where(:client_members => { :user_id => members })
+    ).pluck(:id)
+
+    Activity.where(id: activity_ids)
   end
 
   def admin?
