@@ -22,6 +22,14 @@
     get_latest_operative_log:
       method: 'GET'
       url: 'api/deals/:id/latest_log'
+    forecast_detail:
+      method: 'GET'
+      url: 'api/deals.json'
+      isArray: true
+    won_deals:
+      method: 'GET'
+      url: '/api/deals/won_deals'
+      isArray: true
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
@@ -31,6 +39,12 @@
   @all = (params) ->
     deferred = $q.defer()
     resource.query params, (deals) ->
+      deferred.resolve(deals)
+    deferred.promise
+
+  @won_deals = (params) ->
+    deferred = $q.defer()
+    resource.won_deals params, (deals) ->
       deferred.resolve(deals)
     deferred.promise
 
@@ -58,6 +72,12 @@
         deferred.reject(err)
     deferred.promise
 
+  @forecast_detail = (params) ->
+    deferred = $q.defer()
+    resource.forecast_detail params, (response) ->
+      deferred.resolve(response)
+    deferred.promise
+
   @pipeline_summary_report = (params) ->
     deferred = $q.defer()
     pipeline_summary_report_resource.query params, (response) ->
@@ -71,6 +91,7 @@
       (deal) ->
         deferred.resolve(deal)
         $rootScope.$broadcast 'updated_deals'
+        $rootScope.$broadcast 'newDeal', deal.id
       (resp) ->
         deferred.reject(resp)
     )

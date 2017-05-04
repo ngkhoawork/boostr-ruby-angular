@@ -28,6 +28,7 @@
 //= require angular-xeditable
 //= require angular-loading-bar
 //= require angular-ui-sortable
+//= require angular-paginate-anything
 //= require inflection
 //= require ngInflection
 //= require ngInfiniteScroll

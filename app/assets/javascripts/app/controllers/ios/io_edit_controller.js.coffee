@@ -9,7 +9,6 @@
     $scope.deals = []
     $scope.io = io
     $scope.ioMember = {}
-    console.log($scope.io);
 
     $scope.submitText = 'Update'
 
@@ -20,6 +19,8 @@
         $scope.loadClients(io.advertiser.name, $scope.Advertiser)
       if io.agency_id
         $scope.loadClients(io.agency.name, $scope.Agency)
+      if io.deal_id
+        $scope.loadDeals()
 
     User.query().$promise.then (users) ->
       $scope.users = users
@@ -64,7 +65,7 @@
         $scope.agencies = clients
 
   $scope.loadDeals = (query) ->
-    Deal.all({ filter: 'all', name: query, per: 10 }).then (deals) ->
+    Deal.won_deals({ name: query }).then (deals) ->
       $scope.deals = deals
 
   $scope.submitForm = () ->
@@ -79,7 +80,7 @@
   $scope.cancel = ->
     $modalInstance.close()
 
-  $scope.createEditClientModal = (option, target) ->
+  $scope.createNewClientModal = (option, target) ->
     $scope.populateClient = true
     $scope.populateClientTarget = target
     $scope.modalInstance = $modal.open

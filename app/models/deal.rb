@@ -105,6 +105,7 @@ class Deal < ActiveRecord::Base
   scope :won, -> { closed.includes(:stage).where(stages: { probability: 100 }) }
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
+  scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
 
   def integrate_with_operative
     if stage_id_changed? && operative_integration_allowed?
@@ -198,34 +199,38 @@ class Deal < ActiveRecord::Base
   end
 
   def as_json(options = {})
-    super(options.merge(
-              include: [
-                  :creator,
-                  :advertiser,
-                  :agency,
-                  :stage,
-                  :values,
-                  :deal_custom_field,
-                  deal_members: {
-                      methods: [:name]
-                  },
-                  activities: {
-                      include: {
-                          creator: {},
-                          contacts: {},
-                          assets: {
-                              methods: [
-                                  :presigned_url
-                              ]
-                          }
-                      }
-                  }
-              ],
-              methods: [
-                  :formatted_name
-              ]
-          )
-    )
+    if options[:override].present? && options[:override] == true
+      super(options[:options])
+    else
+      super(options.merge(
+                    include: [
+                            :creator,
+                            :advertiser,
+                            :agency,
+                            :stage,
+                            :values,
+                            :deal_custom_field,
+                            deal_members: {
+                                    methods: [:name]
+                            },
+                            activities: {
+                                    include: {
+                                            creator: {},
+                                            contacts: {},
+                                            assets: {
+                                                    methods: [
+                                                            :presigned_url
+                                                    ]
+                                            }
+                                    }
+                            }
+                    ],
+                    methods: [
+                            :formatted_name
+                    ]
+            )
+      )
+    end
   end
 
   def as_weighted_pipeline(start_date, end_date)
@@ -274,6 +279,19 @@ class Deal < ActiveRecord::Base
       num_days = (to.to_date - from.to_date) + 1
       deal_product_budget.daily_budget.to_f * num_days
     end
+  end
+
+  def in_period_open_amt(start_date, end_date)
+    total = 0
+    deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+      if deal_product_budget.deal_product.open == true
+        from = [start_date, deal_product_budget.start_date].max
+        to = [end_date, deal_product_budget.end_date].min
+        num_days = (to.to_date - from.to_date) + 1
+        total += deal_product_budget.daily_budget.to_f * num_days
+      end
+    end
+    total
   end
 
   def days

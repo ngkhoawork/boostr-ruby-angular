@@ -19,10 +19,15 @@ class Company < ActiveRecord::Base
   has_many :display_line_items, through: :ios
   has_many :temp_ios
   has_many :bps
+  has_many :bp_estimates, through: :bps
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names
+  has_many :account_cf_names
+  has_many :contact_cf_names
   has_many :deal_custom_fields, through: :deals
   has_many :deal_product_cfs, through: :deal_products
+  has_many :account_cfs, through: :clients
+  has_many :contact_cfs, through: :contacts
   has_many :exchange_rates
   has_many :validations, dependent: :destroy
   has_many :api_configurations, dependent: :destroy
@@ -55,6 +60,9 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Product', name: 'Product Family', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Member Role', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Category', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Client', name: 'Region', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Client', name: 'Segment', value_type: 'Option', locked: true)
+    fields.find_or_initialize_by(subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true)
 
     fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Attachment Type', value_type: 'Option', locked: true)
 
@@ -74,16 +82,18 @@ class Company < ActiveRecord::Base
     activity_types.find_or_initialize_by(name:'QBR', action:'Quarterly Business Review with', icon:'/assets/icons/qbr.png')
     activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.png')
     activity_types.find_or_initialize_by(name:'Post Sale Meeting', action:'had post sale meeting with', icon:'/assets/icons/post-sale.png')
+    activity_types.find_or_initialize_by(name:'Internal Meeting', action:'had insternal meeting with', icon:'/assets/icons/internal-meeting.png')
 
     setup_default_validations
   end
 
   def settings
     [
-      { name: 'Deals', fields: fields.where(subject_type: 'Deal')},
-      { name: 'Clients', fields: fields.where(subject_type: 'Client')},
-      { name: 'Products', fields: fields.where(subject_type: 'Product')},
-      { name: 'Multiple', fields: fields.where(subject_type: 'Multiple')}
+      { name: 'Deals', fields: fields.where(subject_type: 'Deal')        },
+      { name: 'Clients', fields: fields.where(subject_type: 'Client')    },
+      { name: 'Products', fields: fields.where(subject_type: 'Product')  },
+      { name: 'Contacts', fields: fields.where(subject_type: 'Contact')  },
+      { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') }
     ]
   end
 

@@ -2,38 +2,90 @@ class Contact < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
+  belongs_to :client
 
   has_one :primary_client, through: :primary_client_contact, source: :client
   has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
+  has_one :contact_cf, dependent: :destroy
 
   has_many :clients, -> { uniq }, through: :client_contacts
   has_many :client_contacts, dependent: :destroy
+  has_many :non_primary_client_contacts, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
+  has_many :non_primary_clients, -> { uniq }, through: :non_primary_client_contacts, source: :client
+
+  has_many :workplaces, -> { select(:id, :name) }, through: :workplace_clients, source: :client
+  has_many :workplace_clients, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
 
   has_many :deals, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :reminders, as: :remindable, dependent: :destroy
   has_one :address, as: :addressable
   has_many :integrations, as: :integratable
+  has_many :values, as: :subject
+
+  has_and_belongs_to_many :latest_happened_activity, -> {
+    order('activities.happened_at DESC').limit(1)
+  }, class_name: 'Activity'
 
   has_and_belongs_to_many :activities, after_add: :update_activity_updated_at
 
   delegate :email, :street1, :street2, :city, :state, :zip, :phone, :mobile, :country, to: :address, allow_nil: true
 
+  accepts_nested_attributes_for :contact_cf
   accepts_nested_attributes_for :address
+  accepts_nested_attributes_for :values
 
   validates :name, presence: true
   validate :email_is_present?
   validate :email_unique?
 
-  scope :for_client, -> client_id { where(client_id: client_id) if client_id.present? }
+  scope :for_client, -> client_id { Contact.joins("INNER JOIN client_contacts as cc1 ON contacts.id=cc1.contact_id").where("cc1.client_id = ?", client_id) if client_id.present? }
+  scope :not_for_client, -> client_id { Contact.joins("INNER JOIN client_contacts as cc1 ON contacts.id=cc1.contact_id").where("cc1.client_id = ?", client_id) if client_id.present? }
+  scope :for_primary_client, -> client_id { Contact.joins("INNER JOIN client_contacts as cc ON cc.contact_id = contacts.id").where("cc.client_id = ? and cc.primary IS TRUE", client_id) if client_id.present? }
   scope :unassigned, -> user_id { where(created_by: user_id).where('id NOT IN (SELECT DISTINCT(contact_id) from client_contacts)') }
   scope :by_email, -> email, company_id {
-    Contact.joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email ilike ? and contacts.company_id=?", email, company_id)
+    joins("INNER JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type='Contact'").where("addresses.email ilike ? and contacts.company_id=?", email, company_id)
   }
   scope :total_count, -> { except(:order, :limit, :offset).count.to_s }
-  scope :by_client_ids, -> limit, offset, ids { Contact.joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).limit(limit).offset(offset).distinct }
-
+  scope :by_client_ids, -> ids do
+    joins("INNER JOIN client_contacts ON contacts.id=client_contacts.contact_id").where("client_contacts.client_id in (:q)", {q: ids}).order(:name).distinct
+  end
   scope :by_name, -> name { where('contacts.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_primary_client_name, -> client_name do
+    joins(
+      "INNER JOIN client_contacts as primary_client_contact ON contacts.id=primary_client_contact.contact_id and (primary_client_contact.primary = #{true})"
+    ).joins(
+      'INNER JOIN clients as primary_clients ON primary_clients.id = primary_client_contact.client_id'
+    ).where('primary_clients.name ilike ?', client_name) if client_name.present?
+  end
+
+  scope :by_city, -> city_name do
+    joins(:address).where("addresses.city ilike ?", city_name) if city_name.present?
+  end
+
+  scope :by_job_level, -> job_level do
+    joins(:values).where('values.option_id in (?)', Option.by_name(job_level).ids) if job_level.present?
+  end
+
+  scope :by_country, -> country do
+    joins(:address).where("addresses.country ilike ?", country) if country.present?
+  end
+
+  scope :by_last_touch, -> start_date, end_date do
+    where(activity_updated_at: start_date..end_date) if (start_date && end_date).present?
+  end
+
+  scope :less_than, -> activity_updated_at do
+    where('activity_updated_at < ? OR activity_updated_at is null', activity_updated_at)
+  end
+
+  scope :greater_than_happened_at, -> happened_at do
+    joins(:activities).where('activities.happened_at > ?', happened_at)
+  end
+
+  scope :less_than_happened_at, -> happened_at do
+    joins(:activities).where('activities.happened_at <= ? OR activities.happened_at is null', happened_at).distinct
+  end
 
   after_save do
     if client_id_changed? && !client_id.nil?
@@ -42,6 +94,11 @@ class Contact < ActiveRecord::Base
       relation.save
     elsif client_id_changed? && client_id.nil?
       self.clients = []
+    elsif client_id.present?
+      relation = ClientContact.find_or_initialize_by(contact_id: id, client_id: client_id)
+      relations = ClientContact.where(contact_id: id)
+      relation.primary = true if relations.count == 0
+      relation.save
     end
   end
 
@@ -181,6 +238,15 @@ class Contact < ActiveRecord::Base
     errors
   end
 
+  def self.metadata(company_id)
+    {
+      workplaces: Contact.where(company_id: company_id).joins(:primary_client).distinct.pluck('clients.name'),
+      job_levels: Field.where(company_id: company_id, subject_type: 'Contact', name: 'Job Level').joins(:options).pluck('options.name'),
+      cities: Contact.where(company_id: company_id).joins(:address).where.not(addresses: {city: nil}).pluck('addresses.city').uniq,
+      countries: ISO3166::Country.all_translated
+    }
+  end
+
   private
 
   def email_is_present?
@@ -204,7 +270,7 @@ class Contact < ActiveRecord::Base
   end
 
   def update_activity_updated_at(activity)
-    activity_updated_at = activity.happened_at
+    self.activity_updated_at = activity.happened_at
     save
   end
 end

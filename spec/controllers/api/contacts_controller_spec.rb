@@ -70,6 +70,58 @@ RSpec.describe Api::ContactsController, type: :controller do
         expect(response_json.length).to eq(team_contacts_count)
       end
     end
+
+    context 'search criterions' do
+      it 'filters by workplace' do
+        client_criteria = create :client, name: 'Flipboard', company: user.company, created_by: user.id
+        create :contact, company: user.company, clients: [client_criteria], client_id: client_criteria.id
+
+        get :index, filter: 'my_contacts', workplace: 'flipboard'
+
+        expect(json_response.length).to be 1
+        expect(json_response.first['primary_client_json']['name']).to eql 'Flipboard'
+      end
+
+      it 'filters by city' do
+        address_criteria = attributes_for :address, city: 'Palm Beach'
+        user_client = create :client, company: user.company, created_by: user.id
+        create :contact, company: user.company, address_attributes: address_criteria, created_by: user.id, clients: [user_client]
+
+        get :index, filter: 'my_contacts', city: 'palm beach'
+
+        expect(json_response.length).to be 1
+        expect(json_response.first['address']['city']).to eql 'Palm Beach'
+      end
+
+      it 'filters by contact job level' do
+        field = user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level')
+        ceo_option = create :option, name: 'CEO', field: field
+        seller_option = create :option, name: 'Seller', field: field
+
+        user_client = create :client, company: user.company, created_by: user.id
+        ceo_contact = create :contact, company: user.company,
+          created_by: user.id, clients: [user_client],
+          values_attributes: [field: field, option: ceo_option]
+        seller_contact = create :contact, company: user.company,
+          created_by: user.id, clients: [user_client],
+          values_attributes: [field: field, option: seller_option]
+
+        get :index, filter: 'my_contacts', job_level: 'CEO'
+
+        expect(json_response.length).to be 1
+        expect(json_response.first['name']).to eql ceo_contact.name
+      end
+    end
+  end
+
+  describe 'GET #show' do
+    let!(:contact) { create :contact, clients: [client], name: 'Testy test' }
+
+    it 'returns contact info' do
+      get :show, id: contact.id
+
+      expect(json_response['name']).to eql 'Testy test'
+    end
   end
 
   describe "POST #create" do
@@ -84,9 +136,10 @@ RSpec.describe Api::ContactsController, type: :controller do
 
     it 'returns errors if the contact is invalid' do
       expect{
-        post :create, contact: { client_id: client2.id, addresses_attributes: address_params }, format: :json
+        post :create, contact: { addresses_attributes: address_params }, format: :json
         expect(response.status).to eq(422)
         response_json = JSON.parse(response.body)
+
         expect(response_json['errors']['primary account']).to eq(["can't be blank"])
       }.to_not change(Contact, :count)
     end
@@ -138,4 +191,71 @@ RSpec.describe Api::ContactsController, type: :controller do
     end
   end
 
+  describe 'GET #metadata' do
+    it 'returns contacts metadata' do
+      prepare_contact_metadata
+
+      get :metadata
+
+      expect(json_response).to eql(
+        'workplaces' => ['Fidelity', 'Fliboard'],
+        'job_levels' => ['CEO', 'Seller'],
+        'cities'     => ['Palm Beach', 'New York'],
+        'countries'  => ISO3166::Country.all_translated
+      )
+    end
+  end
+
+  describe 'GET #related_clients' do
+    it 'returns related clients information' do
+      user_client = create :client, name: 'Fidelity', company: user.company, created_by: user.id, client_type_id: advertiser_type_id(user.company)
+      user_client2 = create :client, name: 'Fliboard', company: user.company, created_by: user.id, client_type_id: advertiser_type_id(user.company)
+      user_client3 = create :client, name: 'Test', company: user.company, created_by: user.id, client_type_id: agency_type_id(user.company)
+      contact = create :contact, company: user.company, created_by: user.id, clients: [user_client, user_client2], client_id: user_client3.id
+
+      get :related_clients, id: contact.id
+
+      expect(json_response.map{|el| el['name'] } ).to eq(['Fidelity', 'Fliboard'])
+    end
+  end
+
+  describe 'POST #assign_account' do
+    it 'should assign client to contact' do
+      contact = create :contact
+
+      expect{
+        post :assign_account, id: contact.id, client_id: client.id
+      }.to change(ClientContact, :count).by(1)
+    end
+  end
+
+  describe 'DELETE #unassign_account' do
+    it 'should unassign client from contact' do
+      contact = create :contact, clients: [client]
+
+      expect{
+        delete :unassign_account, id: contact.id, client_id: client.id
+      }.to change(ClientContact, :count).by(-1)
+    end
+  end
+
+  def prepare_contact_metadata
+    field = user.company.fields.find_by(subject_type: 'Contact')
+    ceo_option = create :option, name: 'CEO', field: field
+    seller_option = create :option, name: 'Seller', field: field
+
+    user_client = create :client, name: 'Fidelity', company: user.company, created_by: user.id
+    user_client2 = create :client, name: 'Fliboard', company: user.company, created_by: user.id
+
+    ceo_contact = create :contact, company: user.company,
+      created_by: user.id, clients: [user_client], client_id: user_client.id,
+      values_attributes: [field: field, option: ceo_option],
+      address_attributes: (attributes_for :address, city: 'Palm Beach')
+
+    seller_contact = create :contact, company: user.company,
+      created_by: user.id, clients: [user_client2], client_id: user_client2.id,
+      values_attributes: [field: field, option: seller_option],
+      address_attributes: (attributes_for :address, city: 'New York')
+
+  end
 end

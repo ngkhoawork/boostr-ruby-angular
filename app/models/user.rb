@@ -94,16 +94,12 @@ class User < ActiveRecord::Base
     teams.count > 0
   end
 
-  def leader
-    teams.count > 0
-  end
-
   def as_json(options = {})
     if options[:override]
       super(options)
     else
       super(options.merge(
-        methods: [:name, :leader?, :leader]
+        methods: [:name, :leader?]
       ).except(:override))
     end
   end
@@ -182,6 +178,69 @@ class User < ActiveRecord::Base
           split_period_budget: split_period_budget
       }
     end
+  end
+
+  def quarterly_ios(start_date, end_date)
+    ios = self.all_ios_for_time_period(start_date, end_date).as_json
+    year = start_date.year
+    ios.map do |io|
+      io_obj = Io.find(io['id'])
+
+      sum_period_budget, split_period_budget = io_obj.for_forecast_page(start_date, end_date, self)
+
+      start_month = start_date.month
+      end_month = end_date.month
+      io[:quarters] = Array.new(4, nil)
+      io[:months] = Array.new(12, nil)
+      for i in start_month..end_month
+        io[:months][i - 1] = 0
+      end
+      for i in ((start_month - 1) / 3)..((end_month - 1) / 3)
+        io[:quarters][i] = 0
+      end
+      io[:members] = io_obj.io_members
+
+      if io['end_date'] == io['start_date']
+        io['end_date'] += 1.day
+      end
+
+      io_obj.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+        month = content_fee_product_budget.start_date.mon
+        io[:months][month - 1] += content_fee_product_budget.budget
+        io[:quarters][(month - 1) / 3] += content_fee_product_budget.budget
+      end
+
+      io_obj.display_line_items.for_time_period(start_date, end_date).each do |display_line_item|
+        display_line_item_budgets = display_line_item.display_line_item_budgets.to_a
+
+        for index in start_date.mon..end_date.mon
+          month = index.to_s
+          if index < 10
+            month = '0' + index.to_s
+          end
+          first_date = Date.parse("#{year}#{month}01")
+
+          num_of_days = [[first_date.end_of_month, display_line_item.end_date].min - [first_date, display_line_item.start_date].max + 1, 0].max.to_f
+          in_budget_days = 0
+          in_budget_total = 0
+          display_line_item_budgets.each do |display_line_item_budget|
+            in_from = [first_date, display_line_item.start_date, display_line_item_budget.start_date].max
+            in_to = [first_date.end_of_month, display_line_item.end_date, display_line_item_budget.end_date].min
+            in_days = [(in_to.to_date - in_from.to_date) + 1, 0].max
+            in_budget_days += in_days
+            in_budget_total += display_line_item_budget.daily_budget * in_days
+          end
+          budget = in_budget_total + display_line_item.ave_run_rate * (num_of_days - in_budget_days)
+          io[:months][index - 1] += budget
+          io[:quarters][(index - 1) / 3] += budget
+        end
+      end
+
+      io['in_period_amt'] = sum_period_budget
+      io['in_period_split_amt'] = split_period_budget
+    end
+
+    ios
   end
 
   def all_revenues_for_time_period(start_date, end_date)
@@ -263,22 +322,21 @@ class User < ActiveRecord::Base
   end
 
   def all_activities
-    @all_activities = []
-    @all_activities += activities
-
     members = teams_tree_members
+    activity_ids = self.activities.pluck(:id)
 
-    Deal.joins(:deal_members).includes(:activities).where(:deal_members => { :user_id => members }).each do |as|
-      as.activities.each do |a|
-        @all_activities += [a] if !@all_activities.include?(a)
-      end
-    end
-    Client.joins(:client_members).includes(:activities).where(:client_members => { :user_id => members }).each do |as|
-      as.activities.each do |a|
-        @all_activities += [a] if !@all_activities.include?(a)
-      end
-    end
+    activity_ids += Activity.where(company_id: self.company_id).where(
+      deal_id: Deal.joins(:deal_members).where(:deal_members => { :user_id => members })
+    ).pluck(:id)
 
-    return @all_activities
+    activity_ids += Activity.where(company_id: self.company_id).where(
+      client_id: Client.joins(:client_members).where(:client_members => { :user_id => members })
+    ).pluck(:id)
+
+    Activity.where(id: activity_ids)
+  end
+
+  def admin?
+    user_type == ADMIN
   end
 end

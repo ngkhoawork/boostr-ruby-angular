@@ -1,0 +1,33 @@
+.contacts.block
+    %div.mb20
+        %span.title{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
+            Advertisers
+        %span.title{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
+            Agencies
+        %add-button{'ng-click': 'showNewAccountConnectionModal()'} Add
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left Name
+                %th.left Primary
+                %th.left Status
+                %th.left City
+        %tbody
+            %tr{ ng: { repeat: 'client_connection in client_connections'} }
+                %td{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
+                    %a{'ng-href': '/accounts/{{client_connection.advertiser.id}}'} {{ client_connection.advertiser.name }}
+                    %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditAccountConnectionModal(client_connection)'}
+                    %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnection(client_connection)'}
+                %td{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
+                    %a{'ng-href': '/accounts/{{client_connection.agency.id}}'} {{ client_connection.agency.name }}
+                    %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditAccountConnectionModal(client_connection)'}
+                    %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnection(client_connection)'}
+                %td
+                    {{ client_connection.primary ? 'Yes' : 'No' }}
+                %td
+                    {{ client_connection.active ? 'Active' : 'Inactive' }}
+                %td{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
+                    {{ client_connection.advertiser.address.city }}
+                %td.left{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
+                    {{ client_connection.agency.address.city }}

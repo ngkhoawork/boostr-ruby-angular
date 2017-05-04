@@ -19,7 +19,7 @@
   $scope.showIONewModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/io_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'IONewController'
       backdrop: 'static'
       keyboard: false

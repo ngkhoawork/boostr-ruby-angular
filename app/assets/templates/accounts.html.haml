@@ -1,0 +1,166 @@
+#accounts.z-styles
+    .accounts-filter{'ng-class': '{open: filter.isOpen}'}
+        .header
+            Filter
+            %span.pull-right{'ng-click': 'filter.close($event)'} Close
+        .body
+            .filter-row
+                .filter-name
+                    %div
+                        Category
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.category', 'ng-click': 'filter.reset("category")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.category}'}
+                            {{filter.selected.category.name || 'Select an category'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'category in filter.categories | filter: filtering | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("category", category)'} {{category.name}}
+            .filter-row
+                .filter-name
+                    %div
+                        Owner
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.owner', 'ng-click': 'filter.reset("owner")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.owner}'}
+                            {{filter.selected.owner.name || 'Select an owner'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'owner in filter.owners | filter: filtering | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("owner", owner)'} {{owner.name}}
+            .filter-row
+                .filter-name
+                    %div
+                        City
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.city', 'ng-click': 'filter.reset("city")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.city}'}
+                            {{filter.selected.city || 'Select an city'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'city in filter.cities | filter: filtering | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("city", city)'} {{city}}
+            .filter-row
+                .filter-name
+                    %div
+                        Type
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.type', 'ng-click': 'filter.reset("type")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.type}'}
+                            {{filter.selected.type.name || 'Select an type'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'type in filter.types | filter: filtering | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("type", type)'} {{type.name}}
+            .filter-row
+                .filter-name
+                    %div
+                        Last Touch
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.date.startDate && filter.selected.date.endDate', 'ng-click': 'filter.reset("date")'}
+                    %span.bs-datepicker
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.date.startDate && filter.selected.date.endDate}'}
+                            %div.date-picker{'date-range-picker': true,
+                                                           'ng-model': 'filter.datePicker.date',
+                                                           options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.apply}}'}
+                                %span.filter-date {{filter.getDateValue()}}
+                            %span.caret
+            .filter-row
+                .filter-name
+                    %div
+                        Region
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.region', 'ng-click': 'filter.reset("region")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.region}'}
+                            {{filter.selected.region.name || 'Select a Region'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'region in filter.regions | filter: filtering | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("region", region)'} {{region.name}}
+            .filter-row
+                .filter-name
+                    %div
+                        Segment
+                .filter-dropdown
+                    %i.fa.fa-close{'ng-show': 'filter.selected.segment', 'ng-click': 'filter.reset("segment")'}
+                    %span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
+                        .dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.segment}'}
+                            {{filter.selected.segment.name || 'Select a Segment'}}
+                            %span.caret
+                        .dropdown-menu{'dropdown-menu': '', role: 'menu'}
+                            .form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
+                                %i.fa.fa-search
+                                %input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
+                            %span.dropdown-title Select from list
+                            .dropdown-option{'ng-repeat': 'segment in filter.segments | filter: filtering | limitTo: 10', role: 'menuitem'}
+                                %a{href: '', 'ng-click': 'filter.select("segment", segment)'} {{segment.name}}
+        .footer
+            %span.reset{'ng-click': 'filter.resetAll()'} Reset
+            %button.btn-main.submit{'ng-click': 'filter.apply()'} Apply filters
+    .container-fluid
+        .row
+            .col-xs-12.accounts-menu
+                %span.title Accounts
+
+                %add-button{'ng-click': 'showNewAccountModal()'} Add Account
+                .accounts-types
+                    %span{'ng-repeat': 'type in accountTypes', 'ng-class': '{active: type === selectedType}', 'ng-click': 'filterAccounts(type)'}
+                        {{type.name}}
+                .search
+                    %form
+                        .input-group
+                            .input-group-addon
+                                %i.glyphicon.glyphicon-search
+                            %input.form-control{ ng: { model: 'searchText', change: 'handleSearch()' }, placeholder: "Search by Name" }
+                %button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
+                    %i.fa.fa-filter
+                    Add filter
+        .row
+            .col-xs-12
+                .block
+                    %table.table.table-hover
+                        %thead
+                            %tr
+                                %th Name
+                                %th Type
+                                %th Category
+                                %th Team
+                                %th City
+                                %th Last Touch
+                        %tbody{'infinite-scroll': "loadMoreClients()"}
+                            %tr{ ng: { repeat: 'client in clients'} }
+                                %td
+                                    %a{'ng-href': '/accounts/{{client.id}}'}
+                                        {{client.name}}
+                                %td {{getClientType(client)}}
+                                %td {{getClientCategory(client)}}
+                                %td
+                                    %div{ 'ng-repeat': 'member in client.client_members' }
+                                        {{ member.user.name + " (" + member.share + "%)" }}
+                                %td {{client.address.city}}
+                                %td {{getLastTouch(client) | date: 'MMM dd, yyyy'}}

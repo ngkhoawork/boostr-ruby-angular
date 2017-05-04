@@ -57,6 +57,10 @@ class BpEstimate < ActiveRecord::Base
     })
   end
 
+  def time_dimension
+    TimeDimension.find_by(start_date: self.bp.time_period.start_date, end_date: self.bp.time_period.end_date)
+  end
+
   def generate_bp_estimate_products
     bp.company.products.each do |product|
       bp_estimate_product_param = {

@@ -1,0 +1,50 @@
+#contact {
+    .contact-stats {
+        display: flex;
+        .stats-body {
+            display: flex;
+            flex: 1;
+            justify-content: space-around;
+            align-items: center;
+            .stats-col {
+                width: auto;
+                height: auto;
+            }
+            .col-body-wrap {
+                display: block;
+                .col-body {
+                   display: block;
+                }
+            }
+        }
+    }
+    .editable-field {
+        padding: 5px 8px;
+        border: 1px dashed $secondary-font-color;
+    }
+    .dropdown {
+        display: inline-block;
+        button:not(.add-btn) {
+            background-color: inherit;
+            border: none;
+            color: inherit;
+            padding: 0;
+            &:active {
+                outline: none;
+                box-shadow: none;
+            }
+        }
+        .dropdown-menu {
+            top: calc(100% + 10px);
+        }
+    }
+    .contact-info {
+        .title {
+            margin-right: 5px;
+        }
+        .custom-field-item-label {
+            font-weight: bold;
+        }
+
+    }
+}

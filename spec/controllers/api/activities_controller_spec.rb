@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::ActivitiesController, type: :controller do
+describe Api::ActivitiesController, type: :controller do
   let(:new_company) { create :company }
   let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
@@ -49,7 +49,7 @@ RSpec.describe Api::ActivitiesController, type: :controller do
         ]
       }
 
-      before(:each) do
+      before do
         contacts.each do |contact|
           existing_contacts << {name: contact.name, address: {email: contact.address.email}}
         end
@@ -153,6 +153,32 @@ RSpec.describe Api::ActivitiesController, type: :controller do
         end
       end
     end
+
+    context 'contact last happened activity' do
+      it 'update activity updated at field when value is nil' do
+        contact = create :contact
+
+        post :create, activity: activity_params, contacts: [contact.id], format: :json
+
+        expect(contact.reload.activity_updated_at).to eq activity_params[:happened_at]
+      end
+
+      it 'update activity updated at field when value is less than activity happened at' do
+        contact = create :contact, activity_updated_at: '2016-02-11 23:15:03'
+
+        post :create, activity: activity_params, contacts: [contact.id], format: :json
+
+        expect(contact.reload.activity_updated_at).to eq activity_params[:happened_at]
+      end
+
+      it 'does not update activity updated at field when value is greater than activity happened at' do
+        contact = create :contact, activity_updated_at: '2016-04-11 23:15:03'
+
+        post :create, activity: activity_params, contacts: [contact.id], format: :json
+
+        expect(contact.reload.activity_updated_at).to_not eq activity_params[:happened_at]
+      end
+    end
   end
 
   describe "PUT #update" do
@@ -187,7 +213,7 @@ RSpec.describe Api::ActivitiesController, type: :controller do
         ]
       }
 
-      before(:each) do
+      before do
         contacts.each do |contact|
           existing_contacts << {name: contact.name, address: {email: contact.address.email}}
         end
@@ -286,6 +312,36 @@ RSpec.describe Api::ActivitiesController, type: :controller do
           expect(new_contact['name']).to eq duplicate_contact.name
           expect(new_contact['created_by']).to eq user.id
         end
+      end
+    end
+
+    context 'contact last happened activity' do
+      it 'update activity updated at field when value is less than activity happened at' do
+        contact = create :contact, activity_updated_at: '2016-02-11 23:15:03'
+        activity = create :activity
+
+        put :update, id: activity.id, activity: activity_params, contacts: [contact.id], format: :json
+
+        expect(contact.reload.activity_updated_at).to eq activity_params[:happened_at]
+      end
+
+      it 'update activity updated at field when value is less than activity happened at but contact has activity with happened at greater then we send' do
+        contact = create :contact, activity_updated_at: '2016-04-11 23:15:03'
+        first_activity = create :activity, happened_at: '2016-04-11 23:15:03'
+        second_activity = create :activity, contacts: [contact], happened_at: '2016-04-01 23:15:03'
+
+        put :update, id: first_activity.id, activity: activity_params, contacts: [contact.id], format: :json
+
+        expect(contact.reload.activity_updated_at).to eq second_activity.happened_at
+      end
+
+      it 'does not update activity updated at field when value is greater than activity happened at' do
+        contact = create :contact, activity_updated_at: '2016-04-11 23:15:03'
+        activity = create :activity
+
+        post :create, id: activity.id, activity: activity_params, contacts: [contact.id], format: :json
+
+        expect(contact.reload.activity_updated_at).to_not eq activity_params[:happened_at]
       end
     end
   end

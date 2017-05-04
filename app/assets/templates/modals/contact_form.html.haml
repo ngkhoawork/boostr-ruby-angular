@@ -44,6 +44,28 @@
       .form-group
         %label{ for: 'note' } Note
         %textarea.form-control{'msd-elastic': '', name: 'note', placeholder: 'Type your note here', ng: { model: 'contact.note' } }
+
+      .form-group{ng: {repeat: 'contactCfName in contactCfNames | orderBy: "position"', init: "fieldName = contactCfName.field_type + contactCfName.field_index", if: "contactCfName.show_on_modal && !contactCfName.disabled", class:'{error: errors[fieldName]}'}}
+        %span.error-text {{errors[fieldName]}}
+        %label{ for: '{{fieldName}}', ng: { if: "contactCfName.field_type != 'sum'" } }
+          {{contactCfName.field_label}}
+          %span.star{ 'ng-if': "contactCfName.is_required == true" }
+            *
+        %input.form-control{ 'ng-if': "contactCfName.field_type != 'note' && contactCfName.field_type != 'datetime' && contactCfName.field_type != 'boolean' && contactCfName.field_type != 'dropdown' && contactCfName.field_type != 'sum'", placeholder: 'Enter {{contactCfName.field_label}}', ng: { model: 'contact.contact_cf[fieldName]' }, name: '{{fieldName}}' }
+        %textarea.form-control{ 'ng-if': "contactCfName.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "contact.contact_cf[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{contactCfName.field_label}}' }
+        .bs-datepicker
+          %input.form-control{ 'ng-if': "contactCfName.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'contact.contact_cf[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{contactCfName.field_label}}' }
+        .show-hide-remainder-form{ ng: { if: "contactCfName.field_type == 'boolean' " } }
+          .switch-remainder-form
+            %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'contact.contact_cf[fieldName]'}
+            %label{:for => "{{fieldName}}"}
+              %span
+        %ui-select{ name: '{{fieldName}}', ng: { if: "contactCfName.field_type == 'dropdown'", model: 'contact.contact_cf[fieldName]', disabled: true } }
+          %ui-select-match{ placeholder: 'Select value' }
+            {{ $select.selected.value }}
+          %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in contactCfName.contact_cf_options | filter: { value: $select.search }' }
+            %div{ ng: { bind: { html: 'customFieldOption.value' } } }  
+        
       .form-group.text-center{'ng-hide': 'showAddressFields'}
         %a.btn.add-btn{ 'ng-click': 'showAddressFields = true'}
           %i.fa.fa-plus

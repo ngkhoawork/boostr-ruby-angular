@@ -27,6 +27,8 @@
       address_attributes: address_attributes
       client_id: original.contact.client_id
       set_primary_client: !!(original.contact.set_primary_client)
+      values_attributes: original.contact.values
+      contact_cf_attributes: original.contact.contact_cf
     send.unassign = true if original.unassign
     angular.toJson(send)
 
@@ -47,6 +49,26 @@
     delete:
       method: 'DELETE'
       url: '/api/contacts/:id'
+    get_contact:
+      method: 'GET'
+      url: '/api/contacts/:id'
+    metadata:
+      method: 'GET'
+      url: 'api/contacts/metadata'
+    get_related:
+      method: 'GET'
+      url: '/api/contacts/:id/related_clients'
+      isArray: true
+    get_advertisers:
+      method: 'GET'
+      url: '/api/contacts/:id/advertisers'
+      isArray: true
+    assign_account:
+      method: 'POST'
+      url: '/api/contacts/:id/assign_account'
+    unassign_account:
+      method: 'DELETE'
+      url: '/api/contacts/:id/unassign_account'
 
   # @TODO: Replace all of this with just returning resource
   allContacts = []
@@ -106,6 +128,12 @@
     currentContact = _.find allContacts, (contact) ->
       return parseInt(contact_id) == contact.id
     $rootScope.$broadcast 'updated_current_contact'
+
+  resource.getContact = (id) ->
+    deferred = $q.defer()
+    resource.get_contact id: id, (contact) =>
+      deferred.resolve(contact)
+    deferred.promise
 
   return resource
 ]

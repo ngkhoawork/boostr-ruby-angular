@@ -1,0 +1,37 @@
+.contacts.block
+    %div.mb20
+        %span.title Contacts
+        %add-button{'ng-click': 'createNewContactModal()'} Add
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left Name
+                %th.left Position
+                %th.left Email
+                %th.left Status
+                %th.left Job Level
+        %tbody
+            %tr{ ng: { repeat: 'client_contact in client_contacts'} }
+                %td.left
+                    %a{'ng-href': '/contacts/{{client_contact.id}}'} {{ client_contact.name }}
+                    %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(client_contact)'}
+                    %button.btn.btn-primary.btn-lg{ng:{if: 'currentClient.client_type.option.name == "Agency"', click: 'showAssignContactModal(client_contact)'}}
+                        = inline_svg "icons/client-meeting.svg"
+                        Assign
+                %td.left
+                    {{ client_contact.position }}
+                %td.left
+                    {{ client_contact.address.email }}
+                %td.left
+                    {{ client_contact.status }}
+                %td.left
+                    {{ client_contact.job_level }}
+
+
+    .custom-pagination{'bgf-pagination': 'bgf-pagination',
+        'collection': 'client_contacts',
+        'per-page': '10',
+        'link-group-size': "2",
+        'client-limit': "100",
+        'url': 'clientContactUrl'}

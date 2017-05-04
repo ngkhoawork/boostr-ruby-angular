@@ -63,3 +63,8 @@
 .icon-activity-qbr:before {
   content: "\e90b";
 }
+.icon-activity-internal-meeting:before {
+  content: "\00a0\00a0";
+  background: url('icons/internal-meeting.svg') no-repeat top left;
+  background-size: contain;
+}

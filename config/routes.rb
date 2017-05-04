@@ -26,12 +26,62 @@ Rails.application.routes.draw do
       resources :states, only: [:index]
       resources :forgot_password, only: [:create]
       resources :activity_types, only: [:index]
+      resources :holding_companies, only: [:index]
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
         resources :deal_products, only: [:create, :update, :destroy]
         resources :deal_assets, only: [:index, :update, :create, :destroy]
         resources :deal_contacts, only: [:index, :create, :update, :destroy]
+      end
+      resources :stages, only: [:index, :create, :show, :update]
+      resources :clients, only: [:index, :show, :create, :update, :destroy] do
+        get :sellers
+        get :connected_contacts
+        get :connected_client_contacts
+        get :child_clients
+        get :stats
+        collection do
+          get :filter_options
+        end
+        resources :client_members, only: [:index, :create, :update, :destroy]
+        resources :client_contacts, only: [:index, :create, :update, :destroy] do
+          collection do
+            get :related_clients
+          end
+        end
+      end
+
+      resources :client_connections, only: [:index, :create, :update, :destroy]
+
+      resources :reminders, only: [:index, :show, :create, :update, :destroy]
+      resources :remindable, only: [] do
+        get '/:remindable_type', to: 'reminders#remindable'
+      end
+      resources :forecasts, only: [:index, :show]
+      resources :time_periods, only: [:index]
+      resources :countries, only: [:index]
+      resources :fields, only: [:index]
+      resources :users, only: [:index, :update]
+    end # API V1 END
+
+    scope module: :v2, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 2) do
+      post 'forgot_password' => 'forgot_password#create'
+      post 'resend_confirmation' => 'forgot_password#create'
+
+      resources :user_token, only: [:create]
+
+      resource :dashboard, only: [:show]
+      resources :states, only: [:index]
+      resources :forgot_password, only: [:create]
+      resources :activity_types, only: [:index]
+      resources :activities, only: [:index, :create, :show, :update, :destroy]
+      resources :contacts, only: [:index, :create, :update, :destroy]
+      resources :deals, only: [:index, :create, :update, :show, :destroy] do
+        resources :deal_products, only: [:create, :update, :destroy]
+        resources :deal_assets, only: [:index, :update, :create, :destroy]
+        resources :deal_contacts, only: [:index, :create, :update, :destroy]
+        resources :deal_members, only: [:index, :create, :update, :destroy]
       end
       resources :stages, only: [:index, :create, :show, :update]
       resources :clients, only: [:index, :show, :create, :update, :destroy] do
@@ -52,8 +102,22 @@ Rails.application.routes.draw do
       resources :time_periods, only: [:index]
       resources :countries, only: [:index]
       resources :fields, only: [:index]
-      resources :users, only: [:index, :update]
-    end
+      resources :users, only: [:index, :update] do
+        collection do
+          get :signed_in_user
+        end
+      end
+
+      resources :currencies, only: [:index] do
+        collection do
+          get :active_currencies
+          get :exchange_rates_by_currencies
+        end
+      end
+
+      resources :deal_custom_field_names, only: [:index]
+      resources :products, only: [:index]
+    end # API V2 END
 
     resources :countries, only: [:index]
     resources :api_configurations
@@ -71,15 +135,25 @@ Rails.application.routes.draw do
     end
     resources :clients, only: [:index, :show, :create, :update, :destroy] do
       get :sellers
+      get :connected_contacts
+      get :connected_client_contacts
+      get :child_clients
+      get :stats
+      collection do
+        get :filter_options
+      end
       resources :client_members, only: [:index, :create, :update, :destroy]
-      resources :client_contacts, only: [:index] do
+      resources :client_contacts, only: [:index, :create, :update, :destroy] do
         collection do
           get :related_clients
         end
       end
     end
+    resources :client_connections, only: [:index, :create, :update, :destroy]
     resources :deal_custom_field_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_product_cf_names, only: [:index, :show, :create, :update, :destroy]
+    resources :account_cf_names, only: [:index, :show, :create, :update, :destroy]
+    resources :contact_cf_names, only: [:index, :show, :create, :update, :destroy]
     resources :deal_reports, only: [:index]
     
     resources :bps, only: [:index, :create, :update, :show, :destroy] do
@@ -88,15 +162,32 @@ Rails.application.routes.draw do
       get :unassigned_clients
       post :add_client
       post :add_all_clients
+      post :add_all_clients
       resources :bp_estimates, only: [:index, :create, :update, :show, :destroy]
     end
     resources :temp_ios, only: [:index, :update]
-    resources :display_line_items, only: [:index, :create]
-    resources :display_line_item_budgets, only: [:index, :create]
+    resources :display_line_items, only: [:index, :create, :show] do
+      post :add_budget, on: :member
+    end
+    resources :display_line_item_budgets, only: [:index, :create, :update, :destroy]
     resources :io_csvs, only: [:create]
     resources :display_line_item_csvs, only: [:create]
-    resources :contacts, only: [:index, :create, :update, :destroy]
-    resources :revenue, only: [:index, :create]
+    resources :contacts, only: [:index, :show, :create, :update, :destroy] do
+      member do
+        post :assign_account
+        delete :unassign_account
+        get :related_clients
+        get :advertisers
+      end
+      collection do
+        get :metadata
+      end
+    end
+    resources :revenue, only: [:index, :create] do
+      collection do
+        get :forecast_detail
+      end
+    end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
@@ -106,6 +197,7 @@ Rails.application.routes.draw do
       collection do
         get :pipeline_report
         get :pipeline_summary_report
+        get :won_deals
       end
       member do
         post :send_to_operative
@@ -116,7 +208,7 @@ Rails.application.routes.draw do
       get 'latest_log', to: 'integration_logs#latest_log'
     end
     resources :deal_product_budgets, only: [:index, :create]
-    resources :deal_products, only: [:create]
+    resources :deal_products, only: [:index, :create]
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update]
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
@@ -144,7 +236,11 @@ Rails.application.routes.draw do
       end
     end
     resources :quotas, only: [:index, :create, :update]
-    resources :forecasts, only: [:index, :show]
+    resources :forecasts, only: [:index, :show] do
+      collection do
+        get :detail
+      end
+    end
     resources :fields, only: [:index]
     resources :options, only: [:create, :update, :destroy]
     resources :validations, only: [:index, :update]
@@ -152,6 +248,7 @@ Rails.application.routes.draw do
     resources :notifications, only: [:index, :show, :create, :update, :destroy]
     resources :activities, only: [:index, :create, :show, :update, :destroy]
     resources :activity_types, only: [:index, :create, :show, :update, :destroy]
+    resources :holding_companies, only: [:index]
     resources :reports, only: [:index, :show]
     resources :sales_execution_dashboard, only: [:index] do
       collection do
@@ -194,6 +291,8 @@ Rails.application.routes.draw do
 
       get :export, on: :collection
     end
+
+    get 'teams/by_user/:id', to: 'teams#by_user', as: :team_by_user
   end
 
   mount Sidekiq::Web => '/sidekiq'

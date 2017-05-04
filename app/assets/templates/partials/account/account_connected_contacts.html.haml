@@ -1,0 +1,33 @@
+.contacts.block
+    %div.mb20
+        %span.title {{ currentClient.client_type.option.name == 'Advertiser' ? 'Related Agency Contacts' : 'Agency Contacts & Related Advertisers' }}
+        %add-button{ng: {if: 'currentClient.client_type.option.name == "Advertiser"', click: 'showNewAccountConnectionContactModal()'} } Add
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left Name
+                %th.left {{ currentClient.client_type.option.name == 'Advertiser' ? 'Agency' : 'Advertiser' }}
+                %th.left Position
+                %th.left Email
+                %th.left Phone
+                %th.left Status
+        %tbody
+            %tr{ ng: { repeat: 'connected_contact in connected_client_contacts'} }
+                %td
+                    %a{'ng-href': '/contacts/{{connected_contact.id}}'} {{ connected_contact.name }}
+                    %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnectionContact(connected_contact)'}
+                %td{'ng-if': "currentClient.client_type.option.name == 'Advertiser'"}
+                    %a{'ng-href': '/accounts/{{connected_contact.primary_client_json.id}}'}
+                        {{ connected_contact.primary_client_json.name }}
+                %td{'ng-if': "currentClient.client_type.option.name == 'Agency'"}
+                    %a{'ng-href': '/accounts/{{connected_contact.non_primary_client_contact.client_id}}'}
+                        {{ connected_contact.non_primary_client_contact.client.name }}
+                %td
+                    {{ connected_contact.position }}
+                %td
+                    {{ connected_contact.address.email }}
+                %td
+                    {{ connected_contact.address.phone }}
+                %td.left
+                    {{ connected_contact.status }}

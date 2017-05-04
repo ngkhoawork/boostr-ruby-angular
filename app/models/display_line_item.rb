@@ -53,6 +53,8 @@ class DisplayLineItem < ActiveRecord::Base
   after_create :update_io_budget
   after_update :update_io_budget
 
+  scope :for_time_period, -> (start_date, end_date) { where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', end_date, start_date) }
+
   def update_io_budget
     if io.present?
       io.update_total_budget

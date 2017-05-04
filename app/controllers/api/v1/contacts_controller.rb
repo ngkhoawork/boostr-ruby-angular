@@ -14,7 +14,7 @@ class Api::V1::ContactsController < ApiController
       results = contacts
     end
     response.headers['X-Total-Count'] = results.total_count
-    render json: results
+    render json: results.limit(limit).offset(offset)
   end
 
   def create
@@ -87,14 +87,11 @@ class Api::V1::ContactsController < ApiController
 
   def contacts
     if params[:filter] == 'my_contacts'
-      Contact.by_client_ids(limit, offset, current_user.clients.ids)
+      Contact.by_client_ids(current_user.clients.ids)
     elsif params[:filter] == 'team' && team
-      Contact.by_client_ids(limit, offset, team.clients.ids)
+      Contact.by_client_ids(team.clients.ids)
     else
-      current_user.company.contacts
-        .order(:name)
-        .limit(limit)
-        .offset(offset)
+      current_user.company.contacts.order(:name)
     end
   end
 

@@ -98,4 +98,88 @@
                 %td{ colspan: "7"}
                   %center
                     No data available
+    %br
+    .row
+      .col-xs-4.quota-period
+        .row
+          .col-xs-12
+            Account Custom Fields
+    .row
+      .col-xs-12
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Position
+                %th.left Name
+                %th.left Type
+                %th.left Required
+                %th.left Show on Modal
+                %th.left Disabled
+                %th.action-column
+            %tbody
+              %tr{ ng: { repeat: 'accountCustomFieldName in accountCustomFieldNames', if: "accountCustomFieldNames.length > 0" } }
+                %td.left
+                  {{ accountCustomFieldName.position }}
+                %td.left
+                  {{ accountCustomFieldName.field_label }}
+                %td.left
+                  {{ accountCustomFieldName.field_type }}
+                %td.left
+                  {{ accountCustomFieldName.is_required ? "Yes" : "No" }}
+                %td.left
+                  {{ accountCustomFieldName.show_on_modal ? "Yes" : "No" }}
+                %td.left
+                  {{ accountCustomFieldName.disabled ? "Yes" : "No" }}
+                %td.action-td
+                  %a.edit-team{ href: '', ng: { click: 'editModal(accountCustomFieldName, "account")' } }
+                    = inline_svg 'icons/pencil.svg'
+                  %a.delete-team{ href: '', ng: { click: 'delete(accountCustomFieldName, "account")' } }
+                    = inline_svg 'icons/trash.svg'
+              %tr{ ng: { if: "!accountCustomFieldNames || accountCustomFieldNames.length == 0" } }
+                %td{ colspan: "7"}
+                  %center
+                    No data available
 
+    %br
+    .row
+      .col-xs-4.quota-period
+        .row
+          .col-xs-12
+            Contact Custom Fields
+    .row
+      .col-xs-12
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Position
+                %th.left Name
+                %th.left Type
+                %th.left Required
+                %th.left Show on Modal
+                %th.left Disabled
+                %th.action-column
+            %tbody
+              %tr{ ng: { repeat: 'contact_cf_name in contact_cf_names', if: "contact_cf_names.length > 0" } }
+                %td.left
+                  {{ contact_cf_name.position }}
+                %td.left
+                  {{ contact_cf_name.field_label }}
+                %td.left
+                  {{ contact_cf_name.field_type }}
+                %td.left
+                  {{ contact_cf_name.is_required ? "Yes" : "No" }}
+                %td.left
+                  {{ contact_cf_name.show_on_modal ? "Yes" : "No" }}
+                %td.left
+                  {{ contact_cf_name.disabled ? "Yes" : "No" }}
+                %td.action-td
+                  %a.edit-team{ href: '', ng: { click: 'editModal(contact_cf_name, "contact")' } }
+                    = inline_svg 'icons/pencil.svg'
+                  %a.delete-team{ href: '', ng: { click: 'delete(contact_cf_name, "contact")' } }
+                    = inline_svg 'icons/trash.svg'
+              %tr{ ng: { if: "!contact_cf_names || contact_cf_names.length == 0" } }
+                %td{ colspan: "7"}
+                  %center
+                    No data available

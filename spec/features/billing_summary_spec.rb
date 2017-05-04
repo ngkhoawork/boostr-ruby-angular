@@ -10,6 +10,8 @@ feature 'BillingSummary' do
     create :billing_deal_contact, deal: deal_with_missing_display_line_items, contact: contact
     create :billing_deal_contact, deal: deal_with_missing_monthly_actual, contact: contact
 
+    display_line_item_budget
+
     login_as user, scope: :user
 
     visit '/finance/billing'
@@ -27,13 +29,13 @@ feature 'BillingSummary' do
     expect(ios_for_approval_table).to include display_line_item.ad_server
     expect(ios_for_approval_table).to include io.curr_cd
 
-    expect(ios_missing_display_line_items_table).to include io_with_missing_display_line_items.id.to_s
+    expect(ios_missing_display_line_items_table).to include io_with_missing_display_line_items.io_number.to_s
     expect(ios_missing_display_line_items_table).to include io_with_missing_display_line_items.name
     expect(ios_missing_display_line_items_table).to include advertiser.name
     expect(ios_missing_display_line_items_table).to include io_with_missing_display_line_items.curr_cd
     expect(ios_missing_display_line_items_table).to include contact.name
 
-    expect(io_with_with_missing_monthly_actual_table).to include io_with_with_missing_monthly_actual.id.to_s
+    expect(io_with_with_missing_monthly_actual_table).to include io_with_with_missing_monthly_actual.io_number.to_s
     expect(io_with_with_missing_monthly_actual_table).to include io_with_with_missing_monthly_actual.name
     expect(io_with_with_missing_monthly_actual_table).to include display_line_item_with_missing_monthly_actual.line_number.to_s
     expect(io_with_with_missing_monthly_actual_table).to include advertiser.name
@@ -166,7 +168,8 @@ feature 'BillingSummary' do
       product: display_line_item_product,
       line_number: 20,
       price: 10,
-      display_line_item_budgets: [display_line_item_budget]
+      budget: 30_000,
+      budget_loc: 30_000
     )
   end
 
@@ -195,6 +198,7 @@ feature 'BillingSummary' do
       end_date: end_date,
       budget: 20_000,
       budget_loc: 20_000,
+      display_line_item: display_line_item
     )
   end
 

@@ -1,4 +1,4 @@
-#deal {
+#deal, .z-detail-page {
     .warning-message {
         background-color: $error-color;
         color: white;
@@ -127,11 +127,11 @@
     .delete-deal {
         margin-left: 0
     }
-    .deal-stats {
+    .detail-stats {
         textarea.editable {
             margin-left: 10px;
         }
-        .deal-info {
+        .detail-info {
             color: $secondary-font-color;
             .dropdown {
                 position: relative;
@@ -141,11 +141,14 @@
                     font-weight: bold;
                 }
             }
+            b {
+                //color: $main-font-color;
+            }
         }
         .stats-col {
             margin-right: -4px;
             text-align: center;
-            height: 120px;
+            //height: 120px;
             position: relative;
             display: inline-block;
             width: 16.66%;
@@ -155,10 +158,10 @@
             .col-body-wrap {
                 width: 100%;
                 height: 100%;
-                display: table;
+                //display: table;
                 .col-body {
-                    display: table-cell;
-                    vertical-align: middle;
+                    //display: table-cell;
+                    //vertical-align: middle;
                     //white-space: nowrap;
                     .title {
                         font-size: 18px;
@@ -179,6 +182,49 @@
                 left: 1%;
                 width: 98%;
                 bottom: calc(50% + 30px);
+            }
+        }
+    }
+    .deal-insights {
+        .insights-row:not(:last-child) {
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid $separate-line-color;
+        }
+        .sub-title {
+            padding: 10px 0;
+            div:nth-child(1) {
+                width: 39%;
+                display: inline-block;
+                font-weight: bold;
+            }
+            div:nth-child(2) {
+                font-size: 15px;
+                padding-left: 10px;
+                width: 61%;
+                display: inline-block;
+            }
+
+        }
+        .deal-stats {
+            display: flex;
+            justify-content: space-between;
+            .stats-col {
+                width: auto;
+                padding: 0 5px;
+                .col-body-wrap {
+                    .col-body {
+                        .description {
+                            font-size: 0.7vw;
+                            text-align: center;
+                        }
+                        .title {
+                            margin: 0;
+                            text-align: center;
+                            font-size: 0.9vw;
+                        }
+                    }
+                }
             }
         }
     }
@@ -282,6 +328,7 @@
         }
         > table {
             > thead > tr {
+
                 background-color: $brand-tertiary;
                 //background-color: lighten($main-color, 35%);
                 > th {
@@ -507,6 +554,34 @@
         }
         .not-selected {
             color: lighten($secondary-font-color, 15%);
+        }
+    }
+}
+@media screen and (min-width: 1921px) {
+    #deal {
+        .deal-insights {
+            .stats-col {
+                .description {
+                    font-size: 14px !important;
+                }
+                .title {
+                    font-size: 17px !important;
+                }
+            }
+        }
+    }
+}
+@media screen and (max-width: $content-min-width) {
+    #deal {
+        .deal-insights {
+            .stats-col {
+                .description {
+                    font-size: 10px !important;
+                }
+                .title {
+                    font-size: 13px !important;
+                }
+            }
         }
     }
 }

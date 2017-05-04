@@ -25,7 +25,7 @@ RSpec.describe Api::V1::DealContactsController, type: :controller do
 
       expect(response).to be_success
       expect(json_response.length).to eq(1)
-      expect(json_response[0]).to eq(JSON.parse(agency_contact.to_json))
+      expect(json_response[0]['formatted_name']).to eql agency_contact.formatted_name
     end
   end
 

@@ -1,0 +1,25 @@
+.deals.block
+    %div.mb20
+        %span.title IOs
+        -#%add-button{'ng-click': 'showNewDealModal()'} Add
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left Name
+                %th.left Advertiser
+                %th.right.budget-field Budget
+                %th.left Start Date
+                %th.left End Date
+        %tbody
+            %tr{ ng: { repeat: 'io in ios'} }
+                %td
+                    %a{'ng-href': 'revenue/ios/{{io.id}}'} {{ io.name }}
+                %td
+                    {{ io.advertiser.name }}
+                %td.right.budget-field
+                    {{ io.budget | currency:io.currency.curr_symbol:0  }}
+                %td
+                    {{ io.start_date | date: 'MM/dd/yyyy' }}
+                %td.left
+                    {{ io.end_date | date: 'MM/dd/yyyy' }}

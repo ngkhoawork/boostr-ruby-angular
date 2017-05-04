@@ -7,6 +7,27 @@ RSpec.describe Contact, type: :model do
   let(:address) { create :address, email: 'abc123@boostrcrm.com' }
   let(:address2) { create :address, email: 'abc1234@boostrcrm.com' }
 
+  context 'associations' do
+    it { should have_many(:deals).through(:deal_contacts) }
+    it { should have_many(:deal_contacts) }
+    it { should have_one :contact_cf }
+
+    it 'has one latest_happened_activity' do
+      contact = create :contact
+      create :activity, contacts: [contact], happened_at: DateTime.now - 1.month
+      activity = create :activity, contacts: [contact], happened_at: DateTime.now
+
+      expect(contact.latest_happened_activity.count).to be 1
+      expect(contact.latest_happened_activity.first).to eq activity
+    end
+
+    it 'has many workplaces' do
+      contact = create :contact, clients: [client, client2]
+
+      expect(contact.workplaces).to eq(contact.clients.select(:id, :name))
+    end
+  end
+
   context 'after_save' do
     let(:contact) { build :contact, client_id: client.id }
 
@@ -50,11 +71,6 @@ RSpec.describe Contact, type: :model do
     end
   end
 
-  context 'associations' do
-    it { should have_many(:deals).through(:deal_contacts) }
-    it { should have_many(:deal_contacts) }
-  end
-
   context 'scopes' do
     context 'unassigned' do
       let!(:contact) { create :contact, clients: [client], address: address }
@@ -91,8 +107,69 @@ RSpec.describe Contact, type: :model do
       let!(:client_contacts) { create_list :contact, 3, clients: [client, client2] }
 
       it 'returns contacts that have given clients ids assigned as clients' do
-        contacts = Contact.by_client_ids(10, 0, [client.id, client2.id])
+        contacts = Contact.by_client_ids([client.id, client2.id])
         expect(contacts.length).to eq(client_contacts.count)
+      end
+    end
+
+    context 'by_primary_client' do
+      let(:client) { create :client, name: 'Flipboard' }
+      let!(:some_contacts) { create_list :contact, 3 }
+      let!(:client_contacts) { create_list :contact, 3, clients: [client], client_id: client.id }
+
+      it 'returns contacts working at given client name' do
+        contacts = Contact.by_primary_client_name('Flipboard')
+
+        expect(contacts.length).to be 3
+      end
+
+      it 'does case insensitive search' do
+        contacts = Contact.by_primary_client_name('flipboard')
+
+        expect(contacts.length).to be 3
+      end
+
+      it 'skips the scope if parameter is empty' do
+        contacts = Contact.by_primary_client_name('')
+
+        expect(contacts.length).to be 6
+      end
+    end
+
+    context 'by_city' do
+      let!(:luxury_contact) { create :contact, address_attributes: { city: 'Palm Beach', email: FFaker::Internet.email } }
+      let!(:misc_contacts) { create_list :contact, 3, clients: [client], client_id: client.id }
+
+      it 'finds contacts by city' do
+        contacts = Contact.by_city('Palm Beach')
+
+        expect(contacts.length).to be 1
+      end
+
+      it 'does case insensitive search' do
+        contacts = Contact.by_city('palm beach')
+
+        expect(contacts.length).to be 1
+      end
+
+      it 'skips the scope if parameter is empty' do
+        contacts = Contact.by_city('')
+
+        expect(contacts.length).to be 4
+      end
+    end
+
+    context 'by job level' do
+      let!(:field) { company.fields.find_by(subject_type: 'Contact', name: 'Job Level') }
+      let!(:pro) { create :option, name: 'Pro', field: field }
+      let!(:rookie) { create :option, name: 'Rookie', field: field }
+      let!(:new_contacts) { create_list :contact, 3, values_attributes: [{ field_id: field.id, option_id: rookie.id }]}
+      let!(:pro_contacts) { create_list :contact, 3, values_attributes: [{ field_id: field.id, option_id: pro.id }]}
+
+      it 'finds contacts by job level' do
+        contacts = Contact.by_job_level('Rookie')
+
+        expect(contacts.length).to be 3
       end
     end
   end
@@ -132,5 +209,40 @@ RSpec.describe Contact, type: :model do
       expect(contact.reload.primary_client).to eq(client2)
       expect(contact.clients).to eq([client2])
     end
+  end
+
+  describe 'metadata' do
+    let(:client) { create :client, name: 'Flipboard' }
+    let(:client2) { create :client, name: 'Facebook' }
+
+    let!(:field) { company.fields.find_by(subject_type: 'Contact', name: 'Job Level') }
+    let!(:pro) { create :option, name: 'CEO', field: field }
+    let!(:rookie) { create :option, name: 'Seller', field: field }
+
+    let!(:pro_contact) { create :contact,
+      clients: [client], client_id: client.id,
+      values_attributes: [{ field_id: field.id, option_id: rookie.id }],
+      address_attributes: (attributes_for :address, city: 'Palm Beach')
+    }
+
+    let!(:rookie_contact) { create :contact,
+      clients: [client2], client_id: client2.id,
+      values_attributes: [{ field_id: field.id, option_id: pro.id }],
+      address_attributes: (attributes_for :address, city: 'New York')
+    }
+
+    it 'returns information about possible contact filters' do
+      metadata = Contact.metadata(company.id)
+
+      expect(metadata).to eq(
+        workplaces: ['Flipboard', 'Facebook'],
+        job_levels: ['CEO', 'Seller'],
+        cities: ['Palm Beach', 'New York']
+      )
+    end
+  end
+
+  def company
+    @_company ||= Company.first
   end
 end

@@ -1,0 +1,22 @@
+.contacts.block
+    %div.mb20
+        %span.title Brands/Child Accounts
+        %add-button{'ng-click': 'showNewChildAccountModal()'} Add
+
+    %table.table.table-striped
+        %thead
+            %tr
+                %th.left Name
+                %th.left Category
+                %th.left Team
+        %tbody
+            %tr{ ng: { repeat: 'child_client in child_clients'} }
+                %td
+                    %a{'ng-href': '/accounts/{{child_client.id}}'} {{ child_client.name }}
+                    %i.fa.fa-pencil.edit-deal{'ng-click': 'showAccountEditModal(child_client)'}
+                    %i.fa.fa-trash.delete-deal{'ng-click': 'deleteChildClient(child_client)'}
+                %td
+                    {{ getClientCategory(child_client) }}
+                %td.left
+                    %div{ 'ng-repeat': 'client_member in child_client.client_members'}
+                        {{ client_member.user.name + ' (' + client_member.share + '%)' }}

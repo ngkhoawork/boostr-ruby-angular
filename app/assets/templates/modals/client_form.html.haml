@@ -28,12 +28,20 @@
         .row
           .col-xs-6
             %label{ for: 'parent-client' }
-              {{ client.client_type.option_id === Agency ? 'Holding Company' : 'Global Parent' }}
+              Global Parent
             %ui-select{ parent_client: 'parent-client', ng: { model: 'client.parent_client_id', disabled: 'client.client_type.option_id === undefined', keyup: 'searchClients($select.search)'} }
               %ui-select-match{ placeholder: 'Pick from list or search', "allow-clear": 'true' }
                 {{ $select.selected.name || client.parent_client.name }}
               %ui-select-choices{ repeat: 'parent.id as parent in clients | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'parent.name' } } }
+          .col-xs-6
+            %label{ for: 'holding-company' }
+              Holding Company
+            %ui-select{ parent_client: 'holding-company', ng: { model: 'client.holding_company_id', disabled: 'client.client_type.option_id === undefined'} }
+              %ui-select-match{ placeholder: 'Pick from list', "allow-clear": 'true' }
+                {{ $select.selected.name || client.parent_client.name }}
+              %ui-select-choices{ repeat: 'option.id as option in holdingCompanies | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'option.name' } } }
       .form-group{ ng: {if: 'client.client_type.option_id === Advertiser'} }
         .row
           .col-xs-6
@@ -50,6 +58,22 @@
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'subcategory.id as subcategory in current_category.suboptions | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'subcategory.name' } } }
+      .form-group
+        .row
+          .col-xs-6
+            %label{ for: 'client-region' } Region
+            %ui-select{ region: 'client-region', ng: { model: 'client.client_region_id', disabled: true } }
+              %ui-select-match{ placeholder: 'Region' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'region.id as region in client.fields[3].options | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'region.name' } } }
+          .col-xs-6
+            %label{ for: 'client-segment' } Segment
+            %ui-select{ segment: 'client-segment', ng: { model: 'client.client_segment_id', disabled: true } }
+              %ui-select-match{ placeholder: 'Segment' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'segment.id as segment in client.fields[4].options | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'segment.name' } } }
       .form-group
         %label{ for: 'street1' } Address
         %input.form-control{ placeholder: 'Address', ng: { model: 'client.address.street1' }, name: 'street1' }
@@ -81,7 +105,29 @@
       .form-group
         %label{ for: 'website' } Website
         %input.form-control{ placeholder: 'Website', ng: { model: 'client.website' }, name: 'website' }
-
+      .form-group{ng: {repeat: 'accountCfName in accountCfNames | orderBy: "position"', init: "fieldName = accountCfName.field_type + accountCfName.field_index", if: "accountCfName.show_on_modal && !accountCfName.disabled", class:'{error: errors[fieldName]}'}}
+        %span.error-text {{errors[fieldName]}}
+        %label{ for: '{{fieldName}}', ng: { if: "accountCfName.field_type != 'sum'" } }
+          {{accountCfName.field_label}}
+          %span.star{ 'ng-if': "accountCfName.is_required == true" }
+            *
+        %input.form-control{ 'ng-if': "accountCfName.field_type != 'note' && accountCfName.field_type != 'datetime' && accountCfName.field_type != 'boolean' && accountCfName.field_type != 'dropdown' && accountCfName.field_type != 'sum'", placeholder: 'Enter {{accountCfName.field_label}}', ng: { model: 'client.account_cf[fieldName]' }, name: '{{fieldName}}' }
+        %textarea.form-control{ 'ng-if': "accountCfName.field_type == 'note'", 'msd-elastic': '', rows: 1, 'ng-model': "client.account_cf[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{accountCfName.field_label}}' }
+        .bs-datepicker
+          %input.form-control{ 'ng-if': "accountCfName.field_type == 'datetime'", readonly: true, name: '{{fieldName}}', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'client.account_cf[fieldName]', required: true, click: 'dateOpened[fieldName] = true' }, 'is-open': 'dateOpened[fieldName]', placeholder: 'Choose {{accountCfName.field_label}}' }
+        .show-hide-remainder-form{ ng: { if: "accountCfName.field_type == 'boolean' " } }
+          .switch-remainder-form
+            %input.cmn-toggle.cmn-toggle-round-flat{id: "{{fieldName}}", type: 'checkbox', 'ng-model': 'client.account_cf[fieldName]'}
+            %label{:for => "{{fieldName}}"}
+              %span
+        %ui-select{ name: '{{fieldName}}', ng: { if: "accountCfName.field_type == 'dropdown'", model: 'client.account_cf[fieldName]', disabled: true } }
+          %ui-select-match{ placeholder: 'Select value' }
+            {{ $select.selected.value }}
+          %ui-select-choices{ repeat: 'customFieldOption.value as customFieldOption in accountCfName.account_cf_options | filter: { value: $select.search }' }
+            %div{ ng: { bind: { html: 'customFieldOption.value' } } }
+      .form-group
+        %label{ for: 'note' } Note
+        %textarea.form-control{ 'msd-elastic': '', rows: 1, 'ng-model': "client.note", name: "note", placeholder: 'Enter note' }
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
       %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

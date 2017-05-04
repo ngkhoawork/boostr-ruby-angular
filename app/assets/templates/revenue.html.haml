@@ -1,48 +1,45 @@
-#revenue
-  .container
-    .row
-      .col-xs-12
-        %h3
-          Revenue
-        .search
-          %form
-            .input-group
-              .input-group-addon
-                %i.glyphicon.glyphicon-search
-              %input.form-control{ ng: { model: 'searchText' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
+#revenue.z-styles
+  .container-fluid
+    .row.revenue-header.mb20
+      .header-item
+        .main-title Revenue
 
-    .row
-      .col-md-12
-        .risk-upside-filters{ ng: { if: "revenueFilter.param == 'risk' || revenueFilter.param == 'upside'"} }
+      .header-item
+        %div.filter-row
+          %span{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}', click: 'filterRevenues(filter)'} }
+            {{ filter.name }}
+        %div.filter-row.sub-filter{ ng: { if: "revenueFilter.param == 'risk' || revenueFilter.param == 'upside'"} }
           %span{ ng: { class: '{ active: currentPacingAlertsFilterValue == io_owner_filter.value }', click: 'setPacingAlertsFilter(io_owner_filter)', repeat: 'io_owner_filter in pacingAlertsFilters | orderBy: \'order\'' } }
             {{io_owner_filter.name}}
-    .row
-      .col-md-12
-        .navbar.navbar-white
-          %div.date-filter
-            %span Start date period
-            -#%ul
-              %li{ dropdown: true }
-                %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": selectedYear === "All"}' }
-                  {{selectedYear || 'All'}}
-                  %span.caret
-                %ul.dropdown-menu
-                  %li{ ng: { repeat: 'year in years', class: '{active: year === selectedYear}' } }
-                    %a{ href: '', ng: { click: 'filterByYear(year)' } }
-                      {{year}}
-            .date-picker-wrap
-              %div.date-picker#advertiser-date-picker{'date-range-picker': true,
-                                                             'ng-model': 'datePicker.date',
-                                                             :options => "{locale: {format: 'MMMM D, YYYY'},
-                                                                           eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-                Time period
+      .header-item.search
+        %form
+          .input-group
+            .input-group-addon
+              %i.glyphicon.glyphicon-search
+            %input.form-control{ ng: { model: 'searchText' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
+      .header-item.date-filter
+        %span Start date period
+        -#%ul
+          %li{ dropdown: true }
+            %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": selectedYear === "All"}' }
+              {{selectedYear || 'All'}}
               %span.caret
-          %ul.nav.navbar-nav
-            %li{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}' } }
-              %a{ href: "javascript:void(0);", ng: { click: 'filterRevenues(filter)'} }
-                {{ filter.name }}
+            %ul.dropdown-menu
+              %li{ ng: { repeat: 'year in years', class: '{active: year === selectedYear}' } }
+                %a{ href: '', ng: { click: 'filterByYear(year)' } }
+                  {{year}}
+        .date-picker-wrap
+          %div.date-picker#advertiser-date-picker{'date-range-picker': true,
+                                                         'ng-model': 'datePicker.date',
+                                                         :options => "{locale: {format: 'MMMM D, YYYY'},
+                                                                       eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
+            Time period
+          %span.caret
+
+    .row
+      .block
         .table-wrapper
-          %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param == ''"}}
+          %table.table.table-hover{ng: {if: "revenueFilter.param == ''"}}
             %thead
               %tr
                 %th.left
@@ -64,11 +61,11 @@
                 %th.left
                   %span{'ng-click': 'sortBy("deal.name")'} Deal Name
                 %th.action-column
-                %th.right
+                -#%th.right
 
-            %tbody{ ng: { repeat: 'row in revenue | filter:searchText', include: "'partials/revenue_io_rows.html'" } }
+            %tbody{ 'ng-include': "'partials/revenue_io_rows.html'" }
 
-          %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param == 'no-match'"}}
+          %table.table.table-hover{ng: {if: "revenueFilter.param == 'no-match'"}}
             %thead
               %tr
                 %th.left
@@ -87,9 +84,12 @@
                   %span{'ng-click': 'sortBy("end_date")'} End Date
                 %th.right
 
-            %tbody{ ng: { repeat: 'row in revenue | filter:searchText', include: "'partials/revenue_no_match_display_rows.html'" } }
+            %tbody{ 'ng-include': "'partials/revenue_no_match_display_rows.html'" }
 
-          %table.table.table-hover.table-striped{ng: {if: "revenueFilter.param == 'risk' || revenueFilter.param == 'upside'"}}
+          %div{'ng-if': 'revenueFilter.param == "programmatic"'}
+            .title Coming Soon
+
+          %table.table.table-hover{ng: {if: "revenueFilter.param == 'risk' || revenueFilter.param == 'upside'"}}
             %thead
               %tr
                 %th.left
@@ -141,4 +141,4 @@
                 %th.right
                   %span{'ng-click': 'sortBy("budget_remaining_3p_loc")'} 3PBudRem
 
-            %tbody{ ng: { repeat: 'displayLineItem in revenue | filter:searchText', include: "'partials/revenue_display_item_rows.html'"} }
+            %tbody{ 'ng-include': "'partials/revenue_display_item_rows.html'" }
