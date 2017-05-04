@@ -1,5 +1,20 @@
 class Api::DealProductsController < ApplicationController
-  respond_to :json
+  respond_to :json, :csv
+
+  def index
+    respond_to do |format|
+      format.csv {
+        require 'timeout'
+        begin
+          status = Timeout::timeout(120) {
+            send_data current_user.company.deal_products.to_csv, filename: "deal-products-#{Date.today}.csv"
+          }
+        rescue Timeout::Error
+          return
+        end
+      }
+    end
+  end
 
   def create
     if params[:file].present?
