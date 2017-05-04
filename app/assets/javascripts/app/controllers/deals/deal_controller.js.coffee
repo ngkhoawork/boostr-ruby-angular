@@ -823,9 +823,15 @@
           angular.copy deal
 
   $scope.deleteDeal = (deal) ->
+    $scope.errors = {}
     if confirm('Are you sure you want to delete "' +  deal.name + '"?')
-      Deal.delete deal
-      $location.path('/deals')
+      Deal.delete(deal).then(
+        (deal) ->
+          $location.path('/deals')
+        (resp) ->
+          for key, error of resp.data.errors
+            $scope.errors[key] = error && error[0]
+      )
 
   $scope.searchContact = (searchText) ->
     if ($scope.contactSearchText != searchText)

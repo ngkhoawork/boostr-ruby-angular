@@ -7,6 +7,20 @@ RSpec.describe Deal, type: :model do
   context 'associations' do
     it { should have_many(:contacts).through(:deal_contacts) }
     it { should have_many(:deal_contacts) }
+
+    context 'restrictions' do
+      let!(:deal) { create :deal }
+      let!(:deal_product) { create :deal_product, deal: deal, budget: 100_000 }
+      let(:won_stage) { create :stage, name: 'Closed Won', probability: 100, open: false, active: true }
+
+      it 'restricts deleting deal with IO', focus: true do
+        deal.update(stage: won_stage)
+        deal.update_stage
+        deal.update_close
+
+        expect{deal.destroy}.to raise_error(ActiveRecord::DeleteRestrictionError)
+      end
+    end
   end
 
   context 'scopes' do

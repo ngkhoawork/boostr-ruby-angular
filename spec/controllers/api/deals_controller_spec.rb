@@ -95,13 +95,26 @@ RSpec.describe Api::DealsController, type: :controller do
     end
   end
 
-  describe 'DELETE #destroy' do
+  describe 'DELETE #destroy', focus: true do #DELETE FOCUS YO
     let!(:deal) { create :deal, company: company, advertiser: advertiser }
+    let(:won_stage) { create :stage, name: 'Closed Won', probability: 100, open: false, active: true }
 
     it 'marks the deal as deleted' do
       delete :destroy, id: deal.id, format: :json
       expect(response).to be_success
       expect(deal.reload.deleted_at).to_not be_nil
+    end
+
+    it 'prohibits deleting deals with an IO' do
+      deal.update(stage: won_stage)
+      deal.update_stage
+      deal.update_close
+
+      delete :destroy, id: deal.id, format: :json
+
+      expect(response).not_to be_success
+      expect(deal.reload.deleted_at).to be_nil
+      expect(json_response['errors']['delete']).to eql(['Please delete IO for this deal before deleting'])
     end
   end
 end
