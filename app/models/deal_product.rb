@@ -33,6 +33,7 @@ class DealProduct < ActiveRecord::Base
 
   scope :product_type_of, -> (type) { joins(:product).where("products.revenue_type = ?", type) }
   scope :open, ->  { where('deal_products.open IS true')  }
+  scope :active, -> { DealProduct.joins('LEFT JOIN products ON deal_products.product_id = products.id').where('products.active IS true') }
 
   def daily_budget
     budget / (deal.end_date - deal.start_date + 1).to_f

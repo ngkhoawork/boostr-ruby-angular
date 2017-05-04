@@ -29,9 +29,16 @@ class Product < ActiveRecord::Base
 
   def self.to_csv
     CSV.generate do |csv|
-      csv << ["Product ID", "Product Name", "Pricing Type", "Product Line", "Product Family"]
+      csv << ["Product ID", "Product Name", "Pricing Type", "Product Line", "Product Family", "Active"]
       all.each do |product|
-        csv << [product.id, product.name, get_option_value(product, "Pricing Type"), get_option_value(product, "Product Line"), get_option_value(product, "Product Family")]
+        csv << [
+          product.id,
+          product.name,
+          get_option_value(product, "Pricing Type"),
+          get_option_value(product, "Product Line"),
+          get_option_value(product, "Product Family"),
+          product.active ? "Yes" : "No"
+        ]
       end
     end
   end

@@ -15,6 +15,15 @@
     console.log($scope.product)
 
   $scope.submitForm = () ->
+    $scope.errors = {}
+
+    fields = ['revenue_type']
+
+    if (!$scope.product.revenue_type)
+      $scope.errors['revenue_type'] = 'Revenue Type is required'
+
+    if Object.keys($scope.errors).length > 0 then return
+    
     $scope.buttonDisabled = true
     Product.update(id: $scope.product.id, product: $scope.product).then (product) ->
       $scope.product = product
