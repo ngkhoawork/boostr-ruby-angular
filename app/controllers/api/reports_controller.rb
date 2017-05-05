@@ -16,17 +16,18 @@ class Api::ReportsController < ApplicationController
 
   def user_activity_reports
     activity_report = []
-    company.users.by_user_type([SELLER, SALES_MANAGER]).order(:first_name).each do |user|
+    all_team_sales_reps.each do |user|
       user_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
-      .where("user_id = ? and happened_at >= ? and happened_at <= ?", user.id, time_period.start_date, time_period.end_date)
+      .for_time_period(start_date, end_date)
+      .where("user_id = ?", user.id)
       .select("activity_types.name, count(activities.id) as count")
-      .group("activity_types.name").collect { |activity| { username: user.name, "#{activity.name}": activity.count } }
+      .group("activity_types.name").collect { |activity| { user_id: user.id, username: user.name, "#{activity.name}": activity.count } }
       .reduce({}, :merge)
 
       if user_activities.empty?
-        user_activities = {username: user.name}
+        user_activities = {user_id: user.id, username: user.name}
       end
-      user_activities[:total] = user_activities.values[1..-1].reduce(:+) || 0
+      user_activities[:total] = user_activities.values[2..-1].reduce(:+) || 0
       activity_report << user_activities
     end
 
@@ -35,7 +36,8 @@ class Api::ReportsController < ApplicationController
 
   def total_activity_report
     total_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
-    .where("user_id in (?) and happened_at >= ? and happened_at <= ?", company.users.by_user_type([SELLER, SALES_MANAGER]).ids, time_period.start_date, time_period.end_date)
+    .for_time_period(start_date, end_date)
+    .where("user_id in (?)", all_team_sales_reps.collect{|row| row.id})
     .select("activity_types.name, count(activities.id) as count")
     .group("activity_types.name").collect { |activity| { "#{activity.name}": activity.count } }
 
@@ -84,6 +86,27 @@ class Api::ReportsController < ApplicationController
 
   def time_period
     @time_period ||= company.time_periods.find(params[:time_period_id])
+
+  end
+
+  def start_date
+    @start_date ||= (params[:start_date] ? Date.parse(params[:start_date]) : (Time.now.end_of_day - 30.days))
+  end
+
+  def end_date
+    @end_date ||= (params[:end_date] ? Date.parse(params[:end_date]) : Time.now.end_of_day)
+  end
+
+  def team
+    @team ||= company.teams.find(params[:team_id])
+  end
+
+  def all_team_sales_reps
+    if params[:team_id] == 'all'
+      @all_team_members ||= company.users.by_user_type([SELLER, SALES_MANAGER]).where("users.is_active IS TRUE").order(:first_name).to_a
+    else
+      @all_team_members ||= team.all_sales_reps.reject {|row| row.is_active == false }.sort_by {|obj| obj.first_name}
+    end
   end
 
   def company

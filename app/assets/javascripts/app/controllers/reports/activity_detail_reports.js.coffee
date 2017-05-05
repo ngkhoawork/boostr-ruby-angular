@@ -9,17 +9,25 @@
       $scope.activityTypeFilters = []
       $scope.time_period = 'month'
       $scope.teamId = ''
+      $scope.memberId = $routeParams.member_id
+      $scope.isInitLoad = true
       $scope.selectedTeam = {
         id:'all',
         name:'Team'
       }
       $scope.datePicker = {
-        startDate: null
-        endDate: null
+        startDate: moment($routeParams.start_date).startOf('day')
+        endDate: moment($routeParams.end_date).startOf('day')
       }
-      $scope.isDateSet = false
 
       datePickerInput = $document.find('#kpi-date-picker')
+
+      if ($routeParams.start_date && $routeParams.end_date)
+        $scope.isDateSet = true
+        datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+      else
+        $scope.isDateSet = false
+      $scope.activityTypeId = $routeParams.type_id
 
       $scope.datePickerApply = () ->
         if ($scope.datePicker.startDate && $scope.datePicker.endDate)
@@ -57,6 +65,7 @@
 
       fetchData = () ->
         query = {filter: "detail"}
+        console.log($scope)
         if($scope.activityTypeId)
           query.activity_type_id = $scope.activityTypeId
 
@@ -69,7 +78,7 @@
         if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
           query.start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
           query.end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
-
+        $scope.isInitLoad = false
         Activity.all(query).then (activities) ->
           $scope.activities = activities
 
@@ -104,7 +113,9 @@
       #team watcher
       $scope.$watch 'selectedTeam', () ->
         $scope.teamId = $scope.selectedTeam.id
-        $scope.memberId = null
+        if (!$scope.isInitLoad)
+          $scope.memberId = null
+
         fetchTeamMembers($scope.teamId)
         fetchData()
 
@@ -119,6 +130,7 @@
         checkDates()
 
       checkDates = () ->
+        console.log("Sdfasdf")
         end_date = new Date($scope.end_date).valueOf()
         start_date = new Date($scope.start_date).valueOf()
 
@@ -128,6 +140,7 @@
         if(end_date && start_date && end_date > start_date)
           $scope.endDateIsValid = true
           $scope.startDateIsValid = true
+          console.log(valid)
           fetchData()
 
       $scope.go = (path) ->

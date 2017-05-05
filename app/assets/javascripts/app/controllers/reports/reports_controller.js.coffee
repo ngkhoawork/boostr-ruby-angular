@@ -1,39 +1,77 @@
 @app.controller 'ReportsController',
-['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', 'User', 'ActivityType', 'TimePeriod', 'Company', 'ActivityReport',
-($scope, $rootScope, $modal, $routeParams, $location, $window, User, ActivityType, TimePeriod, Company, ActivityReport) ->
+['$scope', '$document', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$filter', 'Team', 'User', 'ActivityType', 'TimePeriod', 'Company', 'ActivityReport',
+($scope, $document, $rootScope, $modal, $routeParams, $location, $window, $filter, Team, User, ActivityType, TimePeriod, Company, ActivityReport) ->
 
   $scope.users = []
   $scope.types = []
+  $scope.typeIds = {}
   $scope.timePeriods = []
   $scope.years = []
   $scope.currentTimePeriod = {}
   $scope.company = {}
 
+  $scope.$watch 'selectedTeam', () ->
+    $scope.teamId = $scope.selectedTeam.id
+    fetchData()
+
+  $scope.datePickerApply = () ->
+    if ($scope.datePicker.startDate && $scope.datePicker.endDate)
+      datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+      $scope.isDateSet = true
+      fetchData()
+
+  $scope.datePickerCancel = (s, r) ->
+    datePickerInput.html('Time period')
+    $scope.isDateSet = false
+    if !r then fetchData()
+
+  $scope.resetFilters = () ->
+    $scope.selectedTeam = {
+      id:'all',
+      name:'Team'
+    }
+    $scope.datePickerCancel(null, true)
+    fetchData()
   $scope.init = ->
+    $scope.teamId = ''
+    $scope.selectedTeam = {
+      id:'all',
+      name:'Team'
+    }  
+    $scope.datePicker = {
+      startDate: null
+      endDate: null
+    }
+    $scope.isDateSet = false
+    datePickerInput = $document.find('#kpi-date-picker')
+
+    Team.all(all_teams: true).then (teams) ->
+      $scope.teams = teams
+      $scope.teams.unshift({
+        id:'all',
+        name:'All'
+      })
     ActivityType.all().then (activityTypes) ->
       $scope.types = angular.copy(activityTypes)
-      TimePeriod.all().then (timePeriods) ->
-        $scope.timePeriods = timePeriods
-        if $routeParams.year
-          $scope.year = $routeParams.year
+      _.each $scope.types, (type) ->
+        $scope.typeIds[cutSpace(type.name)] = type.id
+      fetchData()
 
-        if $routeParams.time_period_id
-          $scope.currentTimePeriod = _.find $scope.timePeriods, (timePeriod) ->
-            "#{timePeriod.id}" == $routeParams.time_period_id
-        else
-          timePeriods.some (timePeriod) ->
-            if timePeriod.is_now
-              $scope.currentTimePeriod = timePeriod
-              return true
-            return false
-          if not $scope.currentTimePeriod
-            $scope.currentTimePeriod = timePeriods[0]
+  fetchData = ->
+    query = {}
 
-        ActivityReport.get({time_period_id: $scope.currentTimePeriod.id}, (report_data) ->
-          $scope.user_activities = report_data.user_activities
-          $scope.total_activities = report_data.total_activity_report
-          $scope.initReport()
-        )
+    if($scope.teamId)
+      query.team_id = $scope.teamId
+
+    if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
+      query.start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
+      query.end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
+    if query.team_id
+      ActivityReport.get(query, (report_data) ->
+        $scope.user_activities = report_data.user_activities
+        $scope.total_activities = report_data.total_activity_report
+        $scope.initReport()
+      )
 
   $scope.initReport = ->
     $scope.sortType = 'total'
@@ -44,10 +82,12 @@
       fullReport = {}
       _.each $scope.types, (type) ->
         fullReport[cutSpace(type.name)] = report[type.name] || 0
+      fullReport.user_id = report.user_id
       fullReport.username = report.username
       fullReport.total = report.total
 
       $scope.userReportValues.push(fullReport)
+    console.log( $scope.userReportValues)
 
     _.each $scope.types, (type) ->
       $scope.total_activities[type.name] = 0 if $scope.total_activities[type.name] == undefined
@@ -56,6 +96,19 @@
     path = []
     path.push "/reports/activity_summary"
     path.push "?time_period_id=#{time_period_id}" if time_period_id
+    $location.url(path.join(''))
+
+  $scope.drillActivityDetail = (member_id, type) ->
+    console.log(member_id)
+    type_id = $scope.typeIds[type]
+    path = []
+    path.push "/reports/activity_detail_reports"
+    path.push "?member_id=#{member_id}&type_id=#{type_id}"
+
+    if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
+      start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
+      end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
+      path.push "&start_date=#{start_date}&end_date=#{end_date}" 
     $location.url(path.join(''))
 
   cutSpace = (string) ->

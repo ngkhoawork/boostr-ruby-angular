@@ -8,21 +8,21 @@
               .h3.header-title
                 Activity Summary
             .header-cell
-              %ul.nav-tabs.pad
-                %li.quota-period{ dropdown: true }
-                  %a{ href: '', dropdown: { toggle: true } }
-                    %span{ ng: { if: 'year' } }
-                      {{ year }} Quarterly
-                    %span{ ng: { if: '!year && currentTimePeriod' } }
-                      {{ currentTimePeriod.name }} ({{ currentTimePeriod.start_date | date: 'shortDate'}} - {{ currentTimePeriod.end_date | date: 'shortDate' }})
+              %ul.nav.nav-tabs
+                %li.detail-filter.dropdown
+                  %span Filter by
+                  %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected:"selectedTeam"}
+                  .date-picker-wrap
+                    %div.date-picker#kpi-date-picker{'date-range-picker': true,
+                                                     'ng-model': 'datePicker',
+                                                     :options => "{locale: {format: 'MMMM D, YYYY',
+                                                                            cancelLabel: 'Clear'},
+                                                                   eventHandlers: {'apply.daterangepicker': datePickerApply,
+                                                                                   'cancel.daterangepicker': datePickerCancel}}"}
+                      Time period
                     %span.caret
-                  %ul.dropdown-menu.time-periods
-                    %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: !year && timePeriod.id == currentTimePeriod.id}' } }
-                      %a{ href: '', ng: { click: 'updateTimePeriod(timePeriod.id)' } }
-                        {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
-                    %li{ ng: { repeat: 'y in years', class: '{active: year == y}' } }
-                      %a{ href: '', ng: { click: 'updateYear(y)' } }
-                        {{ y }} Quarterly
+                  %span#reset-filter{'ng-click': 'resetFilters()'}
+                    Reset
             .header-cell
               .pull-right
                 .header-cell-right
@@ -49,7 +49,9 @@
             %tbody
               %tr{ ng: { repeat: 'report in userReportValues | orderBy:sortType:sortReverse' } }
                 %td.left {{ report.username }}
-                %td {{report['InitialMeeting']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "InitialMeeting")'}
+                    {{report['InitialMeeting']}}
                 %td {{report['Pitch']}}
                 %td {{report['Proposal']}}
                 %td {{report['Feedback']}}
