@@ -4,7 +4,7 @@ class EmailProcessor
   end
 
   def process
-    user = User.find_by_email(@email.from[:email])
+    user = User.by_email(@email.from[:email]).first
     # user = User.find_by_email('support@boostrcrm.com')
     if user.present?
       user_id = user.id
@@ -44,7 +44,7 @@ class EmailProcessor
       end
       if contacts.count > 0
         comment = "<div><strong>Email Subject - " + @email.subject + "</strong></div>"
-        comment = comment + "<div><strong>Email Body - </strong></div>" + (@email.raw_html || @email.raw_text || '')
+        comment = comment + "<div><strong>Email Body - </strong></div>" + email_body
         activity = Activity.create({
             company_id: user.company_id,
             user_id: user.id,
@@ -75,5 +75,11 @@ class EmailProcessor
       end
     end
 
+  end
+
+  private
+
+  def email_body
+    (@email.raw_html || @email.raw_text).force_encoding("UTF-8").scrub('') || ''
   end
 end
