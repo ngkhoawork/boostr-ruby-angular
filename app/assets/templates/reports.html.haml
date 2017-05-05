@@ -52,29 +52,81 @@
                 %td
                   %a{'ng-click': 'drillActivityDetail(report.user_id, "InitialMeeting")'}
                     {{report['InitialMeeting']}}
-                %td {{report['Pitch']}}
-                %td {{report['Proposal']}}
-                %td {{report['Feedback']}}
-                %td {{report['AgencyMeeting']}}
-                %td {{report['ClientMeeting']}}
-                %td {{report['Entertainment']}}
-                %td {{report['CampaignReview']}}
-                %td {{report['QBR']}}
-                %td {{report['Email']}}
-                %td {{report['PostSale Meeting']}}
-                %td.text--bold {{report['total']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "Pitch")'}
+                    {{report['Pitch']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "Proposal")'}
+                    {{report['Proposal']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "Feedback")'}
+                    {{report['Feedback']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "AgencyMeeting")'}
+                    {{report['AgencyMeeting']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "ClientMeeting")'}
+                    {{report['ClientMeeting']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "Entertainment")'}
+                    {{report['Entertainment']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "CampaignReview")'}
+                    {{report['CampaignReview']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "QBR")'}
+                    {{report['QBR']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "PostSale Meeting")'}
+                    {{report['PostSale Meeting']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "Email")'}
+                    {{report['Email']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, "InternalMeeting")'}
+                    {{report['InternalMeeting']}}
+                %td.text--bold
+                  %a{'ng-click': 'drillActivityDetail(report.user_id, null)'}
+                    {{report['total']}}
 
               %tr.text--bold
                 %td.left Total
-                %td {{total_activities['Initial Meeting']}}
-                %td {{total_activities['Pitch']}}
-                %td {{total_activities['Proposal']}}
-                %td {{total_activities['Feedback']}}
-                %td {{total_activities['Agency Meeting']}}
-                %td {{total_activities['Client Meeting']}}
-                %td {{total_activities['Entertainment']}}
-                %td {{total_activities['Campaign Review']}}
-                %td {{total_activities['QBR']}}
-                %td {{total_activities['Email']}}
-                %td {{total_activities['Post Sale Meeting']}}
-                %td {{total_activities['total']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "InitialMeeting")'}
+                    {{total_activities['Initial Meeting']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "Pitch")'}
+                    {{total_activities['Pitch']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "Proposal")'}
+                    {{total_activities['Proposal']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "Feedback")'}
+                    {{total_activities['Feedback']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "AgencyMeeting")'}
+                    {{total_activities['Agency Meeting']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "ClientMeeting")'}
+                    {{total_activities['Client Meeting']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "Entertainment")'}
+                    {{total_activities['Entertainment']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "Campaign Review")'}
+                    {{total_activities['Campaign Review']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "QBR")'}
+                    {{total_activities['QBR']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "PostSale Meeting")'}
+                    {{total_activities['Post Sale Meeting']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "Email")'}
+                    {{total_activities['Email']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, "InternalMeeting")'}
+                    {{total_activities['Internal Meeting']}}
+                %td
+                  %a{'ng-click': 'drillActivityDetail(null, null)'}
+                    {{total_activities['total']}}

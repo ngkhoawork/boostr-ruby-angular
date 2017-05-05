@@ -17,6 +17,7 @@ class Api::ReportsController < ApplicationController
   def user_activity_reports
     activity_report = []
     all_team_sales_reps.each do |user|
+      
       user_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
       .for_time_period(start_date, end_date)
       .where("user_id = ?", user.id)
@@ -27,7 +28,11 @@ class Api::ReportsController < ApplicationController
       if user_activities.empty?
         user_activities = {user_id: user.id, username: user.name}
       end
+      puts "========user"
+      puts user_activities.values[2..-1].reduce(:+).to_json
+
       user_activities[:total] = user_activities.values[2..-1].reduce(:+) || 0
+      puts user_activities.to_json
       activity_report << user_activities
     end
 
@@ -86,7 +91,6 @@ class Api::ReportsController < ApplicationController
 
   def time_period
     @time_period ||= company.time_periods.find(params[:time_period_id])
-
   end
 
   def start_date
@@ -103,9 +107,14 @@ class Api::ReportsController < ApplicationController
 
   def all_team_sales_reps
     if params[:team_id] == 'all'
-      @all_team_members ||= company.users.by_user_type([SELLER, SALES_MANAGER]).where("users.is_active IS TRUE").order(:first_name).to_a
+      return @all_team_sales_reps if @all_team_sales_reps
+      @all_team_members = []
+      company.teams.each do |team_row|
+        @all_team_members += team_row.all_sales_reps.reject {|row| row.is_active == false }
+      end
+      @all_team_members = @all_team_members.sort_by {|obj| obj.first_name}
     else
-      @all_team_members ||= team.all_sales_reps.reject {|row| row.is_active == false }.sort_by {|obj| obj.first_name}
+      @all_team_sales_reps ||= team.all_sales_reps.reject {|row| row.is_active == false }.sort_by {|obj| obj.first_name}
     end
   end
 

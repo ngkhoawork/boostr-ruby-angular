@@ -65,7 +65,6 @@
 
       fetchData = () ->
         query = {filter: "detail"}
-        console.log($scope)
         if($scope.activityTypeId)
           query.activity_type_id = $scope.activityTypeId
 
@@ -130,7 +129,6 @@
         checkDates()
 
       checkDates = () ->
-        console.log("Sdfasdf")
         end_date = new Date($scope.end_date).valueOf()
         start_date = new Date($scope.start_date).valueOf()
 
@@ -140,7 +138,6 @@
         if(end_date && start_date && end_date > start_date)
           $scope.endDateIsValid = true
           $scope.startDateIsValid = true
-          console.log(valid)
           fetchData()
 
       $scope.go = (path) ->

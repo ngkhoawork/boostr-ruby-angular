@@ -9,10 +9,28 @@
   $scope.years = []
   $scope.currentTimePeriod = {}
   $scope.company = {}
+  $scope.teamId = $routeParams.team_id
+  $scope.isInitLoad = true
+  $scope.selectedTeam = {
+    id:'all',
+    name:'Team'
+  }  
+  $scope.datePicker = {
+    startDate: moment($routeParams.start_date).startOf('day')
+    endDate: moment($routeParams.end_date).startOf('day')
+  }
+  $scope.isDateSet = false
+  datePickerInput = $document.find('#kpi-date-picker')
+
+  if ($routeParams.start_date && $routeParams.end_date)
+    $scope.isDateSet = true
+    datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
 
   $scope.$watch 'selectedTeam', () ->
-    $scope.teamId = $scope.selectedTeam.id
-    fetchData()
+    if (($scope.isInitLoad && $scope.teamId == undefined) || !$scope.isInitLoad)
+      $scope.teamId = $scope.selectedTeam.id
+      fetchData()
+    $scope.isInitLoad = false
 
   $scope.datePickerApply = () ->
     if ($scope.datePicker.startDate && $scope.datePicker.endDate)
@@ -33,17 +51,6 @@
     $scope.datePickerCancel(null, true)
     fetchData()
   $scope.init = ->
-    $scope.teamId = ''
-    $scope.selectedTeam = {
-      id:'all',
-      name:'Team'
-    }  
-    $scope.datePicker = {
-      startDate: null
-      endDate: null
-    }
-    $scope.isDateSet = false
-    datePickerInput = $document.find('#kpi-date-picker')
 
     Team.all(all_teams: true).then (teams) ->
       $scope.teams = teams
@@ -55,23 +62,34 @@
       $scope.types = angular.copy(activityTypes)
       _.each $scope.types, (type) ->
         $scope.typeIds[cutSpace(type.name)] = type.id
-      fetchData()
+      query = {}
+      if($scope.teamId)
+        query.team_id = $scope.teamId
+      if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
+        query.start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
+        query.end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
+      if query.team_id
+        ActivityReport.get(query, (report_data) ->
+          $scope.user_activities = report_data.user_activities
+          $scope.total_activities = report_data.total_activity_report
+          $scope.initReport()
+          # $scope.isInitLoad = false
+        )
 
   fetchData = ->
     query = {}
-
     if($scope.teamId)
-      query.team_id = $scope.teamId
-
-    if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
-      query.start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
-      query.end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
-    if query.team_id
-      ActivityReport.get(query, (report_data) ->
-        $scope.user_activities = report_data.user_activities
-        $scope.total_activities = report_data.total_activity_report
-        $scope.initReport()
-      )
+      team_id = $scope.teamId
+    if team_id
+      path = []
+      path.push "/reports/activity_summary"
+      path.push "?team_id=#{team_id}" 
+      if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
+        start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
+        end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
+        path.push "&start_date=#{start_date}&end_date=#{end_date}"
+      $location.url(path.join(''))
+      
 
   $scope.initReport = ->
     $scope.sortType = 'total'
@@ -87,8 +105,6 @@
       fullReport.total = report.total
 
       $scope.userReportValues.push(fullReport)
-    console.log( $scope.userReportValues)
-
     _.each $scope.types, (type) ->
       $scope.total_activities[type.name] = 0 if $scope.total_activities[type.name] == undefined
 
@@ -99,8 +115,12 @@
     $location.url(path.join(''))
 
   $scope.drillActivityDetail = (member_id, type) ->
-    console.log(member_id)
-    type_id = $scope.typeIds[type]
+    if member_id == null
+      member_id = ''
+    if type == null
+      type_id = ''
+    else
+      type_id = $scope.typeIds[type]
     path = []
     path.push "/reports/activity_detail_reports"
     path.push "?member_id=#{member_id}&type_id=#{type_id}"
