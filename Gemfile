@@ -46,6 +46,8 @@ gem 'switch_user'
 gem 'oauth2'
 gem 'asana'
 gem 'pluck_to_hash'
+gem 'upsert'
+gem 'hashie'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

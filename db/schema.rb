@@ -135,6 +135,22 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_index "account_pipeline_facts", ["company_id"], name: "index_account_pipeline_facts_on_company_id", using: :btree
   add_index "account_pipeline_facts", ["time_dimension_id"], name: "index_account_pipeline_facts_on_time_dimension_id", using: :btree
 
+  create_table "account_product_pipeline_facts", force: :cascade do |t|
+    t.integer  "product_id"
+    t.integer  "time_dimension_id"
+    t.integer  "account_dimension_id"
+    t.integer  "company_id"
+    t.decimal  "weighted_amount"
+    t.decimal  "unweighted_amount"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "account_product_pipeline_facts", ["account_dimension_id"], name: "index_account_product_pipeline_facts_on_account_dimension_id", using: :btree
+  add_index "account_product_pipeline_facts", ["company_id"], name: "index_account_product_pipeline_facts_on_company_id", using: :btree
+  add_index "account_product_pipeline_facts", ["product_id"], name: "index_account_product_pipeline_facts_on_product_id", using: :btree
+  add_index "account_product_pipeline_facts", ["time_dimension_id"], name: "index_account_product_pipeline_facts_on_time_dimension_id", using: :btree
+
   create_table "account_revenue_facts", force: :cascade do |t|
     t.integer "company_id"
     t.integer "account_dimension_id"
@@ -1695,6 +1711,10 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_foreign_key "account_pipeline_facts", "account_dimensions"
   add_foreign_key "account_pipeline_facts", "companies"
   add_foreign_key "account_pipeline_facts", "time_dimensions"
+  add_foreign_key "account_product_pipeline_facts", "account_dimensions"
+  add_foreign_key "account_product_pipeline_facts", "companies"
+  add_foreign_key "account_product_pipeline_facts", "products"
+  add_foreign_key "account_product_pipeline_facts", "time_dimensions"
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"

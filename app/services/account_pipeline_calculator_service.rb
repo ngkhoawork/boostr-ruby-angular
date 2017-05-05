@@ -10,7 +10,7 @@ class AccountPipelineCalculatorService < BaseService
       total_budget_calculation_service = TotalBudgetCalculationService.new(client)
       total_budgets = total_budget_calculation_service.perform
       tot_budgets_time_dimension_ids = total_budgets.keys
-      unused_facts_time_dimension_ids= time_dimension_ids - tot_budgets_time_dimension_ids
+      unused_facts_time_dimension_ids = time_dimension_ids - tot_budgets_time_dimension_ids
 
       if unused_facts_time_dimension_ids.any?
         unused_pipeline_facts = AccountPipelineFact.where(account_dimension_id: client.id, company_id: client.company_id, time_dimension_id: unused_facts_time_dimension_ids)
