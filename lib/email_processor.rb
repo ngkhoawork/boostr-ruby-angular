@@ -80,6 +80,6 @@ class EmailProcessor
   private
 
   def email_body
-    (@email.raw_html || @email.raw_text).force_encoding("UTF-8").scrub('') || ''
+    (@email.raw_html || @email.raw_text || '').force_encoding("UTF-8").scrub('')
   end
 end
