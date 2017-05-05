@@ -151,7 +151,16 @@
     path = []
 
   $scope.exportReports = ->
-    $window.open('/api/reports.csv')
+    path = '/api/reports.csv'
+    if($scope.teamId)
+      team_id = $scope.teamId
+    if team_id
+      path += "?team_id=#{team_id}" 
+      if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
+        start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
+        end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
+        path +=  "&start_date=#{start_date}&end_date=#{end_date}"
+      $window.open(path)
     return true
 
 ]

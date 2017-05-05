@@ -28,11 +28,7 @@ class Api::ReportsController < ApplicationController
       if user_activities.empty?
         user_activities = {user_id: user.id, username: user.name}
       end
-      puts "========user"
-      puts user_activities.values[2..-1].reduce(:+).to_json
-
       user_activities[:total] = user_activities.values[2..-1].reduce(:+) || 0
-      puts user_activities.to_json
       activity_report << user_activities
     end
 
@@ -54,38 +50,32 @@ class Api::ReportsController < ApplicationController
   def activity_csv_report
     CSV.generate do |csv|
       header = []
-      header << "Time Period"
       header << "Name"
       company.activity_types.each do |a|
         header << a.name
       end
       header << "Total"
       csv << header
-
-      company.time_periods.order(:name).each do |period|
-        company.users.by_user_type([SELLER, SALES_MANAGER]).order(:first_name).each do |user|
-          line = [period.name]
-          line << user.name
-          company.activity_types.each do |type|
-            count = user.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ?', period.start_date, period.end_date, type.name).count
-            line << count
-          end
-
-          total = user.activities.where('happened_at >= ? and happened_at <= ?', period.start_date, period.end_date).count
-          line << total
-          csv << line
-        end
-
-        line = [period.name]
-        line << 'Total'
-        company.activity_types.each do |type|
-          count = company.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ? and user_id in (?)', period.start_date, period.end_date, type.name, company.users.by_user_type([SELLER, SALES_MANAGER]).ids).count
+      activity_types = company.activity_types.to_a
+      all_team_sales_reps.each do |user|
+        line = [user.name]
+        activity_types.each do |type|
+          count = user.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ?', start_date, end_date, type.name).count
           line << count
         end
-        count = company.activities.where('happened_at >= ? and happened_at <= ? and user_id in (?)', period.start_date, period.end_date, company.users.by_user_type([SELLER, SALES_MANAGER]).ids).count
-        line << count
+
+        total = user.activities.where('happened_at >= ? and happened_at <= ?', start_date, end_date).count
+        line << total
         csv << line
       end
+      line = ['Total']
+      company.activity_types.each do |type|
+        count = company.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ? and user_id in (?)', start_date, end_date, type.name, all_team_sales_reps.collect{|row| row.id}).count
+        line << count
+      end
+      count = company.activities.where('happened_at >= ? and happened_at <= ? and user_id in (?)', start_date, end_date, all_team_sales_reps.collect{|row| row.id}).count
+      line << count
+      csv << line
     end
   end
 
