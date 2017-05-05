@@ -710,17 +710,41 @@ class Deal < ActiveRecord::Base
       deal_custom_field_names.each do |deal_custom_field_name|
         header << deal_custom_field_name.field_label
       end
+
+      deal_settings_fields = company.fields.where(subject_type: 'Deal').pluck(:id, :name)
+
       csv << header
-      deals.each do |deal|
-        agency_name = deal.agency.present? ? deal.agency.name : nil
-        advertiser_name = deal.advertiser.present? ? deal.advertiser.name : nil
-        stage_name = deal.stage.present? ? deal.stage.name : nil
-        stage_probability = deal.stage.present? ? deal.stage.probability : nil
+      deals
+      .includes(:agency, :advertiser, :stage, :users, :deal_custom_field, values: :option)
+      .find_each do |deal|
+        agency_name = deal.agency.try(:name)
+        advertiser_name = deal.advertiser.try(:name)
+        stage_name = deal.stage.try(:name)
+        stage_probability = deal.stage.try(:probability)
         budget_loc = (deal.budget_loc.try(:round) || 0)
         budget_usd = (deal.budget.try(:round) || 0)
-        # member = deal.users.collect{|user| user.name + '/' + user.deal_member.share.to_s}.join(";")
+
         member = deal.deal_members.collect {|deal_member| deal_member.email + "/" + deal_member.share.to_s}.join(";")
-        line = [deal.id, deal.name, advertiser_name, agency_name, member, budget_loc, deal.curr_cd, stage_name, stage_probability, get_option(deal, "Deal Type"), get_option(deal, "Deal Source"), deal.next_steps, deal.start_date, deal.end_date, deal.created_at.strftime("%Y-%m-%d"), deal.closed_at, get_option(deal, "Close Reason"), budget_usd]
+        line = [
+          deal.id,
+          deal.name,
+          advertiser_name,
+          agency_name,
+          member,
+          budget_loc,
+          deal.curr_cd,
+          stage_name,
+          stage_probability,
+          deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Type'),
+          deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Source'),
+          deal.next_steps,
+          deal.start_date,
+          deal.end_date,
+          deal.created_at.strftime("%Y-%m-%d"),
+          deal.closed_at,
+          deal.get_option_value_from_raw_fields(deal_settings_fields, 'Close Reason'),
+          budget_usd
+        ]
         deal_custom_field = deal.deal_custom_field.as_json
         deal_custom_field_names.each do |deal_custom_field_name|
           field_name = deal_custom_field_name.field_type + deal_custom_field_name.field_index.to_s
