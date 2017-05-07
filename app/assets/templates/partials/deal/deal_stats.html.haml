@@ -6,9 +6,9 @@
 				%i.fa.fa-pencil.edit-deal{'ng-click': 'showDealEditModal(currentDeal)'}
 				%i.fa.fa-trash.delete-deal{'ng-click': 'deleteDeal(currentDeal)'}
 			.detail-info
-				{{currentDeal.advertiser.name || ''}}
+				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}'} {{currentDeal.advertiser.name || ''}}
 				{{currentDeal.advertiser.name && currentDeal.agency.name && '|'}}
-				{{currentDeal.agency.name || ''}}
+				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.agency.id}}'} {{currentDeal.agency.name || ''}}
 
 		.clearfix
 		%div.stats-numbers.mb30

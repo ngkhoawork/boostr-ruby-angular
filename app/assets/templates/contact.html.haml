@@ -51,7 +51,7 @@
 							%tbody
 								%tr{'ng-repeat': 'account in relatedAccounts'}
 									%td
-										{{account.name}}
+										%a.mr8{'href': '', 'ng-href': '/accounts/{{account.id}}'} {{account.name}}
 										%i.fa.fa-trash.z-icon{'ng-click': 'unassignClient(account)'}
 									%td {{account.status}}
 									%td {{account.address.city}}
