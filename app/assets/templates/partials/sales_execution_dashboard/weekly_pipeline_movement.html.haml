@@ -25,7 +25,7 @@
         Budget
       %td
         Start Date
-    %tr{'ng-repeat': 'deal in item.deals', 'ng-if': 'item.name != "Advanced"'}
+    %tr{'ng-repeat': 'deal in item.deals'}
       %td
         {{deal.name}}
       %td
@@ -34,12 +34,3 @@
         {{deal.budget | currency: '$' : 0}}
       %td
         {{deal.start_date | date:'MM-dd-yyyy'}}
-    %tr{'ng-repeat': 'deal in item.deals', 'ng-if': 'item.name == "Advanced"'}
-      %td
-        {{deal.deal.name}}
-      %td
-        {{deal.deal.advertiser.name}}
-      %td
-        {{deal.budget_change | currency: '$' : 0}}
-      %td
-        {{deal.deal.start_date | date:'MM-dd-yyyy'}}
