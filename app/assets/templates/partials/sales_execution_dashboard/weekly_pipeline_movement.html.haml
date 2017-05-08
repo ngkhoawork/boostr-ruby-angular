@@ -7,7 +7,7 @@
       %td.left
         {{item.name}}
       %td.bar-section
-        %div.bar{ng: { style: 'item.styles'}, 'popover-template': "'pipelineMovementPopupHtml'", 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
+        %div.bar{ng: { style: 'item.styles'}, 'popover-template': "'pipelineMovementPopupHtml'", 'popover-placement': 'bottom', 'popover-trigger': 'mouseenter'}
           %span
             {{item.value | currency: '$' : 0}}
       %td.right
