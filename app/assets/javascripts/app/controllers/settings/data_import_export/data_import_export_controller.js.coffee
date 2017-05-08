@@ -85,6 +85,10 @@
     $window.open('/api/clients.csv')
     return true
 
+  $scope.exportContacts = ->
+    $window.open('/api/contacts.csv')
+    return true
+
   $scope.exportDeals = ->
     $window.open('/api/deals.csv')
     return true
@@ -114,11 +118,6 @@
       controller: 'SalesOrderLineItemsUploadController'
       backdrop: 'static'
       keyboard: false
-
-
-#  $scope.exportContacts = ->
-#    $window.open('/api/contacts.zip')
-#    return true
 
 #  $scope.exportActivities = ->
 #    $window.open('/api/activities.zip')
