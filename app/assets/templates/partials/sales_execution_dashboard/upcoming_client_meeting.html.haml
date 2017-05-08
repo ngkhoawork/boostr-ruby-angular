@@ -10,11 +10,30 @@
       %th.left Type
       %th.left Attendees
   %tbody
-    %tr{ 'ng-repeat': 'activity in topActivities', 'tooltip': '{{activity.comment}}', 'tooltip-placement': 'left'  }
+    %tr{ 'ng-repeat': 'activity in topActivities', 'popover-template': "'activityPopupHtml'", 'popover-placement': 'top', 'popover-trigger': 'mouseenter' }
       %td.left
         {{activity.happened_at | date:'MM-dd-yyyy'}}
       %td.left {{activity.client.name}}
       %td.left {{activity.activity_type_name}}
       %td.left
+        %div{'ng-repeat': 'contact in activity.contacts'}
+          {{contact.name}}
+
+%script{ type: 'text/ng-template', id: 'activityPopupHtml' }
+  %table.activity-popup
+    %tr
+      %td
+        Type:
+      %td
+        {{activity.activity_type_name}}
+    %tr
+      %td
+        Comment:
+      %td
+        {{activity.comment}}
+    %tr
+      %td
+        Attendees:
+      %td
         %div{'ng-repeat': 'contact in activity.contacts'}
           {{contact.name}}

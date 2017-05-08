@@ -7,7 +7,39 @@
       %td.left
         {{item.name}}
       %td.bar-section
-        %div.bar{ng: { style: 'item.styles'}}
+        %div.bar{ng: { style: 'item.styles'}, 'popover-template': "'pipelineMovementPopupHtml'", 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
           %span
             {{item.value | currency: '$' : 0}}
       %td.right
+
+%script{ type: 'text/ng-template', id: 'pipelineMovementPopupHtml' }
+  %table.pipeline-popup
+    %tr
+      %td
+        Name
+      %td
+        Advertiser
+      %td{'ng-if': 'item.name == "Advanced"'}
+        Budget Change
+      %td{'ng-if': 'item.name != "Advanced"'} 
+        Budget
+      %td
+        Start Date
+    %tr{'ng-repeat': 'deal in item.deals', 'ng-if': 'item.name != "Advanced"'}
+      %td
+        {{deal.name}}
+      %td
+        {{deal.advertiser.name}}
+      %td
+        {{deal.budget | currency: '$' : 0}}
+      %td
+        {{deal.start_date | date:'MM-dd-yyyy'}}
+    %tr{'ng-repeat': 'deal in item.deals', 'ng-if': 'item.name == "Advanced"'}
+      %td
+        {{deal.deal.name}}
+      %td
+        {{deal.deal.advertiser.name}}
+      %td
+        {{deal.budget_change | currency: '$' : 0}}
+      %td
+        {{deal.deal.start_date | date:'MM-dd-yyyy'}}

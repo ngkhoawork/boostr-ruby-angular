@@ -5,16 +5,27 @@
   %thead
     %tr
       %th.left Account
-      %th.left Budget
-      %th.left %
-      %th.left{width: "100"}
+      %th.right Budget
+      %th.left{width: "30"} %
+      %th.left{width: "90"}
         Start Date
-      %th.left Next Step
 
   %tbody
-    %tr{ 'ng-repeat': 'deal in topDeals' }
+    %tr{ 'ng-repeat': 'deal in topDeals', 'popover-template': "'topDealPopupHtml'", 'popover-placement': 'top', 'popover-trigger': 'mouseenter' }
       %td.left {{ deal.advertiser.name }}
-      %td.left {{ deal.budget | currency: '$' : 0}}
+      %td.right {{ deal.budget | currency: '$' : 0}}
       %td.left {{ deal.stage.probability }}
       %td.left {{ deal.start_date | date:'MM-dd-yyyy' }}
-      %td.left {{ deal.next_steps }}
+
+%script{ type: 'text/ng-template', id: 'topDealPopupHtml' }
+  %table.activity-popup
+    %tr
+      %td
+        Deal:
+      %td
+        {{deal.name}}
+    %tr
+      %td
+        Next Steps:
+      %td
+        {{deal.next_steps}}
