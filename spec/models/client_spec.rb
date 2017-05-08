@@ -88,7 +88,7 @@ RSpec.describe Client, type: :model do
 
     it 'creates a new client from csv' do
       expect do
-        expect(Client.import(generate_csv(new_client_csv), user)).to eq([])
+        Client.import(generate_csv(new_client_csv), user.id, '/tmp/clients.csv')
       end.to change(Client, :count).by(1)
 
       new_client = Client.last
@@ -106,9 +106,10 @@ RSpec.describe Client, type: :model do
       expect(new_client.client_members.first.share).to eq(new_client_csv[:teammembers].split('/')[1].to_i)
     end
 
+
     it 'updates an existing client by email match' do
       expect do
-        expect(Client.import(generate_csv(existing_client_csv), user)).to eq([])
+        Client.import(generate_csv(existing_client_csv), user.id, '/tmp/clients.csv')
       end.not_to change(Client, :count)
       existing_client.reload
 
@@ -128,7 +129,7 @@ RSpec.describe Client, type: :model do
 
     it 'updates an existing client by ID match' do
       expect do
-        expect(Client.import(generate_csv(existing_client_csv_id), user)).to eq([])
+        Client.import(generate_csv(existing_client_csv_id), user.id, '/tmp/clients.csv')
       end.not_to change(Client, :count)
       existing_client2.reload
 
@@ -146,6 +147,43 @@ RSpec.describe Client, type: :model do
       expect(existing_client2.client_members.first.share).to eq(existing_client_csv_id[:teammembers].split('/')[1].to_i)
     end
 
+    context 'csv import log' do
+      it 'creates csv import log' do
+        expect do
+          Client.import(generate_csv(new_client_csv), user.id, '/tmp/clients.csv')
+        end.to change(CsvImportLog, :count).by(1)
+      end
+
+      it 'saves amount of processed rows for new clients' do
+        Client.import(generate_csv(new_client_csv), user.id, '/tmp/clients.csv')
+
+        import_log = CsvImportLog.last
+
+        expect(import_log.rows_processed).to be 1
+        expect(import_log.rows_imported).to be 1
+        expect(import_log.file_source).to eq 'clients.csv'
+      end
+
+      it 'saves amount of processed rows when updating existing clients' do
+        Client.import(generate_csv(existing_client_csv_id), user.id, '/tmp/clients.csv')
+
+        import_log = CsvImportLog.last
+
+        expect(import_log.rows_processed).to be 1
+        expect(import_log.rows_imported).to be 1
+      end
+
+      it 'counts failed rows' do
+        no_name = build :client_csv_data, name: nil
+        Client.import(generate_csv(no_name), user.id, '/tmp/clients.csv')
+
+        import_log = CsvImportLog.last
+
+        expect(import_log.rows_processed).to be 1
+        expect(import_log.rows_failed).to be 1
+      end
+    end
+
     context 'invalid data' do
       let!(:duplicate1) { create :client }
       let!(:duplicate2) { create :client, name: duplicate1.name }
@@ -158,66 +196,94 @@ RSpec.describe Client, type: :model do
       let(:invalid_team_member) { build :client_csv_data, teammembers: 'NA/100' }
       let(:own_parent) { build :client_csv_data, name: client.name, parent: client.name }
       let(:ambigous_match) { build :client_csv_data, name: duplicate1.name }
+      let(:import_log) { CsvImportLog.last }
 
       it 'requires name to be present' do
-        expect(
-          Client.import(generate_csv(no_name), user)
-        ).to eq([{:row=>1, :message=>['Name is empty']}])
+        Client.import(generate_csv(no_name), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq [{ "row" => 1, "message" => ['Name is empty'] }]
       end
 
       it 'requires type to be present' do
-        expect(
-          Client.import(generate_csv(no_type), user)
-        ).to eq([{:row=>1, :message=>['Type is empty']}])
+        Client.import(generate_csv(no_type), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq [{ "row" => 1, "message" => ['Type is empty'] }]
       end
 
       it 'validates account type' do
         no_type[:type] = 'test'
-        expect(
-          Client.import(generate_csv(no_type), user)
-        ).to eq([{:row=>1, :message=>['Type is invalid. Use "Agency" or "Advertiser" string']}])
+
+        Client.import(generate_csv(no_type), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ['Type is invalid. Use "Agency" or "Advertiser" string'] }]
+        )
       end
 
       it 'requires parent account to exist' do
-        expect(
-          Client.import(generate_csv(invalid_parent), user)
-        ).to eq([{:row=>1, :message=>["Parent account #{invalid_parent[:parent]} could not be found"]}])
+        Client.import(generate_csv(invalid_parent), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Parent account #{invalid_parent[:parent]} could not be found"] }]
+        )
       end
 
       it 'requires category to exist' do
-        expect(
-          Client.import(generate_csv(invalid_category), user)
-        ).to eq([{:row=>1, :message=>["Category #{invalid_category[:category]} could not be found"]}])
+        Client.import(generate_csv(invalid_category), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Category #{invalid_category[:category]} could not be found"] }]
+        )
       end
 
       it 'requires subcategory to exist' do
-        expect(
-          Client.import(generate_csv(invalid_subcategory), user)
-        ).to eq([{:row=>1, :message=>["Subcategory #{invalid_subcategory[:subcategory]} could not be found"]}])
+        Client.import(generate_csv(invalid_subcategory), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Subcategory #{invalid_subcategory[:subcategory]} could not be found"] }]
+        )
       end
 
       it 'validates equality of team member and shares length' do
-        expect(
-          Client.import(generate_csv(invalid_share), user)
-        ).to eq([{:row=>1, :message=>["Account team member first does not have share"]}])
+        Client.import(generate_csv(invalid_share), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Account team member first does not have share"] }]
+        )
       end
 
       it 'requires account search by name to match no more than 1 account' do
-        expect(
-          Client.import(generate_csv(ambigous_match), user)
-        ).to eq([{:row=>1, :message=>["Account name #{ambigous_match[:name]} matched more than one account record"]}])
+        Client.import(generate_csv(ambigous_match), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Account name #{ambigous_match[:name]} matched more than one account record"] }]
+        )
       end
 
       it 'validates team member presence' do
-        expect(
-          Client.import(generate_csv(invalid_team_member), user)
-        ).to eq([{:row=>1, :message=>["Account team member #{invalid_team_member[:teammembers].split('/')[0]} could not be found in the users list"]}])
+        Client.import(generate_csv(invalid_team_member), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Account team member #{invalid_team_member[:teammembers].split('/')[0]} could not be found in the users list"] }]
+        )
       end
 
       it 'rejects accounts set to be parents of themselves' do
-        expect(
-          Client.import(generate_csv(own_parent), user)
-        ).to eq([{:row=>1, :message=>["Accounts can't be parents of themselves"]}])
+        Client.import(generate_csv(own_parent), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Accounts can't be parents of themselves"] }]
+        )
       end
     end
   end

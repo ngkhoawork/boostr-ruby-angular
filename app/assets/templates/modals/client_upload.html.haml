@@ -54,5 +54,8 @@
         Row {{ error.row }}
       contains errors: {{ error.message.join(', ') }}
 
+    .alert.alert-info{ ng: { show: 'messages' } }
+      {{ messages.message }}
+
     .modal-footer.text-center{ ng: { hide: 'progressPercentage < 100' } }
       %button.btn.btn-primary.btn-lg{ ng: { click: 'cancel()' } } Done

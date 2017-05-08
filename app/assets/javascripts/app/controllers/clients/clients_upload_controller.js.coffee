@@ -29,9 +29,9 @@
           else
             $scope.progressPercentage = percentage
         ).success (data, status, headers, config) ->
-          $scope.errors = data;
+          $scope.messages = data
           $scope.progressPercentage = 100
-          $scope.uploading = false;
+          $scope.uploading = false
 
           $timeout ->
             $rootScope.$broadcast 'updated_clients'

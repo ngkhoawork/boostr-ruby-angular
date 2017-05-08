@@ -252,22 +252,26 @@ class Client < ActiveRecord::Base
     client_members.build(user_id: created_by, share: share)
   end
 
-  def self.import(file, current_user)
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
     errors = []
     row_number = 0
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'account')
+    import_log.set_file_source(file_path)
 
     CSV.parse(file, headers: true) do |row|
       row_number += 1
+      import_log.count_processed
 
       if row[1].nil? || row[1].blank?
-        error = { row: row_number, message: ['Name is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Name is empty'])
         next
       end
 
       if row[2].nil? || row[2].blank?
-        error = { row: row_number, message: ['Type is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Type is empty'])
         next
       end
 
@@ -279,16 +283,16 @@ class Client < ActiveRecord::Base
           type_id = self.agency_type_id(current_user.company)
         end
       else
-        error = { row: row_number, message: ['Type is invalid. Use "Agency" or "Advertiser" string'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Type is invalid. Use "Agency" or "Advertiser" string'])
         next
       end
 
       if row[3].present?
         parent = Client.where("company_id = ? and name ilike ?", current_user.company_id, row[3].strip.downcase).first
         unless parent
-          error = { row: row_number, message: ["Parent account #{row[3]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Parent account #{row[3]} could not be found"])
           next
         end
       else
@@ -299,8 +303,8 @@ class Client < ActiveRecord::Base
         category_field = current_user.company.fields.where(name: 'Category').first
         category = category_field.options.where('name ilike ?', row[4]).first
         unless category
-          error = { row: row_number, message: ["Category #{row[4]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Category #{row[4]} could not be found"])
           next
         end
       else
@@ -310,8 +314,8 @@ class Client < ActiveRecord::Base
       if row[5].present? && row[2] == 'advertiser'
         subcategory = category.suboptions.where('name ilike ?', row[5]).first
         unless subcategory
-          error = { row: row_number, message: ["Subcategory #{row[5]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Subcategory #{row[5]} could not be found"])
           next
         end
       else
@@ -326,15 +330,15 @@ class Client < ActiveRecord::Base
 
         members.each do |member|
           if member[1].nil?
-            error = { row: row_number, message: [ "Account team member #{member[0]} does not have share" ] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Account team member #{member[0]} does not have share"])
             client_member_list_error = true
             break
           elsif user = current_user.company.users.where('email ilike ?', member[0]).first
             client_member_list << user
           else
-            error = { row: row_number, message: ["Account team member #{member[0]} could not be found in the users list"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Account team member #{member[0]} could not be found in the users list"])
             client_member_list_error = true
             break
           end
@@ -349,8 +353,8 @@ class Client < ActiveRecord::Base
         region_field = current_user.company.fields.where(name: 'Region').first
         region = region_field.options.where('name ilike ?', row[14]).first
         unless region
-          error = { row: row_number, message: ["Region #{row[14]} could not be found"] }
-          errors << error∂
+          import_log.count_failed
+          import_log.log_error(["Region #{row[14]} could not be found"])
           next
         end
       else
@@ -361,8 +365,8 @@ class Client < ActiveRecord::Base
         segment_field = current_user.company.fields.where(name: 'Segment').first
         segment = segment_field.options.where('name ilike ?', row[15]).first
         unless segment
-          error = { row: row_number, message: ["Segment #{row[15]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Segment #{row[15]} could not be found"])
           next
         end
       else
@@ -442,8 +446,8 @@ class Client < ActiveRecord::Base
       unless client.present?
         clients = current_user.company.clients.where('name ilike ?', row[1].strip.downcase)
         if clients.length > 1
-          error = { row: row_number, message: ["Account name #{row[1]} matched more than one account record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Account name #{row[1]} matched more than one account record"])
           next
         end
         client = clients.first
@@ -451,8 +455,8 @@ class Client < ActiveRecord::Base
 
       if client.present?
         if parent && parent.id == client.id
-          error = { row: row_number, message: ["Accounts can't be parents of themselves"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Accounts can't be parents of themselves"])
           next
         end
 
@@ -487,18 +491,20 @@ class Client < ActiveRecord::Base
       client_params[:values_attributes] = [type_value_params, category_value_params, region_value_params, segment_value_params]
 
       if client.update_attributes(client_params)
+        import_log.count_imported
         client.client_members.delete_all if row[12] == 'Y'
         client_member_list.each_with_index do |user, index|
           client_member = client.client_members.find_or_initialize_by(user: user)
           client_member.update(share: members[index][1].to_i)
         end
       else
-        error = { row: row_number, message: client.errors.full_messages }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(client.errors.full_messages)
         next
       end
     end
-    errors
+
+    import_log.save
   end
 
   def self.client_type_field(company)

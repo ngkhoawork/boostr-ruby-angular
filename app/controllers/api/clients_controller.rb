@@ -71,9 +71,14 @@ class Api::ClientsController < ApplicationController
       require 'timeout'
       begin
         status = Timeout::timeout(120) {
-          csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-          clients = Client.import(csv_file, current_user)
-          render json: clients
+          CsvImportWorker.perform_async(
+            params[:file].tempfile.path,
+            'Client',
+            current_user.id,
+            params[:file].original_filename
+          )
+
+          render json: { message: "Your file is being processed. Please check status at IO Import Logs page in a few minutes (depending on the file size)" }, status: :ok
         }
       rescue Timeout::Error
         return
