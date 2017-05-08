@@ -7,17 +7,11 @@
       %th.left
         Date
       %th.left Account
-      %th.left Type
-      %th.left Attendees
   %tbody
     %tr{ 'ng-repeat': 'activity in topActivities', 'popover-template': "'activityPopupHtml'", 'popover-placement': 'top', 'popover-trigger': 'mouseenter' }
       %td.left
         {{activity.happened_at | date:'MM-dd-yyyy'}}
       %td.left {{activity.client.name}}
-      %td.left {{activity.activity_type_name}}
-      %td.left
-        %div{'ng-repeat': 'contact in activity.contacts'}
-          {{contact.name}}
 
 %script{ type: 'text/ng-template', id: 'activityPopupHtml' }
   %table.activity-popup
