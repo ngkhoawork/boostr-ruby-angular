@@ -25,6 +25,7 @@
                 %th.left Default Currency
                 %th.left Type
                 %th.left Status
+                %th.left Is Admin
             %tbody
               %tr{ ng: { repeat: 'user in users' } }
                 %td.left{ ng: { click: 'editModal(user)' } }
@@ -51,3 +52,9 @@
                       {{ $select.selected.name }}
                     %ui-select-choices{ repeat: 'status.value as status in user_statuses' }
                       %div{ ng: { bind: { html: 'status.name' } } }
+                %td.left
+                  .show-hide-remainder-form
+                    .switch-remainder-form
+                      %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.is_admin', 'ng-change': "submitUser(user)", id: "rem-act-modal-toggle{{user.id}}"}
+                      %label{:for => "rem-act-modal-toggle{{user.id}}"}
+                        %span

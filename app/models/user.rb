@@ -22,10 +22,6 @@ class User < ActiveRecord::Base
   has_many :contacts, through: :activities
   has_many :display_line_items, through: :ios
 
-  before_update do
-    modify_admin_status if user_type_changed?
-  end
-
   ROLES = %w(user admin superadmin)
 
   validates :first_name, :last_name, presence: true
@@ -48,12 +44,8 @@ class User < ActiveRecord::Base
     roles.include?(role.to_s)
   end
 
-  def modify_admin_status
-    if user_type == ADMIN
-      add_role('admin')
-    else
-      remove_role('admin')
-    end
+  def is_admin
+    is?(:admin)
   end
 
   def add_role(role)
@@ -99,7 +91,7 @@ class User < ActiveRecord::Base
       super(options)
     else
       super(options.merge(
-        methods: [:name, :leader?]
+        methods: [:name, :leader?, :is_admin, :roles]
       ).except(:override))
     end
   end
@@ -334,9 +326,5 @@ class User < ActiveRecord::Base
     ).pluck(:id)
 
     Activity.where(id: activity_ids)
-  end
-
-  def admin?
-    user_type == ADMIN
   end
 end

@@ -5,9 +5,16 @@
 
   $scope.formType = "New"
   $scope.submitText = "Invite"
-  $scope.user = {}
+  $scope.user = {roles: ['user']}
 
   $scope.submitForm = () ->
+    index = $scope.user.roles.indexOf('admin')
+    if ($scope.user.is_admin)
+      if (index == -1)
+        $scope.user.roles.push('admin')
+    else
+      if (index > -1)
+        $scope.user.roles.splice(index, 1)
     $scope.buttonDisabled = true
     User.invite(user: $scope.user).$promise.then (user) ->
       if onInvite
