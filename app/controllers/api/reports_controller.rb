@@ -102,9 +102,9 @@ class Api::ReportsController < ApplicationController
       company.teams.each do |team_row|
         @all_team_members += team_row.all_sales_reps.reject {|row| row.is_active == false }
       end
-      @all_team_members = @all_team_members.sort_by {|obj| obj.first_name}
+      @all_team_members = @all_team_members.sort_by {|obj| obj.first_name}.uniq
     else
-      @all_team_sales_reps ||= team.all_sales_reps.reject {|row| row.is_active == false }.sort_by {|obj| obj.first_name}
+      @all_team_sales_reps ||= team.all_sales_reps.reject {|row| row.is_active == false }.sort_by {|obj| obj.first_name}.uniq
     end
   end
 
