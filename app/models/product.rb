@@ -7,6 +7,8 @@ class Product < ActiveRecord::Base
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
+  scope :active, -> { where('active IS true') }
+
   def as_json(options = {})
     super(options.merge(include: [values: { include: [:option], methods: [:value] }]))
   end

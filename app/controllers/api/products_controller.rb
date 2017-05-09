@@ -3,6 +3,10 @@ class Api::ProductsController < ApplicationController
 
   def index
     products = current_user.company.products
+    if params[:active] == 'true'
+      products = products.active
+    end
+
     respond_to do |format|
       format.json { render json: products }
       format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
