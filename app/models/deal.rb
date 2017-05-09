@@ -106,6 +106,9 @@ class Deal < ActiveRecord::Base
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
   scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
+  scope :grouped_count_by_week, -> start_date, end_date { where(created_at: start_date..end_date)
+                                                          .group("date_trunc('day', created_at)")
+                                                          .order('date_trunc_day_created_at').count }
 
   def integrate_with_operative
     if stage_id_changed? && operative_integration_allowed?

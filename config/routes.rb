@@ -293,6 +293,8 @@ Rails.application.routes.draw do
     end
 
     get 'teams/by_user/:id', to: 'teams#by_user', as: :team_by_user
+
+    resources :pacing_dashboard, only: [:index]
   end
 
   mount Sidekiq::Web => '/sidekiq'

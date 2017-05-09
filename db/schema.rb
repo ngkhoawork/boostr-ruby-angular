@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170502230011) do
+ActiveRecord::Schema.define(version: 20170505153146) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -228,6 +228,10 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
+    t.text     "encrypted_json_api_key"
+    t.text     "encrypted_json_api_key_iv"
+    t.string   "network_code"
+    t.string   "integration_provider"
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -502,6 +506,15 @@ ActiveRecord::Schema.define(version: 20170502230011) do
   end
 
   add_index "content_fees", ["io_id"], name: "index_content_fees_on_io_id", using: :btree
+
+  create_table "cpm_budget_adjustments", force: :cascade do |t|
+    t.float    "percentage"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+    t.integer  "api_configuration_id"
+  end
+
+  add_index "cpm_budget_adjustments", ["api_configuration_id"], name: "index_cpm_budget_adjustments_on_api_configuration_id", using: :btree
 
   create_table "csv_import_logs", force: :cascade do |t|
     t.integer  "rows_processed", default: 0
@@ -827,22 +840,37 @@ ActiveRecord::Schema.define(version: 20170502230011) do
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
 
+  create_table "dfp_report_queries", force: :cascade do |t|
+    t.integer  "report_type"
+    t.string   "weekly_recurrence_day"
+    t.integer  "monthly_recurrence_day"
+    t.string   "report_id"
+    t.boolean  "is_daily_recurrent",     default: false
+    t.integer  "api_configuration_id"
+    t.datetime "created_at",                             null: false
+    t.datetime "updated_at",                             null: false
+  end
+
+  add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
+
   create_table "display_line_item_budgets", force: :cascade do |t|
     t.integer  "display_line_item_id"
     t.integer  "external_io_number"
     t.float    "budget"
     t.date     "start_date"
     t.date     "end_date"
-    t.datetime "created_at",                                                        null: false
-    t.datetime "updated_at",                                                        null: false
-    t.decimal  "budget_loc",           precision: 15, scale: 2, default: 0.0
-    t.string   "billing_status",                                default: "Pending"
-    t.boolean  "manual_override",                               default: false
-    t.decimal  "ad_server_budget",     precision: 15, scale: 2
+    t.datetime "created_at",                                                         null: false
+    t.datetime "updated_at",                                                         null: false
+    t.decimal  "budget_loc",            precision: 15, scale: 2, default: 0.0
+    t.string   "billing_status",                                 default: "Pending"
+    t.boolean  "manual_override",                                default: false
+    t.decimal  "ad_server_budget",      precision: 15, scale: 2
     t.integer  "ad_server_quantity"
     t.integer  "quantity"
     t.integer  "clicks"
-    t.decimal  "ctr",                  precision: 2
+    t.decimal  "ctr",                   precision: 5,  scale: 4
+    t.decimal  "video_avg_view_rate",   precision: 5,  scale: 4
+    t.decimal  "video_completion_rate", precision: 5,  scale: 4
   end
 
   add_index "display_line_item_budgets", ["display_line_item_id"], name: "index_display_line_item_budgets_on_display_line_item_id", using: :btree
@@ -881,6 +909,8 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.decimal  "budget_remaining_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.integer  "balance_loc",                limit: 8
     t.integer  "daily_run_rate_loc"
+    t.decimal  "ctr",                                  precision: 5,  scale: 4
+    t.integer  "clicks"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
@@ -936,13 +966,14 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.string   "request_type"
     t.string   "resource_type"
     t.integer  "company_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
     t.integer  "deal_id"
     t.boolean  "is_error"
     t.string   "api_provider"
     t.string   "object_name"
     t.text     "error_text"
+    t.string   "dfp_query_type"
   end
 
   add_index "integration_logs", ["company_id"], name: "index_integration_logs_on_company_id", using: :btree
@@ -1170,6 +1201,17 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.integer "days_length"
   end
 
+  create_table "time_period_weeks", force: :cascade do |t|
+    t.integer  "week"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.string   "period_name"
+    t.date     "period_start"
+    t.date     "period_end"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
   create_table "time_periods", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -1185,12 +1227,12 @@ ActiveRecord::Schema.define(version: 20170502230011) do
   add_index "time_periods", ["deleted_at"], name: "index_time_periods_on_deleted_at", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                  default: "",    null: false
-    t.string   "encrypted_password",     default: ""
+    t.string   "email",                            default: "",    null: false
+    t.string   "encrypted_password",               default: ""
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0,     null: false
+    t.integer  "sign_in_count",                    default: 0,     null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.inet     "current_sign_in_ip"
@@ -1201,7 +1243,7 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.string   "unconfirmed_email"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "roles_mask",             default: 1
+    t.integer  "roles_mask",                       default: 1
     t.integer  "company_id"
     t.string   "first_name"
     t.string   "last_name"
@@ -1212,28 +1254,28 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.integer  "invitation_limit"
     t.integer  "invited_by_id"
     t.string   "invited_by_type"
-    t.integer  "invitations_count",      default: 0
+    t.integer  "invitations_count",                default: 0
     t.string   "title"
     t.integer  "team_id"
-    t.boolean  "notify",                 default: false
-    t.integer  "neg_balance"
+    t.boolean  "notify",                           default: false
+    t.integer  "neg_balance",            limit: 8
     t.integer  "pos_balance"
     t.datetime "last_alert_at"
-    t.integer  "neg_balance_cnt"
-    t.integer  "pos_balance_cnt"
-    t.integer  "neg_balance_lcnt"
-    t.integer  "pos_balance_lcnt"
-    t.integer  "neg_balance_l"
-    t.integer  "pos_balance_l"
-    t.integer  "neg_balance_l_cnt"
-    t.integer  "pos_balance_l_cnt"
+    t.integer  "neg_balance_cnt",        limit: 8
+    t.integer  "pos_balance_cnt",        limit: 8
+    t.integer  "neg_balance_lcnt",       limit: 8
+    t.integer  "pos_balance_lcnt",       limit: 8
+    t.integer  "neg_balance_l",          limit: 8
+    t.integer  "pos_balance_l",          limit: 8
+    t.integer  "neg_balance_l_cnt",      limit: 8
+    t.integer  "pos_balance_l_cnt",      limit: 8
     t.decimal  "win_rate"
     t.decimal  "average_deal_size"
     t.float    "cycle_time"
-    t.integer  "user_type",              default: 0,     null: false
-    t.boolean  "is_active",              default: true
+    t.integer  "user_type",                        default: 0,     null: false
+    t.boolean  "is_active",                        default: true
     t.string   "starting_page"
-    t.string   "default_currency",       default: "USD"
+    t.string   "default_currency",                 default: "USD"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
@@ -1302,6 +1344,7 @@ ActiveRecord::Schema.define(version: 20170502230011) do
   add_foreign_key "contact_cfs", "contacts"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
+  add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
@@ -1312,6 +1355,7 @@ ActiveRecord::Schema.define(version: 20170502230011) do
   add_foreign_key "deal_product_cf_names", "companies"
   add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
   add_foreign_key "deal_product_cfs", "companies"
+  add_foreign_key "dfp_report_queries", "api_configurations"
   add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"
