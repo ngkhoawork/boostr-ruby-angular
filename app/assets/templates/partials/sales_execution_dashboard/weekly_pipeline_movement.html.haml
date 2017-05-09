@@ -15,15 +15,15 @@
 %script{ type: 'text/ng-template', id: 'pipelineMovementPopupHtml' }
   %table.pipeline-popup
     %tr
-      %td
+      %th
         Name
-      %td
+      %th
         Advertiser
-      %td{'ng-if': 'item.name == "Advanced"'}
+      %th{'ng-if': 'item.name == "Advanced"'}
         Budget Change
-      %td{'ng-if': 'item.name != "Advanced"'} 
+      %th{'ng-if': 'item.name != "Advanced"'} 
         Budget
-      %td
+      %th
         Start Date
     %tr{'ng-repeat': 'deal in item.deals'}
       %td
