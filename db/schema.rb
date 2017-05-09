@@ -1067,8 +1067,9 @@ ActiveRecord::Schema.define(version: 20170504120934) do
     t.string   "product_line"
     t.string   "family"
     t.string   "revenue_type"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "active",       default: true
   end
 
   create_table "quota", force: :cascade do |t|

@@ -1,6 +1,6 @@
 @app.controller 'ContactController',
-    ['$scope', '$modal', '$location', '$routeParams', '$http', '$sce', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'ContactCfName'
-    ( $scope,   $modal,   $location,  $routeParams,    $http,   $sce,   Contact,   Activity,    ActivityType,  Reminder,   ContactCfName) ->
+    ['$scope', '$modal', '$location', '$routeParams', '$http', '$sce', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'ContactCfName', 'ClientContact'
+    ( $scope,   $modal,   $location,  $routeParams,    $http,   $sce,   Contact,   Activity,    ActivityType,  Reminder,   ContactCfName,   ClientContact) ->
 
         $scope.currentContact = null
         $scope.activities = []
@@ -159,6 +159,14 @@
             if confirm('Are you sure you want to delete the activity?')
                 Activity.delete activity, ->
                     $scope.$emit('updated_current_contact')
+
+        $scope.updateClientContactStatus = (clientContact, bool) ->
+            ClientContact.update_status(
+                id: clientContact.id
+                client_id: clientContact.client_id
+                is_active: bool
+            ).$promise.then (resp) ->
+                clientContact.is_active = resp.is_active
 
 
         (initReminder = ->
