@@ -119,6 +119,13 @@ class Contact < ActiveRecord::Base
     self.reload
   end
 
+  def job_level
+    job_level_field = company.fields.where(name: 'Job Level').first
+    job_level_value = self.values.find_by(field_id: job_level_field.id)
+    return job_level_value.option.name if job_level_value.present?
+    return  nil
+  end
+
   def self.to_csv(company)
     header = [
       'Id',
@@ -134,7 +141,8 @@ class Contact < ActiveRecord::Base
       'Country',
       'Phone',
       'Mobile',
-      'Related Accounts'
+      'Related Accounts',
+      'Job Level'
     ]
 
     contact_cf_names = company.contact_cf_names.where("disabled IS NOT TRUE").order("position asc")
@@ -169,6 +177,7 @@ class Contact < ActiveRecord::Base
           memo << client.name
         end
         line << related_clients.join(';')
+        line << contact.job_level
 
         contact_cf = contact.contact_cf.as_json
         contact_cf_names.each do |contact_cf_name|
