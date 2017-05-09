@@ -38,6 +38,15 @@
       $scope.allMemberId = []
       $scope.allLeaderId = []
 
+      $scope.sorting =
+        key: ''
+        reverse: false
+      $scope.sortBy = (key) ->
+        if $scope.sorting.key != key
+          $scope.sorting.key = key
+          $scope.sorting.reverse = false
+        else
+          $scope.sorting.reverse = !$scope.sorting.reverse
       $scope.init = () =>
         Team.all(all_teams: true).then (teams) ->
           all_members = []

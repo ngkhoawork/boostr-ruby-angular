@@ -4,14 +4,17 @@
 %table.table.table-hover.table-striped
   %thead
     %tr
-      %th.left Account
-      %th.right Budget
-      %th.left{width: "30"} %
+      %th.left
+        %span{'ng-click': 'sortBy("advertiser.name")'} Account
+      %th.right
+        %span{'ng-click': 'sortBy("budget")'} Budget
+      %th.left{width: "30"}
+        %span{'ng-click': 'sortBy("stage.probability")'} %
       %th.left{width: "90"}
-        Start Date
+        %span{'ng-click': 'sortBy("start_date")'} Start Date
 
   %tbody
-    %tr{ 'ng-repeat': 'deal in topDeals', 'popover-template': "'topDealPopupHtml'", 'popover-placement': 'top', 'popover-trigger': 'mouseenter' }
+    %tr{ 'ng-repeat': 'deal in topDeals | orderBy : sorting.key : sorting.reverse', 'popover-template': "'topDealPopupHtml'", 'popover-placement': 'top', 'popover-trigger': 'mouseenter' }
       %td.left {{ deal.advertiser.name }}
       %td.right {{ deal.budget | currency: '$' : 0}}
       %td.left {{ deal.stage.probability }}
