@@ -31,6 +31,9 @@ class User < ActiveRecord::Base
   scope :by_name, -> name { where('users.first_name ilike ? or users.last_name ilike ?', "%#{name}%", "%#{name}%") if name.present? }
 
   def roles=(roles)
+    if roles. nil?
+      roles = %w(user)
+    end
     self.roles_mask = (roles & ROLES).map { |r| 2**ROLES.index(r) }.inject(0, :+)
   end
 
