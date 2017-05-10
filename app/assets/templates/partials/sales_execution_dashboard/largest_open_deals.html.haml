@@ -5,19 +5,19 @@
   %thead
     %tr
       %th.left
-        %span{'ng-click': 'sortBy("advertiser.name")'} Account
+        %span{'ng-click': 'sort.toggle("advertiser_name")'} Account
       %th.right
-        %span{'ng-click': 'sortBy("budget")'} Budget
+        %span{'ng-click': 'sort.toggle("budget")'} Budget
       %th.left{width: "30"}
-        %span{'ng-click': 'sortBy("stage.probability")'} %
+        %span{'ng-click': 'sort.toggle("stage_probability")'} %
       %th.left{width: "90"}
-        %span{'ng-click': 'sortBy("start_date")'} Start Date
+        %span{'ng-click': 'sort.toggle("start_date")'} Start Date
 
   %tbody
     %tr{ 'ng-repeat': 'deal in topDeals | orderBy : sorting.key : sorting.reverse', 'popover-template': "'topDealPopupHtml'", 'popover-placement': 'top', 'popover-trigger': 'mouseenter' }
-      %td.left {{ deal.advertiser.name }}
+      %td.left {{ deal.advertiser_name }}
       %td.right {{ deal.budget | currency: '$' : 0}}
-      %td.left {{ deal.stage.probability }}
+      %td.left {{ deal.stage_probability }}
       %td.left {{ deal.start_date | date:'MM-dd-yyyy' }}
 
 %script{ type: 'text/ng-template', id: 'topDealPopupHtml' }

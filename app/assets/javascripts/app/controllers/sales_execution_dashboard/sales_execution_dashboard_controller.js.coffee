@@ -38,6 +38,55 @@
       $scope.allMemberId = []
       $scope.allLeaderId = []
 
+      class McSort
+        constructor: (opts) ->
+          @column = opts.column
+          @compareFn = opts.compareFn || (-> 0)
+          @dataset = opts.dataset || []
+          @defaults = opts
+          @direction = opts.direction || "asc"
+          @hasMultipleDatasets = opts.hasMultipleDatasets || false
+          @execute()
+
+        execute: ->
+          mcSort = @
+          if not @hasMultipleDatasets
+            @dataset.sort (a, b) ->
+              mcSort.compareFn(mcSort.column, a, b)
+            @dataset.reverse() if @direction == "desc"
+          else
+            @dataset = @dataset.map (row) ->
+              row.sort (a, b) ->
+                mcSort.compareFn(mcSort.column, a, b)
+              row.reverse() if mcSort.direction == "desc"
+              row
+          @dataset
+
+        reset: ->
+          @column = @defaults.column
+          @direction = @defaults.direction || "asc"
+          @execute()
+
+        toggle: (column) ->
+          direction = "asc"
+          direction = "desc" if @column == column and @direction == "asc"
+          @column = column
+          @direction = direction
+          @execute()
+
+      setMcSort = ->
+        $scope.sort = new McSort({
+          column: "client_name",
+          compareFn: (column, a, b) ->
+            switch (column)
+              when "advertiser_name", 'start_date'
+                a[column].localeCompare(b[column])
+              else
+                a[column] - b[column]
+          dataset: $scope.topDeals
+          hasMultipleDatasets: false
+        })
+
       $scope.sorting =
         key: ''
         reverse: false
@@ -101,7 +150,11 @@
           $scope.kpis = data[0]
 
         SalesExecutionDashboard.all("member_ids[]": $scope.selectedMemberList, team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
-          $scope.topDeals = data[0].top_deals
+          $scope.topDeals = _.map data[0].top_deals, (item) ->
+            item.advertiser_name = item.advertiser.name
+            item.stage_probability = item.stage.probability
+            return item
+
           maxValue = data[0].week_pipeline_data
           maxValue = _.max(_.map data[0].week_pipeline_data, (item) =>
               return item.value
@@ -114,6 +167,7 @@
 
           $scope.productPipelineData = data[0].product_pipeline_data
           updateProductPipelineData()
+          setMcSort()
 
         SalesExecutionDashboard.forecast(team_id: $scope.selectedTeamId, member_id: $scope.selectedMemberId).then (data) ->
           SalesExecutionDashboardDataStore.setDataQuarterForecast(data);
