@@ -25,7 +25,9 @@ class DisplayLineItemCsv
   end
 
   def perform
+    # byebug
     return self.errors.full_messages unless self.valid?
+    update_external_io_number
     if io_or_tempio && display_line_item
       display_line_item.update(
         line_number: line_number,
@@ -86,6 +88,12 @@ class DisplayLineItemCsv
 
   def io_number
     io_name.gsub(/[^\d]/, '')
+  end
+
+  def update_external_io_number
+    if io && external_io_number
+      io.update_columns(external_io_number: external_io_number)
+    end
   end
 
   def product
