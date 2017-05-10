@@ -88,7 +88,7 @@ class Api::ContactsController < ApplicationController
   end
 
   def advertisers
-    render json: current_user.clients.by_type_id(advertiser_type_id)
+    render json: current_user.company.clients.by_type_id(advertiser_type_id)
                                      .by_name(params[:name])
                                      .without_related_clients(params[:id])
                                      .limit(limit)
