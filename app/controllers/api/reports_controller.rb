@@ -88,7 +88,7 @@ class Api::ReportsController < ApplicationController
   end
 
   def end_date
-    @end_date ||= (params[:end_date] ? Date.parse(params[:end_date]) : Time.now.end_of_day)
+    @end_date ||= (params[:end_date] ? Date.parse(params[:end_date]).end_of_day : Time.now.end_of_day)
   end
 
   def team
