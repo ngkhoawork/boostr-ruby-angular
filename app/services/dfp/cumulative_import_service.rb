@@ -11,6 +11,10 @@ module DFP
       ].min
       DisplayLineItemCsv.new(
         io_name: row[:dimensionorder_name],
+        io_advertiser: row[:dimensionadvertiser_name],
+        io_agency: row[:dimensionattributeorder_agency],
+        io_start_date: row[:dimensionattributeorder_start_date_time],
+        io_end_date: row[:dimensionattributeorder_end_date_time],
         external_io_number: row[:dimensionorder_id].to_i,
         product_name: row[:dimensionline_item_name].to_i,
         line_number: row[:dimensionline_item_id],

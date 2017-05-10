@@ -15,7 +15,7 @@ class DisplayLineItemCsv
     :external_io_number, :line_number, :ad_server, :start_date, :end_date,
     :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
     :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks,
-    :io_name
+    :io_name, :io_start_date, :io_end_date, :io_advertiser, :io_agency
   )
 
   def initialize(attributes = {})
@@ -28,6 +28,7 @@ class DisplayLineItemCsv
     # byebug
     return self.errors.full_messages unless self.valid?
     update_external_io_number
+    upsert_temp_io
     if io_or_tempio && display_line_item
       display_line_item.update(
         line_number: line_number,
@@ -84,6 +85,22 @@ class DisplayLineItemCsv
 
   def tempio
     @_temp_io ||= TempIo.find_or_initialize_by(company_id: company_id, external_io_number: external_io_number)
+  end
+
+  def upsert_temp_io
+    if io_or_tempio.kind_of? TempIo
+      temp_io_params = {
+          name: io_name,
+          start_date: io_start_date,
+          end_date: io_end_date,
+          advertiser: io_advertiser,
+          agency: io_agency
+      }
+
+      io_or_tempio.update!(
+          temp_io_params
+      )
+    end
   end
 
   def io_number
