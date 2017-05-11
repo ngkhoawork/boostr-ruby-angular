@@ -49,10 +49,16 @@ class Api::ContactsController < ApplicationController
 
   def create
     if params[:file].present?
-      # csv_file = IO.read(params[:file].tempfile.path)
-      csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-      contacts = Contact.import(csv_file, current_user)
-      render json: contacts
+      CsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Contact',
+        current_user.id,
+        params[:file][:original_filename]
+      )
+
+      render json: {
+        message: "Your file is being processed. Please check status at IO Import Logs page in a few minutes (depending on the file size)"
+      }, status: :ok
     else
       if contact_params[:client_id].present?
         contact = current_user.company.contacts.new(contact_params)

@@ -13,21 +13,16 @@
         api_url: ->
           '/api/clients'
 
-  $scope.showUploadContactModal = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/contact_upload.html'
-      size: 'lg'
-      controller: 'ContactsUploadController'
-      backdrop: 'static'
-      keyboard: false
-
   $scope.showUploadActivityModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/activity_upload.html'
       size: 'lg'
-      controller: 'ActivityUploadController'
+      controller: 'CsvUploadController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        api_url: ->
+          '/api/activities'
 
   $scope.showUploadDealsModal = () ->
     $scope.modalInstance = $modal.open
@@ -44,9 +39,12 @@
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_product_upload.html'
       size: 'lg'
-      controller: 'DealProductUploadController'
+      controller: 'CsvUploadController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        api_url: ->
+          '/api/deal_products'
 
   $scope.showUploadDealProductBudgetModal = ->
     $scope.modalInstance = $modal.open
@@ -60,12 +58,12 @@
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_upload.html'
       size: 'lg'
-      controller: 'ContactsUploadController'
+      controller: 'CsvUploadController'
       backdrop: 'static'
       keyboard: false
       resolve:
-        contact: ->
-          {}
+        api_url: ->
+          '/api/contacts'
 
   $scope.showUploadDisplayIOModal = () ->
     $scope.modalInstance = $modal.open
@@ -106,26 +104,4 @@
   $scope.exportDealProductMonhtlyBudget = ->
     $window.open('/api/deal_product_budgets.csv')
     return true
-
-
-  # TEMPORARY UPLOADERS
-  $scope.showUploadSalesOrdersModal = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/sales_orders_upload.html'
-      size: 'lg'
-      controller: 'SalesOrdersUploadController'
-      backdrop: 'static'
-      keyboard: false
-
-  $scope.showUploadSalesOrderLineItemsModal = () ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/sales_order_lineitems_upload.html'
-      size: 'lg'
-      controller: 'SalesOrderLineItemsUploadController'
-      backdrop: 'static'
-      keyboard: false
-
-#  $scope.exportActivities = ->
-#    $window.open('/api/activities.zip')
-#    return true
 ]
