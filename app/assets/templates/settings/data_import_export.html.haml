@@ -104,12 +104,10 @@
           .panel-body
             %h4 Contacts Export
             %h5 Click here to export Contacts
-            -#%li.export
-            -#  %a.upload{ href: '', ng: { click: 'exportContacts()' } }
-            -#    = inline_svg 'icons/import.svg'
-            -#    Export Contacts
-            %li.import
-              Coming soon...
+            %li.export
+              %a.upload{ href: '', ng: { click: 'exportContacts()' } }
+                = inline_svg 'icons/import.svg'
+                Export Contacts
 
     .row
       .col-sm-6
