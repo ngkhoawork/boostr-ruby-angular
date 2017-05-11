@@ -51,7 +51,7 @@
 							%tbody
 								%tr{'ng-repeat': 'account in relatedAccounts'}
 									%td
-										{{account.name}}
+										%a.mr8{'href': '', 'ng-href': '/accounts/{{account.id}}'} {{account.name}}
 										%i.fa.fa-trash.z-icon{'ng-click': 'unassignClient(account)'}
 									%td {{account.status}}
 									%td {{account.address.city}}
@@ -74,7 +74,8 @@
 							%div {{ concatAddress(currentContact.address) }}
 					%div.custom-field-item{'ng-if': 'currentContact.primary_client_json.name'}
 						%div.custom-field-item-label Works At
-						%div.custom-field-item-field {{currentContact.primary_client_json.name}}
+						%div.custom-field-item-field
+							%a{'href': '', 'ng-href': '/accounts/{{currentContact.primary_client_json.id}}'} {{currentContact.primary_client_json.name}}
 					%div.custom-field-item{'ng-if': 'currentContact.address.email'}
 						%div.custom-field-item-label Email
 						%div.custom-field-item-field {{currentContact.address.email}}

@@ -4,9 +4,9 @@
   %td.left
     {{ displayLineItem.io.external_io_number }}
   %td.left
-    {{ displayLineItem.io.advertiser ? displayLineItem.io.advertiser.name : "" }}
+    %a{'href': '', 'ng-href': '/accounts/{{displayLineItem.io.advertiser.id}}'} {{ displayLineItem.io.advertiser.name }}
   %td.left
-    {{ displayLineItem.io.agency ? displayLineItem.io.agency.name : "" }}
+    %a{'href': '', 'ng-href': '/accounts/{{displayLineItem.io.agency.id}}'} {{ displayLineItem.io.agency.name }}
   %td.right
     {{ displayLineItem.daily_run_rate | currency:displayLineItem.io.currency.curr_symbol:0 }}
   %td.right
