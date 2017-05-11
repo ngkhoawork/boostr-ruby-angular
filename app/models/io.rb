@@ -137,6 +137,33 @@ class Io < ActiveRecord::Base
     total_budget
   end
 
+  def effective_product_revenue_budget(member, product, start_date, end_date)
+    io_member = self.io_members.find_by(user_id: member.id)
+    share = io_member.share
+    total_budget = 0
+    content_fee_rows = self.content_fees
+    content_fee_rows = content_fee_rows.for_product_id(product.id) if product.present?
+    content_fee_rows.each do |content_fee|
+      content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+        total_budget += content_fee_product_budget.corrected_daily_budget(self.start_date, self.end_date) * effective_days(start_date, end_date, io_member, [content_fee_product_budget]) * (share/100.0)
+      end
+    end
+
+    display_line_item_rows = io.display_line_items
+    display_line_item_rows = display_line_item_rows.for_product_id(product.id) if product.present?
+    display_line_item_rows.each do |display_line_item|
+      in_budget_days = 0
+      in_budget_total = 0
+      display_line_item.display_line_item_budgets.each do |display_line_item_budget|
+        in_days = effective_days(start_date, end_date, io_member, [display_line_item, display_line_item_budget])
+        in_budget_days += in_days
+        in_budget_total += display_line_item_budget.daily_budget * in_days * (share/100.0)
+      end
+      total_budget += in_budget_total + display_line_item.ave_run_rate * (effective_days(start_date, end_date, io_member, [display_line_item]) - in_budget_days) * (share/100.0)
+    end
+    total_budget
+  end
+
   def effective_days(start_date, end_date, effecter, objects)
     from = [start_date]
     to = [end_date]

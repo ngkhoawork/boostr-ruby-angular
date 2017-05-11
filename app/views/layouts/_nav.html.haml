@@ -48,6 +48,8 @@
                 %li
                   = link_to "Forecast Detail", "/reports/forecasts"
                 %li
+                  = link_to "Product Forecast Detail", "/reports/product_forecasts"
+                %li
                   = link_to "Pipeline Changes", "/reports/pipeline_changes_report"
           - else
             %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
@@ -63,6 +65,8 @@
                   = link_to "Activity Summary", "/reports/activity_summary"
                 %li
                   = link_to "Forecast Detail", "/reports/forecasts"
+                %li
+                  = link_to "Product Forecast Detail", "/reports/product_forecasts"
           - if current_user.leader?
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }

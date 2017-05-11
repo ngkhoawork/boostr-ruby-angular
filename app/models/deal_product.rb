@@ -32,6 +32,7 @@ class DealProduct < ActiveRecord::Base
   end
 
   scope :product_type_of, -> (type) { joins(:product).where("products.revenue_type = ?", type) }
+  scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
   scope :open, ->  { where('deal_products.open IS true')  }
   scope :active, -> { DealProduct.joins('LEFT JOIN products ON deal_products.product_id = products.id').where('products.active IS true') }
 
