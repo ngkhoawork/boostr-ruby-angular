@@ -30,6 +30,7 @@ class Activity < ActiveRecord::Base
 
   scope :for_company, -> (id) { where(company_id: id) }
   scope :for_contact, -> (id) { joins(:activities_contacts).where('activities_contacts.contact_id = ?', id) }
+  scope :for_time_period, -> (start_date, end_date) { where('activities.happened_at <= ? AND activities.happened_at >= ?', end_date, start_date) if start_date && end_date }
 
   def self.import(file, current_user)
     errors = []

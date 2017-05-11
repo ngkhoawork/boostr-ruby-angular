@@ -25,6 +25,13 @@
             $scope.users.push(user)
 
   $scope.submitUser = (user) ->
+    index = user.roles.indexOf('admin')
+    if (user.is_admin)
+      if (index == -1)
+        user.roles.push('admin')
+    else
+      if (index > -1)
+        user.roles.splice(index, 1)
     user.$update()
 
   $scope.editModal = (user) ->
@@ -37,6 +44,8 @@
       resolve:
         user: ->
           user
+    .result.then (response) ->
+      $scope.init()
  
   $scope.init()
 

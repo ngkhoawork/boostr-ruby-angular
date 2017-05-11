@@ -20,7 +20,7 @@
                 $scope.deal_product.deal_product_budgets.push({ budget_loc: '' })
                 $scope.deal_product.months.push(month)
 
-            Product.all().then (products) ->
+            Product.all({active: true}).then (products) ->
                 $scope.products = $filter('notIn')(products, $scope.currentDeal.products)
 
             addProductBudgetCorrection = ->

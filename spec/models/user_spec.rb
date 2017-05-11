@@ -29,6 +29,10 @@ RSpec.describe User, type: :model do
     it 'has many teams that only belong to the company' do
       expect(user.reload.teams).to include(team)
     end
+
+    it 'finds user by email case insensitively' do
+      expect(User.by_email(user.email.upcase)).to eq [user]
+    end
   end
 
   context 'roles' do

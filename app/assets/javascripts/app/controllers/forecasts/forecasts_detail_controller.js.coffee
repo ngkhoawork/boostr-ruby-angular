@@ -85,8 +85,8 @@
                 when 2 #managet
                     searchAndSetUserTeam data.teams, data.user.id
                     searchAndSetTimePeriod data.timePeriods
-                when 5 #admin
-                    searchAndSetTimePeriod data.timePeriods
+            if (data.user.is_admin)
+                searchAndSetTimePeriod data.timePeriods
             getData()
 
         searchAndSetUserTeam = (teams, user_id) ->

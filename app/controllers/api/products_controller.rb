@@ -3,6 +3,10 @@ class Api::ProductsController < ApplicationController
 
   def index
     products = current_user.company.products
+    if params[:active] == 'true'
+      products = products.active
+    end
+
     respond_to do |format|
       format.json { render json: products }
       format.csv { send_data products.to_csv, filename: "products-#{Date.today}.csv" }
@@ -29,7 +33,7 @@ class Api::ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :revenue_type, { values_attributes: [:id, :field_id, :option_id, :value] })
+    params.require(:product).permit(:name, :revenue_type, :active, { values_attributes: [:id, :field_id, :option_id, :value] })
   end
 
   def product

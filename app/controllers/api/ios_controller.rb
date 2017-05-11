@@ -32,7 +32,7 @@ class Api::IosController < ApplicationController
   end
 
   def destroy
-    if current_user.admin?
+    if current_user.is_admin
       io.destroy
 
       render nothing: true

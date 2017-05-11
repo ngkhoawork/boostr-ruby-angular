@@ -205,16 +205,50 @@ class Api::SalesExecutionDashboardController < ApplicationController
   def week_pipeline_data
     start_date = Time.now.utc.beginning_of_week - 7.days
     end_date = Time.now.utc.beginning_of_week - 1.seconds
-    pipeline_won = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(100).sum(:budget)
-    pipeline_lost = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(0).sum(:budget)
-    pipeline_added = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).started_at(start_date, end_date).sum(:budget)
-    pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date).sum(:budget_change)
+    pipeline_won = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(100)
+    pipeline_lost = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
+    pipeline_added = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).started_at(start_date, end_date)
+    pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date)
+    pipeline_advanced_deals = pipeline_advanced.joins("LEFT JOIN deals ON deal_logs.deal_id = deals.id")
+      .group('deals.id')
+      .select('deals.id, deals.name, deals.start_date, deals.advertiser_id, sum(deal_logs.budget_change) as total_budget_change')
+      .collect{|item| {
+        id: item.id,
+        name: item.name,
+        start_date: item.start_date,
+        budget: item.total_budget_change,
+        advertiser: Client.find(item.advertiser_id).as_json({override: true, only: [:id, :name] })
+        }
+      }
+    options = {
+      override: true,
+      options: {
+        only: [:id, :name, :start_date, :budget, :budget_loc, :curr_cd],
+        include: {
+          advertiser: {
+            only: [:id, :name]
+          }
+        }
+      }
+    }
+    deal_log_options = {
+      include: {
+        deal: {
+          only: [:id, :name, :start_date, :budget, :budget_loc, :curr_cd],
+            include: {
+            advertiser: {
+              only: [:id, :name]
+            }
+          }
+        }
+      }
+    }
 
     @week_pipeline_data = [
-        {name: 'Added', value: pipeline_added.round, color:'#a4d0f0'},
-        {name: 'Advanced', value: pipeline_advanced.round, color:'#52a1e2'},
-        {name: 'Won', value: pipeline_won.round, color:'#8ec536'},
-        {name: 'Lost', value: pipeline_lost.round, color:'#d2e8f8'}
+        {name: 'Added', value: pipeline_added.sum(:budget).round, color:'#a4d0f0', deals: pipeline_added.as_json(options)},
+        {name: 'Advanced', value: pipeline_advanced.sum(:budget_change).round, color:'#52a1e2', deals: pipeline_advanced_deals},
+        {name: 'Won', value: pipeline_won.sum(:budget).round, color:'#8ec536', deals: pipeline_won.as_json(options)},
+        {name: 'Lost', value: pipeline_lost.sum(:budget).round, color:'#d2e8f8', deals: pipeline_lost.as_json(options)}
     ]
 
     @week_pipeline_data

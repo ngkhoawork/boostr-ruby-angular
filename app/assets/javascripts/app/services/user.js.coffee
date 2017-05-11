@@ -18,7 +18,6 @@
     { name: 'Sales Manager', id: 2 }
     { name: 'Account Manager', id: 3 }
     { name: 'Manager Account Manager', id: 4 }
-    { name: 'Admin', id: 5 }
     { name: 'Exec', id: 6 }
   ]
 

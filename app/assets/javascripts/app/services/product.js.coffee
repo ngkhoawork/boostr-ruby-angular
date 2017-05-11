@@ -21,9 +21,9 @@
   allProducts = []
   currentProduct = undefined
 
-  @all = ->
+  @all = (params) ->
     deferred = $q.defer()
-    resource.query {}, (products) ->
+    resource.query params, (products) ->
       allProducts = products
       deferred.resolve(products)
     deferred.promise

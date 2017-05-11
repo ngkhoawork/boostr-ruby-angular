@@ -119,9 +119,11 @@
 
   @delete = (deletedDeal) ->
     deferred = $q.defer()
-    resource.delete id: deletedDeal.id, () ->
-      deferred.resolve()
+    resource.delete id: deletedDeal.id, (deal) ->
+      deferred.resolve(deal)
       $rootScope.$broadcast 'updated_deals'
+    , (error) ->
+      deferred.reject(error)
     deferred.promise
 
   return
