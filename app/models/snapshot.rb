@@ -11,6 +11,15 @@ class Snapshot < ActiveRecord::Base
   # NOTE: if there are two duplicate time periods this will probably break (ideally we would use the time_period_id to group them and grab from a single group)
   scope :two_recent_for_time_period, -> (start_date, end_date) { where('snapshots.start_date = ? AND snapshots.end_date = ?', start_date, end_date).order('created_at DESC').limit(2) }
   scope :two_recent_for_year_and_quarter, -> (year, quarter) { where('snapshots.year = ? AND snapshots.quarter = ?', year, quarter).order('created_at DESC').limit(2) }
+  scope :by_company_in_period, -> (company, period) do
+    where(company: company, created_at: period.start_date..period.end_date)
+  end
+  scope :grouped_by_day_in_period_for_company, -> (company, period) do
+    by_company_in_period(company, period)
+    .select(:id, :created_at, :revenue, :weighted_pipeline)
+    .group("date_trunc('day', created_at)")
+    .order('date_trunc_day_created_at')
+  end
 
   validates :company, :user, :time_period, presence: true
 
