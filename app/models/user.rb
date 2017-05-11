@@ -29,6 +29,7 @@ class User < ActiveRecord::Base
 
   scope :by_user_type, -> type_id { where(user_type: type_id) if type_id.present? }
   scope :by_name, -> name { where('users.first_name ilike ? or users.last_name ilike ?', "%#{name}%", "%#{name}%") if name.present? }
+  scope :by_email, -> email { where('email ilike ?', email)  }
 
   def roles=(roles)
     if roles. nil?

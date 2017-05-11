@@ -13,6 +13,14 @@ RSpec.describe EmailProcessor do
     expect(Activity.last.comment).to include html_email[:html]
   end
 
+  it 'recognizes users email capitalized' do
+    email = build :email, :html_email, from: user.email.capitalize
+
+    expect {
+      subject(email).process
+    }.to change(Activity, :count).by 1
+  end
+
   context 'plain text email' do
     it 'processes email without html' do
       expect {
