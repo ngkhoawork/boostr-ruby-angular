@@ -4,17 +4,31 @@
 %table.table.table-hover.table-striped
   %thead
     %tr
-      %th.left Account
-      %th.left Budget
-      %th.left %
-      %th.left{width: "100"}
-        Start Date
-      %th.left Next Step
+      %th.left
+        %span{'ng-click': 'sort.toggle("advertiser_name")'} Account
+      %th.right
+        %span{'ng-click': 'sort.toggle("budget")'} Budget
+      %th.left{width: "30"}
+        %span{'ng-click': 'sort.toggle("stage_probability")'} %
+      %th.left{width: "90"}
+        %span{'ng-click': 'sort.toggle("start_date")'} Start Date
 
   %tbody
-    %tr{ 'ng-repeat': 'deal in topDeals' }
-      %td.left {{ deal.advertiser.name }}
-      %td.left {{ deal.budget | currency: '$' : 0}}
-      %td.left {{ deal.stage.probability }}
+    %tr{ 'ng-repeat': 'deal in topDeals | orderBy : sorting.key : sorting.reverse', 'popover-template': "'topDealPopupHtml'", 'popover-placement': 'top', 'popover-trigger': 'mouseenter' }
+      %td.left {{ deal.advertiser_name }}
+      %td.right {{ deal.budget | currency: '$' : 0}}
+      %td.left {{ deal.stage_probability }}
       %td.left {{ deal.start_date | date:'MM-dd-yyyy' }}
-      %td.left {{ deal.next_steps }}
+
+%script{ type: 'text/ng-template', id: 'topDealPopupHtml' }
+  %table.activity-popup
+    %tr
+      %td
+        Deal:
+      %td
+        {{deal.name}}
+    %tr
+      %td
+        Next Steps:
+      %td
+        {{deal.next_steps}}
