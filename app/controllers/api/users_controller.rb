@@ -7,6 +7,8 @@ class Api::UsersController < ApplicationController
 
   def update
     if user.update_attributes(user_params)
+      user.roles = params[:roles]
+      user.save
       render json: user, status: :accepted
     else
       render json: { errors: user.errors.messages }, status: :unprocessable_entity

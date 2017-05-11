@@ -13,6 +13,10 @@ class Api::InvitationsController < Devise::InvitationsController
       if is_flashing_format? && resource.invitation_sent_at
         set_flash_message :notice, :send_instructions, email: resource.email
       end
+      if resource.is_a?(User)
+        resource.roles = params[:user][:roles]
+        resource.save
+      end
       render json: resource, status: :created
     else
       render json: { errors: resource.errors.messages }, status: :unprocessable_entity
