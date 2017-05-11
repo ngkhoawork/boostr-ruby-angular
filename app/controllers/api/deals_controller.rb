@@ -253,6 +253,9 @@ class Api::DealsController < ApplicationController
     deal.destroy
 
     render nothing: true
+
+  rescue ActiveRecord::DeleteRestrictionError => e
+    render json: { errors: { delete: ['Please delete IO for this deal before deleting'] } }, status: :unprocessable_entity
   end
 
   def send_to_operative
