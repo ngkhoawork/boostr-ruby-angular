@@ -7,12 +7,15 @@
             $scope.stages = []
             $scope.columns = []
             $scope.allDeals = []
-            $scope.selectedType = 0
             $scope.dealTypes = [
                 {name: 'My Deals', param: ''}
                 {name: 'My Team\'s Deals', param: 'team'}
                 {name: 'All Deals', param: 'company'}
             ]
+
+            $scope.teamFilter = (value) ->
+                if value then DealsFilter.teamFilter = value else DealsFilter.teamFilter
+
             $scope.history =
                 set: (id, key, value) ->
                     if !this[id] then this[id] = {locked: false}
@@ -152,7 +155,7 @@
                     this.isOpen = false
 
             $scope.init = ->
-                $q.all({ deals: Deal.all({filter: $scope.selectedType.param}), stages: Stage.query().$promise }).then (data) ->
+                $q.all({ deals: Deal.all({filter: $scope.teamFilter().param}), stages: Stage.query().$promise }).then (data) ->
                     owners = []
                     advertisers = []
                     agencies = []
@@ -198,11 +201,14 @@
                     $scope.filter.apply()
 
             $scope.filterDeals = (filter) ->
-                $scope.selectedType = filter
+                $scope.teamFilter filter
                 $rootScope.dealFilter = $scope.dealFilter
                 $scope.init()
 
-            $scope.filterDeals($scope.dealTypes[0])
+            if $scope.teamFilter()
+                $scope.filterDeals $scope.teamFilter()
+            else
+                $scope.filterDeals $scope.dealTypes[0]
 
             $scope.openFilter = ->
                 $scope.isFilterOpen = !$scope.isFilterOpen

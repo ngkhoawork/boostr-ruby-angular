@@ -1,6 +1,7 @@
 @app.controller 'ContactsController',
     ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$sce', '$http', 'Contact', 'Field', 'Activity', 'ActivityType', 'Reminder',  'ContactsFilter'
     ( $scope,   $rootScope,   $modal,   $routeParams,   $location,   $sce,   $http,   Contact,   Field,   Activity,   ActivityType,   Reminder,    ContactsFilter) ->
+
             $scope.contacts = []
             $scope.feedName = 'Updates'
             $scope.page = 1
@@ -14,7 +15,11 @@
                 {name: 'My Team\'s Contacts', param: 'team'}
                 {name: 'All Contacts', param: ''}
             ]
-            $scope.selectedSwitch = $scope.switches[0]
+
+            $scope.teamFilter = (value) ->
+                if value then ContactsFilter.teamFilter = value else ContactsFilter.teamFilter
+
+            if !$scope.teamFilter() then $scope.teamFilter $scope.switches[0]
 
             $scope.filter =
                 workPlaces: []
@@ -39,8 +44,8 @@
                     filter.city = s.city if s.city
                     filter.country = s.country if s.country
                     if s.date.startDate && s.date.endDate
-                        filter.start_date = s.date.startDate.format('YYYY-MM-DD') + 'T00:00:00.000Z'
-                        filter.end_date = s.date.endDate.format('YYYY-MM-DD') + 'T23:59:59.999Z'
+                        filter.start_date = s.date.startDate.toDate()
+                        filter.end_date = s.date.endDate.toDate()
                     filter
                 apply: (reset) ->
                     $scope.getContacts()
@@ -126,7 +131,7 @@
                 $scope.isLoading = true
                 params = {
                     page: $scope.page,
-                    filter: $scope.selectedSwitch.param,
+                    filter: $scope.teamFilter().param,
                     per: 20
                 }
                 params = _.extend params, $scope.filter.get()
@@ -169,7 +174,7 @@
 
 
             $scope.switchContacts = (swch) ->
-                $scope.selectedSwitch = swch
+                $scope.teamFilter swch
                 $scope.init();
 
             $scope.$on 'updated_contacts', ->
