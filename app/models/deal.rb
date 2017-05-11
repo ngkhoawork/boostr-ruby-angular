@@ -70,7 +70,9 @@ class Deal < ActiveRecord::Base
 
   before_create do
     update_stage
-    self.closed_at = created_at unless stage.open?
+    if self.closed_at.nil?
+      self.closed_at = created_at unless stage.open?
+    end
   end
 
   after_create do
