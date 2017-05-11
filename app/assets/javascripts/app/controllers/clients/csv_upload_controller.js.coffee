@@ -1,6 +1,6 @@
-@app.controller "ClientsUploadController",
-['$scope', '$rootScope', '$modalInstance', '$timeout', 'Client', 'Upload', 'Transloadit', '$http',
-($scope, $rootScope, $modalInstance, $timeout, Client, Upload, Transloadit, $http) ->
+@app.controller "CsvUploadController",
+['$scope', '$rootScope', '$modalInstance', '$timeout', 'Client', 'Upload', 'Transloadit', '$http', 'api_url'
+($scope, $rootScope, $modalInstance, $timeout, Client, Upload, Transloadit, $http, api_url) ->
 
   $scope.progressPercentage = 0
   $scope.files = []
@@ -52,7 +52,7 @@
           folder = assemblyJson.results[':original'][0].id.slice(0, 2) + '/' + assemblyJson.results[':original'][0].id.slice(2) + '/'
           s3_file_path = folder + assemblyJson.results[':original'][0].url.substr(assemblyJson.results[':original'][0].url.lastIndexOf('/') + 1);
 
-          $http.post '/api/clients/',
+          $http.post api_url,
               file:
                 s3_file_path: s3_file_path
                 original_filename: assemblyJson.results[':original'][0].name

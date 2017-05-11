@@ -68,21 +68,14 @@ class Api::ClientsController < ApplicationController
 
   def create
     if params[:file].present?
-      require 'timeout'
-      begin
-        status = Timeout::timeout(120) {
-          CsvImportWorker.perform_async(
-            params[:file].tempfile.path,
-            'Client',
-            current_user.id,
-            params[:file].original_filename
-          )
+      CsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Client',
+        current_user.id,
+        params[:file][:original_filename]
+      )
 
-          render json: { message: "Your file is being processed. Please check status at IO Import Logs page in a few minutes (depending on the file size)" }, status: :ok
-        }
-      rescue Timeout::Error
-        return
-      end
+      render json: { message: "Your file is being processed. Please check status at IO Import Logs page in a few minutes (depending on the file size)" }, status: :ok
     else
       client = company.clients.new(client_params)
       client.created_by = current_user.id

@@ -6,9 +6,12 @@
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_upload.html'
       size: 'lg'
-      controller: 'ClientsUploadController'
+      controller: 'CsvUploadController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        api_url: ->
+          '/api/clients'
 
   $scope.showUploadContactModal = () ->
     $scope.modalInstance = $modal.open
