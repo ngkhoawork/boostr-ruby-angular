@@ -256,7 +256,7 @@ class Client < ActiveRecord::Base
     current_user = User.find current_user_id
     errors = []
     row_number = 0
-    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'account')
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'account', source: 'ui')
     import_log.set_file_source(file_path)
 
     CSV.parse(file, headers: true) do |row|

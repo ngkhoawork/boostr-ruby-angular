@@ -37,7 +37,7 @@ class Activity < ActiveRecord::Base
 
     row_number = 0
 
-    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'activity')
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'activity', source: 'ui')
     import_log.set_file_source(file_path)
 
     CSV.parse(file, headers: true) do |row|

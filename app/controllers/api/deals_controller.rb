@@ -226,7 +226,7 @@ class Api::DealsController < ApplicationController
       )
 
       render json: {
-        message: "Your file is being processed. Please check status at IO Import Logs page in a few minutes (depending on the file size)"
+        message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
       }, status: :ok
     else
       @deal = company.deals.new(deal_params)

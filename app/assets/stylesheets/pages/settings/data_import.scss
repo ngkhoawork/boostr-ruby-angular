@@ -1,4 +1,48 @@
 #data_import {
+  font-family: "Avenir Next", Arial, serif;
+  color: $main-font-color;
+
+  &.block {
+    margin: 40px auto;
+    width: 70%;
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-right: 20px;
+    }
+
+    .logs-filter {
+      ul.nav.nav-tabs {
+        display: inline-block;
+        li {
+          padding: 12px 5px;
+          margin: 0 10px;
+          font-weight: bold;
+          cursor: pointer;
+          a {
+            color: #2b3c49;
+            &:hover {
+              background-color: transparent;
+            }
+          }
+          &.active {
+            a {
+              color: $main-color;
+              border-bottom: 2px solid $main-color;
+            }
+          }
+        }
+      }
+    }
+
+    table {
+      table-layout: auto;
+      td {
+          font-size: 14px;
+      }
+    }
+  }
+
   li.import,
   li.export {
     list-style: none;

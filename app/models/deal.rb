@@ -846,7 +846,7 @@ class Deal < ActiveRecord::Base
     close_reason_field = current_user.company.fields.find_by_name("Close Reason")
     list_of_currencies = Currency.pluck(:curr_cd)
 
-    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal')
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal', source: 'ui')
     import_log.set_file_source(file_path)
 
     CSV.parse(file, headers: true) do |row|

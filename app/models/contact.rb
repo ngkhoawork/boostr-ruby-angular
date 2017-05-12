@@ -207,7 +207,7 @@ class Contact < ActiveRecord::Base
   def self.import(file, current_user_id, file_path)
     current_user = User.find current_user_id
 
-    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'contact')
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'contact', source: 'ui')
     import_log.set_file_source(file_path)
     
     row_number = 0

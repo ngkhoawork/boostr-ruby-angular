@@ -1,6 +1,12 @@
 @app.controller 'DataImportExportController',
-['$scope', '$modal', '$window',
-($scope, $modal, $window) ->
+['$scope', '$modal', '$window', 'CsvImportLogs'
+($scope, $modal, $window, CsvImportLogs) ->
+
+  $scope.logs = []
+
+  $scope.getLogs = () ->
+    CsvImportLogs.all(source: 'ui').then (logs) ->
+      $scope.logs = logs
 
   $scope.showUploadClientModal = () ->
     $scope.modalInstance = $modal.open
@@ -104,4 +110,15 @@
   $scope.exportDealProductMonhtlyBudget = ->
     $window.open('/api/deal_product_budgets.csv')
     return true
+
+  $scope.showBodyModal = (body) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/csv_logs_body.html'
+      size: 'lg'
+      controller: 'CsvLogsBodyController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        body: ->
+          body
 ]

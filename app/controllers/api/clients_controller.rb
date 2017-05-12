@@ -75,7 +75,7 @@ class Api::ClientsController < ApplicationController
         params[:file][:original_filename]
       )
 
-      render json: { message: "Your file is being processed. Please check status at IO Import Logs page in a few minutes (depending on the file size)" }, status: :ok
+      render json: { message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)" }, status: :ok
     else
       client = company.clients.new(client_params)
       client.created_by = current_user.id
