@@ -29,9 +29,6 @@ class Client < ActiveRecord::Base
   has_many :agency_contacts, through: :agencies, source: :contacts
   has_many :advertiser_contacts, -> { uniq }, through: :advertisers, source: :primary_contacts
 
-  has_many :agency_contacts_client_contacts, -> { uniq }, through: :agency_contacts, source: :client_contacts
-  has_many :advertiser_contacts_client_contacts, -> { uniq }, through: :advertiser_contacts, source: :client_contacts
-
   has_many :values, as: :subject
   has_many :activities, -> { order(happened_at: :desc) }
   has_many :agency_activities, -> { order(happened_at: :desc) }, class_name: 'Activity', foreign_key: 'agency_id'
