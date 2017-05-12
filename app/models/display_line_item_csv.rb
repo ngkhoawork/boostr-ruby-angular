@@ -25,7 +25,6 @@ class DisplayLineItemCsv
   end
 
   def perform
-    # byebug
     return self.errors.full_messages unless self.valid?
     update_external_io_number
     upsert_temp_io
@@ -104,7 +103,7 @@ class DisplayLineItemCsv
   end
 
   def io_number
-    io_name.gsub(/[^\d]/, '')
+    io_name.gsub(/.+_/, '')
   end
 
   def update_external_io_number

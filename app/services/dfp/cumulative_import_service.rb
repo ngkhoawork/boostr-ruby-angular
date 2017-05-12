@@ -9,6 +9,7 @@ module DFP
         goal_quantity,
         row[:columntotal_line_item_level_impressions].to_i
       ].min
+      price = row[:dimensionattributeline_item_cost_per_unit].to_i / 1_000_000
       DisplayLineItemCsv.new(
         io_name: row[:dimensionorder_name],
         io_advertiser: row[:dimensionadvertiser_name],
@@ -22,7 +23,7 @@ module DFP
         start_date: row[:dimensionattributeline_item_start_date_time],
         end_date: row[:dimensionattributeline_item_end_date_time],
         pricing_type: row[:dimensionattributeline_item_cost_type],
-        price: row[:dimensionattributeline_item_cost_per_unit].to_i,
+        price: price,
         quantity: goal_quantity,
         budget: adjustment_service.perform(row[:dimensionattributeline_item_non_cpd_booked_revenue]).to_i,
         quantity_delivered: quantity_delivered,
