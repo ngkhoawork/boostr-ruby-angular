@@ -16,6 +16,6 @@ class Api::PacingDashboardController < ApplicationController
   end
 
   def weeks_data_series
-    PacingDashboardService.new(company).perform
+    PacingDashboard::CalculationService.new(company).perform
   end
 end
