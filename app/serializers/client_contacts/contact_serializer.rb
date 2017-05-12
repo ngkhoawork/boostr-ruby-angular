@@ -3,7 +3,9 @@ class ClientContacts::ContactSerializer < ActiveModel::Serializer
     :id,
     :name,
     :address,
-    :job_level
+    :job_level,
+    :non_primary_client_contacts,
+    :position
   )
 
   def job_level

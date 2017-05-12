@@ -161,9 +161,20 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        render json: client.agency_contacts.for_primary_client(client.id).uniq
+        # render json: client.agency_contacts.for_primary_client(client.id).uniq
+        render json: client.agency_contacts_client_contacts.where(client_id: client.id, primary: true)
+          .preload(contact: [:non_primary_client_contacts, :address, :values])
+          .limit(limit)
+          .offset(offset),
+            each_serializer: ClientContacts::ClientContactsForClientSerializer,
+                             contact_options: company_job_level_options
       elsif client.client_type.name == "Advertiser"
-        render json: client.advertiser_contacts.for_client(client.id).uniq
+        render json: client.advertiser_contacts_client_contacts.where(client_id: client.id, primary: true)
+          .preload(contact: [:non_primary_client_contacts, :address, :values])
+          .limit(limit)
+          .offset(offset),
+            each_serializer: ClientContacts::ClientContactsForClientSerializer,
+                             contact_options: company_job_level_options
       end
     else
       render json: []
@@ -303,5 +314,9 @@ class Api::ClientsController < ApplicationController
 
   def activity_clients
     @_activity_clients ||= company.clients.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
+  end
+
+  def company_job_level_options
+    current_user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level').options.select(:id, :field_id, :name)
   end
 end
