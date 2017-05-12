@@ -499,6 +499,22 @@
           else
             return item
 
+  $scope.updateClientContactStatus = (clientContact, bool) ->
+    ClientContact.update_status(
+      id: clientContact.id
+      client_id: clientContact.client_id
+      is_active: bool
+    ).$promise.then (resp) ->
+      clientContact.is_active = resp.is_active
+
+  $scope.updateClientConnection = (clientConnection, newValues) ->
+    ClientConnection.update(
+        id: clientConnection.id
+        client_connection: newValues
+    ).then (resp) ->
+      _.extend clientConnection, resp
+
+
   $scope.showLinkExistingPerson = ->
     $scope.showContactList = true
     Contact.all (contacts) ->

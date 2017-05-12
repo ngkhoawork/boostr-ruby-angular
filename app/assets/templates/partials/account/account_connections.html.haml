@@ -24,9 +24,31 @@
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditAccountConnectionModal(client_connection)'}
                     %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnection(client_connection)'}
                 %td
-                    {{ client_connection.primary ? 'Yes' : 'No' }}
+                    .dropdown
+                        %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                            %span.editable
+                                {{ client_connection.primary ? 'Yes' : 'No' }}
+                            %span.caret
+                        %ul.dropdown-menu
+                            %li{'ng-class': '{active: client_connection.primary == true}'}
+                                %a{'href': '', 'ng-click': 'updateClientConnection(client_connection, {primary: true})'}
+                                    %span.text Yes
+                            %li{'ng-class': '{active: client_connection.primary == false}'}
+                                %a{'href': '', 'ng-click': 'updateClientConnection(client_connection, {primary: false})'}
+                                    %span.text No
                 %td
-                    {{ client_connection.active ? 'Active' : 'Inactive' }}
+                    .dropdown
+                        %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                            %span.editable
+                                {{ client_connection.active ? 'Active' : 'Inactive' }}
+                            %span.caret
+                        %ul.dropdown-menu
+                            %li{'ng-class': '{active: client_connection.active == true}'}
+                                %a{'href': '', 'ng-click': 'updateClientConnection(client_connection, {active: true})'}
+                                    %span.text Active
+                            %li{'ng-class': '{active: client_connection.active == false}'}
+                                %a{'href': '', 'ng-click': 'updateClientConnection(client_connection, {active: false})'}
+                                    %span.text Inactive
                 %td{ 'ng-if': 'currentClient.client_type.option.name == "Agency"' }
                     {{ client_connection.advertiser.address.city }}
                 %td.left{ 'ng-if': 'currentClient.client_type.option.name == "Advertiser"' }
