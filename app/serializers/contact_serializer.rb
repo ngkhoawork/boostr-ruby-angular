@@ -59,7 +59,7 @@ class ContactSerializer < ActiveModel::Serializer
       end
       option = @options[:contact_options].find do |el|
         el.id == value.option_id
-      end
+      end if value
     end
 
     if option

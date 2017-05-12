@@ -244,6 +244,24 @@ class Contact < ActiveRecord::Base
     }
   end
 
+  def job_level(company_fields)
+    if self.values.present? && company_fields.present?
+      field_id = company_fields.first.field_id
+      value = self.values.find do |el|
+        el.field_id == field_id
+      end
+      option = company_fields.find do |el|
+        el.id == value.option_id
+      end if value
+    end
+
+    if option
+      option.name
+    else
+      nil
+    end
+  end
+
   private
 
   def email_is_present?
