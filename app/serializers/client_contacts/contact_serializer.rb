@@ -5,6 +5,7 @@ class ClientContacts::ContactSerializer < ActiveModel::Serializer
     :address,
     :job_level,
     :non_primary_client_contacts,
+    :primary_client_json,
     :position
   )
 
