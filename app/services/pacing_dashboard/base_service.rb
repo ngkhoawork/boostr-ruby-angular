@@ -2,16 +2,33 @@ class PacingDashboard::BaseService
 	FIRST_QUARTER_NUMBER = 1
 	LAST_QUARTER_NUMBER = 4
 
-	def initialize(company)
-		@company = company
+	def initialize(company, params = nil)
+    @company = company
+    @params = params
+    @time_period_id = params[:time_period_id]
+    @product_id = params[:product_id]
+    @team_id = params[:team_id]
+    @seller_id = params[:seller_id]
+    @deals = deals
 	end
 
 	private
 
-	attr_reader :company
+	attr_reader :company, :deals, :params, :time_period_id, :product_id, :team_id, :seller_id
+
+  def deals
+    company.deals
+           .by_product_id(product_id)
+           .by_team_id(team_id)
+           .by_seller_id(seller_id)
+  end
 
 	def current_quarter
-		@_current_quarter ||= company.time_periods.current_quarter
+		@_current_quarter ||= if time_period_id.present?
+                            company.time_periods.find(time_period_id)
+                          else
+                            company.time_periods.current_quarter
+                          end
 	end
 
 	def previous_quarter

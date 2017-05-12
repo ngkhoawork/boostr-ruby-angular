@@ -106,6 +106,11 @@ class Deal < ActiveRecord::Base
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
   scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
+  scope :by_product_id, -> (product_id) { joins(:products).where(products: { id: product_id } ) if product_id.present? }
+  scope :by_team_id, -> (team_id) { joins(deal_members: :user).where(users: { team_id: team_id }) if team_id.present? }
+  scope :by_seller_id, -> (seller_id) do
+    joins(:deal_members).where(deal_members: { user_id: seller_id }) if seller_id.present?
+  end
 
   def integrate_with_operative
     if stage_id_changed? && operative_integration_allowed?
@@ -1326,8 +1331,8 @@ class Deal < ActiveRecord::Base
 
   def self.grouped_count_by_week(start_date, end_date)
     where(created_at: start_date..end_date)
-    .group("date_trunc('day', created_at)")
-    .order('date_trunc_day_created_at').count
+    .group("date_trunc('day', deals.created_at)")
+    .order('date_trunc_day_deals_created_at').count
   end
 
   def self.grouped_sum_budget_by_week(start_date, end_date)

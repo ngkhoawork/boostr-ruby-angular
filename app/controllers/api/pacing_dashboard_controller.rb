@@ -20,7 +20,7 @@ class Api::PacingDashboardController < ApplicationController
   end
 
   def pipeline_and_revenue_series
-    PacingDashboard::PipelineAndRevenueCalculationService.new(company).perform
+    PacingDashboard::PipelineAndRevenueCalculationService.new(company, params).perform
 	end
 
 	def activity_pacing_serializer
@@ -28,6 +28,6 @@ class Api::PacingDashboardController < ApplicationController
 	end
 
 	def activity_pacing_series
-		PacingDashboard::ActivityPacingCalculationService.new(company).perform
+		PacingDashboard::ActivityPacingCalculationService.new(company, params).perform
 	end
 end

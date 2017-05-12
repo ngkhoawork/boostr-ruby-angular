@@ -12,7 +12,7 @@ module PacingDashboard
 
 		def won_deals_for_current_quarter
 			@_won_deals_for_current_quarter ||=
-				company.deals.grouped_sum_budget_by_week(current_quarter.start_date, current_quarter.end_date)
+				deals.grouped_sum_budget_by_week(current_quarter.start_date, current_quarter.end_date)
 		end
 
 		def won_current_quarter_series
@@ -27,7 +27,7 @@ module PacingDashboard
 
 		def won_deals_for_previous_quarter
 			@_won_deals_for_previous_quarter ||=
-				company.deals.grouped_sum_budget_by_week(previous_quarter.start_date, previous_quarter.end_date)
+				deals.grouped_sum_budget_by_week(previous_quarter.start_date, previous_quarter.end_date)
 		end
 
 		def won_previous_quarter_series
@@ -44,7 +44,7 @@ module PacingDashboard
 
 		def won_deals_for_previous_year_quarter
 			@_won_deals_for_previous_year_quarter ||=
-				company.deals.grouped_sum_budget_by_week(previous_year_quarter.start_date, previous_year_quarter.end_date)
+				deals.grouped_sum_budget_by_week(previous_year_quarter.start_date, previous_year_quarter.end_date)
 		end
 
 		def won_previous_year_quarter_series
