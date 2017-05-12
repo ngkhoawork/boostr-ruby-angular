@@ -11,6 +11,7 @@ module DFP
       ].min
       price = row[:dimensionattributeline_item_cost_per_unit].to_i / 1_000_000
       rate = row[:columnvideo_viewership_completion_rate].to_f
+      non_cpd_booked_revenue = row[:dimensionattributeline_item_non_cpd_booked_revenue].to_i / 1_000_000
 
       line_item_params = {
         io_name: row[:dimensionorder_name],
@@ -27,7 +28,7 @@ module DFP
         pricing_type: row[:dimensionattributeline_item_cost_type],
         price: price,
         quantity: goal_quantity,
-        budget: adjustment_service.perform(row[:dimensionattributeline_item_non_cpd_booked_revenue]).to_i,
+        budget: adjustment_service.perform(non_cpd_booked_revenue),
         quantity_delivered: quantity_delivered,
         clicks: row[:columntotal_line_item_level_clicks],
         ctr: row[:columntotal_line_item_level_ctr],
