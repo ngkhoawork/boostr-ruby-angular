@@ -63,3 +63,5 @@ json.activities deal.activities do |activity|
   json.client activity.client
   json.contacts activity.contacts
 end
+
+json.closed_reason_text deal.closed_reason_text
