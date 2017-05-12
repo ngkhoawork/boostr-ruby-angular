@@ -20,24 +20,59 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
     subject.perform
   end
 
-  it 'passes rows to DisplayLineItemCsv' do
+  it 'maps CPM product to DisplayLineItemCsv' do
     allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_csv)
 
     expect(DisplayLineItemCsv).to receive(:new).with(
-      external_io_number: '605084194',
-      product_name: 'Hershey test - In-Feed - :30 - iOS',
+      io_name: 'ioname',
+      io_advertiser: 'Advertiser name',
+      io_agency: 'Agency name',
+      io_start_date: "2016-10-31T00:00:00-07:00",
+      io_end_date: "2016-11-27T23:59:00-08:00",
       line_number: '1170022354',
       ad_server: 'DFP',
       start_date: '2016-10-31T00:00:00-07:00',
       end_date: '2016-11-27T23:59:00-08:00',
+      external_io_number: 605084194,
+      product_name: 'Hershey test - In-Feed - :30 - iOS',
       pricing_type: 'CPM',
-      price: '20000000',
+      price: 20000000,
       quantity: 63750,
       budget: 1275000000,
       quantity_delivered: 63750,
       clicks: '977',
       ctr: '0.0115',
       budget_delivered: 38237.25,
+      company_id: company.id
+    ).and_return(line_item_csv)
+    expect(line_item_csv).to receive(:valid?)
+    expect(line_item_csv).to receive(:perform)
+    subject.perform
+  end
+
+  it 'maps CPD product to DisplayLineItemCsv' do
+    allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_csv_cpd)
+
+    expect(DisplayLineItemCsv).to receive(:new).with(
+      io_name: 'ioname',
+      io_advertiser: 'Advertiser name',
+      io_agency: 'Agency name',
+      io_start_date: "2016-10-31T00:00:00-07:00",
+      io_end_date: "2016-11-27T23:59:00-08:00",
+      external_io_number: 605084194,
+      product_name: 'Hershey test - In-Feed - :30 - iOS',
+      line_number: '1170022354',
+      ad_server: 'DFP',
+      start_date: '2016-10-31T00:00:00-07:00',
+      end_date: '2016-11-27T23:59:00-08:00',
+      pricing_type: 'CPD',
+      price: 20000000,
+      quantity: 85001,
+      budget: 0.5998,
+      quantity_delivered: 85001,
+      clicks: '977',
+      ctr: '0.0115',
+      budget_delivered: 0.5998,
       company_id: company.id
     ).and_return(line_item_csv)
     expect(line_item_csv).to receive(:valid?)
@@ -108,6 +143,11 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
   def report_csv(opts = {})
     @_report_csv ||= generate_csv(
       build :dfp_report_cummulative_csv_data,
+        dimensionorder_name: 'ioname',
+        dimensionadvertiser_name: 'Advertiser name',
+        dimensionattributeorder_agency: 'Agency name',
+        dimensionattributeorder_start_date_time: "2016-10-31T00:00:00-07:00",
+        dimensionattributeorder_end_date_time: "2016-11-27T23:59:00-08:00",
         dimensionorder_id: "605084194",
         dimensionline_item_name: "Hershey test - In-Feed - :30 - iOS",
         dimensionline_item_id: "1170022354",
@@ -123,6 +163,31 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
         columntotal_line_item_level_all_revenue: "1700020000",
         columnvideo_viewership_completion_rate: "0.5998"
     )
+  end
+
+  def report_csv_cpd(opts = {})
+    @_report_csv ||= generate_csv(
+      build :dfp_report_cummulative_csv_data,
+        dimensionorder_name: 'ioname',
+        dimensionadvertiser_name: 'Advertiser name',
+        dimensionattributeorder_agency: 'Agency name',
+        dimensionattributeorder_start_date_time: "2016-10-31T00:00:00-07:00",
+        dimensionattributeorder_end_date_time: "2016-11-27T23:59:00-08:00",
+        dimensionorder_id: "605084194",
+        dimensionline_item_name: "Hershey test - In-Feed - :30 - iOS",
+        dimensionline_item_id: "1170022354",
+        dimensionattributeline_item_start_date_time: "2016-10-31T00:00:00-07:00",
+        dimensionattributeline_item_end_date_time: "2016-11-27T23:59:00-08:00",
+        dimensionattributeline_item_cost_type: "CPD",
+        dimensionattributeline_item_cost_per_unit: "20000000",
+        dimensionattributeline_item_goal_quantity: "85000",
+        dimensionattributeline_item_non_cpd_booked_revenue: "1700000000",
+        columntotal_line_item_level_impressions: "85001",
+        columntotal_line_item_level_clicks: "977",
+        columntotal_line_item_level_ctr: "0.0115",
+        columntotal_line_item_level_all_revenue: "1700020000",
+        columnvideo_viewership_completion_rate: "0.5998"
+    )    
   end
 
   def multiline_report_csv
