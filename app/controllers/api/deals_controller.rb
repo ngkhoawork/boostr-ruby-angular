@@ -10,7 +10,11 @@ class Api::DealsController < ApplicationController
           render json: activity_deals
         elsif params[:time_period_id].present?
           if valid_time_period?
-            render json: forecast_deals
+            if params[:product_id].present?
+              render json: product_forecast_deals
+            else
+              render json: forecast_deals
+            end
           else
             render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
           end
@@ -407,6 +411,85 @@ class Api::DealsController < ApplicationController
     response_deals
   end
 
+  def product_forecast_deals
+    response_deals = []
+    all_users = []
+    if params[:user_id].present? && params[:user_id] != 'all'
+      response_deals = user.deals
+      all_users << user.id
+    elsif params[:team_id].present? && params[:team_id] == 'all'
+      response_deals = company.deals
+      all_users = company.users.pluck(:id)
+    else
+      response_deals = all_team_deals
+      selected_team = Team.find(params[:team_id])
+      all_users = selected_team.all_members.map(&:id)
+      all_users += selected_team.all_leaders.map(&:id)
+    end
+    response_deals = response_deals
+     .for_time_period(time_period.start_date, time_period.end_date)
+     .open_partial
+     .as_json({override: true, options: {
+                      only: [
+                              :id,
+                              :name,
+                              :stage_id,
+                              :budget,
+                              :budget_loc,
+                              :curr_cd,
+                              :next_steps,
+                              :open,
+                              :start_date,
+                              :end_date
+                      ],
+                      include: {
+
+                              stage: {
+                                      only: [:id, :probability, :open, :active]
+                              },
+                              deal_members: {
+                                      only: [:id, :share, :user_id],
+                                      methods: [:name]
+                              },
+                              advertiser: {
+                                      only: [:id, :name]
+                              }
+                      }
+              }}
+     )
+
+    year = time_period.start_date.year
+    data = []
+    response_deals.each do |deal|
+      range = deal['start_date'] .. deal['end_date']
+
+      deal_object = Deal.find(deal['id'])
+
+      product_deals = {}
+      deal_object.deal_products.for_product_ids(product_ids).each do |deal_product|
+        item_product_id = deal_product.product_id
+        deal_product.deal_product_budgets.for_time_period(time_period.start_date, time_period.end_date).each do |deal_product_budget|
+          if product_deals[item_product_id].nil?
+            product_deals[item_product_id] = Marshal.load(Marshal.dump(deal))
+            product_deals[item_product_id][:product_id] = item_product_id
+            product_deals[item_product_id][:product] = deal_product.product
+            product_deals[item_product_id][:in_period_amt] = 0
+          end
+          if deal_product_budget.deal_product.open == true
+            from = [time_period.start_date, deal_product_budget.start_date].max
+            to = [time_period.end_date, deal_product_budget.end_date].min
+            num_days = (to.to_date - from.to_date) + 1
+            product_deals[item_product_id][:in_period_amt] += deal_product_budget.daily_budget.to_f * num_days
+          end
+        end
+      end
+
+      data = data + product_deals.values
+    end
+
+    data
+  end
+
   def product_filter
     if params[:product_id].presence && params[:product_id] != 'all'
       params[:product_id].to_i
@@ -609,6 +692,14 @@ class Api::DealsController < ApplicationController
       company.teams.where(leader: current_user).first
     else
       current_user.team
+    end
+  end
+
+  def product_ids
+    @product_ids ||= if params[:product_id].present? && params[:product_id] != 'all'
+      [params[:product_id]]
+    else
+      nil
     end
   end
 

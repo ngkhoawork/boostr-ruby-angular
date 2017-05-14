@@ -169,6 +169,10 @@ class ProductForecastTeam
     @unweighted_pipeline_by_stage
   end
 
+  def unweighted_pipeline
+    (teams.sum(&:unweighted_pipeline) + members.sum(&:unweighted_pipeline) + (leader.try(:unweighted_pipeline) || 0)).to_f
+  end
+
   def revenue
     teams.sum(&:revenue) + members.sum(&:revenue) + (leader.try(:revenue) || 0)
   end

@@ -88,6 +88,10 @@ class ProductForecast
     teams.sum(&:weighted_pipeline)
   end
 
+  def unweighted_pipeline
+    teams.sum(&:unweighted_pipeline)
+  end
+
   def revenue
     teams.sum(&:revenue)
   end

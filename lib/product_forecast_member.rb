@@ -160,6 +160,28 @@ class ProductForecastMember
     @unweighted_pipeline_by_stage
   end
 
+  def unweighted_pipeline
+    return @unweighted_pipeline if defined?(@unweighted_pipeline)
+
+    deal_shares = {}
+    member.deal_members.each do |mem|
+      deal_shares[mem.deal_id] = mem.share
+    end
+
+    @unweighted_pipeline = open_deals.sum do |deal|
+      deal_total = 0
+      deal_products = deal.deal_products.open
+      deal_products = deal_products.for_product_id(product.id) if product.present?
+      deal_products.each do |deal_product|
+        deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+          deal_total += deal_product_budget.daily_budget * number_of_days(deal_product_budget) * (deal_shares[deal.id]/100.0)
+        end
+      end
+
+      deal_total
+    end
+  end
+
   def monthly_weighted_pipeline_by_stage
     return @weighted_monthly_pipeline_by_stage if defined?(@weighted_monthly_pipeline_by_stage)
 

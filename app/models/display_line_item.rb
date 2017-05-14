@@ -55,6 +55,7 @@ class DisplayLineItem < ActiveRecord::Base
 
   scope :for_time_period, -> (start_date, end_date) { where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', end_date, start_date) }
   scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
+  scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
   
   def update_io_budget
     if io.present?

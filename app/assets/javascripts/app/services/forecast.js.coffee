@@ -5,5 +5,6 @@
     forecast_detail:
       method: 'GET'
       url: '/api/forecasts/detail'
+      isArray: true
   return resource
 ]

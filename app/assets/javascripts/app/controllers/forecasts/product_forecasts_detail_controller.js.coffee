@@ -134,32 +134,16 @@
                 fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
             fc.stages.sort (s1, s2) -> s1.probability - s2.probability
 
-        addDetailAmounts = (data, type) ->
-            qs = ['Q1', 'Q2', 'Q3', 'Q4']
-            ms = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-            suffix = if type == 'revenues' then 's' else if type == 'deals' then '_amounts'
-            quarters = []
-            months = []
-            for q, i in qs
-                for item in data
-                    if item['quarter' + suffix][i] != null
-                        quarters.push q
-                        break
-            for m, i in ms
-                for item in data
-                    if item['month' + suffix][i] != null
-                        months.push m
-                        break
-            data.detail_amounts =
-                quarters: quarters
-                months: months
-
         parseBudget = (data) ->
             data = _.map data, (item) ->
                 item.budget = parseInt item.budget if item.budget
                 item.budget_loc = parseInt item.budget_loc if item.budget_loc
                 item
-
+        $scope.getStageId = (data, probability) ->
+            stage  = _.filter data.stages, (item) ->
+                if item.probability == probability
+                    return true
+            return stage[0].id
         getData = ->
             if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
             query =
@@ -168,18 +152,14 @@
                 time_period_id: $scope.filter.timePeriod.id
                 product_id: $scope.filter.product.id
             Forecast.forecast_detail(query).$promise.then (data) ->
-                handleForecast data
-                $scope.forecast = data.forecast
-                $scope.quarters = data.quarters
+                $scope.forecast_data = data
             query.team_id = query.id
             delete query.id
             Revenue.forecast_detail(query).$promise.then (data) ->
                 parseBudget data
-                addDetailAmounts data, 'revenues'
                 $scope.revenues = data
             Deal.forecast_detail(query).then (data) ->
                 parseBudget data
-                addDetailAmounts data, 'deals'
                 $scope.deals = data
 
     ]

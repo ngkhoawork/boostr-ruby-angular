@@ -149,7 +149,7 @@ class Io < ActiveRecord::Base
       end
     end
 
-    display_line_item_rows = io.display_line_items
+    display_line_item_rows = self.display_line_items
     display_line_item_rows = display_line_item_rows.for_product_id(product.id) if product.present?
     display_line_item_rows.each do |display_line_item|
       in_budget_days = 0
@@ -242,6 +242,53 @@ class Io < ActiveRecord::Base
     end
 
     display_line_items.each do |display_line_item|
+      display_line_item_budget_overlapped_days = 0
+      display_line_item_budget_with_io_member_overlapped_days = 0
+      budget_in_period_for_display_line_item_budget = 0
+      budget_in_period_for_display_line_item_budget_with_share = 0
+
+      display_line_item.display_line_item_budgets.each do |display_line_item_budget|
+        if (start_date <= display_line_item_budget.end_date && end_date >= display_line_item_budget.start_date)
+          in_period_days = [[end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
+          in_period_effective_days = [[end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
+
+          display_line_item_budget_overlapped_days += in_period_days
+          display_line_item_budget_with_io_member_overlapped_days += in_period_effective_days
+
+          budget_in_period_for_display_line_item_budget += display_line_item_budget.daily_budget * in_period_days
+          budget_in_period_for_display_line_item_budget_with_share += display_line_item_budget.daily_budget * in_period_effective_days / 100 * share
+        end
+      end
+
+      if (start_date <= display_line_item.end_date && end_date >= display_line_item.start_date)
+        in_period_days = [[self.end_date, end_date, display_line_item.end_date].min - [self.start_date, start_date, display_line_item.start_date].max + 1, 0].max
+        in_period_effective_days = [[self.end_date, end_date, display_line_item.end_date, io_member.to_date].min - [self.start_date, start_date, display_line_item.start_date, io_member.from_date].max + 1, 0].max
+        sum_period_budget += budget_in_period_for_display_line_item_budget + display_line_item.ave_run_rate * (in_period_days - display_line_item_budget_overlapped_days)
+        split_period_budget += budget_in_period_for_display_line_item_budget_with_share + display_line_item.ave_run_rate * (in_period_effective_days - display_line_item_budget_with_io_member_overlapped_days) * share / 100
+      end
+    end
+
+    return sum_period_budget, split_period_budget
+  end
+
+  def for_product_forecast_page(product, start_date, end_date, user = nil)
+    sum_period_budget = 0
+    split_period_budget = 0
+    share = user.present? ? io_members.find_by(user_id: user.id).share : io_members.pluck(:share).sum
+    user ||= users.first
+    io_member = io_members.find_by(user_id: user.id)
+    content_fees.for_product_id(product.id).each do |content_fee|
+      content_fee.content_fee_product_budgets.each do |content_fee_product_budget|
+        if (start_date <= content_fee_product_budget.end_date && end_date >= content_fee_product_budget.start_date)
+          in_period_days = [[self.end_date, end_date, content_fee_product_budget.end_date].min - [self.start_date, start_date, content_fee_product_budget.start_date].max + 1, 0].max
+          in_period_effective_days = [[self.end_date, end_date, content_fee_product_budget.end_date, io_member.to_date].min - [self.start_date, start_date, content_fee_product_budget.start_date, io_member.from_date].max + 1, 0].max
+          sum_period_budget += content_fee_product_budget.corrected_daily_budget(self.start_date, self.end_date) * in_period_days
+          split_period_budget += content_fee_product_budget.corrected_daily_budget(self.start_date, self.end_date) * in_period_effective_days * share / 100
+        end
+      end
+    end
+
+    display_line_items.for_product_id(product.id).each do |display_line_item|
       display_line_item_budget_overlapped_days = 0
       display_line_item_budget_with_io_member_overlapped_days = 0
       budget_in_period_for_display_line_item_budget = 0
