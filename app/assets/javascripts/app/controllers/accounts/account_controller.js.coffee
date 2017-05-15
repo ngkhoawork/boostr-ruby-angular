@@ -62,17 +62,12 @@
 
   $scope.getClientConnectedClientContacts = ->
     Client.connected_client_contacts({id: $scope.currentClient.id}).$promise.then (connected_client_contacts) ->
-      if ($scope.currentClient.client_type.option.name == 'Advertiser')
-        $scope.connected_client_contacts = connected_client_contacts
-      else
-        $scope.connected_client_contacts = []
-        _.each connected_client_contacts, (connected_client_contact) ->
-          object = angular.copy(connected_client_contact)
-          _.each connected_client_contact.non_primary_client_contacts, (primary_client_contact) ->
-            new_object = angular.copy(object)
-            new_object.non_primary_client_contact = primary_client_contact
-            $scope.connected_client_contacts.push(new_object)
-
+      $scope.connected_client_contacts = _.map connected_client_contacts, (clientContact) ->
+        if ($scope.currentClient.client_type.option.name == 'Advertiser')
+          clientContact._clientContacts = [clientContact.contact.primary_client_contact]
+        else
+          clientContact._clientContacts = clientContact.contact.non_primary_client_contacts
+        clientContact
 
   $scope.getChildClients = ->
     Client.child_clients({id: $scope.currentClient.id}).$promise.then (child_clients) ->
