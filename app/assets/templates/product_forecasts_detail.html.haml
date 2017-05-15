@@ -57,53 +57,34 @@
               %thead
                 %tr
                   %th
-                  %th{colspan: "7"}
+                  %th{colspan: "{{stages.length}}"}
                     Pipeline (W)
+                  %th
                   %th{colspan: "2"}
                     Total Forecast Amount
                 %tr
                   %th
                     Product
-                  %th
-                    10%
-                  %th
-                    25%
-                  %th
-                    50%
-                  %th
-                    75%
-                  %th
-                    90%
-                  %th
-                    100%
-                  %th
+                  %th.right{'ng-repeat': 'stage in stages'}
+                    {{stage.probability}}%
+                  %th.right
                     Revenue
-                  %th
+                  %th.right
                     Unweighted
-                  %th
+                  %th.right
                     Weighted
               %tbody
                 %tr{'ng-repeat': 'product_forecast in forecast_data'}
                   %td
                     {{product_forecast.product.name}}
-                  %td
-                    {{product_forecast.unweighted_pipeline_by_stage[getStageId(product_forecast, 10)] | currency : '$' : 2}}
-                  %td
-                    {{product_forecast.unweighted_pipeline_by_stage[getStageId(product_forecast, 25)] | currency : '$' : 2}}
-                  %td
-                    {{product_forecast.unweighted_pipeline_by_stage[getStageId(product_forecast, 50)] | currency : '$' : 2}}
-                  %td
-                    {{product_forecast.unweighted_pipeline_by_stage[getStageId(product_forecast, 75)] | currency : '$' : 2}}
-                  %td
-                    {{product_forecast.unweighted_pipeline_by_stage[getStageId(product_forecast, 90)] | currency : '$' : 2}}
-                  %td
-                    {{product_forecast.unweighted_pipeline_by_stage[getStageId(product_forecast, 100)] | currency : '$' : 2}}
-                  %td
-                    {{product_forecast.revenue | currency : '$' : 2}}
-                  %td
-                    {{(product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 2}}
-                  %td
-                    {{(product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 2}}
+                  %td.right{'ng-repeat': 'stage in stages'}
+                    {{(product_forecast.unweighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
+                  %td.right
+                    {{product_forecast.revenue | currency : '$' : 0}}
+                  %td.right
+                    {{(product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
+                  %td.right
+                    {{(product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
       .row
         .col-xs-12
           .block
@@ -121,7 +102,7 @@
                       %span.clickable{'ng-click': 'sortRevenues.by("advertiser.name")'}
                         Advertiser
                         %i{'ng-show': 'sortRevenues.field == "advertiser.name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
-                    %th
+                    %th.right
                       %span.clickable{'ng-click': 'sortRevenues.by("budget")'}
                         Total Budget
                         %i{'ng-show': 'sortRevenues.field == "budget"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
@@ -129,7 +110,7 @@
                       %span.clickable{'ng-click': 'sortRevenues.by("advertiser.name")'}
                         Product
                         %i{'ng-show': 'sortRevenues.field == "product.name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
-                    %th
+                    %th.right
                       %span.clickable{'ng-click': 'sortRevenues.by("in_period_split_amt")'}
                         Product Budget
                         %i{'ng-show': 'sortRevenues.field == "in_period_amt"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
@@ -148,9 +129,9 @@
                     %td
                       %a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}'} {{revenue.name}}
                     %td {{revenue.advertiser.name}}
-                    %td {{revenue.budget | currency : '$' : 0}}
+                    %td.right {{revenue.budget | currency : '$' : 0}}
                     %td {{revenue.product.name}}
-                    %td {{revenue.in_period_amt | currency : '$' : 0}}
+                    %td.right {{revenue.in_period_amt | currency : '$' : 0}}
                     %td {{revenue.start_date | date : 'MM/dd/yyyy'}}
                     %td {{revenue.end_date | date : 'MM/dd/yyyy'}}
                     %td
@@ -181,7 +162,7 @@
                       %span.clickable{'ng-click': 'sortDeals.by("stage.name")'}
                         Stage
                         %i{'ng-show': 'sortDeals.field == "stage.name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
-                    %th
+                    %th.right
                       %span.clickable{'ng-click': 'sortDeals.by("budget")'}
                         Total Budget
                         %i{'ng-show': 'sortDeals.field == "budget"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
@@ -189,7 +170,7 @@
                       %span.clickable{'ng-click': 'sortDeals.by("product.name")'}
                         Product
                         %i{'ng-show': 'sortDeals.field == "product.name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
-                    %th
+                    %th.right
                       %span.clickable{'ng-click': 'sortDeals.by("in_period_amt")'}
                         Product Budget
                         %i{'ng-show': 'sortDeals.field == "in_period_amt"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
@@ -210,9 +191,9 @@
                     %td {{deal.advertiser.name}}
                     %td {{deal.stage.probability}}%
                     %td {{deal.stage.name}}
-                    %td {{deal.budget | currency : '$' : 0}}
+                    %td.right {{deal.budget | currency : '$' : 0}}
                     %td {{deal.product.name}}
-                    %td {{deal.in_period_amt | currency : '$' : 0}}
+                    %td.right {{deal.in_period_amt | currency : '$' : 0}}
                     %td {{deal.start_date | date : 'MM/dd/yyyy'}}
                     %td {{deal.end_date | date : 'MM/dd/yyyy'}}
                     %td

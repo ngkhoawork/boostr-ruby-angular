@@ -153,6 +153,7 @@ class Api::RevenueController < ApplicationController
     if params[:team_id] == 'all' && params[:user_id] == 'all'
       data = []
       all_users = current_user.company.users
+      # ios = all_users.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq.as_json
       ios = current_user.company.ios
                     .for_time_period(start_date, end_date)
                     .as_json

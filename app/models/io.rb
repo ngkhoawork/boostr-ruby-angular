@@ -128,16 +128,17 @@ class Io < ActiveRecord::Base
       in_budget_days = 0
       in_budget_total = 0
       display_line_item.display_line_item_budgets.each do |display_line_item_budget|
-        in_days = effective_days(start_date, end_date, io_member, [display_line_item, display_line_item_budget])
+        in_days = effective_days(start_date, end_date, io_member, [self, display_line_item, display_line_item_budget])
         in_budget_days += in_days
         in_budget_total += display_line_item_budget.daily_budget * in_days * (share/100.0)
       end
-      total_budget += in_budget_total + display_line_item.ave_run_rate * (effective_days(start_date, end_date, io_member, [display_line_item]) - in_budget_days) * (share/100.0)
+      total_budget += in_budget_total + display_line_item.ave_run_rate * (effective_days(start_date, end_date, io_member, [self, display_line_item]) - in_budget_days) * (share/100.0)
     end
     total_budget
   end
 
   def effective_product_revenue_budget(member, product, start_date, end_date)
+    flag = true
     io_member = self.io_members.find_by(user_id: member.id)
     share = io_member.share
     total_budget = 0
@@ -155,11 +156,12 @@ class Io < ActiveRecord::Base
       in_budget_days = 0
       in_budget_total = 0
       display_line_item.display_line_item_budgets.each do |display_line_item_budget|
-        in_days = effective_days(start_date, end_date, io_member, [display_line_item, display_line_item_budget])
+        
+        in_days = effective_days(start_date, end_date, io_member, [self, display_line_item, display_line_item_budget])
         in_budget_days += in_days
         in_budget_total += display_line_item_budget.daily_budget * in_days * (share/100.0)
       end
-      total_budget += in_budget_total + display_line_item.ave_run_rate * (effective_days(start_date, end_date, io_member, [display_line_item]) - in_budget_days) * (share/100.0)
+      total_budget += in_budget_total + display_line_item.ave_run_rate * (effective_days(start_date, end_date, io_member, [display_line_item, self]) - in_budget_days) * (share/100.0)
     end
     total_budget
   end
@@ -249,8 +251,8 @@ class Io < ActiveRecord::Base
 
       display_line_item.display_line_item_budgets.each do |display_line_item_budget|
         if (start_date <= display_line_item_budget.end_date && end_date >= display_line_item_budget.start_date)
-          in_period_days = [[end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
-          in_period_effective_days = [[end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
+          in_period_days = [[self.end_date, end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [self.start_date, start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
+          in_period_effective_days = [[self.end_date, end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [self.start_date, start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
 
           display_line_item_budget_overlapped_days += in_period_days
           display_line_item_budget_with_io_member_overlapped_days += in_period_effective_days
@@ -272,6 +274,7 @@ class Io < ActiveRecord::Base
   end
 
   def for_product_forecast_page(product, start_date, end_date, user = nil)
+    flag = true
     sum_period_budget = 0
     split_period_budget = 0
     share = user.present? ? io_members.find_by(user_id: user.id).share : io_members.pluck(:share).sum
@@ -296,8 +299,8 @@ class Io < ActiveRecord::Base
 
       display_line_item.display_line_item_budgets.each do |display_line_item_budget|
         if (start_date <= display_line_item_budget.end_date && end_date >= display_line_item_budget.start_date)
-          in_period_days = [[end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
-          in_period_effective_days = [[end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
+          in_period_days = [[self.end_date, end_date, display_line_item.end_date, display_line_item_budget.end_date].min - [self.start_date, start_date, display_line_item.start_date, display_line_item_budget.start_date].max + 1, 0].max
+          in_period_effective_days = [[self.end_date, end_date, display_line_item.end_date, display_line_item_budget.end_date, io_member.to_date].min - [self.start_date, start_date, display_line_item.start_date, display_line_item_budget.start_date, io_member.from_date].max + 1, 0].max
 
           display_line_item_budget_overlapped_days += in_period_days
           display_line_item_budget_with_io_member_overlapped_days += in_period_effective_days
@@ -314,7 +317,6 @@ class Io < ActiveRecord::Base
         split_period_budget += budget_in_period_for_display_line_item_budget_with_share + display_line_item.ave_run_rate * (in_period_effective_days - display_line_item_budget_with_io_member_overlapped_days) * share / 100
       end
     end
-
     return sum_period_budget, split_period_budget
   end
 end

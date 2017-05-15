@@ -22,34 +22,40 @@ class Api::ForecastsController < ApplicationController
 
       quarters = (start_date.to_date..end_date.to_date).map { |d| 'q' + ((d.month - 1) / 3 + 1).to_s + '-' + d.year.to_s }.uniq
       if user.present?
-        if params[:product_id].present?
-          data = products.map do |product_item|
-            ProductForecastMemberSerializer.new(ProductForecastMember.new(user, product_item, start_date, end_date, nil, nil))
-          end
-          render json: data
-        else
-          render json: { forecast: QuarterlyForecastMemberSerializer.new(ForecastMember.new(user, start_date, end_date, nil, nil)), quarters: quarters }
-        end
+        render json: { forecast: QuarterlyForecastMemberSerializer.new(ForecastMember.new(user, start_date, end_date, nil, nil)), quarters: quarters }
         
       elsif team.present?
-        if params[:product_id].present?
-          data = products.map do |product_item|
-            ProductForecastTeamSerializer.new(ProductForecastTeam.new(team, product_item, start_date, end_date, nil, nil))
-          end
-          render json: data
-        else
-          render json: { forecast: QuarterlyForecastTeamSerializer.new(ForecastTeam.new(team, start_date, end_date, nil, nil)), quarters: quarters }
-        end
-        
+        render json: { forecast: QuarterlyForecastTeamSerializer.new(ForecastTeam.new(team, start_date, end_date, nil, nil)), quarters: quarters }
       else
-        if params[:product_id].present?
-          data = products.map do |product_item|
-            ProductForecastSerializer.new(ProductForecast.new(company, teams, product_item, start_date, end_date, nil))
-          end
-          render json: data
-        else
-          render json: { forecast: QuarterlyForecastSerializer.new(Forecast.new(company, teams, start_date, end_date, nil)), quarters: quarters }
+        render json: { forecast: QuarterlyForecastSerializer.new(Forecast.new(company, teams, start_date, end_date, nil)), quarters: quarters }
+      end
+    else
+      render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
+    end
+  end
+
+  def product_detail
+    if valid_time_period?
+      start_date = time_period.start_date
+      end_date = time_period.end_date
+
+      quarters = (start_date.to_date..end_date.to_date).map { |d| 'q' + ((d.month - 1) / 3 + 1).to_s + '-' + d.year.to_s }.uniq
+      if user.present?
+        data = products.map do |product_item|
+          ProductForecastMemberSerializer.new(ProductForecastMember.new(user, product_item, start_date, end_date, nil, nil))
         end
+        render json: data
+        
+      elsif team.present?
+        data = products.map do |product_item|
+          ProductForecastTeamSerializer.new(ProductForecastTeam.new(team, product_item, start_date, end_date, nil, nil))
+        end
+        render json: data
+      else
+        data = products.map do |product_item|
+          ProductForecastSerializer.new(ProductForecast.new(company, teams, product_item, start_date, end_date, nil))
+        end
+        render json: data
       end
     else
       render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity

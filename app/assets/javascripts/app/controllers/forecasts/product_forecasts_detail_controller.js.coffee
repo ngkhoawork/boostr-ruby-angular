@@ -1,12 +1,12 @@
 @app.controller 'ProductForecastsDetailController',
-    ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal', 'Product'
-    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal,   Product) ->
+    ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal', 'Product', 'Stage'
+    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal,   Product,   Stage) ->
         $scope.teams = []
         $scope.sellers = []
         $scope.timePeriods = []
         defaultUser = {id: 'all', name: 'All', first_name: 'All'}
         $scope.filter =
-            team: {id: null, name: 'All'}
+            team: {id: 'all', name: 'All'}
             seller: defaultUser
             timePeriod: {id: null, name: 'Select'}
             product: {id: 'all', name: 'All'}
@@ -47,6 +47,7 @@
         $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->
             if nextTeam.id && !isTeamFound
                 $scope.filter.seller = defaultUser
+
                 $scope.setFilter('team', nextTeam)
             isTeamFound = false
             Seller.query({id: nextTeam.id || 'all'}).$promise.then (sellers) ->
@@ -71,9 +72,10 @@
             sellers: Seller.query({id: 'all'}).$promise
             timePeriods: TimePeriod.all()
             products: Product.all()
+            stages: Stage.query().$promise
         ).then (data) ->
             $scope.teams = data.teams
-            $scope.teams.unshift {id: null, name: 'All'}
+            $scope.teams.unshift {id: 'all', name: 'All'}
             data.timePeriods = data.timePeriods.filter (period) ->
                 period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
             $scope.timePeriods = data.timePeriods
@@ -81,6 +83,9 @@
             $scope.sellers.unshift(defaultUser)
             $scope.products = data.products
             $scope.products.unshift({id: 'all', name: 'All'})
+            $scope.stages = _.filter data.stages, (item) ->
+                if item.open == true
+                    return true
             switch data.user.user_type
                 when 1 #seller
                     $scope.filter.seller = data.user
@@ -112,38 +117,11 @@
                     moment().isBetween(period.start_date, period.end_date, 'days', '[]')
                         return $scope.filter.timePeriod = period
 
-        handleForecast = (data) ->
-            fc = data.forecast
-            fc.quarterly_weighted_forecast = {}
-            fc.quarterly_unweighted_forecast = {}
-            fc.quarterly_weighted_gap_to_quota = {}
-            fc.quarterly_unweighted_gap_to_quota = {}
-            fc.quarterly_percentage_of_annual_quota = {}
-            fc.stages = _.filter fc.stages, (stage) -> stage.active
-            quotaSum = _.reduce fc.quarterly_quota, (result, val) -> result + Number val
-            _.each data.quarters, (quarter) ->
-                weighted = Number fc.quarterly_revenue[quarter]
-                unweighted = Number fc.quarterly_revenue[quarter]
-                _.each fc.stages, (stage) ->
-                    weighted += Number fc.quarterly_weighted_pipeline_by_stage[stage.id][quarter]
-                    unweighted += Number fc.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
-                fc.quarterly_weighted_forecast[quarter] = weighted
-                fc.quarterly_unweighted_forecast[quarter] = unweighted
-                fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
-                fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
-                fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
-            fc.stages.sort (s1, s2) -> s1.probability - s2.probability
-
         parseBudget = (data) ->
             data = _.map data, (item) ->
                 item.budget = parseInt item.budget if item.budget
                 item.budget_loc = parseInt item.budget_loc if item.budget_loc
                 item
-        $scope.getStageId = (data, probability) ->
-            stage  = _.filter data.stages, (item) ->
-                if item.probability == probability
-                    return true
-            return stage[0].id
         getData = ->
             if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
             query =
@@ -151,7 +129,7 @@
                 user_id: $scope.filter.seller.id || 'all'
                 time_period_id: $scope.filter.timePeriod.id
                 product_id: $scope.filter.product.id
-            Forecast.forecast_detail(query).$promise.then (data) ->
+            Forecast.product_forecast_detail(query).$promise.then (data) ->
                 $scope.forecast_data = data
             query.team_id = query.id
             delete query.id

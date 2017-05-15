@@ -91,6 +91,8 @@ class ProductForecastMember
   def weighted_pipeline
     return @weighted_pipeline if defined?(@weighted_pipeline)
 
+    @weighted_pipeline = 0
+    
     deal_shares = {}
     member.deal_members.each do |mem|
       deal_shares[mem.deal_id] = mem.share
@@ -162,6 +164,8 @@ class ProductForecastMember
 
   def unweighted_pipeline
     return @unweighted_pipeline if defined?(@unweighted_pipeline)
+
+    @unweighted_pipeline = 0
 
     deal_shares = {}
     member.deal_members.each do |mem|
