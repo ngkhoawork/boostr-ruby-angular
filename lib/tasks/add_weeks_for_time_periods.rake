@@ -1,7 +1,7 @@
 namespace :time_periods do
   desc 'Add weeks for time periods'
   task add_weeks: :environment do
-    file = File.open("#{Rails.root}/tmp/pacing_dash.csv", 'r:ISO-8859-1')
+    file = File.open("#{Rails.root}/lib/files/pacing_dash.csv", 'r:ISO-8859-1')
 
     CSV.parse(file, { headers: true, header_converters: :symbol }) do |row|
       TimePeriodWeek.create(
