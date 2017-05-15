@@ -5,7 +5,7 @@ class DisplayLineItemBudgetCsv
             :video_avg_view_rate, :video_completion_rate, :budget_loc, presence: true
 
   attr_accessor :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
-                :video_avg_view_rate, :video_completion_rate, :budget_loc
+                :video_avg_view_rate, :video_completion_rate, :budget_loc, :io_name
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -15,7 +15,7 @@ class DisplayLineItemBudgetCsv
 
   def perform
     return self.errors.full_messages unless self.valid?
-
+    update_external_io_number
     if io_or_tempio && display_line_item
       create_or_update_display_line_item_budget
     end
@@ -63,10 +63,21 @@ class DisplayLineItemBudgetCsv
 
   def io
     @_io ||= company.ios.find_by(external_io_number: external_io_number)
+    @_io ||= company.ios.find_by(io_number: io_number)
   end
 
   def tempio
     @_temp_io ||= company.temp_ios.find_by(external_io_number: external_io_number)
+  end
+
+  def io_number
+    io_name.gsub(/.+_/, '')
+  end
+
+  def update_external_io_number
+    if io && external_io_number
+      io.update_columns(external_io_number: external_io_number)
+    end
   end
 
   def company
