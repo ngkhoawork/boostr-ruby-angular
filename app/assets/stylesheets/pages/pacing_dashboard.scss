@@ -1,0 +1,73 @@
+#pacing-dashboard {
+    $metrics-width: 250px;
+    padding-left: 25px;
+    padding-right: 25px;
+    .inner-pacing-dashboard {
+        max-width: 1600px;
+        padding: 0 15px;
+    }
+    .filters-block {
+        padding-left: 60px;
+        a {
+            font-weight: normal;
+            color: $main-color;
+            &.empty {
+                color: #B5BDC4;
+                //color: $secondary-font-color;
+            }
+        }
+        .dropdown-menu {
+            li {
+                &.active {
+                    color: white;
+                }
+                a {
+                    color: inherit;
+                }
+            }
+        }
+        vertical-align: middle;
+    }
+    .pacing-metrics {
+        vertical-align: top;
+        width: $metrics-width;
+        display: inline-block;
+    }
+    #pipeline-revenue-chart-container {
+        display: inline-block;
+        width: calc(100% - #{$metrics-width});
+    }
+    .pacing-chart {
+        height: auto;
+        .axis {
+            font: 10px sans-serif;
+        }
+        .data-rect {
+            stroke-width: 2;
+            stroke: rgba(255, 255, 255, 0);
+            transition: stroke 350ms;
+        }
+        .hovered {
+            stroke: #847f85;
+        }
+        .graph {
+            fill: transparent;
+            stroke-width: 3px;
+        }
+        .week-line {
+            stroke: #BEC1C4;
+            stroke-width: 2px;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #d9dde0;
+            shape-rendering: crispEdges;
+        }
+    }
+    table.table {
+        th:last-child, td:last-child {
+            text-align: center;
+        }
+    }
+}

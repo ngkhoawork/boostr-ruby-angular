@@ -1,0 +1,51 @@
+#pacing-dashboard.z-styles
+	.container-fluid.inner-pacing-dashboard
+		.row.mb20
+			.reports-header
+				.header-cell.main-title
+					Pacing Dashboard
+				.header-cell.filters-block
+					%table
+						%tr.filter-title
+							%td Time period
+						%tr
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
+											{{filter.timePeriod.name || 'All'}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
+													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+		.row.mb20
+			.block
+				%div.mb20
+					%span.title Pipeline & Revenue Pacing
+				%div.pacing-metrics>
+					%div
+						%b Show metrics
+					%div{'ng-repeat': 'metric in metrics'}
+						%b {{metric}}
+				%div#pipeline-revenue-chart-container
+					%svg#pipeline-revenue-chart.pacing-chart
+
+				%table.table.table-hover
+					%thead
+						%tr
+							%th
+								%b Wighted Pipe
+							%th Week 1
+							%th Week 2
+							%th Week 3
+							%th Week 4
+							%th Week 5
+					%tbody
+						%tr
+							%td this qtr
+							%td 300
+							%td 300
+							%td 300
+							%td 300
+							%td 300
