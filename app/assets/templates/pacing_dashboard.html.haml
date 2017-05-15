@@ -13,9 +13,12 @@
 								%ul.filter-item
 									%li{ dropdown: true }
 										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
-											{{filter.timePeriod.name || 'All'}}
+											{{filter.timePeriod.name}}
 											%span.caret
 										%ul.dropdown-menu
+											%li{ ng: { class: '{active: !filter.timePeriod.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("timePeriod", defaultTimePeriod)' } }
+													{{defaultTimePeriod.name}}
 											%li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
 													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
@@ -27,7 +30,9 @@
 					%div
 						%b Show metrics
 					%div{'ng-repeat': 'metric in metrics'}
-						%b {{metric}}
+						%div.metric-row{'ng-click': 'setMetric(metric)'}
+							%i.fa{'ng-class': '{"fa-check-square active": metric.active, "fa-square-o": !metric.active}'}
+							{{metric.name}}
 				%div#pipeline-revenue-chart-container
 					%svg#pipeline-revenue-chart.pacing-chart
 
@@ -36,16 +41,37 @@
 						%tr
 							%th
 								%b Wighted Pipe
-							%th Week 1
-							%th Week 2
-							%th Week 3
-							%th Week 4
-							%th Week 5
-					%tbody
+							%th{'ng-repeat': 'week in weeks'} Week {{week}}
+					%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
 						%tr
-							%td this qtr
-							%td 300
-							%td 300
-							%td 300
-							%td 300
-							%td 300
+							%td This Qtr
+							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.current_quarter track by $index'}
+								{{val | currency: '$' : '0'}}
+						%tr
+							%td Last Qtr
+							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_quarter track by $index'}
+								{{val | currency: '$' : '0'}}
+						%tr
+							%td Last Year
+							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_year_quarter track by $index'}
+								{{val | currency: '$' : '0'}}
+
+				%table.table.table-hover
+					%thead
+						%tr
+							%th
+								%b Revenue
+							%th{'ng-repeat': 'week in weeks'} Week {{week}}
+					%tbody{'ng-show': 'pipelineRevenue.revenue'}
+						%tr
+							%td This Qtr
+							%td{'ng-repeat': 'val in pipelineRevenue.revenue.current_quarter track by $index'}
+								{{val | currency: '$' : '0'}}
+						%tr
+							%td Last Qtr
+							%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_quarter track by $index'}
+								{{val | currency: '$' : '0'}}
+						%tr
+							%td Last Year
+							%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_year_quarter track by $index'}
+								{{val | currency: '$' : '0'}}

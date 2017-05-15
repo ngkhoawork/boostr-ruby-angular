@@ -1,5 +1,5 @@
 #pacing-dashboard {
-    $metrics-width: 250px;
+    $metrics-width: 200px;
     padding-left: 25px;
     padding-right: 25px;
     .inner-pacing-dashboard {
@@ -32,6 +32,24 @@
         vertical-align: top;
         width: $metrics-width;
         display: inline-block;
+        .metric-row {
+            color: $secondary-font-color;
+            padding-top: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            .fa {
+                width: 22px;
+                height: 22px;
+                color: #16A085;
+                font-size: 22px;
+                vertical-align: bottom;
+                margin-right: 4px;
+            }
+            .fa:not(.active) {
+                font-size: 25px;
+                color: lighten($secondary-font-color, 35%);
+            }
+        }
     }
     #pipeline-revenue-chart-container {
         display: inline-block;
@@ -51,6 +69,7 @@
             stroke: #847f85;
         }
         .graph {
+            opacity: 0;
             fill: transparent;
             stroke-width: 3px;
         }
@@ -66,8 +85,13 @@
         }
     }
     table.table {
-        th:last-child, td:last-child {
+        th, td {
             text-align: center;
+        }
+        th:first-child {
+            color: $main-font-color !important;
+            text-align: left;
+            font-size: 14px;
         }
     }
 }
