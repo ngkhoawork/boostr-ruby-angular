@@ -162,14 +162,14 @@ class Api::ClientsController < ApplicationController
     if client && client.client_type
       if client.client_type.name == "Agency"
         render json: client.client_contacts.where(contact_id: client.agency_contacts.ids)
-          .preload(contact: [:non_primary_client_contacts, :address, :values])
+          .preload(contact: [:non_primary_client_contacts, :address, :values, :primary_client_contact])
           .limit(limit)
           .offset(offset),
             each_serializer: ClientContacts::ClientContactsForClientSerializer,
                              contact_options: company_job_level_options
       elsif client.client_type.name == "Advertiser"
         render json: client.client_contacts.where(contact_id: client.advertiser_contacts.ids)
-          .preload(contact: [:non_primary_client_contacts, :address, :values])
+          .preload(contact: [:non_primary_client_contacts, :address, :values, :primary_client_contact])
           .limit(limit)
           .offset(offset),
             each_serializer: ClientContacts::ClientContactsForClientSerializer,
