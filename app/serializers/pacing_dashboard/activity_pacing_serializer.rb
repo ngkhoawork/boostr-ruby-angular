@@ -1,4 +1,6 @@
 class PacingDashboard::ActivityPacingSerializer < ActiveModel::Serializer
+	attribute :current_week
+
 	has_many :teams, serializer: PacingDashboard::TeamSerializer
 	has_many :sellers, serializer: PacingDashboard::SellerSerializer
 	has_many :products, serializer: PacingDashboard::ProductSerializer
@@ -15,5 +17,9 @@ class PacingDashboard::ActivityPacingSerializer < ActiveModel::Serializer
 
 	def products
 		object.products
-	end
+  end
+
+  def current_week
+    TimePeriodWeek.current_week_number
+  end
 end
