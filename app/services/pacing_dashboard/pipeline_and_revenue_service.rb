@@ -54,7 +54,7 @@ module PacingDashboard
 						memo[week.start_date] = value if value > memo[week.start_date]
 					end
 				end
-			end
+			end.values
 		end
 
 		def max_weighted_pipeline_by_week_for_current_quarter_series
@@ -66,7 +66,7 @@ module PacingDashboard
 						memo[week.start_date] = value if value > memo[week.start_date]
 					end
 				end
-			end
+			end.values
 		end
 
 		def sum_revenue_and_weighted_pipeline_by_week_for_current_quarter_series
@@ -78,7 +78,7 @@ module PacingDashboard
 						memo[week.start_date] = value if value > memo[week.start_date]
 					end
 				end
-			end
+			end.values
 		end
 
 		def snapshot_grouped_by_day_for_previous_quarter
@@ -105,7 +105,7 @@ module PacingDashboard
 		end
 
 		def max_revenue_by_week_for_previous_quarter_series
-			return {} if previous_quarter.nil?
+			return [] if previous_quarter.nil?
 
 			weeks_for_previous_quarter.each_with_object({}) do |week, memo|
 				memo[week.start_date] = 0
@@ -115,11 +115,11 @@ module PacingDashboard
 						memo[week.start_date] = value if value > memo[week.start_date]
 					end
 				end
-			end
+			end.values
 		end
 
 		def max_weighted_pipeline_by_week_for_previous_quarter_series
-			return {} if previous_quarter.nil?
+			return [] if previous_quarter.nil?
 
 			weeks_for_previous_quarter.each_with_object({}) do |week, memo|
 				memo[week.start_date] = 0
@@ -129,11 +129,11 @@ module PacingDashboard
 						memo[week.start_date] = value if value > memo[week.start_date]
 					end
 				end
-			end
+			end.values
 		end
 
 		def sum_revenue_and_weighted_pipeline_by_week_for_previous_quarter_series
-			return {} if previous_quarter.nil?
+			return [] if previous_quarter.nil?
 
 			weeks_for_previous_quarter.each_with_object({}) do |week, memo|
 				memo[week.start_date] = 0
@@ -143,7 +143,7 @@ module PacingDashboard
 						memo[week.start_date] = value if value > memo[week.start_date]
 					end
 				end
-			end
+			end.values
 		end
 
 		def snapshot_grouped_by_day_for_previous_year_quarter
@@ -170,7 +170,7 @@ module PacingDashboard
 		end
 
 		def max_revenue_by_week_for_previous_year_quarter_series
-			return {} if previous_year_quarter.nil?
+			return [] if previous_year_quarter.nil?
 
 			weeks_for_previous_year_quarter.each_with_object({}) do |week, memo|
 				memo[week.start_date] = 0
@@ -180,11 +180,11 @@ module PacingDashboard
 						memo[week.start_date] = value if value > memo[week.start_date]
 					end
 				end
-			end
+			end.values
 		end
 
 		def max_weighted_pipeline_by_week_for_previous_year_quarter_series
-			return {} if previous_year_quarter.nil?
+			return [] if previous_year_quarter.nil?
 
 			weeks_for_previous_year_quarter.each_with_object({}) do |week, memo|
 				memo[week.start_date] = 0
@@ -194,11 +194,11 @@ module PacingDashboard
 						memo[week.start_date] = value if value > memo[week.start_date]
 					end
 				end
-			end
+			end.values
 		end
 
 		def sum_revenue_and_weighted_pipeline_by_week_for_previous_year_quarter_series
-			return {} if previous_year_quarter.nil?
+			return [] if previous_year_quarter.nil?
 
 			weeks_for_previous_year_quarter.each_with_object({}) do |week, memo|
 				memo[week.start_date] = 0
@@ -208,7 +208,7 @@ module PacingDashboard
 						memo[week.start_date] = value if value > memo[week.start_date]
 					end
 				end
-			end
+			end.values
 		end
 	end
 end

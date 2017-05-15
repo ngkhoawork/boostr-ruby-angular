@@ -14,18 +14,9 @@ describe PacingDashboard::NewDealService do
     previous_quarter = result[:previous_quarter]
     previous_year_quarter = result[:previous_year_quarter]
 
-    expect(current_quarter[Date.new(2017, 1, 1)]).to eq(5)
-    expect(current_quarter[Date.new(2017, 1, 9)]).to eq(2)
-    expect(current_quarter[Date.new(2017, 1, 16)]).to eq(4)
-    expect(current_quarter[Date.new(2017, 2, 13)]).to eq(2)
-
-    expect(previous_quarter[Date.new(2016, 10, 1)]).to eq(6)
-    expect(previous_quarter[Date.new(2016, 10, 10)]).to eq(2)
-    expect(previous_quarter[Date.new(2016, 12, 19)]).to eq(4)
-
-    expect(previous_year_quarter[Date.new(2016, 1, 1)]).to eq(3)
-    expect(previous_year_quarter[Date.new(2016, 2, 8)]).to eq(5)
-    expect(previous_year_quarter[Date.new(2016, 3, 21)]).to eq(2)
+    expect(current_quarter).to eq [5, 2, 4, 0, 0, 0, 2, 0, 0, 0, 0, 0]
+    expect(previous_quarter).to eq [6, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0]
+    expect(previous_year_quarter).to eq [3, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 2, 0]
   end
 
   private
