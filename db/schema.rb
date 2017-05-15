@@ -151,6 +151,21 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_index "account_product_pipeline_facts", ["product_id"], name: "index_account_product_pipeline_facts_on_product_id", using: :btree
   add_index "account_product_pipeline_facts", ["time_dimension_id"], name: "index_account_product_pipeline_facts_on_time_dimension_id", using: :btree
 
+  create_table "account_product_revenue_facts", force: :cascade do |t|
+    t.integer  "account_dimension_id"
+    t.integer  "time_dimension_id"
+    t.integer  "company_id"
+    t.integer  "product_dimension_id"
+    t.integer  "revenue_amount"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "account_product_revenue_facts", ["account_dimension_id"], name: "index_account_product_revenue_facts_on_account_dimension_id", using: :btree
+  add_index "account_product_revenue_facts", ["company_id"], name: "index_account_product_revenue_facts_on_company_id", using: :btree
+  add_index "account_product_revenue_facts", ["product_dimension_id"], name: "index_account_product_revenue_facts_on_product_dimension_id", using: :btree
+  add_index "account_product_revenue_facts", ["time_dimension_id"], name: "index_account_product_revenue_facts_on_time_dimension_id", using: :btree
+
   create_table "account_revenue_facts", force: :cascade do |t|
     t.integer "company_id"
     t.integer "account_dimension_id"
@@ -1334,10 +1349,11 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_index "print_items", ["io_id"], name: "index_print_items_on_io_id", using: :btree
 
   create_table "product_dimensions", force: :cascade do |t|
-    t.integer  "company_id"
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "revenue_type"
+    t.integer  "company_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   add_index "product_dimensions", ["company_id"], name: "index_product_dimensions_on_company_id", using: :btree
@@ -1715,6 +1731,10 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_foreign_key "account_product_pipeline_facts", "companies"
   add_foreign_key "account_product_pipeline_facts", "products"
   add_foreign_key "account_product_pipeline_facts", "time_dimensions"
+  add_foreign_key "account_product_revenue_facts", "account_dimensions"
+  add_foreign_key "account_product_revenue_facts", "companies"
+  add_foreign_key "account_product_revenue_facts", "products", column: "product_dimension_id"
+  add_foreign_key "account_product_revenue_facts", "time_dimensions"
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
