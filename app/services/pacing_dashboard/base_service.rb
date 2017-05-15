@@ -2,7 +2,7 @@ class PacingDashboard::BaseService
 	FIRST_QUARTER_NUMBER = 1
 	LAST_QUARTER_NUMBER = 4
 
-	def initialize(company, params = nil)
+	def initialize(company, params = {})
     @company = company
     @params = params
     @time_period_id = params[:time_period_id]
