@@ -31,7 +31,7 @@ module PacingDashboard
 		end
 
 		def won_previous_quarter_series
-			return [] if previous_quarter.nil?
+			return empty_weeks_data if previous_quarter.nil?
 
 			weeks_for_previous_quarter.each_with_object({}) do |week, memo|
 				memo[week.start_date] = 0
@@ -48,7 +48,7 @@ module PacingDashboard
 		end
 
 		def won_previous_year_quarter_series
-			return [] if previous_year_quarter.nil?
+			return empty_weeks_data if previous_year_quarter.nil?
 
 			weeks_for_previous_year_quarter.each_with_object({}) do |week, memo|
 				memo[week.start_date] = 0

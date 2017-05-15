@@ -88,5 +88,13 @@ class PacingDashboard::BaseService
 	def weeks_for_previous_year_quarter
 		@_weeks_for_previous_year_quarter ||= TimePeriodWeek.by_period_start_and_end(previous_year_quarter.start_date,
 																																								 previous_year_quarter.end_date)
-	end
+  end
+
+  def empty_value
+    @_empty_value ||= 0
+  end
+
+  def empty_weeks_data
+    Array.new(13, empty_value)
+  end
 end
