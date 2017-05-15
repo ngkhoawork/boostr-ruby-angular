@@ -5,14 +5,17 @@ module DFP
 
     def build_csv(row)
       goal_quantity = adjustment_service.perform(row[:dimensionattributeline_item_goal_quantity]).to_i
-      quantity_delivered = [
-        goal_quantity,
-        row[:columntotal_line_item_level_impressions].to_i
-      ].min
+      total_impressions = row[:columntotal_line_item_level_impressions].to_i
+
+      if total_impressions >= goal_quantity
+        total_impressions = goal_quantity
+      end
+
+      quantity_delivered = [ goal_quantity, total_impressions ].min
       price = row[:dimensionattributeline_item_cost_per_unit].to_i / 1_000_000
       rate = row[:columnvideo_viewership_completion_rate].to_f
       non_cpd_booked_revenue = row[:dimensionattributeline_item_non_cpd_booked_revenue].to_i / 1_000_000
-      budget_delivered = price * row[:columntotal_line_item_level_impressions].to_i / 1_000
+      budget_delivered = price *  total_impressions / 1_000
 
       line_item_params = {
         io_name: row[:dimensionorder_name],
@@ -33,7 +36,7 @@ module DFP
         quantity_delivered: quantity_delivered,
         clicks: row[:columntotal_line_item_level_clicks],
         ctr: row[:columntotal_line_item_level_ctr],
-        budget_delivered: adjustment_service.perform(budget_delivered),
+        budget_delivered: budget_delivered,
         company_id: company_id
       }
 
@@ -46,10 +49,10 @@ module DFP
           line_item_params[:budget_delivered] = 0
         end
 
-        line_item_params[:quantity] = row[:columntotal_line_item_level_impressions].to_i
+        line_item_params[:quantity] = total_impressions
 
         if line_item_params[:budget_delivered] > 0
-          line_item_params[:quantity_delivered] = row[:columntotal_line_item_level_impressions].to_i
+          line_item_params[:quantity_delivered] = total_impressions
         end
 
       end
