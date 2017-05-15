@@ -12,6 +12,7 @@ module DFP
       price = row[:dimensionattributeline_item_cost_per_unit].to_i / 1_000_000
       rate = row[:columnvideo_viewership_completion_rate].to_f
       non_cpd_booked_revenue = row[:dimensionattributeline_item_non_cpd_booked_revenue].to_i / 1_000_000
+      budget_delivered = price * row[:columntotal_line_item_level_impressions].to_i / 1_000
 
       line_item_params = {
         io_name: row[:dimensionorder_name],
@@ -32,7 +33,7 @@ module DFP
         quantity_delivered: quantity_delivered,
         clicks: row[:columntotal_line_item_level_clicks],
         ctr: row[:columntotal_line_item_level_ctr],
-        budget_delivered: rate * quantity_delivered,
+        budget_delivered: adjustment_service.perform(budget_delivered),
         company_id: company_id
       }
 
@@ -40,7 +41,7 @@ module DFP
         line_item_params[:budget] = rate
 
         if DateTime.parse(line_item_params[:start_date]).to_date < Date.today
-          line_item_params[:budget_delivered] = rate
+          line_item_params[:budget_delivered] = budget_delivered
         else
           line_item_params[:budget_delivered] = 0
         end
