@@ -6,7 +6,7 @@
         $scope.timePeriods = []
         defaultUser = {id: 'all', name: 'All', first_name: 'All'}
         $scope.filter =
-            team: {id: null, name: 'All'}
+            team: {id: 'all', name: 'All'}
             seller: defaultUser
             timePeriod: {id: null, name: 'Select'}
         $scope.selectedTeam = $scope.filter.team
@@ -71,7 +71,7 @@
             timePeriods: TimePeriod.all()
         ).then (data) ->
             $scope.teams = data.teams
-            $scope.teams.unshift {id: null, name: 'All'}
+            $scope.teams.unshift {id: 'all', name: 'All'}
             data.timePeriods = data.timePeriods.filter (period) ->
                 period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
             $scope.timePeriods = data.timePeriods

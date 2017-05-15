@@ -84,7 +84,7 @@
             $scope.products = data.products
             $scope.products.unshift({id: 'all', name: 'All'})
             $scope.stages = _.filter data.stages, (item) ->
-                if item.open == true
+                if item.probability > 0
                     return true
             switch data.user.user_type
                 when 1 #seller
