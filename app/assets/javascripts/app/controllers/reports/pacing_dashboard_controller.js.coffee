@@ -1,16 +1,12 @@
 @app.controller 'PacingDashboardController',
-    ['$scope', '$filter', 'PacingDashboard'
-    ( $scope,   $filter,   PacingDashboard ) ->
-
-#=====================================================================================================================
-        getRandomValue = (min, max)-> Math.round(Math.random() * (max - min)) + min
-#=====================================================================================================================
+    ['$scope', '$filter', 'PacingDashboard', 'shadeColor'
+    ( $scope,   $filter,   PacingDashboard,   shadeColor ) ->
 
         $scope.timePeriods = []
         $scope.metrics = [
             {name: 'Pipeline', active: true, visibility: 'A'}
-            {name: 'Revenue', active: true, visibility: 'B'}
-            {name: 'Forecast Amt', active: true, visibility: 'C'}
+            {name: 'Revenue', active: false, visibility: 'B'}
+            {name: 'Forecast Amt', active: false, visibility: 'C'}
             {name: 'This Qtr', active: true, visibility: '1'}
             {name: 'Last Qtr', active: true, visibility: '2'}
             {name: 'YoY', active: true, visibility: '3'}
@@ -23,7 +19,20 @@
         $scope.weeks = [1..13]
         $scope.currentWeek = 0
 
+        colors = [
+            shadeColor('#B3D776', 0)
+            shadeColor('#B3D776', 30)
+            shadeColor('#B3D776', 60)
+            shadeColor('#5398CC', 0)
+            shadeColor('#5398CC', 30)
+            shadeColor('#5398CC', 60)
+            shadeColor('#FF7E30', 0)
+            shadeColor('#FF7E30', 30)
+            shadeColor('#FF7E30', 60)
+        ]
+
 #=====================================================================================================================
+        getRandomValue = (min, max)-> Math.round(Math.random() * (max - min)) + min
         testData = {
             revenue: {
                 current_quarter: [1..13].map -> getRandomValue(100000, 500000)
@@ -43,12 +52,19 @@
         }
 #=====================================================================================================================
         (init = (query) ->
+#            setTimeout ->
+#                $scope.currentWeek = getRandomValue(1, 13)
+#                drawChart(testData, '#pipeline-revenue-chart')
+#                updateChartVisibility()
+#            return
             PacingDashboard.pipeline_revenue(query).then (data) ->
                 $scope.currentWeek = data.current_week
                 $scope.timePeriods = data.time_periods
                 $scope.pipelineRevenue = data.series.pipeline_and_revenue
 #                drawChart(testData)
-                drawChart($scope.pipelineRevenue)
+                drawChart($scope.pipelineRevenue, '#pipeline-revenue-chart')
+                drawChart($scope.pipelineRevenue, '#activity-new-chart')
+                drawChart($scope.pipelineRevenue, '#activity-won-chart')
                 updateChartVisibility()
         )()
 
@@ -84,8 +100,7 @@
                         opacity: 1
                     }, 500
 
-        drawChart = (data) ->
-            chartId = '#pipeline-revenue-chart'
+        drawChart = (data, chartId) ->
             chartContainer = angular.element(chartId + '-container')
             delay = 1000
             duration = 2000
@@ -93,29 +108,28 @@
                 top: 10
                 left: 45
                 right: 10
-                bottom: 60
-            legendHeight = 50
+                bottom: 40
             width = chartContainer.width() - margin.left - margin.right || 800
             height = 400
 
 
             svg = d3.select(chartId)
                 .attr('width', width + margin.left + margin.right)
-                .attr('height', height + margin.top + margin.bottom + legendHeight)
+                .attr('height', height + margin.top + margin.bottom)
                 .html('')
                 .append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
             dataset = [
-                {name: 'TQ-Pipeline', visibility: 'A1', values: data.weighted_pipeline.current_quarter}
-                {name: 'LQ-Pipeline', visibility: 'A2', values: data.weighted_pipeline.previous_quarter}
-                {name: 'YoY-Pipeline', visibility: 'A3', values: data.weighted_pipeline.previous_year_quarter}
-                {name: 'TQ-Revenue', visibility: 'B1', values: data.revenue.current_quarter}
-                {name: 'LQ-Revenue', visibility: 'B2', values: data.revenue.previous_quarter}
-                {name: 'YoY-Revenue', visibility: 'B3', values: data.revenue.previous_year_quarter}
-                {name: 'TQ-Forecast', visibility: 'C1', values: data.sum_revenue_and_weighted_pipeline.current_quarter}
-                {name: 'LQ-Forecast', visibility: 'C2', values: data.sum_revenue_and_weighted_pipeline.previous_quarter}
-                {name: 'YoY-Forecast', visibility: 'C3', values: data.sum_revenue_and_weighted_pipeline.previous_year_quarter}
+                {name: 'TQ-Pipeline', color: shadeColor('#B3D776', 0), visibility: 'A1', values: data.weighted_pipeline.current_quarter}
+                {name: 'LQ-Pipeline', color: shadeColor('#B3D776', 0.3), visibility: 'A2', values: data.weighted_pipeline.previous_quarter}
+                {name: 'YoY-Pipeline', color: shadeColor('#B3D776', 0.6), visibility: 'A3', values: data.weighted_pipeline.previous_year_quarter}
+                {name: 'TQ-Revenue', color: shadeColor('#5398CC', 0), visibility: 'B1', values: data.revenue.current_quarter}
+                {name: 'LQ-Revenue', color: shadeColor('#5398CC', 0.3), visibility: 'B2', values: data.revenue.previous_quarter}
+                {name: 'YoY-Revenue', color: shadeColor('#5398CC', 0.6), visibility: 'B3', values: data.revenue.previous_year_quarter}
+                {name: 'TQ-Forecast', color: shadeColor('#FF7E30', 0), visibility: 'C1', values: data.sum_revenue_and_weighted_pipeline.current_quarter}
+                {name: 'LQ-Forecast', color: shadeColor('#FF7E30', 0.3), visibility: 'C2', values: data.sum_revenue_and_weighted_pipeline.previous_quarter}
+                {name: 'YoY-Forecast', color: shadeColor('#FF7E30', 0.6), visibility: 'C3', values: data.sum_revenue_and_weighted_pipeline.previous_year_quarter}
             ]
 
             yMax = d3.max dataset, (item) -> d3.max item.values
@@ -124,7 +138,7 @@
 #            yParts = 5
 #            yValues = [yParts..0].map (i) -> yMax / yParts * i
 
-            x = d3.scale.ordinal().domain($scope.weeks).rangeBands([0, width])
+            x = d3.scale.ordinal().domain(['Week'].concat $scope.weeks).rangePoints([0, width - width / $scope.weeks.length])
             y = d3.scale.linear().domain([yMax, 0]).range([0, height])
 
             xAxis = d3.svg.axis().scale(x).orient('bottom')
@@ -132,11 +146,12 @@
                 .innerTickSize(0)
                 .tickPadding(10)
                 .tickFormat (v, i) ->
-                    if $scope.currentWeek == i + 1
+                    if $scope.currentWeek == i
                         d3.select(this)
                             .style 'font-weight', 'bold'
                             .style 'font-size', '12px'
-                    'Week ' + v
+#                    'Week ' + v
+                    v
             yAxis = d3.svg.axis().scale(y).orient('left')
                 .innerTickSize(-width)
                 .tickPadding(10)
@@ -149,9 +164,9 @@
 
             svg.append('line')
                 .attr('class', 'week-line')
-                .attr 'x1', x($scope.currentWeek) + x(2) / 2
+                .attr 'x1', x($scope.currentWeek)
                 .attr 'y1', height
-                .attr 'x2', x($scope.currentWeek) + x(2) / 2
+                .attr 'x2', x($scope.currentWeek)
                 .attr 'y2', height
                 .transition()
                 .delay(delay / 2)
@@ -159,10 +174,10 @@
                 .ease('linear')
                 .attr('y1', 0)
 
-            color = d3.scale.category10()
+#            color = d3.scale.category10()
 
             graphLine = d3.svg.line()
-                .x((value, i) -> x(i + 1) + x(2) / 2)
+                .x((value, i) -> x(i + 1))
                 .y((value, i) -> y(value))
 
             graphs = svg.selectAll('.graph')
@@ -171,7 +186,7 @@
                 .append('path')
                 .attr('class', 'graph')
                 .attr('data-visibility', (d) -> d.visibility)
-                .style 'stroke', (d) -> color d.name
+                .style 'stroke', (d) -> d.color
                 .attr 'd', (d) ->
                     graphLine(d.values)
 
@@ -190,39 +205,20 @@
                 .attr('stroke-dashoffset', 0)
 
             #legend
-            legendData = [
-                {color: 'gray', label: 'Goal'}
-            ]
-            _.forEach dataset.stages, (stage, i) ->
-                if i is 0
-                    legendData.push {color: colors[0], label: 'Won'}
-                else
-                    legendData.push {color: shadeColor(colors[1], 0.15 * (i - 1)), label: stage + '%'}
-
-            legend = svg.append("g")
-                .attr("transform", "translate(0, " + (height + 50) + ")")
-                .attr("class", "legendTable")
-
-            legendWithData = legend
+            legendContainer = d3.select(chartId + '-container').append('div')
+                .attr('class', 'legend-container')
+                .style 'margin-left', margin.left + 'px'
+            legend = legendContainer
                 .selectAll('.legend')
                 .data(dataset)
                 .enter()
-                .append('g')
+                .append('div')
                 .attr('class', 'legend')
-                .attr('transform', (d, i) -> 'translate(' + (i % 9) * 120 + ', 0)')
-            legendWithData.append('rect')
-                .attr 'x', 0
-                .attr('y', (d, i) -> Math.floor(i / 9) * 20)
-                .attr('width', 13)
-                .attr('height', 13)
-                .attr("rx", 4)
-                .attr("ry", 4)
-                .style 'fill', (d) -> color d.name
-            legendWithData.append('text')
-                .attr 'x', 20
-                .attr('y', (d, i) -> Math.floor(i / 9) * 20 + 10)
-                .attr('height', 30)
-                .attr('width', 150)
-                .text (d) -> d.name
+            legend.append('div')
+                .attr('class', 'legend-icon')
+                .style 'background-color', (d) -> d.color
+            legend.append('span')
+                .attr 'class', 'legend-text'
+                .html (d) -> d.name
 
     ]
