@@ -130,7 +130,34 @@
                 time_period_id: $scope.filter.timePeriod.id
                 product_id: $scope.filter.product.id
             Forecast.product_forecast_detail(query).$promise.then (data) ->
-                $scope.forecast_data = data
+                $scope.forecastData = data
+                $scope.totalForecastData = {
+                    revenue: 0,
+                    unweighted_pipeline_by_stage: {}, 
+                    unweighted_pipeline: 0,
+                    weighted_pipeline_by_stage: {}, 
+                    weighted_pipeline: 0
+                }
+                _.each data, (item) ->
+                    if item.revenue && item.revenue > 0
+                        $scope.totalForecastData.revenue += item.revenue
+
+                    if item.unweighted_pipeline && item.unweighted_pipeline > 0
+                        $scope.totalForecastData.unweighted_pipeline += item.unweighted_pipeline
+
+                    if item.weighted_pipeline && item.weighted_pipeline > 0
+                        $scope.totalForecastData.weighted_pipeline += item.weighted_pipeline
+
+                    _.each item.unweighted_pipeline_by_stage, (val, index) ->
+                        if !$scope.totalForecastData.unweighted_pipeline_by_stage[index]
+                            $scope.totalForecastData.unweighted_pipeline_by_stage[index] = 0
+                        $scope.totalForecastData.unweighted_pipeline_by_stage[index] += val
+
+                    _.each item.weighted_pipeline_by_stage, (val, index) ->
+                        if !$scope.totalForecastData.weighted_pipeline_by_stage[index]
+                            $scope.totalForecastData.weighted_pipeline_by_stage[index] = 0
+                        $scope.totalForecastData.weighted_pipeline_by_stage[index] += val
+
             query.team_id = query.id
             delete query.id
             Revenue.forecast_detail(query).$promise.then (data) ->

@@ -39,7 +39,7 @@
               %td
                 %ul.filter-item
                   %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.product.name === "All"}' }
+                    %a{ href: '', dropdown: { toggle: true, multiselect: true }, 'ng-class': '{"empty": filter.product.name === "All"}' }
                       {{filter.product.name}}
                       %span.caret
                     %ul.dropdown-menu
@@ -57,7 +57,7 @@
               %thead
                 %tr
                   %th
-                  %th{colspan: "{{stages.length}}"}
+                  %th{colspan: "{{stages.length + 1}}"}
                     Pipeline (W)
                   %th
                   %th{colspan: "2"}
@@ -68,23 +68,46 @@
                   %th.right{'ng-repeat': 'stage in stages'}
                     {{stage.probability}}%
                   %th.right
+                    Pipeline (W)
+                  %th.right
                     Revenue
                   %th.right
                     Unweighted
                   %th.right
                     Weighted
               %tbody
-                %tr{'ng-repeat': 'product_forecast in forecast_data'}
+                %tr{'ng-repeat': 'product_forecast in forecastData | orderBy : "product.name"'}
                   %td
                     {{product_forecast.product.name}}
                   %td.right{'ng-repeat': 'stage in stages'}
-                    {{(product_forecast.unweighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
+                    {{(product_forecast.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
+                  %td.right
+                    {{product_forecast.weighted_pipeline | currency : '$' : 0}}
                   %td.right
                     {{product_forecast.revenue | currency : '$' : 0}}
                   %td.right
                     {{(product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
                   %td.right
                     {{(product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
+                %tr
+                  %td
+                    %strong
+                      Total
+                  %td.right{'ng-repeat': 'stage in stages'}
+                    %strong
+                      {{(totalForecastData.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
+                  %td.right
+                    %strong
+                      {{(totalForecastData.weighted_pipeline || 0) | currency : '$' : 0}}
+                  %td.right
+                    %strong
+                      {{(totalForecastData.revenue || 0) | currency : '$' : 0}}
+                  %td.right
+                    %strong
+                      {{((totalForecastData.unweighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
+                  %td.right
+                    %strong
+                      {{((totalForecastData.weighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
       .row
         .col-xs-12
           .block
@@ -158,10 +181,6 @@
                       %span.clickable{'ng-click': 'sortDeals.by("stage.probability")'}
                         \%
                         %i{'ng-show': 'sortDeals.field == "stage.probability"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sortDeals.by("stage.name")'}
-                        Stage
-                        %i{'ng-show': 'sortDeals.field == "stage.name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
                     %th.right
                       %span.clickable{'ng-click': 'sortDeals.by("budget")'}
                         Total Budget
@@ -190,7 +209,6 @@
                       %a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
                     %td {{deal.advertiser.name}}
                     %td {{deal.stage.probability}}%
-                    %td {{deal.stage.name}}
                     %td.right {{deal.budget | currency : '$' : 0}}
                     %td {{deal.product.name}}
                     %td.right {{deal.in_period_amt | currency : '$' : 0}}
