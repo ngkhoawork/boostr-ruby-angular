@@ -11,8 +11,8 @@ module DFP
         month_and_year: row[:dimensionmonth_and_year],
         clicks: row[:columntotal_line_item_level_clicks],
         ctr: row[:columntotal_line_item_level_ctr],
-        impressions: row[:columntotal_line_item_level_impressions],
-        budget_loc: adjustment_service.perform(row[:columntotal_line_item_level_impressions]),
+        impressions: row[:columntotal_line_item_level_impressions].to_i,
+        budget_loc: adjustment_service.perform(row[:columntotal_line_item_level_impressions].to_i),
         video_avg_view_rate: row[:columnvideo_viewership_average_view_rate],
         video_completion_rate: row[:columnvideo_viewership_completion_rate],
         company_id: company_id

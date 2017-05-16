@@ -3,6 +3,8 @@ class DisplayLineItemBudgetCsv
 
   validates :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
             :video_avg_view_rate, :video_completion_rate, :budget_loc, presence: true
+  validate :budget_less_than_display_line_item_budget
+  validate :sum_of_budgets_less_than_line_item_budget
 
   attr_accessor :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
                 :video_avg_view_rate, :video_completion_rate, :budget_loc, :io_name
@@ -24,11 +26,23 @@ class DisplayLineItemBudgetCsv
   private
 
   def create_or_update_display_line_item_budget
-    display_line_item_budget.present? ? update_display_line_item_budget : create_display_line_item_budget
+    display_line_item_budget.present? ? update_display_line_item_budget : new_display_line_item_budget
   end
 
-  def create_display_line_item_budget
-    display_line_item.display_line_item_budgets.create(
+  def new_display_line_item_budget
+    display_line_item_budget.save
+  end
+
+  def update_display_line_item_budget
+    display_line_item_budget.update!(display_line_item_budget_attributes)
+  end
+
+  def display_line_item
+    @_display_line_item ||= io_or_tempio.display_line_items.find_by(line_number: line_number)
+  end
+
+  def display_line_item_budget_attributes
+    {
       external_io_number: external_io_number,
       start_date: start_date,
       end_date: end_date,
@@ -37,24 +51,15 @@ class DisplayLineItemBudgetCsv
       quantity: impressions,
       ad_server_quantity: impressions,
       budget: budget,
-      budget_loc: budget_loc,
+      budget_loc: calculate_budget_loc,
       video_avg_view_rate: video_avg_view_rate,
       video_completion_rate: video_completion_rate
-    )
-  end
-
-  def update_display_line_item_budget
-    display_line_item_budget.update(
-      ad_server_quantity: impressions
-    )
-  end
-
-  def display_line_item
-    @_display_line_item ||= io_or_tempio.display_line_items.find_by(line_number: line_number)
+    }
   end
 
   def display_line_item_budget
-    display_line_item.display_line_item_budgets.find_by(start_date: start_date)
+    @_display_line_item_budget ||= display_line_item.display_line_item_budgets.find_by(start_date: start_date)
+    @_display_line_item_budget ||= display_line_item.display_line_item_budgets.new(display_line_item_budget_attributes)
   end
 
   def io_or_tempio
@@ -97,10 +102,31 @@ class DisplayLineItemBudgetCsv
   end
 
   def budget
-    display_line_item.price * impressions.to_i
+    display_line_item.price * impressions / 1_000
   end
 
   def calculate_budget_loc
-    display_line_item.price * budget_loc
+    display_line_item.price * budget_loc / 1_000
   end
+
+  def budget_less_than_display_line_item_budget
+    return unless display_line_item_budget.budget_loc.present?
+
+    if display_line_item_budget.budget_loc > display_line_item.budget_loc
+      errors.add(:budget, 'can\'t be more then line item budget')
+    end
+  end
+
+  def sum_of_budgets_less_than_line_item_budget
+    return unless display_line_item_budget.budget_loc.present?
+
+    if sum_of_monthly_budgets > display_line_item.budget_loc
+      errors.add(:budget, 'sum of monthly budgets can\'t be more then line item budget')
+    end
+  end
+
+  def sum_of_monthly_budgets
+    (display_line_item.display_line_item_budgets.where.not(id: display_line_item_budget.id).sum(:budget_loc) + display_line_item_budget.budget_loc)
+  end
+
 end
