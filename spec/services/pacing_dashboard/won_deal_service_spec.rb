@@ -6,7 +6,7 @@ describe PacingDashboard::WonDealService do
     create_deals
   end
 
-  it 'return proper count for new deal service' do
+  it 'return proper data for won deal service' do
     Timecop.freeze(2017, 2, 2)
 
     result = new_deal_service.perform
