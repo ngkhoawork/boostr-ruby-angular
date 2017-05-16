@@ -1,5 +1,5 @@
 class PacingDashboard::PipelineAndRevenueCalculationService
-	def initialize(company, params = {})
+	def initialize(company, params)
 		@company = company
 		@params = params
 	end

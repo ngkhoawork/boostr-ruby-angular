@@ -1,5 +1,5 @@
 class PacingDashboard::ActivityPacingCalculationService
-	def initialize(company, params = {})
+	def initialize(company, params)
 		@company = company
 		@params = params
 	end

@@ -2,7 +2,7 @@ class PacingDashboard::BaseService
 	FIRST_QUARTER_NUMBER = 1
 	LAST_QUARTER_NUMBER = 4
 
-	def initialize(company, params = {})
+	def initialize(company, params)
     @company = company
     @params = params
     @time_period_id = params[:time_period_id]
@@ -32,6 +32,8 @@ class PacingDashboard::BaseService
 	end
 
 	def previous_quarter
+		return nil if time_period_week_for_previous_quarter.blank?
+
 		@_previous_quarter ||= company.time_periods.all_quarter.find_by(
 			start_date: time_period_week_for_previous_quarter.period_start,
 			end_date: time_period_week_for_previous_quarter.period_end
@@ -39,6 +41,8 @@ class PacingDashboard::BaseService
 	end
 
 	def previous_year_quarter
+		return nil if time_period_week_for_previous_year_quarter.blank?
+
 		@_previous_year_quarter ||= company.time_periods.all_quarter.find_by(
 			start_date: time_period_week_for_previous_year_quarter.period_start,
 			end_date: time_period_week_for_previous_year_quarter.period_end

@@ -22,7 +22,7 @@ describe PacingDashboard::NewDealService do
   private
 
   def new_deal_service
-    described_class.new(company)
+    described_class.new(company, {})
   end
 
   def company
