@@ -100,7 +100,7 @@ class Api::V2::DealsController < ApiController
   def update
     deal.updated_by = current_user.id
     if deal.update_attributes(deal_params)
-      render json: deal
+      render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
     end
