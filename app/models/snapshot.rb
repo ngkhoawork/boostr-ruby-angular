@@ -12,7 +12,7 @@ class Snapshot < ActiveRecord::Base
   scope :two_recent_for_time_period, -> (start_date, end_date) { where('snapshots.start_date = ? AND snapshots.end_date = ?', start_date, end_date).order('created_at DESC').limit(2) }
   scope :two_recent_for_year_and_quarter, -> (year, quarter) { where('snapshots.year = ? AND snapshots.quarter = ?', year, quarter).order('created_at DESC').limit(2) }
   scope :by_company_in_period, -> (company, period) do
-    where(company: company, created_at: period.start_date..period.end_date)
+    where(company: company, created_at: period.start_date..period.end_date, time_period: period)
   end
   scope :grouped_by_day_in_period_for_company, -> (company, period) do
     by_company_in_period(company, period)
