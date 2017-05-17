@@ -38,10 +38,10 @@
 					%div.legend-container
 
 				%table.table.table-hover
-					%thead
-						%tr
+					%tbody
+						%tr.header-row
 							%th
-								%b Wighted Pipe
+								%b Weighted Pipe
 							%th{'ng-repeat': 'week in weeks'} Week {{week}}
 					%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
 						%tr
@@ -56,10 +56,8 @@
 							%td YoY
 							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_year_quarter track by $index'}
 								{{val | currency: '$' : '0'}}
-
-				%table.table.table-hover
-					%thead
-						%tr
+					%tbody
+						%tr.header-row
 							%th
 								%b Revenue
 							%th{'ng-repeat': 'week in weeks'} Week {{week}}
@@ -157,8 +155,8 @@
 				%div.mb20
 					%span.title Activity Pacing
 				%table.table.table-hover
-					%thead
-						%tr
+					%tbody
+						%tr.header-row
 							%th
 								%b New Deals #
 							%th{'ng-repeat': 'week in weeks'} Week {{week}}
@@ -176,9 +174,8 @@
 							%td{'ng-repeat': 'val in newDeals.previous_year_quarter track by $index'}
 								{{val}}
 
-				%table.table.table-hover
-					%thead
-						%tr
+					%tbody
+						%tr.header-row
 							%th
 								%b Won Deals
 							%th{'ng-repeat': 'week in weeks'} Week {{week}}

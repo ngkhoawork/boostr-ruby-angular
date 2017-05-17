@@ -119,5 +119,22 @@
             text-align: left;
             font-size: 14px;
         }
+        .header-row {
+            height: auto !important;
+            &:hover {
+                background-color: inherit;
+            }
+            th {
+                border-top: none;
+                border-bottom: 2px solid #ddd;
+                font-family: inherit;
+                &:first-child {
+                    font-size: 15px;
+                }
+                &:not(:first-child) {
+                    font-size: 12px;
+                }
+            }
+        }
     }
 }
