@@ -3,69 +3,48 @@
     ( $scope,   $filter,   PacingDashboard,   shadeColor ) ->
 
         $scope.timePeriods = []
+        $scope.teams = []
+        $scope.sellers = []
+        $scope.products = []
         $scope.metrics = [
             {name: 'Pipeline', active: true, visibility: 'A'}
-            {name: 'Revenue', active: false, visibility: 'B'}
-            {name: 'Forecast Amt', active: false, visibility: 'C'}
+            {name: 'Revenue', active: true, visibility: 'B'}
+            {name: 'Forecast Amt', active: true, visibility: 'C'}
             {name: 'This Qtr', active: true, visibility: '1'}
             {name: 'Last Qtr', active: true, visibility: '2'}
             {name: 'YoY', active: true, visibility: '3'}
         ]
-        $scope.defaultTimePeriod = {id: null, name: 'Current'}
-        $scope.filter =
-            timePeriod: $scope.defaultTimePeriod
+        $scope.defaultFilter =
+            timePeriod: {id: null, name: 'Current'}
+            team: {id: null, name: 'All'}
+            seller: {id: null, name: 'All'}
+            product: {id: null, name: 'All'}
+        $scope.filter = angular.copy $scope.defaultFilter
 
         $scope.pipelineRevenue = {}
+        $scope.newDeals = {}
+        $scope.wonDeals = {}
         $scope.weeks = [1..13]
         $scope.currentWeek = 0
 
-        colors = [
-            shadeColor('#B3D776', 0)
-            shadeColor('#B3D776', 30)
-            shadeColor('#B3D776', 60)
-            shadeColor('#5398CC', 0)
-            shadeColor('#5398CC', 30)
-            shadeColor('#5398CC', 60)
-            shadeColor('#FF7E30', 0)
-            shadeColor('#FF7E30', 30)
-            shadeColor('#FF7E30', 60)
-        ]
-
-#=====================================================================================================================
-        getRandomValue = (min, max)-> Math.round(Math.random() * (max - min)) + min
-        testData = {
-            revenue: {
-                current_quarter: [1..13].map -> getRandomValue(100000, 500000)
-                previous_quarter: [1..13].map -> getRandomValue(250000, 350000)
-                previous_year_quarter: [1..13].map -> getRandomValue(300000, 560000)
-            }
-            weighted_pipeline: {
-                current_quarter: [1..13].map -> getRandomValue(100000, 500000)
-                previous_quarter: [1..13].map -> getRandomValue(250000, 350000)
-                previous_year_quarter: [1..13].map -> getRandomValue(300000, 560000)
-            }
-            sum_revenue_and_weighted_pipeline: {
-                current_quarter: [1..13].map -> getRandomValue(100000, 500000)
-                previous_quarter: [1..13].map -> getRandomValue(250000, 350000)
-                previous_year_quarter: [1..13].map -> getRandomValue(300000, 560000)
-            }
-        }
-#=====================================================================================================================
-        (init = (query) ->
-#            setTimeout ->
-#                $scope.currentWeek = getRandomValue(1, 13)
-#                drawChart(testData, '#pipeline-revenue-chart')
-#                updateChartVisibility()
-#            return
+        (getPipelineRevenueData = (query) ->
             PacingDashboard.pipeline_revenue(query).then (data) ->
                 $scope.currentWeek = data.current_week
                 $scope.timePeriods = data.time_periods
                 $scope.pipelineRevenue = data.series.pipeline_and_revenue
-#                drawChart(testData)
                 drawChart($scope.pipelineRevenue, '#pipeline-revenue-chart')
-                drawChart($scope.pipelineRevenue, '#activity-new-chart')
-                drawChart($scope.pipelineRevenue, '#activity-won-chart')
                 updateChartVisibility()
+        )()
+
+        (getNewWonDealsData = (query) ->
+            PacingDashboard.activity_pacing(query).then (data) ->
+                $scope.teams = data.teams
+                $scope.sellers = data.sellers
+                $scope.products = data.products
+                $scope.newDeals = data.series.new_deals
+                $scope.wonDeals = data.series.won_deals
+                drawChart($scope.newDeals, '#activity-new-chart')
+                drawChart($scope.wonDeals, '#activity-won-chart')
         )()
 
         $scope.setMetric = (metric) ->
@@ -74,15 +53,16 @@
             return
 
         $scope.setFilter = (key, value) ->
-            $scope.filter[key] = value
-            applyFilter $scope.filter
-            return
-
-        applyFilter = (filter) ->
+            f = $scope.filter
+            f[key] = value
             query = {}
-            query.time_period_id = filter.timePeriod.id if filter.timePeriod.id
-            console.log query
-            init query
+            query.time_period_id = f.timePeriod.id if f.timePeriod.id
+            getPipelineRevenueData query if key == 'timePeriod'
+
+            query.team_id = f.team.id if f.team.id
+            query.seller_id = f.seller.id if f.seller.id
+            query.product_id = f.product.id if f.product.id
+            getNewWonDealsData query
 
         updateChartVisibility = ->
             visibility = _.reduce $scope.metrics, (mem, metric) ->
@@ -95,10 +75,38 @@
                     graph.animate {
                         opacity: 0
                     }, 500
-                else
+                else   
                     graph.animate {
                         opacity: 1
                     }, 500
+
+        transformChartData = (data, chartId) ->
+            colors = d3.scale.category10()
+            switch chartId
+                when '#pipeline-revenue-chart'
+                    [
+                        {name: 'TQ-Pipeline',  color: shadeColor('#B3D776', 0),   dasharray: 'none',   visibility: 'A1', values: data.weighted_pipeline.current_quarter}
+                        {name: 'LQ-Pipeline',  color: shadeColor('#B3D776', 0.3), dasharray: 'none',   visibility: 'A2', values: data.weighted_pipeline.previous_quarter}
+                        {name: 'YoY-Pipeline', color: shadeColor('#B3D776', 0.6), dasharray: 'none',   visibility: 'A3', values: data.weighted_pipeline.previous_year_quarter}
+                        {name: 'TQ-Revenue',   color: shadeColor('#5398CC', 0),   dasharray: '4, 4',   visibility: 'B1', values: data.revenue.current_quarter}
+                        {name: 'LQ-Revenue',   color: shadeColor('#5398CC', 0.3), dasharray: '4, 4',   visibility: 'B2', values: data.revenue.previous_quarter}
+                        {name: 'YoY-Revenue',  color: shadeColor('#5398CC', 0.6), dasharray: '4, 4',   visibility: 'B3', values: data.revenue.previous_year_quarter}
+                        {name: 'TQ-Forecast',  color: shadeColor('#FF7E30', 0),   dasharray: '12, 12', visibility: 'C1', values: data.sum_revenue_and_weighted_pipeline.current_quarter}
+                        {name: 'LQ-Forecast',  color: shadeColor('#FF7E30', 0.3), dasharray: '12, 12', visibility: 'C2', values: data.sum_revenue_and_weighted_pipeline.previous_quarter}
+                        {name: 'YoY-Forecast', color: shadeColor('#FF7E30', 0.6), dasharray: '12, 12', visibility: 'C3', values: data.sum_revenue_and_weighted_pipeline.previous_year_quarter}
+                    ]
+                when '#activity-new-chart'
+                    [
+                        {name: 'TQ-New Deals',  color: colors(0), values: data.current_quarter}
+                        {name: 'LQ-New Deals',  color: colors(1), values: data.previous_quarter}
+                        {name: 'YoY-New Deals', color: colors(2), values: data.previous_year_quarter}
+                    ]
+                when '#activity-won-chart'
+                    [
+                        {name: 'TQ-Won Deals',  color: colors(0), values: data.current_quarter}
+                        {name: 'LQ-Won Deals',  color: colors(1), values: data.previous_quarter}
+                        {name: 'YoY-Won Deals', color: colors(2), values: data.previous_year_quarter}
+                    ]
 
         drawChart = (data, chartId) ->
             chartContainer = angular.element(chartId + '-container')
@@ -120,26 +128,13 @@
                 .append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-            dataset = [
-                {name: 'TQ-Pipeline', color: shadeColor('#B3D776', 0), visibility: 'A1', values: data.weighted_pipeline.current_quarter}
-                {name: 'LQ-Pipeline', color: shadeColor('#B3D776', 0.3), visibility: 'A2', values: data.weighted_pipeline.previous_quarter}
-                {name: 'YoY-Pipeline', color: shadeColor('#B3D776', 0.6), visibility: 'A3', values: data.weighted_pipeline.previous_year_quarter}
-                {name: 'TQ-Revenue', color: shadeColor('#5398CC', 0), visibility: 'B1', values: data.revenue.current_quarter}
-                {name: 'LQ-Revenue', color: shadeColor('#5398CC', 0.3), visibility: 'B2', values: data.revenue.previous_quarter}
-                {name: 'YoY-Revenue', color: shadeColor('#5398CC', 0.6), visibility: 'B3', values: data.revenue.previous_year_quarter}
-                {name: 'TQ-Forecast', color: shadeColor('#FF7E30', 0), visibility: 'C1', values: data.sum_revenue_and_weighted_pipeline.current_quarter}
-                {name: 'LQ-Forecast', color: shadeColor('#FF7E30', 0.3), visibility: 'C2', values: data.sum_revenue_and_weighted_pipeline.previous_quarter}
-                {name: 'YoY-Forecast', color: shadeColor('#FF7E30', 0.6), visibility: 'C3', values: data.sum_revenue_and_weighted_pipeline.previous_year_quarter}
-            ]
+            dataset = transformChartData(data, chartId)
 
             yMax = d3.max dataset, (item) -> d3.max item.values
-            yMax = (yMax || 0) * 1.2
-
-#            yParts = 5
-#            yValues = [yParts..0].map (i) -> yMax / yParts * i
+            yMax = yMax * 1.2 || 0
 
             x = d3.scale.ordinal().domain(['Week'].concat $scope.weeks).rangePoints([0, width - width / $scope.weeks.length])
-            y = d3.scale.linear().domain([yMax, 0]).range([0, height])
+            y = d3.scale.linear().domain([yMax || 1, 0]).rangeRound([0, height])
 
             xAxis = d3.svg.axis().scale(x).orient('bottom')
                 .outerTickSize(0)
@@ -150,63 +145,59 @@
                         d3.select(this)
                             .style 'font-weight', 'bold'
                             .style 'font-size', '12px'
-#                    'Week ' + v
                     v
             yAxis = d3.svg.axis().scale(y).orient('left')
                 .innerTickSize(-width)
                 .tickPadding(10)
                 .outerTickSize(0)
-                .ticks(6)
-                .tickFormat (v) -> $filter('formatMoney')(v)
+                .ticks(if yMax > 6 then 6 else yMax || 1)
+                .tickFormat (v) ->
+                    if chartId == '#activity-new-chart' then return v
+                    $filter('formatMoney')(v)
+            yAxis.tickValues([0]) if yMax == 0
 
             svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')').call xAxis
             svg.append('g').attr('class', 'axis').call yAxis
 
-            svg.append('line')
-                .attr('class', 'week-line')
-                .attr 'x1', x($scope.currentWeek)
-                .attr 'y1', height
-                .attr 'x2', x($scope.currentWeek)
-                .attr 'y2', height
-                .transition()
-                .delay(delay / 2)
-                .duration(duration / 2)
-                .ease('linear')
-                .attr('y1', 0)
-
-#            color = d3.scale.category10()
+            if $scope.currentWeek
+                svg.append('line')
+                    .attr('class', 'week-line')
+                    .attr 'x1', x($scope.currentWeek)
+                    .attr 'y1', height
+                    .attr 'x2', x($scope.currentWeek)
+                    .attr 'y2', height
+                    .transition()
+                    .delay(delay / 2)
+                    .duration(duration / 2)
+                    .ease('linear')
+                    .attr('y1', 0)
 
             graphLine = d3.svg.line()
                 .x((value, i) -> x(i + 1))
                 .y((value, i) -> y(value))
 
-            graphs = svg.selectAll('.graph')
+            graphsContainer = svg.append('g')
+                .attr('class', 'graphs-container')
+#                .attr('clip-path', 'url(#clip)')
+
+            graphs = graphsContainer.selectAll('.graph')
                 .data(dataset)
                 .enter()
                 .append('path')
                 .attr('class', 'graph')
                 .attr('data-visibility', (d) -> d.visibility)
                 .style 'stroke', (d) -> d.color
-                .attr 'd', (d) ->
-                    graphLine(d.values)
-
-#            totalLength = 0
-#            graphs.each ->
-#                length = this.getTotalLength()
-#                totalLength = length if length > totalLength
+                .attr 'd', -> graphLine(_.map $scope.weeks, -> 0)
+                .transition()
+                .duration(duration)
+                .attr 'd', (d) -> graphLine(d.values)
 
             graphs
-                .attr 'stroke-dasharray', -> this.getTotalLength() + ' ' + this.getTotalLength()
-                .attr 'stroke-dashoffset', -> this.getTotalLength()
-                .transition()
-                .delay(delay)
-                .duration(duration)
-                .ease('linear')
-                .attr('stroke-dashoffset', 0)
+                .attr 'stroke-dasharray', (d) -> d.dasharray
 
             #legend
-            legendContainer = d3.select(chartId + '-container').append('div')
-                .attr('class', 'legend-container')
+            legendContainer = d3.select(chartId + '-container .legend-container')
+                .html('')
                 .style 'margin-left', margin.left + 'px'
             legend = legendContainer
                 .selectAll('.legend')
@@ -214,9 +205,21 @@
                 .enter()
                 .append('div')
                 .attr('class', 'legend')
-            legend.append('div')
-                .attr('class', 'legend-icon')
-                .style 'background-color', (d) -> d.color
+#            legend.append('div')
+#                .attr('class', 'legend-icon')
+#                .style 'background-color', (d) -> d.color
+            legend.append('svg')
+                .style 'width', '36'
+                .style 'height', '4px'
+                .style 'margin-right', '8px'
+                .append('line')
+                .attr 'stroke-dasharray', (d) -> d.dasharray
+                .style 'stroke', (d) -> d.color
+                .style 'stroke-width', 3
+                .attr 'x1', 0
+                .attr 'y1', 2
+                .attr 'x2', 36
+                .attr 'y2', 2
             legend.append('span')
                 .attr 'class', 'legend-text'
                 .html (d) -> d.name

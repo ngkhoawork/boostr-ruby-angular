@@ -17,11 +17,11 @@
 											%span.caret
 										%ul.dropdown-menu
 											%li{ ng: { class: '{active: !filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", defaultTimePeriod)' } }
-													{{defaultTimePeriod.name}}
+												%a{ href: '', ng: { click: 'setFilter("timePeriod", defaultFilter.timePeriod)' } }
+													{{defaultFilter.timePeriod.name}}
 											%li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+													{{timePeriod.name}}
 		.row.mb20
 			.block
 				%div.mb20
@@ -33,8 +33,9 @@
 						%div.metric-row{'ng-click': 'setMetric(metric)'}
 							%i.fa{'ng-class': '{"fa-check-square active": metric.active, "fa-square-o": !metric.active}'}
 							{{metric.name}}
-				%div#pipeline-revenue-chart-container
+				%div#pipeline-revenue-chart-container.mb20
 					%svg#pipeline-revenue-chart.pacing-chart
+					%div.legend-container
 
 				%table.table.table-hover
 					%thead
@@ -52,7 +53,7 @@
 							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_quarter track by $index'}
 								{{val | currency: '$' : '0'}}
 						%tr
-							%td Last Year
+							%td YoY
 							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_year_quarter track by $index'}
 								{{val | currency: '$' : '0'}}
 
@@ -72,7 +73,7 @@
 							%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_quarter track by $index'}
 								{{val | currency: '$' : '0'}}
 						%tr
-							%td Last Year
+							%td YoY
 							%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_year_quarter track by $index'}
 								{{val | currency: '$' : '0'}}
 
@@ -88,16 +89,16 @@
 							%td
 								%ul.filter-item
 									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
-											{{filter.timePeriod.name}}
+										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.team.id}' }
+											{{filter.team.name}}
 											%span.caret
 										%ul.dropdown-menu
-											%li{ ng: { class: '{active: !filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", defaultTimePeriod)' } }
-													{{defaultTimePeriod.name}}
-											%li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+											%li{ ng: { class: '{active: !filter.team.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("team", defaultFilter.team)' } }
+													{{defaultFilter.team.name}}
+											%li{ ng: { repeat: 'team in teams', class: '{active: team.id === filter.team.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("team", team)' } }
+													{{team.name}}
 				.header-cell.filters-block
 					%table
 						%tr.filter-title
@@ -106,16 +107,16 @@
 							%td
 								%ul.filter-item
 									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
-											{{filter.timePeriod.name}}
+										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.seller.id}' }
+											{{filter.seller.name}}
 											%span.caret
 										%ul.dropdown-menu
-											%li{ ng: { class: '{active: !filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", defaultTimePeriod)' } }
-													{{defaultTimePeriod.name}}
-											%li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+											%li{ ng: { class: '{active: !filter.seller.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("seller", defaultFilter.seller)' } }
+													{{defaultFilter.seller.name}}
+											%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
+													{{seller.name}}
 
 				.header-cell.filters-block
 					%table
@@ -125,16 +126,16 @@
 							%td
 								%ul.filter-item
 									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
-											{{filter.timePeriod.name}}
+										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.product.id}' }
+											{{filter.product.name}}
 											%span.caret
 										%ul.dropdown-menu
-											%li{ ng: { class: '{active: !filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", defaultTimePeriod)' } }
-													{{defaultTimePeriod.name}}
-											%li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+											%li{ ng: { class: '{active: !filter.product.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("product", defaultFilter.product)' } }
+													{{defaultFilter.product.name}}
+											%li{ ng: { repeat: 'product in products', class: '{active: product.id === filter.product.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("product", product)' } }
+													{{product.name}}
 
 		.row
 			.col-xs-6.pl0
@@ -143,12 +144,14 @@
 						%span.title New Deal/RFP Pacing
 					%div#activity-new-chart-container
 						%svg#activity-new-chart.pacing-chart
+						%div.legend-container
 			.col-xs-6.pr0
 				.block
 					%div.mb20
 						%span.title Weekly Won Revenue Pacing
 					%div#activity-won-chart-container
 						%svg#activity-won-chart.pacing-chart
+						%div.legend-container
 		.row.mb20
 			.block
 				%div.mb20
@@ -157,38 +160,38 @@
 					%thead
 						%tr
 							%th
-								%b Wighted Pipe
+								%b New Deals #
 							%th{'ng-repeat': 'week in weeks'} Week {{week}}
 					%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
 						%tr
 							%td This Qtr
-							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.current_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
+							%td{'ng-repeat': 'val in newDeals.current_quarter track by $index'}
+								{{val}}
 						%tr
 							%td Last Qtr
-							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
+							%td{'ng-repeat': 'val in newDeals.previous_quarter track by $index'}
+								{{val}}
 						%tr
-							%td Last Year
-							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_year_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
+							%td YoY
+							%td{'ng-repeat': 'val in newDeals.previous_year_quarter track by $index'}
+								{{val}}
 
 				%table.table.table-hover
 					%thead
 						%tr
 							%th
-								%b Revenue
+								%b Won Deals
 							%th{'ng-repeat': 'week in weeks'} Week {{week}}
 					%tbody{'ng-show': 'pipelineRevenue.revenue'}
 						%tr
 							%td This Qtr
-							%td{'ng-repeat': 'val in pipelineRevenue.revenue.current_quarter track by $index'}
+							%td{'ng-repeat': 'val in wonDeals.current_quarter track by $index'}
 								{{val | currency: '$' : '0'}}
 						%tr
 							%td Last Qtr
-							%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_quarter track by $index'}
+							%td{'ng-repeat': 'val in wonDeals.previous_quarter track by $index'}
 								{{val | currency: '$' : '0'}}
 						%tr
-							%td Last Year
-							%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_year_quarter track by $index'}
+							%td YoY
+							%td{'ng-repeat': 'val in wonDeals.previous_year_quarter track by $index'}
 								{{val | currency: '$' : '0'}}
