@@ -8,7 +8,10 @@ class ContentFee < ActiveRecord::Base
   accepts_nested_attributes_for :content_fee_product_budgets
 
   default_scope { order(:created_at) }
-
+  scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
+  scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
+  scope :for_time_period, -> (start_date, end_date) { where('content_fees.start_date <= ? AND content_fees.end_date >= ?', end_date, start_date) }
+  
   after_update do
     if content_fee_product_budgets.sum(:budget) != budget || content_fee_product_budgets.sum(:budget_loc) != budget_loc
       if budget_changed?

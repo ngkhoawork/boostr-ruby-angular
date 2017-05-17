@@ -239,6 +239,7 @@ Rails.application.routes.draw do
     resources :forecasts, only: [:index, :show] do
       collection do
         get :detail
+        get :product_detail
       end
     end
     resources :fields, only: [:index]
