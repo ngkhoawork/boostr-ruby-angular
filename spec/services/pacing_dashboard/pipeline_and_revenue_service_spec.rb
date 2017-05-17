@@ -30,9 +30,9 @@ describe PacingDashboard::PipelineAndRevenueService do
     expect(pipeline_previous_quarter).to eq [20000, 25000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 0]
     expect(pipeline_previous_year_quarter).to eq [2000, 0, 0, 0, 0, 5000, 0, 0, 0, 0, 0, 10000, 0]
 
-    expect(forecast_amt_current_quarter).to eq [15000, 7000, 35000, 0, 0, 0, 5000, 0, 0, 0, 0, 0]
-    expect(forecast_amt_previous_quarter).to eq [35000, 37000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3000, 0]
-    expect(forecast_amt_previous_year_quarter).to eq [10000, 0, 0, 0, 0, 15000, 0, 0, 0, 0, 0, 14000, 0]
+    expect(forecast_amt_current_quarter).to eq [15000, 7000, 50000, 0, 0, 0, 7500, 0, 0, 0, 0, 0]
+    expect(forecast_amt_previous_quarter).to eq [35000, 49000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3000, 0]
+    expect(forecast_amt_previous_year_quarter).to eq [16000, 0, 0, 0, 0, 15000, 0, 0, 0, 0, 0, 14000, 0]
   end
 
   private
@@ -45,9 +45,17 @@ describe PacingDashboard::PipelineAndRevenueService do
     @_company ||= create :company
   end
 
-  def time_period
-    @_time_period ||= TimePeriod.first
-  end
+  def current_quarter_time_period
+    @_current_quarter_time_period ||= TimePeriod.find_by(name: 'Q1-2017')
+	end
+
+	def previous_quarter_time_period
+		@_previous_quarter_time_period ||= TimePeriod.find_by(name: 'Q4-2016')
+	end
+
+	def previous_year_quarter_time_period
+		@_previous_year_quarter_time_period ||= TimePeriod.find_by(name: 'Q1-2016')
+	end
 
   def user
     @_user ||= create :user
@@ -63,56 +71,68 @@ describe PacingDashboard::PipelineAndRevenueService do
 
   def create_snapshots_for_current_quarter
     Timecop.freeze(2017, 1, 2)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
+    snapshot = create :snapshot, company: company, user: user, time_period: current_quarter_time_period
     snapshot.update(revenue: 5_000, weighted_pipeline: 10_000)
 
     Timecop.return
     Timecop.freeze(2017, 1, 10)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
+    snapshot = create :snapshot, company: company, user: user, time_period: current_quarter_time_period
     snapshot.update(revenue: 2_000, weighted_pipeline: 5_000)
 
     Timecop.return
     Timecop.freeze(2017, 1, 17)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
+    snapshot = create :snapshot, company: company, user: user, time_period: current_quarter_time_period
     snapshot.update(revenue: 20_000, weighted_pipeline: 15_000)
+
+		snapshot = create :snapshot, company: company, user: user, time_period: current_quarter_time_period
+		snapshot.update(revenue: 10_000, weighted_pipeline: 5_000)
 
     Timecop.return
     Timecop.freeze(2017, 2, 14)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
-    snapshot.update(revenue: 4_000, weighted_pipeline: 1_000)
+    snapshot = create :snapshot, company: company, user: user, time_period: current_quarter_time_period
+		snapshot.update(revenue: 4_000, weighted_pipeline: 1_000)
+
+		snapshot = create :snapshot, company: company, user: user, time_period: current_quarter_time_period
+		snapshot.update(revenue: 2_000, weighted_pipeline: 500)
   end
 
   def create_snapshots_for_previous_quarter
     Timecop.return
     Timecop.freeze(2016, 10, 2)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
+    snapshot = create :snapshot, company: company, user: user, time_period: previous_quarter_time_period
     snapshot.update(revenue: 15_000, weighted_pipeline: 20_000)
 
     Timecop.return
     Timecop.freeze(2016, 10, 11)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
+    snapshot = create :snapshot, company: company, user: user, time_period: previous_quarter_time_period
     snapshot.update(revenue: 12_000, weighted_pipeline: 25_000)
+
+		snapshot = create :snapshot, company: company, user: user, time_period: previous_quarter_time_period
+		snapshot.update(revenue: 7_000, weighted_pipeline: 5_000)
 
     Timecop.return
     Timecop.freeze(2016, 12, 22)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
+    snapshot = create :snapshot, company: company, user: user, time_period: previous_quarter_time_period
     snapshot.update(revenue: 2_000, weighted_pipeline: 1_000)
   end
 
   def create_snapshots_for_previous_year_quarter
     Timecop.return
     Timecop.freeze(2016, 1, 2)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
+    snapshot = create :snapshot, company: company, user: user, time_period: previous_year_quarter_time_period
     snapshot.update(revenue: 8_000, weighted_pipeline: 2_000)
+
+		snapshot = create :snapshot, company: company, user: user, time_period: previous_year_quarter_time_period
+		snapshot.update(revenue: 5_000, weighted_pipeline: 1_000)
 
     Timecop.return
     Timecop.freeze(2016, 2, 9)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
+    snapshot = create :snapshot, company: company, user: user, time_period: previous_year_quarter_time_period
     snapshot.update(revenue: 10_000, weighted_pipeline: 5_000)
 
     Timecop.return
     Timecop.freeze(2016, 3, 22)
-    snapshot = create :snapshot, company: company, user: user, time_period: time_period
+    snapshot = create :snapshot, company: company, user: user, time_period: previous_year_quarter_time_period
     snapshot.update(revenue: 4_000, weighted_pipeline: 10_000)
   end
 end
