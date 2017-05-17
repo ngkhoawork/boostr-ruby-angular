@@ -5,11 +5,12 @@
         $scope.sellers = []
         $scope.timePeriods = []
         defaultUser = {id: 'all', name: 'All', first_name: 'All'}
+        $scope.isLoading = false
         $scope.filter =
             team: {id: 'all', name: 'All'}
             seller: defaultUser
             timePeriod: {id: null, name: 'Select'}
-            product: {id: 'all', name: 'All'}
+            products: []
         $scope.selectedTeam = $scope.filter.team
         $scope.switch =
             revenues: 'quarters'
@@ -58,7 +59,20 @@
             if $scope.filter[key]is value
                 return
             $scope.filter[key] = value
-            getData()
+
+        $scope.removeFilter = (key, item) ->
+            $scope.filter[key] = _.reject $scope.filter[key], (row) ->
+                return row.id == item.id
+            $scope.products.push item
+
+        $scope.addFilter = (key, item) ->
+            $scope.filter[key].push item
+            $scope.products = _.reject $scope.products, (row) ->
+                return row.id == item.id 
+
+        $scope.applyFilter = () ->
+            if !$scope.isLoading
+                getData()
 
         $scope.getAnnualSum = (data) ->
             sum = 0
@@ -82,7 +96,6 @@
             $scope.sellers = data.sellers
             $scope.sellers.unshift(defaultUser)
             $scope.products = data.products
-            $scope.products.unshift({id: 'all', name: 'All'})
             $scope.stages = _.filter data.stages, (item) ->
                 if item.probability > 0
                     return true
@@ -96,7 +109,6 @@
                     searchAndSetTimePeriod data.timePeriods
                 when 5 #admin
                     searchAndSetTimePeriod data.timePeriods
-            getData()
 
         searchAndSetUserTeam = (teams, user_id) ->
             for team in teams
@@ -124,11 +136,17 @@
                 item
         getData = ->
             if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
+            queryProducts = []
+            if $scope.filter.products.length > 0
+                queryProducts = _.map $scope.filter.products, (item) -> item.id
+            else
+                queryProducts = ['all']
             query =
                 id: $scope.filter.team.id || 'all'
                 user_id: $scope.filter.seller.id || 'all'
                 time_period_id: $scope.filter.timePeriod.id
-                product_id: $scope.filter.product.id
+                'product_ids[]': queryProducts
+            $scope.isLoading = true
             Forecast.product_forecast_detail(query).$promise.then (data) ->
                 $scope.forecastData = data
                 $scope.totalForecastData = {
@@ -157,15 +175,15 @@
                         if !$scope.totalForecastData.weighted_pipeline_by_stage[index]
                             $scope.totalForecastData.weighted_pipeline_by_stage[index] = 0
                         $scope.totalForecastData.weighted_pipeline_by_stage[index] += parseFloat(val)
-                console.log($scope.totalForecastData);
+                query.team_id = query.id
+                delete query.id
+                Revenue.forecast_detail(query).$promise.then (data) ->
+                    parseBudget data
+                    $scope.revenues = data
 
-            query.team_id = query.id
-            delete query.id
-            Revenue.forecast_detail(query).$promise.then (data) ->
-                parseBudget data
-                $scope.revenues = data
-            Deal.forecast_detail(query).then (data) ->
-                parseBudget data
-                $scope.deals = data
+                    Deal.forecast_detail(query).then (data) ->
+                        parseBudget data
+                        $scope.deals = data
+                        $scope.isLoading = false
 
     ]

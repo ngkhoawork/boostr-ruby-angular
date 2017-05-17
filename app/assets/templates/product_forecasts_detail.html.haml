@@ -10,7 +10,7 @@
               %td Team
               %td Seller
               %td Time period
-              %td Product
+              %td Products
             %tr
               %td
                 %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'onChange': 'test()', 'ng-class': '{"empty": selectedTeam.name === "All"}'}
@@ -39,13 +39,20 @@
               %td
                 %ul.filter-item
                   %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.product.name === "All"}' }
-                      {{filter.product.name}}
+                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.products.length == 0}' }
+                      %span{'ng-if': 'filter.products.length == 0'}
+                        All
+                      %span{'ng-repeat': 'product in filter.products'}
+                        {{product.name}}
+                        %i.fa.fa-times.close-btn{'ng-click': 'removeFilter("products", product)'}
                       %span.caret
                     %ul.dropdown-menu
-                      %li{ ng: { repeat: 'product in products', class: '{active: product.id === filter.product.id}' } }
-                        %a{ href: '', ng: { click: 'setFilter("product", product)' } }
+                      %li{ ng: { repeat: 'product in products | orderBy: "name"' } }
+                        %a{ href: '', ng: { click: 'addFilter("products", product)' } }
                           {{ product.name }}
+        .header-cell
+          %button.btn-main.submit{'ng-click': 'applyFilter()', 'ng-class': '{"disabled": isLoading == true}'}
+            Apply Filters
 
     %div{'ng-show': 'filter.timePeriod.id'}
       .row
@@ -89,7 +96,7 @@
                     {{(product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
                   %td.right
                     {{(product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
-                %tr
+                %tr{'ng-if': 'totalForecastData'}
                   %td
                     %strong
                       Total

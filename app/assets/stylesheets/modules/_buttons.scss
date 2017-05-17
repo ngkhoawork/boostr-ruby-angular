@@ -78,6 +78,9 @@
       background: linear-gradient(to right, darken($main-color, 10%), darken(lighten($main-color, 20%), 10%));
     }
   }
+  &.submit.disabled {
+    background: linear-gradient(to right, darken($main-color, 10%), darken(lighten($main-color, 20%), 10%));
+  }
 }
 .activity-email-btn {
   background-color: #DDDDDD;

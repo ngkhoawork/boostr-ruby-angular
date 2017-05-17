@@ -148,10 +148,10 @@ class Api::ForecastsController < ApplicationController
   def products
     return @products if defined?(@products)
     @products = []
-    if params[:product_id] && params[:product_id] != 'all'
-      @products = [company.products.find(params[:product_id])]
-    elsif params[:product_id] && params[:product_id] == 'all'
+    if params[:product_ids] == ['all']
       @products = company.products
+    elsif params[:product_ids] && params[:product_ids] != ['all']
+      @products = company.products.where('id in (?)', params[:product_ids])
     end
   end
 

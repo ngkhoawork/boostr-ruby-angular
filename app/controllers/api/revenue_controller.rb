@@ -13,7 +13,7 @@ class Api::RevenueController < ApplicationController
 
   def forecast_detail
     if valid_time_period?
-      if params[:product_id].present?
+      if params[:product_ids].present?
         render json: quarterly_product_ios
       else
         render json: quarterly_ios
@@ -359,8 +359,8 @@ class Api::RevenueController < ApplicationController
   end
 
   def product_ids
-    @product_ids ||= if params[:product_id].present? && params[:product_id] != 'all'
-      [params[:product_id]]
+    @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
+      params[:product_ids]
     else
       nil
     end
