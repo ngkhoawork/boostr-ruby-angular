@@ -3,7 +3,7 @@
     .row.mb20
       .reports-header
         .header-cell.main-title
-          Forecast Detail
+          Product Forecast Detail
         .header-cell.filters-block
           %table
             %tr.filter-title
@@ -39,7 +39,7 @@
               %td
                 %ul.filter-item
                   %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true, multiselect: true }, 'ng-class': '{"empty": filter.product.name === "All"}' }
+                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.product.name === "All"}' }
                       {{filter.product.name}}
                       %span.caret
                     %ul.dropdown-menu
@@ -72,9 +72,9 @@
                   %th.right
                     Revenue
                   %th.right
-                    Unweighted
-                  %th.right
                     Weighted
+                  %th.right
+                    Unweighted
               %tbody
                 %tr{'ng-repeat': 'product_forecast in forecastData | orderBy : "product.name"'}
                   %td
@@ -104,10 +104,10 @@
                       {{(totalForecastData.revenue || 0) | currency : '$' : 0}}
                   %td.right
                     %strong
-                      {{((totalForecastData.unweighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
+                      {{((totalForecastData.weighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
                   %td.right
                     %strong
-                      {{((totalForecastData.weighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
+                      {{((totalForecastData.unweighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
       .row
         .col-xs-12
           .block

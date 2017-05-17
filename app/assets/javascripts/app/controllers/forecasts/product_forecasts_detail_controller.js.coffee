@@ -140,23 +140,24 @@
                 }
                 _.each data, (item) ->
                     if item.revenue && item.revenue > 0
-                        $scope.totalForecastData.revenue += item.revenue
+                        $scope.totalForecastData.revenue += parseFloat(item.revenue)
 
                     if item.unweighted_pipeline && item.unweighted_pipeline > 0
-                        $scope.totalForecastData.unweighted_pipeline += item.unweighted_pipeline
+                        $scope.totalForecastData.unweighted_pipeline += parseFloat(item.unweighted_pipeline)
 
                     if item.weighted_pipeline && item.weighted_pipeline > 0
-                        $scope.totalForecastData.weighted_pipeline += item.weighted_pipeline
+                        $scope.totalForecastData.weighted_pipeline += parseFloat(item.weighted_pipeline)
 
                     _.each item.unweighted_pipeline_by_stage, (val, index) ->
                         if !$scope.totalForecastData.unweighted_pipeline_by_stage[index]
                             $scope.totalForecastData.unweighted_pipeline_by_stage[index] = 0
-                        $scope.totalForecastData.unweighted_pipeline_by_stage[index] += val
+                        $scope.totalForecastData.unweighted_pipeline_by_stage[index] += parseFloat(val)
 
                     _.each item.weighted_pipeline_by_stage, (val, index) ->
                         if !$scope.totalForecastData.weighted_pipeline_by_stage[index]
                             $scope.totalForecastData.weighted_pipeline_by_stage[index] = 0
-                        $scope.totalForecastData.weighted_pipeline_by_stage[index] += val
+                        $scope.totalForecastData.weighted_pipeline_by_stage[index] += parseFloat(val)
+                console.log($scope.totalForecastData);
 
             query.team_id = query.id
             delete query.id
