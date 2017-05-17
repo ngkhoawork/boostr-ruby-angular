@@ -68,7 +68,8 @@
                     Pipeline (W)
                   %th
                   %th{colspan: "2"}
-                    Total Forecast Amount
+                    %div{'ng-style': '{transform: "translateX(35px)"}'}
+                      Total Forecast Amount
                 %tr
                   %th
                     Product
@@ -78,9 +79,9 @@
                     Pipeline (W)
                   %th.right
                     Revenue
-                  %th.right
+                  %th.right{width: '160px'}
                     Weighted
-                  %th.right
+                  %th.right{width: '160px'}
                     Unweighted
               %tbody
                 %tr{'ng-repeat': 'product_forecast in forecastData | orderBy : "product.name"'}
