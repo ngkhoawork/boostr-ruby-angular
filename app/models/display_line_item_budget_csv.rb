@@ -34,7 +34,7 @@ class DisplayLineItemBudgetCsv
   end
 
   def update_display_line_item_budget
-    display_line_item_budget.update!(display_line_item_budget_attributes)
+    display_line_item_budget.update!(display_line_item_budget_attributes) unless display_line_item_budget.manual_override?
   end
 
   def display_line_item
