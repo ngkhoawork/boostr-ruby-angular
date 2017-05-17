@@ -6,7 +6,7 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
   }
 
   before do
-    dfp_api_configuration(25)
+    dfp_api_configuration(0)
   end
 
   it 'opens file' do
@@ -37,12 +37,12 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       product_name: 'Hershey test - In-Feed - :30 - iOS',
       pricing_type: 'CPM',
       price: 20000000 / 1_000_000,
-      quantity: 63750,
-      budget: 1275000000 / 1_000_000,
-      quantity_delivered: 63750,
+      quantity: 85000,
+      budget: 1700000000 / 1_000_000,
+      quantity_delivered: [85000, 85001].min,
       clicks: '977',
       ctr: '0.0115',
-      budget_delivered: 38237.25,
+      budget_delivered: (20000000 / 1_000_000 * 85001 / 1_000),
       company_id: company.id
     ).and_return(line_item_csv)
     expect(line_item_csv).to receive(:valid?)
@@ -67,12 +67,12 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       end_date: '2016-11-27T23:59:00-08:00',
       pricing_type: 'CPD',
       price: 20000000 / 1_000_000,
-      quantity: 85001,
-      budget: 0.5998,
-      quantity_delivered: 85001,
+      quantity: 85000,
+      budget: 20000000 / 1_000_000,
+      quantity_delivered: 85000,
       clicks: '977',
       ctr: '0.0115',
-      budget_delivered: 0.5998,
+      budget_delivered: (20000000 / 1_000_000 * 85000 / 1_000),
       company_id: company.id
     ).and_return(line_item_csv)
     expect(line_item_csv).to receive(:valid?)
@@ -166,7 +166,7 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
   end
 
   def report_csv_cpd(opts = {})
-    @_report_csv ||= generate_csv(
+    @_report_csv_cpd ||= generate_csv(
       build :dfp_report_cummulative_csv_data,
         dimensionorder_name: 'ioname',
         dimensionadvertiser_name: 'Advertiser name',
