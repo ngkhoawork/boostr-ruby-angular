@@ -56,9 +56,12 @@
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/deal_product_budget_upload.html'
       size: 'lg'
-      controller: 'DealProductBudgetUploadController'
+      controller: 'CsvUploadController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        api_url: ->
+          '/api/deal_products'
 
   $scope.showUploadContactsModal = ->
     $scope.modalInstance = $modal.open

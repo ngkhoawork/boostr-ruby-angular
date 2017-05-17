@@ -84,19 +84,21 @@ class DealProductBudget < ActiveRecord::Base
     end
   end
 
-  def self.import(file, current_user)
-    errors = []
-    row_number = 0
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
+
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal_product_budget', source: 'ui')
+    import_log.set_file_source(file_path)
 
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
+      import_log.count_processed
 
       if row[0]
         begin
           deal = current_user.company.deals.find(row[0].strip)
         rescue ActiveRecord::RecordNotFound
-          error = { row: row_number, message: ["Deal ID #{row[0]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal ID #{row[0]} could not be found"])
           next
         end
       end
@@ -105,32 +107,32 @@ class DealProductBudget < ActiveRecord::Base
         if !(deal)
           deals = current_user.company.deals.where('name ilike ?', row[1].strip)
           if deals.length > 1
-            error = { row: row_number, message: ["Deal Name #{row[1]} matched more than one deal record"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Deal Name #{row[1]} matched more than one deal record"])
             next
           elsif deals.length < 1
-            error = { row: row_number, message: ["Deal Name #{row[1]} did not match any Deal record"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Deal Name #{row[1]} did not match any Deal record"])
             next
           end
           deal = deals.first
         end
       else
-        error = { row: row_number, message: ["Deal Name can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Deal Name can't be blank"])
         next
       end
 
       if row[2]
         product = current_user.company.products.where(name: row[2]).first
         unless product
-          error = { row: row_number, message: ["Product #{row[2]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Product #{row[2]} could not be found"])
           next
         end
       else
-        error = { row: row_number, message: ["Deal Product can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Deal Product can't be blank"])
         next
       end
 
@@ -139,21 +141,21 @@ class DealProductBudget < ActiveRecord::Base
         budget = Float(row[3].strip) rescue false
         budget_loc = budget
         unless budget
-          error = { row: row_number, message: ["Budget must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Budget must be a numeric value"])
           next
         end
       else
-        error = { row: row_number, message: ["Budget can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Budget can't be blank"])
         next
       end
 
       if deal.exchange_rate
         budget = budget_loc / deal.exchange_rate
       else
-        error = { row: row_number, message: ["No active exchange rate for #{deal.curr_cd} at #{Date.today.strftime("%m/%d/%Y")}"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["No active exchange rate for #{deal.curr_cd} at #{Date.today.strftime("%m/%d/%Y")}"])
         next
       end
 
@@ -161,19 +163,19 @@ class DealProductBudget < ActiveRecord::Base
         begin
           period = Date.strptime(row[4].strip, '%b-%y')
         rescue ArgumentError
-          error = {row: row_number, message: ['Period must be in valid format: Mon-YY'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Period must be in valid format: Mon-YY'])
           next
         end
 
         unless period.between?(deal.start_date.beginning_of_month, deal.end_date.end_of_month)
-          error = { row: row_number, message: ["Period #{row[4]} must be within Deal Period"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Period #{row[4]} must be within Deal Period"])
           next
         end
       else
-        error = { row: row_number, message: ["Period can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Period can't be blank"])
         next
       end
 
@@ -193,28 +195,30 @@ class DealProductBudget < ActiveRecord::Base
         deal_product_budget_params[:deal_product_id] = deal_product.id
 
         if deal_product.deal_product_budgets.count >= deal.months.length
-          error = { row: row_number, message: ["Deal Product #{row[2].strip} already exists"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal Product #{row[2].strip} already exists"])
           next
         end
 
         if deal_product.deal_product_budgets.where(start_date: period.beginning_of_month).any?
-          error = { row: row_number, message: ["Deal Product Budget for #{row[4]} month already exists"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal Product Budget for #{row[4]} month already exists"])
           next
         end
       end
 
       if deal_product.update_attributes(deal_product_budgets_attributes: [deal_product_budget_params])
+        import_log.count_imported
+
         deal_product.update_budget if deal_product_is_new
         deal_product.deal.update_total_budget if deal_product_is_new
       else
-        error = { row: row_number, message: deal_product.errors.full_messages }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(deal_product.errors.full_messages)
         next
       end
     end
 
-    errors
+    import_log.save
   end
 end

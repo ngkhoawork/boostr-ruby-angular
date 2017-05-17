@@ -125,13 +125,10 @@ class DealProduct < ActiveRecord::Base
   def self.import(file, current_user_id, file_path)
     current_user = User.find current_user_id
 
-    row_number = 0
-
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal_product', source: 'ui')
     import_log.set_file_source(file_path)
 
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
       import_log.count_processed
 
       if row[0]
@@ -215,6 +212,7 @@ class DealProduct < ActiveRecord::Base
 
       if deal_product.update_attributes(deal_product_params)
         import_log.count_imported
+
         deal_product.deal.update_total_budget
       else
         import_log.count_failed
