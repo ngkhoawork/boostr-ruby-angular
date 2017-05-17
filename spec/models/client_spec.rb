@@ -41,12 +41,6 @@ RSpec.describe Client, type: :model do
       teammembers: [client.users.order(:id).map(&:email), client.client_members.order(:user_id).map(&:share).map(&:to_s)].transpose.map{|el|el.join('/')}.join(';')
     }
 
-    it 'returns correct headers' do
-      data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
-      data_headers = headers.keys.map(&:capitalize).map(&:to_s)
-      expect(data[0]).to eq(data_headers)
-    end
-
     it 'returns correct data for account' do
       data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
       client_data = client_ordered_data.values.map(&:to_s).map(&:presence)
@@ -197,6 +191,9 @@ RSpec.describe Client, type: :model do
       let(:own_parent) { build :client_csv_data, name: client.name, parent: client.name }
       let(:ambigous_match) { build :client_csv_data, name: duplicate1.name }
       let(:import_log) { CsvImportLog.last }
+      let(:missing_holding_company) { build :client_csv_data, type: 'agency', holding_company: 'AbInBev' }
+      let(:missing_region) { build :client_csv_data, region: 'NaN' }
+      let(:missing_segment) { build :client_csv_data, segment: 'NaN' }
 
       it 'requires name to be present' do
         Client.import(generate_csv(no_name), user.id, '/tmp/clients.csv')
@@ -283,6 +280,33 @@ RSpec.describe Client, type: :model do
         expect(import_log.rows_failed).to be 1
         expect(import_log.error_messages).to eq(
           [{ "row" => 1, "message" => ["Accounts can't be parents of themselves"] }]
+        )
+      end
+
+      it 'validates presence of region' do
+        Client.import(generate_csv(missing_region), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Region NaN could not be found"] }]
+        )
+      end
+
+      it 'validates presence of segment' do
+        Client.import(generate_csv(missing_segment), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Segment NaN could not be found"] }]
+        )
+      end
+
+      it 'validates presence of holding company' do
+        Client.import(generate_csv(missing_holding_company), user.id, '/tmp/clients.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Holding company AbInBev could not be found"] }]
         )
       end
     end

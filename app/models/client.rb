@@ -89,7 +89,7 @@ class Client < ActiveRecord::Base
       :Zip,
       :Phone,
       :Website,
-      :Replace_team,
+      :Replace_Team,
       :Teammembers,
       :Region,
       :Segment,
@@ -379,8 +379,8 @@ class Client < ActiveRecord::Base
       if row[16].present? && row[2] == 'agency'
         holding_company = HoldingCompany.where("name ilike ?", row[16].strip.downcase).first
         unless holding_company
-          error = { row: row_number, message: ["Holding company #{row[16]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Holding company #{row[16]} could not be found"])
           next
         end
       else
