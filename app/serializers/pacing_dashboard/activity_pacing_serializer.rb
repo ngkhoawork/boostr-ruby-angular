@@ -20,6 +20,14 @@ class PacingDashboard::ActivityPacingSerializer < ActiveModel::Serializer
   end
 
   def current_week
-    TimePeriodWeek.current_week_number
-  end
+    TimePeriodWeek.current_week_number if current_time_period?
+	end
+
+	def time_period_id
+		options[:time_period_id]
+	end
+
+	def current_time_period?
+		time_period_id.blank? || TimePeriod.current_quarter.id.eql?(time_period_id.to_i)
+	end
 end

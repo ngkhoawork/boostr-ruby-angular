@@ -16,18 +16,22 @@ class Api::PacingDashboardController < ApplicationController
   end
 
   def pipeline_and_revenue_serializer
-    PacingDashboard::PipelineAndRevenueSerializer.new(company).serializable_hash
-  end
+    PacingDashboard::PipelineAndRevenueSerializer.new(company, time_period_id: time_period_id).serializable_hash
+	end
 
   def pipeline_and_revenue_series
     PacingDashboard::PipelineAndRevenueCalculationService.new(company, params).perform
 	end
 
 	def activity_pacing_serializer
-		PacingDashboard::ActivityPacingSerializer.new(company).serializable_hash
+		PacingDashboard::ActivityPacingSerializer.new(company, time_period_id: time_period_id).serializable_hash
 	end
 
 	def activity_pacing_series
 		PacingDashboard::ActivityPacingCalculationService.new(company, params).perform
+	end
+
+	def time_period_id
+		@_time_period_id ||= params[:time_period_id]
 	end
 end
