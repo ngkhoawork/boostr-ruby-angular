@@ -68,7 +68,7 @@
             visibility = _.reduce $scope.metrics, (mem, metric) ->
                 if metric.active then mem + metric.visibility else mem || ''
             , ''
-            angular.element('.graph').each (graph) ->
+            angular.element('#pipeline-revenue-chart .graph').each (graph) ->
                 graph = angular.element(this)
                 graphVisibility = graph.data().visibility || []
                 if _.indexOf(visibility, graphVisibility[0]) == -1 || _.indexOf(visibility, graphVisibility[1]) == -1
