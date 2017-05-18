@@ -72,7 +72,9 @@ class Deal < ActiveRecord::Base
 
   before_create do
     update_stage
-    self.closed_at = created_at unless stage.open?
+    if self.closed_at.nil?
+      self.closed_at = created_at unless stage.open?
+    end
   end
 
   after_create do
@@ -1034,7 +1036,7 @@ class Deal < ActiveRecord::Base
 
       if row[11].present?
         begin
-          created_at = DateTime.strptime(row[11], '%m/%d/%Y')
+          created_at = DateTime.strptime(row[11], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
           error = {row: row_number, message: ['Deal Creation Date must have valid date format MM/DD/YYYY'] }
           errors << error
@@ -1044,7 +1046,7 @@ class Deal < ActiveRecord::Base
 
       if row[12].present?
         begin
-          closed_date = DateTime.strptime(row[12], '%m/%d/%Y')
+          closed_date = DateTime.strptime(row[12], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
           error = {row: row_number, message: ['Deal Close Date must have valid date format MM/DD/YYYY'] }
           errors << error
