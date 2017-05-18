@@ -72,9 +72,9 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 		weeks_for_current_quarter.each_with_object({}) do |week, memo|
 			memo[week.start_date] = 0
 
-			snapshot_sum_revenue_and_weighted_pipeline_for_current_quarter.map do |key, value|
+			snapshot_sum_revenue_and_weighted_pipeline_for_current_quarter.map do |key, _value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] = value if value > memo[week.start_date]
+					memo[week.start_date] += snapshot_sum_revenue_and_weighted_pipeline_for_current_quarter.delete(key)
 				end
 			end
 		end.values
@@ -137,9 +137,9 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 		weeks_for_previous_quarter.each_with_object({}) do |week, memo|
 			memo[week.start_date] = 0
 
-			snapshot_sum_revenue_and_weighted_pipeline_for_previous_quarter.map do |key, value|
+			snapshot_sum_revenue_and_weighted_pipeline_for_previous_quarter.map do |key, _value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] = value if value > memo[week.start_date]
+					memo[week.start_date] += snapshot_sum_revenue_and_weighted_pipeline_for_previous_quarter.delete(key)
 				end
 			end
 		end.values
@@ -202,9 +202,9 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 		weeks_for_previous_year_quarter.each_with_object({}) do |week, memo|
 			memo[week.start_date] = 0
 
-			snapshot_sum_revenue_and_weighted_pipeline_for_previous_year_quarter.map do |key, value|
+			snapshot_sum_revenue_and_weighted_pipeline_for_previous_year_quarter.map do |key, _value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] = value if value > memo[week.start_date]
+					memo[week.start_date] += snapshot_sum_revenue_and_weighted_pipeline_for_previous_year_quarter.delete(key)
 				end
 			end
 		end.values
