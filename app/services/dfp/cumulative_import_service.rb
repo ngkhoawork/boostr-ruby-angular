@@ -45,7 +45,7 @@ module DFP
         line_item_params[:budget] = price
 
         if DateTime.parse(line_item_params[:start_date]).to_date < Date.today
-          line_item_params[:budget_delivered] = budget_delivered
+          line_item_params[:budget_delivered] = price
         else
           line_item_params[:budget_delivered] = 0
         end
