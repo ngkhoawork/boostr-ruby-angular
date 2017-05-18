@@ -28,20 +28,17 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 	def snapshot_max_revenue_by_day_for_current_quarter
 		@_snapshot_max_revenue_by_day_for_current_quarter ||=
-			snapshot_grouped_by_day_for_current_quarter.maximum(:revenue)
+			snapshot_grouped_by_day_for_current_quarter.sum(:revenue)
 	end
 
 	def snapshot_max_weighted_pipeline_by_day_for_current_quarter
 		@_snapshot_max_weighted_pipeline_by_day_for_current_quarter ||=
-			snapshot_grouped_by_day_for_current_quarter.maximum(:weighted_pipeline)
+			snapshot_grouped_by_day_for_current_quarter.sum(:weighted_pipeline)
 	end
 
 	def snapshot_sum_revenue_and_weighted_pipeline_for_current_quarter
 		@_snapshot_sum_revenue_and_weighted_pipeline_for_current_quarter ||=
-			snapshot_grouped_by_day_for_current_quarter.sum(:weighted_pipeline)
-			.merge(snapshot_grouped_by_day_for_current_quarter.sum(:revenue)) do |_key, revenue_val, pipeline_val|
-				revenue_val + pipeline_val
-			end
+			snapshot_grouped_by_day_for_current_quarter.sum('revenue + weighted_pipeline')
 	end
 
 	def max_revenue_by_week_for_current_quarter_series
@@ -50,7 +47,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 			snapshot_max_revenue_by_day_for_current_quarter.map do |key, value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] = value if value > memo[week.start_date]
+					memo[week.start_date] = value if key >= week.start_date
 				end
 			end
 		end.values
@@ -62,7 +59,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 			snapshot_max_weighted_pipeline_by_day_for_current_quarter.map do |key, value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] = value if value > memo[week.start_date]
+					memo[week.start_date] = value if key >= week.start_date
 				end
 			end
 		end.values
@@ -72,9 +69,9 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 		weeks_for_current_quarter.each_with_object({}) do |week, memo|
 			memo[week.start_date] = 0
 
-			snapshot_sum_revenue_and_weighted_pipeline_for_current_quarter.map do |key, _value|
+			snapshot_sum_revenue_and_weighted_pipeline_for_current_quarter.map do |key, value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] += snapshot_sum_revenue_and_weighted_pipeline_for_current_quarter.delete(key)
+					memo[week.start_date] = value if key >= week.start_date
 				end
 			end
 		end.values
@@ -87,20 +84,17 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 	def snapshot_max_revenue_by_day_for_previous_quarter
 		@_snapshot_max_revenue_by_day_for_previous_quarter ||=
-			snapshot_grouped_by_day_for_previous_quarter.maximum(:revenue)
+			snapshot_grouped_by_day_for_previous_quarter.sum(:revenue)
 	end
 
 	def snapshot_max_weighted_pipeline_by_day_for_previous_quarter
 		@_snapshot_max_weighted_pipeline_by_day_for_previous_quarter ||=
-			snapshot_grouped_by_day_for_previous_quarter.maximum(:weighted_pipeline)
+			snapshot_grouped_by_day_for_previous_quarter.sum(:weighted_pipeline)
 	end
 
 	def snapshot_sum_revenue_and_weighted_pipeline_for_previous_quarter
 		@_snapshot_sum_revenue_and_weighted_pipeline_for_previous_quarter ||=
-			snapshot_grouped_by_day_for_previous_quarter.sum(:weighted_pipeline)
-			.merge(snapshot_grouped_by_day_for_previous_quarter.sum(:revenue)) do |_key, revenue_val, pipeline_val|
-				revenue_val + pipeline_val
-			end
+			snapshot_grouped_by_day_for_previous_quarter.sum('revenue + weighted_pipeline')
 	end
 
 	def max_revenue_by_week_for_previous_quarter_series
@@ -111,7 +105,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 			snapshot_max_revenue_by_day_for_previous_quarter.map do |key, value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] = value if value > memo[week.start_date]
+					memo[week.start_date] = value if key >= week.start_date
 				end
 			end
 		end.values
@@ -125,7 +119,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 			snapshot_max_weighted_pipeline_by_day_for_previous_quarter.map do |key, value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] = value if value > memo[week.start_date]
+					memo[week.start_date] = value if key >= week.start_date
 				end
 			end
 		end.values
@@ -137,9 +131,9 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 		weeks_for_previous_quarter.each_with_object({}) do |week, memo|
 			memo[week.start_date] = 0
 
-			snapshot_sum_revenue_and_weighted_pipeline_for_previous_quarter.map do |key, _value|
+			snapshot_sum_revenue_and_weighted_pipeline_for_previous_quarter.map do |key, value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] += snapshot_sum_revenue_and_weighted_pipeline_for_previous_quarter.delete(key)
+					memo[week.start_date] = value if key >= week.start_date
 				end
 			end
 		end.values
@@ -152,20 +146,17 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 	def snapshot_max_revenue_by_day_for_previous_year_quarter
 		@_snapshot_max_revenue_by_day_for_previous_year_quarter ||=
-			snapshot_grouped_by_day_for_previous_year_quarter.maximum(:revenue)
+			snapshot_grouped_by_day_for_previous_year_quarter.sum(:revenue)
 	end
 
 	def snapshot_max_weighted_pipeline_by_day_for_previous_year_quarter
 		@_snapshot_max_weighted_pipeline_by_day_for_previous_year_quarter ||=
-			snapshot_grouped_by_day_for_previous_year_quarter.maximum(:weighted_pipeline)
+			snapshot_grouped_by_day_for_previous_year_quarter.sum(:weighted_pipeline)
 	end
 
 	def snapshot_sum_revenue_and_weighted_pipeline_for_previous_year_quarter
 		@_snapshot_sum_revenue_and_weighted_pipeline_for_previous_year_quarter ||=
-			snapshot_grouped_by_day_for_previous_year_quarter.sum(:weighted_pipeline)
-			.merge(snapshot_grouped_by_day_for_previous_year_quarter.sum(:revenue)) do |_key, revenue_val, pipeline_val|
-				revenue_val + pipeline_val
-			end
+			snapshot_grouped_by_day_for_previous_year_quarter.sum('revenue + weighted_pipeline')
 	end
 
 	def max_revenue_by_week_for_previous_year_quarter_series
@@ -176,7 +167,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 			snapshot_max_revenue_by_day_for_previous_year_quarter.map do |key, value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] = value if value > memo[week.start_date]
+					memo[week.start_date] = value if key >= week.start_date
 				end
 			end
 		end.values
@@ -190,7 +181,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 			snapshot_max_weighted_pipeline_by_day_for_previous_year_quarter.map do |key, value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] = value if value > memo[week.start_date]
+					memo[week.start_date] = value if key >= week.start_date
 				end
 			end
 		end.values
@@ -202,9 +193,9 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 		weeks_for_previous_year_quarter.each_with_object({}) do |week, memo|
 			memo[week.start_date] = 0
 
-			snapshot_sum_revenue_and_weighted_pipeline_for_previous_year_quarter.map do |key, _value|
+			snapshot_sum_revenue_and_weighted_pipeline_for_previous_year_quarter.map do |key, value|
 				if week.start_date <= key && week.end_date >= key
-					memo[week.start_date] += snapshot_sum_revenue_and_weighted_pipeline_for_previous_year_quarter.delete(key)
+					memo[week.start_date] = value if key >= week.start_date
 				end
 			end
 		end.values
