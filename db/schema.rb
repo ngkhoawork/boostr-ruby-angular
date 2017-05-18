@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170502230011) do
+ActiveRecord::Schema.define(version: 20170518085106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -305,6 +305,7 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.boolean  "primary",    default: false, null: false
+    t.boolean  "is_active",  default: true,  null: false
   end
 
   add_index "client_contacts", ["client_id", "contact_id"], name: "index_client_contacts_on_client_id_and_contact_id", using: :btree
@@ -527,6 +528,7 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.integer  "company_id"
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
+    t.string   "source"
   end
 
   add_index "csv_import_logs", ["company_id"], name: "index_csv_import_logs_on_company_id", using: :btree
@@ -859,12 +861,12 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.float    "budget"
     t.date     "start_date"
     t.date     "end_date"
-    t.datetime "created_at",                                                        null: false
-    t.datetime "updated_at",                                                        null: false
-    t.decimal  "budget_loc",           precision: 15, scale: 2, default: 0.0
-    t.string   "billing_status",                                default: "Pending"
-    t.boolean  "manual_override",                               default: false
-    t.decimal  "ad_server_budget",     precision: 15, scale: 2
+    t.datetime "created_at",                                                         null: false
+    t.datetime "updated_at",                                                         null: false
+    t.decimal  "budget_loc",            precision: 15, scale: 2, default: 0.0
+    t.string   "billing_status",                                 default: "Pending"
+    t.boolean  "manual_override",                                default: false
+    t.decimal  "ad_server_budget",      precision: 15, scale: 2
     t.integer  "ad_server_quantity"
     t.integer  "quantity"
     t.integer  "clicks"
@@ -909,8 +911,9 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.decimal  "budget_remaining_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.integer  "balance_loc",                limit: 8
     t.integer  "daily_run_rate_loc"
-    t.decimal  "ctr",                                  precision: 3,  scale: 2
+    t.decimal  "ctr",                                  precision: 5,  scale: 4
     t.integer  "clicks"
+    t.text     "ad_unit"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
@@ -966,8 +969,8 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.string   "request_type"
     t.string   "resource_type"
     t.integer  "company_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
     t.integer  "deal_id"
     t.boolean  "is_error"
     t.string   "api_provider"
@@ -1066,8 +1069,9 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.string   "product_line"
     t.string   "family"
     t.string   "revenue_type"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "active",       default: true
   end
 
   create_table "quota", force: :cascade do |t|
@@ -1199,6 +1203,17 @@ ActiveRecord::Schema.define(version: 20170502230011) do
     t.date    "start_date"
     t.date    "end_date"
     t.integer "days_length"
+  end
+
+  create_table "time_period_weeks", force: :cascade do |t|
+    t.integer  "week"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.string   "period_name"
+    t.date     "period_start"
+    t.date     "period_end"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   create_table "time_periods", force: :cascade do |t|

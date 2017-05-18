@@ -11,12 +11,10 @@ class DisplayLineItemCsv
   validate :io_exchange_rate_presence
   validate :dates_can_be_parsed
 
-  attr_accessor(
-    :external_io_number, :line_number, :ad_server, :start_date, :end_date,
-    :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
-    :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks,
-    :io_name, :io_start_date, :io_end_date, :io_advertiser, :io_agency
-  )
+  attr_accessor :external_io_number, :line_number, :ad_server, :start_date, :end_date,
+                :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
+                :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks,
+                :io_name, :io_start_date, :io_end_date, :io_advertiser, :io_agency, :ad_unit_name
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -49,7 +47,8 @@ class DisplayLineItemCsv
         quantity_remaining: quantity_remaining,
         quantity_delivered_3p: quantity_delivered_3p,
         ctr: ctr,
-        clicks: clicks
+        clicks: clicks,
+        ad_unit: ad_unit_name
       )
     end
   end

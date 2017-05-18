@@ -37,7 +37,8 @@ module DFP
         clicks: row[:columntotal_line_item_level_clicks],
         ctr: row[:columntotal_line_item_level_ctr],
         budget_delivered: budget_delivered,
-        company_id: company_id
+        company_id: company_id,
+        ad_unit_name: row[:dimensionad_unit_name]
       }
 
       if line_item_params[:pricing_type] == 'CPD'
