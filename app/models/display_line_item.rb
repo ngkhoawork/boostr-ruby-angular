@@ -103,13 +103,17 @@ class DisplayLineItem < ActiveRecord::Base
     self.save if should_save
   end
 
-  def self.import(file, current_user)
-    errors = []
-    row_number = 0
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
+
     list_of_currencies = Currency.pluck(:curr_cd)
 
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'display_line_item', source: 'ui')
+    import_log.set_file_source(file_path)
+
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
+      import_log.count_processed
+
       io_id = nil
       io = nil
 
@@ -122,8 +126,8 @@ class DisplayLineItem < ActiveRecord::Base
           io = ios[0]
         end
       else
-        error = { row: row_number, message: ["Ext IO Num can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Ext IO Num can't be blank"])
         next
       end
 
@@ -147,8 +151,8 @@ class DisplayLineItem < ActiveRecord::Base
           io_name = row[1]
         end
       else
-        error = { row: row_number, message: ["IO Name can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["IO Name can't be blank"])
         next
       end
 
@@ -160,13 +164,13 @@ class DisplayLineItem < ActiveRecord::Base
             io_start_date = Date.strptime(row[2].strip, "%m/%d/%y")
           end
         rescue ArgumentError
-          error = {row: row_number, message: ['IO Start Date must be a valid datetime'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['IO Start Date must be a valid datetime'])
           next
         end
       else
-        error = {row: row_number, message: ['IO Start Date must be present'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['IO Start Date must be present'])
         next
       end
 
@@ -178,19 +182,19 @@ class DisplayLineItem < ActiveRecord::Base
             io_end_date = Date.strptime(row[3].strip, "%m/%d/%y")
           end
         rescue ArgumentError
-          error = {row: row_number, message: ['IO End Date must be a valid datetime'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['IO End Date must be a valid datetime'])
           next
         end
       else
-        error = {row: row_number, message: ['IO End Date must be present'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['IO End Date must be present'])
         next
       end
 
       if (io_end_date && io_start_date) && io_start_date > io_end_date
-        error = {row: row_number, message: ['IO Start Date must preceed IO End Date'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['IO Start Date must preceed IO End Date'])
         next
       end
 
@@ -200,13 +204,13 @@ class DisplayLineItem < ActiveRecord::Base
         io_budget = Float(row[4].strip) rescue false
         io_budget_loc = io_budget
         unless io_budget
-          error = { row: row_number, message: ["IO Budget must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["IO Budget must be a numeric value"])
           next
         end
       else
-        error = { row: row_number, message: ["IO Budget can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["IO Budget can't be blank"])
         next
       end
 
@@ -214,17 +218,17 @@ class DisplayLineItem < ActiveRecord::Base
       if row[5]
         curr_cd = row[5].strip
         if !(list_of_currencies.include?(curr_cd))
-          error = { row: row_number, message: ["Currency #{curr_cd} is not found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Currency #{curr_cd} is not found"])
           next
         elsif !(io_id.nil?) && io.curr_cd != curr_cd
-          error = { row: row_number, message: ["IO currency #{io.curr_cd} does not match #{curr_cd}"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["IO currency #{io.curr_cd} does not match #{curr_cd}"])
           next
         end
       else
-        error = { row: row_number, message: ["Currency code can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Currency code can't be blank"])
         next
       end
 
@@ -232,8 +236,8 @@ class DisplayLineItem < ActiveRecord::Base
       if row[6]
         advertiser = row[6].strip
       else
-        error = { row: row_number, message: ["Advertiser can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Advertiser can't be blank"])
         next
       end
 
@@ -247,13 +251,13 @@ class DisplayLineItem < ActiveRecord::Base
       if row[8]
         line_number = Integer(row[8].strip) rescue false
         unless line_number
-          error = { row: row_number, message: ["Line # must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Line # must be a numeric value"])
           next
         end
       else
-        error = { row: row_number, message: ["Line # can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Line # can't be blank"])
         next
       end
 
@@ -267,13 +271,13 @@ class DisplayLineItem < ActiveRecord::Base
             start_date = Date.strptime(row[10].strip, "%m/%d/%y")
           end
         rescue ArgumentError
-          error = {row: row_number, message: ['Start Date must be a valid datetime'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Start Date must be a valid datetime'])
           next
         end
       else
-        error = {row: row_number, message: ['Start Date must be present'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Start Date must be present'])
         next
       end
 
@@ -285,19 +289,19 @@ class DisplayLineItem < ActiveRecord::Base
             end_date = Date.strptime(row[11].strip, "%m/%d/%y")
           end
         rescue ArgumentError
-          error = {row: row_number, message: ['End Date must be a valid datetime'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['End Date must be a valid datetime'])
           next
         end
       else
-        error = {row: row_number, message: ['End Date must be present'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['End Date must be present'])
         next
       end
 
       if (end_date && start_date) && start_date > end_date
-        error = {row: row_number, message: ['Start Date must preceed End Date'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Start Date must preceed End Date'])
         next
       end
 
@@ -316,8 +320,8 @@ class DisplayLineItem < ActiveRecord::Base
           end
         end
       else
-        error = { row: row_number, message: ["Product can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Product can't be blank"])
         next
       end
 
@@ -325,13 +329,13 @@ class DisplayLineItem < ActiveRecord::Base
       if row[13]
         qty = Integer(row[13].strip) rescue false
         unless qty
-          error = { row: row_number, message: ["Qty must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Qty must be a numeric value"])
           next
         end
       else
-        error = { row: row_number, message: ["Qty can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Qty can't be blank"])
         next
       end
 
@@ -344,13 +348,13 @@ class DisplayLineItem < ActiveRecord::Base
         budget = Float(row[16].strip) rescue false
         budget_loc = budget
         unless budget
-          error = { row: row_number, message: ["Budget must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Budget must be a numeric value"])
           next
         end
       else
-        error = { row: row_number, message: ["Budget can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Budget can't be blank"])
         next
       end
 
@@ -360,8 +364,8 @@ class DisplayLineItem < ActiveRecord::Base
         budget_delivered = Float(row[17].strip) rescue false
         budget_delivered_loc = budget_delivered
         unless budget_delivered
-          error = { row: row_number, message: ["Budget Delivered must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Budget Delivered must be a numeric value"])
           next
         end
       end
@@ -372,8 +376,8 @@ class DisplayLineItem < ActiveRecord::Base
         budget_remaining = Float(row[18].strip) rescue false
         budget_remaining_loc = budget_remaining
         unless budget_remaining
-          error = { row: row_number, message: ["Budget Remaining must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Budget Remaining must be a numeric value"])
           next
         end
       end
@@ -382,8 +386,8 @@ class DisplayLineItem < ActiveRecord::Base
       if row[19]
         qty_delivered = Float(row[19].strip) rescue false
         unless qty_delivered
-          error = { row: row_number, message: ["Qty Delivered must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Qty Delivered must be a numeric value"])
           next
         end
       end
@@ -392,8 +396,8 @@ class DisplayLineItem < ActiveRecord::Base
       if row[20]
         qty_remaining = Float(row[20].strip) rescue false
         unless qty_remaining
-          error = { row: row_number, message: ["Qty Remaining must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Qty Remaining must be a numeric value"])
           next
         end
       end
@@ -402,8 +406,8 @@ class DisplayLineItem < ActiveRecord::Base
       if row[21]
         qty_delivered_3p = Float(row[21].strip) rescue false
         unless qty_delivered_3p
-          error = { row: row_number, message: ["3P Qty Delivered must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["3P Qty Delivered must be a numeric value"])
           next
         end
       end
@@ -412,8 +416,8 @@ class DisplayLineItem < ActiveRecord::Base
       if row[22]
         qty_remaining_3p = Float(row[22].strip) rescue false
         unless qty_remaining_3p
-          error = { row: row_number, message: ["3P Qty Remaining must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["3P Qty Remaining must be a numeric value"])
           next
         end
       end
@@ -424,8 +428,8 @@ class DisplayLineItem < ActiveRecord::Base
         budget_delivered_3p = Float(row[23].strip) rescue false
         budget_delivered_3p_loc = budget_delivered_3p
         unless budget_delivered_3p
-          error = { row: row_number, message: ["3P Budget Delivered must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["3P Budget Delivered must be a numeric value"])
           next
         end
       end
@@ -436,8 +440,8 @@ class DisplayLineItem < ActiveRecord::Base
         budget_remaining_3p = Float(row[24].strip) rescue false
         budget_remaining_3p_loc = budget_remaining_3p
         unless budget_remaining_3p
-          error = { row: row_number, message: ["3P Budget Remaining must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["3P Budget Remaining must be a numeric value"])
           next
         end
       end
@@ -492,8 +496,8 @@ class DisplayLineItem < ActiveRecord::Base
         end
 
         unless temp_io.exchange_rate
-          error = { row: row_number, message: ["No exchange rate for #{temp_io.curr_cd} found at #{temp_io.created_at.strftime("%m/%d/%Y")}"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["No exchange rate for #{temp_io.curr_cd} found at #{temp_io.created_at.strftime("%m/%d/%Y")}"])
           next
         end
 
@@ -501,8 +505,8 @@ class DisplayLineItem < ActiveRecord::Base
         display_line_item_params = self.convert_params_currency(temp_io.exchange_rate, display_line_item_params)
       else
         unless io.exchange_rate
-          error = { row: row_number, message: ["No exchange rate for #{io.curr_cd} found at #{io.created_at.strftime("%m/%d/%Y")}"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["No exchange rate for #{io.curr_cd} found at #{io.created_at.strftime("%m/%d/%Y")}"])
           next
         end
 
@@ -529,13 +533,15 @@ class DisplayLineItem < ActiveRecord::Base
         display_line_item = display_line_items.first
       end
       if display_line_item.present?
+        import_log.count_imported
         display_line_item.update(display_line_item_params)
       else
+        import_log.count_imported
         DisplayLineItem.create(display_line_item_params)
       end
     end
 
-    errors
+    import_log.save
   end
 
   def ave_run_rate

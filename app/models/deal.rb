@@ -840,7 +840,6 @@ class Deal < ActiveRecord::Base
   def self.import(file, current_user_id, file_path)
     current_user = User.find current_user_id
 
-    row_number = 0
     deal_type_field = current_user.company.fields.find_by_name('Deal Type')
     deal_source_field = current_user.company.fields.find_by_name('Deal Source')
     close_reason_field = current_user.company.fields.find_by_name("Close Reason")
@@ -850,7 +849,6 @@ class Deal < ActiveRecord::Base
     import_log.set_file_source(file_path)
 
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
       import_log.count_processed
 
       if row[0]

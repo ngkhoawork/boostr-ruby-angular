@@ -78,17 +78,23 @@
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/display_io_upload.html'
       size: 'lg'
-      controller: 'DisplayIOUploadController'
+      controller: 'CsvUploadController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        api_url: ->
+          '/api/display_line_items'
 
   $scope.showUploadDisplayIOMonthlyBudgetModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/display_io_monthly_budget_upload.html'
       size: 'lg'
-      controller: 'DisplayIOMonthlyBudgetUploadController'
+      controller: 'CsvUploadController'
       backdrop: 'static'
       keyboard: false
+      resolve:
+        api_url: ->
+          '/api/display_line_item_budgets'
 
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')

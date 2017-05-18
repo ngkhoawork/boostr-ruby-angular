@@ -210,9 +210,7 @@ class Contact < ActiveRecord::Base
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'contact', source: 'ui')
     import_log.set_file_source(file_path)
     
-    row_number = 0
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
       import_log.count_processed
 
       if row[3].nil? || row[3].blank?

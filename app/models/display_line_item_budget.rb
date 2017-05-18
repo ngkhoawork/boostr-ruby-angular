@@ -77,16 +77,19 @@ class DisplayLineItemBudget < ActiveRecord::Base
     end
   end
 
-  def self.import(file, current_user)
-    errors = []
-    row_number = 0
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
+
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'display_line_item_budget', source: 'ui')
+    import_log.set_file_source(file_path)
 
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
+      import_log.count_processed
+
       io_id = nil
       io = nil
-
       external_io_number = nil
+
       if row[0]
         external_io_number = row[0].strip
         ios = current_user.company.ios.where("external_io_number = ?", row[0].strip)
@@ -95,18 +98,18 @@ class DisplayLineItemBudget < ActiveRecord::Base
           io = ios[0]
 
           unless io.exchange_rate
-            error = { row: row_number, message: ["No exchange rate for #{io.curr_cd} found at #{io.created_at.strftime("%m/%d/%Y")}"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["No exchange rate for #{io.curr_cd} found at #{io.created_at.strftime("%m/%d/%Y")}"])
             next
           end
         else
-          error = { row: row_number, message: ["Ext IO Num doesn't match with any IO."] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Ext IO Num doesn't match with any IO."])
           next
         end
       else
-        error = { row: row_number, message: ["Ext IO Num can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Ext IO Num can't be blank"])
         next
       end
 
@@ -117,13 +120,13 @@ class DisplayLineItemBudget < ActiveRecord::Base
         if display_line_items.count > 0
           display_line_item = display_line_items[0]
         else
-          error = { row: row_number, message: ["Display Line Number doesn't match with any display line items."] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Display Line Number doesn't match with any display line items."])
           next
         end
       else
-        error = { row: row_number, message: ["Display Line Number can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Display Line Number can't be blank"])
         next
       end
 
@@ -133,13 +136,13 @@ class DisplayLineItemBudget < ActiveRecord::Base
         budget = Float(row[2].strip) rescue false
         budget_loc = budget
         unless budget
-          error = { row: row_number, message: ["Budget must be a numeric value"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Budget must be a numeric value"])
           next
         end
       else
-        error = { row: row_number, message: ["Budget can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Budget can't be blank"])
         next
       end
 
@@ -152,13 +155,13 @@ class DisplayLineItemBudget < ActiveRecord::Base
           end
 
         rescue ArgumentError
-          error = {row: row_number, message: ['Start Date must be a valid datetime'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Start Date must be a valid datetime'])
           next
         end
       else
-        error = {row: row_number, message: ['Start Date must be present'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Start Date must be present'])
         next
       end
 
@@ -170,19 +173,19 @@ class DisplayLineItemBudget < ActiveRecord::Base
             end_date = Date.strptime(row[4].strip, "%m/%d/%y")
           end
         rescue ArgumentError
-          error = {row: row_number, message: ['End Date must be a valid datetime'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['End Date must be a valid datetime'])
           next
         end
       else
-        error = {row: row_number, message: ['End Date must be present'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['End Date must be present'])
         next
       end
 
       if (end_date && start_date) && start_date > end_date
-        error = {row: row_number, message: ['Start Date must preceed End Date'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Start Date must preceed End Date'])
         next
       end
 
@@ -199,13 +202,16 @@ class DisplayLineItemBudget < ActiveRecord::Base
       display_line_item_budgets = display_line_item.display_line_item_budgets.where("date_part('year', start_date) = ? and date_part('month', start_date) = ?", start_date.year, start_date.month)
       if display_line_item_budgets.count > 0
         display_line_item_budget = display_line_item_budgets[0]
+
+        import_log.count_imported
         display_line_item_budget.update_attributes(display_line_item_budget_params)
       else
+        import_log.count_imported
         display_line_item.display_line_item_budgets.create(display_line_item_budget_params)
       end
     end
 
-    errors
+    import_log.save
   end
 
   private
