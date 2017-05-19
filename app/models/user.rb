@@ -266,7 +266,7 @@ class User < ActiveRecord::Base
         content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
           item_product_id = content_fee.product_id
           if product_ios[item_product_id].nil?
-            product_ios[item_product_id] = Marshal.load(Marshal.dump(io))
+            product_ios[item_product_id] = JSON.parse(JSON.generate(io))
             product_ios[item_product_id][:product_id] = item_product_id
             product_ios[item_product_id][:product] = content_fee.product
           end
@@ -278,7 +278,7 @@ class User < ActiveRecord::Base
       display_line_item_rows.each do |display_line_item|
         item_product_id = display_line_item.product_id
         if product_ios[item_product_id].nil?
-          product_ios[item_product_id] = Marshal.load(Marshal.dump(io))
+          product_ios[item_product_id] = JSON.parse(JSON.generate(io))
           product_ios[item_product_id][:product_id] = item_product_id
           product_ios[item_product_id][:product] = display_line_item.product
         end
