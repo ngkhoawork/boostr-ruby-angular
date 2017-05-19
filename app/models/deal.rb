@@ -1330,16 +1330,17 @@ class Deal < ActiveRecord::Base
   end
 
   def self.grouped_count_by_week(start_date, end_date)
-    where(created_at: start_date..end_date)
+    where(created_at: start_date.beginning_of_day..end_date.end_of_day)
     .group("date_trunc('day', deals.created_at)")
     .order('date_trunc_day_deals_created_at').count
   end
 
   def self.grouped_sum_budget_by_week(start_date, end_date)
-    where(created_at: start_date..end_date).won
-                                           .select(:created_at, :budget)
-                                           .group('deals.created_at')
-                                           .order('deals.created_at')
-                                           .sum('budget')
+    where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+    .won
+    .select(:created_at, :budget)
+    .group('deals.created_at')
+    .order('deals.created_at')
+    .sum('budget')
   end
 end

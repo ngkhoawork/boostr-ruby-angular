@@ -19,7 +19,7 @@ class PacingDashboard::WonDealService < PacingDashboard::BaseService
 			memo[week.start_date] = 0
 
 			won_deals_for_current_quarter.map do |key, value|
-				memo[week.start_date] += value.to_i if week.start_date <= key && week.end_date >= key
+				memo[week.start_date] += value.to_i if week.start_date.beginning_of_day <= key && week.end_date.end_of_day >= key
 			end
 		end.values
 	end
@@ -36,7 +36,7 @@ class PacingDashboard::WonDealService < PacingDashboard::BaseService
 			memo[week.start_date] = 0
 
 			won_deals_for_previous_quarter.map do |key, value|
-				memo[week.start_date] += value.to_i if week.start_date <= key && week.end_date >= key
+				memo[week.start_date] += value.to_i if week.start_date.beginning_of_day <= key && week.end_date.end_of_day >= key
 			end
 		end.values
 	end
@@ -53,7 +53,7 @@ class PacingDashboard::WonDealService < PacingDashboard::BaseService
 			memo[week.start_date] = 0
 
 			won_deals_for_previous_year_quarter.map do |key, value|
-				memo[week.start_date] += value.to_i if week.start_date <= key && week.end_date >= key
+				memo[week.start_date] += value.to_i if week.start_date.beginning_of_day <= key && week.end_date.end_of_day >= key
 			end
 		end.values
 	end
