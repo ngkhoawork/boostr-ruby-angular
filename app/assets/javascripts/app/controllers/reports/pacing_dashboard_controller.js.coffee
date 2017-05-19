@@ -26,25 +26,30 @@
         $scope.wonDeals = {}
         $scope.weeks = [1..13]
         $scope.currentWeek = 0
+        
+        FIRST_CHART_ID = '#pipeline-revenue-chart'
+        SECOND_CHART_ID = '#activity-new-chart'
+        THIRD_CHART_ID = '#activity-won-chart'
 
         (getPipelineRevenueData = (query) ->
             PacingDashboard.pipeline_revenue(query).then (data) ->
-                $scope.currentWeek = data.current_week
+                $scope.currentWeek = data.current_week if !$scope.currentWeek
                 $scope.timePeriods = data.time_periods
                 $scope.pipelineRevenue = data.series.pipeline_and_revenue
-                drawChart($scope.pipelineRevenue, '#pipeline-revenue-chart')
+                drawChart($scope.pipelineRevenue, FIRST_CHART_ID)
                 updateChartVisibility()
         )()
 
         (getNewWonDealsData = (query) ->
             PacingDashboard.activity_pacing(query).then (data) ->
+                $scope.currentWeek = data.current_week if !$scope.currentWeek
                 $scope.teams = data.teams
                 $scope.sellers = data.sellers
                 $scope.products = data.products
                 $scope.newDeals = data.series.new_deals
                 $scope.wonDeals = data.series.won_deals
-                drawChart($scope.newDeals, '#activity-new-chart')
-                drawChart($scope.wonDeals, '#activity-won-chart')
+                drawChart($scope.newDeals, SECOND_CHART_ID)
+                drawChart($scope.wonDeals, THIRD_CHART_ID)
         )()
 
         $scope.setMetric = (metric) ->
@@ -86,7 +91,7 @@
             c(2) #green
             c(1) #oranbe
             switch chartId
-                when '#pipeline-revenue-chart'
+                when FIRST_CHART_ID
                     [
                         {name: 'TQ-Pipeline',  color: shadeColor(c(0), 0),   dasharray: 'none',   visibility: 'A1', values: data.weighted_pipeline.current_quarter}
                         {name: 'LQ-Pipeline',  color: shadeColor(c(0), 0.3), dasharray: 'none',   visibility: 'A2', values: data.weighted_pipeline.previous_quarter}
@@ -98,13 +103,13 @@
                         {name: 'LQ-Forecast',  color: shadeColor(c(2), 0.3), dasharray: '12, 12', visibility: 'C2', values: data.sum_revenue_and_weighted_pipeline.previous_quarter}
                         {name: 'YoY-Forecast', color: shadeColor(c(2), 0.6), dasharray: '12, 12', visibility: 'C3', values: data.sum_revenue_and_weighted_pipeline.previous_year_quarter}
                     ]
-                when '#activity-new-chart'
+                when SECOND_CHART_ID
                     [
                         {name: 'TQ-New Deals',  color: c(1), dasharray: 'none',   values: data.current_quarter}
                         {name: 'LQ-New Deals',  color: c(1), dasharray: '4, 4',   values: data.previous_quarter}
                         {name: 'YoY-New Deals', color: c(1), dasharray: '12, 12', values: data.previous_year_quarter}
                     ]
-                when '#activity-won-chart'
+                when THIRD_CHART_ID
                     [
                         {name: 'TQ-Won Deals',  color: c(1), dasharray: 'none',   values: data.current_quarter}
                         {name: 'LQ-Won Deals',  color: c(1), dasharray: '4, 4',   values: data.previous_quarter}
@@ -133,8 +138,8 @@
 
             dataset = transformChartData(data, chartId)
 
-            yMax = d3.max dataset, (item) -> d3.max item.values
-            yMax = yMax * 1.2 || 0
+            maxValue = (d3.max dataset, (item) -> d3.max item.values) || 0
+            yMax = maxValue * 1.2
 
             x = d3.scale.ordinal().domain(['Week'].concat $scope.weeks).rangePoints([0, width - width / $scope.weeks.length])
             y = d3.scale.linear().domain([yMax || 1, 0]).rangeRound([0, height])
@@ -155,7 +160,7 @@
                 .outerTickSize(0)
                 .ticks(if yMax > 6 then 6 else yMax || 1)
                 .tickFormat (v) ->
-                    if chartId == '#activity-new-chart' then return v
+                    if chartId == SECOND_CHART_ID then return v
                     $filter('formatMoney')(v)
             yAxis.tickValues([0]) if yMax == 0
 
@@ -174,6 +179,19 @@
                     .duration(duration / 2)
                     .ease('linear')
                     .attr('y1', 0)
+
+            if chartId == FIRST_CHART_ID
+                svg.append('line')
+                    .attr('class', 'max-line')
+                    .attr 'x1', 0
+                    .attr 'y1', y maxValue
+                    .attr 'x2', 0
+                    .attr 'y2', y maxValue
+                    .transition()
+                    .delay(delay / 2)
+                    .duration(duration / 2)
+                    .ease('linear')
+                    .attr('x2', width)
 
             graphLine = d3.svg.line()
                 .x((value, i) -> x(i + 1))
