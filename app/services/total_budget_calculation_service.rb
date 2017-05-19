@@ -15,7 +15,7 @@ class TotalBudgetCalculationService
   def calculate_total_budgets
     deal_product_budgets.each_with_object({}) do |deal_product_budget, total_budgets|
       time_dimensions.each do |time_dimension|
-        if time_dimension.start_date <= deal_product_budget.end_date && deal_product_budget.end_date >= deal_product_budget.start_date
+        if time_dimension.start_date <= deal_product_budget.end_date && time_dimension.end_date >= deal_product_budget.start_date
           if total_budgets[time_dimension.id].nil?
             total_budgets[time_dimension.id] = 0
           end

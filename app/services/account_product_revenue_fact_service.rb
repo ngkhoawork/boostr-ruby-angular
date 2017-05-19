@@ -1,18 +1,33 @@
+require 'upsert/active_record_upsert'
+
 class AccountProductRevenueFactService < BaseService
   def perform
-    clients.each do |client|
+    accounts.each do |client|
+      time_dimensions.each do |time_dimension|
+        service = AccountProductRevenueCalculationService.new(company_id: client.company_id,
+                                                               date_range: { start_date: time_dimension.start_date,
+                                                                             end_date: time_dimension.end_date })
+        revenues = service.perform
+        Upsert.batch(ActiveRecord::Base.retrieve_connection, :account_product_revenue_facts) do |batch|
+          revenues.each do |product_id, revenue_amount|
+            batch.row({ revenue_amount: revenue_amount.to_i }, { account_dimension_id: client.id,
+                                                                 time_dimension_id: time_dimension.id,
+                                                                 company_id: client.company_id,
+                                                                 product_dimension_id: product_id,
+                                                                 revenue_amount: revenue_amount.to_i,
+                                                                 created_at: DateTime.now,
+                                                                 updated_at: DateTime.now })
+          end
+        end
 
+      end
     end
   end
 
   private
 
-  def content_fee_products
-    @content_fee_products
-  end
-
   def accounts
-    @clients ||= AccountDimension.all
+    @clients ||= Client.includes(:company)
   end
 
   def time_dimensions

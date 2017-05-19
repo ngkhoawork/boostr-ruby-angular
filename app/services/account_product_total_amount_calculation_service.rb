@@ -33,7 +33,7 @@ class AccountProductTotalAmountCalculationService < BaseService
   def calculate_amounts
     deal_product_budgets.each do |deal_product_budget|
       time_dimensions.each do |time_dimension|
-        if time_dimension.start_date <= deal_product_budget.end_date && deal_product_budget.end_date >= deal_product_budget.start_date
+        if time_dimension.start_date <= deal_product_budget.end_date && time_dimension.end_date >= deal_product_budget.start_date
           service = DealProductBudgetPipelineService.new(deal_product_budget: deal_product_budget)
           create_or_update_calculated_amount_item(time_dimension,
                                                   weighted_amount: service.weighted_amount,
