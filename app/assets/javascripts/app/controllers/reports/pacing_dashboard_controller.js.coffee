@@ -25,15 +25,17 @@
         $scope.newDeals = {}
         $scope.wonDeals = {}
         $scope.weeks = [1..13]
-        $scope.currentWeek = 0
-        
+        $scope.currentWeek = null
+        $scope.maxQuota = null
+
         FIRST_CHART_ID = '#pipeline-revenue-chart'
         SECOND_CHART_ID = '#activity-new-chart'
         THIRD_CHART_ID = '#activity-won-chart'
 
         (getPipelineRevenueData = (query) ->
             PacingDashboard.pipeline_revenue(query).then (data) ->
-                $scope.currentWeek = data.current_week if !$scope.currentWeek
+                $scope.currentWeek = data.current_week
+                $scope.maxQuota = data.max_quota
                 $scope.timePeriods = data.time_periods
                 $scope.pipelineRevenue = data.series.pipeline_and_revenue
                 drawChart($scope.pipelineRevenue, FIRST_CHART_ID)
@@ -42,7 +44,7 @@
 
         (getNewWonDealsData = (query) ->
             PacingDashboard.activity_pacing(query).then (data) ->
-                $scope.currentWeek = data.current_week if !$scope.currentWeek
+                $scope.currentWeek = data.current_week
                 $scope.teams = data.teams
                 $scope.sellers = data.sellers
                 $scope.products = data.products
@@ -180,13 +182,13 @@
                     .ease('linear')
                     .attr('y1', 0)
 
-            if chartId == FIRST_CHART_ID
+            if chartId == FIRST_CHART_ID && $scope.maxQuota
                 svg.append('line')
                     .attr('class', 'max-line')
                     .attr 'x1', 0
-                    .attr 'y1', y maxValue
+                    .attr 'y1', y $scope.maxQuota
                     .attr 'x2', 0
-                    .attr 'y2', y maxValue
+                    .attr 'y2', y $scope.maxQuota
                     .transition()
                     .delay(delay / 2)
                     .duration(duration / 2)

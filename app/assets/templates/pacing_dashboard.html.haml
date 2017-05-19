@@ -19,7 +19,7 @@
 											%li{ ng: { class: '{active: !filter.timePeriod.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("timePeriod", defaultFilter.timePeriod)' } }
 													{{defaultFilter.timePeriod.name}}
-											%li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
+											%li{ ng: { repeat: 'timePeriod in timePeriods | orderBy : "start_date"', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
 													{{timePeriod.name}}
 		.row.mb20
@@ -94,7 +94,7 @@
 											%li{ ng: { class: '{active: !filter.team.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("team", defaultFilter.team)' } }
 													{{defaultFilter.team.name}}
-											%li{ ng: { repeat: 'team in teams', class: '{active: team.id === filter.team.id}' } }
+											%li{ ng: { repeat: 'team in teams | orderBy : "name"', class: '{active: team.id === filter.team.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("team", team)' } }
 													{{team.name}}
 				.header-cell.filters-block
@@ -112,7 +112,7 @@
 											%li{ ng: { class: '{active: !filter.seller.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("seller", defaultFilter.seller)' } }
 													{{defaultFilter.seller.name}}
-											%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller.id}' } }
+											%li{ ng: { repeat: 'seller in sellers | orderBy : "name"', class: '{active: seller.id === filter.seller.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
 													{{seller.name}}
 
@@ -131,7 +131,7 @@
 											%li{ ng: { class: '{active: !filter.product.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("product", defaultFilter.product)' } }
 													{{defaultFilter.product.name}}
-											%li{ ng: { repeat: 'product in products', class: '{active: product.id === filter.product.id}' } }
+											%li{ ng: { repeat: 'product in products | orderBy : "name"', class: '{active: product.id === filter.product.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("product", product)' } }
 													{{product.name}}
 
