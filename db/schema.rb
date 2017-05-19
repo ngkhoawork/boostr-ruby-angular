@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170518085106) do
+ActiveRecord::Schema.define(version: 20170518104712) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -199,6 +199,15 @@ ActiveRecord::Schema.define(version: 20170518085106) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  create_table "ad_units", force: :cascade do |t|
+    t.text     "name"
+    t.integer  "product_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "ad_units", ["product_id"], name: "index_ad_units_on_product_id", using: :btree
 
   create_table "addresses", force: :cascade do |t|
     t.integer  "addressable_id"
@@ -1333,6 +1342,7 @@ ActiveRecord::Schema.define(version: 20170518085106) do
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
+  add_foreign_key "ad_units", "products"
   add_foreign_key "api_configurations", "companies"
   add_foreign_key "bp_estimate_products", "bp_estimates"
   add_foreign_key "bp_estimate_products", "products"
