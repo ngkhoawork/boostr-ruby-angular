@@ -470,7 +470,7 @@ class Api::DealsController < ApplicationController
         item_product_id = deal_product.product_id
         deal_product.deal_product_budgets.for_time_period(time_period.start_date, time_period.end_date).each do |deal_product_budget|
           if product_deals[item_product_id].nil?
-            product_deals[item_product_id] = Marshal.load(Marshal.dump(deal))
+            product_deals[item_product_id] = JSON.parse(JSON.generate(deal))
             product_deals[item_product_id][:product_id] = item_product_id
             product_deals[item_product_id][:product] = deal_product.product
             product_deals[item_product_id][:in_period_amt] = 0
