@@ -16,8 +16,8 @@ class Api::ReportsController < ApplicationController
 
   def user_activity_reports
     activity_report = []
-    all_team_sales_reps.each do |user|
-      
+    all_team_sales_reps.select { |user| user.user_type.eql? user_type }.each do |user|
+
       user_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
       .for_time_period(start_date, end_date)
       .where("user_id = ?", user.id)
@@ -38,7 +38,7 @@ class Api::ReportsController < ApplicationController
   def total_activity_report
     total_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
     .for_time_period(start_date, end_date)
-    .where("user_id in (?)", all_team_sales_reps.collect{|row| row.id})
+    .where("user_id in (?)", all_team_sales_reps.select { |user| user.user_type.eql? user_type }.collect { |row| row.id })
     .select("activity_types.name, count(activities.id) as count")
     .group("activity_types.name").collect { |activity| { "#{activity.name}": activity.count } }
 
@@ -110,5 +110,9 @@ class Api::ReportsController < ApplicationController
 
   def company
     @company ||= current_user.company
+  end
+
+  def user_type
+    @_user_type ||= params[:user_type].to_i
   end
 end
