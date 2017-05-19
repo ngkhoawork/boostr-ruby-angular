@@ -120,7 +120,9 @@
 
 
             $scope.$watch 'query', (oldValue, newValue) ->
-                if oldValue != newValue then $scope.getContacts()
+                if oldValue != newValue
+                    $scope.page = 1
+                    $scope.getContacts()
 
             $scope.getContacts = ->
                 $scope.isLoading = true
