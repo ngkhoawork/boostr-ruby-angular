@@ -57,7 +57,7 @@
 							%ul.dropdown-menu
 								%li{'ng-repeat': 'stage in stages', 'ng-class': '{active: currentDeal.stage.name == stage.name}'}
 									%a{'href': '', 'ng-click': 'updateDealStage(currentDeal, stage.id)'}
-										%span.text {{stage.name}}
+										%span.text {{stage.name}} {{stage.probability}}%
 			%div.stats-col
 				.col-body-wrap
 					.col-body
