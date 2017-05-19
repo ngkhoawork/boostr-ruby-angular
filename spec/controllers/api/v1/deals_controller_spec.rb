@@ -83,7 +83,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
 
   describe 'PUT #update' do
     it 'updates the deal and returns success' do
-      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }
+      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, format: :json
 
       expect(response).to be_success
     end
@@ -92,7 +92,7 @@ RSpec.describe Api::V1::DealsController, type: :controller do
       expect(controller).to receive(:deal).and_return(deal).at_least(:once)
       expect(deal).to_not receive(:touch)
 
-      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }
+      put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, format: :json
 
       expect(response).to be_success
     end

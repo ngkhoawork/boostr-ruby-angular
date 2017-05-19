@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::FieldsController, type: :controller do
+describe Api::V1::FieldsController, type: :controller do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
 
@@ -8,17 +8,19 @@ RSpec.describe Api::V1::FieldsController, type: :controller do
     valid_token_auth user
   end
 
-  describe "GET #index" do
+  describe 'GET #index' do
     it 'returns a list of Deal fields in json' do
-      get :index, { format: :json, subject: 'Deal' }
+      get :index, format: :json, subject: 'Deal'
+
       expect(response).to be_success
       expect(json_response.length).to eq(4)
     end
 
     it 'returns a list of Client fields in json' do
-      get :index, { format: :json, subject: 'Client' }
+      get :index, format: :json, subject: 'Client'
+
       expect(response).to be_success
-      expect(json_response.length).to eq(3)
+      expect(json_response.length).to eq(5)
     end
   end
 end
