@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170504120642) do
+ActiveRecord::Schema.define(version: 20170505153146) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -306,6 +305,7 @@ ActiveRecord::Schema.define(version: 20170504120642) do
     t.datetime "created_at",                 null: false
     t.datetime "updated_at",                 null: false
     t.boolean  "primary",    default: false, null: false
+    t.boolean  "is_active",  default: true,  null: false
   end
 
   add_index "client_contacts", ["client_id", "contact_id"], name: "index_client_contacts_on_client_id_and_contact_id", using: :btree
@@ -368,6 +368,104 @@ ActiveRecord::Schema.define(version: 20170504120642) do
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
   end
+
+  create_table "contact_cf_names", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "field_index"
+    t.string   "field_type"
+    t.string   "field_label"
+    t.boolean  "is_required"
+    t.integer  "position"
+    t.boolean  "show_on_modal"
+    t.boolean  "disabled"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "contact_cf_names", ["company_id"], name: "index_contact_cf_names_on_company_id", using: :btree
+
+  create_table "contact_cf_options", force: :cascade do |t|
+    t.integer  "contact_cf_name_id"
+    t.string   "value"
+    t.datetime "created_at",         null: false
+    t.datetime "updated_at",         null: false
+  end
+
+  add_index "contact_cf_options", ["contact_cf_name_id"], name: "index_contact_cf_options_on_contact_cf_name_id", using: :btree
+
+  create_table "contact_cfs", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "contact_id"
+    t.decimal  "currency1",      precision: 15, scale: 2
+    t.decimal  "currency2",      precision: 15, scale: 2
+    t.decimal  "currency3",      precision: 15, scale: 2
+    t.decimal  "currency4",      precision: 15, scale: 2
+    t.decimal  "currency5",      precision: 15, scale: 2
+    t.decimal  "currency6",      precision: 15, scale: 2
+    t.decimal  "currency7",      precision: 15, scale: 2
+    t.string   "currency_code1"
+    t.string   "currency_code2"
+    t.string   "currency_code3"
+    t.string   "currency_code4"
+    t.string   "currency_code5"
+    t.string   "currency_code6"
+    t.string   "currency_code7"
+    t.string   "text1"
+    t.string   "text2"
+    t.string   "text3"
+    t.string   "text4"
+    t.string   "text5"
+    t.text     "note1"
+    t.text     "note2"
+    t.datetime "datetime1"
+    t.datetime "datetime2"
+    t.datetime "datetime3"
+    t.datetime "datetime4"
+    t.datetime "datetime5"
+    t.datetime "datetime6"
+    t.datetime "datetime7"
+    t.decimal  "number1",        precision: 15, scale: 2
+    t.decimal  "number2",        precision: 15, scale: 2
+    t.decimal  "number3",        precision: 15, scale: 2
+    t.decimal  "number4",        precision: 15, scale: 2
+    t.decimal  "number5",        precision: 15, scale: 2
+    t.decimal  "number6",        precision: 15, scale: 2
+    t.decimal  "number7",        precision: 15, scale: 2
+    t.decimal  "integer1",       precision: 15
+    t.decimal  "integer2",       precision: 15
+    t.decimal  "integer3",       precision: 15
+    t.decimal  "integer4",       precision: 15
+    t.decimal  "integer5",       precision: 15
+    t.decimal  "integer6",       precision: 15
+    t.decimal  "integer7",       precision: 15
+    t.boolean  "boolean1"
+    t.boolean  "boolean2"
+    t.boolean  "boolean3"
+    t.decimal  "percentage1",    precision: 5,  scale: 2
+    t.decimal  "percentage2",    precision: 5,  scale: 2
+    t.decimal  "percentage3",    precision: 5,  scale: 2
+    t.decimal  "percentage4",    precision: 5,  scale: 2
+    t.decimal  "percentage5",    precision: 5,  scale: 2
+    t.string   "dropdown1"
+    t.string   "dropdown2"
+    t.string   "dropdown3"
+    t.string   "dropdown4"
+    t.string   "dropdown5"
+    t.string   "dropdown6"
+    t.string   "dropdown7"
+    t.decimal  "number_4_dec1",  precision: 15, scale: 4
+    t.decimal  "number_4_dec2",  precision: 15, scale: 4
+    t.decimal  "number_4_dec3",  precision: 15, scale: 4
+    t.decimal  "number_4_dec4",  precision: 15, scale: 4
+    t.decimal  "number_4_dec5",  precision: 15, scale: 4
+    t.decimal  "number_4_dec6",  precision: 15, scale: 4
+    t.decimal  "number_4_dec7",  precision: 15, scale: 4
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+  end
+
+  add_index "contact_cfs", ["company_id"], name: "index_contact_cfs_on_company_id", using: :btree
+  add_index "contact_cfs", ["contact_id"], name: "index_contact_cfs_on_contact_id", using: :btree
 
   create_table "contacts", force: :cascade do |t|
     t.string   "name"
@@ -1105,6 +1203,17 @@ ActiveRecord::Schema.define(version: 20170504120642) do
     t.integer "days_length"
   end
 
+  create_table "time_period_weeks", force: :cascade do |t|
+    t.integer  "week"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.string   "period_name"
+    t.date     "period_start"
+    t.date     "period_end"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
   create_table "time_periods", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -1231,6 +1340,10 @@ ActiveRecord::Schema.define(version: 20170504120642) do
   add_foreign_key "bps", "companies"
   add_foreign_key "bps", "time_periods"
   add_foreign_key "clients", "clients", column: "parent_client_id"
+  add_foreign_key "contact_cf_names", "companies"
+  add_foreign_key "contact_cf_options", "contact_cf_names"
+  add_foreign_key "contact_cfs", "companies"
+  add_foreign_key "contact_cfs", "contacts"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"

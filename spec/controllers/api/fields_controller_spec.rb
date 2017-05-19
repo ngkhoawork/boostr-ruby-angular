@@ -21,7 +21,7 @@ RSpec.describe Api::FieldsController, type: :controller do
       get :index, { format: :json, subject: 'Client' }
       expect(response).to be_success
       response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(3)
+      expect(response_json.length).to eq(5)
     end
   end
 end

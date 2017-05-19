@@ -18,7 +18,7 @@ RSpec.describe Api::V2::FieldsController, type: :controller do
     it 'returns a list of Client fields in json' do
       get :index, { format: :json, subject: 'Client' }
       expect(response).to be_success
-      expect(json_response.length).to eq(3)
+      expect(json_response.length).to eq(5)
     end
   end
 end

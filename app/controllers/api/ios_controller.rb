@@ -32,7 +32,7 @@ class Api::IosController < ApplicationController
   end
 
   def destroy
-    if current_user.is_admin
+    if current_user.user_type.eql?(ADMIN)
       io.destroy
 
       render nothing: true

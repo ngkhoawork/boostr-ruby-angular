@@ -22,10 +22,12 @@ RSpec.describe Api::DealContactsController, type: :controller do
 
     it 'accepts name attribute' do
       get :index, deal_id: deal.id, name: agency_contact.name, format: :json
-      expect(response).to be_success
       response_json = JSON.parse(response.body)
+
+      expect(response).to be_success
       expect(response_json.length).to eq(1)
-      expect(response_json[0]).to eq(JSON.parse(agency_contact.to_json))
+      expect(response_json[0]['id']).to eq(JSON.parse(agency_contact.to_json)['id'])
+      expect(response_json[0]['name']).to eq(JSON.parse(agency_contact.to_json)['name'])
     end
   end
 
