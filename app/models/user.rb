@@ -77,9 +77,15 @@ class User < ActiveRecord::Base
 
   def self.from_token_payload payload
     # Returns a valid user, `nil` or raise from token payload
-    if user = self.find(payload["sub"])
+    if user = self.find_by(id: payload["sub"], is_active: true)
       return user if payload["refresh"] && Digest::SHA1.hexdigest(user.encrypted_password.slice(20, 20)) == payload["refresh"]
     end
+  end
+
+  def self.from_token_request request
+    # Finds user from token request
+    email = request.params["auth"] && request.params["auth"]["email"]
+    self.find_by(email: email, is_active: true)
   end
 
   def name
@@ -237,6 +243,56 @@ class User < ActiveRecord::Base
     end
 
     ios
+  end
+
+  def quarterly_product_ios(product_ids, start_date, end_date)
+    data = []
+    ios = self.all_ios_for_time_period(start_date, end_date).as_json
+    year = start_date.year
+    ios.each do |io|
+      io_obj = Io.find(io['id'])
+
+      io[:members] = io_obj.io_members
+
+      if io['end_date'] == io['start_date']
+        io['end_date'] += 1.day
+      end
+
+      product_ios = {}
+
+      content_fee_rows = io_obj.content_fees
+      content_fee_rows = content_fee_rows.for_product_ids(product_ids) if product_ids.present?
+      content_fee_rows.each do |content_fee|
+        content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+          item_product_id = content_fee.product_id
+          if product_ios[item_product_id].nil?
+            product_ios[item_product_id] = Marshal.load(Marshal.dump(io))
+            product_ios[item_product_id][:product_id] = item_product_id
+            product_ios[item_product_id][:product] = content_fee.product
+          end
+        end
+      end
+
+      display_line_item_rows = io_obj.display_line_items.for_time_period(start_date, end_date)
+      display_line_item_rows = display_line_item_rows.for_product_ids(product_ids) if product_ids.present?
+      display_line_item_rows.each do |display_line_item|
+        item_product_id = display_line_item.product_id
+        if product_ios[item_product_id].nil?
+          product_ios[item_product_id] = Marshal.load(Marshal.dump(io))
+          product_ios[item_product_id][:product_id] = item_product_id
+          product_ios[item_product_id][:product] = display_line_item.product
+        end
+      end
+      product_ios.each do |index, item|
+        sum_period_budget, split_period_budget = io_obj.for_product_forecast_page(item[:product], start_date, end_date, self)
+        product_ios[index]['in_period_amt'] = sum_period_budget
+        product_ios[index]['in_period_split_amt'] = split_period_budget
+      end
+
+      data = data + product_ios.values
+    end
+
+    data
   end
 
   def all_revenues_for_time_period(start_date, end_date)

@@ -118,4 +118,95 @@ RSpec.describe User, type: :model do
       expect(user.active_for_authentication?).to be(false)
     end
   end
+
+  describe '#to_token_payload' do
+    it 'returns a hash with user id and encrypted password hash' do
+      expect(user.to_token_payload.keys).to contain_exactly(:sub, :refresh)
+    end
+
+    it 'returns user id in :sub key' do
+      expect(user.to_token_payload[:sub]).to be user.id
+    end
+
+    it 'encrypts and returns part of user\'s password hash' do
+      expect(Digest::SHA1).to receive(:hexdigest).
+      with(user.encrypted_password.slice(20, 20)).and_return(:encrypted_hash_part)
+
+      expect(user.to_token_payload[:refresh]).to be :encrypted_hash_part
+    end
+  end
+
+  describe '#from_token_payload' do
+    it 'finds a user by payload sub key' do
+      allow(Digest::SHA1).to receive(:hexdigest).and_return(:encrypted_hash_part)
+
+      payload = { "sub" => user.id, "refresh" => :encrypted_hash_part }
+
+      expect(User.from_token_payload payload).to eql user
+    end
+
+    it 'returns nil if user is not found' do
+      payload = { "sub" => nil, "refresh" => :encrypted_hash_part }
+
+      expect(User.from_token_payload payload).to be nil
+    end
+
+    it 'returns nil if user is inactive' do
+      user.update(is_active: false)
+      payload = { "sub" => user.id, "refresh" => :encrypted_hash_part }
+
+      expect(User.from_token_payload payload).to be nil
+    end
+
+    it 'returns nil if refresh token does not match' do
+      payload = { "sub" => user.id, "refresh" => :stale_hash_part }
+
+      expect(User.from_token_payload payload).to be nil
+    end
+
+    it 'returns nil if sub param is empty' do
+      payload = { "refresh" => :stale_hash_part }
+
+      expect(User.from_token_payload payload).to be nil
+    end
+
+    it 'returns nil if refresh token param is empty' do
+      payload = { "sub" => user.id }
+
+      expect(User.from_token_payload payload).to be nil
+    end
+  end
+
+  describe '#from_token_request' do
+    it 'finds user from token request' do
+      request = double('request', params: { 'auth' => { 'email' => user.email } })
+
+      expect(User.from_token_request request).to eql user
+    end
+
+    it 'returns nil if user is inactive' do
+      user.update(is_active: false)
+      request = double('request', params: { 'auth' => { 'email' => user.email } })
+
+      expect(User.from_token_request request).to be nil
+    end
+
+    it 'returns nil if no such user is found' do
+      request = double('request', params: { 'auth' => { 'email' => 'John Doe' } })
+
+      expect(User.from_token_request request).to be nil
+    end
+
+    it 'returns nil if email param is missing' do
+      request = double('request', params: { 'auth' => { 'spam' => '#)$(*#@$)(@#&' } })
+
+      expect(User.from_token_request request).to be nil
+    end
+
+    it 'returns nil if auth param is missing' do
+      request = double('request', params: { 'spam' => '#($)#$@)(*' })
+
+      expect(User.from_token_request request).to be nil
+    end
+  end
 end

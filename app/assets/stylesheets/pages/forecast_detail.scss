@@ -45,4 +45,14 @@
             word-wrap: break-word;
         }
     }
+    .close-btn {
+        color: $secondary-font-color;
+        &:hover {
+            color: $main-color
+        }
+        z-index: 999999;
+    }
+    .add-btn {
+        top: 0;
+    }
 }

@@ -82,6 +82,9 @@
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
+    .when '/reports/product_forecasts',
+      templateUrl: 'product_forecasts_detail.html'
+      controller: 'ProductForecastsDetailController'
     .when '/smart_reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
       controller: 'SalesExecutionDashboardController'

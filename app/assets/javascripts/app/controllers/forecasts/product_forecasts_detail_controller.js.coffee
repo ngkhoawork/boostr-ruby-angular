@@ -1,14 +1,16 @@
-@app.controller 'ForecastsDetailController',
-    ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal'
-    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal) ->
+@app.controller 'ProductForecastsDetailController',
+    ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal', 'Product', 'Stage'
+    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal,   Product,   Stage) ->
         $scope.teams = []
         $scope.sellers = []
         $scope.timePeriods = []
         defaultUser = {id: 'all', name: 'All', first_name: 'All'}
+        $scope.isLoading = false
         $scope.filter =
             team: {id: 'all', name: 'All'}
             seller: defaultUser
             timePeriod: {id: null, name: 'Select'}
+            products: []
         $scope.selectedTeam = $scope.filter.team
         $scope.switch =
             revenues: 'quarters'
@@ -46,6 +48,7 @@
         $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->
             if nextTeam.id && !isTeamFound
                 $scope.filter.seller = defaultUser
+
                 $scope.setFilter('team', nextTeam)
             isTeamFound = false
             Seller.query({id: nextTeam.id || 'all'}).$promise.then (sellers) ->
@@ -56,7 +59,20 @@
             if $scope.filter[key]is value
                 return
             $scope.filter[key] = value
-            getData()
+
+        $scope.removeFilter = (key, item) ->
+            $scope.filter[key] = _.reject $scope.filter[key], (row) ->
+                return row.id == item.id
+            $scope.products.push item
+
+        $scope.addFilter = (key, item) ->
+            $scope.filter[key].push item
+            $scope.products = _.reject $scope.products, (row) ->
+                return row.id == item.id 
+
+        $scope.applyFilter = () ->
+            if !$scope.isLoading
+                getData()
 
         $scope.getAnnualSum = (data) ->
             sum = 0
@@ -69,6 +85,8 @@
             teams: Team.all(all_teams: true)
             sellers: Seller.query({id: 'all'}).$promise
             timePeriods: TimePeriod.all()
+            products: Product.all()
+            stages: Stage.query().$promise
         ).then (data) ->
             $scope.teams = data.teams
             $scope.teams.unshift {id: 'all', name: 'All'}
@@ -77,6 +95,10 @@
             $scope.timePeriods = data.timePeriods
             $scope.sellers = data.sellers
             $scope.sellers.unshift(defaultUser)
+            $scope.products = data.products
+            $scope.stages = _.filter data.stages, (item) ->
+                if item.probability > 0
+                    return true
             switch data.user.user_type
                 when 1 #seller
                     $scope.filter.seller = data.user
@@ -85,9 +107,8 @@
                 when 2 #managet
                     searchAndSetUserTeam data.teams, data.user.id
                     searchAndSetTimePeriod data.timePeriods
-            if (data.user.is_admin)
-                searchAndSetTimePeriod data.timePeriods
-            getData()
+                when 5 #admin
+                    searchAndSetTimePeriod data.timePeriods
 
         searchAndSetUserTeam = (teams, user_id) ->
             for team in teams
@@ -108,73 +129,61 @@
                     moment().isBetween(period.start_date, period.end_date, 'days', '[]')
                         return $scope.filter.timePeriod = period
 
-        handleForecast = (data) ->
-            fc = data.forecast
-            fc.quarterly_weighted_forecast = {}
-            fc.quarterly_unweighted_forecast = {}
-            fc.quarterly_weighted_gap_to_quota = {}
-            fc.quarterly_unweighted_gap_to_quota = {}
-            fc.quarterly_percentage_of_annual_quota = {}
-            fc.stages = _.filter fc.stages, (stage) -> stage.active
-            quotaSum = _.reduce fc.quarterly_quota, (result, val) -> result + Number val
-            _.each data.quarters, (quarter) ->
-                weighted = Number fc.quarterly_revenue[quarter]
-                unweighted = Number fc.quarterly_revenue[quarter]
-                _.each fc.stages, (stage) ->
-                    weighted += Number fc.quarterly_weighted_pipeline_by_stage[stage.id][quarter]
-                    unweighted += Number fc.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
-                fc.quarterly_weighted_forecast[quarter] = weighted
-                fc.quarterly_unweighted_forecast[quarter] = unweighted
-                fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
-                fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
-                fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
-            fc.stages.sort (s1, s2) -> s1.probability - s2.probability
-
-        addDetailAmounts = (data, type) ->
-            qs = ['Q1', 'Q2', 'Q3', 'Q4']
-            ms = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-            suffix = if type == 'revenues' then 's' else if type == 'deals' then '_amounts'
-            quarters = []
-            months = []
-            for q, i in qs
-                for item in data
-                    if item['quarter' + suffix][i] != null
-                        quarters.push q
-                        break
-            for m, i in ms
-                for item in data
-                    if item['month' + suffix][i] != null
-                        months.push m
-                        break
-            data.detail_amounts =
-                quarters: quarters
-                months: months
-
         parseBudget = (data) ->
             data = _.map data, (item) ->
                 item.budget = parseInt item.budget if item.budget
                 item.budget_loc = parseInt item.budget_loc if item.budget_loc
                 item
-
         getData = ->
             if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
+            queryProducts = []
+            if $scope.filter.products.length > 0
+                queryProducts = _.map $scope.filter.products, (item) -> item.id
+            else
+                queryProducts = ['all']
             query =
                 id: $scope.filter.team.id || 'all'
                 user_id: $scope.filter.seller.id || 'all'
                 time_period_id: $scope.filter.timePeriod.id
-            Forecast.forecast_detail(query).$promise.then (data) ->
-                handleForecast data
-                $scope.forecast = data.forecast
-                $scope.quarters = data.quarters
-            query.team_id = query.id
-            delete query.id
-            Revenue.forecast_detail(query).$promise.then (data) ->
-                parseBudget data
-                addDetailAmounts data, 'revenues'
-                $scope.revenues = data
-            Deal.forecast_detail(query).then (data) ->
-                parseBudget data
-                addDetailAmounts data, 'deals'
-                $scope.deals = data
+                'product_ids[]': queryProducts
+            $scope.isLoading = true
+            Forecast.product_forecast_detail(query).$promise.then (data) ->
+                $scope.forecastData = data
+                $scope.totalForecastData = {
+                    revenue: 0,
+                    unweighted_pipeline_by_stage: {}, 
+                    unweighted_pipeline: 0,
+                    weighted_pipeline_by_stage: {}, 
+                    weighted_pipeline: 0
+                }
+                _.each data, (item) ->
+                    if item.revenue && item.revenue > 0
+                        $scope.totalForecastData.revenue += parseFloat(item.revenue)
+
+                    if item.unweighted_pipeline && item.unweighted_pipeline > 0
+                        $scope.totalForecastData.unweighted_pipeline += parseFloat(item.unweighted_pipeline)
+
+                    if item.weighted_pipeline && item.weighted_pipeline > 0
+                        $scope.totalForecastData.weighted_pipeline += parseFloat(item.weighted_pipeline)
+
+                    _.each item.unweighted_pipeline_by_stage, (val, index) ->
+                        if !$scope.totalForecastData.unweighted_pipeline_by_stage[index]
+                            $scope.totalForecastData.unweighted_pipeline_by_stage[index] = 0
+                        $scope.totalForecastData.unweighted_pipeline_by_stage[index] += parseFloat(val)
+
+                    _.each item.weighted_pipeline_by_stage, (val, index) ->
+                        if !$scope.totalForecastData.weighted_pipeline_by_stage[index]
+                            $scope.totalForecastData.weighted_pipeline_by_stage[index] = 0
+                        $scope.totalForecastData.weighted_pipeline_by_stage[index] += parseFloat(val)
+                query.team_id = query.id
+                delete query.id
+                Revenue.forecast_detail(query).$promise.then (data) ->
+                    parseBudget data
+                    $scope.revenues = data
+
+                    Deal.forecast_detail(query).then (data) ->
+                        parseBudget data
+                        $scope.deals = data
+                        $scope.isLoading = false
 
     ]

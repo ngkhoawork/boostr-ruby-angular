@@ -72,7 +72,9 @@ class Deal < ActiveRecord::Base
 
   before_create do
     update_stage
-    self.closed_at = created_at unless stage.open?
+    if self.closed_at.nil?
+      self.closed_at = created_at unless stage.open?
+    end
   end
 
   after_create do
@@ -284,6 +286,19 @@ class Deal < ActiveRecord::Base
   end
 
   def in_period_open_amt(start_date, end_date)
+    total = 0
+    deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+      if deal_product_budget.deal_product.open == true
+        from = [start_date, deal_product_budget.start_date].max
+        to = [end_date, deal_product_budget.end_date].min
+        num_days = (to.to_date - from.to_date) + 1
+        total += deal_product_budget.daily_budget.to_f * num_days
+      end
+    end
+    total
+  end
+
+  def product_in_period_open_amt(product, start_date, end_date)
     total = 0
     deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
       if deal_product_budget.deal_product.open == true
@@ -1021,7 +1036,7 @@ class Deal < ActiveRecord::Base
 
       if row[11].present?
         begin
-          created_at = DateTime.strptime(row[11], '%m/%d/%Y')
+          created_at = DateTime.strptime(row[11], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
           error = {row: row_number, message: ['Deal Creation Date must have valid date format MM/DD/YYYY'] }
           errors << error
@@ -1031,7 +1046,7 @@ class Deal < ActiveRecord::Base
 
       if row[12].present?
         begin
-          closed_date = DateTime.strptime(row[12], '%m/%d/%Y')
+          closed_date = DateTime.strptime(row[12], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
           error = {row: row_number, message: ['Deal Close Date must have valid date format MM/DD/YYYY'] }
           errors << error
