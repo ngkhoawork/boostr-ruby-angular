@@ -10,9 +10,7 @@ class Team < ActiveRecord::Base
   has_many :clients, through: :members
   has_many :revenues, through: :clients
 
-  scope :roots, proc {|root_only|
-    where(parent_id: nil) if root_only
-  }
+  scope :roots, proc { |root_only| where(parent_id: nil) if root_only }
 
   validates :name, presence: true
 
@@ -288,5 +286,9 @@ class Team < ActiveRecord::Base
       )
       SELECT id FROM team_tree ORDER BY path
     SQL
+  end
+
+  def self.leader_ids
+    roots(true).joins(:leader).pluck(:leader_id)
   end
 end
