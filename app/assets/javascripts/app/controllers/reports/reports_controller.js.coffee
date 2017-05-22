@@ -10,7 +10,7 @@
   $scope.userTypes = _.filter User.user_types_list, (type) -> type.id && type.id != 7  #excluding "Default" and "Fake User"
   $scope.currentTimePeriod = {}
   $scope.company = {}
-  $scope.userTypeId = parseInt $routeParams.user_type
+  $scope.userTypeId = $routeParams.user_type
   $scope.teamId = $routeParams.team_id
   $scope.isInitLoad = true
   $scope.selectedTeam = {

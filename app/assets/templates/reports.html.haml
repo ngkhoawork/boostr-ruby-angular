@@ -21,7 +21,7 @@
                         %li{ ng: { class: '{active: userTypeId === undefined}' } }
                           %a{ href: '', ng: { click: 'setFilter("userTypeId", undefined)' } }
                             All
-                        %li{ ng: { repeat: 'userType in userTypes', class: '{active: userType.id === userTypeId}' } }
+                        %li{ ng: { repeat: 'userType in userTypes', class: '{active: userType.id == userTypeId}' } }
                           %a{ href: '', ng: { click: 'setFilter("userTypeId", userType.id)' } }
                             {{ userType.name }}
                   .date-picker-wrap
