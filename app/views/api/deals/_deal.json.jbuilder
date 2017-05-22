@@ -81,6 +81,16 @@ if deal.agency
   end
 end
 
+if !deal.stage.open && deal.stage.probability == 100
+  json.io do
+    json.extract! deal.io, :id, :budget, :budget_loc, :start_date, :end_date, :display_line_items
+    json.content_fees deal.io.content_fees do |content_fee|
+      json.extract! content_fee, :id, :io_id, :budget, :budget_loc, :content_fee_product_budgets
+      json.product content_fee.product
+    end
+  end
+end
+
 json.values deal.values
 json.fields deal.fields
 

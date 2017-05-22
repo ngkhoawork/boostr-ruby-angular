@@ -637,6 +637,21 @@
         contact: ->
           deal_contact.contact
 
+  $scope.showRequestModal = (requestable, requestable_type) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/request_form.html'
+      size: 'md'
+      controller: 'RequestsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        deal_id: ->
+          $scope.currentDeal.id
+        requestable: ->
+          requestable
+        requestable_type: ->
+          requestable_type
+
   $scope.deleteContact = (deletedContact) ->
     if confirm('Are you sure you want to delete "' +  deletedContact.contact.name + '"?')
       DealContact.delete(deal_id: $scope.currentDeal.id, id: deletedContact.id).then (deal_contact) ->

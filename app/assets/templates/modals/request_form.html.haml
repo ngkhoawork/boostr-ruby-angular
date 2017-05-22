@@ -1,0 +1,30 @@
+#request_modal.popup-modal
+  %form.form-horizontal
+    .popup-modal-header
+      New Revenue Request
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body.modal-body
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          <strong style="text-transform: capitalize">{{field}}</strong>
+          {{error}}
+
+      .form-group
+        %input.form-control{ name: 'description', placeholder: 'Explain your change', ng: { model: 'request.description' } }
+      .form-group
+        .row
+          .col-xs-12
+            .client-list
+              .client-info{ 'ng-repeat': 'io in ios | filter: { name: searchText }' }
+                .name{ ng: { bind: { html: 'io.name' } } }
+                .type
+                  {{io.advertiser ? io.advertiser.name : ""}},
+                  {{io.start_date | date: 'MM/dd/yyyy'}}
+                .action
+                  %a{ href: "javascript:void(0)", 'ng-click': "assignIO(io)" }
+                    Assign
+
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-warning{ type: 'submit', ng: { click: "createRequest()" } } Save

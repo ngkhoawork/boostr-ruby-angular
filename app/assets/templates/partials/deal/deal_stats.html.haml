@@ -1,4 +1,10 @@
 .detail-stats.block
+	.deal-won-indicator{ 'ng-show': '!currentDeal.stage.open && currentDeal.stage.probability == 100' }
+		.deal-won-indicator-oval
+		.deal-won-indicator-deal
+			Deal
+		.deal-won-indicator-won
+			Won
 	%div.stats-body
 		%div.deal-title.mb30
 			%span.main-title

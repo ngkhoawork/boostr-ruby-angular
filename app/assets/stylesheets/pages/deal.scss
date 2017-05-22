@@ -128,6 +128,48 @@
         margin-left: 0
     }
     .detail-stats {
+        .deal-won-indicator {
+            position: absolute;
+            top: 25px;
+            left: 325px;
+            height: 146.97px;
+            width: 146.97px;
+            opacity: 0.5;
+            transform: rotate(345deg);
+            text-transform: uppercase;
+            .deal-won-indicator-deal {
+                height: 48.18px;
+                width: 69.39px;
+                color: #FF7200;
+                font-family: "Avenir Next";
+                font-size: 31px;
+                font-weight: 600;
+                line-height: 33px;
+                text-align: right;
+                position: absolute;
+                top: 38px;
+                left: 30px;
+            }
+            .deal-won-indicator-won {
+                height: 71.92px;
+                width: 104.45px;
+                color: #FF7200;
+                font-family: "Avenir Next";
+                font-size: 42px;
+                font-weight: 600;
+                line-height: 49px;
+                text-align: right;
+                position: absolute;
+                top: 71px;
+                left: 16px;
+            }
+            .deal-won-indicator-oval {
+                height: 146.97px;
+                width: 146.97px;
+                border: 5px solid #FF7200;
+                border-radius: 125px;
+            }
+        }
         textarea.editable {
             margin-left: 10px;
         }
@@ -182,6 +224,17 @@
                 left: 1%;
                 width: 98%;
                 bottom: calc(50% + 30px);
+            }
+        }
+    }
+    #line-content-fees, #line-display {
+        .cell-thin {
+            min-width: 133px;
+            width: 133px;
+            padding-left: 0;
+            padding-right: 0;
+            a {
+                color: $main-color;
             }
         }
     }
