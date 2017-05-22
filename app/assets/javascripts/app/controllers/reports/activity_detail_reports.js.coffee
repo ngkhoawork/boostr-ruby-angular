@@ -182,4 +182,15 @@
           resolve:
             activity: ->
               activity
+
+      $scope.showActivityEditModal = (activity) ->
+        $scope.modalInstance = $modal.open
+          templateUrl: 'modals/activity_new_form.html'
+          size: 'md'
+          controller: 'ActivityNewController'
+          backdrop: 'static'
+          keyboard: false
+          resolve:
+            activity: -> activity
+            options: -> null
   ]
