@@ -19,4 +19,11 @@
         color: #3498DB;
         cursor: pointer;
     }
+    .dropdown-menu {
+        li {
+            &.active {
+                background-color: $main-color;
+            }
+        }
+    }
 }

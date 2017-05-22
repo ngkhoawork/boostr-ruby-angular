@@ -7,7 +7,7 @@
   $scope.typeIds = {}
   $scope.timePeriods = []
   $scope.years = []
-  $scope.userTypes = _.filter User.user_types_list, (type) -> type.id != 7 #excluding "Fake User"
+  $scope.userTypes = _.filter User.user_types_list, (type) -> type.id && type.id != 7  #excluding "Default" and "Fake User"
   $scope.currentTimePeriod = {}
   $scope.company = {}
   $scope.userTypeId = parseInt $routeParams.user_type
@@ -72,7 +72,7 @@
       query = {}
       if($scope.teamId)
         query.team_id = $scope.teamId
-      if $scope.userTypeId
+      if $scope.userTypeId != undefined
         query.user_type = $scope.userTypeId
       if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
         query.start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
