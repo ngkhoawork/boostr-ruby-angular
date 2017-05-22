@@ -11,9 +11,9 @@ RSpec.describe User, type: :model do
 
   context 'before_update' do
     it 'promotes user to an admin if user type is changed to ADMIN' do
-      expect(user.is?('admin')).to eq false
+      expect(user.user_type).to_not eq ADMIN
       user.update(user_type: ADMIN)
-      expect(user.reload.is?('admin')).to eq true
+      expect(user.user_type).to eq ADMIN
     end
   end
 
