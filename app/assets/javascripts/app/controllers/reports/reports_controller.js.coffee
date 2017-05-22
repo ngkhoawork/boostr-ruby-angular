@@ -7,8 +7,10 @@
   $scope.typeIds = {}
   $scope.timePeriods = []
   $scope.years = []
+  $scope.userTypes = _.filter User.user_types_list, (type) -> type.id != 7 #excluding "Fake User"
   $scope.currentTimePeriod = {}
   $scope.company = {}
+  $scope.userTypeId = parseInt $routeParams.user_type
   $scope.teamId = $routeParams.team_id
   $scope.isInitLoad = true
   $scope.selectedTeam = {
@@ -32,6 +34,10 @@
       fetchData()
     $scope.isInitLoad = false
 
+  $scope.setFilter = (key, value) ->
+    $scope[key] = value
+    fetchData()
+
   $scope.datePickerApply = () ->
     if ($scope.datePicker.startDate && $scope.datePicker.endDate)
       datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
@@ -48,10 +54,11 @@
       id:'all',
       name:'Team'
     }
+    $scope.userTypeId = null
     $scope.datePickerCancel(null, true)
     fetchData()
-  $scope.init = ->
 
+  $scope.init = ->
     Team.all(all_teams: true).then (teams) ->
       $scope.teams = teams
       $scope.teams.unshift({
@@ -65,6 +72,8 @@
       query = {}
       if($scope.teamId)
         query.team_id = $scope.teamId
+      if $scope.userTypeId
+        query.user_type = $scope.userTypeId
       if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
         query.start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
         query.end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
@@ -83,13 +92,15 @@
     if team_id
       path = []
       path.push "/reports/activity_summary"
-      path.push "?team_id=#{team_id}" 
+      path.push "?team_id=#{team_id}"
+      if $scope.userTypeId
+        path.push '&user_type=' + $scope.userTypeId
       if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
         start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
         end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
         path.push "&start_date=#{start_date}&end_date=#{end_date}"
       $location.url(path.join(''))
-      
+
 
   $scope.initReport = ->
     $scope.sortType = 'total'
@@ -103,7 +114,6 @@
       fullReport.user_id = report.user_id
       fullReport.username = report.username
       fullReport.total = report.total
-
       $scope.userReportValues.push(fullReport)
     _.each $scope.types, (type) ->
       $scope.total_activities[type.name] = 0 if $scope.total_activities[type.name] == undefined
@@ -155,7 +165,9 @@
     if($scope.teamId)
       team_id = $scope.teamId
     if team_id
-      path += "?team_id=#{team_id}" 
+      path += "?team_id=#{team_id}"
+      if $scope.userTypeId
+        path += '&user_type=' + $scope.userTypeId
       if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
         start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
         end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
