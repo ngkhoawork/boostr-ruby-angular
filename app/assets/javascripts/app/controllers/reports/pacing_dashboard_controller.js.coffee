@@ -96,26 +96,26 @@
                 when FIRST_CHART_ID
                     [
                         {name: 'TQ-Pipeline',  color: shadeColor(c(0), 0),   dasharray: 'none',   visibility: 'A1', values: data.weighted_pipeline.current_quarter}
-                        {name: 'LQ-Pipeline',  color: shadeColor(c(0), 0.3), dasharray: 'none',   visibility: 'A2', values: data.weighted_pipeline.previous_quarter}
-                        {name: 'YoY-Pipeline', color: shadeColor(c(0), 0.6), dasharray: 'none',   visibility: 'A3', values: data.weighted_pipeline.previous_year_quarter}
-                        {name: 'TQ-Revenue',   color: shadeColor(c(1), 0),   dasharray: '4, 4',   visibility: 'B1', values: data.revenue.current_quarter}
-                        {name: 'LQ-Revenue',   color: shadeColor(c(1), 0.3), dasharray: '4, 4',   visibility: 'B2', values: data.revenue.previous_quarter}
+                        {name: 'LQ-Pipeline',  color: shadeColor(c(0), 0.3), dasharray: '12, 12',   visibility: 'A2', values: data.weighted_pipeline.previous_quarter}
+                        {name: 'YoY-Pipeline', color: shadeColor(c(0), 0.6), dasharray: '4, 4',   visibility: 'A3', values: data.weighted_pipeline.previous_year_quarter}
+                        {name: 'TQ-Revenue',   color: shadeColor(c(1), 0),   dasharray: 'none',   visibility: 'B1', values: data.revenue.current_quarter}
+                        {name: 'LQ-Revenue',   color: shadeColor(c(1), 0.3), dasharray: '12, 12',   visibility: 'B2', values: data.revenue.previous_quarter}
                         {name: 'YoY-Revenue',  color: shadeColor(c(1), 0.6), dasharray: '4, 4',   visibility: 'B3', values: data.revenue.previous_year_quarter}
-                        {name: 'TQ-Forecast',  color: shadeColor(c(2), 0),   dasharray: '12, 12', visibility: 'C1', values: data.sum_revenue_and_weighted_pipeline.current_quarter}
+                        {name: 'TQ-Forecast',  color: shadeColor(c(2), 0),   dasharray: 'none', visibility: 'C1', values: data.sum_revenue_and_weighted_pipeline.current_quarter}
                         {name: 'LQ-Forecast',  color: shadeColor(c(2), 0.3), dasharray: '12, 12', visibility: 'C2', values: data.sum_revenue_and_weighted_pipeline.previous_quarter}
-                        {name: 'YoY-Forecast', color: shadeColor(c(2), 0.6), dasharray: '12, 12', visibility: 'C3', values: data.sum_revenue_and_weighted_pipeline.previous_year_quarter}
+                        {name: 'YoY-Forecast', color: shadeColor(c(2), 0.6), dasharray: '4, 4', visibility: 'C3', values: data.sum_revenue_and_weighted_pipeline.previous_year_quarter}
                     ]
                 when SECOND_CHART_ID
                     [
                         {name: 'TQ-New Deals',  color: c(1), dasharray: 'none',   values: data.current_quarter}
-                        {name: 'LQ-New Deals',  color: c(1), dasharray: '4, 4',   values: data.previous_quarter}
-                        {name: 'YoY-New Deals', color: c(1), dasharray: '12, 12', values: data.previous_year_quarter}
+                        {name: 'LQ-New Deals',  color: c(1), dasharray: '12, 12',   values: data.previous_quarter}
+                        {name: 'YoY-New Deals', color: c(1), dasharray: '4, 4', values: data.previous_year_quarter}
                     ]
                 when THIRD_CHART_ID
                     [
                         {name: 'TQ-Won Deals',  color: c(1), dasharray: 'none',   values: data.current_quarter}
-                        {name: 'LQ-Won Deals',  color: c(1), dasharray: '4, 4',   values: data.previous_quarter}
-                        {name: 'YoY-Won Deals', color: c(1), dasharray: '12, 12', values: data.previous_year_quarter}
+                        {name: 'LQ-Won Deals',  color: c(1), dasharray: '12, 12',   values: data.previous_quarter}
+                        {name: 'YoY-Won Deals', color: c(1), dasharray: '4, 4', values: data.previous_year_quarter}
                     ]
 
         drawChart = (data, chartId) ->
