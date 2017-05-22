@@ -3,7 +3,7 @@ FactoryGirl.define do
     account_dimension nil
     time_dimension nil
     company nil
-    product nil
+    product_dimension nil
     revenue_amount 1
   end
 end

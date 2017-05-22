@@ -4,9 +4,9 @@ class AccountProductRevenueFactService < BaseService
   def perform
     accounts.each do |client|
       time_dimensions.each do |time_dimension|
-        service = AccountProductRevenueCalculationService.new(company_id: client.company_id,
-                                                               date_range: { start_date: time_dimension.start_date,
-                                                                             end_date: time_dimension.end_date })
+        # binding.pry
+        date_range = { start_date: time_dimension.start_date, end_date: time_dimension.end_date }
+        service = AccountProductRevenueCalculationService.new(company_id: client.company_id, date_range: date_range)
         revenues = service.perform
         Upsert.batch(ActiveRecord::Base.retrieve_connection, :account_product_revenue_facts) do |batch|
           revenues.each do |product_id, revenue_amount|

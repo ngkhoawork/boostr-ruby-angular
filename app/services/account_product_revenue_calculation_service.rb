@@ -46,7 +46,8 @@ class AccountProductRevenueCalculationService < BaseService
   end
 
   def display_line_item_budgets_daily_rate_conditions
-    'products.company_id = :company_id
+    'products.revenue_type = \'Display\'
+     AND products.company_id = :company_id
      AND product_id NOT IN (:product_ids)
      AND display_line_items.end_date >= :time_dim_start_date
      AND display_line_items.start_date <= :time_dim_end_date'
