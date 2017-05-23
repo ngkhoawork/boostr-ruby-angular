@@ -101,6 +101,7 @@
 									%th.left End Date
 									%th.left
 										.product Product
+									%th.left Ad Unit
 									%th.left Ad Server Product
 									%th.right Qty
 									%th.right Price
@@ -130,6 +131,8 @@
 										{{ displayLineItem.end_date | date: 'M/d/yyyy' }}
 									%td.left
 										{{ displayLineItem.product.name }}
+									%td.left
+										{{ displayLineItem.ad_unit }}
 									%td.left
 										{{ displayLineItem.ad_server_product }}
 									%td.right
