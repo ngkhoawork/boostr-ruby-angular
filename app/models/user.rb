@@ -48,7 +48,7 @@ class User < ActiveRecord::Base
     roles.include?(role.to_s)
   end
 
-  def is_admin
+  def is_admin?
     is?(:admin)
   end
 
@@ -101,7 +101,7 @@ class User < ActiveRecord::Base
       super(options)
     else
       super(options.merge(
-        methods: [:name, :leader?, :is_admin, :roles]
+        methods: [:name, :leader?, :is_admin?, :roles]
       ).except(:override))
     end
   end
