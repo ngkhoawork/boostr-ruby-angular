@@ -48,7 +48,7 @@ feature 'BillingSummary' do
   it 'update content fee product budget successfully', js: true do
     expect(find('.display-line-budget').text).to eq('$20,000')
 
-    find('.display-line-quantity').click
+    find('.display-line-quantity').trigger('click')
     find('form.editable-number .editable-input').set(100_000)
     find('.ios-for-approval').click
 
