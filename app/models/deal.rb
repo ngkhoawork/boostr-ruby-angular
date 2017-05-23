@@ -1336,11 +1336,11 @@ class Deal < ActiveRecord::Base
   end
 
   def self.grouped_sum_budget_by_week(start_date, end_date)
-    where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+    where(closed_at: start_date.beginning_of_day..end_date.end_of_day)
     .won
-    .select(:created_at, :budget)
-    .group('deals.created_at')
-    .order('deals.created_at')
+    .select(:closed_at, :budget)
+    .group('deals.closed_at')
+    .order('deals.closed_at')
     .sum('budget')
   end
 end
