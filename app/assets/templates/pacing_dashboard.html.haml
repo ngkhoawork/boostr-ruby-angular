@@ -36,44 +36,46 @@
 				%div#pipeline-revenue-chart-container.mb20
 					%svg#pipeline-revenue-chart.pacing-chart
 					%div.legend-container
-
-				%table.table.table-hover
-					%tbody
-						%tr.header-row
-							%th
-								%b Weighted Pipe
-							%th{'ng-repeat': 'week in weeks'} Week {{week}}
-					%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
-						%tr
-							%td This Qtr
-							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.current_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
-						%tr
-							%td Last Qtr
-							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
-						%tr
-							%td YoY
-							%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_year_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
-					%tbody
-						%tr.header-row
-							%th
-								%b Revenue
-							%th{'ng-repeat': 'week in weeks'} Week {{week}}
-					%tbody{'ng-show': 'pipelineRevenue.revenue'}
-						%tr
-							%td This Qtr
-							%td{'ng-repeat': 'val in pipelineRevenue.revenue.current_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
-						%tr
-							%td Last Qtr
-							%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
-						%tr
-							%td YoY
-							%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_year_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
+				.table-wrapper
+					%table.table.table-hover
+						%tbody
+							%tr.header-row
+								%th
+									%b Weighted Pipe
+								%th{'ng-repeat': 'week in weeks'}
+									Week {{week <= weekShift ? week - weekShift - 1 : week - weekShift}}
+						%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
+							%tr
+								%td This Qtr
+								%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.current_quarter track by $index'}
+									{{val | currency: '$' : '0'}}
+							%tr
+								%td Last Qtr
+								%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_quarter track by $index'}
+									{{val | currency: '$' : '0'}}
+							%tr
+								%td YoY
+								%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_year_quarter track by $index'}
+									{{val | currency: '$' : '0'}}
+						%tbody
+							%tr.header-row
+								%th
+									%b Revenue
+								%th{'ng-repeat': 'week in weeks'}
+									Week {{week <= weekShift ? week - weekShift - 1 : week - weekShift}}
+						%tbody{'ng-show': 'pipelineRevenue.revenue'}
+							%tr
+								%td This Qtr
+								%td{'ng-repeat': 'val in pipelineRevenue.revenue.current_quarter track by $index'}
+									{{val | currency: '$' : '0'}}
+							%tr
+								%td Last Qtr
+								%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_quarter track by $index'}
+									{{val | currency: '$' : '0'}}
+							%tr
+								%td YoY
+								%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_year_quarter track by $index'}
+									{{val | currency: '$' : '0'}}
 
 		.row.mb20
 			.reports-header
@@ -159,7 +161,7 @@
 						%tr.header-row
 							%th
 								%b New Deals #
-							%th{'ng-repeat': 'week in weeks'} Week {{week}}
+							%th{'ng-repeat': 'week in dealWeeks'} Week {{week}}
 					%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
 						%tr
 							%td This Qtr
@@ -178,7 +180,7 @@
 						%tr.header-row
 							%th
 								%b Won Deals
-							%th{'ng-repeat': 'week in weeks'} Week {{week}}
+							%th{'ng-repeat': 'week in dealWeeks'} Week {{week}}
 					%tbody{'ng-show': 'pipelineRevenue.revenue'}
 						%tr
 							%td This Qtr

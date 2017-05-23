@@ -24,7 +24,9 @@
         $scope.pipelineRevenue = {}
         $scope.newDeals = {}
         $scope.wonDeals = {}
-        $scope.weeks = [1..13]
+        $scope.weekShift = 8
+        $scope.weeks = [1..13 + $scope.weekShift]
+        $scope.dealWeeks = [1..13]
         $scope.currentWeek = null
         $scope.maxQuota = null
 
@@ -130,6 +132,11 @@
             width = chartContainer.width() - margin.left - margin.right || 800
             height = 400
 
+            currentWeek = $scope.currentWeek
+            weekShift = if chartId == FIRST_CHART_ID then $scope.weekShift else 0
+            weeks = if chartId == FIRST_CHART_ID then $scope.weeks else $scope.dealWeeks
+
+            dataset = transformChartData(data, chartId)
 
             svg = d3.select(chartId)
                 .attr('width', width + margin.left + margin.right)
@@ -138,12 +145,11 @@
                 .append('g')
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-            dataset = transformChartData(data, chartId)
 
             maxValue = (d3.max dataset, (item) -> d3.max item.values) || 0
             yMax = maxValue * 1.2
 
-            x = d3.scale.ordinal().domain(['Week'].concat $scope.weeks).rangePoints([0, width - width / $scope.weeks.length])
+            x = d3.scale.ordinal().domain(['Week'].concat weeks).rangePoints([0, width - width / weeks.length])
             y = d3.scale.linear().domain([yMax || 1, 0]).rangeRound([0, height])
 
             xAxis = d3.svg.axis().scale(x).orient('bottom')
@@ -151,11 +157,13 @@
                 .innerTickSize(0)
                 .tickPadding(10)
                 .tickFormat (v, i) ->
-                    if $scope.currentWeek == i
+                    if chartId == FIRST_CHART_ID && typeof v == 'number'
+                        v = if v <= weekShift then v - weekShift - 1 else v - weekShift
+                    if currentWeek == v
                         d3.select(this)
                             .style 'font-weight', 'bold'
                             .style 'font-size', '12px'
-                    v
+                    return v
             yAxis = d3.svg.axis().scale(y).orient('left')
                 .innerTickSize(-width)
                 .tickPadding(10)
@@ -169,12 +177,12 @@
             svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')').call xAxis
             svg.append('g').attr('class', 'axis').call yAxis
 
-            if $scope.currentWeek
+            if currentWeek
                 svg.append('line')
                     .attr('class', 'week-line')
-                    .attr 'x1', x($scope.currentWeek)
+                    .attr 'x1', x(currentWeek + weekShift)
                     .attr 'y1', height
-                    .attr 'x2', x($scope.currentWeek)
+                    .attr 'x2', x(currentWeek + weekShift)
                     .attr 'y2', height
                     .transition()
                     .delay(delay / 2)
@@ -209,14 +217,12 @@
                 .append('path')
                 .attr('class', 'graph')
                 .attr('data-visibility', (d) -> d.visibility)
-                .style 'stroke', (d) -> d.color
-                .attr 'd', -> graphLine(_.map $scope.weeks, -> 0)
+                .attr 'stroke', (d) -> d.color
+                .attr 'stroke-dasharray', (d) -> d.dasharray
+                .attr 'd', -> graphLine(_.map weeks, -> 0)
                 .transition()
                 .duration(duration)
                 .attr 'd', (d) -> graphLine(d.values)
-
-            graphs
-                .attr 'stroke-dasharray', (d) -> d.dasharray
 
             #legend
             legendContainer = d3.select(chartId + '-container .legend-container')
