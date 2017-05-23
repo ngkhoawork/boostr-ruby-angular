@@ -227,7 +227,21 @@
             }
         }
     }
-    #line-content-fees, #line-display {
+    #io-details {
+        span.title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-right: 20px;
+            display: block;
+        }
+        span.details {
+            margin-left: 15px;
+            margin-bottom: 15px;
+        }
+        a.io-link {
+            display: inline-block;
+            margin-bottom: 25px;
+        }
         .cell-thin {
             min-width: 133px;
             width: 133px;

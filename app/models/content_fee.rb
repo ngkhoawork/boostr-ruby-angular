@@ -1,7 +1,10 @@
 class ContentFee < ActiveRecord::Base
   belongs_to :io
-  has_many :content_fee_product_budgets, dependent: :destroy
   belongs_to :product
+
+  has_many :content_fee_product_budgets, dependent: :destroy
+
+  has_one :request, as: :requestable
 
   validate :active_exchange_rate
 

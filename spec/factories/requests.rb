@@ -7,6 +7,10 @@ FactoryGirl.define do
     resolution { FFaker::HipsterIpsum.phrase }
     due_date { FFaker::Time.date }
     status { ['New', 'Denied', 'Completed'].sample }
+
+    before(:create) do |item|
+      item.company = Company.first if item.company.blank?
+    end
   end
 
 end

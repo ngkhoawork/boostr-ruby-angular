@@ -33,6 +33,7 @@ class Company < ActiveRecord::Base
   has_many :api_configurations, dependent: :destroy
   has_many :initiatives, dependent: :destroy
   has_many :integration_logs, dependent: :destroy
+  has_many :requests
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'

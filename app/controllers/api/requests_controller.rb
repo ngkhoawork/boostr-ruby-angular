@@ -1,9 +1,14 @@
 class Api::RequestsController < ApplicationController
   respond_to :json
 
+  def index
+    render json: requests, each_serializer: Requests::RequestSerializer
+  end
+
   def create
     request = deal.requests.new(request_params)
     request.requester = current_user
+    request.company_id = current_user.company_id
 
     if request.save
       render json: request, status: :created
@@ -13,10 +18,10 @@ class Api::RequestsController < ApplicationController
   end
 
   def update
-    if request.update_attributes(request_params)
-      render json: request, status: :accepted
+    if request_item.update_attributes(request_params)
+      render json: request_item, status: :accepted
     else
-      render json: { errors: request.errors.messages }, status: :unprocessable_entity
+      render json: { errors: request_item.errors.messages }, status: :unprocessable_entity
     end
   end
 
@@ -32,14 +37,33 @@ class Api::RequestsController < ApplicationController
       :status,
       :assignee_id,
       :requestable_id,
-      :requestable_type
+      :requestable_type,
+      :request_type
     )
+  end
+
+  def requests
+    Request.where(company_id: current_user.company_id).by_request_type(type_filter).by_status(status_filter)
+  end
+
+  def type_filter
+    params[:request_type]
+  end
+
+  def status_filter
+    params[:status]
   end
 
   def deal
     @_deal ||= Deal.find_by(
       id: request_params['deal_id'],
       company_id: current_user.company_id
+    )
+  end
+
+  def request_item
+    @_request_item ||= Request.find_by(
+      id: params['id'], company_id: current_user.company_id
     )
   end
 end

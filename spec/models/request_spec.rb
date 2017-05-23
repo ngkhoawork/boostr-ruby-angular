@@ -11,5 +11,6 @@ RSpec.describe Request, type: :model do
     it { should belong_to(:assignee) }
     it { should belong_to(:deal) }
     it { should belong_to(:requestable) }
+    it { should belong_to(:company) }
   end
 end

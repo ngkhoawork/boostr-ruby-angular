@@ -1,0 +1,12 @@
+#requests.z-styles
+  .container-fluid
+    %span.title Requests
+    .row.mb10.filter-row
+      .request-types
+        %span{ng: {repeat: 'type in request_types', class: '{active: type == request_type_filter}', click: 'typeFilter(type)'}}
+          {{type}}
+      .request-statuses
+        %span{ng: {repeat: 'status in statuses', class: '{active: status == status_filter}', click: 'statusFilter(status)'}}
+          {{status}}
+
+    %div{ng: {include: '"partials/requests/revenue_requests_tab.html"', show: 'request_type_filter == "Revenue"'}}

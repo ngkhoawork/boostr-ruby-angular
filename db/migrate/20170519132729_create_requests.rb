@@ -2,11 +2,13 @@ class CreateRequests < ActiveRecord::Migration
   def change
     create_table :requests do |t|
       t.belongs_to :deal, index: true, foreign_key: true
+      t.belongs_to :company, index: true, foreign_key: true
       t.references :requester, references: :users, index: true
       t.references :assignee, references: :users, index: true
       t.integer :requestable_id
       t.string :requestable_type
       t.string :status
+      t.string :request_type
       t.text :description, default: ""
       t.text :resolution, default: ""
       t.date :due_date

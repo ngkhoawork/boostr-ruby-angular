@@ -1,0 +1,46 @@
+#revenue-requests.block
+  %table.deals-table.table.table-hover
+    %thead
+      %tr
+        %th Requester
+        %th Deal Name
+        %th IO Number
+        %th Description
+        %th Resolution
+        %th Created
+        %th Status
+        %th Owner
+
+    %tbody
+      %tr{ng: {repeat: 'request in requests'}}
+        %td
+          {{request.requester.name}}
+        %td
+          %a{'href': '', 'ng-href': '/deals/{{request.deal.id}}'} {{request.deal.name}}
+        %td
+          %a{'href': '', 'ng-href': '/revenue/ios/{{request.deal.io_id}}'}
+            \#
+            {{request.deal.id}}
+            {{request.requestable_type}}
+             
+            {{request.requestable_id}}
+        %td
+          {{request.description}}
+        %td
+          {{request.resolution}}
+        %td
+          {{request.created_at | date : mediumDate}}
+        %td
+          {{request.status}}
+        %td
+          {{request.assignee.name}}
+
+
+
+
+
+
+
+
+
+

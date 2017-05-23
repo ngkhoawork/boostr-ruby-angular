@@ -18,21 +18,34 @@
       # transformRequest: transformRequest
     }
 
+  @statuses = [
+    'New',
+    'Denied',
+    'Completed'
+  ]
+
+  @request_types = [
+    'Revenue',
+    'Resource'
+  ]
+
   @all = (params) ->
+    deferred = $q.defer()
     resource.query params, (data) ->
-      deferred = $q.defer()
       deferred.resolve(data)
     deferred.promise
 
   @create = (params) ->
     deferred = $q.defer()
     resource.save params, (data) ->
+      $rootScope.$broadcast 'newRequest', data
       deferred.resolve(data)
     deferred.promise
 
   @update = (params) ->
     deferred = $q.defer()
     resource.update params, (data) ->
+      $rootScope.$broadcast 'newRequest', data
       deferred.resolve(data)
     deferred.promise
 

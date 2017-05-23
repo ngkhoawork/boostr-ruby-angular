@@ -12,6 +12,8 @@ RSpec.describe Company, type: :model do
 
     it { should have_many(:deal_product_cf_names) }
     it { should have_many(:deal_product_cfs).through(:deal_products) }
+
+    it { should have_many(:requests) }
   end
 
   context 'before create' do
