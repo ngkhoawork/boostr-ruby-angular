@@ -116,7 +116,14 @@ class Api::ReportsController < ApplicationController
   end
 
   def users
-    @_users ||=
-      params[:user_type].present? ? all_team_sales_reps.select { |u| u.user_type.eql? user_type } : all_team_sales_reps
+    @_users ||= params[:user_type].present? ? by_user_type : without_default_and_fake_type
+  end
+
+  def by_user_type
+    all_team_sales_reps.select { |u| u.user_type.eql? user_type }
+  end
+
+  def without_default_and_fake_type
+    all_team_sales_reps.reject { |u| [FAKE_USER, DEFAULT].include?(u.user_type) }
   end
 end

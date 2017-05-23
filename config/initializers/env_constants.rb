@@ -1,6 +1,7 @@
 # Application Constants
 
 # User Types
+DEFAULT = 0
 SELLER = 1
 SALES_MANAGER = 2
 ACCOUNT_MANAGER = 3
