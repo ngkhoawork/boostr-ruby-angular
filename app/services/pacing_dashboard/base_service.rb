@@ -114,7 +114,7 @@ class PacingDashboard::BaseService
   end
 
   def empty_weeks_data
-    Array.new(21, empty_value)
+		use_all_time_period_weeks? ? Array.new(21, empty_value) : Array.new(13, empty_value)
 	end
 
 	def use_all_time_period_weeks?
