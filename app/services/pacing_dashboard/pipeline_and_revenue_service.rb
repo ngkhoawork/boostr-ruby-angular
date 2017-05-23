@@ -21,6 +21,10 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
 	private
 
+	def use_all_time_period_weeks?
+		true
+	end
+
 	def snapshot_grouped_by_day_for_current_quarter
 		@_snapshot_grouped_by_day_for_current_quarter ||=
 			Snapshot.grouped_by_day_in_period_for_company(company, current_quarter)

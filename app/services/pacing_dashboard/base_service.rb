@@ -79,19 +79,34 @@ class PacingDashboard::BaseService
 			TimePeriodWeek.find_by(period_name: "Q#{current_quarter_number}-#{previous_year_quarter_year}")
 	end
 
+	def all_time_period_weeks_for_current_quarter
+		@_all_time_period_weeks_for_current_quarter ||=
+			TimePeriodWeek.by_period_start_and_end(current_quarter.start_date, current_quarter.end_date)
+	end
+
 	def weeks_for_current_quarter
-		@_weeks_for_current_quarter ||= TimePeriodWeek.by_period_start_and_end(current_quarter.start_date,
-																																					 current_quarter.end_date)
+		@_weeks_for_current_quarter ||=
+			use_all_time_period_weeks? ? all_time_period_weeks_for_current_quarter : all_time_period_weeks_for_current_quarter.with_positive_weeks
+	end
+
+	def all_time_period_weeks_for_previous_quarter
+		@_all_time_period_weeks_for_previous_quarter ||=
+			TimePeriodWeek.by_period_start_and_end(previous_quarter.start_date, previous_quarter.end_date)
 	end
 
 	def weeks_for_previous_quarter
-		@_weeks_for_previous_quarter ||= TimePeriodWeek.by_period_start_and_end(previous_quarter.start_date,
-																																						previous_quarter.end_date)
+		@_weeks_for_previous_quarter ||=
+			use_all_time_period_weeks? ? all_time_period_weeks_for_previous_quarter : all_time_period_weeks_for_previous_quarter.with_positive_weeks
+	end
+
+	def all_time_period_weeks_for_previous_year_quarter
+		@_all_time_period_weeks_for_previous_year_quarter ||=
+			TimePeriodWeek.by_period_start_and_end(previous_year_quarter.start_date, previous_year_quarter.end_date)
 	end
 
 	def weeks_for_previous_year_quarter
-		@_weeks_for_previous_year_quarter ||= TimePeriodWeek.by_period_start_and_end(previous_year_quarter.start_date,
-																																								 previous_year_quarter.end_date)
+		@_weeks_for_previous_year_quarter ||=
+			use_all_time_period_weeks? ? all_time_period_weeks_for_previous_year_quarter : all_time_period_weeks_for_previous_year_quarter.with_positive_weeks
   end
 
   def empty_value
@@ -99,6 +114,10 @@ class PacingDashboard::BaseService
   end
 
   def empty_weeks_data
-    Array.new(13, empty_value)
-  end
+    Array.new(21, empty_value)
+	end
+
+	def use_all_time_period_weeks?
+		false
+	end
 end
