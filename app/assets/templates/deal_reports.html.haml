@@ -159,7 +159,7 @@
                 %td.left {{ deal.agency.parent_client.name }}
                 %td.left {{ deal.stage.name }}
                 %td.right {{ deal.stage.probability }}%
-                %td.right ${{ (deal.budget || 0) | number : 0}}
+                %td.right {{ deal.budget | currency:'$':0}}
                 %td.left {{ deal.next_steps.substr(0, 30) }}
                 %td.left{ ng: { if: 'deal.latest_activity && deal.latest_activity.activity_type_name == "Email"' } }
                   %button.btn.activity-email-btn{'ng-click': 'showEmailsModal(deal.latest_activity)'}
