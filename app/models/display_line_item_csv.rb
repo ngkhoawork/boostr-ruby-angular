@@ -2,13 +2,11 @@ class DisplayLineItemCsv
   include ActiveModel::Validations
 
   validates_presence_of     :line_number, :start_date, :end_date, :product_name,
-                            :quantity, :budget, :company_id
+                            :quantity, :budget, :company_id, :io_name
   validates_numericality_of :line_number, :quantity, :budget, :budget_delivered, numericality: true
   validates_numericality_of :quantity_delivered, :quantity_delivered_3p, allow_blank: true
 
-  validates :io_or_tempio, presence: { message: 'not found' }
-
-  validate :io_exchange_rate_presence
+  validate :io_exchange_rate_presence, if: :company_id
   validate :dates_can_be_parsed
 
   attr_accessor :external_io_number, :line_number, :ad_server, :start_date, :end_date,
@@ -102,7 +100,7 @@ class DisplayLineItemCsv
   end
 
   def io_number
-    io_name.gsub(/.+_/, '')
+    io_name.gsub(/.+_/, '') if io_name
   end
 
   def update_external_io_number

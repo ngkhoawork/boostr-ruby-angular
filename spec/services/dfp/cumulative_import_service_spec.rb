@@ -38,12 +38,13 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       pricing_type: 'CPM',
       price: 20000000 / 1_000_000,
       quantity: 85000,
-      budget: 1700000000 / 1_000_000,
+      budget: (1700000000 / 1_000_000).to_f,
       quantity_delivered: [85000, 85001].min,
       clicks: '977',
       ctr: '0.0115',
       budget_delivered: (20000000 / 1_000_000 * 85001 / 1_000),
-      company_id: company.id
+      company_id: company.id,
+      ad_unit_name: nil
     ).and_return(line_item_csv)
     expect(line_item_csv).to receive(:valid?)
     expect(line_item_csv).to receive(:perform)
@@ -72,8 +73,9 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       quantity_delivered: 85000,
       clicks: '977',
       ctr: '0.0115',
-      budget_delivered: (20000000 / 1_000_000 * 85000 / 1_000),
-      company_id: company.id
+      budget_delivered: 20000000 / 1_000_000,
+      company_id: company.id,
+      ad_unit_name: nil
     ).and_return(line_item_csv)
     expect(line_item_csv).to receive(:valid?)
     expect(line_item_csv).to receive(:perform)
@@ -205,6 +207,7 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       columntotal_line_item_level_clicks: "977",
       columntotal_line_item_level_ctr: "0.0115",
       columntotal_line_item_level_all_revenue: "1700020000"
+
 
     list << (build :dfp_report_cummulative_csv_data,
       dimensionorder_id: io.external_io_number,
