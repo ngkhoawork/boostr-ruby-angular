@@ -235,9 +235,10 @@ RSpec.describe Contact, type: :model do
       metadata = Contact.metadata(company.id)
 
       expect(metadata).to eq(
-        workplaces: ['Flipboard', 'Facebook'],
+        workplaces: ['Facebook', 'Flipboard'],
         job_levels: ['CEO', 'Seller'],
-        cities: ['Palm Beach', 'New York']
+        cities: ['Palm Beach', 'New York'],
+        countries: ISO3166::Country.all_translated
       )
     end
   end

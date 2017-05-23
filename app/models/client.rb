@@ -350,7 +350,7 @@ class Client < ActiveRecord::Base
         region = region_field.options.where('name ilike ?', row[14]).first
         unless region
           error = { row: row_number, message: ["Region #{row[14]} could not be found"] }
-          errors << error∂
+          errors << error
           next
         end
       else

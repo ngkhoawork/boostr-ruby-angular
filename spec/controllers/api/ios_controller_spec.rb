@@ -41,7 +41,7 @@ describe Api::IosController do
   end
 
   def admin_user
-    @_admin_user ||= create :user, company: company, user_type: ADMIN
+    @_admin_user ||= create :user, company: company, roles: ['admin']
   end
 
   def account_manager
