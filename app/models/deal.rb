@@ -17,7 +17,7 @@ class Deal < ActiveRecord::Base
 
   # Restrict with exception is used to rollback any
   # other potential dependent: :destroy relations
-  has_one :io, class_name: "Io", foreign_key: 'io_number', dependent: :restrict_with_exception
+  has_one :io, class_name: "Io", foreign_key: 'deal_id', dependent: :restrict_with_exception
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   has_many :contacts, -> { uniq }, through: :deal_contacts
