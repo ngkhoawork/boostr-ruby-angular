@@ -4,7 +4,6 @@ class AccountProductRevenueFactService < BaseService
   def perform
     accounts.each do |client|
       time_dimensions.each do |time_dimension|
-        # binding.pry
         date_range = { start_date: time_dimension.start_date, end_date: time_dimension.end_date }
         service = AccountProductRevenueCalculationService.new(company_id: client.company_id, date_range: date_range)
         revenues = service.perform

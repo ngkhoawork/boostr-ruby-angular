@@ -1,17 +1,28 @@
 class AccountProductPipelineFactService < BaseService
   def perform
     clients.each do |client|
-      service = AccountProductTotalAmountCalculationService.new(client: client)
-      service.perform
-      total_amounts = service.calculated_amounts
-      total_amounts.each do |total_amount_item|
-        fact_item = AccountProductPipelineFact.find_or_initialize_by(company_id: client.company.id,
-                                                                     account_dimension_id: client.id,
-                                                                     time_dimension_id: total_amount_item.time_dimension_id,
-                                                                     product_id: total_amount_item.product_id)
-        fact_item.weighted_amount = total_amount_item.weighted_amount
-        fact_item.unweighted_amount = total_amount_item.unweighted_amount
-        fact_item.save
+      time_dimensions.each do |time_dimension|
+        service = AccountProductTotalAmountCalculationService.new(client: client, time_dimension: time_dimension)
+        calculated_amounts = service.perform
+        Upsert.batch(ActiveRecord::Base.retrieve_connection, :account_product_pipeline_facts) do |batch|
+          calculated_amounts.each do |calculated_amount|
+            batch.row({ weighted_amount: calculated_amount['weighted_budget'].to_i,
+                        unweighted_amount: calculated_amount['unweighted_budget'].to_i,
+                        account_dimension_id: client.id,
+                        time_dimension_id: time_dimension.id,
+                        company_id: client.company_id,
+                        product_id: calculated_amount['product_id']},
+                      { account_dimension_id: client.id,
+                        time_dimension_id: time_dimension.id,
+                        company_id: client.company_id,
+                        product_id: calculated_amount['product_id'],
+                        weighted_amount: calculated_amount['weighted_budget'].to_i,
+                        unweighted_amount: calculated_amount['unweighted_budget'].to_i,
+                        created_at: DateTime.now,
+                        updated_at: DateTime.now
+                      })
+          end
+        end
       end
     end
   end
