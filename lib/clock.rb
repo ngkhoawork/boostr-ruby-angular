@@ -39,3 +39,11 @@ module Clockwork
     DfpImportWorker.perform_async
   end
 end
+
+every(1.day, 'Account Product Pipeline Fact Updater', at: '5:20', tz: 'UTC') do
+  AccountProductPipelineCalculationWorker.perform_async
+end
+
+every(1.day, 'Account Product Revenue Fact Updater', at: '5:30', tz: 'UTC') do
+  AccountProductRevenueCalculationWorker.perform_async
+end
