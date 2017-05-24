@@ -33,7 +33,7 @@
               %span
                 {{ product_budget.budget_loc | currency:currency_symbol:0 }}
             %td.left.cell-thin
-              %a{href: '', 'ng-click': "showRequestModal(content_fee, 'ContentFee')"}
+              %a{href: '', 'ng-click': "showNewRequestModal(content_fee, 'ContentFee')"}
                 Revenue Request
           %tr{ ng: { if: '!currentDeal.io.content_fees || currentDeal.io.content_fees.length == 0' } }
             %td.center{ 'colspan': '{{4+currentDeal.months.length}}' }
@@ -111,7 +111,7 @@
             %td.right
               {{ displayLineItem.num_days_til_out_of_budget }}
             %td.right.cell-thin
-              %a{href: '', 'ng-click': "showRequestModal(displayLineItem, 'DisplayLineItem')"}
+              %a{href: '', 'ng-click': "showNewRequestModal(displayLineItem, 'DisplayLineItem')"}
                 Revenue Request
 
         %tbody{ ng: { if: '!currentDeal.io.display_line_items || currentDeal.io.display_line_items.length == 0' } }

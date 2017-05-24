@@ -1,8 +1,12 @@
 class Api::RequestsController < ApplicationController
+  include CleanPagination
   respond_to :json
 
   def index
-    render json: requests, each_serializer: Requests::RequestSerializer
+    max_per_page = 20
+    paginate requests.count, max_per_page do |limit, offset|
+      render json: requests.limit(limit).offset(offset), each_serializer: Requests::RequestSerializer
+    end
   end
 
   def create

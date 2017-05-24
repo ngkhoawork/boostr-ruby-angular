@@ -637,7 +637,7 @@
         contact: ->
           deal_contact.contact
 
-  $scope.showRequestModal = (requestable, requestable_type) ->
+  $scope.showNewRequestModal = (requestable, requestable_type) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/request_form.html'
       size: 'md'

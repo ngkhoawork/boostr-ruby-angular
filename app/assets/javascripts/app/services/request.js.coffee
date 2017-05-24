@@ -2,20 +2,14 @@
 ['$resource', '$rootScope', '$q',
 ($resource, $rootScope, $q) ->
 
-  # transformRequest = (original, headers) ->
-  #   original.deal_member.values_attributes = original.deal_member.values
-  #   angular.toJson(original)
-
   resource = $resource '/api/requests/:id', { id: '@id' },
     save: {
       method: 'POST'
       url: '/api/requests/:id'
-      # transformRequest: transformRequest
     },
     update: {
       method: 'PUT'
       url: '/api/requests/:id'
-      # transformRequest: transformRequest
     }
 
   @statuses = [

@@ -1,5 +1,5 @@
 #revenue-requests.block
-  %table.deals-table.table.table-hover
+  %table.table.table-hover
     %thead
       %tr
         %th Requester
@@ -9,10 +9,10 @@
         %th Resolution
         %th Created
         %th Status
-        %th Owner
+        %th.left Owner
 
     %tbody
-      %tr{ng: {repeat: 'request in requests'}}
+      %tr{ng: {repeat: 'request in requests', click: 'showEditRequestModal(request)'}}
         %td
           {{request.requester.name}}
         %td
@@ -32,15 +32,15 @@
           {{request.created_at | date : mediumDate}}
         %td
           {{request.status}}
-        %td
+        %td.left{ng: {if: 'request.assignee'}}
           {{request.assignee.name}}
+        %td.left{ng: {if: '!request.assignee'}}
+          %button.btn.activity-email-btn{ng: { click: 'assignRequest(request, $event)' } }
+            Take Ownership
 
-
-
-
-
-
-
-
-
-
+  .custom-pagination{'bgf-pagination': 'bgf-pagination',
+    'collection': 'requests',
+    'per-page': '20',
+    'link-group-size': "2",
+    'request-limit': "100",
+    'url': 'requestUrl'}
