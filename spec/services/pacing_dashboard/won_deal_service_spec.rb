@@ -14,7 +14,7 @@ describe PacingDashboard::WonDealService do
     previous_quarter = result[:previous_quarter]
     previous_year_quarter = result[:previous_year_quarter]
 
-    expect(current_quarter).to eq [50000, 10000, 80000, 0, 0, 0, 30000, 0, 0, 0, 0, 0]
+    expect(current_quarter).to eq [50000, 10000, 80000, 0, 0, 0, 30000, 0, 0, 0, 0, 0, 0]
     expect(previous_quarter).to eq [12000, 20000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20000, 0]
     expect(previous_year_quarter).to eq [15000, 0, 0, 0, 0, 5000, 0, 0, 0, 0, 0, 40000, 0]
   end
@@ -84,5 +84,13 @@ describe PacingDashboard::WonDealService do
     Timecop.return
     Timecop.freeze(2016, 3, 22)
     create_list :deal, 2, company: company, stage: stage, budget: 20_000
+  end
+
+  def create_time_periods
+    create_current_time_period
+
+    create_previous_time_period
+
+    create_previous_year_time_period
   end
 end
