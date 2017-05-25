@@ -9,9 +9,9 @@
           %i.fa.fa-warning
           <strong style="text-transform: capitalize">{{field}}</strong>
           {{error}}
-      .form-group{'ng-class':'{error: errors.name}'}
-        %span.error-text {{errors.name}}
-        %label{ for: 'name' }
+      .form-group{'ng-class':'{error: errors.recipient}'}
+        %span.error-text {{errors.recipient}}
+        %label{ for: 'recipient' }
           TO
           %span.star *
         .recipients-list
@@ -117,4 +117,4 @@
       
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
-      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } Send
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled', click: 'submitForm()' } } Send

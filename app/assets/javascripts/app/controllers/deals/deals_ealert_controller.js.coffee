@@ -4,8 +4,7 @@
   $scope.init = ->
     $scope.deal = deal
     $scope.comment = ''
-
-    getDealCustomFieldNames()
+    $scope.errors = {}
 
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
       $scope.dealCustomFieldNames = dealCustomFieldNames
@@ -23,6 +22,9 @@
     $scope.recipient_list.splice(index, 1)
 
   $scope.onKeypress = (e) ->
+    if $scope.errors && $scope.errors['recipient']
+      delete $scope.errors['recipient']
+    e.target.className = 'form-control recipient-field';
     email = e.target.value
     if e.which == 13
       if email
@@ -32,7 +34,7 @@
         else
           e.target.className = 'form-control recipient-field'
 
-        index = _.find $scope.ealert.recipient_list, (recipient) ->
+        index = _.find $scope.recipient_list, (recipient) ->
           return recipient == email
         if index == undefined
           $scope.recipient_list.push(email)
@@ -136,81 +138,31 @@
         else
           $scope.available_fields.push(field_data)
     _.each $scope.ealert.ealert_custom_fields, (ealert_custom_field) ->
-      # value = ''
-      # switch ealert_custom_field.subject.field_type
-      #   when 'currency' then value = '$100,000'
-      #   when 'text' then value = 'some text'
-      #   when 'note' then value = 'some notes'
-      #   when 'datetime' then value = '07/05/2017'
-      #   when 'number' then value = '75.80'
-      #   when 'number_4_dec' then value = '76.4500'
-      #   when 'integer' then value = '210'
-      #   when 'boolean' then value = 'Yes'
-      #   when 'percentage' then value = '80.76%'
-      #   when 'dropdown' then value = 'option 1'
-      #   when 'sum' then value = '20,000'
-      # ealert_custom_field.subject.field_value = value
       if ealert_custom_field.position > 0
         $scope.selected_fields.push(ealert_custom_field)
       else
         $scope.available_fields.push(ealert_custom_field)
     $scope.selected_fields = _.sortBy $scope.selected_fields, (field) ->
       return field.position
-  getDealCustomFieldNames = () ->
-    DealCustomFieldName.all().then (dealCustomFieldNames) ->
-      $scope.dealCustomFieldNames = dealCustomFieldNames
-
-  $scope.setClientTypes = (client_types) ->
-    client_types.options.forEach (option) ->
-      $scope[option.name] = option.id
-
-  $scope.advertiserSelected = (model) ->
-    $scope.deal.advertiser_id = model
-
-  $scope.agencySelected = (model) ->
-    $scope.deal.agency_id = model
-
-  searchTimeout = null;
-  $scope.searchClients = (query, type_id) ->
-    if searchTimeout
-      clearTimeout(searchTimeout)
-      searchTimeout = null
-    searchTimeout = setTimeout(
-      -> $scope.loadClients(query, type_id)
-      400
-    )
-
-  $scope.loadClients = (query, type_id) ->
-    Client.query({ filter: 'all', name: query, per: 10, client_type_id: type_id }).$promise.then (clients) ->
-      if type_id == $scope.Advertiser
-        $scope.advertisers = clients
-      if type_id == $scope.Agency
-        $scope.agencies = clients
 
   $scope.submitForm = () ->
     $scope.errors = {}
 
-    fields = ['name', 'stage_id', 'advertiser_id', 'agency_id', 'deal_type', 'source_type']
-
-    fields.forEach (key) ->
-      field = $scope.deal[key]
-      switch key
-        when 'name'
-          if !field then return $scope.errors[key] = 'Name is required'
-        when 'stage_id'
-          if !field then return $scope.errors[key] = 'Stage is required'
-        when 'advertiser_id'
-          if !field then return $scope.errors[key] = 'Advertiser is required'
-
-    $scope.dealCustomFieldNames.forEach (item) ->
-      if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
-        $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
-
+    if $scope.recipient_list.length == 0
+      $scope.errors['recipient'] = 'Recipient is required'
+  
     if Object.keys($scope.errors).length > 0 then return
 
-    Deal.update(id: $scope.deal.id, deal: $scope.deal).then(
-      (deal) ->
-        $modalInstance.close()
+    data = {
+      recipients: $scope.recipient_list.join(),
+      comment: $scope.comment,
+      deal_id: $scope.deal.id
+    }
+
+    Ealert.send_ealert(id: $scope.ealert.id, data: data).then(
+      (response) ->
+        console.log(response)
+        # $modalInstance.close()
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

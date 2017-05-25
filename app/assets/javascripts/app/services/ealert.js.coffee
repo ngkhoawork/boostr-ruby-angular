@@ -18,7 +18,9 @@
       method: 'PUT'
       url: '/api/ealerts/:id'
       transformRequest: transformRequest
-
+    send_ealert:
+      method: 'POST'
+      url: '/api/ealerts/:id/send_ealert'
 
   currentEalert = undefined
 
@@ -48,6 +50,18 @@
       (ealert) ->
         deferred.resolve(ealert)
         $rootScope.$broadcast 'updated_ealerts'
+      (resp) ->
+        deferred.reject(resp)
+    )
+    deferred.promise
+
+  @send_ealert = (params) ->
+    deferred = $q.defer()
+    resource.send_ealert(
+      params,
+      (ealert) ->
+        deferred.resolve(ealert)
+        $rootScope.$broadcast 'sent_ealert'
       (resp) ->
         deferred.reject(resp)
     )

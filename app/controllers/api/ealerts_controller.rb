@@ -77,10 +77,23 @@ class Api::EalertsController < ApplicationController
   end
 
   def destroy
-
     ealert.destroy
 
     render nothing: true
+  end
+
+  def send_ealert
+    recipients = params[:data][:recipients].split(',').map(&:strip)
+    deal_id = params[:data][:deal_id]
+    comment = params[:data][:comment]
+    deal = company.deals.find(deal_id)
+    ealert = ealerts.find(params[:id])
+    if ealert.present? && deal.present?
+      UserMailer.ealert_email(recipients, params[:id], deal_id, comment).deliver_now
+      render nothing: true
+    else
+      render json: { errors: ealert.errors.messages }, status: :unprocessable_entity
+    end
   end
 
   private
