@@ -81,61 +81,6 @@
 			.reports-header
 				.header-cell.main-title
 					Activity Pacing
-				.header-cell.filters-block
-					%table
-						%tr.filter-title
-							%td Team
-						%tr
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.team.id}' }
-											{{filter.team.name}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { class: '{active: !filter.team.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("team", defaultFilter.team)' } }
-													{{defaultFilter.team.name}}
-											%li{ ng: { repeat: 'team in teams | orderBy : "name"', class: '{active: team.id === filter.team.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("team", team)' } }
-													{{team.name}}
-				.header-cell.filters-block
-					%table
-						%tr.filter-title
-							%td Seller
-						%tr
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.seller.id}' }
-											{{filter.seller.name}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { class: '{active: !filter.seller.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("seller", defaultFilter.seller)' } }
-													{{defaultFilter.seller.name}}
-											%li{ ng: { repeat: 'seller in sellers | orderBy : "name"', class: '{active: seller.id === filter.seller.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
-													{{seller.name}}
-
-				.header-cell.filters-block
-					%table
-						%tr.filter-title
-							%td Product
-						%tr
-							%td
-								%ul.filter-item
-									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.product.id}' }
-											{{filter.product.name}}
-											%span.caret
-										%ul.dropdown-menu
-											%li{ ng: { class: '{active: !filter.product.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("product", defaultFilter.product)' } }
-													{{defaultFilter.product.name}}
-											%li{ ng: { repeat: 'product in products | orderBy : "name"', class: '{active: product.id === filter.product.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("product", product)' } }
-													{{product.name}}
 
 		.row
 			.col-xs-6.pl0

@@ -3,9 +3,6 @@
     ( $scope,   $filter,   PacingDashboard,   shadeColor ) ->
 
         $scope.timePeriods = []
-        $scope.teams = []
-        $scope.sellers = []
-        $scope.products = []
         $scope.metrics = [
             {name: 'Pipeline', active: true, visibility: 'A'}
             {name: 'Revenue', active: true, visibility: 'B'}
@@ -16,9 +13,7 @@
         ]
         $scope.defaultFilter =
             timePeriod: {id: null, name: 'Current'}
-            team: {id: null, name: 'All'}
-            seller: {id: null, name: 'All'}
-            product: {id: null, name: 'All'}
+
         $scope.filter = angular.copy $scope.defaultFilter
 
         $scope.pipelineRevenue = {}
@@ -47,9 +42,6 @@
         (getNewWonDealsData = (query) ->
             PacingDashboard.activity_pacing(query).then (data) ->
                 $scope.currentWeek = data.current_week
-                $scope.teams = data.teams
-                $scope.sellers = data.sellers
-                $scope.products = data.products
                 $scope.newDeals = data.series.new_deals
                 $scope.wonDeals = data.series.won_deals
                 drawChart($scope.newDeals, SECOND_CHART_ID)
@@ -67,10 +59,6 @@
             query = {}
             query.time_period_id = f.timePeriod.id if f.timePeriod.id
             getPipelineRevenueData query if key == 'timePeriod'
-
-            query.team_id = f.team.id if f.team.id
-            query.seller_id = f.seller.id if f.seller.id
-            query.product_id = f.product.id if f.product.id
             getNewWonDealsData query
 
         updateChartVisibility = ->
@@ -190,7 +178,7 @@
                     .ease('linear')
                     .attr('y1', 0)
 
-            if chartId == FIRST_CHART_ID && $scope.maxQuota
+            if chartId == FIRST_CHART_ID && !_.isUndefined $scope.maxQuota
                 svg.append('line')
                     .attr('class', 'max-line')
                     .attr 'x1', 0
