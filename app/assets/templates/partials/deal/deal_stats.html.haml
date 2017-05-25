@@ -5,6 +5,10 @@
 				{{currentDeal.name}}
 				%i.fa.fa-pencil.edit-deal{'ng-click': 'showDealEditModal(currentDeal)'}
 				%i.fa.fa-trash.delete-deal{'ng-click': 'deleteDeal(currentDeal)'}
+				.ealert-label.pull-right
+					eAlerts
+				%i.fa.fa-envelope.ealert.pull-right{'ng-click': 'showDealEalertModal(currentDeal)'}
+				
 			.detail-info
 				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}'} {{currentDeal.advertiser.name || ''}}
 				{{currentDeal.advertiser.name && currentDeal.agency.name && '|'}}

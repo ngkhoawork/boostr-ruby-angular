@@ -822,6 +822,17 @@
         deal: ->
           angular.copy deal
 
+  $scope.showDealEalertModal = (deal) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/ealert_form.html'
+      size: 'lg'
+      controller: 'DealsEalertController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        deal: ->
+          angular.copy deal
+
   $scope.deleteDeal = (deal) ->
     $scope.errors = {}
     if confirm('Are you sure you want to delete "' +  deal.name + '"?')

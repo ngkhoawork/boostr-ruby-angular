@@ -1,0 +1,120 @@
+#ealerts.popup-modal
+  %form
+    .popup-modal-header
+      Send eAlert
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          <strong style="text-transform: capitalize">{{field}}</strong>
+          {{error}}
+      .form-group{'ng-class':'{error: errors.name}'}
+        %span.error-text {{errors.name}}
+        %label{ for: 'name' }
+          TO
+          %span.star *
+        .recipients-list
+          .recipient-item{'ng-repeat': 'recipient in recipient_list track by $index'}
+            {{recipient}}
+            %span.close-btn{'ng-click': 'removeRecipient($index)'}
+        %input.form-control.recipient-field{type: 'text', placeholder: "Add custom recipients", 'ng-keypress': 'onKeypress($event)'}
+      .form-group
+        %label{ for: 'comment' } Comments to eAlert
+        %textarea.form-control{ 'msd-elastic': '', rows: 2, 'ng-model': "comment", name: "{{fieldName}}", placeholder: 'Enter {{accountCfName.field_label}}' }
+
+      .form-group
+        .preview-container
+          .preview-header
+            .logo-title
+              boostr
+            .subtitle
+              eAlert
+          .preview-subheader
+            %table{width: '100%'} 
+              %tr
+                %td
+                  .subtitle
+                    {{deal.name}}
+                  .advertiser-ballast
+                    %strong
+                      Advertiser:
+                    {{deal.advertiser.name}}
+                %td.action
+                  %button.add-btn{'ng-click': 'goDeal()'}
+                    Go to Deal
+          .preview-body
+            %section.mb30
+              %div
+                %strong
+                  Budget:
+                {{deal.budget_loc | currency: deal.currency.curr_symbol : 0}}
+              %div
+                %strong
+                  Flight Date:
+                {{deal.start_date | date: 'MMM dd, yyyy'}} - {{deal.end_date | date: 'MMM dd, yyyy'}}
+            %section.mb30
+              .products.mb10
+                Products
+              %div.mb10{'ng-repeat': 'deal_product in deal.deal_products'}
+                %strong
+                  {{deal_product.name}}:
+                {{deal_product.budget_loc | currency: deal.currency.curr_symbol : 0}}
+                .product-fields
+                  %div{'ng-repeat': 'field in selected_fields | filter: dealProductCfFilter'}
+                    %strong
+                      {{field.subject.field_label}}:
+                    %span{'ng-switch': 'field.subject.field_type'}
+                      %span{ ng: { 'switch-when': 'number' } }
+                        {{(getDealProductFieldValue(deal_product, field) || 0) | number : 2}}                  
+                      %span{ ng: { 'switch-when': 'number_4_dec' } }
+                        {{(getDealProductFieldValue(deal_product, field) || 0) | number : 4}}
+                      %span{ ng: { 'switch-when': 'integer' } }
+                        {{(getDealProductFieldValue(deal_product, field) || 0) | number : 0}}
+                      %span{ ng: { 'switch-when': 'currency' } }
+                        {{(getDealProductFieldValue(deal_product, field) || 0) | currency: '$' : 2}}
+                      %span{ ng: { 'switch-when': 'percentage' } }
+                        {{(getDealProductFieldValue(deal_product, field) || 0) | number : 2}}%
+                      %span{ ng: { 'switch-when': 'datetime' } }
+                        {{getDealProductFieldValue(deal_product, field) | date: 'MMM dd, yyyy'}}
+                      %span{ ng: { 'switch-when': 'boolean' } }
+                        {{getDealProductFieldValue(deal_product, field) ? 'Yes' : 'No'}}
+                      %span{ ng: { 'switch-when': 'sum' } }
+                        {{(getDealProductFieldValue(deal_product, field) || 0) | number : 0}}
+                      %span{ ng: { 'switch-default': 'switch-default' } }
+                        {{getDealProductFieldValue(deal_product, field)}}
+            %section.mb30
+              %div{'ng-repeat': 'field in selected_fields | filter: dealCustomFieldFilter'}
+                %strong
+                  {{field.subject.field_label}}:
+                %span{'ng-switch': 'field.subject.field_type'}
+                  %span{ ng: { 'switch-when': 'number' } }
+                    {{(getDealFieldValue(field) || 0) | number : 2}}                  
+                  %span{ ng: { 'switch-when': 'number_4_dec' } }
+                    {{(getDealFieldValue(field) || 0) | number : 4}}
+                  %span{ ng: { 'switch-when': 'integer' } }
+                    {{(getDealFieldValue(field) || 0) | number : 0}}
+                  %span{ ng: { 'switch-when': 'currency' } }
+                    {{(getDealFieldValue(field) || 0) | currency: '$' : 2}}
+                  %span{ ng: { 'switch-when': 'percentage' } }
+                    {{(getDealFieldValue(field) || 0) | number : 2}}%
+                  %span{ ng: { 'switch-when': 'datetime' } }
+                    {{getDealFieldValue(field) | date: 'MMM dd, yyyy'}}
+                  %span{ ng: { 'switch-when': 'boolean' } }
+                    {{getDealFieldValue(field) ? 'Yes' : 'No'}}
+                  %span{ ng: { 'switch-when': 'sum' } }
+                    {{(getDealFieldValue(field) || 0) | number : 0}}
+                  %span{ ng: { 'switch-default': 'switch-default' } }
+                    {{getDealFieldValue(field)}}
+            %section
+              %div
+                %strong
+                  Comments:
+              %div
+                {{comment}}
+
+
+      
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } Send

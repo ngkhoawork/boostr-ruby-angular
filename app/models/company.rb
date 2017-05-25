@@ -19,6 +19,7 @@ class Company < ActiveRecord::Base
   has_many :display_line_items, through: :ios
   has_many :temp_ios
   has_many :bps
+  has_many :ealerts, dependent: :destroy
   has_many :bp_estimates, through: :bps
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names
