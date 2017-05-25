@@ -5,7 +5,7 @@
   $scope.formType = 'New'
   $scope.submitText = 'Create'
   $scope.product = { active: true }
-  $scope.revenue_types = ['Display', 'Content-Fee', 'Print', 'Programmatic', 'None']
+  $scope.revenue_types = ['Display', 'Content-Fee']
 
   Field.defaults($scope.product, 'Product').then (fields) ->
     $scope.product.revenue_type = ""
