@@ -56,6 +56,33 @@
     $scope.available_fields.push(item)
     repositionFields()
 
+  $scope.changeEalertEnabled = (index) ->
+    $scope.ealert.ealert_stages[index].enabled = !$scope.ealert.ealert_stages[index].enabled
+    all_disabled = true
+    automatic_send = true
+    for index in [0...$scope.ealert.ealert_stages.length]
+      if $scope.ealert.ealert_stages[index].enabled == true
+        all_disabled = false
+      else
+        automatic_send = false
+    $scope.ealert.all_disabled = all_disabled
+    $scope.ealert.automatic_send = automatic_send
+
+
+  $scope.enableAllEalerts = () ->
+    $scope.ealert.automatic_send = !$scope.ealert.automatic_send
+    if $scope.ealert.automatic_send == true
+      $scope.ealert.all_disabled = false
+      for index in [0...$scope.ealert.ealert_stages.length]
+        $scope.ealert.ealert_stages[index].enabled = true
+
+  $scope.disableAllEalerts = () ->
+    $scope.ealert.all_disabled = !$scope.ealert.all_disabled
+    if $scope.ealert.all_disabled == true
+      $scope.ealert.automatic_send = false
+      for index in [0...$scope.ealert.ealert_stages.length]
+        $scope.ealert.ealert_stages[index].enabled = false
+
   $scope.onKeypress = (e, stage_id) ->
     email = e.target.value
     if e.which == 13
@@ -124,6 +151,7 @@
     return str.join(' ');
 
   transformEalert = () ->
+    $scope.ealert.recipient_list = []
     if $scope.ealert.recipients
       $scope.ealert.recipient_list = $scope.ealert.recipients.split(',')
     _.each $scope.stages, (stage) ->

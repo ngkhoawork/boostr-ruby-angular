@@ -110,9 +110,6 @@ class UserMailer < ApplicationMailer
         end
       end
     end
-
-    puts "======ealert"
-    puts @deal_products.to_json
     mail(to: recipients, subject: subject)
   end
 end

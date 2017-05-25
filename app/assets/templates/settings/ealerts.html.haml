@@ -32,13 +32,13 @@
                   Auto-send eAlerts on stages:
                 .all-stages
                   .stage-item
-                    %i.fa.checkbox-fa{ng: {class: '{"fa-check-square active": !ealert.automatic_send, "fa-square-o": ealert.automatic_send}', click: 'ealert.automatic_send = !ealert.automatic_send'}}
+                    %i.fa.checkbox-fa{ng: {class: '{"fa-check-square active": ealert.automatic_send, "fa-square-o": !ealert.automatic_send}', click: 'enableAllEalerts()'}}
                     All Stages
                   .stage-item
-                    %i.fa.checkbox-fa{ng: {class: '{"fa-check-square active": !ealert.automatic_send, "fa-square-o": ealert.automatic_send}', click: 'ealert.automatic_send = !ealert.automatic_send'}}
+                    %i.fa.checkbox-fa{ng: {class: '{"fa-check-square active": ealert.all_disabled, "fa-square-o": !ealert.all_disabled}', click: 'disableAllEalerts()'}}
                     Don’t send auto eAlerts
-                  .stage-item{ng: {repeat: 'ealert_stage in ealert.ealert_stages'}}
-                    %i.fa.checkbox-fa{ng: {class: '{"fa-check-square active": ealert_stage.enabled, "fa-square-o": !ealert_stage.enabled}', click: 'ealert_stage.enabled = !ealert_stage.enabled'}}
+                  .stage-item{ng: {repeat: 'ealert_stage in ealert.ealert_stages track by $index'}}
+                    %i.fa.checkbox-fa{ng: {class: '{"fa-check-square active": ealert_stage.enabled, "fa-square-o": !ealert_stage.enabled}', click: 'changeEalertEnabled($index)'}}
                     {{ealert_stage.stage.probability}}%
               .mb20.pb20.bb-gray{'ng-if': '!ealert.same_all_stages'}
                 .specify-the-recipien
