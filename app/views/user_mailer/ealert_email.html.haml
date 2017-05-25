@@ -16,7 +16,7 @@
             #{@deal.advertiser.name}
         %td.action{style: 'text-align: right;'}
           %button.add-btn{style: 'outline: none;font-weight: bold;background-color: transparent;color: #ff7200;border: 2px solid #ff7200;border-radius: 100px;padding: 4px 14px 4px 12px;position: relative;top: -3px;transition: background-color 300ms, color 300ms;'}
-            %a{href: '/deals'}
+            %a{href: '/deals', style: 'color: #ff7200;text-decoration: none;font-weight: bold;font-size: 13px;'}
               Go to Deal
   .preview-body{style: 'padding: 20px 20px;color: #2B3C49;font-size: 13px;line-height: 20px;'}
     %section.mb30{style: 'margin-bottom: 30px;'}
@@ -28,20 +28,22 @@
         %strong
           Flight Date:
         #{@deal.start_date} - #{@deal.end_date}
-    %section.mb30{style: 'margin-bottom: 30px;'}
-      .products.mb10{style: 'margin-bottom: 10px;color: #818689;font-size: 15px;font-weight: 600;line-height: 20px;'}
-        Products
-      - @deal_products.each do |deal_product|
-        %div.mb10{style: 'margin-bottom: 10px;'}
-          %strong
-            #{deal_product['product']['name']}:
-          #{@deal.currency.curr_symbol}#{deal_product['budget_loc']}
-          .product-fields{style: 'padding-left: 20px;'}
-            - deal_product['deal_product_fields'].each do |deal_product_field|
-              %div
-                %strong
-                  #{deal_product_field['label']}:
-                #{deal_product_field['value']}
+    - if @deal_products.count > 0
+      %section.mb30{style: 'margin-bottom: 30px;'}
+        .products.mb10{style: 'margin-bottom: 10px;color: #818689;font-size: 15px;font-weight: 600;line-height: 20px;'}
+          Products
+        - @deal_products.each do |deal_product|
+          %div.mb10{style: 'margin-bottom: 10px;'}
+            %strong
+              #{deal_product['product']['name']}:
+            #{@deal.currency.curr_symbol}#{deal_product['budget_loc']}
+            - if deal_product['deal_product_fields'].count > 0
+              .product-fields{style: 'padding-left: 20px;'}
+                - deal_product['deal_product_fields'].each do |deal_product_field|
+                  %div
+                    %strong
+                      #{deal_product_field['label']}:
+                    #{deal_product_field['value']}
     %section.mb30{style: 'margin-bottom: 30px;'}
       - @deal_fields.each do |deal_field|
         %div
