@@ -268,17 +268,6 @@
         client: ->
           {}
 
-  $scope.showUploadModal = ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/client_upload.html'
-      size: 'lg'
-      controller: 'ClientsUploadController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        client: ->
-          {}
-
   $scope.deleteChildClient = (client) ->
     if confirm("Click Ok to remove the child account or Cancel")
       client.parent_client_id = null

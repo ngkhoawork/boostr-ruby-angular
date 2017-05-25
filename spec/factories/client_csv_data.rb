@@ -14,6 +14,9 @@ FactoryGirl.define do
     website { FFaker::Internet.http_url }
     replace_team 'N'
     teammembers nil
+    region nil
+    segment nil
+    holding_company nil
 
     initialize_with { attributes }
 

@@ -46,13 +46,14 @@
             .text{ ng: { hide: 'progressPercentage > 0' } }
               CSV File
         .col-xs-3
-          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "uploading" } }
+          #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "is_uploading" } }
             Browse
 
     .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
-      %strong
-        Row {{ error.row }}
-      contains errors: {{ error.message.join(', ') }}
+      {{ error.message.join(', ') }}
 
-    .modal-footer.text-center{ ng: { hide: 'progressPercentage < 100' } }
+    .alert.alert-info{ ng: { show: 'messages' } }
+      {{ messages.message }}
+
+    .modal-footer.text-center{ ng: { hide: 'progressPercentage < 100 || is_uploading == true' } }
       %button.btn.btn-primary.btn-lg{ ng: { click: 'cancel()' } } Done

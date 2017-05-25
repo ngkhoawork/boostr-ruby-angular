@@ -18,4 +18,10 @@ class Field < ActiveRecord::Base
   def as_json(opts = {})
     super(opts.merge(include: [options: {include: [:suboptions]}]))
   end
+
+  def option_from_name(name)
+    self.options.find do |opt|
+      opt.name.casecmp(name) == 0
+    end
+  end
 end

@@ -88,11 +88,12 @@ RSpec.describe DealProduct, type: :model do
     let!(:three_month_deal) { create :deal, start_date: Date.new(2015, 7), end_date: Date.new(2015, 9).end_of_month }
     let!(:deal_with_product) { create :deal }
     let!(:existing_deal_product) { create :deal_product, deal: deal_with_product, product: product, budget: 1_000 }
+    let(:import_log) { CsvImportLog.last }
 
     it 'creates new deal product' do
       data = build :deal_product_csv_data, deal_name: three_month_deal.name
       expect do
-        expect(DealProduct.import(generate_csv(data), user)).to eq([])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
       end.to change(DealProduct, :count).by(1)
 
       deal_product = DealProduct.last
@@ -106,7 +107,7 @@ RSpec.describe DealProduct, type: :model do
     it 'updates existing deal product' do
       data = build :deal_product_csv_data, deal_id: deal_with_product.id, product: product.name, budget: 50_000
       expect do
-        expect(DealProduct.import(generate_csv(data), user)).to eq([])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
       end.not_to change(DealProduct, :count)
 
       deal_with_product.reload
@@ -118,67 +119,128 @@ RSpec.describe DealProduct, type: :model do
       expect(existing_deal_product.deal_product_budgets.count).to be 2
     end
 
+    context 'csv import log' do
+      it 'creates csv import log' do
+        data = build :deal_product_csv_data, deal_name: three_month_deal.name
+
+        expect do
+          DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+        end.to change(CsvImportLog, :count).by(1)
+      end
+
+      it 'saves amount of processed rows for new objects' do
+        data = build :deal_product_csv_data, deal_name: three_month_deal.name
+
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_processed).to be 1
+        expect(import_log.rows_imported).to be 1
+        expect(import_log.file_source).to eq 'deal_products.csv'
+      end
+
+      it 'saves amount of processed rows when updating existing objects' do
+        data = build :deal_product_csv_data, deal_id: deal_with_product.id
+
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_processed).to be 1
+        expect(import_log.rows_imported).to be 1
+      end
+
+      it 'counts failed rows' do
+        data = build :deal_product_csv_data, deal_name: 'N/A'
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_processed).to be 1
+        expect(import_log.rows_failed).to be 1
+      end
+    end
+
     context 'invalid data' do
       let!(:duplicate_deal) { create :deal, name: FFaker::NatoAlphabet.callsign }
       let!(:duplicate_deal2) { create :deal, name: duplicate_deal.name }
 
       it 'requires deal ID to match' do
         data = build :deal_product_csv_data, deal_id: 0
-        expect(
-          DealProduct.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Deal ID #{data[:deal_id]} could not be found"]])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal ID #{data[:deal_id]} could not be found"] }]
+        )
       end
 
       it 'requires deal name to be present' do
         data = build :deal_product_csv_data
         data[:deal_name] = nil
-        expect(
-          DealProduct.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Deal Name can't be blank"]])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal Name can't be blank"] }]
+        )
       end
 
       it 'requires deal name to match only 1 record' do
         data = build :deal_product_csv_data, deal_name: duplicate_deal.name
-        expect(
-          DealProduct.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Deal Name #{data[:deal_name]} matched more than one deal record"]])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal Name #{data[:deal_name]} matched more than one deal record"] }]
+        )
       end
 
       it 'requires deal name to match at least one record' do
         data = build :deal_product_csv_data, deal_name: 'N/A'
-        expect(
-          DealProduct.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Deal Name #{data[:deal_name]} did not match any Deal record"]])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal Name #{data[:deal_name]} did not match any Deal record"] }]
+        )
       end
 
       it 'requires product to be present' do
         data = build :deal_product_csv_data
         data[:product] = nil
-        expect(
-          DealProduct.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Product can't be blank"]])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Product can't be blank"] }]
+        )
       end
 
       it 'requires product to exist' do
         data = build :deal_product_csv_data, product: 'N/A'
-        expect(
-          DealProduct.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Product #{data[:product]} could not be found"]])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Product #{data[:product]} could not be found"] }]
+        )
       end
 
       it 'requires budget to be present' do
         data = build :deal_product_csv_data
         data[:budget] = nil
-        expect(
-          DealProduct.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Budget can't be blank"]])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Budget can't be blank"] }]
+        )
       end
 
       it 'validates numericality of budget' do
         data = build :deal_product_csv_data, budget: 'test'
-        expect(
-          DealProduct.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Budget must be a numeric value"]])
+        DealProduct.import(generate_csv(data), user.id, 'deal_products.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Budget must be a numeric value"] }]
+        )
       end
     end
   end

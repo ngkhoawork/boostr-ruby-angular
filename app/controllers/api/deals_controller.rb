@@ -222,14 +222,16 @@ class Api::DealsController < ApplicationController
 
   def create
     if params[:file].present?
-      require 'timeout'
-      begin
-        csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-        errors = Deal.import(csv_file, current_user)
-        render json: errors
-      rescue Timeout::Error
-        return
-      end
+      CsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Deal',
+        current_user.id,
+        params[:file][:original_filename]
+      )
+
+      render json: {
+        message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
+      }, status: :ok
     else
       @deal = company.deals.new(deal_params)
 

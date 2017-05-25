@@ -170,8 +170,6 @@ Rails.application.routes.draw do
       post :add_budget, on: :member
     end
     resources :display_line_item_budgets, only: [:index, :create, :update, :destroy]
-    resources :io_csvs, only: [:create]
-    resources :display_line_item_csvs, only: [:create]
     resources :contacts, only: [:index, :show, :create, :update, :destroy] do
       member do
         post :assign_account
