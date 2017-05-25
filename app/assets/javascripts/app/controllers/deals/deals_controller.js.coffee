@@ -10,7 +10,7 @@
             $scope.dealTypes = [
                 {name: 'My Deals', param: ''}
                 {name: 'My Team\'s Deals', param: 'team'}
-                {name: 'All Deals', param: 'company'}
+                {name: 'All Deals', param: 'all'}
             ]
 
             $scope.teamFilter = (value) ->

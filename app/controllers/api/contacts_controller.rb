@@ -232,8 +232,12 @@ class Api::ContactsController < ApplicationController
   def contacts
     if params[:filter] == 'my_contacts'
       Contact.by_client_ids(current_user.clients.ids)
-    elsif params[:filter] == 'team' && team
-      Contact.by_client_ids(team.clients.ids)
+    elsif params[:filter] == 'team'
+      if team.present?
+        Contact.by_client_ids(team.clients.ids)
+      else
+        current_user.company.contacts.order(:name)
+      end
     else
       current_user.company.contacts.order(:name)
     end
