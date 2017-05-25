@@ -119,16 +119,15 @@ class Api::DealsController < ApplicationController
 
   def pipeline_report
     respond_to do |format|
-      selected_deals = nil
-      case params[:status]
+      selected_deals = case params[:status]
         when 'open'
-          selected_deals = deals.open.less_than(100)
+          deals.open.less_than(100)
         when 'all'
-          selected_deals = deals
+          deals
         when 'closed'
-          selected_deals = deals.close_status
+          deals.close_status
         else
-          selected_deals = deals.open.less_than(100)
+          deals.open.less_than(100)
       end
 
       filtered_deals = selected_deals
