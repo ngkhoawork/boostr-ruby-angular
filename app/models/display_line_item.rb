@@ -3,7 +3,7 @@ class DisplayLineItem < ActiveRecord::Base
   belongs_to :product
   belongs_to :temp_io
 
-  has_many :display_line_item_budgets
+  has_many :display_line_item_budgets, dependent: :destroy
 
   scope :without_budgets_by_date, -> (start_date, end_date) do
     joins(:display_line_item_budgets)
