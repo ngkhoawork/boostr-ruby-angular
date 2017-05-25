@@ -180,6 +180,9 @@
             $scope.$on 'updated_activities', ->
                 $scope.init()
 
+            $scope.$on 'newContact', (event, contact) ->
+                $location.path('/contacts/' + contact.id)
+
             $scope.init()
 
     ]
