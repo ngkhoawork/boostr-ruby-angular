@@ -105,8 +105,8 @@
       e.target.value = ''
       $scope.status.isopen[stage_id] = false
 
-  $scope.goDeal = () ->
-    $location.path('/deals')
+  # $scope.goDeal = () ->
+  #   $location.path('/deals/')
   $scope.onMoved = (field, index) ->
     $scope.selected_fields.splice(index, 1)
     repositionFields()
