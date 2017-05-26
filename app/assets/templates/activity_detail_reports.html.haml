@@ -80,6 +80,9 @@
                 %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("creator.first_name")'}
                     Creator
+                %th.left{ width: "150" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("team_creator")'}
+                    Team
             %tbody
               %tr{ ng: { if: 'activities.length > 0', repeat: 'activity in activities | orderBy:sortType:sortReverse' } }
                 %td.left {{ activity.happened_at | date: 'MM-dd-yyyy' }}
@@ -97,6 +100,7 @@
                     {{ contact.name }}
                 %td.left {{ activity.deal.name }}
                 %td.left {{ activity.creator.first_name + " " + activity.creator.last_name }}
+                %td.left {{ activity.team_creator }}
               %tr{ ng: { if: 'activities.length == 0' }}
                 %td.center{ colspan: '8' }
                   No data available
