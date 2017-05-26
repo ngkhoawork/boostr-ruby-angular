@@ -121,7 +121,9 @@ class Team < ActiveRecord::Base
 
   def quarterly_ios(start_date, end_date)
     all_users = all_members + all_leaders
-    ios = all_members.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq.as_json
+
+    ios = Io.for_company(company_id).for_io_members(all_users.map(&:id)).for_time_period(start_date, end_date).distinct.as_json
+    # ios = all_members.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten
     year = start_date.year
     ios.map do |io|
       io_obj = Io.find(io['id'])
@@ -197,7 +199,8 @@ class Team < ActiveRecord::Base
   def quarterly_product_ios(product_ids, start_date, end_date)
     data = []
     all_users = all_members + all_leaders
-    ios = all_users.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq.as_json
+    ios = Io.for_company(company_id).for_io_members(all_users.map(&:id)).for_time_period(start_date, end_date).distinct.as_json
+    # ios = all_users.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq.as_json
     year = start_date.year
     ios.each do |io|
       io_obj = Io.find(io['id'])
@@ -257,7 +260,7 @@ class Team < ActiveRecord::Base
   def all_members
     ms = []
     ms += members.all
-    children.find_each do |child|
+    children.each do |child|
       ms += child.all_members
     end
     ms
@@ -284,8 +287,8 @@ class Team < ActiveRecord::Base
 
   def all_leaders
     ls = leader.nil? ? []:[leader]
-    children.find_each do |child|
-      ls << child.leader if !child.leader.nil?
+    children.each do |child|
+      ls += child.all_leaders
     end
     ls
   end
