@@ -18,11 +18,11 @@ class Csv::ActivityDetailDecorator
   end
 
   def advertiser
-    activity.client.present? ? activity.client.name : EMPTY_LINE
+    activity.client.name rescue EMPTY_LINE
   end
 
   def agency
-    activity.agency.present? ? activity.agency.name : EMPTY_LINE
+    activity.agency.name rescue EMPTY_LINE
   end
 
   def contacts
@@ -30,15 +30,15 @@ class Csv::ActivityDetailDecorator
   end
 
   def deal
-    activity.deal.present? ? activity.deal.name : EMPTY_LINE
+    activity.deal.name rescue EMPTY_LINE
   end
 
   def creator
-    activity.creator.present? ? activity.creator.name : EMPTY_LINE
+    activity.creator.name rescue EMPTY_LINE
   end
 
   def team
-    activity.team_creator
+    activity.team_creator rescue EMPTY_LINE
   end
 
   private
