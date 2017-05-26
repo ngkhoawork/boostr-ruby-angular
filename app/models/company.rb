@@ -85,6 +85,8 @@ class Company < ActiveRecord::Base
     activity_types.find_or_initialize_by(name:'Post Sale Meeting', action:'had post sale meeting with', icon:'/assets/icons/post-sale.png')
     activity_types.find_or_initialize_by(name:'Internal Meeting', action:'had insternal meeting with', icon:'/assets/icons/internal-meeting.png')
 
+    ealerts.find_or_initialize_by(recipients: nil, automatic_send: false, same_all_stages: true)
+
     setup_default_validations
   end
 

@@ -51,7 +51,7 @@
       return field.subject.field_value
     customField = _.find $scope.dealCustomFieldNames, (item) ->
       return item.id == field.subject_id
-    if customField != undefined
+    if customField != undefined && $scope.deal.deal_custom_field
       fieldName = customField.field_type + customField.field_index
       return $scope.deal.deal_custom_field[fieldName]
     return ''
@@ -59,7 +59,7 @@
   $scope.getDealProductFieldValue = (deal_product, field) ->
     customField = _.find $scope.dealProductCustomFieldNames, (item) ->
       return item.id == field.subject_id
-    if customField != undefined
+    if customField != undefined && deal_product.deal_product_cf
       fieldName = customField.field_type + customField.field_index
       return deal_product.deal_product_cf[fieldName]
     return ''
@@ -159,10 +159,11 @@
       deal_id: $scope.deal.id
     }
 
+    $scope.buttonDisabled = true
     Ealert.send_ealert(id: $scope.ealert.id, data: data).then(
       (response) ->
-        console.log(response)
-        # $modalInstance.close()
+        # console.log(response)
+        $modalInstance.close()
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

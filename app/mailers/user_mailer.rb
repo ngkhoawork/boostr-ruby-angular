@@ -89,26 +89,84 @@ class UserMailer < ApplicationMailer
     ealert['ealert_custom_fields'].each do |ealert_custom_field|
       if ealert_custom_field['subject_type'] == 'DealCustomFieldName' && ealert_custom_field['position'] > 0
         field_name = ealert_custom_field['subject']['field_type'] + ealert_custom_field['subject']['field_index'].to_s
+        value = deal_custom_field && deal_custom_field[field_name] ? deal_custom_field[field_name] : nil
+
+        case ealert_custom_field['subject']['field_type']
+          when 'number'
+            value = value || 0
+            value = number_with_precision(value, :precision => 2, :delimiter => ',')
+          when 'number_4_dec'
+            value = value || 0
+            value = number_with_precision(value, :precision => 4, :delimiter => ',')
+          when 'integer'
+            value = value || 0
+            value = number_with_precision(value, :precision => 0, :delimiter => ',')
+          when 'currency'
+            value = value || 0
+            value = '$' + number_with_precision(value, :precision => 2, :delimiter => ',').to_s
+          when 'percentage'
+            value = value || 0
+            value = number_with_precision(value, :precision => 0, :delimiter => ',')
+          when 'datetime'
+            value = value ? value.strftime('%b %d, %Y') : ''
+          when 'boolean'
+            value = value || false
+            value = value ? 'Yes' : 'No'
+          when 'sum'
+            value = value || 0
+            value = number_with_precision(value, :precision => 0, :delimiter => ',')
+        end
         position_field = {
           'name' => field_name,
           'label' => ealert_custom_field['subject']['field_label'],
-          'value' => deal_custom_field[field_name],
+          'value' => value,
           'position' => ealert_custom_field['position']
         }
         @deal_fields << position_field
       elsif ealert_custom_field['subject_type'] == 'DealProductCfName' && ealert_custom_field['position'] > 0
         field_name = ealert_custom_field['subject']['field_type'] + ealert_custom_field['subject']['field_index'].to_s
         @deal_products = @deal_products.map do |deal_product|
+          value = deal_product['deal_product_cf'] && deal_product['deal_product_cf'][field_name] ? deal_product['deal_product_cf'][field_name] : nil
+          case ealert_custom_field['subject']['field_type']
+            when 'number'
+              value = value || 0
+              value = number_with_precision(value, :precision => 2, :delimiter => ',')
+            when 'number_4_dec'
+              value = value || 0
+              value = number_with_precision(value, :precision => 4, :delimiter => ',')
+            when 'integer'
+              value = value || 0
+              value = number_with_precision(value, :precision => 0, :delimiter => ',')
+            when 'currency'
+              value = value || 0
+              value = '$' + number_with_precision(value, :precision => 2, :delimiter => ',').to_s
+            when 'percentage'
+              value = value || 0
+              value = number_with_precision(value, :precision => 0, :delimiter => ',')
+            when 'datetime'
+              value = value ? value.strftime('%b %d, %Y') : ''
+            when 'boolean'
+              value = value || false
+              value = value ? 'Yes' : 'No'
+            when 'sum'
+              value = value || 0
+              value = number_with_precision(value, :precision => 0, :delimiter => ',')
+          end
           position_field = {
             'name' => field_name,
             'label' => ealert_custom_field['subject']['field_label'],
-            'value' => deal_product['deal_product_cf'][field_name],
+            'value' => value,
             'position' => ealert_custom_field['position']
           }
           deal_product['deal_product_fields'] << position_field
           deal_product
         end
       end
+    end
+    @deal_fields = @deal_fields.sort_by { |hash| hash['position'].to_i }
+    @deal_products = @deal_products.map do |deal_product|
+      deal_product['deal_product_fields'] = deal_product['deal_product_fields'].sort_by { |hash| hash['position'].to_i }
+      deal_product
     end
     mail(to: recipients, subject: subject)
   end

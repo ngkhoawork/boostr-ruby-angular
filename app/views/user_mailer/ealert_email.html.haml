@@ -23,11 +23,11 @@
       %div
         %strong
           Budget:
-        #{@deal.currency.curr_symbol}#{@deal.budget_loc}
+        #{@deal.currency.curr_symbol}#{number_with_precision(@deal.budget_loc, :precision => 0, :delimiter => ',')}
       %div
         %strong
           Flight Date:
-        #{@deal.start_date} - #{@deal.end_date}
+        #{@deal.start_date.strftime('%b %d, %Y')} - #{@deal.end_date.strftime('%b %d, %Y')}
     - if @deal_products.count > 0
       %section.mb30{style: 'margin-bottom: 30px;'}
         .products.mb10{style: 'margin-bottom: 10px;color: #818689;font-size: 15px;font-weight: 600;line-height: 20px;'}
@@ -36,7 +36,7 @@
           %div.mb10{style: 'margin-bottom: 10px;'}
             %strong
               #{deal_product['product']['name']}:
-            #{@deal.currency.curr_symbol}#{deal_product['budget_loc']}
+            #{@deal.currency.curr_symbol}#{number_with_precision(deal_product['budget_loc'], :precision => 0, :delimiter => ',')}
             - if deal_product['deal_product_fields'].count > 0
               .product-fields{style: 'padding-left: 20px;'}
                 - deal_product['deal_product_fields'].each do |deal_product_field|
