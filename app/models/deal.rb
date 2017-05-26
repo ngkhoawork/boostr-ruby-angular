@@ -852,31 +852,33 @@ class Deal < ActiveRecord::Base
 
   end
 
-  def self.import(file, current_user)
-    errors = []
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
 
-    row_number = 0
     deal_type_field = current_user.company.fields.find_by_name('Deal Type')
     deal_source_field = current_user.company.fields.find_by_name('Deal Source')
     close_reason_field = current_user.company.fields.find_by_name("Close Reason")
     list_of_currencies = Currency.pluck(:curr_cd)
 
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal', source: 'ui')
+    import_log.set_file_source(file_path)
+
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
+      import_log.count_processed
 
       if row[0]
         begin
           deal = current_user.company.deals.find(row[0].strip)
         rescue ActiveRecord::RecordNotFound
-          error = { row: row_number, message: ["Deal ID #{row[0]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal ID #{row[0]} could not be found"])
           next
         end
       end
 
       if row[1].nil? || row[1].blank?
-        error = { row: row_number, message: ["Deal name can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Deal name can't be blank"])
         next
       end
 
@@ -884,19 +886,19 @@ class Deal < ActiveRecord::Base
         advertiser_type_id = Client.advertiser_type_id(current_user.company)
         advertisers = current_user.company.clients.by_type_id(advertiser_type_id).where('name ilike ?', row[2].strip)
         if advertisers.length > 1
-          error = { row: row_number, message: ["Advertiser #{row[2]} matched more than one account record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Advertiser #{row[2]} matched more than one account record"])
           next
         elsif advertisers.length == 0
-          error = { row: row_number, message: ["Advertiser #{row[2]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Advertiser #{row[2]} could not be found"])
           next
         else
           advertiser = advertisers.first
         end
       else
-        error = { row: row_number, message: ["Advertiser can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Advertiser can't be blank"])
         next
       end
 
@@ -904,12 +906,12 @@ class Deal < ActiveRecord::Base
         agency_type_id = Client.agency_type_id(current_user.company)
         agencies = current_user.company.clients.by_type_id(agency_type_id).where('name ilike ?', row[3].strip)
         if agencies.length > 1
-          error = { row: row_number, message: ["Agency #{row[3]} matched more than one account record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Agency #{row[3]} matched more than one account record"])
           next
         elsif agencies.length == 0
-          error = { row: row_number, message: ["Agency #{row[3]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Agency #{row[3]} could not be found"])
           next
         else
           agency = agencies.first
@@ -920,21 +922,21 @@ class Deal < ActiveRecord::Base
       if row[4]
         curr_cd = row[4].strip
         if !(list_of_currencies.include?(curr_cd))
-          error = { row: row_number, message: ["Currency #{curr_cd} is not found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Currency #{curr_cd} is not found"])
           next
         end
       else
-        error = { row: row_number, message: ["Currency code can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Currency code can't be blank"])
         next
       end
 
       if row[5].present?
         deal_type = deal_type_field.options.where('name ilike ?', row[5].strip).first
         unless deal_type
-          error = { row: row_number, message: ["Deal Type #{row[5]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal Type #{row[5]} could not be found"])
           next
         end
       else
@@ -944,8 +946,8 @@ class Deal < ActiveRecord::Base
       if row[6].present?
         deal_source = deal_source_field.options.where('name ilike ?', row[6].strip).first
         unless deal_source
-          error = { row: row_number, message: ["Deal Source #{row[6]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal Source #{row[6]} could not be found"])
           next
         end
       else
@@ -955,15 +957,15 @@ class Deal < ActiveRecord::Base
       start_date = nil
       if row[7].present?
         if !(row[8].present?)
-          error = {row: row_number, message: ['End Date must be present if Start Date is set'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['End Date must be present if Start Date is set'])
           next
         end
         begin
           start_date = Date.strptime(row[7], '%m/%d/%Y')
         rescue ArgumentError
-          error = {row: row_number, message: ['Start Date must have valid date format MM/DD/YYYY'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Start Date must have valid date format MM/DD/YYYY'])
           next
         end
       end
@@ -971,35 +973,35 @@ class Deal < ActiveRecord::Base
       end_date = nil
       if row[8].present?
         if !(row[7].present?)
-          error = {row: row_number, message: ['Start Date must be present if End Date is set'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Start Date must be present if End Date is set'])
           next
         end
         begin
           end_date = Date.strptime(row[8], '%m/%d/%Y')
         rescue ArgumentError
-          error = {row: row_number, message: ['End Date must have valid date format MM/DD/YYYY'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['End Date must have valid date format MM/DD/YYYY'])
           next
         end
       end
 
       if (end_date && start_date) && start_date > end_date
-        error = {row: row_number, message: ['Start Date must preceed End Date'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Start Date must preceed End Date'])
         next
       end
 
       if row[9].present?
         stage = current_user.company.stages.where('name ilike ?', row[9].strip).first
         unless stage
-          error = { row: row_number, message: ["Stage #{row[9]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Stage #{row[9]} could not be found"])
           next
         end
       else
-        error = { row: row_number, message: ["Stage can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Stage can't be blank"])
         next
       end
 
@@ -1011,15 +1013,15 @@ class Deal < ActiveRecord::Base
 
         deal_members.each do |deal_member|
           if deal_member[1].nil?
-            error = { row: row_number, message: ["Deal Member #{deal_member[0]} does not have a share"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Deal Member #{deal_member[0]} does not have a share"])
             deal_member_list_error = true
             break
           elsif user = current_user.company.users.where('email ilike ?', deal_member[0]).first
             deal_member_list << user
           else
-            error = { row: row_number, message: ["Deal Member #{deal_member[0]} could not be found in the User list"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Deal Member #{deal_member[0]} could not be found in the User list"])
             deal_member_list_error = true
             break
           end
@@ -1029,8 +1031,8 @@ class Deal < ActiveRecord::Base
           next
         end
       else
-        error = { row: row_number, message: ["Team can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Team can't be blank"])
         next
       end
 
@@ -1038,8 +1040,8 @@ class Deal < ActiveRecord::Base
         begin
           created_at = DateTime.strptime(row[11], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
-          error = {row: row_number, message: ['Deal Creation Date must have valid date format MM/DD/YYYY'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Deal Creation Date must have valid date format MM/DD/YYYY'])
           next
         end
       end
@@ -1048,8 +1050,8 @@ class Deal < ActiveRecord::Base
         begin
           closed_date = DateTime.strptime(row[12], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
-          error = {row: row_number, message: ['Deal Close Date must have valid date format MM/DD/YYYY'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Deal Close Date must have valid date format MM/DD/YYYY'])
           next
         end
       else
@@ -1059,8 +1061,8 @@ class Deal < ActiveRecord::Base
       if row[13].present?
         close_reason = close_reason_field.options.where('name ilike ?', row[13].strip).first
         unless close_reason
-          error = { row: row_number, message: ["Close Reason #{row[13]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Close Reason #{row[13]} could not be found"])
           next
         end
       else
@@ -1077,8 +1079,8 @@ class Deal < ActiveRecord::Base
           if contact = Contact.by_email(deal_contact, current_user.company_id).first
             deal_contact_list << contact
           else
-            error = { row: row_number, message: ["Contact #{deal_contact} could not be found"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Contact #{deal_contact} could not be found"])
             deal_contact_list_error = true
             break
           end
@@ -1130,8 +1132,8 @@ class Deal < ActiveRecord::Base
       if !(deal.present?)
         deals = current_user.company.deals.where('name ilike ?', row[1].strip)
         if deals.length > 1
-          error = { row: row_number, message: ["Deal name #{row[1]} matched more than one deal record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal name #{row[1]} matched more than one deal record"])
           next
         end
         deal = deals.first
@@ -1160,6 +1162,8 @@ class Deal < ActiveRecord::Base
       ]
 
       if deal.update_attributes(deal_params)
+        import_log.count_imported
+
         deal.deal_members.delete_all if deal_is_new
         deal_member_list.each_with_index do |user, index|
           deal_member = deal.deal_members.find_or_initialize_by(user: user)
@@ -1169,13 +1173,13 @@ class Deal < ActiveRecord::Base
           deal.deal_contacts.find_or_create_by(contact: contact)
         end
       else
-        error = { row: row_number, message: deal.errors.full_messages }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(deal.errors.full_messages)
         next
       end
     end
 
-    errors
+    import_log.save
   end
 
   def update_stage

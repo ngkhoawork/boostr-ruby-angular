@@ -204,38 +204,36 @@ class Contact < ActiveRecord::Base
     end
   end
 
-  def self.import(file, current_user)
-    errors = []
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
 
-    # if !current_user.is?(:superadmin)
-    #   error = { message: ['Permission denied'] }
-    #   errors << error
-    # else
-    row_number = 0
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'contact', source: 'ui')
+    import_log.set_file_source(file_path)
+    
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
-      # unless client = Client.where(company_id: current_user.company_id, name: row[1]).first
+      import_log.count_processed
+
       if row[3].nil? || row[3].blank?
-        error = { row: row_number, message: ['Email is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Email is empty'])
         next
       end
 
       if row[1].nil? || row[1].blank?
-        error = { row: row_number, message: ['Account is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Account is empty'])
         next
       end
 
       if row[0].nil? || row[0].blank?
-        error = { row: row_number, message: ['Name is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Name is empty'])
         next
       end
 
       unless client = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, row[1].strip.downcase).first
-        error = { row: row_number, message: ['Account ' + row[1].to_s + ' could not be found'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Account ' + row[1].to_s + ' could not be found'])
         next
       end
       agency_data_list = []
@@ -248,8 +246,8 @@ class Contact < ActiveRecord::Base
           if agency = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, agency_name.strip.downcase).first
             agency_data_list << agency
           else
-            error = { row: row_number, message: ['Account ' + agency_name.to_s + ' could not be found'] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(['Account ' + agency_name.to_s + ' could not be found'])
             agency_list_error = true
             break
           end
@@ -300,6 +298,8 @@ class Contact < ActiveRecord::Base
       contact_params[:address_attributes] = address_params
 
       if contact.update_attributes(contact_params)
+        import_log.count_imported
+
         ClientContact.delete_all(client_id: client.id, contact_id: contact.id, primary: false)
         primary_client_contact = ClientContact.find_by({contact_id: contact.id, primary: true})
         if primary_client_contact.nil?
@@ -314,13 +314,13 @@ class Contact < ActiveRecord::Base
           end
         end
       else
-        error = { row: row_number, message: contact.errors.full_messages }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(contact.errors.full_messages)
         next
       end
     end
-    # end
-    errors
+
+    import_log.save
   end
 
   def self.metadata(company_id)

@@ -21,7 +21,7 @@ class Operative::ImportSalesOrderLineItemsService
     begin
       File.open(file, 'r:ISO-8859-1')
     rescue Exception => e
-      import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item')
+      import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item', source: 'operative')
       import_log.set_file_source(file)
       import_log.log_error [e.class.to_s, e.message]
       import_log.save
@@ -41,7 +41,7 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def parse_line_items
-    import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item')
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item', source: 'operative')
     import_log.set_file_source(sales_order_line_items)
 
     CSV.parse(sales_order_csv_file, { headers: true, header_converters: :symbol }) do |row|

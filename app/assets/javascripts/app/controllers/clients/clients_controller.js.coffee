@@ -146,17 +146,6 @@
         client: ->
           {}
 
-  $scope.showUploadModal = ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/client_upload.html'
-      size: 'lg'
-      controller: 'ClientsUploadController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        client: ->
-          {}
-
   $scope.showEditModal = ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'

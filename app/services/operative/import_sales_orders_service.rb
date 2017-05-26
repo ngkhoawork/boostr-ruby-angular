@@ -20,7 +20,7 @@ class Operative::ImportSalesOrdersService
     begin
       File.open(file, 'r:ISO-8859-1')
     rescue Exception => e
-      import_log = CsvImportLog.new(company_id: company_id, object_name: 'io')
+      import_log = CsvImportLog.new(company_id: company_id, object_name: 'io', source: 'operative')
       import_log.set_file_source(file)
       import_log.log_error [e.class.to_s, e.message]
       import_log.save
@@ -42,7 +42,7 @@ class Operative::ImportSalesOrdersService
   end
 
   def parse_sales_order
-    import_log = CsvImportLog.new(company_id: company_id, object_name: 'io')
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'io', source: 'operative')
     import_log.set_file_source(sales_order)
 
     CSV.parse(sales_order_file, { headers: true, header_converters: :symbol }) do |row|

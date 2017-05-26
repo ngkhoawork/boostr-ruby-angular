@@ -33,8 +33,22 @@ RSpec.describe CsvImportLog, type: :model do
       allow(CsvImportLogNotificationMailer).to receive(:send_email).and_return(message_delivery)
       allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
 
+      subject.update(company: company)
+
+      expect(CsvImportLogNotificationMailer).not_to have_received(:send_email).with(recipients, subject.id)
+      expect(message_delivery).not_to have_received(:deliver_later).with(queue: 'default')
+    end
+
+    it 'does not send email if source is ui' do
+      message_delivery = instance_double(ActionMailer::MessageDelivery)
+      allow(CsvImportLogNotificationMailer).to receive(:send_email).and_return(message_delivery)
+      allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
+
       subject.update(
         company: company,
+        rows_failed: 1,
+        error_messages: [{row: 1, message: 'Undefined Context'}],
+        source: 'ui'
       )
 
       expect(CsvImportLogNotificationMailer).not_to have_received(:send_email).with(recipients, subject.id)
