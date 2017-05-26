@@ -1200,7 +1200,7 @@ class Deal < ActiveRecord::Base
     ealert = self.company.ealerts.first
     if ealert
       ealert_stage = ealert.ealert_stages.find_by(stage_id: self.stage_id)
-      if ealert_stage.enabled == true
+      if ealert_stage && ealert_stage.enabled == true
         recipients = []
         if ealert.same_all_stages == true
           recipients = ealert.recipients.split(',').map(&:strip) if ealert.recipients
