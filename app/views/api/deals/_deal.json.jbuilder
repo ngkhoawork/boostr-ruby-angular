@@ -81,7 +81,7 @@ if deal.agency
   end
 end
 
-if !deal.stage.open && deal.stage.probability == 100
+if !deal.stage.open && deal.stage.probability == 100 && deal.io.present?
   json.io do
     json.extract! deal.io, :id, :budget, :budget_loc, :start_date, :end_date
 
