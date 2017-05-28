@@ -19,6 +19,7 @@
     { name: 'Account Manager', id: 3 }
     { name: 'Manager Account Manager', id: 4 }
     { name: 'Exec', id: 6 }
+    { name: 'Fake User', id: 7 }
   ]
 
   resource.user_statuses_list = [

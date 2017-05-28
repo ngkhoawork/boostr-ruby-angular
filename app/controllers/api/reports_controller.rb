@@ -16,8 +16,7 @@ class Api::ReportsController < ApplicationController
 
   def user_activity_reports
     activity_report = []
-    all_team_sales_reps.each do |user|
-      
+    users.each do |user|
       user_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
       .for_time_period(start_date, end_date)
       .where("user_id = ?", user.id)
@@ -38,7 +37,7 @@ class Api::ReportsController < ApplicationController
   def total_activity_report
     total_activities = Activity.joins("left join activity_types on activities.activity_type_id=activity_types.id")
     .for_time_period(start_date, end_date)
-    .where("user_id in (?)", all_team_sales_reps.collect{|row| row.id})
+    .where("user_id in (?)", users.collect { |row| row.id })
     .select("activity_types.name, count(activities.id) as count")
     .group("activity_types.name").collect { |activity| { "#{activity.name}": activity.count } }
 
@@ -57,7 +56,7 @@ class Api::ReportsController < ApplicationController
       header << "Total"
       csv << header
       activity_types = company.activity_types.to_a
-      all_team_sales_reps.each do |user|
+      users.each do |user|
         line = [user.name]
         activity_types.each do |type|
           count = user.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ?', start_date, end_date, type.name).count
@@ -70,10 +69,10 @@ class Api::ReportsController < ApplicationController
       end
       line = ['Total']
       company.activity_types.each do |type|
-        count = company.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ? and user_id in (?)', start_date, end_date, type.name, all_team_sales_reps.collect{|row| row.id}).count
+        count = company.activities.where('happened_at >= ? and happened_at <= ? and activity_type_name = ? and user_id in (?)', start_date, end_date, type.name, users.collect{|row| row.id}).count
         line << count
       end
-      count = company.activities.where('happened_at >= ? and happened_at <= ? and user_id in (?)', start_date, end_date, all_team_sales_reps.collect{|row| row.id}).count
+      count = company.activities.where('happened_at >= ? and happened_at <= ? and user_id in (?)', start_date, end_date, users.collect{|row| row.id}).count
       line << count
       csv << line
     end
@@ -110,5 +109,21 @@ class Api::ReportsController < ApplicationController
 
   def company
     @company ||= current_user.company
+  end
+
+  def user_type
+    @_user_type ||= params[:user_type].to_i
+  end
+
+  def users
+    @_users ||= params[:user_type].present? ? by_user_type : without_default_and_fake_type
+  end
+
+  def by_user_type
+    all_team_sales_reps.select { |u| u.user_type.eql? user_type }
+  end
+
+  def without_default_and_fake_type
+    all_team_sales_reps.reject { |u| [FAKE_USER, DEFAULT].include?(u.user_type) }
   end
 end
