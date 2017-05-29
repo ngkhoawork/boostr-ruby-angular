@@ -53,7 +53,7 @@
     .row
       .col-md-12
         .table-wrapper
-          %table.table
+          %table.table.table-hover
             %thead
               %tr
                 %th.left{ width: "120" }
@@ -81,14 +81,14 @@
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("creator.first_name")'}
                     Creator
             %tbody
-              %tr{ ng: { if: 'activities.length > 0', repeat: 'activity in activities | orderBy:sortType:sortReverse' } }
+              %tr.clickable{ ng: { if: 'activities.length > 0', repeat: 'activity in activities | orderBy:sortType:sortReverse', click: 'showActivityEditModal(activity)' } }
                 %td.left {{ activity.happened_at | date: 'MM-dd-yyyy' }}
                 %td.left {{ activity.activity_type_name }}
                 %td.left
                   %div{'ng-if': 'activity.activity_type_name != "Email"','ng-bind-html': 'getHtml(activity.comment)'}
                   %div{'ng-if': 'activity.activity_type_name == "Email"'}
                     %p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
-                    %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
+                    %button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity, $event)'}
                       Show email
                 %td.left {{ activity.client.name }}
                 %td.left {{ activity.agency.name }}
