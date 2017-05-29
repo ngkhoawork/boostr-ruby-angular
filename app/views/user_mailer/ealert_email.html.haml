@@ -42,6 +42,15 @@
             %strong
               #{deal_product['product']['name']}:
             #{@deal.currency.curr_symbol}#{number_with_precision(deal_product['budget_loc'], :precision => 0, :delimiter => ',')}
+            %table{width: '100%'}
+              %tr
+                - @deal.months.each do |month|
+                  %td
+                    %strong #{Date.new(month[0],month[1]).strftime('%b %y')}
+              %tr
+                - deal_product['deal_product_budgets'].each do |deal_product_budget|
+                  %td
+                    #{deal_product_budget['budget_percentage']}%
             - if deal_product['deal_product_fields'].count > 0
               .product-fields{style: 'padding-left: 20px;'}
                 - deal_product['deal_product_fields'].each do |deal_product_field|

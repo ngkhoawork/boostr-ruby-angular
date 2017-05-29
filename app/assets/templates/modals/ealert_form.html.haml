@@ -82,6 +82,13 @@
                 %strong
                   {{deal_product.name}}:
                 {{deal_product.budget_loc | currency: deal.currency.curr_symbol : 0}}
+                %table{width: '100%'} 
+                  %tr
+                    %td{'ng-repeat': 'month in deal.months'}
+                      %strong {{ month | boDate : true }}
+                  %tr
+                    %td{'ng-repeat': 'product_budget in deal_product.deal_product_budgets'}
+                      {{ product_budget.budget_percent | number: 0 }}%
                 .product-fields
                   %div{'ng-repeat': 'field in selected_fields | filter: dealProductCfFilter'}
                     %strong

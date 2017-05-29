@@ -24,6 +24,9 @@ class UserMailer < ApplicationMailer
     @comment = comment
     @deal_products = @deal.deal_products.as_json({
       include: {
+        deal_product_budgets: {
+          methods: [:budget_percentage]
+        },
         deal_product_cf: {},
         product: {
           only: [:id, :name]
