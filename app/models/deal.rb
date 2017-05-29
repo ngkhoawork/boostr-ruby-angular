@@ -45,6 +45,7 @@ class Deal < ActiveRecord::Base
   validate :billing_contact_presence
   validate :single_billing_contact
   validate :account_manager_presence
+  validate :disable_manual_deal_won_validation, on: :manual_update
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
@@ -67,7 +68,7 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
-    integrate_with_operative if self.company_id.eql?(22)
+    integrate_with_operative
   end
 
   before_create do
@@ -122,7 +123,15 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_integration_allowed?
-    operative_switched_on? && deal_lost_or_won?
+    company_allowed_use_operative? && operative_switched_on? && deal_lost_or_won?
+  end
+
+  def company_allowed_use_operative?
+    if self.company_id.eql?(22)
+      true
+    else
+      false
+    end
   end
 
   def operative_switched_on?
@@ -130,11 +139,11 @@ class Deal < ActiveRecord::Base
   end
 
   def deal_lost_or_won?
-    deal_stage_percentage_eql_api_config_percentage? || deal_lost?
+    (deal_stage_percentage_greater_or_eql_api_config_percentage? && !integrations.operative.present?) || deal_lost?
   end
 
-  def deal_stage_percentage_eql_api_config_percentage?
-    stage.probability.eql?(operative_api_config.trigger_on_deal_percentage)
+  def deal_stage_percentage_greater_or_eql_api_config_percentage?
+    stage.probability >= operative_api_config.trigger_on_deal_percentage
   end
 
   def deal_lost?
@@ -176,6 +185,15 @@ class Deal < ActiveRecord::Base
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
       errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+    end
+  end
+
+  def disable_manual_deal_won_validation
+    validation = company.validation_for(:disable_deal_won)
+    disable_flag = validation.criterion.try(:value) if validation
+
+    if validation && disable_flag == true && stage && stage.probability == 100 && stage.open? == false
+      errors.add(:stage, "#{self.stage.try(:name)} can't be set per configuration. Deals can be set to won from API integration only")
     end
   end
 

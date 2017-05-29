@@ -16,5 +16,26 @@ FactoryGirl.define do
       open false
       active true
     end
+
+    factory :discuss_stage do
+      name 'Discuss Requirements'
+      probability 25
+      open true
+      active true
+    end
+
+    factory :proposal_stage do
+      name 'Proposal'
+      probability 50
+      open true
+      active true
+    end
+
+    factory :lost_stage do
+      name 'Closed Lost'
+      probability 0
+      open false
+      active true
+    end
   end
 end
