@@ -250,7 +250,7 @@ RSpec.describe Deal, type: :model do
       allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
       expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
-      
+
       deal.update(stage: discuss_stage)
     end
 
@@ -258,7 +258,7 @@ RSpec.describe Deal, type: :model do
       allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
       expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
-      
+
       deal.update(stage: proposal_stage)
     end
 
@@ -268,16 +268,16 @@ RSpec.describe Deal, type: :model do
       allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
       expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
-      
+
       deal.update(stage: lost_stage)
     end
 
-    context 'no integration' do    
+    context 'no integration' do
       it 'when stage is not changed' do
         allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
         expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
-        
+
         deal.update(name: 'Christmas Auction')
       end
 
@@ -287,7 +287,7 @@ RSpec.describe Deal, type: :model do
         allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
         expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
-        
+
         deal.update(stage: discuss_stage)
       end
 
@@ -297,7 +297,7 @@ RSpec.describe Deal, type: :model do
         allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
         expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
-        
+
         deal.update(stage: proposal_stage)
       end
 
@@ -305,7 +305,7 @@ RSpec.describe Deal, type: :model do
         allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
         expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
-        
+
         deal.update(stage: lost_stage)
       end
 
@@ -313,7 +313,7 @@ RSpec.describe Deal, type: :model do
         allow(deal).to receive(:company_allowed_use_operative?).and_return(false)
 
         expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
-        
+
         deal.update(stage: proposal_stage)
       end
 
@@ -323,7 +323,7 @@ RSpec.describe Deal, type: :model do
         allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
         expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
-        
+
         deal.update(stage: proposal_stage)
       end
 
@@ -333,7 +333,7 @@ RSpec.describe Deal, type: :model do
         allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
         expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
-        
+
         deal.update(stage: proposal_stage)
       end
     end
