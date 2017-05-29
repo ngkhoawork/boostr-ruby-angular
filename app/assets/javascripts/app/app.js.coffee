@@ -79,6 +79,9 @@
     .when '/reports/activity_summary',
       templateUrl: 'reports.html'
       controller: 'ReportsController'
+    .when '/reports/activity_account',
+      templateUrl: 'activity_account.html'
+      controller: 'ActivityAccountController'
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
