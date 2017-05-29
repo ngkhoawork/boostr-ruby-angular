@@ -3,7 +3,6 @@
 ($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, DealProductCfName, Currency, CurrentUser, Ealert) ->
   $scope.init = ->
     $scope.deal = deal
-    console.log($scope.deal)
     $scope.comment = ''
     $scope.errors = {}
 
