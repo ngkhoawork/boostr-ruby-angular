@@ -81,7 +81,9 @@
         _.each $scope.current.option.suboptions, (option, i) ->
           if(option.name == new_suboption.name)
             $scope.current.option.suboptions[i] = new_suboption
-
+    setTimeout(()->
+      $scope.isUpdating = false
+    , 100);
 
   $scope.deleteOption = (option) ->
     if option.id
