@@ -631,12 +631,18 @@ class Api::DealsController < ApplicationController
   def deals
     if params[:filter] == 'company' && current_user.leader?
       company.deals.active
+    elsif params[:filter] == 'all'
+      company.deals.active
     elsif params[:filter] == 'selected_team' && params[:team_id]
       all_team_deals
     elsif params[:filter] == 'user' && params[:user_id]
       deal_member_filter
-    elsif params[:filter] == 'team' && team.present?
-      company.deals.by_deal_team(team.all_members.map(&:id) + team.all_leaders.map(&:id))
+    elsif params[:filter] == 'team'
+      if team.present?
+        company.deals.by_deal_team(team.all_members.map(&:id) + team.all_leaders.map(&:id))
+      else
+        company.deals.active
+      end
     elsif params[:client_id].present?
       company.deals.active
     else

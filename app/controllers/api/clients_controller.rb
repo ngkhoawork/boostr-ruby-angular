@@ -273,10 +273,13 @@ class Api::ClientsController < ApplicationController
   def clients
     if params[:filter] == 'company' && current_user.leader?
       company.clients
-    elsif params[:filter] == 'team' && team.present?
-      team.clients
+    elsif params[:filter] == 'team'
+      if team.present?
+        team.clients
+      else
+        company.clients
+      end
     elsif params[:filter] == 'all'
-      # TODO eventually we may want to limit this... it is only used in the new deal dropdown
       company.clients
     else
       current_user.clients
