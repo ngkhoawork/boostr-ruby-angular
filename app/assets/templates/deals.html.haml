@@ -134,6 +134,8 @@
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header
 						%span
+							{{stage.probability}}%
+							%br
 							{{stage.name}}
 							%i ({{columns[columnIndex].length || 0}})
 						%span
