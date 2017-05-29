@@ -1,6 +1,6 @@
 @app.controller 'ForecastsDetailController',
     ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal'
-    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal) ->
+    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal ) ->
         $scope.teams = []
         $scope.sellers = []
         $scope.timePeriods = []
@@ -33,9 +33,21 @@
                 else
                     this.field = key
                     this.reverse = false
+        $scope.getSortableAmountKey = (type, index) ->
+            switch type
+                when 'revenues'
+                    if $scope.switch.revenues == 'quarters'
+                        return "quarters[#{index}]"
+                    if $scope.switch.revenues == 'months'
+                        return "months[#{index}]"
+                when 'deals'
+                    if $scope.switch.deals == 'quarters'
+                        return "quarter_amounts[#{index}]"
+                    if $scope.switch.deals == 'months'
+                        return "month_amounts[#{index}]"
+
         $scope.isYear = -> $scope.filter.timePeriod.period_type is 'year'
         $scope.isNumber = (number) -> angular.isNumber number
-
 
         $scope.quarters = []
         $scope.forecast = {}
@@ -51,6 +63,12 @@
             Seller.query({id: nextTeam.id || 'all'}).$promise.then (sellers) ->
                 $scope.sellers = sellers
                 $scope.sellers.unshift(defaultUser)
+
+        $scope.scrollTo = (id) ->
+            angular.element('html, body').animate {
+                scrollTop: angular.element(id).offset().top
+            }, 1000
+            return
 
         $scope.setFilter = (key, value) ->
             if $scope.filter[key]is value
@@ -128,32 +146,43 @@
                 fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
                 fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
                 fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
-            fc.stages.sort (s1, s2) -> s1.probability - s2.probability
+            fc.stages.sort (s1, s2) -> s2.probability - s1.probability
 
         addDetailAmounts = (data, type) ->
             qs = ['Q1', 'Q2', 'Q3', 'Q4']
             ms = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
             suffix = if type == 'revenues' then 's' else if type == 'deals' then '_amounts'
-            quarters = []
-            months = []
+            quarters = {}
+            months = {}
             for q, i in qs
                 for item in data
                     if item['quarter' + suffix][i] != null
-                        quarters.push q
+                        quarters[i] = q
                         break
             for m, i in ms
                 for item in data
                     if item['month' + suffix][i] != null
-                        months.push m
+                        months[i] = m
                         break
             data.detail_amounts =
                 quarters: quarters
                 months: months
 
-        parseBudget = (data) ->
+        parseRevenueBudgets = (data) ->
             data = _.map data, (item) ->
                 item.budget = parseInt item.budget if item.budget
                 item.budget_loc = parseInt item.budget_loc if item.budget_loc
+                item.in_period_split_amt = parseInt item.in_period_split_amt if item.in_period_split_amt
+                item.months = _.map item.months, (m) -> if isNaN parseInt m then null else parseInt m
+                item.quarters = _.map item.quarters, (q) -> if isNaN parseInt q then null else parseInt q
+                item
+        parseDealBudgets = (data) ->
+            data = _.map data, (item) ->
+                item.budget = parseInt item.budget if item.budget
+                item.budget_loc = parseInt item.budget_loc if item.budget_loc
+                item.split_period_budget = parseInt item.split_period_budget if item.split_period_budget
+                item.month_amounts = _.map item.month_amounts, (m) -> if isNaN parseInt m then null else parseInt m
+                item.quarter_amounts = _.map item.quarter_amounts, (q) -> if isNaN parseInt q then null else parseInt q
                 item
 
         getData = ->
@@ -169,11 +198,11 @@
             query.team_id = query.id
             delete query.id
             Revenue.forecast_detail(query).$promise.then (data) ->
-                parseBudget data
+                parseRevenueBudgets data
                 addDetailAmounts data, 'revenues'
                 $scope.revenues = data
             Deal.forecast_detail(query).then (data) ->
-                parseBudget data
+                parseDealBudgets data
                 addDetailAmounts data, 'deals'
                 $scope.deals = data
 
