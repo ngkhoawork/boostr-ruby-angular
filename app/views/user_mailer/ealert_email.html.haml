@@ -8,8 +8,8 @@
     %table{width: '100%'} 
       %tr
         %td
-          .subtitle{style: 'height: 33px;font-size: 24px;font-weight: 600;line-height: 33px;'}
-            #{@deal.name}
+          .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
+            #{@deal.name} - #{@deal.stage.probability}%
           .advertiser-ballast{style: 'height: 20px;font-size: 15px;line-height: 20px;'}
             %strong
               Advertiser:
@@ -28,6 +28,11 @@
         %strong
           Flight Date:
         #{@deal.start_date.strftime('%b %d, %Y')} - #{@deal.end_date.strftime('%b %d, %Y')}
+      - @deal_fields.each do |deal_field|
+        %div
+          %strong
+            #{deal_field['label']}:
+          #{deal_field['value']}
     - if @deal_products.count > 0
       %section.mb30{style: 'margin-bottom: 30px;'}
         .products.mb10{style: 'margin-bottom: 10px;color: #818689;font-size: 15px;font-weight: 600;line-height: 20px;'}
@@ -44,12 +49,6 @@
                     %strong
                       #{deal_product_field['label']}:
                     #{deal_product_field['value']}
-    %section.mb30{style: 'margin-bottom: 30px;'}
-      - @deal_fields.each do |deal_field|
-        %div
-          %strong
-            #{deal_field['label']}:
-          #{deal_field['value']}
     %section
       %div
         %strong

@@ -98,7 +98,7 @@
                       %tr
                         %td
                           .subtitle
-                            Summer Concert Series
+                            Summer Concert Series - 75%
                           .advertiser-ballast
                             %strong
                               Advertiser:
@@ -116,6 +116,10 @@
                         %strong
                           Flight Date:
                         Jun 15, 2017 - Sep 31, 2017
+                      %div{'ng-repeat': 'field in selected_fields | filter: dealCustomFieldFilter'}
+                        %strong
+                          {{field.subject.field_label}}:
+                        {{field.subject.field_value}}
                     %section.mb30
                       .products.mb10
                         Products
@@ -137,11 +141,6 @@
                             %strong
                               {{field.subject.field_label}}:
                             {{field.subject.field_value}}
-                    %section.mb30
-                      %div{'ng-repeat': 'field in selected_fields | filter: dealCustomFieldFilter'}
-                        %strong
-                          {{field.subject.field_label}}:
-                        {{field.subject.field_value}}
                     %section
                       %div
                         %strong

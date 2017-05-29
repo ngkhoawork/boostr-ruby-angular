@@ -35,7 +35,7 @@
               %tr
                 %td
                   .subtitle
-                    {{deal.name}}
+                    {{deal.name}} - {{deal.stage.probability}}%
                   .advertiser-ballast
                     %strong
                       Advertiser:
@@ -53,6 +53,28 @@
                 %strong
                   Flight Date:
                 {{deal.start_date | date: 'MMM dd, yyyy'}} - {{deal.end_date | date: 'MMM dd, yyyy'}}
+              %div{'ng-repeat': 'field in selected_fields | filter: dealCustomFieldFilter'}
+                %strong
+                  {{field.subject.field_label}}:
+                %span{'ng-switch': 'field.subject.field_type'}
+                  %span{ ng: { 'switch-when': 'number' } }
+                    {{(getDealFieldValue(field) || 0) | number : 2}}                  
+                  %span{ ng: { 'switch-when': 'number_4_dec' } }
+                    {{(getDealFieldValue(field) || 0) | number : 4}}
+                  %span{ ng: { 'switch-when': 'integer' } }
+                    {{(getDealFieldValue(field) || 0) | number : 0}}
+                  %span{ ng: { 'switch-when': 'currency' } }
+                    {{(getDealFieldValue(field) || 0) | currency: '$' : 2}}
+                  %span{ ng: { 'switch-when': 'percentage' } }
+                    {{(getDealFieldValue(field) || 0) | number : 2}}%
+                  %span{ ng: { 'switch-when': 'datetime' } }
+                    {{getDealFieldValue(field) | date: 'MMM dd, yyyy'}}
+                  %span{ ng: { 'switch-when': 'boolean' } }
+                    {{getDealFieldValue(field) ? 'Yes' : 'No'}}
+                  %span{ ng: { 'switch-when': 'sum' } }
+                    {{(getDealFieldValue(field) || 0) | number : 0}}
+                  %span{ ng: { 'switch-default': 'switch-default' } }
+                    {{getDealFieldValue(field)}}
             %section.mb30
               .products.mb10
                 Products
@@ -83,29 +105,6 @@
                         {{(getDealProductFieldValue(deal_product, field) || 0) | number : 0}}
                       %span{ ng: { 'switch-default': 'switch-default' } }
                         {{getDealProductFieldValue(deal_product, field)}}
-            %section.mb30
-              %div{'ng-repeat': 'field in selected_fields | filter: dealCustomFieldFilter'}
-                %strong
-                  {{field.subject.field_label}}:
-                %span{'ng-switch': 'field.subject.field_type'}
-                  %span{ ng: { 'switch-when': 'number' } }
-                    {{(getDealFieldValue(field) || 0) | number : 2}}                  
-                  %span{ ng: { 'switch-when': 'number_4_dec' } }
-                    {{(getDealFieldValue(field) || 0) | number : 4}}
-                  %span{ ng: { 'switch-when': 'integer' } }
-                    {{(getDealFieldValue(field) || 0) | number : 0}}
-                  %span{ ng: { 'switch-when': 'currency' } }
-                    {{(getDealFieldValue(field) || 0) | currency: '$' : 2}}
-                  %span{ ng: { 'switch-when': 'percentage' } }
-                    {{(getDealFieldValue(field) || 0) | number : 2}}%
-                  %span{ ng: { 'switch-when': 'datetime' } }
-                    {{getDealFieldValue(field) | date: 'MMM dd, yyyy'}}
-                  %span{ ng: { 'switch-when': 'boolean' } }
-                    {{getDealFieldValue(field) ? 'Yes' : 'No'}}
-                  %span{ ng: { 'switch-when': 'sum' } }
-                    {{(getDealFieldValue(field) || 0) | number : 0}}
-                  %span{ ng: { 'switch-default': 'switch-default' } }
-                    {{getDealFieldValue(field)}}
             %section
               %div
                 %strong
