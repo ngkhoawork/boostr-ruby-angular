@@ -1,6 +1,7 @@
 class Csv::BaseService
-  def initialize(records)
+  def initialize(records, options = {})
     @records = records
+    @options = options
   end
 
   def perform
@@ -9,7 +10,7 @@ class Csv::BaseService
 
   private
 
-  attr_reader :records
+  attr_reader :records, :options
 
   def generate_csv
     CSV.generate do |csv|
