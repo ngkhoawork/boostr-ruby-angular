@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   root 'pages#index'
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
+  get 'switch_user', to: 'switch_user#set_current_user'
+  get 'switch_user/remember_user', to: 'switch_user#remember_user'
+
   namespace :api do
     scope module: :v1, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 1) do
       post 'forgot_password' => 'forgot_password#create'
