@@ -260,7 +260,9 @@ Rails.application.routes.draw do
     resources :ealerts, only: [:index, :show, :create, :update, :destroy] do
       post :send_ealert
     end
-    resources :reports, only: [:index, :show]
+    resources :reports, only: [:index] do
+      get :summary_by_account, on: :collection
+    end
     resources :sales_execution_dashboard, only: [:index] do
       collection do
         get :forecast

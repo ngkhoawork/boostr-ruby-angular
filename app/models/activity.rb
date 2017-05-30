@@ -35,6 +35,8 @@ class Activity < ActiveRecord::Base
   end
   scope :with_activity_types, -> { joins('left join activity_types on activities.activity_type_id=activity_types.id') }
   scope :by_user, -> (user) { where(user_id: user) }
+  scope :by_client, -> (client) { where(client_id: client) if client.present? }
+  scope :by_agency, -> (agency) { where(agency_id: agency) if agency.present? }
   scope :group_by_activity_types_name, -> do
     select('activity_types.name, count(activities.id) as count').group('activity_types.name')
   end
