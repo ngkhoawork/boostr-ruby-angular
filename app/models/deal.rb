@@ -471,6 +471,7 @@ class Deal < ActiveRecord::Base
       header << "Latest Activity"
       header << "Deal Type"
       header << "Deal Source"
+      header << "Team"
       header << "Next Steps"
       header << "Start Date"
       header << "End Date"
@@ -497,6 +498,7 @@ class Deal < ActiveRecord::Base
         line << deal.latest_activity_csv_string
         line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Type')
         line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Source')
+        line << deal.team_for_user_with_highest_share
         line << deal.next_steps
         line << deal.start_date
         line << deal.end_date
@@ -1387,5 +1389,13 @@ class Deal < ActiveRecord::Base
     .group('deals.closed_at')
     .order('deals.closed_at')
     .sum('budget')
+  end
+
+  def user_with_highest_share
+    @_user_with_highest_share ||= deal_members.ordered_by_share.first.user
+  end
+
+  def team_for_user_with_highest_share
+    user_with_highest_share.leader? ? Team.find_by(leader: user_with_highest_share).name : user_with_highest_share.team.name
   end
 end
