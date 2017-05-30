@@ -1,4 +1,6 @@
 class ActivitySummary::AccountService < ActivitySummary::BaseService
+  AGENCY_TYPE = 'agency'.freeze
+
   def perform
     { client_activities: clients_activity_reports, total_activity_report: total_clients_activity_report }
   end
@@ -6,7 +8,7 @@ class ActivitySummary::AccountService < ActivitySummary::BaseService
   private
 
   def clients_activity_reports
-    company.clients.reduce([]) do |client_report, client|
+    clients_all_or_by_type.reduce([]) do |client_report, client|
       client_activities = client_activities_for(client)
         .map { |activity| { client_id: client.id, client_name: client.name, activity.name => activity.count } }
         .reduce({}, :merge)
@@ -20,11 +22,12 @@ class ActivitySummary::AccountService < ActivitySummary::BaseService
   end
 
   def total_clients_activity_report
-    client_activities = advertiser_and_agency_activities_grouped_by_type.reduce do |memo, el|
+    client_activities = activities_all_or_by_type.reduce do |memo, el|
       memo.merge(el) { |_k, old_v, new_v| old_v + new_v }
     end
 
-    client_activities[:total] = client_activities.values.sum
+    client_activities = {} if client_activities.nil?
+    client_activities[:total] = client_activities.values.sum || 0
     client_activities
   end
 
@@ -73,5 +76,25 @@ class ActivitySummary::AccountService < ActivitySummary::BaseService
 
   def advertiser_and_agency_activities_grouped_by_type
     advertiser_activities_grouped_by_type + agency_activities_grouped_by_type
+  end
+
+  def activities_by_type
+    client_type.downcase.eql?(AGENCY_TYPE) ? agency_activities_grouped_by_type : advertiser_activities_grouped_by_type
+  end
+
+  def activities_all_or_by_type
+    client_type.present? ? activities_by_type : advertiser_and_agency_activities_grouped_by_type
+  end
+
+  def client_type
+    @_client_type ||= params[:type]
+  end
+
+  def clients_by_type
+    client_type.downcase.eql?(AGENCY_TYPE) ? agencies : advertisers
+  end
+
+  def clients_all_or_by_type
+    client_type.present? ? clients_by_type : company.clients
   end
 end
