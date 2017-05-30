@@ -92,7 +92,7 @@
                     selected = this.selected
                     $scope.appliedExchangeRate = selected.exchange_rate
                     $scope.deals = $scope.allDeals.filter (deal) ->
-                        if selected.owner && deal.members.indexOf(selected.owner) is -1
+                        if selected.owner && deal.members && deal.members.indexOf(selected.owner) is -1
                             return false
                         if selected.advertiser && (!deal.advertiser || deal.advertiser.id != selected.advertiser.id)
                             return false
