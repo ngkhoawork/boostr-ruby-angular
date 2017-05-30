@@ -24,6 +24,8 @@
         %strong
           Budget:
         #{@deal.currency.curr_symbol}#{number_with_precision(@deal.budget_loc, :precision => 0, :delimiter => ',')}
+        - if @deal.currency.curr_cd != 'USD'
+          \- $#{number_with_precision(@deal.budget, :precision => 0, :delimiter => ',')}
       %div
         %strong
           Flight Date:
@@ -42,6 +44,8 @@
             %strong
               #{deal_product['product']['name']}:
             #{@deal.currency.curr_symbol}#{number_with_precision(deal_product['budget_loc'], :precision => 0, :delimiter => ',')}
+            - if @deal.currency.curr_cd != 'USD'
+              \- $#{number_with_precision(deal_product['budget'], :precision => 0, :delimiter => ',')}
             %table{width: '100%'}
               %tr
                 - @deal.months.each do |month|

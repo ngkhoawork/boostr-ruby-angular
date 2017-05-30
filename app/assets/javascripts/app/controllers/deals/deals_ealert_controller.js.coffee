@@ -163,7 +163,7 @@
     Ealert.send_ealert(id: $scope.ealert.id, data: data).then(
       (response) ->
         # console.log(response)
-        $modalInstance.close()
+        $modalInstance.close(true)
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

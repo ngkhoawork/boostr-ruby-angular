@@ -100,10 +100,20 @@
             background-color: $secondary-font-color;
             color: white;
         }
+        &.danger {
+            color: $brand-danger;
+            &:hover {
+                background-color: $brand-danger;
+                color: white;
+            }
+        }
     }
     .ealert-label {
         font-size: 14px;
         line-height: 34px;
+        &.danger {
+            color: $brand-danger;
+        }
     }
     .send-icon {
         vertical-align: middle;

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170523195359) do
+ActiveRecord::Schema.define(version: 20170530145222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -357,8 +357,8 @@ ActiveRecord::Schema.define(version: 20170523195359) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
@@ -367,6 +367,7 @@ ActiveRecord::Schema.define(version: 20170523195359) do
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
+    t.boolean  "ealert_reminder",                   default: false
   end
 
   create_table "contact_cf_names", force: :cascade do |t|

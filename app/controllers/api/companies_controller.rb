@@ -16,7 +16,7 @@ class Api::CompaniesController < ApplicationController
   protected
 
   def company_params
-    params.require(:company).permit(:snapshot_day, :avg_day, :yellow_threshold, :red_threshold, :deals_needed_calculation_duration)
+    params.require(:company).permit(:snapshot_day, :avg_day, :yellow_threshold, :red_threshold, :deals_needed_calculation_duration, :ealert_reminder)
   end
 
   def company

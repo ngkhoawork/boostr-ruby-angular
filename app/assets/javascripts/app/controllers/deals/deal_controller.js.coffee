@@ -12,6 +12,7 @@
   $scope.prevStageId = null
   $scope.selectedStageId = null
   $scope.currency_symbol = '$'
+  $scope.ealertReminder = false
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
@@ -258,6 +259,7 @@
     Deal.update(id: currentDeal.id, deal: currentDeal).then(
       (deal) ->
         $scope.setCurrentDeal(deal)
+        $scope.ealertReminder = true
       (resp) ->
         $timeout ->
           delete $scope.errors.curr_cd
@@ -416,6 +418,7 @@
         $scope.currentDeal = deal
         $scope.selectedStageId = deal.stage_id
         $scope.setBudgetPercent(deal)
+        $scope.ealertReminder = true
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
@@ -565,6 +568,7 @@
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
       (deal) ->
         $scope.setCurrentDeal(deal)
+        $scope.ealertReminder = true
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
@@ -585,6 +589,7 @@
                 $scope.setCurrentDeal(deal)
               else
                 $scope.init()
+              $scope.ealertReminder = true
             (resp) ->
               $timeout ->
                 delete $scope.errors.stage
@@ -599,6 +604,7 @@
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then(
       (deal) ->
         $scope.setCurrentDeal(deal)
+        $scope.ealertReminder = true
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
@@ -668,6 +674,7 @@
       DealProduct.delete(id: deal_product.id, deal_id: $scope.currentDeal.id).then(
         (deal) ->
           $scope.setCurrentDeal(deal)
+          $scope.ealertReminder = true
         (resp) ->
           for key, error of resp.data.errors
             $scope.errors[key] = error && error[0]
@@ -832,6 +839,9 @@
       resolve:
         deal: ->
           angular.copy deal
+    .result.then (response) ->
+      if response
+        $scope.ealertReminder = false
 
   $scope.deleteDeal = (deal) ->
     $scope.errors = {}
