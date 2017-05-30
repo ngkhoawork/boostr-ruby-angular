@@ -64,7 +64,7 @@
     Client.connected_client_contacts({id: $scope.currentClient.id}).$promise.then (connected_client_contacts) ->
       $scope.connected_client_contacts = _.map connected_client_contacts, (clientContact) ->
         if ($scope.currentClient.client_type.option.name == 'Advertiser')
-          clientContact._clientContacts = [clientContact.contact.primary_client_contact]
+          clientContact._clientContacts = [_.extend clientContact.contact.primary_client_contact, clientContact]
         else
           clientContact._clientContacts = clientContact.contact.non_primary_client_contacts
         clientContact
