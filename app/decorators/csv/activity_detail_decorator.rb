@@ -14,7 +14,7 @@ class Csv::ActivityDetailDecorator
   end
 
   def comments
-    activity.comment
+    activity.comment unless activity.activity_type_name.eql?('Email')
   end
 
   def advertiser
