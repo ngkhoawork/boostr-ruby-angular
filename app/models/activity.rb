@@ -220,6 +220,14 @@ class Activity < ActiveRecord::Base
   end
 
   def team_creator
-    creator.leader? ? Team.find_by(leader: creator).name : creator.team.name
+    creator.leader? ? leader_name : creator_team_name
+  end
+
+  def leader_name
+    Team.find_by(leader: creator).name
+  end
+
+  def creator_team_name
+    creator.team.name rescue nil
   end
 end
