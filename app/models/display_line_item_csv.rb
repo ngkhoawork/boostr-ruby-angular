@@ -2,7 +2,7 @@ class DisplayLineItemCsv
   include ActiveModel::Validations
 
   validates_presence_of     :line_number, :start_date, :end_date, :product_name,
-                            :quantity, :budget, :company_id, :io_name
+                            :quantity, :budget, :company_id#, :io_name
   validates_numericality_of :line_number, :quantity, :budget, :budget_delivered, numericality: true
   validates_numericality_of :quantity_delivered, :quantity_delivered_3p, allow_blank: true
 
@@ -84,6 +84,7 @@ class DisplayLineItemCsv
   end
 
   def upsert_temp_io
+    return unless io_name.present? && io_start_date.present? && io_end_date.present?
     if io_or_tempio.kind_of? TempIo
       temp_io_params = {
           name: io_name,
