@@ -9,6 +9,10 @@ class Api::RequestsController < ApplicationController
     end
   end
 
+  def show
+    render json: request_item, serializer: Requests::RequestSerializer
+  end
+
   def create
     request = deal.requests.new(request_params)
     request.requester = current_user

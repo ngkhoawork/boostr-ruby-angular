@@ -3,12 +3,13 @@
 ($scope, $rootScope, $modalInstance, Request, requestable, requestable_type, deal_id) ->
 
   $scope.formType = "New"
-  $scope.statuses = Request.statuses
+  $scope.statuses = [Request.statuses[0]]
   $scope.request = requestable.request || {
     requestable_type: requestable_type,
     requestable_id: requestable.id,
     deal_id: deal_id,
-    request_type: 'Revenue'
+    request_type: 'Revenue',
+    status: 'New'
   }
 
   $scope.saveRequest = () ->

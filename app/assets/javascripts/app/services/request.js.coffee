@@ -29,6 +29,12 @@
       deferred.resolve(data)
     deferred.promise
 
+  @get = (id) ->
+    deferred = $q.defer()
+    resource.get id: id, (data) ->
+      deferred.resolve(data)
+    deferred.promise
+
   @create = (params) ->
     deferred = $q.defer()
     resource.save params, (data) ->

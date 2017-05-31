@@ -292,7 +292,7 @@ Rails.application.routes.draw do
 
       get :export, on: :collection
     end
-    resources :requests, only: [:index, :create, :update, :destroy]
+    resources :requests, only: [:index, :show, :create, :update, :destroy]
 
     get 'teams/by_user/:id', to: 'teams#by_user', as: :team_by_user
   end

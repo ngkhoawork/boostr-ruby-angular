@@ -1,0 +1,5 @@
+%p
+  #{ @request.requester.name } submitted a #{@request.request_type} Request for your approval -
+  %a{ href: api_request_path(id: @request.id}
+    click here
+  for details.

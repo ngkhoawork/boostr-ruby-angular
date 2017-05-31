@@ -118,6 +118,9 @@
     .when '/requests',
       templateUrl: 'requests.html'
       controller: 'RequestsController'
+    .when '/requests/:id',
+      templateUrl: 'request.html'
+      controller: 'RequestController'
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'

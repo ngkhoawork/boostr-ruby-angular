@@ -4,24 +4,20 @@
 
   $scope.request_types = Request.request_types
   $scope.statuses = Request.statuses
-  $scope.request_type_filter = $scope.request_types[0]
-  $scope.status_filter = $scope.statuses[0]
-  $scope.requestUrl = "api/requests?request_type=#{$scope.request_type_filter}&status=#{$scope.status_filter}"
+  $scope.requestUrl = "api/requests"
+  $scope.requestUrlParams = {
+    request_type: $scope.request_types[0],
+    status: $scope.statuses[0]
+  }
 
   CurrentUser.get().$promise.then (user) ->
     $scope.current_user = user
 
-  $scope.init = ->
-    Request.all(request_type: $scope.request_type_filter, status: $scope.status_filter).then (requests) ->
-      $scope.requests = requests
-
   $scope.typeFilter = (type) ->
-    $scope.request_type_filter = type
-    $scope.init()
+    $scope.requestUrlParams.request_type = type
 
   $scope.statusFilter = (status) ->
-    $scope.status_filter = status
-    $scope.init()
+    $scope.requestUrlParams.status = status
 
   $scope.assignRequest = (request, event) ->
     event.stopPropagation()
@@ -31,7 +27,7 @@
 
     Request.update(request: request, id: request.id).then(
       (data) ->
-        true
+        $scope.$broadcast 'pagination:reload'
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
@@ -48,8 +44,4 @@
         request: ->
           request
 
-  $scope.$on 'newRequest', (event, request) ->
-    $scope.init()
-
-  $scope.init()
 ]

@@ -88,6 +88,10 @@ class User < ActiveRecord::Base
     self.find_by(email: email, is_active: true)
   end
 
+  def has_requests_access?
+    self.revenue_requests_access
+  end
+
   def name
     "#{first_name} #{last_name}"
   end

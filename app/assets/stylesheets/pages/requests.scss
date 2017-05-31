@@ -6,27 +6,25 @@
     font-size: 24px;
     font-weight: 600;
     margin-right: 20px;
-    display: block;
+    display: inline-block;
   }
-  .filter-row {
-    .request-types, .request-statuses {
-      margin-left: 5px;
-      display: inline-block;
+  .request-types, .request-statuses {
+    margin-left: 5px;
+    display: inline-block;
+  }
+  .request-statuses {
+    margin-right: 10px;
+    float: right;
+  }
+  .request-types > span, .request-statuses > span {
+    display: inline-block;
+    padding: 12px 5px;
+    margin: 0 10px;
+    font-weight: bold;
+    cursor: pointer;
+    &.active {
+      color: $main-color;
+      border-bottom: 2px solid $main-color;
     }
-    .request-statuses {
-      margin-right: 10px;
-      float: right;
-    }
-    span {
-      display: inline-block;
-      padding: 12px 5px;
-      margin: 0 10px;
-      font-weight: bold;
-      cursor: pointer;
-      &.active {
-        color: $main-color;
-        border-bottom: 2px solid $main-color;
-      }
-    }
-  }  
+  }
 }

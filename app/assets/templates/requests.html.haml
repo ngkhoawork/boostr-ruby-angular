@@ -1,12 +1,13 @@
 #requests.z-styles
   .container-fluid
-    %span.title Requests
-    .row.mb10.filter-row
-      .request-types
-        %span{ng: {repeat: 'type in request_types', class: '{active: type == request_type_filter}', click: 'typeFilter(type)'}}
-          {{type}}
-      .request-statuses
-        %span{ng: {repeat: 'status in statuses', class: '{active: status == status_filter}', click: 'statusFilter(status)'}}
-          {{status}}
+    .row.mb10
+      .col-xs-12
+        %span.title Requests
+        .request-types
+          %span{ng: {repeat: 'type in request_types', class: '{active: type == requestUrlParams.request_type}', click: 'typeFilter(type)'}}
+            {{type}}
+        .request-statuses.pull-right
+          %span{ng: {repeat: 'status in statuses', class: '{active: status == requestUrlParams.status}', click: 'statusFilter(status)'}}
+            {{status}}
 
-    %div{ng: {include: '"partials/requests/revenue_requests_tab.html"', show: 'request_type_filter == "Revenue"'}}
+    %div{ng: {include: '"partials/requests/revenue_requests_tab.html"', show: 'requestUrlParams.request_type == "Revenue"'}}
