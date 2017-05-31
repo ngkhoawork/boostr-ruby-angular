@@ -56,13 +56,6 @@
 										{{quarter.toUpperCase()}}
 									%th{'ng-if': 'isYear()'} Total
 							%tbody
-								%tr{'ng-repeat': 'stage in forecast.stages'}
-									%td
-										%b {{stage.probability}}%
-									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
-									%td{'ng-if': 'isYear()'}
-										{{getAnnualSum(forecast.quarterly_weighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Revenue
@@ -70,6 +63,13 @@
 										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
+								%tr{'ng-repeat': 'stage in forecast.stages'}
+									%td
+										%b {{stage.probability}}%
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_weighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Forecast
@@ -112,13 +112,6 @@
 										{{quarter.toUpperCase()}}
 									%th{'ng-if': 'isYear()'} Total
 							%tbody
-								%tr{'ng-repeat': 'stage in forecast.stages'}
-									%td
-										%b {{stage.probability}}%
-									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
-									%td{'ng-if': 'isYear()'}
-										{{getAnnualSum(forecast.quarterly_unweighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Revenue
@@ -126,6 +119,13 @@
 										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
+								%tr{'ng-repeat': 'stage in forecast.stages'}
+									%td
+										%b {{stage.probability}}%
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_unweighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Forecast
