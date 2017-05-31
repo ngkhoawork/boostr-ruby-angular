@@ -19,6 +19,12 @@ class Csv::BaseService
       decorated_records.each do |record|
         csv << headers.map { |attr| record.send(attr.downcase) }
       end
+
+      add_total_line_to(csv) if add_total_line?
     end
+  end
+
+  def add_total_line?
+    false
   end
 end

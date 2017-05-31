@@ -26,21 +26,10 @@ class Api::ReportsController < ApplicationController
   end
 
   def activity_summary_user_csv_report
-    Csv::ActivitySummaryService.new(
-      all_team_sales_reps,
-      activity_summary_user_csv_options
-    ).perform
-  end
-
-  def activity_summary_user_csv_options
-    {
-      company: company,
-      start_date: start_date,
-      end_date: end_date
-    }
+    activity_summary_user_service.perform_csv_service
   end
 
   def activity_summary_account_csv_report
-
+    activity_summary_account_service.perform_csv_service
   end
 end

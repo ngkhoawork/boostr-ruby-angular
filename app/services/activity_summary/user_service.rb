@@ -4,7 +4,7 @@ class ActivitySummary::UserService < ActivitySummary::BaseService
   end
 
   def perform_csv_service
-    Csv::ActivitySummaryService.new(
+    Csv::ActivitySummary::UserService.new(
       users,
       activity_summary_user_csv_options
     ).perform
@@ -16,7 +16,8 @@ class ActivitySummary::UserService < ActivitySummary::BaseService
     {
       company: company,
       start_date: start_date,
-      end_date: end_date
+      end_date: end_date,
+      total: total_activity_report
     }
   end
 
