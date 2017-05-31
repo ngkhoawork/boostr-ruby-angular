@@ -41,6 +41,7 @@ gem 'faraday'
 gem 'attr_encrypted', '~> 3.0.0'
 gem 'net-sftp', require: false
 gem 'clean_pagination'
+gem "switch_user"
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
