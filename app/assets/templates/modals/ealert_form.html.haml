@@ -48,9 +48,9 @@
               %div
                 %strong
                   Budget:
-                {{deal.budget_loc | currency: deal.currency.curr_symbol : 0}},
+                {{deal.budget_loc | currency: deal.currency.curr_symbol : 0}}
                 %span{'ng-if': 'deal.currency.curr_cd != "USD"'} 
-                  {{deal.budget | currency: '$' : 0}}
+                  , {{deal.budget | currency: '$' : 0}}
               %div
                 %strong
                   Flight Date:
@@ -83,9 +83,9 @@
               %div.mb10{'ng-repeat': 'deal_product in deal.deal_products'}
                 %strong
                   {{deal_product.name}}:
-                {{deal_product.budget_loc | currency: deal.currency.curr_symbol : 0}},
+                {{deal_product.budget_loc | currency: deal.currency.curr_symbol : 0}}
                 %span{'ng-if': 'deal.currency.curr_cd != "USD"'} 
-                  {{deal_product.budget | currency: '$' : 0}}
+                  , {{deal_product.budget | currency: '$' : 0}}
                 %table{width: '100%'} 
                   %tr
                     %td{'ng-repeat': 'month in deal.months'}
