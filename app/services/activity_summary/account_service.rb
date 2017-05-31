@@ -5,7 +5,23 @@ class ActivitySummary::AccountService < ActivitySummary::BaseService
     { client_activities: clients_activity_reports, total_activity_report: total_clients_activity_report }
   end
 
+  def perform_csv_service
+    Csv::ActivitySummary::AccountService.new(
+      clients_all_or_by_type,
+      activity_summary_account_csv_options
+    ).perform
+  end
+
   private
+
+  def activity_summary_account_csv_options
+    {
+      company: company,
+      start_date: start_date,
+      end_date: end_date,
+      total: total_clients_activity_report
+    }
+  end
 
   def clients_activity_reports
     clients_all_or_by_type.reduce([]) do |client_report, client|
