@@ -1208,7 +1208,7 @@ class Deal < ActiveRecord::Base
           recipients = ealert_stage.recipients.split(',').map(&:strip) if ealert_stage.recipients
         end
         
-        UserMailer.ealert_email(recipients, ealert.id, self.id, '').deliver_now if recipients.length > 0
+        UserMailer.ealert_email(recipients, ealert.id, self.id, '').deliver_later(wait: 10.minutes, queue: "default") if recipients.length > 0
       end
     end
   end
