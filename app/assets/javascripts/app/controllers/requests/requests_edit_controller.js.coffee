@@ -10,6 +10,7 @@
     Request.update(request: $scope.request, id: $scope.request.id).then(
       (request) ->
         $modalInstance.close()
+        $rootScope.$broadcast 'pagination:reload'
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]

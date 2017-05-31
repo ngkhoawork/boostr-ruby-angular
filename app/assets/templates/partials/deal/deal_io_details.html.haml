@@ -1,6 +1,6 @@
 #io-details{ng: {if: 'currentDeal.io && currentDeal.stage.probability == 100'}}
   %span.title IO Details
-  %a.io-link{'href': '', 'ng-href': '/revenue/ios/{{currentDeal.io.id}}'} {{currentDeal.name || ''}}
+  %a.io-link{'href': '', 'ng-href': '/revenue/ios/{{currentDeal.io.id}}'} {{currentDeal.io.name || ''}}
   %span.details Total Budget = {{ currentDeal.io.budget_loc | currency: currency_symbol : 0 }}
 
   .block#line-content-fees
@@ -89,7 +89,11 @@
             %td.left
               {{ displayLineItem.pricing_type }}
             %td.right.display-line-table-budget
-              {{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
+              %div
+                %a{href: '', 'ng-click': 'showBudgetRow(displayLineItem, $event)'}
+                  {{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
+              %div.budget-arrow{'ng-class': '{"active": displayLineItem == selectedIORow}'}
+                .fa.fa-caret-up
             %td.right
               {{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
             %td.right
@@ -113,6 +117,16 @@
             %td.right.cell-thin
               %a{href: '', 'ng-click': "showNewRequestModal(displayLineItem, 'DisplayLineItem')"}
                 Revenue Request
+          %tr.display-line-budgets-row
+            %td.left{colspan: 21}
+              %div.display-line-budgets{'data-displayID': '{{displayLineItem.id}}', 'ng-class': '{active: selectedIORow == displayLineItem }'}
+                %div.budgets-inner
+                  %div.title
+                    Monthly Budgets
+                    %span ( {{ budgets.rest | currency:currency_symbol:0 }} remaining )
+                  %div.line-budget{'ng-repeat': 'budget in budgets'}
+                    .month {{budget.month}}
+                    .budget {{budget.budget_loc | currency : currency_symbol : 0}}
 
         %tbody{ ng: { if: '!currentDeal.io.display_line_items || currentDeal.io.display_line_items.length == 0' } }
           %tr
