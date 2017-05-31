@@ -67,6 +67,7 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
+    send_ealert if stage_id_changed?
     integrate_with_operative if self.company_id.eql?(22)
   end
 
@@ -1193,6 +1194,23 @@ class Deal < ActiveRecord::Base
     self.previous_stage_id = self.stage_id_was
     self.stage_updated_at = updated_at
     self.stage_updated_by = updated_by
+  end
+
+  def send_ealert
+    ealert = self.company.ealerts.first
+    if ealert
+      ealert_stage = ealert.ealert_stages.find_by(stage_id: self.stage_id)
+      if ealert_stage && ealert_stage.enabled == true
+        recipients = []
+        if ealert.same_all_stages == true
+          recipients = ealert.recipients.split(',').map(&:strip) if ealert.recipients
+        else
+          recipients = ealert_stage.recipients.split(',').map(&:strip) if ealert_stage.recipients
+        end
+        
+        UserMailer.ealert_email(recipients, ealert.id, self.id, '').deliver_later(wait: 10.minutes, queue: "default") if recipients.length > 0
+      end
+    end
   end
 
   def close_display_product

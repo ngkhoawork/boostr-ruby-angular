@@ -1,8 +1,10 @@
 @filters.filter 'boDate', ['$filter', ($filter) ->
-  (month) ->
+  (month, short=false) ->
     if !month
       return ''
     date = new Date(month[0], month[1] - 1)
-
-    $filter('date')(date, 'MMM yyyy')
+    if short
+      $filter('date')(date, 'MMM yy')
+    else
+      $filter('date')(date, 'MMM yyyy')
 ]

@@ -181,6 +181,9 @@
     .when '/settings/custom_fields/',
       templateUrl: 'settings/custom_fields.html'
       controller: 'SettingsDealCustomFieldNamesController'
+    .when '/settings/ealerts/',
+      templateUrl: 'settings/ealerts.html'
+      controller: 'SettingsEalertsController'
     .when '/bp',
       templateUrl: 'bp.html'
       controller: 'BPController'

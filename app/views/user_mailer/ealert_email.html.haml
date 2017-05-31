@@ -1,0 +1,70 @@
+.preview-container{style: 'border-radius: 4px;background-color: #FFFFFF;box-shadow: 0 15px 20px 0 rgba(0,0,0,0.15);margin: 0px 30px 30px 30px;'}
+  .preview-header{style: 'border: 1px solid #FF7200;height: 100px;width: 100%;border-radius: 4px 4px 0 0;background-color: #FF7200;text-align: center;vertical-align: middle;color: white;padding-top: 20px;'}
+    .logo-title{style: 'font-size: 34px;font-weight: 600;line-height: 40px;'}
+      boostr
+    .subtitle{style: 'opacity: 0.5;font-size: 18px;font-weight: 600;line-height: 25px;'}
+      eAlert
+  .preview-subheader{style: 'padding: 20px 20px;color: #2B3C49;border-left: 1px solid #EAECEE;border-right: 1px solid #EAECEE;vertical-align: middle;'}
+    %table{width: '100%'} 
+      %tr
+        %td
+          .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
+            #{@deal.name} - #{@deal.stage.probability}%
+          .advertiser-ballast{style: 'height: 20px;font-size: 15px;line-height: 20px;'}
+            %strong
+              Advertiser:
+            #{@deal.advertiser.name}
+        %td.action{style: 'text-align: right;'}
+          %button.add-btn{style: 'outline: none;font-weight: bold;background-color: transparent;color: #ff7200;border: 2px solid #ff7200;border-radius: 100px;padding: 4px 14px 4px 12px;position: relative;top: -3px;transition: background-color 300ms, color 300ms;'}
+            %a{href: "#{root_url}deals/#{@deal.id}", style: 'color: #ff7200;text-decoration: none;font-weight: bold;font-size: 13px;'}
+              Go to Deal
+  .preview-body{style: 'border: 1px solid #EAECEE;border-bottom-left-radius:4px;border-bottom-right-radius:4px;padding: 20px 20px;color: #2B3C49;font-size: 13px;line-height: 20px;'}
+    %section.mb30{style: 'margin-bottom: 30px;'}
+      %div
+        %strong
+          Budget:
+        #{@deal.currency.curr_symbol}#{number_with_precision(@deal.budget_loc, :precision => 0, :delimiter => ',')}
+        - if @deal.currency.curr_cd != 'USD'
+          , $#{number_with_precision(@deal.budget, :precision => 0, :delimiter => ',')}
+      %div
+        %strong
+          Flight Date:
+        #{@deal.start_date.strftime('%b %d, %Y')} - #{@deal.end_date.strftime('%b %d, %Y')}
+      - @deal_fields.each do |deal_field|
+        %div
+          %strong
+            #{deal_field['label']}:
+          #{deal_field['value']}
+    - if @deal_products.count > 0
+      %section.mb30{style: 'margin-bottom: 30px;'}
+        .products.mb10{style: 'margin-bottom: 10px;color: #818689;font-size: 15px;font-weight: 600;line-height: 20px;'}
+          Products
+        - @deal_products.each do |deal_product|
+          %div.mb10{style: 'margin-bottom: 10px;'}
+            %strong
+              #{deal_product['product']['name']}:
+            #{@deal.currency.curr_symbol}#{number_with_precision(deal_product['budget_loc'], :precision => 0, :delimiter => ',')}
+            - if @deal.currency.curr_cd != 'USD'
+              , $#{number_with_precision(deal_product['budget'], :precision => 0, :delimiter => ',')}
+            %table{width: '100%'}
+              %tr
+                - @deal.months.each do |month|
+                  %td
+                    %strong #{Date.new(month[0],month[1]).strftime('%b %y')}
+              %tr
+                - deal_product['deal_product_budgets'].each do |deal_product_budget|
+                  %td
+                    #{deal_product_budget['budget_percentage']}%
+            - if deal_product['deal_product_fields'].count > 0
+              .product-fields{style: 'padding-left: 20px;'}
+                - deal_product['deal_product_fields'].each do |deal_product_field|
+                  %div
+                    %strong
+                      #{deal_product_field['label']}:
+                    #{deal_product_field['value']}
+    %section
+      %div
+        %strong
+          Comments:
+      %div
+        #{@comment}

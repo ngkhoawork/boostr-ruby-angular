@@ -19,6 +19,7 @@ class Company < ActiveRecord::Base
   has_many :display_line_items, through: :ios
   has_many :temp_ios
   has_many :bps
+  has_many :ealerts, dependent: :destroy
   has_many :bp_estimates, through: :bps
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names
@@ -83,6 +84,8 @@ class Company < ActiveRecord::Base
     activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.png')
     activity_types.find_or_initialize_by(name:'Post Sale Meeting', action:'had post sale meeting with', icon:'/assets/icons/post-sale.png')
     activity_types.find_or_initialize_by(name:'Internal Meeting', action:'had insternal meeting with', icon:'/assets/icons/internal-meeting.png')
+
+    ealerts.find_or_initialize_by(recipients: nil, automatic_send: false, same_all_stages: true)
 
     setup_default_validations
   end

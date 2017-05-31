@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170512195108) do
+ActiveRecord::Schema.define(version: 20170530145222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -357,8 +357,8 @@ ActiveRecord::Schema.define(version: 20170512195108) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
@@ -367,6 +367,7 @@ ActiveRecord::Schema.define(version: 20170512195108) do
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
+    t.boolean  "ealert_reminder",                   default: false
   end
 
   create_table "contact_cf_names", force: :cascade do |t|
@@ -918,6 +919,50 @@ ActiveRecord::Schema.define(version: 20170512195108) do
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
   add_index "display_line_items", ["product_id"], name: "index_display_line_items_on_product_id", using: :btree
 
+  create_table "ealert_custom_fields", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "ealert_id"
+    t.string   "subject_type"
+    t.integer  "subject_id"
+    t.integer  "position",     limit: 2, default: 0
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
+  add_index "ealert_custom_fields", ["company_id"], name: "index_ealert_custom_fields_on_company_id", using: :btree
+  add_index "ealert_custom_fields", ["ealert_id"], name: "index_ealert_custom_fields_on_ealert_id", using: :btree
+
+  create_table "ealert_stages", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "ealert_id"
+    t.integer  "stage_id"
+    t.string   "recipients"
+    t.boolean  "enabled"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "ealert_stages", ["company_id"], name: "index_ealert_stages_on_company_id", using: :btree
+  add_index "ealert_stages", ["ealert_id"], name: "index_ealert_stages_on_ealert_id", using: :btree
+  add_index "ealert_stages", ["stage_id"], name: "index_ealert_stages_on_stage_id", using: :btree
+
+  create_table "ealerts", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "recipients"
+    t.boolean  "automatic_send"
+    t.boolean  "same_all_stages"
+    t.integer  "agency",          limit: 2, default: 0
+    t.integer  "deal_type",       limit: 2, default: 0
+    t.integer  "source_type",     limit: 2, default: 0
+    t.integer  "next_steps",      limit: 2, default: 0
+    t.integer  "closed_reason",   limit: 2, default: 0
+    t.integer  "intiative",       limit: 2, default: 0
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+  end
+
+  add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
+
   create_table "exchange_rates", force: :cascade do |t|
     t.integer "company_id"
     t.date    "start_date"
@@ -1363,6 +1408,12 @@ ActiveRecord::Schema.define(version: 20170512195108) do
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"
   add_foreign_key "display_line_items", "temp_ios"
+  add_foreign_key "ealert_custom_fields", "companies"
+  add_foreign_key "ealert_custom_fields", "ealerts"
+  add_foreign_key "ealert_stages", "companies"
+  add_foreign_key "ealert_stages", "ealerts"
+  add_foreign_key "ealert_stages", "stages"
+  add_foreign_key "ealerts", "companies"
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
   add_foreign_key "integration_logs", "companies"
