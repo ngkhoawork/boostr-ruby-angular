@@ -15,6 +15,9 @@
       method: 'PUT'
       transformRequest: transformRequest
     }
+    update_status: {
+      method: 'PUT'
+    }
 
   @all = (params) ->
     resource.query params, (client_contact) ->
@@ -39,5 +42,6 @@
     resource.delete { client_id: params.client_id, id: params.id }, (client) ->
       deferred.resolve(client)
     deferred.promise
+
   return resource
 ]

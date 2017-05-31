@@ -19,7 +19,13 @@ class Api::ContactsController < ApplicationController
         results = apply_search_criteria(results)
 
         response.headers['X-Total-Count'] = results.total_count
-        render json: results.includes(:primary_client).preload(:values, :address, :workplaces)
+        render json: results.includes(:primary_client).preload(
+		  :latest_happened_activity,
+		  :client,
+		  :values,
+		  :address,
+		  non_primary_client_contacts: [:client]
+	  	)
           .limit(limit)
           .offset(offset), each_serializer: ContactSerializer,
                            contact_options: company_job_level_options,
@@ -99,11 +105,15 @@ class Api::ContactsController < ApplicationController
   end
 
   def related_clients
-    render json: contact.workplaces.by_type_id(advertiser_type_id).as_json(
-      override: true,
-      only: [:id, :name],
+    render json: contact.non_primary_client_contacts.joins(:client).where('clients.client_type_id = ?', advertiser_type_id)
+    .preload(client: [:address])
+    .as_json(
       include: {
-        address: { only: :city }
+        client: {
+          include: {
+            address: { only: :city }
+          }
+        }
       }
     )
   end

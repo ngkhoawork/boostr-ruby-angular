@@ -120,7 +120,7 @@
 							%th Works At
 							%th Related Accounts
 							%th Email
-							%th Phone
+							%th Mobile
 							%th Last Touch
 					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading'}}
 						%tr{'ng-repeat': 'contact in contacts'}
@@ -130,7 +130,7 @@
 							%td {{contact.job_level}}
 							%td {{contact.primary_client_json.name}}
 							%td
-								%div{'ng-repeat': 'client in contact.workplaces'} {{client.name}}
+								%div{'ng-repeat': 'clientContact in contact.non_primary_client_contacts'} {{clientContact.client.name}}
 							%td {{contact.address.email}}
-							%td {{contact.address.phone}}
+							%td {{contact.address.mobile}}
 							%td {{contact.last_touched | date}}

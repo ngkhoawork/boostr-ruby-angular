@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20170530145222) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -228,10 +229,6 @@ ActiveRecord::Schema.define(version: 20170530145222) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
-    t.text     "encrypted_json_api_key"
-    t.text     "encrypted_json_api_key_iv"
-    t.string   "network_code"
-    t.string   "integration_provider"
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -508,15 +505,6 @@ ActiveRecord::Schema.define(version: 20170530145222) do
   end
 
   add_index "content_fees", ["io_id"], name: "index_content_fees_on_io_id", using: :btree
-
-  create_table "cpm_budget_adjustments", force: :cascade do |t|
-    t.float    "percentage"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-    t.integer  "api_configuration_id"
-  end
-
-  add_index "cpm_budget_adjustments", ["api_configuration_id"], name: "index_cpm_budget_adjustments_on_api_configuration_id", using: :btree
 
   create_table "csv_import_logs", force: :cascade do |t|
     t.integer  "rows_processed", default: 0
@@ -843,37 +831,22 @@ ActiveRecord::Schema.define(version: 20170530145222) do
 
   add_index "deals", ["deleted_at"], name: "index_deals_on_deleted_at", using: :btree
 
-  create_table "dfp_report_queries", force: :cascade do |t|
-    t.integer  "report_type"
-    t.string   "weekly_recurrence_day"
-    t.integer  "monthly_recurrence_day"
-    t.string   "report_id"
-    t.boolean  "is_daily_recurrent",     default: false
-    t.integer  "api_configuration_id"
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
-  end
-
-  add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
-
   create_table "display_line_item_budgets", force: :cascade do |t|
     t.integer  "display_line_item_id"
     t.integer  "external_io_number"
     t.float    "budget"
     t.date     "start_date"
     t.date     "end_date"
-    t.datetime "created_at",                                                         null: false
-    t.datetime "updated_at",                                                         null: false
-    t.decimal  "budget_loc",            precision: 15, scale: 2, default: 0.0
-    t.string   "billing_status",                                 default: "Pending"
-    t.boolean  "manual_override",                                default: false
-    t.decimal  "ad_server_budget",      precision: 15, scale: 2
+    t.datetime "created_at",                                                        null: false
+    t.datetime "updated_at",                                                        null: false
+    t.decimal  "budget_loc",           precision: 15, scale: 2, default: 0.0
+    t.string   "billing_status",                                default: "Pending"
+    t.boolean  "manual_override",                               default: false
+    t.decimal  "ad_server_budget",     precision: 15, scale: 2
     t.integer  "ad_server_quantity"
     t.integer  "quantity"
     t.integer  "clicks"
-    t.decimal  "ctr",                   precision: 5,  scale: 4
-    t.decimal  "video_avg_view_rate",   precision: 5,  scale: 4
-    t.decimal  "video_completion_rate", precision: 5,  scale: 4
+    t.decimal  "ctr",                  precision: 2
   end
 
   add_index "display_line_item_budgets", ["display_line_item_id"], name: "index_display_line_item_budgets_on_display_line_item_id", using: :btree
@@ -912,8 +885,6 @@ ActiveRecord::Schema.define(version: 20170530145222) do
     t.decimal  "budget_remaining_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.integer  "balance_loc",                limit: 8
     t.integer  "daily_run_rate_loc"
-    t.decimal  "ctr",                                  precision: 5,  scale: 4
-    t.integer  "clicks"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
@@ -1013,14 +984,13 @@ ActiveRecord::Schema.define(version: 20170530145222) do
     t.string   "request_type"
     t.string   "resource_type"
     t.integer  "company_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
     t.integer  "deal_id"
     t.boolean  "is_error"
     t.string   "api_provider"
     t.string   "object_name"
     t.text     "error_text"
-    t.string   "dfp_query_type"
   end
 
   add_index "integration_logs", ["company_id"], name: "index_integration_logs_on_company_id", using: :btree
@@ -1392,7 +1362,6 @@ ActiveRecord::Schema.define(version: 20170530145222) do
   add_foreign_key "contact_cfs", "contacts"
   add_foreign_key "content_fee_product_budgets", "content_fees"
   add_foreign_key "content_fees", "ios"
-  add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
@@ -1403,7 +1372,6 @@ ActiveRecord::Schema.define(version: 20170530145222) do
   add_foreign_key "deal_product_cf_names", "companies"
   add_foreign_key "deal_product_cf_options", "deal_product_cf_names"
   add_foreign_key "deal_product_cfs", "companies"
-  add_foreign_key "dfp_report_queries", "api_configurations"
   add_foreign_key "display_line_item_budgets", "display_line_items"
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"

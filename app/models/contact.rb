@@ -13,9 +13,6 @@ class Contact < ActiveRecord::Base
   has_many :non_primary_client_contacts, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
   has_many :non_primary_clients, -> { uniq }, through: :non_primary_client_contacts, source: :client
 
-  has_many :workplaces, -> { select(:id, :name) }, through: :workplace_clients, source: :client
-  has_many :workplace_clients, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
-
   has_many :deals, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :reminders, as: :remindable, dependent: :destroy
@@ -330,6 +327,24 @@ class Contact < ActiveRecord::Base
       cities: Contact.where(company_id: company_id).joins(:address).where.not(addresses: {city: nil}).pluck('addresses.city').uniq,
       countries: ISO3166::Country.all_translated
     }
+  end
+
+  def job_level(company_fields)
+    if self.values.present? && company_fields.present?
+      field_id = company_fields.first.field_id
+      value = self.values.find do |el|
+        el.field_id == field_id
+      end
+      option = company_fields.find do |el|
+        el.id == value.option_id
+      end if value
+    end
+
+    if option
+      option.name
+    else
+      nil
+    end
   end
 
   private

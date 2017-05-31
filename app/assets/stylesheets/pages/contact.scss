@@ -36,6 +36,19 @@
         }
         .dropdown-menu {
             top: calc(100% + 10px);
+            li {
+                a {
+                    color: $main-font-color;
+                    &:hover {
+                        color: $main-color;
+                    }
+                }
+                &.active {
+                    a {
+                        color: white;
+                    }
+                }
+            }
         }
     }
     .contact-info {
