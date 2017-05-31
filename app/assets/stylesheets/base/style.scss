@@ -8,5 +8,6 @@
     overflow-x: auto;
     & > div {
         min-width: $content-min-width;
+        min-height: calc(100vh - #{$header-height});
     }
 }
