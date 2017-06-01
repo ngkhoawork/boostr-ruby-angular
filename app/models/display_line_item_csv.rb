@@ -80,7 +80,11 @@ class DisplayLineItemCsv
   end
 
   def tempio
-    @_temp_io ||= TempIo.find_or_initialize_by(company_id: company_id, external_io_number: external_io_number)
+    if io_name.present? && io_start_date.present? && io_end_date.present?
+      @_temp_io ||= TempIo.find_or_initialize_by(company_id: company_id, external_io_number: external_io_number)
+    else
+      @_temp_io ||= TempIo.find_by(company_id: company_id, external_io_number: external_io_number)
+    end
   end
 
   def upsert_temp_io
