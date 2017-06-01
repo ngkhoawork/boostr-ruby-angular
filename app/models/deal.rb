@@ -193,7 +193,7 @@ class Deal < ActiveRecord::Base
     disable_flag = validation.criterion.try(:value) if validation
 
     if validation && disable_flag == true && stage && stage.probability == 100 && stage.open? == false
-      errors.add(:stage, "#{self.stage.try(:name)} can't be set per configuration. Deals can be set to won from API integration only")
+      errors.add(:stage, "can't be updated to #{self.stage.try(:name)} manually. Deals can only be set to #{self.stage.try(:name)} from API integration")
     end
   end
 
