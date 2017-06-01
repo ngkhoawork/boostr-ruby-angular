@@ -31,5 +31,4 @@ class Api::DealReportsController < ApplicationController
   def date_range_params
     params.permit(:start_date, :end_date)
   end
-
 end

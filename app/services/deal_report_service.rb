@@ -31,8 +31,13 @@ class DealReportService < BaseService
   end
 
   # Advanced Deals - (list of deals that changed sales stage on target date -use deal_stage_logs.created_at yesterday)
+  def stage_changed_deal_items
+    Deal.includes(:deal_stage_logs, :previous_stage, :stage, :advertiser)
+        .where(company_id: company_id)
+        .where(deal_stage_logs: { created_at: date_range })
+  end
+
   def stage_changed_deals
-    stage_changed_deal_items = Deal.includes(:deal_stage_logs, :previous_stage, :stage, :advertiser).where(company_id: company_id).where(deal_stage_logs: { created_at: date_range })
     ActiveModel::ArraySerializer.new(stage_changed_deal_items, each_serializer: DealChangedSerializer).as_json
   end
 
@@ -45,8 +50,11 @@ class DealReportService < BaseService
     Deal.at_percent(0).where(company_id: company_id, closed_at: date_range)
   end
 
+  def deal_logs
+    DealLog.includes(:deal).where(created_at: date_range).where(deals: { company_id: company_id })
+  end
+
   def budget_changed
-    deal_logs =  DealLog.includes(:deal).where(created_at: date_range).where(deals: { company_id: company_id })
     ActiveModel::ArraySerializer.new(deal_logs, each_serializer: BudgetChangeSerializer).as_json
   end
 
@@ -62,6 +70,7 @@ class DealReportService < BaseService
 
   def date_range
     return target_date.midnight..target_date.end_of_day unless target_date.kind_of? Hash
+
     DateTime.parse(target_date[:start_date])..DateTime.parse(target_date[:end_date])
   end
 

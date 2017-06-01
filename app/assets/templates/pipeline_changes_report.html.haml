@@ -27,6 +27,9 @@
             %thead
               %tr
                 %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("date")'}
+                    Date
+                %th.left{ width: "200" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_type")'}
                     Change type
                 %th.left{ width: "150" }
@@ -52,6 +55,8 @@
                     Budget change
             %tbody
               %tr{ ng: { repeat: 'deal in report_data_items | orderBy:sortType:sortReverse' } }
+                %td.left
+                  {{ deal.date | date: 'MM-dd-yyyy' }}
                 %td.left
                   {{ deal.deal_type }}
                 %td.left
