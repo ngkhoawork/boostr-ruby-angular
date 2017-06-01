@@ -9,7 +9,9 @@
       %tr
         %td
           .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
-            #{@deal.name} - #{@deal.stage.probability}%
+            #{@deal.name}
+            - if @deal.stage.open == true
+              \- #{@deal.stage.probability}%
           .advertiser-ballast{style: 'height: 20px;font-size: 15px;line-height: 20px;'}
             %strong
               Advertiser:
@@ -37,10 +39,10 @@
           #{deal_field['value']}
     - if @deal_products.count > 0
       %section.mb30{style: 'margin-bottom: 30px;'}
-        .products.mb10{style: 'margin-bottom: 10px;color: #818689;font-size: 15px;font-weight: 600;line-height: 20px;'}
+        .products.mb10{style: 'margin-bottom: 10px;color: #818689;font-size: 16px;font-weight: 600;line-height: 20px;'}
           Products
         - @deal_products.each do |deal_product|
-          %div.mb10{style: 'margin-bottom: 10px;'}
+          %div.mb10{style: 'margin-bottom: 10px;font-size: 14px;'}
             %strong
               #{deal_product['product']['name']}:
             #{@deal.currency.curr_symbol}#{number_with_precision(deal_product['budget_loc'], :precision => 0, :delimiter => ',')}
@@ -56,7 +58,7 @@
                   %td
                     #{deal_product_budget['budget_percentage']}%
             - if deal_product['deal_product_fields'].count > 0
-              .product-fields{style: 'padding-left: 20px;'}
+              .product-fields{style: 'padding-left: 20px;font-size: 12px;'}
                 - deal_product['deal_product_fields'].each do |deal_product_field|
                   %div
                     %strong
