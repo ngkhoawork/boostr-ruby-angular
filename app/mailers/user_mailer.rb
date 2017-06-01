@@ -109,7 +109,7 @@ class UserMailer < ApplicationMailer
             value = '$' + number_with_precision(value, :precision => 2, :delimiter => ',').to_s
           when 'percentage'
             value = value || 0
-            value = number_with_precision(value, :precision => 0, :delimiter => ',')
+            value = number_with_precision(value, :precision => 0, :delimiter => ',') + '%'
           when 'datetime'
             value = value ? value.strftime('%b %d, %Y') : ''
           when 'boolean'
@@ -145,7 +145,7 @@ class UserMailer < ApplicationMailer
               value = '$' + number_with_precision(value, :precision => 2, :delimiter => ',').to_s
             when 'percentage'
               value = value || 0
-              value = number_with_precision(value, :precision => 0, :delimiter => ',')
+              value = number_with_precision(value, :precision => 0, :delimiter => ',') + '%'
             when 'datetime'
               value = value ? value.strftime('%b %d, %Y') : ''
             when 'boolean'

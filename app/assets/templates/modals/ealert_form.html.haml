@@ -35,7 +35,9 @@
               %tr
                 %td
                   .subtitle
-                    {{deal.name}} - {{deal.stage.probability}}%
+                    {{deal.name}}
+                    %span{'ng-if': 'deal.stage.open == true'}
+                      \- {{deal.stage.probability}}%
                   .advertiser-ballast
                     %strong
                       Advertiser:

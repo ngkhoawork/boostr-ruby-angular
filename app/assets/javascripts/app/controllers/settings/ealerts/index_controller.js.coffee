@@ -46,13 +46,19 @@
 
   $scope.addField = (item) ->
     $scope.available_fields = _.reject $scope.available_fields, (field) ->
-      return item.id == field.id
+      if item.id
+        return item.id == field.id
+      else if item.subject && field.subject
+        return item.subject.field_type == field.subject.field_type && item.subject.field_index == field.subject.field_index
     $scope.selected_fields.push(item)
     repositionFields()
 
   $scope.removeField = (item) ->
     $scope.selected_fields = _.reject $scope.selected_fields, (field) ->
-      return item.id == field.id
+      if item.id
+        return item.id == field.id
+      else if item.subject && field.subject
+        return item.subject.field_type == field.subject.field_type && item.subject.field_index == field.subject.field_index
     $scope.available_fields.push(item)
     repositionFields()
 
@@ -132,7 +138,7 @@
       when 'Deal' then $scope.ealert[item.name] = item.position
       else
         index = _.findIndex $scope.ealert.ealert_custom_fields, (ealert_custom_field) ->
-          return ealert_custom_field.subject_type == item.subject_type && ealert_custom_field.subject_id = item.subject_id
+          return ealert_custom_field.subject_type == item.subject_type && ealert_custom_field.subject_id == item.subject_id && ealert_custom_field.subject.field_type == item.subject.field_type && ealert_custom_field.subject.field_index == item.subject.field_index
         if index > -1
           $scope.ealert.ealert_custom_fields[index].position = item.position
   
