@@ -80,7 +80,7 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def team
-    user_with_highest_share.leader? ? Team.find_by(leader: user_with_highest_share).name : user_with_highest_share.team.name
+    user_with_highest_share.leader? ? leader_team_name : user_name_with_highest_share
   end
 
   # def cache_key
@@ -110,5 +110,13 @@ class DealReportSerializer < ActiveModel::Serializer
 
   def user_with_highest_share
     @_user_with_highest_share ||= object.deal_members.ordered_by_share.first.user
+  end
+
+  def leader_team_name
+    Team.find_by(leader: user_with_highest_share).name
+  end
+
+  def user_name_with_highest_share
+    user_with_highest_share.team.name rescue nil
   end
 end
