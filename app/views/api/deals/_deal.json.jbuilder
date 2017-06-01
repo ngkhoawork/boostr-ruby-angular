@@ -10,7 +10,7 @@ json.days_per_month deal.days_per_month
 json.currency deal.currency
 json.company_ealert_reminder deal.company.ealert_reminder
 
-json.stage deal.stage, :name, :probability, :color, :open
+json.stage deal.stage, :name, :probability, :color, :open, :active
 if deal.previous_stage
   json.previous_stage deal.previous_stage, :name, :probability, :color, :open
 end
