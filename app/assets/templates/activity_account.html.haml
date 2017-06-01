@@ -16,13 +16,13 @@
 							%td
 								%ul.filter-item
 									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.type.id}' }
-											{{filter.type.name}}
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.type == "All"}' }
+											{{filter.type}}
 											%span.caret
 										%ul.dropdown-menu
-											%li{ ng: { repeat: 'type in types', class: '{active: type.id === filter.type.id}' } }
+											%li{ ng: { repeat: 'type in types', class: '{active: type === filter.type}' } }
 												%a{ href: '', ng: { click: 'setFilter("type", type)' } }
-													{{type.name}}
+													{{type}}
 
 							%td
 								.date-picker-wrap
@@ -57,8 +57,8 @@
 										Total
 							%tbody
 								%tr{'ng-repeat': 'account in accounts'}
-									%td {{account.name}}
-									%td{'ng-repeat': 'type in activityTypes'} {{account[type.name]}}
+									%td {{account.client_name}}
+									%td{'ng-repeat': 'type in activityTypes'} {{account[type.name] || 0}}
 									%td {{account.total}}
 								%tr
 									%td Total
