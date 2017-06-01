@@ -1,7 +1,8 @@
 @app.controller 'SettingsGeneralController',
-['$scope', 'Company', 'Stage', 'Validation'
-($scope, Company, Stage, Validation) ->
-
+['$scope', 'Company', 'Stage', 'Validation', 'User'
+($scope, Company, Stage, Validation, User) ->
+  $scope.userTypes = User.user_types_list
+  console.log($scope.userTypes)
   Company.get().$promise.then (company) ->
     $scope.company = company
 
