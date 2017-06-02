@@ -1,0 +1,8 @@
+%p
+  #{@deal.name} for #{@deal.advertiser_name} with budget #{@deal.budget_loc.to_i} was lost. 
+
+%p
+  Loss Reason - #{Deal.get_option(@deal, 'Close Reason')}
+  
+%p
+  Loss Comments - #{@deal.closed_reason_text}

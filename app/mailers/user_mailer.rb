@@ -7,6 +7,12 @@ class UserMailer < ApplicationMailer
     mail(to: recipients, subject: subject)
   end
 
+  def lost_deal_email(recipients, deal)
+    @deal = deal
+    subject = lost_deal_subject_for(deal)
+    mail(to: recipients, subject: subject)
+  end
+
   def stage_changed_email(recipients, subject, deal_id)
     @deal = Deal.find(deal_id)
     mail(to: recipients, subject: subject)
@@ -172,5 +178,11 @@ class UserMailer < ApplicationMailer
       deal_product
     end
     mail(to: recipients, subject: subject)
+  end
+
+  private
+
+  def lost_deal_subject_for(deal)
+    "A #{deal.budget_loc.to_i} for #{deal.advertiser_name} was lost"
   end
 end
