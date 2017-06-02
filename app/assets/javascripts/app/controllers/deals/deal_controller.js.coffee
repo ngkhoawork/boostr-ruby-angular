@@ -30,6 +30,7 @@
   $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
   $scope.dealProductCfNames = []
+  $scope.activeDealProductCfLength = 0
 
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
@@ -173,6 +174,14 @@
   getDealProductCfNames = () ->
     DealProductCfName.all().then (dealProductCfNames) ->
       $scope.dealProductCfNames = dealProductCfNames
+      $scope.activeDealProductCfLength = (_.filter dealProductCfNames, (item) -> !item.disabled).length
+
+  $scope.sumDealProductBudget = (index) ->
+    products = $scope.currentDeal.deal_products
+    _.reduce products, (result, product) ->
+      if !_.isUndefined index then product = product.deal_product_budgets[index]
+      result += product.budget_loc
+    , 0
 
   $scope.initReminder = ->
 
@@ -599,7 +608,6 @@
           )
 
   $scope.updateDealProduct = (data) ->
-    console.log(data)
     $scope.errors = {}
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then(
       (deal) ->
