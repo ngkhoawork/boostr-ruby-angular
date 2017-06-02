@@ -36,7 +36,7 @@
             %ui-select{ multiple: true, name: 'members', ng: { model: 'team.members', disabled: true } }
               %ui-select-match{ placeholder: "Type Name" }
                 {{ $item.first_name }} {{ $item.last_name }}
-              %ui-select-choices{ repeat: 'user.id as user in availableUsers | filter: { name: $select.search }' }
+              %ui-select-choices{ repeat: 'user.id as user in availableUsers | filter: { name: $select.search, "leader?": false }' }
                 %div{ ng: { bind: { html: 'user.name' } } }
     .modal-footer.text-center
       %button.btn.btn-primary.btn-lg{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

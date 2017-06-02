@@ -12,16 +12,15 @@
       $scope.teams = data.teams
       $scope.users = data.users
       $scope.leader = data.team.leader
-      $scope.availableUsers = []
+      $scope.availableUsers = data.users
       if $scope.users
+        members = []
         _.each $scope.users, (u) ->
-          if u.id == $scope.team.leader_id
-            $scope.leader = u
-            $scope.availableUsers.push($scope.leader)
-        _.each $scope.users, (u) ->
-          if u && !u['leader?']
-            $scope.availableUsers.push(u)
-
+          searchObj = _.find $scope.team.members, (item) ->
+            return item.id == u.id
+          if searchObj != undefined
+            members.push(u)
+        $scope.team.members = members
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
