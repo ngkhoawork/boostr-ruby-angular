@@ -96,8 +96,15 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def find_in_invoices(id)
-    @_parsed_invoices.find(-> { {} }) do |invoice|
+    lines = @_parsed_invoices.select do |invoice|
       invoice[:sales_order_line_item_id] == id
     end
+
+    {
+      sales_order_line_item_id: id,
+      recognized_revenue:                 lines.map {|row| row[:recognized_revenue].to_f}.reduce(0, :+),
+      cumulative_primary_performance:     lines[-1][:cumulative_primary_performance].to_i,
+      cumulative_third_party_performance: lines[-1][:cumulative_third_party_performance].to_i
+    }
   end
 end

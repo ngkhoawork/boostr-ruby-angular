@@ -1,11 +1,9 @@
-#general
-  .container
-    .row
-      .col-xs-12
-        %h3 General Settings
+#general.z-styles
+  .container-fluid
+    %span.page-title General Settings
 
     .row
-      .col-sm-12
+      .col-sm-3
         .panel
           .panel-body
             %h4 Forecast
@@ -18,7 +16,7 @@
                 %ui-select-choices{ repeat: 'day.id as day in days | filter: { name: $select.search }' }
                   %div{ ng: { bind: { html: 'day.name' } } }
 
-      .col-sm-12
+      .col-sm-3
         .panel
           .panel-body
             %h4 Deal Validations
@@ -39,3 +37,15 @@
                   {{ $select.selected.name }}
                 %ui-select-choices{ repeat: 'stage.probability as stage in stages | orderBy: "[-active, position]"' }
                   %div{ ng: { bind: { html: 'stage.name' } } }
+
+            %h5 Can't be closed manually
+            .form-group
+              %label.control-label{ for: 'disable_close' } Disable Manual change to Closed Won stage
+              .show-hide-remainder-form
+                .switch-remainder-form
+                  %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'disable_deal_close_validation.criterion.value', id: "disable_close", 'ng-change': 'confirmDisableDealWon()'}
+                  %label{:for => "disable_close"}
+                    %span
+                .validation-warning{ng: { if: 'disable_deal_close_validation.criterion.value' }}
+                  %i.fa.fa-exclamation-triangle{'aria-hidden' => 'true'}
+                  %span Stages can't be changed to Closed Won manually

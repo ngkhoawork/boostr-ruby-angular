@@ -1119,6 +1119,27 @@ ActiveRecord::Schema.define(version: 20170530145222) do
 
   add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
 
+  create_table "requests", force: :cascade do |t|
+    t.integer  "deal_id"
+    t.integer  "company_id"
+    t.integer  "requester_id"
+    t.integer  "assignee_id"
+    t.integer  "requestable_id"
+    t.string   "requestable_type"
+    t.string   "status"
+    t.string   "request_type"
+    t.text     "description",      default: ""
+    t.text     "resolution",       default: ""
+    t.date     "due_date"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  add_index "requests", ["assignee_id"], name: "index_requests_on_assignee_id", using: :btree
+  add_index "requests", ["company_id"], name: "index_requests_on_company_id", using: :btree
+  add_index "requests", ["deal_id"], name: "index_requests_on_deal_id", using: :btree
+  add_index "requests", ["requester_id"], name: "index_requests_on_requester_id", using: :btree
+
   create_table "revenues", force: :cascade do |t|
     t.integer  "order_number"
     t.string   "ad_server"
@@ -1217,17 +1238,6 @@ ActiveRecord::Schema.define(version: 20170530145222) do
     t.date    "start_date"
     t.date    "end_date"
     t.integer "days_length"
-  end
-
-  create_table "time_period_weeks", force: :cascade do |t|
-    t.integer  "week"
-    t.date     "start_date"
-    t.date     "end_date"
-    t.string   "period_name"
-    t.date     "period_start"
-    t.date     "period_end"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
   end
 
   create_table "time_periods", force: :cascade do |t|
@@ -1390,6 +1400,10 @@ ActiveRecord::Schema.define(version: 20170530145222) do
   add_foreign_key "ios", "companies"
   add_foreign_key "ios", "deals"
   add_foreign_key "print_items", "ios"
+  add_foreign_key "requests", "companies"
+  add_foreign_key "requests", "deals"
+  add_foreign_key "requests", "users", column: "assignee_id"
+  add_foreign_key "requests", "users", column: "requester_id"
   add_foreign_key "temp_ios", "companies"
   add_foreign_key "temp_ios", "ios"
   add_foreign_key "users", "teams"
