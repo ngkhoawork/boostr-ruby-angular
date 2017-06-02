@@ -745,7 +745,7 @@
 
   $scope.$on 'updated_deals', ->
     console.log 'UPDATED'
-    $scope.init()
+    $scope.init() if $scope.marked_for_removal == false
 
   $scope.$on 'updated_reminders', ->
     $scope.initReminder()
@@ -846,10 +846,12 @@
   $scope.deleteDeal = (deal) ->
     $scope.errors = {}
     if confirm('Are you sure you want to delete "' +  deal.name + '"?')
+      $scope.marked_for_removal = true
       Deal.delete(deal).then(
         (deal) ->
           $location.path('/deals')
         (resp) ->
+          $scope.marked_for_removal = false
           for key, error of resp.data.errors
             $scope.errors[key] = error && error[0]
       )
