@@ -8,7 +8,14 @@
             'Advertiser'
             'Agency'
         ]
-        $scope.accounts = []
+        $scope.sorting =
+            key: null
+            reverse: false
+            set: (key) ->
+                this.reverse = if this.key == key then !this.reverse else false
+                this.key = key
+
+        $scope.clientActivities = []
         $scope.filter =
             type: $routeParams.type || $scope.types[0]
             date: (->
@@ -40,10 +47,10 @@
             $scope.filter.date.endDate = null
             $scope.applyFilter()
 
-        $scope.getTotalActivities = (type) ->
-            _.reduce($scope.accounts, (total, account) ->
-                total += account[type] || 0
-            , 0)
+#        $scope.getTotalActivities = (type) ->
+#            _.reduce($scope.totalActivities, (total, clientActivity) ->
+#                total += clientActivity[type] || 0
+#            , 0)
 
         getQuery = ->
             f = $scope.filter
@@ -57,7 +64,13 @@
 
         getActivities = (query) ->
             ActivityReport.by_account(query).$promise.then (data) ->
-                $scope.accounts = data.client_activities
+                $scope.clientActivities = _.map data.client_activities, (item) ->
+                    _.map $scope.activityTypes, (type) ->
+                        item[type.name] = item[type.name] || 0
+                    item
+                $scope.totalActivities = data.total_activity_report
+                _.map $scope.activityTypes, (type) ->
+                    $scope.totalActivities[type.name] = $scope.totalActivities[type.name] || 0
 
         ActivityType.all().then (activityTypes) ->
             $scope.activityTypes = activityTypes

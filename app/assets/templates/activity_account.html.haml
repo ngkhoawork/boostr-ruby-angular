@@ -49,18 +49,22 @@
 						%table.table.table-hover
 							%thead
 								%tr
-									%th{ 'ng-click': 'changeSortType("username")'}
-										Account Name
-									%th{ ng: { repeat: 'activityType in activityTypes track by $index' }, 'ng-click': 'changeSortType(activityType.name)' }
-										{{ activityType.name }}
-									%th{ 'ng-click': 'changeSortType("total")'}
-										Total
+									%th
+										%span.clickable{'ng-click': 'sorting.set("client_name")'}
+											Account Name
+									%th{'ng-repeat': 'activityType in activityTypes track by $index'}
+										%span.clickable{'ng-click': 'sorting.set("\'" + activityType.name + "\'")'}
+											{{activityType.name}}
+									%th
+										%span.clickable{'ng-click': 'sorting.set("total")'}
+											Total
 							%tbody
-								%tr{'ng-repeat': 'account in accounts'}
-									%td {{account.client_name}}
-									%td{'ng-repeat': 'type in activityTypes'} {{account[type.name] || 0}}
-									%td {{account.total}}
+								%tr{'ng-repeat': 'clientActivity in clientActivities | orderBy: sorting.key: sorting.reverse'}
+									%td
+										%a{href: '', 'ng-href': '/accounts/{{clientActivity.client_id}}'} {{clientActivity.client_name}}
+									%td{'ng-repeat': 'type in activityTypes'} {{clientActivity[type.name]}}
+									%td {{clientActivity.total}}
 								%tr
 									%td Total
-									%td{'ng-repeat': 'type in activityTypes'} {{getTotalActivities(type.name)}}
-									%td {{getTotalActivities('total')}}
+									%td{'ng-repeat': 'type in activityTypes'} {{totalActivities[type.name]}}
+									%td {{totalActivities.total}}
