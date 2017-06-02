@@ -103,6 +103,9 @@
     .when '/smart_reports/initiatives',
       templateUrl: 'initiatives_summary.html'
       controller: 'InitiativesSummaryController'
+    .when '/smart_reports/pacing_dashboard',
+      templateUrl: 'pacing_dashboard.html'
+      controller: 'PacingDashboardController'
     .when '/reports/deal_reports',
       templateUrl: 'deal_reports.html'
       controller: 'DealReportsController'
@@ -178,6 +181,9 @@
     .when '/settings/custom_fields/',
       templateUrl: 'settings/custom_fields.html'
       controller: 'SettingsDealCustomFieldNamesController'
+    .when '/settings/ealerts/',
+      templateUrl: 'settings/ealerts.html'
+      controller: 'SettingsEalertsController'
     .when '/bp',
       templateUrl: 'bp.html'
       controller: 'BPController'

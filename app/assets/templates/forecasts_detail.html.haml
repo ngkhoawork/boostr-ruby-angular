@@ -36,6 +36,12 @@
 												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
 													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
 
+				.header-cell
+					%span.mr8 Go to
+					%a{href: '', 'ng-click': 'scrollTo("#revenue-section")'} Revenue
+					|
+					%a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
+
 		%div{'ng-show': 'filter.timePeriod.id'}
 			.row
 				.col-xs-6
@@ -50,13 +56,6 @@
 										{{quarter.toUpperCase()}}
 									%th{'ng-if': 'isYear()'} Total
 							%tbody
-								%tr{'ng-repeat': 'stage in forecast.stages'}
-									%td
-										%b {{stage.probability}}%
-									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
-									%td{'ng-if': 'isYear()'}
-										{{getAnnualSum(forecast.quarterly_weighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Revenue
@@ -64,6 +63,13 @@
 										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
+								%tr{'ng-repeat': 'stage in forecast.stages'}
+									%td
+										%b {{stage.probability}}%
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_weighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_weighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Forecast
@@ -106,13 +112,6 @@
 										{{quarter.toUpperCase()}}
 									%th{'ng-if': 'isYear()'} Total
 							%tbody
-								%tr{'ng-repeat': 'stage in forecast.stages'}
-									%td
-										%b {{stage.probability}}%
-									%td{'ng-repeat': 'quarter in quarters'}
-										{{forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
-									%td{'ng-if': 'isYear()'}
-										{{getAnnualSum(forecast.quarterly_unweighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Revenue
@@ -120,6 +119,13 @@
 										{{forecast.quarterly_revenue[quarter] | currency : '$' : 0}}
 									%td{'ng-if': 'isYear()'}
 										{{getAnnualSum(forecast.quarterly_revenue) | currency : '$' : 0}}
+								%tr{'ng-repeat': 'stage in forecast.stages'}
+									%td
+										%b {{stage.probability}}%
+									%td{'ng-repeat': 'quarter in quarters'}
+										{{forecast.quarterly_unweighted_pipeline_by_stage[stage.id][quarter] | currency : '$' : 0}}
+									%td{'ng-if': 'isYear()'}
+										{{getAnnualSum(forecast.quarterly_unweighted_pipeline_by_stage[stage.id]) | currency : '$' : 0}}
 								%tr
 									%td
 										%b Forecast
@@ -149,7 +155,7 @@
 									%td{'ng-repeat': 'quarter in quarters'}
 										{{isNumber(forecast.quarterly_percentage_of_annual_quota[quarter]) ? forecast.quarterly_percentage_of_annual_quota[quarter] + '%' : 'N/A'}}
 									%td{'ng-if': 'isYear()'}
-			.row
+			#revenue-section.row
 				.col-xs-12
 					.block
 						.switch-row.pull-right
@@ -191,7 +197,10 @@
 											%span.clickable{'ng-click': 'sortRevenues.by("in_period_split_amt")'}
 												Split In-Period Amt
 												%i{'ng-show': 'sortRevenues.field == "in_period_split_amt"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
-										%th{'ng-repeat': 'key in revenues.detail_amounts[switch.revenues]'} {{key}}
+										%th{'ng-repeat': '(index, key) in revenues.detail_amounts[switch.revenues]'}
+											%span.clickable{'ng-click': 'sortRevenues.by(getSortableAmountKey("revenues", index))'}
+												{{key}}
+												%i{'ng-show': 'sortRevenues.field == getSortableAmountKey("revenues", index)', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
 								%tbody
 									%tr{'ng-repeat': 'revenue in revenues | orderBy : sortRevenues.field : sortRevenues.reverse'}
 										%td
@@ -209,7 +218,7 @@
 										%td{'ng-repeat': 'amount in revenue.months track by $index', 'ng-if': 'switch.revenues == "months" && amount != null'}
 											{{amount | currency : '$' : 0}}
 
-			.row
+			#deals-section.row
 				.col-xs-12
 					.block
 						.switch-row.pull-right
@@ -256,7 +265,10 @@
 												\%
 												%i{'ng-show': 'sortDeals.field == "stage.probability"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
 										-#%th{width: '300px'} Next Steps
-										%th{'ng-repeat': 'key in deals.detail_amounts[switch.deals]'} {{key}}
+										%th{'ng-repeat': '(index, key) in deals.detail_amounts[switch.deals]'}
+											%span.clickable{'ng-click': 'sortDeals.by(getSortableAmountKey("deals", index))'}
+												{{key}}
+												%i{'ng-show': 'sortDeals.field == getSortableAmountKey("deals", index)', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
 								%tbody
 									%tr{'ng-repeat': 'deal in deals | orderBy : sortDeals.field : sortDeals.reverse', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
 										%td

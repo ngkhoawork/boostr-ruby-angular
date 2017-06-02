@@ -125,7 +125,9 @@
 
 
             $scope.$watch 'query', (oldValue, newValue) ->
-                if oldValue != newValue then $scope.getContacts()
+                if oldValue != newValue
+                    $scope.page = 1
+                    $scope.getContacts()
 
             $scope.getContacts = ->
                 $scope.isLoading = true
@@ -182,6 +184,9 @@
 
             $scope.$on 'updated_activities', ->
                 $scope.init()
+
+            $scope.$on 'newContact', (event, contact) ->
+                $location.path('/contacts/' + contact.id)
 
             $scope.init()
 

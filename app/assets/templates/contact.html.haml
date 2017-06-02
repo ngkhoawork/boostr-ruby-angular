@@ -41,20 +41,31 @@
 						%span.title{'ng-if': 'currentContact.primary_client_type == "Agency"'} Related Advertisers
 						%span.title{'ng-if': 'currentContact.primary_client_type == "Advertiser"'} Related Brands/Child Accounts
 						%add-button{'ng-click': 'showAssignModal(currentContact)'} Add
-					.table-wrapper
-						%table.table.table-hover
-							%thead
-								%tr
-									%th Name
-									%th Status
-									%th City
-							%tbody
-								%tr{'ng-repeat': 'account in relatedAccounts'}
-									%td
-										%a.mr8{'href': '', 'ng-href': '/accounts/{{account.id}}'} {{account.name}}
-										%i.fa.fa-trash.z-icon{'ng-click': 'unassignClient(account)'}
-									%td {{account.status}}
-									%td {{account.address.city}}
+					%table.table.table-hover
+						%thead
+							%tr
+								%th Name
+								%th Status
+								%th City
+						%tbody
+							%tr{'ng-repeat': 'account in relatedAccounts'}
+								%td
+									%a.mr8{'href': '', 'ng-href': '/accounts/{{account.client.id}}'} {{account.client.name}}
+									%i.fa.fa-trash.z-icon{'ng-click': 'unassignClient(account.client)'}
+								%td
+									.dropdown
+										%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+											%span.editable
+												{{account.is_active ? 'Active' : 'Inactive'}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: account.is_active == true}'}
+												%a{'href': '', 'ng-click': 'updateClientContactStatus(account, true)'}
+													%span.text Active
+											%li{'ng-class': '{active: account.is_active == false}'}
+												%a{'href': '', 'ng-click': 'updateClientContactStatus(account, false)'}
+													%span.text Inactive
+								%td {{account.client.address.city}}
 
 			.col-xs-3
 				.block.contact-info.campaign-details

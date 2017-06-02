@@ -26,6 +26,7 @@
 @import "settings/data_import";
 @import "settings/general";
 @import "settings/initiatives";
+@import "settings/ealerts";
 @import "where_to_pitch";
 @import "deal_reports";
 @import "inactives";
@@ -34,5 +35,6 @@
 @import "integration_logs";
 @import "forecast_detail";
 @import "billing";
+@import "pacing_dashboard";
 
 html,body { height:100%; }

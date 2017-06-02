@@ -37,6 +37,7 @@ RSpec.configure do |config|
   config.include Warden::Test::Helpers
   config.include Helpers
   config.include WaitForAjax
+  config.include PacingDashboardHelper
   config.before :suite do
     Warden.test_mode!
   end

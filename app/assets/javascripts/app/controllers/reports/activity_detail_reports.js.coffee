@@ -172,7 +172,8 @@
       $scope.getHtml = (html) ->
         return $sce.trustAsHtml(html)
 
-      $scope.showEmailsModal = (activity) ->
+      $scope.showEmailsModal = (activity, e) ->
+        e.stopPropagation()
         $scope.modalInstance = $modal.open
           templateUrl: 'modals/activity_emails.html'
           size: 'lg'
@@ -182,4 +183,17 @@
           resolve:
             activity: ->
               activity
+
+      $scope.showActivityEditModal = (activity) ->
+        $scope.modalInstance = $modal.open
+          templateUrl: 'modals/activity_new_form.html'
+          size: 'md'
+          controller: 'ActivityNewController'
+          backdrop: 'static'
+          keyboard: false
+          resolve:
+            activity: -> activity
+            options: -> null
+
+      $scope.$on 'updated_activities', fetchData
   ]

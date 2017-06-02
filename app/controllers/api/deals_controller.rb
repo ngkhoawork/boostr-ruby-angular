@@ -119,16 +119,15 @@ class Api::DealsController < ApplicationController
 
   def pipeline_report
     respond_to do |format|
-      selected_deals = nil
-      case params[:status]
+      selected_deals = case params[:status]
         when 'open'
-          selected_deals = deals.open.less_than(100)
+          deals.open.less_than(100)
         when 'all'
-          selected_deals = deals
+          deals
         when 'closed'
-          selected_deals = deals.close_status
+          deals.close_status
         else
-          selected_deals = deals.open.less_than(100)
+          deals.open.less_than(100)
       end
 
       filtered_deals = selected_deals
@@ -238,7 +237,7 @@ class Api::DealsController < ApplicationController
       deal.created_by = current_user.id
       deal.updated_by = current_user.id
       # deal.set_user_currency
-      if deal.save
+      if deal.save(context: :manual_update)
         render json: deal, status: :created
       else
         render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -248,7 +247,9 @@ class Api::DealsController < ApplicationController
 
   def update
     deal.updated_by = current_user.id
-    if deal.update_attributes(deal_params)
+    deal.assign_attributes(deal_params)
+
+    if deal.save(context: :manual_update)
       render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -631,12 +632,18 @@ class Api::DealsController < ApplicationController
   def deals
     if params[:filter] == 'company' && current_user.leader?
       company.deals.active
+    elsif params[:filter] == 'all'
+      company.deals.active
     elsif params[:filter] == 'selected_team' && params[:team_id]
       all_team_deals
     elsif params[:filter] == 'user' && params[:user_id]
       deal_member_filter
-    elsif params[:filter] == 'team' && team.present?
-      company.deals.by_deal_team(team.all_members.map(&:id) + team.all_leaders.map(&:id))
+    elsif params[:filter] == 'team'
+      if team.present?
+        company.deals.by_deal_team(team.all_members.map(&:id) + team.all_leaders.map(&:id))
+      else
+        company.deals.active
+      end
     elsif params[:client_id].present?
       company.deals.active
     else

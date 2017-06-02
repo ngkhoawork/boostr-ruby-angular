@@ -40,9 +40,34 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       price: '100',
       pricing_type: 'PPC',
       budget: '100000',
-      budget_delivered: '1500',
-      quantity_delivered: '50',
-      quantity_delivered_3p: '60',
+      budget_delivered: 1500.0,
+      quantity_delivered: 50,
+      quantity_delivered_3p: 60,
+      company_id: company.id
+    ).and_return(line_item_csv)
+    expect(line_item_csv).to receive(:valid?).and_return(:true)
+    expect(line_item_csv).to receive(:perform)
+    subject.perform
+  end
+
+  it 'sums budget_delivered and gets last cumulative values from invoice lines' do
+    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_csv_file)
+    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(multiline_invoice_csv_file)
+    allow(File).to receive(:open).with("/home/trizes/.pry_history", "a", 384).and_call_original
+    expect(DisplayLineItemCsv).to receive(:new).with(
+      external_io_number: '1',
+      line_number: '2',
+      ad_server: 'O1',
+      start_date: '2017-01-01',
+      end_date: '2017-02-01',
+      product_name: 'Display',
+      quantity: '1000',
+      price: '100',
+      pricing_type: 'PPC',
+      budget: '100000',
+      budget_delivered: 300000.00,
+      quantity_delivered: 4568899,
+      quantity_delivered_3p: 30,
       company_id: company.id
     ).and_return(line_item_csv)
     expect(line_item_csv).to receive(:valid?).and_return(:true)
@@ -165,5 +190,15 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       cumulative_primary_performance: '50',
       cumulative_third_party_performance: '60'
     })
+  end
+
+  def multiline_invoice_csv_file
+    keys = [:sales_order_line_item_id, :recognized_revenue, :cumulative_primary_performance, :cumulative_third_party_performance]
+    values = [
+      [ '2', '27489.18', '916306', '10' ],
+      [ '2', '148820.46', '4568899', '20' ],
+      [ '2', '123690.36', '4568899', '30']
+    ]
+    @_invoice_csv_file ||= generate_multiline_csv(keys, values)
   end
 end

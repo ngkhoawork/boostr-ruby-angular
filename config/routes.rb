@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   root 'pages#index'
   get 'styleguide' => 'pages#styleguide', as: :styleguide
 
+  get 'switch_user', to: 'switch_user#set_current_user'
+  get 'switch_user/remember_user', to: 'switch_user#remember_user'
+
   namespace :api do
     scope module: :v1, defaults: { format: 'json' }, constraints: ApiConstraints.new(version: 1) do
       post 'forgot_password' => 'forgot_password#create'
@@ -27,6 +30,9 @@ Rails.application.routes.draw do
       resources :forgot_password, only: [:create]
       resources :activity_types, only: [:index]
       resources :holding_companies, only: [:index]
+      resources :ealerts, only: [:index, :show, :create, :update, :destroy] do
+        post :send_ealert
+      end
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
@@ -248,6 +254,9 @@ Rails.application.routes.draw do
     resources :activities, only: [:index, :create, :show, :update, :destroy]
     resources :activity_types, only: [:index, :create, :show, :update, :destroy]
     resources :holding_companies, only: [:index]
+    resources :ealerts, only: [:index, :show, :create, :update, :destroy] do
+      post :send_ealert
+    end
     resources :reports, only: [:index, :show]
     resources :sales_execution_dashboard, only: [:index] do
       collection do
@@ -292,6 +301,13 @@ Rails.application.routes.draw do
     end
 
     get 'teams/by_user/:id', to: 'teams#by_user', as: :team_by_user
+
+    resources :pacing_dashboard, only: [] do
+      collection do
+				get :pipeline_and_revenue
+				get :activity_pacing
+			end
+		end
   end
 
   mount Sidekiq::Web => '/sidekiq'

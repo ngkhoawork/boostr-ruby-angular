@@ -14,19 +14,30 @@
         %tbody
             %tr{ ng: { repeat: 'client_contact in client_contacts'} }
                 %td.left
-                    %a{'ng-href': '/contacts/{{client_contact.id}}'} {{ client_contact.name }}
+                    %a{'ng-href': '/contacts/{{client_contact.contact.id}}'} {{ client_contact.contact.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(client_contact)'}
                     %button.btn.btn-primary.btn-lg{ng:{if: 'currentClient.client_type.option.name == "Agency"', click: 'showAssignContactModal(client_contact)'}}
                         = inline_svg "icons/client-meeting.svg"
                         Assign
                 %td.left
-                    {{ client_contact.position }}
+                    {{ client_contact.contact.position }}
                 %td.left
-                    {{ client_contact.address.email }}
+                    {{ client_contact.contact.address.email }}
                 %td.left
-                    {{ client_contact.status }}
+                    .dropdown
+                        %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                            %span.editable
+                                {{client_contact.is_active ? 'Active' : 'Inactive'}}
+                            %span.caret
+                        %ul.dropdown-menu
+                            %li{'ng-class': '{active: client_contact.is_active == true}'}
+                                %a{'href': '', 'ng-click': 'updateClientContactStatus(client_contact, true)'}
+                                    %span.text Active
+                            %li{'ng-class': '{active: client_contact.is_active == false}'}
+                                %a{'href': '', 'ng-click': 'updateClientContactStatus(client_contact, false)'}
+                                    %span.text Inactive
                 %td.left
-                    {{ client_contact.job_level }}
+                    {{ client_contact.contact.job_level }}
 
 
     .custom-pagination{'bgf-pagination': 'bgf-pagination',

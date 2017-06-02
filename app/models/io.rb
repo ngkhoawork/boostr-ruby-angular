@@ -11,6 +11,7 @@ class Io < ActiveRecord::Base
   has_many :display_line_items, dependent: :destroy
   has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
+  has_many :temp_ios, dependent: :destroy
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
   validate :active_exchange_rate

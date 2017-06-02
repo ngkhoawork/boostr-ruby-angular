@@ -7,7 +7,7 @@
   $scope.accountTypes = [
     {name: 'My Accounts', param: ''}
     {name: 'My Team\'s Accounts', param: 'team'}
-    {name: 'All', param: 'company'}
+    {name: 'All', param: 'all'}
   ]
 
   $scope.teamFilter = (value) ->

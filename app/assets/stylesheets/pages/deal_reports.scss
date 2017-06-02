@@ -1,5 +1,6 @@
 #reports {
     padding-top: 20px;
+    min-height: calc(100vh - #{$header-height});
     .filters-block {
         display: inline-block;
         vertical-align: middle;
@@ -18,5 +19,12 @@
     a {
         color: #3498DB;
         cursor: pointer;
+    }
+    .dropdown-menu {
+        li {
+            &.active {
+                background-color: $main-color;
+            }
+        }
     }
 }

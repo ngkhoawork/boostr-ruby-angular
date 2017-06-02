@@ -11,10 +11,10 @@ RSpec.describe Deal, type: :model do
     context 'restrictions' do
       let!(:deal) { create :deal }
       let!(:deal_product) { create :deal_product, deal: deal, budget: 100_000 }
-      let(:won_stage) { create :stage, name: 'Closed Won', probability: 100, open: false, active: true }
+      let(:closed_won_stage) { create :closed_won_stage }
 
       it 'restricts deleting deal with IO' do
-        deal.update(stage: won_stage)
+        deal.update(stage: closed_won_stage)
         deal.update_stage
         deal.update_close
 
@@ -149,6 +149,61 @@ RSpec.describe Deal, type: :model do
         end
       end
     end
+
+    context 'disable deal closed won' do
+      let(:validation) { deal.company.validation_for(:disable_deal_won) }
+      let(:closed_won_stage) { create :closed_won_stage }
+
+      it 'passes validation if company does not have it' do
+        deal.update(stage: closed_won_stage)
+
+        expect(deal).to be_valid
+        expect(deal.reload.stage).to eq closed_won_stage
+      end
+
+      it 'passes validation if it is off' do
+        validation.criterion.update(value: false)
+
+        deal.assign_attributes(stage: closed_won_stage)
+
+        expect(deal).to be_valid
+      end
+
+      it 'passes validation in default context' do
+        validation.criterion.update(value: true)
+
+        deal.assign_attributes(stage: closed_won_stage)
+
+        expect(deal).to be_valid
+      end
+
+      it 'is invalid if validation is active' do
+        validation.criterion.update(value: true)
+
+        deal.assign_attributes(stage: closed_won_stage)
+
+        expect(deal).not_to be_valid(:manual_update)
+        expect(deal.errors.full_messages).to eql ["Stage Closed Won can't be set per configuration. Deals can be set to won from API integration only"]
+      end
+
+      it 'does not save record when validation is active' do
+        validation.criterion.update(value: true)
+
+        deal.assign_attributes(stage: closed_won_stage)
+
+        expect(deal.save(context: :manual_update)).to be false
+      end
+
+      it 'passes validation if stage is not 100/won' do
+        validation.criterion.update(value: true)
+
+        deal.assign_attributes(stage: closed_won_stage)
+        deal.save
+        deal.reload.assign_attributes(stage: deal.previous_stage)
+
+        expect(deal).to be_valid(:manual_update)
+      end
+    end
   end
 
   describe '#has_billing_contact?' do
@@ -182,6 +237,107 @@ RSpec.describe Deal, type: :model do
       create :deal_contact, deal: deal, role: 'Billing'
       expect(deal.no_more_one_billing_contact?).to be true
     end
+  end
+
+  describe '#integrate_with_operative' do
+    let!(:deal) { create :deal }
+    let(:discuss_stage) { create :discuss_stage }
+    let(:proposal_stage) { create :proposal_stage }
+    let(:lost_stage) { create :lost_stage }
+    let!(:api_configuration) { create :api_configuration, trigger_on_deal_percentage: 25 }
+
+    it 'integrates if stage equals threshold' do
+      allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+      expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
+
+      deal.update(stage: discuss_stage)
+    end
+
+    it 'integrates when stage is above threshold' do
+      allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+      expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
+
+      deal.update(stage: proposal_stage)
+    end
+
+    it 'integrates when stage is lost and there was an integration already' do
+      create :integration, integratable: deal, external_type: Integration::OPERATIVE, external_id: 10
+
+      allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+      expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
+
+      deal.update(stage: lost_stage)
+    end
+
+    context 'no integration' do
+      it 'when stage is not changed' do
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(name: 'Christmas Auction')
+      end
+
+      it 'when stage is below threshold' do
+        api_configuration.update(trigger_on_deal_percentage: 75)
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: discuss_stage)
+      end
+
+      it 'when there was an integration already' do
+        create :integration, integratable: deal, external_type: Integration::OPERATIVE, external_id: 10
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: proposal_stage)
+      end
+
+      it 'when stage is lost but there was no integration' do
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: lost_stage)
+      end
+
+      it 'when company is not allowed to run operative' do
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(false)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: proposal_stage)
+      end
+
+      it 'when operative integration config is missing' do
+        api_configuration.destroy
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: proposal_stage)
+      end
+
+      it 'when operative integration config is turted off' do
+        api_configuration.update(switched_on: false)
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: proposal_stage)
+      end
+    end
+
   end
 
   describe '#has_account_manager_member?' do

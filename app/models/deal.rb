@@ -17,7 +17,7 @@ class Deal < ActiveRecord::Base
 
   # Restrict with exception is used to rollback any
   # other potential dependent: :destroy relations
-  has_one :io, class_name: "Io", foreign_key: 'io_number', dependent: :restrict_with_exception
+  has_one :io, class_name: "Io", foreign_key: 'deal_id', dependent: :restrict_with_exception
 
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   has_many :contacts, -> { uniq }, through: :deal_contacts
@@ -45,6 +45,7 @@ class Deal < ActiveRecord::Base
   validate :billing_contact_presence
   validate :single_billing_contact
   validate :account_manager_presence
+  validate :disable_manual_deal_won_validation, on: :manual_update
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
@@ -67,7 +68,8 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
-    integrate_with_operative if self.company_id.eql?(22)
+    send_ealert if stage_id_changed?
+    integrate_with_operative
   end
 
   before_create do
@@ -110,6 +112,11 @@ class Deal < ActiveRecord::Base
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
   scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
+  scope :by_product_id, -> (product_id) { joins(:products).where(products: { id: product_id } ) if product_id.present? }
+  scope :by_team_id, -> (team_id) { joins(deal_members: :user).where(users: { team_id: team_id }) if team_id.present? }
+  scope :by_seller_id, -> (seller_id) do
+    joins(:deal_members).where(deal_members: { user_id: seller_id }) if seller_id.present?
+  end
 
   def integrate_with_operative
     if stage_id_changed? && operative_integration_allowed?
@@ -122,7 +129,15 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_integration_allowed?
-    operative_switched_on? && deal_lost_or_won?
+    company_allowed_use_operative? && operative_switched_on? && deal_lost_or_won?
+  end
+
+  def company_allowed_use_operative?
+    if self.company_id.eql?(22)
+      true
+    else
+      false
+    end
   end
 
   def operative_switched_on?
@@ -130,11 +145,11 @@ class Deal < ActiveRecord::Base
   end
 
   def deal_lost_or_won?
-    deal_stage_percentage_eql_api_config_percentage? || deal_lost?
+    (deal_stage_percentage_greater_or_eql_api_config_percentage? && !integrations.operative.present?) || deal_lost?
   end
 
-  def deal_stage_percentage_eql_api_config_percentage?
-    stage.probability.eql?(operative_api_config.trigger_on_deal_percentage)
+  def deal_stage_percentage_greater_or_eql_api_config_percentage?
+    stage.probability >= operative_api_config.trigger_on_deal_percentage
   end
 
   def deal_lost?
@@ -176,6 +191,17 @@ class Deal < ActiveRecord::Base
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
       errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+    end
+  end
+
+  def disable_manual_deal_won_validation
+    validation = company.validation_for(:disable_deal_won)
+    disable_flag = validation.criterion.try(:value) if validation
+
+    if validation && disable_flag == true && stage && stage.probability == 100 && stage.open? == false
+      errors.add(
+        :stage, "Deals can't be updated to #{self.stage.try(:name)} manually. Deals can only be set to #{self.stage.try(:name)} from API integration"
+      )
     end
   end
 
@@ -466,6 +492,7 @@ class Deal < ActiveRecord::Base
       header << "Latest Activity"
       header << "Deal Type"
       header << "Deal Source"
+      header << "Team"
       header << "Next Steps"
       header << "Start Date"
       header << "End Date"
@@ -492,6 +519,7 @@ class Deal < ActiveRecord::Base
         line << deal.latest_activity_csv_string
         line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Type')
         line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Source')
+        line << deal.team_for_user_with_highest_share
         line << deal.next_steps
         line << deal.start_date
         line << deal.end_date
@@ -1188,6 +1216,23 @@ class Deal < ActiveRecord::Base
     self.stage_updated_by = updated_by
   end
 
+  def send_ealert
+    ealert = self.company.ealerts.first
+    if ealert
+      ealert_stage = ealert.ealert_stages.find_by(stage_id: self.stage_id)
+      if ealert_stage && ealert_stage.enabled == true
+        recipients = []
+        if ealert.same_all_stages == true
+          recipients = ealert.recipients.split(',').map(&:strip) if ealert.recipients
+        else
+          recipients = ealert_stage.recipients.split(',').map(&:strip) if ealert_stage.recipients
+        end
+        
+        UserMailer.ealert_email(recipients, ealert.id, self.id, '').deliver_later(wait: 10.minutes, queue: "default") if recipients.length > 0
+      end
+    end
+  end
+
   def close_display_product
     should_open = false
     self.deal_products.each do |deal_product|
@@ -1367,5 +1412,28 @@ class Deal < ActiveRecord::Base
 
   def ordered_by_created_at_billing_contacts
     deal_contacts.where(role: 'Billing').order(:created_at)
+  end
+
+  def self.grouped_count_by_week(start_date, end_date)
+    where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+    .group("date_trunc('day', deals.created_at)")
+    .order('date_trunc_day_deals_created_at').count
+  end
+
+  def self.grouped_sum_budget_by_week(start_date, end_date)
+    where(closed_at: start_date.beginning_of_day..end_date.end_of_day)
+    .won
+    .select(:closed_at, :budget)
+    .group('deals.closed_at')
+    .order('deals.closed_at')
+    .sum('budget')
+  end
+
+  def user_with_highest_share
+    @_user_with_highest_share ||= deal_members.ordered_by_share.first.user
+  end
+
+  def team_for_user_with_highest_share
+    user_with_highest_share.leader? ? Team.find_by(leader: user_with_highest_share).name : user_with_highest_share.team.name
   end
 end

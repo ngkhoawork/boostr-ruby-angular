@@ -213,8 +213,21 @@ class Activity < ActiveRecord::Base
             include: { address: {} }
             },
           :creator => {}
-        }
+        },
+        methods: [:team_creator]
       ).except(:override))
     end
+  end
+
+  def team_creator
+    creator.leader? ? leader_name : creator_team_name
+  end
+
+  def leader_name
+    Team.find_by(leader: creator).name
+  end
+
+  def creator_team_name
+    creator.team.name rescue nil
   end
 end

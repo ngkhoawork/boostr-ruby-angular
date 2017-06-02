@@ -107,35 +107,7 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def activity_csv_report
-    CSV.generate do |csv|
-      header = []
-      header << "Date"
-      header << "Type"
-      header << "Comments"
-      header << "Advertiser"
-      header << "Agency"
-      header << "Contacts"
-      header << "Deal"
-      header << "Creator"
-      csv << header
-
-      activities.each do |row|
-        line = []
-        line << row.happened_at.strftime("%m/%d/%Y")
-        line << row.activity_type_name
-        line << row.comment
-        line << (row.client.nil? ? "" : row.client.name)
-        line << (row.agency.nil? ? "" : row.agency.name)
-        contacts = ""
-        row.contacts.each do |contact|
-          contacts += contact.name + "\n"
-        end
-        line << contacts
-        line << (row.deal.nil? ? "" : row.deal.name)
-        line << (row.creator.nil? ? "" : row.creator.first_name + " " + row.creator.last_name)
-        csv << line
-      end
-    end
+    Csv::ActivityDetailService.new(activities).perform
   end
 
   def activities

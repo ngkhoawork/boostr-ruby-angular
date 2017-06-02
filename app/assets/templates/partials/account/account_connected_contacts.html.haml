@@ -12,22 +12,30 @@
                 %th.left Email
                 %th.left Phone
                 %th.left Status
-        %tbody
-            %tr{ ng: { repeat: 'connected_contact in connected_client_contacts'} }
+        %tbody{ ng: { repeat: 'connected_contact in connected_client_contacts'} }
+            %tr{ ng: { repeat: 'clientContact in connected_contact._clientContacts'} }
                 %td
-                    %a{'ng-href': '/contacts/{{connected_contact.id}}'} {{ connected_contact.name }}
+                    %a{'ng-href': '/contacts/{{connected_contact.contact.id}}'} {{ connected_contact.contact.name }}
                     %i.fa.fa-trash.delete-deal{'ng-click': 'deleteAccountConnectionContact(connected_contact)'}
-                %td{'ng-if': "currentClient.client_type.option.name == 'Advertiser'"}
-                    %a{'ng-href': '/accounts/{{connected_contact.primary_client_json.id}}'}
-                        {{ connected_contact.primary_client_json.name }}
-                %td{'ng-if': "currentClient.client_type.option.name == 'Agency'"}
-                    %a{'ng-href': '/accounts/{{connected_contact.non_primary_client_contact.client_id}}'}
-                        {{ connected_contact.non_primary_client_contact.client.name }}
                 %td
-                    {{ connected_contact.position }}
+                    %a{'ng-href': '/accounts/{{clientContact.client.id}}'}
+                        {{ clientContact.client.name }}
                 %td
-                    {{ connected_contact.address.email }}
+                    {{ connected_contact.contact.position }}
                 %td
-                    {{ connected_contact.address.phone }}
+                    {{ connected_contact.contact.address.email }}
+                %td
+                    {{ connected_contact.contact.address.mobile }}
                 %td.left
-                    {{ connected_contact.status }}
+                    .dropdown
+                        %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                            %span.editable
+                                {{clientContact.is_active ? 'Active' : 'Inactive'}}
+                            %span.caret
+                        %ul.dropdown-menu
+                            %li{'ng-class': '{active: clientContact.is_active == true}'}
+                                %a{'href': '', 'ng-click': 'updateClientContactStatus(clientContact, true)'}
+                                    %span.text Active
+                            %li{'ng-class': '{active: clientContact.is_active == false}'}
+                                %a{'href': '', 'ng-click': 'updateClientContactStatus(clientContact, false)'}
+                                    %span.text Inactive

@@ -12,6 +12,10 @@ class DealProductBudget < ActiveRecord::Base
     budget / (end_date - start_date + 1).to_f
   end
 
+  def budget_percentage
+    ((budget_loc || 0).to_f / deal_product.budget_loc.to_f * 100).to_i
+  end
+
   def update_local_budget(exchange_rate)
     self.update(budget_loc: budget * exchange_rate)
   end

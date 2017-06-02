@@ -118,6 +118,7 @@
           $scope.deals = data[0].deals
           $scope.productRange = data[0].range
           $scope.deals = _.map $scope.deals, (deal) ->
+            deal.budget = parseInt deal.budget
             products = []
             _.each $scope.productRange, (range) ->
               products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range))

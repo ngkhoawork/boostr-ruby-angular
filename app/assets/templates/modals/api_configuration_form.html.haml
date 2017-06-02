@@ -19,7 +19,7 @@
             %select.form-control{ ng: {model: 'api_configuration.integration_type', options: 'type for type in integration_types', disabled: 'formType == "Edit"'} }
         .row{ng: {if: "api_configuration.integration_type == 'operative'"}}
           .col-xs-12
-            %label.control-label{ for: 'trigger_on_deal_percentage' } Triggers on deal percentage
+            %label.control-label{ for: 'trigger_on_deal_percentage' } Probability Threshold
             %input.form-control{ placeholder: 'Eg. 100', ng: { model: 'api_configuration.trigger_on_deal_percentage' }, name: 'trigger_on_deal_percentage', type: 'number', required: true }
         .row
           .col-xs-12

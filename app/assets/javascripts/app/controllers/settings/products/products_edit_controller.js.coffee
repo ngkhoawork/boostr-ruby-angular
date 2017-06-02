@@ -4,7 +4,7 @@
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
-  $scope.revenue_types = ['Display', 'Content-Fee', 'Print', 'Programmatic', 'None']
+  $scope.revenue_types = ['Display', 'Content-Fee']
 
   Field.defaults(product, 'Product').then (fields) ->
 #    $scope.product.pricing_type = product.pricing_type

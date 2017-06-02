@@ -440,6 +440,9 @@
                         visibility: visible;
                     }
                 }
+                .dropdown button {
+                    visibility: visible;
+                }
             }
         }
 
@@ -592,6 +595,9 @@
             //background-color: #2ca02c;
             //color: white;
             color: #2ca02c;
+        }
+        .title {
+            margin-right: 0;
         }
     }
     .error-tooltip {

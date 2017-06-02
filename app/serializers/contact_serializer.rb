@@ -21,7 +21,6 @@ class ContactSerializer < ActiveModel::Serializer
   )
 
   has_one :address
-  has_many :workplaces
 
   def primary_client_json
     object.primary_client.serializable_hash(only: [:id, :name, :client_type_id]) rescue nil
@@ -60,7 +59,7 @@ class ContactSerializer < ActiveModel::Serializer
       end
       option = @options[:contact_options].find do |el|
         el.id == value.option_id
-      end
+      end if value
     end
 
     if option

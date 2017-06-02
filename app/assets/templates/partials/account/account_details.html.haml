@@ -1,60 +1,20 @@
 .campaign-details.block
-
-    %div.pull-right.align-right
-        .show-create-remainders-popup
-            %label{ 'for': 'deal-reminders'}
-                %i.fa.fa-bell-o.reminder-icon
-            %input.show-form-create-reminders#deal-reminders{ type: 'checkbox', ng: { model: 'reminderOptions.showReminder' } }
-
-            %div{ ng: { show: 'reminderOptions.showReminder' } }
-                #reminder_popup_modal.popup-modal
-                    .popup-modal-header
-                        %label{ 'for': 'deal-reminders'}
-                            %span.close-btn
-                    %form{ name: 'dealReminderForm', ng: { submit: 'submitReminderForm()' } }
-                        .popup-modal-body
-                            .form-group{'ng-class':'{error: reminderOptions.errors.Name}'}
-                                %span.error-text {{errors.reminderName}}
-                                %label
-                                    Reminder name
-                                    %span.star *
-                                %input.form-control{'ng-model': 'reminder.name'}
-                            .col-xs-6.date
-                                .form-group{'ng-class':'{error: reminderOptions.errors.Date}'}
-                                    %span.error-text {{errors.reminderDate}}
-                                    %label Date
-                                    %span.star *
-                                    .input-group
-                                        %span.input-group-addon
-                                            %i.fa.fa-calendar
-                                        %span.bs-datepicker
-                                            %input.form-control.box.w4{readonly: true, placeholder: 'Pick date', name: 'reminderDate', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'reminderDateOpened = true' }, 'is-open': 'reminderDateOpened' }
-                            .col-xs-6.time
-                                .form-group{ ng: { class: '{error: reminderOptions.errors.Time}' } }
-                                    %label Time
-                                    %timepicker-pop.wrap-select-time.form-control-time{'input-time': 'reminder._time', 'show-meridian': 'reminderOptions.showMeridian'}
-                            .form-group{'ng-class':'{error: errors.reminderComment}'}
-                                %span.error-text {{errors.reminderComment}}
-                                %label
-                                    Reminder note
-                                %textarea.form-control{rows: '1', 'msd-elastic': '', 'ng-model': 'reminder.comment'}
-
-                        .popup-modal-footer
-                            %button.btn.btn-warning{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } }  Set Reminder
+    %div.pull-right{'ng-include': '"partials/reminder_form.html"'}
+    %div.pull-right
+        %span.star
+            *
+            %span{style: 'font-size: 12px'} is required
     %div.mb20
         %span.title Info
-    .star
-        *
-        %span{style: 'font-size: 12px'} is required
+        %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
 
     %div.custom-field-item
         %div.custom-field-item-label
             %label{ for: 'type' }
                 Address
         %div.custom-field-item-field.address-field
-            %div
-                {{ currentClient.address.street1 }}&nbsp;
-                %i.fa.fa-pencil.edit-deal{'ng-click': "showEditModal(currentClient)"}
+            %div {{currentClient.address.street1}}
+            %div {{currentClient.address.street2}}
             %div {{ concatAddress(currentClient.address) }}
     %div.custom-field-item
         %div.custom-field-item-label
