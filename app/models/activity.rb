@@ -30,7 +30,16 @@ class Activity < ActiveRecord::Base
 
   scope :for_company, -> (id) { where(company_id: id) }
   scope :for_contact, -> (id) { joins(:activities_contacts).where('activities_contacts.contact_id = ?', id) }
-  scope :for_time_period, -> (start_date, end_date) { where('activities.happened_at <= ? AND activities.happened_at >= ?', end_date, start_date) if start_date && end_date }
+  scope :for_time_period, -> (start_date, end_date) do
+    where('happened_at >= ? and happened_at <= ?', start_date, end_date) if start_date && end_date
+  end
+  scope :with_activity_types, -> { joins('left join activity_types on activities.activity_type_id=activity_types.id') }
+  scope :by_user, -> (user) { where(user_id: user) }
+  scope :by_client, -> (client) { where(client_id: client) if client.present? }
+  scope :by_agency, -> (agency) { where(agency_id: agency) if agency.present? }
+  scope :group_by_activity_types_name, -> do
+    select('activity_types.name, count(activities.id) as count').group('activity_types.name')
+  end
 
   def self.import(file, current_user_id, file_path)
     current_user = User.find current_user_id
