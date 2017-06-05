@@ -6,8 +6,8 @@ class Requests::RequestableSerializer < ActiveModel::Serializer
   def id
     if object.is_a?(ContentFee)
       object.product.name
-    else
-      object.id
+    elsif object.is_a?(DisplayLineItem)
+      object.line_number
     end
   end
 end
