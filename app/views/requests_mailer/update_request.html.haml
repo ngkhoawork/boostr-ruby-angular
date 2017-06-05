@@ -1,2 +1,6 @@
 %p
-  Your request was #{ @request.status }. The resolution is #{ @request.resolution }.
+  Your request was #{ @request.status }.
+  - if @request.resolution.present?
+    The resolution is
+    %blockquote{:style => "margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"}
+      #{ @request.resolution }

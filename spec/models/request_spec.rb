@@ -4,6 +4,7 @@ RSpec.describe Request, type: :model do
   context 'validations' do
     it { should validate_length_of(:description).is_at_most(1000) }
     it { should validate_length_of(:resolution).is_at_most(1000) }
+    it { should validate_presence_of(:resolution).on(:update) }
   end
 
   context 'associations' do

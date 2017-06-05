@@ -8,6 +8,7 @@ class Request < ActiveRecord::Base
 
   validates_length_of :description, maximum: 1000
   validates_length_of :resolution, maximum: 1000
+  validates_presence_of :resolution, on: :update, if: :request_is_denied
 
   default_scope { order(created_at: :desc) }
 
@@ -16,6 +17,14 @@ class Request < ActiveRecord::Base
 
   after_create :notify_assignee
   after_update :notify_requester
+
+  def request_is_completed
+    self.status == 'Completed'
+  end
+
+  def request_is_denied
+    self.status == 'Denied'
+  end
 
   private
 
