@@ -1434,6 +1434,14 @@ class Deal < ActiveRecord::Base
   end
 
   def team_for_user_with_highest_share
-    user_with_highest_share.leader? ? Team.find_by(leader: user_with_highest_share).name : user_with_highest_share.team.name
+    user_with_highest_share.leader? ? team_leader_name : user_with_highest_share_name
+  end
+
+  def team_leader_name
+    Team.find_by(leader: user_with_highest_share).name
+  end
+
+  def user_with_highest_share_name
+    user_with_highest_share.team.name rescue nil
   end
 end
