@@ -40,47 +40,47 @@ module Helpers
 
   def set_client_type(client, company, option_name)
     field = client_type_field(company)
-    option = field.options.where(name: option_name).first
+    option = field.options.find_by(name: option_name)
     create :value, company: company, field: field, subject: client, option: option
   end
 
   def client_type_field(company)
-    company.fields.where(name: 'Client Type').first
+    company.fields.find_by(name: 'Client Type')
   end
 
   def agency_type_id(company)
-    client_type_field(company).options.where(name: "Agency").first.id
+    client_type_field(company).options.find_by(name: 'Agency').id
   end
 
   def advertiser_type_id(company)
-    client_type_field(company).options.where(name: "Advertiser").first.id
+    client_type_field(company).options.find_by(name: 'Advertiser').id
   end
 
   def deal_type_field(company)
-    company.fields.where(name: 'Deal Type').first
+    company.fields.find_by(name: 'Deal Type')
   end
 
   def deal_source_field(company)
-    company.fields.where(name: 'Deal Source').first
+    company.fields.find_by(name: 'Deal Source')
   end
 
   def product_pricing_field(company)
-    company.fields.where(name: 'Pricing Type').first
+    company.fields.find_by(name: 'Pricing Type')
   end
 
   def product_line_field(company)
-    company.fields.where(name: 'Product Line').first
+    company.fields.find_by(name: 'Product Line')
   end
 
   def product_family_field(company)
-    company.fields.where(name: 'Product Family').first
+    company.fields.find_by(name: 'Product Family')
   end
 
   def client_role_field(company)
-    company.fields.where(name: 'Member Role').first
+    company.fields.find_by(name: 'Member Role')
   end
 
-  def create_member_role(company, name="Owner")
+  def create_member_role(company, name='Owner')
     client_owner_role_option = create :option, company: company, field: client_role_field(company), name: name
     build :value, company: company, field: client_role_field(company), option: client_owner_role_option
   end
