@@ -2,6 +2,7 @@ class Product < ActiveRecord::Base
   belongs_to :company
   has_many :deal_products
   has_many :values, as: :subject
+  has_many :ad_units
 
   validates :name, presence: true
 
