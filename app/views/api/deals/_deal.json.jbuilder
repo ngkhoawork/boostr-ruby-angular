@@ -99,7 +99,7 @@ if !deal.stage.open && deal.stage.probability == 100 && deal.io.present?
         :quantity_delivered_3p, :quantity_remaining_3p, :budget_delivered_3p, :budget_remaining_3p,
         :price, :balance, :last_alert_at, :temp_io_id, :ad_server_product, :budget_loc,
         :budget_delivered_loc, :budget_remaining_loc, :budget_delivered_3p_loc,
-        :budget_remaining_3p_loc, :balance_loc, :daily_run_rate_loc, :ctr, :clicks
+        :budget_remaining_3p_loc, :balance_loc, :daily_run_rate_loc
       json.product display_line_item.product
       json.request display_line_item.request
     end

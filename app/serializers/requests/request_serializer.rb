@@ -13,5 +13,5 @@ class Requests::RequestSerializer < ActiveModel::Serializer
   has_one :requester, serializer: Requests::UserSerializer
   has_one :assignee, serializer: Requests::UserSerializer
   has_one :deal, serializer: Requests::DealSerializer
-  has_one :requestable
+  has_one :requestable, serializer: Requests::RequestableSerializer
 end

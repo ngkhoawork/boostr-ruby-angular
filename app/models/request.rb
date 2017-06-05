@@ -14,17 +14,28 @@ class Request < ActiveRecord::Base
   scope :by_request_type, -> (type) { where(request_type: type) if type.present? }
   scope :by_status, -> (status) { where(status: status) if status.present? }
 
-  after_create :notify_users
+  after_create :notify_assignee
+  after_update :notify_requester
 
   private
 
-  def notify_users
+  def notify_assignee
     if self.status == 'New'
-      RequestsMailer.send_email(request_mail_recipients, self.id).deliver_later(queue: "default")
+      RequestsMailer.new_request(request_mail_recipients, self.id).deliver_later(queue: "default")
     end
   end
 
   def request_mail_recipients
     self.company.users.where("#{self.request_type.downcase}_requests_access": true).map(&:email)
+  end
+
+  def notify_requester
+    if self.status == 'Completed' || self.status == 'Denied'
+      RequestsMailer.update_request(requester_email, self.id).deliver_later(queue: "default")
+    end
+  end
+
+  def requester_email
+    [self.requester.try(:email)]
   end
 end

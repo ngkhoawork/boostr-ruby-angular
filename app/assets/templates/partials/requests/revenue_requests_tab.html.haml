@@ -4,9 +4,9 @@
       %tr
         %th Requester
         %th Deal Name
-        %th IO Number
+        %th IO Name
+        %th Item
         %th Description
-        %th Resolution
         %th Created
         %th Status
         %th.left Owner
@@ -19,15 +19,14 @@
           %a{'href': '', 'ng-href': '/deals/{{request.deal.id}}'} {{request.deal.name}}
         %td
           %a{'href': '', 'ng-href': '/revenue/ios/{{request.deal.io_id}}'}
-            \#
-            {{request.deal.id}}
+            {{request.deal.io_name}}
+        %td
+          %a{'href': '', 'ng-href': '/revenue/ios/{{request.deal.io_id}}'}
             {{request.requestable_type}}
              
-            {{request.requestable_id}}
+            {{request.requestable.id}}
         %td
           {{request.description}}
-        %td
-          {{request.resolution}}
         %td
           {{request.created_at | date : mediumDate}}
         %td

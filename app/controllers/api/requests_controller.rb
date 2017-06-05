@@ -5,7 +5,9 @@ class Api::RequestsController < ApplicationController
   def index
     max_per_page = 20
     paginate requests.count, max_per_page do |limit, offset|
-      render json: requests.limit(limit).offset(offset), each_serializer: Requests::RequestSerializer
+      render json: requests
+      .preload(:deal, :requester, :assignee, :requestable)
+      .limit(limit).offset(offset), each_serializer: Requests::RequestSerializer
     end
   end
 
