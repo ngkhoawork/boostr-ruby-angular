@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170526133845) do
+ActiveRecord::Schema.define(version: 20170605202435) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1266,12 +1266,12 @@ ActiveRecord::Schema.define(version: 20170526133845) do
     t.datetime "dimensionattributeline_item_start_date_time"
     t.datetime "dimensionattributeline_item_end_date_time"
     t.string   "dimensionattributeline_item_cost_type"
-    t.integer  "dimensionattributeline_item_cost_per_unit"
-    t.integer  "dimensionattributeline_item_goal_quantity"
-    t.integer  "dimensionattributeline_item_non_cpd_booked_revenue"
-    t.integer  "columntotal_line_item_level_impressions"
-    t.integer  "columntotal_line_item_level_clicks"
-    t.integer  "columntotal_line_item_level_all_revenue"
+    t.integer  "dimensionattributeline_item_cost_per_unit",          limit: 8
+    t.integer  "dimensionattributeline_item_goal_quantity",          limit: 8
+    t.integer  "dimensionattributeline_item_non_cpd_booked_revenue", limit: 8
+    t.integer  "columntotal_line_item_level_impressions",            limit: 8
+    t.integer  "columntotal_line_item_level_clicks",                 limit: 8
+    t.integer  "columntotal_line_item_level_all_revenue",            limit: 8
     t.float    "columntotal_line_item_level_ctr"
     t.float    "columnvideo_viewership_average_view_rate"
     t.float    "columnvideo_viewership_completion_rate"

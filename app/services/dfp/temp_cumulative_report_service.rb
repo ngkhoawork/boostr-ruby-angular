@@ -4,9 +4,9 @@ module DFP
     def get_merged_row
       totals.each_with_object({}) do |total, hsh|
         hsh.merge!(base_itm_to_merge)
-        hsh[:columntotal_line_item_level_impressions_sum] = total[:impr_sum]
-        hsh[:columntotal_line_item_level_clicks_sum] = total[:clicks_sum]
-        hsh[:ctr] = total[:ctr]
+        hsh[:columntotal_line_item_level_impressions] = total[:impr_sum]
+        hsh[:columntotal_line_item_level_clicks] = total[:clicks_sum]
+        hsh[:columntotal_line_item_level_ctr] = total[:ctr]
         hsh[:product_id] = product_id
       end
     end

@@ -47,7 +47,11 @@ class IoCsv
   end
 
   def temp_io
-    @_temp_io ||= TempIo.find_or_initialize_by(company_id: company_id, external_io_number: io_external_number)
+    @_temp_io ||= TempIo.find_or_initialize_by(
+      company_id: company_id,
+      external_io_number: io_external_number,
+      curr_cd: io_curr_cd
+    )
   end
 
   def update_io
