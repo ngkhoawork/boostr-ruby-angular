@@ -11,16 +11,45 @@
     $q.all({ teams: Team.all(), users: User.query().$promise}).then (data) ->
       $scope.teams = data.teams
       $scope.users = data.users
-      $scope.availableUsers = []
-      if $scope.users
-        _.each $scope.users, (u) ->
+      resetUsers()
+
+  resetUsers = () ->
+    $scope.availableUsers = []
+    $scope.availableLeaders = []
+    if $scope.users
+      members = []
+      _.each $scope.users, (u) ->
+        searchObj = _.find $scope.team.members, (item) ->
+          return item == u.id
+        if searchObj != undefined
+          members.push(u)
+        else
           if u.id == $scope.team.leader_id
             $scope.leader = u
-            $scope.availableUsers.push($scope.leader)
-        _.each $scope.users, (u) ->
+            $scope.availableLeaders.push($scope.leader)
           if u && !u['leader?']
-            $scope.availableUsers.push(u)
+            $scope.availableLeaders.push(u)
+        
+        if u && !u['leader?']
+          $scope.availableUsers.push(u)
+      $scope.team.members = _.map members, (item) ->
+        return item.id
 
+  $scope.memberChanged = () ->
+    resetUsers()
+
+  $scope.beforeLeaderChange = (id) ->
+    searchObj = _.find $scope.availableLeaders, (item) ->
+      return item.id == id
+    if searchObj != undefined
+      searchObj['leader?'] = false
+
+  $scope.afterLeaderChange = (id) ->
+    searchObj = _.find $scope.availableUsers, (item) ->
+      return item.id == id
+    if searchObj != undefined
+      searchObj['leader?'] = true
+    resetUsers()
 
   $scope.submitForm = () ->
     $scope.buttonDisabled = true
