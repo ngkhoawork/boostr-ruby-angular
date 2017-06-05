@@ -4,7 +4,7 @@ class ContentFee < ActiveRecord::Base
 
   has_many :content_fee_product_budgets, dependent: :destroy
 
-  has_one :request, as: :requestable
+  has_one :request, as: :requestable, dependent: :destroy
 
   validate :active_exchange_rate
 

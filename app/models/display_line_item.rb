@@ -5,7 +5,7 @@ class DisplayLineItem < ActiveRecord::Base
 
   has_many :display_line_item_budgets
 
-  has_one :request, as: :requestable
+  has_one :request, as: :requestable, dependent: :destroy
 
   scope :without_budgets_by_date, -> (start_date, end_date) do
     joins(:display_line_item_budgets)
