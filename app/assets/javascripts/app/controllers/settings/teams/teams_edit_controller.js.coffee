@@ -9,6 +9,8 @@
   $scope.init = ->
     $q.all({ team: Team.get(team.id), teams: Team.all(), users: User.query().$promise}).then (data) ->
       $scope.team = data.team
+      $scope.team.members = _.map $scope.team.members, (item) ->
+        return item.id
       $scope.teams = data.teams
       $scope.users = data.users
       $scope.leader = data.team.leader
