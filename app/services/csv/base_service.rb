@@ -1,7 +1,6 @@
 class Csv::BaseService
-  def initialize(records, options = {})
+  def initialize(records)
     @records = records
-    @options = options
   end
 
   def perform
@@ -10,7 +9,7 @@ class Csv::BaseService
 
   private
 
-  attr_reader :records, :options
+  attr_reader :records
 
   def generate_csv
     CSV.generate do |csv|
@@ -19,12 +18,6 @@ class Csv::BaseService
       decorated_records.each do |record|
         csv << headers.map { |attr| record.send(attr.downcase) }
       end
-
-      add_total_line_to(csv) if add_total_line?
     end
-  end
-
-  def add_total_line?
-    false
   end
 end
