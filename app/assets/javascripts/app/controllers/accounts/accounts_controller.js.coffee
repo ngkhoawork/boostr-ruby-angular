@@ -185,7 +185,6 @@
       resolve:
         client: ->
           {}
-  $scope.showNewAccountModal()
   $scope.go = (client_id) ->
     $location.path('/accounts/' + client_id)
   $scope.$on 'newClient', ->
