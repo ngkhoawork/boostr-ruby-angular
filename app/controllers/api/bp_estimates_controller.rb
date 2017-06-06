@@ -96,8 +96,24 @@ class Api::BpEstimatesController < ApplicationController
     @bp ||= current_user.company.bps.find(params[:bp_id])
   end
 
+  def team
+    @team ||= current_user.company.teams.find_by(id: params[:team_id])
+  end
+
+  def user
+    @user ||= current_user.company.users.find_by(id: params[:user_id])
+  end
+
   def bp_estimate
     @bp_estimate ||= bp.bp_estimates.find(params[:id])
+  end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 10
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 
   def bp_estimates
@@ -128,16 +144,15 @@ class Api::BpEstimatesController < ApplicationController
                methods: [:time_dimension]
        })
     else
-      case params[:filter]
-        when 'my'
-          @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).where(user_id: current_user.id).collect{ |bp_estimate| bp_estimate.full_json }
-        when 'team'
-          member_ids = current_user.all_team_members.collect{ |member| member.id}
-          member_ids << current_user.id
-          @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).where("user_id in (?)", member_ids).collect{ |bp_estimate| bp_estimate.full_json }
-        else
-          @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).collect{ |bp_estimate| bp_estimate.full_json }
+      @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete)
+      if user.present?
+        @bp_estimates = @bp_estimates.where(user_id: user.id)
+      elsif team.present?
+        member_ids = team.all_members.collect{ |member| member.id}
+        @bp_estimates = @bp_estimates.where("user_id in (?)", member_ids)
       end
+      @bp_estimates = @bp_estimates.limit(limit).offset(offset)
+      @bp_estimates = @bp_estimates.collect{ |bp_estimate| bp_estimate.full_json }
     end
   end
 

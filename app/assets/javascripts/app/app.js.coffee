@@ -184,7 +184,7 @@
     .when '/settings/ealerts/',
       templateUrl: 'settings/ealerts.html'
       controller: 'SettingsEalertsController'
-    .when '/bp',
+    .when '/bps',
       templateUrl: 'bp.html'
       controller: 'BPController'
     .when '/forecast/:team_id?',
