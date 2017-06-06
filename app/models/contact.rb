@@ -151,7 +151,7 @@ class Contact < ActiveRecord::Base
     CSV.generate(headers: true) do |csv|
       csv << header
 
-      contacts = contacts.includes(:primary_client, :address, :contact_cf, :non_primary_clients)
+      contacts = contacts.includes(:contact_cf)
 
       contacts.each do |contact|
 

@@ -2,7 +2,7 @@ class Api::ContactsController < ApplicationController
   respond_to :json
 
   def index
-    results = if params[:unassigned] == "yes"
+    results = if params[:unassigned].eql?('yes')
       unassigned_contacts
     elsif params[:name].present?
       suggest_contacts
