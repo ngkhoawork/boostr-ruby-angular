@@ -5,6 +5,13 @@
   $scope.clients = []
   $scope.query = ""
   $scope.countries = []
+  $scope.showAddressFields = Boolean(client.address and
+    (client.address.country or
+      client.address.street1 or
+      client.address.city or
+      client.address.state or
+      client.address.zip))
+
 
   CountriesList.get (data) ->
     $scope.countries = data.countries
