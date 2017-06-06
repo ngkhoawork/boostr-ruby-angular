@@ -1,6 +1,7 @@
 class DealProductCfName < ActiveRecord::Base
   belongs_to :company
   has_many :deal_product_cf_options, dependent: :destroy
+  has_one :ealert_custom_field, as: :subject, dependent: :destroy
 
   accepts_nested_attributes_for :deal_product_cf_options
 
