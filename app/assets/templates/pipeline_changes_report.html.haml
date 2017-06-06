@@ -2,24 +2,32 @@
   .container-fluid.table-report
     .row
       .col-xs-12
-        %h3.title
-          Pipeline Change Report
-        .filters-block.pipeline-filter-block
-          %span.filter-block-label Filter By:
-          .date-picker-wrap
-            %div.date-picker#pipeline-change-date-picker{'date-range-picker': true,
-                                                 'ng-model': 'datePicker',
-                                                 :options => "{locale: {format: 'MMMM D, YYYY',
-                                                                        cancelLabel: 'Clear'},
-                                                               eventHandlers: {'apply.daterangepicker': datePickerApply,
-                                                                               'cancel.daterangepicker': datePickerCancel}}"}
-              Time period
-            %span.caret
-          %span#reset-pipeline-filter{'ng-click': 'resetFilters()'}
-            Reset
-          -#%a.pull-right{ href: '', ng: { click: 'exportReports()' } }
-          -#  = inline_svg 'icons/export.svg'
-          -#  Export
+        .reports-header
+          .header-cell
+            .h3.header-title
+              Pipeline Change Report
+          .header-cell
+            .filters-block
+              %span.filter-block-label Filter By:
+              .date-picker-wrap
+                %div.date-picker#pipeline-change-date-picker{'date-range-picker': true,
+                                                     'ng-model': 'datePicker',
+                                                     :options => "{locale: {format: 'MMMM D, YYYY',
+                                                                            cancelLabel: 'Clear'},
+                                                                   eventHandlers: {'apply.daterangepicker': datePickerApply,
+                                                                                   'cancel.daterangepicker': datePickerCancel}}"}
+                  Time period
+                %span.caret
+              %span#reset-pipeline-filter.mr20{'ng-click': 'resetFilters()'}
+                Reset
+
+          .header-cell
+            %button.add-btn{'ng-click': 'applyFilter()'}
+              Apply Filters
+
+              -#%a.pull-right{ href: '', ng: { click: 'exportReports()' } }
+              -#  = inline_svg 'icons/export.svg'
+              -#  Export
     .row
       .col-md-12
         .table-wrapper

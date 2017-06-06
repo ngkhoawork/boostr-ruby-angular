@@ -21,7 +21,7 @@
 											{{(filter.seller.first_name && filter.seller.first_name + ' ' + filter.seller.last_name) || 'All'}}
 											%span.caret
 										%ul.dropdown-menu
-											%li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller.id}' } }
+											%li{ ng: { repeat: 'seller in sellers | orderBy : "name"', class: '{active: seller.id === filter.seller.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
 													{{ seller.first_name + ' ' + seller.last_name}}
 
@@ -32,9 +32,13 @@
 											{{filter.timePeriod.name || 'All'}}
 											%span.caret
 										%ul.dropdown-menu
-											%li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
+											%li{ ng: { repeat: 'timePeriod in timePeriods | orderBy : ["period_type", "start_date"]', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
 													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+
+				.header-cell
+					%button.add-btn.mr20{'ng-click': 'applyFilter()'}
+						Apply Filters
 
 				.header-cell
 					%span.mr8 Go to
