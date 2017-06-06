@@ -123,7 +123,7 @@ class Contact < ActiveRecord::Base
     return  nil
   end
 
-  def self.to_csv(company)
+  def self.to_csv(company, contacts)
     header = [
       'Id',
       'Name',
@@ -142,7 +142,8 @@ class Contact < ActiveRecord::Base
       'Job Level'
     ]
 
-    contact_cf_names = company.contact_cf_names.where("disabled IS NOT TRUE").order("position asc")
+    contact_cf_names = company.contact_cf_names.where('disabled IS NOT TRUE').order('position asc')
+
     contact_cf_names.each do |contact_cf_name|
       header << contact_cf_name.field_label
     end
@@ -150,11 +151,9 @@ class Contact < ActiveRecord::Base
     CSV.generate(headers: true) do |csv|
       csv << header
 
-      all
-      .includes(
-        :primary_client,
-        :address
-      ).each do |contact|
+      contacts = contacts.includes(:primary_client, :address, :contact_cf, :non_primary_clients)
+
+      contacts.each do |contact|
 
         line = []
         line << contact.id
@@ -329,7 +328,7 @@ class Contact < ActiveRecord::Base
     }
   end
 
-  def job_level(company_fields)
+  def job_level_for(company_fields)
     if self.values.present? && company_fields.present?
       field_id = company_fields.first.field_id
       value = self.values.find do |el|
