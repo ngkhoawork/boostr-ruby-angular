@@ -2,11 +2,6 @@
     ['$scope', 'CurrentUser'
     ( $scope,   CurrentUser ) ->
 
-        $scope.isSuperAdmin = false
-
-        CurrentUser.get().$promise.then (user) ->
-            $scope.isSuperAdmin = _.contains $scope.currentUser.roles, 'super_admin'
-
         $scope.options = [
             {icon: 'gamepad',title: 'General Settings', url: '/settings/general', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean at posuere tellus. Nulla vulputate erat.'}
             {icon: 'anchor',title: 'Smart Insights', url: '/settings/smart_insights', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean at posuere tellus. Nulla vulputate erat.'}
@@ -28,4 +23,10 @@
             {icon: 'cog',title: 'Initiatives', url: '/settings/initiatives', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean at posuere tellus. Nulla vulputate erat.'}
             {icon: 'cutlery',title: 'eAlerts', url: '/settings/ealerts', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean at posuere tellus. Nulla vulputate erat.'}
         ]
+
+
+        CurrentUser.get().$promise.then (user) ->
+            if _.contains user.roles, 'super_admin'
+                $scope.options.push {icon: 'asterisk', title: 'Tools', url: '/settings/tools', description: 'Tools'}
+
     ]
