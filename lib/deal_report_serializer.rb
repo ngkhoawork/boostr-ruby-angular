@@ -80,6 +80,8 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def team
+    return nil if ordered_deal_members.blank?
+
     user_with_highest_share.leader? ? leader_team_name : user_name_with_highest_share
   end
 
@@ -108,8 +110,12 @@ class DealReportSerializer < ActiveModel::Serializer
     end
   end
 
+  def ordered_deal_members
+    object.deal_members.ordered_by_share
+  end
+
   def user_with_highest_share
-    @_user_with_highest_share ||= object.deal_members.ordered_by_share.first.user
+    @_user_with_highest_share ||= ordered_deal_members.first.user
   end
 
   def leader_team_name
