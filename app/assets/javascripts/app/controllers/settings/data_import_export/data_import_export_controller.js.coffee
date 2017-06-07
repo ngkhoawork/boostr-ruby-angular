@@ -61,7 +61,7 @@
       keyboard: false
       resolve:
         api_url: ->
-          '/api/deal_products'
+          '/api/deal_product_budgets'
 
   $scope.showUploadContactsModal = ->
     $scope.modalInstance = $modal.open
