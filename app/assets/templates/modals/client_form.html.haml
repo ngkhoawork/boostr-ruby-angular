@@ -21,12 +21,12 @@
       .form-group{'ng-class':'{error: errors.name}'}
         %span.error-text {{errors.name}}
         %label{ for: 'name' }
-        Name
+          Name
         %span.star *
         %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }
       .form-group
         .row
-          .col-xs-6
+          .col-xs-6{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }
             %label{ for: 'parent-client' }
               Global Parent
             %ui-select{ parent_client: 'parent-client', ng: { model: 'client.parent_client_id', disabled: 'client.client_type.option_id === undefined', keyup: 'searchClients($select.search)'} }
@@ -34,7 +34,7 @@
                 {{ $select.selected.name || client.parent_client.name }}
               %ui-select-choices{ repeat: 'parent.id as parent in clients | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'parent.name' } } }
-          .col-xs-6
+          .col-xs-6{ ng: {if: 'Agency && client.client_type.option_id === Agency'} }
             %label{ for: 'holding-company' }
               Holding Company
             %ui-select{ parent_client: 'holding-company', ng: { model: 'client.holding_company_id', disabled: 'client.client_type.option_id === undefined'} }
@@ -42,7 +42,7 @@
                 {{ $select.selected.name || client.parent_client.name }}
               %ui-select-choices{ repeat: 'option.id as option in holdingCompanies | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'option.name' } } }
-      .form-group{ ng: {if: 'client.client_type.option_id === Advertiser'} }
+      .form-group{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }
         .row
           .col-xs-6
             %label{ for: 'client-category' } Advertiser Category
