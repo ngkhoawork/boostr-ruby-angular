@@ -1,4 +1,7 @@
 #activity-feed.block
+	%div.switch-row.pull-right{'ng-if': 'activitySwitch'}
+		%span{'ng-class': '{active: activitySwitch == "past"}', 'ng-click': 'setActivitySwitch("past")'} Past
+		%span{'ng-class': '{active: activitySwitch == "future"}', 'ng-click': 'setActivitySwitch("future")'} Future
 	%div.mb20
 		%span.title Activity
 		%add-button{'ng-click': 'showNewActivityModal()'} Add

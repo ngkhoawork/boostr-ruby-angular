@@ -1,7 +1,6 @@
 @app.controller 'DashboardController',
-    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType',
-        'Reminder', 'Stage',
-        ($scope, $rootScope, $document, $http, $modal, $sce, Dashboard, Deal, Client, Field, Contact, Activity, ActivityType, Reminder, Stage) ->
+    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage',
+    ( $scope,   $rootScope,   $document,   $http,   $modal,   $sce,   Dashboard,   Deal,   Client,   Field,   Contact,   Activity,   ActivityType,   Reminder,   Stage ) ->
 
             $scope.progressPercentage = 10
             $scope.showMeridian = true
@@ -12,6 +11,7 @@
             $scope.loadMoreActivitiesText = "Load More"
             $scope.loadingMoreActivities = false
             $scope.contactSearch = ""
+            $scope.activitySwitch = 'past'
 
             $scope.pacingAlertsFilters = [
               { name: 'My Lines', value: 'my', order: 0 }
@@ -24,6 +24,10 @@
             $scope.setPacingAlertsFilter = (filter) ->
               $scope.currentPacingAlertsFilter = filter
               $scope.init()
+
+            $scope.setActivitySwitch = (val) ->
+                $scope.activitySwitch = val
+                $scope.activitiesInit()
 
             $scope.showSpinners = (reminder) ->
                 reminder.showSpinners = true
@@ -93,8 +97,21 @@
             $scope.$on 'dashboard.openAccountModal', ->
                 $scope.showNewAccountModal()
 
+            getActivityDateRange = ->
+                switch $scope.activitySwitch
+                     when 'past'
+                         start_date: moment('2015-01-01')
+                         end_date: moment()
+                     when 'future'
+                         start_date: moment()
+                         end_date: moment().add(5, 'years')
+                     else
+                         {}
+
             $scope.activitiesInit = ->
-                Activity.all({page: 1, filter: "client"}).then (activities) ->
+                params = {page: 1, filter: "client"}
+                _.extend params, getActivityDateRange()
+                Activity.all(params).then (activities) ->
                     $scope.activities = activities
                     if activities.length == 10
                         $scope.hasMoreActivities = true
@@ -104,7 +121,9 @@
                 if $scope.loadingMoreActivities == false
                     $scope.loadingMoreActivities = true
                     $scope.loadMoreActivitiesText = "Loading ..."
-                    Activity.all({page: $scope.nextActivitiesPage, filter: "client"}).then (activities) ->
+                    params = {page: $scope.nextActivitiesPage, filter: "client"}
+                    _.extend params, getActivityDateRange()
+                    Activity.all(params).then (activities) ->
                         $scope.activities = $scope.activities.concat(activities)
                         if activities.length == 10
                             $scope.hasMoreActivities = true
