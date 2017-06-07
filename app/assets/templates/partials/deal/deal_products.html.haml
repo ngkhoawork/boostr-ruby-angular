@@ -147,3 +147,11 @@
 							{{ deal_product_budget.budget_loc | currency: currency_symbol : 0 }}
 						%div.budget-percent
 							{{ deal_product_budget.budget_percent+ '%'}}
+				%tr.sum-budgets-row
+					%td{colspan: '{{activeDealProductCfLength}}'}
+					%td.right
+						%b TOTAL
+					%td
+						%b {{sumDealProductBudget() | currency: currency_symbol : 0}}
+					%td{'ng-repeat': 'month in currentDeal.months'}
+						%b {{sumDealProductBudget($index) | currency: currency_symbol : 0}}
