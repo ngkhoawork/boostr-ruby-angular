@@ -34,6 +34,6 @@ class BudgetChangeSerializer < ActiveModel::Serializer
   end
 
   def date
-    object.deal_stage_logs.ordered_by_created_at.first.created_at.to_date rescue nil
+    object.created_at.to_date rescue nil
   end
 end
