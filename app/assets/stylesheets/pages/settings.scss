@@ -1,0 +1,45 @@
+#settings {
+    .settings-options {
+        width: $content-min-width;
+        margin: 0 auto 10px;
+        position: relative;
+        display: flex;
+        flex-flow: row wrap;
+        .option {
+            flex-basis: calc(25% - 30px);
+            box-sizing: border-box;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid $separate-line-color;
+            background-color: white;
+            transition: box-shadow 250ms, transform 250ms;
+            &:hover {
+                box-shadow: 0 0 14px lighten($main-color, 15%);
+                border-color: lighten($main-color, 25%);
+                transform: scale(1.05, 1.05);
+            }
+            .option-inner {
+                display: flex;
+                //align-items: center;
+                .icon {
+                    .fa {
+                        font-size: 50px;
+                        color: $main-color;
+                    }
+                }
+                .body {
+                    padding-left: 15px;
+                    .title {
+                        color: $main-font-color;
+                        font-size: 18px;
+                    }
+                    .description {
+                        color: $secondary-font-color;
+                        font-size: 12px;
+                    }
+                }
+            }
+        }
+    }
+}

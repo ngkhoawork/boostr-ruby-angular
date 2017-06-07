@@ -1,0 +1,9 @@
+#settings.z-styles
+	%div.settings-options
+		%a.option{'ng-repeat': 'option in options', href: '', 'ng-href': '{{option.url}}'}
+			.option-inner
+				-#%div.icon
+					%i{class: 'fa fa-{{option.icon}}'}
+				%div.body
+					.title {{option.title}}
+					.description {{option.description}}
