@@ -9,7 +9,10 @@ class UserMailer < ApplicationMailer
 
   def lost_deal_email(recipients, deal)
     @deal = deal
+    @deal_budget = lost_deal_budget_for(deal)
+    @deal_member = deal.user_with_highest_share
     subject = lost_deal_subject_for(deal)
+
     mail(to: recipients, subject: subject)
   end
 
@@ -183,6 +186,14 @@ class UserMailer < ApplicationMailer
   private
 
   def lost_deal_subject_for(deal)
-    "A #{deal.budget_loc.to_i} for #{deal.advertiser_name} was lost"
+    "A #{deal.budget_loc.to_i} deal for #{deal.advertiser_name} was lost"
+  end
+
+  def lost_deal_budget_for(deal)
+    number_to_currency(
+      deal.budget_loc.to_i,
+      precision: 0,
+      unit: deal.currency.curr_symbol
+    )
   end
 end
