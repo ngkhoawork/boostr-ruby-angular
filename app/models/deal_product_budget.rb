@@ -198,15 +198,12 @@ class DealProductBudget < ActiveRecord::Base
       else
         deal_product_budget_params[:deal_product_id] = deal_product.id
 
-        if deal_product.deal_product_budgets.count >= deal.months.length
+        deal_product_budgets = deal_product.deal_product_budgets.where("DATE_PART('year', start_date) = ? and DATE_PART('month', start_date) = ?", period.year, period.month)
+        if deal_product_budgets.any?
+          deal_product_budget_params[:id] = deal_product_budgets.first.id
+        elsif deal_product.deal_product_budgets.count >= deal.months.length
           import_log.count_failed
-          import_log.log_error(["Deal Product #{row[2].strip} already exists"])
-          next
-        end
-
-        if deal_product.deal_product_budgets.where(start_date: period.beginning_of_month).any?
-          import_log.count_failed
-          import_log.log_error(["Deal Product Budget for #{row[4]} month already exists"])
+          import_log.log_error(["Deal Product #{row[2].strip} is full of monthly budgets"])
           next
         end
       end
