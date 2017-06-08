@@ -39,6 +39,9 @@ class Api::BpEstimatesController < ApplicationController
       end
       respond_to do |format|
         format.json {
+          response.headers['X-Total-Count'] = bp_estimates.select('distinct(client_id)').count.to_s
+          # response.headers['X-Seller-Estimate'] = bp_estimates.collect{|bp_estimate| bp_estimate.estimate_seller || 0}.inject(0){|sum,x| sum + x }.to_s
+          # response.headers['X-Mgr-Estimate'] = bp_estimates.collect{|bp_estimate| bp_estimate.estimate_mgr || 0}.inject(0){|sum,x| sum + x }
           render json: {
               bp_estimates: bp_estimates.limit(limit).offset(offset).collect{ |bp_estimate| bp_estimate.full_json },
               current: { pipelines: pipelines, revenues: revenues },

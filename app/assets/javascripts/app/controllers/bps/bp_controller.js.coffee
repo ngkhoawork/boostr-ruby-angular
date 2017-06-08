@@ -58,6 +58,7 @@
       $scope.isLoading = false
       $scope.hasMoreBps = true
       $scope.page = 1
+      $scope.totalCount = 0
 
       $scope.dataType = "weighted"
       $scope.notification = null
@@ -263,6 +264,7 @@
           }
           $scope.isLoading = true
           BpEstimate.all(filters).then (data) ->
+            $scope.totalCount = BpEstimate.resource.totalCount
             $scope.revenues = data.current.revenues
             $scope.pipelines = data.current.pipelines
 

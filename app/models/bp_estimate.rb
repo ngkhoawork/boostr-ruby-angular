@@ -112,8 +112,8 @@ class BpEstimate < ActiveRecord::Base
           prev_change = (bp_estimate.estimate_seller.to_f / prev_revenue_amount.to_f - 1) * 100
         end
         line = [
-          bp_estimate.client.name,
-          bp_estimate.user.name,
+          bp_estimate.client ? bp_estimate.client.name : nil,
+          bp_estimate.user ? bp_estimate.user.name : nil,
           '$' + pipeline_amount.to_s,
           '$' + revenue_amount.to_s,
           '$' + (bp_estimate.estimate_seller || 0).to_s,
