@@ -1,6 +1,6 @@
 @app.controller 'ContactsController',
-    ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$sce', '$http', 'Contact', 'Field', 'Activity', 'ActivityType', 'Reminder',  'ContactsFilter'
-    ( $scope,   $rootScope,   $modal,   $routeParams,   $location,   $sce,   $http,   Contact,   Field,   Activity,   ActivityType,   Reminder,    ContactsFilter) ->
+    ['$scope', '$rootScope', '$window', '$modal', '$routeParams', '$location', '$sce', '$http', '$httpParamSerializer', 'Contact', 'Field', 'Activity', 'ActivityType', 'Reminder',  'ContactsFilter'
+    ( $scope,   $rootScope,   $window,   $modal,   $routeParams,   $location,   $sce,   $http,   $httpParamSerializer,   Contact,   Field,   Activity,   ActivityType,   Reminder,    ContactsFilter) ->
 
             $scope.contacts = []
             $scope.feedName = 'Updates'
@@ -178,6 +178,16 @@
             $scope.switchContacts = (swch) ->
                 $scope.teamFilter swch
                 $scope.init();
+
+            $scope.export = ->
+                params = {
+                    filter: $scope.teamFilter().param,
+                }
+                params = _.extend params, $scope.filter.get()
+                if $scope.query.trim().length
+                    params.name = $scope.query.trim()
+                $window.open Contact.exportUrl + '?' + $httpParamSerializer params
+                return
 
             $scope.$on 'updated_contacts', ->
                 $scope.init()
