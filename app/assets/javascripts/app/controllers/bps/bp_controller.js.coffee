@@ -170,7 +170,8 @@
               $scope.selectedBP
         .result.then (bp) ->
           if (bp && bp.id)
-            init()
+            $scope.page = 1
+            loadBPData()
 
       $scope.applyFilter = () ->
         if $scope.filter.bp.id && !$scope.isLoading

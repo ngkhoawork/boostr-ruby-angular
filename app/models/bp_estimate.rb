@@ -54,7 +54,7 @@ class BpEstimate < ActiveRecord::Base
 
       csv << header
       bp_estimates
-      .find_each do |bp_estimate|
+      .each do |bp_estimate|
         pipeline_amount = 0
         revenue_amount = 0
         year_pipeline_amount = 0

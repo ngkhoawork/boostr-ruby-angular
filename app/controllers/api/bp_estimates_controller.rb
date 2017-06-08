@@ -161,11 +161,11 @@ class Api::BpEstimatesController < ApplicationController
       @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete)
       case params[:filter]
         when 'my'
-          @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).where(user_id: current_user.id)
+          @bp_estimates = @bp_estimates.where(user_id: current_user.id)
         when 'team'
           member_ids = current_user.all_team_members.collect{ |member| member.id}
           member_ids << current_user.id
-          @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).where("user_id in (?)", member_ids)
+          @bp_estimates = @bp_estimates.where("user_id in (?)", member_ids)
         else
           if user.present?
             @bp_estimates = @bp_estimates.where(user_id: user.id)
@@ -174,8 +174,9 @@ class Api::BpEstimatesController < ApplicationController
             @bp_estimates = @bp_estimates.where("user_id in (?)", member_ids)
           end
       end
-      @bp_estimates
+      @bp_estimates = @bp_estimates.order("clients.name")
     end
+    @bp_estimates
   end
 
   def bp_estimate_params
