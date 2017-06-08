@@ -101,6 +101,7 @@
         if $scope.selectedBP.id != 0
           $scope.page = 1
           $scope.bpEstimates = []
+          $scope.hasMoreBps = true
           loadBPData()
 
       $scope.setFilter = (key, value) ->
