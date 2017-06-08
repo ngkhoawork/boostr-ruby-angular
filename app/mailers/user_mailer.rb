@@ -186,11 +186,11 @@ class UserMailer < ApplicationMailer
   private
 
   def lost_deal_subject_for(deal)
-    "A #{deal.budget_loc.to_i} deal for #{deal.advertiser_name} was lost"
+    "A #{lost_deal_budget_for(deal)} deal for #{deal.advertiser_name} was lost"
   end
 
   def lost_deal_budget_for(deal)
-    number_to_currency(
+    @_lost_deal_budget ||= number_to_currency(
       deal.budget_loc.to_i,
       precision: 0,
       unit: deal.currency.curr_symbol
