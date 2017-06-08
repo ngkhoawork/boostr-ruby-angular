@@ -271,10 +271,8 @@
     .fixed {
       top: 0px;
       left: 0px;
-      margin-left: 25px;
-      margin-right: 25px;
-      position: fixed;
-      width: calc(100% - 50px);
+      position: absolute;
+      width: 100%;
       display:none;
       border:none;
     }
@@ -285,6 +283,7 @@
       font-size: 13px;
       font-weight: normal;
       width: 100%;
+      position: relative;
 
       thead {
         background-color: #ffffff;

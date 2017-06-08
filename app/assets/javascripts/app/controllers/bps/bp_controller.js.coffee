@@ -114,8 +114,10 @@
 
       $document.bind 'scroll', (evt) ->
         scrollTop = evt.target.scrollingElement.scrollTop
+        scrollLeft = evt.target.scrollingElement.scrollLeft
         targetTop = $('.bp-table-wrapper')[0].offsetTop
         if scrollTop >= targetTop
+          $('.fixed')[0].style.top = (scrollTop - targetTop) + 'px';
           $('.fixed')[0].style.display = "table";
         else
           $('.fixed')[0].style.display = "none"
