@@ -112,6 +112,18 @@
           $scope.users = users
           $scope.users.unshift(defaultUser)
 
+      $document.bind 'scroll', (evt) ->
+        scrollTop = evt.target.scrollingElement.scrollTop
+        targetTop = $('.bp-table-wrapper')[0].offsetTop
+        if scrollTop >= targetTop
+          $('.fixed')[0].style.display = "table";
+        else
+          $('.fixed')[0].style.display = "none"
+      
+
+      $scope.$on '$destroy', () ->
+        $document.unbind('scroll')
+
       #init query
       init = () ->
         if $rootScope.userType == 1

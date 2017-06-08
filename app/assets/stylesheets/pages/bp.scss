@@ -268,8 +268,19 @@
     background-color: #ffffff;
     overflow-x: auto;
 
+    .fixed {
+      top: 0px;
+      left: 0px;
+      margin-left: 25px;
+      margin-right: 25px;
+      position: fixed;
+      width: calc(100% - 50px);
+      display:none;
+      border:none;
+    }
+
     table {
-      table-layout: fixed;
+      table-layout: auto;
       font-family: $font-family-arial !important;
       font-size: 13px;
       font-weight: normal;
