@@ -9,6 +9,10 @@ class Api::DashboardsController < ApplicationController
       current_user: current_user,
       revenue: dashboard_pacing_alert_service.display_revenue
     }
+
+  rescue NoMethodError => _e
+    render json: { errors: "Error happened when company didn't have time periods of type Quarter" },
+                   status: :unprocessable_entity
   end
 
   def typeahead
