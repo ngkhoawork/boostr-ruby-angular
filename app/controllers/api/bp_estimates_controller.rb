@@ -174,7 +174,7 @@ class Api::BpEstimatesController < ApplicationController
             @bp_estimates = @bp_estimates.where("user_id in (?)", member_ids)
           end
       end
-      
+      @bp_estimates
     end
   end
 
