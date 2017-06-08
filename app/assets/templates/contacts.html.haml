@@ -103,6 +103,8 @@
 				%i.fa.fa-search
 				%input.form-control{placeholder: 'Search', ng: {model: 'query', 'model-options': '{debounce: 500}' }}
 			.header-item
+				%download-button.mr8{'ng-click': 'export()'}
+					Export
 				%button.btn-main{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter

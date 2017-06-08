@@ -2,42 +2,43 @@ class Api::ContactsController < ApplicationController
   respond_to :json
 
   def index
+    results = if params[:unassigned].eql?('yes')
+      unassigned_contacts
+    elsif params[:name].present?
+      suggest_contacts
+    elsif params[:contact_name].present?
+      suggest_contacts(true)
+    elsif params[:activity].present?
+      activity_contacts
+    else
+      contacts
+    end
+
+    results = apply_search_criteria(results)
+
     respond_to do |format|
       format.json {
-        if params[:unassigned] == "yes"
-          results = unassigned_contacts
-        elsif params[:name].present?
-          results = suggest_contacts
-        elsif params[:contact_name].present?
-          results = suggest_contacts(true)
-        elsif params[:activity].present?
-          results = activity_contacts
-        else
-          results = contacts
-        end
-
-        results = apply_search_criteria(results)
 
         response.headers['X-Total-Count'] = results.total_count
         render json: results.includes(:primary_client).preload(
-		  :latest_happened_activity,
-		  :client,
-		  :values,
-		  :address,
-		  non_primary_client_contacts: [:client]
-	  	)
-          .limit(limit)
-          .offset(offset), each_serializer: ContactSerializer,
-                           contact_options: company_job_level_options,
-                           advertiser: advertiser_type_id,
-                           agency: Client.agency_type_id(current_user.company)
+          :latest_happened_activity,
+          :client,
+          :values,
+          :address,
+          non_primary_client_contacts: [:client]
+        )
+        .limit(limit)
+        .offset(offset), each_serializer: ContactSerializer,
+                         contact_options: company_job_level_options,
+                         advertiser: advertiser_type_id,
+                         agency: Client.agency_type_id(current_user.company)
       }
 
       format.csv {
         require 'timeout'
         begin
           status = Timeout::timeout(120) {
-            send_data contacts.to_csv(current_user.company), filename: "contacts-#{Date.today}.csv"
+            send_data Contact.to_csv(current_user.company, results), filename: "contacts-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return

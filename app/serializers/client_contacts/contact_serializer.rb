@@ -10,6 +10,6 @@ class ClientContacts::ContactSerializer < ActiveModel::Serializer
   )
 
   def job_level
-    object.job_level(@options[:contact_options])
+    object.job_level_for(@options[:contact_options])
   end
 end
