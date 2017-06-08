@@ -17,13 +17,13 @@
               %a{ href: '', ng: { click: 'setFilter("bp", bp)' } }
                 %span.name
                   {{ bp.name }}
-      %ul.bp-filter.pull-left
+      %ul.bp-filter.pull-left{'ng-if': 'selectedFilter.value == "all"'}
         %li.title
           Team
         %li
           %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team'}
 
-      %ul.bp-filter.pull-left
+      %ul.bp-filter.pull-left{'ng-if': 'selectedFilter.value == "all"'}
         %li.title
           User
         %li{ dropdown: true }
@@ -41,8 +41,12 @@
       %ul.bp-filter.action.pull-left
         %li
           %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{"disabled": isLoading == true}'}
-            Apply Filters    
-      .bp-info.col-xs-12{ ng: { show: 'selectedBP.id > 0' } }
+            Apply Filters
+      %ul.bp-filter.action.pull-right{ ng: { if: 'selectedBP.id > 0' } }
+        %li
+          %button.add-btn{'ng-click': 'export()'}
+            Export
+      .bp-info.col-xs-12
         .info
           .info-body-wrap
             .name
@@ -70,16 +74,15 @@
               .title
                 {{ totalEstimate(bpEstimates, 'estimate_mgr') | humanReadableMoney }}
               .description Manager Estimate
-        -# .filter.pull-right
-        -#   .filter-item{ ng: { repeat: 'filter in bpEstimateFilters', class: '{active: filter.value == selectedFilter.value}', click: 'selectFilter(filter)' } }
-        -#     {{ filter.name }}
-          -#.filter-item.active
-          -#  All
-          -#.filter-item
-          -#  My Estimates
-          -#.filter-item
-          -#  My Team's Estimate
-    .row{ ng: { if: 'selectedBP.id > 0' } }
+        .filter.pull-right
+          %div.mb20
+            .filter-item{ ng: { repeat: 'filter in bpEstimateFilters', class: '{active: filter.value == selectedFilter.value}', click: 'selectFilter(filter)' } }
+              {{ filter.name }}
+          %div.pull-right{ ng: { if: 'selectedBP.id > 0' } }
+            %button.add-btn{'ng-click': 'showAddClientModal()'}
+              Add Account
+
+    .row
       .col-md-12.text-center.bp-table-wrapper
         .alerts{ 'ng-if': 'notification' }
           .alert.alert-success

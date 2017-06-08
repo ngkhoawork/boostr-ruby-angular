@@ -1,6 +1,6 @@
 @app.controller 'BPController',
-  ['$scope', '$rootScope', '$document', '$modal', 'BP', 'BpEstimate', 'Team', 'User'
-    ($scope, $rootScope, $document, $modal, BP, BpEstimate, Team, User) ->
+  ['$scope', '$rootScope', '$window', '$document', '$modal', 'BP', 'BpEstimate', 'Team', 'User'
+    ($scope, $rootScope, $window, $document, $modal, BP, BpEstimate, Team, User) ->
 
       class McSort
         constructor: (opts) ->
@@ -95,6 +95,11 @@
           hasMultipleDatasets: false
         })
 
+      $scope.selectFilter = (filter) ->
+        $scope.selectedFilter = filter
+        if $scope.selectedBP.id != 0
+          loadBPData()
+
       $scope.setFilter = (key, value) ->
         if $scope.filter[key]is value
           return
@@ -128,6 +133,30 @@
           $scope.users.unshift(defaultUser)
 
       init()
+
+      $scope.export = () ->
+        if $scope.selectedBP.id > 0
+          url = '/api/bps/' + $scope.selectedBP.id + '/bp_estimates.csv?filter=' + $scope.selectedFilter.value
+          if $scope.selectedTeam.id > 0
+            url += '&team_id=' + $scope.selectedTeam.id
+          if $scope.selectedUser.id > 0
+            url += '&user_id=' + $scope.selectedUser.id
+          $window.open(url)
+          return true
+
+      $scope.showAddClientModal = () ->
+        $scope.modalInstance = $modal.open
+          templateUrl: 'modals/bp_add_client_form.html'
+          size: 'md'
+          controller: 'BpAddClientController'
+          backdrop: 'static'
+          keyboard: false
+          resolve:
+            bp: ->
+              $scope.selectedBP
+        .result.then (bp) ->
+          if (bp && bp.id)
+            init()
 
       $scope.applyFilter = () ->
         if $scope.filter.bp.id && !$scope.isLoading
