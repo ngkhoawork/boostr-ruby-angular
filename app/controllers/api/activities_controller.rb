@@ -189,7 +189,16 @@ class Api::ActivitiesController < ApplicationController
       result = company.activities.where('client_id in (?) OR created_by = ?', client_ids, current_user.id)
     end
 
-    result.for_time_period(params[:start_date], params[:end_date]).order("happened_at desc").limit(10).offset(offset)
+    result.for_time_period(params[:start_date], params[:end_date]).order("happened_at #{sort_direction_filter}").limit(10).offset(offset)
+  end
+
+  def sort_direction_filter
+    case params[:order]
+    when 'asc'
+      'asc'
+    else
+      'desc'
+    end
   end
 
   def offset
