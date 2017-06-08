@@ -99,6 +99,8 @@
       $scope.selectFilter = (filter) ->
         $scope.selectedFilter = filter
         if $scope.selectedBP.id != 0
+          $scope.page = 1
+          $scope.bpEstimates = []
           loadBPData()
 
       $scope.setFilter = (key, value) ->
