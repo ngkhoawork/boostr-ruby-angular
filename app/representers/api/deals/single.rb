@@ -8,6 +8,16 @@ class API::Deals::Single < API::Single
   end
 
   def date
-    represented.deal_stage_logs.ordered_by_created_at.first.created_at.to_date rescue nil
+    deal_date.to_date rescue represented.created_at
+  end
+
+  private
+
+  def deal_date
+    won_or_lost? ? represented.closed_at : represented.created_at
+  end
+
+  def won_or_lost?
+    represented.closed_lost? || represented.closed_won?
   end
 end
