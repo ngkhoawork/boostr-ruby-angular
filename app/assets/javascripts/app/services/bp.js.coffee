@@ -41,10 +41,18 @@
           method: 'POST'
           isArray: false
           url: 'api/bps/:id/add_client'
+        assignClient:
+          method: 'POST'
+          isArray: false
+          url: 'api/bps/:id/assign_client'
         addAllClients:
           method: 'POST'
           isArray: false
           url: 'api/bps/:id/add_all_clients'
+        assignAllClients:
+          method: 'POST'
+          isArray: false
+          url: 'api/bps/:id/assign_all_clients'
 
       currentBP = undefined
 
@@ -78,9 +86,21 @@
           deferred.resolve(data)
         deferred.promise
 
+      @assignClient = (params) ->
+        deferred = $q.defer()
+        resource.assignClient params, (data) ->
+          deferred.resolve(data)
+        deferred.promise
+
       @addAllClients = (params) ->
         deferred = $q.defer()
         resource.addAllClients params, (data) ->
+          deferred.resolve(data)
+        deferred.promise
+
+      @assignAllClients = (params) ->
+        deferred = $q.defer()
+        resource.assignAllClients params, (data) ->
           deferred.resolve(data)
         deferred.promise
 

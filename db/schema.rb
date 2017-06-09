@@ -366,8 +366,8 @@ ActiveRecord::Schema.define(version: 20170609112145) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at",                                                                                                                           null: false
+    t.datetime "updated_at",                                                                                                                           null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
@@ -377,7 +377,10 @@ ActiveRecord::Schema.define(version: 20170609112145) do
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
+    t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
   end
+
+  add_index "companies", ["forecast_permission"], name: "index_companies_on_forecast_permission", using: :gin
 
   create_table "contact_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -1169,27 +1172,6 @@ ActiveRecord::Schema.define(version: 20170609112145) do
 
   add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
 
-  create_table "requests", force: :cascade do |t|
-    t.integer  "deal_id"
-    t.integer  "company_id"
-    t.integer  "requester_id"
-    t.integer  "assignee_id"
-    t.integer  "requestable_id"
-    t.string   "requestable_type"
-    t.string   "status"
-    t.string   "request_type"
-    t.text     "description",      default: ""
-    t.text     "resolution",       default: ""
-    t.date     "due_date"
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-  end
-
-  add_index "requests", ["assignee_id"], name: "index_requests_on_assignee_id", using: :btree
-  add_index "requests", ["company_id"], name: "index_requests_on_company_id", using: :btree
-  add_index "requests", ["deal_id"], name: "index_requests_on_deal_id", using: :btree
-  add_index "requests", ["requester_id"], name: "index_requests_on_requester_id", using: :btree
-
   create_table "revenues", force: :cascade do |t|
     t.integer  "order_number"
     t.string   "ad_server"
@@ -1495,10 +1477,6 @@ ActiveRecord::Schema.define(version: 20170609112145) do
   add_foreign_key "ios", "companies"
   add_foreign_key "ios", "deals"
   add_foreign_key "print_items", "ios"
-  add_foreign_key "requests", "companies"
-  add_foreign_key "requests", "deals"
-  add_foreign_key "requests", "users", column: "assignee_id"
-  add_foreign_key "requests", "users", column: "requester_id"
   add_foreign_key "temp_ios", "companies"
   add_foreign_key "temp_ios", "ios"
   add_foreign_key "users", "teams"

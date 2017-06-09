@@ -37,13 +37,30 @@ class Api::BpEstimatesController < ApplicationController
           prev_time_period = prev_time_periods[0]
         end
       end
-
-      render json: {
-          bp_estimates: bp_estimates,
-          current: { pipelines: pipelines, revenues: revenues },
-          year: { pipelines: year_pipelines, revenues: year_revenues, time_period: year_time_period },
-          prev: { pipelines: prev_pipelines, revenues: prev_revenues, time_period: prev_time_period }
-      }, status: :ok
+      respond_to do |format|
+        format.json {
+          response.headers['X-Total-Count'] = bp_estimates.select('distinct(client_id)').count.to_s
+          # response.headers['X-Seller-Estimate'] = bp_estimates.collect{|bp_estimate| bp_estimate.estimate_seller || 0}.inject(0){|sum,x| sum + x }.to_s
+          # response.headers['X-Mgr-Estimate'] = bp_estimates.collect{|bp_estimate| bp_estimate.estimate_mgr || 0}.inject(0){|sum,x| sum + x }
+          render json: {
+              bp_estimates: bp_estimates.limit(limit).offset(offset).collect{ |bp_estimate| bp_estimate.full_json },
+              current: { pipelines: pipelines, revenues: revenues },
+              year: { pipelines: year_pipelines, revenues: year_revenues, time_period: year_time_period },
+              prev: { pipelines: prev_pipelines, revenues: prev_revenues, time_period: prev_time_period }
+          }, status: :ok
+        }
+        format.csv {
+          require 'timeout'
+          begin
+            status = Timeout::timeout(120) {
+              # send_data BpEstimates.to_csv, filename: "bp-estimates-#{Date.today}.csv"
+              send_data BpEstimate.to_csv(bp, bp_estimates, company), filename: "bp-estimates-#{Date.today}.csv"
+            }
+          rescue Timeout::Error
+            return
+          end
+        }
+      end
     else
       render json: { error: 'Business Plan Not Found' }, status: :not_found
     end
@@ -96,8 +113,24 @@ class Api::BpEstimatesController < ApplicationController
     @bp ||= current_user.company.bps.find(params[:bp_id])
   end
 
+  def team
+    @team ||= current_user.company.teams.find_by(id: params[:team_id])
+  end
+
+  def user
+    @user ||= current_user.company.users.find_by(id: params[:user_id])
+  end
+
   def bp_estimate
     @bp_estimate ||= bp.bp_estimates.find(params[:id])
+  end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 10
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 
   def bp_estimates
@@ -128,17 +161,25 @@ class Api::BpEstimatesController < ApplicationController
                methods: [:time_dimension]
        })
     else
+      @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete)
       case params[:filter]
         when 'my'
-          @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).where(user_id: current_user.id).collect{ |bp_estimate| bp_estimate.full_json }
+          @bp_estimates = @bp_estimates.where(user_id: current_user.id)
         when 'team'
           member_ids = current_user.all_team_members.collect{ |member| member.id}
           member_ids << current_user.id
-          @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).where("user_id in (?)", member_ids).collect{ |bp_estimate| bp_estimate.full_json }
+          @bp_estimates = @bp_estimates.where("user_id in (?)", member_ids)
         else
-          @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).collect{ |bp_estimate| bp_estimate.full_json }
+          if user.present?
+            @bp_estimates = @bp_estimates.where(user_id: user.id)
+          elsif team.present?
+            member_ids = team.all_members.collect{ |member| member.id}
+            @bp_estimates = @bp_estimates.where("user_id in (?)", member_ids)
+          end
       end
+      @bp_estimates = @bp_estimates.order("clients.name")
     end
+    @bp_estimates
   end
 
   def bp_estimate_params
