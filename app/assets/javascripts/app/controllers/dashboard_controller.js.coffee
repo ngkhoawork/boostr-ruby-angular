@@ -110,6 +110,7 @@
 
             $scope.activitiesInit = ->
                 params = {page: 1, filter: "client"}
+                params.order = 'asc' if $scope.activitySwitch == 'future'
                 _.extend params, getActivityDateRange()
                 Activity.all(params).then (activities) ->
                     $scope.activities = activities
@@ -122,6 +123,7 @@
                     $scope.loadingMoreActivities = true
                     $scope.loadMoreActivitiesText = "Loading ..."
                     params = {page: $scope.nextActivitiesPage, filter: "client"}
+                    params.order = 'asc' if $scope.activitySwitch == 'future'
                     _.extend params, getActivityDateRange()
                     Activity.all(params).then (activities) ->
                         $scope.activities = $scope.activities.concat(activities)

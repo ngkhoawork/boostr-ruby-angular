@@ -7,7 +7,7 @@
 		%add-button{'ng-click': 'showNewActivityModal()'} Add
 	%p{'ng-show': '!activities || !activities.length'}
 		No activity
-	%div.activity-item{'ng-repeat': 'activity in activities | orderBy: "-happened_at"'}
+	%div.activity-item{'ng-repeat': 'activity in activities | orderBy: "happened_at" : activitySwitch == "past"'}
 		%div.activity-header
 			%span{'class': 'icon-activity-{{getIconName(activity.activity_type_name)}}'}
 			%span
