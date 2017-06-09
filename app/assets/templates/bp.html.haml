@@ -7,20 +7,46 @@
           Quarter
         %li{ dropdown: true }
           %a{ href: '', dropdown: { toggle: true } }
-            %span{ 'ng-if': 'selectedBP.id > 0' }
-              {{ selectedBP.name }}
-            %span{ 'ng-if': 'selectedBP.id == 0' }
+            %span{ 'ng-if': 'filter.bp.id > 0' }
+              {{ filter.bp.name }}
+            %span{ 'ng-if': 'filter.bp.id == 0' }
               Select a quarter
             %span.caret
           %ul.dropdown-menu
-            %li{ ng: { repeat: 'bp in bps | filter: { name: bpSearch }', class: '{active: bp.id == selectedBP.id}' } }
-              %a{ href: '', ng: { click: 'selectBP(bp)' } }
+            %li{ ng: { repeat: 'bp in bps | filter: { name: bpSearch }', class: '{active: bp.id == filter.bp.id}' } }
+              %a{ href: '', ng: { click: 'setFilter("bp", bp)' } }
                 %span.name
                   {{ bp.name }}
-                -#&nbsp;&nbsp;&nbsp;
-                -#%span.status
-                -#  {{bp.status}} / {{bp.client_count}}
-      .bp-info.col-xs-12{ ng: { show: 'selectedBP.id > 0' } }
+      %ul.bp-filter.pull-left{'ng-if': 'selectedFilter.value == "all"'}
+        %li.title
+          Team
+        %li
+          %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team'}
+
+      %ul.bp-filter.pull-left{'ng-if': 'selectedFilter.value == "all"'}
+        %li.title
+          User
+        %li{ dropdown: true }
+          %a{ href: '', dropdown: { toggle: true } }
+            %span{ 'ng-if': 'filter.user.id' }
+              {{ filter.user.name }}
+            %span{ 'ng-if': 'filter.user.id == 0' }
+              Select a user
+            %span.caret
+          %ul.dropdown-menu
+            %li{ ng: { repeat: 'user in users', class: '{active: user.id == filter.user.id}' } }
+              %a{ href: '', ng: { click: 'setFilter("user", user)' } }
+                %span.name
+                  {{ user.name }}
+      %ul.bp-filter.action.pull-left
+        %li
+          %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{"disabled": isLoading == true}'}
+            Apply Filters
+      %ul.bp-filter.action.pull-right{ ng: { if: 'selectedBP.id > 0' } }
+        %li
+          %button.add-btn{'ng-click': 'export()'}
+            Export
+      .bp-info.col-xs-12
         .info
           .info-body-wrap
             .name
@@ -34,7 +60,7 @@
           .info-body-wrap
             .info-body
               #progress-number.title
-                {{totalStatus}}/{{totalClients}}
+                {{totalStatus}}/{{totalCount}}
               .description Status
         .info
           .info-body-wrap
@@ -49,49 +75,106 @@
                 {{ totalEstimate(bpEstimates, 'estimate_mgr') | humanReadableMoney }}
               .description Manager Estimate
         .filter.pull-right
-          .filter-item{ ng: { repeat: 'filter in bpEstimateFilters', class: '{active: filter.value == selectedFilter.value}', click: 'selectFilter(filter)' } }
-            {{ filter.name }}
-          -#.filter-item.active
-          -#  All
-          -#.filter-item
-          -#  My Estimates
-          -#.filter-item
-          -#  My Team's Estimate
-    .row{ ng: { if: 'selectedBP.id > 0' } }
+          %div.mb20
+            .filter-item{ ng: { repeat: 'filter in bpEstimateFilters', class: '{active: filter.value == selectedFilter.value}', click: 'selectFilter(filter)' } }
+              {{ filter.name }}
+          %div.pull-right{ ng: { if: 'selectedBP.id > 0' } }
+            %button.add-btn{'ng-click': 'showAddClientModal()'}
+              Add Account
+
+    .row
       .col-md-12.text-center.bp-table-wrapper
         .alerts{ 'ng-if': 'notification' }
           .alert.alert-success
             %i.fa.fa-check-circle
             <strong style="text-transform: capitalize"></strong>
             {{notification}}
-        %table
-          %thead
-            %tr
-              %th.left{ width: "200" }
+        %table{'infinite-scroll': "loadMoreBps()", 'infinite-scroll-immediate-check': 'true'}
+          %thead.fixed
+            %tr{ width: "100%" }
+              %th.left{ width: "13%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("client_name")' } }
                   Account
                   %i{ ng: { class: "{ 'fa': sort.column == 'client_name', 'fa-sort-asc': sort.column == 'client_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'client_name' && sort.direction == 'desc' }" } }
-              %th.left{ width: "150" }
+              %th.left{ width: "11%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("user_name")' } }
                   Seller
                   %i{ ng: { class: "{ 'fa': sort.column == 'user_name', 'fa-sort-asc': sort.column == 'user_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'user_name' && sort.direction == 'desc' }" } }
-              %th{ width: "130" }
-                {{selectedBP.time_period.name}} Pipeline (W)
-              %th{ width: "130" }
-                {{selectedBP.time_period.name}} Revenue
-              %th{ width: "150" }
-                {{selectedBP.time_period.name}} Estimate
-              %th{ width: "150" }
-                Mgr Estimate
-              %th{ width: "130" }
-                {{yearQuarter}} Revenue
-              %th{ width: "130" }
-                {{'% Change - YoY'}}
-              %th{ width: "130" }
-                {{prevQuarter}} Revenue
-              %th{ width: "130" }
-                {{'% Change - QoQ'}}
-          %tbody{ ng: { if: 'bpEstimates.length > 0', repeat: 'bp_estimate in bpEstimates', include: "'partials/bp_rows.html'" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("pipeline")' } }
+                  {{selectedBP.time_period.name}} Pipeline (W)
+                  %i{ ng: { class: "{ 'fa': sort.column == 'pipeline', 'fa-sort-asc': sort.column == 'pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'pipeline' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("revenue")' } }
+                  {{selectedBP.time_period.name}} Revenue
+                  %i{ ng: { class: "{ 'fa': sort.column == 'revenue', 'fa-sort-asc': sort.column == 'revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'revenue' && sort.direction == 'desc' }" } }
+              %th{ width: "11%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("estimate_seller")' } }
+                  {{selectedBP.time_period.name}} Estimate
+                  %i{ ng: { class: "{ 'fa': sort.column == 'estimate_seller', 'fa-sort-asc': sort.column == 'estimate_seller' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'estimate_seller' && sort.direction == 'desc' }" } }
+              %th{ width: "11%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("estimate_mgr")' } }
+                  Mgr Estimate
+                  %i{ ng: { class: "{ 'fa': sort.column == 'estimate_mgr', 'fa-sort-asc': sort.column == 'estimate_mgr' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'estimate_mgr' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("year_revenue")' } }
+                  {{yearQuarter}} Revenue
+                  %i{ ng: { class: "{ 'fa': sort.column == 'year_revenue', 'fa-sort-asc': sort.column == 'year_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'year_revenue' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("year_change")' } }
+                  {{'% Change - YoY'}}
+                  %i{ ng: { class: "{ 'fa': sort.column == 'year_change', 'fa-sort-asc': sort.column == 'year_change' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'year_change' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("prev_revenue")' } }
+                  {{prevQuarter}} Revenue
+                  %i{ ng: { class: "{ 'fa': sort.column == 'prev_revenue', 'fa-sort-asc': sort.column == 'prev_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'prev_revenue' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("prev_year_change")' } }
+                  {{'% Change - QoQ'}}
+                  %i{ ng: { class: "{ 'fa': sort.column == 'prev_year_change', 'fa-sort-asc': sort.column == 'prev_year_change' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'prev_year_change' && sort.direction == 'desc' }" } }
+          %thead
+            %tr{ width: "100%" }
+              %th.left{ width: "13%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("client_name")' } }
+                  Account
+                  %i{ ng: { class: "{ 'fa': sort.column == 'client_name', 'fa-sort-asc': sort.column == 'client_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'client_name' && sort.direction == 'desc' }" } }
+              %th.left{ width: "11%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("user_name")' } }
+                  Seller
+                  %i{ ng: { class: "{ 'fa': sort.column == 'user_name', 'fa-sort-asc': sort.column == 'user_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'user_name' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("pipeline")' } }
+                  {{selectedBP.time_period.name}} Pipeline (W)
+                  %i{ ng: { class: "{ 'fa': sort.column == 'pipeline', 'fa-sort-asc': sort.column == 'pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'pipeline' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("revenue")' } }
+                  {{selectedBP.time_period.name}} Revenue
+                  %i{ ng: { class: "{ 'fa': sort.column == 'revenue', 'fa-sort-asc': sort.column == 'revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'revenue' && sort.direction == 'desc' }" } }
+              %th{ width: "11%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("estimate_seller")' } }
+                  {{selectedBP.time_period.name}} Estimate
+                  %i{ ng: { class: "{ 'fa': sort.column == 'estimate_seller', 'fa-sort-asc': sort.column == 'estimate_seller' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'estimate_seller' && sort.direction == 'desc' }" } }
+              %th{ width: "11%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("estimate_mgr")' } }
+                  Mgr Estimate
+                  %i{ ng: { class: "{ 'fa': sort.column == 'estimate_mgr', 'fa-sort-asc': sort.column == 'estimate_mgr' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'estimate_mgr' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("year_revenue")' } }
+                  {{yearQuarter}} Revenue
+                  %i{ ng: { class: "{ 'fa': sort.column == 'year_revenue', 'fa-sort-asc': sort.column == 'year_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'year_revenue' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("year_change")' } }
+                  {{'% Change - YoY'}}
+                  %i{ ng: { class: "{ 'fa': sort.column == 'year_change', 'fa-sort-asc': sort.column == 'year_change' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'year_change' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("prev_revenue")' } }
+                  {{prevQuarter}} Revenue
+                  %i{ ng: { class: "{ 'fa': sort.column == 'prev_revenue', 'fa-sort-asc': sort.column == 'prev_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'prev_revenue' && sort.direction == 'desc' }" } }
+              %th{ width: "9%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("prev_year_change")' } }
+                  {{'% Change - QoQ'}}
+                  %i{ ng: { class: "{ 'fa': sort.column == 'prev_year_change', 'fa-sort-asc': sort.column == 'prev_year_change' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'prev_year_change' && sort.direction == 'desc' }" } }
+          %tbody{ng: { if: 'bpEstimates.length > 0', repeat: 'bp_estimate in bpEstimates', include: "'partials/bp_rows.html'" } }
           %tbody{ ng: { if: 'bpEstimates.length == 0' } }
             %tr
               %td.center{ colspan: '10' }
