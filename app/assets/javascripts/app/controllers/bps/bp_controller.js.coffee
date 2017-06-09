@@ -166,7 +166,7 @@
         $scope.modalInstance = $modal.open
           templateUrl: 'modals/bp_add_client_form.html'
           size: 'md'
-          controller: 'BpAddClientController'
+          controller: 'BpAssignClientController'
           backdrop: 'static'
           keyboard: false
           resolve:
