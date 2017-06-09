@@ -1,12 +1,12 @@
 #products {
     .table {
-        th {
+        th:first-child {
             padding-left: 34px;
             vertical-align: middle;
         }
         .ad-unit-table {
             width: 100%;
-            th, td {
+            th:first-child, td:first-child {
                 padding-left: 34px;
                 text-align: left;
                 background-color: #F6F9FC;
