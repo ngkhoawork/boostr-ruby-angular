@@ -52,7 +52,6 @@ class Deal < ActiveRecord::Base
 
   delegate :name, to: :advertiser, allow_nil: true, prefix: true
   delegate :name, to: :stage, allow_nil: true, prefix: true
-  delegate :curr_symbol, to: :currency, allow_nil: true, prefix: true
 
   before_update do
     if curr_cd_changed?
@@ -1321,8 +1320,9 @@ class Deal < ActiveRecord::Base
   def send_lost_deal_notification
     if stage_id_changed? && closed_lost?
       notification = company.notifications.by_name(Notification::LOST_DEAL)
+      recipients = notification.recipients_arr
 
-      UserMailer.lost_deal_email(notification.recipients_arr, self).deliver_later(queue: 'default')
+      UserMailer.lost_deal_email(recipients, self).deliver_later(queue: 'default') if recipients.any?
     end
   end
 
