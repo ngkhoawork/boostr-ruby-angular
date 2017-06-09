@@ -158,6 +158,15 @@
 
   transformEalert = () ->
     $scope.ealert.recipient_list = []
+    all_disabled = true
+    automatic_send = true
+    for index in [0...$scope.ealert.ealert_stages.length]
+      if $scope.ealert.ealert_stages[index].enabled == true
+        all_disabled = false
+      else
+        automatic_send = false
+    $scope.ealert.all_disabled = all_disabled
+    $scope.ealert.automatic_send = automatic_send
     if $scope.ealert.recipients
       $scope.ealert.recipient_list = $scope.ealert.recipients.split(',')
     _.each $scope.stages, (stage) ->
