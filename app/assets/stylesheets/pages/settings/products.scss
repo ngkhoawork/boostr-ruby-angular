@@ -1,0 +1,31 @@
+#products {
+    .table {
+        th {
+            padding-left: 34px;
+            vertical-align: middle;
+        }
+        .ad-unit-table {
+            width: 100%;
+            th, td {
+                padding-left: 34px;
+                text-align: left;
+                background-color: #F6F9FC;
+            }
+            tr {
+                .z-icon {
+                    visibility: hidden;
+                }
+                &:hover {
+                    .z-icon {
+                        visibility: visible;
+                    }
+                }
+            }
+            .add-unit {
+                color: $main-color;
+                cursor: pointer;
+                padding: 5px;
+            }
+        }
+    }
+}

@@ -6,7 +6,7 @@
     original.product.values_attributes = original.product.values
     angular.toJson(original)
 
-  resource = $resource '/api/products/:id', { id: '@id' },
+  resource = $resource '/api/products/:id', { id: '@id', product_id: '@product_id' },
     save: {
       method: 'POST'
       url: '/api/products'
@@ -17,9 +17,57 @@
       url: '/api/products/:id'
       transformRequest: transformRequest
     }
+    get_units: {
+      method: 'GET'
+      url: '/api/products/:product_id/ad_units'
+      isArray: true
+    }
+    add_unit: {
+      method: 'POST'
+      url: '/api/products/:product_id/ad_units'
+    }
+    update_unit: {
+      method: 'PUT'
+      url: '/api/products/:product_id/ad_units/:id'
+    }
+    delete_unit: {
+      method: 'DELETE'
+      url: '/api/products/:product_id/ad_units/:id'
+    }
 
   allProducts = []
   currentProduct = undefined
+
+  @get_units = (params) ->
+    deferred = $q.defer()
+    resource.get_units params,
+      (resp) ->
+        deferred.resolve(resp)
+    deferred.promise
+
+  @add_unit = (params) ->
+    deferred = $q.defer()
+    resource.add_unit params,
+      (resp) ->
+        deferred.resolve(resp)
+        $rootScope.$broadcast 'updated_product_units', params.product_id
+    deferred.promise
+
+  @update_unit = (params) ->
+    deferred = $q.defer()
+    resource.update_unit params,
+      (resp) ->
+        deferred.resolve(resp)
+        $rootScope.$broadcast 'updated_product_units', params.product_id
+    deferred.promise
+
+  @delete_unit = (params) ->
+    deferred = $q.defer()
+    resource.delete_unit params,
+      (resp) ->
+        deferred.resolve(resp)
+        $rootScope.$broadcast 'updated_product_units', params.product_id
+    deferred.promise
 
   @all = ->
     deferred = $q.defer()
