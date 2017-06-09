@@ -1,10 +1,10 @@
 class Api::AdUnitsController < ApplicationController
-  before_action :set_api_ad_unit, only: [:show, :edit, :update, :destroy]
+  before_action :set_ad_unit, only: [:show, :update, :destroy]
 
   # GET /api/ad_units
   # GET /api/ad_units.json
   def index
-    @api_ad_units = AdUnit.all
+    @ad_units = AdUnit.all
   end
 
   # GET /api/ad_units/1
@@ -20,14 +20,12 @@ class Api::AdUnitsController < ApplicationController
   # POST /api/ad_units
   # POST /api/ad_units.json
   def create
-    @ad_unit = Api::AdUnit.new(ad_unit_params)
+    @ad_unit = AdUnit.new(ad_unit_params)
 
     respond_to do |format|
       if @ad_unit.save
-        format.html { redirect_to @ad_unit, notice: 'Ad unit was successfully created.' }
-        format.json { render :show, status: :created, location: @api_ad_unit }
+        format.json { render :show, status: :created, location: @ad_unit }
       else
-        format.html { render :new }
         format.json { render json: @ad_unit.errors, status: :unprocessable_entity }
       end
     end
@@ -38,7 +36,7 @@ class Api::AdUnitsController < ApplicationController
   def update
     respond_to do |format|
       if @ad_unit.update(ad_unit_params)
-        format.json { render :show, status: :ok, location: @api_ad_unit }
+        format.json { render :show, status: :ok, location: @ad_unit }
       else
         format.json { render json: @ad_unit.errors, status: :unprocessable_entity }
       end
@@ -56,7 +54,7 @@ class Api::AdUnitsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_api_ad_unit
+    def set_ad_unit
       @ad_unit = AdUnit.find(params[:id])
     end
 
