@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170530220615) do
+ActiveRecord::Schema.define(version: 20170607203827) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -201,6 +200,15 @@ ActiveRecord::Schema.define(version: 20170530220615) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "ad_units", force: :cascade do |t|
+    t.text     "name"
+    t.integer  "product_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "ad_units", ["product_id"], name: "index_ad_units_on_product_id", using: :btree
+
   create_table "addresses", force: :cascade do |t|
     t.integer  "addressable_id"
     t.string   "addressable_type"
@@ -358,8 +366,8 @@ ActiveRecord::Schema.define(version: 20170530220615) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
@@ -368,6 +376,7 @@ ActiveRecord::Schema.define(version: 20170530220615) do
     t.integer  "yellow_threshold"
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
+    t.boolean  "ealert_reminder",                   default: false
   end
 
   create_table "contact_cf_names", force: :cascade do |t|
@@ -533,6 +542,16 @@ ActiveRecord::Schema.define(version: 20170530220615) do
   end
 
   add_index "csv_import_logs", ["company_id"], name: "index_csv_import_logs_on_company_id", using: :btree
+
+  create_table "csv_temp_rows", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "jid"
+    t.text     "row"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "csv_temp_rows", ["company_id"], name: "index_csv_temp_rows_on_company_id", using: :btree
 
   create_table "currencies", force: :cascade do |t|
     t.string "curr_cd"
@@ -914,10 +933,55 @@ ActiveRecord::Schema.define(version: 20170530220615) do
     t.integer  "daily_run_rate_loc"
     t.decimal  "ctr",                                  precision: 5,  scale: 4
     t.integer  "clicks"
+    t.text     "ad_unit"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
   add_index "display_line_items", ["product_id"], name: "index_display_line_items_on_product_id", using: :btree
+
+  create_table "ealert_custom_fields", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "ealert_id"
+    t.string   "subject_type"
+    t.integer  "subject_id"
+    t.integer  "position",     limit: 2, default: 0
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
+  add_index "ealert_custom_fields", ["company_id"], name: "index_ealert_custom_fields_on_company_id", using: :btree
+  add_index "ealert_custom_fields", ["ealert_id"], name: "index_ealert_custom_fields_on_ealert_id", using: :btree
+
+  create_table "ealert_stages", force: :cascade do |t|
+    t.integer  "company_id"
+    t.integer  "ealert_id"
+    t.integer  "stage_id"
+    t.string   "recipients"
+    t.boolean  "enabled"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "ealert_stages", ["company_id"], name: "index_ealert_stages_on_company_id", using: :btree
+  add_index "ealert_stages", ["ealert_id"], name: "index_ealert_stages_on_ealert_id", using: :btree
+  add_index "ealert_stages", ["stage_id"], name: "index_ealert_stages_on_stage_id", using: :btree
+
+  create_table "ealerts", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "recipients"
+    t.boolean  "automatic_send"
+    t.boolean  "same_all_stages"
+    t.integer  "agency",          limit: 2, default: 0
+    t.integer  "deal_type",       limit: 2, default: 0
+    t.integer  "source_type",     limit: 2, default: 0
+    t.integer  "next_steps",      limit: 2, default: 0
+    t.integer  "closed_reason",   limit: 2, default: 0
+    t.integer  "intiative",       limit: 2, default: 0
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+  end
+
+  add_index "ealerts", ["company_id"], name: "index_ealerts_on_company_id", using: :btree
 
   create_table "exchange_rates", force: :cascade do |t|
     t.integer "company_id"
@@ -1201,6 +1265,35 @@ ActiveRecord::Schema.define(version: 20170530220615) do
   add_index "teams", ["leader_id"], name: "index_teams_on_leader_id", using: :btree
   add_index "teams", ["parent_id"], name: "index_teams_on_parent_id", using: :btree
 
+  create_table "temp_cumulative_dfp_reports", force: :cascade do |t|
+    t.string   "dimensionorder_name"
+    t.string   "dimensionadvertiser_name"
+    t.string   "dimensionline_item_name"
+    t.string   "dimensionad_unit_name"
+    t.integer  "dimensionorder_id"
+    t.integer  "dimensionadvertiser_id"
+    t.integer  "dimensionline_item_id"
+    t.integer  "dimensionad_unit_id"
+    t.datetime "dimensionattributeorder_start_date_time"
+    t.datetime "dimensionattributeorder_end_date_time"
+    t.string   "dimensionattributeorder_agency"
+    t.datetime "dimensionattributeline_item_start_date_time"
+    t.datetime "dimensionattributeline_item_end_date_time"
+    t.string   "dimensionattributeline_item_cost_type"
+    t.integer  "dimensionattributeline_item_cost_per_unit",          limit: 8
+    t.integer  "dimensionattributeline_item_goal_quantity",          limit: 8
+    t.integer  "dimensionattributeline_item_non_cpd_booked_revenue", limit: 8
+    t.integer  "columntotal_line_item_level_impressions",            limit: 8
+    t.integer  "columntotal_line_item_level_clicks",                 limit: 8
+    t.integer  "columntotal_line_item_level_all_revenue",            limit: 8
+    t.float    "columntotal_line_item_level_ctr"
+    t.float    "columnvideo_viewership_average_view_rate"
+    t.float    "columnvideo_viewership_completion_rate"
+    t.integer  "company_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "temp_ios", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -1224,6 +1317,17 @@ ActiveRecord::Schema.define(version: 20170530220615) do
     t.date    "start_date"
     t.date    "end_date"
     t.integer "days_length"
+  end
+
+  create_table "time_period_weeks", force: :cascade do |t|
+    t.integer  "week"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.string   "period_name"
+    t.date     "period_start"
+    t.date     "period_end"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   create_table "time_periods", force: :cascade do |t|
@@ -1344,6 +1448,7 @@ ActiveRecord::Schema.define(version: 20170530220615) do
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
+  add_foreign_key "ad_units", "products"
   add_foreign_key "api_configurations", "companies"
   add_foreign_key "bp_estimate_products", "bp_estimates"
   add_foreign_key "bp_estimate_products", "products"
@@ -1361,6 +1466,7 @@ ActiveRecord::Schema.define(version: 20170530220615) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
+  add_foreign_key "csv_temp_rows", "companies"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
   add_foreign_key "deal_custom_fields", "companies"
@@ -1375,6 +1481,12 @@ ActiveRecord::Schema.define(version: 20170530220615) do
   add_foreign_key "display_line_items", "ios"
   add_foreign_key "display_line_items", "products"
   add_foreign_key "display_line_items", "temp_ios"
+  add_foreign_key "ealert_custom_fields", "companies"
+  add_foreign_key "ealert_custom_fields", "ealerts"
+  add_foreign_key "ealert_stages", "companies"
+  add_foreign_key "ealert_stages", "ealerts"
+  add_foreign_key "ealert_stages", "stages"
+  add_foreign_key "ealerts", "companies"
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
   add_foreign_key "integration_logs", "companies"

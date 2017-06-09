@@ -3,7 +3,10 @@ class Io < ActiveRecord::Base
   belongs_to :agency, class_name: 'Client', foreign_key: 'agency_id'
   belongs_to :deal
   belongs_to :company
+
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
+  has_one :request, as: :requestable, dependent: :destroy
+
   has_many :io_members, dependent: :destroy
   has_many :users, dependent: :destroy, through: :io_members
   has_many :content_fees, dependent: :destroy

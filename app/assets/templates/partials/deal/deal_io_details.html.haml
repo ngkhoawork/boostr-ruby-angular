@@ -2,6 +2,8 @@
   %span.title IO Details
   %a.io-link{'href': '', 'ng-href': '/revenue/ios/{{currentDeal.io.id}}'} {{currentDeal.io.name || ''}}
   %span.details Total Budget = {{ currentDeal.io.budget_loc | currency: currency_symbol : 0 }}
+  %a.io-revenue-request{href: '', 'ng-click': "showNewRequestModal(currentDeal.io, 'Io')"}
+    Revenue Request
 
   .block#line-content-fees
     %div.mb20

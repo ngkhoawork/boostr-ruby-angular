@@ -4,7 +4,11 @@ RSpec.describe Request, type: :model do
   context 'validations' do
     it { should validate_length_of(:description).is_at_most(1000) }
     it { should validate_length_of(:resolution).is_at_most(1000) }
-    it { should validate_presence_of(:resolution).on(:update) }
+
+    context 'request denied' do
+      before { allow(subject).to receive(:request_is_denied).and_return(true) }
+      it { should validate_presence_of(:resolution).on(:update) }
+    end
   end
 
   context 'associations' do
@@ -86,7 +90,7 @@ RSpec.describe Request, type: :model do
       expect(message_delivery).to have_received(:deliver_later).with(queue: 'default')
     end
 
-    it 'does not send email if status is New' do
+    it 'does not send update_request if status is New' do
       request.update(
         status: 'New',
         description: 'Testing',
@@ -96,6 +100,21 @@ RSpec.describe Request, type: :model do
 
       expect(RequestsMailer).not_to have_received(:update_request)
       expect(message_delivery).not_to have_received(:deliver_later)
+    end
+
+    it 'sends new_request if status is New' do
+      allow(RequestsMailer).to receive(:new_request).and_return(message_delivery)
+      allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
+
+      request.update(
+        status: 'New',
+        description: 'Testing',
+        request_type: 'Revenue',
+        company: company
+      )
+
+      expect(RequestsMailer).to have_received(:new_request)
+      expect(message_delivery).to have_received(:deliver_later)
     end
   end
 

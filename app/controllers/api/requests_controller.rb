@@ -6,7 +6,7 @@ class Api::RequestsController < ApplicationController
     max_per_page = 20
     paginate requests.count, max_per_page do |limit, offset|
       render json: requests
-      .preload(:requester, :assignee, deal: [:io], requestable: [:product])
+      .preload(:requester, :assignee, deal: [:io])
       .limit(limit).offset(offset), each_serializer: Requests::RequestSerializer
     end
   end

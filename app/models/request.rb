@@ -16,7 +16,10 @@ class Request < ActiveRecord::Base
   scope :by_status, -> (status) { where(status: status) if status.present? }
 
   after_create :notify_assignee
-  after_update :notify_requester
+  after_update do
+    notify_assignee if self.status_changed?
+    notify_requester if self.status_changed?
+  end
 
   def request_is_completed
     self.status == 'Completed'

@@ -8,6 +8,8 @@ class Requests::RequestableSerializer < ActiveModel::Serializer
       object.product.name
     elsif object.is_a?(DisplayLineItem)
       object.line_number
+    else
+      object.id
     end
   end
 end
