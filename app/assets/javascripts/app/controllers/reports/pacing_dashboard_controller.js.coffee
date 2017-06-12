@@ -48,6 +48,8 @@
                 drawChart($scope.wonDeals, THIRD_CHART_ID)
         )()
 
+        $scope.isNumber = _.isNumber
+
         $scope.setMetric = (metric) ->
             metric.active = !metric.active
             updateChartVisibility()
@@ -194,6 +196,7 @@
             graphLine = d3.svg.line()
                 .x((value, i) -> x(i + 1))
                 .y((value, i) -> y(value))
+                .defined((value, i) -> _.isNumber value)
 
             graphsContainer = svg.append('g')
                 .attr('class', 'graphs-container')
