@@ -1430,12 +1430,12 @@ class Deal < ActiveRecord::Base
   end
 
   def user_with_highest_share
-    return nil if ordered_members_by_share.blank?
-
     @_user_with_highest_share ||= ordered_members_by_share.first.user
   end
 
   def team_for_user_with_highest_share
+    return nil if ordered_members_by_share.blank?
+
     user_with_highest_share.leader? ? team_leader_name : user_with_highest_share_name
   end
 
