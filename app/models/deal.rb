@@ -86,6 +86,7 @@ class Deal < ActiveRecord::Base
     generate_deal_members
     send_new_deal_notification
     asana_connect
+    connect_deal_clients
   end
 
   before_destroy do
@@ -1522,6 +1523,13 @@ class Deal < ActiveRecord::Base
 
     if params.compact.any?
       deal.upsert_custom_fields(params)
+    end
+  end
+
+  def connect_deal_clients
+    if agency.present? && advertiser.present?
+      advertiser.agencies << agency
+      agency.advertisers << advertiser
     end
   end
 end
