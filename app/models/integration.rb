@@ -19,7 +19,7 @@ class Integration < ActiveRecord::Base
       integration_params = {}
 
       if row[0].strip
-        integratable_type[:integratable_type] = row[0].strip
+        integration_params[:integratable_type] = row[0].strip
       else
         import_log.count_failed
         import_log.log_error(["Type can't be blank"])
@@ -27,7 +27,7 @@ class Integration < ActiveRecord::Base
       end
 
       if row[1].strip
-        integratable_type[:external_id] = row[1].strip
+        integration_params[:external_id] = row[1].strip
       else
         import_log.count_failed
         import_log.log_error(["External ID can't be blank"])
@@ -35,7 +35,7 @@ class Integration < ActiveRecord::Base
       end
 
       if row[2].strip
-        integratable_type[:external_type] = row[2].strip
+        integration_params[:external_type] = row[2].strip
       else
         import_log.count_failed
         import_log.log_error(["External Type can't be blank"])
@@ -56,7 +56,7 @@ class Integration < ActiveRecord::Base
           import_log.log_error(["#{row[0].strip} name #{row[3].strip} did not match any #{row[0].strip} record"])
           next
         else
-          integratable_type[:integratable_id] = target.id
+          integration_params[:integratable_id] = target.id
         end
       end
 
@@ -74,12 +74,11 @@ class Integration < ActiveRecord::Base
           import_log.log_error(["#{row[0].strip} ID #{row[4].strip} did not match any #{row[0].strip} record"])
           next
         else
-          integratable_type[:integratable_id] = target.id
+          integration_params[:integratable_id] = target.id
         end
-        integratable_type[:integratable_type] = row[0].strip
       end
 
-      if integratable_type[:integratable_id].nil?
+      if integration_params[:integratable_id].nil?
         import_log.count_failed
         import_log.log_error(["Related Name or Related ID is not valid"])
         next
