@@ -159,6 +159,8 @@
 
   transformEalert = () ->
     $scope.ealert.recipient_list = []
+    $scope.ealert.ealert_stages = _.reject $scope.ealert.ealert_stages, (item) ->
+      return item.stage.active == false
     all_disabled = true
     automatic_send = true
     for index in [0...$scope.ealert.ealert_stages.length]
