@@ -8,6 +8,8 @@ class Product < ActiveRecord::Base
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
+  scope :active, -> { where('active IS true') }
+
   def as_json(options = {})
     super(options.merge(include: [:ad_units, values: { include: [:option], methods: [:value] }]))
   end
@@ -30,9 +32,16 @@ class Product < ActiveRecord::Base
 
   def self.to_csv
     CSV.generate do |csv|
-      csv << ["Product ID", "Product Name", "Pricing Type", "Product Line", "Product Family"]
+      csv << ["Product ID", "Product Name", "Pricing Type", "Product Line", "Product Family", "Active"]
       all.each do |product|
-        csv << [product.id, product.name, get_option_value(product, "Pricing Type"), get_option_value(product, "Product Line"), get_option_value(product, "Product Family")]
+        csv << [
+          product.id,
+          product.name,
+          get_option_value(product, "Pricing Type"),
+          get_option_value(product, "Product Line"),
+          get_option_value(product, "Product Family"),
+          product.active ? "Yes" : "No"
+        ]
       end
     end
   end

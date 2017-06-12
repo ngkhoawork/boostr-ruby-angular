@@ -13,7 +13,7 @@ gem 'bootstrap-sass', '~> 3.3.5'
 gem 'devise'
 gem 'devise_invitable', '~> 1.3.4'
 gem 'knock', git: 'https://github.com/trizes/knock.git', branch: 'master'
-gem 'rollbar', '~> 1.5.3'
+gem 'rollbar', '~> 2.14.0'
 gem 'activeadmin', '~> 1.0.0'
 gem 'haml-rails', '~> 0.9'
 gem 'angular-rails-templates'
@@ -42,6 +42,7 @@ gem 'attr_encrypted', '~> 3.0.0'
 gem 'net-sftp', require: false
 gem 'google-dfp-api'
 gem 'clean_pagination'
+gem "switch_user"
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -63,6 +64,10 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-angular-paginate-anything'
 end
 
+group :production, :staging do
+  gem 'rails_12factor'
+end
+
 group :test do
   gem 'shoulda-matchers', require: false
   gem 'vcr'
@@ -71,6 +76,7 @@ end
 
 group :development do
   gem 'bullet'
+  gem 'letter_opener'
 end
 
 group :development, :test do

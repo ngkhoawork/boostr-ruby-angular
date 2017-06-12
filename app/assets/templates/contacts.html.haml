@@ -97,12 +97,14 @@
 				%add-button{'ng-click': 'showModal()'}
 					Add Contact
 			.header-item.switch-row
-				%span{ng: {repeat: 'switch in switches', class: '{active: switch.name == selectedSwitch.name}', click: 'switchContacts(switch)'}}
+				%span{ng: {repeat: 'switch in switches', class: '{active: switch.name == teamFilter().name}', click: 'switchContacts(switch)'}}
 					{{switch.name}}
 			.header-item.contact-search
 				%i.fa.fa-search
 				%input.form-control{placeholder: 'Search', ng: {model: 'query', 'model-options': '{debounce: 500}' }}
 			.header-item
+				%download-button.mr8{'ng-click': 'export()'}
+					Export
 				%button.btn-main{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
@@ -120,7 +122,7 @@
 							%th Works At
 							%th Related Accounts
 							%th Email
-							%th Phone
+							%th Mobile
 							%th Last Touch
 					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading'}}
 						%tr{'ng-repeat': 'contact in contacts'}
@@ -130,7 +132,7 @@
 							%td {{contact.job_level}}
 							%td {{contact.primary_client_json.name}}
 							%td
-								%div{'ng-repeat': 'client in contact.workplaces'} {{client.name}}
+								%div{'ng-repeat': 'clientContact in contact.non_primary_client_contacts'} {{clientContact.client.name}}
 							%td {{contact.address.email}}
-							%td {{contact.address.phone}}
+							%td {{contact.address.mobile}}
 							%td {{contact.last_touched | date}}

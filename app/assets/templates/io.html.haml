@@ -10,9 +10,9 @@
 								%i.fa.fa-pencil.z-icon{'ng-click': 'showIOEditModal(currentIO)'}
 								%i.fa.fa-trash.z-icon{'ng-click': 'deleteIo(currentIO)'}
 							.detail-info
-								{{currentIO.advertiser.name || ''}}
+								%a{'href': '', 'ng-href': '/accounts/{{currentIO.advertiser.id}}'} {{currentIO.advertiser.name || ''}}
 								{{currentIO.advertiser.name && currentIO.agency.name && '|'}}
-								{{currentIO.agency.name || ''}}
+								%a{'href': '', 'ng-href': '/accounts/{{currentIO.agency.id}}'} {{currentIO.agency.name || ''}}
 							.detail-info
 								%span.mr8 IO # {{currentIO.io_number}}
 								-#{{currentIO.io_number && currentIO.external_io_number && '|'}}
@@ -41,7 +41,7 @@
 								.col-body-wrap
 									.col-body
 										.description Start-End Dates
-										%div{'ng-if': 'currentUser.user_type == 5'}
+										%div{'ng-if': 'currentUser.is_admin'}
 											.title.bs-datepicker
 												%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.start_date', click: 'startOpened = !startOpened', class: '{ editing: startOpened }', change: 'updateIO()' }, 'is-open': 'startOpened' }
 													{{currentIO.start_date | date : 'mediumDate'}}
@@ -50,7 +50,7 @@
 													%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'currentIO.end_date', click: 'endOpened = !endOpened', class: '{ editing: endOpened }', change: 'updateIO()' }, 'is-open': 'endOpened' }
 														{{currentIO.end_date | date : 'mediumDate'}}
 													%span.caret
-										%div{'ng-if': 'currentUser.user_type != 5'}
+										%div{'ng-if': '!currentUser.is_admin'}
 											.title
 												%span {{currentIO.start_date | date : 'mediumDate'}}
 												{{'-'}}
@@ -78,12 +78,12 @@
 									%td
 										{{ currentIO.end_date | date: 'M/d/yyyy' }}
 									%td
-										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.user_type == 5" }
-										%span{ ng: { if: "currentUser.user_type != 5" } }
+										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "content_fee.budget_loc", 'on-after-save': 'updateContentFee(content_fee)', 'ng-if': "currentUser.is_admin" }
+										%span{ ng: { if: "!currentUser.is_admin" } }
 											{{ content_fee.budget_loc | currency:currency_symbol:0 }}
 									%td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
-										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFeeAndBudget(content_fee)', 'ng-if': "currentUser.user_type == 5" }
-										%span{ ng: { if: "currentUser.user_type != 5" } }
+										%span{'click-to-edit':'click-to-edit', type: "number", prefix: "{{currency_symbol}}", 'ng-model': "product_budget.budget_loc", 'on-after-save': 'updateContentFeeAndBudget(content_fee)', 'ng-if': "currentUser.is_admin" }
+										%span{ ng: { if: "!currentUser.is_admin" } }
 											{{ product_budget.budget_loc | currency:currency_symbol:0 }}
 								%tr{ ng: { if: '!currentIO.content_fees || currentIO.content_fees.length == 0' } }
 									%td.center{ 'colspan': '{{4+currentIO.readable_months.length}}' }
@@ -178,7 +178,7 @@
 												%div.title
 													Monthly Budgets
 													%span ( {{ budgets.rest | currency:currency_symbol:0 }} remaining )
-												%div.line-budget{'ng-if': 'currentUser.user_type == 5', 'ng-repeat': 'budget in budgets'}
+												%div.line-budget{'ng-if': 'currentUser.is_admin', 'ng-repeat': 'budget in budgets'}
 													.month {{budget.month}}
 													.budget.hide-input-arrows
 														%span.editable-budget{'editable-number': 'budget.budget_loc', 'blur': 'submit', 'onbeforesave': 'createOrUpdateBudget(budget, $data, $index)'}
@@ -187,7 +187,7 @@
 																%i.fa.fa-close.budget-delete{'ng-click': 'deleteBudget(budget, $event)'}
 															%span{'ng-if': 'isNaN(budget.budget_loc)'}
 																%b.add-budget Add
-												%div.line-budget{'ng-if': 'currentUser.user_type != 5', 'ng-repeat': 'budget in budgets'}
+												%div.line-budget{'ng-if': '!currentUser.is_admin', 'ng-repeat': 'budget in budgets'}
 													.month {{budget.month}}
 													.budget {{budget.budget_loc | currency : currency_symbol : 0}}
 
@@ -251,20 +251,20 @@
 								%tr{ ng: { repeat: "io_member in currentIO.io_members | orderBy: 'name'"} }
 									%td
 										%span.mr8 {{ io_member.name }}
-										%i.fa.fa-trash.z-icon{ href: '', ng: { if: "currentUser.user_type == 5", click: 'deleteMember(io_member)' } }
+										%i.fa.fa-trash.z-icon{ href: '', ng: { if: "currentUser.is_admin", click: 'deleteMember(io_member)' } }
 									%td
 										.bs-datepicker
-											%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.from_date', click: 'startOpened1 = !startOpened1', class: '{ editing: startOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'startOpened1' }
+											%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.is_admin", model: 'io_member.from_date', click: 'startOpened1 = !startOpened1', class: '{ editing: startOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'startOpened1' }
 												{{ io_member.from_date | date: 'M/d/yyyy' }}
-											%span{ ng: { if: "currentUser.user_type != 5" } }
+											%span{ ng: { if: "!currentUser.is_admin" } }
 												{{ io_member.from_date | date: 'M/d/yyyy' }}
 									%td
 										.bs-datepicker
-											%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.user_type == 5", model: 'io_member.to_date', click: 'endOpened1 = !endOpened1', class: '{ editing: endOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'endOpened1' }
+											%span.editable{ datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { if: "currentUser.is_admin", model: 'io_member.to_date', click: 'endOpened1 = !endOpened1', class: '{ editing: endOpened1 }', change: 'updateIOMember(io_member)' }, 'is-open': 'endOpened1' }
 												{{ io_member.to_date | date: 'M/d/yyyy' }}
-										%span{ ng: { if: "currentUser.user_type != 5" } }
+										%span{ ng: { if: "!currentUser.is_admin" } }
 											{{ io_member.to_date | date: 'M/d/yyyy' }}
 									%td
-										%span{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "io_member.share", 'on-after-save': 'updateIOMember(io_member)', 'ng-if': "currentUser.user_type == 5" }
-										%span{ ng: { if: "currentUser.user_type != 5" } }
+										%span{'click-to-edit':'click-to-edit', type: "inputText", postfix: '%', 'ng-model': "io_member.share", 'on-after-save': 'updateIOMember(io_member)', 'ng-if': "currentUser.is_admin" }
+										%span{ ng: { if: "!currentUser.is_admin" } }
 											{{ io_member.share }}%

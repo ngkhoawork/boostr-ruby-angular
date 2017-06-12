@@ -10,7 +10,11 @@ class Api::DealsController < ApplicationController
           render json: activity_deals
         elsif params[:time_period_id].present?
           if valid_time_period?
-            render json: forecast_deals
+            if params[:product_ids].present?
+              render json: product_forecast_deals
+            else
+              render json: forecast_deals
+            end
           else
             render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
           end
@@ -115,16 +119,15 @@ class Api::DealsController < ApplicationController
 
   def pipeline_report
     respond_to do |format|
-      selected_deals = nil
-      case params[:status]
+      selected_deals = case params[:status]
         when 'open'
-          selected_deals = deals.open.less_than(100)
+          deals.open.less_than(100)
         when 'all'
-          selected_deals = deals
+          deals
         when 'closed'
-          selected_deals = deals.close_status
+          deals.close_status
         else
-          selected_deals = deals.open.less_than(100)
+          deals.open.less_than(100)
       end
 
       filtered_deals = selected_deals
@@ -218,21 +221,23 @@ class Api::DealsController < ApplicationController
 
   def create
     if params[:file].present?
-      require 'timeout'
-      begin
-        csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-        errors = Deal.import(csv_file, current_user)
-        render json: errors
-      rescue Timeout::Error
-        return
-      end
+      CsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Deal',
+        current_user.id,
+        params[:file][:original_filename]
+      )
+
+      render json: {
+        message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
+      }, status: :ok
     else
       @deal = company.deals.new(deal_params)
 
       deal.created_by = current_user.id
       deal.updated_by = current_user.id
       # deal.set_user_currency
-      if deal.save
+      if deal.save(context: :manual_update)
         render json: deal, status: :created
       else
         render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -242,7 +247,9 @@ class Api::DealsController < ApplicationController
 
   def update
     deal.updated_by = current_user.id
-    if deal.update_attributes(deal_params)
+    deal.assign_attributes(deal_params)
+
+    if deal.save(context: :manual_update)
       render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -253,6 +260,9 @@ class Api::DealsController < ApplicationController
     deal.destroy
 
     render nothing: true
+
+  rescue ActiveRecord::DeleteRestrictionError => e
+    render json: { errors: { delete: ['Please delete IO for this deal before deleting'] } }, status: :unprocessable_entity
   end
 
   def send_to_operative
@@ -404,6 +414,85 @@ class Api::DealsController < ApplicationController
     response_deals
   end
 
+  def product_forecast_deals
+    response_deals = []
+    all_users = []
+    if params[:user_id].present? && params[:user_id] != 'all'
+      response_deals = user.deals
+      all_users << user.id
+    elsif params[:team_id].present? && params[:team_id] == 'all'
+      response_deals = company.deals
+      all_users = company.users.pluck(:id)
+    else
+      response_deals = all_team_deals
+      selected_team = Team.find(params[:team_id])
+      all_users = selected_team.all_members.map(&:id)
+      all_users += selected_team.all_leaders.map(&:id)
+    end
+    response_deals = response_deals
+     .for_time_period(time_period.start_date, time_period.end_date)
+     .open_partial
+     .as_json({override: true, options: {
+                      only: [
+                              :id,
+                              :name,
+                              :stage_id,
+                              :budget,
+                              :budget_loc,
+                              :curr_cd,
+                              :next_steps,
+                              :open,
+                              :start_date,
+                              :end_date
+                      ],
+                      include: {
+
+                              stage: {
+                                      only: [:id, :probability, :open, :active]
+                              },
+                              deal_members: {
+                                      only: [:id, :share, :user_id],
+                                      methods: [:name]
+                              },
+                              advertiser: {
+                                      only: [:id, :name]
+                              }
+                      }
+              }}
+     )
+
+    year = time_period.start_date.year
+    data = []
+    response_deals.each do |deal|
+      range = deal['start_date'] .. deal['end_date']
+
+      deal_object = Deal.find(deal['id'])
+
+      product_deals = {}
+      deal_object.deal_products.for_product_ids(product_ids).each do |deal_product|
+        item_product_id = deal_product.product_id
+        deal_product.deal_product_budgets.for_time_period(time_period.start_date, time_period.end_date).each do |deal_product_budget|
+          if product_deals[item_product_id].nil?
+            product_deals[item_product_id] = JSON.parse(JSON.generate(deal))
+            product_deals[item_product_id][:product_id] = item_product_id
+            product_deals[item_product_id][:product] = deal_product.product
+            product_deals[item_product_id][:in_period_amt] = 0
+          end
+          if deal_product_budget.deal_product.open == true
+            from = [time_period.start_date, deal_product_budget.start_date].max
+            to = [time_period.end_date, deal_product_budget.end_date].min
+            num_days = (to.to_date - from.to_date) + 1
+            product_deals[item_product_id][:in_period_amt] += deal_product_budget.daily_budget.to_f * num_days
+          end
+        end
+      end
+
+      data = data + product_deals.values
+    end
+
+    data
+  end
+
   def product_filter
     if params[:product_id].presence && params[:product_id] != 'all'
       params[:product_id].to_i
@@ -543,12 +632,18 @@ class Api::DealsController < ApplicationController
   def deals
     if params[:filter] == 'company' && current_user.leader?
       company.deals.active
+    elsif params[:filter] == 'all'
+      company.deals.active
     elsif params[:filter] == 'selected_team' && params[:team_id]
       all_team_deals
     elsif params[:filter] == 'user' && params[:user_id]
       deal_member_filter
-    elsif params[:filter] == 'team' && team.present?
-      company.deals.by_deal_team(team.all_members.map(&:id) + team.all_leaders.map(&:id))
+    elsif params[:filter] == 'team'
+      if team.present?
+        company.deals.by_deal_team(team.all_members.map(&:id) + team.all_leaders.map(&:id))
+      else
+        company.deals.active
+      end
     elsif params[:client_id].present?
       company.deals.active
     else
@@ -606,6 +701,14 @@ class Api::DealsController < ApplicationController
       company.teams.where(leader: current_user).first
     else
       current_user.team
+    end
+  end
+
+  def product_ids
+    @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
+      params[:product_ids]
+    else
+      nil
     end
   end
 

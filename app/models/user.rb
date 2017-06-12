@@ -22,10 +22,6 @@ class User < ActiveRecord::Base
   has_many :contacts, through: :activities
   has_many :display_line_items, through: :ios
 
-  before_update do
-    modify_admin_status if user_type_changed?
-  end
-
   ROLES = %w(user admin superadmin)
 
   validates :first_name, :last_name, presence: true
@@ -33,8 +29,12 @@ class User < ActiveRecord::Base
 
   scope :by_user_type, -> type_id { where(user_type: type_id) if type_id.present? }
   scope :by_name, -> name { where('users.first_name ilike ? or users.last_name ilike ?', "%#{name}%", "%#{name}%") if name.present? }
+  scope :by_email, -> email { where('email ilike ?', email)  }
 
   def roles=(roles)
+    if roles. nil?
+      roles = %w(user)
+    end
     self.roles_mask = (roles & ROLES).map { |r| 2**ROLES.index(r) }.inject(0, :+)
   end
 
@@ -48,12 +48,8 @@ class User < ActiveRecord::Base
     roles.include?(role.to_s)
   end
 
-  def modify_admin_status
-    if user_type == ADMIN
-      add_role('admin')
-    else
-      remove_role('admin')
-    end
+  def is_admin
+    is?(:admin)
   end
 
   def add_role(role)
@@ -81,9 +77,15 @@ class User < ActiveRecord::Base
 
   def self.from_token_payload payload
     # Returns a valid user, `nil` or raise from token payload
-    if user = self.find(payload["sub"])
+    if user = self.find_by(id: payload["sub"], is_active: true)
       return user if payload["refresh"] && Digest::SHA1.hexdigest(user.encrypted_password.slice(20, 20)) == payload["refresh"]
     end
+  end
+
+  def self.from_token_request request
+    # Finds user from token request
+    email = request.params["auth"] && request.params["auth"]["email"]
+    self.find_by(email: email, is_active: true)
   end
 
   def name
@@ -99,7 +101,7 @@ class User < ActiveRecord::Base
       super(options)
     else
       super(options.merge(
-        methods: [:name, :leader?]
+        methods: [:name, :leader?, :is_admin, :roles]
       ).except(:override))
     end
   end
@@ -243,6 +245,56 @@ class User < ActiveRecord::Base
     ios
   end
 
+  def quarterly_product_ios(product_ids, start_date, end_date)
+    data = []
+    ios = self.all_ios_for_time_period(start_date, end_date).as_json
+    year = start_date.year
+    ios.each do |io|
+      io_obj = Io.find(io['id'])
+
+      io[:members] = io_obj.io_members
+
+      if io['end_date'] == io['start_date']
+        io['end_date'] += 1.day
+      end
+
+      product_ios = {}
+
+      content_fee_rows = io_obj.content_fees
+      content_fee_rows = content_fee_rows.for_product_ids(product_ids) if product_ids.present?
+      content_fee_rows.each do |content_fee|
+        content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+          item_product_id = content_fee.product_id
+          if product_ios[item_product_id].nil?
+            product_ios[item_product_id] = JSON.parse(JSON.generate(io))
+            product_ios[item_product_id][:product_id] = item_product_id
+            product_ios[item_product_id][:product] = content_fee.product
+          end
+        end
+      end
+
+      display_line_item_rows = io_obj.display_line_items.for_time_period(start_date, end_date)
+      display_line_item_rows = display_line_item_rows.for_product_ids(product_ids) if product_ids.present?
+      display_line_item_rows.each do |display_line_item|
+        item_product_id = display_line_item.product_id
+        if product_ios[item_product_id].nil?
+          product_ios[item_product_id] = JSON.parse(JSON.generate(io))
+          product_ios[item_product_id][:product_id] = item_product_id
+          product_ios[item_product_id][:product] = display_line_item.product
+        end
+      end
+      product_ios.each do |index, item|
+        sum_period_budget, split_period_budget = io_obj.for_product_forecast_page(item[:product], start_date, end_date, self)
+        product_ios[index]['in_period_amt'] = sum_period_budget
+        product_ios[index]['in_period_split_amt'] = split_period_budget
+      end
+
+      data = data + product_ios.values
+    end
+
+    data
+  end
+
   def all_revenues_for_time_period(start_date, end_date)
     rs = revenues.for_time_period(start_date, end_date)
     rs.map {|r| r.set_period_budget(start_date, end_date)}
@@ -334,9 +386,5 @@ class User < ActiveRecord::Base
     ).pluck(:id)
 
     Activity.where(id: activity_ids)
-  end
-
-  def admin?
-    user_type == ADMIN
   end
 end

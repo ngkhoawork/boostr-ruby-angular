@@ -62,17 +62,12 @@
 
   $scope.getClientConnectedClientContacts = ->
     Client.connected_client_contacts({id: $scope.currentClient.id}).$promise.then (connected_client_contacts) ->
-      if ($scope.currentClient.client_type.option.name == 'Advertiser')
-        $scope.connected_client_contacts = connected_client_contacts
-      else
-        $scope.connected_client_contacts = []
-        _.each connected_client_contacts, (connected_client_contact) ->
-          object = angular.copy(connected_client_contact)
-          _.each connected_client_contact.non_primary_client_contacts, (primary_client_contact) ->
-            new_object = angular.copy(object)
-            new_object.non_primary_client_contact = primary_client_contact
-            $scope.connected_client_contacts.push(new_object)
-
+      $scope.connected_client_contacts = _.map connected_client_contacts, (clientContact) ->
+        if ($scope.currentClient.client_type.option.name == 'Advertiser')
+          clientContact._clientContacts = [_.extend clientContact.contact.primary_client_contact, clientContact]
+        else
+          clientContact._clientContacts = clientContact.contact.non_primary_client_contacts
+        clientContact
 
   $scope.getChildClients = ->
     Client.child_clients({id: $scope.currentClient.id}).$promise.then (child_clients) ->
@@ -262,17 +257,6 @@
       templateUrl: 'modals/client_form.html'
       size: 'md'
       controller: 'AccountsNewController'
-      backdrop: 'static'
-      keyboard: false
-      resolve:
-        client: ->
-          {}
-
-  $scope.showUploadModal = ->
-    $scope.modalInstance = $modal.open
-      templateUrl: 'modals/client_upload.html'
-      size: 'lg'
-      controller: 'ClientsUploadController'
       backdrop: 'static'
       keyboard: false
       resolve:
@@ -498,6 +482,22 @@
             return client_member
           else
             return item
+
+  $scope.updateClientContactStatus = (clientContact, bool) ->
+    ClientContact.update_status(
+      id: clientContact.id
+      client_id: clientContact.client_id
+      is_active: bool
+    ).$promise.then (resp) ->
+      clientContact.is_active = resp.is_active
+
+  $scope.updateClientConnection = (clientConnection, newValues) ->
+    ClientConnection.update(
+        id: clientConnection.id
+        client_connection: newValues
+    ).then (resp) ->
+      _.extend clientConnection, resp
+
 
   $scope.showLinkExistingPerson = ->
     $scope.showContactList = true

@@ -82,6 +82,9 @@
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
+    .when '/reports/product_forecasts',
+      templateUrl: 'product_forecasts_detail.html'
+      controller: 'ProductForecastsDetailController'
     .when '/smart_reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
       controller: 'SalesExecutionDashboardController'
@@ -100,6 +103,9 @@
     .when '/smart_reports/initiatives',
       templateUrl: 'initiatives_summary.html'
       controller: 'InitiativesSummaryController'
+    .when '/smart_reports/pacing_dashboard',
+      templateUrl: 'pacing_dashboard.html'
+      controller: 'PacingDashboardController'
     .when '/reports/deal_reports',
       templateUrl: 'deal_reports.html'
       controller: 'DealReportsController'
@@ -175,7 +181,10 @@
     .when '/settings/custom_fields/',
       templateUrl: 'settings/custom_fields.html'
       controller: 'SettingsDealCustomFieldNamesController'
-    .when '/bp',
+    .when '/settings/ealerts/',
+      templateUrl: 'settings/ealerts.html'
+      controller: 'SettingsEalertsController'
+    .when '/bps',
       templateUrl: 'bp.html'
       controller: 'BPController'
     .when '/forecast/:team_id?',

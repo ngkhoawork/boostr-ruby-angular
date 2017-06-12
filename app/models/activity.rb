@@ -30,13 +30,17 @@ class Activity < ActiveRecord::Base
 
   scope :for_company, -> (id) { where(company_id: id) }
   scope :for_contact, -> (id) { joins(:activities_contacts).where('activities_contacts.contact_id = ?', id) }
+  scope :for_time_period, -> (start_date, end_date) { where('activities.happened_at <= ? AND activities.happened_at >= ?', end_date, start_date) if start_date && end_date }
 
-  def self.import(file, current_user)
-    errors = []
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
 
-    row_number = 0
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'activity', source: 'ui')
+    import_log.set_file_source(file_path)
+
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
+      import_log.count_processed
+
       if row[1].present?
         begin
           happened_at = DateTime.strptime(row[1].strip, '%m/%d/%Y')
@@ -44,25 +48,25 @@ class Activity < ActiveRecord::Base
             happened_at = Date.strptime(row[1].strip, "%m/%d/%y")
           end
         rescue ArgumentError
-          error = {row: row_number, message: ['Date must be a valid datetime'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Date must be a valid datetime'])
           next
         end
       else
-        error = { row: row_number, message: ['Date is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Date is empty'])
         next
       end
 
       if row[2].nil? || row[2].blank?
-        error = { row: row_number, message: ['Creator is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Creator is empty'])
         next
       else
         creator = current_user.company.users.where('email ilike ?', row[2]).first
         unless creator
-          error = { row: row_number, message: ["User #{row[2]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["User #{row[2]} could not be found"])
           next
         end
       end
@@ -71,12 +75,12 @@ class Activity < ActiveRecord::Base
         advertiser_type_id = Client.advertiser_type_id(current_user.company)
         advertisers = current_user.company.clients.by_type_id(advertiser_type_id).where('name ilike ?', row[3].strip)
         if advertisers.length > 1
-          error = { row: row_number, message: ["Advertiser #{row[3]} matched more than one account record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Advertiser #{row[3]} matched more than one account record"])
           next
         elsif advertisers.length == 0
-          error = { row: row_number, message: ["Advertiser #{row[3]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Advertiser #{row[3]} could not be found"])
           next
         else
           advertiser = advertisers.first
@@ -87,12 +91,12 @@ class Activity < ActiveRecord::Base
         agency_type_id = Client.agency_type_id(current_user.company)
         agencies = current_user.company.clients.by_type_id(agency_type_id).where('name ilike ?', row[4].strip)
         if agencies.length > 1
-          error = { row: row_number, message: ["Agency #{row[4]} matched more than one account record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Agency #{row[4]} matched more than one account record"])
           next
         elsif agencies.length == 0
-          error = { row: row_number, message: ["Agency #{row[4]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Agency #{row[4]} could not be found"])
           next
         else
           agency = agencies.first
@@ -102,12 +106,12 @@ class Activity < ActiveRecord::Base
       if row[5].present?
         deals = current_user.company.deals.where('name ilike ?', row[5].strip)
         if deals.length > 1
-          error = { row: row_number, message: ["Deal #{row[5]} matched more than one deal record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal #{row[5]} matched more than one deal record"])
           next
         elsif deals.length == 0
-          error = { row: row_number, message: ["Deal #{row[5]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal #{row[5]} could not be found"])
           next
         else
           deal = deals.first
@@ -117,13 +121,13 @@ class Activity < ActiveRecord::Base
       if row[6].present?
         type = current_user.company.activity_types.where('name ilike ?', row[6].strip).first
         unless type
-          error = { row: row_number, message: ["Activity type #{row[6]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Activity type #{row[6]} could not be found"])
           next
         end
       else
-        error = { row: row_number, message: ['Activity type is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Activity type is empty'])
         next
       end
 
@@ -137,8 +141,8 @@ class Activity < ActiveRecord::Base
           if contact
             contact_list << contact
           else
-            error = { row: row_number, message: ["Activity contact #{email} could not be found in the contacts list"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Activity contact #{email} could not be found in the contacts list"])
             contact_list_error = true
             break
           end
@@ -174,15 +178,16 @@ class Activity < ActiveRecord::Base
       end
 
       if activity.update_attributes(activity_params)
+        import_log.count_imported
         activity.contacts << contact_list
       else
-        error = { row: row_number, message: activity.errors.full_messages }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(activity.errors.full_messages)
         next
       end
     end
 
-    errors
+    import_log.save
   end
 
   def as_json(options = {})
@@ -208,8 +213,21 @@ class Activity < ActiveRecord::Base
             include: { address: {} }
             },
           :creator => {}
-        }
+        },
+        methods: [:team_creator]
       ).except(:override))
     end
+  end
+
+  def team_creator
+    creator.leader? ? leader_name : creator_team_name
+  end
+
+  def leader_name
+    Team.find_by(leader: creator).name
+  end
+
+  def creator_team_name
+    creator.team.name rescue nil
   end
 end

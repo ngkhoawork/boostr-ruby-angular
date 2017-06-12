@@ -56,6 +56,10 @@ class DealIndexSerializer < ActiveModel::Serializer
     parts << object.advertiser.try(:updated_at)
     parts << object.stage.try(:id)
     parts << object.stage.try(:updated_at)
+    object.users.each do |user|
+      parts << user.id
+      parts << user.updated_at
+    end
     parts
   end
 end

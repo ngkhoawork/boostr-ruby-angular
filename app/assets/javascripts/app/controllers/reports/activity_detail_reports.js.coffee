@@ -9,17 +9,25 @@
       $scope.activityTypeFilters = []
       $scope.time_period = 'month'
       $scope.teamId = ''
+      $scope.memberId = $routeParams.member_id
+      $scope.isInitLoad = true
       $scope.selectedTeam = {
         id:'all',
         name:'Team'
       }
       $scope.datePicker = {
-        startDate: null
-        endDate: null
+        startDate: moment($routeParams.start_date).startOf('day')
+        endDate: moment($routeParams.end_date).startOf('day')
       }
-      $scope.isDateSet = false
 
       datePickerInput = $document.find('#kpi-date-picker')
+
+      if ($routeParams.start_date && $routeParams.end_date)
+        $scope.isDateSet = true
+        datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+      else
+        $scope.isDateSet = false
+      $scope.activityTypeId = $routeParams.type_id
 
       $scope.datePickerApply = () ->
         if ($scope.datePicker.startDate && $scope.datePicker.endDate)
@@ -69,7 +77,7 @@
         if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
           query.start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
           query.end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
-
+        $scope.isInitLoad = false
         Activity.all(query).then (activities) ->
           $scope.activities = activities
 
@@ -104,7 +112,9 @@
       #team watcher
       $scope.$watch 'selectedTeam', () ->
         $scope.teamId = $scope.selectedTeam.id
-        $scope.memberId = null
+        if (!$scope.isInitLoad)
+          $scope.memberId = null
+
         fetchTeamMembers($scope.teamId)
         fetchData()
 
@@ -162,7 +172,8 @@
       $scope.getHtml = (html) ->
         return $sce.trustAsHtml(html)
 
-      $scope.showEmailsModal = (activity) ->
+      $scope.showEmailsModal = (activity, e) ->
+        e.stopPropagation()
         $scope.modalInstance = $modal.open
           templateUrl: 'modals/activity_emails.html'
           size: 'lg'
@@ -172,4 +183,17 @@
           resolve:
             activity: ->
               activity
+
+      $scope.showActivityEditModal = (activity) ->
+        $scope.modalInstance = $modal.open
+          templateUrl: 'modals/activity_new_form.html'
+          size: 'md'
+          controller: 'ActivityNewController'
+          backdrop: 'static'
+          keyboard: false
+          resolve:
+            activity: -> activity
+            options: -> null
+
+      $scope.$on 'updated_activities', fetchData
   ]

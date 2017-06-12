@@ -124,7 +124,7 @@
 				%span.title Deals
 				%add-button{'ng-click': 'showNewDealModal()'} Add Deal
 				.deals-types
-					%span{'ng-repeat': 'type in dealTypes', 'ng-class': '{active: type === selectedType}', 'ng-click': 'filterDeals(type)'}
+					%span{'ng-repeat': 'type in dealTypes', 'ng-class': '{active: type.name == teamFilter().name}', 'ng-click': 'filterDeals(type)'}
 						{{type.name}}
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
@@ -134,6 +134,8 @@
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header
 						%span
+							{{stage.probability}}%
+							%br
 							{{stage.name}}
 							%i ({{columns[columnIndex].length || 0}})
 						%span

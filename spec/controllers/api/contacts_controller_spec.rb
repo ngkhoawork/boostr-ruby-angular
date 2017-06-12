@@ -76,7 +76,7 @@ RSpec.describe Api::ContactsController, type: :controller do
         client_criteria = create :client, name: 'Flipboard', company: user.company, created_by: user.id
         create :contact, company: user.company, clients: [client_criteria], client_id: client_criteria.id
 
-        get :index, filter: 'my_contacts', workplace: 'flipboard'
+        get :index, filter: 'my_contacts', workplace: 'flipboard', format: :json
 
         expect(json_response.length).to be 1
         expect(json_response.first['primary_client_json']['name']).to eql 'Flipboard'
@@ -87,7 +87,7 @@ RSpec.describe Api::ContactsController, type: :controller do
         user_client = create :client, company: user.company, created_by: user.id
         create :contact, company: user.company, address_attributes: address_criteria, created_by: user.id, clients: [user_client]
 
-        get :index, filter: 'my_contacts', city: 'palm beach'
+        get :index, filter: 'my_contacts', city: 'palm beach', format: :json
 
         expect(json_response.length).to be 1
         expect(json_response.first['address']['city']).to eql 'Palm Beach'
@@ -106,7 +106,7 @@ RSpec.describe Api::ContactsController, type: :controller do
           created_by: user.id, clients: [user_client],
           values_attributes: [field: field, option: seller_option]
 
-        get :index, filter: 'my_contacts', job_level: 'CEO'
+        get :index, filter: 'my_contacts', job_level: 'CEO', format: :json
 
         expect(json_response.length).to be 1
         expect(json_response.first['name']).to eql ceo_contact.name
@@ -195,7 +195,7 @@ RSpec.describe Api::ContactsController, type: :controller do
     it 'returns contacts metadata' do
       prepare_contact_metadata
 
-      get :metadata
+      get :metadata, format: :json
 
       expect(json_response).to eql(
         'workplaces' => ['Fidelity', 'Fliboard'],
@@ -215,7 +215,7 @@ RSpec.describe Api::ContactsController, type: :controller do
 
       get :related_clients, id: contact.id
 
-      expect(json_response.map{|el| el['name'] } ).to eq(['Fidelity', 'Fliboard'])
+      expect(json_response.map{|el| el['client']['name'] } ).to eq(['Fidelity', 'Fliboard'])
     end
   end
 

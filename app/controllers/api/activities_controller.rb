@@ -14,14 +14,16 @@ class Api::ActivitiesController < ApplicationController
 
   def create
     if params[:file].present?
-      require 'timeout'
-      begin
-        csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-        activities = Activity.import(csv_file, current_user)
-        render json: activities
-      rescue Timeout::Error
-        return
-      end
+      CsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Activity',
+        current_user.id,
+        params[:file][:original_filename]
+      )
+
+      render json: {
+        message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
+      }, status: :ok
     else
       @activity = company.activities.build(activity_params)
       @activity.user_id = current_user.id
@@ -105,35 +107,7 @@ class Api::ActivitiesController < ApplicationController
   end
 
   def activity_csv_report
-    CSV.generate do |csv|
-      header = []
-      header << "Date"
-      header << "Type"
-      header << "Comments"
-      header << "Advertiser"
-      header << "Agency"
-      header << "Contacts"
-      header << "Deal"
-      header << "Creator"
-      csv << header
-
-      activities.each do |row|
-        line = []
-        line << row.happened_at.strftime("%m/%d/%Y")
-        line << row.activity_type_name
-        line << row.comment
-        line << (row.client.nil? ? "" : row.client.name)
-        line << (row.agency.nil? ? "" : row.agency.name)
-        contacts = ""
-        row.contacts.each do |contact|
-          contacts += contact.name + "\n"
-        end
-        line << contacts
-        line << (row.deal.nil? ? "" : row.deal.name)
-        line << (row.creator.nil? ? "" : row.creator.first_name + " " + row.creator.last_name)
-        csv << line
-      end
-    end
+    Csv::ActivityDetailService.new(activities).perform
   end
 
   def activities

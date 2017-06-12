@@ -1,12 +1,13 @@
 #activity-form-modal.popup-modal
     .popup-modal-header
         Error Messages
-        %span.close-btn{'ng-click': 'cancel()'} +
+        %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body
-        .alert.alert-danger{ role: 'alert', ng: { repeat: 'error in errors' } }
-            %strong
-                Row {{ error.row }}
-            contains errors: {{ error.message.join(', ') }}
+        %div{ role: 'alert', ng: { repeat: 'error in errors' } }
+            %p
+                %strong
+                    Row {{ error.row }}
+                error: {{ error.message.join(', ') }}
 
     .popup-modal-footer
         %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close

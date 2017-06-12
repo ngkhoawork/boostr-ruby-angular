@@ -5,10 +5,14 @@
 				{{currentDeal.name}}
 				%i.fa.fa-pencil.edit-deal{'ng-click': 'showDealEditModal(currentDeal)'}
 				%i.fa.fa-trash.delete-deal{'ng-click': 'deleteDeal(currentDeal)'}
+				.ealert-label.pull-right{'ng-class': '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}
+					eAlerts
+				%i.fa.fa-envelope.ealert.pull-right{ng: {click: 'showDealEalertModal(currentDeal)', class: '{danger: (ealertReminder && currentDeal.company_ealert_reminder)}'}}
+				
 			.detail-info
-				{{currentDeal.advertiser.name || ''}}
+				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.advertiser.id}}'} {{currentDeal.advertiser.name || ''}}
 				{{currentDeal.advertiser.name && currentDeal.agency.name && '|'}}
-				{{currentDeal.agency.name || ''}}
+				%a{'href': '', 'ng-href': '/accounts/{{currentDeal.agency.id}}'} {{currentDeal.agency.name || ''}}
 
 		.clearfix
 		%div.stats-numbers.mb30
@@ -57,7 +61,7 @@
 							%ul.dropdown-menu
 								%li{'ng-repeat': 'stage in stages', 'ng-class': '{active: currentDeal.stage.name == stage.name}'}
 									%a{'href': '', 'ng-click': 'updateDealStage(currentDeal, stage.id)'}
-										%span.text {{stage.name}}
+										%span.text {{stage.name}} {{stage.probability}}%
 			%div.stats-col
 				.col-body-wrap
 					.col-body

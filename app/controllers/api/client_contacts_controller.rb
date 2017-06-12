@@ -4,13 +4,18 @@ class Api::ClientContactsController < ApplicationController
 
   def index
     if params[:primary]
-      contacts = client.primary_contacts.order(:name).includes(:address)
+      client_contacts = client.primary_client_contacts.includes(:contact).order('contacts.name')
     else
-      contacts = client.contacts.order(:name).includes(:address)
+      client_contacts = client.client_contacts.includes(:contact).order('contacts.name')
     end
     max_per_page = 100
-    paginate contacts.count, max_per_page do |limit, offset|
-      render json: contacts.limit(limit).offset(offset)
+    paginate client_contacts.count, max_per_page do |limit, offset|
+      render json: client_contacts
+                    .preload(contact: [:address, values: [:option, :field]])
+                    .limit(limit)
+                    .offset(offset),
+                    each_serializer: ClientContacts::ClientContactsForClientSerializer,
+                                     contact_options: company_job_level_options
     end
   end
 
@@ -45,8 +50,9 @@ class Api::ClientContactsController < ApplicationController
   def client
     @client ||= current_user.company.clients.find(params[:client_id])
   end
+
   def client_contact_params
-    params.require(:client_contact).permit(:contact_id, :primary)
+    params.require(:client_contact).permit(:contact_id, :primary, :is_active)
   end
 
   def client_contact
@@ -69,5 +75,9 @@ class Api::ClientContactsController < ApplicationController
       }).each do |client|
         client['contacts'].delete_if { |contact| !(client_contact_ids.include?(contact["id"])) }
     end
+  end
+
+  def company_job_level_options
+    current_user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level').options.select(:id, :field_id, :name)
   end
 end

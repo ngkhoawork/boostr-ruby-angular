@@ -15,9 +15,11 @@ class Deal < ActiveRecord::Base
   belongs_to :previous_stage, class_name: 'Stage', foreign_key: 'previous_stage_id'
   belongs_to :initiative
 
-  has_one :io, class_name: "Io", foreign_key: 'io_number'
-  has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
+  # Restrict with exception is used to rollback any
+  # other potential dependent: :destroy relations
+  has_one :io, class_name: "Io", foreign_key: 'deal_id', dependent: :restrict_with_exception
 
+  has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products, dependent: :destroy
@@ -43,6 +45,7 @@ class Deal < ActiveRecord::Base
   validate :billing_contact_presence
   validate :single_billing_contact
   validate :account_manager_presence
+  validate :disable_manual_deal_won_validation, on: :manual_update
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
@@ -65,12 +68,16 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     log_stage if stage_id_changed?
-    integrate_with_operative if self.company_id.eql?(22)
+    send_ealert if stage_id_changed?
+    integrate_with_operative
+    send_lost_deal_notification
   end
 
   before_create do
     update_stage
-    self.closed_at = created_at unless stage.open?
+    if self.closed_at.nil?
+      self.closed_at = created_at unless stage.open?
+    end
   end
 
   after_create do
@@ -106,6 +113,11 @@ class Deal < ActiveRecord::Base
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
   scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
+  scope :by_product_id, -> (product_id) { joins(:products).where(products: { id: product_id } ) if product_id.present? }
+  scope :by_team_id, -> (team_id) { joins(deal_members: :user).where(users: { team_id: team_id }) if team_id.present? }
+  scope :by_seller_id, -> (seller_id) do
+    joins(:deal_members).where(deal_members: { user_id: seller_id }) if seller_id.present?
+  end
 
   def integrate_with_operative
     if stage_id_changed? && operative_integration_allowed?
@@ -118,7 +130,15 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_integration_allowed?
-    operative_switched_on? && deal_lost_or_won?
+    company_allowed_use_operative? && operative_switched_on? && deal_lost_or_won?
+  end
+
+  def company_allowed_use_operative?
+    if self.company_id.eql?(22)
+      true
+    else
+      false
+    end
   end
 
   def operative_switched_on?
@@ -126,11 +146,11 @@ class Deal < ActiveRecord::Base
   end
 
   def deal_lost_or_won?
-    deal_stage_percentage_eql_api_config_percentage? || deal_lost?
+    (deal_stage_percentage_greater_or_eql_api_config_percentage? && !integrations.operative.present?) || deal_lost?
   end
 
-  def deal_stage_percentage_eql_api_config_percentage?
-    stage.probability.eql?(operative_api_config.trigger_on_deal_percentage)
+  def deal_stage_percentage_greater_or_eql_api_config_percentage?
+    stage.probability >= operative_api_config.trigger_on_deal_percentage
   end
 
   def deal_lost?
@@ -172,6 +192,17 @@ class Deal < ActiveRecord::Base
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
       errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+    end
+  end
+
+  def disable_manual_deal_won_validation
+    validation = company.validation_for(:disable_deal_won)
+    disable_flag = validation.criterion.try(:value) if validation
+
+    if validation && disable_flag == true && stage && stage.probability == 100 && stage.open? == false
+      errors.add(
+        :stage, "Deals can't be updated to #{self.stage.try(:name)} manually. Deals can only be set to #{self.stage.try(:name)} from API integration"
+      )
     end
   end
 
@@ -282,6 +313,19 @@ class Deal < ActiveRecord::Base
   end
 
   def in_period_open_amt(start_date, end_date)
+    total = 0
+    deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+      if deal_product_budget.deal_product.open == true
+        from = [start_date, deal_product_budget.start_date].max
+        to = [end_date, deal_product_budget.end_date].min
+        num_days = (to.to_date - from.to_date) + 1
+        total += deal_product_budget.daily_budget.to_f * num_days
+      end
+    end
+    total
+  end
+
+  def product_in_period_open_amt(product, start_date, end_date)
     total = 0
     deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
       if deal_product_budget.deal_product.open == true
@@ -449,6 +493,7 @@ class Deal < ActiveRecord::Base
       header << "Latest Activity"
       header << "Deal Type"
       header << "Deal Source"
+      header << "Team"
       header << "Next Steps"
       header << "Start Date"
       header << "End Date"
@@ -475,6 +520,7 @@ class Deal < ActiveRecord::Base
         line << deal.latest_activity_csv_string
         line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Type')
         line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Source')
+        line << deal.team_for_user_with_highest_share
         line << deal.next_steps
         line << deal.start_date
         line << deal.end_date
@@ -835,31 +881,33 @@ class Deal < ActiveRecord::Base
 
   end
 
-  def self.import(file, current_user)
-    errors = []
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
 
-    row_number = 0
     deal_type_field = current_user.company.fields.find_by_name('Deal Type')
     deal_source_field = current_user.company.fields.find_by_name('Deal Source')
     close_reason_field = current_user.company.fields.find_by_name("Close Reason")
     list_of_currencies = Currency.pluck(:curr_cd)
 
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal', source: 'ui')
+    import_log.set_file_source(file_path)
+
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
+      import_log.count_processed
 
       if row[0]
         begin
           deal = current_user.company.deals.find(row[0].strip)
         rescue ActiveRecord::RecordNotFound
-          error = { row: row_number, message: ["Deal ID #{row[0]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal ID #{row[0]} could not be found"])
           next
         end
       end
 
       if row[1].nil? || row[1].blank?
-        error = { row: row_number, message: ["Deal name can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Deal name can't be blank"])
         next
       end
 
@@ -867,19 +915,19 @@ class Deal < ActiveRecord::Base
         advertiser_type_id = Client.advertiser_type_id(current_user.company)
         advertisers = current_user.company.clients.by_type_id(advertiser_type_id).where('name ilike ?', row[2].strip)
         if advertisers.length > 1
-          error = { row: row_number, message: ["Advertiser #{row[2]} matched more than one account record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Advertiser #{row[2]} matched more than one account record"])
           next
         elsif advertisers.length == 0
-          error = { row: row_number, message: ["Advertiser #{row[2]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Advertiser #{row[2]} could not be found"])
           next
         else
           advertiser = advertisers.first
         end
       else
-        error = { row: row_number, message: ["Advertiser can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Advertiser can't be blank"])
         next
       end
 
@@ -887,12 +935,12 @@ class Deal < ActiveRecord::Base
         agency_type_id = Client.agency_type_id(current_user.company)
         agencies = current_user.company.clients.by_type_id(agency_type_id).where('name ilike ?', row[3].strip)
         if agencies.length > 1
-          error = { row: row_number, message: ["Agency #{row[3]} matched more than one account record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Agency #{row[3]} matched more than one account record"])
           next
         elsif agencies.length == 0
-          error = { row: row_number, message: ["Agency #{row[3]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Agency #{row[3]} could not be found"])
           next
         else
           agency = agencies.first
@@ -903,21 +951,21 @@ class Deal < ActiveRecord::Base
       if row[4]
         curr_cd = row[4].strip
         if !(list_of_currencies.include?(curr_cd))
-          error = { row: row_number, message: ["Currency #{curr_cd} is not found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Currency #{curr_cd} is not found"])
           next
         end
       else
-        error = { row: row_number, message: ["Currency code can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Currency code can't be blank"])
         next
       end
 
       if row[5].present?
         deal_type = deal_type_field.options.where('name ilike ?', row[5].strip).first
         unless deal_type
-          error = { row: row_number, message: ["Deal Type #{row[5]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal Type #{row[5]} could not be found"])
           next
         end
       else
@@ -927,8 +975,8 @@ class Deal < ActiveRecord::Base
       if row[6].present?
         deal_source = deal_source_field.options.where('name ilike ?', row[6].strip).first
         unless deal_source
-          error = { row: row_number, message: ["Deal Source #{row[6]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal Source #{row[6]} could not be found"])
           next
         end
       else
@@ -938,15 +986,15 @@ class Deal < ActiveRecord::Base
       start_date = nil
       if row[7].present?
         if !(row[8].present?)
-          error = {row: row_number, message: ['End Date must be present if Start Date is set'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['End Date must be present if Start Date is set'])
           next
         end
         begin
           start_date = Date.strptime(row[7], '%m/%d/%Y')
         rescue ArgumentError
-          error = {row: row_number, message: ['Start Date must have valid date format MM/DD/YYYY'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Start Date must have valid date format MM/DD/YYYY'])
           next
         end
       end
@@ -954,35 +1002,35 @@ class Deal < ActiveRecord::Base
       end_date = nil
       if row[8].present?
         if !(row[7].present?)
-          error = {row: row_number, message: ['Start Date must be present if End Date is set'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Start Date must be present if End Date is set'])
           next
         end
         begin
           end_date = Date.strptime(row[8], '%m/%d/%Y')
         rescue ArgumentError
-          error = {row: row_number, message: ['End Date must have valid date format MM/DD/YYYY'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['End Date must have valid date format MM/DD/YYYY'])
           next
         end
       end
 
       if (end_date && start_date) && start_date > end_date
-        error = {row: row_number, message: ['Start Date must preceed End Date'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Start Date must preceed End Date'])
         next
       end
 
       if row[9].present?
         stage = current_user.company.stages.where('name ilike ?', row[9].strip).first
         unless stage
-          error = { row: row_number, message: ["Stage #{row[9]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Stage #{row[9]} could not be found"])
           next
         end
       else
-        error = { row: row_number, message: ["Stage can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Stage can't be blank"])
         next
       end
 
@@ -994,15 +1042,15 @@ class Deal < ActiveRecord::Base
 
         deal_members.each do |deal_member|
           if deal_member[1].nil?
-            error = { row: row_number, message: ["Deal Member #{deal_member[0]} does not have a share"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Deal Member #{deal_member[0]} does not have a share"])
             deal_member_list_error = true
             break
           elsif user = current_user.company.users.where('email ilike ?', deal_member[0]).first
             deal_member_list << user
           else
-            error = { row: row_number, message: ["Deal Member #{deal_member[0]} could not be found in the User list"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Deal Member #{deal_member[0]} could not be found in the User list"])
             deal_member_list_error = true
             break
           end
@@ -1012,27 +1060,27 @@ class Deal < ActiveRecord::Base
           next
         end
       else
-        error = { row: row_number, message: ["Team can't be blank"] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(["Team can't be blank"])
         next
       end
 
       if row[11].present?
         begin
-          created_at = DateTime.strptime(row[11], '%m/%d/%Y')
+          created_at = DateTime.strptime(row[11], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
-          error = {row: row_number, message: ['Deal Creation Date must have valid date format MM/DD/YYYY'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Deal Creation Date must have valid date format MM/DD/YYYY'])
           next
         end
       end
 
       if row[12].present?
         begin
-          closed_date = DateTime.strptime(row[12], '%m/%d/%Y')
+          closed_date = DateTime.strptime(row[12], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
-          error = {row: row_number, message: ['Deal Close Date must have valid date format MM/DD/YYYY'] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(['Deal Close Date must have valid date format MM/DD/YYYY'])
           next
         end
       else
@@ -1042,8 +1090,8 @@ class Deal < ActiveRecord::Base
       if row[13].present?
         close_reason = close_reason_field.options.where('name ilike ?', row[13].strip).first
         unless close_reason
-          error = { row: row_number, message: ["Close Reason #{row[13]} could not be found"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Close Reason #{row[13]} could not be found"])
           next
         end
       else
@@ -1060,8 +1108,8 @@ class Deal < ActiveRecord::Base
           if contact = Contact.by_email(deal_contact, current_user.company_id).first
             deal_contact_list << contact
           else
-            error = { row: row_number, message: ["Contact #{deal_contact} could not be found"] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(["Contact #{deal_contact} could not be found"])
             deal_contact_list_error = true
             break
           end
@@ -1113,8 +1161,8 @@ class Deal < ActiveRecord::Base
       if !(deal.present?)
         deals = current_user.company.deals.where('name ilike ?', row[1].strip)
         if deals.length > 1
-          error = { row: row_number, message: ["Deal name #{row[1]} matched more than one deal record"] }
-          errors << error
+          import_log.count_failed
+          import_log.log_error(["Deal name #{row[1]} matched more than one deal record"])
           next
         end
         deal = deals.first
@@ -1143,6 +1191,8 @@ class Deal < ActiveRecord::Base
       ]
 
       if deal.update_attributes(deal_params)
+        import_log.count_imported
+
         deal.deal_members.delete_all if deal_is_new
         deal_member_list.each_with_index do |user, index|
           deal_member = deal.deal_members.find_or_initialize_by(user: user)
@@ -1152,19 +1202,36 @@ class Deal < ActiveRecord::Base
           deal.deal_contacts.find_or_create_by(contact: contact)
         end
       else
-        error = { row: row_number, message: deal.errors.full_messages }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(deal.errors.full_messages)
         next
       end
     end
 
-    errors
+    import_log.save
   end
 
   def update_stage
     self.previous_stage_id = self.stage_id_was
     self.stage_updated_at = updated_at
     self.stage_updated_by = updated_by
+  end
+
+  def send_ealert
+    ealert = self.company.ealerts.first
+    if ealert
+      ealert_stage = ealert.ealert_stages.find_by(stage_id: self.stage_id)
+      if ealert_stage && ealert_stage.enabled == true
+        recipients = []
+        if ealert.same_all_stages == true
+          recipients = ealert.recipients.split(',').map(&:strip) if ealert.recipients
+        else
+          recipients = ealert_stage.recipients.split(',').map(&:strip) if ealert_stage.recipients
+        end
+        
+        UserMailer.ealert_email(recipients, ealert.id, self.id, '').deliver_later(wait: 10.minutes, queue: "default") if recipients.length > 0
+      end
+    end
   end
 
   def close_display_product
@@ -1241,12 +1308,21 @@ class Deal < ActiveRecord::Base
   end
 
   def send_new_deal_notification
-    notification = company.notifications.find_by_name('New Deal')
+    notification = company.notifications.by_name('New Deal')
     if !notification.nil? && !notification.recipients.nil?
       recipients = notification.recipients.split(',').map(&:strip)
       if !recipients.nil? && recipients.length > 0
-        UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: "default")
+        UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default')
       end
+    end
+  end
+
+  def send_lost_deal_notification
+    if stage_id_changed? && closed_lost?
+      notification = company.notifications.by_name(Notification::LOST_DEAL)
+      recipients = notification.recipients_arr
+
+      UserMailer.lost_deal_email(recipients, self).deliver_later(queue: 'default') if recipients.any?
     end
   end
 
@@ -1346,5 +1422,36 @@ class Deal < ActiveRecord::Base
 
   def ordered_by_created_at_billing_contacts
     deal_contacts.where(role: 'Billing').order(:created_at)
+  end
+
+  def self.grouped_count_by_week(start_date, end_date)
+    where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+    .group("date_trunc('day', deals.created_at)")
+    .order('date_trunc_day_deals_created_at').count
+  end
+
+  def self.grouped_sum_budget_by_week(start_date, end_date)
+    where(closed_at: start_date.beginning_of_day..end_date.end_of_day)
+    .won
+    .select(:closed_at, :budget)
+    .group('deals.closed_at')
+    .order('deals.closed_at')
+    .sum('budget')
+  end
+
+  def user_with_highest_share
+    @_user_with_highest_share ||= deal_members.ordered_by_share.first.user
+  end
+
+  def team_for_user_with_highest_share
+    user_with_highest_share.leader? ? team_leader_name : user_with_highest_share_name
+  end
+
+  def team_leader_name
+    Team.find_by(leader: user_with_highest_share).name
+  end
+
+  def user_with_highest_share_name
+    user_with_highest_share.team.name rescue nil
   end
 end

@@ -19,6 +19,7 @@ class Company < ActiveRecord::Base
   has_many :display_line_items, through: :ios
   has_many :temp_ios
   has_many :bps
+  has_many :ealerts, dependent: :destroy
   has_many :bp_estimates, through: :bps
   has_many :deal_custom_field_names
   has_many :deal_product_cf_names
@@ -72,6 +73,7 @@ class Company < ActiveRecord::Base
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
     notifications.find_or_initialize_by(name: 'New Deal', active: true)
+    notifications.find_or_initialize_by(name: 'Lost Deal', active: true)
     notifications.find_or_initialize_by(name: 'Pipeline Changes Reports', active: true)
 
     activity_types.find_or_initialize_by(name:'Initial Meeting', action:'had initial meeting with', icon:'/assets/icons/meeting.png')
@@ -86,6 +88,8 @@ class Company < ActiveRecord::Base
     activity_types.find_or_initialize_by(name:'Email', action:'emailed to', icon:'/assets/icons/email.png')
     activity_types.find_or_initialize_by(name:'Post Sale Meeting', action:'had post sale meeting with', icon:'/assets/icons/post-sale.png')
     activity_types.find_or_initialize_by(name:'Internal Meeting', action:'had insternal meeting with', icon:'/assets/icons/internal-meeting.png')
+
+    ealerts.find_or_initialize_by(recipients: nil, automatic_send: false, same_all_stages: true)
 
     setup_default_validations
   end
@@ -189,5 +193,6 @@ class Company < ActiveRecord::Base
   def setup_default_validations
     validations.find_or_initialize_by(factor: 'Billing Contact', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Account Manager', value_type: 'Number')
+    validations.find_or_initialize_by(factor: 'Disable Deal Won', value_type: 'Boolean')
   end
 end

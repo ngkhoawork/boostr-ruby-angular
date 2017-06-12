@@ -16,6 +16,13 @@
         angular.toJson(send)
 
       resource = $resource '/api/bps/:bp_id/bp_estimates/:id', { bp_id: '@bp_id', id: '@id' },
+        get:
+          method: 'GET'
+          url: '/api/bps/:bp_id/bp_estimates'
+          transformResponse: (data, headers) ->
+            resource.totalCount = headers()['x-total-count']
+            angular.fromJson(data)
+
         update:
           method: 'PUT'
           url: '/api/bps/:bp_id/bp_estimates/:id'
@@ -23,6 +30,8 @@
         save:
           method: 'POST'
           transformRequest: transformRequest
+
+      resource.totalCount = 0
 
       @all = (params) ->
         deferred = $q.defer()
@@ -47,5 +56,7 @@
           deferred.resolve(bp_estimate)
         deferred.promise
 
-      return
+      @resource = resource
+
+      return 
   ]

@@ -10,9 +10,7 @@ class Team < ActiveRecord::Base
   has_many :clients, through: :members
   has_many :revenues, through: :clients
 
-  scope :roots, proc {|root_only|
-    where(parent_id: nil) if root_only
-  }
+  scope :roots, proc { |root_only| where(parent_id: nil) if root_only }
 
   validates :name, presence: true
 
@@ -121,7 +119,9 @@ class Team < ActiveRecord::Base
 
   def quarterly_ios(start_date, end_date)
     all_users = all_members + all_leaders
-    ios = all_members.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq.as_json
+
+    ios = Io.for_company(company_id).for_io_members(all_users.map(&:id)).for_time_period(start_date, end_date).distinct.as_json
+    # ios = all_members.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten
     year = start_date.year
     ios.map do |io|
       io_obj = Io.find(io['id'])
@@ -194,10 +194,71 @@ class Team < ActiveRecord::Base
     ios
   end
 
+  def quarterly_product_ios(product_ids, start_date, end_date)
+    data = []
+    all_users = all_members + all_leaders
+    ios = Io.for_company(company_id).for_io_members(all_users.map(&:id)).for_time_period(start_date, end_date).distinct.as_json
+    # ios = all_users.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq.as_json
+    year = start_date.year
+    ios.each do |io|
+      io_obj = Io.find(io['id'])
+
+      io_users = io_obj.users.pluck(:id)
+      io_team_users = all_users.select do |user|
+        io_users.include?(user.id)
+      end
+      io[:members] = io_obj.io_members
+
+      if io['end_date'] == io['start_date']
+        io['end_date'] += 1.day
+      end
+
+      product_ios = {}
+
+      content_fee_rows = io_obj.content_fees
+      content_fee_rows = content_fee_rows.for_product_ids(product_ids) if product_ids.present?
+      content_fee_rows.each do |content_fee|
+        content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+          item_product_id = content_fee.product_id
+          if product_ios[item_product_id].nil?
+            product_ios[item_product_id] = JSON.parse(JSON.generate(io))
+            product_ios[item_product_id][:product_id] = item_product_id
+            product_ios[item_product_id][:product] = content_fee.product
+          end
+        end
+      end
+
+      display_line_item_rows = io_obj.display_line_items.for_time_period(start_date, end_date)
+      display_line_item_rows = display_line_item_rows.for_product_ids(product_ids) if product_ids.present?
+      display_line_item_rows.each do |display_line_item|
+        item_product_id = display_line_item.product_id
+        if product_ios[item_product_id].nil?
+          product_ios[item_product_id] = JSON.parse(JSON.generate(io))
+          product_ios[item_product_id][:product_id] = item_product_id
+          product_ios[item_product_id][:product] = display_line_item.product
+        end
+      end
+      product_ios.each do |index, item|
+        sum_period_budget, split_period_budget = 0, 0
+        io_team_users.each do |user|
+          result = io_obj.for_product_forecast_page(item[:product], start_date, end_date, user)
+          sum_period_budget += result[0] if sum_period_budget == 0
+          split_period_budget += result[1]
+        end
+        product_ios[index]['in_period_amt'] = sum_period_budget
+        product_ios[index]['in_period_split_amt'] = split_period_budget
+      end
+
+      data = data + product_ios.values
+    end
+
+    data
+  end
+
   def all_members
     ms = []
     ms += members.all
-    children.find_each do |child|
+    children.each do |child|
       ms += child.all_members
     end
     ms
@@ -224,8 +285,8 @@ class Team < ActiveRecord::Base
 
   def all_leaders
     ls = leader.nil? ? []:[leader]
-    children.find_each do |child|
-      ls << child.leader if !child.leader.nil?
+    children.each do |child|
+      ls += child.all_leaders
     end
     ls
   end
@@ -288,5 +349,9 @@ class Team < ActiveRecord::Base
       )
       SELECT id FROM team_tree ORDER BY path
     SQL
+  end
+
+  def self.leader_ids
+    roots(true).joins(:leader).pluck(:leader_id)
   end
 end

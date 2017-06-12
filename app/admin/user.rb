@@ -12,7 +12,22 @@ ActiveAdmin.register User do
     column :current_sign_in_at
     column :sign_in_count
     column :created_at
-    actions
+    actions do |action|
+      link_to "Login As", "/switch_user?scope_identifier=user_#{action.id}", :target => '_blank'
+    end
+  end
+
+  show do |user|
+    attributes_table do
+      #We want to keep the existing columns
+      User.column_names.each do |column|
+        row column
+      end
+      #This is where we add a new column
+      row :login_as do
+        link_to "#{user.name}", "/switch_user?remember=true&scope_identifier=user_#{user.id}", :target => '_blank'
+      end
+    end
   end
 
   filter :email

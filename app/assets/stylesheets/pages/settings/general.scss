@@ -1,5 +1,19 @@
 #general {
+  span.page-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-right: 20px;
+    display: block;
+  }
   h5 {
     margin-top: 30px
+  }
+  .fa.fa-exclamation-triangle {
+    color: $main-color;
+    font-size: 15px;
+    margin-left: 10px;
+  }
+  .switch-remainder-form {
+    margin-left: 0;
   }
 }

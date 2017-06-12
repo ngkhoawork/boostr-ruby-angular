@@ -6,9 +6,16 @@
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.hideEmail = true
-  $scope.user = user
+  $scope.user = angular.copy(user)
 
   $scope.submitForm = () ->
+    index = $scope.user.roles.indexOf('admin')
+    if ($scope.user.is_admin)
+      if (index == -1)
+        $scope.user.roles.push('admin')
+    else
+      if (index > -1)
+        $scope.user.roles.splice(index, 1)
     $scope.buttonDisabled = true
     $scope.user.$update ->
       $modalInstance.close()

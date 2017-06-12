@@ -18,7 +18,7 @@
 @directives.directive 'enterPress', ->
   (scope, elem, attrs) ->
     elem.bind 'keydown keypress', (e) ->
-      if e.which is 13
+      if e.which == 13
         scope.$apply ->
           scope.$eval attrs.enterPress
         e.preventDefault();

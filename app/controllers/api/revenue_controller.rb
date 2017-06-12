@@ -13,7 +13,11 @@ class Api::RevenueController < ApplicationController
 
   def forecast_detail
     if valid_time_period?
-      render json: quarterly_ios
+      if params[:product_ids].present?
+        render json: quarterly_product_ios
+      else
+        render json: quarterly_ios
+      end
     else
       render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
     end
@@ -142,6 +146,74 @@ class Api::RevenueController < ApplicationController
       ios
     else
       member_or_team.quarterly_ios(time_period.start_date, time_period.end_date)
+    end
+  end
+
+  def quarterly_product_ios
+    if params[:team_id] == 'all' && params[:user_id] == 'all'
+      data = []
+      all_users = current_user.company.users
+      # ios = all_users.map { |user| user.all_ios_for_time_period(start_date, end_date)  }.flatten.uniq.as_json
+      ios = current_user.company.ios
+                    .for_time_period(start_date, end_date)
+                    .as_json
+      year = start_date.year
+      ios.each do |io|
+        io_obj = Io.find(io['id'])
+
+        io_users = io_obj.users.pluck(:id)
+        io_team_users = all_users.select do |user|
+          io_users.include?(user.id)
+        end
+        io[:members] = io_obj.io_members
+
+        if io['end_date'] == io['start_date']
+          io['end_date'] += 1.day
+        end
+
+        product_ios = {}
+
+        content_fee_rows = io_obj.content_fees
+        content_fee_rows = content_fee_rows.for_product_ids(product_ids) if product_ids.present?
+        content_fee_rows.each do |content_fee|
+          content_fee.content_fee_product_budgets.for_time_period(start_date, end_date).each do |content_fee_product_budget|
+            item_product_id = content_fee.product_id
+            if product_ios[item_product_id].nil?
+              product_ios[item_product_id] = JSON.parse(JSON.generate(io))
+              product_ios[item_product_id][:product_id] = item_product_id
+              product_ios[item_product_id][:product] = content_fee.product
+            end
+          end
+        end
+
+        display_line_item_rows = io_obj.display_line_items.for_time_period(start_date, end_date)
+        display_line_item_rows = display_line_item_rows.for_product_ids(product_ids) if product_ids.present?
+        display_line_item_rows.each do |display_line_item|
+          item_product_id = display_line_item.product_id
+          if product_ios[item_product_id].nil?
+            product_ios[item_product_id] = JSON.parse(JSON.generate(io))
+            product_ios[item_product_id][:product_id] = item_product_id
+            product_ios[item_product_id][:product] = display_line_item.product
+          end
+        end
+
+        product_ios.each do |index, item|
+          sum_period_budget, split_period_budget = 0, 0
+          io_team_users.each do |user|
+            result = io_obj.for_product_forecast_page(item[:product], start_date, end_date, user)
+            sum_period_budget += result[0] if sum_period_budget == 0
+            split_period_budget += result[1]
+          end
+          product_ios[index]['in_period_amt'] = sum_period_budget
+          product_ios[index]['in_period_split_amt'] = split_period_budget
+        end
+
+        data = data + product_ios.values
+      end
+
+      data
+    else
+      member_or_team.quarterly_product_ios(product_ids, time_period.start_date, time_period.end_date)
     end
   end
 
@@ -283,6 +355,14 @@ class Api::RevenueController < ApplicationController
       quarters[quarter-1][:end_date]
     else
       time_period.end_date
+    end
+  end
+
+  def product_ids
+    @product_ids ||= if params[:product_ids].present? && params[:product_ids] != ['all']
+      params[:product_ids]
+    else
+      nil
     end
   end
 

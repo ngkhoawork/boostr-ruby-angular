@@ -1,12 +1,9 @@
-#custom-values
-  .container
-    .row
-      .col-xs-12
-        %h3
-          Custom Values
+#custom-values.z-styles
+  .container-fluid.msides20
+    %span.page-title Custom Values
 
     .row
-      #objects.col-xs-2.list-group
+      #objects.col-xs-3.list-group
         .well.primary
           Object
         .well{ ng: { repeat: 'object in objects', click: 'setObject(object)', class: '{active: current.object == object}' } }
@@ -24,7 +21,7 @@
           |
           %span.total
             {{ field.options.length }}-Opt
-      #options.col-xs-4.list-group
+      #options.col-xs-3.list-group
         .well.primary
           Options
           .pull-right
@@ -35,7 +32,7 @@
           %li{ ng: { repeat: 'option in current.field.options', click: 'setOption(option)', class: '{ active: current.option === option }' } }
             .well{ ng: { include: '"settings/custom_values/option.html"' }, 'scroll-if': 'option == newest' }
 
-      #suboptions.col-xs-3.list-group
+      #suboptions.col-xs-3.list-group{ng: { show: 'isFieldCategory()' }}
         .well.primary
           Sub-Options
           .pull-right

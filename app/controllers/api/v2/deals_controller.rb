@@ -90,7 +90,7 @@ class Api::V2::DealsController < ApiController
     deal.created_by = current_user.id
     deal.updated_by = current_user.id
     # deal.set_user_currency
-    if deal.save
+    if deal.save(context: :manual_update)
       render json: deal, status: :created
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
@@ -99,8 +99,10 @@ class Api::V2::DealsController < ApiController
 
   def update
     deal.updated_by = current_user.id
-    if deal.update_attributes(deal_params)
-      render json: deal
+    deal.assign_attributes(deal_params)
+
+    if deal.save(context: :manual_update)
+      render deal
     else
       render json: { errors: deal.errors.messages }, status: :unprocessable_entity
     end
@@ -145,6 +147,7 @@ class Api::V2::DealsController < ApiController
         :agency_id,
         :closed_at,
         :next_steps,
+        :closed_reason_text,
         {
             values_attributes: [
                 :id,

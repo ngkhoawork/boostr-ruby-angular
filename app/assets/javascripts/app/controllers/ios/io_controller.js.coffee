@@ -43,8 +43,13 @@
 
             $scope.deleteIo = (io) ->
                 if confirm('Are you sure you want to delete "' +  io.name + '"?')
-                    IO.delete io, ->
-                        $location.path('/revenue')
+                    IO.delete(io).then(
+                        (data) ->
+                            $location.path('/revenue')
+                        (resp) ->
+                            for key, error of resp.data.errors
+                                $scope.errors[key] = error && error[0]
+                    )
 
             $scope.showLinkExistingUser = ->
                 User.query().$promise.then (users) ->

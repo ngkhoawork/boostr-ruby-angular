@@ -19,11 +19,12 @@ RSpec.describe Activity, type: :model do
       let!(:deal) { create :deal, name: 'New Big Deal' }
       let!(:contacts) { create_list :contact, 4, company: company }
       let!(:activity) { create :activity }
+      let(:import_log) { CsvImportLog.last }
 
       it 'creates a new activity from csv' do
         data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name
         expect do
-          expect(Activity.import(generate_csv(data), user)).to eq([])
+          Activity.import(generate_csv(data), user.id, 'activity.csv')
         end.to change(Activity, :count).by(1)
 
         new_activity = Activity.last
@@ -42,7 +43,7 @@ RSpec.describe Activity, type: :model do
       it 'updates an existing activity by ID match' do
         data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name, id: activity.id
         expect do
-          expect(Activity.import(generate_csv(data), user)).to eq([])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
         end.not_to change(Activity, :count)
         activity.reload
 
@@ -61,7 +62,7 @@ RSpec.describe Activity, type: :model do
       it 'adds new contacts to the existing ones' do
         activity_contacts = activity.contacts.map(&:address).map(&:email)
         data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name, id: activity.id
-        Activity.import(generate_csv(data), user)
+        Activity.import(generate_csv(data), user.id, 'activities.csv')
         activity.reload
 
         expected_contacts = (activity_contacts + data[:contacts].split(';')).sort
@@ -70,10 +71,47 @@ RSpec.describe Activity, type: :model do
 
       it 'correctly processes year in YY format' do
         data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name, id: activity.id, date: '10/11/17'
-        Activity.import(generate_csv(data), user)
+        Activity.import(generate_csv(data), user.id, 'activities.csv')
         activity.reload
 
         expect(activity.happened_at).to eq DateTime.parse('11/10/2017')
+      end
+
+      context 'csv import log' do
+        it 'creates csv import log' do
+          data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name
+
+          expect do
+            Activity.import(generate_csv(data), user.id, 'activities.csv')
+          end.to change(CsvImportLog, :count).by(1)
+        end
+
+        it 'saves amount of processed rows for new objects' do
+          data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name
+
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_processed).to be 1
+          expect(import_log.rows_imported).to be 1
+          expect(import_log.file_source).to eq 'activities.csv'
+        end
+
+        it 'saves amount of processed rows when updating existing objects' do
+          data = build :activity_csv_data, agency: agency.name, advertiser: advertiser.name, id: activity.id
+
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_processed).to be 1
+          expect(import_log.rows_imported).to be 1
+        end
+
+        it 'counts failed rows' do
+          data = build :activity_csv_data, date: nil
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_processed).to be 1
+          expect(import_log.rows_failed).to be 1
+        end
       end
 
       context 'invalid data' do
@@ -86,95 +124,134 @@ RSpec.describe Activity, type: :model do
 
         it 'requires date to be present' do
           data = build :activity_csv_data, date: nil
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ['Date is empty']}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ['Date is empty'] }]
+          )
         end
 
         it 'requires date to be valid' do
           data = build :activity_csv_data, date: 'zzz'
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ['Date must be a valid datetime']}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ['Date must be a valid datetime'] }]
+          )
         end
 
         it 'requires creator column to be present' do
           data = build :activity_csv_data
           data[:creator] = nil
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ['Creator is empty']}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ['Creator is empty'] }]
+          )
         end
 
         it 'requires creator user to exist' do
           data = build :activity_csv_data, creator: 'N/A'
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["User #{data[:creator]} could not be found"]}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ["User #{data[:creator]} could not be found"] }]
+          )
         end
 
         it 'requires advertiser to exist' do
           data = build :activity_csv_data, advertiser: 'N/A'
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} could not be found"]}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ["Advertiser #{data[:advertiser]} could not be found"] }]
+          )
         end
 
         it 'requires advertiser to match no more than 1 account' do
           data = build :activity_csv_data, advertiser: duplicate_advertiser2.name
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} matched more than one account record"]}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ["Advertiser #{data[:advertiser]} matched more than one account record"] }]
+          )
         end
 
         it 'requires agency to exist' do
           data = build :activity_csv_data, agency: 'N/A'
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Agency #{data[:agency]} could not be found"]}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ["Agency #{data[:agency]} could not be found"] }]
+          )
         end
 
         it 'requires agency to match no more than 1 record' do
           data = build :activity_csv_data, agency: duplicate_agency2.name
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Agency #{data[:agency]} matched more than one account record"]}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ["Agency #{data[:agency]} matched more than one account record"] }]
+          )
         end
 
         it 'requires deal to exist' do
           data = build :activity_csv_data, deal: 'N/A'
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Deal #{data[:deal]} could not be found"]}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ["Deal #{data[:deal]} could not be found"] }]
+          )
         end
 
         it 'requires deal to match no more than 1 record' do
           data = build :activity_csv_data, deal: duplicate_deal2.name
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Deal #{data[:deal]} matched more than one deal record"]}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ["Deal #{data[:deal]} matched more than one deal record"] }]
+          )
         end
 
         it 'requires meeting type to be present' do
           data = build :activity_csv_data
           data[:type] = nil
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ['Activity type is empty']}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ['Activity type is empty'] }]
+          )
         end
 
         it 'requires activity type to exist' do
           data = build :activity_csv_data, type: 'N/A'
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Activity type #{data[:type]} could not be found"]}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ["Activity type #{data[:type]} could not be found"] }]
+          )
         end
 
         it 'requires contact to exist' do
           data = build :activity_csv_data, contacts: 'N/A'
-          expect(
-            Activity.import(generate_csv(data), user)
-          ).to eq([{row: 1, message: ["Activity contact #{data[:contacts]} could not be found in the contacts list"]}])
+          Activity.import(generate_csv(data), user.id, 'activities.csv')
+
+          expect(import_log.rows_failed).to be 1
+          expect(import_log.error_messages).to eq(
+            [{ "row" => 1, "message" => ["Activity contact #{data[:contacts]} could not be found in the contacts list"] }]
+          )
         end
       end
     end

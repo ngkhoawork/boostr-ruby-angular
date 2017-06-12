@@ -21,10 +21,10 @@ RSpec.describe Contact, type: :model do
       expect(contact.latest_happened_activity.first).to eq activity
     end
 
-    it 'has many workplaces' do
+    it 'has many non_primary_clients' do
       contact = create :contact, clients: [client, client2]
 
-      expect(contact.workplaces).to eq(contact.clients.select(:id, :name))
+      expect(contact.non_primary_clients.order(:name)).to eq(contact.clients.order(:name))
     end
   end
 
@@ -235,9 +235,10 @@ RSpec.describe Contact, type: :model do
       metadata = Contact.metadata(company.id)
 
       expect(metadata).to eq(
-        workplaces: ['Flipboard', 'Facebook'],
+        workplaces: ['Facebook', 'Flipboard'],
         job_levels: ['CEO', 'Seller'],
-        cities: ['Palm Beach', 'New York']
+        cities: ['Palm Beach', 'New York'],
+        countries: ISO3166::Country.all_translated
       )
     end
   end

@@ -75,6 +75,7 @@
   currentContact = undefined
 
   # @$resource = resource
+  resource.exportUrl = '/api/contacts.csv'
 
   resource.all = (callback) ->
     resource.query {}, (contacts) =>

@@ -2,27 +2,49 @@ class Api::ContactsController < ApplicationController
   respond_to :json
 
   def index
-    if params[:unassigned] == "yes"
-      results = unassigned_contacts
+    results = if params[:unassigned].eql?('yes')
+      unassigned_contacts
     elsif params[:name].present?
-      results = suggest_contacts
+      suggest_contacts
     elsif params[:contact_name].present?
-      results = suggest_contacts(true)
+      suggest_contacts(true)
     elsif params[:activity].present?
-      results = activity_contacts
+      activity_contacts
     else
-      results = contacts
+      contacts
     end
 
     results = apply_search_criteria(results)
 
-    response.headers['X-Total-Count'] = results.total_count
-    render json: results.includes(:primary_client).preload(:values, :address, :workplaces)
-      .limit(limit)
-      .offset(offset), each_serializer: ContactSerializer,
-                       contact_options: company_job_level_options,
-                       advertiser: advertiser_type_id,
-                       agency: Client.agency_type_id(current_user.company)
+    respond_to do |format|
+      format.json {
+
+        response.headers['X-Total-Count'] = results.total_count
+        render json: results.includes(:primary_client).preload(
+          :latest_happened_activity,
+          :client,
+          :values,
+          :address,
+          non_primary_client_contacts: [:client]
+        )
+        .limit(limit)
+        .offset(offset), each_serializer: ContactSerializer,
+                         contact_options: company_job_level_options,
+                         advertiser: advertiser_type_id,
+                         agency: Client.agency_type_id(current_user.company)
+      }
+
+      format.csv {
+        require 'timeout'
+        begin
+          status = Timeout::timeout(120) {
+            send_data Contact.to_csv(current_user.company, results), filename: "contacts-#{Date.today}.csv"
+          }
+        rescue Timeout::Error
+          return
+        end
+      }
+    end
   end
 
   def show
@@ -34,10 +56,16 @@ class Api::ContactsController < ApplicationController
 
   def create
     if params[:file].present?
-      # csv_file = IO.read(params[:file].tempfile.path)
-      csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-      contacts = Contact.import(csv_file, current_user)
-      render json: contacts
+      CsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Contact',
+        current_user.id,
+        params[:file][:original_filename]
+      )
+
+      render json: {
+        message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
+      }, status: :ok
     else
       if contact_params[:client_id].present?
         contact = current_user.company.contacts.new(contact_params)
@@ -78,11 +106,15 @@ class Api::ContactsController < ApplicationController
   end
 
   def related_clients
-    render json: contact.workplaces.by_type_id(advertiser_type_id).as_json(
-      override: true,
-      only: [:id, :name],
+    render json: contact.non_primary_client_contacts.joins(:client).where('clients.client_type_id = ?', advertiser_type_id)
+    .preload(client: [:address])
+    .as_json(
       include: {
-        address: { only: :city }
+        client: {
+          include: {
+            address: { only: :city }
+          }
+        }
       }
     )
   end
@@ -217,8 +249,12 @@ class Api::ContactsController < ApplicationController
   def contacts
     if params[:filter] == 'my_contacts'
       Contact.by_client_ids(current_user.clients.ids)
-    elsif params[:filter] == 'team' && team
-      Contact.by_client_ids(team.clients.ids)
+    elsif params[:filter] == 'team'
+      if team.present?
+        Contact.by_client_ids(team.clients.ids)
+      else
+        current_user.company.contacts.order(:name)
+      end
     else
       current_user.company.contacts.order(:name)
     end

@@ -11,10 +11,10 @@ RSpec.describe Api::V1::ActivityTypesController, type: :controller do
     expect(response).to be_success
   end
 
-  it 'returns 11 activity types' do
+  it 'returns activity types' do
     get :index
 
-    expect(json_response.length).to be 11
+    expect(json_response.length).to be 12
   end
 
   def company

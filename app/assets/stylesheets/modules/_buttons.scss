@@ -50,6 +50,10 @@
       }
     }
   }
+  &.disabled {
+    background-color: $main-color;
+    color: white;
+  }
 }
 
 .btn-main {

@@ -68,16 +68,14 @@ class Api::ClientsController < ApplicationController
 
   def create
     if params[:file].present?
-      require 'timeout'
-      begin
-        status = Timeout::timeout(120) {
-          csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-          clients = Client.import(csv_file, current_user)
-          render json: clients
-        }
-      rescue Timeout::Error
-        return
-      end
+      CsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Client',
+        current_user.id,
+        params[:file][:original_filename]
+      )
+
+      render json: { message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)" }, status: :ok
     else
       client = company.clients.new(client_params)
       client.created_by = current_user.id
@@ -161,9 +159,19 @@ class Api::ClientsController < ApplicationController
     client = company.clients.find(params[:client_id])
     if client && client.client_type
       if client.client_type.name == "Agency"
-        render json: client.agency_contacts.for_primary_client(client.id).uniq
+        render json: client.client_contacts.where(contact_id: client.agency_contacts.ids)
+          .preload(contact: [:non_primary_client_contacts, :address, :values, :primary_client_contact])
+          .limit(limit)
+          .offset(offset),
+            each_serializer: ClientContacts::ClientContactsForClientSerializer,
+                             contact_options: company_job_level_options
       elsif client.client_type.name == "Advertiser"
-        render json: client.advertiser_contacts.for_client(client.id).uniq
+        render json: client.client_contacts.where(contact_id: client.advertiser_contacts.ids)
+          .preload(contact: [:non_primary_client_contacts, :address, :values, :primary_client_contact])
+          .limit(limit)
+          .offset(offset),
+            each_serializer: ClientContacts::ClientContactsForClientSerializer,
+                             contact_options: company_job_level_options
       end
     else
       render json: []
@@ -275,10 +283,13 @@ class Api::ClientsController < ApplicationController
   def clients
     if params[:filter] == 'company' && current_user.leader?
       company.clients
-    elsif params[:filter] == 'team' && team.present?
-      team.clients
+    elsif params[:filter] == 'team'
+      if team.present?
+        team.clients
+      else
+        company.clients
+      end
     elsif params[:filter] == 'all'
-      # TODO eventually we may want to limit this... it is only used in the new deal dropdown
       company.clients
     else
       current_user.clients
@@ -303,5 +314,9 @@ class Api::ClientsController < ApplicationController
 
   def activity_clients
     @_activity_clients ||= company.clients.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
+  end
+
+  def company_job_level_options
+    current_user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level').options.select(:id, :field_id, :name)
   end
 end

@@ -7,5 +7,9 @@ FactoryGirl.define do
     base_link 'https://config.operativeone.com'
     api_email 'api_user@kingsandbox.com'
     password 'King2017!'
+
+    before(:create) do |item|
+      item.company = Company.first if item.company.blank?
+    end
   end
 end

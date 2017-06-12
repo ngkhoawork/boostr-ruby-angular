@@ -1,6 +1,6 @@
 @app.controller 'BPController',
-  ['$scope', '$rootScope', '$document', '$modal', 'BP', 'BpEstimate',
-    ($scope, $rootScope, $document, $modal, BP, BpEstimate) ->
+  ['$scope', '$rootScope', '$window', '$document', '$modal', 'BP', 'BpEstimate', 'Team', 'User'
+    ($scope, $rootScope, $window, $document, $modal, BP, BpEstimate, Team, User) ->
 
       class McSort
         constructor: (opts) ->
@@ -44,17 +44,29 @@
         {name: "My Team's Estimates", value: "team"},
         {name: "All Estimates", value: "all"}
       ]
+      defaultUser = {id: 'all', name: 'All', first_name: 'All'}
       $scope.teamId = ''
       $scope.monthlyForecastData = []
       $scope.totalData = null
       $scope.isDateSet = false
       $scope.selectedBP = {id: 0}
+      $scope.selectedTeam = {id: null, name: 'All'}
+      $scope.selectedUser = defaultUser
       $scope.bpEstimates = []
       $scope.totalClients = 0
       $scope.totalStatus = 0
+      $scope.isLoading = false
+      $scope.hasMoreBps = true
+      $scope.page = 1
+      $scope.totalCount = 0
 
       $scope.dataType = "weighted"
       $scope.notification = null
+      $scope.filter =
+        team: {id: null, name: 'All'}
+        user: defaultUser
+        bp: {id: 0}
+      $scope.selectedTeam = $scope.filter.team
 
       setMcSort = ->
        $scope.sort = new McSort({
@@ -84,6 +96,40 @@
           hasMultipleDatasets: false
         })
 
+      $scope.selectFilter = (filter) ->
+        $scope.selectedFilter = filter
+        if $scope.selectedBP.id != 0
+          $scope.page = 1
+          $scope.bpEstimates = []
+          $scope.hasMoreBps = true
+          loadBPData()
+
+      $scope.setFilter = (key, value) ->
+        if $scope.filter[key]is value
+          return
+        $scope.filter[key] = value
+
+      $scope.$watch 'filter.team', (nextTeam, prevTeam) ->
+        if nextTeam.id then $scope.filter.user = defaultUser
+        $scope.setFilter('team', nextTeam)
+        Team.all_members({team_id: nextTeam.id || 'all'}).then (users) ->
+          $scope.users = users
+          $scope.users.unshift(defaultUser)
+
+      $document.bind 'scroll', (evt) ->
+        scrollTop = evt.target.scrollingElement.scrollTop
+        scrollLeft = evt.target.scrollingElement.scrollLeft
+        targetTop = $('.bp-table-wrapper')[0].offsetTop
+        if scrollTop >= targetTop
+          $('.fixed')[0].style.top = (scrollTop - targetTop) + 'px';
+          $('.fixed')[0].style.display = "table";
+        else
+          $('.fixed')[0].style.display = "none"
+      
+
+      $scope.$on '$destroy', () ->
+        $document.unbind('scroll')
+
       #init query
       init = () ->
         if $rootScope.userType == 1
@@ -92,29 +138,70 @@
           $scope.selectedFilter = {name: "My Team's Estimates", value: "team"}
         else
           $scope.selectedFilter = {name: "All Estimates", value: "all"}
+
         BP.all().then (bps) ->
           $scope.bps = bps
 
+        Team.all(all_teams: true).then (teams) ->
+          $scope.teams = teams
+          $scope.teams.unshift {id: null, name: 'All'}
+
+        Team.all_members(team_id: 'all').then (users) ->
+          $scope.users = users
+          $scope.users.unshift(defaultUser)
+
       init()
 
-      $scope.selectFilter = (filter) ->
-        $scope.selectedFilter = filter
-        if $scope.selectedBP.id != 0
+      $scope.export = () ->
+        if $scope.selectedBP.id > 0
+          url = '/api/bps/' + $scope.selectedBP.id + '/bp_estimates.csv?filter=' + $scope.selectedFilter.value
+          if $scope.selectedTeam.id > 0
+            url += '&team_id=' + $scope.selectedTeam.id
+          if $scope.selectedUser.id > 0
+            url += '&user_id=' + $scope.selectedUser.id
+          $window.open(url)
+          return true
+
+      $scope.showAddClientModal = () ->
+        $scope.modalInstance = $modal.open
+          templateUrl: 'modals/bp_add_client_form.html'
+          size: 'md'
+          controller: 'BpAssignClientController'
+          backdrop: 'static'
+          keyboard: false
+          resolve:
+            bp: ->
+              $scope.selectedBP
+        .result.then (bp) ->
+          if (bp && bp.id)
+            $scope.page = 1
+            loadBPData()
+
+      $scope.applyFilter = () ->
+        if $scope.filter.bp.id && !$scope.isLoading
+          $scope.selectedBP = $scope.filter.bp
+          $scope.selectedTeam = $scope.filter.team
+          $scope.selectedUser = $scope.filter.user
+
+          startDate = new Date($scope.selectedBP.time_period.start_date)
+          year = startDate.getUTCFullYear()
+          month = startDate.getUTCMonth()
+          $scope.yearQuarter = 'Q' + (month / 3 + 1) + '-' + (year - 1)
+          prevMonth = month - 3
+          prevYear = year
+          if prevMonth < 0
+            prevMonth += 12
+            prevYear = year - 1
+          $scope.prevQuarter = 'Q' + (prevMonth / 3 + 1) + '-' + prevYear
+          $scope.bpEstimates = []
+          $scope.hasMoreBps = true
+          $scope.page = 1
           loadBPData()
 
-      $scope.selectBP = (bp) ->
-        $scope.selectedBP = bp
-        startDate = new Date(bp.time_period.start_date)
-        year = startDate.getUTCFullYear()
-        month = startDate.getUTCMonth()
-        $scope.yearQuarter = 'Q' + (month / 3 + 1) + '-' + (year - 1)
-        prevMonth = month - 3
-        prevYear = year
-        if prevMonth < 0
-          prevMonth += 12
-          prevYear = year - 1
-        $scope.prevQuarter = 'Q' + (prevMonth / 3 + 1) + '-' + prevYear
-        loadBPData()
+      $scope.loadMoreBps = ->
+        if !$scope.isLoading && $scope.hasMoreBps == true
+          $scope.page = $scope.page + 1
+          loadBPData()
 
       buildBPEstimate = (item) ->
         data = angular.copy(item)
@@ -156,29 +243,53 @@
         if (year_pipeline)
           data.year_pipeline = year_pipeline.pipeline_amount
 
+        if data.estimate_seller > 0 && data.year_revenue > 0
+          data.year_change = (parseFloat(data.estimate_seller) / parseFloat(data.year_revenue) - 1) * 100
+        else
+          data.year_change = null
+
+        if data.estimate_seller > 0 && data.prev_revenue > 0
+          data.prev_year_change = (parseFloat(data.estimate_seller) / parseFloat(data.prev_revenue) - 1) * 100
+        else
+          data.prev_year_change = null
+
         return data
 
       loadBPData = () ->
-        filters = { bp_id: $scope.selectedBP.id, filter: $scope.selectedFilter.value }
-#        BP.accountTotalEstimates(id: $scope.selectedBP.id, filter: $scope.selectedFilter.value).then (accountTotalEstimates) ->
-#          $scope.accountTotalEstimates = accountTotalEstimates
-#          setSummaryMcSort()
-        BpEstimate.all(filters).then (data) ->
-          $scope.revenues = data.current.revenues
-          $scope.pipelines = data.current.pipelines
+        if $scope.selectedBP.id
+          filters = {
+            bp_id: $scope.selectedBP.id,
+            filter: $scope.selectedFilter.value
+            team_id: $scope.selectedTeam.id
+            user_id: $scope.selectedUser.id
+            page: $scope.page
+            per: 10
+          }
+          $scope.isLoading = true
+          BpEstimate.all(filters).then (data) ->
+            $scope.totalCount = BpEstimate.resource.totalCount
+            $scope.revenues = data.current.revenues
+            $scope.pipelines = data.current.pipelines
 
-          $scope.prev_revenues = data.prev.revenues
-          $scope.prev_pipelines = data.prev.pipelines
-          $scope.prev_time_period = data.prev.time_period
+            $scope.prev_revenues = data.prev.revenues
+            $scope.prev_pipelines = data.prev.pipelines
+            $scope.prev_time_period = data.prev.time_period
 
-          $scope.year_revenues = data.year.revenues
-          $scope.year_pipelines = data.year.pipelines
-          $scope.year_time_period = data.prev.year_time_period
+            $scope.year_revenues = data.year.revenues
+            $scope.year_pipelines = data.year.pipelines
+            $scope.year_time_period = data.prev.year_time_period
 
-          $scope.bpEstimates = _.map data.bp_estimates, buildBPEstimate
+            if $scope.page == 1
+              $scope.bpEstimates = _.map data.bp_estimates, buildBPEstimate
+            else
+              $scope.bpEstimates = $scope.bpEstimates.concat(_.map data.bp_estimates, buildBPEstimate)
+            
+            calculateStatus()
+            setMcSort()
+            $scope.isLoading = false
+            if data.bp_estimates.length == 0
+              $scope.hasMoreBps = false
 
-          calculateStatus()
-          setMcSort()
 
       calculateStatus = () ->
         $scope.totalClients = (_.uniq (_.map $scope.bpEstimates, 'client_id')).length
@@ -200,18 +311,34 @@
         drawProgressCircle(percentage)
 
       $scope.updateBpEstimate = (bpEstimate) ->
-        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate)
+        BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data) ->
+          calculateChange(data)
 
       $scope.updateBpEstimateProduct = (bpEstimate) ->
         BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data) ->
           replaceBpEstimate(data)
           calculateStatus()
+          calculateChange(data)
 
       $scope.unassignBpEstimate = (bpEstimate) ->
         if confirm('Are you sure you want to unassign the BP estimate?')
           bpEstimate.user_id = null
           BpEstimate.update(id: bpEstimate.id, bp_id: $scope.selectedBP.id, bp_estimate: bpEstimate).then (data) ->
             replaceBpEstimate(data)
+            calculateChange(data)
+
+
+      calculateChange = (bpEstimate) ->
+        targetBpEstimate = _.find($scope.bpEstimates, {id: bpEstimate.id})
+        if targetBpEstimate.estimate_seller > 0 && targetBpEstimate.year_revenue > 0
+          targetBpEstimate.year_change = (parseFloat(targetBpEstimate.estimate_seller) / parseFloat(targetBpEstimate.year_revenue) - 1) * 100
+        else
+          targetBpEstimate.year_change = null
+
+        if targetBpEstimate.estimate_seller > 0 && targetBpEstimate.prev_revenue > 0
+          targetBpEstimate.prev_year_change = (parseFloat(targetBpEstimate.estimate_seller) / parseFloat(targetBpEstimate.prev_revenue) - 1) * 100
+        else
+          targetBpEstimate.prev_year_change = null
 
       replaceBpEstimate = (bpEstimate) ->
         targetBpEstimate = _.find($scope.bpEstimates, {id: bpEstimate.id})

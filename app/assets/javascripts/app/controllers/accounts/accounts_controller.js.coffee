@@ -2,14 +2,16 @@
 ['$scope', '$filter', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$sce', 'Client', 'ClientMember', 'Contact', 'Deal', 'Field', 'Activity', 'ActivityType', 'Reminder', '$http', 'ClientContacts', 'ClientsTypes', 'AccountsFilter'
 ($scope, $filter, $rootScope, $modal, $routeParams, $location, $window, $sce, Client, ClientMember, Contact, Deal, Field, Activity, ActivityType, Reminder, $http, ClientContacts, ClientsTypes, AccountsFilter) ->
   formatMoney = $filter('formatMoney')
-  $scope.selectedType = 0
   $scope.query = ""
   $scope.page = 1
   $scope.accountTypes = [
     {name: 'My Accounts', param: ''}
     {name: 'My Team\'s Accounts', param: 'team'}
-    {name: 'All', param: 'company'}
+    {name: 'All', param: 'all'}
   ]
+
+  $scope.teamFilter = (value) ->
+    if value then AccountsFilter.teamFilter = value else AccountsFilter.teamFilter
 
   $scope.filter =
     owners: []
@@ -85,7 +87,7 @@
       return item.toString().toUpperCase().indexOf($scope.filter.search.toUpperCase()) > -1
 
   $scope.filterAccounts = (filter) ->
-    $scope.selectedType = filter
+    $scope.teamFilter filter
     $scope.page = 1
     $scope.getClients()
     $scope.getFilterOptions()
@@ -98,7 +100,7 @@
       $scope.getClients()
 
   $scope.init = ->
-    $scope.selectedType = $scope.accountTypes[0]
+    if !$scope.teamFilter() then $scope.teamFilter $scope.accountTypes[0]
     $scope.page = 1
     $scope.getClients()
     $scope.getFilterOptions()
@@ -111,7 +113,7 @@
   $scope.getClients = ->
     $scope.isLoading = true
     params = {
-      filter: $scope.selectedType.param,
+      filter: $scope.teamFilter().param,
       search: $scope.searchText,
       page: $scope.page
     }
@@ -143,7 +145,7 @@
   $scope.getFilterOptions = ->
     $scope.isLoading = true
     params = {
-      filter: $scope.selectedType.param,
+      filter: $scope.teamFilter().param,
     }
     Client.filter_options(params).$promise.then (response) ->
       $scope.filter.owners = response.owners

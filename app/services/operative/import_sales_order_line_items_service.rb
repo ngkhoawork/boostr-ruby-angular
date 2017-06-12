@@ -21,7 +21,7 @@ class Operative::ImportSalesOrderLineItemsService
     begin
       File.open(file, 'r:ISO-8859-1')
     rescue Exception => e
-      import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item')
+      import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item', source: 'operative')
       import_log.set_file_source(file)
       import_log.log_error [e.class.to_s, e.message]
       import_log.save
@@ -41,7 +41,7 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def parse_line_items
-    import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item')
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item', source: 'operative')
     import_log.set_file_source(sales_order_line_items)
 
     CSV.parse(sales_order_csv_file, { headers: true, header_converters: :symbol }) do |row|
@@ -96,8 +96,15 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def find_in_invoices(id)
-    @_parsed_invoices.find(-> { {} }) do |invoice|
+    lines = @_parsed_invoices.select do |invoice|
       invoice[:sales_order_line_item_id] == id
     end
+
+    {
+      sales_order_line_item_id: id,
+      recognized_revenue:                 lines.map {|row| row[:recognized_revenue].to_f}.reduce(0, :+),
+      cumulative_primary_performance:     lines[-1][:cumulative_primary_performance].to_i,
+      cumulative_third_party_performance: lines[-1][:cumulative_third_party_performance].to_i
+    }
   end
 end

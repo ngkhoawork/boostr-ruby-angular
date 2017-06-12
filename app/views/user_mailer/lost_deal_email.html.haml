@@ -1,0 +1,12 @@
+%p
+  #{@deal.name} deal for #{@deal.advertiser_name} with budget #{@deal_budget} was lost.
+
+%p
+  Seller - 
+  = mail_to @deal_member.email, @deal_member.name
+
+%p
+  Loss Reason - #{Deal.get_option(@deal, 'Close Reason')}
+
+%p
+  Loss Comments - #{@deal.closed_reason_text}

@@ -13,9 +13,6 @@ class Contact < ActiveRecord::Base
   has_many :non_primary_client_contacts, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
   has_many :non_primary_clients, -> { uniq }, through: :non_primary_client_contacts, source: :client
 
-  has_many :workplaces, -> { select(:id, :name) }, through: :workplace_clients, source: :client
-  has_many :workplace_clients, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
-
   has_many :deals, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :reminders, as: :remindable, dependent: :destroy
@@ -119,38 +116,120 @@ class Contact < ActiveRecord::Base
     self.reload
   end
 
-  def self.import(file, current_user)
-    errors = []
+  def job_level
+    job_level_field = company.fields.where(name: 'Job Level').first
+    job_level_value = self.values.find_by(field_id: job_level_field.id)
+    return job_level_value.option.name if job_level_value.present?
+    return  nil
+  end
 
-    # if !current_user.is?(:superadmin)
-    #   error = { message: ['Permission denied'] }
-    #   errors << error
-    # else
-    row_number = 0
+  def self.to_csv(company, contacts)
+    header = [
+      'Id',
+      'Name',
+      'Works At',
+      'Position',
+      'Email',
+      'Street1',
+      'Street2',
+      'City',
+      'State',
+      'Zip',
+      'Country',
+      'Phone',
+      'Mobile',
+      'Related Accounts',
+      'Job Level'
+    ]
+
+    contact_cf_names = company.contact_cf_names.where('disabled IS NOT TRUE').order('position asc')
+
+    contact_cf_names.each do |contact_cf_name|
+      header << contact_cf_name.field_label
+    end
+
+    CSV.generate(headers: true) do |csv|
+      csv << header
+
+      contacts = contacts.includes(:contact_cf)
+
+      contacts.each do |contact|
+
+        line = []
+        line << contact.id
+        line << contact.name
+        line << (contact.primary_client.nil? ? nil : contact.primary_client.name)
+        line << contact.position
+        line << (contact.address.nil? ? nil : contact.address.email)
+        line << (contact.address.nil? ? nil : contact.address.street1)
+        line << (contact.address.nil? ? nil : contact.address.street2)
+        line << (contact.address.nil? ? nil : contact.address.city)
+        line << (contact.address.nil? ? nil : contact.address.state)
+        line << (contact.address.nil? ? nil : contact.address.zip)
+        line << (contact.address.nil? ? nil : contact.address.country)
+        line << (contact.address.nil? ? nil : contact.address.phone)
+        line << (contact.address.nil? ? nil : contact.address.mobile)
+        related_clients = contact.non_primary_clients.each_with_object([]) do |client, memo|
+          memo << client.name
+        end
+        line << related_clients.join(';')
+        line << contact.job_level
+
+        contact_cf = contact.contact_cf.as_json
+        contact_cf_names.each do |contact_cf_name|
+          field_name = contact_cf_name.field_type + contact_cf_name.field_index.to_s
+          value = nil
+          if contact_cf.present?
+            value = contact_cf[field_name]
+          end
+          case contact_cf_name.field_type
+            when "currency"
+              line << '$' + (value || '').to_s
+            when "percentage"
+              line << (value || '').to_s + "%"
+            when "number", "integer"
+              line << (value || '')
+            when "datetime"
+              line << (value.present? ? (value.strftime("%Y-%m-%d %H:%M:%S")) : '')
+            else
+              line << (value || '')
+          end
+        end
+        csv << line
+      end
+    end
+  end
+
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
+
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'contact', source: 'ui')
+    import_log.set_file_source(file_path)
+    
     CSV.parse(file, headers: true) do |row|
-      row_number += 1
-      # unless client = Client.where(company_id: current_user.company_id, name: row[1]).first
+      import_log.count_processed
+
       if row[3].nil? || row[3].blank?
-        error = { row: row_number, message: ['Email is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Email is empty'])
         next
       end
 
       if row[1].nil? || row[1].blank?
-        error = { row: row_number, message: ['Account is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Account is empty'])
         next
       end
 
       if row[0].nil? || row[0].blank?
-        error = { row: row_number, message: ['Name is empty'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Name is empty'])
         next
       end
 
       unless client = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, row[1].strip.downcase).first
-        error = { row: row_number, message: ['Account ' + row[1].to_s + ' could not be found'] }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(['Account ' + row[1].to_s + ' could not be found'])
         next
       end
       agency_data_list = []
@@ -163,8 +242,8 @@ class Contact < ActiveRecord::Base
           if agency = Client.where("company_id = ? and lower(name) = ? ", current_user.company_id, agency_name.strip.downcase).first
             agency_data_list << agency
           else
-            error = { row: row_number, message: ['Account ' + agency_name.to_s + ' could not be found'] }
-            errors << error
+            import_log.count_failed
+            import_log.log_error(['Account ' + agency_name.to_s + ' could not be found'])
             agency_list_error = true
             break
           end
@@ -216,6 +295,8 @@ class Contact < ActiveRecord::Base
       contact_params[:address_attributes] = address_params
 
       if contact.update_attributes(contact_params)
+        import_log.count_imported
+
         ClientContact.delete_all(client_id: client.id, contact_id: contact.id, primary: false)
         primary_client_contact = ClientContact.find_by({contact_id: contact.id, primary: true})
         if primary_client_contact.nil?
@@ -230,13 +311,13 @@ class Contact < ActiveRecord::Base
           end
         end
       else
-        error = { row: row_number, message: contact.errors.full_messages }
-        errors << error
+        import_log.count_failed
+        import_log.log_error(contact.errors.full_messages)
         next
       end
     end
-    # end
-    errors
+
+    import_log.save
   end
 
   def self.metadata(company_id)
@@ -246,6 +327,24 @@ class Contact < ActiveRecord::Base
       cities: Contact.where(company_id: company_id).joins(:address).where.not(addresses: {city: nil}).pluck('addresses.city').uniq,
       countries: ISO3166::Country.all_translated
     }
+  end
+
+  def job_level_for(company_fields)
+    if self.values.present? && company_fields.present?
+      field_id = company_fields.first.field_id
+      value = self.values.find do |el|
+        el.field_id == field_id
+      end
+      option = company_fields.find do |el|
+        el.id == value.option_id
+      end if value
+    end
+
+    if option
+      option.name
+    else
+      nil
+    end
   end
 
   private

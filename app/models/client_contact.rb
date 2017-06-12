@@ -11,7 +11,7 @@ class ClientContact < ActiveRecord::Base
   after_destroy  do
   end
   def as_json(options = {})
-    super(options.merge(include: {
+    super(options.deep_merge(include: {
             client: {
                     only: [:id, :name]
             }

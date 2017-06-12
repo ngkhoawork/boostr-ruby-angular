@@ -2,6 +2,8 @@ class DealCustomFieldName < ActiveRecord::Base
   belongs_to :company
   has_many :deal_custom_field_options, dependent: :destroy
 
+  has_one :ealert_custom_field, as: :subject, dependent: :destroy
+
   accepts_nested_attributes_for :deal_custom_field_options
 
   scope :by_type, -> type { where(field_type: type) if type.present? }

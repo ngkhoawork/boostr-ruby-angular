@@ -7,6 +7,20 @@ RSpec.describe Deal, type: :model do
   context 'associations' do
     it { should have_many(:contacts).through(:deal_contacts) }
     it { should have_many(:deal_contacts) }
+
+    context 'restrictions' do
+      let!(:deal) { create :deal }
+      let!(:deal_product) { create :deal_product, deal: deal, budget: 100_000 }
+      let(:closed_won_stage) { create :closed_won_stage }
+
+      it 'restricts deleting deal with IO' do
+        deal.update(stage: closed_won_stage)
+        deal.update_stage
+        deal.update_close
+
+        expect{deal.destroy}.to raise_error(ActiveRecord::DeleteRestrictionError)
+      end
+    end
   end
 
   context 'scopes' do
@@ -135,6 +149,61 @@ RSpec.describe Deal, type: :model do
         end
       end
     end
+
+    context 'disable deal closed won' do
+      let(:validation) { deal.company.validation_for(:disable_deal_won) }
+      let(:closed_won_stage) { create :closed_won_stage }
+
+      it 'passes validation if company does not have it' do
+        deal.update(stage: closed_won_stage)
+
+        expect(deal).to be_valid
+        expect(deal.reload.stage).to eq closed_won_stage
+      end
+
+      it 'passes validation if it is off' do
+        validation.criterion.update(value: false)
+
+        deal.assign_attributes(stage: closed_won_stage)
+
+        expect(deal).to be_valid
+      end
+
+      it 'passes validation in default context' do
+        validation.criterion.update(value: true)
+
+        deal.assign_attributes(stage: closed_won_stage)
+
+        expect(deal).to be_valid
+      end
+
+      it 'is invalid if validation is active' do
+        validation.criterion.update(value: true)
+
+        deal.assign_attributes(stage: closed_won_stage)
+
+        expect(deal).not_to be_valid(:manual_update)
+        expect(deal.errors.full_messages).to eql ["Stage Closed Won can't be set per configuration. Deals can be set to won from API integration only"]
+      end
+
+      it 'does not save record when validation is active' do
+        validation.criterion.update(value: true)
+
+        deal.assign_attributes(stage: closed_won_stage)
+
+        expect(deal.save(context: :manual_update)).to be false
+      end
+
+      it 'passes validation if stage is not 100/won' do
+        validation.criterion.update(value: true)
+
+        deal.assign_attributes(stage: closed_won_stage)
+        deal.save
+        deal.reload.assign_attributes(stage: deal.previous_stage)
+
+        expect(deal).to be_valid(:manual_update)
+      end
+    end
   end
 
   describe '#has_billing_contact?' do
@@ -168,6 +237,107 @@ RSpec.describe Deal, type: :model do
       create :deal_contact, deal: deal, role: 'Billing'
       expect(deal.no_more_one_billing_contact?).to be true
     end
+  end
+
+  describe '#integrate_with_operative' do
+    let!(:deal) { create :deal }
+    let(:discuss_stage) { create :discuss_stage }
+    let(:proposal_stage) { create :proposal_stage }
+    let(:lost_stage) { create :lost_stage }
+    let!(:api_configuration) { create :api_configuration, trigger_on_deal_percentage: 25 }
+
+    it 'integrates if stage equals threshold' do
+      allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+      expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
+
+      deal.update(stage: discuss_stage)
+    end
+
+    it 'integrates when stage is above threshold' do
+      allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+      expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
+
+      deal.update(stage: proposal_stage)
+    end
+
+    it 'integrates when stage is lost and there was an integration already' do
+      create :integration, integratable: deal, external_type: Integration::OPERATIVE, external_id: 10
+
+      allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+      expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
+
+      deal.update(stage: lost_stage)
+    end
+
+    context 'no integration' do
+      it 'when stage is not changed' do
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(name: 'Christmas Auction')
+      end
+
+      it 'when stage is below threshold' do
+        api_configuration.update(trigger_on_deal_percentage: 75)
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: discuss_stage)
+      end
+
+      it 'when there was an integration already' do
+        create :integration, integratable: deal, external_type: Integration::OPERATIVE, external_id: 10
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: proposal_stage)
+      end
+
+      it 'when stage is lost but there was no integration' do
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: lost_stage)
+      end
+
+      it 'when company is not allowed to run operative' do
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(false)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: proposal_stage)
+      end
+
+      it 'when operative integration config is missing' do
+        api_configuration.destroy
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: proposal_stage)
+      end
+
+      it 'when operative integration config is turted off' do
+        api_configuration.update(switched_on: false)
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: proposal_stage)
+      end
+    end
+
   end
 
   describe '#has_account_manager_member?' do
@@ -311,8 +481,8 @@ RSpec.describe Deal, type: :model do
     let!(:user) { create :user }
     let!(:another_user) { create :user }
     let!(:company) { user.company }
-    let!(:stage_100) { create :stage, company: user.company, name: 'Won', probability: 100, open: false }
-    let!(:stage_100) { create :stage, company: user.company, name: 'Lost', probability: 0, open: false }
+    let!(:stage_won) { create :stage, company: user.company, name: 'Won', probability: 100, open: false }
+    let!(:stage_lost) { create :stage, company: user.company, name: 'Lost', probability: 0, open: false }
     let!(:advertiser) { create :client, created_by: user.id, client_type_id: advertiser_type_id(company) }
     let!(:agency) { create :client, created_by: user.id, client_type_id: agency_type_id(company) }
     let!(:deal_type_field) { user.company.fields.find_by_name('Deal Type') }
@@ -323,11 +493,12 @@ RSpec.describe Deal, type: :model do
     let!(:close_reason) { create :option, field: close_reason_field, company: user.company }
     let!(:existing_deal) { create :deal, creator: another_user, updator: another_user }
     let!(:contacts) { create_list :contact, 4, company: company, client_id: advertiser.id }
+    let(:import_log) { CsvImportLog.last }
 
     it 'creates a new deal from csv' do
-      data = build :deal_csv_data
+      data = build :deal_csv_data, stage: stage_won.name
       expect do
-        expect(Deal.import(generate_csv(data), user)).to eq([])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
       end.to change(Deal, :count).by(1)
 
       deal = Deal.last
@@ -342,14 +513,14 @@ RSpec.describe Deal, type: :model do
       expect(deal.stage.name).to eq(data[:stage])
       expect(deal.users.map(&:email)).to eq([data[:team].split('/')[0]])
       expect(deal.deal_members.map(&:share)).to eq([data[:team].split('/')[1].to_i])
-      expect(deal.created_at).to eq(data[:created])
-      expect(deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y'))
+      expect(deal.created_at).to eq(DateTime.strptime(data[:created], '%m/%d/%Y') + 8.hours)
+      expect(deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y') + 8.hours)
       expect(deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
     end
 
     it 'creates a deal with type and source' do
       data = build :deal_csv_data, type: deal_type.name, source: deal_source.name
-      expect(Deal.import(generate_csv(data), user)).to eq([])
+      Deal.import(generate_csv(data), user.id, 'deals.csv')
       deal = Deal.last
 
       expect(deal.values.where(field: deal_type_field).first.option_id).to eq deal_type.id
@@ -359,7 +530,7 @@ RSpec.describe Deal, type: :model do
     it 'updates a deal by an ID match' do
       data = build :deal_csv_data, id: existing_deal.id
       expect do
-        expect(Deal.import(generate_csv(data), user)).to eq([])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
       end.not_to change(Deal, :count)
       existing_deal.reload
 
@@ -373,36 +544,57 @@ RSpec.describe Deal, type: :model do
       expect(existing_deal.stage.name).to eq(data[:stage])
       expect(existing_deal.users.map(&:email)).to include(data[:team].split('/')[0])
       expect(existing_deal.deal_members.map(&:share)).to include(data[:team].split('/')[1].to_i)
-      expect(existing_deal.created_at).to eq(data[:created])
       expect(existing_deal.contacts.map(&:address).map(&:email).sort).to eq(data[:contacts].split(';').sort)
+    end
+
+    context 'csv import log' do
+      it 'creates csv import log' do
+        data = build :deal_csv_data
+
+        expect do
+          Deal.import(generate_csv(data), user.id, 'deals.csv')
+        end.to change(CsvImportLog, :count).by(1)
+      end
+
+      it 'saves amount of processed rows for new objects' do
+        data = build :deal_csv_data
+
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_processed).to be 1
+        expect(import_log.rows_imported).to be 1
+        expect(import_log.file_source).to eq 'deals.csv'
+      end
+
+      it 'saves amount of processed rows when updating existing objects' do
+        data = build :deal_csv_data, id: existing_deal.id
+
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_processed).to be 1
+        expect(import_log.rows_imported).to be 1
+      end
+
+      it 'counts failed rows' do
+        no_name = build :deal_csv_data, name: nil
+        Deal.import(generate_csv(no_name), user.id, 'deals.csv')
+
+        expect(import_log.rows_processed).to be 1
+        expect(import_log.rows_failed).to be 1
+      end
     end
 
     it 'sets closed_at date for existing deals' do
       data = build :deal_csv_data, id: existing_deal.id, stage: existing_deal.stage.name
-      expect do
-        expect(Deal.import(generate_csv(data), user)).to eq([])
-      end.not_to change(Deal, :count)
+      Deal.import(generate_csv(data), user.id, 'deals.csv')
+ 
       existing_deal.reload
-      expect(existing_deal.closed_at).to eq(Date.parse(data[:closed_date]))
-    end
-
-    it 'allows creation date to be nil' do
-      data = build :deal_csv_data, id: existing_deal.id, created: nil
-      expect do
-        expect(Deal.import(generate_csv(data), user)).to eq([])
-      end.not_to change(Deal, :count)
-    end
-
-    it 'allows close date to be nil' do
-      data = build :deal_csv_data, id: existing_deal.id, closed_date: nil
-      expect do
-        expect(Deal.import(generate_csv(data), user)).to eq([])
-      end.not_to change(Deal, :count)
+      expect(existing_deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y') + 8.hours)
     end
 
     it 'creates a deal with close reason' do
       data = build :deal_csv_data, close_reason: close_reason.name
-      expect(Deal.import(generate_csv(data), user)).to eq([])
+      Deal.import(generate_csv(data), user.id, 'deals.csv')
       deal = Deal.last
 
       expect(deal.values.where(field: close_reason_field).first.option_id).to eq close_reason.id
@@ -411,7 +603,7 @@ RSpec.describe Deal, type: :model do
     it 'finds a deal by name match' do
       data = build :deal_csv_data, name: existing_deal.name
       expect do
-        expect(Deal.import(generate_csv(data), user)).to eq([])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
       end.not_to change(Deal, :count)
       existing_deal.reload
 
@@ -429,189 +621,267 @@ RSpec.describe Deal, type: :model do
 
       it 'requires ID to match' do
         data = build :deal_csv_data, id: 0
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Deal ID #{data[:id]} could not be found"]])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal ID #{data[:id]} could not be found"] }]
+        )
       end
 
       it 'requires name to exist' do
         data = build :deal_csv_data, name: nil
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Deal name can't be blank"]])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal name can't be blank"] }]
+        )
       end
 
       it 'requires name to match no more than one deal' do
         data = build :deal_csv_data, name: duplicate_deal.name
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([row: 1, message: ["Deal name #{data[:name]} matched more than one deal record"]])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal name #{data[:name]} matched more than one deal record"] }]
+        )
       end
 
       it 'requires advertiser to be present' do
         data = build :deal_csv_data
         data[:advertiser] = nil
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Advertiser can't be blank"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Advertiser can't be blank"] }]
+        )
       end
 
       it 'requires advertiser to exist' do
         data = build :deal_csv_data, advertiser: 'N/A'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} could not be found"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Advertiser #{data[:advertiser]} could not be found"] }]
+        )
       end
 
       it 'requires advertiser to match no more than 1 record' do
         data = build :deal_csv_data, advertiser: duplicate_advertiser2.name
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Advertiser #{data[:advertiser]} matched more than one account record"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Advertiser #{data[:advertiser]} matched more than one account record"] }]
+        )
       end
 
       it 'requires agency to exist' do
         data = build :deal_csv_data, agency: 'N/A'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Agency #{data[:agency]} could not be found"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Agency #{data[:agency]} could not be found"] }]
+        )
       end
 
       it 'requires agency to match no more than 1 record' do
         data = build :deal_csv_data, agency: duplicate_agency2.name
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Agency #{data[:agency]} matched more than one account record"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Agency #{data[:agency]} matched more than one account record"] }]
+        )
       end
 
       it 'requires currency code to be present' do
         data = build :deal_csv_data
         data[:curr_cd] = nil
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Currency code can't be blank"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Currency code can't be blank"] }]
+        )
       end
 
       it 'requires currency code to exist' do
         data = build :deal_csv_data
         data[:curr_cd] = 'N/A'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Currency N/A is not found"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Currency N/A is not found"] }]
+        )
       end
 
       it 'requires deal type to exist' do
         data = build :deal_csv_data, type: 'N/A'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Deal Type #{data[:type]} could not be found"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal Type #{data[:type]} could not be found"] }]
+        )
       end
 
       it 'requires deal source to exist' do
         data = build :deal_csv_data, source: 'N/A'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Deal Source #{data[:source]} could not be found"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal Source #{data[:source]} could not be found"] }]
+        )
       end
 
       it 'requires start date to be valid' do
         data = build :deal_csv_data, start_date: 'zzz'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ['Start Date must have valid date format MM/DD/YYYY']}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ['Start Date must have valid date format MM/DD/YYYY'] }]
+        )
       end
 
       it 'requires end date to be valid' do
         data = build :deal_csv_data, end_date: 'zzz'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ['End Date must have valid date format MM/DD/YYYY']}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ['End Date must have valid date format MM/DD/YYYY'] }]
+        )
       end
 
       it 'requires start date to be present if end date is set' do
         data = build :deal_csv_data, start_date: nil
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ['Start Date must be present if End Date is set']}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ['Start Date must be present if End Date is set'] }]
+        )
       end
 
       it 'requires end date to be present if start date is set' do
         data = build :deal_csv_data, end_date: nil
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ['End Date must be present if Start Date is set']}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ['End Date must be present if Start Date is set'] }]
+        )
       end
 
       it 'requires start date to preceed end date' do
         data = build :deal_csv_data, start_date: '12/12/2016', end_date: '11/11/2016'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ['Start Date must preceed End Date']}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ['Start Date must preceed End Date'] }]
+        )
       end
 
       it 'requires stage to be present' do
         data = build :deal_csv_data
         data[:stage] = nil
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Stage can't be blank"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Stage can't be blank"] }]
+        )
       end
 
       it 'requires stage to exist' do
         data = build :deal_csv_data, stage: 'N/A'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Stage #{data[:stage]} could not be found"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Stage #{data[:stage]} could not be found"] }]
+        )
       end
 
       it 'requires deal team to be present' do
         data = build :deal_csv_data
         data[:team] = nil
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Team can't be blank"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Team can't be blank"] }]
+        )
       end
 
       it 'requires deal team members to exist' do
         data = build :deal_csv_data, team: 'NA/0'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Deal Member #{data[:team].split('/')[0]} could not be found in the User list"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal Member #{data[:team].split('/')[0]} could not be found in the User list"] }]
+        )
       end
 
       it 'requires deal team member to have a share' do
         data = build :deal_csv_data, team: 'NA'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Deal Member #{data[:team].split('/')[0]} does not have a share"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal Member #{data[:team].split('/')[0]} does not have a share"] }]
+        )
       end
 
       it 'requires created date to be a valid date' do
         data = build :deal_csv_data, created: 'NA'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Deal Creation Date must have valid date format MM/DD/YYYY"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal Creation Date must have valid date format MM/DD/YYYY"] }]
+        )
       end
 
       it 'requires closed date to be a valid date' do
         data = build :deal_csv_data, closed_date: 'NA'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Deal Close Date must have valid date format MM/DD/YYYY"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Deal Close Date must have valid date format MM/DD/YYYY"] }]
+        )
       end
 
       it 'requires company close reason to exist' do
         data = build :deal_csv_data, close_reason: 'NA'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Close Reason #{data[:close_reason]} could not be found"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Close Reason #{data[:close_reason]} could not be found"] }]
+        )
       end
 
       it 'requires company contacts to exist' do
         data = build :deal_csv_data, contacts: 'NA'
-        expect(
-          Deal.import(generate_csv(data), user)
-        ).to eq([{row: 1, message: ["Contact #{data[:contacts]} could not be found"]}])
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Contact #{data[:contacts]} could not be found"] }]
+        )
       end
     end
   end

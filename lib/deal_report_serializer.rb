@@ -20,6 +20,7 @@ class DealReportSerializer < ActiveModel::Serializer
     :latest_activity,
     :type,
     :source,
+    :team
   )
 
   def stage
@@ -78,6 +79,12 @@ class DealReportSerializer < ActiveModel::Serializer
     get_deal_value_name 'Close Reason'
   end
 
+  def team
+    return nil if ordered_deal_members.blank?
+
+    user_with_highest_share.leader? ? leader_team_name : user_name_with_highest_share
+  end
+
   # def cache_key
   #   parts = []
   #   parts << object.id
@@ -101,5 +108,21 @@ class DealReportSerializer < ActiveModel::Serializer
     if field = @options[:deal_settings_fields].find { |field| field.include? field_name }
       object.values.find { |value| value.field_id == field[0] }.try(:option).try(:name)
     end
+  end
+
+  def ordered_deal_members
+    object.deal_members.ordered_by_share
+  end
+
+  def user_with_highest_share
+    @_user_with_highest_share ||= ordered_deal_members.first.user
+  end
+
+  def leader_team_name
+    Team.find_by(leader: user_with_highest_share).name
+  end
+
+  def user_name_with_highest_share
+    user_with_highest_share.team.name rescue nil
   end
 end

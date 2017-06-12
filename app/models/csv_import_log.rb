@@ -6,6 +6,9 @@ class CsvImportLog < ActiveRecord::Base
 
   default_scope { order(created_at: :desc) }
 
+  scope :for_company, -> (id) { where(company_id: id) }
+  scope :by_source,   -> (source) { where(source: source) if source.present? }
+
   def count_processed
     self.rows_processed += 1
   end
@@ -38,8 +41,8 @@ class CsvImportLog < ActiveRecord::Base
   private
 
   def send_notification
-    if is_error? && error_log_recipients.any?
-      CsvImportLogNotificationMailer.send_email(error_log_recipients, id).deliver_later(queue: 'default')
+    if !(self.source == 'ui') && is_error? && error_log_recipients.any?
+      CsvImportLogNotificationMailer.send_email(error_log_recipients, id).deliver_later(queue: "default")
     end
   end
 
