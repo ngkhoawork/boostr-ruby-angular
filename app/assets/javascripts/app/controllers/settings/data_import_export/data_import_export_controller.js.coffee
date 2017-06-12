@@ -96,6 +96,17 @@
         api_url: ->
           '/api/display_line_item_budgets'
 
+  $scope.showUploadIntegrationIdModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/integration_id_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/integrations'
+
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')
     return true

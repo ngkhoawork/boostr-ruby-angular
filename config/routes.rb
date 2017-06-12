@@ -131,6 +131,8 @@ Rails.application.routes.draw do
     resources :integration_logs, only: [:index, :show] do
       post :resend_request, on: :member
     end
+
+    resources :integrations, only: [:create]
     resources :csv_import_logs, only: [:index]
 
     resources :users, only: [:index, :update] do

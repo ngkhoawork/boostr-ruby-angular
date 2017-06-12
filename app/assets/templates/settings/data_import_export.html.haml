@@ -70,6 +70,14 @@
                     %a.upload{ href: '', ng: { click: 'showUploadActivityModal()' } }
                       = inline_svg 'icons/import.svg'
                       Import Activities
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Integration ID Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadIntegrationIdModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Integration IDs
 
         %tab{heading: "Data Export", index: "1"}
           .row
