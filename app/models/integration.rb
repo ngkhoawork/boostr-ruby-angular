@@ -60,7 +60,7 @@ class Integration < ActiveRecord::Base
         end
       end
 
-      if row[4] && integratable_type[:integratable_id].nil?
+      if row[4] && integration_params[:integratable_id].nil?
         case row[0].strip
         when 'Client'
           target = current_user.company.clients.find_by(id: row[4].strip)
