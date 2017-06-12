@@ -14,7 +14,8 @@
       DealProductCfName.all().then (dealProductCustomFieldNames) ->
         $scope.dealProductCustomFieldNames = dealProductCustomFieldNames
         Stage.query().$promise.then (stages) ->
-          $scope.stages = stages
+          $scope.stages = _.reject stages, (item) ->
+            return item.active == false
           Ealert.all().then (ealert) ->
             $scope.ealert = ealert
             transformEalert()
