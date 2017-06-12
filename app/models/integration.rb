@@ -45,11 +45,11 @@ class Integration < ActiveRecord::Base
       if row[3].strip
         case row[0].strip
         when 'Client'
-          target = Client.find_by(name: row[3].strip)
+          target = company.clients.find_by(name: row[3].strip)
         when 'Deal'
-          target = Deal.find_by(name: row[3].strip)
+          target = company.deals.find_by(name: row[3].strip)
         when 'Contact'
-          target = Contact.find_by(name: row[3].strip)
+          target = company.contacts.find_by(name: row[3].strip)
         end
         if target.nil?
           import_log.count_failed
@@ -63,11 +63,11 @@ class Integration < ActiveRecord::Base
       if row[4].strip && integratable_type[:integratable_id].nil?
         case row[0].strip
         when 'Client'
-          target = Client.find_by(id: row[4].strip)
+          target = company.clients.find_by(id: row[4].strip)
         when 'Deal'
-          target = Deal.find_by(id: row[4].strip)
+          target = company.deals.find_by(id: row[4].strip)
         when 'Contact'
-          target = Contact.find_by(id: row[4].strip)
+          target = company.contacts.find_by(id: row[4].strip)
         end
         if target.nil?
           import_log.count_failed

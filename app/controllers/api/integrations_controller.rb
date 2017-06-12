@@ -3,7 +3,7 @@ class Api::IntegrationsController < ApplicationController
     if params[:file].present?
       CsvImportWorker.perform_async(
         params[:file][:s3_file_path],
-        'Deal',
+        'Integration',
         current_user.id,
         params[:file][:original_filename]
       )
