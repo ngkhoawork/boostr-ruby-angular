@@ -7,15 +7,6 @@ class UserMailer < ApplicationMailer
     mail(to: recipients, subject: subject)
   end
 
-  def lost_deal_email(recipients, deal)
-    @deal = deal
-    @deal_budget = lost_deal_budget_for(deal)
-    @deal_member = deal.user_with_highest_share
-    subject = lost_deal_subject_for(deal)
-
-    mail(to: recipients, subject: subject)
-  end
-
   def stage_changed_email(recipients, subject, deal_id)
     @deal = Deal.find(deal_id)
     mail(to: recipients, subject: subject)
@@ -181,19 +172,5 @@ class UserMailer < ApplicationMailer
       deal_product
     end
     mail(to: recipients, subject: subject)
-  end
-
-  private
-
-  def lost_deal_subject_for(deal)
-    "A #{lost_deal_budget_for(deal)} deal for #{deal.advertiser_name} was lost"
-  end
-
-  def lost_deal_budget_for(deal)
-    @_lost_deal_budget ||= number_to_currency(
-      deal.budget_loc.to_i,
-      precision: 0,
-      unit: deal.currency.curr_symbol
-    )
   end
 end
