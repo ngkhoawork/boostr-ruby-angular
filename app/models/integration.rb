@@ -18,7 +18,7 @@ class Integration < ActiveRecord::Base
       import_log.count_processed
       integration_params = {}
 
-      if row[0].strip
+      if row[0]
         integration_params[:integratable_type] = row[0].strip
       else
         import_log.count_failed
@@ -26,7 +26,7 @@ class Integration < ActiveRecord::Base
         next
       end
 
-      if row[1].strip
+      if row[1]
         integration_params[:external_id] = row[1].strip
       else
         import_log.count_failed
@@ -34,7 +34,7 @@ class Integration < ActiveRecord::Base
         next
       end
 
-      if row[2].strip
+      if row[2]
         integration_params[:external_type] = row[2].strip
       else
         import_log.count_failed
@@ -42,7 +42,7 @@ class Integration < ActiveRecord::Base
         next
       end
 
-      if row[3].strip
+      if row[3]
         case row[0].strip
         when 'Client'
           target = current_user.company.clients.find_by(name: row[3].strip)
@@ -60,7 +60,7 @@ class Integration < ActiveRecord::Base
         end
       end
 
-      if row[4].strip && integratable_type[:integratable_id].nil?
+      if row[4] && integratable_type[:integratable_id].nil?
         case row[0].strip
         when 'Client'
           target = current_user.company.clients.find_by(id: row[4].strip)
