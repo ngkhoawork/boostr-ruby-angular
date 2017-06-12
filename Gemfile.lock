@@ -266,8 +266,6 @@ GEM
     kaminari-core (1.0.1)
     launchy (2.4.3)
       addressable (~> 2.3)
-    letter_opener (1.4.1)
-      launchy (~> 2.2)
     libnotify (0.9.3)
       ffi (>= 1.0.11)
     listen (3.0.3)
@@ -543,7 +541,6 @@ DEPENDENCIES
   jquery-rails
   knock!
   launchy
-  letter_opener
   libnotify
   money
   net-sftp

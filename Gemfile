@@ -75,7 +75,6 @@ end
 
 group :development do
   gem 'bullet'
-  gem 'letter_opener'
 end
 
 group :development, :test do
