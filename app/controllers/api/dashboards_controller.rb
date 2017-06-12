@@ -9,10 +9,6 @@ class Api::DashboardsController < ApplicationController
       current_user: current_user,
       revenue: dashboard_pacing_alert_service.display_revenue
     }
-
-  rescue NoMethodError => _e
-    render json: { errors: "Error happened when company didn't have time periods of type Quarter" },
-                   status: :unprocessable_entity
   end
 
   def typeahead
@@ -26,32 +22,40 @@ class Api::DashboardsController < ApplicationController
   end
 
   def time_period
-    @_time_period ||= company.time_periods.current_quarter
+    return @time_period if defined?(@time_period)
+
+    @time_period = company.time_periods.now
   end
 
   def next_time_period
-    company.time_periods.all_quarter.find_by(start_date: time_period.end_date.next)
+    start_date = (Time.now.utc + 3.months).beginning_of_quarter
+    end_date = (Time.now.utc + 3.months).end_of_quarter.beginning_of_day
+    start_date..end_date
   end
 
   def forecast
+    return @forecast if defined?(@forecast)
+
     return nil unless time_period
 
-    @_forecast ||= forecast_for(time_period)
+    if current_user.user_type == EXEC && user_quota_for_period(time_period.start_date, time_period.end_date) == 0
+      @forecast = Forecast.new(company, company_teams, time_period.start_date, time_period.end_date)
+    elsif current_user.leader?
+      @forecast = Forecast.new(company, current_user.teams, time_period.start_date, time_period.end_date)
+    else
+      @forecast = ForecastMember.new(current_user, time_period.start_date, time_period.end_date)
+    end
   end
 
   def next_quarter_forecast
-    return nil unless time_period || next_time_period
+    return @next_quarter_forecast if defined?(@next_quarter_forecast)
 
-    @_next_quarter_forecast ||= forecast_for(next_time_period)
-  end
-
-  def forecast_for(period)
-    if current_user.user_type.eql?(EXEC) && user_quota_for_period(period.start_date, period.end_date) == 0
-      Forecast.new(company, company_teams, period.start_date, period.end_date)
+    if current_user.user_type == EXEC && user_quota_for_period(next_time_period.first, next_time_period.last) == 0
+      @next_quarter_forecast = Forecast.new(company, company_teams, next_time_period.first, next_time_period.last)
     elsif current_user.leader?
-      Forecast.new(company, current_user.teams, period.start_date, period.end_date)
+      @next_quarter_forecast = Forecast.new(company, current_user.teams, next_time_period.first, next_time_period.last)
     else
-      ForecastMember.new(current_user, period.start_date, period.end_date)
+      @next_quarter_forecast = ForecastMember.new(current_user, next_time_period.first, next_time_period.last)
     end
   end
 
@@ -60,22 +64,28 @@ class Api::DashboardsController < ApplicationController
   end
 
   def company_teams
-    @_teams = company.teams.roots(true)
+    @teams = company.teams.roots(true)
   end
 
   def deals
-    @_deals ||= current_user.deals.open.order('start_date')
+    return @deals if defined?(@deals)
+
+    @deals = current_user.deals.open.order("start_date asc")
   end
 
   def deal_search
-    @_deal_search ||= current_user.deals.open.by_name(params[:query])
+    return @deal_search if defined?(@deal_search)
+
+    @deal_search = current_user.deals.open.where('name ilike ?', "%#{params[:query]}%")
   end
 
   def company
-    @_company ||= current_user.company
+    return @company if defined?(@company)
+    @company = current_user.company
   end
 
   def serialized_deals
     ActiveModel::ArraySerializer.new(deals, each_serializer: DashboardDealSerializer)
   end
+
 end
