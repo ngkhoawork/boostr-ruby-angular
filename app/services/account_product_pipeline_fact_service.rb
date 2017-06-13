@@ -6,9 +6,7 @@ class AccountProductPipelineFactService < BaseService
         calculated_amounts = service.perform
         Upsert.batch(ActiveRecord::Base.retrieve_connection, :account_product_pipeline_facts) do |batch|
           calculated_amounts.each do |calculated_amount|
-            batch.row({ weighted_amount: calculated_amount['weighted_budget'].to_i,
-                        unweighted_amount: calculated_amount['unweighted_budget'].to_i,
-                        account_dimension_id: client.id,
+            batch.row({ account_dimension_id: client.id,
                         time_dimension_id: time_dimension.id,
                         company_id: client.company_id,
                         product_id: calculated_amount['product_id']},
