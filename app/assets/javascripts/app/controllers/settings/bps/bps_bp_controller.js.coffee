@@ -1,6 +1,6 @@
 @app.controller 'BPsBPController',
-  ['$scope', '$rootScope', '$routeParams', '$document', '$modal', 'BP', 'BpEstimate',
-    ($scope, $rootScope, $routeParams, $document, $modal, BP, BpEstimate) ->
+  ['$scope', '$rootScope', '$window', '$routeParams', '$document', '$modal', 'BP', 'BpEstimate',
+    ($scope, $rootScope, $window, $routeParams, $document, $modal, BP, BpEstimate) ->
 
       class McSort
         constructor: (opts) ->
@@ -50,6 +50,8 @@
       $scope.isDateSet = false
       $scope.selectedBP = {id: 0}
       $scope.bpEstimates = []
+      $scope.incompleteBpEstimates = []
+      $scope.isLoading = false
 
       $scope.dataType = "weighted"
       $scope.notification = null
@@ -94,7 +96,7 @@
           drawProgressCircle(percentage)
           BP.sellerTotalEstimates(id: $routeParams.id).then (sellerTotalEstimates) ->
             $scope.sellerTotalEstimates = sellerTotalEstimates
-          BpEstimate.all({ bp_id: $routeParams.id }).then (data) ->
+          BpEstimate.all({ bp_id: $routeParams.id, incomplete: false }).then (data) ->
             $scope.revenues = data.current.revenues
             $scope.pipelines = data.current.pipelines
 
@@ -108,12 +110,23 @@
 
             $scope.bpEstimates = _.map data.bp_estimates, buildBPEstimate
             $scope.unassignedBpEstimates = _.filter $scope.bpEstimates, {user_id: null}
-            $scope.incompleteBpEstimates = _.filter $scope.bpEstimates, (item) ->
-              return item.user_id != null && (item.estimate_seller == null || item.estimate_seller == 0)
             setUnassignedMcSort()
-            setIncompleteMcSort()
 
       init()
+
+      $scope.exportIncompleteEstimates = ->
+        url = '/api/bps/' + $scope.bp.id + '/bp_estimates.csv?incomplete=true'
+        $window.open(url)
+        true
+
+      $scope.loadIncompleteEstimates = () ->
+        if !$scope.isLoading
+          $scope.isLoading = true
+          BpEstimate.all({ bp_id: $routeParams.id, incomplete: true }).then (data) ->
+            $scope.incompleteBpEstimates = _.map data.bp_estimates, buildBPEstimate
+            unassignedBpEstimates = _.filter $scope.incompleteBpEstimates, {user_id: null}
+            setIncompleteMcSort()
+            $scope.isLoading = false
 
       $scope.showAssignBpEstimateModal = (bpEstimate) ->
         $scope.modalInstance = $modal.open
@@ -142,6 +155,10 @@
         .result.then (bp) ->
           if (bp && bp.id)
             init()
+
+      $scope.updateBp = () ->
+        BP.update(id: $scope.bp.id, bp: $scope.bp).then (data) ->
+          $scope.bp.read_only = data.read_only
 
       buildBPEstimate = (item) ->
         data = angular.copy(item)

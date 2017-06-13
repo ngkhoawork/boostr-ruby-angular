@@ -200,15 +200,6 @@ ActiveRecord::Schema.define(version: 20170609112145) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "ad_units", force: :cascade do |t|
-    t.text     "name"
-    t.integer  "product_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "ad_units", ["product_id"], name: "index_ad_units_on_product_id", using: :btree
-
   create_table "addresses", force: :cascade do |t|
     t.integer  "addressable_id"
     t.string   "addressable_type"
@@ -292,8 +283,9 @@ ActiveRecord::Schema.define(version: 20170609112145) do
     t.integer  "time_period_id"
     t.date     "due_date"
     t.integer  "company_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.boolean  "read_only",      default: false
   end
 
   add_index "bps", ["company_id"], name: "index_bps_on_company_id", using: :btree
@@ -366,8 +358,8 @@ ActiveRecord::Schema.define(version: 20170609112145) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                                                                                                           null: false
-    t.datetime "updated_at",                                                                                                                           null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
@@ -377,10 +369,7 @@ ActiveRecord::Schema.define(version: 20170609112145) do
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
-    t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
   end
-
-  add_index "companies", ["forecast_permission"], name: "index_companies_on_forecast_permission", using: :gin
 
   create_table "contact_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -545,16 +534,6 @@ ActiveRecord::Schema.define(version: 20170609112145) do
   end
 
   add_index "csv_import_logs", ["company_id"], name: "index_csv_import_logs_on_company_id", using: :btree
-
-  create_table "csv_temp_rows", force: :cascade do |t|
-    t.integer  "company_id"
-    t.string   "jid"
-    t.text     "row"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "csv_temp_rows", ["company_id"], name: "index_csv_temp_rows_on_company_id", using: :btree
 
   create_table "currencies", force: :cascade do |t|
     t.string "curr_cd"
@@ -936,7 +915,6 @@ ActiveRecord::Schema.define(version: 20170609112145) do
     t.integer  "daily_run_rate_loc"
     t.decimal  "ctr",                                  precision: 5,  scale: 4
     t.integer  "clicks"
-    t.text     "ad_unit"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
@@ -1247,35 +1225,6 @@ ActiveRecord::Schema.define(version: 20170609112145) do
   add_index "teams", ["leader_id"], name: "index_teams_on_leader_id", using: :btree
   add_index "teams", ["parent_id"], name: "index_teams_on_parent_id", using: :btree
 
-  create_table "temp_cumulative_dfp_reports", force: :cascade do |t|
-    t.string   "dimensionorder_name"
-    t.string   "dimensionadvertiser_name"
-    t.string   "dimensionline_item_name"
-    t.string   "dimensionad_unit_name"
-    t.integer  "dimensionorder_id"
-    t.integer  "dimensionadvertiser_id"
-    t.integer  "dimensionline_item_id"
-    t.integer  "dimensionad_unit_id"
-    t.datetime "dimensionattributeorder_start_date_time"
-    t.datetime "dimensionattributeorder_end_date_time"
-    t.string   "dimensionattributeorder_agency"
-    t.datetime "dimensionattributeline_item_start_date_time"
-    t.datetime "dimensionattributeline_item_end_date_time"
-    t.string   "dimensionattributeline_item_cost_type"
-    t.integer  "dimensionattributeline_item_cost_per_unit",          limit: 8
-    t.integer  "dimensionattributeline_item_goal_quantity",          limit: 8
-    t.integer  "dimensionattributeline_item_non_cpd_booked_revenue", limit: 8
-    t.integer  "columntotal_line_item_level_impressions",            limit: 8
-    t.integer  "columntotal_line_item_level_clicks",                 limit: 8
-    t.integer  "columntotal_line_item_level_all_revenue",            limit: 8
-    t.float    "columntotal_line_item_level_ctr"
-    t.float    "columnvideo_viewership_average_view_rate"
-    t.float    "columnvideo_viewership_completion_rate"
-    t.integer  "company_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "temp_ios", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -1327,12 +1276,12 @@ ActiveRecord::Schema.define(version: 20170609112145) do
   add_index "time_periods", ["deleted_at"], name: "index_time_periods_on_deleted_at", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                             default: "",    null: false
-    t.string   "encrypted_password",                default: ""
+    t.string   "email",                            default: "",    null: false
+    t.string   "encrypted_password",               default: ""
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                     default: 0,     null: false
+    t.integer  "sign_in_count",                    default: 0,     null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.inet     "current_sign_in_ip"
@@ -1343,7 +1292,7 @@ ActiveRecord::Schema.define(version: 20170609112145) do
     t.string   "unconfirmed_email"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "roles_mask",                        default: 1
+    t.integer  "roles_mask",                       default: 1
     t.integer  "company_id"
     t.string   "first_name"
     t.string   "last_name"
@@ -1354,29 +1303,28 @@ ActiveRecord::Schema.define(version: 20170609112145) do
     t.integer  "invitation_limit"
     t.integer  "invited_by_id"
     t.string   "invited_by_type"
-    t.integer  "invitations_count",                 default: 0
+    t.integer  "invitations_count",                default: 0
     t.string   "title"
     t.integer  "team_id"
-    t.boolean  "notify",                            default: false
-    t.integer  "neg_balance",             limit: 8
+    t.boolean  "notify",                           default: false
+    t.integer  "neg_balance",            limit: 8
     t.integer  "pos_balance"
     t.datetime "last_alert_at"
-    t.integer  "neg_balance_cnt",         limit: 8
-    t.integer  "pos_balance_cnt",         limit: 8
-    t.integer  "neg_balance_lcnt",        limit: 8
-    t.integer  "pos_balance_lcnt",        limit: 8
-    t.integer  "neg_balance_l",           limit: 8
-    t.integer  "pos_balance_l",           limit: 8
-    t.integer  "neg_balance_l_cnt",       limit: 8
-    t.integer  "pos_balance_l_cnt",       limit: 8
+    t.integer  "neg_balance_cnt",        limit: 8
+    t.integer  "pos_balance_cnt",        limit: 8
+    t.integer  "neg_balance_lcnt",       limit: 8
+    t.integer  "pos_balance_lcnt",       limit: 8
+    t.integer  "neg_balance_l",          limit: 8
+    t.integer  "pos_balance_l",          limit: 8
+    t.integer  "neg_balance_l_cnt",      limit: 8
+    t.integer  "pos_balance_l_cnt",      limit: 8
     t.decimal  "win_rate"
     t.decimal  "average_deal_size"
     t.float    "cycle_time"
-    t.integer  "user_type",                         default: 0,     null: false
-    t.boolean  "is_active",                         default: true
+    t.integer  "user_type",                        default: 0,     null: false
+    t.boolean  "is_active",                        default: true
     t.string   "starting_page"
-    t.string   "default_currency",                  default: "USD"
-    t.boolean  "revenue_requests_access",           default: false
+    t.string   "default_currency",                 default: "USD"
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
@@ -1430,7 +1378,6 @@ ActiveRecord::Schema.define(version: 20170609112145) do
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
-  add_foreign_key "ad_units", "products"
   add_foreign_key "api_configurations", "companies"
   add_foreign_key "bp_estimate_products", "bp_estimates"
   add_foreign_key "bp_estimate_products", "products"
@@ -1448,7 +1395,6 @@ ActiveRecord::Schema.define(version: 20170609112145) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
-  add_foreign_key "csv_temp_rows", "companies"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
   add_foreign_key "deal_custom_fields", "companies"
