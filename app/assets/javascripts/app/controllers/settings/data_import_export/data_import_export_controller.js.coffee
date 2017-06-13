@@ -18,6 +18,8 @@
       resolve:
         api_url: ->
           '/api/clients'
+        custom_fields_api: ->
+          undefined
 
   $scope.showUploadActivityModal = () ->
     $scope.modalInstance = $modal.open
@@ -29,6 +31,8 @@
       resolve:
         api_url: ->
           '/api/activities'
+        custom_fields_api: ->
+          undefined
 
   $scope.showUploadDealsModal = () ->
     $scope.modalInstance = $modal.open
@@ -40,6 +44,8 @@
       resolve:
         api_url: ->
           '/api/deals'
+        custom_fields_api: ->
+          'DealCustomFieldName'
 
   $scope.showUploadDealProductModal = ->
     $scope.modalInstance = $modal.open
@@ -51,6 +57,8 @@
       resolve:
         api_url: ->
           '/api/deal_products'
+        custom_fields_api: ->
+          'DealProductCfName'
 
   $scope.showUploadDealProductBudgetModal = ->
     $scope.modalInstance = $modal.open
@@ -62,6 +70,8 @@
       resolve:
         api_url: ->
           '/api/deal_product_budgets'
+        custom_fields_api: ->
+          undefined
 
   $scope.showUploadContactsModal = ->
     $scope.modalInstance = $modal.open
@@ -73,6 +83,8 @@
       resolve:
         api_url: ->
           '/api/contacts'
+        custom_fields_api: ->
+          undefined
 
   $scope.showUploadDisplayIOModal = () ->
     $scope.modalInstance = $modal.open
@@ -84,6 +96,8 @@
       resolve:
         api_url: ->
           '/api/display_line_items'
+        custom_fields_api: ->
+          undefined
 
   $scope.showUploadDisplayIOMonthlyBudgetModal = () ->
     $scope.modalInstance = $modal.open
@@ -95,6 +109,8 @@
       resolve:
         api_url: ->
           '/api/display_line_item_budgets'
+        custom_fields_api: ->
+          undefined
 
   $scope.showUploadIntegrationIdModal = () ->
     $scope.modalInstance = $modal.open
@@ -106,6 +122,8 @@
       resolve:
         api_url: ->
           '/api/integrations'
+        custom_fields_api: ->
+          undefined
 
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')

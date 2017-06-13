@@ -888,13 +888,14 @@ class Deal < ActiveRecord::Base
     deal_source_field = current_user.company.fields.find_by_name('Deal Source')
     close_reason_field = current_user.company.fields.find_by_name("Close Reason")
     list_of_currencies = Currency.pluck(:curr_cd)
-    @deal_custom_field_names = current_user.company.deal_custom_field_names
+    @custom_field_names = current_user.company.deal_custom_field_names
 
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal', source: 'ui')
     import_log.set_file_source(file_path)
 
     CSV.parse(file, headers: true, header_converters: :symbol) do |row|
       import_log.count_processed
+      @has_custom_field_rows = (row.headers && @custom_field_names.map(&:to_csv_header)).any?
 
       if row[0]
         begin
@@ -1203,7 +1204,7 @@ class Deal < ActiveRecord::Base
           deal.deal_contacts.find_or_create_by(contact: contact)
         end
 
-        import_deal_custom_field(deal, row) if @deal_custom_field_names.any?
+        import_deal_custom_field(deal, row) if @has_custom_field_rows
       else
         import_log.count_failed
         import_log.log_error(deal.errors.full_messages)
@@ -1471,7 +1472,7 @@ class Deal < ActiveRecord::Base
 
   def self.import_deal_custom_field(deal, row)
     params = {}
-    @deal_custom_field_names.each do |cf|
+    @custom_field_names.each do |cf|
       params[cf.field_name] = row[cf.to_csv_header]
     end
 

@@ -130,8 +130,11 @@ class DealProduct < ActiveRecord::Base
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal_product', source: 'ui')
     import_log.set_file_source(file_path)
 
-    CSV.parse(file, headers: true) do |row|
+    @custom_field_names = current_user.company.deal_product_cf_names
+
+    CSV.parse(file, headers: true, header_converters: :symbol) do |row|
       import_log.count_processed
+      @has_custom_field_rows = (row.headers && @custom_field_names.map(&:to_csv_header)).any?
 
       if row[0]
         begin
@@ -216,6 +219,8 @@ class DealProduct < ActiveRecord::Base
         import_log.count_imported
 
         deal_product.deal.update_total_budget
+
+        import_custom_field(deal_product, row) if @has_custom_field_rows
       else
         import_log.count_failed
         import_log.log_error(deal_product.errors.full_messages)
@@ -266,6 +271,29 @@ class DealProduct < ActiveRecord::Base
 
         csv << line
       end
+    end
+  end
+
+  def upsert_custom_fields(params)
+    if self.deal_product_cf.present?
+      self.deal_product_cf.update(params)
+    else
+      cf = self.build_deal_product_cf(params)
+      cf.save
+    end
+  end
+
+  private
+
+  def self.import_custom_field(obj, row)
+    params = {}
+
+    @custom_field_names.each do |cf|
+      params[cf.field_name] = row[cf.to_csv_header]
+    end
+
+    if params.compact.any?
+      obj.upsert_custom_fields(params)
     end
   end
 end

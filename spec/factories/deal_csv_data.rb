@@ -67,7 +67,7 @@ def setup_custom_fields(item)
     when 'number'
       max = 999
       min = 100
-      rand.round(2) * (max - min) + min
+      (rand * (max - min) + min).round(2)
     when 'text'
       FFaker::BaconIpsum.paragraph
     end
