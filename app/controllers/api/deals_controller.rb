@@ -92,7 +92,7 @@ class Api::DealsController < ApplicationController
           end
           render json: response_deals
         else
-          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users, :currency).distinct , each_serializer: DealIndexSerializer).to_json
+          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).eager_load(:advertiser, :agency, :stage, :deal_custom_field, :users, :currency).distinct , each_serializer: DealIndexSerializer).to_json
         end
       }
       format.csv {
@@ -631,9 +631,9 @@ class Api::DealsController < ApplicationController
 
   def deals
     if params[:filter] == 'company' && current_user.leader?
-      company.deals.active
+      company.deals
     elsif params[:filter] == 'all'
-      company.deals.active
+      company.deals
     elsif params[:filter] == 'selected_team' && params[:team_id]
       all_team_deals
     elsif params[:filter] == 'user' && params[:user_id]
@@ -642,12 +642,12 @@ class Api::DealsController < ApplicationController
       if team.present?
         company.deals.by_deal_team(team.all_members.map(&:id) + team.all_leaders.map(&:id))
       else
-        company.deals.active
+        company.deals
       end
     elsif params[:client_id].present?
-      company.deals.active
+      company.deals
     else
-      current_user.deals.active
+      current_user.deals
     end
   end
 
@@ -678,7 +678,7 @@ class Api::DealsController < ApplicationController
     elsif user.user_type == SALES_MANAGER
       company.deals.by_deal_team(user.teams_tree_members.ids)
     else
-      company.deals.active
+      company.deals
     end
   end
 
