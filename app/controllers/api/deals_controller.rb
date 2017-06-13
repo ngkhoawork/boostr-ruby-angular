@@ -92,7 +92,18 @@ class Api::DealsController < ApplicationController
           end
           render json: response_deals
         else
-          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).eager_load(:advertiser, :agency, :stage, :deal_custom_field, :users, :currency).distinct , each_serializer: DealIndexSerializer).to_json
+          render json: ActiveModel::ArraySerializer.new(
+            # deals.for_client(params[:client_id]).limit(limit).offset(offset).eager_load(
+            deals.for_client(params[:client_id]).eager_load(
+              :advertiser,
+              :agency,
+              :stage,
+              :deal_custom_field,
+              :users,
+              :currency
+            ).distinct,
+            each_serializer: DealIndexSerializer
+           )
         end
       }
       format.csv {
@@ -747,5 +758,13 @@ class Api::DealsController < ApplicationController
 
   def company_won_deals
     company.deals.won.by_name(params[:name])
+  end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 10
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 end
