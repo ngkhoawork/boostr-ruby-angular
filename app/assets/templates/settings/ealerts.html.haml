@@ -43,7 +43,7 @@
               .mb20.pb20.bb-gray{'ng-if': '!ealert.same_all_stages'}
                 .specify-the-recipien
                   Recipients on each stages:
-                .stage-recipients{ng: {repeat: '(stage_index, ealert_stage) in ealert.ealert_stages', if: 'ealert_stage.enabled'}}
+                .stage-recipients{ng: {repeat: '(stage_index, ealert_stage) in ealert.ealert_stages'}}
                   .recipients-list
                     .auto-send-e-alerts-on
                       {{ealert_stage.stage.probability}}%
