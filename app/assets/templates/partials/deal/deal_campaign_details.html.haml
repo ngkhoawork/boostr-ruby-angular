@@ -102,7 +102,11 @@
         %div.custom-field-item-label
             %label Closed at
         %div.custom-field-item-field
-            {{ currentDeal.closed_at | date }}
+            .datetime-field.bs-datepicker{'ng-if': '!isAdmin'}
+                {{ currentDeal.closed_at | date }}
+            .datetime-field.bs-datepicker{'ng-if': 'isAdmin'}
+                %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !currentDeal.closed_at}', model: 'currentDeal.closed_at', click: 'closedAtOpened = !closedAtOpened', change: 'updateDeal()' }, 'is-open': 'closedAtOpened' }
+                    {{(currentDeal.closed_at | date) || 'Select date'}}
     %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
         %div.custom-field-item-label
             %label Loss Reason

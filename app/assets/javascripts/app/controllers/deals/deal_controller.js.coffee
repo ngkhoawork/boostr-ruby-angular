@@ -963,4 +963,7 @@
       _.forEach members, (member) ->
         if member.user_id == currentUser.id && !(member.share > 0)
           $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
+
+  $scope.$watch 'currentUser', (currentUser) ->
+    $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
 ]
