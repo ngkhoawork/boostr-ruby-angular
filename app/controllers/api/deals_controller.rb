@@ -775,13 +775,10 @@ class Api::DealsController < ApplicationController
                               .by_curr_cd(params[:curr_cd])
                               .by_start_date(params[:start_date], params[:end_date])
 
-      closed_year = Date.new(params[:closed_year].to_i)
+      closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
 
-      ordered_deals = stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.order(closed_at: :desc)
-                                                                                          .closed_at(
-                                                                                            closed_year.beginning_of_year.to_datetime.beginning_of_day,
-                                                                                            closed_year.end_of_year.to_datetime.end_of_day
-                                                                                          )
+      ordered_deals = stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.by_closed_at(closed_year)
+                                                                                          .order(closed_at: :desc)
 
       deals_count_per_stage << { stage.probability => ordered_deals.count }
 

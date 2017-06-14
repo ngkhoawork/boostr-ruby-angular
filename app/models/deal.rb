@@ -96,9 +96,7 @@ class Deal < ActiveRecord::Base
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
   scope :for_time_period, -> (start_date, end_date) { where('deals.start_date <= ? AND deals.end_date >= ?', end_date, start_date) }
   scope :closed_in, -> (duration_in_days) { where('deals.closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
-  scope :closed_at, -> (start_date, end_date) do
-    where(closed_at: start_date..end_date) if start_date.present? && end_date.present? 
-  end
+  scope :closed_at, -> (start_date, end_date) { where('deals.closed_at >= ? and deals.closed_at <= ?', start_date, end_date) }
   scope :started_at, -> (start_date, end_date) { where('deals.created_at >= ? and deals.created_at <= ?', start_date, end_date) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
   scope :close_status, -> { joins(:stage).where('stages.open IS false OR stages.probability = 100') }
@@ -125,6 +123,9 @@ class Deal < ActiveRecord::Base
   scope :by_curr_cd, -> (curr_cd) { where(curr_cd: curr_cd) if curr_cd.present? }
   scope :by_start_date, -> (start_date, end_date) do
     where(start_date: start_date..end_date) if start_date.present? && end_date.present?
+  end
+  scope :by_closed_at, -> (closed_at) do
+    where(closed_at: closed_at.beginning_of_year.to_datetime.beginning_of_day..closed_at.end_of_year.to_datetime.end_of_day) if closed_at.present?
   end
 
   def integrate_with_operative
