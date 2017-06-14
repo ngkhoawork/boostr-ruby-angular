@@ -59,7 +59,6 @@
 
           TimePeriod.all().then (timePeriods) ->
             $scope.timePeriods = angular.copy timePeriods
-            console.log timePeriods
             $scope.timePeriods = _.sortBy $scope.timePeriods, 'start_date'
             $scope.timePeriods.unshift({name:'All', id:'all'})
 
