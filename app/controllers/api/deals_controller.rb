@@ -92,9 +92,11 @@ class Api::DealsController < ApplicationController
           end
           render json: response_deals
         else
-          render json: ActiveModel::ArraySerializer.new(serialized_deals, each_serializer: DealIndexSerializer)
-        end
-      }
+          response.headers['Deals-Count-Per-Stage'] = { deals_count_per_stage: serialized_deals[:deals_count_per_stage] }
+
+          render json: ActiveModel::ArraySerializer.new(serialized_deals[:deals_with_stage], each_serializer: DealIndexSerializer)
+      end
+    }
       format.csv {
         require 'timeout'
         begin
@@ -277,6 +279,10 @@ class Api::DealsController < ApplicationController
 
   def won_deals
     render json: company_won_deals.as_json(override: true, options: { only: [:id, :name] })
+  end
+
+  def filter_data
+    render json: FilterData::BaseSerializer.new(company).serializable_hash
   end
 
   private
@@ -758,9 +764,26 @@ class Api::DealsController < ApplicationController
   end
 
   def serialized_deals
-    company.stages.reduce([]) do |arr, stage|
+    deals_count_per_stage = []
+
+    deals_with_stage = company.stages.reduce([]) do |arr, stage|
       deals_with_stage = deals.where(stage: stage)
+                              .by_creator(params[:owner_id])
+                              .for_client(params[:advertiser_id])
+                              .for_client(params[:agency_id])
+                              .by_budget_range(params[:budget_from], params[:budget_to])
+                              .by_curr_cd(params[:curr_cd])
+                              .by_start_date(params[:start_date], params[:end_date])
+
+      closed_year = Date.new(params[:closed_year].to_i)
+
       ordered_deals = stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.order(closed_at: :desc)
+                                                                                          .closed_at(
+                                                                                            closed_year.beginning_of_year.to_datetime.beginning_of_day,
+                                                                                            closed_year.end_of_year.to_datetime.end_of_day
+                                                                                          )
+
+      deals_count_per_stage << { stage.probability => ordered_deals.count }
 
       arr <<
         ordered_deals.limit(limit).offset(offset).includes(
@@ -772,5 +795,7 @@ class Api::DealsController < ApplicationController
           :currency
         ).distinct
     end.flatten
+
+    { deals_with_stage: deals_with_stage, deals_count_per_stage: deals_count_per_stage }
   end
 end

@@ -96,7 +96,9 @@ class Deal < ActiveRecord::Base
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
   scope :for_time_period, -> (start_date, end_date) { where('deals.start_date <= ? AND deals.end_date >= ?', end_date, start_date) }
   scope :closed_in, -> (duration_in_days) { where('deals.closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
-  scope :closed_at, -> (start_date, end_date) { where('deals.closed_at >= ? and deals.closed_at <= ?', start_date, end_date) }
+  scope :closed_at, -> (start_date, end_date) do
+    where(closed_at: start_date..end_date) if start_date.present? && end_date.present? 
+  end
   scope :started_at, -> (start_date, end_date) { where('deals.created_at >= ? and deals.created_at <= ?', start_date, end_date) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
   scope :close_status, -> { joins(:stage).where('stages.open IS false OR stages.probability = 100') }
@@ -117,6 +119,12 @@ class Deal < ActiveRecord::Base
   scope :by_team_id, -> (team_id) { joins(deal_members: :user).where(users: { team_id: team_id }) if team_id.present? }
   scope :by_seller_id, -> (seller_id) do
     joins(:deal_members).where(deal_members: { user_id: seller_id }) if seller_id.present?
+  end
+  scope :by_creator, -> (creator_id) { joins(:creator).where(users: { id: creator_id }) if creator_id.present? }
+  scope :by_budget_range, -> (from, to) { where(budget: from..to) if from.present? && to.present? }
+  scope :by_curr_cd, -> (curr_cd) { where(curr_cd: curr_cd) if curr_cd.present? }
+  scope :by_start_date, -> (start_date, end_date) do
+    where(start_date: start_date..end_date) if start_date.present? && end_date.present?
   end
 
   def integrate_with_operative
