@@ -68,7 +68,7 @@
     $scope.recipient_list = []
     if $scope.ealert.recipients && $scope.ealert.same_all_stages
       $scope.recipient_list = $scope.ealert.recipients.split(',')
-    else
+    else if $scope.ealert.same_all_stages == false
       ealert_stage = _.find $scope.ealert.ealert_stages, (item) ->
         return item.stage_id == $scope.deal.stage_id
       if ealert_stage != undefined && ealert_stage.recipients
