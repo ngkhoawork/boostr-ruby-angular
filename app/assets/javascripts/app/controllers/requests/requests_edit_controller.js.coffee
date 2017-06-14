@@ -6,6 +6,8 @@
   $scope.statuses = Request.statuses
   $scope.request = request
 
+  $scope.name = $scope.request.requestable.name
+
   $scope.saveRequest = () ->
     Request.update(request: $scope.request, id: $scope.request.id).then(
       (request) ->

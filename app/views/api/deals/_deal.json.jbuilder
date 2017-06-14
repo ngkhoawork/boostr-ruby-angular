@@ -8,6 +8,7 @@ json.days deal.days
 json.months deal.months
 json.days_per_month deal.days_per_month
 json.currency deal.currency
+json.requests_enabled deal.company.requests_enabled
 
 json.stage deal.stage, :name, :probability, :color, :open
 if deal.previous_stage

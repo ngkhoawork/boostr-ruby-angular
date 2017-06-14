@@ -12,6 +12,12 @@
     status: 'New'
   }
 
+  $scope.name = switch requestable_type
+    when "Io" then "IO #{requestable.id}"
+    when "ContentFee" then "#{requestable.product.name}"
+    when "DisplayLineItem" then "Line Number #{requestable.line_number}"
+    else ''
+
   $scope.saveRequest = () ->
     if requestable.request
       Request.update(request: $scope.request, id: $scope.request.id).then(

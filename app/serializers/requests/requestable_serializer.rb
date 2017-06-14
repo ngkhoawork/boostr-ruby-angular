@@ -1,15 +1,15 @@
 class Requests::RequestableSerializer < ActiveModel::Serializer
   attributes(
-    :id
+    :id, :name
   )
 
-  def id
+  def name
     if object.is_a?(ContentFee)
-      object.product.name
+      "#{object.product.name}"
     elsif object.is_a?(DisplayLineItem)
-      object.line_number
+      "Line Number #{requestable.line_number}"
     else
-      object.id
+      "IO #{object.id}"
     end
   end
 end

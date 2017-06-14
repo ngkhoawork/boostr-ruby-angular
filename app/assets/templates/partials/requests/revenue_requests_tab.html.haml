@@ -16,13 +16,12 @@
         %td
           {{request.requester.name}}
         %td
-          %a{'href': '', 'ng-href': '/deals/{{request.deal.id}}', 'ng-click': '$event.stopPropagation()'} {{request.deal.name}}
+          %a{'href': '', 'ng-href': '/deals/{{request.deal.id}}'} {{request.deal.name}}
         %td
           %a{'href': '', 'ng-href': '/revenue/ios/{{request.deal.io_id}}', 'ng-click': '$event.stopPropagation()'}
             {{request.deal.io_name}}
         %td
-          {{request.requestable_type}}
-          {{request.requestable.id}}
+          {{request.requestable.name}}
         %td
           {{request.description}}
         %td

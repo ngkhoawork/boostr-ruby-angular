@@ -1,19 +1,19 @@
 #request_modal.popup-modal
-  %form.form-horizontal
+  %form
     .popup-modal-header
-      Revenue Request
+      Revenue Request for {{ name }}
       %span.close-btn{'ng-click': 'cancel()'}
-    .popup-modal-body.modal-body
+    .popup-modal-body
       .form-group
-        %label.control-label{ for: 'description' } Change Description
+        %label{ for: 'description' } Change Description
         %textarea.form-control{ placeholder: 'Explain your change', ng: { model: 'request.description' }, name: 'description' }
 
       .form-group{ng: {if: 'formType == "Edit"'}}
-        %label.control-label{ for: 'resolution' } Action Description
+        %label{ for: 'resolution' } Action Description
         %textarea.form-control{ placeholder: 'Explain your action', ng: { model: 'request.resolution' }, name: 'resolution' }
 
       .form-group
-        %label.control-label{ for: 'status' } Status
+        %label{ for: 'status' } Status
         %ui-select{ name: 'status', ng: { model: 'request.status', required: true } }
           %ui-select-match
             {{ $select.selected }}

@@ -2,7 +2,7 @@
   %span.title IO Details
   %a.io-link{'href': '', 'ng-href': '/revenue/ios/{{currentDeal.io.id}}'} {{currentDeal.io.name || ''}}
   %span.details Total Budget = {{ currentDeal.io.budget_loc | currency: currency_symbol : 0 }}
-  %a.io-revenue-request{href: '', 'ng-click': "showNewRequestModal(currentDeal.io, 'Io')"}
+  %a.io-revenue-request{href: '', ng: { click: "showNewRequestModal(currentDeal.io, 'Io')", if: 'currentDeal.requests_enabled' } }
     Revenue Request
 
   .block#line-content-fees
@@ -19,7 +19,7 @@
             %th.left Total Budget
             %th.left{ ng: { repeat: "month in currentDeal.months" } }
               {{ month | boDate }}
-            %th
+            %th{ ng: { if: 'currentDeal.requests_enabled' } }
         %tbody
           %tr{ ng: { if: 'currentDeal.io.content_fees && currentDeal.io.content_fees.length > 0', repeat: "content_fee in currentDeal.io.content_fees"} }
             %td
@@ -31,11 +31,11 @@
             %td
               %span
                 {{ content_fee.budget_loc | currency:currency_symbol:0 }}
-            %td{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
+            %td.left{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
               %span
                 {{ product_budget.budget_loc | currency:currency_symbol:0 }}
-            %td.left.cell-thin
-              %a{href: '', 'ng-click': "showNewRequestModal(content_fee, 'ContentFee')"}
+            %td.left.cell-thin{ ng: { if: 'currentDeal.requests_enabled' } }
+              %a{href: '', ng: { click: "showNewRequestModal(content_fee, 'ContentFee')" } }
                 Revenue Request
           %tr{ ng: { if: '!currentDeal.io.content_fees || currentDeal.io.content_fees.length == 0' } }
             %td.center{ 'colspan': '{{4+currentDeal.months.length}}' }
@@ -69,7 +69,7 @@
             %th.right 3PBudRem
             %th.right Daily Rate
             %th.right {{"#DaysNoBud"}}
-            %th.right
+            %th.right{ ng: { if: 'currentDeal.requests_enabled' } }
         %tbody{ ng: { if: 'currentDeal.io.display_line_items && currentDeal.io.display_line_items.length > 0', repeat: "displayLineItem in currentDeal.io.display_line_items | orderBy: 'line_number'"} }
           %tr
             %td.left
@@ -116,8 +116,8 @@
               {{ displayLineItem.daily_run_rate | currency:currency_symbol:0 }}
             %td.right
               {{ displayLineItem.num_days_til_out_of_budget }}
-            %td.right.cell-thin
-              %a{href: '', 'ng-click': "showNewRequestModal(displayLineItem, 'DisplayLineItem')"}
+            %td.right.cell-thin{ ng: { if: 'currentDeal.requests_enabled' } }
+              %a{href: '', ng: { click: "showNewRequestModal(displayLineItem, 'DisplayLineItem')" } }
                 Revenue Request
           %tr.display-line-budgets-row
             %td.left{colspan: 21}

@@ -103,7 +103,7 @@
                   = link_to "Inactives", "/smart_reports/inactives"
                 %li
                   = link_to "Initiatives", "/smart_reports/initiatives"
-          - if current_user.has_requests_access?
+          - if current_user.company.requests_enabled && current_user.has_requests_access?
             %li{ ng: { class: "{ active: isActive('/requests') }" } }
               = link_to "REQUESTS", "/requests"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
