@@ -239,7 +239,7 @@ RSpec.describe Deal, type: :model do
     end
   end
 
-  describe '#integrate_with_operative', focus: true do
+  describe '#integrate_with_operative' do
     let!(:deal) { create :deal }
     let(:discuss_stage) { create :discuss_stage }
     let(:proposal_stage) { create :proposal_stage }
