@@ -239,7 +239,7 @@ RSpec.describe Deal, type: :model do
     end
   end
 
-  describe '#integrate_with_operative' do
+  describe '#integrate_with_operative', focus: true do
     let!(:deal) { create :deal }
     let(:discuss_stage) { create :discuss_stage }
     let(:proposal_stage) { create :proposal_stage }
@@ -255,6 +255,17 @@ RSpec.describe Deal, type: :model do
     end
 
     it 'integrates when stage is above threshold' do
+      allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+      expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
+
+      deal.update(stage: proposal_stage)
+    end
+
+    it 'integrates when there was an integration and config requires to reintegrate each stage' do
+      api_configuration.update(recurring: true)
+      create :integration, integratable: deal, external_type: Integration::OPERATIVE, external_id: 10
+
       allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
       expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
@@ -283,6 +294,16 @@ RSpec.describe Deal, type: :model do
 
       it 'when stage is below threshold' do
         api_configuration.update(trigger_on_deal_percentage: 75)
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: discuss_stage)
+      end
+
+      it 'when stage is below threshold and integration is recurring' do
+        api_configuration.update(trigger_on_deal_percentage: 75, recurring: true)
 
         allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
