@@ -92,9 +92,17 @@ class Api::DealsController < ApplicationController
           end
           render json: response_deals
         else
-          response.headers['Deals-Count-Per-Stage'] = { deals_count_per_stage: serialized_deals[:deals_count_per_stage] }
-
-          render json: ActiveModel::ArraySerializer.new(serialized_deals[:deals_with_stage], each_serializer: DealIndexSerializer)
+          render json: ActiveModel::ArraySerializer.new(
+            deals.for_client(params[:client_id]).eager_load(
+              :advertiser,
+              :agency,
+              :stage,
+              :deal_custom_field,
+              :users,
+              :currency
+            ).distinct,
+            each_serializer: DealIndexSerializer
+          )
       end
     }
       format.csv {
@@ -283,6 +291,16 @@ class Api::DealsController < ApplicationController
 
   def filter_data
     render json: FilterData::BaseSerializer.new(company).serializable_hash
+  end
+
+  def all
+    render json: {
+      deals_count_per_stage: serialized_deals[:deals_count_per_stage],
+      deals_with_stage: ActiveModel::ArraySerializer.new(
+        serialized_deals[:deals_with_stage],
+        each_serializer: DealIndexSerializer
+      )
+    }
   end
 
   private

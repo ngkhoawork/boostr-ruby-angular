@@ -206,6 +206,7 @@ Rails.application.routes.draw do
         get :pipeline_summary_report
         get :won_deals
         get :filter_data
+        get :all
       end
       member do
         post :send_to_operative
