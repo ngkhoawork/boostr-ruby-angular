@@ -8,7 +8,7 @@ FactoryGirl.define do
     initialize_with { attributes }
 
     after(:build) do |item|
-      setup_defaults(item)
+      setup_default_deal_product_csv_data(item)
     end
 
     factory :deal_product_csv_data_custom_fields do
@@ -19,7 +19,7 @@ FactoryGirl.define do
   end
 end
 
-def setup_defaults(item)
+def setup_default_deal_product_csv_data(item)
   if item[:deal_name].nil?
     item[:deal_name] = Company.first.deals.order(:id).first.name
   end

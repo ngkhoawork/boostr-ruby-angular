@@ -895,7 +895,7 @@ class Deal < ActiveRecord::Base
 
     CSV.parse(file, headers: true, header_converters: :symbol) do |row|
       import_log.count_processed
-      @has_custom_field_rows = (row.headers && @custom_field_names.map(&:to_csv_header)).any?
+      @has_custom_field_rows ||= (row.headers && @custom_field_names.map(&:to_csv_header)).any?
 
       if row[0]
         begin

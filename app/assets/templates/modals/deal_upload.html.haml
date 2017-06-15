@@ -51,7 +51,7 @@
           %br
           (email1;email2)
 
-      .custom_fields{ng: { show: 'custom_fields' }}
+      .custom_fields{ng: { show: 'custom_fields && custom_fields.length > 0' }}
         %h6.text-center
           Optional Deal Custom Fields. Please use these EXACT headers to allow system to recognize Custom Fields:
 

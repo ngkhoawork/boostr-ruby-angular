@@ -21,24 +21,52 @@ FactoryGirl.define do
     initialize_with { attributes }
 
     after(:build) do |item|
-      if item[:parent].nil?
-        item[:parent] = Company.first.clients.first.name
-      end
+      setup_default_client_csv_data(item)
+    end
 
-      if item[:category].nil?
-        category = Company.first.fields.where(name: 'Category').first.options.first
-        item[:category] = category.name
-      end
-
-      if item[:subcategory].nil? && category
-        subcategory = category.suboptions.first
-        item[:subcategory] = subcategory.name
-      end
-
-      if item[:teammembers].nil?
-        user = Company.first.users.first
-        item[:teammembers] = user.email + '/100'
+    factory :client_csv_data_custom_fields do
+      after(:build) do |item|
+        setup_custom_fields(item)
       end
     end
   end
+end
+
+def setup_default_client_csv_data(item)
+  if item[:parent].nil?
+    item[:parent] = Company.first.clients.first.name
+  end
+
+  if item[:category].nil?
+    category = Company.first.fields.where(name: 'Category').first.options.first
+    item[:category] = category.name
+  end
+
+  if item[:subcategory].nil? && category
+    subcategory = category.suboptions.first
+    item[:subcategory] = subcategory.name
+  end
+
+  if item[:teammembers].nil?
+    user = Company.first.users.first
+    item[:teammembers] = user.email + '/100'
+  end
+end
+
+def setup_custom_fields(item)
+  item[:custom_field_names].each do |cf|
+    item[cf.to_csv_header] = case cf.field_type
+    when 'boolean'
+      [true, false].sample
+    when 'datetime'
+      FFaker::Time.date
+    when 'number'
+      max = 999
+      min = 100
+      (rand * (max - min) + min).round(2)
+    when 'text'
+      FFaker::BaconIpsum.paragraph
+    end
+  end
+  item[:custom_field_names] = nil
 end

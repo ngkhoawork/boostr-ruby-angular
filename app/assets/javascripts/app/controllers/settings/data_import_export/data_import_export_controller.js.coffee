@@ -19,7 +19,7 @@
         api_url: ->
           '/api/clients'
         custom_fields_api: ->
-          undefined
+          'AccountCfName'
 
   $scope.showUploadActivityModal = () ->
     $scope.modalInstance = $modal.open
