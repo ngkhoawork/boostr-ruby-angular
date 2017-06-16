@@ -295,8 +295,8 @@ class Api::DealsController < ApplicationController
 
   def all
     render json: {
-      deals_count_per_stage: serialized_deals[:deals_count_per_stage],
-      deals_with_stage: ActiveModel::ArraySerializer.new(
+      deals_info: serialized_deals[:deals_count_per_stage],
+      deals: ActiveModel::ArraySerializer.new(
         serialized_deals[:deals_with_stage],
         each_serializer: DealIndexSerializer
       )
@@ -782,7 +782,7 @@ class Api::DealsController < ApplicationController
   end
 
   def serialized_deals
-    deals_count_per_stage = []
+    deals_count_per_stage = {}
 
     deals_with_stage = company.stages.reduce([]) do |arr, stage|
       deals_with_stage = deals.where(stage: stage)
@@ -797,8 +797,14 @@ class Api::DealsController < ApplicationController
 
       ordered_deals = stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.by_closed_at(closed_year)
                                                                                           .order(closed_at: :desc)
+      unweighted_budget = ordered_deals.sum(:budget).to_i
+      weighted_budget = stage.probability.zero? ? unweighted_budget : unweighted_budget * (stage.probability.to_f / 100.to_f)
 
-      deals_count_per_stage << { stage.probability => ordered_deals.count }
+      deals_count_per_stage[stage.probability] = {
+        count: ordered_deals.count,
+        unweighted: unweighted_budget,
+        weighted: weighted_budget.to_i
+      }
 
       arr <<
         ordered_deals.limit(limit).offset(offset).includes(
