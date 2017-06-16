@@ -1,4 +1,4 @@
-#revenue_upload_modal
+#csv_import_modal
   .modal-header.text-center
     %a.close{ ng: { click: 'cancel()' } }
       %span{'aria-hidden' => 'true'}
@@ -13,14 +13,22 @@
 
   .modal-body
     .well.transparent
-      %p.text-center
+      %h6.text-center
         Make sure your CSV file includes these EXACT headers and columns:
 
-      %ol.row.center-block
-        %li.col-xs-3.col-xs-offset-2 Deal ID
-        %li.col-xs-3 Deal Name*
-        %li.col-xs-3 Deal Product*
-        %li.col-xs-3.col-xs-offset-2 Budget*
+      %ol.row.center-block.grid-block
+        %li Deal ID
+        %li Deal Name*
+        %li Deal Product*
+        %li Budget*
+
+      .custom_fields{ng: { show: 'custom_fields && custom_fields.length > 0' }}
+        %h6.text-center
+          Optional Deal Product Custom Fields. Please use these EXACT headers to allow system to recognize Custom Fields:
+
+        %ol.row.center-block.grid-block
+          %li{ng: { repeat: 'custom_field in custom_fields' }}
+            {{custom_field.field_label}}
 
     .well.well-lg.dark
       .row

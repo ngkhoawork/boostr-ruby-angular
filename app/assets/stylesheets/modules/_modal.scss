@@ -578,3 +578,31 @@
 .modal-backdrop.in {
   height: 100%;
 }
+
+#csv_import_modal {
+  svg {
+    height: 36px;
+    fill: $brand-primary;
+  }
+
+  .modal-header {
+    border: none;
+  }
+
+  .modal-body {
+    padding: 20px;
+    color: $dark-text-color;
+
+    ol.grid-block {
+      margin-left: 25px;
+      margin-bottom: 25px;
+      font-size: 13px;
+
+      li {
+        padding: 10px 20px 10px 0;
+        width: 33.33333333%;
+        float: left;
+      }
+    }
+  }
+}

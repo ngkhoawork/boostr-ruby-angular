@@ -11,9 +11,13 @@
   %td{ width: "9%" }
     {{ bp_estimate.revenue | currency:'$':0 }}
   %td{ width: "11%" }
-    %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+    %div{'ng-if': 'selectedBP.read_only == false', 'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+    %span{'ng-if': 'selectedBP.read_only == true'}
+      {{ (bp_estimate.estimate_seller || 0) | currency:'$':0 }}
   %td{ width: "11%" }
-    %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+    %div{'ng-if': 'selectedBP.read_only == false', 'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+    %span{'ng-if': 'selectedBP.read_only == true'}
+      {{ (bp_estimate.estimate_mgr || 0) | currency:'$':0 }}
   %td{ width: "9%" }
     {{ bp_estimate.year_revenue | currency:'$':0 }}
   %td{ width: "9%" }
@@ -39,12 +43,12 @@
       .attr-label
         Objectives
       .attr-value
-        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Objectives', 'ng-model': 'bp_estimate.objectives', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Objectives', 'ng-model': 'bp_estimate.objectives', 'ng-blur': 'updateBpEstimate(bp_estimate)', 'ng-disabled': 'selectedBP.read_only == true'}
     .bp-estimate-attribute
       .attr-label
         Assumptions
       .attr-value
-        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Assumptions', 'ng-model': 'bp_estimate.assumptions', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Assumptions', 'ng-model': 'bp_estimate.assumptions', 'ng-blur': 'updateBpEstimate(bp_estimate)', 'ng-disabled': 'selectedBP.read_only == true'}
   %td.bp-estimate-product-list.left{ colspan: "3"}
     %table.detail
       %tbody
@@ -58,8 +62,12 @@
         %tr{ ng: { repeat: 'bp_estimate_product in bp_estimate.bp_estimate_products' } }
           %td.left {{ bp_estimate_product.product.name }}
           %td
-            %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %div{'ng-if': 'selectedBP.read_only == false', 'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %span{'ng-if': 'selectedBP.read_only == true'}
+              {{ (bp_estimate_product.estimate_seller || 0) | currency:'$':0 }}
           %td
-            %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %div{'ng-if': 'selectedBP.read_only == false', 'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %span{'ng-if': 'selectedBP.read_only == true'}
+              {{ (bp_estimate_product.estimate_mgr || 0) | currency:'$':0 }}
 
   %td{ colspan: "4"}

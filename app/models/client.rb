@@ -266,8 +266,11 @@ class Client < ActiveRecord::Base
     region_field   = current_user.company.fields.find_by(subject_type: 'Client', name: 'Region')
     segment_field  = current_user.company.fields.find_by(subject_type: 'Client', name: 'Segment')
 
-    CSV.parse(file, headers: true) do |row|
+    @custom_field_names = current_user.company.account_cf_names
+
+    CSV.parse(file, headers: true, header_converters: :symbol) do |row|
       import_log.count_processed
+      @has_custom_field_rows ||= (row.headers && @custom_field_names.map(&:to_csv_header)).any?
 
       if row[1].nil? || row[1].blank?
         import_log.count_failed
@@ -500,6 +503,8 @@ class Client < ActiveRecord::Base
           client_member = client.client_members.find_or_initialize_by(user: user)
           client_member.update(share: members[index][1].to_i)
         end
+
+        import_custom_field(client, row) if @has_custom_field_rows
       else
         import_log.count_failed
         import_log.log_error(client.errors.full_messages)
@@ -585,5 +590,28 @@ class Client < ActiveRecord::Base
 
   def agency_avg_deal_size
     agency_deals.won.map(&:budget).sum / agency_deals.won.count if agency_deals.won.any?
+  end
+
+  def upsert_custom_fields(params)
+    if self.account_cf.present?
+      self.account_cf.update(params)
+    else
+      cf = self.build_account_cf(params)
+      cf.save
+    end
+  end
+
+  private
+
+  def self.import_custom_field(obj, row)
+    params = {}
+
+    @custom_field_names.each do |cf|
+      params[cf.field_name] = row[cf.to_csv_header]
+    end
+
+    if params.compact.any?
+      obj.upsert_custom_fields(params)
+    end
   end
 end
