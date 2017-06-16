@@ -70,6 +70,7 @@ class Deal < ActiveRecord::Base
     log_stage if stage_id_changed?
     send_ealert if stage_id_changed?
     integrate_with_operative
+    send_lost_deal_notification
   end
 
   before_create do
@@ -1307,12 +1308,21 @@ class Deal < ActiveRecord::Base
   end
 
   def send_new_deal_notification
-    notification = company.notifications.find_by_name('New Deal')
+    notification = company.notifications.by_name('New Deal')
     if !notification.nil? && !notification.recipients.nil?
       recipients = notification.recipients.split(',').map(&:strip)
       if !recipients.nil? && recipients.length > 0
-        UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: "default")
+        UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default')
       end
+    end
+  end
+
+  def send_lost_deal_notification
+    if stage_id_changed? && closed_lost?
+      notification = company.notifications.by_name(Notification::LOST_DEAL)
+      recipients = notification.recipients_arr
+
+      UserMailer.lost_deal_email(recipients, self).deliver_later(queue: 'default') if recipients.any?
     end
   end
 
