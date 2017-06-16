@@ -1,4 +1,4 @@
-#revenue_upload_modal
+#csv_import_modal
   .modal-header.text-center
     %a.close{ ng: { click: 'cancel()' } }
       %span{'aria-hidden' => 'true'}
@@ -13,27 +13,35 @@
 
   .modal-body
     .well.transparent
-      %p.text-center
+      %h6.text-center
         Make sure your CSV file includes these EXACT headers and columns:
 
-      %ol.row.center-block
-        %li.col-xs-3.col-xs-offset-2 Account Id
-        %li.col-xs-3 Name*
-        %li.col-xs-3 Type*
-        %li.col-xs-3.col-xs-offset-2 Parent Account
-        %li.col-xs-3 Category
-        %li.col-xs-3 Subcategory
-        %li.col-xs-3.col-xs-offset-2 Address
-        %li.col-xs-3 City
-        %li.col-xs-3 State
-        %li.col-xs-3.col-xs-offset-2 Zip
-        %li.col-xs-3 Phone
-        %li.col-xs-3 Website
-        %li.col-xs-3.col-xs-offset-2 Replace Team (Y/N)
-        %li.col-xs-3 Teammembers (email1/%;email2/%)
-        %li.col-xs-3 Region
-        %li.col-xs-3.col-xs-offset-2 Segment
-        %li.col-xs-3 Holding Company (For Agency)
+      %ol.row.center-block.grid-block
+        %li Account Id
+        %li Name*
+        %li Type*
+        %li Parent Account
+        %li Category
+        %li Subcategory
+        %li Address
+        %li City
+        %li State
+        %li Zip
+        %li Phone
+        %li Website
+        %li Replace Team (Y/N)
+        %li Teammembers (email1/%;email2/%)
+        %li Region
+        %li Segment
+        %li Holding Company (For Agency)
+
+      .custom_fields{ng: { show: 'custom_fields && custom_fields.length > 0' }}
+        %h6.text-center
+          Optional Account Custom Fields. Please use these EXACT headers to allow system to recognize Custom Fields:
+
+        %ol.row.center-block.grid-block
+          %li{ng: { repeat: 'custom_field in custom_fields' }}
+            {{custom_field.field_label}}
 
     .well.well-lg.dark
       .row

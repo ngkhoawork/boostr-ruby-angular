@@ -10,7 +10,6 @@ class DealCustomFieldName < ActiveRecord::Base
   scope :by_index, -> field_index { where(field_index: field_index) if field_index.present? }
 
   after_create do
-    field_name = self.field_type + self.field_index.to_s
     self.company.deal_custom_fields.update_all(field_name => nil)
   end
 
@@ -31,5 +30,13 @@ class DealCustomFieldName < ActiveRecord::Base
         "sum" => 7
     }
     field_limits[type]
+  end
+
+  def field_name
+    self.field_type + self.field_index.to_s
+  end
+
+  def to_csv_header
+    CSV::HeaderConverters[:symbol].call(self.field_label)
   end
 end

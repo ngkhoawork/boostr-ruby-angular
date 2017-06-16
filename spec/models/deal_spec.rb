@@ -884,6 +884,25 @@ RSpec.describe Deal, type: :model do
         )
       end
     end
+
+    context 'deal custom fields' do
+      it 'imports deal custom field' do
+        setup_custom_fields(company)
+        data = build :deal_csv_data_custom_fields,
+               stage: stage_won.name,
+               custom_field_names: company.deal_custom_field_names
+
+        expect do
+          Deal.import(generate_csv(data), user.id, 'deals.csv')
+        end.to change(DealCustomField, :count).by(1)
+
+        deal_cf = DealCustomField.last
+
+        company.deal_custom_field_names.each do |cf|
+          expect(deal_cf[cf.field_name]).to eq(data[cf.to_csv_header])
+        end
+      end
+    end
   end
 
   context 'after_update' do
@@ -965,5 +984,12 @@ RSpec.describe Deal, type: :model do
 
   def user
     @_user ||= create :user
+  end
+
+  def setup_custom_fields(company)
+    create :deal_custom_field_name, field_type: 'datetime', field_label: 'Production Date', company: company
+    create :deal_custom_field_name, field_type: 'boolean',  field_label: 'Risky Click?', company: company
+    create :deal_custom_field_name, field_type: 'number',   field_label: 'Target Views', company: company
+    create :deal_custom_field_name, field_type: 'text',     field_label: 'Deal Type', company: company
   end
 end

@@ -67,6 +67,8 @@
         DealProductCfName.delete(id: customFieldName.id)        
       else if objectType == 'contact'
         ContactCfName.delete(id: customFieldName.id)
+      else if objectType == 'account'
+        AccountCfName.delete(id: customFieldName.id)
 
   $scope.$on 'updated_deal_custom_field_names', ->
     $scope.init()

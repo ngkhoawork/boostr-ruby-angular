@@ -310,6 +310,25 @@ RSpec.describe Client, type: :model do
         )
       end
     end
+
+    context 'client custom fields' do
+      it 'imports account custom field' do
+        setup_custom_fields(company)
+        new_client_csv = build :client_csv_data_custom_fields,
+                type: 'Advertiser',
+                custom_field_names: company.account_cf_names
+
+        expect do
+          Client.import(generate_csv(new_client_csv), user.id, '/tmp/clients.csv')
+        end.to change(AccountCf, :count).by(1)
+
+        account_cf = AccountCf.last
+
+        company.account_cf_names.each do |cf|
+          expect(account_cf[cf.field_name]).to eq(new_client_csv[cf.to_csv_header])
+        end
+      end
+    end
   end
 
   def generate_csv(data)
@@ -317,5 +336,14 @@ RSpec.describe Client, type: :model do
       csv << data.keys
       csv << data.values
     end
+  end
+
+  private
+
+  def setup_custom_fields(company)
+    create :account_cf_name, field_type: 'datetime', field_label: 'Production Date', company: company
+    create :account_cf_name, field_type: 'boolean',  field_label: 'Risky Click?', company: company
+    create :account_cf_name, field_type: 'number',   field_label: 'Target Views', company: company
+    create :account_cf_name, field_type: 'text',     field_label: 'Deal Type', company: company
   end
 end

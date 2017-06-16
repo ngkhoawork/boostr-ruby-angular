@@ -1,4 +1,4 @@
-#revenue_upload_modal
+#csv_import_modal
   .modal-header.text-center
     %a.close{ ng: { click: 'cancel()' } }
       %span{'aria-hidden' => 'true'}
@@ -13,43 +13,51 @@
 
   .modal-body
     .well.transparent
-      %p.text-center
+      %h6.text-center
         Make sure your CSV file includes these EXACT headers and columns:
 
-      %ol.row.center-block
-        %li.col-xs-3.col-xs-offset-2 Deal ID
-        %li.col-xs-3 Name*
-        %li.col-xs-3 Advertiser*
-        %li.col-xs-3.col-xs-offset-2 Agency
-        %li.col-xs-3 ISO Currency Code *
-        %li.col-xs-3 Type
-        %li.col-xs-3.col-xs-offset-2 Source
-        %li.col-xs-3
+      %ol.row.center-block.grid-block
+        %li Deal ID
+        %li Name*
+        %li Advertiser*
+        %li Agency
+        %li ISO Currency Code *
+        %li Type
+        %li Source
+        %li
           Start Date
           %br
           (MM/DD/YYYY)
-        %li.col-xs-3
+        %li
           End Date
           %br
           (MM/DD/YYYY)
-        %li.col-xs-3.col-xs-offset-2 Stage
-        %li.col-xs-3
+        %li Stage
+        %li
           Team
           %br
           (email1/%;email2/%)
-        %li.col-xs-3
+        %li
           Created Date
           %br
           (MM/DD/YYYY)
-        %li.col-xs-3.col-xs-offset-2
+        %li
           Closed Date
           %br
           (MM/DD/YYYY)
-        %li.col-xs-3 Close Reason
-        %li.col-xs-3
+        %li Close Reason
+        %li
           Contacts
           %br
           (email1;email2)
+
+      .custom_fields{ng: { show: 'custom_fields && custom_fields.length > 0' }}
+        %h6.text-center
+          Optional Deal Custom Fields. Please use these EXACT headers to allow system to recognize Custom Fields:
+
+        %ol.row.center-block.grid-block
+          %li{ng: { repeat: 'custom_field in custom_fields' }}
+            {{custom_field.field_label}}
 
     .well.well-lg.dark
       .row
