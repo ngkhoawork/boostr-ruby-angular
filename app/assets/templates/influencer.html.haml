@@ -1,0 +1,121 @@
+#account.z-styles
+  .container-fluid.pad
+    .col-xs-12.mb20
+      %span.main-title
+        {{influencer.name}}
+      %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal()'}
+      %i.fa.fa-trash.delete-deal{'ng-click': 'delete()'}
+    .col-xs-9
+      .contacts.block
+        %div.mb20
+          %span.sub-title Fee History
+          %add-button{'ng-click': 'createNewContactModal()'} Add
+
+        %table.table.table-striped
+          %thead
+            %tr
+              %th.left Deal Name
+              %th.left Gross
+              %th.left Fee Type
+              %th.left Fee
+              %th.left Fees
+              %th.left Advertiser
+              %th.left Asset
+          %tbody
+            %tr{ ng: { repeat: 'client_contact in client_contacts'} }
+              %td.left
+                %a{'ng-href': '/contacts/{{client_contact.contact.id}}'} {{ client_contact.contact.name }}
+                %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(client_contact)'}
+                %button.btn.btn-primary.btn-lg{ng:{if: 'currentClient.client_type.option.name == "Agency"', click: 'showAssignContactModal(client_contact)'}}
+                  = inline_svg "icons/client-meeting.svg"
+                  Assign
+              %td.left
+                {{ client_contact.contact.position }}
+              %td.left
+                {{ client_contact.contact.address.email }}
+              %td.left
+                .dropdown
+                  %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                    %span.editable
+                      {{client_contact.is_active ? 'Active' : 'Inactive'}}
+                    %span.caret
+                  %ul.dropdown-menu
+                    %li{'ng-class': '{active: client_contact.is_active == true}'}
+                      %a{'href': '', 'ng-click': 'updateClientContactStatus(client_contact, true)'}
+                        %span.text Active
+                    %li{'ng-class': '{active: client_contact.is_active == false}'}
+                      %a{'href': '', 'ng-click': 'updateClientContactStatus(client_contact, false)'}
+                        %span.text Inactive
+                %td.left
+                  {{ client_contact.contact.job_level }}
+                %td.left
+                  {{ client_contact.contact.job_level }}
+                %td.left
+                  {{ client_contact.contact.job_level }}
+
+
+        .custom-pagination{'bgf-pagination': 'bgf-pagination',
+          'collection': 'client_contacts',
+          'per-page': '10',
+          'link-group-size': "2",
+          'client-limit': "100",
+          'url': 'clientContactUrl'}
+    .col-xs-3
+      .campaign-details.block
+        %div.pull-right
+          %span.star
+            *
+            %span{style: 'font-size: 12px'} is required
+        %div.mb20
+          %span.title Info
+          %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
+        %div.custom-field-item.required-field
+          %div.custom-field-item-label
+            %label{ for: 'network' }
+              Network
+              %span.star *
+          %div.custom-field-item-field{'ng-class': '{"has-error": !influencer.network.option_id}'}
+            %ui-select.editable-dropdown{ network: 'network', ng: { model: 'influencer.network.option_id', change: 'updateInfluencer()'} }
+              %ui-select-match{ placeholder: 'Select network', "allow-clear": 'false' }
+                {{ $select.selected.name || influencer.network.option.name }}
+              %ui-select-choices.dropdown-menu{ repeat: 'network.id as network in influencer.network.options | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'network.name' } } }
+        %div.custom-field-item
+          %div.custom-field-item-label
+            %label{ for: 'email' }
+              Email
+          %div.custom-field-item-field
+            %input.editable{ 'ng-model': "influencer.email", name: "email", placeholder: 'Enter email', 'ng-blur': 'updateInfluencer()' }
+        %div.custom-field-item
+          %div.custom-field-item-label
+            %label{ for: 'address' }
+              Address
+          %div.custom-field-item-field
+            %input.editable{ 'ng-model': "influencer.address", name: "address", placeholder: 'Enter address', 'ng-blur': 'updateInfluencer()' }
+        %div.custom-field-item
+          %div.custom-field-item-label
+            %label{ for: 'phone' }
+              Phone
+          %div.custom-field-item-field
+            %input.editable{ 'ng-model': "influencer.phone", name: "phone", placeholder: 'Enter phone', 'ng-blur': 'updateInfluencer()' }
+
+      .campaign-details.block
+        %div.mb20
+          %span.title Agreement Detail
+          %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
+        %div.custom-field-item
+          %div.custom-field-item-label
+            %label{ for: 'agreement-fee_type' }
+              Fee Type
+          %div.custom-field-item-field
+            %ui-select.editable-dropdown{ 'agreement-fee_type': 'agreement-fee_type', ng: { model: 'influencer.agreement.fee_type', change: 'updateInfluencer()'} }
+              %ui-select-match{ placeholder: 'Select fee type', "allow-clear": 'false' }
+                {{ $select.selected.name }}
+              %ui-select-choices.dropdown-menu{ repeat: 'feeType.value as feeType in feeTypes | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'feeType.name' } } }
+        %div.custom-field-item
+          %div.custom-field-item-label
+            %label{ for: 'agreement-amount' }
+              Amount
+          %div.custom-field-item-field
+            %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: '$', 'ng-model': "influencer.agreement.amount", 'on-after-save': 'updateInfluencer()'}

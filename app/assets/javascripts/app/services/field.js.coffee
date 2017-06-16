@@ -63,6 +63,9 @@
   @findClientTypes = (fields) ->
     $filter('filter')(fields, { name: 'Client Type' })[0]
 
+  @findNetworkTypes = (fields) ->
+    $filter('filter')(fields, { name: 'Network' })[0]
+
   @findFieldOptions = (fields, name) ->
     field = $filter('filter')(fields, { name: name })[0]
     if field

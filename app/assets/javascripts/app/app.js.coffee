@@ -52,6 +52,12 @@
     .when '/contacts',
       templateUrl: 'contacts.html'
       controller: 'ContactsController'
+    .when '/influencers',
+      templateUrl: 'influencers.html'
+      controller: 'InfluencersController'
+    .when '/influencers/:id',
+      templateUrl: 'influencer.html'
+      controller: 'InfluencerController'
     .when '/old_revenue',
       templateUrl: 'old_revenue.html'
       controller: 'OldRevenueController'

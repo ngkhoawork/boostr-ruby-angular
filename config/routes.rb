@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       resources :ealerts, only: [:index, :show, :create, :update, :destroy] do
         post :send_ealert
       end
+      resources :influencers, only: [:index, :show, :create, :update, :destroy]
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
@@ -283,6 +284,7 @@ Rails.application.routes.draw do
         get :pipeline_summary
       end
     end
+    resources :influencers, only: [:index, :show, :create, :update, :destroy]
     resources :sales_execution_dashboard, only: [:index] do
       collection do
         get :forecast
