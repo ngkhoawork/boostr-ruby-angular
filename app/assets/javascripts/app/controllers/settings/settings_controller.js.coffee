@@ -18,7 +18,7 @@
             {title: 'Business Plans',     url: '/settings/bps',                icon: 'book',                description: 'Manage Business Plans'}
             {title: 'Integrations',       url: '/settings/api_configurations', icon: 'paper-plane-o',       description: 'Manage integration settings for external systems '}
             {title: 'Integration Logs',   url: '/settings/integration_logs',   icon: 'arrows-h',            description: 'View integration activities and error details'}
-            {title: 'IO Feed Logs',       url: 'settings/io_feed_logs',        icon: 'arrows-v',            description: 'View DFP and Operative IO import jos and error details'}
+            {title: 'IO Feed Logs',       url: 'settings/io_feed_logs',        icon: 'arrows-v',            description: 'View DFP and Operative IO import jobs and error details'}
             {title: 'Notifications',      url: '/settings/notifications',      icon: 'envelope',            description: 'Setup simple email notifications'}
             {title: 'Initiatives',        url: '/settings/initiatives',        icon: 'list-ol',             description: 'Setup initiatives for tracking progress against goals'}
             {title: 'eAlerts',            url: '/settings/ealerts',            icon: 'envelope',            description: 'Manage eAlert HTML workflow emails'}
