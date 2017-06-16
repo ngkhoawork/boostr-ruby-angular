@@ -242,33 +242,34 @@ class Deal < ActiveRecord::Base
     if options[:override].present? && options[:override] == true
       super(options[:options])
     else
-      super(options.merge(
-                    include: [
-                            :creator,
-                            :advertiser,
-                            :agency,
-                            :stage,
-                            :values,
-                            :deal_custom_field,
-                            deal_members: {
-                                    methods: [:name]
-                            },
-                            activities: {
-                                    include: {
-                                            creator: {},
-                                            contacts: {},
-                                            assets: {
-                                                    methods: [
-                                                            :presigned_url
-                                                    ]
-                                            }
-                                    }
-                            }
-                    ],
+      super(
+        options.merge(
+          include: [
+            :creator,
+            :advertiser,
+            :agency,
+            :stage,
+            :values,
+            :deal_custom_field,
+            deal_members: {
+              methods: [:name]
+            },
+              activities: {
+                include: {
+                  creator: {},
+                  contacts: {},
+                  assets: {
                     methods: [
-                            :formatted_name
+                      :presigned_url
                     ]
-            )
+                  }
+                }
+              }
+          ],
+          methods: [
+            :formatted_name
+          ]
+        )
       )
     end
   end

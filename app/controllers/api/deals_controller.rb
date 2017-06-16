@@ -798,7 +798,7 @@ class Api::DealsController < ApplicationController
       ordered_deals = stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.by_closed_at(closed_year)
                                                                                           .order(closed_at: :desc)
       unweighted_budget = ordered_deals.sum(:budget).to_i
-      weighted_budget = stage.probability.zero? ? unweighted_budget : unweighted_budget * (stage.probability.to_f / 100.to_f)
+      weighted_budget = stage.probability.zero? ? 0 : unweighted_budget * (stage.probability.to_f / 100.to_f)
 
       deals_count_per_stage[stage.probability] = {
         count: ordered_deals.count,

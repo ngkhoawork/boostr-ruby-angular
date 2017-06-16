@@ -100,3 +100,4 @@ if deal.initiative.present?
 end
 
 json.closed_reason_text deal.closed_reason_text
+json.curr_symbol deal.currency.curr_symbol
