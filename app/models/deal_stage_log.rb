@@ -7,4 +7,5 @@ class DealStageLog < ActiveRecord::Base
 
   validates :company_id, :deal_id, :stage_id, :stage_updated_by, :stage_updated_at, presence: true
 
+  scope :ordered_by_created_at, -> { order(created_at: :desc) }
 end
