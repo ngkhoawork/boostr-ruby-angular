@@ -118,6 +118,9 @@
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
       controller: 'ActivityDetailReportsController'
+    .when '/settings/',
+      templateUrl: 'settings.html'
+      controller: 'SettingsController'
     .when '/settings/general',
       templateUrl: 'settings/general.html'
       controller: 'SettingsGeneralController'
