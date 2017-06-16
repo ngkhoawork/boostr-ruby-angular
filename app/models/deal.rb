@@ -1268,7 +1268,7 @@ class Deal < ActiveRecord::Base
     should_open = stage.open?
     if !stage.open? && stage.probability == 100
       self.deal_products.each do |deal_product|
-        if deal_product.product.revenue_type != "Content-Fee"
+        if deal_product.product.revenue_type != 'Content-Fee'
           should_open = true
           deal_product.update_columns(open: true)
         else
@@ -1276,44 +1276,51 @@ class Deal < ActiveRecord::Base
         end
       end
 
-      notification = company.notifications.find_by_name('Closed Won')
-      if !notification.nil? && !notification.recipients.nil?
-        recipients = notification.recipients.split(',').map(&:strip)
-        if !recipients.nil? && recipients.length > 0
-          subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency(budget.round, :precision => 0))+' deal for '+advertiser.name+' was just won!'
-          UserMailer.close_email(recipients, subject, self).deliver_later(wait: 10.minutes, queue: "default")
-        end
-      end
+      send_closed_won_deal_notification
     else
       self.deal_products.update_all(open: stage.open)
 
       if !self.closed_at.nil? && stage.open?
         self.closed_at = nil
         if !self.fields.nil? && !self.values.nil?
-          field = self.fields.find_by_name("Close Reason")
+          field = self.fields.find_by_name('Close Reason')
           close_reason = self.values.find_by_field_id(field.id) if !field.nil?
           close_reason.destroy if !close_reason.nil?
         end
       end
-      notification = company.notifications.find_by_name('Stage Changed')
-      if !notification.nil? && !notification.recipients.nil?
-        recipients = notification.recipients.split(',').map(&:strip)
-        if !recipients.nil? && recipients.length > 0
-          subject = self.name + ' changed to ' + stage.name + ' - ' + stage.probability.to_s + '%'
-          UserMailer.stage_changed_email(recipients, subject, self.id).deliver_later(wait: 10.minutes, queue: "default")
-        end
-      end
+
+      send_stage_changed_deal_notification if stage.open?
     end
     self.open = should_open.to_s
   end
 
   def send_new_deal_notification
-    notification = company.notifications.by_name('New Deal')
-    if !notification.nil? && !notification.recipients.nil?
-      recipients = notification.recipients.split(',').map(&:strip)
-      if !recipients.nil? && recipients.length > 0
-        UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default')
-      end
+    notification = company.notifications.find_by_name('New Deal')
+
+    if notification.present?
+      recipients = notification.recipients_arr
+
+      UserMailer.new_deal_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+    end
+  end
+
+  def send_stage_changed_deal_notification
+    notification = company.notifications.find_by_name('Stage Changed')
+
+    if notification.present?
+      recipients = notification.recipients_arr
+
+      UserMailer.stage_changed_email(recipients, self, stage).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+    end
+  end
+
+  def send_closed_won_deal_notification
+    notification = company.notifications.find_by_name('Closed Won')
+
+    if notification.present?
+      recipients = notification.recipients_arr
+
+      UserMailer.close_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 

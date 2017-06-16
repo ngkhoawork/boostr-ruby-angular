@@ -2,8 +2,10 @@ class UserMailer < ApplicationMailer
   include ActionView::Helpers::NumberHelper
   default from: 'boostr <noreply@boostrcrm.com>'
  
-  def close_email(recipients, subject, deal)
+  def close_email(recipients, deal)
     @deal = deal
+    subject = close_email_subject_for(deal)
+
     mail(to: recipients, subject: subject)
   end
 
@@ -16,15 +18,26 @@ class UserMailer < ApplicationMailer
     mail(to: recipients, subject: subject)
   end
 
-  def stage_changed_email(recipients, subject, deal_id)
-    @deal = Deal.find(deal_id)
-    mail(to: recipients, subject: subject)
+  def stage_changed_email(recipients, deal, stage)
+    begin
+      @deal = deal
+      subject = "#{@deal.name} changed to #{stage.name} - #{stage.probability}%"
+
+      mail(to: recipients, subject: subject)
+    rescue ActiveRecord::RecordNotFound
+      return
+    end
   end
 
-  def new_deal_email(recipients, deal_id)
-    @deal = Deal.find(deal_id)
-    subject = "A new #{@deal.budget.nil? ? '$0' : number_to_currency((@deal.budget).round, :precision => 0)} deal for #{@deal.advertiser.present? ? @deal.advertiser.name : ""} just added to the pipeline"
-    mail(to: recipients, subject: subject)
+  def new_deal_email(recipients, deal)
+    begin
+      @deal = deal
+      subject = new_deal_email_subject_for(deal)
+  
+      mail(to: recipients, subject: subject)
+    rescue ActiveRecord::RecordNotFound
+      return
+    end
   end
 
   def ealert_email(recipients, ealert_id, deal_id, comment)
@@ -195,5 +208,17 @@ class UserMailer < ApplicationMailer
       precision: 0,
       unit: deal.currency.curr_symbol
     )
+  end
+
+  def close_email_subject_for(deal)
+    "A #{budget_with_currency(deal)} deal for #{deal.advertiser.name} was just won!"
+  end
+
+  def new_deal_email_subject_for(deal)
+    "A new #{budget_with_currency(deal)} deal for #{deal.advertiser.name} just added to the pipeline"
+  end
+
+  def budget_with_currency(deal)
+    number_to_currency(deal.budget.round, precision: 0)
   end
 end
