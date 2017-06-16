@@ -167,9 +167,10 @@
 
 
             $scope.init = ->
-                $scope.isLoading = true
+                $scope.page = 1
                 params = {filter: $scope.teamFilter().param}
                 _.extend params, $scope.filter.toQuery()
+                $scope.isLoading = true
                 $q.all({
                     deals: Deal.list(params)
                     filter: Deal.filter_data()
