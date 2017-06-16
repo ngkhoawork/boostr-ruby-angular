@@ -168,6 +168,7 @@
 
             $scope.init = ->
                 $scope.page = 1
+                $scope.allDealsLoaded = false
                 params = {filter: $scope.teamFilter().param}
                 _.extend params, $scope.filter.toQuery()
                 $scope.isLoading = true
