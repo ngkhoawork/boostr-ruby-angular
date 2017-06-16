@@ -103,7 +103,7 @@
         %div.mb20
           %span.title Agreement Detail
           %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
-        %div.custom-field-item
+        %div.custom-field-item{'ng-if': 'influencer.id'}
           %div.custom-field-item-label
             %label{ for: 'agreement-fee_type' }
               Fee Type
@@ -113,7 +113,7 @@
                 {{ $select.selected.name }}
               %ui-select-choices.dropdown-menu{ repeat: 'feeType.value as feeType in feeTypes | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'feeType.name' } } }
-        %div.custom-field-item
+        %div.custom-field-item{'ng-if': 'influencer.id'}
           %div.custom-field-item-label
             %label{ for: 'agreement-amount' }
               Amount
