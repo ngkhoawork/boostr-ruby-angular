@@ -113,7 +113,7 @@
       params,
       (deal) ->
         deferred.resolve(deal)
-        $rootScope.$broadcast 'updated_deals'
+        $rootScope.$broadcast 'updated_deals', deal
       (resp) ->
         deferred.reject(resp)
     )

@@ -129,7 +129,7 @@
 				%button.btn-main.pull-right{'ng-click': 'filter.open($event)'}
 					%i.fa.fa-filter
 					Add filter
-		.row.deals-container{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0'}}
+		.row.deals-container{infinite: {scroll: 'loadMoreDeals()', 'scroll-disabled': 'isLoading || allDealsLoaded', 'scroll-distance': '0.5'}}
 			.deals-table
 				.deal-column{'ng-repeat': 'stage in stages', 'ng-init': 'columnIndex = stage.index; $last && coloringColumns()'}
 					.column-header
@@ -137,9 +137,9 @@
 							{{stage.probability}}%
 							%br
 							{{stage.name}}
-							%i ({{dealsCount[stage.probability] || 0}})
+							%i ({{dealsInfo[stage.probability].count || 0}})
 						%span
-							{{calcWeighted(columns[columnIndex], stage) | convertCurrency: appliedExchangeRate.rate | formatMoney: appliedExchangeRate.currency.curr_symbol }} (W) / {{calcUnweighted(columns[columnIndex]) | convertCurrency: appliedExchangeRate.rate | formatMoney: appliedExchangeRate.currency.curr_symbol }} (UW)
+							{{dealsInfo[stage.probability].weighted | convertCurrency: appliedExchangeRate.rate | formatMoney: appliedExchangeRate.currency.curr_symbol }} (W) / {{dealsInfo[stage.probability].unweighted | convertCurrency: appliedExchangeRate.rate | formatMoney: appliedExchangeRate.currency.curr_symbol }} (UW)
 						%svg{width: '17', height: '72'}
 							%polygon{points: '-2,-7 15, 36, -2, 79'}
 					.column-body{'dnd-list': 'columns[columnIndex]',
@@ -159,7 +159,7 @@
 							%span
 								{{deal.budget_loc || deal.budget | formatMoney: deal.curr_symbol || deal.curr_cd}}
 								%i &#183;
-								{{deal.members ? deal.members.join(', ') : '-'}}
+								{{dealMemberToString(deal.deal_members)}}
 							%div.block-menu
 								%div{'dropdown': '', 'keyboard-nav': ''}
 									%i.fa.fa-ellipsis-h{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.advertiser}'}

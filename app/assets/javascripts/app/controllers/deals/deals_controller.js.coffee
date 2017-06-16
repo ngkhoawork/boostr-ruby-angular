@@ -9,8 +9,8 @@
             $scope.selectedDeal = null
             $scope.stages = []
             $scope.columns = []
-            $scope.allDeals = []
-            $scope.dealsCount = {}
+            $scope.deals = []
+            $scope.dealsInfo = {}
             $scope.dealTypes = [
                 {name: 'My Deals', param: ''}
                 {name: 'My Team\'s Deals', param: 'team'}
@@ -93,7 +93,7 @@
                         _this = $scope.filter.datePicker
                         if (_this.date.startDate && _this.date.endDate)
                             $scope.filter.selected.date = _this.date
-                apply: (options = {}) ->
+                apply: (reset) ->
                     this.appliedSelection = angular.copy this.selected
                     $scope.page = 1
                     params = {filter: $scope.teamFilter().param}
@@ -101,20 +101,18 @@
                     $window.scrollTo(0, 0)
                     $scope.isLoading = true
                     Deal.list(params).then (data) ->
-                        $scope.deals = data.deals_with_stage
-                        _.forEach data.deals_count_per_stage, (stage) ->
-                            pair = _.pairs(stage)[0]
-                            $scope.dealsCount[pair[0]] = pair[1]
+                        $scope.deals = data.deals
+                        $scope.dealsInfo = data.deals_info
                         updateDealsTable()
                         $scope.filter.isOpen = false
                         $scope.allDealsLoaded = false
                         $timeout -> $scope.isLoading = false
-                    if options.close then this.isOpen = false
+                    this.isOpen = false
                 reset: (key) ->
                     DealsFilter.reset(key)
                 resetAll: ->
                     DealsFilter.resetAll()
-                    this.apply(close: true)
+#                    this.apply(true)
                 getBudgetValue: ->
                     budget = this.selected.budget
                     if budget.min && !budget.max
@@ -163,17 +161,19 @@
                         columns[stage.index].open = stage.open
                         columns[stage.index].push deal
                 $scope.columns = columns
-    
+
 
 
             $scope.init = ->
-                $scope.page = 1
-                $scope.allDealsLoaded = false
+                if $scope.teamFilter()
+                    $scope.teamFilter $scope.teamFilter()
+                else
+                    $scope.teamFilter $scope.dealTypes[0]
                 params = {filter: $scope.teamFilter().param}
                 _.extend params, $scope.filter.toQuery()
                 $scope.isLoading = true
                 $q.all({
-                    deals: Deal.list(params)
+                    deals_data: Deal.list(params)
                     filter: Deal.filter_data()
                     stages: Stage.query().$promise
                 }).then (data) ->
@@ -183,13 +183,11 @@
                     $scope.filter.currencies = data.filter.currencies
                     $scope.filter.dealYears = [2015.. DealsFilter.currentYear]
                     $scope.filter.slider.maxValue = $scope.filter.slider.options.ceil = data.filter.max_budget
-                    columns = []
-                    _.forEach data.deals.deals_count_per_stage, (stage) ->
-                        pair = _.pairs(stage)[0]
-                        $scope.dealsCount[pair[0]] = pair[1]
-                    $scope.deals = data.deals.deals_with_stage
+                    $scope.dealsInfo = data.deals_data.deals_info
+                    $scope.deals = data.deals_data.deals
                     $scope.stages = data.stages
                     $scope.stages = $scope.stages.filter (stage) -> stage.active
+                    columns = []
                     $scope.stages.forEach (stage, i) ->
                         stage.index = i
                         column = []
@@ -197,7 +195,8 @@
                         columns.push column
                     $scope.emptyColumns = angular.copy columns
                     updateDealsTable()
-                    $scope.isLoading = false
+                    $timeout -> $scope.isLoading = false
+            $scope.init()
 
             $scope.loadMoreDeals = ->
                 params = {
@@ -207,20 +206,16 @@
                 _.extend params, $scope.filter.toQuery(true)
                 $scope.isLoading = true
                 Deal.list(params).then (data) ->
-                    $scope.allDealsLoaded = !data.deals_with_stage.length
-                    $scope.deals = $scope.deals.concat data.deals_with_stage
+                    $scope.allDealsLoaded = !data.deals.length
+                    $scope.deals = $scope.deals.concat data.deals
                     updateDealsTable()
                     $timeout -> $scope.isLoading = false
 
             $scope.filterDeals = (filter) ->
                 $scope.teamFilter filter
-                $rootScope.dealFilter = $scope.dealFilter
-                $scope.init();
-
-            if $scope.teamFilter()
-                $scope.filterDeals $scope.teamFilter()
-            else
-                $scope.filterDeals $scope.dealTypes[0]
+                $scope.filter.apply()
+#                $rootScope.dealFilter = $scope.dealFilter
+#                $scope.init();
 
             $scope.openFilter = ->
                 $scope.isFilterOpen = !$scope.isFilterOpen
@@ -300,7 +295,12 @@
             $scope.$on 'newDeal', (event, id) ->
                 $location.path('/deals/' + id)
 
-            $scope.$on 'updated_deals', $scope.init
+            $scope.$on 'updated_deals', (event, deal) ->
+                if deal
+                    index = _.findIndex $scope.deals, {id: deal.id}
+                    $scope.deals[index] = deal
+                    updateDealsTable()
+#                   $scope.init()
 
             $scope.filtering = (item) ->
                 if !item then return false
@@ -312,22 +312,27 @@
             $scope.linkTo = (href) ->
                 $location.path href
 
-            $scope.calcWeighted = (deals, stage) ->
-                weighted = 0
-                if !deals || !deals.length
-                    return weighted
-                mod = if stage.probability is 0 then 0 else stage.probability / 100
-                deals.forEach (deal) ->
-                    weighted += (parseInt(deal.budget) || 0) * mod
-                weighted
-
-            $scope.calcUnweighted = (deals) ->
-                unweighted = 0
-                if !deals || !deals.length
-                    return unweighted
-                deals.forEach (deal) ->
-                    unweighted += parseInt(deal.budget) || 0
-                unweighted
+            $scope.dealMemberToString = (members) ->
+                if members
+                    names = _.map members, (member) -> member.name
+                    names.join ', '
+                else '-'
+#            $scope.calcWeighted = (deals, stage) ->
+#                weighted = 0
+#                if !deals || !deals.length
+#                    return weighted
+#                mod = if stage.probability is 0 then 0 else stage.probability / 100
+#                deals.forEach (deal) ->
+#                    weighted += (parseInt(deal.budget) || 0) * mod
+#                weighted
+#
+#            $scope.calcUnweighted = (deals) ->
+#                unweighted = 0
+#                if !deals || !deals.length
+#                    return unweighted
+#                deals.forEach (deal) ->
+#                    unweighted += parseInt(deal.budget) || 0
+#                unweighted
 
             $scope.showNewDealModal = ->
                 $scope.modalInstance = $modal.open
@@ -375,9 +380,15 @@
 
             $scope.deleteDeal = (deal) ->
                 if confirm('Are you sure you want to delete "' +  deal.name + '"?')
-                    Deal.delete deal
-
-
+                    Deal.delete(deal).then ->
+                        weighted = deal.budget * (deal.stage.probability / 100)
+                        unweighted = deal.budget
+                        index = _.findIndex $scope.deals, {id: deal.id}
+                        $scope.deals.splice index, 1
+                        $scope.dealsInfo[deal.stage.probability].count -= 1
+                        $scope.dealsInfo[deal.stage.probability].weighted -= weighted
+                        $scope.dealsInfo[deal.stage.probability].unweighted -= unweighted
+                        updateDealsTable()
 
             x = 0
             shift = 0
