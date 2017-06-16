@@ -16,4 +16,39 @@
   .switch-remainder-form {
     margin-left: 0;
   }
+  
+  table {
+      thead {
+          background-color: white;
+          th {
+              color: $secondary-font-color !important;
+              border-left: none;
+              border-right: none;
+          }
+      }
+      tr {
+          &:hover {
+              i.fa {
+                  visibility: visible;
+              }
+          }
+          &:nth-of-type(even) {
+              background-color: #fafafb;
+          }
+          th, td {
+              text-align: left;
+              padding-left: 10px;
+              padding-right: 10px;
+          }
+          .stage {
+              select {
+                  height: 40px;
+                  border: none;
+                  background-color: transparent;
+                  cursor: pointer;
+                  outline: none;
+              }
+          }
+      }
+  }
 }

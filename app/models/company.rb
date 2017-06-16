@@ -41,6 +41,8 @@ class Company < ActiveRecord::Base
   has_one :billing_address, as: :addressable, class_name: 'Address'
   has_one :physical_address, as: :addressable, class_name: 'Address'
 
+  serialize :forecast_permission, HashSerializer
+
   accepts_nested_attributes_for :billing_address
   accepts_nested_attributes_for :physical_address
 
