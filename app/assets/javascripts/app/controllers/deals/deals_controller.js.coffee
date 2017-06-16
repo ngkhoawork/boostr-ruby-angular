@@ -214,8 +214,6 @@
             $scope.filterDeals = (filter) ->
                 $scope.teamFilter filter
                 $scope.filter.apply()
-#                $rootScope.dealFilter = $scope.dealFilter
-#                $scope.init();
 
             $scope.openFilter = ->
                 $scope.isFilterOpen = !$scope.isFilterOpen
@@ -298,9 +296,9 @@
             $scope.$on 'updated_deals', (event, deal) ->
                 if deal
                     index = _.findIndex $scope.deals, {id: deal.id}
+                    deal.deal_members = deal.members
                     $scope.deals[index] = deal
                     updateDealsTable()
-#                   $scope.init()
 
             $scope.filtering = (item) ->
                 if !item then return false
@@ -317,22 +315,6 @@
                     names = _.map members, (member) -> member.name
                     names.join ', '
                 else '-'
-#            $scope.calcWeighted = (deals, stage) ->
-#                weighted = 0
-#                if !deals || !deals.length
-#                    return weighted
-#                mod = if stage.probability is 0 then 0 else stage.probability / 100
-#                deals.forEach (deal) ->
-#                    weighted += (parseInt(deal.budget) || 0) * mod
-#                weighted
-#
-#            $scope.calcUnweighted = (deals) ->
-#                unweighted = 0
-#                if !deals || !deals.length
-#                    return unweighted
-#                deals.forEach (deal) ->
-#                    unweighted += parseInt(deal.budget) || 0
-#                unweighted
 
             $scope.showNewDealModal = ->
                 $scope.modalInstance = $modal.open
