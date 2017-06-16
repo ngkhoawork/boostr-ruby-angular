@@ -117,7 +117,7 @@
     $sliding-filter-w: 350px;
     $sliding-filter-dropdown-w: 330px;
     background-color: white;
-    height: 100%;
+    min-height: calc(100vh - #{$header-height});
     width: $sliding-filter-w;
     position: absolute;
     right: -$sliding-filter-w - 5px;

@@ -8,6 +8,9 @@
     angular.toJson(original)
 
   resource = $resource '/api/deals/:id', { id: '@id' },
+    list:
+      method: 'GET'
+      url: '/api/deals/all'
     save:
       method: 'POST'
       url: '/api/deals'
@@ -30,6 +33,9 @@
       method: 'GET'
       url: '/api/deals/won_deals'
       isArray: true
+    filter_data:
+      method: 'GET'
+      url: '/api/deals/filter_data'
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
@@ -41,6 +47,10 @@
     resource.query params, (deals) ->
       deferred.resolve(deals)
     deferred.promise
+
+  @list = (params) -> resource.list(params).$promise
+
+  @filter_data = -> resource.filter_data().$promise
 
   @won_deals = (params) ->
     deferred = $q.defer()
