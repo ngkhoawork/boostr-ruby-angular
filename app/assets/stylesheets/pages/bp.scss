@@ -3,6 +3,17 @@
   padding: 20px 10px;
   font-family: $font-family-arial !important;
 
+  .export {
+    color: #ff7200;
+
+    svg {
+      width: 24px;
+      height: 24px;
+      vertical-align: middle;
+      fill: #ff7200;
+    }
+  }
+
   #progress-circle {
     circle {
       fill: #ff7200;
@@ -228,6 +239,11 @@
           font-size: 13px;
           font-weight: normal;
           color: $gray-normal;
+
+          .action {
+            display: inline-block;
+            vertical-align: middle;
+          }
         }
         .name {
           font-size: 20px;

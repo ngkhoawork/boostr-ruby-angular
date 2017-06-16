@@ -202,7 +202,7 @@ class Api::BpsController < ApplicationController
   private
 
   def bp_params
-    params.require(:bp).permit(:name, :time_period_id, :due_date)
+    params.require(:bp).permit(:name, :time_period_id, :due_date, :read_only)
   end
 
   def company
