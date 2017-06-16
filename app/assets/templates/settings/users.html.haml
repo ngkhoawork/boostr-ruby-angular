@@ -22,6 +22,7 @@
                 %th.left Name
                 %th.left Email
                 %th.left Title
+                %th.left Team
                 %th.left Default Currency
                 %th.left Type
                 %th.left Status
@@ -35,6 +36,8 @@
                   {{ user.email }}
                 %td.left{ ng: { click: 'editModal(user)' } }
                   {{ user.title }}
+                %td.left{ ng: { click: 'editModal(user)' } }
+                  {{ user.teams.length > 0 ? 'Leader - ' + user.teams[0].name : user.team.name}}
                 %td.left
                   %ui-select{ name: 'default-currency', ng: { model: 'user.default_currency' }, 'on-select': 'submitUser(user)' }
                     %ui-select-match

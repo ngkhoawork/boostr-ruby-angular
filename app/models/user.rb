@@ -101,6 +101,12 @@ class User < ActiveRecord::Base
       super(options)
     else
       super(options.merge(
+        include: {
+          team: {
+            only: [:id, :name]
+          },
+          teams: {}
+        },
         methods: [:name, :leader?, :is_admin, :roles]
       ).except(:override))
     end
