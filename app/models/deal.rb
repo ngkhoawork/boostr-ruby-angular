@@ -134,11 +134,7 @@ class Deal < ActiveRecord::Base
   end
 
   def company_allowed_use_operative?
-    if self.company_id.eql?(22)
-      true
-    else
-      false
-    end
+    %w(22 29).include? self.company_id.to_s
   end
 
   def operative_switched_on?
