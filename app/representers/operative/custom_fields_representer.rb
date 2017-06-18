@@ -36,13 +36,13 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   end
   
   def final_billable_customer
-    if cf_billable_client_id.present? && account_cf_billable_client_id_value.present?
+    if account.account_cf.present? && cf_billable_client_id.present? && account_cf_billable_client_id_value.present?
       { name: 'Final_billable_customer', value: account_cf_billable_client_id_value }
     end
   end
   
   def ultimate_customer_advertiser
-    if cf_intacct_ultimate_customer_id.present? && advertiser_cf_intacct_ultimate_customer_id_value.present?
+    if represented.advertiser.account_cf.present? && cf_intacct_ultimate_customer_id.present? && advertiser_cf_intacct_ultimate_customer_id_value.present?
       { name: 'Ultimate_customer_advertiser', value: advertiser_cf_intacct_ultimate_customer_id_value }
     end
   end

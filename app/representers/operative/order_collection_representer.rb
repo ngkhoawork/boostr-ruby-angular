@@ -66,7 +66,9 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def mashable_sales_order_type
-    account_cf_billable_client_id_value if order_type_cf.present? && account_cf_billable_client_id_value.present?
+    if order_type_cf.present? && represented.deal_custom_field.present? && account_cf_billable_client_id_value.present?
+      account_cf_billable_client_id_value
+    end
   end
 
   def name
