@@ -66,7 +66,7 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   end
 
   def account_cf_billable_client_id_value
-    account.account_cf.send("#{cf_billable_client_id.field_type}#{cf_billable_client_id.field_index}")
+    account.account_cf.send(cf_billable_client_id.field_name)
   end
 
   def cf_intacct_ultimate_customer_id
@@ -74,7 +74,7 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   end
   
   def advertiser_cf_intacct_ultimate_customer_id_value
-    represented.advertiser.account_cf.send("#{cf_intacct_ultimate_customer_id.field_type}#{cf_intacct_ultimate_customer_id.field_index}")
+    represented.advertiser.account_cf.send(cf_intacct_ultimate_customer_id.field_name)
   end
 
   def deal_type

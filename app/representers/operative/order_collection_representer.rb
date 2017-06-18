@@ -66,7 +66,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def mashable_sales_order_type
-    account_cf_billable_client_id_value if order_type_cf.present?
+    account_cf_billable_client_id_value if order_type_cf.present? && account_cf_billable_client_id_value.present?
   end
 
   def name
@@ -168,6 +168,6 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def account_cf_billable_client_id_value
-    represented.deal_custom_field.send("#{order_type_cf.field_type}#{order_type_cf.field_index}")
+    represented.deal_custom_field.send(order_type_cf.field_name)
   end
 end

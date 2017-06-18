@@ -200,6 +200,15 @@ ActiveRecord::Schema.define(version: 20170616130519) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "ad_units", force: :cascade do |t|
+    t.text     "name"
+    t.integer  "product_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "ad_units", ["product_id"], name: "index_ad_units_on_product_id", using: :btree
+
   create_table "addresses", force: :cascade do |t|
     t.integer  "addressable_id"
     t.string   "addressable_type"
@@ -358,8 +367,8 @@ ActiveRecord::Schema.define(version: 20170616130519) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at",                                                                                                                           null: false
+    t.datetime "updated_at",                                                                                                                           null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
@@ -370,8 +379,8 @@ ActiveRecord::Schema.define(version: 20170616130519) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.boolean  "requests_enabled",                  default: false
-    t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "enable_operative_extra_fields",     default: false
+    t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
   end
 
   add_index "companies", ["forecast_permission"], name: "index_companies_on_forecast_permission", using: :gin
@@ -920,6 +929,7 @@ ActiveRecord::Schema.define(version: 20170616130519) do
     t.integer  "daily_run_rate_loc"
     t.decimal  "ctr",                                  precision: 5,  scale: 4
     t.integer  "clicks"
+    t.text     "ad_unit"
   end
 
   add_index "display_line_items", ["io_id"], name: "index_display_line_items_on_io_id", using: :btree
@@ -1229,6 +1239,35 @@ ActiveRecord::Schema.define(version: 20170616130519) do
   add_index "teams", ["deleted_at"], name: "index_teams_on_deleted_at", using: :btree
   add_index "teams", ["leader_id"], name: "index_teams_on_leader_id", using: :btree
   add_index "teams", ["parent_id"], name: "index_teams_on_parent_id", using: :btree
+
+  create_table "temp_cumulative_dfp_reports", force: :cascade do |t|
+    t.string   "dimensionorder_name"
+    t.string   "dimensionadvertiser_name"
+    t.string   "dimensionline_item_name"
+    t.string   "dimensionad_unit_name"
+    t.integer  "dimensionorder_id"
+    t.integer  "dimensionadvertiser_id"
+    t.integer  "dimensionline_item_id"
+    t.integer  "dimensionad_unit_id"
+    t.datetime "dimensionattributeorder_start_date_time"
+    t.datetime "dimensionattributeorder_end_date_time"
+    t.string   "dimensionattributeorder_agency"
+    t.datetime "dimensionattributeline_item_start_date_time"
+    t.datetime "dimensionattributeline_item_end_date_time"
+    t.string   "dimensionattributeline_item_cost_type"
+    t.integer  "dimensionattributeline_item_cost_per_unit",          limit: 8
+    t.integer  "dimensionattributeline_item_goal_quantity",          limit: 8
+    t.integer  "dimensionattributeline_item_non_cpd_booked_revenue", limit: 8
+    t.integer  "columntotal_line_item_level_impressions",            limit: 8
+    t.integer  "columntotal_line_item_level_clicks",                 limit: 8
+    t.integer  "columntotal_line_item_level_all_revenue",            limit: 8
+    t.float    "columntotal_line_item_level_ctr"
+    t.float    "columnvideo_viewership_average_view_rate"
+    t.float    "columnvideo_viewership_completion_rate"
+    t.integer  "company_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "temp_ios", force: :cascade do |t|
     t.string   "name"

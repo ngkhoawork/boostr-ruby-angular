@@ -12,28 +12,26 @@ class AccountCfName < ActiveRecord::Base
   end
 
   def self.get_field_limit(type)
-    puts "====="
-    puts type
     field_limits = {
-            "currency" => 7,
-            "text" => 5,
-            "note" => 2,
-            "datetime" => 7,
-            "number" => 7,
-            "number_4_dec" => 7,
-            "integer" => 7,
-            "boolean" => 3,
-            "percentage" => 5,
-            "dropdown" => 7
+      "currency" => 7,
+      "text" => 5,
+      "note" => 2,
+      "datetime" => 7,
+      "number" => 7,
+      "number_4_dec" => 7,
+      "integer" => 7,
+      "boolean" => 3,
+      "percentage" => 5,
+      "dropdown" => 7
     }
     field_limits[type]
   end
 
   def field_name
-    self.field_type + self.field_index.to_s
+    field_type + field_index.to_s
   end
 
   def to_csv_header
-    CSV::HeaderConverters[:symbol].call(self.field_label)
+    CSV::HeaderConverters[:symbol].call(field_label)
   end
 end
