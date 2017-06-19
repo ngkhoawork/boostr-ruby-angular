@@ -3,6 +3,7 @@
 ( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration) ->
 
   $scope.showMeridian = true
+  $scope.isAdmin = false
   $scope.feedName = 'Deal Updates'
   $scope.types = []
   $scope.contacts = []

@@ -97,7 +97,14 @@
         %div.custom-field-item-label
             %label Created at
         %div.custom-field-item-field
-            {{ currentDeal.created_at | date}} @ {{ currentDeal.created_at | date: 'shortTime'}}
+            %div{'ng-if': '!isAdmin'}
+                {{ currentDeal.created_at | date}} @ {{ currentDeal.created_at | date: 'shortTime'}}
+            %div{'ng-if': 'isAdmin'}
+                .datetime-field.bs-datepicker>
+                    %span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !currentDeal.created_at}', model: 'currentDeal.created_at', click: 'createdAtOpened = !createdAtOpened', change: 'updateDeal()' }, 'is-open': 'createdAtOpened' }
+                        {{(currentDeal.created_at | date) || 'Select date'}}
+                    @
+                    {{ currentDeal.created_at | date: 'shortTime'}}
     %div.custom-field-item{ 'ng-if': "currentDeal.stage.open == false" }
         %div.custom-field-item-label
             %label Closed at
