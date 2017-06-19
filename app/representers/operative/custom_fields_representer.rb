@@ -9,7 +9,7 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   property :location_id_2, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
   property :primary_sales_rep_id, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
   property :opportunity_created_date, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
-  property :sfdc_type, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
+  # property :sfdc_type, decorator: Operative::DropdownCustomFieldRepresenter, exec_context: :decorator
   property :final_billable_customer, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
   property :ultimate_customer_advertiser, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
 
@@ -28,7 +28,7 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   end
 
   def opportunity_created_date
-    { name: 'Opportunity_Created_Date', value: represented.created_at }
+    { name: 'Opportunity_Created_Date', value: represented.created_at.strftime('%Y-%m-%d') }
   end
 
   def sfdc_type

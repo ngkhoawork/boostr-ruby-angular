@@ -3,7 +3,7 @@ require 'representable/xml'
 class Operative::CustomFieldRepresenter < Representable::Decorator
   include Representable::XML
 
-  self.representation_wrap = 'custom_fields'
+  self.representation_wrap = 'customField'
 
   property :name, as: :apiName, exec_context: :decorator
   property :value, exec_context: :decorator
