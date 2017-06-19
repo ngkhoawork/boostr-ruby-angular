@@ -120,7 +120,10 @@ ActiveRecord::Schema.define(version: 20170905015555) do
     t.integer "account_type"
     t.integer "category_id"
     t.integer "subcategory_id"
+    t.integer "holding_company_id"
   end
+
+  add_index "account_dimensions", ["holding_company_id"], name: "index_account_dimensions_on_holding_company_id", using: :btree
 
   create_table "account_pipeline_facts", force: :cascade do |t|
     t.integer "company_id"
@@ -469,8 +472,8 @@ ActiveRecord::Schema.define(version: 20170905015555) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                                                                                                           null: false
-    t.datetime "updated_at",                                                                                                                           null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
