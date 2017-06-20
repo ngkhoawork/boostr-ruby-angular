@@ -173,7 +173,7 @@ class UserMailer < ApplicationMailer
       deal_product
     end
     @sales_team = ''
-    @sales_team = @deal.deal_members.map{ |deal_member| deal_member.user.name + ' (' + deal_member.share.to_s + '%)' }.join(', ') if deal.deal_members.count > 0
+    @sales_team = @deal.deal_members.map{ |deal_member| deal_member.user.name + ' (' + deal_member.share.to_s + '%)' }.join(', ') if @deal.deal_members.count > 0
     if user_id.present?
       mail(to: recipients, from: @user.email, subject: subject)
     else
