@@ -130,7 +130,7 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_integration_allowed?
-    company_allowed_use_operative? && operative_switched_on? && deal_lost_or_won?
+    company_allowed_use_operative? && operative_switched_on? && deal_eligible_for_integration
   end
 
   def company_allowed_use_operative?
@@ -138,14 +138,18 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_switched_on?
-    operative_api_config.present? && operative_api_config.switched_on
+    operative_api_config.present? && operative_api_config.switched_on?
   end
 
-  def deal_lost_or_won?
-    (deal_stage_percentage_greater_or_eql_api_config_percentage? && !integrations.operative.present?) || deal_lost?
+  def deal_eligible_for_integration
+    stage_greater_eql_threshold && integration_happened_or_recurring || deal_lost?
   end
 
-  def deal_stage_percentage_greater_or_eql_api_config_percentage?
+  def integration_happened_or_recurring
+    operative_api_config.recurring? || !integrations.operative.present?
+  end
+
+  def stage_greater_eql_threshold
     stage.probability >= operative_api_config.trigger_on_deal_percentage
   end
 

@@ -35,6 +35,9 @@ class Api::ApiConfigurationsController < ApplicationController
   end
 
   def api_configuration_params
-    params.require(:api_configuration).permit(:id, :integration_type, :switched_on, :trigger_on_deal_percentage, :company_id, :base_link, :password, :api_email)
+    params.require(:api_configuration).permit(
+      :id, :integration_type, :switched_on, :trigger_on_deal_percentage,
+      :company_id, :base_link, :password, :api_email, :recurring
+    )
   end
 end
