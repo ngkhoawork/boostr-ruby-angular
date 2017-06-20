@@ -1,7 +1,7 @@
 @app.controller "ClientsNewController",
 ['$scope', '$rootScope', '$modalInstance', 'Client', 'Field', 'client', 'CountriesList'
 ($scope, $rootScope, $modalInstance, Client, Field, client, CountriesList) ->
-  console.log 'CLIENTS'
+
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.client = new Client(client || {})
