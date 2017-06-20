@@ -18,7 +18,6 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   property :accounts, decorator: Operative::AccountsRepresenter, exec_context: :decorator
   property :custom_fields, decorator: Operative::CustomFieldsRepresenter, exec_context: :decorator,
            if: -> (options) { options[:enable_operative_extra_fields].eql? true }
-  property :curr_cd, as: :currency, if: -> (options) { options[:enable_operative_extra_fields].eql? true }
 
   property :operative_mashable_stage_name, as: 'v2:name', wrap: 'v2:salesStage', exec_context: :decorator,
            if: -> (options) { (options[:create].eql?(true) || options[:closed_lost].eql?(false)) && options[:enable_operative_extra_fields].eql?(true) }
@@ -91,7 +90,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def operative_mashable_stage_id
-    9
+    8
   end
 
   def description
@@ -161,7 +160,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
       'Recommendation',
       'Verbal Approval',
       'Closed Won',
-      'Closed Lost'
+      '0% - Closed/Lost'
     ]
   end
 
