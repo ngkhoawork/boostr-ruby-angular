@@ -365,9 +365,9 @@
                 }
             }
             > tbody {
-                > td:first-child {
+                td:first-child {
                     white-space: nowrap;
-                    font-size: 18px;
+                    font-size: 16px;
                     font-weight: bold;
                     .delete-product {
                         font-size: 18px;
@@ -392,6 +392,14 @@
                     text-align: left;
                     width: 200px;
                 }
+            }
+        }
+        .sum-budgets-row {
+            &:hover {
+                background-color: inherit;
+            }
+            td {
+                border-top-width: 2px;
             }
         }
     }

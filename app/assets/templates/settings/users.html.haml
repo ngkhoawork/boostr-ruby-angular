@@ -28,6 +28,8 @@
                 %th.left Status
                 %th.left Is Admin
                 %th.left Action
+                %th.left Employee Id
+                %th.left Office
             %tbody
               %tr{ ng: { repeat: 'user in users' } }
                 %td.left{ ng: { click: 'editModal(user)' } }
@@ -64,3 +66,7 @@
                         %span
                 %td.left
                   %a{href: '/switch_user?scope_identifier=user_{{user.id}}', target: '_blank'} Login As
+                %td.left{ ng: { click: 'editModal(user)' } }
+                  {{ user.employee_id }}
+                %td.left{ ng: { click: 'editModal(user)' } }
+                  {{ user.office }}

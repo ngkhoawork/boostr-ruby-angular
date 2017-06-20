@@ -1,7 +1,7 @@
 class DealProduct < ActiveRecord::Base
   belongs_to :deal, touch: true
   belongs_to :product
-  has_many :deal_product_budgets, dependent: :destroy
+  has_many :deal_product_budgets, -> { order(:start_date) }, dependent: :destroy
   has_one :deal_product_cf, dependent: :destroy
 
   validates :product, presence: true

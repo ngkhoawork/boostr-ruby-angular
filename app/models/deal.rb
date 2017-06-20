@@ -130,26 +130,26 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_integration_allowed?
-    company_allowed_use_operative? && operative_switched_on? && deal_lost_or_won?
+    company_allowed_use_operative? && operative_switched_on? && deal_eligible_for_integration
   end
 
   def company_allowed_use_operative?
-    if self.company_id.eql?(22)
-      true
-    else
-      false
-    end
+    %w(22 29).include? self.company_id.to_s
   end
 
   def operative_switched_on?
-    operative_api_config.present? && operative_api_config.switched_on
+    operative_api_config.present? && operative_api_config.switched_on?
   end
 
-  def deal_lost_or_won?
-    (deal_stage_percentage_greater_or_eql_api_config_percentage? && !integrations.operative.present?) || deal_lost?
+  def deal_eligible_for_integration
+    stage_greater_eql_threshold && integration_happened_or_recurring || deal_lost?
   end
 
-  def deal_stage_percentage_greater_or_eql_api_config_percentage?
+  def integration_happened_or_recurring
+    operative_api_config.recurring? || !integrations.operative.present?
+  end
+
+  def stage_greater_eql_threshold
     stage.probability >= operative_api_config.trigger_on_deal_percentage
   end
 
@@ -1232,8 +1232,12 @@ class Deal < ActiveRecord::Base
         else
           recipients = ealert_stage.recipients.split(',').map(&:strip) if ealert_stage.recipients
         end
-        
-        UserMailer.ealert_email(recipients, ealert.id, self.id, '').deliver_later(wait: 60.minutes, queue: "default") if recipients.length > 0
+        deal_members = self.deal_members.order("share desc")
+        highest_member = nil
+        if deal_members.count > 0
+          highest_member = deal_members[0].user_id
+        end
+        UserMailer.ealert_email(recipients, ealert.id, self.id, '', highest_member).deliver_later(wait: 60.minutes, queue: "default") if recipients.length > 0
       end
     end
   end

@@ -43,8 +43,11 @@ class Api::UsersController < ApplicationController
       :starting_page,
       :user_type,
       :is_active,
-      :default_currency
+      :default_currency,
+      :employee_id,
+      :office
     )
+
     if !user_params[:is_active].nil? && current_user.id == user.id
       user_params[:is_active] = true
     end
@@ -56,6 +59,6 @@ class Api::UsersController < ApplicationController
   end
 
   def user
-    @user ||= current_user.company.users.where(id: params[:id]).first
+    @user ||= current_user.company.users.find(params[:id])
   end
 end

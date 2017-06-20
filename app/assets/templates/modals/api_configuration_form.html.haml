@@ -15,6 +15,10 @@
             %input{ ng: { model: 'api_configuration.switched_on' }, type: 'checkbox' }
         .row
           .col-xs-12
+            %label.control-label{for: 'recurring'} Recurring after the threshold
+            %input{ ng: { model: 'api_configuration.recurring' }, type: 'checkbox' }
+        .row
+          .col-xs-12
             %label.control-label{ for: 'integration_type' } Integration type
             %select.form-control{ ng: {model: 'api_configuration.integration_type', options: 'type for type in integration_types', disabled: 'formType == "Edit"'} }
         .row{ng: {if: "api_configuration.integration_type == 'operative'"}}

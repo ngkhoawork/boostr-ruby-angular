@@ -88,6 +88,14 @@
 												'ng-blur':'disableProductsEditMode(deal_product, deal_product.deal_product_budgets, deal_product_budget)',
 												'numbers-only': '' }>
 								%span.symbol.percent %
+				%tr.sum-budgets-row
+					%td{colspan: '{{activeDealProductCfLength}}', ng: { if: 'dealProductCfNames && dealProductCfNames.length > 0' }}
+					%td.right
+						%b TOTAL
+					%td
+						%b {{sumDealProductBudget() | currency: currency_symbol : 0}}
+					%td{'ng-repeat': 'month in currentDeal.months'}
+						%b {{sumDealProductBudget($index) | currency: currency_symbol : 0}}
 
 			%tbody{'ng-if': '!currentDeal.stage.open'}
 				%tr{ ng: { repeat: 'deal_product in currentDeal.deal_products' } }
@@ -139,3 +147,11 @@
 							{{ deal_product_budget.budget_loc | currency: currency_symbol : 0 }}
 						%div.budget-percent
 							{{ deal_product_budget.budget_percent+ '%'}}
+				%tr.sum-budgets-row
+					%td{colspan: '{{activeDealProductCfLength}}'}
+					%td.right
+						%b TOTAL
+					%td
+						%b {{sumDealProductBudget() | currency: currency_symbol : 0}}
+					%td{'ng-repeat': 'month in currentDeal.months'}
+						%b {{sumDealProductBudget($index) | currency: currency_symbol : 0}}

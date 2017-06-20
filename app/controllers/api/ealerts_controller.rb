@@ -89,7 +89,7 @@ class Api::EalertsController < ApplicationController
     deal = company.deals.find(deal_id)
     ealert = ealerts.find(params[:id])
     if ealert.present? && deal.present?
-      UserMailer.ealert_email(recipients, params[:id], deal_id, comment).deliver_now
+      UserMailer.ealert_email(recipients, params[:id], deal_id, comment, current_user.id).deliver_now
       render nothing: true
     else
       render json: { errors: ealert.errors.messages }, status: :unprocessable_entity

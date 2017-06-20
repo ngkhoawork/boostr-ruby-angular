@@ -1,36 +1,34 @@
-#api-configurations
-  #nav.transparent
-    .container
-      .row
-        .col-xs-12
-          %ul.nav.nav-tabs
-            %li.pull-right.last
-              %a.add-api-integration{ href: '', ng: { click: 'createModal()' } }
-                = inline_svg 'icons/add.svg'
-                Add Api Integration
-
-
-  .container
-    %h3 Integrations
-
+#api-configurations.z-styles
+  .container-fluid.mb20
     .row
-      .table-wrapper
-        %table.table.table-hover.table-striped
-          %thead
-            %tr
-              %th.left Integration Provider
-              %th.left Api link
-              %th.left Probability Threshold
-              %th.left Switched on?
-              %th.action-column
-          %tbody
-            %tr{ ng: { repeat: 'api_configuration in api_configurations' } }
-              %td.left {{ api_configuration.integration_type }}
-              %td.left {{ api_configuration.base_link }}
-              %td.left {{ api_configuration.trigger_on_deal_percentage }}
-              %td.left {{ api_configuration.switched_on }}
-              %td.action-td
-                %a.edit-api-integration{ href: '', ng: { click: 'editModal(api_configuration)' } }
-                  = inline_svg 'icons/pencil.svg'
-                %a.delete-api-integration{ href: '', ng: { click: 'delete(api_configuration)' } }
-                  = inline_svg 'icons/trash.svg'
+      .col-xs-10.col-centered
+        %span.page-title
+          Integrations
+        %add-button.plus-btn{ ng: { click: 'createModal()'} }
+          Add Api Integration
+
+  .container-fluid
+    .row
+      .col-xs-10.col-centered.block
+        .table-wrapper
+          %table.table.table-hover.table-striped
+            %thead
+              %tr
+                %th.left Integration Provider
+                %th.left Api link
+                %th.left Probability Threshold
+                %th.left Switched on?
+                %th.left Recurring?
+                %th.action-column
+            %tbody
+              %tr{ ng: { repeat: 'api_configuration in api_configurations' } }
+                %td.left {{ api_configuration.integration_type }}
+                %td.left {{ api_configuration.base_link }}
+                %td.left {{ api_configuration.trigger_on_deal_percentage }}
+                %td.left {{ api_configuration.switched_on }}
+                %td.left {{ api_configuration.recurring }}
+                %td.action-td
+                  %a.edit-api-integration{ href: '', ng: { click: 'editModal(api_configuration)' } }
+                    = inline_svg 'icons/pencil.svg'
+                  %a.delete-api-integration{ href: '', ng: { click: 'delete(api_configuration)' } }
+                    = inline_svg 'icons/trash.svg'
