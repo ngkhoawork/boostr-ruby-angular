@@ -89,7 +89,7 @@
 												'numbers-only': '' }>
 								%span.symbol.percent %
 				%tr.sum-budgets-row
-					%td{colspan: '{{activeDealProductCfLength}}', ng: { if: 'dealProductCfNames && dealProductCfNames.length > 0' }}
+					%td{colspan: '{{activeDealProductCfLength}}', 'ng-show': 'activeDealProductCfLength'}
 					%td.right
 						%b TOTAL
 					%td
@@ -148,7 +148,7 @@
 						%div.budget-percent
 							{{ deal_product_budget.budget_percent+ '%'}}
 				%tr.sum-budgets-row
-					%td{colspan: '{{activeDealProductCfLength}}'}
+					%td{colspan: '{{activeDealProductCfLength}}', 'ng-show': 'activeDealProductCfLength'}
 					%td.right
 						%b TOTAL
 					%td
