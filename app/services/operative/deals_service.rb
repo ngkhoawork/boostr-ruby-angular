@@ -23,7 +23,8 @@ class Operative::DealsService
       advertiser: advertiser,
       agency: agency?,
       closed_lost: closed_lost?,
-      contact: contact?
+      contact: contact?,
+      enable_operative_extra_fields: deal.company.enable_operative_extra_fields
     )
   end
 
