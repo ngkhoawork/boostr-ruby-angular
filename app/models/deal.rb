@@ -1227,8 +1227,12 @@ class Deal < ActiveRecord::Base
         else
           recipients = ealert_stage.recipients.split(',').map(&:strip) if ealert_stage.recipients
         end
-        
-        UserMailer.ealert_email(recipients, ealert.id, self.id, '').deliver_later(wait: 60.minutes, queue: "default") if recipients.length > 0
+        deal_members = self.deal_members.order("share desc")
+        highest_member = nil
+        if deal_members.count > 0
+          highest_member = deal_members[0].user_id
+        end
+        UserMailer.ealert_email(recipients, ealert.id, self.id, '', highest_member).deliver_later(wait: 60.minutes, queue: "default") if recipients.length > 0
       end
     end
   end

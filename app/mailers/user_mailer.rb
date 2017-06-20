@@ -18,7 +18,8 @@ class UserMailer < ApplicationMailer
     mail(to: recipients, subject: subject)
   end
 
-  def ealert_email(recipients, ealert_id, deal_id, comment)
+  def ealert_email(recipients, ealert_id, deal_id, comment, user_id = nil)
+    @user = User.find(user_id) if user_id.present?
     @deal = Deal.find(deal_id)
     @deal_fields = []
     @comment = comment
@@ -171,6 +172,12 @@ class UserMailer < ApplicationMailer
       deal_product['deal_product_fields'] = deal_product['deal_product_fields'].sort_by { |hash| hash['position'].to_i }
       deal_product
     end
-    mail(to: recipients, subject: subject)
+    @sales_team = ''
+    @sales_team = @deal.deal_members.map{ |deal_member| deal_member.user.name + ' (' + deal_member.share.to_s + '%)' }.join(', ') if deal.deal_members.count > 0
+    if user_id.present?
+      mail(to: recipients, from: @user.email, subject: subject)
+    else
+      mail(to: recipients, subject: subject)
+    end
   end
 end
