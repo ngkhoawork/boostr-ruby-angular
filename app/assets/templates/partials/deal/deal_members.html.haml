@@ -20,7 +20,7 @@
 						Sum of the column should be equal 100%
 					Share (%)
 		%tbody
-			%tr{ ng: { repeat: "member in currentDeal.members | orderBy: 'name'"} }
+			%tr{ ng: { repeat: "member in dealMembers | orderBy: 'name'"} }
 				%td
 					{{ member.name }}
 					%i.fa.fa-trash.delete-deal{'ng-click': 'deleteMember(member)'}

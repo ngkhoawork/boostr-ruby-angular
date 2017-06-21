@@ -103,7 +103,7 @@
       params,
       (deal) ->
         deferred.resolve(deal)
-        $rootScope.$broadcast 'updated_deals'
+        $rootScope.$broadcast 'updated_deals', deal
       (resp) ->
         deferred.reject(resp)
     )
@@ -121,7 +121,7 @@
     deferred = $q.defer()
     resource.delete id: deletedDeal.id, (deal) ->
       deferred.resolve(deal)
-      $rootScope.$broadcast 'updated_deals'
+      $rootScope.$broadcast 'updated_deals', deal, 'delete'
     , (error) ->
       deferred.reject(error)
     deferred.promise
