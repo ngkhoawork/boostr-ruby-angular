@@ -1308,7 +1308,7 @@ class Deal < ActiveRecord::Base
     if notification.present?
       recipients = notification.recipients_arr
 
-      UserMailer.new_deal_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+      UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 
@@ -1318,7 +1318,7 @@ class Deal < ActiveRecord::Base
     if notification.present?
       recipients = notification.recipients_arr
 
-      UserMailer.stage_changed_email(recipients, self, stage).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+      UserMailer.stage_changed_email(recipients, self.id, stage).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 
