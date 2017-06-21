@@ -20,6 +20,8 @@
           '/api/clients'
         custom_fields_api: ->
           'AccountCfName'
+        metadata: ->
+          false
 
   $scope.showUploadActivityModal = () ->
     $scope.modalInstance = $modal.open
@@ -33,6 +35,8 @@
           '/api/activities'
         custom_fields_api: ->
           undefined
+        metadata: ->
+          false
 
   $scope.showUploadDealsModal = () ->
     $scope.modalInstance = $modal.open
@@ -46,6 +50,8 @@
           '/api/deals'
         custom_fields_api: ->
           'DealCustomFieldName'
+        metadata: ->
+          false
 
   $scope.showUploadDealProductModal = ->
     $scope.modalInstance = $modal.open
@@ -59,6 +65,8 @@
           '/api/deal_products'
         custom_fields_api: ->
           'DealProductCfName'
+        metadata: ->
+          false
 
   $scope.showUploadDealProductBudgetModal = ->
     $scope.modalInstance = $modal.open
@@ -72,6 +80,8 @@
           '/api/deal_product_budgets'
         custom_fields_api: ->
           undefined
+        metadata: ->
+          false
 
   $scope.showUploadContactsModal = ->
     $scope.modalInstance = $modal.open
@@ -85,6 +95,8 @@
           '/api/contacts'
         custom_fields_api: ->
           undefined
+        metadata: ->
+          false
 
   $scope.showUploadDisplayIOModal = () ->
     $scope.modalInstance = $modal.open
@@ -98,6 +110,8 @@
           '/api/display_line_items'
         custom_fields_api: ->
           undefined
+        metadata: ->
+          false
 
   $scope.showUploadDisplayIOMonthlyBudgetModal = () ->
     $scope.modalInstance = $modal.open
@@ -111,6 +125,8 @@
           '/api/display_line_item_budgets'
         custom_fields_api: ->
           undefined
+        metadata: ->
+          false
 
   $scope.showUploadIntegrationIdModal = () ->
     $scope.modalInstance = $modal.open
@@ -124,6 +140,31 @@
           '/api/integrations'
         custom_fields_api: ->
           undefined
+        metadata: ->
+          false
+
+  $scope.showUploadAssetsModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/assets_upload.html'
+      size: 'lg'
+      controller: 'AssetsUploadController'
+      backdrop: 'static'
+      keyboard: false
+
+  $scope.showUploadAssetMappingModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/asset_mapping_import.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/assets'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          true
 
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')

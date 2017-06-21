@@ -1,6 +1,6 @@
 @app.controller "CsvUploadController",
-['$scope', '$rootScope', '$injector', '$modalInstance', '$timeout', 'Client', 'Upload', 'Transloadit', '$http', 'api_url', 'custom_fields_api'
-($scope, $rootScope, $injector, $modalInstance, $timeout, Client, Upload, Transloadit, $http, api_url, custom_fields_api) ->
+['$scope', '$rootScope', '$injector', '$modalInstance', '$timeout', 'Client', 'Upload', 'Transloadit', '$http', 'api_url', 'custom_fields_api', 'metadata'
+($scope, $rootScope, $injector, $modalInstance, $timeout, Client, Upload, Transloadit, $http, api_url, custom_fields_api, metadata) ->
 
   $scope.progressPercentage = 0
   $scope.files = []
@@ -12,6 +12,7 @@
 
   $scope.init = () ->
     getCustomFields()
+    getMetadata()
 
   $scope.upload = (file) ->
     $scope.progressPercentage = 0
@@ -32,7 +33,7 @@
           key: 'a49408107c0e11e68f21fda8b5e9bb0a'
         },
 
-        template_id: $rootScope.transloaditTemplate
+        template_id: $rootScope.transloaditTemplates.store_single
       },
 
       signature: (callback) ->
@@ -89,9 +90,14 @@
     $modalInstance.close()
 
   getCustomFields = ->
-    service = $injector.get(custom_fields_api)
-    service.all().then (custom_fields) ->
-      $scope.custom_fields = custom_fields
+    if custom_fields_api
+      service = $injector.get(custom_fields_api)
+      service.all().then (custom_fields) ->
+        $scope.custom_fields = custom_fields
 
-  $scope.init() if custom_fields_api
+  getMetadata = ->
+    $http.get(api_url + '/metadata').then (response) ->
+      $scope.metadata = response.data
+
+  $scope.init()
 ]

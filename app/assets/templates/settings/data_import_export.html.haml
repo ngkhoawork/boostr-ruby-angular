@@ -78,6 +78,22 @@
                     %a.upload{ href: '', ng: { click: 'showUploadIntegrationIdModal()' } }
                       = inline_svg 'icons/import.svg'
                       Import Integration IDs
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Assets Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadAssetsModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Compressed Assets
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Asset Mapping Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadAssetMappingModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Asset Mapping or check unmapped
 
         %tab{heading: "Data Export", index: "1"}
           .row

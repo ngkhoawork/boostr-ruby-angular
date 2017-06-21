@@ -225,7 +225,7 @@
 
 @app.run ['$rootScope', ($rootScope) ->
   $rootScope.currentUserIsLeader = currentUserIsLeader
-  $rootScope.transloaditTemplate = transloaditTemplate
+  $rootScope.transloaditTemplates = transloaditTemplates
   $rootScope.userType = userType
 ]
 

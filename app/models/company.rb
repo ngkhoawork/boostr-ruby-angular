@@ -19,6 +19,7 @@ class Company < ActiveRecord::Base
   has_many :display_line_items, through: :ios
   has_many :temp_ios
   has_many :bps
+  has_many :assets, dependent: :destroy
   has_many :ealerts, dependent: :destroy
   has_many :bp_estimates, through: :bps
   has_many :deal_custom_field_names
@@ -45,6 +46,7 @@ class Company < ActiveRecord::Base
 
   accepts_nested_attributes_for :billing_address
   accepts_nested_attributes_for :physical_address
+  accepts_nested_attributes_for :assets
 
   before_create :setup_defaults
 
