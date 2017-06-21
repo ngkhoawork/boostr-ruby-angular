@@ -102,7 +102,7 @@
                     $scope.isLoading = true
                     Deal.list(params).then (data) ->
                         $scope.deals = data.deals
-                        $scope.dealsInfo = data.deals_info
+                        $scope.dealsInfo = data.deals_info_by_stage
                         updateDealsTable()
                         $scope.filter.isOpen = false
                         $scope.allDealsLoaded = false
@@ -183,7 +183,7 @@
                     $scope.filter.currencies = data.filter.currencies
                     $scope.filter.dealYears = [2015.. DealsFilter.currentYear]
                     $scope.filter.slider.maxValue = $scope.filter.slider.options.ceil = data.filter.max_budget
-                    $scope.dealsInfo = data.deals_data.deals_info
+                    $scope.dealsInfo = data.deals_data.deals_info_by_stage
                     $scope.deals = data.deals_data.deals
                     $scope.stages = data.stages
                     $scope.stages = $scope.stages.filter (stage) -> stage.active
@@ -360,16 +360,19 @@
                         deal: ->
                             angular.copy deal
 
+            updateDealsInfo = (deal, stage, mod = 1) ->
+                weighted = deal.budget * (stage.probability / 100)
+                unweighted = deal.budget
+                $scope.dealsInfo[stage.id].count += mod
+                $scope.dealsInfo[stage.id].weighted += weighted * mod
+                $scope.dealsInfo[stage.id].unweighted += unweighted * mod
+
             $scope.deleteDeal = (deal) ->
                 if confirm('Are you sure you want to delete "' +  deal.name + '"?')
                     Deal.delete(deal).then ->
-                        weighted = deal.budget * (deal.stage.probability / 100)
-                        unweighted = deal.budget
                         index = _.findIndex $scope.deals, {id: deal.id}
                         $scope.deals.splice index, 1
-                        $scope.dealsInfo[deal.stage.probability].count -= 1
-                        $scope.dealsInfo[deal.stage.probability].weighted -= weighted
-                        $scope.dealsInfo[deal.stage.probability].unweighted -= unweighted
+                        updateDealsInfo deal, deal.stage, -1
                         updateDealsTable()
 
             x = 0
