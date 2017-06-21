@@ -132,6 +132,10 @@ Rails.application.routes.draw do
         get :callback
       end
     end
+    resources :agency_dashboards do
+      get :spend_by_product, on: :collection
+    end
+
     resources :countries, only: [:index]
     resources :api_configurations
     resources :integration_types, only: [:index]

@@ -35,7 +35,7 @@ describe AccountProductRevenueFactService do
                                                      company_id: company.id,
                                                      product_dimension_id: product_dimension.id,
                                                      revenue_amount: 1000 } }
-        let!(:account_product_revenue_fact) { create(:account_product_revenue_fact, account_product_revenue_fact_params)}
+        let!(:account_product_revenue_facts) { create(:account_product_revenue_facts, account_product_revenue_fact_params)}
         it 'updates existing value if revenue amount recalculated' do
           expect{ subject.call }.to change{ AccountProductRevenueFact.last.revenue_amount }.from(account_product_revenue_fact.revenue_amount).to(content_fee_product_budget.budget.to_i + content_fee_product_budget_1.budget.to_i)
         end

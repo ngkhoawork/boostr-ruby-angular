@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :account_product_pipeline_fact do
+  factory :account_product_pipeline_facts do
     product nil
 time_dimension nil
 account nil
