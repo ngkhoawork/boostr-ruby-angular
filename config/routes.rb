@@ -207,6 +207,7 @@ Rails.application.routes.draw do
         get :won_deals
         get :filter_data
         get :all
+        get :all_deals_header
       end
       member do
         post :send_to_operative

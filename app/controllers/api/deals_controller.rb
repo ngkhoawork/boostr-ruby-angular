@@ -295,11 +295,13 @@ class Api::DealsController < ApplicationController
 
   def all
     render json: {
-      deals_info_by_stage: serialized_deals[:deals_info_by_stage],
-      deals: ActiveModel::ArraySerializer.new(
-        serialized_deals[:deals_with_stage],
-        each_serializer: DealIndexSerializer
-      )
+      deals: ActiveModel::ArraySerializer.new(serialized_deals, each_serializer: DealIndexSerializer)
+    }
+  end
+
+  def all_deals_header
+    render json: {
+      deals_info_by_stage: deals_info_by_stage
     }
   end
 
@@ -782,29 +784,9 @@ class Api::DealsController < ApplicationController
   end
 
   def serialized_deals
-    deals_info_by_stage = {}
+    company.stages.reduce([]) do |arr, stage|
 
-    deals_with_stage = company.stages.reduce([]) do |arr, stage|
-      deals_with_stage = deals.where(stage: stage)
-                              .by_creator(params[:owner_id])
-                              .for_client(params[:advertiser_id])
-                              .for_client(params[:agency_id])
-                              .by_budget_range(params[:budget_from], params[:budget_to])
-                              .by_curr_cd(params[:curr_cd])
-                              .by_start_date(params[:start_date], params[:end_date])
-
-      closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
-
-      ordered_deals = stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.by_closed_at(closed_year)
-                                                                                          .order(closed_at: :desc)
-      unweighted_budget = ordered_deals.sum(:budget).to_i
-      weighted_budget = stage.probability.zero? ? 0 : unweighted_budget * (stage.probability.to_f / 100.to_f)
-
-      deals_info_by_stage[stage.id] = {
-        count: ordered_deals.count,
-        unweighted: unweighted_budget,
-        weighted: weighted_budget.to_i
-      }
+      ordered_deals = all_ordered_deals_by_stage(stage)
 
       arr <<
         ordered_deals.limit(limit).offset(offset).includes(
@@ -816,7 +798,38 @@ class Api::DealsController < ApplicationController
           :currency
         ).distinct
     end.flatten
+  end
 
-    { deals_with_stage: deals_with_stage, deals_info_by_stage: deals_info_by_stage }
+  def deals_info_by_stage
+    deals_info_by_stage = {}
+
+    company.stages.reduce([]) do |arr, stage|
+      ordered_deals = all_ordered_deals_by_stage(stage)
+
+      unweighted_budget = ordered_deals.sum(:budget).to_i
+      weighted_budget = stage.probability.zero? ? 0 : unweighted_budget * (stage.probability.to_f / 100.to_f)
+
+      arr << deals_info_by_stage[stage.id] = {
+        count: ordered_deals.count,
+        unweighted: unweighted_budget,
+        weighted: weighted_budget.to_i
+      }
+    end
+
+    deals_info_by_stage
+  end
+
+  def all_ordered_deals_by_stage(stage)
+    deals_with_stage = deals.where(stage: stage)
+      .by_creator(params[:owner_id])
+      .for_client(params[:advertiser_id])
+      .for_client(params[:agency_id])
+      .by_budget_range(params[:budget_from], params[:budget_to])
+      .by_curr_cd(params[:curr_cd])
+      .by_start_date(params[:start_date], params[:end_date])
+
+    closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
+
+    stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.by_closed_at(closed_year).order(closed_at: :desc)
   end
 end
