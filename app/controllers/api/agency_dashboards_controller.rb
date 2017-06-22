@@ -17,5 +17,4 @@ class Api::AgencyDashboardsController < ApplicationController
   def filter_params
     params.permit(:start_date, :end_date, :holding_company_name, :account_name, :company_id)
   end
-
 end

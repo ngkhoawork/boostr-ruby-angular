@@ -23,10 +23,6 @@ class AccountProductTotalAmountCalculationService < BaseService
                                                .group('deal_products.product_id, stages.probability')
   end
 
-  def time_dimensions
-    @time_dimensions ||= TimeDimension.all
-  end
-
   def conditions
     'deals.advertiser_id = :client_id
      OR deals.agency_id = :client_id

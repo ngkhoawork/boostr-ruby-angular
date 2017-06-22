@@ -10,7 +10,6 @@ class FactTables::AccountProductRevenueFacts::FilteredQuery
             .by_holding_company_name(options[:holding_company_name])
             .by_account_name(options[:account_name])
             .by_company_id(options[:company_id])
-
   end
 
   private
@@ -20,7 +19,8 @@ class FactTables::AccountProductRevenueFacts::FilteredQuery
   module FactScopes
     def by_time_dimension_date_range(start_date, end_date)
       where('time_dimensions.start_date >= :start_date
-             AND time_dimensions.end_date <= :end_date',
+             AND time_dimensions.end_date <= :end_date
+             AND time_dimensions.days_length <= 31',
              start_date: start_date,
              end_date: end_date)
     end
