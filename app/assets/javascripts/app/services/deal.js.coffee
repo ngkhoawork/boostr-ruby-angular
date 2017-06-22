@@ -11,6 +11,10 @@
     list:
       method: 'GET'
       url: '/api/deals/all'
+      isArray: true
+    deals_info_by_stage:
+      method: 'GET'
+      url: '/api/deals/all_deals_header'
     save:
       method: 'POST'
       url: '/api/deals'
@@ -49,6 +53,7 @@
     deferred.promise
 
   @list = (params) -> resource.list(params).$promise
+  @deals_info_by_stage = (params) -> resource.deals_info_by_stage(params).$promise
 
   @filter_data = -> resource.filter_data().$promise
 

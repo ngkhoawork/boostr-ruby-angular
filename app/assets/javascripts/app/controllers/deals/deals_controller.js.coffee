@@ -96,13 +96,15 @@
                 apply: (reset) ->
                     this.appliedSelection = angular.copy this.selected
                     $scope.page = 1
-                    params = {filter: $scope.teamFilter().param}
-                    _.extend params, this.toQuery()
+                    params = getDealParams()
                     $window.scrollTo(0, 0)
                     $scope.isLoading = true
-                    Deal.list(params).then (data) ->
+                    $q.all({
+                        deals: Deal.list(params)
+                        deals_info: Deal.deals_info_by_stage(params)
+                    }).then (data) ->
                         $scope.deals = data.deals
-                        $scope.dealsInfo = data.deals_info_by_stage
+                        $scope.dealsInfo = data.deals_info
                         updateDealsTable()
                         $scope.filter.isOpen = false
                         $scope.allDealsLoaded = false
@@ -162,18 +164,20 @@
                         columns[stage.index].push deal
                 $scope.columns = columns
 
-
+            getDealParams = ->
+                params = {filter: $scope.teamFilter().param}
+                _.extend params, $scope.filter.toQuery()
 
             $scope.init = ->
                 if $scope.teamFilter()
                     $scope.teamFilter $scope.teamFilter()
                 else
                     $scope.teamFilter $scope.dealTypes[0]
-                params = {filter: $scope.teamFilter().param}
-                _.extend params, $scope.filter.toQuery()
+                params = getDealParams()
                 $scope.isLoading = true
                 $q.all({
-                    deals_data: Deal.list(params)
+                    deals: Deal.list(params)
+                    deals_info: Deal.deals_info_by_stage(params)
                     filter: Deal.filter_data()
                     stages: Stage.query().$promise
                 }).then (data) ->
@@ -183,8 +187,8 @@
                     $scope.filter.currencies = data.filter.currencies
                     $scope.filter.dealYears = [2015.. DealsFilter.currentYear]
                     $scope.filter.slider.maxValue = $scope.filter.slider.options.ceil = data.filter.max_budget
-                    $scope.dealsInfo = data.deals_data.deals_info_by_stage
-                    $scope.deals = data.deals_data.deals
+                    $scope.dealsInfo = data.deals_info
+                    $scope.deals = data.deals
                     $scope.stages = data.stages
                     $scope.stages = $scope.stages.filter (stage) -> stage.active
                     columns = []
@@ -199,15 +203,12 @@
             $scope.init()
 
             $scope.loadMoreDeals = ->
-                params = {
-                    filter: $scope.teamFilter().param
-                    page: ++$scope.page
-                }
-                _.extend params, $scope.filter.toQuery(true)
+                params = getDealParams()
+                params.page = ++$scope.page
                 $scope.isLoading = true
                 Deal.list(params).then (data) ->
-                    $scope.allDealsLoaded = !data.deals.length
-                    $scope.deals = $scope.deals.concat data.deals
+                    $scope.allDealsLoaded = !data.length
+                    $scope.deals = $scope.deals.concat data
                     updateDealsTable()
                     $timeout -> $scope.isLoading = false
 
@@ -298,6 +299,7 @@
                     index = _.findIndex $scope.deals, {id: deal.id}
                     deal.deal_members = deal.members
                     $scope.deals[index] = deal
+                    updateDealsInfo()
                     updateDealsTable()
 
             $scope.filtering = (item) ->
@@ -360,19 +362,17 @@
                         deal: ->
                             angular.copy deal
 
-            updateDealsInfo = (deal, stage, mod = 1) ->
-                weighted = deal.budget * (stage.probability / 100)
-                unweighted = deal.budget
-                $scope.dealsInfo[stage.id].count += mod
-                $scope.dealsInfo[stage.id].weighted += weighted * mod
-                $scope.dealsInfo[stage.id].unweighted += unweighted * mod
+            updateDealsInfo = ->
+                params = getDealParams()
+                Deal.deals_info_by_stage(params).then (data) ->
+                    $scope.dealsInfo = data
 
             $scope.deleteDeal = (deal) ->
                 if confirm('Are you sure you want to delete "' +  deal.name + '"?')
                     Deal.delete(deal).then ->
                         index = _.findIndex $scope.deals, {id: deal.id}
                         $scope.deals.splice index, 1
-                        updateDealsInfo deal, deal.stage, -1
+                        updateDealsInfo()
                         updateDealsTable()
 
             x = 0

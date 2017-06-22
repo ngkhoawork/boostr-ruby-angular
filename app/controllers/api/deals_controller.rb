@@ -294,15 +294,11 @@ class Api::DealsController < ApplicationController
   end
 
   def all
-    render json: {
-      deals: ActiveModel::ArraySerializer.new(serialized_deals, each_serializer: DealIndexSerializer)
-    }
+    render json: ActiveModel::ArraySerializer.new(serialized_deals, each_serializer: DealIndexSerializer)
   end
 
   def all_deals_header
-    render json: {
-      deals_info_by_stage: deals_info_by_stage
-    }
+    render json: deals_info_by_stage
   end
 
   private
