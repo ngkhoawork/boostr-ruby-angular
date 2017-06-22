@@ -134,6 +134,18 @@ class BpEstimate < ActiveRecord::Base
     client.name
   end
 
+  def primary_agency
+    primary_advertiser_connection = nil
+    primary_advertiser_connection = client.advertiser_connections.where(primary: true).first if client.advertiser_connections.count > 0
+    if primary_advertiser_connection.present?
+      Client.find_by(id: primary_advertiser_connection.agency_id)
+    end
+  end
+
+  def primary_agency_name
+    self.primary_agency.name if self.primary_agency.present?
+  end
+
   def user_name
     user.present? ? user.name : ""
   end
@@ -149,7 +161,7 @@ class BpEstimate < ActiveRecord::Base
             client: {},
             user: {}
         },
-        methods: [:client_name, :user_name]
+        methods: [:client_name, :user_name, :primary_agency, :primary_agency_name]
     })
   end
 
