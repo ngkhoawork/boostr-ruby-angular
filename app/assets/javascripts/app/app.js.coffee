@@ -239,6 +239,7 @@
         updateTalkus(user)
 
   updateTalkus = (user) ->
+    if location.hostname is 'localhost' then return
     talkus('init', 'qu346HQax2ut3MQr4',
       id: user.id
       name: user.name
