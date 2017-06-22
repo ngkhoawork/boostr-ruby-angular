@@ -1,0 +1,75 @@
+#influencer_modal.popup-modal
+  %form{ ng: { submit: 'submitForm()' } }
+    .popup-modal-header
+      {{formType}} Influencer
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+      .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
+        .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+          %i.fa.fa-warning
+          {{error}}
+
+      .form-group
+        .row
+          .col-xs-12{'ng-class':'{error: errors.influencer}'}
+            %span.error-text {{errors.influencer}}
+            %label{ for: 'influencer' } Influencer
+            %span.star *
+            %ui-select{ name: 'influencer', ng: { model: 'influencerContentFee.influencer_id', disabled: true, keyup: 'searchInfluencers($select.search)' }, 'on-select': "influencerSelected($model)" }
+              %ui-select-match{ placeholder: 'Influencer' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'influencer.id as influencer in influencers' }
+                %div{ ng: { bind: { html: 'influencer.name' } } }
+      .form-group
+        .row
+          .col-xs-12{'ng-class':'{error: errors.content_fee}'}
+            %span.error-text {{errors.content_fee}}
+            %label{ for: 'content_fee' } Product
+            %span.star *
+            %ui-select{ name: 'content_fee', ng: { model: 'influencerContentFee.content_fee_id', disabled: true } }
+              %ui-select-match{ placeholder: 'Product' }
+                {{ $select.selected.product.name }}
+              %ui-select-choices{ repeat: 'contentFee.id as contentFee in contentFees' }
+                %div{ ng: { bind: { html: 'contentFee.product.name' } } }
+      .form-group
+        .row
+          .col-md-12.bs-datepicker{'ng-class':'{error: errors.effect_date}'}
+            %span.error-text {{errors.effect_date}}
+            %label{ for: 'effect_date' }
+              Date
+              %span.star *
+            %input.form-control{readonly: true, name: 'effect_date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'influencerContentFee.effect_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened', placeholder: 'Choose date' }
+      .form-group
+        .row
+          .col-xs-6{'ng-class':'{error: errors.fee_type}'}
+            %span.error-text {{errors.fee_type}}
+            %label{ for: 'fee_type' }
+              Fee Type
+              %span.star *
+            %ui-select{ name: 'fee_type', ng: { model: 'influencerContentFee.fee_type', required: true } }
+              %ui-select-match{ placeholder: 'Fee Type' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'feeType.value as feeType in feeTypes' }
+                %div{ ng: { bind: { html: 'feeType.name' } } }
+          .col-xs-6{'ng-class':'{error: errors.currency}'}
+            %span.error-text {{errors.currency}}
+            %label{ for: 'currency' }
+              Currency
+              %span.star *
+            %ui-select{ name: 'currency', ng: { model: 'influencerContentFee.curr_cd', required: true } }
+              %ui-select-match{ placeholder: 'Currency' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'currency.curr_cd as currency in currencies' }
+                %div{ ng: { bind: { html: 'currency.name' } } }
+      .form-group{'ng-class':'{error: errors.gross_amount}'}
+        %span.error-text {{errors.gross_amount}}
+        %label{ for: 'gross_amount_loc' }
+          Gross Amount
+          %span.star *
+        %input.form-control{ placeholder: 'Enter gross amount', ng: { model: 'influencerContentFee.gross_amount_loc', required: true }, name: 'gross_amount_loc' }
+      .form-group
+        %label{ for: 'asset' } Asset
+        %textarea.form-control{ 'msd-elastic': '', rows: 1, 'ng-model': "influencerContentFee.asset", name: "asset", placeholder: 'Enter asset' }
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

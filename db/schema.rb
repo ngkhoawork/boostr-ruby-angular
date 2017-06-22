@@ -446,8 +446,8 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at",                                                                                                                           null: false
+    t.datetime "updated_at",                                                                                                                           null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"

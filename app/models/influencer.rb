@@ -2,6 +2,7 @@ class Influencer < ActiveRecord::Base
   belongs_to :company
   has_one :agreement, dependent: :destroy
   has_many :values, as: :subject
+  has_many :influencer_content_fees
 
   accepts_nested_attributes_for :agreement
   accepts_nested_attributes_for :values

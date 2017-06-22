@@ -1,6 +1,7 @@
 class ContentFee < ActiveRecord::Base
   belongs_to :io
   belongs_to :product
+  has_many :influencer_content_fees, dependent: :destroy
 
   has_many :content_fee_product_budgets, dependent: :destroy
 

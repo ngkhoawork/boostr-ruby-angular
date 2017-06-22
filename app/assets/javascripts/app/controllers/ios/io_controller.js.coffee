@@ -1,6 +1,6 @@
 @app.controller 'IOController',
-    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'DisplayLineItem', 'Company'
-    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   DisplayLineItem,   Company) ->
+    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'DisplayLineItem', 'Company', 'InfluencerContentFee'
+    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   DisplayLineItem,   Company,   InfluencerContentFee) ->
             $scope.currentIO = {}
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
@@ -18,6 +18,14 @@
                     console.log('$scope.canEditIO', $scope.canEditIO)
                 IO.get($routeParams.id).then (io) ->
                     $scope.currentIO = io
+                    if $scope.currentIO.influencer_content_fees
+                        $scope.currentIO.total_influencer_gross = 0
+                        $scope.currentIO.total_influencer_net = 0
+
+                        _.each $scope.currentIO.influencer_content_fees, (influencer_content_fee) ->
+                          $scope.currentIO.total_influencer_gross += parseFloat(influencer_content_fee.gross_amount_loc)
+                        _.each $scope.currentIO.influencer_content_fees, (influencer_content_fee) ->
+                          $scope.currentIO.total_influencer_net += parseFloat(influencer_content_fee.net_loc)
                     if io.currency
                         if io.currency.curr_symbol
                             $scope.currency_symbol = io.currency.curr_symbol
@@ -45,6 +53,34 @@
                     keyboard: true
                     resolve:
                         message: -> message
+            $scope.showEditInfluencerContentFeeModal = (influencerContentFee)->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/influencer_content_fee_form.html'
+                    size: 'md'
+                    controller: 'InfluencerContentFeesEditController'
+                    backdrop: 'static'
+                    keyboard: true
+                    resolve:
+                        influencerContentFee: -> influencerContentFee
+                        io: -> $scope.currentIO
+            $scope.showNewInfluencerContentFeeModal = ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/influencer_content_fee_form.html'
+                    size: 'md'
+                    controller: 'InfluencerContentFeesNewController'
+                    backdrop: 'static'
+                    keyboard: true
+                    resolve:
+                        io: -> $scope.currentIO
+            $scope.deleteInfluencerContentFee = (influencerContentFee) ->
+                if confirm('Are you sure you want to unassign "' +  influencerContentFee.influencer.name + '"?')
+                    InfluencerContentFee.delete(io_id: $scope.currentIO.id, id: influencerContentFee.id).then(
+                        (data) ->
+
+                        (resp) ->
+                            for key, error of resp.data.errors
+                                $scope.errors[key] = error && error[0]
+                    )
 
             $scope.deleteIo = (io) ->
                 if confirm('Are you sure you want to delete "' +  io.name + '"?')
@@ -195,5 +231,7 @@
                         for key, error of resp.data.errors
                             $scope.errors[key] = error && error[0]
                 )
+            $scope.$on 'updated_influencer_content_fees', ->
+                $scope.init()
             $scope.init()
     ]
