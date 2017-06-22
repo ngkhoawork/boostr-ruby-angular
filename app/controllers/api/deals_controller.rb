@@ -92,9 +92,19 @@ class Api::DealsController < ApplicationController
           end
           render json: response_deals
         else
-          render json: ActiveModel::ArraySerializer.new(deals.for_client(params[:client_id]).includes(:advertiser, :stage, :previous_stage, :deal_custom_field, :users, :currency).distinct , each_serializer: DealIndexSerializer).to_json
-        end
-      }
+          render json: ActiveModel::ArraySerializer.new(
+            deals.for_client(params[:client_id]).eager_load(
+              :advertiser,
+              :agency,
+              :stage,
+              :deal_custom_field,
+              :users,
+              :currency
+            ).distinct,
+            each_serializer: DealIndexSerializer
+          )
+      end
+    }
       format.csv {
         require 'timeout'
         begin
@@ -277,6 +287,18 @@ class Api::DealsController < ApplicationController
 
   def won_deals
     render json: company_won_deals.as_json(override: true, options: { only: [:id, :name] })
+  end
+
+  def filter_data
+    render json: FilterData::BaseSerializer.new(company).serializable_hash
+  end
+
+  def all
+    render json: ActiveModel::ArraySerializer.new(serialized_deals, each_serializer: DealIndexSerializer)
+  end
+
+  def all_deals_header
+    render json: deals_info_by_stage
   end
 
   private
@@ -631,9 +653,9 @@ class Api::DealsController < ApplicationController
 
   def deals
     if params[:filter] == 'company' && current_user.leader?
-      company.deals.active
+      company.deals
     elsif params[:filter] == 'all'
-      company.deals.active
+      company.deals
     elsif params[:filter] == 'selected_team' && params[:team_id]
       all_team_deals
     elsif params[:filter] == 'user' && params[:user_id]
@@ -642,12 +664,12 @@ class Api::DealsController < ApplicationController
       if team.present?
         company.deals.by_deal_team(team.all_members.map(&:id) + team.all_leaders.map(&:id))
       else
-        company.deals.active
+        company.deals
       end
     elsif params[:client_id].present?
-      company.deals.active
+      company.deals
     else
-      current_user.deals.active
+      current_user.deals
     end
   end
 
@@ -678,7 +700,7 @@ class Api::DealsController < ApplicationController
     elsif user.user_type == SALES_MANAGER
       company.deals.by_deal_team(user.teams_tree_members.ids)
     else
-      company.deals.active
+      company.deals
     end
   end
 
@@ -747,5 +769,63 @@ class Api::DealsController < ApplicationController
 
   def company_won_deals
     company.deals.won.by_name(params[:name])
+  end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 10
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
+  end
+
+  def serialized_deals
+    company.stages.reduce([]) do |arr, stage|
+
+      ordered_deals = all_ordered_deals_by_stage(stage)
+
+      arr <<
+        ordered_deals.limit(limit).offset(offset).includes(
+          :advertiser,
+          :agency,
+          :deal_custom_field,
+          :users,
+          :stage,
+          :currency
+        ).distinct
+    end.flatten
+  end
+
+  def deals_info_by_stage
+    deals_info_by_stage = {}
+
+    company.stages.reduce([]) do |arr, stage|
+      ordered_deals = all_ordered_deals_by_stage(stage)
+
+      unweighted_budget = ordered_deals.sum(:budget).to_i
+      weighted_budget = stage.probability.zero? ? 0 : unweighted_budget * (stage.probability.to_f / 100.to_f)
+
+      arr << deals_info_by_stage[stage.id] = {
+        count: ordered_deals.count,
+        unweighted: unweighted_budget,
+        weighted: weighted_budget.to_i
+      }
+    end
+
+    deals_info_by_stage
+  end
+
+  def all_ordered_deals_by_stage(stage)
+    deals_with_stage = deals.where(stage: stage)
+      .by_creator(params[:owner_id])
+      .for_client(params[:advertiser_id])
+      .for_client(params[:agency_id])
+      .by_budget_range(params[:budget_from], params[:budget_to])
+      .by_curr_cd(params[:curr_cd])
+      .by_start_date(params[:start_date], params[:end_date])
+
+    closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
+
+    stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.by_closed_at(closed_year).order(closed_at: :desc)
   end
 end
