@@ -79,6 +79,9 @@
     .when '/reports/activity_summary',
       templateUrl: 'reports.html'
       controller: 'ReportsController'
+    .when '/reports/pipeline_split_report',
+      templateUrl: 'pipeline_split_report.html'
+      controller: 'PipelineSplitReportController'
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'

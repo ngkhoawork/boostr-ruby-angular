@@ -1,6 +1,6 @@
 @app.controller 'SettingsController',
-    ['$scope', 'CurrentUser'
-    ( $scope,   CurrentUser ) ->
+    ['$scope'
+    ( $scope ) ->
 
         $scope.options = [
             {title: 'General Settings',   url: '/settings/general',            icon: 'gear',                description: 'Manage snapshots, validations & permissions'}
@@ -24,9 +24,8 @@
             {title: 'eAlerts',            url: '/settings/ealerts',            icon: 'envelope',            description: 'Manage eAlert HTML workflow emails'}
         ]
 
-
-        CurrentUser.get().$promise.then (user) ->
-            if _.contains user.roles, 'super_admin'
+        $scope.$watch 'currentUser', (user) ->
+            if user && _.contains user.roles, 'super_admin'
                 $scope.options.push {icon: 'asterisk', title: 'Tools', url: '/settings/tools', description: 'Tools'}
 
     ]
