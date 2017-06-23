@@ -6,7 +6,7 @@ class SplitAdjustedReportService
     @company   = company
     @seller_id = params[:seller_id]
     @team_id   = params[:team_id]
-    @stage_id  = params[:stage_id]
+    @stage_ids  = params[:stage_ids]
     @status    = params[:status]
   end
 
@@ -19,13 +19,13 @@ class SplitAdjustedReportService
 
   private
 
-  attr_reader :company, :seller_id, :team_id, :stage_id, :status
+  attr_reader :company, :seller_id, :team_id, :stage_ids, :status
 
   def data_for_serializer
     filtered_deal_members
       .by_seller(seller_params)
       .by_team(team_params)
-      .by_stage(stage_params)
+      .by_stage_ids(stage_ids)
       .order(deal_id: :desc)
   end
 
@@ -51,10 +51,6 @@ class SplitAdjustedReportService
 
   def team_params
     determine_params_for(team_id)
-  end
-
-  def stage_params
-    determine_params_for(stage_id)
   end
 
   def status_params

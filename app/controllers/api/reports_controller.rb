@@ -13,7 +13,15 @@ class Api::ReportsController < ApplicationController
   end
 
   def split_adjusted
-    render json: SplitAdjustedReportService.new(company, params).perform
+    respond_to do |format|
+      format.json {
+        render json: split_adjusted_serializer
+      }
+      format.csv {
+        send_data Csv::SplitAdjustedService.new(split_adjusted_serializer.as_json).perform,
+                  filename: "reports-#{Date.today}.csv"
+      }
+    end
   end
 
   private
@@ -129,5 +137,9 @@ class Api::ReportsController < ApplicationController
 
   def without_default_and_fake_type
     all_team_sales_reps.reject { |u| [FAKE_USER, DEFAULT].include?(u.user_type) }
+  end
+
+  def split_adjusted_serializer
+    SplitAdjustedReportService.new(company, params).perform
   end
 end
