@@ -136,6 +136,8 @@ Rails.application.routes.draw do
       get :spend_by_product, on: :collection
     end
 
+    resources :time_dimensions, only: [:index]
+
     resources :countries, only: [:index]
     resources :api_configurations
     resources :integration_types, only: [:index]
@@ -291,7 +293,9 @@ Rails.application.routes.draw do
     resources :activity_types, only: [:index, :create, :update, :destroy] do
       put :update_positions, on: :collection
     end
-    resources :holding_companies, only: [:index]
+    resources :holding_companies, only: [:index] do
+      resources :account_dimensions
+    end
     resources :ealerts, only: [:index, :show, :create, :update, :destroy] do
       post :send_ealert
     end
