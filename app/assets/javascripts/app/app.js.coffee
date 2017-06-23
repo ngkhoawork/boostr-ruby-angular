@@ -40,18 +40,12 @@
     .when '/deals',
       templateUrl: 'deals.html'
       controller: 'DealsController'
-    .when '/clients/:id',
-      templateUrl: 'clients.html'
-      controller: 'ClientsController'
     .when '/accounts',
       templateUrl: 'accounts.html'
       controller: 'AccountsController'
     .when '/accounts/:id',
       templateUrl: 'account.html'
       controller: 'AccountController'
-    .when '/clients',
-      templateUrl: 'clients.html'
-      controller: 'ClientsController'
     .when '/contacts/:id',
       templateUrl: 'contact.html'
       controller: 'ContactController'

@@ -29,7 +29,7 @@
                 $scope.modalInstance = $modal.open
                     templateUrl: 'modals/client_form.html'
                     size: 'md'
-                    controller: 'ClientsNewController'
+                    controller: 'AccountsNewController'
                     backdrop: 'static'
                     keyboard: false
                     resolve:

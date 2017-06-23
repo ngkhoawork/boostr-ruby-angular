@@ -21,12 +21,12 @@
       .form-group{'ng-class':'{error: errors.name}'}
         %span.error-text {{errors.name}}
         %label{ for: 'name' }
-        Name
+          Name
         %span.star *
         %input.form-control{ placeholder: 'Name', ng: { model: 'client.name' }, name: 'name' }
       .form-group
         .row
-          .col-xs-6
+          .col-xs-6{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }
             %label{ for: 'parent-client' }
               Global Parent
             %ui-select{ parent_client: 'parent-client', ng: { model: 'client.parent_client_id', disabled: 'client.client_type.option_id === undefined', keyup: 'searchClients($select.search)'} }
@@ -34,7 +34,7 @@
                 {{ $select.selected.name || client.parent_client.name }}
               %ui-select-choices{ repeat: 'parent.id as parent in clients | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'parent.name' } } }
-          .col-xs-6
+          .col-xs-6{ ng: {if: 'Agency && client.client_type.option_id === Agency'} }
             %label{ for: 'holding-company' }
               Holding Company
             %ui-select{ parent_client: 'holding-company', ng: { model: 'client.holding_company_id', disabled: 'client.client_type.option_id === undefined'} }
@@ -42,7 +42,7 @@
                 {{ $select.selected.name || client.parent_client.name }}
               %ui-select-choices{ repeat: 'option.id as option in holdingCompanies | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'option.name' } } }
-      .form-group{ ng: {if: 'client.client_type.option_id === Advertiser'} }
+      .form-group{ ng: {if: 'Advertiser && client.client_type.option_id === Advertiser'} }
         .row
           .col-xs-6
             %label{ for: 'client-category' } Advertiser Category
@@ -75,31 +75,6 @@
               %ui-select-choices{ repeat: 'segment.id as segment in client.fields[4].options | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'segment.name' } } }
       .form-group
-        %label{ for: 'street1' } Address
-        %input.form-control{ placeholder: 'Address', ng: { model: 'client.address.street1' }, name: 'street1' }
-      .form-group
-        .row
-          .col-xs-5
-            %label{ for: 'city' } City
-            %input.form-control{ placeholder: 'City', ng: { model: 'client.address.city' }, name: 'city'  }
-          .col-xs-4
-            %label{ for: 'state' } State
-            %ui-select.bo-state-select{ name: 'state', ng: { model: 'client.address.state', disabled: true } }
-              %ui-select-match{ placeholder: 'State' }
-                {{ $select.selected.name }}
-              %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
-                %div{ ng: { bind: { html: 'state.name' } } }
-          .col-xs-3
-            %label{ for: 'zip' } Postal code
-            %input.form-control{ name: 'zip', placeholder: 'Postal code', ng: { model: 'client.address.zip' }  }
-      .form-group
-        %label{ for: 'country' } Country
-        %ui-select{ name: 'country', ng: { model: 'client.address.country', disabled: true } }
-          %ui-select-match{ placeholder: 'Country' }
-            {{ $select.selected }}
-          %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
-            %div {{ country }}
-      .form-group
         %label{ for: 'office' } Phone
         %input.form-control{ placeholder: 'Office Number', ng: { model: 'client.address.phone' }, name: 'office' }
       .form-group
@@ -128,6 +103,40 @@
       .form-group
         %label{ for: 'note' } Note
         %textarea.form-control{ 'msd-elastic': '', rows: 1, 'ng-model': "client.note", name: "note", placeholder: 'Enter note' }
+
+    .row.text-center{'ng-hide': 'showAddressFields'}
+      %a.btn.add-btn{ 'ng-click': 'showAddressFields = true'}
+        %i.fa.fa-plus
+        Add Address
+
+
+    %div.address-wrap{'ng-show': 'showAddressFields'}
+      .form-group
+        %label{ for: 'street1' } Address
+        %input.form-control{ placeholder: 'Address', ng: { model: 'client.address.street1' }, name: 'street1' }
+      .form-group
+        .row
+          .col-xs-5
+            %label{ for: 'city' } City
+            %input.form-control{ placeholder: 'City', ng: { model: 'client.address.city' }, name: 'city'  }
+          .col-xs-4
+            %label{ for: 'state' } State
+            %ui-select.bo-state-select{ name: 'state', ng: { model: 'client.address.state', disabled: true } }
+              %ui-select-match{ placeholder: 'State' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'state.name' } } }
+          .col-xs-3
+            %label{ for: 'zip' } Postal code
+            %input.form-control{ name: 'zip', placeholder: 'Postal code', ng: { model: 'client.address.zip' }  }
+      .form-group
+        %label{ for: 'country' } Country
+        %ui-select{ name: 'country', ng: { model: 'client.address.country', disabled: true } }
+          %ui-select-match{ placeholder: 'Country' }
+            {{ $select.selected }}
+          %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
+            %div {{ country }}
+
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
       %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
