@@ -3,6 +3,7 @@
 ( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration) ->
 
   $scope.showMeridian = true
+  $scope.isAdmin = false
   $scope.feedName = 'Deal Updates'
   $scope.types = []
   $scope.contacts = []
@@ -962,4 +963,7 @@
       _.forEach members, (member) ->
         if member.user_id == currentUser.id && !(member.share > 0)
           $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
+
+  $scope.$watch 'currentUser', (currentUser) ->
+    $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
 ]

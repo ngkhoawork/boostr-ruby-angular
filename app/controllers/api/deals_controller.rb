@@ -548,6 +548,7 @@ class Api::DealsController < ApplicationController
         :next_steps,
         :initiative_id,
         :closed_reason_text,
+        :created_at,
         {
             values_attributes: [
                 :id,
