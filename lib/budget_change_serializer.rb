@@ -34,6 +34,6 @@ class BudgetChangeSerializer < ActiveModel::Serializer
   end
 
   def date
-    object.created_at.to_date rescue nil
+    object.created_at rescue nil
   end
 end

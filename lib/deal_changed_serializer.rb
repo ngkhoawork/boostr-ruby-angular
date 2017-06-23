@@ -34,6 +34,6 @@ class DealChangedSerializer < ActiveModel::Serializer
   end
 
   def date
-    object.deal_stage_logs.ordered_by_created_at.first.created_at.to_date rescue nil
+    object.deal_stage_logs.ordered_by_created_at.first.created_at rescue nil
   end
 end

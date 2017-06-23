@@ -8,7 +8,7 @@ class API::Deals::Single < API::Single
   end
 
   def date
-    deal_date.to_date rescue represented.created_at
+    deal_date rescue represented.created_at
   end
 
   private
