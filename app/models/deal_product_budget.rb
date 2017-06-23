@@ -13,7 +13,7 @@ class DealProductBudget < ActiveRecord::Base
   end
 
   def budget_percentage
-    return ((budget_loc || 0).to_f / deal_product.budget_loc.to_f * 100).to_i if budget_loc && deal_product.budget_loc && deal_product.budget_loc > 0
+    return ((budget_loc || 0).to_f / deal_product.budget_loc.to_f * 100).round if budget_loc && deal_product.budget_loc && deal_product.budget_loc > 0
     return 0
   end
 
