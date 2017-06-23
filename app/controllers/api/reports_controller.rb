@@ -13,7 +13,7 @@ class Api::ReportsController < ApplicationController
   end
 
   def split_adjusted
-    render json: SplitAdjustedReportService.new(company).perform
+    render json: SplitAdjustedReportService.new(company, params).perform
   end
 
   private
