@@ -6,6 +6,6 @@ class Api::AccountDimensionsController < ApplicationController
   private
 
   def account_dimensions
-    AccountDimension.where(holding_company_id: params[:holding_company_id])
+    AccountDimension.where(holding_company_id: params[:holding_company_id], account_type: Client::AGENCY)
   end
 end
