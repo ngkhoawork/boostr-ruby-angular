@@ -7,7 +7,7 @@ class Requests::RequestableSerializer < ActiveModel::Serializer
     if object.is_a?(ContentFee)
       "#{object.product.name}"
     elsif object.is_a?(DisplayLineItem)
-      "Line Number #{requestable.line_number}"
+      "Line Number #{object.line_number}"
     else
       "IO #{object.id}"
     end
