@@ -42,6 +42,7 @@ class BpEstimate < ActiveRecord::Base
     CSV.generate do |csv|
       header = [
         "Account",
+        "Primary Agency",
         "Seller",
         "Q2-2017 Pipeline (W)",
         "Q2-2017 Revenue",
@@ -114,6 +115,7 @@ class BpEstimate < ActiveRecord::Base
         end
         line = [
           bp_estimate.client ? bp_estimate.client.name : nil,
+          bp_estimate.primary_agency_name ? bp_estimate.primary_agency_name : nil,
           bp_estimate.user ? bp_estimate.user.name : nil,
           '$' + pipeline_amount.to_s,
           '$' + revenue_amount.to_s,
