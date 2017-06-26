@@ -18,15 +18,18 @@
         if ($scope.datePicker.startDate && $scope.datePicker.endDate)
           datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
           $scope.isDateSet = true
-          getReportData()
+#          getReportData()
 
       $scope.datePickerCancel = (s, r) ->
         datePickerInput.html('Time period')
         $scope.isDateSet = false
-        if !r then getReportData()
+#        if !r then getReportData()
 
       $scope.resetFilters = () ->
         $scope.datePickerCancel(null, true)
+#        getReportData()
+
+      $scope.applyFilter = ->
         getReportData()
 
       $scope.go = (path) ->
@@ -50,7 +53,7 @@
         PipelineChangeReportService.get(query).$promise.then (data)->
           $scope.report_data_items = data.report_data
 
-      init = ->
-        getReportData()
-      init()
+#      init = ->
+#        getReportData()
+#      init()
   ]

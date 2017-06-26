@@ -86,6 +86,10 @@
                               %a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
                                 {{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
             .header-cell
+              %button.add-btn{'ng-click': 'applyFilter()'}
+                Run Report
+
+            .header-cell
               .pull-right
                 .header-cell-right
                   %a.export.pull-right{ href: '', ng: { click: 'exportReports()' } }

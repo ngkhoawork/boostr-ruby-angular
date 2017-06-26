@@ -73,6 +73,7 @@
     .when '/reports/activity_summary',
       templateUrl: 'reports.html'
       controller: 'ReportsController'
+      reloadOnSearch: false
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'

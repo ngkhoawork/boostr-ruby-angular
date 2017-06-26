@@ -33,28 +33,33 @@
           if user.user_type is 1 || user.user_type is 2
             currentUser = user
             $scope.filter.seller = user
-          getData()
+#          getData()
           Product.all().then (products) ->
             $scope.products = products
+            $scope.products = _.sortBy $scope.products, 'name'
             $scope.products.unshift({name:'All', id:'all'})
 
           Field.defaults({}, 'Deal').then (fields) ->
             client_types = Field.findDealTypes(fields)
-            $scope.types.push({name:'All', id:'all'})
             client_types.options.forEach (option) ->
               $scope.types.push(option)
+            $scope.types = _.sortBy $scope.types, 'name'
+            $scope.types.unshift({name:'All', id:'all'})
 
             sources = Field.findSources(fields)
-            $scope.sources.push({name:'All', id:'all'})
             sources.options.forEach (option) ->
               $scope.sources.push(option)
+            $scope.sources = _.sortBy $scope.sources, 'name'
+            $scope.sources.unshift({name:'All', id:'all'})
 
           Seller.query({id: 'all'}).$promise.then (sellers) ->
             $scope.sellers = sellers
+            $scope.sellers = _.sortBy $scope.sellers, 'name'
             $scope.sellers.unshift(defaultUser)
 
           TimePeriod.all().then (timePeriods) ->
             $scope.timePeriods = angular.copy timePeriods
+            $scope.timePeriods = _.sortBy $scope.timePeriods, 'start_date'
             $scope.timePeriods.unshift({name:'All', id:'all'})
 
           Team.all(all_teams: true).then (teams) ->
@@ -83,7 +88,7 @@
         if $scope.filter[key]is value
           return
         $scope.filter[key] = value
-        getData()
+#        getData()
 
       $scope.resetFilter = ->
         $scope.filter =
@@ -95,6 +100,9 @@
           seller: currentUser || defaultUser
           timePeriod: {id: 'all', name: 'All'}
         $scope.selectedTeam = $scope.filter.team
+#        getData()
+
+      $scope.applyFilter = ->
         getData()
 
       query = null
