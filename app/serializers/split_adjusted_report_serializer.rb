@@ -11,11 +11,11 @@ class SplitAdjustedReportSerializer < ActiveModel::Serializer
   end
 
   def advertiser
-    deal.advertiser.name
+    deal.advertiser.serializable_hash(only: [:id, :name]) rescue nil
   end
 
   def agency
-    deal.agency.name if deal.agency.present?
+    deal.agency.serializable_hash(only: [:id, :name]) rescue nil if deal.agency.present?
   end
 
   def name
@@ -27,7 +27,7 @@ class SplitAdjustedReportSerializer < ActiveModel::Serializer
   end
 
   def stage
-    deal.stage.probability
+    deal.stage.serializable_hash(only: [:name, :probability]) rescue nil
   end
 
   def type

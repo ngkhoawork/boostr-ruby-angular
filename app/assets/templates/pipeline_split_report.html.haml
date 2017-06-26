@@ -32,12 +32,16 @@
 							%td
 								%ul.filter-item
 									%li{ dropdown: true }
-										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.stage.name === "All"}' }
-											{{filter.stage.name}} {{isNumber(filter.stage.probability) ? filter.stage.probability + '%' : ''}}
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.stages.length == 0}' }
+											%span{'ng-if': 'filter.stages.length == 0'}
+												All
+											%span{'ng-repeat': 'stage in filter.stages'}
+												{{stage.name}} {{stage.probability + '%'}}
+												%i.fa.fa-times.close-btn{'ng-click': 'removeFilter("stages", stage)'}
 											%span.caret
 										%ul.dropdown-menu
-											%li{ ng: { repeat: 'stage in stages', class: '{active: stage.name === filter.stage.name}' } }
-												%a{ href: '', ng: { click: 'setFilter("stage", stage)' } }
+											%li{ ng: { repeat: 'stage in stages | orderBy: ["-open", "probability"]' } }
+												%a{ href: '', ng: { click: 'setFilter("stages", stage)' } }
 													{{stage.name}} {{isNumber(stage.probability) ? stage.probability + '%' : ''}}
 
 							%td
@@ -80,37 +84,23 @@
 									%th Created Date
 									%th Closed Date
 							%tbody
-								%tr
-									%td 651
-									%td Q4-Q1 Clearance Retargeting
-									%td Best Buy
+								%tr{'ng-repeat': 'item in data'}
+									%td {{item.deal_id}}
 									%td
-									%td Tom Seller
-									%td 50%
-									%td 750000
-									%td Discuss Requirements
-									%td 25
+										%a{href: '', 'ng-href': '/deals/{{item.deal_id}}'} {{item.deal_name}}
 									%td
+										%a{href: '', 'ng-href': '/accounts/{{item.advertiser.id}}'} {{item.advertiser.name}}
 									%td
-									%td
-									%td 11/15/2016
-									%td 1/31/2017
-									%td 10/19/2016
-									%td
-								%tr
-									%td 630
-									%td Back to Future Lace Ups
-									%td Nike, Inc.
-									%td
-									%td Jen Seller
-									%td 75%
-									%td 7500
-									%td Discuss Requirements
-									%td 25
-									%td
-									%td
-									%td
-									%td 10/10/2016
-									%td 12/24/2016
-									%td 10/11/2016
-									%td
+										%a{href: '', 'ng-href': '/accounts/{{item.agency.id}}'} {{item.agency.name}}
+									%td {{item.name}}
+									%td {{item.share}}%
+									%td {{item.budget | currency : '$' : 0}}
+									%td {{item.stage.name}}
+									%td {{item.stage.probability}}
+									%td {{item.type}}
+									%td {{item.source}}
+									%td {{item.next_steps}}
+									%td {{item.start_date}}
+									%td {{item.end_date}}
+									%td {{item.created_date}}
+									%td {{item.closed_date}}

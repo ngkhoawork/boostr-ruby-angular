@@ -7,6 +7,7 @@
     }
     .filters-block {
         padding-left: 60px;
+        vertical-align: middle;
         a {
             font-weight: normal;
             color: $main-color;
@@ -24,7 +25,14 @@
                 }
             }
         }
-        vertical-align: middle;
+        .filter-item {
+            .close-btn {
+                color: $secondary-font-color;
+                &:hover {
+                    color: $main-color;
+                }
+            }
+        }
     }
     .block {
         .title {
