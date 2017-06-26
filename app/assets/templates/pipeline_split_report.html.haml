@@ -56,6 +56,10 @@
 													{{ status.name }}
 
 				.header-cell
+					%button.add-btn{'ng-click': 'applyFilter()'}
+						Run Report
+
+				.header-cell
 					.pull-right
 						%download-button{'ng-click': 'export()'}
 							Export
