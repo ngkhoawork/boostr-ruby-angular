@@ -72,11 +72,20 @@
                     keyboard: true
                     resolve:
                         io: -> $scope.currentIO
+            $scope.updateInfluencerBudget = (influencerContentFee) ->
+                if confirm('Are you sure you want to update content fee budget with "' +  influencerContentFee.influencer.name + '"?')
+                    InfluencerContentFee.update_budget(io_id: $scope.currentIO.id, id: influencerContentFee.id, influencer_content_fee: influencerContentFee).then(
+                        (data) ->
+                            $scope.init()
+                        (resp) ->
+                            for key, error of resp.data.errors
+                                $scope.errors[key] = error && error[0]
+                    )
             $scope.deleteInfluencerContentFee = (influencerContentFee) ->
                 if confirm('Are you sure you want to unassign "' +  influencerContentFee.influencer.name + '"?')
                     InfluencerContentFee.delete(io_id: $scope.currentIO.id, id: influencerContentFee.id).then(
                         (data) ->
-
+                            $scope.init()
                         (resp) ->
                             for key, error of resp.data.errors
                                 $scope.errors[key] = error && error[0]

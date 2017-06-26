@@ -51,6 +51,22 @@ class Api::InfluencerContentFeesController < ApplicationController
     end
   end
 
+  def update_budget
+    if content_fee.present?
+      content_fee_product_budget_rows = content_fee.content_fee_product_budgets.for_year_month(influencer_content_fee.effect_date)
+      if content_fee_product_budget_rows.count > 0
+        content_fee_product_budget = content_fee_product_budget_rows.first
+        content_fee_product_budget.budget_loc = influencer_content_fee.net_loc
+        content_fee_product_budget.budget = influencer_content_fee.net
+        if content_fee_product_budget.save
+          content_fee.update_budget
+          content_fee.io.update_total_budget
+        end
+      end
+    end
+    render nothing: true
+  end
+
   def destroy
     influencer_content_fee.destroy
 
@@ -69,6 +85,7 @@ class Api::InfluencerContentFeesController < ApplicationController
       :content_fee_id,
       :effect_date,
       :fee_type,
+      :fee_amount,
       :curr_cd,
       :gross_amount,
       :gross_amount_loc,
@@ -84,6 +101,10 @@ class Api::InfluencerContentFeesController < ApplicationController
 
   def company
     @company ||= current_user.company
+  end
+
+  def content_fee
+    @content_fee ||= influencer_content_fee.content_fee
   end
 
   def io

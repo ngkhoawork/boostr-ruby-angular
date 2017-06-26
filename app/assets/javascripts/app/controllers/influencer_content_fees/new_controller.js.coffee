@@ -30,6 +30,7 @@
   $scope.influencerSelected = (influencerId) ->
     influencer = _.find($scope.influencers, {id: influencerId})
     $scope.influencerContentFee.fee_type = influencer.agreement.fee_type if influencer && influencer.agreement
+    $scope.influencerContentFee.fee_amount = influencer.agreement.amount if influencer && influencer.agreement
 
   $scope.searchInfluencers = (name) ->
     params = {
@@ -46,6 +47,7 @@
     if !$scope.influencerContentFee.curr_cd then $scope.errors['currency'] = 'Currency is required'
     if !$scope.influencerContentFee.gross_amount_loc then $scope.errors['gross_amount'] = 'Gross amount is required'
     if !$scope.influencerContentFee.fee_type then $scope.errors['fee_type'] = 'Fee Type is required'
+    if !$scope.influencerContentFee.fee_amount then $scope.errors['fee_amount'] = 'Fee amount is required'
 
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true

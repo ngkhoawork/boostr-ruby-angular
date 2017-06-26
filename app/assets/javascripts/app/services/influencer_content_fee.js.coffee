@@ -23,6 +23,10 @@
       method: 'PUT'
       url: '/api/ios/:io_id/influencer_content_fees/:id'
       transformRequest: transformRequest
+    update_budget:
+      method: 'POST'
+      url: '/api/ios/:io_id/influencer_content_fees/:id/update_budget'
+      transformRequest: transformRequest
 
   currentInfluencerContentFee = undefined
 
@@ -59,6 +63,17 @@
     )
     deferred.promise
 
+  @update_budget = (params) ->
+    deferred = $q.defer()
+    resource.update_budget(
+      params,
+      (influencer_content_fee) ->
+        deferred.resolve(influencer_content_fee)
+      (resp) ->
+        deferred.reject(resp)
+    )
+    deferred.promise
+
   @get = (influencer_content_fee_id) ->
     deferred = $q.defer()
     resource.get id: influencer_content_fee_id, (influencer_content_fee) ->
@@ -71,7 +86,6 @@
     deferred = $q.defer()
     resource.delete params, (influencer_content_fee) ->
       deferred.resolve(influencer_content_fee)
-      $rootScope.$broadcast 'updated_influencer_content_fees'
     , (error) ->
       deferred.reject(error)
     deferred.promise

@@ -18,12 +18,11 @@ class InfluencerContentFee < ActiveRecord::Base
 
   def update_net
     if influencer.agreement.present?
-      fee_type = influencer.agreement.fee_type
-      fee_amount = influencer.agreement.amount
-      fee_amount_loc = (fee_amount || 0) * self.exchange_rate if self.exchange_rate
-      if fee_type && fee_type == 'flat'
+      fee_amount = self.fee_amount
+      fee_amount_loc = (fee_amount || 0) / self.exchange_rate if self.exchange_rate && self.fee_type == 'flat'
+      if self.fee_type && self.fee_type == 'flat'
         self.net_loc = fee_amount_loc
-      elsif fee_type && fee_type == 'percentage'
+      elsif self.fee_type && self.fee_type == 'percentage'
         self.net_loc = (fee_amount || 0) * self.gross_amount_loc / 100.0
       end
     end
@@ -32,8 +31,9 @@ class InfluencerContentFee < ActiveRecord::Base
   def exchange_amount
     exchange_rate = self.exchange_rate
     if exchange_rate
-      self.gross_amount = (self.gross_amount_loc.to_f / exchange_rate).round(2)
-      self.net = (self.net_loc.to_f / exchange_rate).round(2)
+      self.gross_amount = (self.gross_amount_loc.to_f * exchange_rate).round(2)
+      self.net = (self.net_loc.to_f * exchange_rate).round(2)
+      self.fee_amount_loc = (self.fee_amount.to_f / exchange_rate).round(2) if self.fee_type == 'flat'
     end
   end
 
