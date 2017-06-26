@@ -33,12 +33,12 @@
         if ($scope.datePicker.startDate && $scope.datePicker.endDate)
           datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
           $scope.isDateSet = true
-          fetchData()
+#          fetchData()
 
       $scope.datePickerCancel = (s, r) ->
         datePickerInput.html('Time period')
         $scope.isDateSet = false
-        if !r then fetchData()
+#        if !r then fetchData()
 
       $scope.resetFilters = () ->
         $scope.memberId = null
@@ -48,16 +48,20 @@
           name:'Team'
         }
         $scope.datePickerCancel(null, true)
-        fetchData()
+#        fetchData()
 
       resetFilters = () ->
         $scope.memberFilters = []
         $scope.timeFilters = []
         $scope.activityTypeFilters = []
 
+      $scope.applyFilter = ->
+        fetchData()
+
       fetchTeamMembers = (teamId) ->
         Team.all_members(team_id: teamId).then (members) ->
           $scope.members = members
+          $scope.members = _.sortBy $scope.members, 'name'
           $scope.members.unshift({
             id:'all',
             name:'All'
@@ -94,6 +98,7 @@
 
         ActivityType.all().then (activityTypes) ->
           $scope.activityTypes = angular.copy(activityTypes)
+          $scope.activityTypes = _.sortBy $scope.activityTypes, 'name'
           $scope.activityTypes.unshift({
             id:'',
             name:'All'
@@ -103,11 +108,11 @@
 
       $scope.filterByMember =(member) ->
         $scope.memberId = member
-        fetchData()
+#        fetchData()
 
       $scope.filterByActivityType =(activityTypeId) ->
         $scope.activityTypeId = activityTypeId
-        fetchData()
+#        fetchData()
 
       #team watcher
       $scope.$watch 'selectedTeam', () ->
@@ -116,7 +121,7 @@
           $scope.memberId = null
 
         fetchTeamMembers($scope.teamId)
-        fetchData()
+#        fetchData()
 
       #work with dates====================================================================
       $scope.endDateIsValid = undefined
@@ -138,7 +143,7 @@
         if(end_date && start_date && end_date > start_date)
           $scope.endDateIsValid = true
           $scope.startDateIsValid = true
-          fetchData()
+#          fetchData()
 
       $scope.go = (path) ->
         $location.path(path)

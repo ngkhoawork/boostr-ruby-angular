@@ -5,6 +5,9 @@
         display: inline-block;
         vertical-align: middle;
     }
+    #nav .nav-tabs > li {
+        margin-right: 0;
+    }
     .export {
         svg {
             width: 24px;
@@ -16,9 +19,11 @@
         }
         color: $main-color;
     }
-    a {
-        color: #3498DB;
-        cursor: pointer;
+    .table {
+        a {
+            color: #3498DB;
+            cursor: pointer;
+        }
     }
     .dropdown-menu {
         li {
