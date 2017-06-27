@@ -235,7 +235,6 @@
     user.leader = user['leader?']
     $rootScope.currentUser = user
     updateTalkus user
-    console.log user
 
   $rootScope.$on '$routeChangeSuccess', (scope, next, current) ->
     if $rootScope.currentUser then updateTalkus($rootScope.currentUser)
