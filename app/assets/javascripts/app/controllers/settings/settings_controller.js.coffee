@@ -1,6 +1,6 @@
 @app.controller 'SettingsController',
-    ['$scope', 'CurrentUser'
-    ( $scope,   CurrentUser ) ->
+    ['$scope'
+    ( $scope ) ->
 
         $scope.options = [
             {title: 'General Settings',   url: '/settings/general',            icon: 'gear',                description: 'Manage snapshots, validations & permissions'}
@@ -22,11 +22,7 @@
             {title: 'Notifications',      url: '/settings/notifications',      icon: 'envelope',            description: 'Setup simple email notifications'}
             {title: 'Initiatives',        url: '/settings/initiatives',        icon: 'list-ol',             description: 'Setup initiatives for tracking progress against goals'}
             {title: 'eAlerts',            url: '/settings/ealerts',            icon: 'envelope',            description: 'Manage eAlert HTML workflow emails'}
+            {title: 'Tools',              url: '/settings/tools',              icon: 'asterisk',            description: 'Tools'} if $scope.currentUserRoles.isSuperAdmin()
         ]
-
-
-        CurrentUser.get().$promise.then (user) ->
-            if _.contains user.roles, 'super_admin'
-                $scope.options.push {icon: 'asterisk', title: 'Tools', url: '/settings/tools', description: 'Tools'}
 
     ]

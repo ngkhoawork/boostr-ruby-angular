@@ -223,20 +223,22 @@
   editableOptions.blurForm = 'cancel'
 ]
 
-@app.run ['$rootScope', ($rootScope) ->
+@app.run ['$rootScope', 'CurrentUser', ($rootScope, CurrentUser) ->
   $rootScope.currentUserIsLeader = currentUserIsLeader
   $rootScope.transloaditTemplate = transloaditTemplate
   $rootScope.userType = userType
-]
+  $rootScope.currentUserRoles = currentUserRoles
+  currentUserRoles.isAdmin = -> _.contains this, 'admin'
+  currentUserRoles.isSuperAdmin = -> _.contains this, 'superadmin'
 
-@app.run ['$rootScope', 'CurrentUser', ($rootScope, CU) ->
+  CurrentUser.get().$promise.then (user) ->
+    user.leader = user['leader?']
+    $rootScope.currentUser = user
+    updateTalkus user
+    console.log user
+
   $rootScope.$on '$routeChangeSuccess', (scope, next, current) ->
-    if $rootScope.currentUser
-      updateTalkus($rootScope.currentUser)
-    else
-      CU.get().$promise.then (user) ->
-        $rootScope.currentUser = user
-        updateTalkus(user)
+    if $rootScope.currentUser then updateTalkus($rootScope.currentUser)
 
   updateTalkus = (user) ->
     talkus('init', 'qu346HQax2ut3MQr4',
