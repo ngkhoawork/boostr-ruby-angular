@@ -6,7 +6,8 @@
   $scope.submitText = "Reassign"
   $scope.influencerContentFee = influencerContentFee
   $scope.io = io
-  $scope.contentFees = io.content_fees
+  $scope.contentFees = _.reject io.content_fees, (item) ->
+    return item.product.is_influencer_product == false
   $scope.query = ""
   $scope.feeTypes = [
     {name: 'Flat', value: 'flat'},

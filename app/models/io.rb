@@ -243,8 +243,12 @@ class Io < ActiveRecord::Base
         },
         print_items: {}
       },
-      methods: [:readable_months]
+      methods: [:readable_months, :company_influencer_enabled]
     )
+  end
+
+  def company_influencer_enabled
+    self.company.influencer_enabled
   end
 
   def get_agency

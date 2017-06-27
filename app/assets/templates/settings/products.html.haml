@@ -16,6 +16,7 @@
 							%th Type
 							%th Revenue Type
 							%th Active
+							%th Is Influencer Product
 					%tbody{ ng: { repeat: 'product in products' } }
 						%tr.clickable{'ng-click': 'expendRow(product)'}
 							%td
@@ -27,6 +28,7 @@
 							%td {{ product.pricing_type.option.name }}
 							%td {{ product.revenue_type }}
 							%td {{ product.active ? 'Yes' : 'No' }}
+							%td {{ product.is_influencer_product ? 'Yes' : 'No' }}
 						%tr{'ng-show': 'expendedRow == product.id'}
 							%td{style: 'padding: 0', colspan: '6'}
 								%table.table.ad-unit-table
