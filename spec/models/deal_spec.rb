@@ -7,6 +7,7 @@ RSpec.describe Deal, type: :model do
   context 'associations' do
     it { should have_many(:contacts).through(:deal_contacts) }
     it { should have_many(:deal_contacts) }
+    it { should have_many(:requests) }
 
     context 'restrictions' do
       let!(:deal) { create :deal }

@@ -45,7 +45,8 @@ class Api::UsersController < ApplicationController
       :is_active,
       :default_currency,
       :employee_id,
-      :office
+      :office,
+      :revenue_requests_access
     )
 
     if !user_params[:is_active].nil? && current_user.id == user.id

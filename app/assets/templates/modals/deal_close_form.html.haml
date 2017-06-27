@@ -7,6 +7,7 @@
       .form-group{'ng-class':'{error: errors.reason}'}
         %span.error-text {{errors.reason}}
         %label{ for: 'close-reason' } Loss Reason
+        %span.star *
         .dropdown
           %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
             %span{'ng-hide': 'selectedReason', style: 'color: #D4CFDA'} Reason

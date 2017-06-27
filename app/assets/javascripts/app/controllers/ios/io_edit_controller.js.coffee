@@ -86,7 +86,7 @@
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
       size: 'md'
-      controller: 'ClientsEditController'
+      controller: 'AccountsNewController'
       backdrop: 'static'
       keyboard: false
       resolve:

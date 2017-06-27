@@ -67,6 +67,8 @@
                   = link_to "Forecast Detail", "/reports/forecasts"
                 %li
                   = link_to "Product Forecast Detail", "/reports/product_forecasts"
+                %li
+                  = link_to "Pipeline Changes", "/reports/pipeline_changes_report"
           - if current_user.leader?
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -107,6 +109,9 @@
                   = link_to "Initiatives", "/smart_reports/initiatives"
                 %li
                   = link_to "Pacing Dashboard", "/smart_reports/pacing_dashboard"
+          - if current_user.company.requests_enabled && current_user.has_requests_access?
+            %li{ ng: { class: "{ active: isActive('/requests') }" } }
+              = link_to "REQUESTS", "/requests"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
             %li{ ng: { class: "{ active: isActive('/settings') }" } }
               = link_to "SETTINGS", "/settings"

@@ -34,6 +34,7 @@ class Deal < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable
   has_many :integrations, as: :integratable
+  has_many :requests
 
   has_one :deal_custom_field, dependent: :destroy
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
@@ -117,6 +118,15 @@ class Deal < ActiveRecord::Base
   scope :by_team_id, -> (team_id) { joins(deal_members: :user).where(users: { team_id: team_id }) if team_id.present? }
   scope :by_seller_id, -> (seller_id) do
     joins(:deal_members).where(deal_members: { user_id: seller_id }) if seller_id.present?
+  end
+  scope :by_creator, -> (creator_id) { joins(:creator).where(users: { id: creator_id }) if creator_id.present? }
+  scope :by_budget_range, -> (from, to) { where(budget: from..to) if from.present? && to.present? }
+  scope :by_curr_cd, -> (curr_cd) { where(curr_cd: curr_cd) if curr_cd.present? }
+  scope :by_start_date, -> (start_date, end_date) do
+    where(start_date: start_date..end_date) if start_date.present? && end_date.present?
+  end
+  scope :by_closed_at, -> (closed_at) do
+    where(closed_at: closed_at.beginning_of_year.to_datetime.beginning_of_day..closed_at.end_of_year.to_datetime.end_of_day) if closed_at.present?
   end
 
   def integrate_with_operative
@@ -233,33 +243,34 @@ class Deal < ActiveRecord::Base
     if options[:override].present? && options[:override] == true
       super(options[:options])
     else
-      super(options.merge(
-                    include: [
-                            :creator,
-                            :advertiser,
-                            :agency,
-                            :stage,
-                            :values,
-                            :deal_custom_field,
-                            deal_members: {
-                                    methods: [:name]
-                            },
-                            activities: {
-                                    include: {
-                                            creator: {},
-                                            contacts: {},
-                                            assets: {
-                                                    methods: [
-                                                            :presigned_url
-                                                    ]
-                                            }
-                                    }
-                            }
-                    ],
+      super(
+        options.merge(
+          include: [
+            :creator,
+            :advertiser,
+            :agency,
+            :stage,
+            :values,
+            :deal_custom_field,
+            deal_members: {
+              methods: [:name]
+            },
+              activities: {
+                include: {
+                  creator: {},
+                  contacts: {},
+                  assets: {
                     methods: [
-                            :formatted_name
+                      :presigned_url
                     ]
-            )
+                  }
+                }
+              }
+          ],
+          methods: [
+            :formatted_name
+          ]
+        )
       )
     end
   end
@@ -1308,7 +1319,7 @@ class Deal < ActiveRecord::Base
     if notification.present?
       recipients = notification.recipients_arr
 
-      UserMailer.new_deal_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+      UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 
@@ -1318,7 +1329,7 @@ class Deal < ActiveRecord::Base
     if notification.present?
       recipients = notification.recipients_arr
 
-      UserMailer.stage_changed_email(recipients, self, stage).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+      UserMailer.stage_changed_email(recipients, self.id, stage).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 

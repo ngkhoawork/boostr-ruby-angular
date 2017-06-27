@@ -29,6 +29,10 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
     true
   end
 
+  def current_date
+    @_current_date ||= Date.current
+  end
+
   def start_date_for_current_quarter
     weeks_for_current_quarter.find_by(week: FIRST_NEGATIVE_WEEK).start_date
   end
@@ -77,7 +81,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
   def max_revenue_by_week_for_current_quarter_series
     weeks_for_current_quarter.each_with_object({}) do |week, memo|
-      memo[week.start_date] = 0
+      memo[week.start_date] = week.end_date > current_date ? nil : 0
 
       snapshot_max_revenue_by_day_for_current_quarter.map do |key, value|
         if week.start_date <= key && week.end_date >= key
@@ -89,7 +93,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
   def max_weighted_pipeline_by_week_for_current_quarter_series
     weeks_for_current_quarter.each_with_object({}) do |week, memo|
-      memo[week.start_date] = 0
+      memo[week.start_date] = week.end_date > current_date ? nil : 0
 
       snapshot_max_weighted_pipeline_by_day_for_current_quarter.map do |key, value|
         if week.start_date <= key && week.end_date >= key
@@ -101,7 +105,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
 
   def sum_revenue_and_weighted_pipeline_by_week_for_current_quarter_series
     weeks_for_current_quarter.each_with_object({}) do |week, memo|
-      memo[week.start_date] = 0
+      memo[week.start_date] = week.end_date > current_date ? nil : 0
 
       snapshot_sum_revenue_and_weighted_pipeline_for_current_quarter.map do |key, value|
         if week.start_date <= key && week.end_date >= key
@@ -137,7 +141,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
     return empty_weeks_data if previous_quarter.nil?
 
     weeks_for_previous_quarter.each_with_object({}) do |week, memo|
-      memo[week.start_date] = 0
+      memo[week.start_date] = week.end_date > current_date ? nil : 0
 
       snapshot_max_revenue_by_day_for_previous_quarter.map do |key, value|
         if week.start_date <= key && week.end_date >= key
@@ -151,7 +155,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
     return empty_weeks_data if previous_quarter.nil?
 
     weeks_for_previous_quarter.each_with_object({}) do |week, memo|
-      memo[week.start_date] = 0
+      memo[week.start_date] = week.end_date > current_date ? nil : 0
 
       snapshot_max_weighted_pipeline_by_day_for_previous_quarter.map do |key, value|
         if week.start_date <= key && week.end_date >= key
@@ -165,7 +169,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
     return empty_weeks_data if previous_quarter.nil?
 
     weeks_for_previous_quarter.each_with_object({}) do |week, memo|
-      memo[week.start_date] = 0
+      memo[week.start_date] = week.end_date > current_date ? nil : 0
 
       snapshot_sum_revenue_and_weighted_pipeline_for_previous_quarter.map do |key, value|
         if week.start_date <= key && week.end_date >= key
@@ -204,7 +208,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
     return empty_weeks_data if previous_year_quarter.nil?
 
     weeks_for_previous_year_quarter.each_with_object({}) do |week, memo|
-      memo[week.start_date] = 0
+      memo[week.start_date] = week.end_date > current_date ? nil : 0
 
       snapshot_max_revenue_by_day_for_previous_year_quarter.map do |key, value|
         if week.start_date <= key && week.end_date >= key
@@ -218,7 +222,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
     return empty_weeks_data if previous_year_quarter.nil?
 
     weeks_for_previous_year_quarter.each_with_object({}) do |week, memo|
-      memo[week.start_date] = 0
+      memo[week.start_date] = week.end_date > current_date ? nil : 0
 
       snapshot_max_weighted_pipeline_by_day_for_previous_year_quarter.map do |key, value|
         if week.start_date <= key && week.end_date >= key
@@ -232,7 +236,7 @@ class PacingDashboard::PipelineAndRevenueService < PacingDashboard::BaseService
     return empty_weeks_data if previous_year_quarter.nil?
 
     weeks_for_previous_year_quarter.each_with_object({}) do |week, memo|
-      memo[week.start_date] = 0
+      memo[week.start_date] = week.end_date > current_date ? nil : 0
 
       snapshot_sum_revenue_and_weighted_pipeline_for_previous_year_quarter.map do |key, value|
         if week.start_date <= key && week.end_date >= key

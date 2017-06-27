@@ -131,12 +131,10 @@ class Api::BpEstimatesController < ApplicationController
 
   def limit
     params[:per].to_i if params[:per].present?
-    nil
   end
 
   def offset
     (params[:page].to_i - 1) * limit if params[:page].present?
-    nil
   end
 
   def bp_estimates

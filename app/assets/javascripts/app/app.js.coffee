@@ -40,18 +40,12 @@
     .when '/deals',
       templateUrl: 'deals.html'
       controller: 'DealsController'
-    .when '/clients/:id',
-      templateUrl: 'clients.html'
-      controller: 'ClientsController'
     .when '/accounts',
       templateUrl: 'accounts.html'
       controller: 'AccountsController'
     .when '/accounts/:id',
       templateUrl: 'account.html'
       controller: 'AccountController'
-    .when '/clients',
-      templateUrl: 'clients.html'
-      controller: 'ClientsController'
     .when '/contacts/:id',
       templateUrl: 'contact.html'
       controller: 'ContactController'
@@ -79,6 +73,7 @@
     .when '/reports/activity_summary',
       templateUrl: 'reports.html'
       controller: 'ReportsController'
+      reloadOnSearch: false
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
@@ -118,6 +113,12 @@
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
       controller: 'ActivityDetailReportsController'
+    .when '/requests',
+      templateUrl: 'requests.html'
+      controller: 'RequestsController'
+    .when '/requests/:id',
+      templateUrl: 'request.html'
+      controller: 'RequestController'
     .when '/settings/',
       templateUrl: 'settings.html'
       controller: 'SettingsController'
@@ -239,6 +240,7 @@
         updateTalkus(user)
 
   updateTalkus = (user) ->
+    if location.hostname is 'localhost' then return
     talkus('init', 'qu346HQax2ut3MQr4',
       id: user.id
       name: user.name

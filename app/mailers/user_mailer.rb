@@ -18,9 +18,9 @@ class UserMailer < ApplicationMailer
     mail(to: recipients, subject: subject)
   end
 
-  def stage_changed_email(recipients, deal, stage)
+  def stage_changed_email(recipients, deal_id, stage)
     begin
-      @deal = deal
+      @deal = Deal.find(deal_id)
       subject = "#{@deal.name} changed to #{stage.name} - #{stage.probability}%"
 
       mail(to: recipients, subject: subject)
@@ -29,10 +29,10 @@ class UserMailer < ApplicationMailer
     end
   end
 
-  def new_deal_email(recipients, deal)
+  def new_deal_email(recipients, deal_id)
     begin
-      @deal = deal
-      subject = new_deal_email_subject_for(deal)
+      @deal = Deal.find(deal_id)
+      subject = new_deal_email_subject_for(@deal)
   
       mail(to: recipients, subject: subject)
     rescue ActiveRecord::RecordNotFound

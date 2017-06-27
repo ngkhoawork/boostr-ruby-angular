@@ -1,6 +1,9 @@
 class DealIndexSerializer < ActiveModel::Serializer
   cached
 
+  has_one :advertiser, serializer: Deals::AdvertiserSerializer
+  has_one :agency, serializer: Deals::AgencySerializer
+
   attributes(
     :id,
     :advertiser_id,
@@ -19,8 +22,6 @@ class DealIndexSerializer < ActiveModel::Serializer
     :created_by,
     :closed_at,
     :deleted_at,
-    :advertiser,
-    :agency,
     :deal_custom_field,
     :stage_id,
     :stage,
@@ -29,11 +30,11 @@ class DealIndexSerializer < ActiveModel::Serializer
 
 
   def advertiser
-    object.advertiser.serializable_hash(only: [:id, :name]) rescue nil
+    object.advertiser
   end
 
   def agency
-    object.agency.serializable_hash(only: [:id, :name]) rescue nil
+    object.agency
   end
 
   def deal_custom_field
