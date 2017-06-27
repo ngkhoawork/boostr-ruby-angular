@@ -60,10 +60,10 @@ class DealReportService < BaseService
 
   def report_data
     @report_data ||= {
-                        new_deals: API::Deals::Collection.new(new_deals).to_hash['deals'],
+                        new_deals: API::Deals::Collection.new(new_deals).to_hash(new: true)['deals'],
                         stage_changed_deals: stage_changed_deals,
-                        won_deals: API::Deals::Collection.new(won_deals).to_hash['deals'],
-                        lost_deals: API::Deals::Collection.new(lost_deals).to_hash['deals'],
+                        won_deals: API::Deals::Collection.new(won_deals).to_hash(new: false)['deals'],
+                        lost_deals: API::Deals::Collection.new(lost_deals).to_hash(new: false)['deals'],
                         budget_changed: budget_changed
                       }
   end
