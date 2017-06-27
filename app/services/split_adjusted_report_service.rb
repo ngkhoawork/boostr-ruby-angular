@@ -13,7 +13,7 @@ class SplitAdjustedReportService
   def perform
     ActiveModel::ArraySerializer.new(
       data_for_serializer,
-      each_serializer: SplitAdjustedReportSerializer
+      each_serializer: SplitAdjustedReportSerializer, deal_settings_fields: deal_settings_fields
     )
   end
 
@@ -26,23 +26,15 @@ class SplitAdjustedReportService
       .by_seller(seller_params)
       .by_team(team_params)
       .by_stage_ids(stage_ids)
+      .preload(deal: [:advertiser, :agency, :stage, values: :option])
       .order(deal_id: :desc)
   end
 
   def filtered_deal_members
-    status.eql?(FILTER_ALL_ATTR) ? without_status : with_status
-  end
-
-  def with_status
     DealMember.with_not_zero_share
-      .includes(:user, deal: [:advertiser, :agency, :stage])
-      .where(deals: { company_id: company.id, open: status_params })
-  end
-
-  def without_status
-    DealMember.with_not_zero_share
-      .includes(:user, deal: [:advertiser, :agency, :stage])
+      .includes(:user, :deal)
       .where(deals: { company_id: company.id })
+      .where('deals.stage_id in (?)', filtered_stages)
   end
 
   def seller_params
@@ -54,10 +46,18 @@ class SplitAdjustedReportService
   end
 
   def status_params
-    status.downcase.eql?(OPEN_STATUS) ? true : false
+    status.downcase.eql?(FILTER_ALL_ATTR) ? nil : status.downcase.eql?(OPEN_STATUS)
+  end
+
+  def filtered_stages
+    Stage.for_company(company.id).is_open(status_params).ids
   end
 
   def determine_params_for(attr)
     attr.eql?(FILTER_ALL_ATTR) ? nil : attr
+  end
+
+  def deal_settings_fields
+    company.fields.where(subject_type: 'Deal').pluck(:id, :name)
   end
 end

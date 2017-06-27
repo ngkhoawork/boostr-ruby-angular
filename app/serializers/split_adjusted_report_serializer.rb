@@ -31,11 +31,11 @@ class SplitAdjustedReportSerializer < ActiveModel::Serializer
   end
 
   def type
-    Deal.get_option(deal, 'Deal Type')
+    deal.get_option_value_from_raw_fields(@options[:deal_settings_fields], 'Deal Type')
   end
 
   def source
-    Deal.get_option(deal, 'Deal Sources')
+    deal.get_option_value_from_raw_fields(@options[:deal_settings_fields], 'Deal Source')
   end
 
   def next_steps
