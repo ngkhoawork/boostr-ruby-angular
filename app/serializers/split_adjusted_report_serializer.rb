@@ -43,19 +43,19 @@ class SplitAdjustedReportSerializer < ActiveModel::Serializer
   end
 
   def start_date
-    deal.start_date.strftime('%-m/%-d/%y')
+    deal.start_date
   end
 
   def end_date
-    deal.end_date.strftime('%-m/%-d/%y')
+    deal.end_date
   end
 
   def created_date
-    deal.created_at.strftime('%-m/%-d/%y')
+    deal.created_at
   end
 
   def closed_date
-    deal.closed_at.strftime('%-m/%-d/%y') if deal.closed_at.present?
+    deal.closed_at if deal.closed_at.present?
   end
 
   private

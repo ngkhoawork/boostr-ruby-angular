@@ -71,24 +71,40 @@
 						%table.table.table-hover
 							%thead
 								%tr
-									%th Deal ID
-									%th Name
-									%th Advertiser
-									%th Agency
-									%th Team Member
-									%th Split %
-									%th Budget
-									%th Stage
-									%th Probability
-									%th Type
-									%th Source
-									%th Next Steps
-									%th Start Date
-									%th End Date
-									%th Created Date
-									%th Closed Date
+									%th
+										%span.clickable{'ng-click': 'sorting.set("deal_id")'} Deal ID
+									%th
+										%span.clickable{'ng-click': 'sorting.set("deal_name")'} Name
+									%th
+										%span.clickable{'ng-click': 'sorting.set("advertiser.name")'} Advertiser
+									%th
+										%span.clickable{'ng-click': 'sorting.set("agency.name")'} Agency
+									%th
+										%span.clickable{'ng-click': 'sorting.set("name")'} Team Member
+									%th
+										%span.clickable{'ng-click': 'sorting.set("share")'} Split %
+									%th
+										%span.clickable{'ng-click': 'sorting.set("budget ")'} Budget
+									%th
+										%span.clickable{'ng-click': 'sorting.set("stage.name")'} Stage
+									%th
+										%span.clickable{'ng-click': 'sorting.set("stage.probability")'} Probability
+									%th
+										%span.clickable{'ng-click': 'sorting.set("type")'} Type
+									%th
+										%span.clickable{'ng-click': 'sorting.set("source")'} Source
+									%th
+										%span.clickable{'ng-click': 'sorting.set("next_steps")'} Next Steps
+									%th
+										%span.clickable{'ng-click': 'sorting.set("start_date")'} Start Date
+									%th
+										%span.clickable{'ng-click': 'sorting.set("end_date")'} End Date
+									%th
+										%span.clickable{'ng-click': 'sorting.set("created_date")'} Created Date
+									%th
+										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Closed Date
 							%tbody
-								%tr{'ng-repeat': 'item in data'}
+								%tr{'ng-repeat': 'item in data | orderBy : sorting.key : sorting.reverse'}
 									%td {{item.deal_id}}
 									%td
 										%a{href: '', 'ng-href': '/deals/{{item.deal_id}}'} {{item.deal_name}}
@@ -104,7 +120,7 @@
 									%td {{item.type}}
 									%td {{item.source}}
 									%td {{item.next_steps}}
-									%td {{item.start_date}}
-									%td {{item.end_date}}
-									%td {{item.created_date}}
-									%td {{item.closed_date}}
+									%td {{item.start_date | date : 'shortDate'}}
+									%td {{item.end_date | date : 'shortDate'}}
+									%td {{item.created_date | date : 'shortDate'}}
+									%td {{item.closed_date | date : 'shortDate'}}
