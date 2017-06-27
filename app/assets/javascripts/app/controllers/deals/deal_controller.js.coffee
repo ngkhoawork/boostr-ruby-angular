@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -646,6 +646,21 @@
         contact: ->
           deal_contact.contact
 
+  $scope.showNewRequestModal = (requestable, requestable_type) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/request_form.html'
+      size: 'md'
+      controller: 'RequestsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        deal_id: ->
+          $scope.currentDeal.id
+        requestable: ->
+          requestable
+        requestable_type: ->
+          requestable_type
+
   $scope.deleteContact = (deletedContact) ->
     if confirm('Are you sure you want to delete "' +  deletedContact.contact.name + '"?')
       DealContact.delete(deal_id: $scope.currentDeal.id, id: deletedContact.id).then (deal_contact) ->
@@ -930,6 +945,21 @@
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
 
+  $scope.showBudgetRow = (item, e)->
+    budgetsRow = angular.element("[data-displayID='#{item.id}']")
+    innerDiv = budgetsRow.children()
+    angular.element('.display-line-budgets').outerHeight(0)
+    if $scope.selectedIORow == item
+        $scope.selectedIORow = null
+    else
+        $scope.selectedIORow = null
+        DisplayLineItem.get(item.id).then (budgets) ->
+            $scope.selectedIORow = item
+            $scope.budgets = budgets
+            calcRestBudget()
+            $timeout -> budgetsRow.height innerDiv.outerHeight()
+    return
+
   $scope.sendToOperative = (dealId)->
     Deal.send_to_operative(id: dealId).then () ->
       currentLog = $scope.operativeIntegration.dealLog
@@ -948,6 +978,12 @@
             $scope.operativeIntegration.dealLog = log
             $scope.operativeIntegration.isLoading = false
       , 2000
+
+  calcRestBudget = () ->
+    sum = _.reduce($scope.budgets, (res, budget) ->
+      res += Number(budget.budget_loc) || 0
+    , 0)
+    $scope.budgets && $scope.budgets.rest = $scope.selectedIORow.budget_loc - sum
 
   getOperativeIntegration = (dealId) ->
     ApiConfiguration.all().then (data) ->

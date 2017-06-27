@@ -1,8 +1,8 @@
 ActiveAdmin.register Company do
   permit_params :name, :ealert_reminder, :primary_contact_id, :billing_contact_id, :quantity,
-  :cost, :start_date, :end_date, billing_address_attributes: [ :street1, :street2, :city,
-  :state, :zip, :website, :phone ], physical_address_attributes: [ :street1, :street2,
-  :city, :state, :zip ]
+  :cost, :start_date, :end_date, :requests_enabled,
+  billing_address_attributes: [ :street1, :street2, :city, :state, :zip, :website, :phone ],
+  physical_address_attributes: [ :street1, :street2, :city, :state, :zip ]
 
   index do
     selectable_column
@@ -11,6 +11,7 @@ ActiveAdmin.register Company do
     column :primary_contact
     column :billing_contact
     column :ealert_reminder
+    column :requests_enabled
     actions
   end
 
@@ -20,6 +21,7 @@ ActiveAdmin.register Company do
       row :primary_contact
       row :billing_contact
       row :ealert_reminder
+      row :requests_enabled
     end
 
     panel "Billing Address" do
@@ -60,6 +62,7 @@ ActiveAdmin.register Company do
       f.input :primary_contact, as: :select, collection: f.object.users.map { |u| [u.email, u.id] }
       f.input :billing_contact, as: :select, collection: f.object.users.map { |u| [u.email, u.id] }
       f.input :ealert_reminder
+      f.input :requests_enabled
     end
 
     f.inputs "Billing Address", for: [:billing_address, f.object.billing_address || Address.new] do |ba|

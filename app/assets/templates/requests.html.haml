@@ -1,0 +1,13 @@
+#requests.z-styles
+  .container-fluid
+    .row.mb10
+      .col-xs-12
+        %span.title Requests
+        .request-types
+          %span{ng: {repeat: 'type in request_types', class: '{active: type == requestUrlParams.request_type}', click: 'typeFilter(type)'}}
+            {{type}}
+        .request-statuses.pull-right
+          %span{ng: {repeat: 'status in statuses', class: '{active: status == requestUrlParams.status}', click: 'statusFilter(status)'}}
+            {{status}}
+
+    %div{ng: {include: '"partials/requests/revenue_requests_tab.html"', show: 'requestUrlParams.request_type == "Revenue"'}}

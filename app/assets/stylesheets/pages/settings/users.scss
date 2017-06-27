@@ -1,6 +1,15 @@
 #users {
+  span.page-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-right: 20px;
+  }
+  .col-centered {
+    float: none;
+    margin: 0 auto;
+  }
   #users-table {
-    overflow: visible;
-    margin-bottom: 200px;
+    // overflow: visible;
+    // margin-bottom: 200px;
   }
 }
