@@ -3,6 +3,7 @@
 ($scope, $rootScope, $modal, $routeParams, $filter, $location, $window, $sce, Client, User, ClientMember, ClientConnection, Contact, Deal, IO, AccountCfName, Field, Activity, ActivityType, HoldingCompany, Reminder, BpEstimate, $http, ClientContacts, ClientContact, ClientsTypes) ->
 
   $scope.showMeridian = true
+  $scope.activitiesOrder = '-happened_at'
   $scope.types = []
   $scope.feedName = 'Updates'
   $scope.clients = []
