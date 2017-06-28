@@ -19,7 +19,7 @@
                     this.reverse = if this.key == key then !this.reverse else false
                     this.key = key
 
-            emptyFilter = {id: null, name: 'All', first_name: 'All'}
+            emptyFilter = {id: null, name: 'All'}
 
             $scope.filter =
                 team: emptyFilter
@@ -41,6 +41,7 @@
 #                $location.search(query)
                 getReport query
 
+
             $scope.resetFilter = ->
                 $scope.filter.team = emptyFilter
                 $scope.filter.seller = emptyFilter
@@ -58,6 +59,7 @@
                 query.status = f.status.id if f.status.id
                 query
 
+
             getReport = (query) ->
                 Report.split_adjusted(query).$promise.then (data) ->
                     $scope.data = data
@@ -65,16 +67,17 @@
             $scope.$watch 'filter.team', (team, prevTeam) ->
                 if team.id then $scope.filter.seller = emptyFilter
                 Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
-                    $scope.sellers = sellers
+                    $scope.sellers = _.sortBy sellers, 'name'
                     $scope.sellers.unshift(emptyFilter)
 
             Team.all(all_teams: true).then (teams) ->
                 $scope.teams = teams
                 $scope.teams.unshift emptyFilter
 
-            Seller.query({id: 'all'}).$promise.then (sellers) ->
-                $scope.sellers = sellers
-                $scope.sellers.unshift emptyFilter
+#            Seller.query({id: 'all'}).$promise.then (sellers) ->
+#                $scope.sellers = sellers
+#                $scope.sellers.unshift emptyFilter
+
 
             Stage.query().$promise.then (stages) ->
                 $scope.stages = stages
@@ -85,4 +88,5 @@
                 $window.open url + '?' + $httpParamSerializer getQuery()
                 return
 
+            $scope.applyFilter()
     ]
