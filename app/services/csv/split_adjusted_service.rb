@@ -1,34 +1,53 @@
 class Csv::SplitAdjustedService < Csv::BaseService
   private
+  #TODO tests. Possible refactoring
 
   def generate_csv
     CSV.generate do |csv|
-      csv << headers.map(&:camelize)
+      csv << headers
 
       records.each do |record|
-        csv << headers.map { |attr| record[attr.to_sym] }
+        line = []
+        line << record[:deal_id]
+        line << record[:deal_name]
+        line << record[:advertiser]['name']
+        line << (record[:agency].present? ? record[:agency]['name'] : nil)
+        line << record[:name]
+        line << record[:share]
+        line << record[:stage]['name']
+        line << record[:stage]['probability']
+        line << record[:budget_loc]
+        line << record[:type]
+        line << record[:source]
+        line << record[:next_steps]
+        line << record[:start_date]
+        line << record[:end_date]
+        line << record[:created_date]
+        line << record[:closed_date]
+
+        csv << line
       end
     end
   end
 
   def headers
     [
-      'deal_id',
-      'name',
-      'advertiser',
-      'agency',
-      'team_member',
-      'split',
-      'budget',
-      'stage',
-      'probability',
-      'type',
-      'source',
-      'next_steps',
-      'start_date',
-      'end_date',
-      'created_date',
-      'closed_date'
+      'Deal Id',
+      'Name',
+      'Advertiser',
+      'Agency',
+      'Team Member',
+      'Split',
+      'Stage',
+      '%',
+      'Budget',
+      'Type',
+      'Source',
+      'Next steps',
+      'Start date',
+      'End date',
+      'Created Date',
+      'Closed Date'
     ]
   end
 end
