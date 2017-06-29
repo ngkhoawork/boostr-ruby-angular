@@ -88,7 +88,11 @@
 									%th
 										%span.clickable{'ng-click': 'sorting.set("stage.probability")'} %
 									%th
-										%span.clickable{'ng-click': 'sorting.set("budget ")'} Budget
+										%span.clickable{'ng-click': 'sorting.set("budget_loc")'} Budget
+									%th
+										%span.clickable{'ng-click': 'sorting.set("budget")'} Budget USD
+									%th
+										%span.clickable{'ng-click': 'sorting.set("split_budget")'} Split Budget USD
 									%th
 										%span.clickable{'ng-click': 'sorting.set("type")'} Type
 									%th
@@ -116,7 +120,9 @@
 									%td {{item.share}}%
 									%td {{item.stage.name}}
 									%td {{item.stage.probability}}%
-									%td {{item.budget_loc | currency : item.curr_symbol || item.curr_cd: 0}}
+									%td {{item.budget_loc | currency : item.curr_symbol || item.curr_cd: 0 }}
+									%td {{item.budget | currency: '$': 0 }}
+									%td {{item.split_budget | currency: '$': 0 }}
 									%td {{item.type}}
 									%td {{item.source}}
 									%td {{item.next_steps}}

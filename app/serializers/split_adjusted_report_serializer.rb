@@ -1,6 +1,7 @@
 class SplitAdjustedReportSerializer < ActiveModel::Serializer
-  attributes :name, :share, :deal_id, :deal_name, :advertiser, :agency, :budget, :budget_loc, :curr_symbol, :curr_cd, :stage, :type, :source, :next_steps,
-             :start_date, :end_date, :created_date, :closed_date
+  attributes :name, :share, :deal_id, :deal_name, :advertiser, :agency,
+             :budget, :budget_loc, :split_budget, :curr_symbol, :curr_cd, :stage, :type,
+             :source, :next_steps, :start_date, :end_date, :created_date, :closed_date
 
   def deal_id
     object.deal_id
@@ -28,6 +29,10 @@ class SplitAdjustedReportSerializer < ActiveModel::Serializer
 
   def budget_loc
     deal.budget_loc.to_i
+  end
+
+  def split_budget
+    (deal.budget / 100 * share).to_i
   end
 
   def curr_symbol

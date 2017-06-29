@@ -26,7 +26,7 @@ class SplitAdjustedReportService
       .by_seller(seller_params)
       .by_team(team_params)
       .by_stage_ids(stage_ids)
-      .preload(deal: [:advertiser, :agency, :stage, values: :option])
+      .preload(deal: [:advertiser, :agency, :stage, :currency, values: :option])
       .order(deal_id: :desc)
   end
 
