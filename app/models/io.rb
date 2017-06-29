@@ -15,7 +15,7 @@ class Io < ActiveRecord::Base
   has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
   has_many :temp_ios, dependent: :destroy
-  has_many :influencer_content_fees, dependent: :destroy, through: :content_fees
+  has_many :influencer_content_fees, -> { order 'influencer_content_fees.influencer_id, influencer_content_fees.id' }, dependent: :destroy, through: :content_fees
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
   validate :active_exchange_rate
@@ -243,12 +243,8 @@ class Io < ActiveRecord::Base
         },
         print_items: {}
       },
-      methods: [:readable_months, :company_influencer_enabled]
+      methods: [:readable_months]
     )
-  end
-
-  def company_influencer_enabled
-    self.company.influencer_enabled
   end
 
   def get_agency

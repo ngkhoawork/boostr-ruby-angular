@@ -4,16 +4,12 @@ class InfluencerContentFee < ActiveRecord::Base
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
 
   before_create do
-    if gross_amount_loc_changed? || curr_cd_changed?
-      update_net
-      exchange_amount
-    end
+    update_net
+    exchange_amount
   end
   before_update do
-    if gross_amount_loc_changed? || curr_cd_changed?
-      update_net
-      exchange_amount
-    end
+    update_net
+    exchange_amount
   end
 
   def update_net

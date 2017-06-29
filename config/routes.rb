@@ -202,6 +202,7 @@ Rails.application.routes.draw do
       end
     end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
+      put :update_influencer_budget
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
       resources :influencer_content_fees, only: [:index, :show, :create, :update, :destroy] do

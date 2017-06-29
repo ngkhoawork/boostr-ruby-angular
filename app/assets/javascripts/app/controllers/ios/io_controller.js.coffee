@@ -72,9 +72,9 @@
                     keyboard: true
                     resolve:
                         io: -> $scope.currentIO
-            $scope.updateInfluencerBudget = (influencerContentFee) ->
-                if confirm('Are you sure you want to update content fee budget with "' +  influencerContentFee.influencer.name + '"?')
-                    InfluencerContentFee.update_budget(io_id: $scope.currentIO.id, id: influencerContentFee.id, influencer_content_fee: influencerContentFee).then(
+            $scope.updateInfluencerBudget = () ->
+                if confirm('Are you sure you want to update content fee budget with influencers?')
+                    IO.update_influencer_budget(id: $scope.currentIO.id).then(
                         (data) ->
                             $scope.init()
                         (resp) ->

@@ -226,10 +226,12 @@
 								%tr{ ng: { if: '!currentIO.print_items || currentIO.print_items.length == 0' } }
 									%td.center{ 'colspan': '{{4+2}}' }
 										No data available
-				.block#influencer{'ng-if': 'currentIO.company_influencer_enabled'}
+				.block#influencer{'ng-show': 'currentUser.company_influencer_enabled'}
 					%div.mb20
 						%span.title Influencers
 						%add-button{'ng-click': 'showNewInfluencerContentFeeModal()'} Add
+						%a.pull-right{'ng-click': 'updateInfluencerBudget()'}
+							Update Influencer Budget
 					.table-wrapper
 						%table.table.table-hover
 							%thead
@@ -242,8 +244,8 @@
 									%th.right Gross
 									%th.right Net
 									%th.left Asset
-							%tbody{ ng: { if: 'currentIO.influencer_content_fees && currentIO.influencer_content_fees.length > 0', repeat: "influencerContentFee in currentIO.influencer_content_fees"} }
-								%tr
+							%tbody
+								%tr{ ng: { if: 'currentIO.influencer_content_fees && currentIO.influencer_content_fees.length > 0', repeat: "influencerContentFee in currentIO.influencer_content_fees"} }
 									%td.left
 										{{ influencerContentFee.influencer.name }}
 										%i.fa.fa-pencil.edit-deal.action-button{'ng-click': 'showEditInfluencerContentFeeModal(influencerContentFee)'}
@@ -264,13 +266,8 @@
 										{{ influencerContentFee.net_loc | currency:influencerContentFee.currency.curr_symbol:0 }}
 									%td.left
 										{{ influencerContentFee.asset }}
-								%tr
-									%td.center{colspan: '9'}
-										%a{'ng-click': 'updateInfluencerBudget(influencerContentFee)'}
-											Update Influencer Budget
-										
-							%tbody{'ng-if': 'currentIO.influencer_content_fees && currentIO.influencer_content_fees.length > 0'}
-								%tr
+
+								%tr{'ng-if': 'currentIO.influencer_content_fees && currentIO.influencer_content_fees.length > 0'}
 									%td.left
 										Total
 									%td.left
@@ -278,12 +275,11 @@
 									%td.left
 									%td.right
 									%td.right
-										{{ currentIO.total_influencer_gross | currency:influencerContentFee.currency.curr_symbol:0 }}
+										{{ currentIO.total_influencer_gross | currency:currentIO.currency.curr_symbol:0 }}
 									%td.right
-										{{ currentIO.total_influencer_net | currency:influencerContentFee.currency.curr_symbol:0 }}
+										{{ currentIO.total_influencer_net | currency:currentIO.currency.curr_symbol:0 }}
 									%td.left
-							%tbody{ ng: { if: '!currentIO.influencer_content_fees || currentIO.influencer_content_fees.length == 0' } }
-								%tr
+								%tr{ ng: { if: '!currentIO.influencer_content_fees || currentIO.influencer_content_fees.length == 0' } }
 									%td.center{ 'colspan': '{{10}}' }
 										No data available
 			.col-xs-4
