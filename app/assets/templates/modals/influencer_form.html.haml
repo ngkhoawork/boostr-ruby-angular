@@ -55,7 +55,12 @@
                 %div{ ng: { bind: { html: 'feeType.name' } } }
           .col-xs-6{'ng-class':'{error: errors.fee_amount}'}
             %span.error-text {{errors.fee_amount}}
-            %label{ for: 'fee_amount' } Agreement Amount
+            %label{ for: 'fee_amount' }
+              Agreement Amount
+              %span{'ng-if': 'influencer.agreement.fee_type == "flat"'}
+                ($)
+              %span{'ng-if': 'influencer.agreement.fee_type == "percentage"'}
+                (%)
             %span.star *
             %input.form-control{ placeholder: 'Amount', ng: { model: 'influencer.agreement.amount' }, name: 'amount'  }
       .form-group.text-center{'ng-hide': 'showAddressFields'}
