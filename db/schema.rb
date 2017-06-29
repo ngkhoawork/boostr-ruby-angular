@@ -1150,7 +1150,6 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.integer  "company_id"
     t.string   "name"
     t.boolean  "active"
-    t.string   "address"
     t.string   "email"
     t.string   "phone"
     t.datetime "created_at", null: false

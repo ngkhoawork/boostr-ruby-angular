@@ -7,7 +7,8 @@ class Api::InfluencersController < ApplicationController
     render json: results.limit(limit).offset(offset)
     .as_json({include: {
         agreement: {},
-        values: {}
+        values: {},
+        address: {}
       },
       methods: [:network_name]
     })
@@ -19,7 +20,8 @@ class Api::InfluencersController < ApplicationController
     if influencer.save
       render json: influencer.as_json({include: {
           agreement: {},
-          values: {}
+          values: {},
+          address: {}
         }
       }), status: :created
     else
@@ -30,7 +32,19 @@ class Api::InfluencersController < ApplicationController
   def show
     render json: influencer.as_json({include: {
         agreement: {},
-        values: {}
+        values: {},
+        address: {},
+        influencer_content_fees: {
+          include: {
+            currency: {},
+            content_fee: {
+              include: {
+                io: {},
+                product: {}
+              }
+            }
+          }
+        }
       }
     })
   end
@@ -39,7 +53,8 @@ class Api::InfluencersController < ApplicationController
     if influencer.update_attributes(influencer_params)
       render json: influencer.as_json({include: {
           agreement: {},
-          values: {}
+          values: {},
+          address: {}
         }
       }), status: :accepted
     else
@@ -68,6 +83,18 @@ class Api::InfluencersController < ApplicationController
       :email,
       :phone,
       {
+        address_attributes: [
+          :id,
+          :country,
+          :street1,
+          :street2,
+          :city,
+          :state,
+          :zip,
+          :phone,
+          :mobile,
+          :email
+        ],
         agreement_attributes: [
           :id,
           :fee_type,

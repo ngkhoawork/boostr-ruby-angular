@@ -9,57 +9,55 @@
       .contacts.block
         %div.mb20
           %span.sub-title Fee History
-          %add-button{'ng-click': 'createNewContactModal()'} Add
 
         %table.table.table-striped
           %thead
             %tr
-              %th.left Deal Name
-              %th.left Gross
+              %th.left{width: '200'} Revenue
+              %th.left Product
+              %th.left Date
               %th.left Fee Type
-              %th.left Fee
-              %th.left Fees
-              %th.left Advertiser
+              %th.right Fee Amount
+              %th.right Gross
+              %th.right Net
               %th.left Asset
           %tbody
-            %tr{ ng: { repeat: 'client_contact in client_contacts'} }
+            %tr{ ng: { if: 'influencer.influencer_content_fees && influencer.influencer_content_fees.length > 0', repeat: "influencerContentFee in influencer.influencer_content_fees"} }
               %td.left
-                %a{'ng-href': '/contacts/{{client_contact.contact.id}}'} {{ client_contact.contact.name }}
-                %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(client_contact)'}
-                %button.btn.btn-primary.btn-lg{ng:{if: 'currentClient.client_type.option.name == "Agency"', click: 'showAssignContactModal(client_contact)'}}
-                  = inline_svg "icons/client-meeting.svg"
-                  Assign
+                %a{'ng-href': '/revenue/ios/{{influencerContentFee.content_fee.io.id}}'}
+                  {{ influencerContentFee.content_fee.io.name }}
               %td.left
-                {{ client_contact.contact.position }}
+                {{ influencerContentFee.content_fee.product.name }}
               %td.left
-                {{ client_contact.contact.address.email }}
+                {{ influencerContentFee.effect_date | date: 'M/d/yyyy'  }}
               %td.left
-                .dropdown
-                  %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-                    %span.editable
-                      {{client_contact.is_active ? 'Active' : 'Inactive'}}
-                    %span.caret
-                  %ul.dropdown-menu
-                    %li{'ng-class': '{active: client_contact.is_active == true}'}
-                      %a{'href': '', 'ng-click': 'updateClientContactStatus(client_contact, true)'}
-                        %span.text Active
-                    %li{'ng-class': '{active: client_contact.is_active == false}'}
-                      %a{'href': '', 'ng-click': 'updateClientContactStatus(client_contact, false)'}
-                        %span.text Inactive
-                %td.left
-                  {{ client_contact.contact.job_level }}
-                %td.left
-                  {{ client_contact.contact.job_level }}
-                %td.left
-                  {{ client_contact.contact.job_level }}
+                {{ influencerContentFee.fee_type == 'flat' ? 'Flat' : '%' }}
+              %td.right{'ng-if': 'influencerContentFee.fee_type == "flat"'}
+                {{ influencerContentFee.fee_amount | currency:'$':0 }}
+              %td.right{'ng-if': 'influencerContentFee.fee_type == "percentage"'}
+                {{ influencerContentFee.fee_amount }}%
+              %td.right
+                {{ influencerContentFee.gross_amount | currency:'$':0 }}
+              %td.right
+                {{ influencerContentFee.net | currency:'$':0 }}
+              %td.left
+                {{ influencerContentFee.asset }}
+            %tr{'ng-if': 'influencer.influencer_content_fees && influencer.influencer_content_fees.length > 0'}
+              %td.left
+                Total
+              %td.left
+              %td.left
+              %td.left
+              %td.right
+              %td.right
+                {{ influencer.total_influencer_gross | currency:influencerContentFee.currency.curr_symbol:0 }}
+              %td.right
+                {{ influencer.total_influencer_net | currency:influencerContentFee.currency.curr_symbol:0 }}
+              %td.left
+            %tr{ ng: { if: '!influencer.influencer_content_fees || influencer.influencer_content_fees.length == 0' } }
+              %td.center{ 'colspan': '{{10}}' }
+                No data available
 
-
-        .custom-pagination{'bgf-pagination': 'bgf-pagination',
-          'collection': 'client_contacts',
-          'per-page': '10',
-          'link-group-size': "2",
-          'client-limit': "100",
-          'url': 'clientContactUrl'}
     .col-xs-3
       .campaign-details.block
         %div.pull-right
@@ -90,8 +88,10 @@
           %div.custom-field-item-label
             %label{ for: 'address' }
               Address
-          %div.custom-field-item-field
-            %input.editable{ 'ng-model': "influencer.address", name: "address", placeholder: 'Enter address', 'ng-blur': 'updateInfluencer()' }
+          %div.custom-field-item-field.address-field
+            %div {{influencer.address.street1}}
+            %div {{influencer.address.street2}}
+            %div {{ concatAddress(influencer.address) }}
         %div.custom-field-item
           %div.custom-field-item-label
             %label{ for: 'phone' }
@@ -117,5 +117,7 @@
           %div.custom-field-item-label
             %label{ for: 'agreement-amount' }
               Amount
-          %div.custom-field-item-field
+          %div.custom-field-item-field{'ng-if': 'influencer.agreement.fee_type == "flat"'}
             %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: '$', 'ng-model': "influencer.agreement.amount", 'on-after-save': 'updateInfluencer()'}
+          %div.custom-field-item-field{'ng-if': 'influencer.agreement.fee_type == "percentage"'}
+            %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "influencer.agreement.amount", 'on-after-save': 'updateInfluencer()'}

@@ -32,6 +32,6 @@
                 %a{href: '', 'ng-href': '/influencers/{{influencer.id}}'} {{influencer.name}}
               %td {{influencer.network_name}}
               %td {{influencer.email}}
-              %td {{influencer.address}}
+              %td {{influencer.address.street1}} {{concatAddress(influencer.address)}}
               %td {{influencer.phone}}
               %td {{influencer.active ? 'Active' : 'Inactive'}}

@@ -3,9 +3,11 @@ class Influencer < ActiveRecord::Base
   has_one :agreement, dependent: :destroy
   has_many :values, as: :subject
   has_many :influencer_content_fees
+  has_one :address, as: :addressable
 
   accepts_nested_attributes_for :agreement
   accepts_nested_attributes_for :values
+  accepts_nested_attributes_for :address
 
   scope :by_name, -> name { where('influencers.name ilike ?', "%#{name}%") if name.present? }
 

@@ -5,6 +5,7 @@
   transformRequest = (original, headers) ->
     original.influencer.values_attributes = original.influencer.values if original.influencer.values
     original.influencer.agreement_attributes = original.influencer.agreement if original.influencer.agreement
+    original.influencer.address_attributes = original.influencer.address if original.influencer.address
     angular.toJson(original)
 
   resource = $resource '/api/influencers/:id', { id: '@id' },

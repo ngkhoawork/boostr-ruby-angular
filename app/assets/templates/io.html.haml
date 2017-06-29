@@ -253,7 +253,7 @@
 									%td.left
 										{{ influencerContentFee.effect_date | date: 'M/d/yyyy'  }}
 									%td.left
-										{{ influencerContentFee.influencer.agreement.fee_type == 'flat' ? 'Flat' : '%' }}
+										{{ influencerContentFee.fee_type == 'flat' ? 'Flat' : '%' }}
 									%td.right{'ng-if': 'influencerContentFee.fee_type == "flat"'}
 										{{ influencerContentFee.fee_amount_loc | currency:influencerContentFee.currency.curr_symbol:0 }}
 									%td.right{'ng-if': 'influencerContentFee.fee_type == "percentage"'}

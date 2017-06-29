@@ -1,10 +1,17 @@
 @app.controller "InfluencersNewController",
-['$scope', '$rootScope', '$modalInstance', 'Influencer', 'Field', 'influencer'
-($scope, $rootScope, $modalInstance, Influencer, Field, influencer) ->
+['$scope', '$rootScope', '$modalInstance', 'Influencer', 'Field', 'CountriesList', 'influencer'
+($scope, $rootScope, $modalInstance, Influencer, Field, CountriesList, influencer) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
-  $scope.influencer = { active: true }
+  $scope.influencer = { active: true, agreement: {} }
+  $scope.feeTypes = [
+    {name: 'Flat', value: 'flat'},
+    {name: '%', value: 'percentage'}
+  ]
+
+  CountriesList.get (data) ->
+    $scope.countries = data.countries
 
   Field.defaults($scope.influencer, 'Influencer').then (fields) ->
     $scope.influencer.network = Field.field($scope.influencer, 'Network')
@@ -14,6 +21,8 @@
 
     if !$scope.influencer.name then $scope.errors['name'] = 'Name is required'
     if !$scope.influencer.network.option_id then $scope.errors['network'] = 'Network is required'
+    if !$scope.influencer.agreement.fee_type then $scope.errors['fee_type'] = 'Agreement fee type is required'
+    if !$scope.influencer.agreement.amount then $scope.errors['fee_amount'] = 'Agreement amount is required'
 
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true

@@ -21,6 +21,7 @@
           .col-xs-6{'ng-class':'{error: errors.network}'}
             %span.error-text {{errors.network}}
             %label{ for: 'network' } Network
+            %span.star *
             %ui-select{ network: 'network', ng: { model: 'influencer.network.option_id', disabled: true } }
               %ui-select-match{ placeholder: 'Network' }
                 {{ $select.selected.name }}
@@ -32,18 +33,61 @@
       .form-group
         .row
           .col-xs-6
-            %label{ for: 'address' } Address
-            %input.form-control{ placeholder: 'Address', ng: { model: 'influencer.address' }, name: 'address' }
-          .col-xs-6
             %label{ for: 'phone' } Phone
-            %input.form-control{ placeholder: 'Office Number', ng: { model: 'influencer.phone' }, name: 'office' }    
+            %input.form-control{ placeholder: 'Office Number', ng: { model: 'influencer.phone' }, name: 'office' }
+          .col-xs-6
+            %label{ for: 'active' } Active
+            .show-hide-remainder-form
+              .switch-remainder-form
+                %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'influencer.active', id: "rem-act-modal-toggle12"}
+                %label{:for => "rem-act-modal-toggle12"}
+                  %span
       .form-group
-        %label.control-label{ for: 'active' } Active
-        .show-hide-remainder-form
-          .switch-remainder-form
-            %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'influencer.active', id: "rem-act-modal-toggle12"}
-            %label{:for => "rem-act-modal-toggle12"}
-              %span
+        .row
+          .col-xs-6{'ng-class':'{error: errors.fee_type}'}
+            %span.error-text {{errors.fee_type}}
+            %label{ for: 'fee_type' } Agreement Fee Type
+            %span.star *
+            %ui-select{ fee_type: 'fee_type', ng: { model: 'influencer.agreement.fee_type', disabled: true } }
+              %ui-select-match{ placeholder: 'Select fee type' }
+                {{ $select.selected.name }}
+              %ui-select-choices{ repeat: 'feeType.value as feeType in feeTypes | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'feeType.name' } } }
+          .col-xs-6{'ng-class':'{error: errors.fee_amount}'}
+            %span.error-text {{errors.fee_amount}}
+            %label{ for: 'fee_amount' } Agreement Amount
+            %span.star *
+            %input.form-control{ placeholder: 'Amount', ng: { model: 'influencer.agreement.amount' }, name: 'amount'  }
+      .form-group.text-center{'ng-hide': 'showAddressFields'}
+        %a.btn.add-btn{ 'ng-click': 'showAddressFields = true'}
+          %i.fa.fa-plus
+          Add Address
+      %div{ 'ng-show': 'showAddressFields' }
+        .form-group
+          %label{ for: 'street1' } Address
+          %input.form-control{ name: 'street1', placeholder: 'Address', ng: { model: 'influencer.address.street1' } }
+        .form-group
+          .row
+            .col-xs-5
+              %label{ for: 'city' } City
+              %input.form-control{ name: 'city', placeholder: 'City', ng: { model: 'influencer.address.city' }  }
+            .col-xs-4.fat
+              %label{ for: 'state' } State
+              %ui-select.bo-state-select{ name: 'state', ng: { model: 'influencer.address.state', disabled: true } }
+                %ui-select-match{ placeholder: 'State' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'state.abbreviation as state in states | filter: { name: $select.search }' }
+                  %div{ ng: { bind: { html: 'state.name' } } }
+            .col-xs-3
+              %label{ for: 'zip' } Postal code
+              %input.form-control{ name: 'zip', placeholder: 'Postal code', ng: { model: 'influencer.address.zip' }  }
+        .form-group
+          %label{ for: 'country' } Country
+          %ui-select{ name: 'country', ng: { model: 'influencer.address.country', disabled: true } }
+            %ui-select-match{ placeholder: 'Country' }
+              {{ $select.selected }}
+            %ui-select-choices{ repeat: 'country in countries | filter: $select.search' }
+              %div {{ country }}
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
       %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}
