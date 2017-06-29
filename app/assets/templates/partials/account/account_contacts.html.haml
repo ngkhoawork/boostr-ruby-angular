@@ -16,7 +16,7 @@
                 %td.left
                     %a{'ng-href': '/contacts/{{client_contact.contact.id}}'} {{ client_contact.contact.name }}
                     %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditContactModal(client_contact)'}
-                    %button.btn.btn-primary.btn-lg{ng:{if: 'currentClient.client_type.option.name == "Agency"', click: 'showAssignContactModal(client_contact)'}}
+                    %button.btn.btn-primary.btn-lg{ng:{if: 'currentClient.client_type.option.name == "Agency"', click: 'showAssignContactModal(client_contact.contact)'}}
                         = inline_svg "icons/client-meeting.svg"
                         Assign
                 %td.left
