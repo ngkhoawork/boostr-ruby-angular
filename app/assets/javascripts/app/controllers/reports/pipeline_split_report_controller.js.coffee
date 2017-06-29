@@ -21,11 +21,13 @@
 
             emptyFilter = {id: null, name: 'All'}
 
-            $scope.filter =
+            defaultFilter =
                 team: emptyFilter
                 seller: emptyFilter
                 stages: []
                 status: $scope.statuses[1]
+
+            $scope.filter = angular.copy defaultFilter
 
             $scope.setFilter = (key, val) ->
                 if key == 'stages'
@@ -43,10 +45,7 @@
 
 
             $scope.resetFilter = ->
-                $scope.filter.team = emptyFilter
-                $scope.filter.seller = emptyFilter
-                $scope.filter.stages = []
-                $scope.filter.status = $scope.statuses[1]
+                $scope.filter = defaultFilter
 
             $scope.isNumber = _.isNumber
 
