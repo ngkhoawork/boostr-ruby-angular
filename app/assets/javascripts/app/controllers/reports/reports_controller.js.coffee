@@ -71,7 +71,7 @@
     ActivityType.all().then (activityTypes) ->
       $scope.types = angular.copy(activityTypes)
       _.each $scope.types, (type) ->
-        $scope.typeIds[cutSpace(type.name)] = type.id
+        $scope.typeIds[type.name] = type.id
 #        fetchData()
 
 
@@ -102,7 +102,7 @@
     _.each $scope.user_activities, (report) ->
       fullReport = {}
       _.each $scope.types, (type) ->
-        fullReport[cutSpace(type.name)] = report[type.name] || 0
+        fullReport[type.name] = report[type.name] || 0
       fullReport.user_id = report.user_id
       fullReport.username = report.username
       fullReport.total = report.total
@@ -133,11 +133,7 @@
       path.push "&start_date=#{start_date}&end_date=#{end_date}" 
     $location.url(path.join(''))
 
-  cutSpace = (string) ->
-    angular.copy(string.replace(' ', ''))
-
   $scope.changeSortType = (sortType) ->
-    sortType = cutSpace(sortType)
     if sortType == $scope.sortType
       $scope.sortReverse = !$scope.sortReverse
     else
