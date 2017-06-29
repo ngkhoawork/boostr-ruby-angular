@@ -19,7 +19,7 @@ class Team < ActiveRecord::Base
   end
 
   after_update do
-    leader.update(team_id: nil) if leader_id_changed?
+    leader.update(team_id: nil) if leader_id_changed? && leader.present?
   end
 
   def as_json(options = {})
