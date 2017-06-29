@@ -1,5 +1,5 @@
 #agency360.z-styles
-	.container-fluid.inner-pacing-dashboard
+	.container-fluid.inner-agency360
 		.row.mb20
 			.reports-header
 				.header-cell.main-title
@@ -64,21 +64,14 @@
 		.row.mb20
 			.block
 				%div.mb20
-					%span.title Pipeline & Revenue Pacing
-				%div.pacing-metrics>
-					%div
-						%b Show metrics
-					%div{'ng-repeat': 'metric in metrics'}
-						%div.metric-row{'ng-click': 'setMetric(metric)'}
-							%i.fa{'ng-class': '{"fa-check-square active": metric.active, "fa-square-o": !metric.active}'}
-							{{metric.name}}
-				%div#pipeline-revenue-chart-container.mb20
-					%svg#pipeline-revenue-chart.pacing-chart
+					%span.title Spend by Product
+				%div#spend-product-chart-container.mb20
+					%svg#spend-product-chart.agency360-chart
 					%div.legend-container
 				.table-wrapper
 					%table.table.table-hover
-						%tbody
-							%tr.header-row
+						%thead
+							%tr
 								%th
 									%b Weighted Pipe
 								%th{'ng-repeat': 'week in weeks'}
@@ -96,25 +89,6 @@
 								%td YoY
 								%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_year_quarter track by $index'}
 									{{val | currency: '$' : '0'}}
-						%tbody
-							%tr.header-row
-								%th
-									%b Revenue
-								%th{'ng-repeat': 'week in weeks'}
-									Week {{week <= weekShift ? week - weekShift - 1 : week - weekShift}}
-						%tbody{'ng-show': 'pipelineRevenue.revenue'}
-							%tr
-								%td This Qtr
-								%td{'ng-repeat': 'val in pipelineRevenue.revenue.current_quarter track by $index'}
-									{{val | currency: '$' : '0'}}
-							%tr
-								%td Last Qtr
-								%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_quarter track by $index'}
-									{{val | currency: '$' : '0'}}
-							%tr
-								%td YoY
-								%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_year_quarter track by $index'}
-									{{val | currency: '$' : '0'}}
 
 		.row.mb20
 			.reports-header
@@ -127,14 +101,14 @@
 					%div.mb20
 						%span.title New Deal/RFP Pacing
 					%div#activity-new-chart-container
-						%svg#activity-new-chart.pacing-chart
+						%svg#activity-new-chart.agency360-chart
 						%div.legend-container
 			.col-xs-6.pr0
 				.block
 					%div.mb20
 						%span.title Weekly Won Revenue Pacing
 					%div#activity-won-chart-container
-						%svg#activity-won-chart.pacing-chart
+						%svg#activity-won-chart.agency360-chart
 						%div.legend-container
 		.row.mb20
 			.block

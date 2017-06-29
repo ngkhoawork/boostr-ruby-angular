@@ -1,8 +1,7 @@
 #agency360 {
-    $metrics-width: 200px;
     padding-left: 25px;
     padding-right: 25px;
-    .inner-pacing-dashboard {
+    .inner-agency360 {
         max-width: 1600px;
         padding: 0 15px;
     }
@@ -34,39 +33,16 @@
             padding-right: 30px;
         }
     }
-    .pacing-metrics {
-        vertical-align: top;
-        width: $metrics-width;
+    #spend-product-chart-container, #spend-advertiser-chart-container {
         display: inline-block;
-        .metric-row {
-            color: $secondary-font-color;
-            padding-top: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            .fa {
-                width: 22px;
-                height: 22px;
-                color: #16A085;
-                font-size: 22px;
-                vertical-align: bottom;
-                margin-right: 4px;
-            }
-            .fa:not(.active) {
-                font-size: 25px;
-                color: lighten($secondary-font-color, 35%);
-            }
-        }
-    }
-    #pipeline-revenue-chart-container {
-        display: inline-block;
-        width: calc(100% - #{$metrics-width});
-        .pacing-chart {
+        width: 100%;
+        .agency360-chart {
             .graph {
                 opacity: 0;
             }
         }
     }
-    .pacing-chart {
+    .agency360-chart {
         height: auto;
         .axis {
             font: 10px sans-serif;
