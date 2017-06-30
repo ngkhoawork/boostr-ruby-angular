@@ -58,6 +58,7 @@
 				.block#line-content-fees
 					%div.mb20
 						%span.title Line Items - content & fees
+						%add-button{'ng-click': 'showNewContentFeeModal()'} Add
 
 					.table-wrapper
 						%table.table.table-hover
@@ -72,7 +73,16 @@
 							%tbody
 								%tr{ ng: { if: 'currentIO.content_fees && currentIO.content_fees.length > 0', repeat: "content_fee in currentIO.content_fees"} }
 									%td
-										{{ content_fee.product.name }}
+										.dropdown
+											%button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+												%span.editable
+													{{content_fee.product.name}}
+													%span.caret
+											%ul.dropdown-menu
+												%li{'ng-repeat': 'product in products', 'ng-class': '{active: content_fee.product.name == product.name}'}
+													%a{'href': '', 'ng-click': 'content_fee.product_id = product.id; updateContentFee(content_fee);'}
+														%span.text {{product.name}}
+										%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
 									%td
 										{{ currentIO.start_date | date: 'M/d/yyyy' }}
 									%td

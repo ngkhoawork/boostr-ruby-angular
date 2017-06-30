@@ -1,6 +1,6 @@
 @app.controller 'IOController',
-    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'DisplayLineItem', 'Company', 'InfluencerContentFee'
-    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   DisplayLineItem,   Company,   InfluencerContentFee) ->
+    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'Product', 'DisplayLineItem', 'DisplayLineItem', 'Company', 'InfluencerContentFee'
+    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   Product,   DisplayLineItem,   DisplayLineItem,   Company,   InfluencerContentFee) ->
             $scope.currentIO = {}
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
@@ -29,6 +29,15 @@
                     if io.currency
                         if io.currency.curr_symbol
                             $scope.currency_symbol = io.currency.curr_symbol
+
+                    Product.all({active: true, revenue_type: 'Content-Fee'}).then (products) ->
+                        $scope.products = products
+                        resetProducts()
+
+            resetProducts = ->
+                io_products = _.map $scope.currentIO.content_fees, (content_fee_item) ->
+                    return content_fee_item.product
+                $scope.products = $filter('notIn')($scope.products, io_products)
 
             $scope.showIOEditModal = (io) ->
                 $scope.modalInstance = $modal.open
@@ -90,6 +99,17 @@
                             for key, error of resp.data.errors
                                 $scope.errors[key] = error && error[0]
                     )
+
+            $scope.showNewContentFeeModal = () ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/io_new_content_fee_form.html'
+                    size: 'lg'
+                    controller: 'IONewContentFeeController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        currentIO: ->
+                            $scope.currentIO
 
             $scope.deleteIo = (io) ->
                 if confirm('Are you sure you want to delete "' +  io.name + '"?')
@@ -214,10 +234,12 @@
                 $scope.updateContentFee(content_fee)
 
             $scope.updateContentFee = (data) ->
+                console.log("content fee", data);
                 $scope.errors = {}
                 ContentFee.update(id: data.id, io_id: $scope.currentIO.id, content_fee: data).then(
                     (io) ->
                         $scope.currentIO = io
+                        $scope.init()
                     (resp) ->
                         for key, error of resp.data.errors
                             $scope.errors[key] = error && error[0]
@@ -230,6 +252,16 @@
                 if confirm('Are you sure you want to delete "' + io_member.name + '"?')
                     IOMember.delete(id: io_member.id, io_id: $scope.currentIO.id).then (io) ->
                         $scope.currentIO = io
+            $scope.deleteContentFee = (content_fee) ->
+                $scope.errors = {}
+                if confirm('Are you sure you want to delete "' +  content_fee.product.name + '"?')
+                    ContentFee.delete(id: content_fee.id, io_id: $scope.currentIO.id).then(
+                        (deal) ->
+                            $scope.init()
+                        (resp) ->
+                            for key, error of resp.data.errors
+                                $scope.errors[key] = error && error[0]
+                    )
 
             $scope.updateIO = ->
                 $scope.errors = {}
@@ -241,6 +273,9 @@
                             $scope.errors[key] = error && error[0]
                 )
             $scope.$on 'updated_influencer_content_fees', ->
+                $scope.init()
+
+            $scope.$on 'content_fee_added', ->
                 $scope.init()
             $scope.init()
     ]

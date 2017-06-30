@@ -31,6 +31,36 @@
             }
         }
     }
+    #line-content-fees {
+        .dropdown {
+            display: inline-block;
+            button:not(.add-btn) {
+                background-color: inherit;
+                border: none;
+                color: inherit;
+                padding: 0;
+                &:active {
+                    outline: none;
+                    box-shadow: none;
+                }
+            }
+            .dropdown-menu {
+                top: calc(100% + 10px);
+            }
+        }
+        .table {
+            tbody > tr {
+                .z-icon {
+                    visibility: hidden;
+                }
+                &:hover {
+                    .z-icon {
+                        visibility: visible;
+                    }
+                }
+            }
+        }
+    }
     .display-line-budgets-row {
         height: auto !important;
         max-height: none !important;
