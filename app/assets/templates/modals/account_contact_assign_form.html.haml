@@ -1,13 +1,9 @@
-#contact_assign_modal
+#contact_assign_modal.popup-modal
   %form.form-horizontal
-    .modal-header.text-center
-      %a.close{ ng: { click: 'cancel()' } }
-        %span{'aria-hidden' => 'true'}
-          = inline_svg 'icons/close.svg'
-      %h3.modal-title
-        %strong
-          Assign to an Account
-    .modal-body
+    .popup-modal-header
+      Assign to an Account
+      %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body.modal-body{style: 'padding: 15px'}
       .alerts{ 'ng-repeat': '(field, fieldErrors) in errors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
           %i.fa.fa-warning
@@ -26,5 +22,5 @@
                   %a{ href: "javascript:void(0)", 'ng-click': "assignClient(client)" }
                     Assign
 
-    .modal-footer
-      %a.btn.btn-default.btn-lg{ ng: { click: 'cancel()' } } Cancel
+    .popup-modal-footer
+      %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
