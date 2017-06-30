@@ -732,7 +732,7 @@
             primary_client: $scope.currentClient
           }
 
-  $scope.showEditContactModal = (contact) ->
+  $scope.showEditContactModal = (client_contact) ->
     $scope.populateContact = true
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/contact_form.html'
@@ -742,7 +742,10 @@
       keyboard: false
       resolve:
         contact: ->
-          angular.copy(contact)
+          contact = angular.copy(client_contact.contact)
+          contact.client_id = client_contact.client_id
+          contact.primary_client_json = contact.primary_client_contact.client
+          contact
 
   $scope.cancelActivity = () ->
     $scope.initActivity()
