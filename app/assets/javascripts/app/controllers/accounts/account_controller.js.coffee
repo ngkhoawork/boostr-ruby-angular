@@ -744,6 +744,7 @@
         contact: ->
           contact = angular.copy(client_contact.contact)
           contact.client_id = client_contact.client_id
+          contact.primary_client_json = contact.primary_client_contact.client
           contact
 
   $scope.cancelActivity = () ->
