@@ -35,6 +35,7 @@ class Company < ActiveRecord::Base
   has_many :dfp_api_configurations, dependent: :destroy
   has_many :operative_api_configurations, dependent: :destroy
   has_many :operative_datafeed_configurations, dependent: :destroy
+  has_many :asana_connect_configurations, dependent: :destroy
   has_many :initiatives, dependent: :destroy
   has_many :integration_logs, dependent: :destroy
   has_many :requests
@@ -177,10 +178,6 @@ class Company < ActiveRecord::Base
 
   def operative_api_config
     OperativeApiConfiguration.find_by(company_id: self)
-  end
-
-  def asana_connect_config
-    ApiConfiguration.find_by(company_id: self, integration_type: Integration::ASANA_CONNECT)
   end
 
   def validation_for(factor)

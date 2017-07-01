@@ -1,6 +1,6 @@
 @app.controller 'ApiConfigurationsController',
-  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType', 'AsanaConnect'
-    ($window, $scope, $modal, ApiConfiguration, IntegrationType, AsanaConnect) ->
+  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType',
+    ($window, $scope, $modal, ApiConfiguration, IntegrationType) ->
       mappings = {
         providers: {
           dfp: {
@@ -19,6 +19,12 @@
             actions: {
               create: { templateUrl: 'modals/operative_datafeed_configuration_form.html', controller: 'DataFeedConfigurationsCreateController' },
               update: { templateUrl: 'modals/operative_datafeed_configuration_form.html', controller: 'DataFeedConfigurationsCreateController' },
+            }
+          },
+          asana_connect: {
+            actions: {
+              create: { templateUrl: 'modals/asana_connect_configuration_form.html', controller: 'AsanaConnectConfigurationsCreateController' },
+              update: { templateUrl: 'modals/asana_connect_configuration_form.html', controller: 'AsanaConnectConfigurationsEditController' }
             }
           }
         }
@@ -40,6 +46,8 @@
             mappings.providers.operative
           when 'Operative Datafeed'
             mappings.providers.operative_datafeed
+          when 'Asana Connect'
+            mappings.providers.asana_connect
 
       $scope.init = () ->
         $scope.api_configurations = {}
@@ -68,10 +76,6 @@
           controller: selectControllerTemplate.actions.create.controller
           backdrop: 'static'
           keyboard: false
-
-      $scope.linkAsana = ->
-        AsanaConnect.get().$promise.then (connect_data) ->
-          $window.location.href = connect_data.url
 
       $scope.delete = (api_configuration) ->
         if confirm('Are you sure you want to delete "' +  api_configuration.integration_type + '"?')

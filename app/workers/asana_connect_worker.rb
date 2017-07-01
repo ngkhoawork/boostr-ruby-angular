@@ -10,7 +10,7 @@ class AsanaConnectWorker < BaseWorker
   def asana_integration_required?(deal_id)
     deal = Deal.find_by_id deal_id
     if deal.present?
-      config = deal.company.asana_connect_config
+      config = deal.company.asana_connect_configurations.first
       config.present? && config.switched_on?
     end
   end

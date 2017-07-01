@@ -22,7 +22,7 @@ class AsanaConnect::IntegrationService
   end
 
   def api_config
-    @_api_config ||= deal.company.asana_connect_config
+    @_api_config ||= deal.company.asana_connect_configurations.first
   end
 
   def task_params
@@ -47,7 +47,7 @@ Flight Dates – #{deal.start_date.strftime('%m/%d/%Y')} to #{deal.end_date.strf
   def project
     return @_project if defined?(@_project)
     projects = asana_client.projects.find_by_workspace(workspace: workspace.id)
-    @_project ||= projects.find{|el|el.name == api_config.integration_provider}
+    @_project ||= projects.find{|el|el.name == api_config.network_code}
   end
 
   def asana_client
@@ -70,6 +70,7 @@ Flight Dates – #{deal.start_date.strftime('%m/%d/%Y')} to #{deal.end_date.strf
     integration_log.response_code = error.cause.response[:status]
     integration_log.response_body = error.errors.to_s
     integration_log.is_error      = true
+    integration_log.doctype       = 'json'
 
     integration_log.save
   end
@@ -84,6 +85,7 @@ Flight Dates – #{deal.start_date.strftime('%m/%d/%Y')} to #{deal.end_date.strf
     integration_log.response_code = 200
     integration_log.response_body = "Task #{task.name} has been created"
     integration_log.is_error      = false
+    integration_log.doctype       = 'json'
 
     integration_log.save
   end
