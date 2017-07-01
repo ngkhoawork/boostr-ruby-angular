@@ -1,0 +1,17 @@
+asana:
+  development:
+    client_id: 375452637132320
+    client_secret: 618afc357fa2992463ab89a552ba8818
+    redirect_uri:  https://localhost:9292/api/asana_connect/callback
+    response_type: code
+    site: https://localhost:9292/
+    authorize_url: https://app.asana.com/-/oauth_authorize
+    token_url: https://app.asana.com/-/oauth_token
+  testing:
+    client_id: 377237316608868
+    client_secret: 74fb4a1ac3c6ec5bf762441cc9233ccd
+    redirect_uri:  https://boostr-testing.herokuapp.com/api/asana_connect/callback
+    response_type: code
+    site: https://boostr-testing.herokuapp.com/
+    authorize_url: https://app.asana.com/-/oauth_authorize
+    token_url: https://app.asana.com/-/oauth_token

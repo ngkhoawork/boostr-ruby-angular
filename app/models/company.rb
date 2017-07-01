@@ -179,6 +179,10 @@ class Company < ActiveRecord::Base
     OperativeApiConfiguration.find_by(company_id: self)
   end
 
+  def asana_connect_config
+    ApiConfiguration.find_by(company_id: self, integration_type: Integration::ASANA_CONNECT)
+  end
+
   def validation_for(factor)
     factor_string = factor.to_s.humanize.titleize
     self.validations.find_by(factor: factor_string)

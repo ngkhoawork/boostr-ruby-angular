@@ -84,6 +84,7 @@ class Deal < ActiveRecord::Base
   after_create do
     generate_deal_members
     send_new_deal_notification
+    asana_connect
   end
 
   before_destroy do
@@ -127,6 +128,10 @@ class Deal < ActiveRecord::Base
   end
   scope :by_closed_at, -> (closed_at) do
     where(closed_at: closed_at.beginning_of_year.to_datetime.beginning_of_day..closed_at.end_of_year.to_datetime.end_of_day) if closed_at.present?
+  end
+
+  def asana_connect
+    AsanaConnectWorker.perform_async self.id
   end
 
   def integrate_with_operative

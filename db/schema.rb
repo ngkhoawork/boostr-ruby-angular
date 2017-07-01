@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170623121752) do
+ActiveRecord::Schema.define(version: 20170701143943) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1162,14 +1162,15 @@ ActiveRecord::Schema.define(version: 20170623121752) do
     t.string   "request_type"
     t.string   "resource_type"
     t.integer  "company_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
     t.integer  "deal_id"
     t.boolean  "is_error"
     t.string   "api_provider"
     t.string   "object_name"
     t.text     "error_text"
     t.string   "dfp_query_type"
+    t.string   "doctype",        default: ""
   end
 
   add_index "integration_logs", ["company_id"], name: "index_integration_logs_on_company_id", using: :btree

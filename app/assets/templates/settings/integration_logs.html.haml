@@ -34,7 +34,7 @@
             %a{href: '{{log.api_endpoint}}'} {{getHost(log.api_endpoint)}}
           %td {{log.created_at | date: 'medium'}}
           %td
-            %button.btn.activity-email-btn{'ng-if': 'log.response_body.length', 'ng-click': 'showBodyModal(log.response_body)'}
+            %button.btn.activity-email-btn{'ng-if': 'log.response_body.length', 'ng-click': 'showBodyModal(log)'}
               Show Body
           %td {{log.object_name}}
           %td

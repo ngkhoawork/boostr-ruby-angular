@@ -1,6 +1,6 @@
 @app.controller 'ApiConfigurationsController',
-  ['$scope', '$modal', 'ApiConfiguration', 'IntegrationType'
-    ($scope, $modal, ApiConfiguration, IntegrationType) ->
+  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType', 'AsanaConnect'
+    ($window, $scope, $modal, ApiConfiguration, IntegrationType, AsanaConnect) ->
       mappings = {
         providers: {
           dfp: {
@@ -68,6 +68,10 @@
           controller: selectControllerTemplate.actions.create.controller
           backdrop: 'static'
           keyboard: false
+
+      $scope.linkAsana = ->
+        AsanaConnect.get().$promise.then (connect_data) ->
+          $window.location.href = connect_data.url
 
       $scope.delete = (api_configuration) ->
         if confirm('Are you sure you want to delete "' +  api_configuration.integration_type + '"?')

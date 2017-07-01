@@ -26,7 +26,7 @@
         Logs.resend(logId).then (data) ->
           console.log data
 
-      $scope.showBodyModal = (body) ->
+      $scope.showBodyModal = (log) ->
         $scope.modalInstance = $modal.open
           templateUrl: 'modals/logs_body.html'
           size: 'lg'
@@ -35,5 +35,7 @@
           keyboard: false
           resolve:
             body: ->
-              body
+              log.response_body
+            doctype: ->
+              log.doctype
   ]
