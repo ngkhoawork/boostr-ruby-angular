@@ -7,7 +7,7 @@ asana:
     site: https://localhost:9292/
     authorize_url: https://app.asana.com/-/oauth_authorize
     token_url: https://app.asana.com/-/oauth_token
-  testing:
+  sandbox:
     client_id: 377237316608868
     client_secret: 74fb4a1ac3c6ec5bf762441cc9233ccd
     redirect_uri:  https://boostr-testing.herokuapp.com/api/asana_connect/callback
