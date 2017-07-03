@@ -73,6 +73,7 @@ class Deal < ActiveRecord::Base
     send_ealert if stage_id_changed?
     integrate_with_operative
     send_lost_deal_notification
+    connect_deal_clients
   end
 
   before_create do
@@ -1528,8 +1529,7 @@ class Deal < ActiveRecord::Base
 
   def connect_deal_clients
     if agency.present? && advertiser.present?
-      advertiser.agencies << agency
-      agency.advertisers << advertiser
+      ClientConnection.create(agency_id: agency.id, advertiser_id: advertiser.id)
     end
   end
 end
