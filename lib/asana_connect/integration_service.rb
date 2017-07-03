@@ -67,8 +67,8 @@ Flight Dates – #{deal.start_date.strftime('%m/%d/%Y')} to #{deal.end_date.strf
     integration_log.api_provider  = 'asana_connect'
     integration_log.company_id    = deal.company_id
     integration_log.deal_id       = deal.id
-    integration_log.response_code = error.cause.response[:status]
-    integration_log.response_body = error.errors.to_s
+    integration_log.response_code = (error.cause.response[:status] rescue 500)
+    integration_log.response_body = (error.errors.to_s rescue error.to_s)
     integration_log.is_error      = true
     integration_log.doctype       = 'json'
 
