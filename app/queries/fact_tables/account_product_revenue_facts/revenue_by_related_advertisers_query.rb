@@ -1,5 +1,5 @@
-class FactTables::AccountProductRevenueFacts::FilteredQuery
-  def initialize(options = {}, relation = AccountProductRevenueFact.joins(:time_dimension, :product_dimension, account_dimension: [:holding_company]))
+class FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery
+  def initialize(options = {}, relation = AccountProductRevenueFact.joins(:time_dimension, :account_dimension))
     @relation = relation.extending(FactScopes)
     @options = options
   end
@@ -7,9 +7,9 @@ class FactTables::AccountProductRevenueFacts::FilteredQuery
   def call
     return relation unless options.any?
     relation.by_time_dimension_date_range(options[:start_date], options[:end_date])
-            .by_holding_company_name(options[:holding_company_name])
-            .by_account_name(options[:account_name])
+            .by_related_advertisers(options[:advertisers_ids])
             .by_company_id(options[:company_id])
+
   end
 
   private
@@ -21,16 +21,12 @@ class FactTables::AccountProductRevenueFacts::FilteredQuery
       where('time_dimensions.start_date >= :start_date
              AND time_dimensions.end_date <= :end_date
              AND time_dimensions.days_length <= 31',
-             start_date: start_date,
-             end_date: end_date)
+            start_date: start_date,
+            end_date: end_date)
     end
 
-    def by_account_name(account_name)
-      where('account_dimensions.name = :name', name: account_name)
-    end
-
-    def by_holding_company_name(holding_company_name)
-      where('holding_companies.name = :name', name: holding_company_name)
+    def by_related_advertisers(advertisers_ids)
+      where('account_dimensions.id in (:advertisers_ids)', advertisers_ids: advertisers_ids)
     end
 
     def by_company_id(id)
