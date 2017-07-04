@@ -6,6 +6,7 @@ class AsanaConnect::IntegrationService
   def perform
     begin
       send_deal
+      set_deal_custom_field
     rescue Exception => e
       log_error(e)
     end
@@ -13,12 +14,12 @@ class AsanaConnect::IntegrationService
 
   private
 
-  attr_reader :deal
+  attr_reader :deal, :task
 
   def send_deal
     return unless deal.present?
-    task = asana_client.tasks.create task_params
-    log_success(task)
+    @task = asana_client.tasks.create task_params
+    log_success(@task)
   end
 
   def api_config
@@ -34,20 +35,24 @@ class AsanaConnect::IntegrationService
       notes: "Rep – #{deal.user_with_highest_share.try(:name)}
 Advertiser – #{deal.advertiser.name}
 Agency – #{deal.agency.try(:name) || 'N/A'}
-Due Date – TBD
-Budget – #{deal.budget_loc}
 Flight Dates – #{deal.start_date.strftime('%m/%d/%Y')} to #{deal.end_date.strftime("%m/%d/%Y")}"
     }
   end
 
   def workspace
     @_workspace ||= asana_client.workspaces.find_all.first
+    raise "No workspaces found for api user" unless @_workspace
+    @_workspace
   end
 
   def project
-    return @_project if defined?(@_project)
-    projects = asana_client.projects.find_by_workspace(workspace: workspace.id)
-    @_project ||= projects.find{|el|el.name == api_config.network_code}
+    @_project ||= projects.find{|el|el.name.casecmp(api_config.network_code) == 0}
+    raise "No project #{api_config.network_code} was found" unless @_project
+    @_project
+  end
+
+  def projects
+    asana_client.projects.find_by_workspace(workspace: workspace.id)
   end
 
   def asana_client
@@ -88,5 +93,13 @@ Flight Dates – #{deal.start_date.strftime('%m/%d/%Y')} to #{deal.end_date.strf
     integration_log.doctype       = 'json'
 
     integration_log.save
+  end
+
+  def set_deal_custom_field
+    dcfn = deal.company.deal_custom_field_names.where('disabled IS NOT TRUE').where('field_label ilike ?', 'Asana URL').first
+    return unless dcfn.present?
+    dcf = deal.deal_custom_field
+    dcf = deal.build_deal_custom_field unless dcf.present?
+    dcf.update(dcfn.field_name => "https://app.asana.com/0/#{project.id}/#{@task.id}")
   end
 end
