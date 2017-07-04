@@ -35,6 +35,7 @@ class Company < ActiveRecord::Base
   has_many :dfp_api_configurations, dependent: :destroy
   has_many :operative_api_configurations, dependent: :destroy
   has_many :operative_datafeed_configurations, dependent: :destroy
+  has_many :asana_connect_configurations, dependent: :destroy
   has_many :initiatives, dependent: :destroy
   has_many :integration_logs, dependent: :destroy
   has_many :requests

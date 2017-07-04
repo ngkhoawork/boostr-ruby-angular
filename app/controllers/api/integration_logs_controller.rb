@@ -10,6 +10,8 @@ class Api::IntegrationLogsController < ApplicationController
   def resend_request
     if integration_log.dfp_query_type
       ManualDfpImportWorker.new.perform(dfp_api_configuration.id, integration_log.dfp_query_type)
+    elsif integration_log.api_provider == 'asana_connect'
+      AsanaConnectWorker.perform_async(integration_log.deal_id)
     else
       OperativeIntegrationWorker.perform_async(integration_log.deal_id)
     end

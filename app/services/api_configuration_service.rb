@@ -11,6 +11,8 @@ class ApiConfigurationService < BaseService
         'OperativeDatafeedConfiguration'
       when 'DFP'
         'DfpApiConfiguration'
+      when 'Asana Connect'
+        'AsanaConnectConfiguration'
       else
         'ApiConfiguration'
     end

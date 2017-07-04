@@ -8,5 +8,6 @@ class API::IntegrationLogs::Single < API::Single
              :created_at,
              :is_error,
              :error_text,
-             :object_name
+             :object_name,
+             :doctype
 end
