@@ -1,18 +1,36 @@
 @app.controller 'Agency360Controller',
-    ['$scope', '$filter', '$timeout'
-    ( $scope,   $filter,   $timeout ) ->
+    ['$scope', '$filter', '$timeout', 'HoldingCompany', 'Client'
+    ( $scope,   $filter,   $timeout,   HoldingCompany,   Client ) ->
 
         FIRST_CHART_ID = '#spend-product-chart'
         SECOND_CHART_ID = '#spend-advertiser-chart'
 
+        $scope.holdingCompanies = []
+        $scope.isDateRangeVisible = true
         $scope.months = moment.monthsShort()
+
+        emptyFilter = {id: null, name: 'All'}
+        $scope.defaultFilter =
+            holdingCompany: emptyFilter
+
+        $scope.filter = angular.copy $scope.defaultFilter
+
+        $scope.setFilter = (key, value) ->
+            if $scope.filter[key] is value then return
+            $scope.filter[key] = value
+
+        HoldingCompany.all({}).then (holdingCompanies) ->
+            $scope.holdingCompanies = holdingCompanies
+#            $scope.holdingCompanies.unshift emptyFilter
+            console.log $scope.holdingCompanies
 
         randomValue = (min, max) -> Math.round(Math.random() * (max - min)) + min
         randomItem = (name) -> {name: name, values: $scope.months.map -> randomValue(5, 25) * 20000}
 
-        products = [1..5].map (i) -> randomItem('Product ' + i)
+        $scope.products = [1..5].map (i) -> randomItem('Product ' + i)
+        console.log $scope.products
 
-        $timeout -> drawChart(products, FIRST_CHART_ID)
+        $timeout -> drawChart($scope.products, FIRST_CHART_ID)
 
         drawChart = (data, chartId) ->
             chartContainer = angular.element(chartId + '-container')
@@ -26,8 +44,9 @@
             width = chartContainer.width() - margin.left - margin.right || 800
             height = 400
 
-            currentMonth = $scope.currentMonth
+            currentMonth = 5
             months = $scope.months
+            colors = d3.scale.category10()
 
             dataset = data
 
@@ -42,19 +61,22 @@
             maxValue = (d3.max dataset, (item) -> d3.max item.values) || 0
             yMax = maxValue * 1.2
 
-            x = d3.scale.ordinal().domain(months).rangeBands([0, width])
+            x = d3.scale.ordinal().domain([0..months.length - 1]).rangePoints([width / months.length, width - width / months.length])
             y = d3.scale.linear().domain([yMax || 1, 0]).rangeRound([0, height])
+
 
             xAxis = d3.svg.axis().scale(x).orient('bottom')
                 .outerTickSize(0)
                 .innerTickSize(0)
                 .tickPadding(10)
                 .tickFormat (v, i) ->
+                    tick = d3.select(this)
+                    tick.attr 'class', 'x-tick-text'
                     if currentMonth == v
-                        d3.select(this)
+                        tick
                             .style 'font-weight', 'bold'
-                            .style 'font-size', '12px'
-                    return v
+                            .style 'font-size', '16px'
+                    months[v]
             yAxis = d3.svg.axis().scale(y).orient('left')
                 .innerTickSize(-width)
                 .tickPadding(10)
@@ -82,7 +104,7 @@
                     .attr('y1', 0)
 
             graphLine = d3.svg.line()
-                .x((value, i) -> x(i + 1))
+                .x((value, i) -> x(i))
                 .y((value, i) -> y(value))
 
             graphsContainer = svg.append('g')
@@ -94,9 +116,9 @@
                 .enter()
                 .append('path')
                 .attr('class', 'graph')
-                .attr('data-visibility', (d) -> d.visibility)
-                .attr 'stroke', (d) -> d.color
-                .attr 'stroke-dasharray', (d) -> d.dasharray
+#                .attr('data-visibility', (d) -> d.visibility)
+                .attr 'stroke', (d) -> colors(d.name)
+#                .attr 'stroke-dasharray', (d) -> d.dasharray
                 .attr 'd', -> graphLine(_.map months, -> 0)
                 .transition()
                 .duration(duration)
@@ -120,8 +142,8 @@
                 .style 'height', '4px'
                 .style 'margin-right', '8px'
                 .append('line')
-                .attr 'stroke-dasharray', (d) -> d.dasharray
-                .style 'stroke', (d) -> d.color
+#                .attr 'stroke-dasharray', (d) -> d.dasharray
+                .style 'stroke', (d) -> colors(d.name)
                 .style 'stroke-width', 3
                 .attr 'x1', 0
                 .attr 'y1', 2

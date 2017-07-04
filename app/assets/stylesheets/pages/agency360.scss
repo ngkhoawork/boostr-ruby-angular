@@ -36,11 +36,11 @@
     #spend-product-chart-container, #spend-advertiser-chart-container {
         display: inline-block;
         width: 100%;
-        .agency360-chart {
-            .graph {
-                opacity: 0;
-            }
-        }
+        //.agency360-chart {
+        //    .graph {
+        //        opacity: 0;
+        //    }
+        //}
     }
     .agency360-chart {
         height: auto;
@@ -59,7 +59,7 @@
             fill: transparent;
             stroke-width: 3px;
         }
-        .week-line {
+        .month-line {
             stroke: #BEC1C4;
             stroke-width: 2px;
         }
@@ -74,6 +74,11 @@
             fill: none;
             stroke: #d9dde0;
             shape-rendering: crispEdges;
+        }
+        .tick {
+            .x-tick-text {
+                font-size: 14px;
+            }
         }
     }
     .legend-container {
