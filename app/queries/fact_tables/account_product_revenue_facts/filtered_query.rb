@@ -7,8 +7,8 @@ class FactTables::AccountProductRevenueFacts::FilteredQuery
   def call
     return relation unless options.any?
     relation.by_time_dimension_date_range(options[:start_date], options[:end_date])
-            .by_holding_company_name(options[:holding_company_name])
-            .by_account_name(options[:account_name])
+            .by_holding_company_id(options[:holding_company_id])
+            .by_account_id(options[:account_id])
             .by_company_id(options[:company_id])
   end
 
@@ -25,12 +25,12 @@ class FactTables::AccountProductRevenueFacts::FilteredQuery
              end_date: end_date)
     end
 
-    def by_account_name(account_name)
-      where('account_dimensions.name = :name', name: account_name)
+    def by_account_id(account_id)
+      where('account_dimensions.id = :id', id: account_id)
     end
 
-    def by_holding_company_name(holding_company_name)
-      where('holding_companies.name = :name', name: holding_company_name)
+    def by_holding_company_id(holding_company_id)
+      where('holding_companies.id = :id', id: holding_company_id)
     end
 
     def by_company_id(id)

@@ -134,6 +134,7 @@ Rails.application.routes.draw do
     end
     resources :agency_dashboards do
       get :spend_by_product, on: :collection
+      get :spend_by_advertisers, on: :collection
     end
 
     resources :time_dimensions, only: [:index]
