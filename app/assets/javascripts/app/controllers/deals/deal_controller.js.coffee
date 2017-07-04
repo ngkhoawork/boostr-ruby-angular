@@ -278,6 +278,19 @@
           $scope.errors[key] = error && error[0]
     )
 
+  setValidDeal = () ->
+    $scope.currentDeal.validDeal = true
+    _.each $scope.dealCustomFieldNames, (dealCustomFieldName) ->
+      fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index
+      if dealCustomFieldName.is_required == true && (!$scope.currentDeal.deal_custom_field || !$scope.currentDeal.deal_custom_field[fieldName])
+        $scope.currentDeal.validDeal = false
+    _.each $scope.dealProductCfNames, (dealProdctCfName) ->
+      productFieldName = dealProdctCfName.field_type + dealProdctCfName.field_index
+      if dealProdctCfName.is_required == true
+        _.each $scope.currentDeal.deal_products, (dealProduct) ->
+          if !dealProduct.deal_product_cf || !dealProduct.deal_product_cf[productFieldName]
+            $scope.currentDeal.validDeal = false
+
   $scope.setCurrentDeal = (deal, shouldUsersUpdate) ->
     $scope.currency_symbol = deal.currency && (deal.currency.curr_symbol || deal.currency.curr_cd)
 
@@ -847,6 +860,7 @@
           angular.copy deal
 
   $scope.showDealEalertModal = (deal) ->
+    setValidDeal()
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/ealert_form.html'
       size: 'lg'

@@ -96,9 +96,15 @@
                   .preview-subheader
                     %table{width: '100%'} 
                       %tr
-                        %td
+                        %td{ style: 'position: relative;' }
+                          .deal-won-indicator
+                            .deal-won-indicator-oval
+                            .deal-won-indicator-deal
+                              Deal
+                            .deal-won-indicator-won
+                              Won
                           .subtitle
-                            Summer Concert Series - 75%
+                            Summer Concert Series - 100%
                           .advertiser-ballast
                             %strong
                               Advertiser:
@@ -107,6 +113,12 @@
                             %strong
                               Sales Team:
                             Patrick O (50%), Katie Scheirle (50%)
+                          .comment-section
+                            %div
+                              %strong
+                                Comments:
+                            %div
+                              Client expecting auto-play video location targetting at Concert Venues. Needs to be millenial hip.
                         %td.action
                           %button.add-btn{'ng-click': 'goDeal()'}
                             Go to Deal
@@ -115,7 +127,7 @@
                       %div
                         %strong
                           Budget:
-                        $250,000
+                        £221,321 GBP, $250,000 USD
                       %div
                         %strong
                           Flight Date:
@@ -164,12 +176,6 @@
                             %strong
                               {{field.subject.field_label}}:
                             {{field.subject.field_value}}
-                    %section
-                      %div
-                        %strong
-                          Comments:
-                      %div
-                        Client expecting auto-play video location targetting at Concert Venues. Needs to be millenial hip.
 
 
           

@@ -7,19 +7,32 @@
   .preview-subheader{style: 'padding: 20px 20px;color: #2B3C49;border-left: 1px solid #EAECEE;border-right: 1px solid #EAECEE;vertical-align: middle;'}
     %table{width: '100%'} 
       %tr
-        %td
+        %td{ style: 'position: relative;' }
+          - if !@deal.stage.open && @deal.stage.probability == 100
+            .deal-won-indicator{ style: 'position: absolute; top: 0px; left: 50%; height: 90px; width: 90px; opacity: 0.5; transform: rotate(345deg); text-transform: uppercase; pointer-events: none; user-select: none;' }
+              .deal-won-indicator-oval{ style: 'height: 90px; width: 90px; border: 5px solid #FF7200; border-radius: 125px;' }
+              .deal-won-indicator-deal{ style: 'height: 22.18px; width: 40px; color: #FF7200; font-family: "Avenir Next"; font-size: 20px; font-weight: 600; line-height: 30px; text-align: right; position: absolute; top: 18px; left: 25px;' }
+                Deal
+              .deal-won-indicator-won{ style: 'height: 51.92px; width: 74.45px; color: #FF7200; font-family: "Avenir Next"; font-size: 28px; font-weight: 600; line-height: 30px; text-align: right; position: absolute; top: 45px; left: 12px;' }
+                Won
           .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
             #{@deal.name}
             - if @deal.stage.active == true
               \- #{@deal.stage.probability}%
-          .advertiser-ballast{style: 'height: 20px;font-size: 15px;line-height: 20px;'}
+          .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
             %strong
               Advertiser:
             #{@deal.advertiser.name}
-          .advertiser-ballast{style: 'height: 20px;font-size: 15px;line-height: 20px;'}
+          .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
             %strong
               Sales Team:
             #{@sales_team}
+          .comment-section
+            %div
+              %strong
+                Comments:
+            %div
+              #{@comment}
         %td.action{style: 'text-align: right;'}
           %button.add-btn{style: 'outline: none;font-weight: bold;background-color: transparent;color: #ff7200;border: 2px solid #ff7200;border-radius: 100px;padding: 4px 14px 4px 12px;position: relative;top: -3px;transition: background-color 300ms, color 300ms;'}
             %a{href: "#{root_url}deals/#{@deal.id}", style: 'color: #ff7200;text-decoration: none;font-weight: bold;font-size: 13px;'}
@@ -30,8 +43,10 @@
         %strong
           Budget:
         #{@deal.currency.curr_symbol}#{number_with_precision(@deal.budget_loc, :precision => 0, :delimiter => ',')}
+        &nbsp;#{@deal.currency.curr_cd}
         - if @deal.currency.curr_cd != 'USD'
           , $#{number_with_precision(@deal.budget, :precision => 0, :delimiter => ',')}
+          &nbsp;USD
       %div
         %strong
           Flight Date:
@@ -68,9 +83,4 @@
                     %strong
                       #{deal_product_field['label']}:
                     #{deal_product_field['value']}
-    %section
-      %div
-        %strong
-          Comments:
-      %div
-        #{@comment}
+      

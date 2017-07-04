@@ -4,6 +4,10 @@
       Send eAlert
       %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body
+      .alerts{'ng-if': 'deal.validDeal == false'}
+        .alert.alert-danger
+          %i.fa.fa-warning
+          Please fill or select valid values for required custom fields of deal and deal products to send eAlert.
       .alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
         .alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
           %i.fa.fa-warning
@@ -33,7 +37,13 @@
           .preview-subheader
             %table{width: '100%'} 
               %tr
-                %td
+                %td{ style: 'position: relative;' }
+                  .deal-won-indicator{ 'ng-show': '!deal.stage.open && deal.stage.probability == 100' }
+                    .deal-won-indicator-oval
+                    .deal-won-indicator-deal
+                      Deal
+                    .deal-won-indicator-won
+                      Won
                   .subtitle
                     {{deal.name}}
                     %span{'ng-if': 'deal.stage.active == true'}
@@ -46,6 +56,12 @@
                     %strong
                       Sales Team: 
                     {{salesTeam}}
+                  .comment-section
+                    %div
+                      %strong
+                        Comments:
+                    %div
+                      {{comment}}
                 %td.action
                   %button.add-btn{'ng-click': 'goDeal()'}
                     Go to Deal
@@ -55,8 +71,9 @@
                 %strong
                   Budget:
                 {{deal.budget_loc | currency: deal.currency.curr_symbol : 0}}
+                {{deal.currency.curr_cd}}
                 %span{'ng-if': 'deal.currency.curr_cd != "USD"'} 
-                  , {{deal.budget | currency: '$' : 0}}
+                  , {{deal.budget | currency: '$' : 0}} USD
               %div
                 %strong
                   Flight Date:
@@ -122,15 +139,9 @@
                         {{(getDealProductFieldValue(deal_product, field) || 0) | number : 0}}
                       %span{ ng: { 'switch-default': 'switch-default' } }
                         {{getDealProductFieldValue(deal_product, field)}}
-            %section
-              %div
-                %strong
-                  Comments:
-              %div
-                {{comment}}
 
 
       
     .popup-modal-footer
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
-      %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled', click: 'submitForm()' } } Send
+      %button.btn.btn-primary{ type: 'submit', ng: { disabled: '!deal.validDeal', click: 'submitForm()' } } Send
