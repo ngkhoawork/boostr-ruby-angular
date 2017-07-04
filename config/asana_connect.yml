@@ -15,3 +15,11 @@ asana:
     site: https://boostr-testing.herokuapp.com/
     authorize_url: https://app.asana.com/-/oauth_authorize
     token_url: https://app.asana.com/-/oauth_token
+  staging:
+    client_id: 378312878883785
+    client_secret: 73277b7cb01c1f474881fd34bc8645f6
+    redirect_uri:  https://boostr-staging.herokuapp.com/api/asana_connect/callback
+    response_type: code
+    site: https://boostr-staging.herokuapp.com/
+    authorize_url: https://app.asana.com/-/oauth_authorize
+    token_url: https://app.asana.com/-/oauth_token
