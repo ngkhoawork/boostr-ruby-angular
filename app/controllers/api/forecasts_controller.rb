@@ -8,7 +8,7 @@ class Api::ForecastsController < ApplicationController
       render json: [ForecastTeam.new(team, time_period.start_date, time_period.end_date)]
     elsif params[:id] == 'all'
       render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
-    elsif current_user.leader?
+    elsif show_all_data
       render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
     else
       render json: forecast_member
@@ -166,6 +166,10 @@ class Api::ForecastsController < ApplicationController
   def company
     return @company if defined?(@company)
     @company = current_user.company
+  end
+
+  def show_all_data
+    return company.forecast_permission[current_user.user_type.to_s]
   end
 
 end

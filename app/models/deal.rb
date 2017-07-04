@@ -34,6 +34,7 @@ class Deal < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable
   has_many :integrations, as: :integratable
+  has_many :requests
 
   has_one :deal_custom_field, dependent: :destroy
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
@@ -118,6 +119,15 @@ class Deal < ActiveRecord::Base
   scope :by_seller_id, -> (seller_id) do
     joins(:deal_members).where(deal_members: { user_id: seller_id }) if seller_id.present?
   end
+  scope :by_creator, -> (creator_id) { joins(:creator).where(users: { id: creator_id }) if creator_id.present? }
+  scope :by_budget_range, -> (from, to) { where(budget: from..to) if from.present? && to.present? }
+  scope :by_curr_cd, -> (curr_cd) { where(curr_cd: curr_cd) if curr_cd.present? }
+  scope :by_start_date, -> (start_date, end_date) do
+    where(start_date: start_date..end_date) if start_date.present? && end_date.present?
+  end
+  scope :by_closed_at, -> (closed_at) do
+    where(closed_at: closed_at.beginning_of_year.to_datetime.beginning_of_day..closed_at.end_of_year.to_datetime.end_of_day) if closed_at.present?
+  end
 
   def integrate_with_operative
     if stage_id_changed? && operative_integration_allowed?
@@ -130,26 +140,26 @@ class Deal < ActiveRecord::Base
   end
 
   def operative_integration_allowed?
-    company_allowed_use_operative? && operative_switched_on? && deal_lost_or_won?
+    company_allowed_use_operative? && operative_switched_on? && deal_eligible_for_integration
   end
 
   def company_allowed_use_operative?
-    if self.company_id.eql?(22)
-      true
-    else
-      false
-    end
+    %w(22 29).include? self.company_id.to_s
   end
 
   def operative_switched_on?
-    operative_api_config.present? && operative_api_config.switched_on
+    operative_api_config.present? && operative_api_config.switched_on?
   end
 
-  def deal_lost_or_won?
-    (deal_stage_percentage_greater_or_eql_api_config_percentage? && !integrations.operative.present?) || deal_lost?
+  def deal_eligible_for_integration
+    stage_greater_eql_threshold && integration_happened_or_recurring || deal_lost?
   end
 
-  def deal_stage_percentage_greater_or_eql_api_config_percentage?
+  def integration_happened_or_recurring
+    operative_api_config.recurring? || !integrations.operative.present?
+  end
+
+  def stage_greater_eql_threshold
     stage.probability >= operative_api_config.trigger_on_deal_percentage
   end
 
@@ -233,33 +243,34 @@ class Deal < ActiveRecord::Base
     if options[:override].present? && options[:override] == true
       super(options[:options])
     else
-      super(options.merge(
-                    include: [
-                            :creator,
-                            :advertiser,
-                            :agency,
-                            :stage,
-                            :values,
-                            :deal_custom_field,
-                            deal_members: {
-                                    methods: [:name]
-                            },
-                            activities: {
-                                    include: {
-                                            creator: {},
-                                            contacts: {},
-                                            assets: {
-                                                    methods: [
-                                                            :presigned_url
-                                                    ]
-                                            }
-                                    }
-                            }
-                    ],
+      super(
+        options.merge(
+          include: [
+            :creator,
+            :advertiser,
+            :agency,
+            :stage,
+            :values,
+            :deal_custom_field,
+            deal_members: {
+              methods: [:name]
+            },
+              activities: {
+                include: {
+                  creator: {},
+                  contacts: {},
+                  assets: {
                     methods: [
-                            :formatted_name
+                      :presigned_url
                     ]
-            )
+                  }
+                }
+              }
+          ],
+          methods: [
+            :formatted_name
+          ]
+        )
       )
     end
   end
@@ -888,12 +899,14 @@ class Deal < ActiveRecord::Base
     deal_source_field = current_user.company.fields.find_by_name('Deal Source')
     close_reason_field = current_user.company.fields.find_by_name("Close Reason")
     list_of_currencies = Currency.pluck(:curr_cd)
+    @custom_field_names = current_user.company.deal_custom_field_names
 
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal', source: 'ui')
     import_log.set_file_source(file_path)
 
-    CSV.parse(file, headers: true) do |row|
+    CSV.parse(file, headers: true, header_converters: :symbol) do |row|
       import_log.count_processed
+      @has_custom_field_rows ||= (row.headers && @custom_field_names.map(&:to_csv_header)).any?
 
       if row[0]
         begin
@@ -1201,6 +1214,8 @@ class Deal < ActiveRecord::Base
         deal_contact_list.each do |contact|
           deal.deal_contacts.find_or_create_by(contact: contact)
         end
+
+        import_deal_custom_field(deal, row) if @has_custom_field_rows
       else
         import_log.count_failed
         import_log.log_error(deal.errors.full_messages)
@@ -1228,8 +1243,12 @@ class Deal < ActiveRecord::Base
         else
           recipients = ealert_stage.recipients.split(',').map(&:strip) if ealert_stage.recipients
         end
-        
-        UserMailer.ealert_email(recipients, ealert.id, self.id, '').deliver_later(wait: 10.minutes, queue: "default") if recipients.length > 0
+        deal_members = self.deal_members.order("share desc")
+        highest_member = nil
+        if deal_members.count > 0
+          highest_member = deal_members[0].user_id
+        end
+        UserMailer.ealert_email(recipients, ealert.id, self.id, '', highest_member).deliver_later(wait: 60.minutes, queue: "default") if recipients.length > 0
       end
     end
   end
@@ -1268,7 +1287,7 @@ class Deal < ActiveRecord::Base
     should_open = stage.open?
     if !stage.open? && stage.probability == 100
       self.deal_products.each do |deal_product|
-        if deal_product.product.revenue_type != "Content-Fee"
+        if deal_product.product.revenue_type != 'Content-Fee'
           should_open = true
           deal_product.update_columns(open: true)
         else
@@ -1276,44 +1295,51 @@ class Deal < ActiveRecord::Base
         end
       end
 
-      notification = company.notifications.find_by_name('Closed Won')
-      if !notification.nil? && !notification.recipients.nil?
-        recipients = notification.recipients.split(',').map(&:strip)
-        if !recipients.nil? && recipients.length > 0
-          subject = 'A '+(budget.nil? ? '$0' : ActiveSupport::NumberHelper.number_to_currency(budget.round, :precision => 0))+' deal for '+advertiser.name+' was just won!'
-          UserMailer.close_email(recipients, subject, self).deliver_later(wait: 10.minutes, queue: "default")
-        end
-      end
+      send_closed_won_deal_notification
     else
       self.deal_products.update_all(open: stage.open)
 
       if !self.closed_at.nil? && stage.open?
         self.closed_at = nil
         if !self.fields.nil? && !self.values.nil?
-          field = self.fields.find_by_name("Close Reason")
+          field = self.fields.find_by_name('Close Reason')
           close_reason = self.values.find_by_field_id(field.id) if !field.nil?
           close_reason.destroy if !close_reason.nil?
         end
       end
-      notification = company.notifications.find_by_name('Stage Changed')
-      if !notification.nil? && !notification.recipients.nil?
-        recipients = notification.recipients.split(',').map(&:strip)
-        if !recipients.nil? && recipients.length > 0
-          subject = self.name + ' changed to ' + stage.name + ' - ' + stage.probability.to_s + '%'
-          UserMailer.stage_changed_email(recipients, subject, self.id).deliver_later(wait: 10.minutes, queue: "default")
-        end
-      end
+
+      send_stage_changed_deal_notification if stage.open?
     end
     self.open = should_open.to_s
   end
 
   def send_new_deal_notification
-    notification = company.notifications.by_name('New Deal')
-    if !notification.nil? && !notification.recipients.nil?
-      recipients = notification.recipients.split(',').map(&:strip)
-      if !recipients.nil? && recipients.length > 0
-        UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default')
-      end
+    notification = company.notifications.find_by_name('New Deal')
+
+    if notification.present?
+      recipients = notification.recipients_arr
+
+      UserMailer.new_deal_email(recipients, self.id).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+    end
+  end
+
+  def send_stage_changed_deal_notification
+    notification = company.notifications.find_by_name('Stage Changed')
+
+    if notification.present?
+      recipients = notification.recipients_arr
+
+      UserMailer.stage_changed_email(recipients, self.id, stage).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
+    end
+  end
+
+  def send_closed_won_deal_notification
+    notification = company.notifications.find_by_name('Closed Won')
+
+    if notification.present?
+      recipients = notification.recipients_arr
+
+      UserMailer.close_email(recipients, self).deliver_later(wait: 10.minutes, queue: 'default') if recipients.any?
     end
   end
 
@@ -1440,10 +1466,12 @@ class Deal < ActiveRecord::Base
   end
 
   def user_with_highest_share
-    @_user_with_highest_share ||= deal_members.ordered_by_share.first.user
+    @_user_with_highest_share ||= ordered_members_by_share.first.user
   end
 
   def team_for_user_with_highest_share
+    return nil if ordered_members_by_share.blank?
+
     user_with_highest_share.leader? ? team_leader_name : user_with_highest_share_name
   end
 
@@ -1453,5 +1481,31 @@ class Deal < ActiveRecord::Base
 
   def user_with_highest_share_name
     user_with_highest_share.team.name rescue nil
+  end
+
+  def ordered_members_by_share
+    deal_members.ordered_by_share
+  end
+
+  def upsert_custom_fields(params)
+    if self.deal_custom_field.present?
+      self.deal_custom_field.update(params)
+    else
+      cf = self.build_deal_custom_field(params)
+      cf.save
+    end
+  end
+
+  private
+
+  def self.import_deal_custom_field(deal, row)
+    params = {}
+    @custom_field_names.each do |cf|
+      params[cf.field_name] = row[cf.to_csv_header]
+    end
+
+    if params.compact.any?
+      deal.upsert_custom_fields(params)
+    end
   end
 end

@@ -1,6 +1,6 @@
 @app.controller "CsvUploadController",
-['$scope', '$rootScope', '$modalInstance', '$timeout', 'Client', 'Upload', 'Transloadit', '$http', 'api_url'
-($scope, $rootScope, $modalInstance, $timeout, Client, Upload, Transloadit, $http, api_url) ->
+['$scope', '$rootScope', '$injector', '$modalInstance', '$timeout', 'Client', 'Upload', 'Transloadit', '$http', 'api_url', 'custom_fields_api'
+($scope, $rootScope, $injector, $modalInstance, $timeout, Client, Upload, Transloadit, $http, api_url, custom_fields_api) ->
 
   $scope.progressPercentage = 0
   $scope.files = []
@@ -9,6 +9,9 @@
   $scope.$watch 'files', ->
     if $scope.files and $scope.files.length
       $scope.upload($scope.files[0])
+
+  $scope.init = () ->
+    getCustomFields()
 
   $scope.upload = (file) ->
     $scope.progressPercentage = 0
@@ -84,4 +87,11 @@
 
   $scope.cancel = ->
     $modalInstance.close()
+
+  getCustomFields = ->
+    service = $injector.get(custom_fields_api)
+    service.all().then (custom_fields) ->
+      $scope.custom_fields = custom_fields
+
+  $scope.init() if custom_fields_api
 ]

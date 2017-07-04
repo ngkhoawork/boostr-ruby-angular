@@ -14,6 +14,10 @@
           $scope.ealert = ealert
           transformEalert()
 
+    dealMembers = _.map $scope.deal.members, (dealMember) ->
+      return dealMember.name + ' (' + dealMember.share + '%)'
+    $scope.salesTeam = dealMembers.join(', ')
+
   validateEmail = (email) ->
     re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(email)
@@ -68,7 +72,7 @@
     $scope.recipient_list = []
     if $scope.ealert.recipients && $scope.ealert.same_all_stages
       $scope.recipient_list = $scope.ealert.recipients.split(',')
-    else
+    else if $scope.ealert.same_all_stages == false
       ealert_stage = _.find $scope.ealert.ealert_stages, (item) ->
         return item.stage_id == $scope.deal.stage_id
       if ealert_stage != undefined && ealert_stage.recipients
@@ -180,7 +184,7 @@
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/client_form.html'
       size: 'md'
-      controller: 'ClientsNewController'
+      controller: 'AccountsNewController'
       backdrop: 'static'
       keyboard: false
       resolve:

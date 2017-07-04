@@ -14,7 +14,8 @@
       DealProductCfName.all().then (dealProductCustomFieldNames) ->
         $scope.dealProductCustomFieldNames = dealProductCustomFieldNames
         Stage.query().$promise.then (stages) ->
-          $scope.stages = stages
+          $scope.stages = _.reject stages, (item) ->
+            return item.active == false
           Ealert.all().then (ealert) ->
             $scope.ealert = ealert
             transformEalert()
@@ -158,6 +159,17 @@
 
   transformEalert = () ->
     $scope.ealert.recipient_list = []
+    $scope.ealert.ealert_stages = _.reject $scope.ealert.ealert_stages, (item) ->
+      return item.stage.active == false
+    all_disabled = true
+    automatic_send = true
+    for index in [0...$scope.ealert.ealert_stages.length]
+      if $scope.ealert.ealert_stages[index].enabled == true
+        all_disabled = false
+      else
+        automatic_send = false
+    $scope.ealert.all_disabled = all_disabled
+    $scope.ealert.automatic_send = automatic_send
     if $scope.ealert.recipients
       $scope.ealert.recipient_list = $scope.ealert.recipients.split(',')
     _.each $scope.stages, (stage) ->

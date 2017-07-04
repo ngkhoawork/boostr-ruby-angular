@@ -4,7 +4,7 @@ class Api::ActivitiesController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        render json: activities
+        render json: activities.preload(:assets, :agency, :client, :creator, deal: [:stage, :advertiser], contacts: [:address])
       }
       format.csv {
         send_data activity_csv_report, filename: "activity-detail-reports-#{Date.today}.csv"
@@ -126,19 +126,7 @@ class Api::ActivitiesController < ApplicationController
       elsif params[:team_id]
         team.all_activities
       elsif params[:page] && params[:filter] == "client"
-        offset = (params[:page].to_i - 1) * 10
-
-        if current_user.user_type == EXEC && !(current_user.team.presence) && (!current_user.leader? || current_user.all_team_members.count == 0)
-          company.activities.order("happened_at desc").limit(10).offset(offset)
-        elsif current_user.leader?
-          team_member_ids = team.all_members.map(&:id) + team.all_leaders.map(&:id)
-
-          client_ids = ClientMember.where("user_id in (?)", team_member_ids).collect{|member| member.client_id}
-          company.activities.where('client_id in (?) OR created_by in (?)', client_ids, team_member_ids).order("happened_at desc").limit(10).offset(offset)
-        else
-          client_ids = current_user.clients.collect{|member| member.id}
-          company.activities.where('client_id in (?) OR created_by = ?', client_ids, current_user.id).order("happened_at desc").limit(10).offset(offset)
-        end
+        client_filtered_activities
       else
         current_user.all_activities
       end
@@ -186,6 +174,35 @@ class Api::ActivitiesController < ApplicationController
 
     # puts data
     data
+  end
+
+  def client_filtered_activities
+    if current_user.user_type == EXEC && !(current_user.team.presence) && (!current_user.leader? || current_user.all_team_members.count == 0)
+      result = company.activities
+    elsif current_user.leader?
+      team_member_ids = team.all_members.map(&:id) + team.all_leaders.map(&:id)
+
+      client_ids = ClientMember.where("user_id in (?)", team_member_ids).collect{|member| member.client_id}
+      result = company.activities.where('client_id in (?) OR created_by in (?)', client_ids, team_member_ids)
+    else
+      client_ids = current_user.clients.collect{|member| member.id}
+      result = company.activities.where('client_id in (?) OR created_by = ?', client_ids, current_user.id)
+    end
+
+    result.for_time_period(params[:start_date], params[:end_date]).order("happened_at #{sort_direction_filter}").limit(10).offset(offset)
+  end
+
+  def sort_direction_filter
+    case params[:order]
+    when 'asc'
+      'asc'
+    else
+      'desc'
+    end
+  end
+
+  def offset
+    (params[:page].to_i - 1) * 10
   end
 
   def root_teams

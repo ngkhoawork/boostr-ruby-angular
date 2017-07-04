@@ -1,7 +1,7 @@
 class DealChangedSerializer < ActiveModel::Serializer
   cached
 
-  attributes(:id, :name, :advertiser_name, :start_date, :stage_name, :budget, :previous_stage)
+  attributes :id, :name, :advertiser_name, :start_date, :stage_name, :budget, :previous_stage, :date
 
   private
 
@@ -31,5 +31,9 @@ class DealChangedSerializer < ActiveModel::Serializer
 
   def name
     object.name
+  end
+
+  def date
+    object.deal_stage_logs.ordered_by_created_at.first.created_at rescue nil
   end
 end

@@ -1,0 +1,43 @@
+#revenue-requests.block
+  %table.table.table-hover
+    %thead
+      %tr
+        %th Requester
+        %th Deal Name
+        %th IO Name
+        %th Item
+        %th Description
+        %th Created
+        %th Status
+        %th.left Owner
+
+    %tbody
+      %tr{ng: {repeat: 'request in requests', click: 'showEditRequestModal(request)'}}
+        %td
+          {{request.requester.name}}
+        %td
+          %a{'href': '', 'ng-href': '/deals/{{request.deal.id}}'} {{request.deal.name}}
+        %td
+          %a{'href': '', 'ng-href': '/revenue/ios/{{request.deal.io_id}}', 'ng-click': '$event.stopPropagation()'}
+            {{request.deal.io_name}}
+        %td
+          {{request.requestable.name}}
+        %td
+          {{request.description}}
+        %td
+          {{request.created_at | date : mediumDate}}
+        %td
+          {{request.status}}
+        %td.left{ng: {if: 'request.assignee'}}
+          {{request.assignee.name}}
+        %td.left{ng: {if: '!request.assignee'}}
+          %button.btn.activity-email-btn{ng: { click: 'assignRequest(request, $event)' } }
+            Take Ownership
+
+  .custom-pagination{'bgf-pagination': 'bgf-pagination',
+    'collection': 'requests',
+    'per-page': '20',
+    'link-group-size': "2",
+    'request-limit': "100",
+    'url': 'requestUrl',
+    'url-params': 'requestUrlParams'}

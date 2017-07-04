@@ -5,7 +5,7 @@
         %a{ href:'/settings/bps' }
           %i.fa.fa-arrow-left
           Back to Business Plans
-    .row
+    .row.mb20
       .bp-info.col-xs-12
         .info
           .info-body-wrap
@@ -15,6 +15,15 @@
               Created: {{bp.created_at | date: 'MMM dd, yyyy'}}
             .description
               Due Date: {{bp.due_date | date: 'MMM dd, yyyy'}}
+            .description
+              .action
+                Read Only: 
+              .action
+                .show-hide-remainder-form
+                  .switch-remainder-form
+                    %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'bp.read_only', 'ng-change': "updateBp()", id: "rem-act-modal-toggle{{bp.id}}"}
+                    %label{:for => "rem-act-modal-toggle{{bp.id}}"}
+                      %span
         .info
           %svg#progress-circle
           .info-body-wrap
@@ -25,7 +34,7 @@
     .row
       .col-xs-12
         %h3.title Estimate Summary
-    .row
+    .row.mb20
       .col-md-12.text-center.bp-table-wrapper
         %table.table
           %thead
@@ -53,7 +62,7 @@
           %a.pull-right.upload{ href: '', ng: { click: 'showAddClientModal()' } }
             = inline_svg 'icons/add.svg'
         %h3.title Unassigned Clients
-    .row
+    .row.mb20
       .col-md-12.text-center.bp-table-wrapper
         .alerts{ 'ng-if': 'notification' }
           .alert.alert-success
@@ -87,6 +96,8 @@
     .row
       .col-xs-12
         .section
+          %button.pull-right.add-btn{'ng-click': 'exportIncompleteEstimates()'}
+            Export
         %h3.title Incomplete Estimates
     .row
       .col-md-12.text-center.bp-table-wrapper
@@ -118,4 +129,5 @@
           %tbody{ ng: { if: 'incompleteBpEstimates.length == 0' } }
             %tr
               %td.center{ colspan: '6' }
-                No data available
+                %a{ href: '', ng: { click: 'loadIncompleteEstimates()' } }
+                  Load Incomplete Estimates

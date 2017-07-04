@@ -88,6 +88,10 @@ class User < ActiveRecord::Base
     self.find_by(email: email, is_active: true)
   end
 
+  def has_requests_access?
+    self.revenue_requests_access
+  end
+
   def name
     "#{first_name} #{last_name}"
   end
@@ -101,6 +105,12 @@ class User < ActiveRecord::Base
       super(options)
     else
       super(options.merge(
+        include: {
+          team: {
+            only: [:id, :name]
+          },
+          teams: {}
+        },
         methods: [:name, :leader?, :is_admin, :roles]
       ).except(:override))
     end

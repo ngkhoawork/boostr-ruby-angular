@@ -1,7 +1,7 @@
 class BudgetChangeSerializer < ActiveModel::Serializer
   cached
 
-  attributes(:id, :name, :advertiser_name, :start_date, :stage_name, :budget, :budget_change, :previous_stage)
+  attributes :id, :name, :advertiser_name, :start_date, :stage_name, :budget, :budget_change, :previous_stage, :date
 
   private
 
@@ -31,5 +31,9 @@ class BudgetChangeSerializer < ActiveModel::Serializer
 
   def name
     object.deal.name
+  end
+
+  def date
+    object.created_at rescue nil
   end
 end

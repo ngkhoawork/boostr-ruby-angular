@@ -42,8 +42,13 @@ class Api::BpEstimatesController < ApplicationController
           response.headers['X-Total-Count'] = bp_estimates.select('distinct(client_id)').count.to_s
           # response.headers['X-Seller-Estimate'] = bp_estimates.collect{|bp_estimate| bp_estimate.estimate_seller || 0}.inject(0){|sum,x| sum + x }.to_s
           # response.headers['X-Mgr-Estimate'] = bp_estimates.collect{|bp_estimate| bp_estimate.estimate_mgr || 0}.inject(0){|sum,x| sum + x }
+          if limit.present? && offset.present?
+            bp_data = bp_estimates.limit(limit).offset(offset)
+          else
+            bp_data = bp_estimates
+          end
           render json: {
-              bp_estimates: bp_estimates.limit(limit).offset(offset).collect{ |bp_estimate| bp_estimate.full_json },
+              bp_estimates: bp_data.collect{ |bp_estimate| bp_estimate.full_json },
               current: { pipelines: pipelines, revenues: revenues },
               year: { pipelines: year_pipelines, revenues: year_revenues, time_period: year_time_period },
               prev: { pipelines: prev_pipelines, revenues: prev_revenues, time_period: prev_time_period }
@@ -53,7 +58,6 @@ class Api::BpEstimatesController < ApplicationController
           require 'timeout'
           begin
             status = Timeout::timeout(120) {
-              # send_data BpEstimates.to_csv, filename: "bp-estimates-#{Date.today}.csv"
               send_data BpEstimate.to_csv(bp, bp_estimates, company), filename: "bp-estimates-#{Date.today}.csv"
             }
           rescue Timeout::Error
@@ -126,18 +130,21 @@ class Api::BpEstimatesController < ApplicationController
   end
 
   def limit
-    params[:per].present? ? params[:per].to_i : 10
+    params[:per].to_i if params[:per].present?
   end
 
   def offset
-    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
+    (params[:page].to_i - 1) * limit if params[:page].present?
   end
 
   def bp_estimates
     return @bp_estimates if defined?(@bp_estimates)
     incomplete = false
+    completed = false
     if params[:incomplete] == "true"
       incomplete = true
+    elsif params[:incomplete] == "false"
+      completed = true
     end
     unassigned = false
     if params[:unassigned] == "true"
@@ -161,7 +168,7 @@ class Api::BpEstimatesController < ApplicationController
                methods: [:time_dimension]
        })
     else
-      @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete)
+      @bp_estimates = bp.bp_estimates.includes({ bp_estimate_products: :product }, :user, :client).unassigned(unassigned).incomplete(incomplete).completed(completed)
       case params[:filter]
         when 'my'
           @bp_estimates = @bp_estimates.where(user_id: current_user.id)

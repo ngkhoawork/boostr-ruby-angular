@@ -14,9 +14,9 @@
   %td
     {{ bp_estimate.revenue | currency:'$':0 }}
   %td
-    %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+    %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate, type)'}
   %td
-    %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+    %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate, type)'}
 
 %tr.bp-estimate-detail{ ng: { if: 'toggleId == bp_estimate.id' } }
   %td.bp-estimate-wrapper.left{ colspan: '3' }
@@ -43,6 +43,6 @@
         %tr{ ng: { repeat: 'bp_estimate_product in bp_estimate.bp_estimate_products' } }
           %td {{ bp_estimate_product.product.name }}
           %td
-            %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate, type)'}
           %td
-            %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate, type)'}

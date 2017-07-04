@@ -1,13 +1,15 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem) ->
 
   $scope.showMeridian = true
+  $scope.isAdmin = false
   $scope.feedName = 'Deal Updates'
   $scope.types = []
   $scope.contacts = []
   $scope.errors = {}
   $scope.currencies = []
+  $scope.dealMembers = []
   $scope.contactSearchText = ""
   $scope.prevStageId = null
   $scope.selectedStageId = null
@@ -30,6 +32,7 @@
   $scope.dealFiles = []
   $scope.dealCustomFieldNames = []
   $scope.dealProductCfNames = []
+  $scope.activeDealProductCfLength = 0
 
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
@@ -144,7 +147,7 @@
     $scope.currentDeal = {}
     $scope.resetDealProduct()
     Deal.get($routeParams.id).then (deal) ->
-      $scope.setCurrentDeal(deal)
+      $scope.setCurrentDeal(deal, true)
       if initialLoad
         checkCurrentUserDealShare(deal.members)
         getOperativeIntegration(deal.id)
@@ -173,6 +176,14 @@
   getDealProductCfNames = () ->
     DealProductCfName.all().then (dealProductCfNames) ->
       $scope.dealProductCfNames = dealProductCfNames
+      $scope.activeDealProductCfLength = (_.filter dealProductCfNames, (item) -> !item.disabled).length
+
+  $scope.sumDealProductBudget = (index) ->
+    products = $scope.currentDeal.deal_products
+    _.reduce products, (result, product) ->
+      if !_.isUndefined index then product = product.deal_product_budgets[index]
+      result += parseInt product.budget_loc
+    , 0
 
   $scope.initReminder = ->
 
@@ -258,7 +269,6 @@
     currentDeal.curr_cd = curr_cd
     Deal.update(id: currentDeal.id, deal: currentDeal).then(
       (deal) ->
-        $scope.setCurrentDeal(deal)
         $scope.ealertReminder = true
       (resp) ->
         $timeout ->
@@ -268,17 +278,15 @@
           $scope.errors[key] = error && error[0]
     )
 
-  $scope.setCurrentDeal = (deal) ->
-    if deal
-      if deal.currency
-        if deal.currency.curr_symbol
-          $scope.currency_symbol = deal.currency.curr_symbol
-        else if deal.currency.curr_cd
-          $scope.currency_symbol = deal.currency.curr_cd
+  $scope.setCurrentDeal = (deal, shouldUsersUpdate) ->
+    $scope.currency_symbol = deal.currency && (deal.currency.curr_symbol || deal.currency.curr_cd)
 
-    _.each deal.members, (member) ->
-      Field.defaults(member, 'Client').then (fields) ->
-        member.role = Field.field(member, 'Member Role')
+    if shouldUsersUpdate
+      $scope.dealMembers = angular.copy deal.members
+      _.each $scope.dealMembers, (member) ->
+        Field.defaults(member, 'Client').then (fields) ->
+          member.role = Field.field(member, 'Member Role')
+
     Field.defaults(deal, 'Deal').then (fields) ->
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
@@ -561,13 +569,12 @@
   $scope.linkExistingUser = (item) ->
     $scope.userToLink = undefined
     DealMember.create(deal_id: $scope.currentDeal.id, deal_member: { user_id: item.id, share: 0, values: [] }).then (deal) ->
-      $scope.setCurrentDeal(deal)
+      $scope.setCurrentDeal(deal, true)
 
   $scope.updateDeal = ->
     $scope.errors = {}
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
       (deal) ->
-        $scope.setCurrentDeal(deal)
         $scope.ealertReminder = true
       (resp) ->
         for key, error of resp.data.errors
@@ -585,10 +592,7 @@
         else
           Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
             (deal) ->
-              if currentDeal.close_reason.option == undefined
-                $scope.setCurrentDeal(deal)
-              else
-                $scope.init()
+              if currentDeal.close_reason.option then $scope.init()
               $scope.ealertReminder = true
             (resp) ->
               $timeout ->
@@ -599,7 +603,6 @@
           )
 
   $scope.updateDealProduct = (data) ->
-    console.log(data)
     $scope.errors = {}
     DealProduct.update(id: data.id, deal_id: $scope.currentDeal.id, deal_product: data).then(
       (deal) ->
@@ -615,7 +618,7 @@
 
   $scope.updateDealMember = (data) ->
     DealMember.update(id: data.id, deal_id: $scope.currentDeal.id, deal_member: data).then (deal) ->
-      $scope.setCurrentDeal(deal)
+      $scope.setCurrentDeal(deal, true)
       checkCurrentUserDealShare(deal.members)
 
   $scope.onEditableBlur = () ->
@@ -628,7 +631,7 @@
   $scope.deleteMember = (member) ->
     if confirm('Are you sure you want to delete "' +  member.name + '"?')
       DealMember.delete(id: member.id, deal_id: $scope.currentDeal.id).then (deal) ->
-        $scope.setCurrentDeal(deal)
+        $scope.setCurrentDeal(deal, true)
 
   $scope.showContactEditModal = (deal_contact) ->
     deal_contact.errors = {}
@@ -642,6 +645,21 @@
       resolve:
         contact: ->
           deal_contact.contact
+
+  $scope.showNewRequestModal = (requestable, requestable_type) ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/request_form.html'
+      size: 'md'
+      controller: 'RequestsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        deal_id: ->
+          $scope.currentDeal.id
+        requestable: ->
+          requestable
+        requestable_type: ->
+          requestable_type
 
   $scope.deleteContact = (deletedContact) ->
     if confirm('Are you sure you want to delete "' +  deletedContact.contact.name + '"?')
@@ -743,9 +761,8 @@
   $scope.$on 'openContactModal', ->
     $scope.createNewContactModal()
 
-  $scope.$on 'updated_deals', ->
-    console.log 'UPDATED'
-    $scope.init() if $scope.marked_for_removal == false
+  $scope.$on 'updated_deals', (event, deal, action) ->
+    if deal && action != 'delete' then $scope.setCurrentDeal(deal)
 
   $scope.$on 'updated_reminders', ->
     $scope.initReminder()
@@ -846,12 +863,10 @@
   $scope.deleteDeal = (deal) ->
     $scope.errors = {}
     if confirm('Are you sure you want to delete "' +  deal.name + '"?')
-      $scope.marked_for_removal = true
       Deal.delete(deal).then(
         (deal) ->
           $location.path('/deals')
         (resp) ->
-          $scope.marked_for_removal = false
           for key, error of resp.data.errors
             $scope.errors[key] = error && error[0]
       )
@@ -930,6 +945,21 @@
   $scope.getHtml = (html) ->
     return $sce.trustAsHtml(html)
 
+  $scope.showBudgetRow = (item, e)->
+    budgetsRow = angular.element("[data-displayID='#{item.id}']")
+    innerDiv = budgetsRow.children()
+    angular.element('.display-line-budgets').outerHeight(0)
+    if $scope.selectedIORow == item
+        $scope.selectedIORow = null
+    else
+        $scope.selectedIORow = null
+        DisplayLineItem.get(item.id).then (budgets) ->
+            $scope.selectedIORow = item
+            $scope.budgets = budgets
+            calcRestBudget()
+            $timeout -> budgetsRow.height innerDiv.outerHeight()
+    return
+
   $scope.sendToOperative = (dealId)->
     Deal.send_to_operative(id: dealId).then () ->
       currentLog = $scope.operativeIntegration.dealLog
@@ -949,6 +979,12 @@
             $scope.operativeIntegration.isLoading = false
       , 2000
 
+  calcRestBudget = () ->
+    sum = _.reduce($scope.budgets, (res, budget) ->
+      res += Number(budget.budget_loc) || 0
+    , 0)
+    $scope.budgets && $scope.budgets.rest = $scope.selectedIORow.budget_loc - sum
+
   getOperativeIntegration = (dealId) ->
     ApiConfiguration.all().then (data) ->
       operative = _.findWhere data.api_configurations, integration_type: 'OperativeApiConfiguration'
@@ -963,4 +999,7 @@
       _.forEach members, (member) ->
         if member.user_id == currentUser.id && !(member.share > 0)
           $scope.showWarningModal 'You have 0% split share on this Deal. Update your split % if incorrect.'
+
+  $scope.$watch 'currentUser', (currentUser) ->
+    $scope.isAdmin = _.contains currentUser.roles, 'admin' if currentUser
 ]

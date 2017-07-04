@@ -1,20 +1,15 @@
-#users
-  #nav.transparent
-    .container-fluid
-      .row
-        .col-xs-12
-          %ul.nav.nav-tabs
-            %li.pull-right.last
-              %a.add-user{ href: '', ng: { click: 'showModal()' } }
-                = inline_svg 'icons/add.svg'
-                Add User
+#users.z-styles
+  .container-fluid.mb20
+    .row
+      .col-xs-10.col-centered
+        %span.page-title
+          Users
+        %add-button.plus-btn{ ng: { click: 'showModal()'} }
+          Add User
 
   .container-fluid
     .row
-      .col-xs-12
-        %h3
-          Users
-
+      .col-xs-10.col-centered.block
         #users-table.table-wrapper
           %table.table.table-hover.table-striped
             %thead
@@ -22,11 +17,15 @@
                 %th.left Name
                 %th.left Email
                 %th.left Title
+                %th.left Team
                 %th.left Default Currency
                 %th.left Type
                 %th.left Status
                 %th.left Is Admin
+                %th.left Revenue Requests
                 %th.left Action
+                %th.left Employee Id
+                %th.left Office
             %tbody
               %tr{ ng: { repeat: 'user in users' } }
                 %td.left{ ng: { click: 'editModal(user)' } }
@@ -35,6 +34,8 @@
                   {{ user.email }}
                 %td.left{ ng: { click: 'editModal(user)' } }
                   {{ user.title }}
+                %td.left{ ng: { click: 'editModal(user)' } }
+                  {{ user.teams.length > 0 ? 'Leader - ' + user.teams[0].name : user.team.name}}
                 %td.left
                   %ui-select{ name: 'default-currency', ng: { model: 'user.default_currency' }, 'on-select': 'submitUser(user)' }
                     %ui-select-match
@@ -60,4 +61,14 @@
                       %label{:for => "rem-act-modal-toggle{{user.id}}"}
                         %span
                 %td.left
+                  .show-hide-remainder-form
+                    .switch-remainder-form
+                      %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.revenue_requests_access', 'ng-change': "submitUser(user)", id: "revenue_requests_access{{user.id}}"}
+                      %label{:for => "revenue_requests_access{{user.id}}"}
+                        %span
+                %td.left
                   %a{href: '/switch_user?scope_identifier=user_{{user.id}}', target: '_blank'} Login As
+                %td.left{ ng: { click: 'editModal(user)' } }
+                  {{ user.employee_id }}
+                %td.left{ ng: { click: 'editModal(user)' } }
+                  {{ user.office }}

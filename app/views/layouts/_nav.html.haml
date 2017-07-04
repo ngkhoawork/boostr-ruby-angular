@@ -67,6 +67,8 @@
                   = link_to "Forecast Detail", "/reports/forecasts"
                 %li
                   = link_to "Product Forecast Detail", "/reports/product_forecasts"
+                %li
+                  = link_to "Pipeline Changes", "/reports/pipeline_changes_report"
           - if current_user.leader?
             %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
               %a{ href: '', 'dropdown-toggle': true }
@@ -107,50 +109,9 @@
                   = link_to "Initiatives", "/smart_reports/initiatives"
                 %li
                   = link_to "Pacing Dashboard", "/smart_reports/pacing_dashboard"
+          - if current_user.company.requests_enabled && current_user.has_requests_access?
+            %li{ ng: { class: "{ active: isActive('/requests') }" } }
+              = link_to "REQUESTS", "/requests"
           - if current_user.is?(:admin) || current_user.is?(:superadmin)
-            %li{ ng: { class: "{ active: isActive('/settings') }" }, dropdown: true }
-              %a{ href: '', 'dropdown-toggle': true }
-                SETTINGS
-                %span.caret
-              %ul.dropdown-menu
-                %li
-                  = link_to "General Settings", "/settings/general"
-                %li
-                  = link_to "Smart Insights", "/settings/smart_insights"
-                %li
-                  = link_to "Products", "/settings/products"
-                %li
-                  = link_to "Teams", "/settings/teams"
-                %li
-                  = link_to "Users", "/settings/users"
-                %li
-                  = link_to "Custom Fields", "/settings/custom_fields"
-                %li
-                  = link_to "Currencies", "/settings/currencies"
-                %li
-                  = link_to "Custom Values", "/settings/custom_values"
-                %li
-                  = link_to "Time Periods", "/settings/time_periods"
-                %li
-                  = link_to "Data Import/Export", "/settings/data_import"
-                %li
-                  = link_to "Quotas", "/settings/quotas"
-                %li
-                  = link_to "Stages", "/settings/stages"
-                %li
-                  = link_to "Business Plans", "/settings/bps"
-                %li
-                  = link_to "Integrations", "/settings/api_configurations"
-                %li
-                  = link_to "Integration Logs", "/settings/integration_logs"
-                %li
-                  = link_to "IO Feed Logs", "settings/io_feed_logs"
-                %li
-                  = link_to "Notifications", "/settings/notifications"
-                %li
-                  = link_to "Initiatives", "/settings/initiatives"
-                - if current_user.is?(:superadmin)
-                  %li
-                    = link_to " ", "/settings/tools"
-                %li
-                  = link_to "eAlerts", "/settings/ealerts"
+            %li{ ng: { class: "{ active: isActive('/settings') }" } }
+              = link_to "SETTINGS", "/settings"

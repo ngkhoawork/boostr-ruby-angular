@@ -92,39 +92,43 @@
         %table{'infinite-scroll': "loadMoreBps()", 'infinite-scroll-immediate-check': 'true'}
           %thead.fixed
             %tr{ width: "100%" }
-              %th.left{ width: "13%" }
+              %th.left{ width: "12%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("client_name")' } }
                   Account
                   %i{ ng: { class: "{ 'fa': sort.column == 'client_name', 'fa-sort-asc': sort.column == 'client_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'client_name' && sort.direction == 'desc' }" } }
-              %th.left{ width: "11%" }
+              %th.left{ width: "10%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("primary_agency_name")' } }
+                  Primary Agency
+                  %i{ ng: { class: "{ 'fa': sort.column == 'primary_agency_name', 'fa-sort-asc': sort.column == 'primary_agency_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'primary_agency_name' && sort.direction == 'desc' }" } }
+              %th.left{ width: "10%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("user_name")' } }
                   Seller
                   %i{ ng: { class: "{ 'fa': sort.column == 'user_name', 'fa-sort-asc': sort.column == 'user_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'user_name' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "8%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("pipeline")' } }
                   {{selectedBP.time_period.name}} Pipeline (W)
                   %i{ ng: { class: "{ 'fa': sort.column == 'pipeline', 'fa-sort-asc': sort.column == 'pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'pipeline' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "8%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("revenue")' } }
                   {{selectedBP.time_period.name}} Revenue
                   %i{ ng: { class: "{ 'fa': sort.column == 'revenue', 'fa-sort-asc': sort.column == 'revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'revenue' && sort.direction == 'desc' }" } }
-              %th{ width: "11%" }
+              %th{ width: "10%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("estimate_seller")' } }
                   {{selectedBP.time_period.name}} Estimate
                   %i{ ng: { class: "{ 'fa': sort.column == 'estimate_seller', 'fa-sort-asc': sort.column == 'estimate_seller' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'estimate_seller' && sort.direction == 'desc' }" } }
-              %th{ width: "11%" }
+              %th{ width: "10%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("estimate_mgr")' } }
                   Mgr Estimate
                   %i{ ng: { class: "{ 'fa': sort.column == 'estimate_mgr', 'fa-sort-asc': sort.column == 'estimate_mgr' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'estimate_mgr' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "8%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("year_revenue")' } }
                   {{yearQuarter}} Revenue
                   %i{ ng: { class: "{ 'fa': sort.column == 'year_revenue', 'fa-sort-asc': sort.column == 'year_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'year_revenue' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "7%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("year_change")' } }
                   {{'% Change - YoY'}}
                   %i{ ng: { class: "{ 'fa': sort.column == 'year_change', 'fa-sort-asc': sort.column == 'year_change' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'year_change' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "8%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("prev_revenue")' } }
                   {{prevQuarter}} Revenue
                   %i{ ng: { class: "{ 'fa': sort.column == 'prev_revenue', 'fa-sort-asc': sort.column == 'prev_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'prev_revenue' && sort.direction == 'desc' }" } }
@@ -134,39 +138,43 @@
                   %i{ ng: { class: "{ 'fa': sort.column == 'prev_year_change', 'fa-sort-asc': sort.column == 'prev_year_change' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'prev_year_change' && sort.direction == 'desc' }" } }
           %thead
             %tr{ width: "100%" }
-              %th.left{ width: "13%" }
+              %th.left{ width: "12%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("client_name")' } }
                   Account
                   %i{ ng: { class: "{ 'fa': sort.column == 'client_name', 'fa-sort-asc': sort.column == 'client_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'client_name' && sort.direction == 'desc' }" } }
-              %th.left{ width: "11%" }
+              %th.left{ width: "10%" }
+                %a.sort{ href: '', ng: { click: 'sort.toggle("primary_agency_name")' } }
+                  Primary Agency
+                  %i{ ng: { class: "{ 'fa': sort.column == 'primary_agency_name', 'fa-sort-asc': sort.column == 'primary_agency_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'primary_agency_name' && sort.direction == 'desc' }" } }
+              %th.left{ width: "10%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("user_name")' } }
                   Seller
                   %i{ ng: { class: "{ 'fa': sort.column == 'user_name', 'fa-sort-asc': sort.column == 'user_name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'user_name' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "8%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("pipeline")' } }
                   {{selectedBP.time_period.name}} Pipeline (W)
                   %i{ ng: { class: "{ 'fa': sort.column == 'pipeline', 'fa-sort-asc': sort.column == 'pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'pipeline' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "8%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("revenue")' } }
                   {{selectedBP.time_period.name}} Revenue
                   %i{ ng: { class: "{ 'fa': sort.column == 'revenue', 'fa-sort-asc': sort.column == 'revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'revenue' && sort.direction == 'desc' }" } }
-              %th{ width: "11%" }
+              %th{ width: "10%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("estimate_seller")' } }
                   {{selectedBP.time_period.name}} Estimate
                   %i{ ng: { class: "{ 'fa': sort.column == 'estimate_seller', 'fa-sort-asc': sort.column == 'estimate_seller' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'estimate_seller' && sort.direction == 'desc' }" } }
-              %th{ width: "11%" }
+              %th{ width: "10%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("estimate_mgr")' } }
                   Mgr Estimate
                   %i{ ng: { class: "{ 'fa': sort.column == 'estimate_mgr', 'fa-sort-asc': sort.column == 'estimate_mgr' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'estimate_mgr' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "8%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("year_revenue")' } }
                   {{yearQuarter}} Revenue
                   %i{ ng: { class: "{ 'fa': sort.column == 'year_revenue', 'fa-sort-asc': sort.column == 'year_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'year_revenue' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "7%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("year_change")' } }
                   {{'% Change - YoY'}}
                   %i{ ng: { class: "{ 'fa': sort.column == 'year_change', 'fa-sort-asc': sort.column == 'year_change' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'year_change' && sort.direction == 'desc' }" } }
-              %th{ width: "9%" }
+              %th{ width: "8%" }
                 %a.sort{ href: '', ng: { click: 'sort.toggle("prev_revenue")' } }
                   {{prevQuarter}} Revenue
                   %i{ ng: { class: "{ 'fa': sort.column == 'prev_revenue', 'fa-sort-asc': sort.column == 'prev_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'prev_revenue' && sort.direction == 'desc' }" } }
@@ -177,5 +185,5 @@
           %tbody{ng: { if: 'bpEstimates.length > 0', repeat: 'bp_estimate in bpEstimates', include: "'partials/bp_rows.html'" } }
           %tbody{ ng: { if: 'bpEstimates.length == 0' } }
             %tr
-              %td.center{ colspan: '10' }
+              %td.center{ colspan: '11' }
                 No data available

@@ -50,6 +50,7 @@ class Api::ApiConfigurationsController < ApplicationController
                                               :api_email,
                                               :json_api_key,
                                               :network_code,
+                                              :recurring,
                                               cpm_budget_adjustment_attributes: [:id,
                                                                                  :percentage,
                                                                                  :created_at,

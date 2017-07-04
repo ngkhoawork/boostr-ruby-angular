@@ -7,7 +7,8 @@ class API::ApiConfigurations::Single < API::Single
              :trigger_on_deal_percentage,
              :base_link,
              :api_email,
-             :network_code
+             :network_code,
+             :recurring
 
   property :cumulative_dfp_report_query, exec_context: :decorator
   property :monthly_dfp_report_query, exec_context: :decorator

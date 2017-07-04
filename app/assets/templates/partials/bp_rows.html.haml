@@ -1,29 +1,35 @@
 %tr
-  %td.left{ width: "13%" }
+  %td.left{ width: "12%" }
     %i{ ng: { click: 'toggleRow(bp_estimate.id)', class: "{ 'fa fa-chevron-up toggle-icon': toggleId == bp_estimate.id, 'fa fa-chevron-down toggle-icon': toggleId != bp_estimate.id }" } }
     {{bp_estimate.client_name}}
-  %td.left{ width: "11%" }
+  %td.left{ width: "10%" }
+    {{bp_estimate.primary_agency_name}}
+  %td.left{ width: "10%" }
     {{bp_estimate.user_name}}
     %a.unassign-bp-estimates.pull-right{ href: '', ng: { if: 'bp_estimate.user_id != null',click: 'unassignBpEstimate(bp_estimate)' } }
       = inline_svg 'icons/trash.svg'
-  %td{ width: "9%" }
+  %td{ width: "8%" }
     {{ bp_estimate.pipeline | currency:'$':0 }}
-  %td{ width: "9%" }
+  %td{ width: "8%" }
     {{ bp_estimate.revenue | currency:'$':0 }}
-  %td{ width: "11%" }
-    %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
-  %td{ width: "11%" }
-    %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
-  %td{ width: "9%" }
+  %td{ width: "10%" }
+    %div{'ng-if': 'selectedBP.read_only == false', 'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+    %span{'ng-if': 'selectedBP.read_only == true'}
+      {{ (bp_estimate.estimate_seller || 0) | currency:'$':0 }}
+  %td{ width: "10%" }
+    %div{'ng-if': 'selectedBP.read_only == false', 'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+    %span{'ng-if': 'selectedBP.read_only == true'}
+      {{ (bp_estimate.estimate_mgr || 0) | currency:'$':0 }}
+  %td{ width: "8%" }
     {{ bp_estimate.year_revenue | currency:'$':0 }}
-  %td{ width: "9%" }
+  %td{ width: "7%" }
     %span{'ng-if': 'bp_estimate.estimate_seller == null || bp_estimate.estimate_seller <= 0 || bp_estimate.year_revenue <= 0'}
       {{"-"}}
     %span.positive{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.year_revenue > 0  && bp_estimate.estimate_seller > bp_estimate.year_revenue'}
       {{ bp_estimate.year_change | number:0 }}%
     %span.negative{'ng-if': 'bp_estimate.estimate_seller > 0 && bp_estimate.year_revenue > 0  && bp_estimate.estimate_seller < bp_estimate.year_revenue'}
       {{ bp_estimate.year_change | number:0 }}%
-  %td{ width: "9%" }
+  %td{ width: "8%" }
     {{ bp_estimate.prev_revenue | currency:'$':0 }}
   %td{ width: "9%" }
     %span{'ng-if': 'bp_estimate.estimate_seller == null || bp_estimate.estimate_seller <= 0 || bp_estimate.prev_revenue <= 0'}
@@ -39,12 +45,12 @@
       .attr-label
         Objectives
       .attr-value
-        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Objectives', 'ng-model': 'bp_estimate.objectives', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Objectives', 'ng-model': 'bp_estimate.objectives', 'ng-blur': 'updateBpEstimate(bp_estimate)', 'ng-disabled': 'selectedBP.read_only == true'}
     .bp-estimate-attribute
       .attr-label
         Assumptions
       .attr-value
-        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Assumptions', 'ng-model': 'bp_estimate.assumptions', 'ng-blur': 'updateBpEstimate(bp_estimate)'}
+        %textarea.text-focus-field{ rows: 4, placeholder: 'Enter Assumptions', 'ng-model': 'bp_estimate.assumptions', 'ng-blur': 'updateBpEstimate(bp_estimate)', 'ng-disabled': 'selectedBP.read_only == true'}
   %td.bp-estimate-product-list.left{ colspan: "3"}
     %table.detail
       %tbody
@@ -58,8 +64,12 @@
         %tr{ ng: { repeat: 'bp_estimate_product in bp_estimate.bp_estimate_products' } }
           %td.left {{ bp_estimate_product.product.name }}
           %td
-            %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %div{'ng-if': 'selectedBP.read_only == false', 'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_seller", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %span{'ng-if': 'selectedBP.read_only == true'}
+              {{ (bp_estimate_product.estimate_seller || 0) | currency:'$':0 }}
           %td
-            %div{'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %div{'ng-if': 'selectedBP.read_only == false', 'click-to-edit':'click-to-edit', type: "number", prefix: '$', 'ng-model': "bp_estimate_product.estimate_mgr", 'on-after-save': 'updateBpEstimateProduct(bp_estimate)'}
+            %span{'ng-if': 'selectedBP.read_only == true'}
+              {{ (bp_estimate_product.estimate_mgr || 0) | currency:'$':0 }}
 
   %td{ colspan: "4"}

@@ -5,7 +5,7 @@
         @advertiser = ''
         @agency = ''
         @budget = ''
-        @exchange_rate = ''
+        @currency = ''
         @yearClosed = currentYear
         @date =
             startDate: null

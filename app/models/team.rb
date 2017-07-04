@@ -18,6 +18,10 @@ class Team < ActiveRecord::Base
     remove_team_leader
   end
 
+  after_update do
+    leader.update(team_id: nil) if leader_id_changed? && leader.present?
+  end
+
   def as_json(options = {})
     if options[:override]
       super(options)

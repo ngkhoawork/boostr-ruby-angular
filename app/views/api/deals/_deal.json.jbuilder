@@ -9,6 +9,7 @@ json.months deal.months
 json.days_per_month deal.days_per_month
 json.currency deal.currency
 json.company_ealert_reminder deal.company.ealert_reminder
+json.requests_enabled deal.company.requests_enabled
 
 json.stage deal.stage, :name, :probability, :color, :open, :active
 if deal.previous_stage
@@ -82,6 +83,31 @@ if deal.agency
   end
 end
 
+if !deal.stage.open && deal.stage.probability == 100 && deal.io.present?
+  json.io do
+    json.extract! deal.io, :id, :name, :budget, :budget_loc, :start_date, :end_date
+
+    json.content_fees deal.io.content_fees do |content_fee|
+      json.extract! content_fee, :id, :io_id, :budget, :budget_loc, :content_fee_product_budgets
+      json.product content_fee.product
+      json.request content_fee.request
+    end
+
+    json.display_line_items deal.io.display_line_items do |display_line_item|
+      json.extract! display_line_item,
+        :id, :io_id, :line_number, :ad_server, :quantity, :budget, :pricing_type,
+        :product_id, :budget_delivered, :budget_remaining, :quantity_delivered,
+        :quantity_remaining, :start_date, :end_date, :daily_run_rate, :num_days_til_out_of_budget,
+        :quantity_delivered_3p, :quantity_remaining_3p, :budget_delivered_3p, :budget_remaining_3p,
+        :price, :balance, :last_alert_at, :temp_io_id, :ad_server_product, :budget_loc,
+        :budget_delivered_loc, :budget_remaining_loc, :budget_delivered_3p_loc,
+        :budget_remaining_3p_loc, :balance_loc, :daily_run_rate_loc
+      json.product display_line_item.product
+      json.request display_line_item.request
+    end
+  end
+end
+
 json.values deal.values
 json.fields deal.fields
 
@@ -100,3 +126,4 @@ if deal.initiative.present?
 end
 
 json.closed_reason_text deal.closed_reason_text
+json.curr_symbol deal.currency.curr_symbol

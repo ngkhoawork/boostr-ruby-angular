@@ -28,6 +28,7 @@
 @import "settings/initiatives";
 @import "settings/products";
 @import "settings/ealerts";
+@import "settings/api_configurations";
 @import "where_to_pitch";
 @import "deal_reports";
 @import "inactives";
@@ -37,5 +38,7 @@
 @import "forecast_detail";
 @import "billing";
 @import "pacing_dashboard";
+@import "settings";
+@import "requests";
 
 html,body { height:100%; }

@@ -48,15 +48,15 @@
 							%tr
 								%td This Qtr
 								%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.current_quarter track by $index'}
-									{{val | currency: '$' : '0'}}
+									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 							%tr
 								%td Last Qtr
 								%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_quarter track by $index'}
-									{{val | currency: '$' : '0'}}
+									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 							%tr
 								%td YoY
 								%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.previous_year_quarter track by $index'}
-									{{val | currency: '$' : '0'}}
+									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 						%tbody
 							%tr.header-row
 								%th
@@ -67,15 +67,15 @@
 							%tr
 								%td This Qtr
 								%td{'ng-repeat': 'val in pipelineRevenue.revenue.current_quarter track by $index'}
-									{{val | currency: '$' : '0'}}
+									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 							%tr
 								%td Last Qtr
 								%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_quarter track by $index'}
-									{{val | currency: '$' : '0'}}
+									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 							%tr
 								%td YoY
 								%td{'ng-repeat': 'val in pipelineRevenue.revenue.previous_year_quarter track by $index'}
-									{{val | currency: '$' : '0'}}
+									{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
 
 		.row.mb20
 			.reports-header

@@ -8,6 +8,13 @@
     angular.toJson(original)
 
   resource = $resource '/api/deals/:id', { id: '@id' },
+    list:
+      method: 'GET'
+      url: '/api/deals/all'
+      isArray: true
+    deals_info_by_stage:
+      method: 'GET'
+      url: '/api/deals/all_deals_header'
     save:
       method: 'POST'
       url: '/api/deals'
@@ -30,6 +37,9 @@
       method: 'GET'
       url: '/api/deals/won_deals'
       isArray: true
+    filter_data:
+      method: 'GET'
+      url: '/api/deals/filter_data'
 
   pipeline_report_resource = $resource '/api/deals/pipeline_report'
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
@@ -41,6 +51,11 @@
     resource.query params, (deals) ->
       deferred.resolve(deals)
     deferred.promise
+
+  @list = (params) -> resource.list(params).$promise
+  @deals_info_by_stage = (params) -> resource.deals_info_by_stage(params).$promise
+
+  @filter_data = -> resource.filter_data().$promise
 
   @won_deals = (params) ->
     deferred = $q.defer()
@@ -103,7 +118,7 @@
       params,
       (deal) ->
         deferred.resolve(deal)
-        $rootScope.$broadcast 'updated_deals'
+        $rootScope.$broadcast 'updated_deals', deal
       (resp) ->
         deferred.reject(resp)
     )
@@ -121,7 +136,7 @@
     deferred = $q.defer()
     resource.delete id: deletedDeal.id, (deal) ->
       deferred.resolve(deal)
-      $rootScope.$broadcast 'updated_deals'
+      $rootScope.$broadcast 'updated_deals', deal, 'delete'
     , (error) ->
       deferred.reject(error)
     deferred.promise

@@ -37,12 +37,15 @@ class Company < ActiveRecord::Base
   has_many :operative_datafeed_configurations, dependent: :destroy
   has_many :initiatives, dependent: :destroy
   has_many :integration_logs, dependent: :destroy
+  has_many :requests
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
 
   has_one :billing_address, as: :addressable, class_name: 'Address'
   has_one :physical_address, as: :addressable, class_name: 'Address'
+
+  serialize :forecast_permission, HashSerializer
 
   accepts_nested_attributes_for :billing_address
   accepts_nested_attributes_for :physical_address
@@ -67,7 +70,6 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Region', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Client', name: 'Segment', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true)
-
     fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Attachment Type', value_type: 'Option', locked: true)
 
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)

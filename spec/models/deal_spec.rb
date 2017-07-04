@@ -7,6 +7,7 @@ RSpec.describe Deal, type: :model do
   context 'associations' do
     it { should have_many(:contacts).through(:deal_contacts) }
     it { should have_many(:deal_contacts) }
+    it { should have_many(:requests) }
 
     context 'restrictions' do
       let!(:deal) { create :deal }
@@ -262,6 +263,17 @@ RSpec.describe Deal, type: :model do
       deal.update(stage: proposal_stage)
     end
 
+    it 'integrates when there was an integration and config requires to reintegrate each stage' do
+      api_configuration.update(recurring: true)
+      create :integration, integratable: deal, external_type: Integration::OPERATIVE, external_id: 10
+
+      allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+      expect(OperativeIntegrationWorker).to receive(:perform_async).with(deal.id)
+
+      deal.update(stage: proposal_stage)
+    end
+
     it 'integrates when stage is lost and there was an integration already' do
       create :integration, integratable: deal, external_type: Integration::OPERATIVE, external_id: 10
 
@@ -283,6 +295,16 @@ RSpec.describe Deal, type: :model do
 
       it 'when stage is below threshold' do
         api_configuration.update(trigger_on_deal_percentage: 75)
+
+        allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
+
+        expect(OperativeIntegrationWorker).not_to receive(:perform_async).with(deal.id)
+
+        deal.update(stage: discuss_stage)
+      end
+
+      it 'when stage is below threshold and integration is recurring' do
+        api_configuration.update(trigger_on_deal_percentage: 75, recurring: true)
 
         allow(deal).to receive(:company_allowed_use_operative?).and_return(true)
 
@@ -884,6 +906,25 @@ RSpec.describe Deal, type: :model do
         )
       end
     end
+
+    context 'deal custom fields' do
+      it 'imports deal custom field' do
+        setup_custom_fields(company)
+        data = build :deal_csv_data_custom_fields,
+               stage: stage_won.name,
+               custom_field_names: company.deal_custom_field_names
+
+        expect do
+          Deal.import(generate_csv(data), user.id, 'deals.csv')
+        end.to change(DealCustomField, :count).by(1)
+
+        deal_cf = DealCustomField.last
+
+        company.deal_custom_field_names.each do |cf|
+          expect(deal_cf[cf.field_name]).to eq(data[cf.to_csv_header])
+        end
+      end
+    end
   end
 
   context 'after_update' do
@@ -965,5 +1006,12 @@ RSpec.describe Deal, type: :model do
 
   def user
     @_user ||= create :user
+  end
+
+  def setup_custom_fields(company)
+    create :deal_custom_field_name, field_type: 'datetime', field_label: 'Production Date', company: company
+    create :deal_custom_field_name, field_type: 'boolean',  field_label: 'Risky Click?', company: company
+    create :deal_custom_field_name, field_type: 'number',   field_label: 'Target Views', company: company
+    create :deal_custom_field_name, field_type: 'text',     field_label: 'Deal Type', company: company
   end
 end

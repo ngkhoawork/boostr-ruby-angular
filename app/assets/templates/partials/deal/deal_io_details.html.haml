@@ -1,0 +1,136 @@
+#io-details{ng: {if: 'currentDeal.io && currentDeal.stage.probability == 100'}}
+  %span.title IO Details
+  %a.io-link{'href': '', 'ng-href': '/revenue/ios/{{currentDeal.io.id}}'} {{currentDeal.io.name || ''}}
+  %span.details Total Budget = {{ currentDeal.io.budget_loc | currency: currency_symbol : 0 }}
+  %a.io-revenue-request{href: '', ng: { click: "showNewRequestModal(currentDeal.io, 'Io')", if: 'currentDeal.requests_enabled' } }
+    Revenue Request
+
+  .block#line-content-fees
+    %div.mb20
+      %span.title Line Items - content & fees
+
+    .table-wrapper
+      %table.table.table-hover
+        %thead
+          %tr
+            %th.left Product
+            %th.left Start Date
+            %th.left End Date
+            %th.left Total Budget
+            %th.left{ ng: { repeat: "month in currentDeal.months" } }
+              {{ month | boDate }}
+            %th{ ng: { if: 'currentDeal.requests_enabled' } }
+        %tbody
+          %tr{ ng: { if: 'currentDeal.io.content_fees && currentDeal.io.content_fees.length > 0', repeat: "content_fee in currentDeal.io.content_fees"} }
+            %td
+              {{ content_fee.product.name }}
+            %td
+              {{ currentDeal.io.start_date | date: 'M/d/yyyy' }}
+            %td
+              {{ currentDeal.io.end_date | date: 'M/d/yyyy' }}
+            %td
+              %span
+                {{ content_fee.budget_loc | currency:currency_symbol:0 }}
+            %td.left{ ng: { repeat: "product_budget in content_fee.content_fee_product_budgets | orderBy: 'start_date'" } }
+              %span
+                {{ product_budget.budget_loc | currency:currency_symbol:0 }}
+            %td.left.cell-thin{ ng: { if: 'currentDeal.requests_enabled' } }
+              %a{href: '', ng: { click: "showNewRequestModal(content_fee, 'ContentFee')" } }
+                Revenue Request
+          %tr{ ng: { if: '!currentDeal.io.content_fees || currentDeal.io.content_fees.length == 0' } }
+            %td.center{ 'colspan': '{{4+currentDeal.months.length}}' }
+              No data available
+
+  .block#line-display
+    %div.mb20
+      %span.title Line Items - display
+    .table-wrapper
+      %table.table.table-hover
+        %thead
+          %tr
+            %th.left Line #
+            %th.left AdServer
+            %th.left Start Date
+            %th.left End Date
+            %th.left
+              .product Product
+            %th.left Ad Server Product
+            %th.right Qty
+            %th.right Price
+            %th.left Price Type
+            %th.right Budget
+            %th.right Budg Del
+            %th.right Budg Rem
+            %th.right Qty Del
+            %th.right Qty Rem
+            %th.right 3PQtyDel
+            %th.right 3PQtyRem
+            %th.right 3PBudDel
+            %th.right 3PBudRem
+            %th.right Daily Rate
+            %th.right {{"#DaysNoBud"}}
+            %th.right{ ng: { if: 'currentDeal.requests_enabled' } }
+        %tbody{ ng: { if: 'currentDeal.io.display_line_items && currentDeal.io.display_line_items.length > 0', repeat: "displayLineItem in currentDeal.io.display_line_items | orderBy: 'line_number'"} }
+          %tr
+            %td.left
+              {{ displayLineItem.line_number }}
+            %td.left
+              {{ displayLineItem.ad_server }}
+            %td.left
+              {{ displayLineItem.start_date | date: 'M/d/yyyy' }}
+            %td.left
+              {{ displayLineItem.end_date | date: 'M/d/yyyy' }}
+            %td.left
+              {{ displayLineItem.product.name }}
+            %td.left
+              {{ displayLineItem.ad_server_product }}
+            %td.right
+              {{ displayLineItem.quantity }}
+            %td.right
+              {{ displayLineItem.price | currency:currency_symbol:0 }}
+            %td.left
+              {{ displayLineItem.pricing_type }}
+            %td.right.display-line-table-budget
+              %div
+                %a{href: '', 'ng-click': 'showBudgetRow(displayLineItem, $event)'}
+                  {{ displayLineItem.budget_loc | currency:currency_symbol:0 }}
+              %div.budget-arrow{'ng-class': '{"active": displayLineItem == selectedIORow}'}
+                .fa.fa-caret-up
+            %td.right
+              {{ displayLineItem.budget_delivered_loc | currency:currency_symbol:0 }}
+            %td.right
+              {{ displayLineItem.budget_remaining_loc | currency:currency_symbol:0 }}
+            %td.right
+              {{ displayLineItem.quantity_delivered }}
+            %td.right
+              {{ displayLineItem.quantity_remaining }}
+            %td.right
+              {{ displayLineItem.quantity_delivered_3p }}
+            %td.right
+              {{ displayLineItem.quantity_remaining_3p }}
+            %td.right
+              {{ displayLineItem.budget_delivered_3p_loc | currency:currency_symbol:0 }}
+            %td.right
+              {{ displayLineItem.budget_remaining_3p_loc | currency:currency_symbol:0 }}
+            %td.right
+              {{ displayLineItem.daily_run_rate | currency:currency_symbol:0 }}
+            %td.right
+              {{ displayLineItem.num_days_til_out_of_budget }}
+            %td.right.cell-thin{ ng: { if: 'currentDeal.requests_enabled' } }
+              %a{href: '', ng: { click: "showNewRequestModal(displayLineItem, 'DisplayLineItem')" } }
+                Revenue Request
+          %tr.display-line-budgets-row
+            %td.left{colspan: 21}
+              %div.display-line-budgets{'data-displayID': '{{displayLineItem.id}}', 'ng-class': '{active: selectedIORow == displayLineItem }'}
+                %div.budgets-inner
+                  %div.title
+                    Monthly Budgets
+                    %span ( {{ budgets.rest | currency:currency_symbol:0 }} remaining )
+                  %div.line-budget{'ng-repeat': 'budget in budgets'}
+                    .month {{budget.month}}
+                    .budget {{budget.budget_loc | currency : currency_symbol : 0}}
+
+        %tbody{ ng: { if: '!currentDeal.io.display_line_items || currentDeal.io.display_line_items.length == 0' } }
+          %tr
+            %td.center{ 'colspan': '20' }
+              No data available

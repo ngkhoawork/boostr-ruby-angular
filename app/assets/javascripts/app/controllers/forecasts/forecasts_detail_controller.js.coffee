@@ -74,6 +74,9 @@
             if $scope.filter[key]is value
                 return
             $scope.filter[key] = value
+#            getData()
+
+        $scope.applyFilter = ->
             getData()
 
         $scope.getAnnualSum = (data) ->
@@ -105,7 +108,7 @@
                     searchAndSetTimePeriod data.timePeriods
             if (data.user.is_admin)
                 searchAndSetTimePeriod data.timePeriods
-            getData()
+#            getData()
 
         searchAndSetUserTeam = (teams, user_id) ->
             for team in teams

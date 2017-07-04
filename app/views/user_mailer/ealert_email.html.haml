@@ -16,6 +16,10 @@
             %strong
               Advertiser:
             #{@deal.advertiser.name}
+          .advertiser-ballast{style: 'height: 20px;font-size: 15px;line-height: 20px;'}
+            %strong
+              Sales Team:
+            #{@sales_team}
         %td.action{style: 'text-align: right;'}
           %button.add-btn{style: 'outline: none;font-weight: bold;background-color: transparent;color: #ff7200;border: 2px solid #ff7200;border-radius: 100px;padding: 4px 14px 4px 12px;position: relative;top: -3px;transition: background-color 300ms, color 300ms;'}
             %a{href: "#{root_url}deals/#{@deal.id}", style: 'color: #ff7200;text-decoration: none;font-weight: bold;font-size: 13px;'}
