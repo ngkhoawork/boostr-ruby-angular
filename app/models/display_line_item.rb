@@ -55,6 +55,8 @@ class DisplayLineItem < ActiveRecord::Base
   after_create :update_io_budget
   after_update :update_io_budget
 
+  after_commit :update_temp_io_budget, on: [:create, :update]
+
   scope :for_time_period, -> (start_date, end_date) { where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', end_date, start_date) }
   scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
@@ -72,6 +74,14 @@ class DisplayLineItem < ActiveRecord::Base
       io.users.each do |user|
         user.set_alert(true)
       end
+    end
+  end
+
+  def update_temp_io_budget
+    if temp_io
+      budget = temp_io.display_line_items.sum(:budget)
+      budget_loc = budget / temp_io.exchange_rate
+      temp_io.update_columns(budget: budget, budget_loc: budget_loc)
     end
   end
 

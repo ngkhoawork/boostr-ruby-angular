@@ -220,7 +220,9 @@ Rails.application.routes.draw do
     resources :deal_product_budgets, only: [:index, :create]
     resources :deal_products, only: [:index, :create]
     resources :stages, only: [:index, :create, :show, :update]
-    resources :products, only: [:index, :create, :update]
+    resources :products, only: [:index, :create, :update] do
+      resources :ad_units
+    end
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       collection do
         get :all_members

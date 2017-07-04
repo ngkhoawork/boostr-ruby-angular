@@ -1,6 +1,7 @@
 FactoryGirl.define do
-  factory :api_configuration do
-    integration_type 'operative'
+  factory :operative_api_configuration do
+    integration_type OperativeApiConfiguration
+    integration_provider 'operative'
     switched_on true
     trigger_on_deal_percentage 100
     base_link 'https://config.operativeone.com'

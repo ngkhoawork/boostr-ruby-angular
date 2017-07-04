@@ -1,42 +1,34 @@
 require 'rails_helper'
 
 RSpec.describe DisplayLineItemCsv, type: :model do
-  it { should validate_presence_of(:line_number) }
-  it { should validate_presence_of(:start_date) }
-  it { should validate_presence_of(:end_date) }
-  it { should validate_presence_of(:product_name) }
-  it { should validate_presence_of(:quantity) }
-  it { should validate_presence_of(:budget) }
-  it { should validate_presence_of(:company_id) }
 
-  it { should validate_numericality_of(:line_number) }
-  it { should validate_numericality_of(:quantity) }
-  it { should validate_numericality_of(:budget) }
-  it { should validate_numericality_of(:budget_delivered) }
-  it { should validate_numericality_of(:quantity_delivered) }
-  it { should validate_numericality_of(:quantity_delivered_3p) }
+  context 'validations' do
+    subject { line_item_csv }
+    before do
+      exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
+    end
+    it { is_expected.to validate_presence_of(:io_name) }
+    it { is_expected.to validate_presence_of(:company_id) }
+    it { is_expected.to validate_presence_of(:io_name) }
+    it { is_expected.to validate_presence_of(:line_number) }
+    it { is_expected.to validate_presence_of(:start_date) }
+    it { is_expected.to validate_presence_of(:end_date) }
+    it { is_expected.to validate_presence_of(:product_name) }
+    it { is_expected.to validate_presence_of(:quantity) }
+    it { is_expected.to validate_presence_of(:budget) }
 
-  it { should allow_value("", nil).for(:quantity_delivered) }
-  it { should allow_value("", nil).for(:quantity_delivered_3p) }
+    it { is_expected.to validate_numericality_of(:line_number) }
+    it { is_expected.to validate_numericality_of(:quantity) }
+    it { is_expected.to validate_numericality_of(:budget) }
+    it { is_expected.to validate_numericality_of(:budget_delivered) }
+    it { is_expected.to validate_numericality_of(:quantity_delivered) }
+    it { is_expected.to validate_numericality_of(:quantity_delivered_3p) }
+
+    it { is_expected.to allow_value("", nil).for(:quantity_delivered) }
+    it { is_expected.to allow_value("", nil).for(:quantity_delivered_3p) }
+  end
 
   context 'custom validations' do
-    context 'io or temp_io presence' do
-      it 'validates io presence' do
-        line_item_csv(external_io_number: io.external_io_number)
-        expect(line_item_csv).to be_valid
-      end
-
-      it 'validates temp_io presence' do
-        line_item_csv(external_io_number: temp_io.external_io_number)
-        expect(line_item_csv).to be_valid
-      end
-
-      it 'fails if io and temp_io are not found via external_number' do
-        line_item_csv(external_io_number: 123)
-        expect(line_item_csv).not_to be_valid
-        expect(line_item_csv.errors.full_messages).to eql(["Io or tempio not found"])
-      end
-    end
 
     context 'multicurrency' do
       it 'is valid if io has exchange rate' do
@@ -261,6 +253,18 @@ RSpec.describe DisplayLineItemCsv, type: :model do
     line_item_csv(external_io_number: io.external_io_number, product_name: 'More Ads')
     line_item_csv.perform
     expect(DisplayLineItem.last.product).to eql product
+  end
+
+  it 'sets ctr' do
+    line_item_csv(external_io_number: io.external_io_number, ctr: 0.51)
+    line_item_csv.perform
+    expect(DisplayLineItem.last.ctr).to eql 0.51
+  end
+
+  it 'sets clicks' do
+    line_item_csv(external_io_number: io.external_io_number, clicks: 951)
+    line_item_csv.perform
+    expect(DisplayLineItem.last.clicks).to eql 951
   end
 
   context 'multicurrency Io' do

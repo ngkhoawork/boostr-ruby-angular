@@ -101,6 +101,7 @@
 									%th.left End Date
 									%th.left
 										.product Product
+									%th.left Ad Unit
 									%th.left Ad Server Product
 									%th.right Qty
 									%th.right Price
@@ -116,6 +117,8 @@
 									%th.right 3PBudRem
 									%th.right Daily Rate
 									%th.right {{"#DaysNoBud"}}
+									%th.right Clicks
+									%th.right CTR
 							%tbody{ ng: { if: 'currentIO.display_line_items && currentIO.display_line_items.length > 0', repeat: "displayLineItem in currentIO.display_line_items | orderBy: 'line_number'"} }
 								%tr
 									%td.left
@@ -128,6 +131,8 @@
 										{{ displayLineItem.end_date | date: 'M/d/yyyy' }}
 									%td.left
 										{{ displayLineItem.product.name }}
+									%td.left
+										{{ displayLineItem.ad_unit }}
 									%td.left
 										{{ displayLineItem.ad_server_product }}
 									%td.right
@@ -162,6 +167,10 @@
 										{{ displayLineItem.daily_run_rate | currency:currency_symbol:0 }}
 									%td.right
 										{{ displayLineItem.num_days_til_out_of_budget }}
+									%td.right
+										{{ displayLineItem.clicks }}
+									%td.right
+										{{ displayLineItem.ctr }}
 								%tr.display-line-budgets-row
 									%td.left{colspan: 20}
 										%div.display-line-budgets{'data-displayID': '{{displayLineItem.id}}', 'ng-class': '{active: selectedIORow == displayLineItem }'}

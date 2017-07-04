@@ -138,7 +138,7 @@ ActiveRecord::Schema.define(version: 20170623121752) do
   add_index "account_pipeline_facts", ["time_dimension_id"], name: "index_account_pipeline_facts_on_time_dimension_id", using: :btree
 
   create_table "account_product_pipeline_facts", force: :cascade do |t|
-    t.integer  "product_dimension_id"
+    t.integer  "product_id"
     t.integer  "time_dimension_id"
     t.integer  "account_dimension_id"
     t.integer  "company_id"
@@ -150,7 +150,7 @@ ActiveRecord::Schema.define(version: 20170623121752) do
 
   add_index "account_product_pipeline_facts", ["account_dimension_id"], name: "index_account_product_pipeline_facts_on_account_dimension_id", using: :btree
   add_index "account_product_pipeline_facts", ["company_id"], name: "index_account_product_pipeline_facts_on_company_id", using: :btree
-  add_index "account_product_pipeline_facts", ["product_dimension_id"], name: "index_account_product_pipeline_facts_on_product_dimension_id", using: :btree
+  add_index "account_product_pipeline_facts", ["product_id"], name: "index_account_product_pipeline_facts_on_product_id", using: :btree
   add_index "account_product_pipeline_facts", ["time_dimension_id"], name: "index_account_product_pipeline_facts_on_time_dimension_id", using: :btree
 
   create_table "account_product_revenue_facts", force: :cascade do |t|
@@ -1321,6 +1321,27 @@ ActiveRecord::Schema.define(version: 20170623121752) do
   add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
   add_index "reminders", ["remindable_id", "remindable_type"], name: "index_reminders_on_remindable_id_and_remindable_type", using: :btree
   add_index "reminders", ["user_id"], name: "index_reminders_on_user_id", using: :btree
+
+  create_table "requests", force: :cascade do |t|
+    t.integer  "deal_id"
+    t.integer  "company_id"
+    t.integer  "requester_id"
+    t.integer  "assignee_id"
+    t.integer  "requestable_id"
+    t.string   "requestable_type"
+    t.string   "status"
+    t.string   "request_type"
+    t.text     "description",      default: ""
+    t.text     "resolution",       default: ""
+    t.date     "due_date"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  add_index "requests", ["assignee_id"], name: "index_requests_on_assignee_id", using: :btree
+  add_index "requests", ["company_id"], name: "index_requests_on_company_id", using: :btree
+  add_index "requests", ["deal_id"], name: "index_requests_on_deal_id", using: :btree
+  add_index "requests", ["requester_id"], name: "index_requests_on_requester_id", using: :btree
 
   create_table "requests", force: :cascade do |t|
     t.integer  "deal_id"

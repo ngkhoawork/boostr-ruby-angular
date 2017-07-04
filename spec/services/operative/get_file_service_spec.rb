@@ -40,7 +40,7 @@ RSpec.describe Operative::GetFileService, datafeed: :true do
   end
 
   def api_config
-    @_api_config ||= create :api_configuration, company: company, api_email: 'email', password: 'password', base_link: 'ftpprod.operativeftphost.com'
+    @_api_config ||= create :operative_datafeed_configuration, company: company
   end
 
   def timestamp
