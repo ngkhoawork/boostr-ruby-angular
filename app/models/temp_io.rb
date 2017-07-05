@@ -1,7 +1,7 @@
 class TempIo < ActiveRecord::Base
   belongs_to :company
   belongs_to :io
-  has_many :display_line_items
+  has_many :display_line_items, dependent: :destroy
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
   validate :active_exchange_rate
 

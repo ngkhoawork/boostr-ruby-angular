@@ -40,8 +40,11 @@ gem 'countries'
 gem 'faraday'
 gem 'attr_encrypted', '~> 3.0.0'
 gem 'net-sftp', require: false
+gem 'google-dfp-api'
 gem 'clean_pagination'
-gem "switch_user"
+gem 'switch_user'
+gem 'oauth2'
+gem 'asana'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

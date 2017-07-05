@@ -2,6 +2,7 @@ class Product < ActiveRecord::Base
   belongs_to :company
   has_many :deal_products
   has_many :values, as: :subject
+  has_many :ad_units
 
   validates :name, presence: true
 
@@ -10,7 +11,7 @@ class Product < ActiveRecord::Base
   scope :active, -> { where('active IS true') }
 
   def as_json(options = {})
-    super(options.merge(include: [values: { include: [:option], methods: [:value] }]))
+    super(options.merge(include: [:ad_units, values: { include: [:option], methods: [:value] }]))
   end
 
   def fields

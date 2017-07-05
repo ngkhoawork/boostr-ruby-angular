@@ -1,0 +1,20 @@
+#product-unit-form-modal.popup-modal
+	%form{ ng: { submit: 'submitForm()' } }
+		.popup-modal-header
+			{{headerText}}
+			%span.close-btn{'ng-click': 'cancel()'}
+		.popup-modal-body
+			.alerts{ 'ng-repeat': '(field, fieldErrors) in responseErrors' }
+				.alert.alert-danger{ 'ng-repeat': 'error in fieldErrors' }
+					%i.fa.fa-warning
+					<strong style="text-transform: capitalize">{{field}}</strong>
+					{{error}}
+
+			.form-group{'ng-class':'{error: errors.name}'}
+				%span.error-text {{errors.name}}
+				%label{ for: 'name' } Name
+				%span.star *
+				%input.form-control{ name: 'name', placeholder: 'Name', ng: { model: 'productUnit.name' } }
+		.popup-modal-footer
+			%button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+			%button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{submitText}}

@@ -1,16 +1,13 @@
-@app.controller 'ApiConfigurationsEditController',
+@app.controller 'OperativeApiConfigurationsEditController',
   ['$scope', '$modalInstance', 'ApiConfiguration', 'api_configuration', 'IntegrationType'
     ($scope, $modalInstance, ApiConfiguration, api_configuration, IntegrationType) ->
 
       $scope.formType = 'Edit'
       $scope.submitText = 'Update'
-      $scope.integration_types = []
-      IntegrationType.all().then (types) ->
-        $scope.integration_types = types
 
       $scope.need_change_password = false
 
-      $scope.set_neet_set_password = (val) ->
+      $scope.set_need_set_password = (val) ->
         $scope.need_change_password = val
 
       $scope.api_configuration = api_configuration

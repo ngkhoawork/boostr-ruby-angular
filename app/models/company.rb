@@ -6,7 +6,7 @@ class Company < ActiveRecord::Base
   has_many :deals
   has_many :deal_products, through: :deals
   has_many :stages
-  has_many :distinct_stages, -> {distinct}, class_name: "Stage"
+  has_many :distinct_stages, -> {distinct}, class_name: 'Stage'
   has_many :products
   has_many :teams
   has_many :time_periods
@@ -32,6 +32,10 @@ class Company < ActiveRecord::Base
   has_many :exchange_rates
   has_many :validations, dependent: :destroy
   has_many :api_configurations, dependent: :destroy
+  has_many :dfp_api_configurations, dependent: :destroy
+  has_many :operative_api_configurations, dependent: :destroy
+  has_many :operative_datafeed_configurations, dependent: :destroy
+  has_many :asana_connect_configurations, dependent: :destroy
   has_many :initiatives, dependent: :destroy
   has_many :integration_logs, dependent: :destroy
   has_many :requests
@@ -51,7 +55,7 @@ class Company < ActiveRecord::Base
 
   def setup_defaults
     client_type = fields.find_or_initialize_by(subject_type: 'Client', name: 'Client Type', value_type: 'Option', locked: true)
-    setup_default_options(client_type, ['Advertiser', 'Agency'])
+    setup_default_options(client_type, %w(Advertiser Agency))
 
     contact_role = fields.find_or_initialize_by(subject_type: 'Deal', name: 'Contact Role', value_type: 'Option', locked: true)
     setup_default_options(contact_role, ['Billing'])
@@ -173,7 +177,7 @@ class Company < ActiveRecord::Base
   end
 
   def operative_api_config
-    ApiConfiguration.find_by(company_id: self, integration_type: Integration::OPERATIVE)
+    OperativeApiConfiguration.find_by(company_id: self)
   end
 
   def validation_for(factor)

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe 'Integration', operative: true do
   before do
-    create :api_configuration, company: company
+    create :operative_api_configuration, company: company
     create :billing_deal_contact, deal: deal, contact: contact
   end
 

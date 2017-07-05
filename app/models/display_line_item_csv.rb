@@ -2,20 +2,18 @@ class DisplayLineItemCsv
   include ActiveModel::Validations
 
   validates_presence_of     :line_number, :start_date, :end_date, :product_name,
-                            :quantity, :budget, :company_id
+                            :quantity, :budget, :company_id#, :io_name
   validates_numericality_of :line_number, :quantity, :budget, :budget_delivered, numericality: true
   validates_numericality_of :quantity_delivered, :quantity_delivered_3p, allow_blank: true
 
-  validates :io_or_tempio, presence: { message: 'not found' }
-
-  validate :io_exchange_rate_presence
+  validate :io_exchange_rate_presence, if: :company_id
   validate :dates_can_be_parsed
 
-  attr_accessor(
-    :external_io_number, :line_number, :ad_server, :start_date, :end_date,
-    :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
-    :quantity_delivered, :quantity_delivered_3p, :company_id
-  )
+  attr_accessor :external_io_number, :line_number, :ad_server, :start_date, :end_date,
+                :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
+                :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks,
+                :io_name, :io_start_date, :io_end_date, :io_advertiser, :io_agency, :ad_unit_name,
+                :product
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -25,6 +23,8 @@ class DisplayLineItemCsv
 
   def perform
     return self.errors.full_messages unless self.valid?
+    update_external_io_number
+    upsert_temp_io
     if io_or_tempio && display_line_item
       display_line_item.update(
         line_number: line_number,
@@ -45,6 +45,9 @@ class DisplayLineItemCsv
         quantity_delivered: quantity_delivered,
         quantity_remaining: quantity_remaining,
         quantity_delivered_3p: quantity_delivered_3p,
+        ctr: ctr,
+        clicks: clicks,
+        ad_unit: ad_unit_name
       )
     end
   end
@@ -65,11 +68,51 @@ class DisplayLineItemCsv
   end
 
   def io
-    @_io ||= Io.find_by(company_id: company_id, external_io_number: external_io_number)
+    return io_by_io_num unless io_by_io_num.nil?
+    io_by_ext_num
+  end
+
+  def io_by_ext_num
+    @_io_by_ext_num ||= Io.find_by(company_id: company_id, external_io_number: external_io_number)
+  end
+
+  def io_by_io_num
+    @_io_by_io_num ||= Io.find_by(company_id: company_id, io_number: io_number)
   end
 
   def tempio
-    @_temp_io ||= TempIo.find_by(company_id: company_id, external_io_number: external_io_number)
+    if io_name.present? && io_start_date.present? && io_end_date.present?
+      @_temp_io ||= TempIo.find_or_initialize_by(company_id: company_id, external_io_number: external_io_number)
+    else
+      @_temp_io ||= TempIo.find_by(company_id: company_id, external_io_number: external_io_number)
+    end
+  end
+
+  def upsert_temp_io
+    return unless io_name.present? && io_start_date.present? && io_end_date.present?
+    if io_or_tempio.kind_of? TempIo
+      temp_io_params = {
+          name: io_name,
+          start_date: io_start_date,
+          end_date: io_end_date,
+          advertiser: io_advertiser,
+          agency: io_agency
+      }
+
+      io_or_tempio.update!(
+          temp_io_params
+      )
+    end
+  end
+
+  def io_number
+    io_name.gsub(/.+_/, '') if io_name
+  end
+
+  def update_external_io_number
+    if io && external_io_number
+      io.update_columns(external_io_number: external_io_number)
+    end
   end
 
   def product
@@ -78,7 +121,7 @@ class DisplayLineItemCsv
   end
 
   def budget_loc
-    budget
+    budget.to_i
   end
 
   def budget_delivered_loc
@@ -123,6 +166,7 @@ class DisplayLineItemCsv
   end
 
   def parse_date(str)
+    return str if str.kind_of? ActiveSupport::TimeWithZone
     date_string = str.strip
     d = Date.parse date_string rescue nil
     d ||= Date.strptime(date_string, "%m/%d/%Y") rescue nil

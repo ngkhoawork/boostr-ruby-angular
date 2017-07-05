@@ -1,17 +1,67 @@
 @app.controller 'ApiConfigurationsController',
-  ['$scope', '$modal', 'ApiConfiguration',
-    ($scope, $modal, ApiConfiguration) ->
+  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType',
+    ($window, $scope, $modal, ApiConfiguration, IntegrationType) ->
+      mappings = {
+        providers: {
+          dfp: {
+            actions: {
+              create: { templateUrl: 'modals/dfp_api_configuration_form.html', controller: 'DfpApiConfigurationsCreateController' },
+              update: { templateUrl: 'modals/dfp_api_configuration_form.html', controller: 'DfpApiConfigurationsEditController' }
+            }
+          },
+          operative: {
+            actions: {
+              create: { templateUrl: 'modals/operative_api_configuration_form.html', controller: 'OperativeApiConfigurationsCreateController' },
+              update: { templateUrl: 'modals/operative_api_configuration_form.html', controller: 'OperativeApiConfigurationsEditController' }
+            }
+          },
+          operative_datafeed: {
+            actions: {
+              create: { templateUrl: 'modals/operative_datafeed_configuration_form.html', controller: 'DataFeedConfigurationsCreateController' },
+              update: { templateUrl: 'modals/operative_datafeed_configuration_form.html', controller: 'DataFeedConfigurationsCreateController' },
+            }
+          },
+          asana_connect: {
+            actions: {
+              create: { templateUrl: 'modals/asana_connect_configuration_form.html', controller: 'AsanaConnectConfigurationsCreateController' },
+              update: { templateUrl: 'modals/asana_connect_configuration_form.html', controller: 'AsanaConnectConfigurationsEditController' }
+            }
+          }
+        }
+      }
+
+      $scope.controller_config = {}
+      $scope.integration_types = []
+      $scope.current_integration = 'operative'
+
+      $scope.selectIntegrationProvider = (provider) ->
+        $scope.current_integration = provider
+        $scope.createModal()
+
+      selectMapping = (provider) ->
+        switch provider
+          when 'DFP'
+            mappings.providers.dfp
+          when 'operative'
+            mappings.providers.operative
+          when 'Operative Datafeed'
+            mappings.providers.operative_datafeed
+          when 'Asana Connect'
+            mappings.providers.asana_connect
 
       $scope.init = () ->
         $scope.api_configurations = {}
         ApiConfiguration.all().then (api_configurations) ->
           $scope.api_configurations = api_configurations.api_configurations
+        IntegrationType.all().then (types) ->
+          $scope.integration_types = types
 
       $scope.editModal = (api_configuration) ->
+        selectControllerTemplate = selectMapping(api_configuration.integration_provider)
         $scope.modalInstance = $modal.open
-          templateUrl: 'modals/api_configuration_form.html'
+          templateUrl: selectControllerTemplate.actions.update.templateUrl
           size: 'lg'
-          controller: 'ApiConfigurationsEditController'
+          controller: selectControllerTemplate.actions.update.controller
           backdrop: 'static'
           keyboard: false
           resolve:
@@ -19,10 +69,11 @@
               api_configuration
 
       $scope.createModal = ->
+        selectControllerTemplate = selectMapping($scope.current_integration)
         $scope.modalInstance = $modal.open
-          templateUrl: 'modals/api_configuration_form.html'
+          templateUrl: selectControllerTemplate.actions.create.templateUrl
           size: 'lg'
-          controller: 'ApiConfigurationsCreateController'
+          controller: selectControllerTemplate.actions.create.controller
           backdrop: 'static'
           keyboard: false
 

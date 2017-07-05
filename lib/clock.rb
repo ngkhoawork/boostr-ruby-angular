@@ -27,3 +27,7 @@ end
 every(1.day, 'Account Pipeline Data Calculator', at: '5:10', tz: 'UTC') do
   AccountPipelineCalculator.perform_async
 end
+
+every(1.day, 'Dfp reports importer', at: '4:00', tz: 'PST') do
+  DfpImportWorker.perform_async
+end

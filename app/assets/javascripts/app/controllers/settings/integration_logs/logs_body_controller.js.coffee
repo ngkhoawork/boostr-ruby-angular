@@ -1,6 +1,6 @@
 @app.controller 'LogsBodyController',
-    ['$scope', '$document', '$modalInstance', '$sce', 'body',
-        ($scope, $document, $modalInstance, $sce, body) ->
+    ['$scope', '$document', '$modalInstance', '$sce', 'body', 'doctype'
+        ($scope, $document, $modalInstance, $sce, body, doctype) ->
 
             $scope.cancel = ->
                 $modalInstance.close()
@@ -50,5 +50,8 @@
                         i++
                 obj
 
-            $scope.xmlObject = xmlToJson(parseXml(body))
+            if doctype.indexOf('json') != -1
+                $scope.xmlObject = body
+            else
+                $scope.xmlObject = xmlToJson(parseXml(body))
     ]
