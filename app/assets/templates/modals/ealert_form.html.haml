@@ -107,8 +107,9 @@
                 %strong
                   {{deal_product.name}}:
                 {{deal_product.budget_loc | currency: deal.currency.curr_symbol : 0}}
+                {{deal.currency.curr_cd}}
                 %span{'ng-if': 'deal.currency.curr_cd != "USD"'} 
-                  , {{deal_product.budget | currency: '$' : 0}}
+                  , {{deal_product.budget | currency: '$' : 0}} USD
                 %table{width: '100%'} 
                   %tr
                     %td{'ng-repeat': 'month in deal.months'}

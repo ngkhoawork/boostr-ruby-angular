@@ -65,8 +65,10 @@
             %strong
               #{deal_product['product']['name']}:
             #{@deal.currency.curr_symbol}#{number_with_precision(deal_product['budget_loc'], :precision => 0, :delimiter => ',')}
+            &nbsp;#{@deal.currency.curr_cd}
             - if @deal.currency.curr_cd != 'USD'
               , $#{number_with_precision(deal_product['budget'], :precision => 0, :delimiter => ',')}
+              &nbsp;USD
             %table{width: '100%', style: 'font-size: 12px;'}
               %tr
                 - @deal.months.each do |month|
