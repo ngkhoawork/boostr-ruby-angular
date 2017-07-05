@@ -273,7 +273,8 @@ RSpec.describe DealProduct, type: :model do
     let!(:deal_product) { create :deal_product, deal: deal, product: product, budget_loc: 100_000, budget: 100_000 }
 
     it 'returns correct headers' do
-      data = CSV.parse(user.company.deal_products.to_csv)
+      deal_products = user.company.deal_products
+      data = CSV.parse(Csv::DealProductService.new(deal_products).perform)
 
       expect(data[0]).to eq([
         "Deal_id",
@@ -292,7 +293,8 @@ RSpec.describe DealProduct, type: :model do
     end
 
     it 'returns correct data' do
-      data = CSV.parse(user.company.deal_products.to_csv)
+      deal_products = user.company.deal_products
+      data = CSV.parse(Csv::DealProductService.new(deal_products).perform)
 
       expect(data[1]).to eq([
         deal_product.deal.id,
@@ -305,8 +307,8 @@ RSpec.describe DealProduct, type: :model do
         deal_product.deal.end_date,
         deal_product.deal.curr_cd,
         deal_product.product.name,
-        deal_product.budget,
-        deal_product.budget_loc
+        deal_product.budget_loc,
+        deal_product.budget
       ].map(&:to_s))
     end
 
@@ -316,7 +318,8 @@ RSpec.describe DealProduct, type: :model do
       deal_product.deal.stage.destroy
       deal_product.product.destroy
 
-      deal_product_csv = CSV.parse(user.company.deal_products.to_csv)[1].to_csv
+      deal_products = user.company.deal_products
+      deal_product_csv = CSV.parse(Csv::DealProductService.new(deal_products).perform)[1].to_csv
 
       expect(deal_product_csv).to eq([
         deal_product.deal.id,
@@ -329,8 +332,8 @@ RSpec.describe DealProduct, type: :model do
         deal_product.deal.end_date,
         deal_product.deal.curr_cd,
         nil,
-        deal_product.budget,
-        deal_product.budget_loc
+        deal_product.budget_loc,
+        deal_product.budget
       ].to_csv)
     end
   end
