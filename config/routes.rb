@@ -205,9 +205,6 @@ Rails.application.routes.draw do
       put :update_influencer_budget
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
-      resources :influencer_content_fees, only: [:index, :show, :create, :update, :destroy] do
-        post :update_budget
-      end
     end
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       resources :deal_products, only: [:create, :update, :destroy]
@@ -289,6 +286,9 @@ Rails.application.routes.draw do
       end
     end
     resources :influencers, only: [:index, :show, :create, :update, :destroy]
+    resources :influencer_content_fees, only: [:index, :show, :create, :update, :destroy] do
+      post :update_budget
+    end
     resources :sales_execution_dashboard, only: [:index] do
       collection do
         get :forecast

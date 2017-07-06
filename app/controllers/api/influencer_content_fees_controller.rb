@@ -2,16 +2,52 @@ class Api::InfluencerContentFeesController < ApplicationController
   respond_to :json
 
   def index
-    results = influencer_content_fees.by_name(params[:name])
-    response.headers['X-Total-Count'] = results.count.to_s
-    render json: results.limit(limit).offset(offset)
-    .as_json({include: {
-        influencer: {},
-        currency: {},
-        content_fee: {}
-      },
-      methods: [:network_name]
-    })
+    results = influencer_content_fees.for_influencer_id(params[:influencer_id])
+    respond_to do |format|
+      format.json {
+        response.headers['X-Total-Count'] = results.count.to_s
+        render json: results
+        .as_json({include: {
+            influencer: {
+              methods: [:network_name]
+            },
+            currency: {},
+            content_fee: {
+              include: {
+                io: {
+                  include: {
+                    deal: {
+                      include: {
+                        agency: {},
+                        advertiser: {},
+                        deal_members: {
+                          methods: [:name]
+                        },
+                      },
+                      only: [:id, :name],
+                      methods: [:account_manager, :seller]
+                    }
+                  },
+                  only: [:id, :name, :deal_id, :io_number, :start_date],
+                },
+                product: {}
+              }
+            }
+          }
+        })
+      }
+      format.csv {
+        require 'timeout'
+        begin
+          Timeout::timeout(240) {
+            send_data InfluencerContentFee.to_csv(results, company), filename: "influencer-budget-detail-#{Date.today}.csv"
+          }
+        rescue Timeout::Error
+          return
+        end
+      }
+    end
+    
   end
 
   def create
@@ -76,7 +112,7 @@ class Api::InfluencerContentFeesController < ApplicationController
   private
 
   def influencer_content_fee
-    @influencer_content_fee ||= io.influencer_content_fees.find(params[:id])
+    @influencer_content_fee ||= company.influencer_content_fees.find(params[:id])
   end
 
   def influencer_content_fee_params
@@ -96,7 +132,8 @@ class Api::InfluencerContentFeesController < ApplicationController
   end
 
   def influencer_content_fees
-    @influencer_content_fees ||= io.influencer_content_fees
+    return @influencer_content_fees ||= io.influencer_content_fees if io.present?
+    return @influencer_content_fees ||= company.influencer_content_fees
   end
 
   def company

@@ -26,6 +26,7 @@
             {name: 'Pipeline Changes', url: '/reports/pipeline_changes_report'}
             {name: 'Pipeline Split Adjusted', url: '/reports/pipeline_split_report'}
             {name: 'Pipeline Summary', url: '/reports/pipeline_summary_report'}
+            {name: 'Influencer Budget Detail', url: '/reports/influencer_budget_detail'}
         ]}
         {name: 'SMART INSIGHTS', url: '/smart_reports', dropdown: [
             {name: 'Sales Execution Dashboard', url: '/smart_reports/sales_execution_dashboard'}

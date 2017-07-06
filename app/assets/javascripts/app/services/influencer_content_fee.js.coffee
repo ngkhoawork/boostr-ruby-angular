@@ -7,25 +7,25 @@
     original.influencer_content_fee.agreement_attributes = original.influencer_content_fee.agreement if original.influencer_content_fee.agreement
     angular.toJson(original)
 
-  resource = $resource '/api/ios/:io_id/influencer_content_fees/:id', { io_id: '@io_id', id: '@id' },
+  resource = $resource '/api/influencer_content_fees/:id', { io_id: '@io_id', id: '@id' },
     query:
       isArray: true,
       method: 'GET'
-      url: '/api/ios/:io_id/influencer_content_fees'
+      url: '/api/influencer_content_fees'
       transformResponse: (data, headers) ->
         resource.totalCount = headers()['x-total-count']
         angular.fromJson(data)
     save:
       method: 'POST'
-      url: '/api/ios/:io_id/influencer_content_fees'
+      url: '/api/influencer_content_fees'
       transformRequest: transformRequest
     update:
       method: 'PUT'
-      url: '/api/ios/:io_id/influencer_content_fees/:id'
+      url: '/api/influencer_content_fees/:id'
       transformRequest: transformRequest
     update_budget:
       method: 'POST'
-      url: '/api/ios/:io_id/influencer_content_fees/:id/update_budget'
+      url: '/api/influencer_content_fees/:id/update_budget'
       transformRequest: transformRequest
 
   currentInfluencerContentFee = undefined
