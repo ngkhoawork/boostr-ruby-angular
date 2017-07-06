@@ -75,11 +75,11 @@ class Api::AgencyDashboardsController < ApplicationController
 
   def filtered_pipelines_by_accounts
     @filtered_pipelines_by_accounts ||= FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
-                                                                                                                                          advertisers_ids: related_advertisers_ids)).call
+                                                                                                                                           advertisers_ids: related_advertisers_ids)).call
   end
 
   def advertisers_without_spend
-    FactTables::AccountProductRevenueFacts::AdvertisersWithoutSpendQuery.new(revenue_sums_by_accounts).call
+    FactTables::AccountProductRevenueFacts::AdvertisersWithoutSpendQuery.new(filtered_revenues_by_accounts).call
   end
 
   def agency
