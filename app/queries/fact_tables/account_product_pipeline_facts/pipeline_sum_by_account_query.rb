@@ -1,5 +1,5 @@
-class FactTables::AccountProductRevenueFacts::PipelineSumByProductQuery
-  def initialize(relation = AccountProductRevenueFact.joins(:time_dimension, :account_dimension))
+class FactTables::AccountProductPipelineFacts::PipelineSumByAccountQuery
+  def initialize(relation = AccountProductPipelineFact.joins(:time_dimension, :account_dimension))
     @relation = relation
   end
 

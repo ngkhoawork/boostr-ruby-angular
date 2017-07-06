@@ -41,7 +41,7 @@ class Api::AgencyDashboardsController < ApplicationController
   def revenue_total_account_by_time_dim
     revenue_sums_by_accounts.unscope(:group, :order, :select)
                             .group('time_dimensions.start_date, time_dimensions.end_date')
-                            .select('time_dimensions.start_date, time_dimensions.end_date, sum(weighted_amount) as pipeline_sum')
+                            .select('time_dimensions.start_date, time_dimensions.end_date, sum(revenue_amount) as revenue_sum')
   end
 
   def revenue_sums_by_products
@@ -61,20 +61,20 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def revenue_sums_by_accounts
-    FactTables::AccountProductRevenueFacts::RevenueSumByProductQuery.new(filtered_revenues_by_accounts).call
+    FactTables::AccountProductRevenueFacts::RevenueSumByAccountQuery.new(filtered_revenues_by_accounts).call
   end
 
   def pipeline_sums_by_accounts
-    FactTables::AccountProductRevenueFacts::PipelineSumByProductQuery.new(filtered_pipelines_by_accounts).call
+    FactTables::AccountProductPipelineFacts::PipelineSumByAccountQuery.new(filtered_pipelines_by_accounts).call
   end
 
   def filtered_revenues_by_accounts
     @filtered_revenues_by_accounts ||= FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
-                                                                                                     advertisers_ids: related_advertisers_ids)).call
+                                                                                                                                        advertisers_ids: related_advertisers_ids)).call
   end
 
   def filtered_pipelines_by_accounts
-    @filtered_pipelines_by_accounts ||= FactTables::AccountProductRevenueFacts::PipelineByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
+    @filtered_pipelines_by_accounts ||= FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
                                                                                                                                           advertisers_ids: related_advertisers_ids)).call
   end
 

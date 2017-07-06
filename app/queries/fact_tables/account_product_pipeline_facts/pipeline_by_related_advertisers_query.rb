@@ -1,4 +1,4 @@
-class FactTables::AccountProductRevenueFacts::PipelineByRelatedAdvertisersQuery
+class FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery
   def initialize(options = {}, relation = AccountProductPipelineFact.joins(:time_dimension, :account_dimension))
     @relation = relation.extending(FactScopes)
     @options = options
@@ -7,8 +7,8 @@ class FactTables::AccountProductRevenueFacts::PipelineByRelatedAdvertisersQuery
   def call
     return relation unless options.any?
     relation.by_time_dimension_date_range(options[:start_date], options[:end_date])
-        .by_related_advertisers(options[:advertisers_ids])
-        .by_company_id(options[:company_id])
+            .by_related_advertisers(options[:advertisers_ids])
+            .by_company_id(options[:company_id])
 
   end
 

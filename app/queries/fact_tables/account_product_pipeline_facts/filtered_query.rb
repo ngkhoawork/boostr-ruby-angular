@@ -26,10 +26,12 @@ class FactTables::AccountProductPipelineFacts::FilteredQuery
     end
 
     def by_account_id(account_id)
+      return self unless account_id
       where('account_dimensions.id = :id', id: account_id)
     end
 
     def by_holding_company_id(holding_company_id)
+      return self unless holding_company_id
       where('holding_companies.id = :id', id: holding_company_id)
     end
 
