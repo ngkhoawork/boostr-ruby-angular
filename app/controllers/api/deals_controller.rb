@@ -630,7 +630,8 @@ class Api::DealsController < ApplicationController
                 :number_4_dec4,
                 :number_4_dec5,
                 :number_4_dec6,
-                :number_4_dec7
+                :number_4_dec7,
+                :link1
             ]
         }
     )
