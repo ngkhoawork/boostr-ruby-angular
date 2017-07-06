@@ -14,8 +14,8 @@ class Api::AgencyDashboardsController < ApplicationController
                    revenue_totals: revenue_total_account_by_time_dim }
   end
 
-  def advertisers_without_spend
-
+  def related_advertisers_without_spend
+    render json: { revenue: advertisers_without_spend }
   end
 
   private
@@ -53,33 +53,33 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def filtered_pipelines_by_products
-    FactTables::AccountProductPipelineFacts::FilteredQuery.new(filter_params.merge(company_id: current_user_company_id)).call
+    @filtered_pipelines_by_products ||= FactTables::AccountProductPipelineFacts::FilteredQuery.new(filter_params.merge(company_id: current_user_company_id)).call
   end
 
   def filtered_revenues_by_products
-    FactTables::AccountProductRevenueFacts::FilteredQuery.new(filter_params.merge(company_id: current_user_company_id)).call
+    @filtered_revenues_by_products ||= FactTables::AccountProductRevenueFacts::FilteredQuery.new(filter_params.merge(company_id: current_user_company_id)).call
   end
 
   def revenue_sums_by_accounts
     FactTables::AccountProductRevenueFacts::RevenueSumByProductQuery.new(filtered_revenues_by_accounts).call
   end
 
-  def filtered_revenues_by_accounts
-    FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery.new(start_date: filter_params[:start_date],
-                                                                                 end_date: filter_params[:start_date],
-                                                                                 company_id: current_user_company_id,
-                                                                                 advertisers_ids: related_advertisers_ids).call
-  end
-
   def pipeline_sums_by_accounts
     FactTables::AccountProductRevenueFacts::PipelineSumByProductQuery.new(filtered_pipelines_by_accounts).call
   end
 
+  def filtered_revenues_by_accounts
+    @filtered_revenues_by_accounts ||= FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
+                                                                                                     advertisers_ids: related_advertisers_ids)).call
+  end
+
   def filtered_pipelines_by_accounts
-    FactTables::AccountProductRevenueFacts::PipelineByRelatedAdvertisersQuery.new(start_date: filter_params[:start_date],
-                                                                                  end_date: filter_params[:start_date],
-                                                                                  company_id: current_user_company_id,
-                                                                                  advertisers_ids: related_advertisers_ids).call
+    @filtered_pipelines_by_accounts ||= FactTables::AccountProductRevenueFacts::PipelineByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
+                                                                                                                                          advertisers_ids: related_advertisers_ids)).call
+  end
+
+  def advertisers_without_spend
+    FactTables::AccountProductRevenueFacts::AdvertisersWithoutSpendQuery.new(revenue_sums_by_accounts).call
   end
 
   def agency
