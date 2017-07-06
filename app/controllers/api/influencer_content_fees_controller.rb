@@ -16,31 +16,24 @@ class Api::InfluencerContentFeesController < ApplicationController
               include: {
                 io: {
                   include: {
-                    deal: {
-                      include: {
-                        agency: {},
-                        advertiser: {},
-                        deal_members: {
-                          methods: [:name]
-                        },
-                      },
-                      only: [:id, :name],
-                      methods: [:account_manager, :seller]
-                    }
+                    agency: {},
+                    advertiser: {}
                   },
-                  only: [:id, :name, :deal_id, :io_number, :start_date],
+                  methods: [:account_manager, :seller],
+                  only: [:id, :name, :deal_id, :io_number, :start_date]
                 },
                 product: {}
               }
             }
-          }
+          },
+          methods: [:team_name]
         })
       }
       format.csv {
         require 'timeout'
         begin
           Timeout::timeout(240) {
-            send_data InfluencerContentFee.to_csv(results, company), filename: "influencer-budget-detail-#{Date.today}.csv"
+            send_data InfluencerContentFee.to_csv(results), filename: "influencer-budget-detail-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return

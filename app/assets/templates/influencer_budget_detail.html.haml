@@ -49,16 +49,16 @@
                 %th.left{ width: "100" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_type")'}
                     IO Number
-                %th.left{ width: "100" }
+                %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("name")'}
                     Advertiser
-                %th.left{ width: "100" }
+                %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("advertiser_name")'}
                     Agency
-                %th.left{ width: "200" }
+                %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget")'}
                     Seller
-                %th.left{ width: "200" }
+                %th.left{ width: "150" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("start_date")'}
                     Account Manager
                 %th.left{ width: "150" }
@@ -97,20 +97,19 @@
             %tbody
               %tr{ ng: { repeat: 'influencer_content_fee in influencer_content_fees | orderBy:sortType:sortReverse' } }
                 %td.left
-                  %div{'ng-repeat': 'deal_member in influencer_content_fee.content_fee.io.deal.deal_members'}
-                    {{deal_member.name}} ({{deal_member.share}}%)
+                  {{ influencer_content_fee.team_name }}
                 %td.left
                   %a{'ng-href': '/revenue/ios/{{influencer_content_fee.content_fee.io.id}}'}
                     {{ influencer_content_fee.content_fee.io.io_number }}
                 %td.left
-                  {{ influencer_content_fee.content_fee.io.deal.advertiser.name }}
+                  {{ influencer_content_fee.content_fee.io.advertiser.name }}
                 %td.left
-                  {{ influencer_content_fee.content_fee.io.deal.agency.name }}
+                  {{ influencer_content_fee.content_fee.io.agency.name }}
                 %td.left
-                  %div{'ng-repeat': 'seller in influencer_content_fee.content_fee.io.deal.seller'}
+                  %div{'ng-repeat': 'seller in influencer_content_fee.content_fee.io.seller'}
                     {{seller.first_name + ' ' + seller.last_name}}
                 %td.left
-                  %div{'ng-repeat': 'seller in influencer_content_fee.content_fee.io.deal.account_manager'}
+                  %div{'ng-repeat': 'seller in influencer_content_fee.content_fee.io.account_manager'}
                     {{seller.first_name + ' ' + seller.last_name}}
                 %td.left
                   {{ influencer_content_fee.content_fee.product.name }}

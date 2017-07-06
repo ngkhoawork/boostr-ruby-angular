@@ -38,7 +38,8 @@
       query = null
       $scope.exportReports = ->
         qs = for key, value of query
-          key + '=' + value
+          if value
+            key + '=' + value
         qs = qs.join('&')
         $window.open('/api/influencer_content_fees.csv?' + qs)
         true

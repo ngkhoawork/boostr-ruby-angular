@@ -251,6 +251,22 @@ class Io < ActiveRecord::Base
     agency.present? ? agency.name : ''
   end
 
+  def account_manager
+    self.users.where(user_type: 3)
+  end
+
+  def seller
+    self.users.where(user_type: 1)
+  end
+
+  def highest_member
+    if io_members.count > 0
+      io_members.order("share desc").first
+    else
+      nil
+    end
+  end
+
   def for_forecast_page(start_date, end_date, user = nil)
     sum_period_budget = 0
     split_period_budget = 0
