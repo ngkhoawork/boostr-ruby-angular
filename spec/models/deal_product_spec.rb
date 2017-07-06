@@ -268,33 +268,37 @@ RSpec.describe DealProduct, type: :model do
   end
 
   describe '#to_csv' do
+    before { create :deal_product_cf_name, company: company }
+
     let!(:product) { create :product, company: company }
     let!(:deal) { create :deal, start_date: Date.new(2015, 7, 29), end_date: Date.new(2015, 8, 29), company: company }
     let!(:deal_product) { create :deal_product, deal: deal, product: product, budget_loc: 100_000, budget: 100_000 }
+    let!(:deal_product_cf) { create :deal_product_cf, company: company, deal_product: deal_product, text1: 'Joe Doe' }
 
     it 'returns correct headers' do
       deal_products = user.company.deal_products
-      data = CSV.parse(Csv::DealProductService.new(deal_products).perform)
+      data = CSV.parse(Csv::DealProductService.new(company, deal_products).perform)
 
       expect(data[0]).to eq([
-        "Deal_id",
-        "Deal_name",
-        "Advertiser",
-        "Agency",
-        "Deal_stage",
-        "Deal_probability",
-        "Deal_start_date",
-        "Deal_end_date",
-        "Deal_currency",
-        "Product_name",
-        "Product_budget",
-        "Product_budget_USD"
+        'Deal_id',
+        'Deal_name',
+        'Advertiser',
+        'Agency',
+        'Deal_stage',
+        'Deal_probability',
+        'Deal_start_date',
+        'Deal_end_date',
+        'Deal_currency',
+        'Product_name',
+        'Product_budget',
+        'Product_budget_USD',
+        'Owner'
       ])
     end
 
     it 'returns correct data' do
       deal_products = user.company.deal_products
-      data = CSV.parse(Csv::DealProductService.new(deal_products).perform)
+      data = CSV.parse(Csv::DealProductService.new(company, deal_products).perform)
 
       expect(data[1]).to eq([
         deal_product.deal.id,
@@ -308,7 +312,8 @@ RSpec.describe DealProduct, type: :model do
         deal_product.deal.curr_cd,
         deal_product.product.name,
         deal_product.budget_loc,
-        deal_product.budget
+        deal_product.budget,
+        deal_product_cf.text1
       ].map(&:to_s))
     end
 
@@ -319,7 +324,7 @@ RSpec.describe DealProduct, type: :model do
       deal_product.product.destroy
 
       deal_products = user.company.deal_products
-      deal_product_csv = CSV.parse(Csv::DealProductService.new(deal_products).perform)[1].to_csv
+      deal_product_csv = CSV.parse(Csv::DealProductService.new(company, deal_products).perform)[1].to_csv
 
       expect(deal_product_csv).to eq([
         deal_product.deal.id,
@@ -333,7 +338,8 @@ RSpec.describe DealProduct, type: :model do
         deal_product.deal.curr_cd,
         nil,
         deal_product.budget_loc,
-        deal_product.budget
+        deal_product.budget,
+        deal_product_cf.text1
       ].to_csv)
     end
   end
