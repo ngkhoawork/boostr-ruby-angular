@@ -4,6 +4,8 @@
 
         FIRST_CHART_ID = '#spend-product-chart'
         SECOND_CHART_ID = '#spend-advertiser-chart'
+        THIRD_CHART_ID = '#spend-category-chart'
+        FOURTH_CHART_ID = '#win-rate-category-chart'
 
         $scope.holdingCompanies = []
         $scope.isDateRangeVisible = true
@@ -21,16 +23,22 @@
 
         HoldingCompany.all({}).then (holdingCompanies) ->
             $scope.holdingCompanies = holdingCompanies
-#            $scope.holdingCompanies.unshift emptyFilter
-            console.log $scope.holdingCompanies
-
+#=======================================================================================================================
         randomValue = (min, max) -> Math.round(Math.random() * (max - min)) + min
         randomItem = (name) -> {name: name, values: $scope.months.map -> randomValue(5, 25) * 20000}
 
-        $scope.products = [1..5].map (i) -> randomItem('Product ' + i)
-        console.log $scope.products
+        $scope.spendByProducts = [1..5].map (i) -> randomItem('Product ' + i)
+        $scope.spendByAdvertisers = [1..5].map (i) -> randomItem('Advertiser ' + i)
+        $scope.spendByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(5, 100) * 10}
+        $scope.winRateByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(1, 100)}
+        $scope.winRateByCategory.map (o, i) -> o.value = (i + 2) * 3
+        $scope.winRateByCategory.unshift {name: 'Total', value: randomValue(1, 100)}
 
-        $timeout -> drawChart($scope.products, FIRST_CHART_ID)
+        $timeout -> drawChart($scope.spendByProducts, FIRST_CHART_ID)
+        $timeout -> drawChart($scope.spendByAdvertisers, SECOND_CHART_ID)
+        $timeout -> drawPieChart($scope.spendByCategory, THIRD_CHART_ID)
+        $timeout -> drawWinRateChart($scope.winRateByCategory, FOURTH_CHART_ID)
+#=======================================================================================================================
 
         drawChart = (data, chartId) ->
             chartContainer = angular.element(chartId + '-container')
@@ -38,7 +46,7 @@
             duration = 2000
             margin =
                 top: 10
-                left: 45
+                left: 70
                 right: 10
                 bottom: 40
             width = chartContainer.width() - margin.left - margin.right || 800
@@ -82,9 +90,7 @@
                 .tickPadding(10)
                 .outerTickSize(0)
                 .ticks(if yMax > 6 then 6 else yMax || 1)
-                .tickFormat (v) ->
-                    if chartId == SECOND_CHART_ID then return v
-                    $filter('formatMoney')(v)
+                .tickFormat (v) -> $filter('formatMoney')(v)
             yAxis.tickValues([0]) if yMax == 0
 
             svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')').call xAxis
@@ -109,16 +115,13 @@
 
             graphsContainer = svg.append('g')
                 .attr('class', 'graphs-container')
-#                .attr('clip-path', 'url(#clip)')
 
             graphs = graphsContainer.selectAll('.graph')
                 .data(dataset)
                 .enter()
                 .append('path')
                 .attr('class', 'graph')
-#                .attr('data-visibility', (d) -> d.visibility)
                 .attr 'stroke', (d) -> colors(d.name)
-#                .attr 'stroke-dasharray', (d) -> d.dasharray
                 .attr 'd', -> graphLine(_.map months, -> 0)
                 .transition()
                 .duration(duration)
@@ -134,15 +137,11 @@
                 .enter()
                 .append('div')
                 .attr('class', 'legend')
-#            legend.append('div')
-#                .attr('class', 'legend-icon')
-#                .style 'background-color', (d) -> d.color
             legend.append('svg')
                 .style 'width', '36'
                 .style 'height', '4px'
                 .style 'margin-right', '8px'
                 .append('line')
-#                .attr 'stroke-dasharray', (d) -> d.dasharray
                 .style 'stroke', (d) -> colors(d.name)
                 .style 'stroke-width', 3
                 .attr 'x1', 0
@@ -152,5 +151,121 @@
             legend.append('span')
                 .attr 'class', 'legend-text'
                 .html (d) -> d.name
+
+        drawPieChart = (data, chartId)->
+            width = angular.element(chartId).width()
+            height = width
+            radius = width / 2
+            colors = d3.scale.category10()
+
+            chart = d3.select(chartId).data([data])
+                .attr('width', width)
+                .attr('height', height)
+                .append('svg:g')
+                .attr('transform', 'translate(' + radius + ',' + radius + ')')
+            arc = d3.svg.arc().outerRadius(radius)
+            pie = d3.layout.pie().value (d) -> d.value
+            arcs = chart.selectAll('g.slice')
+                .data(pie).enter()
+                .append('svg:g')
+                .attr('class', 'slice')
+            arcs.append('svg:path')
+                .attr 'fill', (d, i) -> colors i
+                .attr 'd', arc
+
+            #legend
+            legendContainer = d3.select(chartId + '-container .legend-container')
+                .html('')
+                .style 'min-height', height + 'px'
+            legend = legendContainer
+                .selectAll('.legend')
+                .data(data)
+                .enter()
+                .append('div')
+                .attr('class', 'legend')
+            legend.append('div')
+                .style 'margin-right', '8px'
+                .append('svg')
+                .attr 'width', 36
+                .attr 'height', 10
+                .style 'height', '10px'
+                .append('rect')
+                .style 'fill', (d, i) -> colors i
+                .attr 'x', 0
+                .attr 'y', 0
+                .attr 'width', 34
+                .attr 'height', 10
+            legendText = legend.append('div')
+                .attr 'class', 'legend-text'
+            legendText.append('span')
+                .html (d) -> d.name
+                .style 'font-weight', 'bold'
+            legendText.append('span')
+                .html (d) -> $filter('formatMoney')(d.value)
+
+        drawWinRateChart = (data, chartId) ->
+            chartContainer = angular.element(chartId + '-container')
+            delay = 500
+            duration = 1000
+            margin =
+                top: 20
+                left: 100
+                right: 20
+                bottom: 0
+            barHeight = 25
+            barMargin = 25
+            barColor = '#3498DB'
+            totalColor = '#f1c40f'
+            width = chartContainer.width() - margin.left - margin.right || 800
+            height = data.length * (barHeight + barMargin)
+
+
+            svg = d3.select(chartId)
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom)
+                .html('')
+                .append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+            x = d3.scale.linear().domain([0, 100]).rangeRound([0, width])
+            items = data.map (d) -> d.name
+            y = d3.scale.ordinal().domain(items).rangeRoundBands([0, height])
+            xAxis = d3.svg.axis().scale(x).orient('top')
+                .innerTickSize(-height)
+                .tickPadding(10)
+                .outerTickSize(-height)
+                .tickValues([25, 50, 75, 100])
+                .tickFormat (v) -> v + '%'
+            yAxis = d3.svg.axis().scale(y).orient('left')
+                .innerTickSize(0)
+                .tickPadding(10)
+                .outerTickSize(-width)
+
+            svg.append('g').attr('class', 'axis').call xAxis
+            svg.append('g').attr('class', 'axis').call yAxis
+
+            rightRoundedRect = (x, y, w, h, r) ->
+                'M' + x + ',' + y + 'h' + (w - r) + 'a' + r + ',' + r + ' 0 0 1 ' + r + ',' + r + 'v' + (h - 2 * r) + 'a' + r + ',' + r + ' 0 0 1 ' + -r + ',' + r + 'h' + (r - w) + 'z'
+
+            barsWithData = svg.append('g')
+                .selectAll('g')
+                .data(data)
+                .enter()
+                .append('g')
+                .attr 'class', 'category-bar'
+            barsWithData.append('path')
+                .attr 'fill', (d, i) -> if i then barColor else totalColor
+                .attr 'class', 'win-rate-rect'
+                .attr 'd', (d) -> if d.value > 0 then rightRoundedRect(0, (y d.name) + y.rangeBand() / 2 - barHeight / 2, x(d.value), barHeight, 5)
+
+            minXForInnerText = 36
+            barsWithData.append('text')
+                .text (d) -> d.value + '%'
+                .attr 'fill', (d) -> if x(d.value) < minXForInnerText then null else 'white'
+#                .attr 'font-weight', 'bold'
+                .attr 'alignment-baseline', 'middle'
+                .attr 'text-anchor', (d) -> if x(d.value) < minXForInnerText then 'start' else 'end'
+                .attr 'x', (d) -> if x(d.value) < minXForInnerText then x(d.value) + 5 else x(d.value) - 6
+                .attr 'y', (d) -> ((y d.name) + y.rangeBand() / 2) + 2
 
     ]

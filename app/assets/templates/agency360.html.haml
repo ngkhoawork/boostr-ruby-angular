@@ -61,7 +61,7 @@
 													{{timePeriod.name}}
 
 
-		.row.mb20
+		.row
 			.block
 				%div.mb20
 					%span.title Spend by Product
@@ -77,70 +77,177 @@
 								%th{'ng-repeat': 'month in months'}
 									{{month}}
 						%tbody
-							%tr{'ng-repeat': 'product in products'}
+							%tr{'ng-repeat': 'product in spendByProducts'}
 								%td {{product.name}}
 								%td{'ng-repeat': 'val in product.values track by $index'}
 									{{val | currency: '$' : '0'}}
 
-		.row.mb20
-			.reports-header
-				.header-cell.main-title
-					Activity Pacing
-
 		.row
-			.col-xs-6.pl0
-				.block
-					%div.mb20
-						%span.title New Deal/RFP Pacing
-					%div#activity-new-chart-container
-						%svg#activity-new-chart.agency360-chart
-						%div.legend-container
-			.col-xs-6.pr0
-				.block
-					%div.mb20
-						%span.title Weekly Won Revenue Pacing
-					%div#activity-won-chart-container
-						%svg#activity-won-chart.agency360-chart
-						%div.legend-container
-		.row.mb20
 			.block
 				%div.mb20
-					%span.title Activity Pacing
-				%table.table.table-hover
-					%tbody
-						%tr.header-row
-							%th
-								%b New Deals #
-							%th{'ng-repeat': 'week in dealWeeks'} Week {{week}}
-					%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
-						%tr
-							%td This Qtr
-							%td{'ng-repeat': 'val in newDeals.current_quarter track by $index'}
-								{{val}}
-						%tr
-							%td Last Qtr
-							%td{'ng-repeat': 'val in newDeals.previous_quarter track by $index'}
-								{{val}}
-						%tr
-							%td YoY
-							%td{'ng-repeat': 'val in newDeals.previous_year_quarter track by $index'}
-								{{val}}
+					%span.title Spend by Advertiser
+				%div#spend-advertiser-chart-container.mb20
+					%svg#spend-advertiser-chart.agency360-chart
+					%div.legend-container
+				.table-wrapper
+					%table.table.table-hover
+						%thead
+							%tr
+								%th
+									%b Advertiser
+								%th{'ng-repeat': 'month in months'}
+									{{month}}
+						%tbody
+							%tr{'ng-repeat': 'product in spendByAdvertisers'}
+								%td {{product.name}}
+								%td{'ng-repeat': 'val in product.values track by $index'}
+									{{val | currency: '$' : '0'}}
 
-					%tbody
-						%tr.header-row
-							%th
-								%b Won Deals
-							%th{'ng-repeat': 'week in dealWeeks'} Week {{week}}
-					%tbody{'ng-show': 'pipelineRevenue.revenue'}
-						%tr
-							%td This Qtr
-							%td{'ng-repeat': 'val in wonDeals.current_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
-						%tr
-							%td Last Qtr
-							%td{'ng-repeat': 'val in wonDeals.previous_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
-						%tr
-							%td YoY
-							%td{'ng-repeat': 'val in wonDeals.previous_year_quarter track by $index'}
-								{{val | currency: '$' : '0'}}
+		.row
+			.col-xs-8.pl0
+				.block
+					%div.mb20
+						%span.title Advertisers Without Spend at [ADVERTISER_NAME]
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th Advertiser
+									%th Open Pipeline
+									%th Seller
+							%tbody
+								%tr
+									%td
+										%a{href: '', 'ng-href': '#'} Advertiser 1
+									%td {{250000 | currency : '$' : 0}}
+									%td Seller 1
+								%tr
+									%td
+										%a{href: '', 'ng-href': '#'} Advertiser 2
+									%td {{500000 | currency : '$' : 0}}
+									%td Seller 2
+								%tr
+									%td
+										%a{href: '', 'ng-href': '#'} Advertiser 3
+									%td {{750000 | currency : '$' : 0}}
+									%td Seller 3
+				.block
+					%div.mb20
+						%span.title Contacts & Related Advertisers
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th Name
+									%th Advertiser
+									%th Email
+									%th Phone
+									%th Last Touch
+							%tbody
+								%tr
+									%td
+										%a{href: '', 'ng-href': '#'} John Doe
+									%td
+										%a{href: '', 'ng-href': '#'} Nike
+									%td john_doe@gmail.com
+									%td 555-12-34
+									%td 05/20/2017
+								%tr
+									%td
+										%a{href: '', 'ng-href': '#'} John Doe
+									%td
+										%a{href: '', 'ng-href': '#'} Nike
+									%td john_doe@gmail.com
+									%td 555-12-34
+									%td 05/20/2017
+								%tr
+									%td
+										%a{href: '', 'ng-href': '#'} John Doe
+									%td
+										%a{href: '', 'ng-href': '#'} Nike
+									%td john_doe@gmail.com
+									%td 555-12-34
+									%td 05/20/2017
+
+				.block
+					%div.mb20
+						%span.title Activity History
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th Date
+									%th Type
+									%th Advertiser
+									%th Comments
+									%th Contacts
+							%tbody
+								%tr
+									%td 05/20/2017
+									%td
+										.activity-type
+											%span{'class': 'mr8 icon-activity-proposal'}
+											%b Proposal
+									%td
+										%a{href: '', 'ng-href': '#'} Nike
+									%td random comment
+									%td
+										%a{href: '', 'ng-href': '#'} John Doe
+								%tr
+									%td 05/20/2017
+									%td
+										.activity-type
+											%span{'class': 'mr8 icon-activity-email'}
+											%b Proposal
+									%td
+										%a{href: '', 'ng-href': '#'} Nike
+									%td random comment
+									%td
+										%a{href: '', 'ng-href': '#'} John Doe
+								%tr
+									%td 05/20/2017
+									%td
+										.activity-type
+											%span{'class': 'mr8 icon-activity-entertainment'}
+											%b Proposal
+									%td
+										%a{href: '', 'ng-href': '#'} Nike
+									%td random comment
+									%td
+										%a{href: '', 'ng-href': '#'} John Doe
+			.col-xs-4.pr0
+				.block
+					%div.mb20
+						%span.title Spend by Category
+					%div#spend-category-chart-container
+						%svg#spend-category-chart.agency360-chart>
+						%div.legend-container
+
+				.block
+					%div.mb20
+						%span.title Win Rate by Category
+					%div#win-rate-category-chart-container
+						%svg#win-rate-category-chart.agency360-chart
+
+				.block
+					%div.mb20
+						%span.title Spend By Agency
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th Agency
+									%th Spend
+							%tbody
+								%tr
+									%td
+										%a{href: '', 'ng-href': '#'} Agency 1
+									%td {{500000 | currency : '$' : 0}}
+								%tr
+									%td
+										%a{href: '', 'ng-href': '#'} Agency 2
+									%td {{500000 | currency : '$' : 0}}
+								%tr
+									%td
+										%a{href: '', 'ng-href': '#'} Agency 3
+									%td {{500000 | currency : '$' : 0}}

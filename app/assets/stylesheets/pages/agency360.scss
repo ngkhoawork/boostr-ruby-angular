@@ -36,11 +36,32 @@
     #spend-product-chart-container, #spend-advertiser-chart-container {
         display: inline-block;
         width: 100%;
-        //.agency360-chart {
-        //    .graph {
-        //        opacity: 0;
-        //    }
-        //}
+    }
+    #spend-category-chart-container {
+        & > svg {
+            display: inline-block;
+            vertical-align: top;
+            width: 50%;
+        }
+        .legend-container {
+            //background-color: gainsboro;
+            padding-left: 20px;
+            display: inline-flex;
+            flex-flow: column;
+            justify-content: space-around;
+            width: 50%;
+
+            .legend {
+                align-items: baseline;
+                min-height: 16px;
+                margin-right: 0;
+                .legend-text {
+                    width: 100%;
+                    display: inline-flex;
+                    justify-content: space-between;
+                }
+            }
+        }
     }
     .agency360-chart {
         height: auto;
@@ -76,6 +97,7 @@
             shape-rendering: crispEdges;
         }
         .tick {
+            font-size: 12px;
             .x-tick-text {
                 font-size: 14px;
             }
@@ -84,7 +106,6 @@
     .legend-container {
         margin-bottom: 20px;
         .legend {
-            //display: inline-block;
             display: inline-flex;
             align-items: center;
             margin-right: 20px;
@@ -94,40 +115,26 @@
                 border-radius: 3px;
                 display: inline-block;
                 margin-right: 8px;
-                //vertical-align: middle;
             }
             .legend-text {
-                //line-height: 14px;
-                //vertical-align: top;
             }
         }
     }
     table.table {
         th, td {
             text-align: center;
-        }
-        th:first-child {
-            color: $main-font-color !important;
-            text-align: left;
-            font-size: 14px;
-        }
-        .header-row {
-            height: auto !important;
-            &:hover {
-                background-color: inherit;
+            &:first-child {
+                text-align: left;
             }
-            th {
-                white-space: nowrap;
-                border-top: none;
-                border-bottom: 2px solid #ddd;
-                font-family: inherit;
-                &:first-child {
-                    font-size: 15px;
-                }
-                &:not(:first-child) {
-                    font-size: 12px;
-                }
+            .activity-type {
+                display: inline-flex;
+                align-items: center;
             }
         }
+        //th:first-child {
+        //    color: $main-font-color !important;
+        //    text-align: left;
+        //    font-size: 14px;
+        //}
     }
 }
