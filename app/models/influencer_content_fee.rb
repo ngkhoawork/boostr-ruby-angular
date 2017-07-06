@@ -40,8 +40,17 @@ class InfluencerContentFee < ActiveRecord::Base
   end
 
   def team_name
-    if content_fee.io.highest_member.present? && content_fee.io.highest_member.user.team.present?
-      content_fee.io.highest_member.user.team.name
+    team = nil
+    if content_fee.io.highest_member.present? 
+      user = content_fee.io.highest_member.user
+      if user && user.leader?
+        team = user.teams.first
+      elsif user
+        team = user.team
+      end
+    end
+    if team
+      team.name
     else
       ''
     end
