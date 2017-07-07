@@ -1,7 +1,7 @@
 class FilterData::BaseSerializer < ActiveModel::Serializer
   attribute :max_budget
 
-  has_many :owners, serializer: Deals::FilterData::OwnerSerializer
+  has_many :members, serializer: Deals::FilterData::MemberSerializer
   has_many :advertisers, serializer: Deals::AdvertiserSerializer
   has_many :agencies, serializer: Deals::AgencySerializer
   has_many :currencies, serializer: Deals::FilterData::CurrencySerializer
@@ -12,7 +12,7 @@ class FilterData::BaseSerializer < ActiveModel::Serializer
     object.deals.maximum(:budget).to_i
   end
 
-  def owners
+  def members
     object.users
   end
 
