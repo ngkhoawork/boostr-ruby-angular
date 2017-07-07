@@ -604,6 +604,8 @@
                         a {
                             position: relative;
                             top: 3px;
+                        }
+                        span {
                             &.has-error {
                                 color: $error-color;
                             }

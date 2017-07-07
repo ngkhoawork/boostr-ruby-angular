@@ -59,8 +59,7 @@
                 %span{'ng-show': '_scope()[fieldId].$visible', 'editable-text': 'currentDeal.deal_custom_field[fieldName]', onaftersave: 'updateDeal()', blur: 'submit', 'e-form': '{{fieldId}}'}
                     {{currentDeal.deal_custom_field[fieldName]}}
                 %div.link-wrap{'ng-hide': '_scope()[fieldId].$visible'}
-                    -#%span{'ng-if': '!isUrlValid(currentDeal.deal_custom_field[fieldName])'} {{currentDeal.deal_custom_field[fieldName]}}
-                    %a{'ng-if': '!isUrlValid(currentDeal.deal_custom_field[fieldName])', 'ng-class': '{"not-selected": !currentDeal.deal_custom_field[fieldName], "has-error": currentDeal.deal_custom_field[fieldName]}'} {{currentDeal.deal_custom_field[fieldName] || 'Enter ' + dealCustomFieldName.field_label}}
+                    %span{'ng-if': '!isUrlValid(currentDeal.deal_custom_field[fieldName])', 'ng-class': '{"not-selected": !currentDeal.deal_custom_field[fieldName], "has-error": currentDeal.deal_custom_field[fieldName]}'} {{currentDeal.deal_custom_field[fieldName] || 'Enter ' + dealCustomFieldName.field_label}}
                     %a{'ng-if': 'isUrlValid(currentDeal.deal_custom_field[fieldName])', href: '', target: '_blank', 'ng-href': '{{currentDeal.deal_custom_field[fieldName]}}'} {{getUrlHostname(currentDeal.deal_custom_field[fieldName])}}
                 %i.fa.fa-pencil.edit-deal{'ng-hide': '_scope()[fieldId].$visible', 'ng-click': '_scope()[fieldId].$show()'}
             .text-area{ ng: { 'switch-when': 'note' } }
