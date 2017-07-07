@@ -48,6 +48,7 @@ gem 'asana'
 gem 'pluck_to_hash'
 gem 'upsert'
 gem 'hashie'
+gem 'active_record_union'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

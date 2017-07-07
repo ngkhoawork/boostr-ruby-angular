@@ -33,6 +33,8 @@ GEM
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
     active_model_serializers (0.8.3)
       activemodel (>= 3.0)
+    active_record_union (1.2.0)
+      activerecord (>= 4.0)
     activeadmin (1.0.0)
       arbre (>= 1.1.1)
       bourbon
@@ -573,6 +575,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers (= 0.8.3)
+  active_record_union
   activeadmin (~> 1.0.0)
   angular-rails-templates
   asana
