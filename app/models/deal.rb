@@ -1053,8 +1053,8 @@ class Deal < ActiveRecord::Base
       end
 
       deal_member_list = []
-      if row[10].present?
-        deal_members = row[10].split(';').map{|el| el.split('/') }
+      if row[11].present?
+        deal_members = row[11].split(';').map{|el| el.split('/') }
 
         deal_member_list_error = false
 
@@ -1083,9 +1083,9 @@ class Deal < ActiveRecord::Base
         next
       end
 
-      if row[11].present?
+      if row[12].present?
         begin
-          created_at = DateTime.strptime(row[11], '%m/%d/%Y') + 8.hours
+          created_at = DateTime.strptime(row[12], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
           import_log.count_failed
           import_log.log_error(['Deal Creation Date must have valid date format MM/DD/YYYY'])
@@ -1093,9 +1093,9 @@ class Deal < ActiveRecord::Base
         end
       end
 
-      if row[12].present?
+      if row[13].present?
         begin
-          closed_date = DateTime.strptime(row[12], '%m/%d/%Y') + 8.hours
+          closed_date = DateTime.strptime(row[13], '%m/%d/%Y') + 8.hours
         rescue ArgumentError
           import_log.count_failed
           import_log.log_error(['Deal Close Date must have valid date format MM/DD/YYYY'])
@@ -1105,11 +1105,11 @@ class Deal < ActiveRecord::Base
         closed_date = nil
       end
 
-      if row[13].present?
-        close_reason = close_reason_field.options.where('name ilike ?', row[13].strip).first
+      if row[14].present?
+        close_reason = close_reason_field.options.where('name ilike ?', row[14].strip).first
         unless close_reason
           import_log.count_failed
-          import_log.log_error(["Close Reason #{row[13]} could not be found"])
+          import_log.log_error(["Close Reason #{row[14]} could not be found"])
           next
         end
       else
@@ -1117,8 +1117,8 @@ class Deal < ActiveRecord::Base
       end
 
       deal_contact_list = []
-      if row[14].present?
-        deal_contacts = row[14].split(';')
+      if row[15].present?
+        deal_contacts = row[15].split(';')
 
         deal_contact_list_error = false
 
@@ -1211,7 +1211,10 @@ class Deal < ActiveRecord::Base
       if deal.update_attributes(deal_params)
         import_log.count_imported
 
-        deal.deal_members.delete_all if deal_is_new
+        if deal_is_new || row[10] == 'Y'
+          deal.deal_members.delete_all
+        end
+
         deal_member_list.each_with_index do |user, index|
           deal_member = deal.deal_members.find_or_initialize_by(user: user)
           deal_member.update(share: deal_members[index][1].to_i)

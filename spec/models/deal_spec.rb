@@ -634,6 +634,16 @@ RSpec.describe Deal, type: :model do
       expect(existing_deal.end_date).to eq(Date.parse(data[:end_date]))
     end
 
+    it 'replaces deal team when flag is set' do
+      new_user = create :user, company: existing_deal.company
+      data = build :deal_csv_data, name: existing_deal.name, replace_team: 'Y', team: new_user.email + '/100'
+      Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+      existing_deal.reload
+
+      expect(existing_deal.users.map(&:email)).to eq([new_user.email])
+    end
+
     context 'invalid data' do
       let!(:duplicate_advertiser) { create :client, client_type_id: advertiser_type_id(user.company), company: company }
       let!(:duplicate_advertiser2) { create :client, client_type_id: advertiser_type_id(user.company), company: company, name: duplicate_advertiser.name }
