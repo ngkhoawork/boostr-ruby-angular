@@ -136,6 +136,7 @@ Rails.application.routes.draw do
       get :spend_by_product, on: :collection
       get :spend_by_advertisers, on: :collection
       get :related_advertisers_without_spend, on: :collection
+      get :spend_by_category, on: :collection
     end
 
     resources :time_dimensions, only: [:index]

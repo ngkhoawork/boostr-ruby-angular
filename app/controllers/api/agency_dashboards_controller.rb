@@ -18,6 +18,10 @@ class Api::AgencyDashboardsController < ApplicationController
     render json: { revenue: advertisers_without_spend }
   end
 
+  def spend_by_category
+    render json: { revenue: spend_by_category_data }
+  end
+
   private
 
   def revenue_total_product_by_time_dim
@@ -76,6 +80,10 @@ class Api::AgencyDashboardsController < ApplicationController
   def filtered_pipelines_by_accounts
     @filtered_pipelines_by_accounts ||= FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
                                                                                                                                            advertisers_ids: related_advertisers_ids)).call
+  end
+
+  def spend_by_category_data
+    FactTables::AccountProductRevenueFacts::SpendByCategoryQuery.new(filtered_revenues_by_accounts).call
   end
 
   def advertisers_without_spend

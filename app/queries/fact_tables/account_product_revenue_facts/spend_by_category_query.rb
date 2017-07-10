@@ -4,7 +4,7 @@ class FactTables::AccountProductRevenueFacts::SpendByCategoryQuery
   end
 
   def call
-    relation.find_by_sql(spent_by_category)
+    relation.find_by_sql(spent_by_category_sql)
   end
 
   private
@@ -19,7 +19,7 @@ class FactTables::AccountProductRevenueFacts::SpendByCategoryQuery
     relation.joins('INNER JOIN options on options.id = account_dimensions.category_id')
             .group('account_dimensions.category_id')
             .where('account_dimensions.category_id is null')
-            .select('account_dimensions.category_id, null as category_name, sum(revenue_amount) as revenue_sum')
+            .select('account_dimensions.category_id, \'Unassigned\' as category_name, sum(revenue_amount) as revenue_sum')
   end
 
   def advertisers_assigned
