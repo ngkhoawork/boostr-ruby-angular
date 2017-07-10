@@ -62,6 +62,7 @@ rerun.txt
 pickle-email-*.html
 /config/database.yml
 
+/db/schema.rb
 ## Environment normalisation:
 /.bundle
 /vendor/bundle

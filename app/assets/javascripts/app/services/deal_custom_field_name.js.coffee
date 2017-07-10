@@ -37,6 +37,7 @@
         { name: 'Percentage', value: 'percentage' }
         { name: 'Dropdown', value: 'dropdown' }
         { name: 'Sum', value: 'sum' }
+        { name: 'Link', value: 'link' }
       ]
 
       @all = (params) ->

@@ -25,7 +25,8 @@ class DealCustomFieldName < ActiveRecord::Base
       "boolean" => 3,
       "percentage" => 5,
       "dropdown" => 7,
-      "sum" => 7
+      "sum" => 7,
+      "link" => 1
     }
     field_limits[type]
   end
