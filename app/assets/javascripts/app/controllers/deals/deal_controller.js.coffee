@@ -34,6 +34,17 @@
   $scope.dealProductCfNames = []
   $scope.activeDealProductCfLength = 0
 
+  $scope._scope = -> this
+
+  $scope.isUrlValid = (url) ->
+    regexp = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+    regexp.test url
+
+  $scope.getUrlHostname = (url) ->
+    a = document.createElement 'a'
+    a.href = url
+    a.hostname
+
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
     .then (respond) ->

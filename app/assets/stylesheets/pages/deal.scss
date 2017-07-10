@@ -568,7 +568,7 @@
                 padding-left: 10px;
                 display: inline-block;
                 width: 59%;
-                .editable {
+                .editable, .editable-input {
                     display: inline-block;
                     min-width: 100px;
                     max-width: 100%;
@@ -577,6 +577,42 @@
                         border: 1px dashed $secondary-font-color;
                         &:hover {
                             background-color: inherit;
+                        }
+                    }
+                }
+                .editable-controls {
+                    width: 100%;
+                }
+                .editable-input {
+                    background-color: transparent;
+                    padding: 3px 8px;
+                    width: 100%;
+                    height: auto;
+                    border: 1px dashed $secondary-font-color;
+                    box-shadow: none;
+                }
+                .link-field {
+                    height: 28px;
+                    white-space: nowrap;
+                    .link-wrap {
+                        //border: 1px solid $error-color;
+                        padding-left: 8px;
+                        display: inline-block;
+                        //box-sizing: border-box;
+                        max-width: calc(100% - 36px);
+                        overflow: hidden;
+                        a {
+                            position: relative;
+                            top: 3px;
+                        }
+                        span {
+                            &.has-error {
+                                color: $error-color;
+                            }
+                            &.not-selected {
+                                font-weight: normal;
+                                color: #757575;
+                            }
                         }
                     }
                 }
