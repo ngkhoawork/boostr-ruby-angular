@@ -5,8 +5,45 @@
         max-width: 1600px;
         padding: 0 15px;
     }
+    .date-range-container {
+        border: 1px solid #D7E4F1;
+        border-radius: 4px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+        background-color: white;
+        position: absolute;
+        .date-range-inner {
+            padding: 10px 15px 25px;
+        }
+        .dropdown-wrap {
+            //display: flex;
+            //justify-content: space-around;
+            .filters-block {
+                display: inline-block;
+                margin: 0 15px;
+                td {
+                    padding-right: 0;
+                }
+            }
+            .dropdown-menu {
+                .menu-item {
+                    padding: 8px;
+                    &.active {
+                        
+                    }
+                    a {
+                        color: $main-font-color;
+                    }
+                }
+            }
+            .search-field {
+                margin-bottom: 5px;
+                padding: 5px;
+                border-width: 1px;
+                border-radius: 4px;
+            }
+        }
+    }
     .filters-block {
-        padding-left: 60px;
         a {
             font-weight: normal;
             color: $main-color;
