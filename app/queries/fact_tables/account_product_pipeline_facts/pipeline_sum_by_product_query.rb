@@ -7,7 +7,7 @@ class FactTables::AccountProductPipelineFacts::PipelineSumByProductQuery
     relation.where('time_dimensions.start_date >= ?', Date.today)
             .group('time_dimensions.start_date, time_dimensions.end_date, product_dimensions.name')
             .order('product_dimensions.name')
-            .select('time_dimensions.start_date, product_dimensions.name, sum(weighted_amount) as sum')
+            .select('time_dimensions.start_date, product_dimensions.name, sum(weighted_amount)')
   end
 
   private

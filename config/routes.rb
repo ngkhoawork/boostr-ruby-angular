@@ -297,8 +297,9 @@ Rails.application.routes.draw do
       put :update_positions, on: :collection
     end
     resources :holding_companies, only: [:index] do
-      resources :account_dimensions
+      resources :account_dimensions, only: [:index]
     end
+    resources :account_dimensions, only: [:index]
     resources :ealerts, only: [:index, :show, :create, :update, :destroy] do
       post :send_ealert
     end

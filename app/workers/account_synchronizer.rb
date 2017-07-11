@@ -16,7 +16,8 @@ class AccountSynchronizer < BaseWorker
         account_type: global_type_id(account),
         category_id: account.client_category_id,
         subcategory_id: account.client_subcategory_id,
-        holding_company_id: account.holding_company_id
+        holding_company_id: account.holding_company_id,
+        company_id: account.company_id
       }
 
       next if account_dimension.attributes == account_attributes

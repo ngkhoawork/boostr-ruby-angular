@@ -64,12 +64,18 @@ class Api::AgencyDashboardsController < ApplicationController
     FactTables::AccountProductRevenueFacts::AdvertisersWithoutSpendQuery.new(filtered_revenues_by_accounts).call
   end
 
-  def agency
-    @agency ||= Client.find(filter_params[:account_id])
+  def agencies
+    @agencies ||= AccountDimension.joins(:holding_company)
+                                  .where('company_id = ? AND (account_dimensions.id = ? OR holding_company_id = ?)',
+                                         current_user_company_id,
+                                         filter_params[:account_id],
+                                         filter_params[:holding_company_id])
   end
 
   def related_advertisers_ids
-    @related_advertisers_ids ||= agency.advertisers.pluck(:id)
+    @related_advertisers_ids ||= AccountDimension.joins(:advertiser_connections)
+                                                 .where('client_connections.advertiser_id in (?)', agencies.pluck(:id))
+                                                 .pluck(:id)
   end
 
   def current_user_company_id
