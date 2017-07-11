@@ -4,9 +4,9 @@ class FactTables::AccountProductRevenueFacts::RevenueSumByProductQuery
   end
 
   def call
-    relation.group('time_dimensions.start_date, time_dimensions.end_date, product_dimensions.revenue_type')
-            .order('product_dimensions.revenue_type')
-            .select('time_dimensions.start_date, time_dimensions.end_date, product_dimensions.revenue_type, sum(revenue_amount) as revenue_sum')
+    relation.group('time_dimensions.start_date, time_dimensions.end_date, product_dimensions.name')
+            .order('product_dimensions.name')
+            .select('time_dimensions.start_date, product_dimensions.name, sum(revenue_amount)')
   end
 
   private

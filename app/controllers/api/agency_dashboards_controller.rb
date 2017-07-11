@@ -1,52 +1,26 @@
 class Api::AgencyDashboardsController < ApplicationController
 
   def spend_by_product
-    render json: { revenue: revenue_sums_by_products,
-                   pipeline: pipeline_sums_by_products,
-                   pipeline_totals: pipeline_total_by_product_by_time_dim,
-                   revenue_totals: revenue_total_product_by_time_dim }
+    revenue = AgencyDashboard::SpendByProductSerializer.new(revenue_sums_by_products).serializable_hash
+    pipeline = AgencyDashboard::SpendByProductSerializer.new(pipeline_sums_by_products).serializable_hash
+    render json: { products: revenue[:products] + pipeline[:products] }
   end
 
   def spend_by_advertisers
-    render json: { revenue: revenue_sums_by_accounts,
-                   pipeline: pipeline_sums_by_accounts,
-                   pipeline_totals: pipeline_total_by_account_by_time_dim,
-                   revenue_totals: revenue_total_account_by_time_dim }
+    revenue = AgencyDashboard::SpendByAdvertiserSerializer.new(revenue_sums_by_accounts).serializable_hash
+    pipeline = AgencyDashboard::SpendByAdvertiserSerializer.new(pipeline_sums_by_accounts).serializable_hash
+    render json: { advertisers: revenue[:advertisers] + pipeline[:advertisers] }
   end
 
   def related_advertisers_without_spend
-    render json: { revenue: advertisers_without_spend }
+    render json: AgencyDashboard::AdvertisersWithoutSpendSerializer.new(advertisers_without_spend).serializable_hash
   end
 
   def spend_by_category
-    render json: { revenue: spend_by_category_data }
+    render json: AgencyDashboard::SpendByCategorySerializer.new(spend_by_category_data).serializable_hash
   end
 
   private
-
-  def revenue_total_product_by_time_dim
-    revenue_sums_by_products.unscope(:group, :order, :select)
-                            .group('time_dimensions.start_date, time_dimensions.end_date')
-                            .select('time_dimensions.start_date, time_dimensions.end_date, sum(revenue_amount) as revenue_sum')
-  end
-
-  def pipeline_total_by_product_by_time_dim
-    pipeline_sums_by_products.unscope(:group, :order, :select)
-                             .group('time_dimensions.start_date, time_dimensions.end_date')
-                             .select('time_dimensions.start_date, time_dimensions.end_date, sum(weighted_amount) as pipeline_sum')
-  end
-
-  def pipeline_total_by_account_by_time_dim
-    pipeline_sums_by_accounts.unscope(:group, :order, :select)
-                             .group('time_dimensions.start_date, time_dimensions.end_date')
-                             .select('time_dimensions.start_date, time_dimensions.end_date, sum(weighted_amount) as pipeline_sum')
-  end
-
-  def revenue_total_account_by_time_dim
-    revenue_sums_by_accounts.unscope(:group, :order, :select)
-                            .group('time_dimensions.start_date, time_dimensions.end_date')
-                            .select('time_dimensions.start_date, time_dimensions.end_date, sum(revenue_amount) as revenue_sum')
-  end
 
   def revenue_sums_by_products
     FactTables::AccountProductRevenueFacts::RevenueSumByProductQuery.new(filtered_revenues_by_products).call

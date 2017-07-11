@@ -4,10 +4,10 @@ class FactTables::AccountProductPipelineFacts::PipelineSumByProductQuery
   end
 
   def call
-    relation.where('time_dimensions.start_date > ?', Date.today)
-            .group('time_dimensions.start_date, time_dimensions.end_date, product_dimensions.revenue_type')
-            .order('product_dimensions.revenue_type')
-            .select('time_dimensions.start_date, time_dimensions.end_date, product_dimensions.revenue_type, sum(weighted_amount) as pipeline_sum')
+    relation.where('time_dimensions.start_date >= ?', Date.today)
+            .group('time_dimensions.start_date, time_dimensions.end_date, product_dimensions.name')
+            .order('product_dimensions.name')
+            .select('time_dimensions.start_date, product_dimensions.name, sum(weighted_amount) as sum')
   end
 
   private

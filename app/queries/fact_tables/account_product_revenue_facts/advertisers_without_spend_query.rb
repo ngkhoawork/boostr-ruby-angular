@@ -16,7 +16,7 @@ class FactTables::AccountProductRevenueFacts::AdvertisersWithoutSpendQuery
             .group('account_dimensions.name, sellers.seller_name')
             .order('account_dimensions.name')
             .having('sum(revenue_amount) = 0')
-            .select('account_dimensions.name as account_name, sellers.seller_name as seller_name, sum(revenue_amount) as revenue_sum')
+            .select('account_dimensions.name as advertiser_name, sellers.seller_name as seller_name, sum(revenue_amount)')
   end
 
   def advertisers_seller_sql
