@@ -40,14 +40,18 @@ Flight Dates – #{deal.start_date.strftime('%m/%d/%Y')} to #{deal.end_date.strf
   end
 
   def workspace
-    @_workspace ||= asana_client.workspaces.find_all.first
-    raise "No workspaces found for api user" unless @_workspace
+    @_workspace ||= workspaces.find{|el|el.name.casecmp(api_config.asana_connect_details.workspace_name) == 0}
+    raise "No workspace #{api_config.asana_connect_details.workspace_name} was found" unless @_workspace
     @_workspace
   end
 
+  def workspaces
+    asana_client.workspaces.find_all
+  end
+
   def project
-    @_project ||= projects.find{|el|el.name.casecmp(api_config.network_code) == 0}
-    raise "No project #{api_config.network_code} was found" unless @_project
+    @_project ||= projects.find{|el|el.name.casecmp(api_config.asana_connect_details.project_name) == 0}
+    raise "No project #{api_config.asana_connect_details.project_name} was found" unless @_project
     @_project
   end
 

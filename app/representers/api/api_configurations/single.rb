@@ -14,6 +14,7 @@ class API::ApiConfigurations::Single < API::Single
   property :monthly_dfp_report_query, exec_context: :decorator
   property :cpm_budget_adjustment, exec_context: :decorator
   property :json_api_key, exec_context: :decorator
+  property :asana_connect_details, exec_context: :decorator
 
   private
 
@@ -33,4 +34,7 @@ class API::ApiConfigurations::Single < API::Single
     represented.dfp_report_queries.monthly.last if represented.integration_type == 'DfpApiConfiguration'
   end
 
+  def asana_connect_details
+    represented.asana_connect_details if represented.integration_type == 'AsanaConnectConfiguration'
+  end
 end

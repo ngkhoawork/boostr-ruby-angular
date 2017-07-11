@@ -7,6 +7,8 @@ class AsanaConnect < ActiveRecord::Base
     if params[:code]
       token = oauth_client.auth_code.get_token(params[:code])
       create_api_configuration(token, params[:state])
+    elsif params[:error]
+      disable_api_configuration(params[:state])
     end
   end
 
@@ -34,6 +36,12 @@ class AsanaConnect < ActiveRecord::Base
     }
     api_config = ApiConfiguration.find_or_initialize_by(company_id: company_id, integration_provider: Integration::ASANA_CONNECT)
     api_config.update(params)
+  end
+
+  def self.disable_api_configuration(user_id)
+    company_id = User.find(user_id).company_id
+    api_config = ApiConfiguration.find_or_initialize_by(company_id: company_id, integration_provider: Integration::ASANA_CONNECT)
+    api_config.update(switched_on: false)
   end
 
   def persisted?

@@ -6,6 +6,7 @@
       $scope.submitText = 'Create'
       $scope.need_change_password = false
       $scope.api_configuration = {}
+      $scope.api_configuration.asana_connect_details_attributes = {}
       $scope.api_configuration.switched_on = true
       $scope.api_configuration.integration_provider = 'Asana Connect'
       $scope.api_configuration.trigger_on_deal_percentage = 0
