@@ -56,13 +56,16 @@ class Api::ApiConfigurationsController < ApplicationController
                                                                                  :created_at,
                                                                                  :updated_at,
                                                                                  :api_configuration_id],
-                                              dfp_report_queries_attributes: [:id,
-                                                                              :report_type,
-                                                                              :monthly_recurrence_day,
-                                                                              :report_id,
-                                                                              :weekly_recurrence_day,
-                                                                              :is_daily_recurrent,
-                                                                              :api_configuration_id
-                                              ])
+                                              dfp_report_queries_attributes:    [:id,
+                                                                                 :report_type,
+                                                                                 :monthly_recurrence_day,
+                                                                                 :report_id,
+                                                                                 :weekly_recurrence_day,
+                                                                                 :is_daily_recurrent,
+                                                                                 :api_configuration_id],
+                                              asana_connect_details_attributes: [:id,
+                                                                                 :project_name,
+                                                                                 :workspace_name
+                                                                                ])
   end
 end
