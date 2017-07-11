@@ -94,6 +94,14 @@
                     %a.upload{ href: '', ng: { click: 'showUploadAssetMappingModal()' } }
                       = inline_svg 'icons/import.svg'
                       Import Asset Mapping or check unmapped
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Quotas Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadQuotasModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Quotas
 
         %tab{heading: "Data Export", index: "1"}
           .row
