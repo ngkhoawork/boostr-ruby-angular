@@ -13,6 +13,6 @@ class Api::AsanaConnectController < ApplicationController
   private
 
   def asana_connect_params
-    params.permit(:code, :state)
+    params.permit(:code, :state, :error)
   end
 end
