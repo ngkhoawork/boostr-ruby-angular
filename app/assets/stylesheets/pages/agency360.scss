@@ -73,6 +73,7 @@
     #spend-product-chart-container, #spend-advertiser-chart-container {
         display: inline-block;
         width: 100%;
+        overflow-x: auto;
     }
     #spend-category-chart-container {
         & > svg {
@@ -162,6 +163,7 @@
             text-align: center;
             &:first-child {
                 text-align: left;
+                white-space: nowrap;
             }
             .activity-type {
                 display: inline-flex;

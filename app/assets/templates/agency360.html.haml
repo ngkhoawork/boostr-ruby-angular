@@ -106,12 +106,12 @@
 								%th
 									%b Product
 								%th{'ng-repeat': 'month in months'}
-									{{month}}
+									{{month.label}}
 						%tbody
 							%tr{'ng-repeat': 'product in spendByProducts'}
 								%td {{product.name}}
 								%td{'ng-repeat': 'val in product.values track by $index'}
-									{{val | currency: '$' : '0'}}
+									{{val ? (val | currency: '$' : '0') : '-'}}
 
 		.row
 			.block
@@ -127,7 +127,7 @@
 								%th
 									%b Advertiser
 								%th{'ng-repeat': 'month in months'}
-									{{month}}
+									{{month.label}}
 						%tbody
 							%tr{'ng-repeat': 'advertiser in spendByAdvertisers'}
 								%td

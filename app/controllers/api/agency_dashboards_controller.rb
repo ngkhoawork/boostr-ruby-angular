@@ -3,13 +3,13 @@ class Api::AgencyDashboardsController < ApplicationController
   def spend_by_product
     revenue = AgencyDashboard::SpendByProductSerializer.new(revenue_sums_by_products).serializable_hash
     pipeline = AgencyDashboard::SpendByProductSerializer.new(pipeline_sums_by_products).serializable_hash
-    render json: { products: revenue[:products] + pipeline[:products] }
+    render json: revenue[:products] + pipeline[:products]
   end
 
   def spend_by_advertisers
     revenue = AgencyDashboard::SpendByAdvertiserSerializer.new(revenue_sums_by_accounts).serializable_hash
     pipeline = AgencyDashboard::SpendByAdvertiserSerializer.new(pipeline_sums_by_accounts).serializable_hash
-    render json: { advertisers: revenue[:advertisers] + pipeline[:advertisers] }
+    render json: revenue[:advertisers] + pipeline[:advertisers]
   end
 
   def related_advertisers_without_spend

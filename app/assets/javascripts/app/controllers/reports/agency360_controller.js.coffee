@@ -1,6 +1,11 @@
 @app.controller 'Agency360Controller',
-	['$scope', '$window', '$filter', '$timeout', 'HoldingCompany', 'TimeDimension'
-	( $scope,   $window,   $filter,   $timeout,   HoldingCompany,   TimeDimension ) ->
+	['$scope', '$window', '$filter', '$timeout', 'Agency360', 'HoldingCompany', 'TimeDimension'
+	( $scope,   $window,   $filter,   $timeout,   Agency360,   HoldingCompany,   TimeDimension ) ->
+
+		testParams =
+			start_date: '2016-04-01'
+			end_date: '2017-12-31'
+
 		FIRST_CHART_ID = '#spend-product-chart'
 		SECOND_CHART_ID = '#spend-advertiser-chart'
 		THIRD_CHART_ID = '#spend-category-chart'
@@ -9,7 +14,6 @@
 		$scope.holdingCompanies = []
 		$scope.timeDimensions = []
 		$scope.isDateRangeOpen = false
-		$scope.months = moment.monthsShort()
 		$scope.dateRange =
 			switch: 'month'
 			search: ''
@@ -22,6 +26,18 @@
 		$scope.defaultFilter =
 			holdingCompany: emptyFilter
 		$scope.filter = angular.copy $scope.defaultFilter
+
+		getMonths = (startDate, endDate) ->
+			start = moment startDate
+			end = moment endDate
+			months = []
+			while end > start
+				months.push
+					label: start.format('MMM YY')
+					date: start.format('YYYY-MM')
+				start.add 1, 'month'
+			months
+		$scope.months = getMonths(testParams.start_date, testParams.end_date)
 
 		$scope.setFilter = (key, value) ->
 			f = $scope.filter
@@ -53,8 +69,15 @@
 					when td.days_length >= 365 && td.days_length <= 366 then 'year'
 				td
 
-		#        $scope.insideDateRangeClick = (e) ->
-		#            console.log e
+		Agency360.spendByProduct(testParams).then (data) ->
+			grouped = _.groupBy data, 'name'
+			products = _.map grouped, (values, name) ->
+				values = _.mapObject (_.groupBy values, 'date'), (val) -> val[0] && val[0].sum
+				products =
+					name: name
+					values: _.map $scope.months, (month) -> values[month.date] || null
+			$scope.spendByProducts = products
+			drawChart($scope.spendByProducts, FIRST_CHART_ID)
 
 		$scope.toggleDateRange = ->
 			$window.onclick = null
@@ -65,6 +88,7 @@
 					targetElement = angular.element(e.target)
 					$scope.isDateRangeOpen = Boolean targetElement.closest('.date-range-container').length
 					$scope.$apply()
+
 		#=======================================================================================================================
 		randomValue = (min, max) -> Math.round(Math.random() * (max - min)) + min
 		randomItem = (name) -> {name: name, values: $scope.months.map -> randomValue(5, 25) * 20000}
@@ -76,7 +100,7 @@
 		#        $scope.winRateByCategory.map (o, i) -> o.value = (i + 2) * 3
 		$scope.winRateByCategory.unshift {name: 'Total', value: randomValue(50, 100)}
 
-		$timeout -> drawChart($scope.spendByProducts, FIRST_CHART_ID)
+#		$timeout -> drawChart($scope.spendByProducts, FIRST_CHART_ID)
 		$timeout -> drawChart($scope.spendByAdvertisers, SECOND_CHART_ID)
 		$timeout -> drawPieChart($scope.spendByCategory, THIRD_CHART_ID)
 		$timeout -> drawWinRateChart($scope.winRateByCategory, FOURTH_CHART_ID)
@@ -91,11 +115,13 @@
 				left: 70
 				right: 10
 				bottom: 40
-			width = chartContainer.width() - margin.left - margin.right || 800
+			minWidth = $scope.months.length * 60
+			width = chartContainer.width() - margin.left - margin.right
+			width = minWidth if width < minWidth
 			height = 400
 
-			currentMonth = 5
 			months = $scope.months
+			currentMonth = _.findIndex months, {date: moment().format('YYYY-MM')}
 			colors = d3.scale.category10()
 
 			dataset = data
@@ -127,7 +153,7 @@
 						tick
 							.style 'font-weight', 'bold'
 							.style 'font-size', '16px'
-					months[v]
+					months[v].label
 			yAxis = d3.svg.axis().scale(y).orient('left')
 				.innerTickSize(-width)
 				.tickPadding(10)
@@ -139,7 +165,7 @@
 			svg.append('g').attr('class', 'axis').attr('transform', 'translate(0,' + height + ')').call xAxis
 			svg.append('g').attr('class', 'axis').call yAxis
 
-			if currentMonth
+			if currentMonth && currentMonth != -1
 				svg.append('line')
 					.attr('class', 'month-line')
 					.attr 'x1', x(currentMonth)
@@ -155,6 +181,7 @@
 			graphLine = d3.svg.line()
 				.x((value, i) -> x(i))
 				.y((value, i) -> y(value))
+				.defined((value, i) -> _.isNumber value)
 
 			graphsContainer = svg.append('g')
 				.attr('class', 'graphs-container')
