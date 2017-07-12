@@ -7,18 +7,17 @@
 				.header-cell.filters-block
 					%table
 						%tr.filter-title
-							%td Holding Company
+							%td
+								Holding Company
+								%span.required *
 						%tr
 							%td
 								%ul.filter-item
 									%li{ dropdown: true }
 										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.holdingCompany.id}' }
-											{{filter.holdingCompany.name}}
+											{{filter.holdingCompany.id ? filter.holdingCompany.name : 'Select'}}
 											%span.caret
 										%ul.dropdown-menu
-											%li{ ng: { class: '{active: !filter.holdingCompany.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("holdingCompany", defaultFilter.holdingCompany)' } }
-													{{defaultFilter.holdingCompany.name}}
 											%li{ ng: { repeat: 'holdingCompany in holdingCompanies | orderBy : "name"', class: '{active: holdingCompany.id === filter.holdingCompany.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("holdingCompany", holdingCompany)' } }
 													{{holdingCompany.name}}
@@ -30,25 +29,27 @@
 							%td
 								%ul.filter-item
 									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
-											{{filter.timePeriod.name}}
+										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.agency.id}' }
+											{{filter.agency.name}}
 											%span.caret
 										%ul.dropdown-menu
-											%li{ ng: { class: '{active: !filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", defaultFilter.timePeriod)' } }
-													{{defaultFilter.timePeriod.name}}
-											%li{ ng: { repeat: 'timePeriod in timePeriods | orderBy : "start_date"', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
-												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-													{{timePeriod.name}}
+											%li{ ng: { class: '{active: !filter.agency.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("agency", defaultFilter.agency)' } }
+													{{defaultFilter.agency.name}}
+											%li{ ng: { repeat: 'agency in agencies | orderBy : "name"', class: '{active: agency.id === filter.agency.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("agency", agency)' } }
+													{{agency.name}}
 
 				.header-cell.filters-block
 					%table
 						%tr.filter-title
-							%td Date Range
+							%td
+								Date Range
+								%span.required *
 						%tr
 							%td
 								%a.clickable{'ng-click': 'toggleDateRange(); $event.stopPropagation()', 'ng-class': '{empty: !filter.startPeriod.id || !filter.endPeriod.id}'}
-									{{filter.startPeriod && filter.endPeriod ? filter.startPeriod.name + ' - ' + filter.endPeriod.name : 'Select Range'}}
+									{{filter.startPeriod && filter.endPeriod ? filter.startPeriod.name + ' - ' + filter.endPeriod.name : 'Select'}}
 									%span.caret
 								%div.date-range-container{'ng-show': 'isDateRangeOpen', 'ng-click': ''}
 									%div.date-range-inner
@@ -68,10 +69,10 @@
 																	%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.startPeriod.id}' }
 																		{{filter.startPeriod.name || 'Select'}}
 																		%span.caret
-																	%div.dropdown-menu
-																		%div{'ng-click': '$event.stopPropagation()'}
+																	%ul.dropdown-menu
+																		%li{'ng-click': '$event.stopPropagation()'}
 																			%input.search-field{placeholder: 'Search', 'ng-model': 'dateRange.search', 'ng-blur': 'clearSearch()'}
-																		%div.menu-item{ ng: { repeat: 'startPeriod in timeDimensions | orderBy : "start_date" | filter : filterTimeDimensions', class: '{active: startPeriod.id === filter.startPeriod.id}' } }
+																		%li.menu-item{ ng: { repeat: 'startPeriod in timeDimensions | orderBy : "start_date" | filter : filterTimeDimensions', class: '{active: startPeriod.id === filter.startPeriod.id}' } }
 																			%a{ href: '', ng: { click: 'setFilter("startPeriod", startPeriod)' } }
 																				{{startPeriod.name}}
 											.filters-block

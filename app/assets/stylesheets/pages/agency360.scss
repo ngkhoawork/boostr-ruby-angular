@@ -5,6 +5,9 @@
         max-width: 1600px;
         padding: 0 15px;
     }
+    .required {
+        color: $error-color;
+    }
     .date-range-container {
         border: 1px solid #D7E4F1;
         border-radius: 4px;
@@ -24,17 +27,17 @@
                     padding-right: 0;
                 }
             }
-            .dropdown-menu {
-                .menu-item {
-                    padding: 8px;
-                    &.active {
-                        
-                    }
-                    a {
-                        color: $main-font-color;
-                    }
-                }
-            }
+            //.dropdown-menu {
+            //    .menu-item {
+            //        padding: 8px;
+            //        &.active {
+            //
+            //        }
+            //        a {
+            //            color: $main-font-color;
+            //        }
+            //    }
+            //}
             .search-field {
                 margin-bottom: 5px;
                 padding: 5px;

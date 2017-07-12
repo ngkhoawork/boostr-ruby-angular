@@ -1,6 +1,6 @@
 @app.controller 'Agency360Controller',
-	['$scope', '$window', '$filter', '$timeout', 'Agency360', 'HoldingCompany', 'TimeDimension'
-	( $scope,   $window,   $filter,   $timeout,   Agency360,   HoldingCompany,   TimeDimension ) ->
+	['$scope', '$window', '$filter', '$timeout', 'Agency360', 'HoldingCompany', 'Client', 'TimeDimension'
+	( $scope,   $window,   $filter,   $timeout,   Agency360,   HoldingCompany,   Client,   TimeDimension ) ->
 
 		testParams =
 			start_date: '2016-04-01'
@@ -24,10 +24,24 @@
 					this.switch = val
 		emptyFilter = {id: null, name: 'All'}
 		$scope.defaultFilter =
-			holdingCompany: emptyFilter
+			holdingCompany: null
+			agency: emptyFilter
+			startPeriod: null
+			endPeriod: null
 		$scope.filter = angular.copy $scope.defaultFilter
 
+		getQuery = ->
+			f = $scope.filter
+			query = {}
+			query.holding_company_id = f.holdingCompany.id if f.holdingCompany
+			query.account_id = f.agency.id if f.agency.id
+			if f.startPeriod && f.endPeriod
+				query.start_date = f.startPeriod.start_date
+				query.end_date = f.endPeriod.end_date
+			query
+
 		getMonths = (startDate, endDate) ->
+			console.log arguments
 			start = moment startDate
 			end = moment endDate
 			months = []
@@ -37,7 +51,7 @@
 					date: start.format('YYYY-MM')
 				start.add 1, 'month'
 			months
-		$scope.months = getMonths(testParams.start_date, testParams.end_date)
+		$scope.months = []
 
 		$scope.setFilter = (key, value) ->
 			f = $scope.filter
@@ -50,6 +64,10 @@
 				when 'endPeriod'
 					if !(f.startPeriod && moment(f.endPeriod.start_date).isAfter(f.startPeriod.start_date))
 						f.startPeriod = null
+			applyFilter()
+
+		applyFilter = ->
+			updateCharts getQuery()
 
 		$scope.filterTimeDimensions = (item) ->
 			if !item then return false
@@ -57,6 +75,15 @@
 				(!$scope.dateRange.search || item.name.toLowerCase().indexOf($scope.dateRange.search.toLowerCase()) > -1)
 
 		$scope.clearSearch = -> $timeout (-> $scope.dateRange.search = ''; console.log($scope.dateRange.search)), 100
+
+		$scope.$watch 'filter.holdingCompany', (holdingCompany) ->
+			if holdingCompany && holdingCompany.id
+				HoldingCompany.relatedAccounts(holdingCompany.id).then (data) ->
+					$scope.filter.agency = emptyFilter
+					$scope.agencies = data
+			else
+				Client.accountDimensions().$promise.then (data) ->
+					$scope.agencies = data
 
 		HoldingCompany.all().then (holdingCompanies) ->
 			$scope.holdingCompanies = holdingCompanies
@@ -69,15 +96,21 @@
 					when td.days_length >= 365 && td.days_length <= 366 then 'year'
 				td
 
-		Agency360.spendByProduct(testParams).then (data) ->
+		transformData = (data) ->
 			grouped = _.groupBy data, 'name'
-			products = _.map grouped, (values, name) ->
+			_.map grouped, (values, name) ->
 				values = _.mapObject (_.groupBy values, 'date'), (val) -> val[0] && val[0].sum
-				products =
-					name: name
-					values: _.map $scope.months, (month) -> values[month.date] || null
-			$scope.spendByProducts = products
-			drawChart($scope.spendByProducts, FIRST_CHART_ID)
+				{name: name, values: _.map $scope.months, (month) -> parseInt(values[month.date]) || null}
+
+		updateCharts = (query) ->
+			if !query.holding_company_id || !(query.start_date && query.end_date) then return
+			$scope.months = getMonths(query.start_date, query.end_date)
+			Agency360.spendByProduct(query).then (data) ->
+				$scope.spendByProducts = transformData data
+				drawChart($scope.spendByProducts, FIRST_CHART_ID)
+			Agency360.spendByAdvertiser(query).then (data) ->
+				console.log $scope.spendByAdvertiser = transformData data
+				drawChart($scope.spendByAdvertiser, SECOND_CHART_ID)
 
 		$scope.toggleDateRange = ->
 			$window.onclick = null
@@ -91,19 +124,19 @@
 
 		#=======================================================================================================================
 		randomValue = (min, max) -> Math.round(Math.random() * (max - min)) + min
-		randomItem = (name) -> {name: name, values: $scope.months.map -> randomValue(5, 25) * 20000}
+#		randomItem = (name) -> {name: name, values: $scope.months.map -> randomValue(5, 25) * 20000}
 
-		$scope.spendByProducts = [1..5].map (i) -> randomItem('Product ' + i)
-		$scope.spendByAdvertisers = [1..5].map (i) -> randomItem('Advertiser ' + i)
-		$scope.spendByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(5, 100) * 10}
-		$scope.winRateByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(1, 100)}
-		#        $scope.winRateByCategory.map (o, i) -> o.value = (i + 2) * 3
-		$scope.winRateByCategory.unshift {name: 'Total', value: randomValue(50, 100)}
+#		$scope.spendByProducts = [1..5].map (i) -> randomItem('Product ' + i)
+#		$scope.spendByAdvertisers = [1..5].map (i) -> randomItem('Advertiser ' + i)
+#		$scope.spendByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(5, 100) * 10}
+#		$scope.winRateByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(1, 100)}
+#		#        $scope.winRateByCategory.map (o, i) -> o.value = (i + 2) * 3
+#		$scope.winRateByCategory.unshift {name: 'Total', value: randomValue(50, 100)}
 
 #		$timeout -> drawChart($scope.spendByProducts, FIRST_CHART_ID)
-		$timeout -> drawChart($scope.spendByAdvertisers, SECOND_CHART_ID)
-		$timeout -> drawPieChart($scope.spendByCategory, THIRD_CHART_ID)
-		$timeout -> drawWinRateChart($scope.winRateByCategory, FOURTH_CHART_ID)
+#		$timeout -> drawChart($scope.spendByAdvertisers, SECOND_CHART_ID)
+#		$timeout -> drawPieChart($scope.spendByCategory, THIRD_CHART_ID)
+#		$timeout -> drawWinRateChart($scope.winRateByCategory, FOURTH_CHART_ID)
 		#=======================================================================================================================
 
 		drawChart = (data, chartId) ->
