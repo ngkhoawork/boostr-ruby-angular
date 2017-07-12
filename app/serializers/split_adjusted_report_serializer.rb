@@ -32,7 +32,9 @@ class SplitAdjustedReportSerializer < ActiveModel::Serializer
   end
 
   def split_budget
-    (deal.budget / 100 * share).to_i
+    budget = deal.budget || 0
+    share_value = share || 0
+    (budget * share_value / 100).to_i
   end
 
   def curr_symbol

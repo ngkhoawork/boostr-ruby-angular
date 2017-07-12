@@ -16,8 +16,9 @@ class Csv::SplitAdjustedService < Csv::BaseService
         line << record[:share]
         line << record[:stage]['name']
         line << record[:stage]['probability']
-        line << record[:budget_loc]
         line << record[:budget]
+        line << record[:curr_cd]
+        line << record[:budget_loc]
         line << record[:split_budget]
         line << record[:type]
         line << record[:source]
@@ -43,6 +44,7 @@ class Csv::SplitAdjustedService < Csv::BaseService
       'Stage',
       '%',
       'Budget',
+      'Currency',
       'Budget USD',
       'Split Budget USD',
       'Type',
