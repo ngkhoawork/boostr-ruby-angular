@@ -120,7 +120,6 @@ class Deal < ActiveRecord::Base
   scope :by_seller_id, -> (seller_id) do
     joins(:deal_members).where(deal_members: { user_id: seller_id }) if seller_id.present?
   end
-  scope :by_creator, -> (creator_id) { joins(:creator).where(users: { id: creator_id }) if creator_id.present? }
   scope :by_budget_range, -> (from, to) { where(budget: from..to) if from.present? && to.present? }
   scope :by_curr_cd, -> (curr_cd) { where(curr_cd: curr_cd) if curr_cd.present? }
   scope :by_start_date, -> (start_date, end_date) do
