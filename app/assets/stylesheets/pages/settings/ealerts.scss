@@ -22,6 +22,50 @@
     vertical-align: middle;
     float: left;
   }
+  .deal-won-indicator {
+      position: absolute;
+      top: 0px;
+      left: 70%;
+      height: 90px;
+      width: 90px;
+      opacity: 0.5;
+      transform: rotate(345deg);
+      text-transform: uppercase;
+      pointer-events: none;
+      user-select: none;
+      .deal-won-indicator-deal {
+          height: 22.18px;
+          width: 40px;
+          color: #FF7200;
+          font-family: "Avenir Next";
+          font-size: 20px;
+          font-weight: 600;
+          line-height: 30px;
+          text-align: right;
+          position: absolute;
+          top: 15px;
+          left: 21px;
+      }
+      .deal-won-indicator-won {
+          height: 51.92px;
+          width: 74.45px;
+          color: #FF7200;
+          font-family: "Avenir Next";
+          font-size: 28px;
+          font-weight: 600;
+          line-height: 30px;
+          text-align: right;
+          position: absolute;
+          top: 42px;
+          left: 5px;
+      }
+      .deal-won-indicator-oval {
+          height: 90px;
+          width: 90px;
+          border: 5px solid #FF7200;
+          border-radius: 125px;
+      }
+  }
   .show-hide-remainder-form {
     clear: both;
     height: 26px;
@@ -308,7 +352,6 @@
         line-height: 33px;
       }
       .advertiser-ballast {
-        height: 20px;
         font-size: 15px;
         line-height: 20px;
       }

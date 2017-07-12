@@ -17,6 +17,7 @@
     dealMembers = _.map $scope.deal.members, (dealMember) ->
       return dealMember.name + ' (' + dealMember.share + '%)'
     $scope.salesTeam = dealMembers.join(', ')
+    $scope.buttonDisabled = !$scope.deal.validDeal
 
   validateEmail = (email) ->
     re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -162,17 +163,17 @@
       comment: $scope.comment,
       deal_id: $scope.deal.id
     }
-
-    $scope.buttonDisabled = true
-    Ealert.send_ealert(id: $scope.ealert.id, data: data).then(
-      (response) ->
-        # console.log(response)
-        $modalInstance.close(true)
-      (resp) ->
-        for key, error of resp.data.errors
-          $scope.errors[key] = error && error[0]
-        $scope.buttonDisabled = false
-    )
+    if ($scope.deal.validDeal == true)
+      $scope.buttonDisabled = true
+      Ealert.send_ealert(id: $scope.ealert.id, data: data).then(
+        (response) ->
+          # console.log(response)
+          $modalInstance.close(true)
+        (resp) ->
+          for key, error of resp.data.errors
+            $scope.errors[key] = error && error[0]
+          $scope.buttonDisabled = false
+      )
 
 
   $scope.cancel = ->
