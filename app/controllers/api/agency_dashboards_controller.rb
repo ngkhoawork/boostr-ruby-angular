@@ -20,7 +20,18 @@ class Api::AgencyDashboardsController < ApplicationController
     render json: AgencyDashboard::SpendByCategorySerializer.new(spend_by_category_data).serializable_hash
   end
 
+  def win_rate_by_category
+    render json: ActiveModel::ArraySerializer.new(win_rate_by_category_data,
+                                                  each_serializer: AgencyDashboard::WinRateByCategorySerializer)
+
+  end
+
   private
+
+  def win_rate_by_category_data
+    WinRateByAdvertizerCategoryQuery.new(filter_params.merge(company_id: current_user_company_id,
+                                                             advertisers_ids: related_advertisers_ids)).call
+  end
 
   def revenue_sums_by_products
     FactTables::AccountProductRevenueFacts::RevenueSumByProductQuery.new(filtered_revenues_by_products).call
