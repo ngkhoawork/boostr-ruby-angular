@@ -1,5 +1,7 @@
 class FactTables::AccountProductPipelineFacts::FilteredQuery
-  def initialize(options = {}, relation = AccountProductPipelineFact.joins(:time_dimension, :product_dimension, account_dimension: [:holding_company]))
+  def initialize(options = {}, relation = AccountProductPipelineFact.joins(:time_dimension, :product_dimension, :account_dimension)
+                                                                    .joins('LEFT JOIN holding_companies
+                                                                           ON holding_companies.id = account_dimensions.holding_company_id'))
     @relation = relation.extending(FactScopes)
     @options = options
   end

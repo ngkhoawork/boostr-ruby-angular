@@ -65,7 +65,8 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def agencies
-    @agencies ||= AccountDimension.joins(:holding_company)
+    #TODO: move to query object
+    @agencies ||= AccountDimension.joins('LEFT JOIN holding_companies on holding_companies.id = account_dimensions.holding_company_id')
                                   .where('company_id = ? AND (account_dimensions.id = ? OR holding_company_id = ?)',
                                          current_user_company_id,
                                          filter_params[:account_id],
@@ -73,8 +74,8 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def related_advertisers_ids
-    @related_advertisers_ids ||= AccountDimension.joins(:advertiser_connections)
-                                                 .where('client_connections.advertiser_id in (?)', agencies.pluck(:id))
+    @related_advertisers_ids ||= AccountDimension.joins(:advertisers)
+                                                 .where('client_connections.agency_id in (?)', agencies.pluck(:id))
                                                  .pluck(:id)
   end
 
