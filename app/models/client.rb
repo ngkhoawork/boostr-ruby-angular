@@ -55,6 +55,7 @@ class Client < ActiveRecord::Base
   validate  :base_fields_presence
 
   before_create :ensure_client_member
+  after_commit :update_account_dimension, on: [:create, :update]
 
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
@@ -147,6 +148,22 @@ class Client < ActiveRecord::Base
         csv << line
       end
     end
+  end
+
+  def update_account_dimension
+    account_dimension = AccountDimension.find_or_initialize_by(id: id)
+    #TODO: Refactor account synchroniser, move it to separate service
+    account_dimension_service = AccountSynchronizer.new
+    account_dimension_attributes = {
+        id: id,
+        name: name,
+        account_type: account_dimension_service.global_type_id(self),
+        category_id: client_category_id,
+        subcategory_id: client_subcategory_id,
+        holding_company_id: holding_company_id,
+        company_id: company_id
+    }
+    account_dimension.update_attributes(account_dimension_attributes)
   end
 
   def advertiser?
@@ -533,21 +550,6 @@ class Client < ActiveRecord::Base
   def client_type
     company.fields.where(name: 'Client Type').first.options.find_by_id(self.client_type_id)
   end
-  #
-  # def client_category
-  #   company.fields.where(name: 'Category').first.options.where(self.client_category_id) if self.client_category_id.present?
-  #   nil
-  # end
-  #
-  # def client_region
-  #   company.fields.where(name: 'Region').first.options.where(self.client_region_id) if self.client_region_id.present?
-  #   nil
-  # end
-  #
-  # def client_segment
-  #   company.fields.where(name: 'Segment').first.options.where(self.client_segment_id) if self.client_segment_id.present?
-  #   nil
-  # end
 
   def base_field_validations
     self.company.validations_for("#{self.client_type.try(:name)} Base Field")
