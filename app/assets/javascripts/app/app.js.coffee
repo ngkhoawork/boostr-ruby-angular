@@ -74,6 +74,10 @@
       templateUrl: 'reports.html'
       controller: 'ReportsController'
       reloadOnSearch: false
+    .when '/reports/pipeline_split_report',
+      templateUrl: 'pipeline_split_report.html'
+      controller: 'PipelineSplitReportController'
+      reloadOnSearch: false
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
