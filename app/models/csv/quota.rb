@@ -18,7 +18,7 @@ class Csv::Quota
     import_log = CsvImportLog.new(company_id: company.id, object_name: 'quota', source: 'ui')
     import_log.set_file_source(file_path)
 
-    CSV.foreach(file, headers: true) do |row|
+    CSV.parse(file, headers: true) do |row|
       time_period = company.time_periods.find_by(name: row['Time Period'])
       user = company.users.find_by(email: row['Email'])
       csv_quota = self.build_csv_quota(row, time_period.id, user_id)
