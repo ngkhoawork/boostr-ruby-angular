@@ -128,15 +128,15 @@
 
 #		$scope.spendByProducts = [1..5].map (i) -> randomItem('Product ' + i)
 #		$scope.spendByAdvertisers = [1..5].map (i) -> randomItem('Advertiser ' + i)
-#		$scope.spendByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(5, 100) * 10}
-#		$scope.winRateByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(1, 100)}
-#		#        $scope.winRateByCategory.map (o, i) -> o.value = (i + 2) * 3
-#		$scope.winRateByCategory.unshift {name: 'Total', value: randomValue(50, 100)}
+		$scope.spendByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(5, 100) * 10}
+		$scope.winRateByCategory = [1..5].map (i) -> {name: 'Category ' + i, value: randomValue(1, 100)}
+#		$scope.winRateByCategory.map (o, i) -> o.value = (i + 2) * 3
+		$scope.winRateByCategory.unshift {name: 'Total', value: randomValue(50, 100)}
 
 #		$timeout -> drawChart($scope.spendByProducts, FIRST_CHART_ID)
 #		$timeout -> drawChart($scope.spendByAdvertisers, SECOND_CHART_ID)
-#		$timeout -> drawPieChart($scope.spendByCategory, THIRD_CHART_ID)
-#		$timeout -> drawWinRateChart($scope.winRateByCategory, FOURTH_CHART_ID)
+		$timeout -> drawPieChart($scope.spendByCategory, THIRD_CHART_ID)
+		$timeout -> drawWinRateChart($scope.winRateByCategory, FOURTH_CHART_ID)
 		#=======================================================================================================================
 
 		drawChart = (data, chartId) ->
