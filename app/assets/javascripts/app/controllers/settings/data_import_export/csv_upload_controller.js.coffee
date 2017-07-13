@@ -96,8 +96,9 @@
         $scope.custom_fields = custom_fields
 
   getMetadata = ->
-    $http.get(api_url + '/metadata').then (response) ->
-      $scope.metadata = response.data
+    if metadata == true
+      $http.get(api_url + '/metadata').then (response) ->
+        $scope.metadata = response.data
 
   $scope.init()
 ]
