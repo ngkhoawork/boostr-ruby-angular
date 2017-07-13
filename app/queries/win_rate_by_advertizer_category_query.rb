@@ -15,7 +15,7 @@ class WinRateByAdvertizerCategoryQuery
     Deal.find_by_sql([ win_rate_query, start_date: options[:start_date],
                        end_date: options[:end_date],
                        company_id: options[:company_id],
-                       advertiser_ids: options[:advertiser_ids] ])
+                       advertisers_ids: options[:advertisers_ids] ])
   end
 
   def win_rate_query
@@ -35,7 +35,7 @@ class WinRateByAdvertizerCategoryQuery
              AND stages.probability = 100
              AND deals.closed_at BETWEEN :start_date AND :end_date
                  AND deals.company_id = :company_id
-                 AND account_dimensions.id in (:advertiser_ids)
+                 AND account_dimensions.id in (:advertisers_ids)
                GROUP BY options.id,
                         options.name) AS won
           JOIN
@@ -51,7 +51,7 @@ class WinRateByAdvertizerCategoryQuery
                  AND stages.probability = 0
                  AND deals.closed_at BETWEEN :start_date AND :end_date
                  AND deals.company_id = :company_id
-                 AND account_dimensions.id in (:advertiser_ids)
+                 AND account_dimensions.id in (:advertisers_ids)
                GROUP BY options.id,
                         options.name) AS lost ON won.id = lost.id
           ORDER BY won.name'.squish
