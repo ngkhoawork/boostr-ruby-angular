@@ -13,11 +13,13 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def related_advertisers_without_spend
-    render json: AgencyDashboard::AdvertisersWithoutSpendSerializer.new(advertisers_without_spend).serializable_hash
+    data = AgencyDashboard::AdvertisersWithoutSpendSerializer.new(advertisers_without_spend).serializable_hash
+    render json: data[:advertisers]
   end
 
   def spend_by_category
-    render json: AgencyDashboard::SpendByCategorySerializer.new(spend_by_category_data).serializable_hash
+    data = AgencyDashboard::SpendByCategorySerializer.new(spend_by_category_data).serializable_hash
+    render json: data[:categories]
   end
 
   def win_rate_by_category
