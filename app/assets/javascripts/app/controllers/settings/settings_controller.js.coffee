@@ -22,10 +22,7 @@
             {title: 'Notifications',      url: '/settings/notifications',      icon: 'envelope',            description: 'Setup simple email notifications'}
             {title: 'Initiatives',        url: '/settings/initiatives',        icon: 'list-ol',             description: 'Setup initiatives for tracking progress against goals'}
             {title: 'eAlerts',            url: '/settings/ealerts',            icon: 'envelope',            description: 'Manage eAlert HTML workflow emails'}
+            {title: 'Tools',              url: '/settings/tools',              icon: 'asterisk',            description: 'Tools'} if $scope.currentUserRoles.isSuperAdmin()
         ]
-
-        $scope.$watch 'currentUser', (user) ->
-            if user && _.contains user.roles, 'super_admin'
-                $scope.options.push {icon: 'asterisk', title: 'Tools', url: '/settings/tools', description: 'Tools'}
 
     ]
