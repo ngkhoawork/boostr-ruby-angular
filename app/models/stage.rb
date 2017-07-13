@@ -3,8 +3,10 @@ class Stage < ActiveRecord::Base
   has_many :deals
 
   default_scope { order('active, position') }
-  scope :active, -> { where(active: true) }
   scope :closed_won_for_company, -> (company_id) { where(company_id: company_id, active: true, open: false, probability: 100) }
+  scope :for_company, -> (company_id) { where(company_id: company_id) }
+  scope :is_open, -> (status) { where(open: status) unless status.nil? }
+  scope :active, -> { where(active: true) }
 
   validates :name, presence: true
 

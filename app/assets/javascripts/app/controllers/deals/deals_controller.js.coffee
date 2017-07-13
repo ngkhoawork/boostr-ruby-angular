@@ -33,7 +33,7 @@
 
             $scope.filter =
                 currencies: []
-                owners: []
+                members: []
                 advertisers: []
                 agencies: []
                 isOpen: false
@@ -142,7 +142,7 @@
                 toQuery: (previous) ->
                     f = if previous then this.appliedSelection else this.selected
                     query = {}
-                    query.owner_id = f.owner.id if f.owner
+                    query.member_id = f.member.id if f.member
                     query.advertiser_id = f.advertiser.id if f.advertiser
                     query.agency_id = f.agency.id if f.agency
                     query.budget_from = f.budget.min if f.budget
@@ -181,7 +181,7 @@
                     filter: Deal.filter_data()
                     stages: Stage.query().$promise
                 }).then (data) ->
-                    $scope.filter.owners = data.filter.owners
+                    $scope.filter.members = data.filter.members
                     $scope.filter.advertisers = data.filter.advertisers
                     $scope.filter.agencies = data.filter.agencies
                     $scope.filter.currencies = data.filter.currencies

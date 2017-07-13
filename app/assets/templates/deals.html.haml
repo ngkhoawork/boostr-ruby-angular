@@ -7,20 +7,20 @@
 			.filter-row
 				.filter-name
 					%div
-						Owner
+						Member
 				.filter-dropdown
-					%i.fa.fa-close{'ng-show': 'filter.selected.owner', 'ng-click': 'filter.reset("owner")'}
+					%i.fa.fa-close{'ng-show': 'filter.selected.member', 'ng-click': 'filter.reset("member")'}
 					%span{'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()'}
-						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.owner}'}
-							{{filter.selected.owner.name || 'Select an owner'}}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.member}'}
+							{{filter.selected.member.name || 'Select an member'}}
 							%span.caret
 						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
 							.form-group.dropdown-search{'ng-click': '$event.stopPropagation()'}
 								%i.fa.fa-search
 								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
 							%span.dropdown-title Select from list
-							.dropdown-option{'ng-repeat': 'owner in filter.owners | filter: filtering | limitTo: 10', role: 'menuitem'}
-								%a{href: '', 'ng-click': 'filter.select("owner", owner)'} {{owner.name}}
+							.dropdown-option{'ng-repeat': 'member in filter.members | filter: filtering | limitTo: 10', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("member", member)'} {{member.name}}
 			.filter-row
 				.filter-name
 					%div

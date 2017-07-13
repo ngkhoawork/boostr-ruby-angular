@@ -1,0 +1,55 @@
+#pipeline-split-report {
+    padding-left: 25px;
+    padding-right: 25px;
+    .reports-header {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .filters-block {
+        padding-left: 60px;
+        vertical-align: middle;
+        a {
+            font-weight: normal;
+            color: $main-color;
+            &.empty {
+                color: #B5BDC4;
+            }
+        }
+        .dropdown-menu {
+            li {
+                &.active {
+                    color: white;
+                }
+                a {
+                    color: inherit;
+                }
+            }
+        }
+        .filter-item {
+            .close-btn {
+                color: $secondary-font-color;
+                &:hover {
+                    color: $main-color;
+                }
+            }
+        }
+    }
+    .block {
+        .title {
+            font-size: 18px;
+        }
+    }
+    table.table {
+        tr {
+            th, td {
+                text-align: center;
+                &:first-child {
+                    text-align: left;
+                }
+            }
+            .clickable {
+                padding: 5px 5px;
+            }
+        }
+    }
+}

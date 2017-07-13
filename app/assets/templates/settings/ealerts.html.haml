@@ -96,9 +96,15 @@
                   .preview-subheader
                     %table{width: '100%'} 
                       %tr
-                        %td
+                        %td{ style: 'position: relative;' }
+                          .deal-won-indicator
+                            .deal-won-indicator-oval
+                            .deal-won-indicator-deal
+                              Deal
+                            .deal-won-indicator-won
+                              Won
                           .subtitle
-                            Summer Concert Series - 75%
+                            Summer Concert Series - 100%
                           .advertiser-ballast
                             %strong
                               Advertiser:
@@ -107,6 +113,12 @@
                             %strong
                               Sales Team:
                             Patrick O (50%), Katie Scheirle (50%)
+                          .comment-section
+                            %div
+                              %strong
+                                Comments:
+                            %div
+                              Client expecting auto-play video location targetting at Concert Venues. Needs to be millenial hip.
                         %td.action
                           %button.add-btn{'ng-click': 'goDeal()'}
                             Go to Deal
@@ -115,7 +127,7 @@
                       %div
                         %strong
                           Budget:
-                        $250,000
+                        £200,000 GBP, $250,000 USD
                       %div
                         %strong
                           Flight Date:
@@ -130,7 +142,7 @@
                       %div.mb10
                         %strong
                           Custom Video:
-                        $175,000
+                        £140,000 GBP, $175,000 USD
                         %table{width: '100%'} 
                           %tr
                             %td
@@ -158,18 +170,31 @@
                       %div.mb10
                         %strong
                           Snapchat:
-                        $50,000
+                        £60,000 GBP, $75,000
+                        %table{width: '100%'} 
+                          %tr
+                            %td
+                              %strong Jun 17
+                            %td
+                              %strong Jul 17
+                            %td
+                              %strong Aug 17
+                            %td
+                              %strong Sep 17
+                          %tr
+                            %td
+                              10%
+                            %td
+                              40%
+                            %td
+                              25%
+                            %td
+                              25%
                         .product-fields
                           %div{'ng-repeat': 'field in selected_fields | filter: dealProductCfFilter'}
                             %strong
                               {{field.subject.field_label}}:
                             {{field.subject.field_value}}
-                    %section
-                      %div
-                        %strong
-                          Comments:
-                      %div
-                        Client expecting auto-play video location targetting at Concert Venues. Needs to be millenial hip.
 
 
           

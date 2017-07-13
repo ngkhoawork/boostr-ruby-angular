@@ -12,106 +12,17 @@
           %starting-page
       .row
         %ul.nav.navbar-nav
-          %li{ ng: { class: "{ active: isActive('/dashboard') }" } }
-            = link_to "HOME PAGE", "/dashboard"
-          %li{ ng: { class: "{ active: isActive('/deals') }" } }
-            = link_to "DEALS", "/deals"
-          %li{ ng: { class: "{ active: isActive('/forecast') }" } }
-            = link_to "FORECAST", "/forecast"
-          %li{ ng: { class: "{ active: isActive('/revenue') }" } }
-            = link_to "REVENUE", "/revenue"
-          %li{ ng: { class: "{ active: isActive('/accounts') }" } }
-            = link_to "ACCOUNTS", "/accounts"
-          %li{ ng: { class: "{ active: isActive('/contacts') }" } }
-            = link_to "CONTACTS", "/contacts"
-          %li{ ng: { class: "{ active: isActive('/bps') }" } }
-            = link_to "BUSINESS PLANS", "/bps"
-          %li{ ng: { class: "{ active: isActive('/finance') }" }, dropdown: true }
-            %a{ href: '', 'dropdown-toggle': true }
-              FINANCE
+          %li{ ng: { repeat: 'item in ::navbar | filter: ""', class: "{ active: isActive(item.url) }" }, dropdown: '{{::item.dropdown.length > 0}}' }
+            %a{href: '', 'ng-if': '::!item.dropdown.length', 'ng-href': '{{::item.url}}'}
+              {{::item.name}}
+            %a{href: '', 'ng-if': '::item.dropdown.length', 'dropdown-toggle': true }
+              {{::item.name}}
               %span.caret
-            %ul.dropdown-menu
-              %li
-                = link_to "Billing", "/finance/billing"
-          - if current_user.leader?
-            %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
-              %a{ href: '', 'dropdown-toggle': true }
-                REPORTS
-                %span.caret
-              %ul.dropdown-menu
-                %li
-                  = link_to "Pipeline by User", "/reports/deal_reports"
-                %li
-                  = link_to "Activity Detail", "/reports/activity_detail_reports"
-                %li
-                  = link_to "Activity Summary", "/reports/activity_summary"
-                %li
-                  = link_to "Forecast Detail", "/reports/forecasts"
-                %li
-                  = link_to "Product Forecast Detail", "/reports/product_forecasts"
-                %li
-                  = link_to "Pipeline Changes", "/reports/pipeline_changes_report"
-          - else
-            %li{ ng: { class: "{ active: isActive('/reports') }" }, dropdown: true }
-              %a{ href: '', 'dropdown-toggle': true }
-                REPORTS
-                %span.caret
-              %ul.dropdown-menu
-                %li
-                  = link_to "Pipeline by User", "/reports/deal_reports"
-                %li
-                  = link_to "Activity Detail", "/reports/activity_detail_reports"
-                %li
-                  = link_to "Activity Summary", "/reports/activity_summary"
-                %li
-                  = link_to "Forecast Detail", "/reports/forecasts"
-                %li
-                  = link_to "Product Forecast Detail", "/reports/product_forecasts"
-                %li
-                  = link_to "Pipeline Changes", "/reports/pipeline_changes_report"
-          - if current_user.leader?
-            %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
-              %a{ href: '', 'dropdown-toggle': true }
-                SMART INSIGHTS
-                %span.caret
-              %ul.dropdown-menu
-                %li
-                  = link_to "Sales Execution Dashboard", "/smart_reports/sales_execution_dashboard"
-                %li
-                  = link_to "Monthly Forecast", "/smart_reports/monthly_forecasts"
-                %li
-                  = link_to "Where to Pitch", "/smart_reports/where_to_pitch"
-                %li
-                  = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
-                %li
-                  = link_to "Inactives", "/smart_reports/inactives"
-                %li
-                  = link_to "Initiatives", "/smart_reports/initiatives"
-                %li
-                  = link_to "Pacing Dashboard", "/smart_reports/pacing_dashboard"
-          - else
-            %li{ ng: { class: "{ active: isActive('/smart_reports') }" }, dropdown: true }
-              %a{ href: '', 'dropdown-toggle': true }
-                SMART INSIGHTS
-                %span.caret
-              %ul.dropdown-menu
-                %li
-                  = link_to "Sales Execution Dashboard", "/smart_reports/sales_execution_dashboard"
-                %li
-                  = link_to "Monthly Forecast", "/smart_reports/monthly_forecasts"
-                %li
-                  = link_to "Where to Pitch", "/smart_reports/where_to_pitch"
-                %li
-                  = link_to "KPI Analytics", "/smart_reports/kpi_analytics"
-                %li
-                  = link_to "Inactives", "/smart_reports/inactives"
-                %li
-                  = link_to "Initiatives", "/smart_reports/initiatives"
-                %li
-                  = link_to "Pacing Dashboard", "/smart_reports/pacing_dashboard"
-          - if current_user.company.requests_enabled && current_user.has_requests_access?
-            %li{ ng: { class: "{ active: isActive('/requests') }" } }
-              = link_to "REQUESTS", "/requests"
-          - if current_user.is?(:admin) || current_user.is?(:superadmin)
-            %li{ ng: { class: "{ active: isActive('/settings') }" } }
-              = link_to "SETTINGS", "/settings"
+            %ul.dropdown-menu{'ng-if': '::item.dropdown.length'}
+              %li{'ng-repeat': 'item in ::item.dropdown | filter: "" | orderBy: "::name"'}
+                %a{href: '', 'ng-href': '{{::item.url}}'}
+                  {{::item.name}}
+
+
+:javascript
+  _isRequestsVisible = (#{current_user.company.requests_enabled && current_user.has_requests_access?});

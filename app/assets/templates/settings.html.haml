@@ -1,6 +1,6 @@
 #settings.z-styles
 	%div.settings-options
-		%a.option{'ng-repeat': 'option in options | orderBy : "title"', href: '', 'ng-href': '{{option.url}}'}
+		%a.option{'ng-repeat': 'option in options | orderBy : "title" | filter: ""', href: '', 'ng-href': '{{option.url}}'}
 			.option-inner
 				%div.icon
 					%i{class: 'fa fa-{{option.icon}}'}
