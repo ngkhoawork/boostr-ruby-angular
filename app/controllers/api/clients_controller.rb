@@ -35,14 +35,7 @@ class Api::ClientsController < ApplicationController
         require 'timeout'
         begin
           status = Timeout::timeout(120) {
-            if current_user.leader?
-              ordered_clients = company.clients
-            elsif team.present?
-              ordered_clients = team.clients
-            else
-              ordered_clients = current_user.clients
-            end
-            send_data ordered_clients.to_csv(current_user.company), filename: "clients-#{Date.today}.csv"
+            send_data company.clients.to_csv(company), filename: "clients-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return

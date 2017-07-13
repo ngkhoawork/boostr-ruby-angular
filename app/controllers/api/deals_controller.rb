@@ -110,14 +110,11 @@ class Api::DealsController < ApplicationController
         begin
           status = Timeout::timeout(120) {
             # Something that should be interrupted if it takes too much time...
-            if current_user.leader?
-              deals = company.deals
-            elsif team.present?
-              deals = team.deals
+            deals = if params[:team_id].present?
+              company.teams.find(params[:team_id])
             else
-              deals = current_user.deals
+              company.deals
             end
-            # send_data deals.to_csv, filename: "deals-#{Date.today}.csv"
             send_data Deal.to_csv(deals, company), filename: "deals-#{Date.today}.csv"
           }
         rescue Timeout::Error
