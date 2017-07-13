@@ -87,5 +87,4 @@
                 $window.open url + '?' + $httpParamSerializer getQuery()
                 return
 
-            $scope.applyFilter()
     ]
