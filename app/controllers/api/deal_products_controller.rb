@@ -7,7 +7,7 @@ class Api::DealProductsController < ApplicationController
         require 'timeout'
         begin
           status = Timeout::timeout(120) {
-            send_data current_user.company.deal_products.to_csv, filename: "deal-products-#{Date.today}.csv"
+            send_data deal_product_csv, filename: "deal-products-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
@@ -72,6 +72,21 @@ class Api::DealProductsController < ApplicationController
 
   def deal_product
     @deal_product ||= deal.deal_products.find(params[:id])
+  end
+
+  def deal_product_csv
+    Csv::DealProductService.new(company, deal_products).perform
+  end
+
+  def deal_products
+    @_deal_products ||=
+      company.deal_products
+             .includes(:product, :deal_product_cf, deal: [:advertiser, :agency, :stage])
+             .order(:deal_id, :id)
+  end
+
+  def company
+    current_user.company
   end
 
   def deal_product_params
