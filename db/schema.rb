@@ -1124,6 +1124,21 @@ ActiveRecord::Schema.define(version: 20170825112513) do
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
 
+  create_table "forecast_pipeline_facts", force: :cascade do |t|
+    t.integer  "time_dimension_id"
+    t.integer  "user_dimension_id"
+    t.integer  "product_dimension_id"
+    t.integer  "stage_dimension_id"
+    t.decimal  "amount",               precision: 15, scale: 2
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
+  end
+
+  add_index "forecast_pipeline_facts", ["product_dimension_id"], name: "index_forecast_pipeline_facts_on_product_dimension_id", using: :btree
+  add_index "forecast_pipeline_facts", ["stage_dimension_id"], name: "index_forecast_pipeline_facts_on_stage_dimension_id", using: :btree
+  add_index "forecast_pipeline_facts", ["time_dimension_id"], name: "index_forecast_pipeline_facts_on_time_dimension_id", using: :btree
+  add_index "forecast_pipeline_facts", ["user_dimension_id"], name: "index_forecast_pipeline_facts_on_user_dimension_id", using: :btree
+
   create_table "holding_companies", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
@@ -1408,6 +1423,17 @@ ActiveRecord::Schema.define(version: 20170825112513) do
   add_index "snapshots", ["user_id"], name: "index_snapshots_on_user_id", using: :btree
   add_index "snapshots", ["year", "quarter"], name: "index_snapshots_on_year_and_quarter", using: :btree
 
+  create_table "stage_dimensions", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "name"
+    t.integer  "probability"
+    t.boolean  "open"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "stage_dimensions", ["company_id"], name: "index_stage_dimensions_on_company_id", using: :btree
+
   create_table "stages", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -1496,6 +1522,8 @@ ActiveRecord::Schema.define(version: 20170825112513) do
     t.integer "days_length"
   end
 
+  add_index "time_dimensions", ["start_date", "end_date"], name: "index_time_dimensions_on_start_date_and_end_date", using: :btree
+
   create_table "time_period_weeks", force: :cascade do |t|
     t.integer  "week"
     t.date     "start_date"
@@ -1521,6 +1549,17 @@ ActiveRecord::Schema.define(version: 20170825112513) do
 
   add_index "time_periods", ["company_id"], name: "index_time_periods_on_company_id", using: :btree
   add_index "time_periods", ["deleted_at"], name: "index_time_periods_on_deleted_at", using: :btree
+
+  create_table "user_dimensions", force: :cascade do |t|
+    t.integer  "team_id"
+    t.integer  "company_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "user_dimensions", ["company_id"], name: "index_user_dimensions_on_company_id", using: :btree
+  add_index "user_dimensions", ["team_id", "id"], name: "index_user_dimensions_on_team_id_and_id", using: :btree
+  add_index "user_dimensions", ["team_id"], name: "index_user_dimensions_on_team_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                               default: "",    null: false
@@ -1680,6 +1719,10 @@ ActiveRecord::Schema.define(version: 20170825112513) do
   add_foreign_key "influencer_content_fees", "content_fees"
   add_foreign_key "influencer_content_fees", "influencers"
   add_foreign_key "influencers", "companies"
+  add_foreign_key "forecast_pipeline_facts", "product_dimensions"
+  add_foreign_key "forecast_pipeline_facts", "stage_dimensions"
+  add_foreign_key "forecast_pipeline_facts", "time_dimensions"
+  add_foreign_key "forecast_pipeline_facts", "user_dimensions"
   add_foreign_key "integration_logs", "companies"
   add_foreign_key "io_members", "ios"
   add_foreign_key "io_members", "users"
@@ -1690,7 +1733,10 @@ ActiveRecord::Schema.define(version: 20170825112513) do
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"
   add_foreign_key "requests", "users", column: "requester_id"
+  add_foreign_key "stage_dimensions", "companies"
   add_foreign_key "temp_ios", "companies"
   add_foreign_key "temp_ios", "ios"
+  add_foreign_key "user_dimensions", "companies"
+  add_foreign_key "user_dimensions", "teams"
   add_foreign_key "users", "teams"
 end
