@@ -23,6 +23,7 @@
             {name: 'Forecast Detail', url: '/reports/forecasts'}
             {name: 'Product Forecast Detail', url: '/reports/product_forecasts'}
             {name: 'Pipeline Changes', url: '/reports/pipeline_changes_report'}
+            {name: 'Pipeline Split Adjusted', url: '/reports/pipeline_split_report'}
         ]}
         {name: 'SMART INSIGHTS', url: '/smart_reports', dropdown: [
             {name: 'Sales Execution Dashboard', url: '/smart_reports/sales_execution_dashboard'}
@@ -33,7 +34,8 @@
             {name: 'Initiatives', url: '/smart_reports/initiatives'}
             {name: 'Pacing Dashboard', url: '/smart_reports/pacing_dashboard'}
         ]}
-        {name: "SETTINGS", url: "/settings"} if $scope.currentUserRoles.isAdmin() || $scope.currentUserRoles.isSuperAdmin()
+        {name: 'REQUESTS', url: '/requests'} if _isRequestsVisible
+        {name: 'SETTINGS', url: '/settings'} if $scope.currentUserRoles.isAdmin() || $scope.currentUserRoles.isSuperAdmin()
     ]
 
 ]

@@ -22,3 +22,7 @@
               %li{'ng-repeat': 'item in ::item.dropdown | filter: "" | orderBy: "::name"'}
                 %a{href: '', 'ng-href': '{{::item.url}}'}
                   {{::item.name}}
+
+
+:javascript
+  _isRequestsVisible = (#{current_user.company.requests_enabled && current_user.has_requests_access?});
