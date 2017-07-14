@@ -7,7 +7,7 @@ ActiveAdmin.register_page "Dashboard" do
       column do
         panel "Current SuperAdmins" do
           ul do
-            User.where(roles_mask: 3).each do |user|
+            User.where("roles_mask >= ?", 4).each do |user|
               li link_to(user.email, admin_user_path(user))
             end
           end
