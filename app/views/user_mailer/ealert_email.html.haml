@@ -8,7 +8,7 @@
     %table{width: '100%'} 
       %tr
         - if !@deal.stage.open && @deal.stage.probability == 100
-          %td{ style: "background: url('#{root_url}won-deal.png'); background-repeat: no-repeat; background-position: center; height: 110px;" }
+          %td{ style: "background: url('#{root_url}won-deal.png'); background-repeat: no-repeat; background-position: 70%; height: 110px;" }
             .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
               #{@deal.name}
               - if @deal.stage.active == true
