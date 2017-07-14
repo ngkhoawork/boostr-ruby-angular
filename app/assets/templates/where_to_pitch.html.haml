@@ -7,7 +7,14 @@
 			.col-xs-12
 				%table.filter-block
 					%tr.filter-title
-						%td Time period
+						%td
+							%form
+								%label
+									%input{ name: "date_criteria", type: "radio", value: "closed_date", ng: { model: 'filter.date_criteria' } }/
+									%span Closed Date
+								%label
+									%input{ name: "date_criteria", type: "radio", value: "created_date", ng: { model: 'filter.date_criteria' } }/
+									%span Created Date
 						%td Team
 						%td Seller
 						%td Product

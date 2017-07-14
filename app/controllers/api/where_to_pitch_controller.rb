@@ -112,8 +112,8 @@ class Api::WhereToPitchController < ApplicationController
       .where(company_id: company.id)
       .by_advertisers(category_filtered_advertisers)
       .by_product_id(params[:product_id])
-      .where.not(closed_at: nil)
-      .closed_at(start_date, end_date)
+      .where('stage_id in (?)', closed_stages)
+      .where("deals.#{date_criteria_filter} >= ? and deals.#{date_criteria_filter} <= ?", start_date, end_date)
       .distinct
       .includes(:stage)
       .pluck_to_struct(:id, :advertiser_id, :agency_id, 'stages.probability as probability')
@@ -133,5 +133,17 @@ class Api::WhereToPitchController < ApplicationController
 
   def agency_type_id
     Client.agency_type_id(current_user.company)
+  end
+
+  def closed_stages
+    Stage.where(company_id: company.id, active: true, open: false).where('probability in (?)', [0, 100]).ids
+  end
+
+  def date_criteria_filter
+    if params[:date_criteria] == 'created_date'
+      'created_at'
+    else
+      'closed_at'
+    end
   end
 end

@@ -1,7 +1,7 @@
 @app.controller 'WhereToPitchController',
     ['$scope', '$document', 'WhereToPitchService', 'Team', 'Product', 'Field', 'Seller', 'CurrentUser'
         ($scope, $document, WTP, Team, Product, Field, Seller, CurrentUser) ->
-            $scope.filter = {}
+            $scope.filter = { date_criteria: 'closed_date' }
             $scope.selected = {}
             $scope.maxDeals = 10
             $scope.slider =
@@ -11,8 +11,9 @@
                         floor: 0
                         ceil: $scope.maxDeals
                         onEnd: ->
-                            updateTable('advertisers', $scope.mainData.advertisers)
-                            updateTable('agencies', $scope.mainData.agencies)
+                            if $scope.mainData
+                                updateTable('advertisers', $scope.mainData.advertisers)
+                                updateTable('agencies', $scope.mainData.agencies)
                 winRate:
                     value: 35
                     options:
@@ -22,8 +23,9 @@
                             if value > 0 && value < 100 then return value + '%'
                             value
                         onEnd: ->
-                            updateTable('advertisers', $scope.mainData.advertisers)
-                            updateTable('agencies', $scope.mainData.agencies)
+                            if $scope.mainData
+                                updateTable('advertisers', $scope.mainData.advertisers)
+                                updateTable('agencies', $scope.mainData.agencies)
             $scope.selectedTeam =
                 id: 'all'
                 name:'All'
@@ -83,7 +85,7 @@
 
             $scope.resetFilter = ->
                 $scope.selected = {}
-                $scope.filter = {}
+                $scope.filter = { date_criteria: 'closed_date' }
                 $scope.selectedTeam = {id: 'all', name:'All'}
                 $scope.subcategories = $scope.allSubcategories
                 $scope.datePicker.setDefault()
