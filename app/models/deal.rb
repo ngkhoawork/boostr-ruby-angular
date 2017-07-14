@@ -128,6 +128,7 @@ class Deal < ActiveRecord::Base
   scope :by_closed_at, -> (closed_at) do
     where(closed_at: closed_at.beginning_of_year.to_datetime.beginning_of_day..closed_at.end_of_year.to_datetime.end_of_day) if closed_at.present?
   end
+  scope :by_advertisers, -> (ids) { where('advertiser_id in (?)', ids) if ids.present? }
 
   def asana_connect
     AsanaConnectWorker.perform_async self.id

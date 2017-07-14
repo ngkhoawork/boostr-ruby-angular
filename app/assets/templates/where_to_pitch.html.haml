@@ -68,6 +68,9 @@
 										%li{ ng: { repeat: 'subcategory in subcategories', class: '{active: subcategory.id === filter.subcategory_id}' } }
 											%a{ href: '', ng: { click: 'setFilter("subcategory", subcategory)' } }
 												{{ subcategory.name }}
+				.header-cell
+					%button.add-btn{'ng-click': 'applyFilter()'}
+						Run Report
 			.horizontal-line.col-xs-12
 			.col-xs-6
 				%span.slider-title # Deals
