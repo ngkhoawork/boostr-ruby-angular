@@ -9,28 +9,36 @@ class AccountProductRevenueCalculationService < BaseService
 
   def content_fee_products_budgets
     @content_fee_products_budgets ||= ContentFeeProductBudget.joins(content_fee: :product)
-                                          .where(content_fee_products_budgets_conditions,
-                                                 company_id: company_id,
-                                                 time_dim_start_date: date_range[:start_date],
-                                                 time_dim_end_date: date_range[:end_date])
-                                          .group('products.id')
-                                          .sum(:budget)
+                                                             .joins('INNER JOIN companies ON products.company_id = companies.id')
+                                                             .joins('INNER JOIN account_dimensions ON account_dimensions.company_id = companies.id')
+                                                             .where(content_fee_products_budgets_conditions,
+                                                                    account_id: account_id,
+                                                                    company_id: company_id,
+                                                                    time_dim_start_date: date_range[:start_date],
+                                                                    time_dim_end_date: date_range[:end_date])
+                                                             .group('products.id')
+                                                             .sum(:budget)
   end
 
   def display_products_budgets
     @display_products_budgets ||= DisplayLineItemBudget.joins(display_line_item: :product)
+                                                       .joins('INNER JOIN companies ON products.company_id = companies.id')
+                                                       .joins('INNER JOIN account_dimensions ON account_dimensions.company_id = companies.id')
                                                        .where(display_products_budgets_conditions,
-                                                             company_id: company_id,
-                                                             time_dim_start_date: date_range[:start_date],
-                                                             time_dim_end_date: date_range[:end_date])
+                                                              company_id: company_id,
+                                                              account_id: account_id,
+                                                              time_dim_start_date: date_range[:start_date],
+                                                              time_dim_end_date: date_range[:end_date])
                                                        .group('products.id')
                                                        .sum(:budget)
   end
 
   def display_line_item_budgets_daily_rate
-    @display_line_item_budgets_daily_rate ||= DisplayLineItem.joins(:product)
+    @display_line_item_budgets_daily_rate ||= DisplayLineItem.joins(product: :company)
+                                                             .joins('INNER JOIN account_dimensions ON account_dimensions.company_id = companies.id')
                                                              .where(display_line_item_budgets_daily_rate_conditions,
                                                                     company_id: company_id,
+                                                                    account_id: account_id,
                                                                     product_ids: display_products_budgets.keys,
                                                                     time_dim_start_date: date_range[:start_date],
                                                                     time_dim_end_date: date_range[:end_date])
@@ -41,6 +49,7 @@ class AccountProductRevenueCalculationService < BaseService
   def content_fee_products_budgets_conditions
     'products.revenue_type = \'Content-Fee\'
      AND products.company_id = :company_id
+     AND account_dimensions.id = :account_id
      AND content_fee_product_budgets.end_date >= :time_dim_start_date
      AND content_fee_product_budgets.start_date <= :time_dim_end_date'
   end
@@ -48,6 +57,7 @@ class AccountProductRevenueCalculationService < BaseService
   def display_line_item_budgets_daily_rate_conditions
     'products.revenue_type = \'Display\'
      AND products.company_id = :company_id
+     AND account_dimensions.id = :account_id
      AND product_id NOT IN (:product_ids)
      AND display_line_items.end_date >= :time_dim_start_date
      AND display_line_items.start_date <= :time_dim_end_date'
@@ -56,6 +66,7 @@ class AccountProductRevenueCalculationService < BaseService
   def display_products_budgets_conditions
     'products.revenue_type = \'Display\'
      AND products.company_id = :company_id
+     AND account_dimensions.id = :account_id
      AND display_line_item_budgets.end_date >= :time_dim_start_date
      AND display_line_item_budgets.start_date <= :time_dim_end_date'
   end

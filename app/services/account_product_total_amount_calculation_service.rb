@@ -7,16 +7,16 @@ class AccountProductTotalAmountCalculationService < BaseService
   private
 
   def calculated_amounts
-    deal_product_budgets(start_date: time_dimension.start_date, end_date: time_dimension.end_date).map(&:attributes)
+    deal_product_budgets.map(&:attributes)
   end
 
-  def deal_product_budgets(options = {})
+  def deal_product_budgets
     @deal_product_budgets ||= DealProductBudget.joins(deal_product: [deal: :stage] )
                                                .where(conditions,
-                                                      client_id: client.id,
-                                                      company_id: client.company_id,
-                                                      start_date: options[:start_date],
-                                                      end_date: options[:end_date])
+                                                      account_id: account_id,
+                                                      company_id: company_id,
+                                                      start_date: date_range[:start_date],
+                                                      end_date: date_range[:end_date])
                                                .select('sum(deal_product_budgets.budget) * stages.probability / 100 as weighted_budget,
                                                         sum(deal_product_budgets.budget) as unweighted_budget,
                                                         deal_products.product_id as product_id')
@@ -24,8 +24,8 @@ class AccountProductTotalAmountCalculationService < BaseService
   end
 
   def conditions
-    'deals.advertiser_id = :client_id
-     OR deals.agency_id = :client_id
+    'deals.advertiser_id = :account_id
+     OR deals.agency_id = :account_id
      AND deals.company_id = :company_id
      AND deal_products.open IS TRUE
      AND deal_product_budgets.end_date >= :start_date
