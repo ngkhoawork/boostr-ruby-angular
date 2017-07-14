@@ -1,0 +1,155 @@
+#pipeline-summary-report.z-styles
+	.container-fluid
+		.row.mb20
+			.reports-header
+				.header-cell.main-title
+					Pipeline Summary Adjusted
+				.header-cell.filters-block
+					%table
+						%tr.filter-title
+							%td Team
+							%td Team Member
+							%td Stage
+							%td Type
+							%td Source
+							%td Start Date
+							%td Created Date
+							%td
+								%span.reset-filter{'ng-click': 'resetFilter()'}
+									Reset
+						%tr
+							%td
+								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
+
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.seller.id}' }
+											{{filter.seller.name}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: !filter.seller.id}'}
+												%a{href: '', 'ng-click': 'setFilter("seller", emptyFilter)'}
+													{{emptyFilter.name}}
+											%li{ ng: { repeat: 'seller in sellers | orderBy : "name"', class: '{active: seller.id === filter.seller.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
+													{{seller.name}}
+
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.stages.length == 0}' }
+											%span{'ng-if': 'filter.stages.length == 0'}
+												All
+											%span{'ng-repeat': 'stage in filter.stages'}
+												{{stage.name}} {{stage.probability + '%'}}
+												%i.fa.fa-times.close-btn{'ng-click': 'removeFilter("stages", stage)'}
+											%span.caret
+										%ul.dropdown-menu
+											%li{ ng: { repeat: 'stage in stages | orderBy: ["-open", "probability"]' } }
+												%a{ href: '', ng: { click: 'setFilter("stages", stage)' } }
+													{{stage.name}} {{isNumber(stage.probability) ? stage.probability + '%' : ''}}
+
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.type.id}' }
+											{{filter.type.name}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: !filter.type.id}'}
+												%a{href: '', 'ng-click': 'setFilter("type", emptyFilter)'}
+													{{emptyFilter.name}}
+											%li{ ng: { repeat: 'type in types | orderBy : "name"', class: '{active: type.id === filter.type.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("type", type)' } }
+													{{type.name}}
+
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.source.id}' }
+											{{filter.source.name}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: !filter.source.id}'}
+												%a{href: '', 'ng-click': 'setFilter("source", emptyFilter)'}
+													{{emptyFilter.name}}
+											%li{ ng: { repeat: 'source in sources | orderBy : "name"', class: '{active: source.id === filter.source.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("source", source)' } }
+													{{source.name}}
+
+							%td
+								.date-picker-wrap
+									%div.date-picker#activity-account-date-picker{'date-range-picker': true,
+														   'ng-model': 'filter.startDate',
+														   :options => "{locale: {format: 'MMMM D, YYYY'},
+																		 eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
+										%span.empty{'ng-hide': 'datePicker.toString()'}
+											Time period
+											%span.caret
+										%span{'ng-show': 'datePicker.toString()'}
+											{{datePicker.toString()}}
+											%span.caret
+
+				.header-cell
+					%button.add-btn{'ng-click': 'applyFilter()'}
+						Run Report
+
+				.header-cell
+					.pull-right
+						%download-button{'ng-click': 'export()'}
+							Export
+
+		.row
+			.col-xs-12
+				.block
+					%div.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th
+										%span.clickable{'ng-click': 'sorting.set("deal_id")'} Deal ID
+									%th
+										%span.clickable{'ng-click': 'sorting.set("deal_name")'} Name
+									%th
+										%span.clickable{'ng-click': 'sorting.set("advertiser.name")'} Advertiser
+									%th
+										%span.clickable{'ng-click': 'sorting.set("agency.name")'} Category
+									%th
+										%span.clickable{'ng-click': 'sorting.set("name")'} Agency
+									%th
+										%span.clickable{'ng-click': 'sorting.set("share")'} Holding Company
+									%th
+										%span.clickable{'ng-click': 'sorting.set("stage.name")'} Budget USD
+									%th
+										%span.clickable{'ng-click': 'sorting.set("stage.probability")'} Budget
+									%th
+										%span.clickable{'ng-click': 'sorting.set("budget_loc")'} Stage
+									%th
+										%span.clickable{'ng-click': 'sorting.set("budget")'} %
+									%th
+										%span.clickable{'ng-click': 'sorting.set("split_budget")'} Start Date
+									%th
+										%span.clickable{'ng-click': 'sorting.set("type")'} End Date
+									%th
+										%span.clickable{'ng-click': 'sorting.set("source")'} Created Date
+									%th
+										%span.clickable{'ng-click': 'sorting.set("next_steps")'} Closed Date
+									%th
+										%span.clickable{'ng-click': 'sorting.set("start_date")'} Close Reason
+									%th
+										%span.clickable{'ng-click': 'sorting.set("end_date")'} Close Comments
+									%th
+										%span.clickable{'ng-click': 'sorting.set("created_date")'} Members
+									%th
+										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Team
+									%th
+										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Type
+									%th
+										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Source
+									%th
+										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Initiative
+									%th{'ng-repeat': 'cfName in dealCustomFieldNames'}
+										%span.clickable{'ng-click': 'sorting.set("")'} {{cfName.field_label}}
+							%tbody
+								%tr{'ng-repeat': 'item in data | orderBy : sorting.key : sorting.reverse'}
