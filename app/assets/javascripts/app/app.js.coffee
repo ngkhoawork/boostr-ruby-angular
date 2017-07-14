@@ -111,6 +111,9 @@
     .when '/reports/pipeline_changes_report',
       templateUrl: 'pipeline_changes_report.html'
       controller: 'PipelineChangeReportController'
+    .when '/reports/pipeline_summary_report',
+      templateUrl: 'pipeline_summary_report.html'
+      controller: 'PipelineSummaryReportController'
     .when '/reports/pipeline_summary_reports',
       templateUrl: 'pipeline_summary_reports.html'
       controller: 'PipelineSummaryReportsController'

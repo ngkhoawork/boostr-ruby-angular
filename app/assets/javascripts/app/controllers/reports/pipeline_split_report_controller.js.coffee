@@ -45,7 +45,7 @@
 
 
             $scope.resetFilter = ->
-                $scope.filter = defaultFilter
+                $scope.filter = angular.copy defaultFilter
 
             $scope.isNumber = _.isNumber
 
