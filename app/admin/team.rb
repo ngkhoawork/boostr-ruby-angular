@@ -11,4 +11,6 @@ ActiveAdmin.register Team do
     end
     actions
   end
+  filter :name
+  filter :company
 end

@@ -56,6 +56,8 @@ ActiveAdmin.register Company do
     end
   end
 
+  filter :name
+
   form do |f|
     f.inputs "Company Details" do
       f.input :name
