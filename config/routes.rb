@@ -273,6 +273,7 @@ Rails.application.routes.draw do
     resources :reports, only: [:index] do
       collection do
         get :split_adjusted
+        get :pipeline_summary
       end
     end
     resources :sales_execution_dashboard, only: [:index] do
