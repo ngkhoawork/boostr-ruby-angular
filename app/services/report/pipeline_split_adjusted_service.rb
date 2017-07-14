@@ -1,4 +1,4 @@
-class SplitAdjustedReportService
+class Report::PipelineSplitAdjustedService
   OPEN_STATUS = 'open'.freeze
   FILTER_ALL_ATTR = 'all'.freeze
 
@@ -13,7 +13,7 @@ class SplitAdjustedReportService
   def perform
     ActiveModel::ArraySerializer.new(
       data_for_serializer,
-      each_serializer: SplitAdjustedReportSerializer, deal_settings_fields: deal_settings_fields
+      each_serializer: Report::SplitAdjustedSerializer, deal_settings_fields: deal_settings_fields
     )
   end
 
