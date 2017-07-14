@@ -7,11 +7,19 @@ class AccountProductTotalAmountCalculationService < BaseService
   private
 
   def calculated_amounts
-    deal_product_budgets.map(&:attributes)
+    ActiveRecord::Base.connection.execute(sql).to_a
+  end
+
+  def sql
+    "SELECT sum(sums.weighted_budget) as weighted_budget, sum(sums.unweighted_budget) as unweighted_budget, sums.product_id
+     FROM (#{deal_product_budgets.to_sql})
+     AS sums GROUP BY sums.product_id"
   end
 
   def deal_product_budgets
-    @deal_product_budgets ||= DealProductBudget.joins(deal_product: [deal: :stage] )
+    @deal_product_budgets ||= DealProductBudget.joins(deal_product: [:product, deal: :stage] )
+                                               .joins('JOIN account_dimensions ON deals.advertiser_id = account_dimensions.id
+                                                       OR deals.agency_id = account_dimensions.id')
                                                .where(conditions,
                                                       account_id: account_id,
                                                       company_id: company_id,
@@ -24,8 +32,7 @@ class AccountProductTotalAmountCalculationService < BaseService
   end
 
   def conditions
-    'deals.advertiser_id = :account_id
-     OR deals.agency_id = :account_id
+    'account_dimensions.id = :account_id
      AND deals.company_id = :company_id
      AND deal_products.open IS TRUE
      AND deal_product_budgets.end_date >= :start_date
