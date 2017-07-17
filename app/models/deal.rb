@@ -129,6 +129,11 @@ class Deal < ActiveRecord::Base
     where(closed_at: closed_at.beginning_of_year.to_datetime.beginning_of_day..closed_at.end_of_year.to_datetime.end_of_day) if closed_at.present?
   end
   scope :by_advertisers, -> (ids) { where('advertiser_id in (?)', ids) if ids.present? }
+  scope :by_created_date, -> (start_date, end_date) do
+    where(created_at: start_date..end_date) if start_date.present? && end_date.present?
+  end
+  scope :by_stage_ids, -> (stage_ids) { where(stage_id: stage_ids) if stage_ids.present? }
+  scope :by_options , -> (option_id) { joins(:values).where(values: { option_id: option_id }) if option_id.present? }
 
   def asana_connect
     AsanaConnectWorker.perform_async self.id
