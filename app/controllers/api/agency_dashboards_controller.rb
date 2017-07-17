@@ -89,7 +89,7 @@ class Api::AgencyDashboardsController < ApplicationController
   def related_advertisers_ids
     @related_advertisers_ids ||= AccountDimension.joins(:advertisers)
                                                  .where('client_connections.agency_id in (?)', agencies.pluck(:id))
-                                                 .pluck(:id)
+                                                 .pluck(:id).uniq
   end
 
   def current_user_company_id

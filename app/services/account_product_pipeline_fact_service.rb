@@ -16,26 +16,6 @@ class AccountProductPipelineFactService < BaseService
     end
   end
 
-  # def upsert_record
-  #   Upsert.batch(ActiveRecord::Base.retrieve_connection, :account_product_pipeline_facts) do |batch|
-  #     calculated_amounts.each do |calculated_amount|
-  #       batch.row({ account_dimension_id: client.id,
-  #                   time_dimension_id: time_dimension.id,
-  #                   company_id: client.company_id,
-  #                   product_dimension_id: calculated_amount['product_id']},
-  #                 { account_dimension_id: client.id,
-  #                   time_dimension_id: time_dimension.id,
-  #                   company_id: client.company_id,
-  #                   product_dimension_id: calculated_amount['product_id'],
-  #                   weighted_amount: calculated_amount['weighted_budget'].to_i,
-  #                   unweighted_amount: calculated_amount['unweighted_budget'].to_i,
-  #                   created_at: DateTime.now,
-  #                   updated_at: DateTime.now
-  #                 })
-  #     end
-  #   end
-  # end
-
   private
 
   def get_pipelines_for_company_by_date(account_id, company_id, date_range)
@@ -49,13 +29,13 @@ class AccountProductPipelineFactService < BaseService
                                                             product_dimension_id: product_dimension_id)
     if fact.persisted? && fact.unweighted_amount != unweighted_amount.to_i
       fact.update_attributes(unweighted_amount: unweighted_amount.to_i, weighted_amount: weighted_amount.to_i)
-    else
+    elsif fact.new_record?
       fact.update_attributes(unweighted_amount: unweighted_amount.to_i, weighted_amount: weighted_amount.to_i)
     end
   end
 
   def accounts
-    @accounts ||= AccountDimension.pluck_to_struct(:id, :company_id)
+    @accounts ||= AccountDimension.where(company_id: 11).pluck_to_struct(:id, :company_id)
   end
 
   def time_dimensions

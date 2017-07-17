@@ -21,7 +21,7 @@ class WinRateByAdvertizerCategoryQuery
   def win_rate_query
     'SELECT won.id,
              won.name,
-             won_count / won_count + lost_count AS win_rate
+             (cast(won_count as decimal(53,8)) / cast((won_count + lost_count) as DECIMAL(16,2))) AS win_rate
       FROM
         (SELECT options.id,
                 options.name,

@@ -1,5 +1,3 @@
-require 'upsert/active_record_upsert'
-
 class AccountProductRevenueFactService < BaseService
   def perform
     accounts.each do |client|
@@ -13,23 +11,6 @@ class AccountProductRevenueFactService < BaseService
     end
   end
 
-  # def upsert_record(account_dimension_id, time_dimension_id, company_id, product_dimension_id, revenue_amount)
-  #   Upsert.batch(ActiveRecord::Base.retrieve_connection, :account_product_revenue_facts) do |batch|
-  #     batch.row({ account_dimension_id: account_dimension_id,
-  #                 time_dimension_id: time_dimension_id,
-  #                 company_id: company_id,
-  #                 product_dimension_id: product_dimension_id
-  #               },
-  #               { account_dimension_id: account_dimension_id,
-  #                 time_dimension_id: time_dimension_id,
-  #                 company_id: company_id,
-  #                 product_dimension_id: product_dimension_id,
-  #                 revenue_amount: revenue_amount.to_i,
-  #                 created_at: DateTime.now,
-  #                 updated_at: DateTime.now })
-  #     end
-  # end
-
   def get_revenues_for_account_by_date(account_id, company_id, date_range)
     AccountProductRevenueCalculationService.new(account_id: account_id, company_id: company_id, date_range: date_range).perform
   end
@@ -41,7 +22,7 @@ class AccountProductRevenueFactService < BaseService
                                                            product_dimension_id: product_dimension_id)
     if fact.persisted? && fact.revenue_amount != revenue_amount.to_i
       fact.update_attributes(revenue_amount: revenue_amount.to_i)
-    else
+    elsif fact.new_record?
       fact.update_attributes(revenue_amount: revenue_amount.to_i)
     end
   end
@@ -49,7 +30,7 @@ class AccountProductRevenueFactService < BaseService
   private
 
   def accounts
-    @accounts ||= AccountDimension.pluck_to_struct(:id, :company_id)
+    @accounts ||= AccountDimension.where(company_id: 11).pluck_to_struct(:id, :company_id)
   end
 
   def time_dimensions
