@@ -3,7 +3,7 @@
 		.row.mb20
 			.reports-header
 				.header-cell.main-title
-					Pipeline Summary Adjusted
+					Pipeline Summary
 				.header-cell.filters-block
 					%table
 						%tr.filter-title
@@ -80,15 +80,28 @@
 
 							%td
 								.date-picker-wrap
-									%div.date-picker#activity-account-date-picker{'date-range-picker': true,
+									%div.date-picker{'date-range-picker': true,
 														   'ng-model': 'filter.startDate',
 														   :options => "{locale: {format: 'MMMM D, YYYY'},
 																		 eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-										%span.empty{'ng-hide': 'datePicker.toString()'}
+										%span.empty{'ng-hide': 'datePicker.toString("startDate")'}
 											Time period
 											%span.caret
-										%span{'ng-show': 'datePicker.toString()'}
-											{{datePicker.toString()}}
+										%span{'ng-show': 'datePicker.toString("startDate")'}
+											{{datePicker.toString("startDate")}}
+											%span.caret
+
+							%td
+								.date-picker-wrap
+									%div.date-picker{'date-range-picker': true,
+														   'ng-model': 'filter.createdDate',
+														   :options => "{locale: {format: 'MMMM D, YYYY'},
+																		 eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
+										%span.empty{'ng-hide': 'datePicker.toString("createdDate")'}
+											Time period
+											%span.caret
+										%span{'ng-show': 'datePicker.toString("createdDate")'}
+											{{datePicker.toString("createdDate")}}
 											%span.caret
 
 				.header-cell
@@ -108,48 +121,76 @@
 							%thead
 								%tr
 									%th
-										%span.clickable{'ng-click': 'sorting.set("deal_id")'} Deal ID
+										%span.clickable{'ng-click': 'sorting.set("id")'} Deal ID
 									%th
-										%span.clickable{'ng-click': 'sorting.set("deal_name")'} Name
+										%span.clickable{'ng-click': 'sorting.set("name")'} Name
 									%th
 										%span.clickable{'ng-click': 'sorting.set("advertiser.name")'} Advertiser
 									%th
-										%span.clickable{'ng-click': 'sorting.set("agency.name")'} Category
+										%span.clickable{'ng-click': 'sorting.set("category")'} Category
 									%th
-										%span.clickable{'ng-click': 'sorting.set("name")'} Agency
+										%span.clickable{'ng-click': 'sorting.set("agency.name")'} Agency
 									%th
-										%span.clickable{'ng-click': 'sorting.set("share")'} Holding Company
+										%span.clickable{'ng-click': 'sorting.set("holding_company")'} Holding Company
 									%th
-										%span.clickable{'ng-click': 'sorting.set("stage.name")'} Budget USD
+										%span.clickable{'ng-click': 'sorting.set("budget")'} Budget USD
 									%th
-										%span.clickable{'ng-click': 'sorting.set("stage.probability")'} Budget
+										%span.clickable{'ng-click': 'sorting.set("budget_loc")'} Budget
 									%th
-										%span.clickable{'ng-click': 'sorting.set("budget_loc")'} Stage
+										%span.clickable{'ng-click': 'sorting.set("stage.name")'} Stage
 									%th
-										%span.clickable{'ng-click': 'sorting.set("budget")'} %
+										%span.clickable{'ng-click': 'sorting.set("stage.probability")'} %
 									%th
-										%span.clickable{'ng-click': 'sorting.set("split_budget")'} Start Date
+										%span.clickable{'ng-click': 'sorting.set("start_date")'} Start Date
 									%th
-										%span.clickable{'ng-click': 'sorting.set("type")'} End Date
+										%span.clickable{'ng-click': 'sorting.set("end_date")'} End Date
 									%th
-										%span.clickable{'ng-click': 'sorting.set("source")'} Created Date
+										%span.clickable{'ng-click': 'sorting.set("created_at")'} Created Date
 									%th
-										%span.clickable{'ng-click': 'sorting.set("next_steps")'} Closed Date
+										%span.clickable{'ng-click': 'sorting.set("closed_at")'} Closed Date
 									%th
-										%span.clickable{'ng-click': 'sorting.set("start_date")'} Close Reason
+										%span.clickable{'ng-click': 'sorting.set("stage.closed_reason")'} Close Reason
 									%th
-										%span.clickable{'ng-click': 'sorting.set("end_date")'} Close Comments
+										%span.clickable{'ng-click': 'sorting.set("stage.closed_reason_text")'} Close Comments
 									%th
-										%span.clickable{'ng-click': 'sorting.set("created_date")'} Members
+										%span Members
 									%th
-										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Team
+										%span.clickable{'ng-click': 'sorting.set("team")'} Team
 									%th
-										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Type
+										%span.clickable{'ng-click': 'sorting.set("type")'} Type
 									%th
-										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Source
+										%span.clickable{'ng-click': 'sorting.set("source")'} Source
 									%th
-										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Initiative
+										%span.clickable{'ng-click': 'sorting.set("initiative")'} Initiative
 									%th{'ng-repeat': 'cfName in dealCustomFieldNames'}
-										%span.clickable{'ng-click': 'sorting.set("")'} {{cfName.field_label}}
+										%span.clickable{'ng-click': 'sorting.set("custom_fields[" + cfName.id + "]")'} {{cfName.field_label}}
 							%tbody
 								%tr{'ng-repeat': 'item in data | orderBy : sorting.key : sorting.reverse'}
+									%td {{item.id}}
+									%td
+										%a{href: '', 'ng-href': '/deals/{{item.id}}'} {{item.name}}
+									%td
+										%a{href: '', 'ng-href': '/accounts/{{item.advertiser.id}}'} {{item.advertiser.name}}
+									%td {{item.category}}
+									%td
+										%a{href: '', 'ng-href': '/accounts/{{item.agency.id}}'} {{item.agency.name}}
+									%td {{item.holding_company}}
+									%td {{item.budget | currency: '$': 0 }}
+									%td {{item.budget_loc | currency: '$': 0 }}
+									%td {{item.stage.name}}
+									%td {{item.stage.probability}}
+									%td {{item.start_date | date : 'shortDate'}}
+									%td {{item.end_date | date : 'shortDate'}}
+									%td {{item.created_at | date : 'shortDate'}}
+									%td {{item.closed_at | date : 'shortDate'}}
+									%td {{item.stage.closed_reason}}
+									%td {{item.stage.closed_reason_text}}
+									%td.nowrap
+										%div{'ng-repeat': 'member in item.members'}
+											{{member.name}} {{member.share || 0}}%
+									%td {{item.team}}
+									%td {{item.type}}
+									%td {{item.source}}
+									%td {{item.initiative}}
+									%td{'ng-repeat': 'cfName in dealCustomFieldNames'}
+										{{cfName.id}}
