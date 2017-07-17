@@ -46,6 +46,9 @@
 .clickable {
   cursor: pointer;
 }
+.nowrap {
+  white-space: nowrap;
+}
 
 .hide-input-arrows {
   input[type=number]::-webkit-inner-spin-button,

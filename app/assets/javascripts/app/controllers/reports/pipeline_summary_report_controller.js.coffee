@@ -14,6 +14,7 @@
 				key: null
 				reverse: false
 				set: (key) ->
+					console.log key
 					this.reverse = if this.key == key then !this.reverse else false
 					this.key = key
 
@@ -28,17 +29,19 @@
 				startDate:
 					startDate: null
 					endDate: null
-				createdDate: null
-
-			$scope.datePicker =
-				toString: ->
-					date = $scope.filter.startDate
-					if !date.startDate || !date.endDate then return false
-					date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
-				apply: ->
-					console.log arguments
+				createdDate:
+					startDate: null
+					endDate: null
 
 			$scope.filter = angular.copy defaultFilter
+
+			$scope.datePicker =
+				toString: (key) ->
+					date = $scope.filter[key]
+					if !date.startDate || !date.endDate then return false
+					date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
+#				apply: -> console.log arguments
+
 
 			$scope.setFilter = (key, val) ->
 				if key == 'stages'
@@ -51,9 +54,7 @@
 
 			$scope.applyFilter = ->
 				query = getQuery()
-				#                $location.search(query)
 				getReport query
-
 
 			$scope.resetFilter = ->
 				$scope.filter = angular.copy defaultFilter
@@ -68,18 +69,21 @@
 				query['stage_ids[]'] = _.map f.stages, (stage) -> stage.id if f.stages.length
 				query.type_id = f.type.id if f.type.id
 				query.source_id = f.source.id if f.source.id
-				query.seller_id = f.seller.id if f.seller.id
-				if f.date.startDate && f.date.endDate
-					query.start_date = f.date.startDate.format('YYYY-MM-DD')
-					query.end_date = f.date.endDate.format('YYYY-MM-DD')
+				if f.startDate.startDate && f.startDate.endDate
+					query.start_date = f.startDate.startDate.format('YYYY-MM-DD')
+					query.end_date = f.startDate.endDate.format('YYYY-MM-DD')
+				if f.createdDate.startDate && f.createdDate.endDate
+					query.created_date_start = f.createdDate.startDate.format('YYYY-MM-DD')
+					query.created_date_end = f.createdDate.endDate.format('YYYY-MM-DD')
 				query
 
 
 			getReport = (query) ->
-				Report.split_adjusted(query).$promise.then (data) ->
+				Report.pipeline_summary(query).$promise.then (data) ->
+					console.log data
 					$scope.data = data
 
-			$scope.$watch 'filter.team', (team, prevTeam) ->
+			$scope.$watch 'filter.team', (team) ->
 				if team.id then $scope.filter.seller = emptyFilter
 				Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
 					$scope.sellers = _.sortBy sellers, 'name'
@@ -87,10 +91,6 @@
 			Team.all(all_teams: true).then (teams) ->
 				$scope.teams = teams
 				$scope.teams.unshift emptyFilter
-
-#            Seller.query({id: 'all'}).$promise.then (sellers) ->
-#                $scope.sellers = sellers
-#                $scope.sellers.unshift emptyFilter
 
 
 			Stage.query().$promise.then (stages) ->
@@ -107,10 +107,10 @@
 					$scope.sources.push(option)
 
 			DealCustomFieldName.all().then (dealCustomFieldNames) ->
-				console.log $scope.dealCustomFieldNames = dealCustomFieldNames
+				$scope.dealCustomFieldNames = dealCustomFieldNames
 
 			$scope.export = ->
-				url = '/api/reports/split_adjusted.csv'
+				url = '/api/reports/pipeline_summary.csv'
 				$window.open url + '?' + $httpParamSerializer getQuery()
 				return
 
