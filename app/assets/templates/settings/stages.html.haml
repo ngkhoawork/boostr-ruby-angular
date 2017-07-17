@@ -25,7 +25,7 @@
                 %th.left Active
                 %th.action-column
             %tbody{ 'ui-sortable': 'sortableOptions', ng: { model: 'stages' } }
-              %tr{ ng: { repeat: 'row in stages | orderBy: "[-active, position]"' } }
+              %tr{ ng: { repeat: 'row in stages' } }
                 %td {{ row.name }}
                 %td.right {{ row.probability }}%
                 %td {{ row.open ? 'Open' : 'Closed' }}
