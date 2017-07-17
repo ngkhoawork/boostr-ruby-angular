@@ -8,12 +8,15 @@ class Activity < ActiveRecord::Base
   belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
   belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
   belongs_to :activity_type
+  belongs_to :account_dimension, foreign_key: 'agency_id'
 
   has_and_belongs_to_many :contacts
   has_and_belongs_to_many :contacts_info, -> { select(:id, :name) }, class_name: 'Contact'#, foreign_key: 'stage_id'
 
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable
+
+  delegate :name, to: :account_dimension, prefix: true
 
   validates :company_id, presence: true
   validates_uniqueness_of :google_event_id, allow_nil: true, allow_blank: true

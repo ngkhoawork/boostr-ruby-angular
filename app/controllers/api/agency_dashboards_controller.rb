@@ -31,15 +31,23 @@ class Api::AgencyDashboardsController < ApplicationController
     render json: related_agencies_contacts, each_serializer: AgencyDashboard::ContactsAndRelatedAdvertisersSerializer
   end
 
+  def activity_history
+    activities = Activity.includes(:agency).where(agency_id: agencies_ids)
+    max_per_page = 10
+    # paginate activities.count, max_per_page do |limit, offset|
+      render json: activities, each_serializer: AgencyDashboard::ActivityHistorySerializer
+    # end
+  end
+
   private
 
   def related_agencies_contacts
-    @related_agencies_contacts ||= ClientContact.includes(:contact, :account_dimension).where.not(client_id: agencies.pluck(:id))
+    @related_agencies_contacts ||= ClientContact.includes(:contact, :account_dimension).where.not(client_id: agencies_ids)
                                              .where(contact_id: agency_contact_ids)
   end
 
   def agency_contacts_ids
-    @agency_contact_ids ||= ClientContact.where(client_id: agencies).pluck(:contact_id)
+    @agency_contact_ids ||= ClientContact.where(client_id: agencies_ids).pluck(:contact_id)
   end
 
   def win_rate_by_category_data
@@ -89,14 +97,14 @@ class Api::AgencyDashboardsController < ApplicationController
     FactTables::AccountProductRevenueFacts::AdvertisersWithoutSpendQuery.new(filtered_revenues_by_accounts).call
   end
 
-  def agencies
+  def agencies_ids
     @agencies ||= AccountDimension.agencies_by_holding_company_or_agency_id(filter_params[:holding_company_id],
                                                                             filter_params[:account_id],
-                                                                            current_user_company_id)
+                                                                            current_user_company_id).pluck(:id)
   end
 
   def related_advertisers_ids
-    @related_advertisers_ids ||= AccountDimension.related_advertisers_to_agencies(agencies.ids).ids
+    @related_advertisers_ids ||= AccountDimension.related_advertisers_to_agencies(agencies_ids).ids
   end
 
   def current_user_company_id

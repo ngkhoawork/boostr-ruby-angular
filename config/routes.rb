@@ -133,12 +133,15 @@ Rails.application.routes.draw do
       end
     end
     resources :agency_dashboards do
-      get :spend_by_product, on: :collection
-      get :spend_by_advertisers, on: :collection
-      get :related_advertisers_without_spend, on: :collection
-      get :spend_by_category, on: :collection
-      get :win_rate_by_category, on: :collection
-      get :contacts_and_related_advertisers, on: :collection
+      collection do
+        get :spend_by_product
+        get :spend_by_advertisers
+        get :related_advertisers_without_spend
+        get :spend_by_category
+        get :win_rate_by_category
+        get :contacts_and_related_advertisers
+        get :activity_history
+      end
     end
 
     resources :time_dimensions, only: [:index]
