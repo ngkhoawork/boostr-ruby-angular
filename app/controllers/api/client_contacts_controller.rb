@@ -60,6 +60,7 @@ class Api::ClientContactsController < ApplicationController
   end
 
   def related_clients_through_contacts
+    #TODO rework this part
     client = current_user.company.clients.find(params[:client_id])
     client_contact_ids = client.contacts.ids
     result = Client.by_contact_ids(client_contact_ids).opposite_type_id(client.client_type_id).includes(:address, contacts: { address: {} })

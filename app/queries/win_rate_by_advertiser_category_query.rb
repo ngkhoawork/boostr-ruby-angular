@@ -1,4 +1,4 @@
-class WinRateByAdvertizerCategoryQuery
+class WinRateByAdvertiserCategoryQuery
   def initialize(options = {})
     @options = options
   end

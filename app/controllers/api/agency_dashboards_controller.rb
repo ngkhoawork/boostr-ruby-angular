@@ -28,10 +28,17 @@ class Api::AgencyDashboardsController < ApplicationController
 
   end
 
+  def contacts_and_related_advertisers
+    agency_contact_ids = ClientContact.where(client_id: agencies).pluck(:contact_id)
+    related_agencies_contacts = ClientContact.includes(:contact, :account_dimension).where.not(client_id: agencies.pluck(:id))
+                                                                  .where(contact_id: agency_contact_ids)
+    render json: related_agencies_contacts, each_serializer: AgencyDashboard::ContactsAndRelatedAdvertisersSerializer
+  end
+
   private
 
   def win_rate_by_category_data
-    WinRateByAdvertizerCategoryQuery.new(filter_params.merge(company_id: current_user_company_id,
+    WinRateByAdvertiserCategoryQuery.new(filter_params.merge(company_id: current_user_company_id,
                                                              advertisers_ids: related_advertisers_ids)).call
   end
 
@@ -78,18 +85,13 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def agencies
-    #TODO: move to query object
-    @agencies ||= AccountDimension.joins('LEFT JOIN holding_companies on holding_companies.id = account_dimensions.holding_company_id')
-                                  .where('company_id = ? AND (account_dimensions.id = ? OR holding_company_id = ?)',
-                                         current_user_company_id,
-                                         filter_params[:account_id],
-                                         filter_params[:holding_company_id])
+    @agencies ||= AccountDimension.agencies_by_holding_company_or_agency_id(filter_params[:holding_company_id],
+                                                                            filter_params[:account_id],
+                                                                            current_user_company_id)
   end
 
   def related_advertisers_ids
-    @related_advertisers_ids ||= AccountDimension.joins(:advertisers)
-                                                 .where('client_connections.agency_id in (?)', agencies.pluck(:id))
-                                                 .pluck(:id).uniq
+    @related_advertisers_ids ||= AccountDimension.related_advertisers_to_agencies(agencies.ids).ids
   end
 
   def current_user_company_id

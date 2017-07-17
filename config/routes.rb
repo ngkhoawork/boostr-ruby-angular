@@ -138,6 +138,7 @@ Rails.application.routes.draw do
       get :related_advertisers_without_spend, on: :collection
       get :spend_by_category, on: :collection
       get :win_rate_by_category, on: :collection
+      get :contacts_and_related_advertisers, on: :collection
     end
 
     resources :time_dimensions, only: [:index]
