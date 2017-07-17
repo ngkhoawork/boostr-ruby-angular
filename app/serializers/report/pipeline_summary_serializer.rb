@@ -1,7 +1,7 @@
 class Report::PipelineSummarySerializer < ActiveModel::Serializer
   attributes :id, :name, :advertiser, :category, :agency, :holding_company, :budget, :budget_loc, :stage, :start_date,
              :end_date, :created_at, :closed_at, :closed_reason, :closed_reason_text, :type, :source, :initiative,
-             :members, :team, :custom_fields
+             :custom_fields, :members, :team
 
   def advertiser
     object.advertiser.serializable_hash(only: [:id, :name]) rescue nil
@@ -26,7 +26,11 @@ class Report::PipelineSummarySerializer < ActiveModel::Serializer
   end
 
   def budget_loc
-    object.budget_loc.to_i
+    {
+      budget_loc: object.budget_loc.to_i,
+      curr_symbol: object.currency.curr_symbol,
+      curr_cd: object.curr_cd
+    }
   end
 
   def stage
@@ -53,24 +57,26 @@ class Report::PipelineSummarySerializer < ActiveModel::Serializer
     object.deal_members.inject([]) do |data, obj|
       data << {
         id: obj.user_id,
-        name: company.users.find(obj.user_id).name,
+        name: obj.user.name,
         share: obj.share
       }
     end
   end
 
   def team
-    object.user_with_highest_share.team.name rescue nil
+    object.deal_members.max_by(&:share).user.team.name rescue nil
   end
 
   def custom_fields
-    company.deal_custom_field_names.inject([]) do |data, field|
+    custom_fields = {}
+
+    company.deal_custom_field_names.map do |field|
       cf_value = object.deal_custom_field.send(field.field_name) rescue nil
 
-      data << {
-        field.field_label.downcase.gsub(' ', '_').to_sym => cf_value
-      }
+      custom_fields[field.id.to_s] = cf_value
     end
+
+    custom_fields
   end
 
   private
