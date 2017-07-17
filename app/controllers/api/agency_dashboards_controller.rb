@@ -23,19 +23,24 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def win_rate_by_category
-    render json: ActiveModel::ArraySerializer.new(win_rate_by_category_data,
-                                                  each_serializer: AgencyDashboard::WinRateByCategorySerializer)
+    render json: win_rate_by_category_data, each_serializer: AgencyDashboard::WinRateByCategorySerializer
 
   end
 
   def contacts_and_related_advertisers
-    agency_contact_ids = ClientContact.where(client_id: agencies).pluck(:contact_id)
-    related_agencies_contacts = ClientContact.includes(:contact, :account_dimension).where.not(client_id: agencies.pluck(:id))
-                                                                  .where(contact_id: agency_contact_ids)
     render json: related_agencies_contacts, each_serializer: AgencyDashboard::ContactsAndRelatedAdvertisersSerializer
   end
 
   private
+
+  def related_agencies_contacts
+    @related_agencies_contacts ||= ClientContact.includes(:contact, :account_dimension).where.not(client_id: agencies.pluck(:id))
+                                             .where(contact_id: agency_contact_ids)
+  end
+
+  def agency_contacts_ids
+    @agency_contact_ids ||= ClientContact.where(client_id: agencies).pluck(:contact_id)
+  end
 
   def win_rate_by_category_data
     WinRateByAdvertiserCategoryQuery.new(filter_params.merge(company_id: current_user_company_id,
