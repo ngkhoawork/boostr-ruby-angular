@@ -7,9 +7,7 @@
 				.header-cell.filters-block
 					%table
 						%tr.filter-title
-							%td
-								Holding Company
-								%span.required *
+							%td Holding Company
 						%tr
 							%td
 								%ul.filter-item
@@ -33,6 +31,8 @@
 											{{filter.agency.name}}
 											%span.caret
 										%ul.dropdown-menu
+											%li{'ng-hide': 'filter.holdingCompany.id', 'ng-click': '$event.stopPropagation()'}
+												%input.search-field{placeholder: 'Search', ng: {model: 'agencySearch', 'model-options': '{debounce: 400}', change: 'getAgencies()'}}
 											%li{ ng: { class: '{active: !filter.agency.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("agency", defaultFilter.agency)' } }
 													{{defaultFilter.agency.name}}
@@ -92,7 +92,11 @@
 																		%li{ ng: { repeat: 'endPeriod in timeDimensions | orderBy : "start_date" | filter : filterTimeDimensions', class: '{active: endPeriod.id === filter.endPeriod.id}' } }
 																			%a{ href: '', ng: { click: 'setFilter("endPeriod", endPeriod)' } }
 																				{{endPeriod.name}}
+				.header-cell
+					%button.add-btn.mr20{'ng-click': 'applyFilter()'}
+						Run Report
 
+	.container-fluid.inner-agency360{'ng-show': 'showDashboard'}
 		.row
 			.block
 				%div.mb20
@@ -140,7 +144,7 @@
 			.col-xs-8.pl0
 				.block
 					%div.mb20
-						%span.title Advertisers Without Spend at [AGENCY_NAME]
+						%span.title Advertisers Without Spend at {{(filter.holdingCompany.id && filter.holdingCompany.name) || (filter.agency.id && filter.agency.name) || '-'}}
 					.table-wrapper
 						%table.table.table-hover
 							%thead
@@ -149,21 +153,11 @@
 									%th Open Pipeline
 									%th Seller
 							%tbody
-								%tr
+								%tr{'ng-repeat': 'advertiser in relatedAdvertisers'}
 									%td
-										%a{href: '', 'ng-href': '#'} Advertiser 1
-									%td {{250000 | currency : '$' : 0}}
-									%td Seller 1
-								%tr
-									%td
-										%a{href: '', 'ng-href': '#'} Advertiser 2
-									%td {{500000 | currency : '$' : 0}}
-									%td Seller 2
-								%tr
-									%td
-										%a{href: '', 'ng-href': '#'} Advertiser 3
-									%td {{750000 | currency : '$' : 0}}
-									%td Seller 3
+										%a{href: '', 'ng-href': '/accounts/{{advertiser.id}}'} {{advertiser.advertiser_name}}
+									%td {{advertiser.sum | currency : '$' : 0}}
+									%td {{advertiser.seller_name}}
 				.block
 					%div.mb20
 						%span.title Contacts & Related Advertisers
@@ -177,30 +171,14 @@
 									%th Phone
 									%th Last Touch
 							%tbody
-								%tr
+								%tr{'ng-repeat': 'contact in relatedContacts'}
 									%td
-										%a{href: '', 'ng-href': '#'} John Doe
+										%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
 									%td
-										%a{href: '', 'ng-href': '#'} Nike
-									%td john_doe@gmail.com
-									%td 555-12-34
-									%td 05/20/2017
-								%tr
-									%td
-										%a{href: '', 'ng-href': '#'} John Doe
-									%td
-										%a{href: '', 'ng-href': '#'} Nike
-									%td john_doe@gmail.com
-									%td 555-12-34
-									%td 05/20/2017
-								%tr
-									%td
-										%a{href: '', 'ng-href': '#'} John Doe
-									%td
-										%a{href: '', 'ng-href': '#'} Nike
-									%td john_doe@gmail.com
-									%td 555-12-34
-									%td 05/20/2017
+										%a{href: '', 'ng-href': '/accounts/{{contact.advertiser.id}}'} {{contact.advertiser.name}}
+									%td {{contact.email}}
+									%td {{contact.phone}}
+									%td {{contact.last_touch | date}}
 
 				.block
 					%div.mb20
@@ -215,39 +193,18 @@
 									%th Comments
 									%th Contacts
 							%tbody
-								%tr
-									%td 05/20/2017
+								%tr{'ng-repeat': 'activity in activities'}
+									%td {{activity.date | date : 'MM/dd/yy'}}
 									%td
 										.activity-type
-											%span{'class': 'mr8 icon-activity-proposal'}
-											%b Proposal
+											%span{'class': 'mr8 icon-activity-{{getIconName(activity.type)}}'}
+											%b {{activity.type}}
 									%td
-										%a{href: '', 'ng-href': '#'} Nike
-									%td random comment
+										%a{href: '', 'ng-href': '/accounts/{{activity.advertiser.id}}'} {{activity.advertiser.name}}
+									%td {{activity.comments}}
 									%td
-										%a{href: '', 'ng-href': '#'} John Doe
-								%tr
-									%td 05/20/2017
-									%td
-										.activity-type
-											%span{'class': 'mr8 icon-activity-email'}
-											%b Proposal
-									%td
-										%a{href: '', 'ng-href': '#'} Nike
-									%td random comment
-									%td
-										%a{href: '', 'ng-href': '#'} John Doe
-								%tr
-									%td 05/20/2017
-									%td
-										.activity-type
-											%span{'class': 'mr8 icon-activity-entertainment'}
-											%b Proposal
-									%td
-										%a{href: '', 'ng-href': '#'} Nike
-									%td random comment
-									%td
-										%a{href: '', 'ng-href': '#'} John Doe
+										%div{'ng-repeat': 'contact in activity.contacts'}
+											%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}
 			.col-xs-4.pr0
 				.block
 					%div.mb20
@@ -262,7 +219,7 @@
 					%div#win-rate-category-chart-container
 						%svg#win-rate-category-chart.agency360-chart
 
-				.block
+				-#.block
 					%div.mb20
 						%span.title Spend By Agency
 					.table-wrapper

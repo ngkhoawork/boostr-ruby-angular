@@ -1,5 +1,9 @@
 class AgencyDashboard::ContactsAndRelatedAdvertisersSerializer < ActiveModel::Serializer
-  attributes :name, :advertiser, :email, :phone, :last_touch
+  attributes :id, :name, :advertiser, :email, :phone, :last_touch
+
+  def id
+    contact.id
+  end
 
   def name
     contact.name
