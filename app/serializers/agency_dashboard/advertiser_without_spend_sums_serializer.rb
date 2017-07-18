@@ -1,3 +1,3 @@
 class AgencyDashboard::AdvertiserWithoutSpendSumsSerializer < ActiveModel::Serializer
-  attributes :advertiser_name, :seller_name, :sum
+  attributes :id, :advertiser_name, :seller_name, :sum
 end

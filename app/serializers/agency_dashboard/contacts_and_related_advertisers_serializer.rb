@@ -6,7 +6,7 @@ class AgencyDashboard::ContactsAndRelatedAdvertisersSerializer < ActiveModel::Se
   end
 
   def advertiser
-    object.account_dimension_name
+    object.account_dimension.as_json(only: [:id, :name])
   end
 
   def email

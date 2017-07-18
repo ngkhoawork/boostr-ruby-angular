@@ -13,10 +13,10 @@ class FactTables::AccountProductRevenueFacts::AdvertisersWithoutSpendQuery
 
   def advertisers_without_spend
     relation.joins("LEFT JOIN #{advertisers_seller_sql} ON account_product_revenue_facts.account_dimension_id = sellers.account_dimension_id")
-            .group('account_dimensions.name, sellers.seller_name')
+            .group('account_dimensions.id, account_dimensions.name, sellers.seller_name')
             .order('account_dimensions.name')
             .having('sum(revenue_amount) = 0')
-            .select('account_dimensions.name as advertiser_name, sellers.seller_name as seller_name, sum(revenue_amount)')
+            .select('account_dimensions.id, account_dimensions.name as advertiser_name, sellers.seller_name as seller_name, sum(revenue_amount)')
   end
 
   def advertisers_seller_sql
