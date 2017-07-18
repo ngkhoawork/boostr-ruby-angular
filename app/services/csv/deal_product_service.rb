@@ -9,11 +9,11 @@ class Csv::DealProductService < Csv::BaseService
   attr_reader :company
 
   def decorated_records
-    records.map { |record| Csv::DealProductDecorator.new(record, company) }
+    records.map { |record| Csv::DealProductDecorator.new(record, company, deal_product_cf_labels) }
   end
 
   def headers
-    deal_product_cf_names.blank? ? basic_headers : basic_headers.push(deal_product_cf_names.map(&:field_label)).flatten
+    deal_product_cf_names.blank? ? basic_headers : basic_headers.push(deal_product_cf_labels).flatten
   end
 
   def basic_headers
@@ -22,8 +22,12 @@ class Csv::DealProductService < Csv::BaseService
       Product_name Product_budget Product_budget_USD
     )
   end
-  
+
   def deal_product_cf_names
     @_deal_product_cf_names ||= company.deal_product_cf_names
+  end
+
+  def deal_product_cf_labels
+    @_deal_product_cf_labels ||= deal_product_cf_names.map(&:field_label)
   end
 end
