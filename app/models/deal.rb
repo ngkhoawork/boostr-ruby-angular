@@ -29,6 +29,7 @@ class Deal < ActiveRecord::Base
   has_many :deal_members
   has_many :users, through: :deal_members
   has_many :values, as: :subject
+  has_many :options, through: :values
   has_many :deal_stage_logs
   has_many :activities
   has_many :reminders, as: :remindable, dependent: :destroy
@@ -132,7 +133,7 @@ class Deal < ActiveRecord::Base
     where(created_at: start_date..end_date) if start_date.present? && end_date.present?
   end
   scope :by_stage_ids, -> (stage_ids) { where(stage_id: stage_ids) if stage_ids.present? }
-  scope :by_options , -> (option_id) { joins(:values).where(values: { option_id: option_id }) if option_id.present? }
+  scope :by_options , -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
 
   def asana_connect
     AsanaConnectWorker.perform_async self.id
