@@ -98,8 +98,6 @@
   getMetadata = ->
     if metadata == true
       $scope.metadata_url = api_url + '/metadata'
-      $http.get($scope.metadata_url).then (response) ->
-        $scope.metadata = response.data
 
   $scope.init()
 ]

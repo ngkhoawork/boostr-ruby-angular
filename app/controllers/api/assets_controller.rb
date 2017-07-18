@@ -35,7 +35,7 @@ class Api::AssetsController < ApplicationController
   end
 
   def metadata
-    max_per_page = 100
+    max_per_page = 50
     paginate company_unmapped_assets.count, max_per_page do |limit, offset|
       render json: company_unmapped_assets
                     .select(:id, :original_file_name, :asset_file_name)
