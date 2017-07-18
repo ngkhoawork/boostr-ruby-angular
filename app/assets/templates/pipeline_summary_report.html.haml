@@ -164,7 +164,7 @@
 										%span.clickable{'ng-click': 'sorting.set("initiative")'} Initiative
 									%th{'ng-repeat': 'cfName in dealCustomFieldNames'}
 										%span.clickable{'ng-click': 'sorting.set("custom_fields[" + cfName.id + "]")'} {{cfName.field_label}}
-							%tbody
+							%tbody.nowrap
 								%tr{'ng-repeat': 'item in data | orderBy : sorting.key : sorting.reverse'}
 									%td {{item.id}}
 									%td
@@ -176,16 +176,16 @@
 										%a{href: '', 'ng-href': '/accounts/{{item.agency.id}}'} {{item.agency.name}}
 									%td {{item.holding_company}}
 									%td {{item.budget | currency: '$': 0 }}
-									%td {{item.budget_loc | currency: '$': 0 }}
+									%td {{item.budget_loc.budget | currency : item.budget_loc.curr_symbol || item.budget_loc.curr_cd: 0 }}
 									%td {{item.stage.name}}
 									%td {{item.stage.probability}}
 									%td {{item.start_date | date : 'shortDate'}}
 									%td {{item.end_date | date : 'shortDate'}}
 									%td {{item.created_at | date : 'shortDate'}}
 									%td {{item.closed_at | date : 'shortDate'}}
-									%td {{item.stage.closed_reason}}
-									%td {{item.stage.closed_reason_text}}
-									%td.nowrap
+									%td {{item.closed_reason}}
+									%td {{item.closed_reason_text}}
+									%td
 										%div{'ng-repeat': 'member in item.members'}
 											{{member.name}} {{member.share || 0}}%
 									%td {{item.team}}
@@ -193,4 +193,4 @@
 									%td {{item.source}}
 									%td {{item.initiative}}
 									%td{'ng-repeat': 'cfName in dealCustomFieldNames'}
-										{{cfName.id}}
+										{{item.custom_fields[cfName.id]}}
