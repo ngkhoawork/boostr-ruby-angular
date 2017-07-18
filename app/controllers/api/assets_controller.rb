@@ -1,4 +1,5 @@
 class Api::AssetsController < ApplicationController
+  include CleanPagination
   respond_to :json
 
   def create
@@ -34,10 +35,20 @@ class Api::AssetsController < ApplicationController
   end
 
   def metadata
-    render json: current_user.company.assets.unmapped.select(:id, :original_file_name, :asset_file_name)
+    max_per_page = 100
+    paginate company_unmapped_assets.count, max_per_page do |limit, offset|
+      render json: company_unmapped_assets
+                    .select(:id, :original_file_name, :asset_file_name)
+                    .limit(limit)
+                    .offset(offset)
+    end
   end
 
   private
+
+  def company_unmapped_assets
+    current_user.company.assets.unmapped
+  end
 
   def asset_params
     single_asset params.require(:asset)

@@ -37,6 +37,13 @@
         %li{ng: { repeat: 'unmapped_file in metadata' }}
           {{unmapped_file.original_file_name}}
 
+      .custom-pagination{'bgf-pagination': 'bgf-pagination',
+          'collection': 'metadata',
+          'per-page': '50',
+          'link-group-size': "2",
+          'client-limit': "100",
+          'url': 'metadata_url'}
+
     .well.well-lg.dark
       .row
         .col-xs-9
