@@ -1,8 +1,9 @@
 class Csv::DealProductDecorator
-  def initialize(deal_product, company)
+  def initialize(deal_product, company, deal_product_cf_labels)
     @deal_product = deal_product
     @deal = deal_product.deal
     @company = company
+    @deal_product_cf_labels = deal_product_cf_labels
   end
 
   def deal_id
@@ -55,12 +56,15 @@ class Csv::DealProductDecorator
 
   def method_missing(name)
     cf_names = company.deal_product_cf_names
-    deal_product_cf = cf_names.find_by(field_label: name.to_s.titleize) || cf_names.find_by(field_label: name.to_s)
+    field_label = deal_product_cf_labels.select { |label| label.downcase.to_sym.eql? name }.first
+    deal_product_cf = cf_names.find_by(field_label: field_label)
 
-    deal_product.deal_product_cf.send(deal_product_cf.field_name) if deal_product.deal_product_cf.present?
+    if deal_product.deal_product_cf.present? && deal_product_cf.present?
+      deal_product.deal_product_cf.send(deal_product_cf.field_name)
+    end
   end
 
   private
 
-  attr_reader :deal_product, :deal, :company
+  attr_reader :deal_product, :deal, :company, :deal_product_cf_labels
 end
