@@ -43,7 +43,7 @@ class Api::AgencyDashboardsController < ApplicationController
 
   def related_agencies_contacts
     @related_agencies_contacts ||= ClientContact.includes(:contact, :account_dimension).where.not(client_id: agencies_ids)
-                                             .where(contact_id: agency_contact_ids)
+                                                .where(contact_id: agency_contacts_ids)
   end
 
   def agency_contacts_ids
