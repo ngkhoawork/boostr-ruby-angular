@@ -20,7 +20,7 @@
       $scope.is_uploading = false
       return
 
-    if not isValidFileName file.name
+    if not isValidFileType file.type
       uploadError('Unable to upload file. This file type is not supported')
       $scope.is_uploading = false
       return
@@ -72,9 +72,9 @@
   isValidFileSize = (size) ->
     return size < 1000000000
 
-  isValidFileName = (name) ->
-    regex = /^(.*\.(rar|x-7z-compressed|x-cab|x-cpio|x-gzip|x-lzh|x-tar|zip)$)?[^.]*$/igm
-    return (regex).test(name.toLowerCase())
+  isValidFileType = (type) ->
+    regex = /^application\/(rar|x-7z-compressed|x-cab|x-cpio|x-debian-package|x-gtar-compressed|x-gzip|x-lzh|x-redhat-package-manager|x-tar|zip)$[^.]*$/igm
+    return (regex).test(type.toLowerCase())
 
   uploadError = (msg) ->
     $scope.progressPercentage = 0;
