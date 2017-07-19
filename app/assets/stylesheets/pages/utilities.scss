@@ -46,6 +46,9 @@
 .clickable {
   cursor: pointer;
 }
+.inline-block {
+  display: inline-block;
+}
 
 .hide-input-arrows {
   input[type=number]::-webkit-inner-spin-button,

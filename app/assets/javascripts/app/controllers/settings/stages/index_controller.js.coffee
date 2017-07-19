@@ -21,7 +21,7 @@
   $scope.showModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/stage_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'SettingsStagesNewController'
       backdrop: 'static'
       keyboard: false
@@ -29,7 +29,7 @@
   $scope.edit = (stage) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/stage_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'SettingsStagesEditController'
       backdrop: 'static'
       keyboard: false
