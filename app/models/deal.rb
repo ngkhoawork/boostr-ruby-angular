@@ -97,9 +97,11 @@ class Deal < ActiveRecord::Base
   end
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
-  scope :for_time_period, -> (start_date, end_date) { where('deals.start_date <= ? AND deals.end_date >= ?', end_date, start_date) }
-  scope :closed_in, -> (duration_in_days) { where('deals.closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
-  scope :closed_at, -> (start_date, end_date) { where('deals.closed_at >= ? and deals.closed_at <= ?', start_date, end_date) }
+  scope :for_time_period, -> (start_date, end_date) { where('start_date <= ? AND end_date >= ?', end_date, start_date) }
+  scope :closed_in, -> (duration_in_days) { where('closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
+  scope :closed_at, -> (start_date, end_date) do
+    where('closed_at >= ? and closed_at <= ?', start_date, end_date) if start_date.present? && end_date.present?
+  end
   scope :started_at, -> (start_date, end_date) { where('deals.created_at >= ? and deals.created_at <= ?', start_date, end_date) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
   scope :close_status, -> { joins(:stage).where('stages.open IS false OR stages.probability = 100') }

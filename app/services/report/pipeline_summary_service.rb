@@ -2,7 +2,7 @@ class Report::PipelineSummaryService
   def initialize(company, params)
     @company             = company
     @team_id             = params[:team_id]
-    @seller_id          = params[:seller_id]
+    @seller_id           = params[:seller_id]
     @stage_ids           = params[:stage_ids]
     @type_id             = params[:type_id]
     @source_id           = params[:source_id]
@@ -10,6 +10,8 @@ class Report::PipelineSummaryService
     @end_date            = params[:end_date]
     @created_date_start  = params[:created_date_start]
     @created_date_end    = params[:created_date_end]
+    @closed_date_start   = params[:closed_date_start]
+    @closed_date_end     = params[:closed_date_end]
   end
 
   def perform
@@ -23,7 +25,7 @@ class Report::PipelineSummaryService
   private
 
   attr_reader :company, :team_id, :seller_id, :type_id, :source_id, :start_date, :end_date, :created_date_start,
-              :created_date_end, :stage_ids
+              :created_date_end, :stage_ids, :closed_date_start, :closed_date_end
 
   def deals
     @_deals ||= company.deals
@@ -42,6 +44,7 @@ class Report::PipelineSummaryService
            .by_stage_ids(stage_ids)
            .by_start_date(start_date, end_date)
            .by_created_date(created_date_start, created_date_end)
+           .closed_at(closed_date_start, closed_date_end)
   end
 
   def data_for_serializer
