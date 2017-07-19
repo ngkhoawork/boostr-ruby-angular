@@ -20,11 +20,6 @@
       $scope.is_uploading = false
       return
 
-    if not isValidFileType file.type
-      uploadError('Unable to upload file. This file type is not supported')
-      $scope.is_uploading = false
-      return
-
     $scope.uploading = Transloadit.upload(file, {
       params: {
         auth: {
@@ -63,8 +58,8 @@
         $scope.$$phase || $scope.$apply()
       ,
 
-      error: (error) ->
-        console.error('Error from transloadit', error)
+      error: (response) ->
+        uploadError(response.message)
         $scope.$$phase || $scope.$apply()
 
       })
@@ -72,13 +67,9 @@
   isValidFileSize = (size) ->
     return size < 1000000000
 
-  isValidFileType = (type) ->
-    regex = /^application\/(rar|x-7z-compressed|x-cab|x-cpio|x-debian-package|x-gtar-compressed|x-gzip|x-lzh|x-redhat-package-manager|x-tar|zip)$[^.]*$/igm
-    return (regex).test(type.toLowerCase())
-
   uploadError = (msg) ->
     $scope.progressPercentage = 0;
-    $scope.uploading = false
+    $scope.is_uploading = false
     $scope.errors.push({ message: [msg] })
 
   formatName = (file) ->

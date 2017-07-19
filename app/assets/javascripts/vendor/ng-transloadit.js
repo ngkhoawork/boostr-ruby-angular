@@ -65,6 +65,8 @@ angular.module('ngTransloadit', []).factory('Transloadit', ['$http', '$rootScope
             var results = angular.fromJson(this.response);
             if (results.ok === 'ASSEMBLY_COMPLETED') {
               options.uploaded(results);
+            } else if (results.error.length > 0) {
+              options.error(results);
             } else {
               check(results.assembly_ssl_url);
             }
