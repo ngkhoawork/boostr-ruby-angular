@@ -16,8 +16,8 @@
   $scope.submitForm = () ->
     $scope.errors = {}
 
-    fields = ['revenue_type']
-
+    if (!$scope.product.name)
+      $scope.errors['name'] = 'Name is required'
     if (!$scope.product.revenue_type)
       $scope.errors['revenue_type'] = 'Revenue Type is required'
 

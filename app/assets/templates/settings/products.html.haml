@@ -15,18 +15,20 @@
 							%th Family
 							%th Type
 							%th Revenue Type
+							%th Active
 					%tbody{ ng: { repeat: 'product in products' } }
 						%tr.clickable{'ng-click': 'expendRow(product)'}
 							%td
 								%i{class: 'mr8 fa fa-chevron-{{expendedRow == product.id ? "right" : "down"}}'}
 								%span.mr8 {{ product.name }}
-								%i.fa.fa-pencil.z-icon{'ng-click': 'editModal(product)'}
+								%i.fa.fa-pencil.z-icon{'ng-click': 'editModal(product); $event.stopPropagation()'}
 							%td {{ product.product_line.option.name }}
 							%td {{ product.product_family.option.name }}
 							%td {{ product.pricing_type.option.name }}
 							%td {{ product.revenue_type }}
+							%td {{ product.active ? 'Yes' : 'No' }}
 						%tr{'ng-show': 'expendedRow == product.id'}
-							%td{style: 'padding: 0', colspan: '5'}
+							%td{style: 'padding: 0', colspan: '6'}
 								%table.table.ad-unit-table
 									%thead
 										%tr

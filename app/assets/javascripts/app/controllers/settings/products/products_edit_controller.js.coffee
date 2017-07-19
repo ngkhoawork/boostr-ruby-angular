@@ -12,13 +12,12 @@
 #    product.product_line = Field.field(product, 'Product Line')
 #    product.product_family = Field.field(product, 'Product Family')
     $scope.product = product
-    console.log($scope.product)
 
   $scope.submitForm = () ->
     $scope.errors = {}
 
-    fields = ['revenue_type']
-
+    if (!$scope.product.name)
+      $scope.errors['name'] = 'Name is required'
     if (!$scope.product.revenue_type)
       $scope.errors['revenue_type'] = 'Revenue Type is required'
 
