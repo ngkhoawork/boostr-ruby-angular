@@ -56,11 +56,12 @@ class Deal < ActiveRecord::Base
 
   before_update do
     if curr_cd_changed?
-      update_product_currency
+      update_products_currency
     end
 
     if stage_id_changed?
       update_stage
+      recalculate_currency
       update_close
     end
   end
@@ -399,7 +400,7 @@ class Deal < ActiveRecord::Base
     company.exchange_rate_for(currency: self.curr_cd)
   end
 
-  def update_product_currency
+  def update_products_currency
     deal_product_budgets.update_all("budget_loc = budget * #{self.exchange_rate}")
     deal_products.map{ |deal_product| deal_product.update_budget }
     self.budget_loc = budget * self.exchange_rate
@@ -1283,6 +1284,14 @@ class Deal < ActiveRecord::Base
         stage_updated_at: stage_updated_at_was,
         active_wday: count_wday(stage_updated_at_was, stage_updated_at)
       )
+    end
+  end
+
+  def recalculate_currency
+    if !stage.open? && (stage.probability == 100 || stage.probability == 0)
+      deal_product_budgets.update_all("budget = budget_loc / #{self.exchange_rate}")
+      deal_products.map{ |deal_product| deal_product.update_budget }
+      self.budget = deal_products.sum(:budget)
     end
   end
 
