@@ -30,6 +30,8 @@ class Api::ReportsController < ApplicationController
         render json: pipeline_summary_serializer
       }
       format.csv {
+        send_data Csv::PipelineSummaryReportService.new(company, pipeline_summary_serializer.as_json).perform,
+                  filename: "reports-#{Date.today}.csv"
       }
     end
   end

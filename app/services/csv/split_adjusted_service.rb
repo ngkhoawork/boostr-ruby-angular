@@ -1,34 +1,16 @@
 class Csv::SplitAdjustedService < Csv::BaseService
   private
-  #TODO tests. Possible refactoring
+
+  def decorated_records
+    records.map { |record| Csv::SplitAdjustedDecorator.new(record) }
+  end
 
   def generate_csv
     CSV.generate do |csv|
       csv << headers
 
-      records.each do |record|
-        line = []
-        line << record[:deal_id]
-        line << record[:deal_name]
-        line << record[:advertiser]['name']
-        line << (record[:agency].present? ? record[:agency]['name'] : nil)
-        line << record[:name]
-        line << record[:share]
-        line << record[:stage]['name']
-        line << record[:stage]['probability']
-        line << record[:budget]
-        line << record[:curr_cd]
-        line << record[:budget_loc]
-        line << record[:split_budget]
-        line << record[:type]
-        line << record[:source]
-        line << record[:next_steps]
-        line << record[:start_date]
-        line << record[:end_date]
-        line << record[:created_date]
-        line << record[:closed_date]
-
-        csv << line
+      decorated_records.each do |record|
+        csv << headers_as_symbols.map { |attr| record.send(attr) }
       end
     end
   end
@@ -55,5 +37,9 @@ class Csv::SplitAdjustedService < Csv::BaseService
       'Created Date',
       'Closed Date'
     ]
+  end
+
+  def headers_as_symbols
+    @_headers_as_symbols ||= headers.map { |el| el.downcase.gsub(' ','_').to_sym }
   end
 end
