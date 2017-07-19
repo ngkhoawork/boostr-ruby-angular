@@ -10,6 +10,7 @@ FactoryGirl.define do
     start_date '01/01/2016'
     end_date '02/02/2016'
     stage nil
+    replace_team 'N'
     team nil
     created '01/01/2016'
     closed_date '02/02/2016'
