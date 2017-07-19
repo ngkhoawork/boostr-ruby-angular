@@ -1,5 +1,13 @@
 transloadit:
-  boostr: af155d008b5611e6b08d99d95ff526bd
-  boostrdev: 689738007e6b11e693c6c33c0cd97f1d
-  boostrstaging: 889f06a08ca311e688f16bf3099f9724
-  boostrprod: 989b47d08ca311e685b4db739c99bc9d
+  boostrdev:
+    store_single: 689738007e6b11e693c6c33c0cd97f1d
+    store_archive: 5284fa90550a11e7b96e5d29c16e4f70
+  boostr:
+    store_single: af155d008b5611e6b08d99d95ff526bd
+    store_archive: b8f5922056aa11e7ba25e325fed42770
+  boostrstaging:
+    store_single: 889f06a08ca311e688f16bf3099f9724
+    store_archive: 04134ea056ab11e78988c9723823b55c
+  boostrprod:
+    store_single: 989b47d08ca311e685b4db739c99bc9d
+    store_archive: 17c62f3056ab11e7bc2b43ce278cf0c6

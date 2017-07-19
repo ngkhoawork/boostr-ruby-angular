@@ -235,7 +235,7 @@
 
 @app.run ['$rootScope', 'CurrentUser', ($rootScope, CurrentUser) ->
   $rootScope.currentUserIsLeader = currentUserIsLeader
-  $rootScope.transloaditTemplate = transloaditTemplate
+  $rootScope.transloaditTemplates = transloaditTemplates
   $rootScope.userType = userType
   $rootScope.currentUserRoles = currentUserRoles
   currentUserRoles.isAdmin = -> _.contains this, 'admin'

@@ -270,6 +270,7 @@ ActiveRecord::Schema.define(version: 20170717161630) do
     t.string   "comment"
     t.string   "subtype"
     t.integer  "created_by"
+    t.integer  "company_id"
   end
 
   create_table "bp_estimate_products", force: :cascade do |t|
@@ -392,6 +393,7 @@ ActiveRecord::Schema.define(version: 20170717161630) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
   end
@@ -1181,6 +1183,27 @@ ActiveRecord::Schema.define(version: 20170717161630) do
 
   add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
 
+  create_table "requests", force: :cascade do |t|
+    t.integer  "deal_id"
+    t.integer  "company_id"
+    t.integer  "requester_id"
+    t.integer  "assignee_id"
+    t.integer  "requestable_id"
+    t.string   "requestable_type"
+    t.string   "status"
+    t.string   "request_type"
+    t.text     "description",      default: ""
+    t.text     "resolution",       default: ""
+    t.date     "due_date"
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
+  add_index "requests", ["assignee_id"], name: "index_requests_on_assignee_id", using: :btree
+  add_index "requests", ["company_id"], name: "index_requests_on_company_id", using: :btree
+  add_index "requests", ["deal_id"], name: "index_requests_on_deal_id", using: :btree
+  add_index "requests", ["requester_id"], name: "index_requests_on_requester_id", using: :btree
+
   create_table "revenues", force: :cascade do |t|
     t.integer  "order_number"
     t.string   "ad_server"
@@ -1385,9 +1408,9 @@ ActiveRecord::Schema.define(version: 20170717161630) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
+    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
-    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true, using: :btree
@@ -1445,6 +1468,7 @@ ActiveRecord::Schema.define(version: 20170717161630) do
   add_foreign_key "api_configurations", "companies"
   add_foreign_key "asana_connect_details", "api_configurations"
   add_foreign_key "asana_connect_details", "companies"
+  add_foreign_key "assets", "companies"
   add_foreign_key "bp_estimate_products", "bp_estimates"
   add_foreign_key "bp_estimate_products", "products"
   add_foreign_key "bp_estimates", "bps"
