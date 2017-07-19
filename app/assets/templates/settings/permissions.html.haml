@@ -1,0 +1,41 @@
+#general.z-styles
+  .container-fluid
+    %span.page-title General Settings
+
+    .row
+      .col-sm-3
+        .panel
+          .panel-body
+            %h4 Forecast Permission
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th User Type
+                  %th View All Data
+              %tbody
+                %tr{ ng: { repeat: 'userType in userTypes' } }
+                  %td {{userType.name}}
+                  %td 
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'company.forecast_permission[userType.id]', 'ng-change': "updateCompany()", id: "rem-act-modal-toggle-forecast{{userType.id}}"}
+                        %label{:for => "rem-act-modal-toggle-forecast{{userType.id}}"}
+                          %span
+      .col-sm-3
+        .panel
+          .panel-body
+            %h4 IO Permission
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th User Type
+                  %th Edit IO
+              %tbody
+                %tr{ ng: { repeat: 'userType in userTypes' } }
+                  %td {{userType.name}}
+                  %td 
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'company.io_permission[userType.id]', 'ng-change': "updateCompany()", id: "rem-act-modal-toggle-io{{userType.id}}"}
+                        %label{:for => "rem-act-modal-toggle-io{{userType.id}}"}
+                          %span
