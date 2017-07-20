@@ -1529,7 +1529,9 @@ class Deal < ActiveRecord::Base
 
   def connect_deal_clients
     if agency.present? && advertiser.present?
-      ClientConnection.create(agency_id: agency.id, advertiser_id: advertiser.id)
+      unless ClientConnection.find_by(agency_id: agency.id, advertiser_id: advertiser.id).present?
+        ClientConnection.create(agency_id: agency.id, advertiser_id: advertiser.id)
+      end
     end
   end
 end
