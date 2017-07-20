@@ -86,7 +86,6 @@
 
 			getReport = (query) ->
 				Report.pipeline_summary(query).$promise.then (data) ->
-					console.log data
 					$scope.data = data
 
 			$scope.$watch 'filter.team', (team) ->
