@@ -91,7 +91,7 @@
               key: 'a49408107c0e11e68f21fda8b5e9bb0a'
             },
 
-            template_id: $rootScope.transloaditTemplate
+            template_id: $rootScope.transloaditTemplates.store_single
           },
 
           signature: (callback) ->

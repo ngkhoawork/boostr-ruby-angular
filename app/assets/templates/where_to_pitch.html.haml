@@ -7,7 +7,14 @@
 			.col-xs-12
 				%table.filter-block
 					%tr.filter-title
-						%td Time period
+						%td
+							%form
+								%label
+									%input{ name: "date_criteria", type: "radio", value: "closed_date", ng: { model: 'filter.date_criteria' } }/
+									%span Closed Date
+								%label
+									%input{ name: "date_criteria", type: "radio", value: "created_date", ng: { model: 'filter.date_criteria' } }/
+									%span Created Date
 						%td Team
 						%td Seller
 						%td Product
@@ -68,6 +75,9 @@
 										%li{ ng: { repeat: 'subcategory in subcategories', class: '{active: subcategory.id === filter.subcategory_id}' } }
 											%a{ href: '', ng: { click: 'setFilter("subcategory", subcategory)' } }
 												{{ subcategory.name }}
+				.header-cell
+					%button.add-btn{'ng-click': 'applyFilter()'}
+						Run Report
 			.horizontal-line.col-xs-12
 			.col-xs-6
 				%span.slider-title # Deals

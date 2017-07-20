@@ -1,7 +1,7 @@
 @app.controller 'WhereToPitchController',
     ['$scope', '$document', 'WhereToPitchService', 'Team', 'Product', 'Field', 'Seller', 'CurrentUser'
         ($scope, $document, WTP, Team, Product, Field, Seller, CurrentUser) ->
-            $scope.filter = {}
+            $scope.filter = { date_criteria: 'closed_date' }
             $scope.selected = {}
             $scope.maxDeals = 10
             $scope.slider =
@@ -11,8 +11,9 @@
                         floor: 0
                         ceil: $scope.maxDeals
                         onEnd: ->
-                            updateTable('advertisers', $scope.mainData.advertisers)
-                            updateTable('agencies', $scope.mainData.agencies)
+                            if $scope.mainData
+                                updateTable('advertisers', $scope.mainData.advertisers)
+                                updateTable('agencies', $scope.mainData.agencies)
                 winRate:
                     value: 35
                     options:
@@ -22,8 +23,9 @@
                             if value > 0 && value < 100 then return value + '%'
                             value
                         onEnd: ->
-                            updateTable('advertisers', $scope.mainData.advertisers)
-                            updateTable('agencies', $scope.mainData.agencies)
+                            if $scope.mainData
+                                updateTable('advertisers', $scope.mainData.advertisers)
+                                updateTable('agencies', $scope.mainData.agencies)
             $scope.selectedTeam =
                 id: 'all'
                 name:'All'
@@ -81,15 +83,12 @@
                             $scope.subcategories = $scope.allSubcategories
                     when 'subcategory' then $scope.filter.subcategory_id = item.id
 
-                applyFilter()
-
             $scope.resetFilter = ->
                 $scope.selected = {}
-                $scope.filter = {}
+                $scope.filter = { date_criteria: 'closed_date' }
                 $scope.selectedTeam = {id: 'all', name:'All'}
                 $scope.subcategories = $scope.allSubcategories
                 $scope.datePicker.setDefault()
-                applyFilter()
 
             $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->
                 if nextTeam.name == 'Team' && nextTeam.id == 'all' then return
@@ -107,41 +106,34 @@
                 # if seller or manager then filter by this user
                 if user.user_type is 1 || user.user_type is 2
                     query.seller = user.id
-                    $scope.filter.seller = user.id
-                WTP.get(query).$promise.then ((data) ->
-                    $scope.mainData = data
-                    updateTable('advertisers', data.advertisers)
-                    updateTable('agencies', data.agencies)
-                    updateSlider(data)
+                    $scope.setFilter('seller', user)
 
-                    Product.all().then (products) ->
-                        $scope.productsList = products
-                        $scope.productsList.unshift({name: 'All', id: null})
+                Product.all().then (products) ->
+                    $scope.productsList = products
+                    $scope.productsList.unshift({name: 'All', id: null})
 
-                    Seller.query({id: 'all'}).$promise.then (sellers) ->
-                        $scope.sellers = sellers
-                        $scope.sellers.unshift({first_name: 'All', id: null})
+                Seller.query({id: 'all'}).$promise.then (sellers) ->
+                    $scope.sellers = sellers
+                    $scope.sellers.unshift({first_name: 'All', id: null})
 
-                    Team.all(all_teams: true).then (teams) ->
-                        $scope.teams = teams
-                        $scope.teams.unshift({id: null, name: 'All'})
+                Team.all(all_teams: true).then (teams) ->
+                    $scope.teams = teams
+                    $scope.teams.unshift({id: null, name: 'All'})
 
-                    Field.defaults({}, 'Client').then (clients) ->
-                        categories = [{name: 'All', id: null}]
-                        subcategories = [{name: 'All', id: null}]
-                        for client in clients
-                            if client.name is 'Category'
-                                for category in client.options
-                                    categories.push category
-                                    for subcategory in category.suboptions
-                                        subcategories.push subcategory
+                Field.defaults({}, 'Client').then (clients) ->
+                    categories = [{name: 'All', id: null}]
+                    subcategories = [{name: 'All', id: null}]
+                    for client in clients
+                        if client.name is 'Category'
+                            for category in client.options
+                                categories.push category
+                                for subcategory in category.suboptions
+                                    subcategories.push subcategory
 
-                        $scope.categories = categories
-                        $scope.subcategories = $scope.allSubcategories = subcategories
-                ), (err) ->
-                    if err then console.log(err)
+                    $scope.categories = categories
+                    $scope.subcategories = $scope.allSubcategories = subcategories
 
-            applyFilter = ->
+            $scope.applyFilter = ->
                 WTP.get($scope.filter).$promise.then ((data) ->
                     $scope.mainData = data
                     updateTable('advertisers', data.advertisers)

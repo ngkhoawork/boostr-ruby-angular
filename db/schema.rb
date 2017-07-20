@@ -270,6 +270,7 @@ ActiveRecord::Schema.define(version: 20170717161630) do
     t.string   "comment"
     t.string   "subtype"
     t.integer  "created_by"
+    t.integer  "company_id"
   end
 
   create_table "bp_estimate_products", force: :cascade do |t|
@@ -394,9 +395,11 @@ ActiveRecord::Schema.define(version: 20170717161630) do
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
+    t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
   end
 
   add_index "companies", ["forecast_permission"], name: "index_companies_on_forecast_permission", using: :gin
+  add_index "companies", ["io_permission"], name: "index_companies_on_io_permission", using: :gin
 
   create_table "contact_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -1465,6 +1468,7 @@ ActiveRecord::Schema.define(version: 20170717161630) do
   add_foreign_key "api_configurations", "companies"
   add_foreign_key "asana_connect_details", "api_configurations"
   add_foreign_key "asana_connect_details", "companies"
+  add_foreign_key "assets", "companies"
   add_foreign_key "bp_estimate_products", "bp_estimates"
   add_foreign_key "bp_estimate_products", "products"
   add_foreign_key "bp_estimates", "bps"

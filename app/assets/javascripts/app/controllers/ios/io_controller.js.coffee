@@ -1,16 +1,21 @@
 @app.controller 'IOController',
-    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'DisplayLineItem'
-    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   DisplayLineItem) ->
+    ['$scope', '$modal', '$filter', '$timeout', '$routeParams', '$location', '$q', 'IO', 'IOMember', 'ContentFee', 'User', 'CurrentUser', 'DisplayLineItem', 'Company'
+    ( $scope,   $modal,   $filter,   $timeout,   $routeParams,   $location,   $q,   IO,   IOMember,   ContentFee,   User,   CurrentUser,   DisplayLineItem,   Company) ->
             $scope.currentIO = {}
             $scope.activeTab = 'ios'
             $scope.currency_symbol = '$'
             $scope.selectedIORow = null
             $scope.budgets = []
+            $scope.canEditIO = true
             $scope.isNaN = (val) -> isNaN val
 
             $scope.init = ->
                 CurrentUser.get().$promise.then (user) ->
                     $scope.currentUser = user
+                Company.get().$promise.then (company) ->
+                    $scope.company = company
+                    $scope.canEditIO = $scope.company.io_permission[$scope.currentUser.user_type]
+                    console.log('$scope.canEditIO', $scope.canEditIO)
                 IO.get($routeParams.id).then (io) ->
                     $scope.currentIO = io
                     if io.currency

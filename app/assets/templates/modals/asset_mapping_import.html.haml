@@ -6,59 +6,43 @@
     = inline_svg 'icons/csv.svg'
     %h3.modal-title
       %strong
-        Import Deals
+        Import Asset Mapping File
       %br
       %small
-        Please export your deals from your current system into a CSV file.
+        You can map your attachments to Deals and Activities
 
   .modal-body
     .well.transparent
       %h6.text-center
-        Make sure your CSV file includes these EXACT headers and columns:
+        Please use these column names to map your files correctly:
 
       %ol.row.center-block.grid-block
-        %li Deal ID
-        %li Name*
-        %li Advertiser*
-        %li Agency
-        %li ISO Currency Code *
-        %li Type
-        %li Source
+        %li File Name*
         %li
-          Start Date
+          Object Type*
           %br
-          (MM/DD/YYYY)
+          %span Deal or Activity
         %li
-          End Date
+          Object Id*
           %br
-          (MM/DD/YYYY)
-        %li Stage
-        %li Replace Team (Y/N)
-        %li
-          Team
-          %br
-          (email1/%;email2/%)
-        %li
-          Created Date
-          %br
-          (MM/DD/YYYY)
-        %li
-          Closed Date
-          %br
-          (MM/DD/YYYY)
-        %li Close Reason
-        %li
-          Contacts
-          %br
-          (email1;email2)
+          %span Id of the parent item
+        %li Created At
+        %li Uploader Email
 
-      .custom_fields{ng: { show: 'custom_fields && custom_fields.length > 0' }}
-        %h6.text-center
-          Optional Deal Custom Fields. Please use these EXACT headers to allow system to recognize Custom Fields:
+    .well.transparent{ng: { show: 'metadata && metadata.length > 0' }}
+      %h6.text-center
+        You have some unmapped files:
 
-        %ol.row.center-block.grid-block
-          %li{ng: { repeat: 'custom_field in custom_fields' }}
-            {{custom_field.field_label}}
+      %ul.row.center-block.grid-block
+        %li{ng: { repeat: 'unmapped_file in metadata' }}
+          {{unmapped_file.original_file_name}}
+
+      .custom-pagination{'bgf-pagination': 'bgf-pagination',
+          'collection': 'metadata',
+          'per-page': '50',
+          'link-group-size': "2",
+          'client-limit': "100",
+          'url': 'metadata_url'}
 
     .well.well-lg.dark
       .row

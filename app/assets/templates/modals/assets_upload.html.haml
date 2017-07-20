@@ -6,59 +6,21 @@
     = inline_svg 'icons/csv.svg'
     %h3.modal-title
       %strong
-        Import Deals
+        Import Compressed Assets
       %br
       %small
-        Please export your deals from your current system into a CSV file.
+        Please use form below to upload an archive with assets below. It will be uploaded to our servers and decompressed.
 
   .modal-body
     .well.transparent
       %h6.text-center
-        Make sure your CSV file includes these EXACT headers and columns:
+        The following file formats are supported:
 
-      %ol.row.center-block.grid-block
-        %li Deal ID
-        %li Name*
-        %li Advertiser*
-        %li Agency
-        %li ISO Currency Code *
-        %li Type
-        %li Source
-        %li
-          Start Date
-          %br
-          (MM/DD/YYYY)
-        %li
-          End Date
-          %br
-          (MM/DD/YYYY)
-        %li Stage
-        %li Replace Team (Y/N)
-        %li
-          Team
-          %br
-          (email1/%;email2/%)
-        %li
-          Created Date
-          %br
-          (MM/DD/YYYY)
-        %li
-          Closed Date
-          %br
-          (MM/DD/YYYY)
-        %li Close Reason
-        %li
-          Contacts
-          %br
-          (email1;email2)
-
-      .custom_fields{ng: { show: 'custom_fields && custom_fields.length > 0' }}
-        %h6.text-center
-          Optional Deal Custom Fields. Please use these EXACT headers to allow system to recognize Custom Fields:
-
-        %ol.row.center-block.grid-block
-          %li{ng: { repeat: 'custom_field in custom_fields' }}
-            {{custom_field.field_label}}
+      %ul.row.center-block.grid-block
+        %li ZIP archives
+        %li 7-Zip archives
+        %li RAR archives
+        %li GNU tar format
 
     .well.well-lg.dark
       .row
@@ -69,7 +31,7 @@
               .text{ ng: { show: 'progressPercentage > 0' } }
                 {{ progressPercentage }}%
             .text{ ng: { hide: 'progressPercentage > 0' } }
-              CSV File
+              Archive
         .col-xs-3
           #browse.btn.btn-info.btn-block{ ngf: { select: true }, ng: { model: 'files', disabled: "is_uploading" } }
             Browse

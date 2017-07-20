@@ -192,6 +192,11 @@
     .when '/settings/ealerts/',
       templateUrl: 'settings/ealerts.html'
       controller: 'SettingsEalertsController'
+
+    .when '/settings/permissions/',
+      templateUrl: 'settings/permissions.html'
+      controller: 'SettingsPermissionsController'
+
     .when '/bps',
       templateUrl: 'bp.html'
       controller: 'BPController'
@@ -230,7 +235,7 @@
 
 @app.run ['$rootScope', 'CurrentUser', ($rootScope, CurrentUser) ->
   $rootScope.currentUserIsLeader = currentUserIsLeader
-  $rootScope.transloaditTemplate = transloaditTemplate
+  $rootScope.transloaditTemplates = transloaditTemplates
   $rootScope.userType = userType
   $rootScope.currentUserRoles = currentUserRoles
   currentUserRoles.isAdmin = -> _.contains this, 'admin'
