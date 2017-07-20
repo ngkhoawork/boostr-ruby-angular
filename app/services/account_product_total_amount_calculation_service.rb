@@ -35,6 +35,9 @@ class AccountProductTotalAmountCalculationService < BaseService
     'account_dimensions.id = :account_id
      AND deals.company_id = :company_id
      AND deal_products.open IS TRUE
+     AND stages.open IS TRUE
+     AND stages.probability != 100
+     AND stages.probability != 0
      AND deal_product_budgets.end_date >= :start_date
      AND deal_product_budgets.start_date <= :end_date'
   end
