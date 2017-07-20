@@ -19,15 +19,13 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   property :custom_fields, decorator: Operative::CustomFieldsRepresenter, exec_context: :decorator,
            if: -> (options) { options[:enable_operative_extra_fields].eql? true }
 
-  property :operative_mashable_stage_name, as: 'v2:name', wrap: 'v2:salesStage', exec_context: :decorator,
-           if: -> (options) { (options[:create].eql?(true) || options[:closed_lost].eql?(false)) && options[:enable_operative_extra_fields].eql?(true) }
-  property :operative_mashable_stage_id, as: 'v2:id', wrap: 'v2:salesStage', exec_context: :decorator,
-           if: -> (options) { options[:enable_operative_extra_fields].eql?(true) && options[:closed_lost].eql?(true) }
-
   property :sales_stage_name, as: 'v2:name', wrap: 'v2:salesStage', exec_context: :decorator,
-           if: -> (options) { (options[:create].eql?(true) || options[:closed_lost].eql?(false)) && options[:enable_operative_extra_fields].eql?(false) }
+           if: -> (options) { (options[:create].eql?(true) || options[:closed_lost].eql?(false)) }
+
   property :sales_stage_id, as: 'v2:id', wrap: 'v2:salesStage', exec_context: :decorator,
            if: -> (options) { options[:closed_lost].eql?(true) && options[:enable_operative_extra_fields].eql?(false) }
+  property :operative_mashable_stage_id, as: 'v2:id', wrap: 'v2:salesStage', exec_context: :decorator,
+           if: -> (options) { options[:enable_operative_extra_fields].eql?(true) && options[:closed_lost].eql?(true) }
 
   property :primary_sales_person, as: :primarySalesperson, exec_context: :decorator
   property :owner, exec_context: :decorator
@@ -78,11 +76,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def sales_stage_name
-    map_stage_name
-  end
-
-  def operative_mashable_stage_name
-    determine_mashable_stage_name
+    represented.stage.name
   end
 
   def sales_stage_id
@@ -127,45 +121,6 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
 
   def owner_email
     represented.users.find_by(user_type: ACCOUNT_MANAGER).email
-  end
-
-  def map_stage_name
-    operative_king_stages.find { |name| name.include? stage_probability }
-  end
-
-  def stage_probability
-    represented.stage.probability.to_s
-  end
-
-  def operative_king_stages
-    [
-      '0% - Closed/Lost',
-      '10% - Sales lead',
-      '20% - Discuss Requirements',
-      '50% - Proposal',
-      '60% - Negotiation',
-      '80% - Best Case',
-      '100% - Closing'
-    ]
-  end
-
-  def determine_mashable_stage_name
-    operative_mashable_stages.find { |name| name.eql?(stage_name) }
-  end
-
-  def operative_mashable_stages
-    [
-      'Proactive Pitch',
-      'Proposal',
-      'Recommendation',
-      'Verbal Approval',
-      'Closed Won',
-      '0% - Closed/Lost'
-    ]
-  end
-
-  def stage_name
-    represented.stage.name
   end
 
   def order_type_cf
