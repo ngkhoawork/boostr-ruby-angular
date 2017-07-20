@@ -1358,7 +1358,9 @@ class Deal < ActiveRecord::Base
 
   def send_lost_deal_notification
     if stage_id_changed? && closed_lost?
-      notification = company.notifications.by_name(Notification::LOST_DEAL)
+      notification = company.notifications.find_by_name(Notification::LOST_DEAL)
+      return if notification.nil?
+
       recipients = notification.recipients_arr
 
       UserMailer.lost_deal_email(recipients, self).deliver_later(queue: 'default') if recipients.any?
