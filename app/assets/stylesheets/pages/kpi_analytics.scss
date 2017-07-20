@@ -3,7 +3,13 @@
 #kpi-analytics {
   .filter-block {
     .filter-title {
-      color: black
+      color: black;
+      label {
+        margin-bottom: 0px;
+        span {
+          font-weight: normal;
+        }
+      }
     }
     td {
       padding-right: 25px;
