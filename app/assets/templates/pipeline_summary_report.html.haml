@@ -14,6 +14,7 @@
 							%td Source
 							%td Start Date
 							%td Created Date
+							%td Closed Date
 							%td
 								%span.reset-filter{'ng-click': 'resetFilter()'}
 									Reset
@@ -104,6 +105,19 @@
 											{{datePicker.toString("createdDate")}}
 											%span.caret
 
+							%td
+								.date-picker-wrap
+									%div.date-picker{'date-range-picker': true,
+														   'ng-model': 'filter.closedDate',
+														   :options => "{locale: {format: 'MMMM D, YYYY'},
+																		 eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
+										%span.empty{'ng-hide': 'datePicker.toString("closedDate")'}
+											Time period
+											%span.caret
+										%span{'ng-show': 'datePicker.toString("closedDate")'}
+											{{datePicker.toString("closedDate")}}
+											%span.caret
+												
 				.header-cell
 					%button.add-btn{'ng-click': 'applyFilter()'}
 						Run Report

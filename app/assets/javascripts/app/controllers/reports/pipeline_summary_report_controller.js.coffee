@@ -32,6 +32,9 @@
 				createdDate:
 					startDate: null
 					endDate: null
+				closedDate:
+					startDate: null
+					endDate: null
 
 			$scope.filter = angular.copy defaultFilter
 
@@ -75,6 +78,9 @@
 				if f.createdDate.startDate && f.createdDate.endDate
 					query.created_date_start = f.createdDate.startDate.format('YYYY-MM-DD')
 					query.created_date_end = f.createdDate.endDate.format('YYYY-MM-DD')
+				if f.closedDate.startDate && f.closedDate.endDate
+					query.closed_date_start = f.closedDate.startDate.format('YYYY-MM-DD')
+					query.closed_date_end = f.closedDate.endDate.format('YYYY-MM-DD')
 				query
 
 
