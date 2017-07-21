@@ -131,7 +131,14 @@ class Deal < ActiveRecord::Base
   scope :by_advertisers, -> (ids) { where('advertiser_id in (?)', ids) if ids.present? }
 
   def asana_connect
-    AsanaConnectWorker.perform_async self.id
+    if asana_integration_required?
+      AsanaConnectWorker.perform_async self.id
+    end
+  end
+
+  def asana_integration_required?
+    config = self.company.asana_connect_configurations.first
+    config.present? && config.switched_on?
   end
 
   def integrate_with_operative
