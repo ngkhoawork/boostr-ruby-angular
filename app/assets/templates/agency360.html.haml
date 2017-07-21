@@ -33,7 +33,7 @@
 										%ul.dropdown-menu
 											%li{'ng-hide': 'filter.holdingCompany.id', 'ng-click': '$event.stopPropagation()'}
 												%input.search-field{placeholder: 'Search', ng: {model: 'agencySearch', 'model-options': '{debounce: 400}', change: 'getAgencies()'}}
-											%li{ ng: { class: '{active: !filter.agency.id}' } }
+											%li{'ng-hide': 'agencySearch', ng: { class: '{active: !filter.agency.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("agency", defaultFilter.agency)' } }
 													{{defaultFilter.agency.name}}
 											%li{ ng: { repeat: 'agency in agencies | orderBy : "name"', class: '{active: agency.id === filter.agency.id}' } }
@@ -71,8 +71,8 @@
 																		%span.caret
 																	%ul.dropdown-menu
 																		%li{'ng-click': '$event.stopPropagation()'}
-																			%input.search-field{placeholder: 'Search', 'ng-model': 'dateRange.search', 'ng-blur': 'clearSearch()'}
-																		%li.menu-item{ ng: { repeat: 'startPeriod in timeDimensions | orderBy : "start_date" | filter : filterTimeDimensions', class: '{active: startPeriod.id === filter.startPeriod.id}' } }
+																			%input.search-field{placeholder: 'Search', 'ng-model': 'dateRange.startSearch'}
+																		%li.menu-item{ ng: { repeat: 'startPeriod in timeDimensions | orderBy : "start_date" | filter : filterStartTimeDimensions', class: '{active: startPeriod.id === filter.startPeriod.id}' } }
 																			%a{ href: '', ng: { click: 'setFilter("startPeriod", startPeriod)' } }
 																				{{startPeriod.name}}
 											.filters-block
@@ -88,10 +88,14 @@
 																		%span.caret
 																	%ul.dropdown-menu
 																		%li{'ng-click': '$event.stopPropagation()'}
-																			%input.search-field{placeholder: 'Search', 'ng-model': 'dateRange.search', 'ng-blur': 'clearSearch()'}
-																		%li{ ng: { repeat: 'endPeriod in timeDimensions | orderBy : "start_date" | filter : filterTimeDimensions', class: '{active: endPeriod.id === filter.endPeriod.id}' } }
+																			%input.search-field{placeholder: 'Search', 'ng-model': 'dateRange.endSearch'}
+																		%li{ ng: { repeat: 'endPeriod in timeDimensions | orderBy : "start_date" | filter : filterEndTimeDimensions', class: '{active: endPeriod.id === filter.endPeriod.id}' } }
 																			%a{ href: '', ng: { click: 'setFilter("endPeriod", endPeriod)' } }
 																				{{endPeriod.name}}
+				.header-cell.filters-block{style: 'vertical-align: top'}
+					%span.reset-filter.mr20{'ng-click': 'resetFilter()'}
+						Reset
+
 				.header-cell
 					%button.add-btn.mr20{'ng-click': 'applyFilter()'}
 						Run Report

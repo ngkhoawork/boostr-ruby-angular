@@ -1,4 +1,5 @@
 #agency360 {
+    font-family: "Avenir Next", Arial, serif;
     padding-left: 25px;
     padding-right: 25px;
     .inner-agency360 {
@@ -7,6 +8,9 @@
     }
     .required {
         color: $error-color;
+    }
+    .reset-filter {
+
     }
     .date-range-container {
         border: 1px solid #D7E4F1;
@@ -18,8 +22,6 @@
             padding: 10px 15px 25px;
         }
         .dropdown-wrap {
-            //display: flex;
-            //justify-content: space-around;
             .filters-block {
                 display: inline-block;
                 margin: 0 15px;
@@ -27,17 +29,6 @@
                     padding-right: 0;
                 }
             }
-            //.dropdown-menu {
-            //    .menu-item {
-            //        padding: 8px;
-            //        &.active {
-            //
-            //        }
-            //        a {
-            //            color: $main-font-color;
-            //        }
-            //    }
-            //}
         }
     }
     .dropdown {

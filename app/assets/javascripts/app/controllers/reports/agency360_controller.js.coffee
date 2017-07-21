@@ -18,18 +18,21 @@
 		$scope.isDateRangeOpen = false
 		$scope.dateRange =
 			switch: 'month'
-			search: ''
+			startSearch: ''
+			endSearch: ''
 			setSwitch: (val) ->
 				if this.switch != val
 					$scope.filter.startPeriod = null
 					$scope.filter.endPeriod = null
 					this.switch = val
 		emptyFilter = {id: null, name: 'All'}
+
 		$scope.defaultFilter =
 			holdingCompany: null
 			agency: emptyFilter
 			startPeriod: null
 			endPeriod: null
+
 		$scope.filter = angular.copy $scope.defaultFilter
 
 		getQuery = ->
@@ -61,22 +64,30 @@
 			switch key
 #				when 'agency'
 #					$scope.agencySearch = ''
+#					if !f.agency.id
+#						$scope.getAgencies()
 				when 'startPeriod'
+					$scope.dateRange.startSearch = ''
 					if !(f.endPeriod && moment(f.endPeriod.start_date).isAfter(f.startPeriod.start_date))
 						f.endPeriod = null
 				when 'endPeriod'
+					$scope.dateRange.endSearch = ''
 					if !(f.startPeriod && moment(f.endPeriod.start_date).isAfter(f.startPeriod.start_date))
 						f.startPeriod = null
 
 		$scope.applyFilter = ->
 			updateDashboard getQuery()
 
-		$scope.filterTimeDimensions = (item) ->
-			if !item then return false
-			item.type == $scope.dateRange.switch &&
-				(!$scope.dateRange.search || item.name.toLowerCase().indexOf($scope.dateRange.search.toLowerCase()) > -1)
+		$scope.resetFilter = ->
+			$scope.filter = angular.copy $scope.defaultFilter
+			$scope.showDashboard = false
 
-		$scope.clearSearch = -> $timeout (-> $scope.dateRange.search = ''), 100
+		$scope.filterStartTimeDimensions = (item) ->
+			item && item.type == $scope.dateRange.switch &&
+				(!$scope.dateRange.startSearch || item.name.toLowerCase().indexOf($scope.dateRange.startSearch.toLowerCase()) > -1)
+		$scope.filterEndTimeDimensions = (item) ->
+			item && item.type == $scope.dateRange.switch &&
+				(!$scope.dateRange.endSearch || item.name.toLowerCase().indexOf($scope.dateRange.endSearch.toLowerCase()) > -1)
 
 		$scope.$watch 'filter.holdingCompany', (holdingCompany) ->
 			if holdingCompany && holdingCompany.id
