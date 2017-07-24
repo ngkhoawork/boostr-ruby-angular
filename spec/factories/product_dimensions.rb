@@ -4,5 +4,4 @@ FactoryGirl.define do
     revenue_type "MyString"
     company nil
   end
-
 end
