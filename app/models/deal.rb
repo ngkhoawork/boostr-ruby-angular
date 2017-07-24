@@ -1288,11 +1288,9 @@ class Deal < ActiveRecord::Base
   end
 
   def recalculate_currency
-    if !stage.open? && (stage.probability == 100 || stage.probability == 0)
-      deal_product_budgets.update_all("budget = budget_loc / #{self.exchange_rate}")
-      deal_products.map{ |deal_product| deal_product.update_budget }
-      self.budget = deal_products.sum(:budget)
-    end
+    deal_product_budgets.update_all("budget = budget_loc / #{self.exchange_rate}")
+    deal_products.map{ |deal_product| deal_product.update_budget }
+    self.budget = deal_products.sum(:budget)
   end
 
   def update_close
