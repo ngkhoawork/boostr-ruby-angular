@@ -79,7 +79,7 @@
 
 
             Stage.query().$promise.then (stages) ->
-                $scope.stages = stages
+                $scope.stages = _.filter stages, (stage) -> stage.active
                 $scope.stages.unshift emptyFilter
 
             $scope.export = ->
