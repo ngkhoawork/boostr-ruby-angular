@@ -40,7 +40,7 @@ class Api::RemindersController < ApplicationController
   private
 
   def reminder_params
-    params.require(:reminder).permit(:id, :name, :comment, :remindable_id, :remind_on, :remindable_type, :completed)
+    params.require(:reminder).permit(:id, :name, :comment, :remindable_id, :remind_on, :remindable_type, :completed, :assigned)
   end
 
   def reminder_by_remindable
