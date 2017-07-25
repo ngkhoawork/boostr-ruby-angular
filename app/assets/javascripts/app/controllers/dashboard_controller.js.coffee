@@ -219,7 +219,6 @@
                     })
 
             $scope.deleteUnassignedContact = (contact) ->
-                console.log contact
                 if confirm("Are you sure you want to delete contact #{contact.name}?")
                     index = $scope.unassignedContacts.indexOf(contact)
                     contact.$delete {}, ->
