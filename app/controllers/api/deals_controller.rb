@@ -1,6 +1,8 @@
 class Api::DealsController < ApplicationController
   respond_to :json, :zip
 
+  before_filter :set_current_user
+
   def index
     respond_to do |format|
       format.json {

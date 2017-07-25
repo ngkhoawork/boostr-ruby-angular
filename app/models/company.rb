@@ -42,6 +42,7 @@ class Company < ActiveRecord::Base
   has_many :requests
   has_many :influencers, dependent: :destroy
   has_many :influencer_content_fees, through: :influencers
+  has_many :audit_logs
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'

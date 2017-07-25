@@ -21,6 +21,7 @@ class User < ActiveRecord::Base
   has_many :reminders
   has_many :contacts, through: :activities
   has_many :display_line_items, through: :ios
+  has_many :audit_logs
 
   ROLES = %w(user admin superadmin)
 
@@ -400,5 +401,13 @@ class User < ActiveRecord::Base
     ).pluck(:id)
 
     Activity.where(id: activity_ids)
+  end
+
+  def self.current
+    Thread.current[:user]
+  end
+
+  def self.current=(user)
+    Thread.current[:user] = user
   end
 end

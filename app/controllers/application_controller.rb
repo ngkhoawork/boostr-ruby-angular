@@ -24,6 +24,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def set_current_user
+    User.current = current_user
+  end
+
   protected
 
   def layout_by_resource

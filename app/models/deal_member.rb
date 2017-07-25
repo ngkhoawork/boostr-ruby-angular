@@ -18,6 +18,10 @@ class DealMember < ActiveRecord::Base
   scope :by_team, -> (team_id) { where(users: { team_id: team_id }) if team_id.present? }
   scope :by_stage_ids, -> (stage_ids) { joins(:deal).where(deals: { stage_id: stage_ids }) if stage_ids.present? }
 
+  after_update do
+    log_changes if share_changed?
+  end
+
   def name
     user.name if user.present?
   end
@@ -32,5 +36,11 @@ class DealMember < ActiveRecord::Base
 
   def self.emails_for_users_except_account_manager_user_type
     not_account_manager_users.ordered_by_share.pluck(:email)
+  end
+
+  private
+
+  def log_changes
+    AuditLogService.new(self.deal, self.user.name).perform
   end
 end

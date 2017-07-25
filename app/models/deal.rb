@@ -36,6 +36,7 @@ class Deal < ActiveRecord::Base
   has_many :assets, as: :attachable
   has_many :integrations, as: :integratable
   has_many :requests
+  has_many :audit_logs, as: :auditable
 
   has_one :deal_custom_field, dependent: :destroy
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
@@ -75,6 +76,7 @@ class Deal < ActiveRecord::Base
     integrate_with_operative
     send_lost_deal_notification
     connect_deal_clients
+    log_changes if start_date_changed?
   end
 
   before_create do
@@ -1562,5 +1564,9 @@ class Deal < ActiveRecord::Base
         ClientConnection.create(agency_id: agency.id, advertiser_id: advertiser.id)
       end
     end
+  end
+
+  def log_changes
+    AuditLogService.new(self, 'start_date').perform
   end
 end
