@@ -213,6 +213,9 @@
             padding-bottom: 20px;
             position: relative;
             &:hover {
+                .delete-item {
+                    display: block;
+                }
                 button {
                     display: block;
                 }
@@ -231,13 +234,33 @@
                     outline: none;
                 }
             }
+            .delete-item {
+                color: #818689;
+                cursor: pointer;
+                width: 28px;
+                height: 28px;
+                padding: 4px 6px;
+                font-size: 20px;
+                border-radius: 5px;
+
+                position: absolute;
+                display: none;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                margin: auto;
+                &:hover {
+                    background-color: #818689;
+                    color: white;
+                }
+            }
             button {
                 height: 36px;
                 padding: 5px 16px;
                 position: absolute;
                 top: 0;
                 bottom: 0;
-                right: 0;
+                right: 35px;
                 margin: auto;
                 display: none;
                 &:active {
