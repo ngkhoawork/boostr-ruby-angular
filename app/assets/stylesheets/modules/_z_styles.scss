@@ -112,6 +112,22 @@
             }
         }
     }
+    .total-stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .stats-col {
+            text-align: center;
+            margin: 0 30px;
+            .text {
+                color: $secondary-font-color;
+            }
+            .value {
+                font-weight: bold;
+                font-size: 22px;
+            }
+        }
+    }
 }
 .z-sliding-filter {
     $sliding-filter-w: 350px;
