@@ -22,7 +22,9 @@
             {name: 'Pipeline Monthly Summary', url: '/reports/pipeline_monthly_report'}
             {name: 'Activity Detail', url: '/reports/activity_detail_reports'}
             {name: 'Activity Summary', url: '/reports/activity_summary'}
+            {name: 'Old Forecast Detail', url: '/reports/old_forecasts'}
             {name: 'Forecast Detail', url: '/reports/forecasts'}
+            {name: 'Old Forecast Detail by Product', url: '/reports/old_product_forecasts'}
             {name: 'Forecast Detail by Product', url: '/reports/product_forecasts'}
             {name: 'Pipeline Changes', url: '/reports/pipeline_changes_report'}
             {name: 'Pipeline Split Adjusted', url: '/reports/pipeline_split_report'}

@@ -211,7 +211,7 @@ class Team < ActiveRecord::Base
       io_team_users = all_users.select do |user|
         io_users.include?(user.id)
       end
-      io[:members] = io_obj.io_members
+      io[:members] = io_obj.io_members.as_json
 
       if io['end_date'] == io['start_date']
         io['end_date'] += 1.day

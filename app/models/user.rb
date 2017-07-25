@@ -267,7 +267,7 @@ class User < ActiveRecord::Base
     ios.each do |io|
       io_obj = Io.find(io['id'])
 
-      io[:members] = io_obj.io_members
+      io[:members] = io_obj.io_members.as_json
 
       if io['end_date'] == io['start_date']
         io['end_date'] += 1.day

@@ -1130,14 +1130,34 @@ ActiveRecord::Schema.define(version: 20170825112513) do
     t.integer  "product_dimension_id"
     t.integer  "stage_dimension_id"
     t.decimal  "amount",               precision: 15, scale: 2
+    t.datetime "created_at",                                                 null: false
+    t.datetime "updated_at",                                                 null: false
+    t.jsonb    "monthly_amount",                                default: {}, null: false
+    t.integer  "probability"
+  end
+
+  add_index "forecast_pipeline_facts", ["monthly_amount"], name: "index_forecast_pipeline_facts_on_monthly_amount", using: :gin
+  add_index "forecast_pipeline_facts", ["product_dimension_id"], name: "index_forecast_pipeline_facts_on_product_dimension_id", using: :btree
+  add_index "forecast_pipeline_facts", ["stage_dimension_id"], name: "index_forecast_pipeline_facts_on_stage_dimension_id", using: :btree
+  add_index "forecast_pipeline_facts", ["time_dimension_id", "user_dimension_id", "product_dimension_id", "stage_dimension_id"], name: "forecast_pipeline_facts_full_index", using: :btree
+  add_index "forecast_pipeline_facts", ["time_dimension_id"], name: "index_forecast_pipeline_facts_on_time_dimension_id", using: :btree
+  add_index "forecast_pipeline_facts", ["user_dimension_id"], name: "index_forecast_pipeline_facts_on_user_dimension_id", using: :btree
+
+  create_table "forecast_revenue_facts", force: :cascade do |t|
+    t.integer  "time_dimension_id"
+    t.integer  "user_dimension_id"
+    t.integer  "product_dimension_id"
+    t.decimal  "amount",               precision: 15, scale: 2
+    t.jsonb    "monthly_amount"
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
   end
 
-  add_index "forecast_pipeline_facts", ["product_dimension_id"], name: "index_forecast_pipeline_facts_on_product_dimension_id", using: :btree
-  add_index "forecast_pipeline_facts", ["stage_dimension_id"], name: "index_forecast_pipeline_facts_on_stage_dimension_id", using: :btree
-  add_index "forecast_pipeline_facts", ["time_dimension_id"], name: "index_forecast_pipeline_facts_on_time_dimension_id", using: :btree
-  add_index "forecast_pipeline_facts", ["user_dimension_id"], name: "index_forecast_pipeline_facts_on_user_dimension_id", using: :btree
+  add_index "forecast_revenue_facts", ["monthly_amount"], name: "index_forecast_revenue_facts_on_monthly_amount", using: :gin
+  add_index "forecast_revenue_facts", ["product_dimension_id"], name: "index_forecast_revenue_facts_on_product_dimension_id", using: :btree
+  add_index "forecast_revenue_facts", ["time_dimension_id", "user_dimension_id", "product_dimension_id"], name: "forecast_revenue_facts_full_index", using: :btree
+  add_index "forecast_revenue_facts", ["time_dimension_id"], name: "index_forecast_revenue_facts_on_time_dimension_id", using: :btree
+  add_index "forecast_revenue_facts", ["user_dimension_id"], name: "index_forecast_revenue_facts_on_user_dimension_id", using: :btree
 
   create_table "holding_companies", force: :cascade do |t|
     t.string   "name"
@@ -1723,6 +1743,9 @@ ActiveRecord::Schema.define(version: 20170825112513) do
   add_foreign_key "forecast_pipeline_facts", "stage_dimensions"
   add_foreign_key "forecast_pipeline_facts", "time_dimensions"
   add_foreign_key "forecast_pipeline_facts", "user_dimensions"
+  add_foreign_key "forecast_revenue_facts", "product_dimensions"
+  add_foreign_key "forecast_revenue_facts", "time_dimensions"
+  add_foreign_key "forecast_revenue_facts", "user_dimensions"
   add_foreign_key "integration_logs", "companies"
   add_foreign_key "io_members", "ios"
   add_foreign_key "io_members", "users"

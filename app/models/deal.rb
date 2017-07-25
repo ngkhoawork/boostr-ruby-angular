@@ -123,6 +123,7 @@ class Deal < ActiveRecord::Base
   scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
   scope :won, -> { closed.includes(:stage).where(stages: { probability: 100 }) }
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
+  scope :by_stage_id, -> (stage_id) { where(stage_id: stage_id) if stage_id.present? }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
   scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
   scope :by_product_id, -> (product_id) { joins(:products).where(products: { id: product_id } ) if product_id.present? }

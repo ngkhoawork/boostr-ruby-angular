@@ -1,6 +1,6 @@
-@app.controller 'ForecastsDetailController',
-    ['$scope', '$window', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal'
-    ( $scope,   $window,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal ) ->
+@app.controller 'OldForecastsDetailController',
+    ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal'
+    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal ) ->
         $scope.teams = []
         $scope.sellers = []
         $scope.timePeriods = []
@@ -10,7 +10,6 @@
             seller: defaultUser
             timePeriod: {id: null, name: 'Select'}
         $scope.selectedTeam = $scope.filter.team
-        appliedFilter = null
         $scope.switch =
             revenues: 'quarters'
             deals: 'quarters'
@@ -78,11 +77,7 @@
 #            getData()
 
         $scope.applyFilter = ->
-            appliedFilter = angular.copy $scope.filter
             getData()
-
-        $scope.isFilterApplied = ->
-            !angular.equals $scope.filter, appliedFilter
 
         $scope.getAnnualSum = (data) ->
             sum = 0
@@ -199,7 +194,7 @@
                 id: $scope.filter.team.id || 'all'
                 user_id: $scope.filter.seller.id || 'all'
                 time_period_id: $scope.filter.timePeriod.id
-            Forecast.forecast_detail(query).$promise.then (data) ->
+            Forecast.old_forecast_detail(query).$promise.then (data) ->
                 handleForecast data
                 $scope.forecast = data.forecast
                 $scope.quarters = data.quarters
@@ -213,40 +208,5 @@
                         parseDealBudgets data
                         addDetailAmounts data, 'deals'
                         $scope.deals = data
-
-        tableToCSV = (el) ->
-            table = angular.element(el)
-            headers = table.find('tr:has(th)')
-            rows = table.find('tr:has(td)')
-            tmpColDelim = String.fromCharCode(11)
-            tmpRowDelim = String.fromCharCode(0)
-            colDelim = '","'
-            rowDelim = '"\u000d\n"'
-            csv = '"'
-            formatRows = (rows) ->
-                rows.get().join(tmpRowDelim).split(tmpRowDelim).join(rowDelim).split(tmpColDelim).join colDelim
-            grabRow = (i, row) ->
-                row = angular.element(row)
-                cols = row.find('td')
-                if !cols.length
-                    cols = row.find('th')
-                cols.map(grabCol).get().join tmpColDelim
-            grabCol = (j, col) ->
-                col = angular.element(col)
-                text = col.text().trim()
-                text.replace '"', '""'
-            csv += formatRows(headers.map(grabRow))
-            csv += rowDelim
-            csv += formatRows(rows.map(grabRow)) + '"'
-
-        $scope.export = ->
-            tables = angular.element('.exportable-table')
-            csv = _.map(tables, (table) -> tableToCSV(table)).join('\u000d\n\u000d\n')
-            a = document.createElement 'a'
-            a.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv)
-            a.download = 'forecast-detail-' + moment().format('YYYY-MM-DD') + '.csv'
-            a.click()
-            a.remove()
-            return
 
     ]

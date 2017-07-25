@@ -266,7 +266,9 @@ Rails.application.routes.draw do
     end
     resources :forecasts, only: [:index, :show] do
       collection do
+        get :old_detail
         get :detail
+        get :old_product_detail
         get :product_detail
       end
     end
