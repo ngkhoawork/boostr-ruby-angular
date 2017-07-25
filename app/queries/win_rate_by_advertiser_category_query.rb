@@ -20,16 +20,16 @@ class WinRateByAdvertiserCategoryQuery
 
   def win_rate_query
     'SELECT won.id,
-             won.name,
-             (cast(won_count as decimal(53,8)) / cast((won_count + lost_count) as DECIMAL(16,2))) AS win_rate
+            won.name,
+            (cast(won_count as decimal(16,2)) / cast((won_count + coalesce(lost_count, 0)) as DECIMAL(16,2))) * 100 AS win_rate
       FROM
         (SELECT options.id,
-                options.name,
+                coalesce(options.name, \'Unassigned\') as name,
                 COUNT(*) AS won_count
            FROM deals
            JOIN stages ON stages.id = deals.stage_id
            JOIN account_dimensions ON account_dimensions.id = deals.advertiser_id
-           JOIN options ON options.id = account_dimensions.category_id
+           LEFT JOIN options ON options.id = account_dimensions.category_id
            WHERE deals.deleted_at IS NULL
              AND (stages.open IS FALSE)
              AND stages.probability = 100
@@ -40,12 +40,12 @@ class WinRateByAdvertiserCategoryQuery
                         options.name) AS won
           JOIN
             (SELECT options.id,
-                    options.name,
+                    coalesce(options.name, \'Unassigned\') as name,
                     COUNT(*) AS lost_count
                FROM deals
                JOIN stages ON stages.id = deals.stage_id
                JOIN account_dimensions ON account_dimensions.id = deals.advertiser_id
-               JOIN options ON options.id = account_dimensions.category_id
+               LEFT JOIN options ON options.id = account_dimensions.category_id
                WHERE deals.deleted_at IS NULL
                  AND (stages.open IS FALSE)
                  AND stages.probability = 0
@@ -53,7 +53,8 @@ class WinRateByAdvertiserCategoryQuery
                  AND deals.company_id = :company_id
                  AND account_dimensions.id in (:advertisers_ids)
                GROUP BY options.id,
-                        options.name) AS lost ON won.id = lost.id
+                        options.name) AS lost
+          ON coalesce(won.id, 0) = coalesce(lost.id, 0)
           ORDER BY won.name'.squish
   end
 
