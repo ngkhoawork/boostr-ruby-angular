@@ -32,7 +32,7 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def activity_history
-    activities = Activity.includes(:agency).where(agency_id: agencies_ids)
+    activities = Activity.includes(:account_dimension).where(agency_id: agencies_ids).order('activities.happened_at DESC')
     max_per_page = 10
     # paginate activities.count, max_per_page do |limit, offset|
       render json: activities, each_serializer: AgencyDashboard::ActivityHistorySerializer
