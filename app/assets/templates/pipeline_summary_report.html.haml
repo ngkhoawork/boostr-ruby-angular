@@ -152,7 +152,7 @@
 							.text Ave Deal Size
 
 					%div.table-wrapper
-						%table.table.table-hover
+						%table.table.table-hover{'fixed-table-header': '', watch: '["data", "dealCustomFieldNames"]'}
 							%thead
 								%tr{'z-fixed-header': true, watch: '["data", "dealCustomFieldNames"]'}
 									%th
