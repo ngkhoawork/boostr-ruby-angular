@@ -42,8 +42,11 @@
 
   $scope.getUrlHostname = (url) ->
     a = document.createElement 'a'
-    a.href = url
+    a.href = $scope.fixUrl url
     a.hostname
+
+  $scope.fixUrl = (url) ->
+    if url && url.search('//') == -1 then return '//' + url else url
 
   $scope.getDealFiles = () ->
     $http.get('/api/deals/'+ $routeParams.id + '/deal_assets')
