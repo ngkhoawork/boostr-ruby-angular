@@ -57,11 +57,12 @@ class Deal < ActiveRecord::Base
 
   before_update do
     if curr_cd_changed?
-      update_product_currency
+      update_products_currency
     end
 
     if stage_id_changed?
       update_stage
+      recalculate_currency
       update_close
     end
   end
@@ -410,7 +411,7 @@ class Deal < ActiveRecord::Base
     company.exchange_rate_for(currency: self.curr_cd)
   end
 
-  def update_product_currency
+  def update_products_currency
     deal_product_budgets.update_all("budget_loc = budget * #{self.exchange_rate}")
     deal_products.map{ |deal_product| deal_product.update_budget }
     self.budget_loc = budget * self.exchange_rate
@@ -1300,6 +1301,12 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def recalculate_currency
+    deal_product_budgets.update_all("budget = budget_loc / #{self.exchange_rate}")
+    deal_products.map{ |deal_product| deal_product.update_budget }
+    self.budget = deal_products.sum(:budget)
+  end
+
   def update_close
     self.closed_at = updated_at if !stage.open?
     should_open = stage.open?
@@ -1363,7 +1370,9 @@ class Deal < ActiveRecord::Base
 
   def send_lost_deal_notification
     if stage_id_changed? && closed_lost?
-      notification = company.notifications.by_name(Notification::LOST_DEAL)
+      notification = company.notifications.find_by_name(Notification::LOST_DEAL)
+      return if notification.nil?
+
       recipients = notification.recipients_arr
 
       UserMailer.lost_deal_email(recipients, self).deliver_later(queue: 'default') if recipients.any?
