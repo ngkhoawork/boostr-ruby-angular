@@ -73,6 +73,7 @@ class Deal < ActiveRecord::Base
     send_ealert if stage_id_changed?
     integrate_with_operative
     send_lost_deal_notification
+    connect_deal_clients
   end
 
   before_create do
@@ -86,6 +87,7 @@ class Deal < ActiveRecord::Base
     generate_deal_members
     send_new_deal_notification
     asana_connect
+    connect_deal_clients
   end
 
   before_destroy do
@@ -1522,6 +1524,14 @@ class Deal < ActiveRecord::Base
 
     if params.compact.any?
       deal.upsert_custom_fields(params)
+    end
+  end
+
+  def connect_deal_clients
+    if agency.present? && advertiser.present?
+      unless ClientConnection.find_by(agency_id: agency.id, advertiser_id: advertiser.id).present?
+        ClientConnection.create(agency_id: agency.id, advertiser_id: advertiser.id)
+      end
     end
   end
 end
