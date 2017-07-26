@@ -112,6 +112,26 @@
             }
         }
     }
+    .fixed-table-header-wrap {
+        background-color: white;
+        overflow: hidden;
+        position: fixed;
+        top: 0;
+        box-shadow: none;
+        opacity: 0;
+        //display: none;
+        pointer-events: none;
+        //transition: box-shadow 500ms, opacity 100ms;
+        border-bottom: 2px solid #ddd;
+        //padding: 0 20px;
+        &.visible {
+            pointer-events: auto;
+            //padding: 10px 0;
+            //display: block;
+            opacity: 1;
+            //box-shadow: 0 3px 15px $secondary-font-color;
+        }
+    }
 }
 .z-sliding-filter {
     $sliding-filter-w: 350px;

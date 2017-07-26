@@ -14,7 +14,6 @@
 				key: null
 				reverse: false
 				set: (key) ->
-					console.log key
 					this.reverse = if this.key == key then !this.reverse else false
 					this.key = key
 
