@@ -100,7 +100,7 @@ class Operative::ImportSalesOrderLineItemsService
       invoice[:sales_order_line_item_id] == id
     end
 
-    recognized_revenue = lines.map {|row| row[:invoice_units].to_f}.reduce(0, :+) * net_unit_cost.to_f
+    recognized_revenue = lines.map {|row| row[:invoice_units].to_f}.reduce(0, :+) / 1000 * net_unit_cost.to_f
 
     {
       sales_order_line_item_id:           id,
