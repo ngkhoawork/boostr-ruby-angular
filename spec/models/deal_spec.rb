@@ -615,11 +615,12 @@ RSpec.describe Deal, type: :model do
     end
 
     it 'creates a deal with close reason' do
-      data = build :deal_csv_data, close_reason: close_reason.name
+      data = build :deal_csv_data, close_reason: close_reason.name, loss_comments: 'Can retry later'
       Deal.import(generate_csv(data), user.id, 'deals.csv')
       deal = Deal.last
 
       expect(deal.values.where(field: close_reason_field).first.option_id).to eq close_reason.id
+      expect(deal.closed_reason_text).to eq 'Can retry later'
     end
 
     it 'finds a deal by name match' do

@@ -16,6 +16,7 @@ FactoryGirl.define do
     closed_date '02/02/2016'
     close_reason nil
     contacts nil
+    loss_comments nil
 
     initialize_with { attributes }
 

@@ -1149,6 +1149,11 @@ class Deal < ActiveRecord::Base
         end
       end
 
+      closed_reason_text = ''
+      if row[16].present?
+        closed_reason_text = row[16].strip
+      end
+
       deal_params = {
         name: row[1].strip,
         advertiser: advertiser,
@@ -1158,7 +1163,8 @@ class Deal < ActiveRecord::Base
         end_date: end_date,
         stage: stage,
         updated_by: current_user.id,
-        closed_at: closed_date
+        closed_at: closed_date,
+        closed_reason_text: closed_reason_text
       }
 
       deal_params[:created_at] = created_at if created_at
