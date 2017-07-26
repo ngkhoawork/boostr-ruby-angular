@@ -1,6 +1,6 @@
 @app.controller "ContactsNewController",
-['$scope', '$rootScope', '$modalInstance', 'Contact', 'Client', 'contact', 'CountriesList', 'ContactCfName'
-($scope, $rootScope, $modalInstance, Contact, Client, contact, CountriesList, ContactCfName) ->
+['$scope', '$rootScope', '$modal', '$modalInstance', 'Contact', 'Client', 'contact', 'CountriesList', 'ContactCfName'
+($scope, $rootScope, $modal, $modalInstance, Contact, Client, contact, CountriesList, ContactCfName) ->
 
   $scope.formType = "New"
   $scope.submitText = "Create"
@@ -21,10 +21,8 @@
   
   Client.query({filter: 'all'}).$promise.then (clients) ->
     $scope.clients = clients
-    console.log($scope.contact)
     if contact.primary_client
       $scope.clients = $scope.clients.concat([contact.primary_client])
-    console.log($scope.clients)
 
   ContactCfName.all().then (contactCfNames) ->
     $scope.contactCfNames = contactCfNames
@@ -77,6 +75,16 @@
       else
         $scope.clients = clients
       $scope.isLoading = false
+
+  $scope.showNewAccountModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/client_form.html'
+      size: 'md'
+      controller: 'AccountsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        client: -> {}
 
   # Prevent multiple extraneous calls to the server as user inputs search term
   searchTimeout = null;

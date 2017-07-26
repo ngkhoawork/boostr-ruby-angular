@@ -1,6 +1,6 @@
 @app.controller "ContactsEditController",
-['$scope', '$modalInstance', '$filter', 'Contact', 'Client', 'CountriesList', 'contact', 'ContactCfName'
-($scope, $modalInstance, $filter, Contact, Client, CountriesList, contact, ContactCfName) ->
+['$scope', '$modal', '$modalInstance', '$filter', 'Contact', 'Client', 'CountriesList', 'contact', 'ContactCfName'
+($scope, $modal, $modalInstance, $filter, Contact, Client, CountriesList, contact, ContactCfName) ->
 
   $scope.formType = "Edit"
   $scope.submitText = "Update"
@@ -76,6 +76,16 @@
       else
         $scope.clients = clients
       $scope.isLoading = false
+
+  $scope.showNewAccountModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/client_form.html'
+      size: 'md'
+      controller: 'AccountsNewController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        client: -> {}
 
   # Prevent multiple extraneous calls to the server as user inputs search term
   searchTimeout = null;

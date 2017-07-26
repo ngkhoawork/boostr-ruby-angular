@@ -15,7 +15,7 @@
         %label{ for: 'name' } Name
         %span.star *
         %input.form-control{ name: 'name', placeholder: 'Name', ng: { model: 'contact.name' } }
-      .form-group{'ng-class':'{error: errors.client_id}'}
+      .form-group.with-add-btn{'ng-class':'{error: errors.client_id}'}
         %span.error-text {{errors.client_id}}
         %label{ for: 'client' } Primary Account
         %span.star *
@@ -24,6 +24,7 @@
             {{ $select.selected.name || contact.primary_client_json.name }}
           %ui-select-choices{ repeat: 'client.id as client in clients | filter: { name: $select.search }' }
             %div{ ng: { bind: { html: 'client.name' } } }
+        %button.add-btn.plus-btn{type: 'button', 'ng-click': 'showNewAccountModal()'}
       .form-group{'ng-class':'{error: errors.email}'}
         %span.error-text {{errors.email}}
         %label{ for: 'email' } Email
