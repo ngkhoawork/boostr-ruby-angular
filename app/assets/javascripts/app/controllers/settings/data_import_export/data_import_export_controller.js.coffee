@@ -178,6 +178,8 @@
           '/api/quotas/import'
         custom_fields_api: ->
           undefined
+        metadata: ->
+          false
 
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')
