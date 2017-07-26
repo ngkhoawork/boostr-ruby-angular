@@ -23,6 +23,12 @@ class Api::QuotasController < ApplicationController
     end
   end
 
+  def import
+    csv_import_worker_perform
+
+    render json: { message: import_message }, status: :ok
+  end
+
   private
 
   def time_period
@@ -43,5 +49,19 @@ class Api::QuotasController < ApplicationController
 
   def quota_params
     params.require(:quota).permit(:value, :user_id, :time_period_id)
+  end
+
+  def import_message
+    'Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file '\
+     'size)'
+  end
+
+  def csv_import_worker_perform
+    CsvImportWorker.perform_async(
+      params[:file][:s3_file_path],
+      'Csv::Quota',
+      current_user.id,
+      params[:file][:original_filename]
+    )
   end
 end

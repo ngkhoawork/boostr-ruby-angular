@@ -257,7 +257,9 @@ Rails.application.routes.draw do
         get :current_year_quarters
       end
     end
-    resources :quotas, only: [:index, :create, :update]
+    resources :quotas, only: [:index, :create, :update] do
+      post :import, on: :collection
+    end
     resources :forecasts, only: [:index, :show] do
       collection do
         get :detail
