@@ -213,6 +213,9 @@
             padding-bottom: 20px;
             position: relative;
             &:hover {
+                .delete-item {
+                    display: block;
+                }
                 button {
                     display: block;
                 }
@@ -221,6 +224,7 @@
                 color: $error-color;
             }
             input {
+                width: 242px;
                 font-weight: 600;
                 border: none;
                 border-bottom: 1px dashed $main-font-color;
@@ -231,20 +235,41 @@
                     outline: none;
                 }
             }
-            button {
-                height: 36px;
-                padding: 5px 16px;
+            .delete-item {
+                color: #818689;
+                cursor: pointer;
+                width: 28px;
+                height: 28px;
+                padding: 4px 6px;
+                font-size: 20px;
+                border-radius: 5px;
+
                 position: absolute;
+                display: none;
                 top: 0;
                 bottom: 0;
                 right: 0;
+                margin: auto;
+                &:hover {
+                    background-color: #818689;
+                    color: white;
+                }
+            }
+            button {
+                font-size: 14px;
+                height: 34px;
+                padding: 5px 14px;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                right: 35px;
                 margin: auto;
                 display: none;
                 &:active {
                     outline: none;
                 }
                 svg {
-                    width: 15px;
+                    width: 12px;
                     margin-right: 5px;
                     vertical-align: middle;
                     path {
