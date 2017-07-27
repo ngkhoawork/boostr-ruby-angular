@@ -1567,6 +1567,11 @@ class Deal < ActiveRecord::Base
   end
 
   def log_changes
-    AuditLogService.new(self, 'start_date').perform
+    AuditLogService.new(
+      record: self,
+      type: 'Start Date Change',
+      old_value: start_date_was,
+      new_value: start_date
+    ).perform
   end
 end

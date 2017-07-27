@@ -19,7 +19,15 @@ class DealMember < ActiveRecord::Base
   scope :by_stage_ids, -> (stage_ids) { joins(:deal).where(deals: { stage_id: stage_ids }) if stage_ids.present? }
 
   after_update do
-    log_changes if share_changed?
+    log_share_changes if share_changed?
+  end
+
+  after_create do
+    log_adding_member
+  end
+
+  after_destroy do
+    log_destroying_member
   end
 
   def name
@@ -40,7 +48,31 @@ class DealMember < ActiveRecord::Base
 
   private
 
-  def log_changes
-    AuditLogService.new(self.deal, self.user.name).perform
+  def log_share_changes
+    AuditLogService.new(
+      record: deal,
+      type: 'Share Change',
+      member: user_id,
+      old_value: share_was,
+      new_value: share
+    ).perform
+  end
+
+  def log_adding_member
+    AuditLogService.new(
+      record: deal,
+      type: 'Member Added',
+      member: user_id,
+      new_value: user.name
+    ).perform
+  end
+
+  def log_destroying_member
+    AuditLogService.new(
+      record: deal,
+      type: 'Member Removed',
+      member: user_id,
+      old_value: user.name
+    ).perform
   end
 end
