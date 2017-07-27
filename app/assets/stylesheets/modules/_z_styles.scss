@@ -129,6 +129,14 @@
             }
         }
     }
+    .fixed-table-header {
+        position: absolute;
+        background-color: white;
+        border-bottom: 1px solid #ddd;
+        &.fixed {
+            border-bottom: 2px solid #ddd;
+        }
+    }
 }
 .z-sliding-filter {
     $sliding-filter-w: 350px;

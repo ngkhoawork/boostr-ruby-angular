@@ -4,67 +4,41 @@ app.directive 'fixedTableHeader',
 		restrict: 'A'
 		scope: false
 		link: ($scope, element, attrs) ->
-			console.time()
+			mainClass = 'fixed-table-header'
 			window = angular.element($window)
-			source = angular.element(element)
-			sourceContainer = source.parent()
-			sourceHeader = source.find('thead')
-			headerContainer = angular.element('<div class="fixed-table-header-wrap"></div>')
-			header = source.clone()
-			header.removeAttr 'fixed-table-header'
-			header.find('tbody').remove()
-#			compiledHeader = $compile(header)($scope)
-			headerContainer.append(header)
-			sourceContainer.prepend(headerContainer)
+			table = angular.element(element)
+			container = table.parent()
+			thead = table.find('thead')
+			header = thead.children()
+			headerCopy = header.clone()
+			thead.append(headerCopy)
+			header.addClass mainClass
+			container.css 'position', 'relative'
 
-			updateHeader = ->
-				thead = source.find('thead').clone()
-				thead.find('[ng-repeat]').removeAttr 'ng-repeat'
-				$compile(thead)($scope)
-				headerContainer.find('thead').replaceWith thead
-#				headerContainer.find('thead').replaceWith thead
-#				headerContainer.empty()
-#				header = source.clone()
-#				header.removeAttr 'fixed-table-header'
-#				header.find('tbody').remove()
-#				compiledHeader = $compile(header)($scope)
-#				headerContainer.append(compiledHeader)
-#				sourceContainer.prepend(headerContainer)
-
-
-			updateWidth = ->
-				headerContainer.width sourceContainer.width()
-
-			watcher = (newValue) ->
-				console.log newValue
-				console.time('WATCH')
-				$timeout ->
-					updateWidth()
-					updateHeader()
-					sourceThs = source.find('th')
-					headerThs = header.find('th')
-					sourceThs.each (i) ->
-						sourceWidth = angular.element(this).outerWidth()
-						angular.element(headerThs[i]).css('min-width', sourceWidth)
-				console.timeEnd('WATCH')
-
-			values = $scope.$eval attrs.watch
-			_.each values, (value) -> $scope.$watch value, watcher
-
-
-			sourceContainer.scroll ->
-				leftOffset = angular.element(this).scrollLeft()
-				headerContainer.scrollLeft(leftOffset)
+			updateHeaderCopy = ->
+				previousCopy = headerCopy
+				headerCopy = header.clone().removeClass mainClass
+#				headerCopy.children().each -> angular.element(this).css('min-width', 0)
+				previousCopy.replaceWith headerCopy
 
 			window.scroll ->
-				offsetTop = sourceHeader.offset().top
-				height = sourceHeader.outerHeight()
+				offsetTop = table.offset().top
 				if window.scrollTop() > offsetTop
-					headerContainer.addClass 'visible'
+					header.addClass 'fixed'
+					header.css 'top', window.scrollTop() - offsetTop
 				else
-					headerContainer.removeClass 'visible'
+					header.removeClass 'fixed'
+					header.css 'top', 0
 
-			window.on 'resize', updateWidth
-			$scope.$on '$destroy', -> window.off 'resize', updateWidth
-			console.timeEnd()
+			watcher = ->
+				$timeout ->
+					updateHeaderCopy()
+					ths = header.find('th')
+					headerCopy.find('th').each (i) ->
+						width = angular.element(this).outerWidth()
+						angular.element(ths[i]).css('min-width', width)
+
+			watchers = $scope.$eval attrs.watch
+			_.each watchers, (w) -> $scope.$watch w, watcher
+
 	]
