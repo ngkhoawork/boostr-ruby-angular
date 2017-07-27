@@ -116,11 +116,14 @@
 									%b Product
 								%th{'ng-repeat': 'month in months'}
 									{{month.label}}
+								%th Total
 						%tbody
-							%tr{'ng-repeat': 'product in spendByProducts'}
+							%tr{'ng-repeat': 'product in spendByProducts', 'ng-class': '{total: $last}'}
 								%td {{product.name}}
 								%td{'ng-repeat': 'val in product.values track by $index'}
 									{{val ? (val | currency: '$' : '0') : '-'}}
+								%td.total
+									{{product.total | currency: '$' : '0'}}
 
 		.row
 			.block
@@ -137,12 +140,15 @@
 									%b Advertiser
 								%th{'ng-repeat': 'month in months'}
 									{{month.label}}
+								%th Total
 						%tbody
-							%tr{'ng-repeat': 'advertiser in spendByAdvertisers'}
+							%tr{'ng-repeat': 'advertiser in spendByAdvertisers', 'ng-class': '{total: $last}'}
 								%td
 									%a{href: '', 'ng-href': '#'} {{advertiser.name}}
 								%td{'ng-repeat': 'val in advertiser.values track by $index'}
-									{{val | currency: '$' : '0'}}
+									{{val ? (val | currency: '$' : '0') : '-'}}
+								%td.total
+									{{advertiser.total | currency: '$' : '0'}}
 
 		.row
 			.col-xs-8.pl0

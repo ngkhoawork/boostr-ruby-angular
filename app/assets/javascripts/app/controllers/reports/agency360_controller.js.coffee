@@ -109,12 +109,12 @@
 				$scope.getAgencies()
 
 		HoldingCompany.all().then (holdingCompanies) ->
-#			$scope.setFilter('holdingCompany', _.findWhere(holdingCompanies, {id: 4}))
+			$scope.setFilter('holdingCompany', _.findWhere(holdingCompanies, {id: 4}))
 			$scope.holdingCompanies = holdingCompanies
 
 		TimeDimension.all().then (timeDimensions) ->
-#			$scope.setFilter('startPeriod', _.findWhere(timeDimensions, {name: '2016'}))
-#			$scope.setFilter('endPeriod', _.findWhere(timeDimensions, {name: '2017'}))
+			$scope.setFilter('startPeriod', _.findWhere(timeDimensions, {name: '2016'}))
+			$scope.setFilter('endPeriod', _.findWhere(timeDimensions, {name: '2017'}))
 			$scope.timeDimensions = _.map timeDimensions, (td) ->
 				td.type = switch
 					when td.days_length >= 28 && td.days_length <= 31 then 'month'
@@ -124,9 +124,13 @@
 
 		transformData = (data) ->
 			grouped = _.groupBy data, 'name'
-			_.map grouped, (values, name) ->
-				values = _.mapObject (_.groupBy values, 'date'), (val) -> val[0] && val[0].sum
-				{name: name, values: _.map $scope.months, (month) -> parseInt(values[month.date]) || null}
+			arr = _.map grouped, (values, name) ->
+				valuesByDate = _.mapObject (_.groupBy values, 'date'), (val) -> val[0] && val[0].sum
+				values = _.map $scope.months, (month) -> parseInt(valuesByDate[month.date]) || null
+				{name: name, values: values, total: _.reduce values, ((sum, val) -> sum += val || 0), 0}
+			totalValues = _.map $scope.months, (m, i) -> _.reduce arr, ((sum, item) -> sum += item.values[i] || 0), 0
+			arr.push {name: 'Total', values: totalValues, total: _.reduce totalValues, ((sum, val) -> sum += val || 0), 0}
+			arr
 
 		updateDashboard = (query) ->
 			if !(query.start_date && query.end_date) then return
@@ -163,6 +167,9 @@
 
 		$scope.getIconName = (typeName) ->
 			typeName && typeName.split(' ').join('-').toLowerCase()
+
+		$scope.sumTotalValues = (arr) ->
+			_.reduce arr, ((sum, item) -> sum += item.total || 0), 0
 
 		drawChart = (data, chartId) ->
 			chartContainer = angular.element(chartId + '-container')
@@ -395,4 +402,5 @@
 				.attr 'x', (d) -> if x(d.value) < minXForInnerText then x(d.value) + 5 else x(d.value) - 6
 				.attr 'y', (d) -> ((y d.name) + y.rangeBand() / 2) + 2
 
+		$timeout $scope.applyFilter, 2000
 	]
