@@ -69,9 +69,9 @@
         $rootScope.$broadcast 'updated_product_units', params.product_id
     deferred.promise
 
-  @all = ->
+  @all = (params) ->
     deferred = $q.defer()
-    resource.query {}, (products) ->
+    resource.query params, (products) ->
       allProducts = products
       deferred.resolve(products)
     deferred.promise
