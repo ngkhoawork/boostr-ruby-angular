@@ -109,12 +109,12 @@
 				$scope.getAgencies()
 
 		HoldingCompany.all().then (holdingCompanies) ->
-			$scope.setFilter('holdingCompany', _.findWhere(holdingCompanies, {id: 4}))
+#			$scope.setFilter('holdingCompany', _.findWhere(holdingCompanies, {id: 4}))
 			$scope.holdingCompanies = holdingCompanies
 
 		TimeDimension.all().then (timeDimensions) ->
-			$scope.setFilter('startPeriod', _.findWhere(timeDimensions, {name: '2016'}))
-			$scope.setFilter('endPeriod', _.findWhere(timeDimensions, {name: '2017'}))
+#			$scope.setFilter('startPeriod', _.findWhere(timeDimensions, {name: '2016'}))
+#			$scope.setFilter('endPeriod', _.findWhere(timeDimensions, {name: '2017'}))
 			$scope.timeDimensions = _.map timeDimensions, (td) ->
 				td.type = switch
 					when td.days_length >= 28 && td.days_length <= 31 then 'month'
@@ -402,5 +402,4 @@
 				.attr 'x', (d) -> if x(d.value) < minXForInnerText then x(d.value) + 5 else x(d.value) - 6
 				.attr 'y', (d) -> ((y d.name) + y.rangeBand() / 2) + 2
 
-		$timeout $scope.applyFilter, 2000
 	]
