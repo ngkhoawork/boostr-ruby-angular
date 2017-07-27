@@ -257,7 +257,9 @@ Rails.application.routes.draw do
         get :current_year_quarters
       end
     end
-    resources :quotas, only: [:index, :create, :update]
+    resources :quotas, only: [:index, :create, :update] do
+      post :import, on: :collection
+    end
     resources :forecasts, only: [:index, :show] do
       collection do
         get :detail
@@ -278,6 +280,7 @@ Rails.application.routes.draw do
     resources :reports, only: [:index] do
       collection do
         get :split_adjusted
+        get :pipeline_summary
       end
     end
     resources :sales_execution_dashboard, only: [:index] do

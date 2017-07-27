@@ -1,10 +1,10 @@
 @app.controller "SettingsStagesController",
-['$scope', '$modal', 'Stage',
-($scope, $modal, Stage) ->
+['$scope', '$modal', '$filter', 'Stage',
+($scope, $modal, $filter, Stage) ->
 
   $scope.init = () ->
     Stage.query().$promise.then (stages) ->
-      $scope.stages = stages
+      $scope.stages = $filter('orderBy')(stages, ['-active', 'position'])
 
   $scope.sortableOptions =
     stop: () ->
@@ -21,7 +21,7 @@
   $scope.showModal = () ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/stage_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'SettingsStagesNewController'
       backdrop: 'static'
       keyboard: false
@@ -29,13 +29,13 @@
   $scope.edit = (stage) ->
     $scope.modalInstance = $modal.open
       templateUrl: 'modals/stage_form.html'
-      size: 'lg'
+      size: 'md'
       controller: 'SettingsStagesEditController'
       backdrop: 'static'
       keyboard: false
       resolve:
         stage: ->
-          stage
+          angular.copy stage
 
   $scope.$on 'updated_stages', ->
     $scope.init()

@@ -78,6 +78,7 @@ group :test do
 end
 
 group :development do
+  gem 'lol_dba'
   gem 'bullet'
   gem 'letter_opener'
 end

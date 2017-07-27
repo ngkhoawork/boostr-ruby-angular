@@ -53,7 +53,6 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   it 'sums budget_delivered and gets last cumulative values from invoice lines' do
     allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_csv_file)
     allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(multiline_invoice_csv_file)
-    allow(File).to receive(:open).with("/home/trizes/.pry_history", "a", 384).and_call_original
     expect(DisplayLineItemCsv).to receive(:new).with(
       external_io_number: '1',
       line_number: '2',
@@ -186,18 +185,18 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   def invoice_csv_file
     @_invoice_csv_file ||= generate_csv({
       sales_order_line_item_id: '2',
-      recognized_revenue: '1500',
+      invoice_units: '15',
       cumulative_primary_performance: '50',
       cumulative_third_party_performance: '60'
     })
   end
 
   def multiline_invoice_csv_file
-    keys = [:sales_order_line_item_id, :recognized_revenue, :cumulative_primary_performance, :cumulative_third_party_performance]
+    keys = [:sales_order_line_item_id, :invoice_units, :cumulative_primary_performance, :cumulative_third_party_performance]
     values = [
-      [ '2', '27489.18', '916306', '10' ],
-      [ '2', '148820.46', '4568899', '20' ],
-      [ '2', '123690.36', '4568899', '30']
+      [ '2', '1500', '916306', '10' ],
+      [ '2', '1000', '4568899', '20' ],
+      [ '2', '500', '4568899', '30']
     ]
     @_invoice_csv_file ||= generate_multiline_csv(keys, values)
   end

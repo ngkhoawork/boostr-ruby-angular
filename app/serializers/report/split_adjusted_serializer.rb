@@ -1,4 +1,4 @@
-class SplitAdjustedReportSerializer < ActiveModel::Serializer
+class Report::SplitAdjustedSerializer < ActiveModel::Serializer
   attributes :name, :share, :deal_id, :deal_name, :advertiser, :agency,
              :budget, :budget_loc, :split_budget, :curr_symbol, :curr_cd, :stage, :type,
              :source, :next_steps, :start_date, :end_date, :created_date, :closed_date

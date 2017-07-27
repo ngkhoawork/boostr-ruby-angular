@@ -14,7 +14,9 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   property :ultimate_customer_advertiser, decorator: Operative::CustomFieldRepresenter, exec_context: :decorator
 
   def location_id_1
-    { name: 'Location_ID_1', value: deal_members[0].office } if deal_members[0].office.present?
+    if deal_members[0].present? && deal_members[0].office.present?
+      { name: 'Location_ID_1', value: deal_members[0].office }
+    end
   end
 
   def location_id_2
@@ -24,7 +26,9 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   end
 
   def primary_sales_rep_id
-    { name: 'Primary_Sales_Rep_ID', value: deal_members[0].employee_id } if deal_members[0].office.present?
+    if deal_members[0].present? && deal_members[0].employee_id.present?
+      { name: 'Primary_Sales_Rep_ID', value: deal_members[0].employee_id }
+    end
   end
 
   def opportunity_created_date
@@ -50,7 +54,7 @@ class Operative::CustomFieldsRepresenter < Representable::Decorator
   private
 
   def deal_members
-    represented.deal_members.not_account_manager_users.ordered_by_share.map(&:user)
+    @_deal_members ||= represented.deal_members.not_account_manager_users.ordered_by_share.map(&:user)
   end
   
   def account_custom_fields

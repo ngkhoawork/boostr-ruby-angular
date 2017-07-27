@@ -45,7 +45,7 @@
 
 
             $scope.resetFilter = ->
-                $scope.filter = defaultFilter
+                $scope.filter = angular.copy defaultFilter
 
             $scope.isNumber = _.isNumber
 
@@ -79,7 +79,7 @@
 
 
             Stage.query().$promise.then (stages) ->
-                $scope.stages = stages
+                $scope.stages = _.filter stages, (stage) -> stage.active
                 $scope.stages.unshift emptyFilter
 
             $scope.export = ->

@@ -166,6 +166,21 @@
         metadata: ->
           true
 
+  $scope.showUploadQuotasModal = ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/quotas_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/quotas/import'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')
     return true

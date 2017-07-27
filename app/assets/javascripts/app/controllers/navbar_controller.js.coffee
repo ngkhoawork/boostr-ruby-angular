@@ -17,13 +17,14 @@
             {name: 'Billing', url: '/finance/billing'}
         ]}
         {name: 'REPORTS', url: '/reports', dropdown: [
-            {name: 'Pipeline by User', url: '/reports/deal_reports'}
+            {name: 'Pipeline Monthly Summary', url: '/reports/pipeline_monthly_report'}
             {name: 'Activity Detail', url: '/reports/activity_detail_reports'}
             {name: 'Activity Summary', url: '/reports/activity_summary'}
             {name: 'Forecast Detail', url: '/reports/forecasts'}
-            {name: 'Product Forecast Detail', url: '/reports/product_forecasts'}
+            {name: 'Forecast Detail by Product', url: '/reports/product_forecasts'}
             {name: 'Pipeline Changes', url: '/reports/pipeline_changes_report'}
             {name: 'Pipeline Split Adjusted', url: '/reports/pipeline_split_report'}
+            {name: 'Pipeline Summary', url: '/reports/pipeline_summary_report'}
         ]}
         {name: 'SMART INSIGHTS', url: '/smart_reports', dropdown: [
             {name: 'Sales Execution Dashboard', url: '/smart_reports/sales_execution_dashboard'}

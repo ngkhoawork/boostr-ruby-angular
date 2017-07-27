@@ -1,4 +1,4 @@
-#forecast-detail {
+#pipeline-summary-report {
     padding-left: 25px;
     padding-right: 25px;
     .reports-header {
@@ -7,12 +7,12 @@
     }
     .filters-block {
         padding-left: 60px;
+        vertical-align: middle;
         a {
             font-weight: normal;
             color: $main-color;
             &.empty {
                 color: #B5BDC4;
-                //color: $secondary-font-color;
             }
         }
         .dropdown-menu {
@@ -25,7 +25,14 @@
                 }
             }
         }
-        vertical-align: middle;
+        .filter-item {
+            .close-btn {
+                color: $secondary-font-color;
+                &:hover {
+                    color: $main-color;
+                }
+            }
+        }
     }
     .block {
         .title {
@@ -34,28 +41,15 @@
     }
     table.table {
         tr {
-            th {
-                border-top: none;
-            }
             th, td {
                 text-align: center;
                 &:first-child {
                     text-align: left;
                 }
             }
+            .clickable {
+                padding: 5px 5px;
+            }
         }
-        .popover-content {
-            word-wrap: break-word;
-        }
-    }
-    .close-btn {
-        color: $secondary-font-color;
-        &:hover {
-            color: $main-color
-        }
-        z-index: 999999;
-    }
-    .add-btn {
-        top: 0;
     }
 }
