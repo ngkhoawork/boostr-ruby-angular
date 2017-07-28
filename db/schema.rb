@@ -241,16 +241,6 @@ ActiveRecord::Schema.define(version: 20170825112513) do
 
   add_index "addresses", ["addressable_id", "addressable_type"], name: "index_addresses_on_addressable_id_and_addressable_type", using: :btree
 
-  create_table "agreements", force: :cascade do |t|
-    t.integer  "influencer_id"
-    t.string   "fee_type"
-    t.decimal  "amount",        precision: 15, scale: 2
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
-  end
-
-  add_index "agreements", ["influencer_id"], name: "index_agreements_on_influencer_id", using: :btree
-
   create_table "api_configurations", force: :cascade do |t|
     t.string   "integration_type"
     t.boolean  "switched_on"
@@ -1165,38 +1155,6 @@ ActiveRecord::Schema.define(version: 20170825112513) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "influencer_content_fees", force: :cascade do |t|
-    t.integer  "influencer_id"
-    t.integer  "content_fee_id"
-    t.string   "fee_type"
-    t.string   "curr_cd"
-    t.decimal  "gross_amount",     precision: 15, scale: 2
-    t.decimal  "gross_amount_loc", precision: 15, scale: 2
-    t.decimal  "net",              precision: 15, scale: 2
-    t.text     "asset"
-    t.datetime "created_at",                                              null: false
-    t.datetime "updated_at",                                              null: false
-    t.date     "effect_date"
-    t.decimal  "net_loc",          precision: 15, scale: 2
-    t.decimal  "fee_amount",       precision: 15, scale: 2, default: 0.0
-    t.decimal  "fee_amount_loc",   precision: 15, scale: 2, default: 0.0
-  end
-
-  add_index "influencer_content_fees", ["content_fee_id"], name: "index_influencer_content_fees_on_content_fee_id", using: :btree
-  add_index "influencer_content_fees", ["influencer_id"], name: "index_influencer_content_fees_on_influencer_id", using: :btree
-
-  create_table "influencers", force: :cascade do |t|
-    t.integer  "company_id"
-    t.string   "name"
-    t.boolean  "active"
-    t.string   "email"
-    t.string   "phone"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "influencers", ["company_id"], name: "index_influencers_on_company_id", using: :btree
-
   create_table "initiatives", force: :cascade do |t|
     t.string   "name"
     t.integer  "goal"
@@ -1318,16 +1276,24 @@ ActiveRecord::Schema.define(version: 20170825112513) do
 
   add_index "print_items", ["io_id"], name: "index_print_items_on_io_id", using: :btree
 
+  create_table "product_dimensions", force: :cascade do |t|
+    t.integer  "company_id"
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "product_dimensions", ["company_id"], name: "index_product_dimensions_on_company_id", using: :btree
+
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
     t.string   "product_line"
     t.string   "family"
     t.string   "revenue_type"
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
-    t.boolean  "active",                default: true
-    t.boolean  "is_influencer_product", default: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.boolean  "active",       default: true
   end
 
   add_index "products", ["company_id"], name: "index_products_on_company_id", using: :btree
@@ -1692,7 +1658,6 @@ ActiveRecord::Schema.define(version: 20170825112513) do
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
   add_foreign_key "ad_units", "products"
-  add_foreign_key "agreements", "influencers"
   add_foreign_key "api_configurations", "companies"
   add_foreign_key "asana_connect_details", "api_configurations"
   add_foreign_key "asana_connect_details", "companies"
@@ -1736,9 +1701,6 @@ ActiveRecord::Schema.define(version: 20170825112513) do
   add_foreign_key "ealerts", "companies"
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
-  add_foreign_key "influencer_content_fees", "content_fees"
-  add_foreign_key "influencer_content_fees", "influencers"
-  add_foreign_key "influencers", "companies"
   add_foreign_key "forecast_pipeline_facts", "product_dimensions"
   add_foreign_key "forecast_pipeline_facts", "stage_dimensions"
   add_foreign_key "forecast_pipeline_facts", "time_dimensions"
