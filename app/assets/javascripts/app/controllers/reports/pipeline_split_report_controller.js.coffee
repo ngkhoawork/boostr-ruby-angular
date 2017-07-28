@@ -65,12 +65,12 @@
 
             $scope.getPipelineUnweighted = ->
                 _.reduce($scope.deals, (res, deal) ->
-                    res += deal.split_budget
+                    res += parseInt(deal.split_budget) || 0
                 , 0)
 
             $scope.getPipelineWeighted = ->
                 _.reduce($scope.deals, (res, deal) ->
-                    res += deal.split_budget * (deal.stage.probability / 100)
+                    res += parseInt(deal.split_budget * (deal.stage.probability / 100)) || 0
                 , 0)
 
             $scope.$watch 'filter.team', (team, prevTeam) ->

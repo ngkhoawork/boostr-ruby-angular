@@ -130,12 +130,12 @@
 
       $scope.getPipelineUnweighted = ->
         _.reduce($scope.deals, (res, deal) ->
-          res += deal.budget
+          res += parseInt(deal.budget) || 0
         , 0)
 
       $scope.getPipelineWeighted = ->
         _.reduce($scope.deals, (res, deal) ->
-          res += deal.budget * (deal.stage.probability / 100)
+          res += parseInt(deal.budget * (deal.stage.probability / 100)) || 0
         , 0)
 
       $scope.go = (path) ->
