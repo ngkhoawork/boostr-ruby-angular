@@ -20,14 +20,16 @@ class DealMember < ActiveRecord::Base
 
   after_update do
     log_share_changes if share_changed?
+    update_pipeline_fact_user(self) if share_changed?
   end
 
   after_create do
     log_adding_member
   end
 
-  after_destroy do
+  after_destroy do |deal_member|
     log_destroying_member
+    update_pipeline_fact_user(deal_member) if deal_member.share > 0
   end
 
   def name
@@ -44,6 +46,21 @@ class DealMember < ActiveRecord::Base
 
   def self.emails_for_users_except_account_manager_user_type
     not_account_manager_users.ordered_by_share.pluck(:email)
+  end
+
+  def update_pipeline_fact_user(deal_member)
+    user = deal_member.user
+    deal = deal_member.deal
+    company = deal.company
+    stage = deal.stage
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date)
+    time_periods.each do |time_period|
+      deal.deal_products.each do |deal_product|
+        product = deal_product.product
+        forecast_pipeline_fact_calculator = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, stage)
+        forecast_pipeline_fact_calculator.calculate()
+      end
+    end
   end
 
   private

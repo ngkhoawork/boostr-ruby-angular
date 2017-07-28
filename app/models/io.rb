@@ -33,7 +33,15 @@ class Io < ActiveRecord::Base
     if (start_date_changed? || end_date_changed?)
       reset_content_fees
       reset_member_effective_dates
+      update_revenue_fact(self)
     end
+    if (budget_changed?)
+      update_revenue_fact(self)
+    end
+  end
+
+  after_destroy do |io_record|
+    update_revenue_fact(io_record)
   end
 
   def reset_content_fees
@@ -63,6 +71,27 @@ class Io < ActiveRecord::Base
 
       io_member.save if date_changed
     end
+  end
+
+  def update_revenue_fact(io)
+    company = io.company
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+    time_periods.each do |time_period|
+      io.users.each do |user|
+        io.products.each do |product|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def products
+    product_ids = []
+    product_ids += self.content_fees.collect{ |item| item.product_id }
+    product_ids += self.display_line_items.collect{ |item| item.product_id }
+    products = company.products.where("id in (?)", product_ids)
+    products
   end
 
   def days

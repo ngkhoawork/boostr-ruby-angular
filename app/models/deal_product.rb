@@ -14,6 +14,7 @@ class DealProduct < ActiveRecord::Base
     if deal_product_budgets.empty?
       self.create_product_budgets
     end
+    update_forecast_pipeline_product(self)
   end
 
   after_update do
@@ -29,6 +30,12 @@ class DealProduct < ActiveRecord::Base
     if should_update_deal_budget
       deal.update_total_budget
     end
+
+    update_forecast_pipeline_product(self) if budget_changed?
+  end
+
+  after_destroy do |deal_product|
+    update_forecast_pipeline_product(deal_product)
   end
 
   scope :product_type_of, -> (type) { joins(:product).where("products.revenue_type = ?", type) }
@@ -47,6 +54,20 @@ class DealProduct < ActiveRecord::Base
 
   def local_currency_budget_in_usd
     budget_loc / deal.exchange_rate
+  end
+
+  def update_forecast_pipeline_product(deal_product)
+    deal = deal_product.deal
+    company = deal.company
+    stage = deal.stage
+    product = deal_product.product
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date)
+    time_periods.each do |time_period|
+      deal.users.each do |user|
+        forecast_pipeline_fact_calculator = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, stage)
+        forecast_pipeline_fact_calculator.calculate()
+      end
+    end
   end
 
   def active_exchange_rate

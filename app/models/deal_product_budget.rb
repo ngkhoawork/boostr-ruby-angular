@@ -8,6 +8,11 @@ class DealProductBudget < ActiveRecord::Base
 
   validates :start_date, :end_date, presence: true
 
+  after_update do
+    puts "=========deal product budget"
+    
+  end
+
   def daily_budget
     budget / (end_date - start_date + 1).to_f
   end

@@ -73,7 +73,17 @@ class Deal < ActiveRecord::Base
   after_update do
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
-    send_ealert if stage_id_changed?
+    if stage_id_changed?
+      log_stage 
+      send_ealert
+      update_pipeline_fact_stage(stage_id_was, stage_id)
+    end
+
+    if start_date_changed? || end_date_changed?
+      s_date = [start_date_was, start_date].min
+      e_date = [end_date_was, end_date].max
+      update_pipeline_fact_date(s_date, e_date)
+    end
     integrate_with_operative
     send_lost_deal_notification
     connect_deal_clients
@@ -99,6 +109,11 @@ class Deal < ActiveRecord::Base
 
   before_destroy do
     update_stage
+  end
+
+  after_destroy do
+    log_stage
+    update_pipeline_fact(self)
   end
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
@@ -1567,6 +1582,54 @@ class Deal < ActiveRecord::Base
     else
       cf = self.build_deal_custom_field(params)
       cf.save
+    end
+  end
+
+  def update_pipeline_fact_stage(old_stage_id, new_stage_id)
+    company = self.company
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", self.start_date, self.end_date)
+    time_periods.each do |time_period|
+      self.users.each do |user|
+        self.deal_products.each do |deal_product|
+          product = deal_product.product
+          old_stage = company.stages.find(old_stage_id)
+          new_stage = company.stages.find(new_stage_id)
+          forecast_pipeline_fact_calculator1 = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, old_stage)
+          forecast_pipeline_fact_calculator1.calculate()
+          forecast_pipeline_fact_calculator2 = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, new_stage)
+          forecast_pipeline_fact_calculator2.calculate()
+        end
+      end
+    end
+  end
+
+  def update_pipeline_fact_date(s_date, e_date)
+    company = self.company
+    stage = self.stage
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", s_date, e_date)
+    time_periods.each do |time_period|
+      self.users.each do |user|
+        self.deal_products.each do |deal_product|
+          product = deal_product.product
+          forecast_pipeline_fact_calculator = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, stage)
+          forecast_pipeline_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def update_pipeline_fact(deal)
+    company = deal.company
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date)
+    stage = stage = self.stage.stage
+    time_periods.each do |time_period|
+      deal.users.each do |user|
+        deal.deal_products.each do |deal_product|
+          product = deal_product.product
+          forecast_pipeline_fact_calculator1 = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, stage)
+          forecast_pipeline_fact_calculator1.calculate()
+        end
+      end
     end
   end
 
