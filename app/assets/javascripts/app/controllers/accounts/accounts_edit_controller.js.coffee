@@ -1,6 +1,6 @@
 @app.controller "AccountsEditController",
-['$scope', '$modalInstance', '$filter', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList'
-($scope, $modalInstance, $filter, Client, HoldingCompany, Field, AccountCfName, client, CountriesList) ->
+['$scope', '$modalInstance', '$filter', 'Client', 'HoldingCompany', 'Field', 'AccountCfName', 'client', 'CountriesList', 'Validation'
+($scope, $modalInstance, $filter, Client, HoldingCompany, Field, AccountCfName, client, CountriesList, Validation) ->
   $scope.client = client
   $scope.clients = []
   $scope.query = ""
@@ -42,6 +42,10 @@
     if $scope.client && $scope.client.address
       $scope.client.address.phone = $filter('tel')($scope.client.address.phone)
 
+    Validation.account_base_fields().$promise.then (data) ->
+      $scope.advertiser_base_fields_validations = data['Advertiser Base Field']
+      $scope.agency_base_fields_validations = data['Agency Base Field']
+
   getHoldingCompanies = ->
     HoldingCompany.all({}).then (holdingCompanies) ->
       $scope.holdingCompanies = holdingCompanies
@@ -63,6 +67,15 @@
       if item.show_on_modal == true && item.is_required == true && (!$scope.client.account_cf || !$scope.client.account_cf[item.field_type + item.field_index])
         $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
+    if $scope.client.client_type.option_id == $scope.Advertiser
+      base_fields_validation = $scope.advertiser_base_fields_validations
+    else if $scope.client.client_type.option_id == $scope.Agency
+      base_fields_validation = $scope.agency_base_fields_validations
+
+    (base_fields_validation || []).forEach (validation) ->
+      if $scope.client && (!$scope.client[validation.factor] && !$scope.client.address[validation.factor])
+        $scope.errors[validation.factor] = validation.name + ' is required'
+
     if Object.keys($scope.errors).length > 0 then return
     $scope.buttonDisabled = true
     $scope.removeCategoriesFromAgency()
@@ -74,6 +87,18 @@
         $scope.errors = resp.data.errors
         $scope.buttonDisabled = false
     )
+
+  $scope.clearErrors = () ->
+    $scope.errors = {}
+
+  $scope.baseFieldRequired = (factor) ->
+    if $scope.client && $scope.client.client_type
+      if $scope.client.client_type.option_id == $scope.Advertiser
+        validation = _.findWhere($scope.advertiser_base_fields_validations, factor: factor)
+        return validation?
+      else if $scope.client.client_type.option_id == $scope.Agency
+        validation = _.findWhere($scope.agency_base_fields_validations, factor: factor)
+        return validation?
 
   $scope.getClients = (query) ->
     $scope.isLoading = true
@@ -116,7 +141,7 @@
       $scope[option.name] = option.id
 
   $scope.removeCategoriesFromAgency = () ->
-    if $scope.client.client_type.option && $scope.client.client_type.option.name == 'Agency'
+    if $scope.client.client_type.option && $scope.client.client_type.option_id == $scope.Agency
       $scope.client.client_category_id = null
       $scope.client.client_subcategory_id = null
 

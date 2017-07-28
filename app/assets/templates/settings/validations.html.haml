@@ -1,0 +1,78 @@
+#general.z-styles
+  .container-fluid
+    %span.page-title Validations
+
+    .row
+      .col-sm-3
+        .panel
+          .panel-body
+            %h4 Deal Validations
+            %h5 Require Deal Billing Contact
+            .form-group
+              %label.control-label{ for: 'validations' } Select a Stage at which point Billing Contact is always required
+              %ui-select{ name: 'percentage', ng: { model: 'billing_contact_validation.criterion.value', disabled: true }, 'on-select': 'updateValidation(billing_contact_validation)' }
+                %ui-select-match{ placeholder: 'Select Stage' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'stage.probability as stage in stages | orderBy: "[-active, position]"' }
+                  %div{ ng: { bind: { html: 'stage.name' } } }
+
+            %h5 Require Account Manager
+            .form-group
+              %label.control-label{ for: 'validations' } Select a Stage at which point Account Manager is always required
+              %ui-select{ name: 'percentage', ng: { model: 'account_manager_validation.criterion.value', disabled: true }, 'on-select': 'updateValidation(account_manager_validation)' }
+                %ui-select-match{ placeholder: 'Select Stage' }
+                  {{ $select.selected.name }}
+                %ui-select-choices{ repeat: 'stage.probability as stage in stages | orderBy: "[-active, position]"' }
+                  %div{ ng: { bind: { html: 'stage.name' } } }
+
+            %h5 Can't be closed manually
+            .form-group
+              %label.control-label{ for: 'disable_close' } Disable Manual change to Closed Won stage
+              .show-hide-remainder-form
+                .switch-remainder-form
+                  %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'disable_deal_close_validation.criterion.value', id: "disable_close", 'ng-change': 'confirmDisableDealWon()'}
+                  %label{:for => "disable_close"}
+                    %span
+                .validation-warning{ng: { if: 'disable_deal_close_validation.criterion.value' }}
+                  %i.fa.fa-exclamation-triangle{'aria-hidden' => 'true'}
+                  %span Stages can't be changed to Closed Won manually
+
+      .col-sm-3
+        .panel
+          .panel-body
+            %h4 Accounts-Advertiser Required Fields
+            %h5 Select which fields are required
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th Base field
+                  %th Required?
+              %tbody
+                %tr{ ng: { repeat: 'base_field in advertiser_base_fields' } }
+                  %td {{ base_field.name }}
+                  %td
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'base_field.criterion.value', 'ng-change': "updateValidation(base_field)", id: "base-field-validation-{{base_field.id}}"}
+                        %label{:for => "base-field-validation-{{base_field.id}}"}
+                          %span
+
+      .col-sm-3
+        .panel
+          .panel-body
+            %h4 Accounts-Agency Required Fields
+            %h5 Select which fields are required
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th Base field
+                  %th Required?
+              %tbody
+                %tr{ ng: { repeat: 'base_field in agency_base_fields' } }
+                  %td {{ base_field.name }}
+                  %td
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'base_field.criterion.value', 'ng-change': "updateValidation(base_field)", id: "base-field-validation-{{base_field.id}}"}
+                        %label{:for => "base-field-validation-{{base_field.id}}"}
+                          %span

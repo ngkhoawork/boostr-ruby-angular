@@ -16,5 +16,11 @@ FactoryGirl.define do
     factory :parent_client do
       parent_client nil
     end
+
+    factory :bare_client do
+      parent_client nil
+      website nil
+      address nil
+    end
   end
 end

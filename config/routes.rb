@@ -270,7 +270,11 @@ Rails.application.routes.draw do
     end
     resources :fields, only: [:index]
     resources :options, only: [:create, :update, :destroy]
-    resources :validations, only: [:index, :update]
+    resources :validations, only: [:index, :update] do
+      collection do
+        get :account_base_fields
+      end
+    end
     resources :tools, only: [:index]
     resources :notifications, only: [:index, :show, :create, :update, :destroy]
     resources :activities, only: [:index, :create, :show, :update, :destroy]
