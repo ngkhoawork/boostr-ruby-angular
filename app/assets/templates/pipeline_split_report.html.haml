@@ -67,6 +67,18 @@
 		.row
 			.col-xs-12
 				.block
+					.total-stats.mb20
+						%div.stats-col
+							.value {{getPipelineUnweighted() | currency: '$': 0 }}
+							.text Total Pipeline (UW)
+
+						%div.stats-col
+							.value {{getPipelineWeighted() | currency: '$': 0 }}
+							.text Total Pipeline (W)
+
+						%div.stats-col
+							.value {{deals.length}}
+							.text Total Deals
 					%div.table-wrapper
 						%table.table.table-hover
 							%thead
@@ -108,25 +120,25 @@
 									%th
 										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Closed Date
 							%tbody
-								%tr{'ng-repeat': 'item in data | orderBy : sorting.key : sorting.reverse'}
-									%td {{item.deal_id}}
+								%tr{'ng-repeat': 'deal in deals | orderBy : sorting.key : sorting.reverse'}
+									%td {{deal.deal_id}}
 									%td
-										%a{href: '', 'ng-href': '/deals/{{item.deal_id}}'} {{item.deal_name}}
+										%a{href: '', 'ng-href': '/deals/{{deal.deal_id}}'} {{deal.deal_name}}
 									%td
-										%a{href: '', 'ng-href': '/accounts/{{item.advertiser.id}}'} {{item.advertiser.name}}
+										%a{href: '', 'ng-href': '/accounts/{{deal.advertiser.id}}'} {{deal.advertiser.name}}
 									%td
-										%a{href: '', 'ng-href': '/accounts/{{item.agency.id}}'} {{item.agency.name}}
-									%td {{item.name}}
-									%td {{item.share}}%
-									%td {{item.stage.name}}
-									%td {{item.stage.probability}}%
-									%td {{item.budget_loc | currency : item.curr_symbol || item.curr_cd: 0 }}
-									%td {{item.budget | currency: '$': 0 }}
-									%td {{item.split_budget | currency: '$': 0 }}
-									%td {{item.type}}
-									%td {{item.source}}
-									%td {{item.next_steps}}
-									%td {{item.start_date | date : 'shortDate'}}
-									%td {{item.end_date | date : 'shortDate'}}
-									%td {{item.created_date | date : 'shortDate'}}
-									%td {{item.closed_date | date : 'shortDate'}}
+										%a{href: '', 'ng-href': '/accounts/{{deal.agency.id}}'} {{deal.agency.name}}
+									%td {{deal.name}}
+									%td {{deal.share}}%
+									%td {{deal.stage.name}}
+									%td {{deal.stage.probability}}%
+									%td {{deal.budget_loc | currency : deal.curr_symbol || deal.curr_cd: 0 }}
+									%td {{deal.budget | currency: '$': 0 }}
+									%td {{deal.split_budget | currency: '$': 0 }}
+									%td {{deal.type}}
+									%td {{deal.source}}
+									%td {{deal.next_steps}}
+									%td {{deal.start_date | date : 'shortDate'}}
+									%td {{deal.end_date | date : 'shortDate'}}
+									%td {{deal.created_date | date : 'shortDate'}}
+									%td {{deal.closed_date | date : 'shortDate'}}

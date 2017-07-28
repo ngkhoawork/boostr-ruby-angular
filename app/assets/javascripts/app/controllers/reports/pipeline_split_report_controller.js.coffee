@@ -2,7 +2,7 @@
     ['$scope', '$window', '$location', '$httpParamSerializer', '$routeParams', 'Report', 'Team', 'Seller', 'Stage'
     ( $scope,   $window,   $location,   $httpParamSerializer,   $routeParams,   Report,   Team,   Seller,   Stage ) ->
 
-            $scope.data = []
+            $scope.deals = []
             $scope.teams = []
             $scope.sellers = []
             $scope.stages = []
@@ -61,7 +61,17 @@
 
             getReport = (query) ->
                 Report.split_adjusted(query).$promise.then (data) ->
-                    $scope.data = data
+                    $scope.deals = data
+
+            $scope.getPipelineUnweighted = ->
+                _.reduce($scope.deals, (res, deal) ->
+                    res += deal.split_budget
+                , 0)
+
+            $scope.getPipelineWeighted = ->
+                _.reduce($scope.deals, (res, deal) ->
+                    res += deal.split_budget * (deal.stage.probability / 100)
+                , 0)
 
             $scope.$watch 'filter.team', (team, prevTeam) ->
                 if team.id then $scope.filter.seller = emptyFilter

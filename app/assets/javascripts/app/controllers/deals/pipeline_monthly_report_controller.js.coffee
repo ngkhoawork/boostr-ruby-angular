@@ -4,6 +4,7 @@
       $scope.sortType     = 'name'
       $scope.sortReverse  = false
       $scope.filterOpen = false
+      $scope.deals = []
       $scope.teams = []
       $scope.types = []
       $scope.sources = []
@@ -126,6 +127,16 @@
               products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range))
             deal.products = products
             deal
+
+      $scope.getPipelineUnweighted = ->
+        _.reduce($scope.deals, (res, deal) ->
+          res += deal.budget
+        , 0)
+
+      $scope.getPipelineWeighted = ->
+        _.reduce($scope.deals, (res, deal) ->
+          res += deal.budget * (deal.stage.probability / 100)
+        , 0)
 
       $scope.go = (path) ->
         $location.path(path)
