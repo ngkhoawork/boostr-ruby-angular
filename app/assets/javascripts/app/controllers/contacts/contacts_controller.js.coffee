@@ -138,7 +138,7 @@
                 }
                 params = _.extend params, $scope.filter.get()
                 if $scope.query.trim().length
-                    params.name = $scope.query.trim()
+                    params.q = $scope.query.trim()
                 Contact.all1(params).then (contacts) ->
                     if $scope.page > 1
                         $scope.contacts = $scope.contacts.concat(contacts)

@@ -135,7 +135,7 @@
                 if ($scope.contactSearchText != str)
                     $scope.contactSearchText = str
                     query = per: 10, page: 1
-                    if $scope.contactSearchText then query.contact_name = $scope.contactSearchText
+                    if $scope.contactSearchText then query.q = $scope.contactSearchText
                     Contact.all1(query).then (contacts) ->
                         contacts = contacts.filter (c)->
                             $scope.form.contacts.indexOf(c.id) == -1
