@@ -3,6 +3,10 @@ class Csv::SplitAdjustedDecorator
     @deal_member = deal_member
   end
 
+  def name
+    deal_member[:deal_name]
+  end
+
   def advertiser
     deal_member[:advertiser]['name']
   end

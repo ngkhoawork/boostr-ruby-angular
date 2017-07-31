@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ForecastMember do
+RSpec.describe ForecastMember, skip: true do
   context 'as_json' do
     let(:company) { Company.first }
     let(:parent) { create :parent_team }
