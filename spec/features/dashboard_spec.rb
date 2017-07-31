@@ -10,7 +10,8 @@ feature 'Dashboard' do
   let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
   let(:member) { create :user, team: child }
   let!(:deal_member) { create :deal_member, deal: deal, user: member, share: 100 }
-  let!(:deal_product_budget) { create :deal_product_budget, deal: deal, budget: 200000, start_date: "2015-01-01", end_date: "2015-01-31" }
+  let(:deal_product) { create(:deal_product, deal: deal, open: true) }
+  let!(:deal_product_budget) { create :deal_product_budget, deal_product: deal_product, budget: 200000, start_date: "2015-01-01", end_date: "2015-01-31" }
 
   describe 'as a leader' do
     let!(:quota) { create :quota, user: user, value: 20000, time_period: time_period }
@@ -24,22 +25,10 @@ feature 'Dashboard' do
 
     scenario 'shows the stats box and open deals', js: true do
       within '#stats' do
-        expect(find('.attainment')).to have_text '10% ATTAINMENT'
-        expect(find('.quota')).to have_text '$20000 QUOTA'
-        expect(find('.forecast')).to have_text '$2000 FORECAST'
-        expect(find('.gap-to-goal')).to have_text '$18000 GAP TO GOAL'
-      end
+        wait_for_ajax 1
 
-      within '#deals' do
-        expect(page).to have_css '.no-deals'
-      end
-
-      within '#alerts' do
-        expect(page).to have_css '.no-alerts'
-      end
-
-      within '#activities.section' do
-        expect(page).to have_text 'Create New Activity'
+        expect(page.all('.stats-col .title')[1].text).to eq '$20K' # Quota
+        expect(page.all('.stats-col .title')[2].text).to eq '$964.4K' # Forecast
       end
     end
   end
@@ -56,14 +45,14 @@ feature 'Dashboard' do
 
     scenario 'shows the stats box and open deals', js: true do
       within '#stats' do
-        expect(find('.attainment')).to have_text '10% ATTAINMENT'
-        expect(find('.quota')).to have_text '$20000 QUOTA'
-        expect(find('.forecast')).to have_text '$2000 FORECAST'
-        expect(find('.gap-to-goal')).to have_text '$18000 GAP TO GOAL'
+        wait_for_ajax 1
+
+        expect(page.all('.stats-col .title')[1].text).to eq '$20K' # Quota
+        expect(page.all('.stats-col .title')[2].text).to eq '$964.4K' # Forecast
       end
 
-      within '#deals' do
-        expect(page).to have_css '.table-wrapper'
+      within '#open-deals' do
+        expect(page).to have_css '.deals-table'
 
         within 'table tbody' do
           expect(page).to have_css 'tr', count: 1
@@ -88,8 +77,8 @@ feature 'Dashboard' do
     end
 
     scenario 'lists the reminders', js: true do
-      within '#reminders-list' do
-        expect(page).to have_css('.item-reminders', count: 3)
+      within '#reminders' do
+        expect(page).to have_css('.reminder-item', count: 3)
       end
     end
   end

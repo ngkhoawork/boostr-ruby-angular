@@ -10,7 +10,7 @@ describe Csv::ActivityDetailDecorator do
     expect(activity_detail_decorator.contacts).to eq activity_contact
     expect(activity_detail_decorator.deal).to eq activity.deal.name
     expect(activity_detail_decorator.creator).to eq activity.creator.name
-    expect(activity_detail_decorator.team).to eq ''
+    expect(activity_detail_decorator.team).to eq nil
   end
 
   private

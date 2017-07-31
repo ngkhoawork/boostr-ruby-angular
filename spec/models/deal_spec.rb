@@ -184,7 +184,10 @@ RSpec.describe Deal, type: :model do
         deal.assign_attributes(stage: closed_won_stage)
 
         expect(deal).not_to be_valid(:manual_update)
-        expect(deal.errors.full_messages).to eql ["Stage Closed Won can't be set per configuration. Deals can be set to won from API integration only"]
+        expect(deal.errors.full_messages).to eql [
+          'Stage Deals can\'t be updated to Closed Won manually. '\
+          'Deals can only be set to Closed Won from API integration'
+        ]
       end
 
       it 'does not save record when validation is active' do
