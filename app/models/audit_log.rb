@@ -4,5 +4,5 @@ class AuditLog < ActiveRecord::Base
   belongs_to :user, class_name: 'User', foreign_key: 'user_id'
   belongs_to :company
 
-  validates :type_of_change, :biz_days, :updated_by, :company_id, presence: true
+  validates :type_of_change, :updated_by, :company_id, presence: true
 end

@@ -1,4 +1,6 @@
 class AuditLogService
+  STAGE_CHANGE_TYPE = 'Stage Change'.freeze
+
   def initialize(attrs)
     @record = attrs[:record]
     @type = attrs[:type]
@@ -24,16 +26,7 @@ class AuditLogService
   attr_reader :record, :type, :member_user_id, :old_value, :new_value
 
   def calculate_biz_days
-    return nil if ['Member Added', 'Member Removed'].include?(type)
-
-    # Logic for member add and remove
-
-    # if type.eql?('Member Removed')
-    #   if logs_by_added_member_type_and_user_id.present?
-    #     (Date.current - logs_by_added_member_type_and_user_id.first.created_at.to_date).to_i
-    #   else
-    #     (Date.current - record.created_at.to_date).to_i
-    #   end
+    return nil unless type.eql? STAGE_CHANGE_TYPE
 
     if logs_by_type.present?
       (Date.current - logs_by_type.order(created_at: :desc).first.created_at.to_date).to_i
@@ -44,10 +37,5 @@ class AuditLogService
 
   def logs_by_type
     @_logs_by_type ||= record.audit_logs.where(type_of_change: type)
-  end
-
-  def logs_by_added_member_type_and_user_id
-    @_logs_by_added_member_type_and_user_id ||=
-      record.audit_logs.where(type_of_change: 'Member Added', user_id: member_user_id).order(created_at: :desc)
   end
 end

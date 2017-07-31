@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::DealsController, type: :controller do
+describe Api::DealsController, type: :controller do
   let(:company) { create :company }
   let(:team) { create :parent_team, company: company }
   let(:user) { create :user, company: company, team: team }
@@ -92,6 +92,25 @@ RSpec.describe Api::DealsController, type: :controller do
 
       put :update, id: deal.id, deal: { start_date: Date.new(2015, 8, 1) }, format: :json
       expect(response).to be_success
+    end
+
+    it 'creates audit logs for deal when start date was changed' do
+      expect{
+        put :update, id: deal.id, deal: { start_date: Date.new(2017, 8, 10) }, format: :json
+      }.to change(AuditLog, :count).by(1)
+
+      audit_log = deal.audit_logs.last
+
+      expect(audit_log.old_value).to eq '2015-07-29'
+      expect(audit_log.new_value).to eq '2017-08-10'
+      expect(audit_log.type_of_change).to eq 'Start Date Change'
+      expect(audit_log.updated_by).to eq user.id
+    end
+
+    it 'does not create audit logs for deal when start date was not changed' do
+      expect{
+        put :update, id: deal.id, deal: { end_date: Date.new(2017, 8, 10) }, format: :json
+      }.to_not change(AuditLog, :count)
     end
   end
 
