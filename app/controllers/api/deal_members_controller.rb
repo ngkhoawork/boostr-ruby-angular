@@ -1,7 +1,7 @@
 class Api::DealMembersController < ApplicationController
   respond_to :json
 
-  before_filter :set_current_user
+  before_filter :set_current_user, except: :index
 
   def index
     render json: deal.deal_members

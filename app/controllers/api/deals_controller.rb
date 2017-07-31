@@ -1,7 +1,7 @@
 class Api::DealsController < ApplicationController
   respond_to :json, :zip
 
-  before_filter :set_current_user, only: :update
+  before_filter :set_current_user, only: [:update, :create]
 
   def index
     respond_to do |format|
