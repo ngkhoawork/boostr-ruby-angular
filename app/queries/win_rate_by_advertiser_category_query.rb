@@ -15,7 +15,7 @@ class WinRateByAdvertiserCategoryQuery
     Deal.find_by_sql([ win_rate_query, start_date: options[:start_date],
                        end_date: options[:end_date],
                        company_id: options[:company_id],
-                       advertisers_ids: options[:advertisers_ids] ])
+                       agencies_ids: options[:agencies_ids] ])
   end
 
   def win_rate_query
