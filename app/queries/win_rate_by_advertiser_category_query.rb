@@ -35,7 +35,7 @@ class WinRateByAdvertiserCategoryQuery
              AND stages.probability = 100
              AND deals.closed_at BETWEEN :start_date AND :end_date
                  AND deals.company_id = :company_id
-                 AND account_dimensions.id in (:advertisers_ids)
+                 AND account_dimensions.id in (:agencies_ids)
                GROUP BY options.id,
                         options.name) AS won
           JOIN
@@ -51,7 +51,7 @@ class WinRateByAdvertiserCategoryQuery
                  AND stages.probability = 0
                  AND deals.closed_at BETWEEN :start_date AND :end_date
                  AND deals.company_id = :company_id
-                 AND account_dimensions.id in (:advertisers_ids)
+                 AND account_dimensions.id in (:agencies_ids)
                GROUP BY options.id,
                         options.name) AS lost
           ON coalesce(won.id, 0) = coalesce(lost.id, 0)

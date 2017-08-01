@@ -24,7 +24,6 @@ class Api::AgencyDashboardsController < ApplicationController
 
   def win_rate_by_category
     render json: win_rate_by_category_data, each_serializer: AgencyDashboard::WinRateByCategorySerializer
-
   end
 
   def contacts_and_related_advertisers
@@ -52,7 +51,7 @@ class Api::AgencyDashboardsController < ApplicationController
 
   def win_rate_by_category_data
     WinRateByAdvertiserCategoryQuery.new(filter_params.merge(company_id: current_user_company_id,
-                                                             advertisers_ids: related_advertisers_ids)).call
+                                                             agencies_ids: agencies_ids)).call
   end
 
   def revenue_sums_by_products
