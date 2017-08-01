@@ -28,30 +28,30 @@ class WinRateByAdvertiserCategoryQuery
                 COUNT(*) AS won_count
            FROM deals
            JOIN stages ON stages.id = deals.stage_id
-           JOIN account_dimensions ON account_dimensions.id = deals.agency_id
+           JOIN account_dimensions ON account_dimensions.id = deals.advertiser_id
            LEFT JOIN options ON options.id = account_dimensions.category_id
            WHERE deals.deleted_at IS NULL
              AND (stages.open IS FALSE)
              AND stages.probability = 100
              AND deals.closed_at BETWEEN :start_date AND :end_date
                  AND deals.company_id = :company_id
-                 AND account_dimensions.id in (:agencies_ids)
+                 AND deals.agency_id in (:agencies_ids)
                GROUP BY options.id,
                         options.name) AS won
-          JOIN
+        LEFT JOIN
             (SELECT options.id,
                     coalesce(options.name, \'Unassigned\') as name,
                     COUNT(*) AS lost_count
                FROM deals
                JOIN stages ON stages.id = deals.stage_id
-               JOIN account_dimensions ON account_dimensions.id = deals.agency_id
+               JOIN account_dimensions ON account_dimensions.id = deals.advertiser_id
                LEFT JOIN options ON options.id = account_dimensions.category_id
                WHERE deals.deleted_at IS NULL
                  AND (stages.open IS FALSE)
                  AND stages.probability = 0
                  AND deals.closed_at BETWEEN :start_date AND :end_date
                  AND deals.company_id = :company_id
-                 AND account_dimensions.id in (:agencies_ids)
+                 AND deals.agency_id in (:agencies_ids)
                GROUP BY options.id,
                         options.name) AS lost
           ON coalesce(won.id, 0) = coalesce(lost.id, 0)
