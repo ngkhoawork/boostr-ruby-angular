@@ -10,6 +10,12 @@
       $scope.sources = []
       $scope.products = []
       $scope.timePeriods = []
+      $scope.totals =
+        pipelineUnweighted: 0
+        pipelineWeighted: 0
+        pipelineRatio: 0
+        deals: 0
+        aveDealSize: 0
 
       defaultUser = {id: 'all', name: 'All', first_name: 'All'}
       currentUser = null
@@ -127,16 +133,18 @@
               products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range))
             deal.products = products
             deal
+          calcTotals($scope.deals)
 
-      $scope.getPipelineUnweighted = ->
-        _.reduce($scope.deals, (res, deal) ->
-          res += parseInt(deal.budget) || 0
-        , 0)
-
-      $scope.getPipelineWeighted = ->
-        _.reduce($scope.deals, (res, deal) ->
-          res += parseInt(deal.budget * (deal.stage.probability / 100)) || 0
-        , 0)
+      calcTotals = (deals) ->
+        t = $scope.totals
+        _.each t, (val, key) -> t[key] = 0 #reset values
+        _.each deals, (deal) ->
+          budget = parseInt(deal.budget) || 0
+          t.pipelineUnweighted += budget
+          t.pipelineWeighted += budget * deal.stage.probability / 100
+        t.pipelineRatio = Math.round(t.pipelineWeighted / t.pipelineUnweighted * 100) / 100
+        t.deals = deals.length
+        t.aveDealSize = t.pipelineUnweighted / deals.length
 
       $scope.go = (path) ->
         $location.path(path)

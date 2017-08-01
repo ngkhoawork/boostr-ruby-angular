@@ -69,16 +69,25 @@
 				.block
 					.total-stats.mb20
 						%div.stats-col
-							.value {{getPipelineUnweighted() | currency: '$': 0 }}
+							.value {{totals.pipelineUnweighted | currency: '$': 0}}
 							.text Total Pipeline (UW)
 
 						%div.stats-col
-							.value {{getPipelineWeighted() | currency: '$': 0 }}
+							.value {{totals.pipelineWeighted | currency: '$': 0}}
 							.text Total Pipeline (W)
 
 						%div.stats-col
-							.value {{deals.length}}
+							.value {{totals.pipelineRatio}}
+							.text Pipeline W/UW Ratio
+
+						%div.stats-col
+							.value {{totals.deals}}
 							.text Total Deals
+
+						%div.stats-col
+							.value {{totals.aveDealSize | currency: '$': 0}}
+							.text Ave Deal Size
+
 					%div.table-wrapper
 						%table.table.table-hover
 							%thead
