@@ -28,7 +28,7 @@ class WinRateByAdvertiserCategoryQuery
                 COUNT(*) AS won_count
            FROM deals
            JOIN stages ON stages.id = deals.stage_id
-           JOIN account_dimensions ON account_dimensions.id = deals.advertiser_id
+           JOIN account_dimensions ON account_dimensions.id = deals.agency_id
            LEFT JOIN options ON options.id = account_dimensions.category_id
            WHERE deals.deleted_at IS NULL
              AND (stages.open IS FALSE)
@@ -44,7 +44,7 @@ class WinRateByAdvertiserCategoryQuery
                     COUNT(*) AS lost_count
                FROM deals
                JOIN stages ON stages.id = deals.stage_id
-               JOIN account_dimensions ON account_dimensions.id = deals.advertiser_id
+               JOIN account_dimensions ON account_dimensions.id = deals.agency_id
                LEFT JOIN options ON options.id = account_dimensions.category_id
                WHERE deals.deleted_at IS NULL
                  AND (stages.open IS FALSE)
