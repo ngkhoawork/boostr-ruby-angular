@@ -14,9 +14,6 @@
             background-color: inherit;
         }
     }
-    .table-wrapper {
-        overflow-y: hidden;
-    }
     .editable-field {
         &:focus {
             background-color: inherit;
@@ -33,6 +30,7 @@
     }
     #line-content-fees {
         .dropdown {
+            position: static;
             display: inline-block;
             button:not(.add-btn) {
                 background-color: inherit;
@@ -45,7 +43,8 @@
                 }
             }
             .dropdown-menu {
-                top: calc(100% + 10px);
+                top: auto;
+                left: auto;
             }
         }
         .table {
