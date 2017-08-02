@@ -122,7 +122,6 @@
         getTotals($scope.saved_query)
         getData($scope.saved_query)
         appliedFilter = angular.copy $scope.filter
-        getData()
 
       $scope.isFilterApplied = ->
         !angular.equals $scope.filter, appliedFilter
