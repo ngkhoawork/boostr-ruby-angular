@@ -77,7 +77,7 @@
                     budget = parseInt(deal.split_budget) || 0
                     t.pipelineUnweighted += budget
                     t.pipelineWeighted += budget * deal.stage.probability / 100
-                t.pipelineRatio = Math.round(t.pipelineWeighted / t.pipelineUnweighted * 100) / 100
+                t.pipelineRatio = (Math.round(t.pipelineWeighted / t.pipelineUnweighted * 100) / 100) || 0
                 t.deals = deals.length
                 t.aveDealSize = t.pipelineUnweighted / deals.length
 
