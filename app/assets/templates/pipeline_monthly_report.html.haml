@@ -35,7 +35,7 @@
                       %ul.dropdown-menu
                         %li{ ng: { repeat: 'stage in stages | orderBy: ["-open", "probability"]' } }
                           %a{ href: '', ng: { click: 'setFilter("stages", stage)' } }
-                            {{stage.name}} {{isNumber(stage.probability) ? stage.probability + '%' : ''}}
+                            {{stage.name}} {{ stage.probability + '%' }}
 
                 %td
                   %ul.filter-item
