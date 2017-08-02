@@ -20,6 +20,7 @@
         product: {id: 'all', name: 'All'}
         seller: defaultUser
         timePeriod: {id: 'all', name: 'All'}
+      appliedFilter = null
       $scope.selectedTeam = $scope.filter.team
       $scope.statuses = [
         {id: 'all', name: 'All'}
@@ -97,7 +98,11 @@
 #        getData()
 
       $scope.applyFilter = ->
+        appliedFilter = angular.copy $scope.filter
         getData()
+
+      $scope.isFilterApplied = ->
+        !angular.equals $scope.filter, appliedFilter
 
       query = null
       getData = () =>
