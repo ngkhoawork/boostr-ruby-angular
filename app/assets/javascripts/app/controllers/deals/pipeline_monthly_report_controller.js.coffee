@@ -29,8 +29,12 @@
         product: {id: 'all', name: 'All'}
         seller: defaultUser
         timePeriod: {id: 'all', name: 'All'}
+<<<<<<< HEAD
         stages: []
       $scope.filter = angular.copy $scope.defaultFilter
+=======
+      appliedFilter = null
+>>>>>>> highlighted run report button
       $scope.selectedTeam = $scope.filter.team
 
       $scope.init = ->
@@ -120,6 +124,11 @@
 
         getTotals($scope.saved_query)
         getData($scope.saved_query)
+        appliedFilter = angular.copy $scope.filter
+        getData()
+
+      $scope.isFilterApplied = ->
+        !angular.equals $scope.filter, appliedFilter
 
       query = null
 
