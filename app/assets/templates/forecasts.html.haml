@@ -1,99 +1,117 @@
-#forecasts
-  .container.loading{ ng: { hide: 'forecast' } }
-    Loading...
-  #nav.transparent{ ng: { show: 'forecast' } }
-    .container
-      .row
-        .col-xs-12
-          %ul.nav.nav-tabs
-            %li.pull-left.path
-              %a.path-link{ ng: { href: '/forecast?time_period_id={{currentTimePeriod.id}}&year={{year}}' }} Forecast
-              .path-link{ ng: { repeat: 'parent in forecast.parents' } }
-                %a{ ng: { href: '/forecast/{{parent.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' }} {{ parent.name }}
-              .path-link
-                %a{ href: '', ng: { if: 'forecast.name' } }
-                  {{ forecast.name }}
+#forecasts.z-styles.z-report
+	.container-fluid.inner-forecasts
+		.row.mb20
+			.reports-header
+				.header-cell.main-title
+					Forecast
+				.header-cell.filters-block
+					%table
+						%tr.filter-title
+							%td Team
+							%td Seller
+							%td Product
+							%td
+								%span.reset-filter{'ng-click': 'resetFilter()'}
+									Reset
+						%tr
+							%td
+								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
 
-            %li.quota-period.pull-right.last{ dropdown: true }
-              %a{ href: '', dropdown: { toggle: true } }
-                %span{ ng: { if: 'year' } }
-                  {{ year }} Quarterly
-                %span{ ng: { if: '!year && currentTimePeriod' } }
-                  {{ currentTimePeriod.name }} ({{ currentTimePeriod.start_date | date: 'shortDate'}} - {{ currentTimePeriod.end_date | date: 'shortDate' }})
-                %span.caret
-              %ul.dropdown-menu.time-periods
-                %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: !year && timePeriod.id == currentTimePeriod.id}' } }
-                  %a{ href: '', ng: { click: 'updateTimePeriod(timePeriod.id)' } }
-                    {{ timePeriod.name }} ({{ timePeriod.start_date | date: 'shortDate'}} - {{ timePeriod.end_date | date: 'shortDate' }})
-                %li{ ng: { repeat: 'y in years', class: '{active: year == y}' } }
-                  %a{ href: '', ng: { click: 'updateYear(y)' } }
-                    {{ y }} Quarterly
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.seller.id}' }
+											{{filter.seller.name}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: !filter.seller.id}'}
+												%a{href: '', 'ng-click': 'setFilter("seller", emptyFilter)'}
+													{{emptyFilter.name}}
+											%li{ ng: { repeat: 'seller in sellers | orderBy : "name"', class: '{active: seller.id === filter.seller.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
+													{{seller.name}}
 
-  .container
-    .row
-      .col-xs-12
-        %div{ ng: { if: 'chartBarData.datasets.length > 0' } }
-          %div
-            %canvas{ 'tc-chartjs': true, 'chart-type': 'stackedbar', 'chart-data':'chartBarData', 'chart-options':'chartBarOptions', 'chart-legend':'legend', style: 'width: 100%; height: 300px;' }
-          %div{ 'tc-chartjs-legend':'true', 'chart-legend':'legend' }
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.product.id}' }
+											{{filter.product.name}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: !filter.product.id}'}
+												%a{href: '', 'ng-click': 'setFilter("product", emptyFilter)'}
+													{{emptyFilter.name}}
+											%li{ ng: { repeat: 'product in products | orderBy : "name"', class: '{active: product.id === filter.product.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("product", product)' } }
+													{{product.name}}
 
-    .row{ ng: { show: 'forecast' } }
-      .col-xs-12
-        .table-wrapper
-          %table.table.table-striped
-            %thead
-              %tr.no-case
-                %th.left
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("name")' } }
-                    NAME
-                    %i{ ng: { class: "{ 'fa': sort.column == 'name', 'fa-sort-asc': sort.column == 'name' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'name' && sort.direction == 'desc' }" } }
-                %th{ ng: { if: 'year' } }
-                  &nbsp;
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("quota")' } }
-                    QUOTA
-                    %i{ ng: { class: "{ 'fa': sort.column == 'quota', 'fa-sort-asc': sort.column == 'quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'quota' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("weighted_pipeline")' } }
-                    PIPELINE (W)
-                    %i{ ng: { class: "{ 'fa': sort.column == 'weighted_pipeline', 'fa-sort-asc': sort.column == 'weighted_pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'weighted_pipeline' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("revenue")' } }
-                    REVENUE
-                    %i{ ng: { class: "{ 'fa': sort.column == 'revenue', 'fa-sort-asc': sort.column == 'revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'revenue' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("amount")' } }
-                    FORECAST AMT
-                    %i{ ng: { class: "{ 'fa': sort.column == 'amount', 'fa-sort-asc': sort.column == 'amount' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'amount' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("gap_to_quota")' } }
-                    GAP TO QUOTA
-                    %i{ ng: { class: "{ 'fa': sort.column == 'gap_to_quota', 'fa-sort-asc': sort.column == 'gap_to_quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'gap_to_quota' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("percent_to_quota")' } }
-                    \% TO QUOTA
-                    %i{ ng: { class: "{ 'fa': sort.column == 'percent_to_quota', 'fa-sort-asc': sort.column == 'percent_to_quota' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'percent_to_quota' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("percent_booked")' } }
-                    \% BOOKED
-                    %i{ ng: { class: "{ 'fa': sort.column == 'percent_booked', 'fa-sort-asc': sort.column == 'percent_booked' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'percent_booked' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("new_deals_needed")' } }
-                    \# DEALS NEEDED
-                    %i{ ng: { class: "{ 'fa': sort.column == 'new_deals_needed', 'fa-sort-asc': sort.column == 'new_deals_needed' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'new_deals_needed' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("wow_weighted_pipeline")' } }
-                    WoW PIPELINE
-                    %i{ ng: { class: "{ 'fa': sort.column == 'wow_weighted_pipeline', 'fa-sort-asc': sort.column == 'wow_weighted_pipeline' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'wow_weighted_pipeline' && sort.direction == 'desc' }" } }
-                %th.right
-                  %a.sort{ href: '', ng: { click: 'sort.toggle("wow_revenue")' } }
-                    WoW REVENUE
-                    %i{ ng: { class: "{ 'fa': sort.column == 'wow_revenue', 'fa-sort-asc': sort.column == 'wow_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'wow_revenue' && sort.direction == 'desc' }" } }
+		.row.mb20
+			.col-xs-9.pl0
+				.block
+					%div.mb20
+						%span.title Pipeline & Revenue Pacing
+					.table-wrapper
+						%table.table.table-hover
+							%tbody
+								%tr.header-row
+									%th
+										%b Weighted Pipe
+									%th{'ng-repeat': 'week in weeks'}
+										Week {{week <= weekShift ? week - weekShift - 1 : week - weekShift}}
+							%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
+								%tr
+									%td This Qtr
+									%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.current_quarter track by $index'}
+										{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
+			.col-xs-3.pr0
+				.block
+					%div.mb20
+						%span.title Forecast Insights
+					%h5 Pipeline Concentration Risk
+					%table.table.table-stripped.mb10
+						%thead
+							%tr
+								%th % of Deals
+								%th % Total Pipe Value
+								%th # Deals
+						%tbody
+							%tr
+								%td 20%
+								%td -50%-------------
+								%td 5
+							%tr
+								%td 30%
+								%td -75%-------------
+								%td 10
+							%tr
+								%td 50%
+								%td -100%------------
+								%td 20
 
-            %tbody.teams{ ng: { repeat: 'row in teams', include: "'partials/forecast_rows.html'" } }
+					%h5 Deals Missing IOs
+					%table.table.table-stripped.mb10
+						%thead
+							%tr
+								%th # Deals
+								%th Value
+						%tbody
+							%tr
+								%td 3
+								%td {{200000 | currency : '$' : 0}}
+							%tr
+								%td 5
+								%td {{450000 | currency : '$' : 0}}
 
-            %tbody.leader{ ng: { repeat: 'row in [forecast.leader]', include: "'partials/forecast_rows.html'", if: 'forecast.leader && (forecast.leader.revenue > 0 || forecast.leader.weighted_pipeline > 0)' } }
-
-            %tbody.members{ ng: { repeat: 'row in members', include: "'partials/forecast_rows.html'" } }
-
-            %tbody.member{ ng: { hide: 'teams || members', repeat: 'row in [forecast]', include: "'partials/forecast_rows.html'" } }
+					%h5 Underdelivery (UD) Risk
+					%table.table.table-stripped.mb10
+						%thead
+							%tr
+								%th # Lines
+								%th UD Risk Amount
+						%tbody
+							%tr
+								%td 5
+								%td {{100000 | currency : '$' : 0}}
+							%tr
+								%td 10
+								%td {{300000 | currency : '$' : 0}}

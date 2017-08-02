@@ -1,88 +1,9 @@
 #forecasts {
-  a {
-    color: $secondary-color;
-  }
-  .tc-chart-js-legend {
-    list-style-type: none;
-    text-align: center;
-    margin-bottom: 36px;
-
-    li {
-      display: inline-block;
-      line-height: 20px;
-      vertical-align: middle;
+    .inner-forecasts {
+        max-width: 1600px;
+        padding: 0 15px;
+        .reports-header {
+            padding: 0;
+        }
     }
-    .swatch {
-      vertical-align: middle;
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      margin: 0 10px;
-      border: 1px solid $gray-light;
-      background-color: #000;
-    }
-    .legend_quota .swatch {
-      height: 4px;
-      border-top: 4px dotted $brand-secondary;
-      background: none;
-    }
-
-  }
-
-  .weighted-pipeline {
-    position: relative;
-
-    .arrow-up {
-      position: absolute;
-      bottom: -1px;
-      right: 12px;
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-
-      border-bottom: 15px solid $brand-primary;
-    }
-  }
-
-  tr.weighted-pipeline-detail {
-
-    h3, h5 {
-      margin-left: 10px;
-      margin-bottom: 20px;
-      display: inline;
-    }
-
-    h4 {
-      display: inline;
-    }
-
-    h5 {
-      color: $dark-grayish-blue-3;
-    }
-
-    .weighted-pipeline-table-wrapper {
-      padding: 15px 0 0 0;
-      border: 1px solid $brand-primary;
-
-      a.close {
-        margin-right: 10px;
-        margin-top: -5px;
-      }
-
-      table {
-        background: $white;
-        table-layout: fixed;
-      }
-    }
-  }
-
-  .loading {
-    margin-top: 20px;
-    margin-left: 70pt;
-  }
-}
-
-.fixed-revenue-width {
-  width: 1300px;
 }
