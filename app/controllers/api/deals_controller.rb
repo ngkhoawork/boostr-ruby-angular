@@ -126,18 +126,8 @@ class Api::DealsController < ApplicationController
 
   def pipeline_report
     respond_to do |format|
-      selected_deals = case params[:status]
-        when 'open'
-          deals.open.less_than(100)
-        when 'all'
-          deals
-        when 'closed'
-          deals.close_status
-        else
-          deals.open.less_than(100)
-      end
-
-      filtered_deals = selected_deals
+      filtered_deals = deals
+      .by_stage_ids(params[:stage_ids])
       .by_values(deal_type_source_params)
       .includes(
         :advertiser,
@@ -146,7 +136,7 @@ class Api::DealsController < ApplicationController
         :deal_product_budgets,
         :deal_custom_field,
         agency: [:parent_client],
-        deal_members: [:username],
+        deal_members_share_ordered: [:username],
         values: [:option]
       )
       .active
@@ -167,13 +157,6 @@ class Api::DealsController < ApplicationController
       end
 
       format.json {
-        deal_settings_fields = company.fields.where(subject_type: 'Deal').pluck(:id, :name)
-        deal_list = ActiveModel::ArraySerializer.new(
-          filtered_deals,
-          each_serializer: DealReportSerializer,
-          deal_settings_fields: deal_settings_fields,
-          product_filter: product_filter
-        )
         deal_ids = filtered_deals.collect{|deal| deal.id}
 
         range = DealProductBudget
@@ -184,6 +167,18 @@ class Api::DealsController < ApplicationController
         .collect{|deal_product_budget| deal_product_budget.start_date.try(:beginning_of_month)}
         .compact
         .uniq
+
+        deal_settings_fields = company.fields.where(subject_type: 'Deal').pluck(:id, :name)
+
+        deal_list = ActiveModel::ArraySerializer.new(
+          filtered_deals,
+          each_serializer: DealReportSerializer,
+          deal_settings_fields: deal_settings_fields,
+          product_filter: product_filter,
+          company_teams_data: company_teams_data,
+          range: range
+        )
+
 
         render json: [{deals: deal_list, range: range}].to_json
       }
@@ -826,5 +821,9 @@ class Api::DealsController < ApplicationController
     closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
 
     stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.by_closed_at(closed_year).order(closed_at: :desc)
+  end
+
+  def company_teams_data
+    company.teams.pluck_to_struct(:id, :name, :leader_id)
   end
 end

@@ -228,6 +228,10 @@
   datepickerPopupConfig.showButtonBar = false
 ]
 
+@app.config ['$compileProvider', ($compileProvider) ->
+  $compileProvider.debugInfoEnabled false
+]
+
 @app.run ['editableOptions', (editableOptions) ->
   editableOptions.theme = 'bs3'
   editableOptions.buttons = 'no'

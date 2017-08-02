@@ -1,12 +1,13 @@
 @app.controller 'PipelineMonthlyReportController',
-  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'CurrentUser', 'DealCustomFieldName',
-    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Product, Seller, Team, TimePeriod, CurrentUser, DealCustomFieldName) ->
+  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'CurrentUser', 'DealCustomFieldName', 'Stage'
+    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Product, Seller, Team, TimePeriod, CurrentUser, DealCustomFieldName, Stage) ->
       $scope.sortType     = 'name'
       $scope.sortReverse  = false
       $scope.filterOpen = false
       $scope.deals = []
       $scope.teams = []
       $scope.types = []
+      $scope.stages = []
       $scope.sources = []
       $scope.products = []
       $scope.timePeriods = []
@@ -19,20 +20,16 @@
 
       defaultUser = {id: 'all', name: 'All', first_name: 'All'}
       currentUser = null
+
       $scope.filter =
         team: {id: null, name: 'All'}
-        status: {id: 'open', name: 'Open'}
         type: {id: 'all', name: 'All'}
         source: {id: 'all', name: 'All'}
         product: {id: 'all', name: 'All'}
         seller: defaultUser
         timePeriod: {id: 'all', name: 'All'}
+        stages: []
       $scope.selectedTeam = $scope.filter.team
-      $scope.statuses = [
-        {id: 'all', name: 'All'}
-        {id: 'open', name: 'Open'},
-        {id: 'closed', name: 'Closed'},
-      ]
 
       $scope.init = ->
         getDealCustomFieldNames()
@@ -40,7 +37,6 @@
           if user.user_type is 1 || user.user_type is 2
             currentUser = user
             $scope.filter.seller = user
-#          getData()
           Product.all().then (products) ->
             $scope.products = products
             $scope.products = _.sortBy $scope.products, 'name'
@@ -64,6 +60,9 @@
             $scope.sellers = _.sortBy $scope.sellers, 'name'
             $scope.sellers.unshift(defaultUser)
 
+          Stage.query().$promise.then (stages) ->
+              $scope.stages = _.filter stages, (stage) -> stage.active
+
           TimePeriod.all().then (timePeriods) ->
             $scope.timePeriods = angular.copy timePeriods
             $scope.timePeriods = _.sortBy $scope.timePeriods, 'start_date'
@@ -86,22 +85,26 @@
           $scope.sellers.unshift(defaultUser)
 
       $scope.setFilter = (key, value) ->
-        if $scope.filter[key]is value
-          return
-        $scope.filter[key] = value
-#        getData()
+        if key == 'stages'
+          $scope.filter[key] = if value.id then _.union $scope.filter[key], [value] else []
+        else
+          if $scope.filter[key] is value
+            return
+          $scope.filter[key] = value
+
+      $scope.removeFilter = (key, item) ->
+        $scope.filter[key] = _.reject $scope.filter[key], (row) -> row.id == item.id
 
       $scope.resetFilter = ->
         $scope.filter =
           team: {id: null, name: 'All'}
-          status: {id: 'open', name: 'Open'}
           type: {id: 'all', name: 'All'}
           source: {id: 'all', name: 'All'}
           product: {id: 'all', name: 'All'}
           seller: currentUser || defaultUser
           timePeriod: {id: 'all', name: 'All'}
+          stages: []
         $scope.selectedTeam = $scope.filter.team
-#        getData()
 
       $scope.applyFilter = ->
         getData()
@@ -110,10 +113,10 @@
       getData = () =>
         f = $scope.filter
         query =
-          status: f.status.id
           type: f.type.id
           source: f.source.id
           'product_id': f.product.id
+          'stage_ids[]': _.map f.stages, (stage) -> stage.id if f.stages.length
         if f.timePeriod.id != 'all' then query.time_period_id = f.timePeriod.id
         if $scope.filter.seller.id != defaultUser.id
           query.filter = 'user'
@@ -122,17 +125,14 @@
           query.filter = 'selected_team'
           query.team_id = f.team.id || 'all'
 
+        if query['stage_ids[]'].length == 0
+          alert("Please specify a stage.");
+          return
 
         Deal.pipeline_report(query).then (data) ->
           $scope.deals = data[0].deals
           $scope.productRange = data[0].range
-          $scope.deals = _.map $scope.deals, (deal) ->
-            deal.budget = parseInt deal.budget
-            products = []
-            _.each $scope.productRange, (range) ->
-              products.push($scope.findDealProductBudgetBudget(deal.deal_product_budgets, range))
-            deal.products = products
-            deal
+
           calcTotals($scope.deals)
 
       calcTotals = (deals) ->

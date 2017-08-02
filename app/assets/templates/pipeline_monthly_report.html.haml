@@ -9,7 +9,7 @@
             %table
               %tr.filter-title
                 %td Team
-                %td Status
+                %td Stage
                 %td Type
                 %td Source
                 %td Product
@@ -21,16 +21,22 @@
               %tr
                 %td
                   %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'ng-class': '{"empty": selectedTeam.name === "All"}'}
+
                 %td
                   %ul.filter-item
                     %li{ dropdown: true }
-                      %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.status.name === "All"}' }
-                        {{filter.status.name}}
+                      %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.stages.length == 0}' }
+                        %span{'ng-if': 'filter.stages.length == 0'}
+                          Select
+                        %span{'ng-repeat': 'stage in filter.stages'}
+                          {{stage.name}} {{stage.probability + '%'}}
+                          %i.fa.fa-times.close-btn{'ng-click': 'removeFilter("stages", stage)'}
                         %span.caret
                       %ul.dropdown-menu
-                        %li{ ng: { repeat: 'status in statuses', class: '{active: status.name === filter.status.name}' } }
-                          %a{ href: '', ng: { click: 'setFilter("status", status)' } }
-                            {{ status.name }}
+                        %li{ ng: { repeat: 'stage in stages | orderBy: ["-open", "probability"]' } }
+                          %a{ href: '', ng: { click: 'setFilter("stages", stage)' } }
+                            {{stage.name}} {{isNumber(stage.probability) ? stage.probability + '%' : ''}}
+
                 %td
                   %ul.filter-item
                     %li{ dropdown: true }
@@ -203,7 +209,7 @@
                   %td.left {{ deal.start_date | date: 'MM-dd-yyyy' }}
                   %td.left {{ deal.end_date | date: 'MM-dd-yyyy' }}
                   %td.right{ ng: { repeat: 'productTime in productRange track by $index' } }
-                    ${{ deal.products[$index] | number : 0 }}
+                    ${{ deal.deal_product_budgets[$index] | number : 0 }}
                   %td.right{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
                     %span{'ng-if': 'dealCustomFieldName.field_type == "percentage"'}
                       {{deal.deal_custom_field[fieldName] || 0}}%

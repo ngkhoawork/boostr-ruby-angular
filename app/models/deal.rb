@@ -27,6 +27,7 @@ class Deal < ActiveRecord::Base
   has_many :deal_logs
   has_many :products, -> { distinct }, through: :deal_products
   has_many :deal_members
+  has_many :deal_members_share_ordered, -> { order(share: :desc) }, class_name: 'DealMember', foreign_key: 'deal_id'
   has_many :users, through: :deal_members
   has_many :values, as: :subject
   has_many :options, through: :values
@@ -97,7 +98,9 @@ class Deal < ActiveRecord::Base
   end
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
-  scope :for_time_period, -> (start_date, end_date) { where('start_date <= ? AND end_date >= ?', end_date, start_date) }
+  scope :for_time_period, -> (start_date, end_date) do
+    where('start_date <= ? AND end_date >= ?', end_date, start_date) if start_date.present? && end_date.present?
+  end
   scope :closed_in, -> (duration_in_days) { where('closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
   scope :closed_at, -> (start_date, end_date) do
     where('closed_at >= ? and closed_at <= ?', start_date, end_date) if start_date.present? && end_date.present?
