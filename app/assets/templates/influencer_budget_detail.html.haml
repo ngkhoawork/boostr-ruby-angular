@@ -1,141 +1,158 @@
-#reports
-  #nav.transparent
-    .container-fluid
-      .row
-        .col-xs-12
-          .reports-header
-            .header-cell
-              .h3.header-title
-                Influencer Budget Detail
-            .header-cell
-              .filters-block
-                %table
-                  %tr.filter-title
-                    %td Influencer
-                    %td
-                      %span.reset-filter{'ng-click': 'resetFilter()'}
-                        Reset
-                  %tr
-                    %td
-                      %ul.filter-item
-                        %li{ dropdown: true }
-                          %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.influencer.name === "All"}' }
-                            {{filter.influencer.name}}
-                            %span.caret
-                          %ul.dropdown-menu
-                            %li{ ng: { repeat: 'influencer in influencers', class: '{active: influencer.id === filter.influencer.id}' } }
-                              %a{ href: '', ng: { click: 'setFilter("influencer", influencer)' } }
-                                {{ influencer.name }}
-            .header-cell
-              %button.add-btn{'ng-click': 'applyFilter()'}
-                Run Report
+#pipeline-summary-report.z-styles
+  .container-fluid
+    .row.mb20
+      .reports-header
+        .header-cell.main-title
+          Influencer Budget Detail
+        .header-cell.filters-block
+          %table
+            %tr.filter-title
+              %td Influencer
+              %td Asset Date
+              %td
+                %span.reset-filter{'ng-click': 'resetFilter()'}
+                  Reset
+            %tr
+              %td
+                %ul.filter-item
+                  %li{ dropdown: true }
+                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.influencer.name === "All"}' }
+                      {{filter.influencer.name}}
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li{ ng: { repeat: 'influencer in influencers', class: '{active: influencer.id === filter.influencer.id}' } }
+                        %a{ href: '', ng: { click: 'setFilter("influencer", influencer)' } }
+                          {{ influencer.name }}
+              %td
+                .date-picker-wrap
+                  %div.date-picker{'date-range-picker': true,
+                               'ng-model': 'filter.assetDate',
+                               :options => "{locale: {format: 'MMMM D, YYYY'},
+                                     eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
+                    %span.empty{'ng-hide': 'datePicker.toString("assetDate")'}
+                      Time period
+                      %span.caret
+                    %span{'ng-show': 'datePicker.toString("assetDate")'}
+                      {{datePicker.toString("assetDate")}}
+                      %span.caret
+        .header-cell
+          %button.add-btn{'ng-click': 'applyFilter()'}
+            Run Report
 
-            .header-cell
-              .pull-right
-                .header-cell-right
-                  %a.export.pull-right{ href: '', ng: { click: 'exportReports()' } }
-                    = inline_svg 'icons/export.svg'
-                    Export
-  .container-fluid.table-report
+        .header-cell
+          .pull-right
+            .header-cell-right
+              %a.export.pull-right{ href: '', ng: { click: 'exportReports()' } }
+                = inline_svg 'icons/export.svg'
+                Export
     .row
       .col-md-12
-        .table-wrapper
-          %table.table
-            %thead
-              %tr
-                %th.left{ width: "200" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("date")'}
-                    Team
-                %th.left{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("deal_type")'}
-                    IO Number
-                %th.left{ width: "150" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("name")'}
-                    Advertiser
-                %th.left{ width: "150" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("advertiser_name")'}
-                    Agency
-                %th.left{ width: "150" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget")'}
-                    Seller
-                %th.left{ width: "150" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("start_date")'}
-                    Account Manager
-                %th.left{ width: "150" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("stage_name")'}
-                    Product
-                %th.right{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("previous_stage")'}
-                    Total Budget
-                %th.left{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
-                    IO Start Date
-                %th.left{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
-                    Asset Date
-                %th.left{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
-                    Influencer
-                %th.left{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
-                    Network
-                %th.left{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
-                    Fee Type
-                %th.right{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
-                    Fee
-                %th.right{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
-                    Gross Amount
-                %th.right{ width: "100" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
-                    Net Amount
-                %th.left{ width: "200" }
-                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("budget_change")'}
-                    Asset Link
-            %tbody
-              %tr{ ng: { repeat: 'influencer_content_fee in influencer_content_fees | orderBy:sortType:sortReverse' } }
-                %td.left
-                  {{ influencer_content_fee.team_name }}
-                %td.left
-                  %a{'ng-href': '/revenue/ios/{{influencer_content_fee.content_fee.io.id}}'}
-                    {{ influencer_content_fee.content_fee.io.io_number }}
-                %td.left
-                  {{ influencer_content_fee.content_fee.io.advertiser.name }}
-                %td.left
-                  {{ influencer_content_fee.content_fee.io.agency.name }}
-                %td.left
-                  %div{'ng-repeat': 'seller in influencer_content_fee.content_fee.io.seller'}
-                    {{seller.first_name + ' ' + seller.last_name}}
-                %td.left
-                  %div{'ng-repeat': 'seller in influencer_content_fee.content_fee.io.account_manager'}
-                    {{seller.first_name + ' ' + seller.last_name}}
-                %td.left
-                  {{ influencer_content_fee.content_fee.product.name }}
-                %td.right
-                  {{ influencer_content_fee.content_fee.budget_loc | currency:'$':0 }}
-                %td.left
-                  {{ influencer_content_fee.content_fee.io.start_date | date: 'MM-dd-yyyy' }}
-                %td.left
-                  {{ influencer_content_fee.effect_date | date: 'MM-dd-yyyy' }}
-                %td.left
-                  {{ influencer_content_fee.influencer.name }}
-                %td.left
-                  {{ influencer_content_fee.influencer.network_name }}
-                %td.left
-                  %div{'ng-if': 'influencer_content_fee.fee_type == "flat"'}
-                    Flat
-                  %div{'ng-if': 'influencer_content_fee.fee_type == "percentage"'}
-                    \%
-                %td.right
-                  %div{'ng-if': 'influencer_content_fee.fee_type == "flat"'}
-                    {{ influencer_content_fee.fee_amount_loc | currency:'$':0 }}
-                  %div{'ng-if': 'influencer_content_fee.fee_type == "percentage"'}
-                    {{ influencer_content_fee.fee_amount }}%
-                %td.right
-                  {{ influencer_content_fee.gross_amount_loc | currency:'$':0 }}
-                %td.right
-                  {{ influencer_content_fee.net_loc | currency:'$':0 }}
-                %td.left
-                  {{ influencer_content_fee.asset }}
+        .block
+          .total-stats.mb20
+            %div.stats-col
+              .value {{totalGrossAmount | currency: '$': 0}}
+              .text Total Gross Amount
+
+            %div.stats-col
+              .value {{totalNetAmount | currency: '$': 0}}
+              .text Total Net Amount
+          .table-wrapper
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th.left{ width: "200" }
+                    %span.clickable{'ng-click': 'changeSortType("date")'}
+                      Team
+                  %th.left{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("deal_type")'}
+                      IO Number
+                  %th.left{ width: "150" }
+                    %span.clickable{'ng-click': 'changeSortType("name")'}
+                      Advertiser
+                  %th.left{ width: "150" }
+                    %span.clickable{'ng-click': 'changeSortType("advertiser_name")'}
+                      Agency
+                  %th.left{ width: "150" }
+                    %span.clickable{'ng-click': 'changeSortType("budget")'}
+                      Seller
+                  %th.left{ width: "150" }
+                    %span.clickable{'ng-click': 'changeSortType("start_date")'}
+                      Account Manager
+                  %th.left{ width: "150" }
+                    %span.clickable{'ng-click': 'changeSortType("stage_name")'}
+                      Product
+                  %th.right{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("previous_stage")'}
+                      Total Budget
+                  %th.left{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
+                      IO Start Date
+                  %th.left{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
+                      Asset Date
+                  %th.left{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
+                      Influencer
+                  %th.left{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
+                      Network
+                  %th.left{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
+                      Fee Type
+                  %th.right{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
+                      Fee
+                  %th.right{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
+                      Gross Amount
+                  %th.right{ width: "100" }
+                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
+                      Net Amount
+                  %th.left{ width: "200" }
+                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
+                      Asset Link
+              %tbody.nowrap
+                %tr{ ng: { repeat: 'influencer_content_fee in influencer_content_fees | orderBy:sortType:sortReverse' } }
+                  %td.left
+                    {{ influencer_content_fee.team_name }}
+                  %td.left
+                    %a{'ng-href': '/revenue/ios/{{influencer_content_fee.content_fee.io.id}}'}
+                      {{ influencer_content_fee.content_fee.io.io_number }}
+                  %td.left
+                    {{ influencer_content_fee.content_fee.io.advertiser.name }}
+                  %td.left
+                    {{ influencer_content_fee.content_fee.io.agency.name }}
+                  %td.left
+                    %div{'ng-repeat': 'seller in influencer_content_fee.content_fee.io.seller'}
+                      {{seller.first_name + ' ' + seller.last_name}}
+                  %td.left
+                    %div{'ng-repeat': 'seller in influencer_content_fee.content_fee.io.account_manager'}
+                      {{seller.first_name + ' ' + seller.last_name}}
+                  %td.left
+                    {{ influencer_content_fee.content_fee.product.name }}
+                  %td.right
+                    {{ influencer_content_fee.content_fee.budget_loc | currency:'$':0 }}
+                  %td.left
+                    {{ influencer_content_fee.content_fee.io.start_date | date: 'MM-dd-yyyy' }}
+                  %td.left
+                    {{ influencer_content_fee.effect_date | date: 'MM-dd-yyyy' }}
+                  %td.left
+                    {{ influencer_content_fee.influencer.name }}
+                  %td.left
+                    {{ influencer_content_fee.influencer.network_name }}
+                  %td.left
+                    %div{'ng-if': 'influencer_content_fee.fee_type == "flat"'}
+                      Flat
+                    %div{'ng-if': 'influencer_content_fee.fee_type == "percentage"'}
+                      \%
+                  %td.right
+                    %div{'ng-if': 'influencer_content_fee.fee_type == "flat"'}
+                      {{ influencer_content_fee.fee_amount_loc | currency:'$':0 }}
+                    %div{'ng-if': 'influencer_content_fee.fee_type == "percentage"'}
+                      {{ influencer_content_fee.fee_amount }}%
+                  %td.right
+                    {{ influencer_content_fee.gross_amount_loc | currency:'$':0 }}
+                  %td.right
+                    {{ influencer_content_fee.net_loc | currency:'$':0 }}
+                  %td.left
+                    {{ influencer_content_fee.asset }}

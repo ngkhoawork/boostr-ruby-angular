@@ -13,6 +13,9 @@ class InfluencerContentFee < ActiveRecord::Base
   end
 
   scope :for_influencer_id, -> (influencer_id) { where(influencer_id: influencer_id) if influencer_id.present? }
+  scope :by_effect_date, -> (start_date, end_date) do
+    where(effect_date: start_date..end_date) if start_date.present? && end_date.present?
+  end
 
   def update_net
     if influencer.agreement.present?

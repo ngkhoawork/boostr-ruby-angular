@@ -2,7 +2,9 @@ class Api::InfluencerContentFeesController < ApplicationController
   respond_to :json
 
   def index
-    results = influencer_content_fees.for_influencer_id(params[:influencer_id])
+    results = influencer_content_fees
+      .for_influencer_id(params[:influencer_id])
+      .by_effect_date(asset_date_start, asset_date_end)
     respond_to do |format|
       format.json {
         response.headers['X-Total-Count'] = results.count.to_s
@@ -147,5 +149,13 @@ class Api::InfluencerContentFeesController < ApplicationController
 
   def offset
     params[:page].present? ? (params[:page].to_i - 1) * limit : 0
+  end
+
+  def asset_date_start
+    @asset_date_start ||= params[:asset_date_start]
+  end
+
+  def asset_date_end
+    @asset_date_end ||= params[:asset_date_end]
   end
 end
