@@ -6,4 +6,66 @@
             padding: 0;
         }
     }
+    .forecast-chart {
+        height: auto;
+        .axis {
+            font: 10px sans-serif;
+        }
+        .data-rect {
+            stroke-width: 2;
+            stroke: rgba(255, 255, 255, 0);
+            transition: stroke 350ms;
+        }
+        .hovered {
+            stroke: #847f85;
+        }
+        .graph {
+            fill: transparent;
+            stroke-width: 3px;
+        }
+        .week-line {
+            stroke: #BEC1C4;
+            stroke-width: 2px;
+        }
+        .max-line {
+            stroke: black;
+            stroke-dasharray: 3, 3;
+            stroke-width: 1px;
+            shape-rendering: crispEdges;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #d9dde0;
+            shape-rendering: crispEdges;
+
+        }
+        .tick {
+            text {
+                font-size: 14px;
+                //font-weight: bold;
+            }
+        }
+    }
+    .legend-container {
+        margin-bottom: 20px;
+        .legend {
+            //display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+            .legend-icon {
+                width: 14px;
+                height: 14px;
+                border-radius: 3px;
+                display: inline-block;
+                margin-right: 8px;
+                //vertical-align: middle;
+            }
+            .legend-text {
+                //line-height: 14px;
+                //vertical-align: top;
+            }
+        }
+    }
 }

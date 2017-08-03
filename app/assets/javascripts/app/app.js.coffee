@@ -285,6 +285,10 @@
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
 
+    .when '/forecast_old/',
+      templateUrl: 'forecasts_old.html'
+      controller: 'ForecastsOldController'
+
     .when '/users/sign_out',
       templateUrl: 'sign_out.html'
       controller: 'signOutController'

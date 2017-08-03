@@ -10,9 +10,12 @@
 							%td Team
 							%td Seller
 							%td Product
+							%td Time period
 							%td
 								%span.reset-filter{'ng-click': 'resetFilter()'}
 									Reset
+							%td
+								%button.add-btn{'ng-click': 'updateChart()'} TEST BUTTON
 						%tr
 							%td
 								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
@@ -44,20 +47,39 @@
 											%li{ ng: { repeat: 'product in products | orderBy : "name"', class: '{active: product.id === filter.product.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("product", product)' } }
 													{{product.name}}
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
+											{{filter.timePeriod.name || 'All'}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{ ng: { repeat: 'timePeriod in timePeriods | orderBy : ["period_type", "start_date"]', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
+												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
+													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
 
 		.row.mb20
 			.col-xs-9.pl0
 				.block
-					%div.mb20
-						%span.title Pipeline & Revenue Pacing
+					.table-wrapper
+						%div#forecast-chart-container.mb20
+							%svg#forecast-chart.forecast-chart
+							%div.legend-container
 					.table-wrapper
 						%table.table.table-hover
-							%tbody
-								%tr.header-row
-									%th
-										%b Weighted Pipe
-									%th{'ng-repeat': 'week in weeks'}
-										Week {{week <= weekShift ? week - weekShift - 1 : week - weekShift}}
+							%thead
+								%tr
+									%th Name
+									%th Quota
+									%th -Revenue
+									%th Pipeline (W)
+									%th Forecast Amt
+									%th Gap to Quota
+									%th % to Quota
+									%th % Booked
+									%th # Deals Needed
+									%th WoW Pipeline
+									%th Wow Revenue
 							%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
 								%tr
 									%td This Qtr
