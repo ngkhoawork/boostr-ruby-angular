@@ -1,6 +1,6 @@
 @app.controller 'ApiConfigurationsController',
-  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType',
-    ($window, $scope, $modal, ApiConfiguration, IntegrationType) ->
+  ['$window', '$scope', '$modal', 'ApiConfiguration', 'IntegrationType', 'DfpImportService'
+    ($window, $scope, $modal, ApiConfiguration, IntegrationType, DfpImportService) ->
       mappings = {
         providers: {
           dfp: {
@@ -49,12 +49,27 @@
           when 'Asana Connect'
             mappings.providers.asana_connect
 
-      $scope.init = () ->
+      init = () ->
         $scope.api_configurations = {}
         ApiConfiguration.all().then (api_configurations) ->
           $scope.api_configurations = api_configurations.api_configurations
+          $scope.dfp_turned_on = false
+          dfp_config = _.find($scope.api_configurations, (item) ->
+            if item.integration_provider == 'DFP'
+              return item)
+          if dfp_config and dfp_config.switched_on
+            $scope.dfp_turned_on = true
+            $scope.dfp_config_id = dfp_config.id
         IntegrationType.all().then (types) ->
           $scope.integration_types = types
+
+      $scope.dfp_monthly_import = ->
+        DfpImportService.import(api_configuration_id: $scope.dfp_config_id, report_type: 'monthly').then (resp) ->
+          $scope.showInfoModal(resp.message)
+
+      $scope.dfp_cumulative_import = ->
+        DfpImportService.import(api_configuration_id: $scope.dfp_config_id, report_type: 'cumulative').then (resp) ->
+          $scope.showInfoModal(resp.message)
 
       $scope.editModal = (api_configuration) ->
         selectControllerTemplate = selectMapping(api_configuration.integration_provider)
@@ -67,6 +82,16 @@
           resolve:
             api_configuration: ->
               api_configuration
+
+      $scope.showInfoModal = (message) ->
+        $scope.modalInstance = $modal.open
+          templateUrl: 'modals/dfp_info.html'
+          size: 'md'
+          controller: 'DfpImportInfoController'
+          backdrop: 'static'
+          keyboard: true
+          resolve:
+            message: -> message
 
       $scope.createModal = ->
         selectControllerTemplate = selectMapping($scope.current_integration)
@@ -83,7 +108,7 @@
             $location.path('/settings/api_configurations')
 
       $scope.$on 'updated_api_integrations', ->
-        $scope.init()
+        init()
 
-      $scope.init()
+      init()
   ]

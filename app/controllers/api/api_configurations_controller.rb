@@ -62,7 +62,8 @@ class Api::ApiConfigurationsController < ApplicationController
                                                                                  :report_id,
                                                                                  :weekly_recurrence_day,
                                                                                  :is_daily_recurrent,
-                                                                                 :api_configuration_id],
+                                                                                 :api_configuration_id,
+                                                                                 :date_range_type],
                                               asana_connect_details_attributes: [:id,
                                                                                  :project_name,
                                                                                  :workspace_name

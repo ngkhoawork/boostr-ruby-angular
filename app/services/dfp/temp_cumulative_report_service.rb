@@ -20,7 +20,7 @@ module DFP
     def totals
       items_to_merge.group(:dimensionline_item_id).select('sum(columntotal_line_item_level_impressions) as impr_sum,
                              sum(columntotal_line_item_level_clicks) as clicks_sum,
-                             (CAST(sum(columntotal_line_item_level_clicks) as FLOAT) / CAST(sum(columntotal_line_item_level_impressions) as FLOAT)) as ctr,
+                             (CAST(sum(columntotal_line_item_level_clicks) as FLOAT) / nullif(CAST(sum(columntotal_line_item_level_impressions) AS FLOAT), 0)) as ctr,
                              dimensionline_item_id')
 
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170721123401) do
+ActiveRecord::Schema.define(version: 20170803163641) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -120,8 +120,10 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.integer "category_id"
     t.integer "subcategory_id"
     t.integer "holding_company_id"
+    t.integer "company_id"
   end
 
+  add_index "account_dimensions", ["company_id"], name: "index_account_dimensions_on_company_id", using: :btree
   add_index "account_dimensions", ["holding_company_id"], name: "index_account_dimensions_on_holding_company_id", using: :btree
 
   create_table "account_pipeline_facts", force: :cascade do |t|
@@ -457,10 +459,10 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
+    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "enable_operative_extra_fields",     default: false
     t.boolean  "influencer_enabled",                default: false
-    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
   end
 
@@ -979,6 +981,7 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.integer  "api_configuration_id"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.integer  "date_range_type",        default: 0
   end
 
   add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
@@ -1333,6 +1336,7 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.datetime "updated_at",      null: false
     t.datetime "deleted_at"
     t.boolean  "completed"
+    t.boolean  "assigned"
   end
 
   add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
@@ -1451,10 +1455,10 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.string   "dimensionadvertiser_name"
     t.string   "dimensionline_item_name"
     t.string   "dimensionad_unit_name"
-    t.integer  "dimensionorder_id"
-    t.integer  "dimensionadvertiser_id"
-    t.integer  "dimensionline_item_id"
-    t.integer  "dimensionad_unit_id"
+    t.integer  "dimensionorder_id",                                  limit: 8
+    t.integer  "dimensionadvertiser_id",                             limit: 8
+    t.integer  "dimensionline_item_id",                              limit: 8
+    t.integer  "dimensionad_unit_id",                                limit: 8
     t.datetime "dimensionattributeorder_start_date_time"
     t.datetime "dimensionattributeorder_end_date_time"
     t.string   "dimensionattributeorder_agency"
@@ -1577,9 +1581,9 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
+    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
-    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree

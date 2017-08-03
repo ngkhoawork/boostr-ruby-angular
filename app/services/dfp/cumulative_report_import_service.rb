@@ -39,19 +39,23 @@ class DFP::CumulativeReportImportService < BaseService
   end
 
   def report_file_path
-    @report_file_name ||= './tmp/' + DateTime.now.to_s + '_cumulative_report.csv'
+    @_report_file_name ||= './tmp/' + DateTime.now.to_s + '_cumulative_report.csv'
   end
 
   def get_report_link
-    @report_link ||= dfp_reports_service.generate_report_by_saved_query(cumulative_query.report_id)
+    @_report_link ||= dfp_reports_service.generate_report_by_saved_query(cumulative_query.report_id, cumulative_query_date_range)
   end
 
   def cumulative_query
-    dfp_api_configuration.dfp_report_queries.cumulative.last
+    @_cumulative_query ||= dfp_api_configuration.dfp_report_queries.cumulative.last
+  end
+
+  def cumulative_query_date_range
+    @_cumulative_query_date_range ||= cumulative_query.get_custom_date_range_bounds
   end
 
   def dfp_reports_service
-    @dfp_reports_service ||= DFP::ReportsService.new(credentials:  dfp_api_configuration.json_api_key,
+    @_dfp_reports_service ||= DFP::ReportsService.new(credentials:  dfp_api_configuration.json_api_key,
                                                      network_code: dfp_api_configuration.network_code,
                                                      company_id:   dfp_api_configuration.company_id,
                                                      dfp_query_type: 'cumulative')
