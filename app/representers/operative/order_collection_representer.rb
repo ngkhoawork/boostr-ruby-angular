@@ -112,7 +112,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def owner
-    owner_email
+    owner_email || deal_members_emails[0]
   end
 
   def deal_members_emails
@@ -120,7 +120,7 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   end
 
   def owner_email
-    represented.users.find_by(user_type: ACCOUNT_MANAGER).email
+    represented.users.find_by(user_type: ACCOUNT_MANAGER).email rescue nil
   end
 
   def order_type_cf
