@@ -84,8 +84,9 @@ class Deal < ActiveRecord::Base
   after_create do
     generate_deal_members
     send_new_deal_notification
-    asana_connect
   end
+
+  after_commit :asana_connect
 
   before_destroy do
     update_stage
