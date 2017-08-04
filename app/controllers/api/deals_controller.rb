@@ -124,40 +124,34 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def pipeline_report_totals
+    deals = pipeline_report_relation
+      .except(:limit, :order, :offset, :preload)
+      .collect{ |d|
+        { id: d.id, budget: d.budget, probability: d.stage.probability }
+      }
+
+    unweighted = deals.inject(0) { |res, deal| res + deal[:budget] if deal[:budget].present? }
+    weighted = deals.inject(0) { |res, deal| res + (deal[:budget] * deal[:probability] / 100 rescue 0) if deal[:budget].present? }
+    ratio = ((weighted / unweighted * 100) / 100).round rescue 0
+
+    totals = {
+      pipeline_unweighted: unweighted.round,
+      pipeline_weighted: weighted.round,
+      ratio: ratio,
+      total_deals: deals.length,
+      average_deal_size: (unweighted.round / deals.length rescue 0)
+    }
+
+    render json: {totals: totals}
+  end
+
   def pipeline_report
     respond_to do |format|
-      filtered_deals = deals
-      .by_stage_ids(params[:stage_ids])
-      .by_values(deal_type_source_params)
-      .includes(
-        :advertiser,
-        :latest_happened_activity,
-        :stageinfo,
-        :deal_product_budgets,
-        :deal_custom_field,
-        agency: [:parent_client],
-        deal_members_share_ordered: [:username],
-        values: [:option]
-      )
-      .active
-      .distinct
-
-      if time_period
-        filtered_deals = filtered_deals.for_time_period(time_period.start_date, time_period.end_date)
-      end
-
-      # Filter by product id
-      if product_filter
-        filtered_deals = filtered_deals.joins('LEFT JOIN deal_products on deal_products.deal_id = deals.id').where(deal_products: { product_id: product_filter })
-      end
-
-      filtered_deals = filtered_deals.select do |deal|
-        (deal_type_filter ? deal.values.map(&:option_id).include?(deal_type_filter) : true) &&
-        (deal_source_filter ? deal.values.map(&:option_id).include?(deal_source_filter) : true)
-      end
+      filtered_deals = pipeline_report_relation
 
       format.json {
-        deal_ids = filtered_deals.collect{|deal| deal.id}
+        deal_ids = filtered_deals.to_a.collect{|deal| deal.id}
 
         range = DealProductBudget
         .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
@@ -179,7 +173,7 @@ class Api::DealsController < ApplicationController
           range: range
         )
 
-
+        response.headers['X-Total-Count'] = filtered_deals.except(:limit, :order, :offset, :preload).count.to_s
         render json: [{deals: deal_list, range: range}].to_json
       }
       format.csv {
@@ -193,6 +187,33 @@ class Api::DealsController < ApplicationController
         end
       }
     end
+  end
+
+  def pipeline_report_relation
+    result = deals
+      .by_stage_ids(params[:stage_ids])
+      .for_time_period(time_period.try(:start_date), time_period.try(:end_date))
+      .with_all_options(deal_type_source_params)
+      .limit(limit)
+      .offset(offset)
+      .preload(
+        :advertiser,
+        :latest_happened_activity,
+        :stageinfo,
+        :deal_product_budgets,
+        :deal_custom_field,
+        agency: [:parent_client],
+        deal_members_share_ordered: [:username],
+        values: [:option]
+      )
+      .active
+      .distinct
+
+    # Filter by product id
+    if product_filter
+      result = result.joins('LEFT JOIN deal_products on deal_products.deal_id = deals.id').where(deal_products: { product_id: product_filter })
+    end
+    result
   end
 
   def pipeline_summary_report

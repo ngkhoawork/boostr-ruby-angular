@@ -175,7 +175,7 @@
                   %th{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
                     %span.clickable{'ng-click': 'changeSortType("deal_custom_field[fieldName]")'}
                       {{dealCustomFieldName.field_label}}
-              %tbody.nowrap
+              %tbody.nowrap{'infinite-scroll': "loadMoreData()"}
                 %tr{ ng: { repeat: 'deal in deals | orderBy:sortType:sortReverse' } }
                   %td.left
                     %div{ ng: { repeat: 'user in deal.users' } }

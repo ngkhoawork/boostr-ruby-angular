@@ -9,6 +9,8 @@ class Value < ActiveRecord::Base
 
   before_validation :set_value_type, :set_company
 
+  scope :by_option_ids, -> (option_ids) { where('values.option_id in (?)', option_ids) unless option_ids.empty? }
+
   def as_json(options = {})
     super(options.merge(include: [:option], methods: [:value]))
   end

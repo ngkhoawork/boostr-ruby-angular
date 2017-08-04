@@ -4,6 +4,7 @@
       $scope.sortType     = 'name'
       $scope.sortReverse  = false
       $scope.filterOpen = false
+      $scope.page = 1
       $scope.deals = []
       $scope.teams = []
       $scope.types = []
@@ -106,13 +107,30 @@
           stages: []
         $scope.selectedTeam = $scope.filter.team
 
+      $scope.isLoading = false
+      $scope.loadMoreData = ->
+        if !$scope.isLoading && $scope.deals && $scope.deals.length < Deal.pipeline_report_count()
+          $scope.page = $scope.page + 1
+          getData()
+
       $scope.applyFilter = ->
-        getData()
+        $scope.page = 1
+        query = constructQuery()
+
+        if query['stage_ids[]'].length == 0
+          alert("Please specify a stage.");
+          return
+
+        getTotals(query)
+        getData(query)
 
       query = null
-      getData = () =>
+
+      constructQuery = () =>
         f = $scope.filter
         query =
+          page: $scope.page
+          per: 100
           type: f.type.id
           source: f.source.id
           'product_id': f.product.id
@@ -125,26 +143,32 @@
           query.filter = 'selected_team'
           query.team_id = f.team.id || 'all'
 
-        if query['stage_ids[]'].length == 0
-          alert("Please specify a stage.");
-          return
+        query
+
+      getData = (query) ->
+        $scope.isLoading = true
 
         Deal.pipeline_report(query).then (data) ->
-          $scope.deals = data[0].deals
-          $scope.productRange = data[0].range
+          if $scope.page > 1
+            $scope.deals = $scope.deals.concat(data[0].deals)
+          else
+            $scope.deals = data[0].deals
+            $scope.productRange = data[0].range
 
-          calcTotals($scope.deals)
+          # calcTotals($scope.deals)
 
-      calcTotals = (deals) ->
-        t = $scope.totals
-        _.each t, (val, key) -> t[key] = 0 #reset values
-        _.each deals, (deal) ->
-          budget = parseInt(deal.budget) || 0
-          t.pipelineUnweighted += budget
-          t.pipelineWeighted += budget * deal.stage.probability / 100
-        t.pipelineRatio = (Math.round(t.pipelineWeighted / t.pipelineUnweighted * 100) / 100) || 0
-        t.deals = deals.length
-        t.aveDealSize = t.pipelineUnweighted / deals.length
+          $scope.isLoading = false
+
+      getTotals = (query) ->
+        query = constructQuery()
+
+        Deal.pipeline_report_totals(query).then (data) ->
+          t = $scope.totals
+          t.pipelineUnweighted = data.totals.pipeline_unweighted
+          t.pipelineWeighted = data.totals.pipeline_weighted
+          t.deals = data.totals.total_deals
+          t.pipelineRatio = data.totals.ratio
+          t.aveDealSize = data.totals.average_deal_size
 
       $scope.go = (path) ->
         $location.path(path)
@@ -159,9 +183,6 @@
 
       $scope.changeFilter = (filterType) ->
         $scope.filterOpen = filterType
-
-#      $scope.isOpen = (deal) ->
-#        return deal.stage.open == $scope.filterOpen
 
       $scope.changeSortType = (sortType) ->
         if sortType == $scope.sortType
