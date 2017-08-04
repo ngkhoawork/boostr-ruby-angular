@@ -11,27 +11,10 @@
         .axis {
             font: 10px sans-serif;
         }
-        .data-rect {
-            stroke-width: 2;
-            stroke: rgba(255, 255, 255, 0);
-            transition: stroke 350ms;
-        }
-        .hovered {
-            stroke: #847f85;
-        }
-        .graph {
-            fill: transparent;
-            stroke-width: 3px;
-        }
-        .week-line {
-            stroke: #BEC1C4;
-            stroke-width: 2px;
-        }
-        .max-line {
-            stroke: black;
-            stroke-dasharray: 3, 3;
+        .quota-line {
+            stroke: gray;
+            stroke-dasharray: 2, 2;
             stroke-width: 1px;
-            shape-rendering: crispEdges;
         }
         .axis path,
         .axis line {

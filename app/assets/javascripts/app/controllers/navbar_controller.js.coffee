@@ -9,7 +9,7 @@
         {name: 'HOME PAGE', url: '/dashboard'}
         {name: 'DEALS', url: '/deals'}
         {name: 'FORECAST', url: '/forecast'}
-        {name: '!!! FORECAST OLD !!!', url: '/forecast_old'}
+        {name: 'FORECAST OLD', url: '/fore_cast_old'}
         {name: 'REVENUE', url: '/revenue'}
         {name: 'ACCOUNTS', url: '/accounts'}
         {name: 'CONTACTS', url: '/contacts'}

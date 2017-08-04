@@ -14,8 +14,6 @@
 							%td
 								%span.reset-filter{'ng-click': 'resetFilter()'}
 									Reset
-							%td
-								%button.add-btn{'ng-click': 'updateChart()'} TEST BUTTON
 						%tr
 							%td
 								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
@@ -57,6 +55,13 @@
 											%li{ ng: { repeat: 'timePeriod in timePeriods | orderBy : ["period_type", "start_date"]', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
 													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+				.header-cell
+					%b Show UW
+					.show-hide-remainder-form.m0
+						.switch-remainder-form
+							%input#unweighted-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-checked': 'isUnweighted', 'ng-click': 'toggleUnweighted($event)'}
+							%label{for: 'unweighted-toggle'}
+								%span
 
 		.row.mb20
 			.col-xs-9.pl0

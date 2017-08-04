@@ -285,7 +285,7 @@
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
 
-    .when '/forecast_old/',
+    .when '/fore_cast_old/',
       templateUrl: 'forecasts_old.html'
       controller: 'ForecastsOldController'
 
