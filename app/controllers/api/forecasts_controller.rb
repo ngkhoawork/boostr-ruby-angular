@@ -2,16 +2,30 @@ class Api::ForecastsController < ApplicationController
   respond_to :json
 
   def index
-    if user.present?
-      render json: forecast_member
-    elsif team.present?
-      render json: [ForecastTeam.new(team, time_period.start_date, time_period.end_date)]
-    elsif params[:id] == 'all'
-      render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
-    elsif show_all_data
-      render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
+    if new_version?
+      if user.present?
+        render json: forecast_member
+      elsif team.present?
+        render json: [NewForecastTeam.new(team, time_period, product)]
+      elsif params[:id] == 'all'
+        render json: [NewForecast.new(company, teams, time_period, product)]
+      elsif show_all_data
+        render json: [NewForecast.new(company, teams, time_period, product)]
+      else
+        render json: forecast_member
+      end
     else
-      render json: forecast_member
+      if user.present?
+        render json: forecast_member
+      elsif team.present?
+        render json: [ForecastTeam.new(team, time_period.start_date, time_period.end_date, year)]
+      elsif params[:id] == 'all'
+        render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
+      elsif show_all_data
+        render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
+      else
+        render json: forecast_member
+      end
     end
   end
 
@@ -166,7 +180,6 @@ class Api::ForecastsController < ApplicationController
       end_date = time_period.end_date
       time_dimension = TimeDimension.find_by(start_date: start_date, end_date: end_date)
 
-      quarters = (start_date.to_date..end_date.to_date).map { |d| 'q' + ((d.month - 1) / 3 + 1).to_s + '-' + d.year.to_s }.uniq
       user_ids = []
       if user.present?
         user_ids << user.id
@@ -235,13 +248,24 @@ class Api::ForecastsController < ApplicationController
         ForecastMember.new(current_user, dates[:start_date], dates[:end_date], dates[:quarter], year)
       end
     else
-      if user.present?
-        [ForecastMember.new(user, time_period.start_date, time_period.end_date)]
+      if new_version?
+        if user.present?
+          [NewForecastMember.new(user, time_period, product)]
+        else
+          [NewForecastMember.new(current_user, time_period, product)]
+        end
       else
-        [ForecastMember.new(current_user, time_period.start_date, time_period.end_date)]
+        if user.present?
+          [ForecastMember.new(user, time_period.start_date, time_period.end_date)]
+        else
+          [ForecastMember.new(current_user, time_period.start_date, time_period.end_date)]
+        end
       end
-
     end
+  end
+
+  def new_version?
+    params[:new_version] && params[:new_version] == 'true'
   end
 
   def year
