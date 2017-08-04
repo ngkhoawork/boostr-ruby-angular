@@ -109,27 +109,27 @@
 
       $scope.isLoading = false
       $scope.loadMoreData = ->
-        if !$scope.isLoading && $scope.deals && $scope.deals.length < Deal.pipeline_report_count()
+        if $scope.saved_query && !$scope.isLoading && $scope.deals && $scope.deals.length < Deal.pipeline_report_count()
           $scope.page = $scope.page + 1
-          getData()
+
+          getData($scope.saved_query)
 
       $scope.applyFilter = ->
         $scope.page = 1
-        query = constructQuery()
+        $scope.saved_query = constructQuery()
 
-        if query['stage_ids[]'].length == 0
+        if $scope.saved_query['stage_ids[]'].length == 0
           alert("Please specify a stage.");
           return
 
-        getTotals(query)
-        getData(query)
+        getTotals($scope.saved_query)
+        getData($scope.saved_query)
 
       query = null
 
       constructQuery = () =>
         f = $scope.filter
         query =
-          page: $scope.page
           per: 100
           type: f.type.id
           source: f.source.id
@@ -147,6 +147,7 @@
 
       getData = (query) ->
         $scope.isLoading = true
+        query.page = $scope.page
 
         Deal.pipeline_report(query).then (data) ->
           if $scope.page > 1
@@ -154,8 +155,6 @@
           else
             $scope.deals = data[0].deals
             $scope.productRange = data[0].range
-
-          # calcTotals($scope.deals)
 
           $scope.isLoading = false
 
