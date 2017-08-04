@@ -196,6 +196,7 @@ class Api::DealsController < ApplicationController
       .with_all_options(deal_type_source_params)
       .limit(limit)
       .offset(offset)
+      .order(:name)
       .preload(
         :advertiser,
         :latest_happened_activity,
