@@ -182,7 +182,7 @@
 									%td.right
 										{{ displayLineItem.ctr }}
 								%tr.display-line-budgets-row
-									%td.left{colspan: 20}
+									%td.left.auto-colspan
 										%div.display-line-budgets{'data-displayID': '{{displayLineItem.id}}', 'ng-class': '{active: selectedIORow == displayLineItem }'}
 											%div.budgets-inner
 												%div.title
@@ -203,7 +203,7 @@
 
 							%tbody{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
 								%tr
-									%td.center{ 'colspan': '20' }
+									%td.center.auto-colspan
 										No data available
 				.block#line-print
 					%div.mb20

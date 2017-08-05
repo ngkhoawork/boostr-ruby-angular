@@ -76,7 +76,7 @@
 								%tr
 									%th Name
 									%th Quota
-									%th -Revenue
+									%th Revenue
 									%th Pipeline (W)
 									%th Forecast Amt
 									%th Gap to Quota
@@ -85,11 +85,58 @@
 									%th # Deals Needed
 									%th WoW Pipeline
 									%th Wow Revenue
-							%tbody{'ng-show': 'pipelineRevenue.weighted_pipeline'}
+							%tbody{'ng-repeat': 'team in forecast.teams'}
 								%tr
-									%td This Qtr
-									%td{'ng-repeat': 'val in pipelineRevenue.weighted_pipeline.current_quarter track by $index'}
-										{{isNumber(val) ? (val | currency: '$' : '0') : '-'}}
+									%td {{team.name + (team.quarter ? ' Q' + team.quarter : '')}}
+									%td {{team.quota | currency : '$' : 0}}
+									%td
+										%a{href: '', 'ng-click': 'showSubtable("revenue", team.id, $event)'} {{team.revenue | currency : '$' : 0}}
+									%td.subtable-arrow-wrap
+										%div
+											%a{href: '', 'ng-click': 'showSubtable("pipeline", team.id, $event)'} {{team.weighted_pipeline | currency : '$' : 0}}
+											%i.fa.fa-caret-up.subtable-arrow
+									%td {{team.amount | currency : '$' : 0}}
+									%td {{team.gap_to_quota | currency : '$' : 0}}
+									%td {{roundNumber(team.percent_to_quota)}}%
+									%td {{roundNumber(team.percent_booked)}}%
+									%td {{team.new_deals_needed}}
+									%td {{team.wow_weighted_pipeline | currency : '$' : 0}}
+									%td {{team.wow_revenue | currency : '$' : 0}}
+								%tr.subtable-row
+									%td.auto-colspan
+										%div.subtable-wrap.pipeline-subtable
+											%div.subtable-container
+												%div.mb10
+													%span.title Deal Summary
+													%span.close-btn{'ng-click': 'hideSubtable()'}
+												%table.subtable
+													%thead
+														%tr
+															%th Deal Name
+															%th Advertiser
+															%th Agency
+															%th Seller
+															%th %
+															%th Budget (UW)
+															%th In Period Amt
+															%th Start Date
+															%th End Date
+															%th Stage (D)
+															%th Opened (D)
+													%tbody
+														%tr
+															%td
+															%td
+															%td
+															%td
+															%td
+															%td
+															%td
+															%td
+															%td
+															%td
+															%td
+
 			.col-xs-3.pr0
 				.block
 					%div.mb20

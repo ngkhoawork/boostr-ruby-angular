@@ -51,4 +51,96 @@
             }
         }
     }
+    .table-wrapper {
+        padding-bottom: 10px;
+    }
+    .table {
+        .subtable-arrow-wrap {
+            //position: relative;
+            padding: 0;
+            div {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                width: 100%;
+                min-height: 60px;
+                //background-color: #c1dfff;
+            }
+        }
+        .subtable-arrow {
+            height: 0;
+            color: #c1c1c1;
+            font-size: 24px;
+            position: absolute;
+            bottom: 17px;
+            left: 50%;
+            right: 50%;
+            display: none;
+            //opacity: 0;
+            //&.opened {
+            //    opacity: 1;
+            //}
+        }
+    }
+    .loading {
+        display: inline-block;
+        animation: rotation 0.75s infinite linear;
+    }
+    @keyframes rotation {
+        from {
+            transform: rotateY(0deg);
+        }
+        to {
+            transform: rotateY(359deg);
+        }
+    }
+    .subtable-row {
+        max-height: 0 !important;
+        height: auto !important;
+        td {
+            padding: 0;
+            border: none;
+        }
+        .subtable-wrap {
+            //margin: 0 -15px;
+            //border-top: 2px solid #DDDDDD;
+            //border-bottom: 1px solid #DDDDDD;
+            position: relative;
+            overflow: hidden;
+            height: 0;
+            width: 100%;
+            opacity: 0;
+            transition: height 400ms, opacity 400ms;
+            &.opened {
+                border: 1px solid #DDDDDD;
+                border-bottom: none;
+                opacity: 1;
+            }
+            .subtable-container {
+                //padding: 10px 0;
+                padding: 15px;
+                background-color: #FAFAFB;
+                //.title {
+                    //padding: 0 10px;
+                //}
+            }
+            .subtable {
+                width: 100%;
+                background-color: transparent;
+                thead {
+                    background-color: transparent;
+                    border-bottom: 2px solid #DDDDDD;
+                }
+                tbody {
+                    tr:not(:last-child) {
+                        border-bottom: 1px solid #DDDDDD;
+                    }
+                }
+                td {
+                    padding: 8px 10px;
+                }
+            }
+        }
+    }
 }

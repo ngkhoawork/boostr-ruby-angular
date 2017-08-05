@@ -267,14 +267,14 @@
 
   $scope.updateTimePeriod = (time_period_id) ->
     path = []
-    path.push "/forecast_old"
+    path.push "/fore_cast_old"
     path.push "/#{$scope.team.id}" if $scope.team
     path.push "?time_period_id=#{time_period_id}" if time_period_id
     $location.url(path.join(''))
 
   $scope.updateYear = (year) ->
     path = []
-    path.push "/forecast_old"
+    path.push "/fore_cast_old"
     path.push "/#{$scope.team.id}" if $scope.team
     path.push "?year=#{year}" if year
     $location.url(path.join(''))

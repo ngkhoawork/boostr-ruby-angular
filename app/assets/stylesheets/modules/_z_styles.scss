@@ -468,6 +468,40 @@
             }
         }
     }
+    .close-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        position: absolute;
+        right: 8px;
+        top: 10px;
+        transform: rotate(45deg);
+        cursor: pointer;
+        &:before, &:after {
+            content: '';
+            position: absolute;
+            display: block;
+            background-color: $secondary-font-color;
+            height: 16px;
+            width: 16px;
+            top: 5px;
+            left: 5px;
+        }
+        &:before {
+            left: 12px;
+            width: 2px;
+        }
+        &:after {
+            top: 12px;
+            height: 2px;
+        }
+        &:hover {
+            background-color: $secondary-font-color;
+            &:before, &:after {
+                background-color: white;
+            }
+        }
+    }
 }
 .z-sortable {
     //display: inline-block;

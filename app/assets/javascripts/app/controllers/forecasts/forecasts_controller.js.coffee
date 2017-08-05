@@ -1,6 +1,6 @@
 @app.controller 'ForecastsController',
-	['$scope', '$timeout', '$filter', 'Forecast', 'Team', 'Seller', 'Product', 'TimePeriod', 'shadeColor'
-	( $scope,   $timeout,   $filter,   Forecast,   Team,   Seller,   Product,   TimePeriod,   shadeColor ) ->
+	['$scope', '$timeout', '$filter', 'Forecast', 'WeightedPipeline', 'Revenue', 'Team', 'Seller', 'Product', 'TimePeriod', 'shadeColor'
+	( $scope,   $timeout,   $filter,   Forecast,   WeightedPipeline,   Revenue,   Team,   Seller,   Product,   TimePeriod,   shadeColor ) ->
 
 		$scope.teams = []
 		$scope.sellers = []
@@ -18,12 +18,42 @@
 
 		$scope.setFilter = (key, val) ->
 			$scope.filter[key] = val
+			getData getQuery()
 
 		$scope.resetFilter = ->
 			$scope.filter = angular.copy defaultFilter
 
-		$scope.$watch 'filter.team', (team) ->
+		$scope.showSubtable = (type, teamId, event) ->
+			link = angular.element(event.target)
+			arrow = link.parent().find('.subtable-arrow')
+			wrap = link.closest('tr').next().find(".#{type}-subtable")
+			container = wrap.find('.subtable-container')
+			height = container.outerHeight()
+			link.addClass('loading')
+
+			if wrap.hasClass 'opened'
+				arrow.hide()
+				wrap.removeClass('opened').height(0)
+			else
+				angular.element('.subtable-arrow').hide()
+				angular.element('.subtable-wrap').removeClass('opened').height(0)
+				setTimeout ->
+					link.removeClass('loading')
+					arrow.show()
+					wrap.addClass('opened').height(height)
+				, 500
+			return
+
+		$scope.hideSubtable = ->
+			angular.element('.subtable-arrow').hide()
+			angular.element('.subtable-wrap').removeClass('opened').height(0)
+			return
+
+
+		$scope.$watch 'filter.team', (team, prevTeam) ->
+			if team == prevTeam then return
 			if team.id then $scope.filter.seller = emptyFilter
+			$scope.setFilter('team', team)
 			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = _.sortBy sellers, 'name'
 
@@ -37,17 +67,41 @@
 		TimePeriod.all().then (timePeriods) ->
 			$scope.timePeriods = timePeriods.filter (period) ->
 				period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
+			$scope.timePeriods.push {name: '2016 quarterly', id: 2016, type: 'quarterly'}
+			$scope.timePeriods.push {name: '2017 quarterly', id: 2017, type: 'quarterly'}
+			searchAndSetTimePeriod($scope.timePeriods)
 
-		colors = ['#8CC135', '#3498DB', '#EAECEE']
+		searchAndSetTimePeriod = (timePeriods) ->
+			for period in timePeriods
+				if period.period_type is 'quarter' and
+				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
+					return $scope.setFilter('timePeriod', period)
+			for period in timePeriods
+				if period.period_type is 'year' and
+				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
+					return $scope.setFilter('timePeriod', period)
 
-		query =
-#			time_period_id: 146
-#			time_period_id: 34
-			year: 2017
-		Forecast.query(query).$promise.then (forecast) ->
-			$scope.forecast = forecast[0]
-			drawChart($scope.forecast, '#forecast-chart')
+		getQuery = ->
+			f = $scope.filter
+			query = {}
+			query.team_id = f.team.id if f.team.id
+			query.seller_id = f.seller.id if f.seller.id
+			query.product_id = f.product.id if f.product.id
+			query.time_period_id = f.timePeriod.id if f.timePeriod.id
 
+			if f.timePeriod.type is 'quarterly'
+				delete query.time_period_id
+				query.year = f.timePeriod.id
+
+			query
+		
+		getData = (query) ->
+			Forecast.query(query).$promise.then (forecast) ->
+				$scope.forecast = forecast[0]
+				drawChart($scope.forecast, '#forecast-chart')
+
+		$scope.roundNumber = (n) ->
+			Math.round(n)
 
 		$scope.toggleUnweighted = (e) ->
 			if !$scope.isChartDrawed
@@ -56,6 +110,7 @@
 			$scope.isUnweighted = !$scope.isUnweighted
 			$scope.updateChart()
 
+		colors = ['#8CC135', '#3498DB', '#EAECEE']
 		drawChart = (data, chartId) ->
 			if !data then return
 			chartContainer = angular.element(chartId + '-container')
@@ -230,29 +285,29 @@
 					else
 						0
 
-#			quotas = _.last dataset
-#			quotaLines = svg.append('g')
-#			quotaLines.selectAll('line')
-#				.data(quotas)
-#				.enter()
-#				.append('line')
-#				.attr('class', 'quota-line')
-#				.attr 'x1', (d, i) ->
-#					if !d.quota then return 0
-#					if $scope.isUnweighted
-#						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth - barSpaceBetween / 2
-#					else
-#						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth / 2
-#				.attr 'y1', (d) ->
-#					y(d.quota)
-#				.attr 'x2', (d, i) ->
-#					if !d.quota then return 0
-#					if $scope.isUnweighted
-#						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth - barSpaceBetween / 2 + barWidth * 2 + barSpaceBetween
-#					else
-#						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth / 2 + barWidth
-#				.attr 'y2', (d) ->
-#					y(d.quota)
+			quotas = _.last dataset
+			quotaLines = svg.append('g')
+			quotaLines.selectAll('line')
+				.data(quotas)
+				.enter()
+				.append('line')
+				.attr('class', 'quota-line')
+				.attr 'x1', (d, i) ->
+					if !d.quota then return 0
+					if $scope.isUnweighted
+						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth - barSpaceBetween / 2
+					else
+						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth / 2
+				.attr 'y1', (d) ->
+					y(d.quota)
+				.attr 'x2', (d, i) ->
+					if !d.quota then return 0
+					if $scope.isUnweighted
+						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth - barSpaceBetween / 2 + barWidth * 2 + barSpaceBetween
+					else
+						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth / 2 + barWidth
+				.attr 'y2', (d) ->
+					y(d.quota)
 
 #			#legend
 			(drawLegend = ->
@@ -376,23 +431,23 @@
 						else
 							(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth / 2
 
-#				quotaLines.selectAll('line').transition().duration(duration / 2)
-#					.attr 'x1', (d, i) ->
-#						if !d.quota then return 0
-#						if $scope.isUnweighted
-#							(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth - barSpaceBetween / 2
-#						else
-#							(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth / 2
-#					.attr 'y1', (d) ->
-#						y(d.quota)
-#					.attr 'x2', (d, i) ->
-#						if !d.quota then return 0
-#						if $scope.isUnweighted
-#							(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth - barSpaceBetween / 2 + barWidth * 2 + barSpaceBetween
-#						else
-#							(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth / 2 + barWidth
-#					.attr 'y2', (d) ->
-#						y(d.quota)
+				quotaLines.selectAll('line').transition().duration(duration / 2)
+					.attr 'x1', (d, i) ->
+						if !d.quota then return 0
+						if $scope.isUnweighted
+							(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth - barSpaceBetween / 2
+						else
+							(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth / 2
+					.attr 'y1', (d) ->
+						y(d.quota)
+					.attr 'x2', (d, i) ->
+						if !d.quota then return 0
+						if $scope.isUnweighted
+							(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth - barSpaceBetween / 2 + barWidth * 2 + barSpaceBetween
+						else
+							(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth / 2 + barWidth
+					.attr 'y2', (d) ->
+						y(d.quota)
 
 				drawLegend()
 
