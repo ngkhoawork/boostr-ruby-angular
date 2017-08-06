@@ -293,7 +293,7 @@ class NewForecastTeam
       }
       quota = (team.leader ? team.leader.quotas.for_time_period(start_date, end_date).sum(:value) : 0)
       @forecasts_data[:teams][team.id][:quota] ||= quota
-      @forecasts_data[:teams][team.id][:amount] ||= @forecasts_data[:teams][team.id][:weighted_pipeline] + @forecasts_data[:teams][team.id][:revenue]
+      @forecasts_data[:teams][team.id][:amount] ||= (@forecasts_data[:teams][team.id][:weighted_pipeline] || 0) + (@forecasts_data[:teams][team.id][:revenue] || 0)
       @forecasts_data[:teams][team.id][:percent_to_quota] ||= (quota > 0 ? @forecasts_data[:teams][team.id][:amount] / quota * 100 : 100)
       @forecasts_data[:teams][team.id][:percent_booked] ||= (quota > 0 ? @forecasts_data[:teams][team.id][:revenue] / quota * 100 : 100)
       @forecasts_data[:teams][team.id][:gap_to_quota] ||= (quota - @forecasts_data[:teams][team.id][:amount]).to_f
