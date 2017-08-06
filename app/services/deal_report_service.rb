@@ -32,11 +32,7 @@ class DealReportService < BaseService
 
   # Advanced Deals - (list of deals that changed sales stage on target date -use deal_stage_logs.created_at yesterday)
   def deals_stage_audit
-    Company
-      .find(company_id)
-      .audit_logs
-      .in_created_at_range(date_range)
-      .by_auditable_type('Deal')
+    company_audit_logs
       .by_type_of_change('Stage Change')
       .includes(auditable: :advertiser)
   end
@@ -57,12 +53,22 @@ class DealReportService < BaseService
     Deal.at_percent(0).where(company_id: company_id, closed_at: date_range)
   end
 
-  def deal_logs
-    DealLog.includes(:deal).where(created_at: date_range).where(deals: { company_id: company_id })
+  def deal_budget_audit
+    company_audit_logs
+      .by_type_of_change('Budget Change')
+      .includes(auditable: :advertiser)
+  end
+
+  def company_audit_logs
+    @_company_audit_logs ||=
+      Company.find(company_id).audit_logs.in_created_at_range(date_range).by_auditable_type('Deal')
   end
 
   def budget_changed
-    ActiveModel::ArraySerializer.new(deal_logs, each_serializer: BudgetChangeSerializer).as_json
+    ActiveModel::ArraySerializer.new(
+      deal_budget_audit,
+      each_serializer: Report::BudgetChangeDealsAuditLogsSerializer
+    ).as_json
   end
 
   def report_data
