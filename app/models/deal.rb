@@ -409,13 +409,10 @@ class Deal < ActiveRecord::Base
 
   def update_total_budget
     current_budget = self.budget.nil? ? 0 : self.budget
-    current_budget_loc = self.budget_loc.nil? ? 0 : self.budget_loc
     new_budget = deal_product_budgets.sum(:budget)
     new_budget_loc = deal_product_budgets.sum(:budget_loc)
-    budget_change = new_budget - current_budget
-    budget_change_loc = new_budget_loc - current_budget_loc
 
-    write_to_deal_log(budget_change, budget_change_loc) if budget_change != 0
+    log_budget_changes(current_budget.to_i, new_budget.to_i)
 
     update_attributes(budget: new_budget, budget_loc: new_budget_loc)
   end
@@ -428,14 +425,6 @@ class Deal < ActiveRecord::Base
     deal_product_budgets.update_all("budget_loc = budget * #{self.exchange_rate}")
     deal_products.map{ |deal_product| deal_product.update_budget }
     self.budget_loc = budget * self.exchange_rate
-  end
-
-  def write_to_deal_log(budget_change, budget_change_loc)
-    deal_log = DealLog.new
-    deal_log.deal_id = self.id
-    deal_log.budget_change = budget_change
-    deal_log.budget_change_loc = budget_change_loc
-    deal_log.save
   end
 
   def reset_products
@@ -1569,6 +1558,16 @@ class Deal < ActiveRecord::Base
       type: 'Stage Change',
       old_value: previous_stage_id,
       new_value: stage_id
+    ).perform
+  end
+
+  def log_budget_changes(current_budget, new_budget)
+    AuditLogService.new(
+      record: self,
+      type: 'Budget Change',
+      old_value: current_budget,
+      new_value: new_budget,
+      changed_amount: (new_budget - current_budget)
     ).perform
   end
 end

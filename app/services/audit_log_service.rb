@@ -2,11 +2,12 @@ class AuditLogService
   STAGE_CHANGE_TYPE = 'Stage Change'.freeze
 
   def initialize(attrs)
-    @record = attrs[:record]
-    @type = attrs[:type]
+    @record         = attrs[:record]
+    @type           = attrs[:type]
     @member_user_id = attrs[:member]
-    @old_value = attrs[:old_value]
-    @new_value = attrs[:new_value]
+    @old_value      = attrs[:old_value]
+    @new_value      = attrs[:new_value]
+    @changed_amount = attrs[:changed_amount]
   end
 
   def perform
@@ -17,13 +18,14 @@ class AuditLogService
       updated_by: User.current.id,
       user_id: member_user_id,
       company: record.company,
-      biz_days: calculate_biz_days
+      biz_days: calculate_biz_days,
+      changed_amount: changed_amount
     )
   end
 
   private
 
-  attr_reader :record, :type, :member_user_id, :old_value, :new_value
+  attr_reader :record, :type, :member_user_id, :old_value, :new_value, :changed_amount
 
   def calculate_biz_days
     return nil unless type.eql? STAGE_CHANGE_TYPE
