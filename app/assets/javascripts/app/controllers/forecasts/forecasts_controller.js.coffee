@@ -22,26 +22,48 @@
 
 		$scope.resetFilter = ->
 			$scope.filter = angular.copy defaultFilter
+			searchAndSetTimePeriod($scope.timePeriods)
 
-		$scope.showSubtable = (type, teamId, event) ->
+		$scope.showSubtable = (row, type, event) ->
+			$scope.openedSubtable = row
 			link = angular.element(event.target)
 			arrow = link.parent().find('.subtable-arrow')
 			wrap = link.closest('tr').next().find(".#{type}-subtable")
 			container = wrap.find('.subtable-container')
-			height = container.outerHeight()
-			link.addClass('loading')
 
 			if wrap.hasClass 'opened'
 				arrow.hide()
 				wrap.removeClass('opened').height(0)
 			else
+				link.addClass('loading-subtable')
 				angular.element('.subtable-arrow').hide()
 				angular.element('.subtable-wrap').removeClass('opened').height(0)
-				setTimeout ->
-					link.removeClass('loading')
+
+				params = { time_period_id: $scope.filter.timePeriod.id, quarter: row.quarter  }
+				if row.type == 'member'
+					params = _.extend(params, { member_id: row.id })
+				else if row.type == 'team'
+					params = _.extend(params, { team_id: row.id })
+
+				onSubtableLoad = ->
+					height = container.outerHeight()
+					link.removeClass('loading-subtable')
 					arrow.show()
 					wrap.addClass('opened').height(height)
-				, 500
+
+				switch type
+					when 'pipeline'
+						WeightedPipeline.get(params).then (weighted_pipeline) ->
+							$scope.weighted_pipeline = weighted_pipeline
+							$timeout onSubtableLoad
+						, ->
+							link.removeClass('loading-subtable')
+					when 'revenue'
+						Revenue.query(params).$promise.then (revenues) ->
+							$scope.revenues = revenues
+							$timeout onSubtableLoad
+						, ->
+							link.removeClass('loading-subtable')
 			return
 
 		$scope.hideSubtable = ->
@@ -55,11 +77,14 @@
 			if team.id then $scope.filter.seller = emptyFilter
 			$scope.setFilter('team', team)
 			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
-				$scope.sellers = _.sortBy sellers, 'name'
+				$scope.sellers = sellers
 
 		Team.all(all_teams: true).then (teams) ->
 			$scope.teams = teams
 			$scope.teams.unshift emptyFilter
+
+		Seller.query({id: 'all'}).$promise.then (sellers) ->
+			$scope.sellers = sellers
 
 		Product.all().then (products) ->
 			$scope.products = products
@@ -67,8 +92,8 @@
 		TimePeriod.all().then (timePeriods) ->
 			$scope.timePeriods = timePeriods.filter (period) ->
 				period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
-			$scope.timePeriods.push {name: '2016 quarterly', id: 2016, type: 'quarterly'}
-			$scope.timePeriods.push {name: '2017 quarterly', id: 2017, type: 'quarterly'}
+			$scope.timePeriods.push {name: '2016 Quarterly', id: 2016, type: 'quarterly'}
+			$scope.timePeriods.push {name: '2017 Quarterly', id: 2017, type: 'quarterly'}
 			searchAndSetTimePeriod($scope.timePeriods)
 
 		searchAndSetTimePeriod = (timePeriods) ->
@@ -84,10 +109,11 @@
 		getQuery = ->
 			f = $scope.filter
 			query = {}
-			query.team_id = f.team.id if f.team.id
-			query.seller_id = f.seller.id if f.seller.id
+			query.id = f.team.id if f.team.id
+			query.user_id = f.seller.id if f.seller.id
 			query.product_id = f.product.id if f.product.id
 			query.time_period_id = f.timePeriod.id if f.timePeriod.id
+#			query.new_version = true
 
 			if f.timePeriod.type is 'quarterly'
 				delete query.time_period_id
@@ -145,7 +171,7 @@
 			height = 300
 
 			getColor = (probability) ->
-				if _.isNumber probability then shadeColor colors[1], 1 - probability / 100 else colors[0]
+				if _.isNumber probability then shadeColor colors[1], 0.95 - 0.95 * probability / 100 else colors[0]
 
 			dataset = []
 			sets = angular.copy data.stages

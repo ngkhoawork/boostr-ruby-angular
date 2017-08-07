@@ -58,7 +58,7 @@
         .subtable-arrow-wrap {
             //position: relative;
             padding: 0;
-            div {
+            & > div {
                 display: inline-flex;
                 justify-content: center;
                 align-items: center;
@@ -83,7 +83,7 @@
             //}
         }
     }
-    .loading {
+    .loading-subtable {
         display: inline-block;
         animation: rotation 0.75s infinite linear;
     }
@@ -106,18 +106,20 @@
             //margin: 0 -15px;
             //border-top: 2px solid #DDDDDD;
             //border-bottom: 1px solid #DDDDDD;
-            position: relative;
+            background-color: white;
             overflow: hidden;
             height: 0;
             width: 100%;
             opacity: 0;
             transition: height 400ms, opacity 400ms;
             &.opened {
-                border: 1px solid #DDDDDD;
-                border-bottom: none;
                 opacity: 1;
+                border-bottom: 0;
             }
             .subtable-container {
+                display: inline-block;
+                position: relative;
+                border: 1px solid #DDDDDD;
                 //padding: 10px 0;
                 padding: 15px;
                 background-color: #FAFAFB;
