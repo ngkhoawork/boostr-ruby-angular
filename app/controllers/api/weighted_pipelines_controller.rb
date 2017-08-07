@@ -61,13 +61,7 @@ class Api::WeightedPipelinesController < ApplicationController
   end
 
   def member
-    @member ||= if current_user.leader?
-      current_user.company.users.find(params[:member_id])
-    elsif params[:member_id] == current_user.id.to_s
-      current_user
-    else
-      raise ActiveRecord::RecordNotFound
-    end
+    @member ||= current_user.company.users.find(params[:member_id])
   end
 
   def team
