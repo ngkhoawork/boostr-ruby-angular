@@ -1,8 +1,6 @@
 class Api::V2::DealProductsController < ApiController
   respond_to :json
 
-  before_filter :set_current_user, only: [:update, :create, :destroy]
-
   def create
     if params[:file].present?
       require 'timeout'
