@@ -7,9 +7,12 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
   self.representation_wrap = :salesOrder
 
   property :sales_order_type, as: :name, exec_context: :decorator, wrap: :salesOrderType,
-           if: -> (options) { options[:enable_operative_extra_fields].eql? false }
+           if: -> (options) { options[:enable_operative_extra_fields].eql?(false) && options[:buzzfeed].eql?(false) }
   property :mashable_sales_order_type, as: :name, exec_context: :decorator, wrap: :salesOrderType,
-           if: -> (options) { options[:enable_operative_extra_fields].eql? true }
+           if: -> (options) { options[:enable_operative_extra_fields].eql?(true) && options[:buzzfeed].eql?(false) }
+  property :buzzfeed_order_type, as: :name, exec_context: :decorator, wrap: :salesOrderType,
+           if: -> (options) { options[:buzzfeed].eql?(true) }
+
   property :alternate_id, as: :alternateId, exec_context: :decorator
   property :next_steps, as: :nextSteps
   property :description, exec_context: :decorator
@@ -129,5 +132,9 @@ class Operative::OrderCollectionRepresenter < Representable::Decorator
 
   def account_cf_billable_client_id_value
     represented.deal_custom_field.send(order_type_cf.field_name)
+  end
+
+  def buzzfeed_order_type
+    'Direct Sales'
   end
 end
