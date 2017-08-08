@@ -1,9 +1,11 @@
-class AccountProductPipelineFactService < BaseService
+class Facts::AccountProductPipelineFactService < BaseService
   def perform
     accounts.each do |account|
       time_dimensions.each do |time_dimension|
         date_range = { start_date: time_dimension.start_date, end_date: time_dimension.end_date }
-        calculated_amounts = get_pipelines_for_company_by_date(account.id, account.company_id, date_range)
+        pipeline_service = Facts::AccountProductPipelineCalculationService.new(account_id: account.id, company_id: account.company_id, date_range: date_range)
+        pipeline_service.destroy_unused_records
+        calculated_amounts = pipeline_service.calculate_products_pipeline
         calculated_amounts.each do |calculated_amount|
           find_or_create_record(account.id,
                                 time_dimension.id,
@@ -17,10 +19,6 @@ class AccountProductPipelineFactService < BaseService
   end
 
   private
-
-  def get_pipelines_for_company_by_date(account_id, company_id, date_range)
-    AccountProductTotalAmountCalculationService.new(account_id: account_id, company_id: company_id, date_range: date_range).perform
-  end
 
   def find_or_create_record(account_dimension_id, time_dimension_id, company_id, product_dimension_id, weighted_amount, unweighted_amount)
     fact = AccountProductPipelineFact.find_or_initialize_by(account_dimension_id: account_dimension_id,

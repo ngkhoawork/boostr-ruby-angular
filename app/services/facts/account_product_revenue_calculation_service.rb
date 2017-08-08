@@ -1,11 +1,39 @@
-class AccountProductRevenueCalculationService < BaseService
+class Facts::AccountProductRevenueCalculationService < BaseService
 
-  def perform
-    all_budgets = [content_fee_products_budgets, display_products_budgets, display_line_item_budgets_daily_rate]
-    all_budgets.inject(&:merge)
+  def calculate_revenues
+    merged_budgets
+  end
+
+  def remove_unused_records
+    unused_records.delete_all if merged_budgets.any?
   end
 
   private
+
+  def unused_records
+    AccountProductRevenueFact.where('account_dimension_id = :account_id
+                                     AND time_dimension_id = :time_dimension_id
+                                     AND company_id = :company_id
+                                     AND product_dimension_id not in (:ids)',
+                                     account_id: account_id,
+                                     ids: merged_budgets.keys,
+                                     time_dimension_id: time_dimension_id,
+                                     company_id: company_id
+    )
+  end
+
+  def time_dimension_id
+    TimeDimension.where(start_date: date_range[:start_date],
+                        end_date: date_range[:end_date]).pluck(:id)
+  end
+
+  def merged_budgets
+    @merged_budgets ||= all_budgets.inject(&:merge)
+  end
+
+  def all_budgets
+    [content_fee_products_budgets, display_products_budgets, display_line_item_budgets_daily_rate]
+  end
 
   def content_fee_products_budgets
     @content_fee_products_budgets ||= ContentFeeProductBudget.joins(content_fee: :product)

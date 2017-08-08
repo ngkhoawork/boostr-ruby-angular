@@ -1,5 +1,5 @@
 class AccountProductRevenueCalculationWorker < BaseWorker
   def perform
-    AccountProductRevenueFactService.new.perform
+    Facts::AccountProductRevenueFactService.new.perform
   end
 end

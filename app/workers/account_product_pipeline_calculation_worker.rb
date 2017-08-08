@@ -1,5 +1,5 @@
 class AccountProductPipelineCalculationWorker < BaseWorker
   def perform
-    AccountProductPipelineFactService.new.perform
+    Facts::AccountProductPipelineFactService.new.perform
   end
 end
