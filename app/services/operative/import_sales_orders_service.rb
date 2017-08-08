@@ -54,7 +54,7 @@ class Operative::ImportSalesOrdersService
       end
 
       begin
-        row = CSV.parse_line(line, headers: @headers, header_converters: :symbol)
+        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
       rescue Exception => e
         import_log.count_failed
         import_log.log_error [e.message, line]
