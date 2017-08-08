@@ -151,12 +151,34 @@ class NewForecastTeam
       @forecasts_data[:revenue] += item.revenue_amount.to_f
       if team_members[item.user_id] && team_members[item.user_id].count > 0
         team_members[item.user_id].each do |team|
-          @forecasts_data[:teams][team.id] ||= {id: team.id, name: team.name}
+          @forecasts_data[:teams][team.id] ||= {
+            id: team.id,
+            name: team.name,
+            unweighted_pipeline: 0,
+            weighted_pipeline: 0,
+            unweighted_pipeline_by_stage: {},
+            weighted_pipeline_by_stage: {},
+            wow_weighted_pipeline: 0,
+            revenue: 0,
+            wow_revenue: 0,
+            quota: 0
+          }
           @forecasts_data[:teams][team.id][:revenue] ||= 0.0
           @forecasts_data[:teams][team.id][:revenue] += item.revenue_amount.to_f
         end
       else
-        @forecasts_data[:members][item.user_id] ||= {id: user.id, name: user.name}
+        @forecasts_data[:members][item.user_id] ||= {
+          id: user.id,
+          name: user.name,
+          unweighted_pipeline: 0,
+          weighted_pipeline: 0,
+          unweighted_pipeline_by_stage: {},
+          weighted_pipeline_by_stage: {},
+          wow_weighted_pipeline: 0,
+          revenue: 0,
+          wow_revenue: 0,
+          quota: 0
+        }
         @forecasts_data[:members][item.user_id][:revenue] ||= 0.0
         @forecasts_data[:members][item.user_id][:revenue] += item.revenue_amount.to_f
       end
@@ -168,7 +190,18 @@ class NewForecastTeam
       weighted_amount = item.pipeline_amount.to_f * company.stages.find(item.stage_id).probability.to_f / 100
       if team_members[item.user_id] && team_members[item.user_id].count > 0
         team_members[item.user_id].each do |team|
-          @forecasts_data[:teams][team.id] ||= {id: team.id, name: team.name}
+          @forecasts_data[:teams][team.id] ||= {
+            id: team.id,
+            name: team.name,
+            unweighted_pipeline: 0,
+            weighted_pipeline: 0,
+            unweighted_pipeline_by_stage: {},
+            weighted_pipeline_by_stage: {},
+            wow_weighted_pipeline: 0,
+            revenue: 0,
+            wow_revenue: 0,
+            quota: 0
+          }
 
           @forecasts_data[:teams][team.id][:unweighted_pipeline] ||= 0.0
           @forecasts_data[:teams][team.id][:unweighted_pipeline] += item.pipeline_amount.to_f
@@ -185,7 +218,18 @@ class NewForecastTeam
           @forecasts_data[:teams][team.id][:weighted_pipeline_by_stage][item.stage_id] += weighted_amount
         end
       else
-        @forecasts_data[:members][item.user_id] ||= {id: user.id, name: user.name}
+        @forecasts_data[:members][item.user_id] ||= {
+          id: user.id,
+          name: user.name,
+          unweighted_pipeline: 0,
+          weighted_pipeline: 0,
+          unweighted_pipeline_by_stage: {},
+          weighted_pipeline_by_stage: {},
+          wow_weighted_pipeline: 0,
+          revenue: 0,
+          wow_revenue: 0,
+          quota: 0
+        }
 
         @forecasts_data[:members][item.user_id][:unweighted_pipeline] ||= 0.0
         @forecasts_data[:members][item.user_id][:unweighted_pipeline] += item.pipeline_amount.to_f
@@ -226,7 +270,18 @@ class NewForecastTeam
       
       if team_members[user.id] && team_members[user.id].count > 0
         team_members[user.id].each do |team|
-          @forecasts_data[:teams][team.id] ||= {id: team.id, name: team.name}
+          @forecasts_data[:teams][team.id] ||= {
+            id: team.id,
+            name: team.name,
+            unweighted_pipeline: 0,
+            weighted_pipeline: 0,
+            unweighted_pipeline_by_stage: {},
+            weighted_pipeline_by_stage: {},
+            wow_weighted_pipeline: 0,
+            revenue: 0,
+            wow_revenue: 0,
+            quota: 0
+          }
           @forecasts_data[:teams][team.id][:wow_weighted_pipeline] ||= 0.0
           @forecasts_data[:teams][team.id][:wow_weighted_pipeline] += wow_weighted_pipeline
 
@@ -235,7 +290,18 @@ class NewForecastTeam
 
         end
       else
-        @forecasts_data[:members][user.id] ||= {id: user.id, name: user.name}
+        @forecasts_data[:members][user.id] ||= {
+          id: user.id,
+          name: user.name,
+          unweighted_pipeline: 0,
+          weighted_pipeline: 0,
+          unweighted_pipeline_by_stage: {},
+          weighted_pipeline_by_stage: {},
+          wow_weighted_pipeline: 0,
+          revenue: 0,
+          wow_revenue: 0,
+          quota: 0
+        }
         @forecasts_data[:members][user.id][:wow_weighted_pipeline] ||= 0.0
         @forecasts_data[:members][user.id][:wow_weighted_pipeline] += wow_weighted_pipeline
 
@@ -284,12 +350,12 @@ class NewForecastTeam
         name: team.name,
         unweighted_pipeline: 0,
         weighted_pipeline: 0,
-        unweighted_pipeline_by_stage: 0,
-        weighted_pipeline_by_stage: 0,
+        unweighted_pipeline_by_stage: {},
+        weighted_pipeline_by_stage: {},
         wow_weighted_pipeline: 0,
         revenue: 0,
         wow_revenue: 0,
-        quota: 0,
+        quota: 0
       }
       quota = (team.leader ? team.leader.quotas.for_time_period(start_date, end_date).sum(:value) : 0)
       @forecasts_data[:teams][team.id][:quota] ||= quota
