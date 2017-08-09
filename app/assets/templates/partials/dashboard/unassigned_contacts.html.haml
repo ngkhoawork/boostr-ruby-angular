@@ -6,6 +6,7 @@
 		%button.btn.btn-primary.btn-lg{'ng-click': 'showAssignContactModal(contact)'}
 			= inline_svg "icons/client-meeting.svg"
 			Assign
+		%i.fa.fa-trash.delete-item{'ng-click': 'deleteUnassignedContact(contact)'}
 		%p {{contact.address.email}}
 		%p
 			%input{type: 'text', 'ng-model': 'contact.name', placeholder: 'Enter name', 'ng-blur': 'saveCurrentContact(contact)'}

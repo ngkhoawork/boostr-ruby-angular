@@ -33,7 +33,7 @@ class Operative::ImportSalesOrderLineItemsService
     CSV.parse(invoice_csv_file, { headers: true, header_converters: :symbol }) do |row|
       @_parsed_invoices << {
         sales_order_line_item_id: row[:sales_order_line_item_id],
-        recognized_revenue: row[:recognized_revenue],
+        invoice_units: row[:invoice_units],
         cumulative_primary_performance: row[:cumulative_primary_performance],
         cumulative_third_party_performance: row[:cumulative_third_party_performance]
       }
@@ -72,7 +72,7 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def build_dli_csv(row)
-    invoice = find_in_invoices(row[:sales_order_line_item_id])
+    invoice = find_in_invoices(row[:sales_order_line_item_id], row[:net_unit_cost])
     DisplayLineItemCsv.new(
       external_io_number: row[:sales_order_id],
       line_number: row[:sales_order_line_item_id],
@@ -92,17 +92,30 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def irrelevant_line_item(row)
-    row[:line_item_status].try(:downcase) != 'sent_to_production'
+    row[:line_item_status].try(:downcase) != 'sent_to_production' ||
+    !row[:quantity].present? ||
+    !row[:net_cost].present?
   end
 
-  def find_in_invoices(id)
+  def find_in_invoices(id, net_unit_cost)
     lines = @_parsed_invoices.select do |invoice|
       invoice[:sales_order_line_item_id] == id
     end
 
+    if lines.empty?
+      return {
+        sales_order_line_item_id:           id,
+        recognized_revenue:                 0.0,
+        cumulative_primary_performance:     0,
+        cumulative_third_party_performance: 0
+      }
+    end
+
+    recognized_revenue = lines.map {|row| row[:invoice_units].to_f}.reduce(0, :+) / 1000 * net_unit_cost.to_f
+
     {
-      sales_order_line_item_id: id,
-      recognized_revenue:                 lines.map {|row| row[:recognized_revenue].to_f}.reduce(0, :+),
+      sales_order_line_item_id:           id,
+      recognized_revenue:                 recognized_revenue,
       cumulative_primary_performance:     lines[-1][:cumulative_primary_performance].to_i,
       cumulative_third_party_performance: lines[-1][:cumulative_third_party_performance].to_i
     }

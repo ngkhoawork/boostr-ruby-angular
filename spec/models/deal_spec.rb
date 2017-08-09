@@ -184,7 +184,10 @@ RSpec.describe Deal, type: :model do
         deal.assign_attributes(stage: closed_won_stage)
 
         expect(deal).not_to be_valid(:manual_update)
-        expect(deal.errors.full_messages).to eql ["Stage Closed Won can't be set per configuration. Deals can be set to won from API integration only"]
+        expect(deal.errors.full_messages).to eql [
+          'Stage Deals can\'t be updated to Closed Won manually. '\
+          'Deals can only be set to Closed Won from API integration'
+        ]
       end
 
       it 'does not save record when validation is active' do
@@ -615,11 +618,12 @@ RSpec.describe Deal, type: :model do
     end
 
     it 'creates a deal with close reason' do
-      data = build :deal_csv_data, close_reason: close_reason.name
+      data = build :deal_csv_data, close_reason: close_reason.name, loss_comments: 'Can retry later'
       Deal.import(generate_csv(data), user.id, 'deals.csv')
       deal = Deal.last
 
       expect(deal.values.where(field: close_reason_field).first.option_id).to eq close_reason.id
+      expect(deal.closed_reason_text).to eq 'Can retry later'
     end
 
     it 'finds a deal by name match' do

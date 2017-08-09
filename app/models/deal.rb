@@ -29,6 +29,7 @@ class Deal < ActiveRecord::Base
   has_many :deal_members
   has_many :users, through: :deal_members
   has_many :values, as: :subject
+  has_many :options, through: :values
   has_many :deal_stage_logs
   has_many :activities
   has_many :reminders, as: :remindable, dependent: :destroy
@@ -56,11 +57,12 @@ class Deal < ActiveRecord::Base
 
   before_update do
     if curr_cd_changed?
-      update_product_currency
+      update_products_currency
     end
 
     if stage_id_changed?
       update_stage
+      recalculate_currency
       update_close
     end
   end
@@ -72,6 +74,7 @@ class Deal < ActiveRecord::Base
     send_ealert if stage_id_changed?
     integrate_with_operative
     send_lost_deal_notification
+    connect_deal_clients
   end
 
   before_create do
@@ -84,8 +87,10 @@ class Deal < ActiveRecord::Base
   after_create do
     generate_deal_members
     send_new_deal_notification
-    asana_connect
+    connect_deal_clients
   end
+
+  after_commit :asana_connect
 
   before_destroy do
     update_stage
@@ -96,9 +101,11 @@ class Deal < ActiveRecord::Base
   end
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
-  scope :for_time_period, -> (start_date, end_date) { where('deals.start_date <= ? AND deals.end_date >= ?', end_date, start_date) }
-  scope :closed_in, -> (duration_in_days) { where('deals.closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
-  scope :closed_at, -> (start_date, end_date) { where('deals.closed_at >= ? and deals.closed_at <= ?', start_date, end_date) }
+  scope :for_time_period, -> (start_date, end_date) { where('start_date <= ? AND end_date >= ?', end_date, start_date) }
+  scope :closed_in, -> (duration_in_days) { where('closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
+  scope :closed_at, -> (start_date, end_date) do
+    where('closed_at >= ? and closed_at <= ?', start_date, end_date) if start_date.present? && end_date.present?
+  end
   scope :started_at, -> (start_date, end_date) { where('deals.created_at >= ? and deals.created_at <= ?', start_date, end_date) }
   scope :open, -> { joins(:stage).where('stages.open IS true') }
   scope :close_status, -> { joins(:stage).where('stages.open IS false OR stages.probability = 100') }
@@ -129,9 +136,19 @@ class Deal < ActiveRecord::Base
     where(closed_at: closed_at.beginning_of_year.to_datetime.beginning_of_day..closed_at.end_of_year.to_datetime.end_of_day) if closed_at.present?
   end
   scope :by_advertisers, -> (ids) { where('advertiser_id in (?)', ids) if ids.present? }
+  scope :by_created_date, -> (start_date, end_date) do
+    where(created_at: start_date..end_date) if start_date.present? && end_date.present?
+  end
+  scope :by_stage_ids, -> (stage_ids) { where(stage_id: stage_ids) if stage_ids.present? }
+  scope :by_options, -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
 
   def asana_connect
-    AsanaConnectWorker.perform_async self.id
+    AsanaConnectWorker.perform_in(10.minutes, self.id) if asana_integration_required?
+  end
+
+  def asana_integration_required?
+    config = self.company.asana_connect_configurations.first
+    config.present? && config.switched_on?
   end
 
   def integrate_with_operative
@@ -149,7 +166,7 @@ class Deal < ActiveRecord::Base
   end
 
   def company_allowed_use_operative?
-    %w(22 29).include? self.company_id.to_s
+    %w(22 29 34).include? self.company_id.to_s
   end
 
   def operative_switched_on?
@@ -400,7 +417,7 @@ class Deal < ActiveRecord::Base
     company.exchange_rate_for(currency: self.curr_cd)
   end
 
-  def update_product_currency
+  def update_products_currency
     deal_product_budgets.update_all("budget_loc = budget * #{self.exchange_rate}")
     deal_products.map{ |deal_product| deal_product.update_budget }
     self.budget_loc = budget * self.exchange_rate
@@ -1138,6 +1155,11 @@ class Deal < ActiveRecord::Base
         end
       end
 
+      closed_reason_text = ''
+      if row[16].present?
+        closed_reason_text = row[16].strip
+      end
+
       deal_params = {
         name: row[1].strip,
         advertiser: advertiser,
@@ -1147,7 +1169,8 @@ class Deal < ActiveRecord::Base
         end_date: end_date,
         stage: stage,
         updated_by: current_user.id,
-        closed_at: closed_date
+        closed_at: closed_date,
+        closed_reason_text: closed_reason_text
       }
 
       deal_params[:created_at] = created_at if created_at
@@ -1290,6 +1313,12 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def recalculate_currency
+    deal_product_budgets.update_all("budget = budget_loc / #{self.exchange_rate}")
+    deal_products.map{ |deal_product| deal_product.update_budget }
+    self.budget = deal_products.sum(:budget)
+  end
+
   def update_close
     self.closed_at = updated_at if !stage.open?
     should_open = stage.open?
@@ -1353,7 +1382,9 @@ class Deal < ActiveRecord::Base
 
   def send_lost_deal_notification
     if stage_id_changed? && closed_lost?
-      notification = company.notifications.by_name(Notification::LOST_DEAL)
+      notification = company.notifications.find_by_name(Notification::LOST_DEAL)
+      return if notification.nil?
+
       recipients = notification.recipients_arr
 
       UserMailer.lost_deal_email(recipients, self).deliver_later(queue: 'default') if recipients.any?
@@ -1514,6 +1545,14 @@ class Deal < ActiveRecord::Base
 
     if params.compact.any?
       deal.upsert_custom_fields(params)
+    end
+  end
+
+  def connect_deal_clients
+    if agency.present? && advertiser.present?
+      unless ClientConnection.find_by(agency_id: agency.id, advertiser_id: advertiser.id).present?
+        ClientConnection.create(agency_id: agency.id, advertiser_id: advertiser.id)
+      end
     end
   end
 end

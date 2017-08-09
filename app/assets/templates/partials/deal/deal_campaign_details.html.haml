@@ -60,7 +60,7 @@
                     {{currentDeal.deal_custom_field[fieldName]}}
                 %div.link-wrap{'ng-hide': '_scope()[fieldId].$visible'}
                     %span{'ng-if': '!isUrlValid(currentDeal.deal_custom_field[fieldName])', 'ng-class': '{"not-selected": !currentDeal.deal_custom_field[fieldName], "has-error": currentDeal.deal_custom_field[fieldName]}'} {{currentDeal.deal_custom_field[fieldName] || 'Enter ' + dealCustomFieldName.field_label}}
-                    %a{'ng-if': 'isUrlValid(currentDeal.deal_custom_field[fieldName])', href: '', target: '_blank', 'ng-href': '{{currentDeal.deal_custom_field[fieldName]}}'} {{getUrlHostname(currentDeal.deal_custom_field[fieldName])}}
+                    %a{'ng-if': 'isUrlValid(currentDeal.deal_custom_field[fieldName])', href: '', target: '_blank', 'ng-href': '{{fixUrl(currentDeal.deal_custom_field[fieldName])}}'} {{getUrlHostname(currentDeal.deal_custom_field[fieldName])}}
                 %i.fa.fa-pencil.edit-deal{'ng-hide': '_scope()[fieldId].$visible', 'ng-click': '_scope()[fieldId].$show()'}
             .text-area{ ng: { 'switch-when': 'note' } }
                 %textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.deal_custom_field[fieldName]", name: "{{fieldName}}", placeholder: 'Enter {{dealCustomFieldName.field_label}}', 'ng-blur': 'updateDeal()' }
@@ -149,3 +149,8 @@
                 {{operativeIntegration.dealLog ? (operativeIntegration.dealLog.is_error ? 'Error' : 'Success') : 'Not sent'}}
             |
             %a{href: '', 'ng-click': 'sendToOperative(currentDeal.id)'} Send to Operative
+    %div.custom-field-item{ 'ng-if': 'operativeIntegration.isEnabled && currentDeal.operative_order_id' }
+        %div.custom-field-item-label
+            %label Operative Order ID
+        %div.custom-field-item-field
+            {{currentDeal.operative_order_id}}

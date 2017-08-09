@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe ForecastTeam do
+RSpec.describe ForecastTeam, skip: true do
     let(:company) { Company.first }
     let(:leader) { create :user, win_rate: 0.5, average_deal_size: 100 }
     let(:time_period) { create :time_period, start_date: "2015-01-01", end_date: "2015-12-31" }

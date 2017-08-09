@@ -228,6 +228,12 @@
                         message: updated_contact.clients[0].name
                     })
 
+            $scope.deleteUnassignedContact = (contact) ->
+                if confirm("Are you sure you want to delete contact #{contact.name}?")
+                    index = $scope.unassignedContacts.indexOf(contact)
+                    contact.$delete {}, ->
+                        $scope.unassignedContacts.splice index, 1
+
             $scope.saveCurrentContact = (contact) ->
                 Contact._update(id: contact.id, contact: contact).then (updated_contact) ->
                     $scope.unassignedContacts = _.map $scope.unassignedContacts, (item) ->

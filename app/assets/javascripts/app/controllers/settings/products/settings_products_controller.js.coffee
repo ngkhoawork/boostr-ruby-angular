@@ -42,7 +42,7 @@
                 keyboard: false
                 resolve:
                     product: ->
-                        product
+                        angular.copy product
 
         $scope.showUnitModal = (product, unit) ->
             $scope.modalInstance = $modal.open

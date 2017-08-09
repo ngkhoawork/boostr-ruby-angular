@@ -1,4 +1,4 @@
-@app.controller 'DealReportsController',
+@app.controller 'PipelineMonthlyReportController',
   ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'CurrentUser', 'DealCustomFieldName',
     ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Product, Seller, Team, TimePeriod, CurrentUser, DealCustomFieldName) ->
       $scope.sortType     = 'name'
@@ -63,12 +63,6 @@
             $scope.timePeriods.unshift({name:'All', id:'all'})
 
           Team.all(all_teams: true).then (teams) ->
-  #          all_members = []
-  #          all_leaders = []
-  #          _.each teams, (team) ->
-  #            all_members = all_members.concat(team.members)
-  #            all_leaders = all_leaders.concat(team.leaders)
-            #          $scope.teams = teams
             $scope.teams = teams
             $scope.teams.unshift {id: null, name: 'All'}
 

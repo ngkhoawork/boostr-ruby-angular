@@ -4,7 +4,8 @@
       {{ formType }} Product
       %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body
-      .form-group
+      .form-group{ ng: { class:'{error: errors.name}'} }
+        %span.error-text {{errors.name}}
         %label{ for: 'name' } Name
         %span.star *
         %input.form-control{ placeholder: 'Name', ng: { model: 'product.name' }, name: 'name' }
@@ -33,13 +34,24 @@
           %ui-select-choices{ repeat: 'option.id as option in product.pricing_type.options | filter: { name: $select.search }' }
             %div{ ng: { bind: { html: 'option.name' } } }
 
-      .form-group
-        %label{ for: 'revenue-type' } Revenue Type
+      .form-group{ ng: { class:'{error: errors.revenue_type}'} }
+        %span.error-text {{errors.revenue_type}}
+        %label{ for: 'revenue-type' }
+          Revenue Type
+          %span.star *
         %ui-select{ name: 'revenue-type', ng: { model: 'product.revenue_type', disabled: true } }
           %ui-select-match{ placeholder: 'Revenue Type' }
             {{ $select.selected }}
           %ui-select-choices{ repeat: 'revenue_type in revenue_types' }
             %div{ ng: { bind: { html: 'revenue_type' } } }
+
+      .form-group
+        %label{ for: 'active' } Active
+        .show-hide-remainder-form
+          .switch-remainder-form
+            %input#rem-act-modal-toggle.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'product.active'}
+            %label{:for => "rem-act-modal-toggle"}
+              %span
 
     .popup-modal-footer.text-center
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
