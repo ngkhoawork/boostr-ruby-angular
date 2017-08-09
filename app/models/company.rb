@@ -40,6 +40,8 @@ class Company < ActiveRecord::Base
   has_many :initiatives, dependent: :destroy
   has_many :integration_logs, dependent: :destroy
   has_many :requests
+  has_many :influencers, dependent: :destroy
+  has_many :influencer_content_fees, through: :influencers
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -75,6 +77,8 @@ class Company < ActiveRecord::Base
     fields.find_or_initialize_by(subject_type: 'Contact', name: 'Job Level', value_type: 'Option', locked: true)
     fields.find_or_initialize_by(subject_type: 'Multiple', name: 'Attachment Type', value_type: 'Option', locked: true)
 
+    fields.find_or_initialize_by(subject_type: 'Influencer', name: 'Network', value_type: 'Option', locked: true)
+
     notifications.find_or_initialize_by(name: 'Closed Won', active: true)
     notifications.find_or_initialize_by(name: 'Stage Changed', active: true)
     notifications.find_or_initialize_by(name: 'New Deal', active: true)
@@ -105,7 +109,8 @@ class Company < ActiveRecord::Base
       { name: 'Clients', fields: fields.where(subject_type: 'Client')    },
       { name: 'Products', fields: fields.where(subject_type: 'Product')  },
       { name: 'Contacts', fields: fields.where(subject_type: 'Contact')  },
-      { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') }
+      { name: 'Multiple', fields: fields.where(subject_type: 'Multiple') },
+      { name: 'Influencers', fields: fields.where(subject_type: 'Influencer') }
     ]
   end
 

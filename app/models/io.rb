@@ -15,6 +15,7 @@ class Io < ActiveRecord::Base
   has_many :display_line_item_budgets, dependent: :destroy, through: :display_line_items
   has_many :print_items, dependent: :destroy
   has_many :temp_ios, dependent: :destroy
+  has_many :influencer_content_fees, -> { order 'influencer_content_fees.influencer_id, influencer_content_fees.id' }, dependent: :destroy, through: :content_fees
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
   validate :active_exchange_rate
@@ -214,6 +215,27 @@ class Io < ActiveRecord::Base
                 :product
             ]
         },
+        influencer_content_fees: {
+            include: {
+                influencer: {
+                  only: [:id, :name],
+                  include: {
+                    agreement: {
+                      only: [:id, :fee_type, :amount]
+                    }
+                  }
+                },
+                currency: {},
+                content_fee: {
+                  only: [:id],
+                  include: {
+                    product: {
+                      only: [:id, :name]
+                    }
+                  }
+                }
+            }
+        },
         display_line_items: {
             methods: [
                 :product
@@ -227,6 +249,22 @@ class Io < ActiveRecord::Base
 
   def get_agency
     agency.present? ? agency.name : ''
+  end
+
+  def account_manager
+    self.users.where(user_type: 3)
+  end
+
+  def seller
+    self.users.where(user_type: 1)
+  end
+
+  def highest_member
+    if io_members.count > 0
+      io_members.order("share desc").first
+    else
+      nil
+    end
   end
 
   def for_forecast_page(start_date, end_date, user = nil)

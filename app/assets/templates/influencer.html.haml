@@ -1,0 +1,123 @@
+#account.z-styles
+  .container-fluid.pad
+    .col-xs-12.mb20
+      %span.main-title
+        {{influencer.name}}
+      %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal()'}
+      %i.fa.fa-trash.delete-deal{'ng-click': 'delete()'}
+    .col-xs-9
+      .contacts.block
+        %div.mb20
+          %span.sub-title Fee History
+
+        %table.table.table-striped
+          %thead
+            %tr
+              %th.left{width: '200'} IO
+              %th.left Product
+              %th.left Date
+              %th.left Fee Type
+              %th.right Fee Amount
+              %th.right Gross
+              %th.right Net
+              %th.left Asset
+          %tbody
+            %tr{ ng: { if: 'influencer.influencer_content_fees && influencer.influencer_content_fees.length > 0', repeat: "influencerContentFee in influencer.influencer_content_fees"} }
+              %td.left
+                %a{'ng-href': '/revenue/ios/{{influencerContentFee.content_fee.io.id}}'}
+                  {{ influencerContentFee.content_fee.io.name }}
+              %td.left
+                {{ influencerContentFee.content_fee.product.name }}
+              %td.left
+                {{ influencerContentFee.effect_date | date: 'M/d/yyyy'  }}
+              %td.left
+                {{ influencerContentFee.fee_type == 'flat' ? 'Flat' : '%' }}
+              %td.right{'ng-if': 'influencerContentFee.fee_type == "flat"'}
+                {{ influencerContentFee.fee_amount | currency:'$':0 }}
+              %td.right{'ng-if': 'influencerContentFee.fee_type == "percentage"'}
+                {{ influencerContentFee.fee_amount }}%
+              %td.right
+                {{ influencerContentFee.gross_amount | currency:'$':0 }}
+              %td.right
+                {{ influencerContentFee.net | currency:'$':0 }}
+              %td.left
+                {{ influencerContentFee.asset }}
+            %tr{'ng-if': 'influencer.influencer_content_fees && influencer.influencer_content_fees.length > 0'}
+              %td.left
+                Total
+              %td.left
+              %td.left
+              %td.left
+              %td.right
+              %td.right
+                {{ influencer.total_influencer_gross | currency:influencerContentFee.currency.curr_symbol:0 }}
+              %td.right
+                {{ influencer.total_influencer_net | currency:influencerContentFee.currency.curr_symbol:0 }}
+              %td.left
+            %tr{ ng: { if: '!influencer.influencer_content_fees || influencer.influencer_content_fees.length == 0' } }
+              %td.center{ 'colspan': '{{10}}' }
+                No data available
+
+    .col-xs-3
+      .campaign-details.block
+        %div.pull-right
+          %span.star
+            *
+            %span{style: 'font-size: 12px'} is required
+        %div.mb20
+          %span.title Info
+          %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
+        %div.custom-field-item.required-field
+          %div.custom-field-item-label
+            %label{ for: 'network' }
+              Network
+              %span.star *
+          %div.custom-field-item-field{'ng-class': '{"has-error": !influencer.network.option_id}'}
+            %ui-select.editable-dropdown{ network: 'network', ng: { model: 'influencer.network.option_id', change: 'updateInfluencer()'} }
+              %ui-select-match{ placeholder: 'Select network', "allow-clear": 'false' }
+                {{ $select.selected.name || influencer.network.option.name }}
+              %ui-select-choices.dropdown-menu{ repeat: 'network.id as network in influencer.network.options | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'network.name' } } }
+        %div.custom-field-item
+          %div.custom-field-item-label
+            %label{ for: 'email' }
+              Email
+          %div.custom-field-item-field
+            %input.editable{ 'ng-model': "influencer.email", name: "email", placeholder: 'Enter email', 'ng-blur': 'updateInfluencer()' }
+        %div.custom-field-item
+          %div.custom-field-item-label
+            %label{ for: 'address' }
+              Address
+          %div.custom-field-item-field.address-field
+            %div {{influencer.address.street1}}
+            %div {{influencer.address.street2}}
+            %div {{ concatAddress(influencer.address) }}
+        %div.custom-field-item
+          %div.custom-field-item-label
+            %label{ for: 'phone' }
+              Phone
+          %div.custom-field-item-field
+            %input.editable{ 'ng-model': "influencer.phone", name: "phone", placeholder: 'Enter phone', 'ng-blur': 'updateInfluencer()' }
+
+      .campaign-details.block
+        %div.mb20
+          %span.title Agreement Detail
+          %i.fa.fa-pencil.edit-deal{'ng-click': 'showEditModal(currentClient)'}
+        %div.custom-field-item{'ng-if': 'influencer.id'}
+          %div.custom-field-item-label
+            %label{ for: 'agreement-fee_type' }
+              Fee Type
+          %div.custom-field-item-field
+            %ui-select.editable-dropdown{ 'agreement-fee_type': 'agreement-fee_type', ng: { model: 'influencer.agreement.fee_type', change: 'updateInfluencer()'} }
+              %ui-select-match{ placeholder: 'Select fee type', "allow-clear": 'false' }
+                {{ $select.selected.name }}
+              %ui-select-choices.dropdown-menu{ repeat: 'feeType.value as feeType in feeTypes | filter: { name: $select.search }' }
+                %div{ ng: { bind: { html: 'feeType.name' } } }
+        %div.custom-field-item{'ng-if': 'influencer.id'}
+          %div.custom-field-item-label
+            %label{ for: 'agreement-amount' }
+              Amount
+          %div.custom-field-item-field{'ng-if': 'influencer.agreement.fee_type == "flat"'}
+            %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', prefix: '$', 'ng-model': "influencer.agreement.amount", 'on-after-save': 'updateInfluencer()'}
+          %div.custom-field-item-field{'ng-if': 'influencer.agreement.fee_type == "percentage"'}
+            %div{'click-to-edit':'click-to-edit', type: "number", decimal: '2', postfix: '%', 'ng-model': "influencer.agreement.amount", 'on-after-save': 'updateInfluencer()'}

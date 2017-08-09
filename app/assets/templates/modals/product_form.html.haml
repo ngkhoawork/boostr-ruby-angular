@@ -53,6 +53,14 @@
             %label{:for => "rem-act-modal-toggle"}
               %span
 
+      .form-group
+        %label{ for: 'is_influencer_product' } Is Influencer Product
+        .show-hide-remainder-form
+          .switch-remainder-form
+            %input#rem-act-modal-toggle1.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'product.is_influencer_product'}
+            %label{:for => "rem-act-modal-toggle1"}
+              %span
+
     .popup-modal-footer.text-center
       %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
       %button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

@@ -226,6 +226,62 @@
 								%tr{ ng: { if: '!currentIO.print_items || currentIO.print_items.length == 0' } }
 									%td.center{ 'colspan': '{{4+2}}' }
 										No data available
+				.block#influencer{'ng-show': 'currentUser.company_influencer_enabled'}
+					%div.mb20
+						%span.title Influencers
+						%add-button{'ng-click': 'showNewInfluencerContentFeeModal()'} Add
+						%a.pull-right{'ng-click': 'updateInfluencerBudget()'}
+							Update Influencer Budget
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th.left{width: '200'} Influencer
+									%th.left Product
+									%th.left Date
+									%th.left Fee Type
+									%th.right Fee Amount
+									%th.right Gross
+									%th.right Net
+									%th.left Asset
+							%tbody
+								%tr{ ng: { if: 'currentIO.influencer_content_fees && currentIO.influencer_content_fees.length > 0', repeat: "influencerContentFee in currentIO.influencer_content_fees"} }
+									%td.left
+										{{ influencerContentFee.influencer.name }}
+										%i.fa.fa-pencil.edit-deal.action-button{'ng-click': 'showEditInfluencerContentFeeModal(influencerContentFee)'}
+										%i.fa.fa-trash.delete-deal.action-button{'ng-click': 'deleteInfluencerContentFee(influencerContentFee)'}
+									%td.left
+										{{ influencerContentFee.content_fee.product.name }}
+									%td.left
+										{{ influencerContentFee.effect_date | date: 'M/d/yyyy'  }}
+									%td.left
+										{{ influencerContentFee.fee_type == 'flat' ? 'Flat' : '%' }}
+									%td.right{'ng-if': 'influencerContentFee.fee_type == "flat"'}
+										{{ influencerContentFee.fee_amount_loc | currency:influencerContentFee.currency.curr_symbol:0 }}
+									%td.right{'ng-if': 'influencerContentFee.fee_type == "percentage"'}
+										{{ influencerContentFee.fee_amount }}%
+									%td.right
+										{{ influencerContentFee.gross_amount_loc | currency:influencerContentFee.currency.curr_symbol:0 }}
+									%td.right
+										{{ influencerContentFee.net_loc | currency:influencerContentFee.currency.curr_symbol:0 }}
+									%td.left
+										{{ influencerContentFee.asset }}
+
+								%tr{'ng-if': 'currentIO.influencer_content_fees && currentIO.influencer_content_fees.length > 0'}
+									%td.left
+										Total
+									%td.left
+									%td.left
+									%td.left
+									%td.right
+									%td.right
+										{{ currentIO.total_influencer_gross | currency:currentIO.currency.curr_symbol:0 }}
+									%td.right
+										{{ currentIO.total_influencer_net | currency:currentIO.currency.curr_symbol:0 }}
+									%td.left
+								%tr{ ng: { if: '!currentIO.influencer_content_fees || currentIO.influencer_content_fees.length == 0' } }
+									%td.center{ 'colspan': '{{10}}' }
+										No data available
 			.col-xs-4
 				.block#team-split
 					%div.mb20

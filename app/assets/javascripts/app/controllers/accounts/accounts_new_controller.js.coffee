@@ -5,6 +5,7 @@
   $scope.formType = "New"
   $scope.submitText = "Create"
   $scope.client = new Client(client) || {}
+  console.log($scope.client)
   $scope.clients = []
   $scope.query = ""
   $scope.countries = []

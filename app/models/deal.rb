@@ -251,6 +251,14 @@ class Deal < ActiveRecord::Base
     self.users.exists?(user_type: ACCOUNT_MANAGER)
   end
 
+  def account_manager
+    self.users.where(user_type: 3)
+  end
+
+  def seller
+    self.users.where(user_type: 1)
+  end
+
   def fields
     company.fields.where(subject_type: self.class.name)
   end

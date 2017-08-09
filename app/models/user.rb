@@ -48,6 +48,10 @@ class User < ActiveRecord::Base
     roles.include?(role.to_s)
   end
 
+  def company_influencer_enabled
+    self.company.influencer_enabled
+  end
+
   def is_admin
     is?(:admin)
   end
@@ -111,7 +115,7 @@ class User < ActiveRecord::Base
           },
           teams: {}
         },
-        methods: [:name, :leader?, :is_admin, :roles]
+        methods: [:name, :leader?, :is_admin, :roles, :company_influencer_enabled]
       ).except(:override))
     end
   end

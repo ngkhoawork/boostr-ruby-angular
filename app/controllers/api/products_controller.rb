@@ -33,7 +33,7 @@ class Api::ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :revenue_type, :active, { values_attributes: [:id, :field_id, :option_id, :value] })
+    params.require(:product).permit(:name, :revenue_type, :active, :is_influencer_product, { values_attributes: [:id, :field_id, :option_id, :value] })
   end
 
   def product

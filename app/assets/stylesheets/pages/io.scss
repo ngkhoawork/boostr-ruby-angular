@@ -125,4 +125,19 @@
         }
 
     }
+
+    #influencer {
+        .table-hover {
+            tbody > tr {
+                .action-button {
+                    display: none;
+                }
+                &:hover {
+                    .action-button {
+                        display: inline-block;
+                    }
+                }
+            }
+        }
+    }
 }

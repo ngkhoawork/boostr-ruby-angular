@@ -20,6 +20,9 @@
           method: 'PUT'
           url: '/api/ios/:id'
           transformRequest: transformRequest
+        update_influencer_budget:
+          method: 'PUT'
+          url: '/api/ios/:id/update_influencer_budget'
         updateContacts:
           method: 'PUT'
           url: 'api/ios/:id'
@@ -52,6 +55,17 @@
           (io) ->
             deferred.resolve(io)
             $rootScope.$broadcast 'updated_ios'
+          (resp) ->
+            deferred.reject(resp)
+        )
+        deferred.promise
+
+      @update_influencer_budget = (params) ->
+        deferred = $q.defer()
+        resource.update_influencer_budget(
+          params,
+          (io) ->
+            deferred.resolve(io)
           (resp) ->
             deferred.reject(resp)
         )

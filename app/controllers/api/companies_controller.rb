@@ -23,6 +23,7 @@ class Api::CompaniesController < ApplicationController
       :red_threshold,
       :deals_needed_calculation_duration,
       :ealert_reminder,
+      :influencer_enabled,
       forecast_permission: ["0", "1", "2", "3", "4", "5", "6", "7"],
       io_permission: ["0", "1", "2", "3", "4", "5", "6", "7"]
     )
