@@ -22,8 +22,8 @@
                 .form-group{'ng-switch-when': 'Deal'}
                     %label Deal
                     %input.form-control{'placeholder': 'Search', 'ng-model': 'reminder.remindable', 'ng-model-options': '{debounce: 300}', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)'}
-                .form-group{'ng-switch-when': 'Client'}
-                    %label Client
+                .form-group{'ng-switch-when': 'Account'}
+                    %label Account
                     %input.form-control{'placeholder': 'Search', 'ng-model': 'reminder.remindable', 'ng-model-options': '{debounce: 300}', typeahead: 'item as item.formatted_name for item in searchClients($viewValue)'}
                 .form-group{'ng-switch-when': 'Contact'}
                     %label Contact
@@ -50,10 +50,10 @@
                     %label Time
                     %timepicker-pop.wrap-select-time.form-control-time{'input-time': 'reminder._time', 'show-meridian': 'showMeridian'}
             .form-group{'ng-class':'{error: errors.comment}'}
-                %span.error-text {{errors.comment}}
+                -#%span.error-text {{errors.comment}}
                 %label
                     Note
-                    %span.star *
+                    -#%span.star *
                 %textarea.form-control{'msd-elastic': '', 'ng-model': 'reminder.comment', placeholder: 'Note'}
 
         .popup-modal-footer

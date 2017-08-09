@@ -4,7 +4,7 @@
 
         $scope.modalType = 'New'
         $scope.submitType = 'Create'
-        $scope.reminderTypes = ['Deal', 'Client', 'Contact']
+        $scope.reminderTypes = ['Deal', 'Account', 'Contact']
         $scope.reminder = reminder ||
             name: '',
             comment: '',
@@ -20,6 +20,9 @@
         if reminder
             $scope.modalType = 'Edit'
             $scope.submitType = 'Save'
+            console.log(reminder)
+            if reminder.remindable_type == 'Client'
+              reminder.remindable_type = 'Account'
             reminder.remindable.formatted_name = reminder.remindable.name if reminder.remindable
 
         $scope.searchDeals = (str) ->
@@ -41,7 +44,7 @@
         $scope.submitForm = ->
             $scope.errors = {}
 
-            fields = ['name', '_date', 'comment']
+            fields = ['name', '_date']
 
             fields.forEach (key) ->
                 field = $scope.reminder[key]
@@ -52,15 +55,14 @@
                     when '_date'
                         if !field
                             return $scope.errors[key] = 'Date is required'
-                    when 'comment'
-                        if !field
-                            return $scope.errors[key] = 'Comment is required'
 
             if Object.keys($scope.errors).length > 0 then return
             if $scope.reminder
                 if $scope.reminder.remindable_type && $scope.reminder.remindable
-                    $scope.reminder.assigned = true
-                    $scope.reminder.remindable_id = $scope.reminder.remindable.id
+                  if $scope.reminder.remindable_type == 'Account'
+                    $scope.reminder.remindable_type = 'Client'
+                  $scope.reminder.assigned = true
+                  $scope.reminder.remindable_id = $scope.reminder.remindable.id
                 else
                     $scope.reminder.assigned = false
                     $scope.reminder.remindable_id = null
