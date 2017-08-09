@@ -5,6 +5,22 @@
         padding-left: 15px;
         padding-right: 15px;
     }
+    .total-stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .stats-col {
+            text-align: center;
+            margin: 0 30px;
+            .text {
+                color: $secondary-font-color;
+            }
+            .value {
+                font-weight: bold;
+                font-size: 22px;
+            }
+        }
+    }
     .filters-block {
         padding-left: 60px;
         vertical-align: middle;
