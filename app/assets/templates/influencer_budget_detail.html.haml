@@ -1,4 +1,4 @@
-#pipeline-summary-report.z-styles
+#influencer-budget-detail.z-styles
   .container-fluid
     .row.mb20
       .reports-header
@@ -41,10 +41,8 @@
 
         .header-cell
           .pull-right
-            .header-cell-right
-              %a.export.pull-right{ href: '', ng: { click: 'exportReports()' } }
-                = inline_svg 'icons/export.svg'
-                Export
+            %download-button{'ng-click': 'exportReports()'}
+              Export
     .row
       .col-md-12
         .block
@@ -66,6 +64,9 @@
                   %th.left{ width: "100" }
                     %span.clickable{'ng-click': 'changeSortType("deal_type")'}
                       IO Number
+                  %th.left{ width: "150" }
+                    %span.clickable{'ng-click': 'changeSortType("io_name")'}
+                      IO Name
                   %th.left{ width: "150" }
                     %span.clickable{'ng-click': 'changeSortType("name")'}
                       Advertiser
@@ -119,6 +120,9 @@
                     %a{'ng-href': '/revenue/ios/{{influencer_content_fee.content_fee.io.id}}'}
                       {{ influencer_content_fee.content_fee.io.io_number }}
                   %td.left
+                    %a{'ng-href': '/revenue/ios/{{influencer_content_fee.content_fee.io.id}}'}
+                      {{ influencer_content_fee.content_fee.io.name }}
+                  %td.left
                     {{ influencer_content_fee.content_fee.io.advertiser.name }}
                   %td.left
                     {{ influencer_content_fee.content_fee.io.agency.name }}
@@ -156,3 +160,4 @@
                     {{ influencer_content_fee.net_loc | currency:'$':0 }}
                   %td.left
                     {{ influencer_content_fee.asset }}
+
