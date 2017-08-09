@@ -888,7 +888,7 @@ class Deal < ActiveRecord::Base
       csv << ['Deal ID', 'Name', 'Stage', 'Days in Stage', 'Previous Stage', 'Updated Date', 'Updated By']
 
       all.each do |deal|
-        deal.audit_logs.by_type_of_change('Stage Change').each do |audit_log|
+        deal.audit_logs.by_type_of_change(AuditLog::STAGE_CHANGE_TYPE).each do |audit_log|
           stage_updater = User.find(audit_log.update_by).name
 
 		      csv << [deal.id, deal.name, Stage.find(audit_log.new_value).name, audit_log.biz_days, audit_log.old_value ? Stage.find(audit_log.old_value).name : 'n/a', audit_log.created_at, stage_updater]
@@ -1555,7 +1555,7 @@ class Deal < ActiveRecord::Base
   def log_stage_changes
     AuditLogService.new(
       record: self,
-      type: 'Stage Change',
+      type: AuditLog::STAGE_CHANGE_TYPE,
       old_value: previous_stage_id,
       new_value: stage_id
     ).perform
@@ -1564,7 +1564,7 @@ class Deal < ActiveRecord::Base
   def log_budget_changes(current_budget, new_budget)
     AuditLogService.new(
       record: self,
-      type: 'Budget Change',
+      type: AuditLog::BUDGET_CHANGE_TYPE,
       old_value: current_budget,
       new_value: new_budget,
       changed_amount: (new_budget - current_budget)

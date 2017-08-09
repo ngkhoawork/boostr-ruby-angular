@@ -11,6 +11,7 @@ describe Api::DealsController, type: :controller do
 
   before do
     sign_in user
+    User.current = user
   end
 
   describe 'GET #index' do
@@ -95,6 +96,8 @@ describe Api::DealsController, type: :controller do
     end
 
     it 'creates audit logs for deal when start date was changed' do
+      deal = create :deal, company: company
+
       expect{
         put :update, id: deal.id, deal: { start_date: Date.new(2017, 8, 10) }, format: :json
       }.to change(AuditLog, :count).by(1)
@@ -108,6 +111,8 @@ describe Api::DealsController, type: :controller do
     end
 
     it 'does not create audit logs for deal when start date was not changed' do
+      deal = create :deal, company: company
+
       expect{
         put :update, id: deal.id, deal: { end_date: Date.new(2017, 8, 10) }, format: :json
       }.to_not change(AuditLog, :count)

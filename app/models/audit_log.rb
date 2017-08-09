@@ -1,4 +1,7 @@
 class AuditLog < ActiveRecord::Base
+  BUDGET_CHANGE_TYPE = 'Budget Change'.freeze
+  STAGE_CHANGE_TYPE = 'Stage Change'.freeze
+
   belongs_to :auditable, polymorphic: true
   belongs_to :user, class_name: 'User', foreign_key: 'updated_by'
   belongs_to :user, class_name: 'User', foreign_key: 'user_id'

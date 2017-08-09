@@ -33,7 +33,7 @@ class DealReportService < BaseService
   # Advanced Deals - (list of deals that changed sales stage on target date -use deal_stage_logs.created_at yesterday)
   def deals_stage_audit
     company_audit_logs
-      .by_type_of_change('Stage Change')
+      .by_type_of_change(AuditLog::STAGE_CHANGE_TYPE)
       .includes(auditable: :advertiser)
   end
 
@@ -55,7 +55,7 @@ class DealReportService < BaseService
 
   def deal_budget_audit
     company_audit_logs
-      .by_type_of_change('Budget Change')
+      .by_type_of_change(AuditLog::BUDGET_CHANGE_TYPE)
       .includes(auditable: :advertiser)
   end
 

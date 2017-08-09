@@ -1,6 +1,4 @@
 class AuditLogService
-  STAGE_CHANGE_TYPE = 'Stage Change'.freeze
-
   def initialize(attrs)
     @record         = attrs[:record]
     @type           = attrs[:type]
@@ -28,7 +26,7 @@ class AuditLogService
   attr_reader :record, :type, :member_user_id, :old_value, :new_value, :changed_amount
 
   def calculate_biz_days
-    return nil unless type.eql? STAGE_CHANGE_TYPE
+    return nil unless type.eql? AuditLog::STAGE_CHANGE_TYPE
 
     if logs_by_type.present?
       (Date.current - logs_by_type.order(created_at: :desc).first.created_at.to_date).to_i
