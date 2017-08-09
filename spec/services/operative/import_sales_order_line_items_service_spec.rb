@@ -64,9 +64,33 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       price: '100',
       pricing_type: 'PPC',
       budget: '100000',
-      budget_delivered: 300000.00,
+      budget_delivered: 30000.00,
       quantity_delivered: 4568899,
       quantity_delivered_3p: 30,
+      company_id: company.id
+    ).and_return(line_item_csv)
+    expect(line_item_csv).to receive(:valid?).and_return(:true)
+    expect(line_item_csv).to receive(:perform)
+    subject.perform
+  end
+
+  it 'passes budget_delivered and quantity_delivered as zeroes if invoice is not found' do
+    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_csv_file)
+    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(empty_invoice_csv_file)
+    expect(DisplayLineItemCsv).to receive(:new).with(
+      external_io_number: '1',
+      line_number: '2',
+      ad_server: 'O1',
+      start_date: '2017-01-01',
+      end_date: '2017-02-01',
+      product_name: 'Display',
+      quantity: '1000',
+      price: '100',
+      pricing_type: 'PPC',
+      budget: '100000',
+      budget_delivered: 0,
+      quantity_delivered: 0,
+      quantity_delivered_3p: 0,
       company_id: company.id
     ).and_return(line_item_csv)
     expect(line_item_csv).to receive(:valid?).and_return(:true)
@@ -77,6 +101,24 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   it 'skips a row when line_item_status is not production' do
     allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1')
     .and_return(line_item_csv_file(line_item_status: 'deleted'))
+    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1')
+    .and_return(invoice_csv_file)
+    expect(DisplayLineItemCsv).not_to receive(:new)
+    subject.perform
+  end
+
+  it 'skips a row when quantity is NULL' do
+    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1')
+    .and_return(line_item_csv_file(quantity: nil))
+    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1')
+    .and_return(invoice_csv_file)
+    expect(DisplayLineItemCsv).not_to receive(:new)
+    subject.perform
+  end
+
+  it 'skips a row when net_cost is NULL' do
+    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1')
+    .and_return(line_item_csv_file(net_cost: nil))
     allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1')
     .and_return(invoice_csv_file)
     expect(DisplayLineItemCsv).not_to receive(:new)
@@ -102,7 +144,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       expect(import_log.rows_imported).to eq 4
       expect(import_log.rows_failed).to eq 2
       expect(import_log.rows_skipped).to eq 1
-      expect(import_log.error_messages).to eq [{"row"=>5, "message"=>["Budget can't be blank", "Budget is not a number"]}, {"row"=>6, "message"=>["Quantity can't be blank", "Quantity is not a number"]}]
+      expect(import_log.error_messages).to eq [{"row"=>5, "message"=>["Product name can't be blank"]}, {"row"=>6, "message"=>["Product name can't be blank"]}]
       expect(import_log.file_source).to eq 'sales_order_line_item_file.csv'
       expect(import_log.object_name).to eq 'display_line_item'
     end
@@ -154,24 +196,13 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       line_item_status: 'Sent_to_production'
     )
 
-    list << (build :sales_order_line_item_csv_data,
+    list.concat (build_list :sales_order_line_item_csv_data, 2,
       sales_order_id: io.external_io_number,
       sales_order_line_item_id: 2,
       sales_order_line_item_start_date: Date.today - 1.month,
       sales_order_line_item_end_date: Date.today,
-      product_name: 'Display',
+      product_name: nil,
       quantity: 1000,
-      net_unit_cost: 100,
-      cost_type: 'PPC',
-      line_item_status: 'Sent_to_production'
-    )
-
-    list << (build :sales_order_line_item_csv_data,
-      sales_order_id: io.external_io_number,
-      sales_order_line_item_id: 2,
-      sales_order_line_item_start_date: Date.today - 1.month,
-      sales_order_line_item_end_date: Date.today,
-      product_name: 'Display',
       net_unit_cost: 100,
       cost_type: 'PPC',
       net_cost: 100000,
@@ -185,7 +216,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   def invoice_csv_file
     @_invoice_csv_file ||= generate_csv({
       sales_order_line_item_id: '2',
-      invoice_units: '15',
+      invoice_units: '15000',
       cumulative_primary_performance: '50',
       cumulative_third_party_performance: '60'
     })
@@ -194,10 +225,19 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   def multiline_invoice_csv_file
     keys = [:sales_order_line_item_id, :invoice_units, :cumulative_primary_performance, :cumulative_third_party_performance]
     values = [
-      [ '2', '1500', '916306', '10' ],
-      [ '2', '1000', '4568899', '20' ],
-      [ '2', '500', '4568899', '30']
+      [ '2', '150000', '916306', '10' ],
+      [ '2', '100000', '4568899', '20' ],
+      [ '2', '50000', '4568899', '30']
     ]
     @_invoice_csv_file ||= generate_multiline_csv(keys, values)
+  end
+
+  def empty_invoice_csv_file
+    @empty_invoice_csv_file ||= generate_csv({
+      sales_order_line_item_id: '0',
+      invoice_units: '15000',
+      cumulative_primary_performance: '50',
+      cumulative_third_party_performance: '60'
+    })
   end
 end

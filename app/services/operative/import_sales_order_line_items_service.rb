@@ -92,12 +92,23 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def irrelevant_line_item(row)
-    row[:line_item_status].try(:downcase) != 'sent_to_production'
+    row[:line_item_status].try(:downcase) != 'sent_to_production' ||
+    !row[:quantity].present? ||
+    !row[:net_cost].present?
   end
 
   def find_in_invoices(id, net_unit_cost)
     lines = @_parsed_invoices.select do |invoice|
       invoice[:sales_order_line_item_id] == id
+    end
+
+    if lines.empty?
+      return {
+        sales_order_line_item_id:           id,
+        recognized_revenue:                 0.0,
+        cumulative_primary_performance:     0,
+        cumulative_third_party_performance: 0
+      }
     end
 
     recognized_revenue = lines.map {|row| row[:invoice_units].to_f}.reduce(0, :+) / 1000 * net_unit_cost.to_f
