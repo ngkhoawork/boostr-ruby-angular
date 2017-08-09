@@ -28,7 +28,7 @@ class ContentFee < ActiveRecord::Base
   end
 
   after_create do
-    create_content_fee_product_budgets
+    # create_content_fee_product_budgets
     io.update_total_budget
   end
 
@@ -121,6 +121,14 @@ class ContentFee < ActiveRecord::Base
         budget: monthly_budget.round(2),
         budget_loc: monthly_budget_loc.round(2)
       )
+    end
+  end
+
+  def update_periods
+    content_fee_product_budgets.each_with_index do |content_fee_product_budget, index|
+      period = Date.new(*io.months[index])
+      content_fee_product_budget.start_date = [period, io.start_date].max
+      content_fee_product_budget.end_date = [period.end_of_month, io.end_date].min
     end
   end
 

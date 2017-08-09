@@ -15,6 +15,9 @@
       method: 'PUT'
       url: '/api/ios/:io_id/content_fees/:id'
       transformRequest: transformRequest
+    save:
+      method: 'POST'
+      transformRequest: transformRequest
 
   @create = (params) ->
     deferred = $q.defer()
