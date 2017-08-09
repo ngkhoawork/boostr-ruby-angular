@@ -4,6 +4,7 @@ class AsanaConnect::IntegrationService
   end
 
   def perform
+    return unless @deal.present?
     begin
       send_deal
       set_deal_custom_field
@@ -17,7 +18,6 @@ class AsanaConnect::IntegrationService
   attr_reader :deal, :task
 
   def send_deal
-    return unless deal.present?
     @task = asana_client.tasks.create task_params
     log_success(@task)
   end
