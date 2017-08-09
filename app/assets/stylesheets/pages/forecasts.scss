@@ -13,8 +13,9 @@
         }
         .quota-line {
             stroke: gray;
-            stroke-dasharray: 2, 2;
+            stroke-dasharray: 6, 4;
             stroke-width: 1px;
+            shape-rendering: crispEdges;
         }
         .axis path,
         .axis line {
@@ -49,6 +50,32 @@
                 //line-height: 14px;
                 //vertical-align: top;
             }
+        }
+    }
+    #forecast-chart-tooltip {
+        background-color: white;
+        border-radius: 4px;
+        position: fixed;
+        padding: 8px 12px;
+        color: $main-font-color;
+        display: none;
+        border: 1px solid black;
+        .tip-icon {
+            display: inline-block;
+            height: 13px;
+            width: 13px;
+            border-radius: 3px;
+            position: relative;
+            top: 2px;
+            border: 1px solid rgb(228, 228, 228);
+        }
+        .tip-text {
+            font-weight: bold;
+            float: right;
+            padding-left: 8px;
+        }
+        &.active {
+            display: block;
         }
     }
     .table-wrapper {
@@ -103,9 +130,6 @@
             border: none;
         }
         .subtable-wrap {
-            //margin: 0 -15px;
-            //border-top: 2px solid #DDDDDD;
-            //border-bottom: 1px solid #DDDDDD;
             background-color: white;
             overflow: hidden;
             height: 0;
@@ -120,12 +144,8 @@
                 display: inline-block;
                 position: relative;
                 border: 1px solid #DDDDDD;
-                //padding: 10px 0;
                 padding: 15px;
                 background-color: #FAFAFB;
-                //.title {
-                    //padding: 0 10px;
-                //}
             }
             .subtable {
                 width: 100%;

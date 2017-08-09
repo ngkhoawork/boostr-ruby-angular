@@ -2,11 +2,13 @@
 	['$scope', '$timeout', '$filter', 'Forecast', 'WeightedPipeline', 'Revenue', 'Team', 'Seller', 'Product', 'TimePeriod', 'shadeColor'
 	( $scope,   $timeout,   $filter,   Forecast,   WeightedPipeline,   Revenue,   Team,   Seller,   Product,   TimePeriod,   shadeColor ) ->
 
+		$scope.filterTeams = []
 		$scope.teams = []
 		$scope.sellers = []
 		$scope.products = []
 		$scope.timePeriods = []
-		$scope.isUnweighted = true
+		$scope.isUnweighted = false
+		$scope.years = [2016..moment().year()]
 
 		emptyFilter = $scope.emptyFilter = {id: null, name: 'All'}
 		defaultFilter =
@@ -14,9 +16,15 @@
 			seller: emptyFilter
 			product: emptyFilter
 			timePeriod: emptyFilter
+			year: null
 		$scope.filter = angular.copy defaultFilter
 
 		$scope.setFilter = (key, val) ->
+			switch key
+				when 'timePeriod'
+					$scope.filter.year = defaultFilter.year
+				when 'year'
+					$scope.filter.timePeriod = defaultFilter.timePeriod
 			$scope.filter[key] = val
 			getData getQuery()
 
@@ -54,13 +62,35 @@
 				switch type
 					when 'pipeline'
 						WeightedPipeline.get(params).then (weighted_pipeline) ->
+							$scope.revenues = null
 							$scope.weighted_pipeline = weighted_pipeline
+							$scope.sort.weighted_pipeline = new McSort(
+								column: "name",
+								compareFn: (column, a, b) ->
+									switch (column)
+										when "name", "client_name", "agency_name", "start_date", "end_date"
+											a[column].localeCompare(b[column])
+										else
+											a[column] - b[column]
+								dataset: $scope.weighted_pipeline
+							)
 							$timeout onSubtableLoad
 						, ->
 							link.removeClass('loading-subtable')
 					when 'revenue'
 						Revenue.query(params).$promise.then (revenues) ->
+							$scope.weighted_pipeline = null
 							$scope.revenues = revenues
+							$scope.sort.revenues = new McSort(
+								column: "name",
+								compareFn: (column, a, b) ->
+									switch (column)
+										when "name", "agency", "advertiser"
+											a[column] && a[column].localeCompare(b[column])
+										else
+											a[column] - b[column]
+								dataset: $scope.revenues
+							)
 							$timeout onSubtableLoad
 						, ->
 							link.removeClass('loading-subtable')
@@ -80,8 +110,8 @@
 				$scope.sellers = sellers
 
 		Team.all(all_teams: true).then (teams) ->
-			$scope.teams = teams
-			$scope.teams.unshift emptyFilter
+			$scope.filterTeams = teams
+			$scope.filterTeams.unshift emptyFilter
 
 		Seller.query({id: 'all'}).$promise.then (sellers) ->
 			$scope.sellers = sellers
@@ -92,8 +122,6 @@
 		TimePeriod.all().then (timePeriods) ->
 			$scope.timePeriods = timePeriods.filter (period) ->
 				period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
-			$scope.timePeriods.push {name: '2016 Quarterly', id: 2016, type: 'quarterly'}
-			$scope.timePeriods.push {name: '2017 Quarterly', id: 2017, type: 'quarterly'}
 			searchAndSetTimePeriod($scope.timePeriods)
 
 		searchAndSetTimePeriod = (timePeriods) ->
@@ -113,21 +141,36 @@
 			query.user_id = f.seller.id if f.seller.id
 			query.product_id = f.product.id if f.product.id
 			query.time_period_id = f.timePeriod.id if f.timePeriod.id
-#			query.new_version = true
-
-			if f.timePeriod.type is 'quarterly'
-				delete query.time_period_id
-				query.year = f.timePeriod.id
-
+			query.year = f.year if f.year
+			query.new_version = true
 			query
 		
 		getData = (query) ->
-			Forecast.query(query).$promise.then (forecast) ->
-				$scope.forecast = forecast[0]
-				drawChart($scope.forecast, '#forecast-chart')
-
-		$scope.roundNumber = (n) ->
-			Math.round(n)
+#			Forecast.query(query).$promise.then (forecast) ->
+#				$scope.forecast = forecast[0]
+#				drawChart($scope.forecast, '#forecast-chart')
+			if query.id
+				Forecast.get(query).$promise.then (forecast) ->
+					$scope.forecast = forecast
+					$scope.team = forecast
+					$scope.teams = forecast.teams
+					$scope.members = forecast.members
+					$scope.dataset = [$scope.teams || [], $scope.members || []]
+					$scope.setMcSort()
+					drawChart($scope.forecast, '#forecast-chart')
+			else
+				Forecast.query(query).$promise.then (forecast) ->
+					if forecast.length > 1 # forecast is a quarterly member array
+						$scope.forecast = forecast
+						$scope.members = forecast
+					else # forecast is either a single top-level company or single member object
+						$scope.forecast = forecast[0]
+						$scope.teams = forecast[0].teams
+						if forecast[0].type && forecast[0].type == "member"
+							$scope.member = forecast[0]
+					$scope.dataset = [$scope.teams || [], $scope.members || []]
+					$scope.setMcSort()
+					drawChart($scope.forecast, '#forecast-chart')
 
 		$scope.toggleUnweighted = (e) ->
 			if !$scope.isChartDrawed
@@ -156,61 +199,79 @@
 			width = null
 			dataWidth = null
 			(updateBarSizes = ->
-				barWidth = 50
+				barWidth = 56
 				uwBarWidth = 25
 				barWidth = uwBarWidth if $scope.isUnweighted
-				barMargin = 25
 				if $scope.isUnweighted
+					barMargin = 30
 					columnWidth = barWidth * 2 + barSpaceBetween
 				else
+					barMargin = 25
 					columnWidth = barWidth
 				width = chartContainer.width() - margin.left - margin.right
-				dataWidth = data.teams.length * (columnWidth + barMargin)
+				dataWidth = (data.teams && data.teams.length || 1) * (columnWidth + barMargin)
 				width = dataWidth if dataWidth > width
 			)()
 			height = 300
 
 			getColor = (probability) ->
-				if _.isNumber probability then shadeColor colors[1], 0.95 - 0.95 * probability / 100 else colors[0]
+				if _.isFinite probability then shadeColor colors[1], 0.95 - 0.95 * probability / 100 else colors[0]
 
 			dataset = []
-			sets = angular.copy data.stages
+			sets = angular.copy(data.stages)
+			if !sets
+				sets = _.pluck(data, 'stages')
+				sets = _.union.apply(this, sets)
+				sets = _.uniq(sets, 'id')
 			sets.reverse()
 			sets.unshift {type: 'revenue'}
 			sets.unshift {type: 'quota'}
 			sets.push {type: 'quotaLine'}
-			_.each data.teams, (team, i) ->
+			items = switch data.type
+				when 'team'
+					data.members.concat data.leader
+				when 'member'
+					[data]
+				else
+					if data.length > 1 then data else data.teams
+			_.each items, (item, i) ->
 				w0 = 0
 				uw0 = 0
+				tt = {w: {}, uw: {}}
 				_.each sets, (set, j) ->
 					switch set.type
 						when 'revenue'
-							weighted = team.revenue || 0
-							unweighted = team.revenue || 0
+							weighted = item.revenue || 0
+							unweighted = item.revenue || 0
+							tt.revenue = item.revenue
 							color = getColor(set.probability)
 						when 'quota'
-							weighted = team.quota || 0
-							unweighted = team.quota || 0
+							weighted = item.quota || 0
+							unweighted = item.quota || 0
 							color = colors[2]
 						when 'quotaLine'
-							weighted = 100000
-							unweighted = 100000
+							weighted = 0
+							unweighted = 0
 							color = 'transparent'
 						else
-							weighted = team.weighted_pipeline_by_stage[set.id] || 0
-							unweighted = team.unweighted_pipeline_by_stage[set.id] || 0
+							weighted = Number(item.weighted_pipeline_by_stage[set.id]) || 0
+							unweighted = Number(item.unweighted_pipeline_by_stage[set.id]) || 0
 							color = getColor(set.probability)
 					if !_.isArray dataset[j] then dataset[j] = []
+					if _.isNumber(set.probability)
+						tt.w[set.probability] = weighted
+						tt.uw[set.probability] = unweighted
 					dataset[j][i] =
-						name: if team.quarter then team.name + ' Q' + team.quarter else team.name
+						name: if item.quarter then item.name + ' Q' + item.quarter else item.name
 						type: set.type
-						quota: team.quota
+						quota: item.quota
 						w: weighted
 						uw: unweighted
 						w0: w0
 						uw0: uw0
 						stage: set.probability
 						color: color
+						tooltip: tt
 					if set.type != 'quota'
 						w0 += weighted
 						uw0 += unweighted
@@ -237,8 +298,8 @@
 				)
 				yMax = maxValue * 1.2
 
-				items = dataset[0].map((d) -> d.name)
-				x = d3.scale.ordinal().domain(items).rangeRoundBands([0, width])
+				xLabels = _.pluck(dataset[0], 'name')
+				x = d3.scale.ordinal().domain(xLabels).rangeRoundBands([0, width])
 				y = d3.scale.linear().domain([yMax, 0]).range([0, height])
 				xAxis = d3.svg.axis().scale(x).orient('bottom')
 				yAxis = d3.svg.axis().scale(y).orient('left')
@@ -266,10 +327,33 @@
 				.style 'fill', (d, i) ->
 					d[0].color
 
+			curr = (v) -> $filter('currency')(v, '$', 0)
+
 			groups.selectAll('rect.w-rect').data((d) -> d)
 				.enter()
 				.append('rect')
 				.attr('class', 'w-rect')
+				.on 'mouseenter', (d, i) ->
+					content = "<div><b>#{d.name}</b></div>"
+					_.map d.tooltip.w, (val, key) ->
+						if !val then return
+						content += """<div>
+										<span class="tip-icon" style="background-color: #{getColor(key)}"></span>
+										#{key}% <span class="tip-text">#{curr(val)}</span>
+									  </div>"""
+					content += """<div>
+									<span class="tip-icon" style="background-color: #{getColor()}"></span>
+									Revenue <span class="tip-text">#{curr(d.tooltip.revenue)}</span>
+								  </div>"""
+					tooltip
+						.classed 'active', true
+						.html(content)
+				.on 'mousemove', () ->
+					tooltip
+						.style('left', (d3.event.clientX + 6) + 'px')
+						.style('top', (d3.event.clientY - tooltip.node().clientHeight - 6) + 'px');
+				.on 'mouseleave', () ->
+					tooltip.classed 'active', false
 				.attr 'x', (d, i) ->
 					if $scope.isUnweighted
 						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 - barWidth - barSpaceBetween / 2
@@ -288,9 +372,28 @@
 			groups.selectAll('rect.uw-rect').data((d) -> d)
 				.enter()
 				.append('rect')
-				.on 'mouseenter', (d, i) ->
-					console.log d
 				.attr('class', 'uw-rect')
+				.on 'mouseenter', (d, i) ->
+					content = "<div><b>#{d.name}</b></div>"
+					_.map d.tooltip.uw, (val, key) ->
+						if !val then return
+						content += """<div>
+										<span class="tip-icon" style="background-color: #{getColor(key)}"></span>
+										#{key}% <span class="tip-text">#{curr(val)}</span>
+									  </div>"""
+					content += """<div>
+									<span class="tip-icon" style="background-color: #{getColor()}"></span>
+									Revenue <span class="tip-text">#{curr(d.tooltip.revenue)}</span>
+								  </div>"""
+					tooltip
+						.classed 'active', true
+						.html(content)
+				.on 'mousemove', () ->
+					tooltip
+						.style('left', (d3.event.clientX + 6) + 'px')
+						.style('top', (d3.event.clientY - tooltip.node().clientHeight - 6) + 'px');
+				.on 'mouseleave', () ->
+					tooltip.classed 'active', false
 				.attr 'x', (d, i) ->
 					if $scope.isUnweighted
 						(columnWidth + barMargin) * (i + 1) - columnWidth / 2 + barSpaceBetween / 2
@@ -476,5 +579,55 @@
 						y(d.quota)
 
 				drawLegend()
+
+		class McSort
+			constructor: (opts) ->
+				@column = opts.column
+				@compareFn = opts.compareFn || (-> 0)
+				@dataset = opts.dataset || []
+				@defaults = opts
+				@direction = opts.direction || "asc"
+				@hasMultipleDatasets = opts.hasMultipleDatasets || false
+				@execute()
+
+			execute: ->
+				mcSort = @
+				if not @hasMultipleDatasets
+					@dataset.sort (a, b) ->
+						mcSort.compareFn(mcSort.column, a, b)
+					@dataset.reverse() if @direction == "desc"
+				else
+					@dataset = @dataset.map (row) ->
+						row.sort (a, b) ->
+							mcSort.compareFn(mcSort.column, a, b)
+						row.reverse() if mcSort.direction == "desc"
+						row
+				@dataset
+
+			reset: ->
+				@column = @defaults.column
+				@direction = @defaults.direction || "asc"
+				@execute()
+
+			toggle: (column) ->
+				direction = "asc"
+				direction = "desc" if @column == column and @direction == "asc"
+				@column = column
+				@direction = direction
+				@execute()
+
+
+		$scope.setMcSort = ->
+			$scope.sort = new McSort({
+				column: "name",
+				compareFn: (column, a, b) ->
+					switch (column)
+						when "name", "agency", "advertiser"
+							a[column].localeCompare(b[column])
+						else
+							a[column] - b[column]
+				dataset: $scope.dataset
+				hasMultipleDatasets: true
+			})
 
 	]

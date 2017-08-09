@@ -1,8 +1,6 @@
 %tr
 	%td
-		%div{ ng: { if: 'row.type == "member"' } }
-			{{ row.name }}
-		%div{ ng: { if: 'row.type == "team"' } }
+		%div{ ng: { if: 'row.type == "team" || row.type == "member"' } }
 			{{ row.name + (row.quarter ? ' Q' + row.quarter : '')}}
 		%div{ ng: { if: 'row.is_leader && year' } }
 			\--
@@ -19,9 +17,9 @@
 	%td
 		{{ row.is_leader ? '--' : (row.gap_to_quota | currency: '$': 0) }}
 	%td
-		{{ row.is_leader ? '--' : (row.percent_to_quota | number: 0) }}%
+		{{ row.is_leader ? '--' : (row.percent_to_quota | number: 0) + '%'}}
 	%td
-		{{ row.is_leader ? '--' : (row.percent_booked | number: 0) }}%
+		{{ row.is_leader ? '--' : (row.percent_booked | number: 0) + '%'}}
 	%td
 		{{ row.is_leader ? '--' : row.new_deals_needed }}
 	%td
@@ -35,7 +33,7 @@
 				%div.mb10
 					%span.title Revenue Summary
 					%span.close-btn{'ng-click': 'hideSubtable()'}
-				%table.table.subtable
+				%table.table.subtable{'ng-if': 'openedSubtable == row && revenues'}
 					%thead
 						%tr
 							%th
@@ -78,8 +76,10 @@
 			%div.subtable-container
 				%div.mb10
 					%span.title Deal Summary
+					%span.mr8
+					%a{ href: '', 'ng-href': '/deals' } Manage Pipeline
 					%span.close-btn{'ng-click': 'hideSubtable()'}
-				%table.table.subtable
+				%table.table.subtable{'ng-if': 'openedSubtable == row && weighted_pipeline'}
 					%thead
 						%tr
 							%th

@@ -16,7 +16,7 @@
 									Reset
 						%tr
 							%td
-								%tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
+								%tree-dropdown{ class:"tree-dropdown team-list", data:"filterTeams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
 
 							%td
 								%ul.filter-item
@@ -48,13 +48,16 @@
 							%td
 								%ul.filter-item
 									%li{ dropdown: true }
-										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
-											{{filter.timePeriod.name || 'All'}}
+										%a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id && !filter.year}' }
+											{{filter.timePeriod.id ? filter.timePeriod.name : '' || filter.year ? filter.year + ' Quarterly' : '' || 'Select'}}
 											%span.caret
 										%ul.dropdown-menu
 											%li{ ng: { repeat: 'timePeriod in timePeriods | orderBy : ["period_type", "start_date"]', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
 												%a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
 													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+											%li{ ng: { repeat: 'year in years', class: '{active: year == filter.year}' } }
+												%a{ href: '', ng: { click: 'setFilter("year", year)' } }
+													{{year}} Quarterly
 				.header-cell
 					%b Show UW
 					.show-hide-remainder-form.m0
@@ -64,10 +67,11 @@
 								%span
 
 		.row.mb20
-			.col-xs-9.pl0
+			.col-xs-12.pl0
 				.block
 					.table-wrapper
 						%div#forecast-chart-container.mb20
+							%div#forecast-chart-tooltip
 							%svg#forecast-chart.forecast-chart
 							%div.legend-container
 					.table-wrapper
@@ -118,12 +122,12 @@
 										%span.clickable{ ng: { click: 'sort.toggle("wow_revenue")' } }
 											Wow Revenue
 											%i{ ng: { class: "{ 'fa': sort.column == 'wow_revenue', 'fa-sort-asc': sort.column == 'wow_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'wow_revenue' && sort.direction == 'desc' }" } }
-							%tbody.teams{ ng: { repeat: 'row in forecast.teams', include: "'partials/forecast/forecast_row.html'" } }
-							%tbody.leader{ ng: { repeat: 'row in [forecast.leader]', include: "'partials/forecast/forecast_row.html'", if: 'forecast.leader && (forecast.leader.revenue > 0 || forecast.leader.weighted_pipeline > 0)' } }
-							%tbody.members{ ng: { repeat: 'row in forecast.members', include: "'partials/forecast/forecast_row.html'" } }
-							%tbody.member{ ng: { hide: 'forecast.teams || forecast.members', repeat: 'row in [forecast]', include: "'partials/forecast/forecast_row.html'" } }
+							%tbody.teams{ ng: { repeat: 'row in teams', include: "'partials/forecast/forecast_row.html'" } }
+							%tbody.leader{ ng: { repeat: 'row in [forecast.leader]', include: "'partials/forecast/forecast_row.html'", if: 'forecast.leader' } }
+							%tbody.members{ ng: { repeat: 'row in members', include: "'partials/forecast/forecast_row.html'" } }
+							%tbody.member{ ng: { hide: 'teams || members', repeat: 'row in [forecast]', include: "'partials/forecast/forecast_row.html'" } }
 
-			.col-xs-3.pr0
+			-#.col-xs-3.pr0
 				.block
 					%div.mb20
 						%span.title Forecast Insights
