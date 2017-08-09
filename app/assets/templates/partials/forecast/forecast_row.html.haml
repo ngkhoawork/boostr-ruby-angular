@@ -6,8 +6,10 @@
 			\--
 	%td
 		{{ row.is_leader ? '--' : (row.quota | currency: '$': 0) }}
-	%td
-		%a{href: '', 'ng-click': 'showSubtable(row, "revenue", $event)'} {{ row.revenue | currency: '$': 0 }}
+	%td.subtable-arrow-wrap
+		%div
+			%a{href: '', 'ng-click': 'showSubtable(row, "revenue", $event)'} {{ row.revenue | currency: '$': 0 }}
+			%i.fa.fa-caret-up.subtable-arrow
 	%td.subtable-arrow-wrap
 		%div
 			%a{href: '', 'ng-click': 'showSubtable(row, "pipeline", $event)'} {{ row.weighted_pipeline | currency: '$': 0 }}
