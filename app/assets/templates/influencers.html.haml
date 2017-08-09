@@ -9,6 +9,7 @@
       .header-item.contact-search
         %i.fa.fa-search
         %input.form-control{placeholder: 'Search', ng: {model: 'query', 'model-options': '{debounce: 500}' }}
+      .header-item
 
     .row.block{'ng-if': '!influencers.length'}
       .title No Data Available
