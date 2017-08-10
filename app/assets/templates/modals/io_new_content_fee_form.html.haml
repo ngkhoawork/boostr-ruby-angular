@@ -17,7 +17,7 @@
                     .form-group.product-budget{'ng-class': "{'with-add-btn': content_fee.isIncorrectTotalBudgetPercent}"}
                         %label Total Budget
                         %div.total-budget-wrap
-                            %input.form-control.total-budget{'numbers-only': '', 'ng-model': 'content_fee.budget_loc', 'ng-change': 'changeTotalBudget()'}
+                            %input.form-control.total-budget{'float-only': '', 'ng-model': 'content_fee.budget_loc', 'ng-change': 'changeTotalBudget()'}
                             %span.total-percent{'ng-class': "{'has-error': content_fee.isIncorrectTotalBudgetPercent}"}
                                 {{(content_fee.budget_percent || 0 )+ '%'}}
                             %span.reset-budget.glyphicon.glyphicon-remove-circle{'ng-class': "{'has-error': content_fee.isIncorrectTotalBudgetPercent}", 'ng-click': 'resetAddProduct()'}
@@ -31,13 +31,13 @@
                                     'ng-change': 'changeMonthValue(month.budget_loc, $index)',
                                     'ng-focus': 'cutCurrencySymbol(month.budget_loc, $index)',
                                     'ng-blur': 'setCurrencySymbol(month.budget_loc, $index)',
-                                    'numbers-only':''}
+                                    'float-only':''}
                                 %input.form-control{ 'ng-model': 'month.percent_value',
                                     'ng-disabled': '!content_fee.budget_loc',
                                     'ng-change': 'changeMonthPercent(month.percent_value, $index)',
                                     'ng-focus': 'cutPercent(month.percent_value, $index)',
                                     'ng-blur': 'setPercent(month.percent_value, $index)',
-                                    'numbers-only':''}
+                                    'float-only':''}
         .popup-modal-footer
             %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close
             %button.btn.btn-warning{'type': 'submit', 'ng-disabled': 'content_fee.isIncorrectTotalBudgetPercent || !content_fee.product_id'} Add Content Fee
