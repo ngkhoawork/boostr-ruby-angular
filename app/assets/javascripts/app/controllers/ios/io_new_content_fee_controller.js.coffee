@@ -35,8 +35,8 @@
                         budgetSum = budgetSum + month.budget_loc
                         budgetPercentSum = budgetPercentSum + month.percent_value
                     else
-                        month.budget_loc = $scope.content_fee.budget_loc - budgetSum
-                        month.percent_value = 100 - budgetPercentSum
+                        month.budget_loc = Math.round(($scope.content_fee.budget_loc - budgetSum) * 100) / 100
+                        month.percent_value = Math.round((100 - budgetPercentSum) * 100) / 100
 
             cutSymbolsAddProductBudget = (contentFee)->
                 contentFee = angular.copy contentFee
@@ -82,8 +82,9 @@
             $scope.changeTotalBudget = ->
                 $scope.content_fee.budget_percent = 100
                 $scope.content_fee.isIncorrectTotalBudgetPercent = false
-                budgetOneDay = $scope.content_fee.budget_loc / $scope.currentIO.days
-
+                budgetOneDay = parseFloat($scope.content_fee.budget_loc) / parseFloat($scope.currentIO.days)
+                if ($scope.content_fee.budget_loc && Math.floor($scope.content_fee.budget_loc * 100) / 100 != parseFloat($scope.content_fee.budget_loc))
+                    $scope.content_fee.budget_loc = Math.floor($scope.content_fee.budget_loc * 100) / 100
                 budgetSum = 0
                 budgetPercentSum = 0
                 _.each $scope.content_fee.content_fee_product_budgets, (month, index) ->
@@ -91,8 +92,8 @@
                         month.percent_value = 0
                         month.budget_loc = 0
                     else
-                        month.budget_loc = Math.round($scope.currentIO.days_per_month[index] * budgetOneDay)
-                        month.percent_value = Math.round(month.budget_loc / $scope.content_fee.budget_loc * 100)
+                        month.budget_loc = Math.round($scope.currentIO.days_per_month[index] * budgetOneDay * 100) / 100
+                        month.percent_value = Math.round(month.budget_loc / $scope.content_fee.budget_loc * 10000) / 100
                     budgetSum = budgetSum + $scope.currentIO.days_per_month[index] * budgetOneDay
                     budgetPercentSum = budgetPercentSum + month.percent_value
                 if($scope.content_fee.budget_loc && budgetSum != $scope.content_fee.budget_loc  || budgetPercentSum && budgetPercentSum != 100)
@@ -100,6 +101,8 @@
                 setSymbolsAddProductBudget()
 
             $scope.changeMonthValue = (monthValue, index)->
+                if (monthValue && Math.floor(monthValue * 100) / 100 != parseFloat(monthValue))
+                    monthValue = Math.floor(monthValue * 100) / 100
                 if(!monthValue)
                     monthValue = 0
                 if((monthValue+'').length > 1 && (monthValue+'').charAt(0) == '0')
@@ -112,8 +115,9 @@
                         $scope.content_fee.budget_loc = $scope.content_fee.budget_loc + Number(monthValue)
                     else
                         $scope.content_fee.budget_loc = $scope.content_fee.budget_loc + $scope.cutCurrencySymbol(month.budget_loc)
+                $scope.content_fee.budget_loc = Math.round($scope.content_fee.budget_loc * 100) / 100
                 _.each $scope.content_fee.content_fee_product_budgets, (month) ->
-                    month.percent_value = $scope.setPercent( Math.round($scope.cutCurrencySymbol(month.budget_loc) / $scope.content_fee.budget_loc * 100))
+                    month.percent_value = $scope.setPercent( Math.round($scope.cutCurrencySymbol(month.budget_loc) / $scope.content_fee.budget_loc * 10000) / 100)
 
             $scope.changeMonthPercent = (monthPercentValue, index)->
                 if(!monthPercentValue)
@@ -121,7 +125,7 @@
                 if((monthPercentValue+'').length > 1 && (monthPercentValue+'').charAt(0) == '0')
                     monthPercentValue = Number((monthPercentValue + '').slice(1))
                 $scope.content_fee.content_fee_product_budgets[index].percent_value = monthPercentValue
-                $scope.content_fee.content_fee_product_budgets[index].budget_loc = $scope.setCurrencySymbol(Math.round(monthPercentValue/100*$scope.content_fee.budget_loc))
+                $scope.content_fee.content_fee_product_budgets[index].budget_loc = $scope.setCurrencySymbol(Math.round(monthPercentValue/100*$scope.content_fee.budget_loc*100) / 100)
 
                 $scope.content_fee.budget_percent = 0
                 _.each $scope.content_fee.content_fee_product_budgets, (month) ->
@@ -138,7 +142,7 @@
                             budgetSum = 0
                             budgetPercentSum = 0
                             _.each content_fee.content_fee_product_budgets, (content_fee_product_budget, index) ->
-                                content_fee_product_budget.budget_percent = Math.round(content_fee_product_budget.budget_loc/content_fee.budget_loc*100)
+                                content_fee_product_budget.budget_percent = Math.round(content_fee_product_budget.budget_loc/content_fee.budget_loc*10000) / 100
                                 budgetSum = budgetSum + content_fee_product_budget.budget_loc
                                 budgetPercentSum = budgetPercentSum + content_fee_product_budget.budget_percent
 
