@@ -293,7 +293,7 @@
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
 
-    .when '/fore_cast_old/',
+    .when '/fore_cast_old/:team_id?',
       templateUrl: 'forecasts_old.html'
       controller: 'ForecastsOldController'
 

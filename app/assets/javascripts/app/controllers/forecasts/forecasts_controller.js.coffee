@@ -253,6 +253,7 @@
 				else
 					if data.length > 1 then data else data.teams
 			_.each items, (item, i) ->
+				if !item then return
 				w0 = 0
 				uw0 = 0
 				tt = {w: {}, uw: {}}
