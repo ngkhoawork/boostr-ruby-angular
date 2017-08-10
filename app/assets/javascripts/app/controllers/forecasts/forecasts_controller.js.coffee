@@ -1,6 +1,6 @@
 @app.controller 'ForecastsController',
-	['$scope', '$timeout', '$filter', 'Forecast', 'WeightedPipeline', 'Revenue', 'Team', 'Seller', 'Product', 'TimePeriod', 'shadeColor'
-	( $scope,   $timeout,   $filter,   Forecast,   WeightedPipeline,   Revenue,   Team,   Seller,   Product,   TimePeriod,   shadeColor ) ->
+	['$scope', '$timeout', '$filter', '$q', 'Forecast', 'WeightedPipeline', 'Revenue', 'Team', 'Seller', 'Product', 'TimePeriod', 'CurrentUser', 'shadeColor'
+	( $scope,   $timeout,   $filter,   $q,   Forecast,   WeightedPipeline,   Revenue,   Team,   Seller,   Product,   TimePeriod,   CurrentUser,   shadeColor ) ->
 
 		$scope.filterTeams = []
 		$scope.teams = []
@@ -26,11 +26,17 @@
 				when 'year'
 					$scope.filter.timePeriod = defaultFilter.timePeriod
 			$scope.filter[key] = val
+			$scope.applyFilter()
+
+		$scope.applyFilter = ->
 			getData getQuery()
 
 		$scope.resetFilter = ->
 			$scope.filter = angular.copy defaultFilter
 			searchAndSetTimePeriod($scope.timePeriods)
+			searchAndSetTeam($scope.filterTeams, $scope.currentUser)
+			searchAndSetSeller($scope.filter.team, $scope.currentUser)
+			$scope.applyFilter()
 
 		$scope.showSubtable = (row, type, event) ->
 			$scope.openedSubtable = row
@@ -105,22 +111,25 @@
 		$scope.$watch 'filter.team', (team, prevTeam) ->
 			if team == prevTeam then return
 			if team.id then $scope.filter.seller = emptyFilter
-			$scope.setFilter('team', team)
+			$scope.filter.team = team
+			searchAndSetSeller(team, $scope.currentUser)
+			$scope.applyFilter()
 			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = sellers
 
-		Team.all(all_teams: true).then (teams) ->
-			$scope.filterTeams = teams
+		$q.all(
+			user: CurrentUser.get().$promise
+			teams: Team.all(all_teams: true)
+			sellers: Seller.query({id: 'all'}).$promise
+			products: Product.all()
+			timePeriods: TimePeriod.all()
+		).then (data) ->
+			$scope.filterTeams = data.teams
 			$scope.filterTeams.unshift emptyFilter
-
-		Seller.query({id: 'all'}).$promise.then (sellers) ->
-			$scope.sellers = sellers
-
-		Product.all().then (products) ->
-			$scope.products = products
-
-		TimePeriod.all().then (timePeriods) ->
-			$scope.timePeriods = timePeriods.filter (period) ->
+			searchAndSetTeam(data.teams, data.user) if $scope.currentUserIsLeader
+			$scope.sellers = data.sellers
+			$scope.products = data.products
+			$scope.timePeriods = data.timePeriods.filter (period) ->
 				period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
 			searchAndSetTimePeriod($scope.timePeriods)
 
@@ -128,11 +137,23 @@
 			for period in timePeriods
 				if period.period_type is 'quarter' and
 				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
-					return $scope.setFilter('timePeriod', period)
+					return $scope.filter.timePeriod = period
 			for period in timePeriods
 				if period.period_type is 'year' and
 				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
-					return $scope.setFilter('timePeriod', period)
+					return $scope.filter.timePeriod = period
+
+		searchAndSetTeam = (teams, user) ->
+			for team in teams
+				if team.leader_id is user.id
+					return $scope.filter.team = team
+				if team.children && team.children.length
+					searchAndSetUserTeam team.children, user
+
+		searchAndSetSeller = (team, user) ->
+			if !team.id then return
+			if team.leader_id is user.id or _.findWhere team.members, {id: user.id}
+				return $scope.filter.seller = user
 
 		getQuery = ->
 			f = $scope.filter
@@ -146,9 +167,6 @@
 			query
 		
 		getData = (query) ->
-#			Forecast.query(query).$promise.then (forecast) ->
-#				$scope.forecast = forecast[0]
-#				drawChart($scope.forecast, '#forecast-chart')
 			if query.id
 				Forecast.get(query).$promise.then (forecast) ->
 					$scope.forecast = forecast
