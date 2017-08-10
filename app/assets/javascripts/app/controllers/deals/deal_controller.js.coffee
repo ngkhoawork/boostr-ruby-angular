@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -182,6 +182,7 @@
     $scope.initActivity()
     getDealCustomFieldNames()
     getDealProductCfNames()
+    getValidations()
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -191,6 +192,10 @@
     DealProductCfName.all().then (dealProductCfNames) ->
       $scope.dealProductCfNames = dealProductCfNames
       $scope.activeDealProductCfLength = (_.filter dealProductCfNames, (item) -> !item.disabled).length
+
+  getValidations = () ->
+    Validation.deal_base_fields().$promise.then (data) ->
+      $scope.base_fields_validations = data
 
   $scope.sumDealProductBudget = (index) ->
     products = $scope.currentDeal.deal_products
@@ -930,6 +935,11 @@
         $scope.$emit('updated_activities')
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
+
+  $scope.baseFieldRequired = (factor) ->
+    if $scope.currentDeal && $scope.base_fields_validations
+      validation = _.findWhere($scope.base_fields_validations, factor: factor)
+      return validation?
 
   $scope.submitReminderForm = () ->
     $scope.reminderOptions.errors = {}

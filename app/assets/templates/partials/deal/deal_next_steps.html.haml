@@ -39,5 +39,7 @@
 
 					.popup-modal-footer
 						%button.btn.btn-warning{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } }  Set Reminder
-	.title.mb20 Next Steps
+	.title.mb20
+		Next Steps
+		%span.star{ 'ng-if': "baseFieldRequired('next_steps')" } *
 	%textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.next_steps", name: "next_steps", placeholder: 'Enter Next Steps', 'ng-blur': 'updateDeal()' }

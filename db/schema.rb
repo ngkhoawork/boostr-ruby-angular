@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170725130041) do
+ActiveRecord::Schema.define(version: 20170814172411) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -119,10 +119,7 @@ ActiveRecord::Schema.define(version: 20170725130041) do
     t.integer "account_type"
     t.integer "category_id"
     t.integer "subcategory_id"
-    t.integer "holding_company_id"
   end
-
-  add_index "account_dimensions", ["holding_company_id"], name: "index_account_dimensions_on_holding_company_id", using: :btree
 
   create_table "account_pipeline_facts", force: :cascade do |t|
     t.integer "company_id"
@@ -239,8 +236,10 @@ ActiveRecord::Schema.define(version: 20170725130041) do
     t.string   "icon"
     t.integer  "updated_by"
     t.integer  "created_by"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "position"
+    t.boolean  "status",     default: true
   end
 
   create_table "ad_units", force: :cascade do |t|
@@ -330,6 +329,27 @@ ActiveRecord::Schema.define(version: 20170725130041) do
 
   add_index "assets", ["attachable_id", "attachable_type"], name: "index_assets_on_attachable_id_and_attachable_type", using: :btree
   add_index "assets", ["created_by"], name: "index_assets_on_created_by", using: :btree
+
+  create_table "audit_logs", force: :cascade do |t|
+    t.string   "auditable_type"
+    t.integer  "auditable_id"
+    t.string   "type_of_change"
+    t.string   "old_value"
+    t.string   "new_value"
+    t.string   "biz_days"
+    t.integer  "updated_by"
+    t.integer  "company_id"
+    t.integer  "user_id"
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.decimal  "changed_amount", precision: 12, scale: 2
+  end
+
+  add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
+  add_index "audit_logs", ["auditable_type"], name: "index_audit_logs_on_auditable_type", using: :btree
+  add_index "audit_logs", ["company_id"], name: "index_audit_logs_on_company_id", using: :btree
+  add_index "audit_logs", ["updated_by"], name: "index_audit_logs_on_updated_by", using: :btree
+  add_index "audit_logs", ["user_id"], name: "index_audit_logs_on_user_id", using: :btree
 
   create_table "bp_estimate_products", force: :cascade do |t|
     t.integer  "bp_estimate_id"
@@ -458,9 +478,9 @@ ActiveRecord::Schema.define(version: 20170725130041) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
     t.boolean  "influencer_enabled",                default: false
-    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
   end
 
@@ -957,9 +977,11 @@ ActiveRecord::Schema.define(version: 20170725130041) do
     t.decimal  "budget_loc",          precision: 15, scale: 2, default: 0.0
     t.integer  "initiative_id"
     t.string   "closed_reason_text"
+    t.datetime "next_steps_due"
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
+  add_index "deals", ["agency_id", "company_id"], name: "idx_test", using: :btree
   add_index "deals", ["agency_id"], name: "index_deals_on_agency_id", using: :btree
   add_index "deals", ["company_id"], name: "index_deals_on_company_id", using: :btree
   add_index "deals", ["created_by"], name: "index_deals_on_created_by", using: :btree
@@ -1577,9 +1599,9 @@ ActiveRecord::Schema.define(version: 20170725130041) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
+    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
-    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
@@ -1623,6 +1645,7 @@ ActiveRecord::Schema.define(version: 20170725130041) do
 
   add_index "values", ["company_id", "field_id"], name: "index_values_on_company_id_and_field_id", using: :btree
   add_index "values", ["option_id"], name: "index_values_on_option_id", using: :btree
+  add_index "values", ["subject_type", "option_id"], name: "idx_test999", using: :btree
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
@@ -1633,11 +1656,9 @@ ActiveRecord::Schema.define(version: 20170725130041) do
   add_foreign_key "account_pipeline_facts", "account_dimensions"
   add_foreign_key "account_pipeline_facts", "companies"
   add_foreign_key "account_pipeline_facts", "time_dimensions"
-  add_foreign_key "account_product_pipeline_facts", "account_dimensions"
   add_foreign_key "account_product_pipeline_facts", "companies"
   add_foreign_key "account_product_pipeline_facts", "products", column: "product_dimension_id"
   add_foreign_key "account_product_pipeline_facts", "time_dimensions"
-  add_foreign_key "account_product_revenue_facts", "account_dimensions"
   add_foreign_key "account_product_revenue_facts", "companies"
   add_foreign_key "account_product_revenue_facts", "products", column: "product_dimension_id"
   add_foreign_key "account_product_revenue_facts", "time_dimensions"

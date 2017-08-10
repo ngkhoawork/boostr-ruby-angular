@@ -9,6 +9,8 @@
     $scope.advertiser_base_fields        = _.filter(validations, object: 'Advertiser Base Field')
     $scope.agency_base_fields            = _.filter(validations, object: 'Agency Base Field')
 
+    $scope.deal_base_fields            = _.filter(validations, object: 'Deal Base Field')
+
   $scope.updateValidation = (validation) ->
     Validation.update(id: validation.id, validation: validation)
 

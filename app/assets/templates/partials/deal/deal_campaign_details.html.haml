@@ -7,8 +7,9 @@
         %span.title Campaign Details
     %div.custom-field-item
         %div.custom-field-item-label
-            %label{ for: 'type' }
+            %label{ for: 'type', ng: { class: '{"required-field": baseFieldRequired("deal_type_value")}' } }
                 Type
+                %span.star{ 'ng-if': "baseFieldRequired('deal_type_value')" } *
         %div.custom-field-item-field
             .dropdown
                 %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
@@ -21,8 +22,9 @@
                             %span.text {{option.name}}
     %div.custom-field-item
         %div.custom-field-item-label
-            %label{ for: 'source' }
+            %label{ for: 'source', ng: { class: '{"required-field": baseFieldRequired("deal_source_value")}' } }
                 Source
+                %span.star{ 'ng-if': "baseFieldRequired('deal_source_value')" } *
         %div.custom-field-item-field
             .dropdown
                 %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}

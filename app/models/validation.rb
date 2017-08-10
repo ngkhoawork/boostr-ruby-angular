@@ -20,6 +20,12 @@ class Validation < ActiveRecord::Base
     .where('values.value_boolean = ?', true)
   end
 
+  scope :deal_base_fields, -> do
+    where(object: 'Deal Base Field')
+    .joins(:criterion)
+    .where('values.value_boolean = ?', true)
+  end
+
   def as_json(options = {})
     super(options.merge(
       include: {
@@ -41,6 +47,10 @@ class Validation < ActiveRecord::Base
       'Region'
     when 'client_segment_id'
       'Segment'
+    when 'deal_type_value'
+      'Deal Type'
+    when 'deal_source_value'
+      'Deal Source'
     else
       self.factor.titleize
     end

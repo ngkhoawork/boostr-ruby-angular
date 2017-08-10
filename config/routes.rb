@@ -273,6 +273,7 @@ Rails.application.routes.draw do
     resources :validations, only: [:index, :update] do
       collection do
         get :account_base_fields
+        get :deal_base_fields
       end
     end
     resources :tools, only: [:index]

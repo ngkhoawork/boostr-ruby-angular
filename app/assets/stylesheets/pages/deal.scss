@@ -528,6 +528,11 @@
             color: lighten($secondary-font-color, 15%);
         }
     }
+    .next-steps {
+        .star {
+            color: #ed5063;
+        }
+    }
     .contacts {
         table {
             tr {

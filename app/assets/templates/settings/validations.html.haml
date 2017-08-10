@@ -37,6 +37,22 @@
                   %i.fa.fa-exclamation-triangle{'aria-hidden' => 'true'}
                   %span Stages can't be changed to Closed Won manually
 
+            %h5 Select which fields are required
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th Base field
+                  %th Required?
+              %tbody
+                %tr{ ng: { repeat: 'base_field in deal_base_fields' } }
+                  %td {{ base_field.name }}
+                  %td
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'base_field.criterion.value', 'ng-change': "updateValidation(base_field)", id: "base-field-validation-{{base_field.id}}"}
+                        %label{:for => "base-field-validation-{{base_field.id}}"}
+                          %span
+
       .col-sm-3
         .panel
           .panel-body

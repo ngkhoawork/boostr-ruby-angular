@@ -13,6 +13,10 @@
     account_base_fields:
       method: 'GET'
       url: 'api/validations/account_base_fields'
+    deal_base_fields:
+      isArray: true
+      method: 'GET'
+      url: 'api/validations/deal_base_fields'
 
   return resource
 ]

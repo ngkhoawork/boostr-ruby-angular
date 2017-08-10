@@ -48,6 +48,7 @@ class Deal < ActiveRecord::Base
   validate :single_billing_contact
   validate :account_manager_presence
   validate :disable_manual_deal_won_validation, on: :manual_update
+  validate :base_fields_presence
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
@@ -224,6 +225,17 @@ class Deal < ActiveRecord::Base
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
       errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+    end
+  end
+
+  def base_field_validations
+    self.company.validations_for("#{self.class} Base Field")
+  end
+
+  def base_fields_presence
+    if self.company_id.present?
+      factors = base_field_validations.joins(:criterion).where('values.value_boolean = ?', true).pluck(:factor)
+      self.validates_presence_of(factors) if factors.length > 0
     end
   end
 
@@ -488,6 +500,26 @@ class Deal < ActiveRecord::Base
       end
     end
     return option
+  end
+
+  def deal_source_value
+    field_id = self.fields.find_by_name('Deal Source').id
+
+    if self.persisted?
+      self.values.where(field_id: field_id).any?
+    else
+      !!self.values.find{|val| val.field_id == field_id}
+    end
+  end
+
+  def deal_type_value
+    field_id = self.fields.find_by_name('Deal Type').id
+
+    if self.persisted?
+      self.values.where(field_id: field_id).any?
+    else
+      !!self.values.find{|val| val.field_id == field_id}
+    end
   end
 
   def get_option_value_from_raw_fields(field_data, field_name)
