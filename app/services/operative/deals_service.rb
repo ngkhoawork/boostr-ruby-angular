@@ -24,7 +24,8 @@ class Operative::DealsService
       agency: agency?,
       closed_lost: closed_lost?,
       contact: contact?,
-      enable_operative_extra_fields: deal.company.enable_operative_extra_fields
+      enable_operative_extra_fields: deal.company.enable_operative_extra_fields,
+      buzzfeed: buzzfeed?
     )
   end
 
@@ -81,5 +82,9 @@ class Operative::DealsService
 
   def contact?
     deal.ordered_by_created_at_billing_contacts.any?
+  end
+
+  def buzzfeed?
+    deal.company.id.eql?(34)
   end
 end

@@ -45,8 +45,21 @@ class Operative::ImportSalesOrdersService
     import_log = CsvImportLog.new(company_id: company_id, object_name: 'io', source: 'operative')
     import_log.set_file_source(sales_order)
 
-    CSV.parse(sales_order_file, { headers: true, header_converters: :symbol }) do |row|
+    File.foreach(sales_order_file).with_index do |line, line_num|
       import_log.count_processed
+
+      if line_num == 0
+        @headers = CSV.parse_line(line)
+        next
+      end
+
+      begin
+        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
+      rescue Exception => e
+        import_log.count_failed
+        import_log.log_error [e.message, line]
+        next
+      end
 
       if irrelevant_order(row)
         import_log.count_skipped

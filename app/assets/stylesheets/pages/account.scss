@@ -1,4 +1,24 @@
 #account {
+    .main-title {
+        height: 33px;
+        width: 96px;
+        color: #2B3C49;
+        font-family: "Avenir Next";
+        font-size: 24px;
+        font-weight: 600;
+        line-height: 33px;
+    }
+    .sub-title {
+        height: 27px;
+        width: 104px;
+        color: #2B3C49;
+        font-family: "Avenir Next";
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 27px;
+        padding-bottom: 37px;
+        padding-right: 30px;
+    }
     .return {
         padding-bottom: 46px;
         a {
