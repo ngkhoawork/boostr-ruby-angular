@@ -1,6 +1,6 @@
 @app.controller 'DealsController',
-    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter', 'shadeColor',
-    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal,   Stage,   ExchangeRate,   DealsFilter,   shadeColor ) ->
+    ['$rootScope', '$scope', '$window', '$timeout', '$document', '$filter', '$modal', '$q', '$location', 'Deal', 'Stage', 'ExchangeRate', 'DealsFilter', 'TimePeriod', 'shadeColor',
+    ( $rootScope,   $scope,   $window,   $timeout,   $document,   $filter,   $modal,   $q,   $location,   Deal,   Stage,   ExchangeRate,   DealsFilter,   TimePeriod,   shadeColor ) ->
             formatMoney = $filter('formatMoney')
 
             $scope.isLoading = false
@@ -36,6 +36,7 @@
                 members: []
                 advertisers: []
                 agencies: []
+                timePeriods: []
                 isOpen: false
                 isEndDateOpen: false
                 isStartDateOpen: false
@@ -86,13 +87,20 @@
                     refresh: ->
                         $scope.$broadcast 'rzSliderForceRender'
                 datePicker:
-                    date:
+                    startDate:
                         startDate: null
                         endDate: null
-                    apply: ->
+                    createdDate:
+                        startDate: null
+                        endDate: null
+                    applyStartDate: ->
                         _this = $scope.filter.datePicker
-                        if (_this.date.startDate && _this.date.endDate)
-                            $scope.filter.selected.date = _this.date
+                        if (_this.startDate.startDate && _this.startDate.endDate)
+                            $scope.filter.selected.startDate = _this.startDate
+                    applyCreatedDate: ->
+                        _this = $scope.filter.datePicker
+                        if (_this.createdDate.startDate && _this.createdDate.endDate)
+                            $scope.filter.selected.createdDate = _this.createdDate
                 apply: (reset) ->
                     this.appliedSelection = angular.copy this.selected
                     $scope.page = 1
@@ -124,11 +132,13 @@
                     if budget.min && budget.max
                         return formatMoney(budget.min) + ' - ' + formatMoney(budget.max)
                     return 'Budget'
-                getDateValue: ->
-                    date = this.selected.date
+                getDateValue: (key) ->
+                    date = this.selected[key]
                     if date.startDate && date.endDate
-                        return """#{date.startDate.format('MMMM D, YYYY')} -\n#{date.endDate.format('MMMM D, YYYY')}"""
-                    return 'Time period'
+                        return "#{date.startDate.format('MMM D, YYYY')} -\n#{date.endDate.format('MMM D, YYYY')}"
+                    return switch key
+                        when 'startDate' then 'Start date'
+                        when 'createdDate' then 'Created date'
                 select: (key, value) ->
                     DealsFilter.select(key, value)
                 onDropdownToggle: ->
@@ -148,8 +158,11 @@
                     query.budget_from = f.budget.min if f.budget
                     query.budget_to = f.budget.max if f.budget
                     query.curr_cd = f.currency.curr_cd if f.currency
-                    query.start_date = f.date.startDate if f.date.startDate
-                    query.end_date = f.date.endDate if f.date.endDate
+                    query.time_period_id = f.timePeriod.id if f.timePeriod
+                    query.start_start_date = f.startDate.startDate if f.startDate.startDate
+                    query.start_end_date = f.startDate.endDate if f.startDate.endDate
+                    query.created_start_date = f.createdDate.startDate if f.createdDate.startDate
+                    query.created_end_date = f.createdDate.endDate if f.createdDate.endDate
                     query.closed_year = f.yearClosed if f.yearClosed
                     query
 
@@ -180,6 +193,7 @@
                     deals_info: Deal.deals_info_by_stage(params)
                     filter: Deal.filter_data()
                     stages: Stage.query().$promise
+                    timePeriods: TimePeriod.all()
                 }).then (data) ->
                     $scope.filter.members = data.filter.members
                     $scope.filter.advertisers = data.filter.advertisers
@@ -187,6 +201,7 @@
                     $scope.filter.currencies = data.filter.currencies
                     $scope.filter.dealYears = [2015.. DealsFilter.currentYear]
                     $scope.filter.slider.maxValue = $scope.filter.slider.options.ceil = data.filter.max_budget
+                    $scope.filter.timePeriods = data.timePeriods
                     $scope.dealsInfo = data.deals_info
                     $scope.deals = data.deals
                     $scope.stages = data.stages

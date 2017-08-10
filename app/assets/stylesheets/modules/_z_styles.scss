@@ -282,7 +282,7 @@
                             display: block;
                             cursor: pointer;
                             padding: 6px 20px;
-                            color: inherit;
+                            color: inherit !important;
                             &:hover, &:focus {
                                 background-color: #EDEFF0;
                                 outline: none;
