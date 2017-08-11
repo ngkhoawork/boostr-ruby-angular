@@ -22,7 +22,7 @@
       defaultUser = {id: 'all', name: 'All', first_name: 'All'}
       currentUser = null
 
-      $scope.filter =
+      $scope.defaultFilter =
         team: {id: null, name: 'All'}
         type: {id: 'all', name: 'All'}
         source: {id: 'all', name: 'All'}
@@ -30,6 +30,7 @@
         seller: defaultUser
         timePeriod: {id: 'all', name: 'All'}
         stages: []
+      $scope.filter = angular.copy $scope.defaultFilter
       $scope.selectedTeam = $scope.filter.team
 
       $scope.init = ->
@@ -97,15 +98,10 @@
         $scope.filter[key] = _.reject $scope.filter[key], (row) -> row.id == item.id
 
       $scope.resetFilter = ->
-        $scope.filter =
-          team: {id: null, name: 'All'}
-          type: {id: 'all', name: 'All'}
-          source: {id: 'all', name: 'All'}
-          product: {id: 'all', name: 'All'}
-          seller: currentUser || defaultUser
-          timePeriod: {id: 'all', name: 'All'}
-          stages: []
+        $scope.filter = angular.copy $scope.defaultFilter
         $scope.selectedTeam = $scope.filter.team
+        if currentUser.user_type is 1 || currentUser.user_type is 2
+          $scope.filter.seller = currentUser
 
       $scope.isLoading = false
       $scope.loadMoreData = ->
@@ -118,9 +114,9 @@
         $scope.page = 1
         $scope.saved_query = constructQuery()
 
-        if $scope.saved_query['stage_ids[]'].length == 0
-          alert("Please specify a stage.");
-          return
+#        if $scope.saved_query['stage_ids[]'].length == 0
+#          alert("Please specify a stage.");
+#          return
 
         getTotals($scope.saved_query)
         getData($scope.saved_query)
@@ -155,6 +151,10 @@
           else
             $scope.deals = data[0].deals
             $scope.productRange = data[0].range
+          $scope.deals = _.map $scope.deals, (deal) ->
+            deal.deal_custom_field = {} if !deal.deal_custom_field
+            console.log deal.deal_custom_field.percentage1
+            deal
 
           $scope.isLoading = false
 
@@ -184,6 +184,7 @@
         $scope.filterOpen = filterType
 
       $scope.changeSortType = (sortType) ->
+        console.log sortType
         if sortType == $scope.sortType
           $scope.sortReverse = !$scope.sortReverse
         else

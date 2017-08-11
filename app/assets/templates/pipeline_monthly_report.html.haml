@@ -27,7 +27,7 @@
                     %li{ dropdown: true }
                       %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.stages.length == 0}' }
                         %span{'ng-if': 'filter.stages.length == 0'}
-                          Select
+                          All
                         %span{'ng-repeat': 'stage in filter.stages'}
                           {{stage.name}} {{stage.probability + '%'}}
                           %i.fa.fa-times.close-btn{'ng-click': 'removeFilter("stages", stage)'}
@@ -170,30 +170,30 @@
                     %span.clickable{'ng-click': 'changeSortType("end_date")'}
                       End Date
                   %th{ ng: { repeat: 'productTime in productRange track by $index' } }
-                    %span.clickable{'ng-click': 'changeSortType("products["+$index+"]")'}
+                    %span.clickable{'ng-click': 'changeSortType("deal_product_budgets["+$index+"]")'}
                       {{ productTime | date: 'MMM-yy' }}
                   %th{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
-                    %span.clickable{'ng-click': 'changeSortType("deal_custom_field[fieldName]")'}
+                    %span.clickable{'ng-click': 'changeSortType("deal_custom_field[\""+fieldName+"\"]")'}
                       {{dealCustomFieldName.field_label}}
               %tbody.nowrap{'infinite-scroll': "loadMoreData()"}
                 %tr{ ng: { repeat: 'deal in deals | orderBy:sortType:sortReverse' } }
-                  %td.left
+                  %td
                     %div{ ng: { repeat: 'user in deal.users' } }
                       {{ user.first_name + " " + user.last_name + " (" + user.share + "%)"}}
-                  %td.left {{ deal.advertiser.name }}
-                  %td.left
-                    %a{ href: '', ng: { click: 'go("/deals/" + deal.id)'  } }
+                  %td {{ deal.advertiser.name }}
+                  %td
+                    %a{ href: '', ng: { href: '/deals/{{deal.id}}'  } }
                       {{ deal.name }}
-                  %td.left {{ deal.agency.name }}
-                  %td.left {{ deal.agency.parent_client.name }}
-                  %td.left {{ deal.stage.name }}
-                  %td.right {{ deal.stage.probability }}%
-                  %td.right {{ deal.budget | currency:'$':0}}
-                  %td.left {{ deal.next_steps.substr(0, 30) }}
-                  %td.left{ ng: { if: 'deal.latest_activity && deal.latest_activity.activity_type_name == "Email"' } }
+                  %td {{ deal.agency.name }}
+                  %td {{ deal.agency.parent_client.name }}
+                  %td {{ deal.stage.name }}
+                  %td {{ deal.stage.probability }}%
+                  %td {{ deal.budget | currency:'$':0}}
+                  %td {{ deal.next_steps.substr(0, 30) }}
+                  %td{ ng: { if: 'deal.latest_activity && deal.latest_activity.activity_type_name == "Email"' } }
                     %button.btn.activity-email-btn{'ng-click': 'showEmailsModal(deal.latest_activity)'}
                       Show email
-                  %td.left{ ng: { if: 'deal.latest_activity && deal.latest_activity.activity_type_name != "Email"' } }
+                  %td{ ng: { if: 'deal.latest_activity && deal.latest_activity.activity_type_name != "Email"' } }
                     %span{ ng: { if: 'deal.latest_activity.happened_at' } }
                       Date: {{ deal.latest_activity.happened_at | date: 'MM-dd-yyyy h:mm a' }}
                       %br
@@ -202,15 +202,15 @@
                       %br
                     %span{ ng: { if: 'deal.latest_activity.comment' } }
                       Note: {{ deal.latest_activity.comment }}
-                  %td.left{ ng: { if: '!deal.latest_activity' } }
-                  %td.left {{ deal.type }}
-                  %td.left {{ deal.source }}
-                  %td.left {{ deal.team }}
-                  %td.left {{ deal.start_date | date: 'MM-dd-yyyy' }}
-                  %td.left {{ deal.end_date | date: 'MM-dd-yyyy' }}
-                  %td.right{ ng: { repeat: 'productTime in productRange track by $index' } }
+                  %td{ ng: { if: '!deal.latest_activity' } }
+                  %td {{ deal.type }}
+                  %td {{ deal.source }}
+                  %td {{ deal.team }}
+                  %td {{ deal.start_date | date: 'MM-dd-yyyy' }}
+                  %td {{ deal.end_date | date: 'MM-dd-yyyy' }}
+                  %td{ ng: { repeat: 'productTime in productRange track by $index' } }
                     ${{ deal.deal_product_budgets[$index] | number : 0 }}
-                  %td.right{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
+                  %td{ ng: { repeat: 'dealCustomFieldName in dealCustomFieldNames | orderBy: "position"', init: 'fieldName = dealCustomFieldName.field_type + dealCustomFieldName.field_index' } }
                     %span{'ng-if': 'dealCustomFieldName.field_type == "percentage"'}
                       {{deal.deal_custom_field[fieldName] || 0}}%
                     %span{'ng-if': 'dealCustomFieldName.field_type == "number"'}
@@ -231,3 +231,5 @@
                       {{deal.deal_custom_field[fieldName] || "N/A"}}
                     %span{'ng-if': 'dealCustomFieldName.field_type == "sum"'}
                       {{ (deal.deal_custom_field[fieldName] || 0) | number : 0 }}
+                    %a{href: '', ng: { 'if': 'dealCustomFieldName.field_type == "link"', href: '{{deal.deal_custom_field[fieldName]}}' } }
+                      {{deal.deal_custom_field[fieldName]}}
