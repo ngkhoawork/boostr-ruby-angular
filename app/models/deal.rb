@@ -430,7 +430,8 @@ class Deal < ActiveRecord::Base
 
     write_to_deal_log(budget_change, budget_change_loc) if budget_change != 0
 
-    update_attributes(budget: new_budget, budget_loc: new_budget_loc)
+    self.assign_attributes(budget: new_budget, budget_loc: new_budget_loc)
+    self.save(validate: false)
   end
 
   def exchange_rate
