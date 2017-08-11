@@ -64,7 +64,14 @@ class DisplayLineItemCsv
   end
 
   def io_or_tempio
-    io || tempio
+    @first_lookup = true if @first_lookup.nil?
+
+    if @first_lookup
+      @first_lookup = false
+      @parent_object = io || tempio
+    else
+      @parent_object
+    end
   end
 
   def io
@@ -77,7 +84,9 @@ class DisplayLineItemCsv
   end
 
   def io_by_io_num
-    @_io_by_io_num ||= Io.find_by(company_id: company_id, io_number: io_number)
+    if io_number
+      @_io_by_io_num ||= Io.find_by(company_id: company_id, io_number: io_number)
+    end
   end
 
   def tempio

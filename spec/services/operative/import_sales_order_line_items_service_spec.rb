@@ -8,27 +8,18 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     )
   }
   let(:company) { Company.first }
-  let(:line_item_file) { './datafeed/sales_order_line_item_file.csv' }
-  let(:invoice_file) { './datafeed/invoice_line_item_file.csv' }
+  let(:line_item_file) { './spec/sales_order_line_item_file.csv' }
+  let(:invoice_file) { './spec/invoice_line_item_file.csv' }
   let(:line_item_csv) { double() }
 
-  it 'opens file' do
-    expect(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_file)
-    expect(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(invoice_file)
-    subject.perform
-  end
-
-  it 'parses CSV file' do
-    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_file)
-    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(invoice_file)
-    expect(CSV).to receive(:parse).with(line_item_file, {:headers=>true, :header_converters=>:symbol})
-    expect(CSV).to receive(:parse).with(invoice_file, {:headers=>true, :header_converters=>:symbol})
-    subject.perform
-  end
+  in_directory_with_files(['./spec/sales_order_line_item_file.csv', './spec/invoice_line_item_file.csv'])
 
   it 'passes rows to DisplayLineItemCsv' do
-    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_csv_file)
-    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(invoice_csv_file)
+    content_for_files([
+      line_item_csv_file,
+      invoice_csv_file
+    ])
+
     expect(DisplayLineItemCsv).to receive(:new).with(
       external_io_number: '1',
       line_number: '2',
@@ -51,8 +42,11 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   end
 
   it 'sums budget_delivered and gets last cumulative values from invoice lines' do
-    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_csv_file)
-    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(multiline_invoice_csv_file)
+    content_for_files([
+      line_item_csv_file,
+      multiline_invoice_csv_file
+    ])
+
     expect(DisplayLineItemCsv).to receive(:new).with(
       external_io_number: '1',
       line_number: '2',
@@ -75,8 +69,11 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   end
 
   it 'passes budget_delivered and quantity_delivered as zeroes if invoice is not found' do
-    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_csv_file)
-    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(empty_invoice_csv_file)
+    content_for_files([
+      line_item_csv_file,
+      empty_invoice_csv_file
+    ])
+
     expect(DisplayLineItemCsv).to receive(:new).with(
       external_io_number: '1',
       line_number: '2',
@@ -99,44 +96,53 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   end
 
   it 'skips a row when line_item_status is not production' do
-    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1')
-    .and_return(line_item_csv_file(line_item_status: 'deleted'))
-    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1')
-    .and_return(invoice_csv_file)
+    content_for_files([
+      line_item_csv_file(line_item_status: 'deleted'),
+      invoice_csv_file
+    ])
+
     expect(DisplayLineItemCsv).not_to receive(:new)
     subject.perform
   end
 
   it 'skips a row when quantity is NULL' do
-    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1')
-    .and_return(line_item_csv_file(quantity: nil))
-    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1')
-    .and_return(invoice_csv_file)
+    content_for_files([
+      line_item_csv_file(quantity: nil),
+      invoice_csv_file
+    ])
+
     expect(DisplayLineItemCsv).not_to receive(:new)
     subject.perform
   end
 
   it 'skips a row when net_cost is NULL' do
-    allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1')
-    .and_return(line_item_csv_file(net_cost: nil))
-    allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1')
-    .and_return(invoice_csv_file)
+    content_for_files([
+      line_item_csv_file(net_cost: nil),
+      invoice_csv_file
+    ])
+
     expect(DisplayLineItemCsv).not_to receive(:new)
     subject.perform
   end
 
   context 'logging the results' do
     it 'creates an import log item' do
-      allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_csv_file)
-      allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(invoice_csv_file)
+      content_for_files([
+        line_item_csv_file,
+        invoice_csv_file
+      ])
+
       expect {
         subject.perform
       }.to change(CsvImportLog, :count).by 1
     end
 
     it 'saves parse information to the log' do
-      allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(multyline_line_item_csv_file)
-      allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(invoice_csv_file)
+      content_for_files([
+        multyline_line_item_csv_file,
+        invoice_csv_file
+      ])
+
       subject.perform
 
       import_log = CsvImportLog.last
@@ -150,8 +156,11 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     end
 
     it 'catches internal server errors' do
-      allow(File).to receive(:open).with(line_item_file, 'r:ISO-8859-1').and_return(line_item_csv_file)
-      allow(File).to receive(:open).with(invoice_file, 'r:ISO-8859-1').and_return(invoice_csv_file)
+      content_for_files([
+        line_item_csv_file,
+        invoice_csv_file
+      ])
+
       expect(DisplayLineItemCsv).to receive(:new).and_return(line_item_csv)
       expect(line_item_csv).to receive(:valid?).and_return(:true)
       expect(line_item_csv).to receive(:perform).and_raise(ActiveRecord::RecordNotFound)
