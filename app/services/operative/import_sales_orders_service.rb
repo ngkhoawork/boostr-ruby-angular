@@ -34,6 +34,8 @@ class Operative::ImportSalesOrdersService
 
   def parse_currencies
     @currencies_list = {}
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'currency', source: 'operative')
+    import_log.set_file_source(currency)
 
     File.foreach(currency_file).with_index do |line, line_num|
       if line_num == 0
@@ -53,6 +55,8 @@ class Operative::ImportSalesOrdersService
       currency_code = row[:currency_code]
       @currencies_list[currency_id] = currency_code
     end
+
+    import_log.save if import_log.is_error?
   end
 
   def parse_sales_order

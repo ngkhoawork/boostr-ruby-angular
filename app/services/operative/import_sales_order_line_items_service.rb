@@ -30,6 +30,9 @@ class Operative::ImportSalesOrderLineItemsService
 
   def parse_invoices
     @parsed_invoices ||= {}
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'invoice_line_item', source: 'operative')
+    import_log.set_file_source(invoice_line_items)
+
     File.foreach(invoice_csv_file).with_index do |line, line_num|
       if line_num == 0
         @invoice_headers = CSV.parse_line(line)
@@ -51,6 +54,8 @@ class Operative::ImportSalesOrderLineItemsService
         cumulative_third_party_performance: row[:cumulative_third_party_performance]
       }
     end
+
+    import_log.save if import_log.is_error?
   end
 
   def parse_line_items
