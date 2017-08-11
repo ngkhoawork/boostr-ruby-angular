@@ -5,21 +5,23 @@ class Facts::AccountProductPipelineCalculationService < BaseService
   end
 
   def destroy_unused_records
-    unused_records.delete_all if calculated_product_amounts_ids.any?
+    unused_records.delete_all
   end
 
   private
 
   def unused_records
-    AccountProductPipelineFact.where('account_dimension_id = :account_id
-                                     AND time_dimension_id = :time_dimension_id
-                                     AND company_id = :company_id
-                                     AND product_dimension_id not in (:ids)',
-                                     account_id: account_id,
-                                     ids: calculated_product_amounts_ids,
-                                     time_dimension_id: time_dimension_id,
-                                     company_id: company_id
-    )
+    return existing_pipeline_facts unless calculated_product_amounts_ids.any?
+    existing_pipeline_facts.where('product_dimension_id not in (:ids)', ids: calculated_product_amounts_ids)
+  end
+
+  def existing_pipeline_facts
+    @existing_pipeline_facts ||= AccountProductPipelineFact.where('account_dimension_id = :account_id
+                                                                   AND time_dimension_id = :time_dimension_id
+                                                                   AND company_id = :company_id',
+                                                                   account_id: account_id,
+                                                                   time_dimension_id: time_dimension_id,
+                                                                   company_id: company_id)
   end
 
   def calculated_product_amounts_ids

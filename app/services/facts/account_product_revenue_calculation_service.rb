@@ -5,21 +5,23 @@ class Facts::AccountProductRevenueCalculationService < BaseService
   end
 
   def remove_unused_records
-    unused_records.delete_all if merged_budgets.any?
+    unused_records.delete_all
   end
 
   private
 
   def unused_records
-    AccountProductRevenueFact.where('account_dimension_id = :account_id
-                                     AND time_dimension_id = :time_dimension_id
-                                     AND company_id = :company_id
-                                     AND product_dimension_id not in (:ids)',
-                                     account_id: account_id,
-                                     ids: merged_budgets.keys,
-                                     time_dimension_id: time_dimension_id,
-                                     company_id: company_id
-    )
+    return existing_revenue_facts unless merged_budgets.any?
+    existing_revenue_facts.where('product_dimension_id not in (:ids)', ids: merged_budgets.keys)
+  end
+
+  def existing_revenue_facts
+    @existing_revenue_facts ||= AccountProductRevenueFact.where('account_dimension_id = :account_id
+                                                                 AND time_dimension_id = :time_dimension_id
+                                                                 AND company_id = :company_id',
+                                                                 account_id: account_id,
+                                                                 time_dimension_id: time_dimension_id,
+                                                                 company_id: company_id)
   end
 
   def time_dimension_id
