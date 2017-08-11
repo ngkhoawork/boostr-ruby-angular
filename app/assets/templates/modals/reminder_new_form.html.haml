@@ -11,7 +11,7 @@
                         Assigned to
                     .dropdown
                         %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-                            %span.mr8 {{reminder.remindable_type}}
+                            %span.mr8{'ng-class': '{"empty-input": !reminder.remindable_type}'} {{reminder.remindable_type || 'Select'}}
                             %i.fa.fa-close{'ng-show': 'reminder.remindable_type ', 'ng-click': '$event.stopPropagation(); reminder.remindable_type = ""'}
                             %span.caret
                         %ul.dropdown-menu

@@ -34,8 +34,8 @@
                 clients
 
         $scope.searchContacts = (str) ->
-#            query = per: 10, page: 1, contact_name: str
-            Contact.all1(contact_name: str).then (contacts) ->
+            Contact.all1(name: str, per: 10).then (contacts) ->
+                console.log contacts.length
                 contacts
 
         $scope.cancel = ->
