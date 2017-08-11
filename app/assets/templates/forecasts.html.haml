@@ -58,6 +58,11 @@
 											%li{ ng: { repeat: 'year in years', class: '{active: year == filter.year}' } }
 												%a{ href: '', ng: { click: 'setFilter("year", year)' } }
 													{{year}} Quarterly
+
+				.header-cell
+					%button.mr20.add-btn{'ng-click': 'applyFilter()'}
+						Run Report
+
 				.header-cell
 					%b Show UW
 					.show-hide-remainder-form.m0

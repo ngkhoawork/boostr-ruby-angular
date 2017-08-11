@@ -26,7 +26,6 @@
 				when 'year'
 					$scope.filter.timePeriod = defaultFilter.timePeriod
 			$scope.filter[key] = val
-			$scope.applyFilter()
 
 		$scope.applyFilter = ->
 			getData getQuery()
@@ -36,7 +35,6 @@
 			searchAndSetTimePeriod($scope.timePeriods)
 			searchAndSetTeam($scope.filterTeams, $scope.currentUser)
 			searchAndSetSeller($scope.filter.team, $scope.currentUser)
-			$scope.applyFilter()
 
 		$scope.showSubtable = (row, type, event) ->
 			$scope.openedSubtable = row
@@ -110,10 +108,9 @@
 
 		$scope.$watch 'filter.team', (team, prevTeam) ->
 			if team == prevTeam then return
-			if team.id then $scope.filter.seller = emptyFilter
-			$scope.filter.team = team
+			if team.id then $scope.setFilter('seller', emptyFilter)
+			$scope.setFilter('team', team)
 			searchAndSetSeller(team, $scope.currentUser)
-			$scope.applyFilter()
 			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = sellers
 
@@ -137,23 +134,23 @@
 			for period in timePeriods
 				if period.period_type is 'quarter' and
 				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
-					return $scope.filter.timePeriod = period
+					return $scope.setFilter('timePeriod', period)
 			for period in timePeriods
 				if period.period_type is 'year' and
 				moment().isBetween(period.start_date, period.end_date, 'days', '[]')
-					return $scope.filter.timePeriod = period
+					return $scope.setFilter('timePeriod', period)
 
 		searchAndSetTeam = (teams, user) ->
 			for team in teams
 				if team.leader_id is user.id
-					return $scope.filter.team = team
+					return $scope.setFilter('team', team)
 				if team.children && team.children.length
 					searchAndSetUserTeam team.children, user
 
 		searchAndSetSeller = (team, user) ->
 			if !team.id then return
 			if team.leader_id is user.id or _.findWhere team.members, {id: user.id}
-				return $scope.filter.seller = user
+				return $scope.setFilter('seller', user)
 
 		getQuery = ->
 			f = $scope.filter
