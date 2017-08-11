@@ -34,11 +34,29 @@ class Operative::ImportSalesOrdersService
 
   def parse_currencies
     @currencies_list = {}
-    CSV.parse(currency_file, { headers: true, header_converters: :symbol }) do |row|
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'currency', source: 'operative')
+    import_log.set_file_source(currency)
+
+    File.foreach(currency_file).with_index do |line, line_num|
+      if line_num == 0
+        @currency_headers = CSV.parse_line(line)
+        next
+      end
+
+      begin
+        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @currency_headers, header_converters: :symbol)
+      rescue Exception => e
+        import_log.count_failed
+        import_log.log_error [e.message, line]
+        next
+      end
+
       currency_id = row[:currency_id]
       currency_code = row[:currency_code]
       @currencies_list[currency_id] = currency_code
     end
+
+    import_log.save if import_log.is_error?
   end
 
   def parse_sales_order
@@ -46,12 +64,12 @@ class Operative::ImportSalesOrdersService
     import_log.set_file_source(sales_order)
 
     File.foreach(sales_order_file).with_index do |line, line_num|
-      import_log.count_processed
-
       if line_num == 0
         @headers = CSV.parse_line(line)
         next
       end
+
+      import_log.count_processed
 
       begin
         row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)

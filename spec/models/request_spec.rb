@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Request, type: :model do
+describe Request do
   context 'validations' do
     it { should validate_length_of(:description).is_at_most(1000) }
     it { should validate_length_of(:resolution).is_at_most(1000) }
@@ -24,7 +24,7 @@ RSpec.describe Request, type: :model do
       message_delivery = instance_double(ActionMailer::MessageDelivery)
       allow(RequestsMailer).to receive(:new_request).and_return(message_delivery)
       allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
-      recipients
+      recipient
 
       subject.update(
         status: 'New',
@@ -33,7 +33,7 @@ RSpec.describe Request, type: :model do
         company: company
       )
 
-      expect(RequestsMailer).to have_received(:new_request).with(recipients, subject.id)
+      expect(RequestsMailer).to have_received(:new_request).with(recipient, subject.id)
       expect(message_delivery).to have_received(:deliver_later).with(queue: 'default')
     end
 
@@ -41,7 +41,7 @@ RSpec.describe Request, type: :model do
       message_delivery = instance_double(ActionMailer::MessageDelivery)
       allow(RequestsMailer).to receive(:new_request).and_return(message_delivery)
       allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
-      recipients
+      recipient
 
       subject.update(
         status: 'Denied',
@@ -118,8 +118,8 @@ RSpec.describe Request, type: :model do
     end
   end
 
-  def recipients
-    @_recipients ||= (create_list :user, 2, revenue_requests_access: true).map(&:email)
+  def recipient
+    @_recipient ||= [(create :user, revenue_requests_access: true).email]
   end
 
   def company

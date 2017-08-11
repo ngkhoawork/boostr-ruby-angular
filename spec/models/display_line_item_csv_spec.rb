@@ -1,15 +1,15 @@
 require 'rails_helper'
 
-RSpec.describe DisplayLineItemCsv, type: :model do
+describe DisplayLineItemCsv do
 
   context 'validations' do
     subject { line_item_csv }
+
     before do
       exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
     end
-    it { is_expected.to validate_presence_of(:io_name) }
+
     it { is_expected.to validate_presence_of(:company_id) }
-    it { is_expected.to validate_presence_of(:io_name) }
     it { is_expected.to validate_presence_of(:line_number) }
     it { is_expected.to validate_presence_of(:start_date) }
     it { is_expected.to validate_presence_of(:end_date) }
