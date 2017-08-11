@@ -84,6 +84,7 @@ Rails.application.routes.draw do
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
+        get :won_deals, on: :collection
         resources :deal_products, only: [:create, :update, :destroy]
         resources :deal_assets, only: [:index, :update, :create, :destroy]
         resources :deal_contacts, only: [:index, :create, :update, :destroy]

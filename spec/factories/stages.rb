@@ -10,6 +10,13 @@ FactoryGirl.define do
       item.company = Company.first if item.company.blank?
     end
 
+    factory :won_stage do
+      name 'Won'
+      probability 100
+      open true
+      active true
+    end
+
     factory :closed_won_stage do
       name 'Closed Won'
       probability 100
