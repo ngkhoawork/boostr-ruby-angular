@@ -151,10 +151,6 @@
           else
             $scope.deals = data[0].deals
             $scope.productRange = data[0].range
-          $scope.deals = _.map $scope.deals, (deal) ->
-            deal.deal_custom_field = {} if !deal.deal_custom_field
-            console.log deal.deal_custom_field.percentage1
-            deal
 
           $scope.isLoading = false
 
@@ -184,7 +180,6 @@
         $scope.filterOpen = filterType
 
       $scope.changeSortType = (sortType) ->
-        console.log sortType
         if sortType == $scope.sortType
           $scope.sortReverse = !$scope.sortReverse
         else
