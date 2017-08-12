@@ -33,7 +33,7 @@
                 clients
 
         $scope.searchContacts = (str) ->
-            Contact.all1(name: str, per: 10).then (contacts) ->
+            Contact.all1(q: str, per: 10).then (contacts) ->
                 contacts
 
         $scope.cancel = ->
