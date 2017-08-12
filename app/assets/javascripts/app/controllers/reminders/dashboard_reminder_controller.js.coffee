@@ -20,7 +20,6 @@
         if reminder
             $scope.modalType = 'Edit'
             $scope.submitType = 'Save'
-            console.log(reminder)
             if reminder.remindable_type == 'Client'
               reminder.remindable_type = 'Account'
             reminder.remindable.formatted_name = reminder.remindable.name if reminder.remindable
@@ -35,7 +34,6 @@
 
         $scope.searchContacts = (str) ->
             Contact.all1(name: str, per: 10).then (contacts) ->
-                console.log contacts.length
                 contacts
 
         $scope.cancel = ->
