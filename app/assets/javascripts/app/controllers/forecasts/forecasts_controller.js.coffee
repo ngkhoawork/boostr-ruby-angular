@@ -18,6 +18,7 @@
 			timePeriod: emptyFilter
 			year: null
 		$scope.filter = angular.copy defaultFilter
+		appliedFilter = null
 
 		$scope.setFilter = (key, val) ->
 			switch key
@@ -28,7 +29,11 @@
 			$scope.filter[key] = val
 
 		$scope.applyFilter = ->
+			appliedFilter = angular.copy $scope.filter
 			getData getQuery()
+
+		$scope.isFilterApplied = ->
+			!angular.equals $scope.filter, appliedFilter
 
 		$scope.resetFilter = ->
 			$scope.filter = angular.copy defaultFilter
