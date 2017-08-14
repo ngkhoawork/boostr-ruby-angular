@@ -7,7 +7,7 @@ class Api::ForecastsController < ApplicationController
         render json: forecast_member
       elsif team.present?
         render json: [NewForecastTeam.new(team, time_period, product)]
-      elsif params[:id] == 'all'
+      elsif params[:team_id] == 'all'
         render json: [NewForecast.new(company, teams, time_period, product)]
       elsif show_all_data
         render json: [NewForecast.new(company, teams, time_period, product)]
@@ -317,7 +317,9 @@ class Api::ForecastsController < ApplicationController
   def team
     return @team if defined?(@team)
     @team = nil
-    if params[:id] && params[:id] != 'all'
+    if params[:team_id] && params[:team_id] != 'all'
+      @team = company.teams.find(params[:team_id])
+    elsif params[:id] && params[:id] != 'all'
       @team = company.teams.find(params[:id])
     end
   end
