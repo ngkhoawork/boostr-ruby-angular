@@ -1,39 +1,55 @@
 @app.controller 'PipelineChangeReportController',
-  ['$scope', '$document', '$filter', '$location', 'PipelineChangeReportService',
-    ($scope, $document, $filter, $location, PipelineChangeReportService) ->
+  ['$scope', '$document', '$httpParamSerializer', '$location', 'PipelineChangeReportService',
+    ($scope, $document, $httpParamSerializer, $location, PipelineChangeReportService) ->
+
       $scope.report_data_items = []
+      $scope.changeTypes = [
+        'New Deals'
+        'Won Deals'
+        'Lost Deals'
+        'Budget Changed'
+        'Stage Changed'
+      ]
       $scope.sortType = 'deal_type'
       $scope.sortReverse  = false
-      $scope.query = {}
 
-      $scope.datePicker = {
-        startDate: null
-        endDate: null
-      }
-      $scope.isDateSet = false
+      defaultFilter =
+        type: ''
+        date:
+          startDate: moment().subtract(7,'d')
+          endDate: moment()
 
-      datePickerInput = $document.find('#pipeline-change-date-picker')
+      $scope.filter = angular.copy defaultFilter
 
-      $scope.datePickerApply = () ->
-        if ($scope.datePicker.startDate && $scope.datePicker.endDate)
-          datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
-          $scope.isDateSet = true
-#          getReportData()
+      $scope.datePicker =
+        toString: (key) ->
+          date = $scope.filter[key]
+          if !date.startDate || !date.endDate then return false
+          date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
+#        apply: -> console.log arguments
 
-      $scope.datePickerCancel = (s, r) ->
-        datePickerInput.html('Time period')
-        $scope.isDateSet = false
-#        if !r then getReportData()
 
-      $scope.resetFilters = () ->
-        $scope.datePickerCancel(null, true)
-#        getReportData()
+      $scope.setFilter = (key, val) ->
+          $scope.filter[key] = val
+
+      $scope.removeFilter = (key, item) ->
+        $scope.filter[key] = _.reject $scope.filter[key], (row) -> row.id == item.id
 
       $scope.applyFilter = ->
-        getReportData()
+        query = getQuery()
+        getReport query
 
-      $scope.go = (path) ->
-        $location.path(path)
+      $scope.resetFilter = ->
+        $scope.filter = angular.copy defaultFilter
+
+      getQuery = ->
+        f = $scope.filter
+        query = {}
+        query.change_type = f.type if f.type
+        if f.date.startDate && f.date.endDate
+          query.start_date = f.date.startDate.format('YYYY-MM-DD')
+          query.end_date = f.date.endDate.format('YYYY-MM-DD')
+        query
 
       $scope.changeSortType = (sortType) ->
         if sortType == $scope.sortType
@@ -42,18 +58,12 @@
           $scope.sortType = sortType
           $scope.sortReverse = false
 
-      getReportData = ->
-        query = {}
-        query.start_date = moment().subtract(7,'d')
-        query.end_date = moment()
-
-        if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
-          query.start_date = $filter('date')($scope.datePicker.startDate)
-          query.end_date = $filter('date')($scope.datePicker.endDate)
+      getReport = (query) ->
         PipelineChangeReportService.get(query).$promise.then (data)->
           $scope.report_data_items = data.report_data
 
-#      init = ->
-#        getReportData()
-#      init()
+      $scope.export = ->
+        url = '/api/reports/pipeline_summary.csv'
+        $window.open url + '?' + $httpParamSerializer getQuery()
+        return
   ]

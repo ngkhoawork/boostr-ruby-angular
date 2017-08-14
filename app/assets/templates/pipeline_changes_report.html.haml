@@ -1,33 +1,53 @@
-#reports
-  .container-fluid.table-report
-    .row
-      .col-xs-12
-        .reports-header
-          .header-cell
-            .h3.header-title
-              Pipeline Change Report
-          .header-cell
-            .filters-block
-              %span.filter-block-label Filter By:
-              .date-picker-wrap
-                %div.date-picker#pipeline-change-date-picker{'date-range-picker': true,
-                                                     'ng-model': 'datePicker',
-                                                     :options => "{locale: {format: 'MMMM D, YYYY',
-                                                                            cancelLabel: 'Clear'},
-                                                                   eventHandlers: {'apply.daterangepicker': datePickerApply,
-                                                                                   'cancel.daterangepicker': datePickerCancel}}"}
-                  Time period
-                %span.caret
-              %span#reset-pipeline-filter.mr20{'ng-click': 'resetFilters()'}
-                Reset
+#pipeline-changes-report.z-styles.z-report
+  .container-fluid
+    .row.mb20
+      .reports-header
+        .header-cell.main-title
+          Pipeline Change Report
+        .header-cell.filters-block
+          %table
+            %tr.filter-title
+              %td Change Type
+              %td Change Date
+              %td
+                %span.reset-filter{'ng-click': 'resetFilter()'}
+                  Reset
+            %tr
+              %td
+                %ul.filter-item
+                  %li{ dropdown: true }
+                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.type}' }
+                      {{filter.type || 'All'}}
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li{'ng-class': '{active: !filter.type}'}
+                        %a{href: '', 'ng-click': 'setFilter("type", "")'}
+                          All
+                      %li{ ng: { repeat: 'type in changeTypes', class: '{active: type === filter.type}' } }
+                        %a{ href: '', ng: { click: 'setFilter("type", type)' } }
+                          {{type}}
 
-          .header-cell
-            %button.add-btn{'ng-click': 'applyFilter()'}
-              Run Report
+              %td
+                .date-picker-wrap
+                  %div.date-picker{'date-range-picker': true,
+                                                             'ng-model': 'filter.date',
+                                                             :options => "{locale: {format: 'MMMM D, YYYY'},
+                                                                           eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
+                    %span.empty{'ng-hide': 'datePicker.toString("date")'}
+                      Time period
+                      %span.caret
+                    %span{'ng-show': 'datePicker.toString("date")'}
+                      {{datePicker.toString("date")}}
+                      %span.caret
 
-              -#%a.pull-right{ href: '', ng: { click: 'exportReports()' } }
-              -#  = inline_svg 'icons/export.svg'
-              -#  Export
+        .header-cell
+          %button.add-btn{'ng-click': 'applyFilter()'}
+            Run Report
+
+        .header-cell
+          .pull-right
+            %download-button{'ng-click': 'export()'}
+              Export
     .row
       .col-md-12
         .table-wrapper
