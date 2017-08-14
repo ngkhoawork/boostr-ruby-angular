@@ -179,7 +179,9 @@ class Api::DealsController < ApplicationController
         require 'timeout'
         begin
           Timeout::timeout(240) {
-            send_data Deal.to_pipeline_report_csv(filtered_deals, company, product_filter), filename: "pipeline-report-#{Date.today}.csv"
+            send_data Deal.to_pipeline_report_csv(
+              filtered_deals.except(:limit, :order, :offset), company, product_filter
+            ), filename: "pipeline-report-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return

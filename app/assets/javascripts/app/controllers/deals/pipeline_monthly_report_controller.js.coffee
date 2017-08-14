@@ -1,6 +1,6 @@
 @app.controller 'PipelineMonthlyReportController',
-  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'CurrentUser', 'DealCustomFieldName', 'Stage'
-    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Product, Seller, Team, TimePeriod, CurrentUser, DealCustomFieldName, Stage) ->
+  ['$scope', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Deal', 'Field', 'Product', 'Seller', 'Team', 'TimePeriod', 'CurrentUser', 'DealCustomFieldName', 'Stage', '$httpParamSerializer'
+    ($scope, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Deal, Field, Product, Seller, Team, TimePeriod, CurrentUser, DealCustomFieldName, Stage, $httpParamSerializer) ->
       $scope.sortType     = 'name'
       $scope.sortReverse  = false
       $scope.filterOpen = false
@@ -190,10 +190,8 @@
         $sce.trustAsHtml(html)
 
       $scope.exportReports = ->
-        qs = for key, value of query
-          key + '=' + value
-        qs = qs.join('&')
-        $window.open('/api/deals/pipeline_report.csv?' + qs)
+        query = $httpParamSerializer(constructQuery())
+        $window.open('/api/deals/pipeline_report.csv?' + query)
         true
 
       $scope.showEmailsModal = (activity) ->
