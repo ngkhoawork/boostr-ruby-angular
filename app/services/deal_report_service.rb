@@ -1,9 +1,9 @@
 class DealReportService < BaseService
-  NEW_DEALS      = 'New deals'.freeze
-  WON_DEALS      = 'Won deals'.freeze
-  LOST_DEALS     = 'Lost deals'.freeze
-  BUDGET_CHANGED = 'Budget changed'.freeze
-  STAGE_CHANGED  = 'Stage changed deals'.freeze
+  NEW_DEALS      = 'New Deals'.freeze
+  WON_DEALS      = 'Won Deals'.freeze
+  LOST_DEALS     = 'Lost Deals'.freeze
+  BUDGET_CHANGED = 'Budget Changed'.freeze
+  STAGE_CHANGED  = 'Stage Changed'.freeze
 
   def generate_report
     report_data
@@ -14,7 +14,7 @@ class DealReportService < BaseService
       csv << csv_header
 
       report_data.each do |key, vals|
-        next if vals == [] || vals == nil
+        next if vals == []
         deal_type = key.to_s.humanize
 
         vals.each do |val|
@@ -42,6 +42,8 @@ class DealReportService < BaseService
   def new_deals_report
     if change_type.blank? || change_type.eql?(NEW_DEALS)
       API::Deals::Collection.new(new_deals).to_hash(new: true)['deals']
+    else
+      []
     end
   end
 
@@ -58,6 +60,8 @@ class DealReportService < BaseService
         deals_stage_audit,
         each_serializer: Report::StageChangeDealsAuditLogsSerializer
       ).as_json
+    else
+      []
     end
   end
 
@@ -69,6 +73,8 @@ class DealReportService < BaseService
   def won_deals_report
     if change_type.blank? || change_type.eql?(WON_DEALS)
       API::Deals::Collection.new(won_deals).to_hash(new: false)['deals']
+    else
+      []
     end
   end
 
@@ -79,6 +85,8 @@ class DealReportService < BaseService
   def lost_deals_report
     if change_type.blank? || change_type.eql?(LOST_DEALS)
       API::Deals::Collection.new(lost_deals).to_hash(new: false)['deals']
+    else
+      []
     end
   end
 
@@ -99,6 +107,8 @@ class DealReportService < BaseService
         deal_budget_audit,
         each_serializer: Report::BudgetChangeDealsAuditLogsSerializer
       ).as_json
+    else
+      []
     end
   end
 
