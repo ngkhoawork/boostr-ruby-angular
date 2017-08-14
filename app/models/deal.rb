@@ -506,21 +506,13 @@ class Deal < ActiveRecord::Base
   def deal_source_value
     field_id = self.fields.find_by_name('Deal Source').id
 
-    if self.persisted?
-      self.values.where(field_id: field_id).any?
-    else
-      !!self.values.find{|val| val.field_id == field_id}
-    end
+    !!self.values.find{|val| val.field_id == field_id}
   end
 
   def deal_type_value
     field_id = self.fields.find_by_name('Deal Type').id
 
-    if self.persisted?
-      self.values.where(field_id: field_id).any?
-    else
-      !!self.values.find{|val| val.field_id == field_id}
-    end
+    !!self.values.find{|val| val.field_id == field_id}
   end
 
   def get_option_value_from_raw_fields(field_data, field_name)

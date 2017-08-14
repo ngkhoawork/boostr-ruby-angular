@@ -324,6 +324,7 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       deal.contact_roles = Field.field(deal, 'Contact Role')
+      deal.next_steps_expired = moment(deal.next_steps_due) < moment().startOf('day')
       $scope.currentDeal = deal
       $scope.selectedStageId = deal.stage_id
       $scope.verifyMembersShare()
@@ -605,6 +606,12 @@
 
   $scope.updateDeal = ->
     $scope.errors = {}
+    ($scope.base_fields_validations || []).forEach (validation) ->
+      if $scope.currentDeal && (!$scope.currentDeal[validation.factor] && !validationValueFactorExists($scope.currentDeal, validation.factor))
+        $scope.errors[validation.factor] = validation.name + ' is required'
+
+    if Object.keys($scope.errors).length > 0 then return
+
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
       (deal) ->
         $scope.ealertReminder = true
@@ -612,6 +619,14 @@
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
+
+  validationValueFactorExists = (deal, factor) ->
+    if factor == 'deal_type_value'
+      deal.deal_type && deal.deal_type.option_id
+    else if factor == 'deal_source_value'
+      deal.source_type && deal.source_type.option_id
+    else if factor == 'agency'
+      deal && deal.agency_id
 
   $scope.updateDealStage = (currentDeal, stageId) ->
     $scope.errors = {}

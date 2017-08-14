@@ -9,6 +9,7 @@ class DealReportSerializer < ActiveModel::Serializer
     :name,
     :budget,
     :next_steps,
+    :next_steps_due,
     :created_by,
     :advertiser,
     :stage_id,

@@ -543,6 +543,7 @@ class Api::DealsController < ApplicationController
         :agency_id,
         :closed_at,
         :next_steps,
+        :next_steps_due,
         :initiative_id,
         :closed_reason_text,
         :created_at,

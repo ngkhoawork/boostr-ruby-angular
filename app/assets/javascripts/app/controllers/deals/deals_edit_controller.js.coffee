@@ -92,7 +92,7 @@
         $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
     ($scope.base_fields_validations || []).forEach (validation) ->
-      if $scope.deal && (!$scope.deal[validation.factor] && !valueExists($scope.deal, validation.factor))
+      if $scope.deal && (!$scope.deal[validation.factor] && !validationValueFactorExists($scope.deal, validation.factor))
         $scope.errors[validation.factor] = validation.name + ' is required'
 
     if Object.keys($scope.errors).length > 0 then return
@@ -114,7 +114,7 @@
       validation = _.findWhere($scope.base_fields_validations, factor: factor)
       return validation?
 
-  valueExists = (deal, factor) ->
+  validationValueFactorExists = (deal, factor) ->
     if factor == 'deal_type_value'
       deal.deal_type && deal.deal_type.option_id
     else if factor == 'deal_source_value'

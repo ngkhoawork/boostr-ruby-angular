@@ -529,8 +529,23 @@
         }
     }
     .next-steps {
-        .star {
-            color: #ed5063;
+        textarea.editable {
+            margin-bottom: 5px
+        }
+        .custom-field-item {
+            span.star {
+                display: inline;
+            }
+            .custom-field-item-label {
+                label {
+                    margin-top: 5px
+                }
+            }
+        }
+        .datetime-field {
+            span.editable.expired{
+                color: $error-color;
+            }
         }
     }
     .contacts {
@@ -555,7 +570,22 @@
             }
         }
     }
-    .campaign-details {
+    .campaign-details, .next-steps {
+        .error-text {
+          display: none;
+          color: $error-color;
+          float: right;
+          margin-bottom: 5px;
+          margin-left: 104px;
+        }
+        .error {
+          .error-text {
+            display: inline;
+          }
+          input, textarea, span.editable, .ui-select-container, .ui-select-toggle, button.dropdown-toggle {
+            border-color: $error-color;
+          }
+        }
         .star {
             color: $error-color;
         }
