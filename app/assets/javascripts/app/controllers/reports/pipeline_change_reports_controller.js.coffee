@@ -13,6 +13,7 @@
       $scope.sortType = 'deal_type'
       $scope.sortReverse  = false
 
+      appliedFilter = null
       defaultFilter =
         type: ''
         date:
@@ -36,8 +37,12 @@
         $scope.filter[key] = _.reject $scope.filter[key], (row) -> row.id == item.id
 
       $scope.applyFilter = ->
+        appliedFilter = angular.copy $scope.filter
         query = getQuery()
         getReport query
+
+      $scope.isFilterApplied = ->
+        !angular.equals $scope.filter, appliedFilter
 
       $scope.resetFilter = ->
         $scope.filter = angular.copy defaultFilter
