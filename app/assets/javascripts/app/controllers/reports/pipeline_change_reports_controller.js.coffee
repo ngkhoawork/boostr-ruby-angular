@@ -1,6 +1,6 @@
 @app.controller 'PipelineChangeReportController',
-  ['$scope', '$document', '$httpParamSerializer', '$location', 'PipelineChangeReportService',
-    ($scope, $document, $httpParamSerializer, $location, PipelineChangeReportService) ->
+  ['$scope', '$window', '$document', '$httpParamSerializer', '$location', 'PipelineChangeReportService',
+    ($scope, $window, $document, $httpParamSerializer, $location, PipelineChangeReportService) ->
 
       $scope.report_data_items = []
       $scope.changeTypes = [
@@ -68,7 +68,7 @@
           $scope.report_data_items = data.report_data
 
       $scope.export = ->
-        url = '/api/reports/pipeline_summary.csv'
+        url = '/api/deal_reports.csv'
         $window.open url + '?' + $httpParamSerializer getQuery()
         return
   ]
