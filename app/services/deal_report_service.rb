@@ -40,7 +40,7 @@ class DealReportService < BaseService
   end
 
   def new_deals_report
-    if change_type.present? && change_type.eql?(NEW_DEALS)
+    if change_type.blank? || change_type.eql?(NEW_DEALS)
       API::Deals::Collection.new(new_deals).to_hash(new: true)['deals']
     end
   end
@@ -53,7 +53,7 @@ class DealReportService < BaseService
   end
 
   def stage_changed_deals
-    if change_type.present? && change_type.eql?(STAGE_CHANGED)
+    if change_type.blank? || change_type.eql?(STAGE_CHANGED)
       ActiveModel::ArraySerializer.new(
         deals_stage_audit,
         each_serializer: Report::StageChangeDealsAuditLogsSerializer
@@ -67,7 +67,7 @@ class DealReportService < BaseService
   end
 
   def won_deals_report
-    if change_type.present? && change_type.eql?(WON_DEALS)
+    if change_type.blank? || change_type.eql?(WON_DEALS)
       API::Deals::Collection.new(won_deals).to_hash(new: false)['deals']
     end
   end
@@ -77,7 +77,7 @@ class DealReportService < BaseService
   end
 
   def lost_deals_report
-    if change_type.present? && change_type.eql?(LOST_DEALS)
+    if change_type.blank? || change_type.eql?(LOST_DEALS)
       API::Deals::Collection.new(lost_deals).to_hash(new: false)['deals']
     end
   end
@@ -94,7 +94,7 @@ class DealReportService < BaseService
   end
 
   def budget_changed
-    if change_type.present? && change_type.eql?(BUDGET_CHANGED)
+    if change_type.blank? || change_type.eql?(BUDGET_CHANGED)
       ActiveModel::ArraySerializer.new(
         deal_budget_audit,
         each_serializer: Report::BudgetChangeDealsAuditLogsSerializer
