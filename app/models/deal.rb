@@ -561,6 +561,7 @@ class Deal < ActiveRecord::Base
       header << "Deal Source"
       header << "Team"
       header << "Next Steps"
+      header << "Next Steps Due"
       header << "Start Date"
       header << "End Date"
       range.each do |product_time|
@@ -588,6 +589,7 @@ class Deal < ActiveRecord::Base
         line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Source')
         line << deal.team_for_user_with_highest_share
         line << deal.next_steps
+        line << deal.next_steps_due
         line << deal.start_date
         line << deal.end_date
 

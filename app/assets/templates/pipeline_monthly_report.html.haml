@@ -130,6 +130,9 @@
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("next_steps")'}
                     Next Steps
                 %th.left{ width: "200" }
+                  %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("next_steps_due")'}
+                    Next Steps Due
+                %th.left{ width: "200" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("latest_activity")'}
                     Latest Activity
                 %th.left{ width: "200" }
@@ -168,6 +171,7 @@
                 %td.right {{ deal.stage.probability }}%
                 %td.right {{ deal.budget | currency:'$':0}}
                 %td.left {{ deal.next_steps.substr(0, 30) }}
+                %td.left {{ deal.next_steps_due | date: 'MM-dd-yyyy' }}
                 %td.left{ ng: { if: 'deal.latest_activity && deal.latest_activity.activity_type_name == "Email"' } }
                   %button.btn.activity-email-btn{'ng-click': 'showEmailsModal(deal.latest_activity)'}
                     Show email

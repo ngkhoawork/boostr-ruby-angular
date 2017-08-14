@@ -100,6 +100,8 @@
 									%th
 										%span.clickable{'ng-click': 'sorting.set("next_steps")'} Next Steps
 									%th
+										%span.clickable{'ng-click': 'sorting.set("next_steps")'} Next Steps Due
+									%th
 										%span.clickable{'ng-click': 'sorting.set("start_date")'} Start Date
 									%th
 										%span.clickable{'ng-click': 'sorting.set("end_date")'} End Date
@@ -126,6 +128,7 @@
 									%td {{item.type}}
 									%td {{item.source}}
 									%td {{item.next_steps}}
+									%td {{item.next_steps_due | date : 'shortDate'}}
 									%td {{item.start_date | date : 'shortDate'}}
 									%td {{item.end_date | date : 'shortDate'}}
 									%td {{item.created_date | date : 'shortDate'}}
