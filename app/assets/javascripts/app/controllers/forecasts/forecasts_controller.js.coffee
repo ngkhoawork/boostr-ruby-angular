@@ -285,7 +285,7 @@
 					dataset[j][i] =
 						name: if item.quarter then item.name + ' Q' + item.quarter else item.name
 						type: set.type
-						quota: item.quota
+						quota: item.quota || 0
 						w: weighted
 						uw: unweighted
 						w0: w0
