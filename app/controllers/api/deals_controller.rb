@@ -126,14 +126,13 @@ class Api::DealsController < ApplicationController
 
   def pipeline_report_totals
     deals = pipeline_report_relation
+      .includes(:stageinfo)
       .except(:limit, :order, :offset, :preload)
-      .collect{ |d|
-        { id: d.id, budget: d.budget, probability: d.stage.probability }
-      }
+      .pluck_to_struct(:id, :budget, 'stages.probability as probability')
 
-    unweighted = deals.inject(0) { |res, deal| res + deal[:budget] if deal[:budget].present? }
-    weighted = deals.inject(0) { |res, deal| res + (deal[:budget] * deal[:probability] / 100 rescue 0) if deal[:budget].present? }
-    ratio = ((weighted / unweighted * 100) / 100).round rescue 0
+    unweighted = deals.map{ |d| d.budget }.compact.reduce(:+).to_f
+    weighted = deals.map{ |d| d.budget.to_f * d.probability / 100 }.compact.reduce(:+)
+    ratio = ((weighted / unweighted * 100) / 100).round(2) rescue 0
 
     totals = {
       pipeline_unweighted: unweighted.round,
