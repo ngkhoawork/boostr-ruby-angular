@@ -11,7 +11,7 @@
             {title: 'Custom Fields',      url: '/settings/custom_fields',      icon: 'wrench',              description: 'Manage custom fields'}
             {title: 'Currencies',         url: '/settings/currencies',         icon: 'dollar',              description: 'Manage Currencies and Exchange Rates'}
             {title: 'Custom Values',      url: '/settings/custom_values',      icon: 'tags',                description: 'Manage drop down field values'}
-            {title: 'Time Periods',       url: '/settings/time_periods',       icon: 'calendar',            description: 'Manager time periods'}
+            {title: 'Time Periods',       url: '/settings/time_periods',       icon: 'calendar',            description: 'Manage time periods'}
             {title: 'Data Import/Export', url: '/settings/data_import',        icon: 'arrow-circle-o-down', description: 'Import and Export data'}
             {title: 'Quotas',             url: '/settings/quotas',             icon: 'gamepad',             description: 'Setup quotas for users per time period'}
             {title: 'Stages',             url: '/settings/stages',             icon: 'bullseye',            description: 'Manage sales stages and %\'s'}
