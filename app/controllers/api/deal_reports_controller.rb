@@ -15,7 +15,7 @@ class Api::DealReportsController < ApplicationController
   private
 
   def deal_report_service
-    @deal_report_service ||= DealReportService.new(target_date: date_range_params, company_id: current_user.company_id)
+    @deal_report_service ||= DealReportService.new(params: date_range_params, company_id: current_user.company_id)
   end
 
   def generate_csv_report
@@ -29,6 +29,6 @@ class Api::DealReportsController < ApplicationController
   end
 
   def date_range_params
-    params.permit(:start_date, :end_date)
+    params.permit(:start_date, :end_date, :change_type)
   end
 end

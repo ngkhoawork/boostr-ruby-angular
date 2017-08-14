@@ -4,11 +4,11 @@ class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
   private
 
   def advertiser_name
-    object.auditable.advertiser.name
+    deal.advertiser.name
   end
 
   def start_date
-    object.auditable.start_date
+    deal.start_date
   end
 
   def stage_name
@@ -16,7 +16,7 @@ class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
   end
 
   def budget
-    object.auditable.budget
+    deal.budget
   end
 
   def previous_stage
@@ -28,10 +28,14 @@ class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
   end
 
   def name
-    object.auditable.name
+    deal.name
   end
 
   def date
     object.created_at
+  end
+
+  def deal
+    @_deal ||= Deal.with_deleted.find(object.auditable_id)
   end
 end
