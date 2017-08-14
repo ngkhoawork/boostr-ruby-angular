@@ -160,9 +160,9 @@
 		getQuery = ->
 			f = $scope.filter
 			query = {}
-			query.id = f.team.id if f.team.id
-			query.user_id = f.seller.id if f.seller.id
-			query.product_id = f.product.id if f.product.id
+			query.team_id = f.team.id || 'all'
+			query.user_id = f.seller.id || 'all'
+			query.product_id = f.product.id || 'all'
 			query.time_period_id = f.timePeriod.id if f.timePeriod.id
 			query.year = f.year if f.year
 			query.new_version = true
