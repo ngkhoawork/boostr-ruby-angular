@@ -90,7 +90,7 @@ class Deal < ActiveRecord::Base
     connect_deal_clients
   end
 
-  after_commit :asana_connect
+  after_commit :asana_connect, on: [:create]
 
   before_destroy do
     update_stage
