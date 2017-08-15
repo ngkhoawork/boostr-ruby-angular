@@ -227,7 +227,7 @@ class Api::V2::DealsController < ApiController
   end
 
   def deals
-    if params[:filter] == 'company' && current_user.leader?
+    if params[:filter] == 'company'
       company.deals.active
     elsif params[:filter] == 'selected_team' && params[:team_id]
       all_team_deals
