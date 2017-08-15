@@ -150,7 +150,7 @@
 				if team.leader_id is user.id
 					return $scope.setFilter('team', team)
 				if team.children && team.children.length
-					searchAndSetUserTeam team.children, user
+					searchAndSetTeam team.children, user
 
 		searchAndSetSeller = (team, user) ->
 			if !team.id then return
