@@ -18,11 +18,13 @@ class Api::V2::Deals::SingleSerializer < ActiveModel::Serializer
   end
 
   def advertiser
-    object.advertiser.name || ''
+    return '' unless object.advertiser
+    object.advertiser.name
   end
 
   def agency
-    object.agency.name || ''
+    return '' unless object.agency
+    object.agency.name
   end
 
   def category
