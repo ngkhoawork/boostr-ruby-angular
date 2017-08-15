@@ -2,7 +2,9 @@ class ProductDimensionUpdaterService < BaseService
   def perform
     Upsert.batch(connection, :product_dimensions) do |upsert|
       products.each do |product|
-        upsert.row(product.attributes)
+        selector = { id: product[:id], company_id: product[:company_id] }
+        setter = product.attributes.except('id', 'company_id')
+        upsert.row(selector, setter)
       end
     end
   end
