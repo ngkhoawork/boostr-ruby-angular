@@ -76,13 +76,6 @@ class Deal < ActiveRecord::Base
     if stage_id_changed?
       log_stage 
       send_ealert
-      update_pipeline_fact_stage(stage_id_was, stage_id)
-    end
-
-    if start_date_changed? || end_date_changed?
-      s_date = [start_date_was, start_date].min
-      e_date = [end_date_was, end_date].max
-      update_pipeline_fact_date(s_date, e_date)
     end
     integrate_with_operative
     send_lost_deal_notification
@@ -115,6 +108,8 @@ class Deal < ActiveRecord::Base
     log_stage
     update_pipeline_fact(self)
   end
+
+  set_callback :save, :after, :update_pipeline_fact_callback
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
   scope :for_time_period, -> (start_date, end_date) do
@@ -169,6 +164,18 @@ class Deal < ActiveRecord::Base
                .having('count(distinct option_id) >= ?', option_ids.length)
                .pluck(:subject_id)
       where('deals.id in (?)', ids)
+    end
+  end
+
+  def update_pipeline_fact_callback
+    if stage_id_changed?
+      update_pipeline_fact_stage(stage_id_was, stage_id)
+    end
+
+    if start_date_changed? || end_date_changed?
+      s_date = [start_date_was, start_date].min
+      e_date = [end_date_was, end_date].max
+      update_pipeline_fact_date(s_date, e_date)
     end
   end
 
@@ -983,10 +990,15 @@ class Deal < ActiveRecord::Base
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal', source: 'ui')
     import_log.set_file_source(file_path)
 
+    deal_change = {time_period_ids: [], product_ids: [], stage_ids: [], user_ids: []}
+
+    Deal.skip_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.skip_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.skip_callback(:destroy, :after, :update_pipeline_fact_callback)
+
     CSV.parse(file, headers: true, header_converters: :symbol) do |row|
       import_log.count_processed
       @has_custom_field_rows ||= (row.headers && @custom_field_names.map(&:to_csv_header)).any?
-
       if row[0]
         begin
           deal = current_user.company.deals.find(row[0].strip)
@@ -1283,6 +1295,11 @@ class Deal < ActiveRecord::Base
         if deal_source_value = deal.values.where(field_id: deal_source_field).first
           source_value_params[:id] = deal_source_value.id
         end
+
+        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+        deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
+        deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
+        deal_change[:product_ids] += deal.deal_products.collect{|item| item.product_id}
       else
         deal = current_user.company.deals.new(created_by: current_user.id)
         deal_is_new = true
@@ -1293,7 +1310,6 @@ class Deal < ActiveRecord::Base
         source_value_params,
         close_reason_params
       ]
-
       if deal.update_attributes(deal_params)
         import_log.count_imported
 
@@ -1304,7 +1320,11 @@ class Deal < ActiveRecord::Base
         deal_member_list.each_with_index do |user, index|
           deal_member = deal.deal_members.find_or_initialize_by(user: user)
           deal_member.update(share: deal_members[index][1].to_i)
+          deal_change[:user_ids] += [user.id]
         end
+
+        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", start_date, end_date).collect{|item| item.id}
+        deal_change[:stage_ids] += [stage.id] if stage.present?
         deal_contact_list.each do |contact|
           deal.deal_contacts.find_or_create_by(contact: contact)
         end
@@ -1316,6 +1336,16 @@ class Deal < ActiveRecord::Base
         next
       end
     end
+    Deal.set_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.set_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.set_callback(:destroy, :after, :update_pipeline_fact_callback)
+
+    deal_change[:time_period_ids] = deal_change[:time_period_ids].uniq
+    deal_change[:user_ids] = deal_change[:user_ids].uniq
+    deal_change[:product_ids] = deal_change[:product_ids].uniq
+    deal_change[:stage_ids] = deal_change[:stage_ids].uniq
+
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
 
     import_log.save
   end

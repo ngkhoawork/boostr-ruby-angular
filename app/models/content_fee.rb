@@ -32,6 +32,12 @@ class ContentFee < ActiveRecord::Base
     io.update_total_budget
   end
 
+  set_callback :save, :after, :update_revenue_fact_callback
+
+  def update_revenue_fact_callback
+    
+  end
+
   def active_exchange_rate
     if io.curr_cd != 'USD'
       unless io.exchange_rate

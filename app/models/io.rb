@@ -33,15 +33,17 @@ class Io < ActiveRecord::Base
     if (start_date_changed? || end_date_changed?)
       reset_content_fees
       reset_member_effective_dates
-      update_revenue_fact(self)
-    end
-    if (budget_changed?)
-      update_revenue_fact(self)
     end
   end
 
   after_destroy do |io_record|
     update_revenue_fact(io_record)
+  end
+
+  set_callback :save, :after, :update_revenue_fact_callback
+
+  def update_revenue_fact_callback
+    update_revenue_fact(self) if (start_date_changed? || end_date_changed? || budget_changed?)
   end
 
   def reset_content_fees
@@ -57,18 +59,14 @@ class Io < ActiveRecord::Base
   def reset_member_effective_dates
     io_members.each do |io_member|
       date_changed = false
-      puts start_date_was
-      puts io_member.from_date
       if start_date_was == io_member.from_date
         io_member.from_date = start_date
         date_changed = true
-        puts io_member.to_json
       end
       if end_date_was == io_member.to_date
         io_member.to_date = end_date
         date_changed = true
       end
-
       io_member.save if date_changed
     end
   end

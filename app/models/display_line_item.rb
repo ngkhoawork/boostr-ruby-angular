@@ -125,6 +125,10 @@ class DisplayLineItem < ActiveRecord::Base
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'display_line_item', source: 'ui')
     import_log.set_file_source(file_path)
 
+    io_change = {time_period_ids: [], product_ids: [], user_ids: []}
+
+    Io.skip_callback(:save, :after, :update_revenue_fact_callback)
+
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
 
@@ -529,6 +533,8 @@ class DisplayLineItem < ActiveRecord::Base
 
         display_line_item_params = self.convert_params_currency(io.exchange_rate, display_line_item_params)
 
+        io_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date).collect{|item| item.id}
+
         if io.content_fees.count == 0
           if io_start_date < io.start_date
             io.start_date = io_start_date
@@ -537,6 +543,11 @@ class DisplayLineItem < ActiveRecord::Base
             io.end_date = io_end_date
           end
         end
+
+        io_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date).collect{|item| item.id}
+        io_change[:user_ids] += io.users.collect{|item| item.id}
+        io_change[:product_ids] += io.products.collect{|item| item.id}
+        io_change[:product_ids] += [product_id] if product_id.present?
         io.external_io_number = external_io_number
         io.save
       end
@@ -557,6 +568,14 @@ class DisplayLineItem < ActiveRecord::Base
         DisplayLineItem.create(display_line_item_params)
       end
     end
+
+    Io.set_callback(:save, :after, :update_revenue_fact_callback)
+
+    io_change[:time_period_ids] = io_change[:time_period_ids].uniq
+    io_change[:user_ids] = io_change[:user_ids].uniq
+    io_change[:product_ids] = io_change[:product_ids].uniq
+
+    ForecastRevenueCalculatorWorker.perform_async(io_change)
 
     import_log.save
   end

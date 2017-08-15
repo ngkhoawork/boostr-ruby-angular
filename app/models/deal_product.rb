@@ -14,7 +14,6 @@ class DealProduct < ActiveRecord::Base
     if deal_product_budgets.empty?
       self.create_product_budgets
     end
-    update_forecast_pipeline_product(self)
   end
 
   after_update do
@@ -30,19 +29,23 @@ class DealProduct < ActiveRecord::Base
     if should_update_deal_budget
       deal.update_total_budget
     end
-
-    update_forecast_pipeline_product(self) if budget_changed?
   end
 
   after_destroy do |deal_product|
     update_forecast_pipeline_product(deal_product)
   end
 
+  set_callback :save, :after, :update_pipeline_fact_callback
+
   scope :product_type_of, -> (type) { joins(:product).where("products.revenue_type = ?", type) }
   scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) if product_ids.present? }
   scope :open, ->  { where('deal_products.open IS true')  }
   scope :active, -> { DealProduct.joins('LEFT JOIN products ON deal_products.product_id = products.id').where('products.active IS true') }
+
+  def update_pipeline_fact_callback
+    update_forecast_pipeline_product(self) if budget_changed?
+  end
 
   def daily_budget
     budget / (deal.end_date - deal.start_date + 1).to_f
@@ -153,6 +156,12 @@ class DealProduct < ActiveRecord::Base
 
     @custom_field_names = current_user.company.deal_product_cf_names
 
+    Deal.skip_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.skip_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.skip_callback(:destroy, :after, :update_pipeline_fact_callback)
+
+    deal_change = {time_period_ids: [], product_ids: [], stage_ids: [], user_ids: []}
+
     CSV.parse(file, headers: true, header_converters: :symbol) do |row|
       import_log.count_processed
       @has_custom_field_rows ||= (row.headers && @custom_field_names.map(&:to_csv_header)).any?
@@ -232,8 +241,25 @@ class DealProduct < ActiveRecord::Base
 
       deal_product = deal.deal_products.find_by(product: product)
 
+      if deal.present?
+        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+        deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
+        deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
+        deal_change[:product_ids] += deal.deal_products.collect{|item| item.product_id}
+      end
+      deal_change[:product_ids] += [product.id]
+
       if !(deal_product)
+        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+        deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
+        deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
+        deal_change[:product_ids] += [product.id]
         deal_product = deal.deal_products.new
+      elsif (deal_product.budget != budget || deal_product.budget_loc != budget_loc)
+        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+        deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
+        deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
+        deal_change[:product_ids] += [product.id]
       end
 
       if deal_product.update_attributes(deal_product_params)
@@ -248,6 +274,17 @@ class DealProduct < ActiveRecord::Base
         next
       end
     end
+
+    Deal.set_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.set_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.set_callback(:destroy, :after, :update_pipeline_fact_callback)
+
+    deal_change[:time_period_ids] = deal_change[:time_period_ids].uniq
+    deal_change[:user_ids] = deal_change[:user_ids].uniq
+    deal_change[:product_ids] = deal_change[:product_ids].uniq
+    deal_change[:stage_ids] = deal_change[:stage_ids].uniq
+
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
 
     import_log.save
   end

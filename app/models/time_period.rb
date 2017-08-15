@@ -14,6 +14,12 @@ class TimePeriod < ActiveRecord::Base
     end
   end
 
+  after_update do
+    if start_date_changed? || end_date_changed?
+      update_forecast_fact_callback
+    end
+  end
+
   scope :current_year_quarters, -> (company_id) do
     where(company_id: company_id).where("date(end_date) - date(start_date) < 100")
                                  .where("extract(year from start_date) = ?", Date.current.year)
@@ -27,6 +33,17 @@ class TimePeriod < ActiveRecord::Base
 
   def self.now
     where('start_date <= ? AND end_date >= ?', Time.now, Time.now).first
+  end
+
+  def update_forecast_fact_callback
+    time_period_ids = [self.id]
+    user_ids = company.users.collect{|user| user.id}
+    product_ids = company.products.collect{|product| product.id}
+    stage_ids = company.stages.collect{|stage| stage.id}
+    io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
+    deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
+    ForecastRevenueCalculatorWorker.perform_async(io_change)
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
   end
 
   protected

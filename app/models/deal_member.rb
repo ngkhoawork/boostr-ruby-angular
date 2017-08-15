@@ -20,7 +20,6 @@ class DealMember < ActiveRecord::Base
 
   after_update do
     log_share_changes if share_changed?
-    update_pipeline_fact_user(self) if share_changed?
   end
 
   after_create do
@@ -29,7 +28,17 @@ class DealMember < ActiveRecord::Base
 
   after_destroy do |deal_member|
     log_destroying_member
-    update_pipeline_fact_user(deal_member) if deal_member.share > 0
+  end
+
+  set_callback :save, :after, :update_pipeline_fact_callback
+  set_callback :destroy, :after, :remove_pipeline_fact_callback
+
+  def update_pipeline_fact_callback
+    update_pipeline_fact_user(self) if share_changed?
+  end
+
+  def remove_pipeline_fact_callback
+    update_pipeline_fact_user(self) if deal_member.share > 0
   end
 
   def name
@@ -49,6 +58,7 @@ class DealMember < ActiveRecord::Base
   end
 
   def update_pipeline_fact_user(deal_member)
+    puts "==========update deal member fact"
     user = deal_member.user
     deal = deal_member.deal
     company = deal.company

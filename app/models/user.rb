@@ -32,6 +32,30 @@ class User < ActiveRecord::Base
   scope :by_name, -> name { where('users.first_name ilike ? or users.last_name ilike ?', "%#{name}%", "%#{name}%") if name.present? }
   scope :by_email, -> email { where('email ilike ?', email)  }
 
+  after_create do
+    create_dimension
+    update_forecast_fact_callback
+  end
+
+  def create_dimension
+    UserDimension.create(
+      id: self.id,
+      company_id: self.company_id,
+      team_id: self.team_id
+    )
+  end
+
+  def update_forecast_fact_callback
+    time_period_ids = company.time_periods.collect{|time_period| time_period.id}
+    user_ids = [self.id]
+    product_ids = company.products.collect{|product| product.id}
+    stage_ids = company.stages.collect{|stage| stage.id}
+    io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
+    deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
+    ForecastRevenueCalculatorWorker.perform_async(io_change)
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
+  end
+
   def roles=(roles)
     if roles. nil?
       roles = %w(user)

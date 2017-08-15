@@ -11,6 +11,30 @@ class Product < ActiveRecord::Base
   scope :active, -> { where('active IS true') }
   scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
 
+  after_create do
+    create_dimension
+    update_forecast_fact_callback
+  end
+
+  def create_dimension
+    ProductDimension.create(
+      id: self.id,
+      company_id: self.company_id,
+      name: self.name
+    )
+  end
+
+  def update_forecast_fact_callback
+    time_period_ids = company.time_periods.collect{|time_period| time_period.id}
+    user_ids = company.users.collect{|user| user.id}
+    product_ids = [self.id]
+    stage_ids = company.stages.collect{|stage| stage.id}
+    io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
+    deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
+    ForecastRevenueCalculatorWorker.perform_async(io_change)
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
+  end
+
   def as_json(options = {})
     super(options.merge(include: [:ad_units, values: { include: [:option], methods: [:value] }]))
   end
