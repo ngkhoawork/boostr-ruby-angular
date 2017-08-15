@@ -250,7 +250,7 @@
 			sets.push {type: 'quotaLine'}
 			items = switch data.type
 				when 'team'
-					data.members.concat data.leader
+					[].concat data.teams, data.members, data.leader
 				when 'member'
 					[data]
 				else
@@ -318,7 +318,7 @@
 					else
 						d3.max group, (d) -> d.w + d.w0
 				)
-				yMax = maxValue * 1.2
+				yMax = (maxValue || 1) * 1.2
 
 				xLabels = _.pluck(dataset[0], 'name')
 				x = d3.scale.ordinal().domain(xLabels).rangeRoundBands([0, width])
