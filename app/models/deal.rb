@@ -412,7 +412,7 @@ class Deal < ActiveRecord::Base
     new_budget = deal_product_budgets.sum(:budget)
     new_budget_loc = deal_product_budgets.sum(:budget_loc)
 
-    log_budget_changes(current_budget.to_i, new_budget.to_i)
+    log_budget_changes(current_budget, new_budget)
 
     update_attributes(budget: new_budget, budget_loc: new_budget_loc)
   end
