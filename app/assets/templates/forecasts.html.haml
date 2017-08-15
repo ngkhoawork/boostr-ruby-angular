@@ -130,7 +130,6 @@
 									%th
 										Call Qtr
 							%tbody.teams{ ng: { repeat: 'row in teams', include: "'partials/forecast/forecast_row.html'" } }
-							%tbody.leader{ ng: { repeat: 'row in [forecast.leader]', include: "'partials/forecast/forecast_row.html'", if: 'forecast.leader' } }
 							%tbody.members{ ng: { repeat: 'row in members', include: "'partials/forecast/forecast_row.html'" } }
 							%tbody.member{ ng: { hide: 'teams || members', repeat: 'row in [forecast]', include: "'partials/forecast/forecast_row.html'" } }
 

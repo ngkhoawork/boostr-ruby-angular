@@ -154,6 +154,7 @@ class NewForecastTeam
           @forecasts_data[:teams][team.id] ||= {
             id: team.id,
             name: team.name,
+            type: 'team',
             unweighted_pipeline: 0,
             weighted_pipeline: 0,
             unweighted_pipeline_by_stage: {},
@@ -170,7 +171,10 @@ class NewForecastTeam
         @forecasts_data[:members][item.user_id] ||= {
           id: user.id,
           name: user.name,
-          is_leader: user.id == leader.id,
+          is_leader: user.leader?,
+          type: 'member',
+          quarter: nil,
+          year: nil,
           unweighted_pipeline: 0,
           weighted_pipeline: 0,
           unweighted_pipeline_by_stage: {},
@@ -194,6 +198,7 @@ class NewForecastTeam
           @forecasts_data[:teams][team.id] ||= {
             id: team.id,
             name: team.name,
+            type: 'team',
             unweighted_pipeline: 0,
             weighted_pipeline: 0,
             unweighted_pipeline_by_stage: {},
@@ -222,7 +227,10 @@ class NewForecastTeam
         @forecasts_data[:members][item.user_id] ||= {
           id: user.id,
           name: user.name,
-          is_leader: user.id == leader.id,
+          is_leader: user.leader?,
+          type: 'member',
+          quarter: nil,
+          year: nil,
           unweighted_pipeline: 0,
           weighted_pipeline: 0,
           unweighted_pipeline_by_stage: {},
@@ -275,6 +283,7 @@ class NewForecastTeam
           @forecasts_data[:teams][team.id] ||= {
             id: team.id,
             name: team.name,
+            type: 'team',
             unweighted_pipeline: 0,
             weighted_pipeline: 0,
             unweighted_pipeline_by_stage: {},
@@ -295,7 +304,10 @@ class NewForecastTeam
         @forecasts_data[:members][user.id] ||= {
           id: user.id,
           name: user.name,
-          is_leader: user.id == leader.id,
+          is_leader: user.leader?,
+          type: 'member',
+          quarter: nil,
+          year: nil,
           unweighted_pipeline: 0,
           weighted_pipeline: 0,
           unweighted_pipeline_by_stage: {},
@@ -351,6 +363,7 @@ class NewForecastTeam
       @forecasts_data[:teams][team.id] ||= {
         id: team.id,
         name: team.name,
+        type: 'team',
         unweighted_pipeline: 0,
         weighted_pipeline: 0,
         unweighted_pipeline_by_stage: {},

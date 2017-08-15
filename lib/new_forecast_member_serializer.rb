@@ -1,7 +1,7 @@
 class NewForecastMemberSerializer < ActiveModel::Serializer
-  cached
+  # cached
 
-  delegate :cache_key, to: :object
+  # delegate :cache_key, to: :object
 
   attributes(
     :id,

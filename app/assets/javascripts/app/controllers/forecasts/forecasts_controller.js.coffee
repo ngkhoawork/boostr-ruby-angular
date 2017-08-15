@@ -186,6 +186,7 @@
 					else # forecast is either a single top-level company or single member object
 						$scope.forecast = forecast[0]
 						$scope.teams = forecast[0].teams
+						$scope.members = forecast[0].members
 						if forecast[0].type && forecast[0].type == "member"
 							$scope.member = forecast[0]
 					$scope.dataset = [$scope.teams || [], $scope.members || []]

@@ -1,7 +1,7 @@
 class NewForecastTeamSerializer < ActiveModel::Serializer
-  cached
+  # cached
 
-  delegate :cache_key, to: :object
+  # delegate :cache_key, to: :object
 
   attributes(
     :id,
@@ -26,14 +26,4 @@ class NewForecastTeamSerializer < ActiveModel::Serializer
     :new_deals_needed,
   )
 
-
-  def year_value
-    object.year || object.start_date.year rescue nil
-  end
-
-  def quarter_number
-    if object.start_date.present? && object.end_date.present? && (object.end_date - object.start_date).to_i < 100
-      1 + ((object.start_date.month - 1)/3).to_i
-    end
-  end
 end
