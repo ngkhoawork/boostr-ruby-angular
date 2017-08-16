@@ -51,7 +51,7 @@ class DealMember < ActiveRecord::Base
   def log_share_changes
     AuditLogService.new(
       record: deal,
-      type: 'Share Change',
+      type: AuditLog::SHARE_CHANGE_TYPE,
       member: user_id,
       old_value: share_was,
       new_value: share
@@ -61,7 +61,7 @@ class DealMember < ActiveRecord::Base
   def log_adding_member
     AuditLogService.new(
       record: deal,
-      type: 'Member Added',
+      type: AuditLog::MEMBER_ADDED_TYPE,
       member: user_id,
       new_value: user.name
     ).perform
@@ -70,7 +70,7 @@ class DealMember < ActiveRecord::Base
   def log_destroying_member
     AuditLogService.new(
       record: deal,
-      type: 'Member Removed',
+      type: AuditLog::MEMBER_REMOVED_TYPE,
       member: user_id,
       old_value: user.name
     ).perform

@@ -1,5 +1,5 @@
-class Report::BudgetChangeDealsAuditLogsSerializer < ActiveModel::Serializer
-  attributes :id, :name, :advertiser_name, :start_date, :budget, :budget_change, :date
+class Report::BaseAuditLogSerializer < ActiveModel::Serializer
+  attributes :id, :name, :advertiser_name, :start_date, :budget, :date
 
   private
 
@@ -21,10 +21,6 @@ class Report::BudgetChangeDealsAuditLogsSerializer < ActiveModel::Serializer
 
   def budget
     deal.budget
-  end
-
-  def budget_change
-    object.changed_amount
   end
 
   def date

@@ -9,6 +9,10 @@
         'Lost Deals'
         'Budget Changed'
         'Stage Changed'
+        'Start Date Changed'
+        'Member Added'
+        'Member Removed'
+        'Share Changed'
       ]
       $scope.sortType = 'deal_type'
       $scope.sortReverse  = false

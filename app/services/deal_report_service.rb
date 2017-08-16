@@ -1,9 +1,11 @@
 class DealReportService < BaseService
-  NEW_DEALS      = 'New Deals'.freeze
-  WON_DEALS      = 'Won Deals'.freeze
-  LOST_DEALS     = 'Lost Deals'.freeze
-  BUDGET_CHANGED = 'Budget Changed'.freeze
-  STAGE_CHANGED  = 'Stage Changed'.freeze
+  NEW_DEALS           = 'New Deals'.freeze
+  WON_DEALS           = 'Won Deals'.freeze
+  LOST_DEALS          = 'Lost Deals'.freeze
+  BUDGET_CHANGED      = 'Budget Changed'.freeze
+  STAGE_CHANGED       = 'Stage Changed'.freeze
+  START_DATE_CHANGED  = 'Start Date Changed'.freeze
+  SHARE_CHANGED       = 'Share Changed'.freeze
 
   def generate_report
     report_data
@@ -112,13 +114,85 @@ class DealReportService < BaseService
     end
   end
 
+  def deal_start_date_audit
+    company_audit_logs
+      .by_type_of_change(AuditLog::START_DATE_CHANGE_TYPE)
+      .includes(auditable: :advertiser)
+  end
+
+  def start_date_changed
+    if change_type.blank? || change_type.eql?(START_DATE_CHANGED)
+      ActiveModel::ArraySerializer.new(
+        deal_start_date_audit,
+        each_serializer: Report::StartDateChangeSerializer
+      ).as_json
+    else
+      []
+    end
+  end
+
+  def deal_member_added_audit
+    company_audit_logs
+      .by_type_of_change(AuditLog::MEMBER_ADDED_TYPE)
+      .includes(auditable: :advertiser)
+  end
+
+  def member_added_changed
+    if change_type.blank? || change_type.eql?(AuditLog::MEMBER_ADDED_TYPE)
+      ActiveModel::ArraySerializer.new(
+        deal_member_added_audit,
+        each_serializer: Report::MemberAddedSerializer
+      ).as_json
+    else
+      []
+    end
+  end
+
+  def deal_member_removed_audit
+    company_audit_logs
+      .by_type_of_change(AuditLog::MEMBER_REMOVED_TYPE)
+      .includes(auditable: :advertiser)
+  end
+
+  def member_removed_changed
+    if change_type.blank? || change_type.eql?(AuditLog::MEMBER_REMOVED_TYPE)
+      ActiveModel::ArraySerializer.new(
+        deal_member_removed_audit,
+        each_serializer: Report::MemberRemovedSerializer
+      ).as_json
+    else
+      []
+    end
+  end
+
+  def deal_share_change_audit
+    company_audit_logs
+      .by_type_of_change(AuditLog::SHARE_CHANGE_TYPE)
+      .includes(auditable: :advertiser)
+  end
+
+  def share_change_report
+    if change_type.blank? || change_type.eql?(SHARE_CHANGED)
+      ActiveModel::ArraySerializer.new(
+        deal_share_change_audit,
+        each_serializer: Report::ShareChangedSerializer
+      ).as_json
+    else
+      []
+    end
+  end
+
   def report_data
     @report_data ||= {
                         new_deals: new_deals_report,
                         stage_changed_deals: stage_changed_deals,
                         won_deals: won_deals_report,
                         lost_deals: lost_deals_report,
-                        budget_changed: budget_changed
+                        budget_changed: budget_changed,
+                        start_date_changed: start_date_changed,
+                        member_added: member_added_changed,
+                        member_removed: member_removed_changed,
+                        share_change: share_change_report
                       }
   end
 
