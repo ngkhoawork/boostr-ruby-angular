@@ -224,6 +224,5 @@ class Company < ActiveRecord::Base
     validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'deal_source_value')
     validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'agency')
     validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'next_steps')
-    validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'next_steps_due')
   end
 end

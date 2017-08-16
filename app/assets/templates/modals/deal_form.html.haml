@@ -82,21 +82,12 @@
                             %ui-select-choices{ repeat: 'option.id as option in deal.source_type.options | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'option.name' } } }
 
-            .form-group
-                .row
-                    .col-xs-6{'ng-class':'{error: errors.next_steps}'}
-                        %span.error-text {{errors.next_steps}}
-                        %label{ for: 'next-steps' }
-                            Next Steps
-                            %span.star{ 'ng-if': "baseFieldRequired('next_steps')" } *
-                        %input.form-control{ placeholder: 'Next Steps', ng: { model: 'deal.next_steps' }, name: 'next-steps' }
-
-                    .col-xs-6{'ng-class':'{error: errors.next_steps_due}'}
-                        %span.error-text {{errors.next_steps_due}}
-                        %label{ for: 'next-steps' }
-                            Next Steps Due
-                            %span.star{ 'ng-if': "baseFieldRequired('next_steps_due')" } *
-                        %input.form-control{readonly: true, name: 'next_steps_due', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'deal.next_steps_due', required: true, click: 'next_steps_due_opened = true' }, 'is-open': 'next_steps_due_opened' }
+            .form-group{'ng-class':'{error: errors.next_steps}'}
+                %span.error-text {{errors.next_steps}}
+                %label{ for: 'next-steps' }
+                    Next Steps
+                    %span.star{ 'ng-if': "baseFieldRequired('next_steps')" } *
+                %input.form-control{ placeholder: 'Next Steps', ng: { model: 'deal.next_steps' }, name: 'next-steps' }
 
             %div{ ng: {if: "formType == 'New'"}}
                 .row
