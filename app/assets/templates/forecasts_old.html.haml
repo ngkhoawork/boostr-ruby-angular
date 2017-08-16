@@ -7,9 +7,9 @@
         .col-xs-12
           %ul.nav.nav-tabs
             %li.pull-left.path
-              %a.path-link{ ng: { href: '/forecast?time_period_id={{currentTimePeriod.id}}&year={{year}}' }} Forecast
+              %a.path-link{ ng: { href: '/fore_cast_old?time_period_id={{currentTimePeriod.id}}&year={{year}}' }} Forecast
               .path-link{ ng: { repeat: 'parent in forecast.parents' } }
-                %a{ ng: { href: '/forecast/{{parent.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' }} {{ parent.name }}
+                %a{ ng: { href: '/fore_cast_old/{{parent.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' }} {{ parent.name }}
               .path-link
                 %a{ href: '', ng: { if: 'forecast.name' } }
                   {{ forecast.name }}
