@@ -324,11 +324,19 @@ class NewForecastTeam
         @forecasts_data[:members][user.id][:wow_revenue] += wow_revenue
 
         quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
-        @forecasts_data[:members][user.id][:quota] = quota
-        @forecasts_data[:members][user.id][:amount] ||= (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
-        @forecasts_data[:members][user.id][:percent_to_quota] ||= (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
-        @forecasts_data[:members][user.id][:percent_booked] ||= (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
-        @forecasts_data[:members][user.id][:gap_to_quota] ||= (quota - @forecasts_data[:members][user.id][:amount]).to_f
+        if user.leader?
+          @forecasts_data[:members][user.id][:quota] = 0
+          @forecasts_data[:members][user.id][:amount] ||= (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
+          @forecasts_data[:members][user.id][:percent_to_quota] ||= (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
+          @forecasts_data[:members][user.id][:percent_booked] ||= (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
+          @forecasts_data[:members][user.id][:gap_to_quota] ||= (quota - @forecasts_data[:members][user.id][:amount]).to_f
+        else
+          @forecasts_data[:members][user.id][:quota] = quota
+          @forecasts_data[:members][user.id][:amount] ||= (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
+          @forecasts_data[:members][user.id][:percent_to_quota] ||= (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
+          @forecasts_data[:members][user.id][:percent_booked] ||= (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
+          @forecasts_data[:members][user.id][:gap_to_quota] ||= (quota - @forecasts_data[:members][user.id][:amount]).to_f
+        end
 
         incomplete_deals ||= user.deals.active.closed.at_percent(0).closed_in(user.company.deals_needed_calculation_duration)
         complete_deals ||= user.deals.active.at_percent(100).closed_in(user.company.deals_needed_calculation_duration)
