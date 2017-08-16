@@ -22,6 +22,7 @@ class NewForecastTeamSerializer < ActiveModel::Serializer
     :teams,
     :leader,
     :members,
+    :stages,
     :all_teammembers,
     :new_deals_needed,
   )

@@ -63,6 +63,12 @@ class NewForecastTeam
     @leader ||= team.leader
   end
 
+  def stages
+    return @stages if defined?(@stages)
+    ids = weighted_pipeline_by_stage.keys
+    @stages = team.company.stages.where(id: ids).order(:probability).all
+  end
+
   def members
     return @members if defined?(@members)
     @members = []

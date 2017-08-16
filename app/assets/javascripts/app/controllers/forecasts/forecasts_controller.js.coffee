@@ -250,7 +250,7 @@
 			sets.push {type: 'quotaLine'}
 			items = switch data.type
 				when 'team'
-					[].concat data.teams, data.members, data.leader
+					[].concat data.teams, data.members
 				when 'member'
 					[data]
 				else
