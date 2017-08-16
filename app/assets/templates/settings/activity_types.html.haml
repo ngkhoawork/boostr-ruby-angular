@@ -1,0 +1,9 @@
+#activity-types.z-styles
+  .container-fluid
+    %span.page-title.mb40 Activity Types Settings
+
+    .row
+      .col-sm-6
+        .panel{ ng: { repeat: 'activity in activity_types' } }
+          .panel-body
+            %span {{activity.name}}

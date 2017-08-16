@@ -82,6 +82,7 @@ group :development do
   gem 'lol_dba'
   gem 'bullet'
   gem 'letter_opener'
+  gem 'meta_request'
 end
 
 group :development, :test do
