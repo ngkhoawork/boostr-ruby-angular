@@ -23,13 +23,15 @@ class DealReportService < BaseService
           val = val.symbolize_keys
 
           line = []
-          line = [deal_type]
+          line << val[:date].to_date
           line << val[:name]
           line << val[:advertiser_name]
+          line << deal_type
+          line << val[:old_value]
+          line << val[:new_value]
           line << val[:budget]
+          line << val[:budget_change]
           line << val[:start_date]
-          line << val[:stage_name]
-          line << val[:previous_stage]
           csv << line
         end
       end
@@ -203,7 +205,17 @@ class DealReportService < BaseService
   end
 
   def csv_header
-    [:deal_type, :deal_name, :advertiser_name, :budget, :start_date, :stage_name, :previous_stage]
+    [
+      'Change Type',
+      'Deal Name',
+      'Advertiser Name',
+      'Change Type',
+      'Old Value',
+      'New Value',
+      'Budget',
+      'Budget Change',
+      'Deal Start Date'
+    ]
   end
 
   def change_type

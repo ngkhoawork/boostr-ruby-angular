@@ -59,47 +59,47 @@
                     %span.clickable{'ng-click': 'changeSortType("date")'}
                       Change Date
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("deal_type")'}
-                      Change type
-                  %th
                     %span.clickable{'ng-click': 'changeSortType("name")'}
-                      Deal name
+                      Deal Name
                   %th
                     %span.clickable{'ng-click': 'changeSortType("advertiser_name")'}
-                      Advertiser name
+                      Advertiser Name
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("budget")'}
-                      Deal budget
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("start_date")'}
-                      Deal start date
+                    %span.clickable{'ng-click': 'changeSortType("deal_type")'}
+                      Change Type
                   %th
                     %span.clickable{'ng-click': 'changeSortType("old_value")'}
-                      Old value
+                      Old Value
                   %th
                     %span.clickable{'ng-click': 'changeSortType("new_value")'}
-                      New value
+                      New Value
+                  %th
+                    %span.clickable{'ng-click': 'changeSortType("budget")'}
+                      Deal Budget
                   %th
                     %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Budget change
+                      Budget Change Amount
+                  %th
+                    %span.clickable{'ng-click': 'changeSortType("start_date")'}
+                      Deal Start Date
               %tbody
                 %tr{ ng: { repeat: 'deal in report_data_items | orderBy:sortType:sortReverse' } }
                   %td
                     {{ deal.date | date: 'MM-dd-yyyy' }}
-                  %td
-                    {{ deal.deal_type }}
                   %td
                     %a{ href: '', ng: { href: '"/deals/" + deal.id)'  } }
                       {{ deal.name }}
                   %td
                     {{ deal.advertiser_name }}
                   %td
-                    {{ deal.budget | currency:'$':0 }}
+                    {{ deal.deal_type }}
                   %td
-                    {{ deal.start_date | date: 'MM-dd-yyyy' }}
-                  %td
-                    {{ deal.old_value  }}
+                    {{ deal.old_value }}
                   %td
                     {{ deal.new_value }}
                   %td
+                    {{ deal.budget | currency:'$':0 }}
+                  %td
                     {{ deal.budget_change | currency:'$':0 }}
+                  %td
+                    {{ deal.start_date | date: 'MM-dd-yyyy' }}
