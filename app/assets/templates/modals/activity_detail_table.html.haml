@@ -1,0 +1,9 @@
+#activity-form-modal.popup-modal
+    .popup-modal-header
+        Activity Detail
+        %span.close-btn{'ng-click': 'cancel()'}
+    .popup-modal-body
+        .z-styles{style: 'background-color: white; padding: 0; min-height: 0'}
+            %ng-include{src: '"partials/activity_detail_table.html"' }
+    .popup-modal-footer
+        %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close

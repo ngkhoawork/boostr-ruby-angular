@@ -52,35 +52,38 @@
               %download-button{'ng-click': 'exportReports()'}
                 Export
 
-  .row
-    .col-md-12
-      .block
-        .table-wrapper
-          %table.table.table-hover
-            %thead
-              %tr{'z-fixed-header': true, watch: '["types", "userReportValues"]'}
-                %th.left{ 'ng-click': 'changeSortType("username")'}
-                  Name
-                %th{ ng: { repeat: 'type in types track by $index' }, 'ng-click': 'changeSortType("\"" + type.name + "\"")' }
-                  {{ type.name }}
-                %th.text--bold{ 'ng-click': 'changeSortType("total")'}
-                  Total
+    .row
+      .col-md-12
+        .block
+          .table-wrapper
+            %table.table.table-hover
+              %thead
+                %tr{'z-fixed-header': true, watch: '["types", "userReportValues"]'}
+                  %th.left
+                    %span.clickable{ 'ng-click': 'changeSortType("username")'}
+                      Name
+                  %th{ ng: { repeat: 'type in types track by $index' } }
+                    %span.clickable{'ng-click': 'changeSortType("\"" + type.name + "\"")'}
+                      {{ type.name }}
+                  %th.text--bold
+                    %span.clickable{ 'ng-click': 'changeSortType("total")'}
+                      Total
 
-            %tbody
-              %tr{ ng: { repeat: 'report in userReportValues | orderBy:sortType:sortReverse' } }
-                %td.left {{ report.username }}
-                %td{'ng-repeat': 'type in types'}
-                  %a{'ng-click': 'drillActivityDetail(report.user_id, type.name)'}
-                    {{report[type.name]}}
-                %td.text--bold
-                  %a{'ng-click': 'drillActivityDetail(report.user_id, null)'}
-                    {{report['total']}}
+              %tbody
+                %tr{ ng: { repeat: 'report in userReportValues | orderBy:sortType:sortReverse' } }
+                  %td.left {{ report.username }}
+                  %td{'ng-repeat': 'type in types'}
+                    %a{'ng-click': 'showActivityDetailModal(report.user_id, type.id)'}
+                      {{report[type.name]}}
+                  %td.text--bold
+                    %a{'ng-click': 'showActivityDetailModal(report.user_id, null)'}
+                      {{report['total']}}
 
-              %tr.text--bold
-                %td.left Total
-                %td{'ng-repeat': 'type in types'}
-                  %a{'ng-click': 'drillActivityDetail(null, type.name)'}
-                    {{total_activities[type.name]}}
-                %td
-                  %a{'ng-click': 'drillActivityDetail(null, null)'}
-                    {{total_activities['total']}}
+                %tr.text--bold
+                  %td.left Total
+                  %td{'ng-repeat': 'type in types'}
+                    %a{'ng-click': 'showActivityDetailModal(null, type.id)'}
+                      {{total_activities[type.name]}}
+                  %td
+                    %a{'ng-click': 'showActivityDetailModal(null, null)'}
+                      {{total_activities['total']}}

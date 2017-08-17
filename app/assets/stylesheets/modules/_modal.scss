@@ -1,6 +1,10 @@
 .modal-content {
   box-shadow: none;
 }
+.modal-xl {
+  min-width: $content-min-width;
+  width: 90%;
+}
 
 .modal-dialog {
   .modal-header {
