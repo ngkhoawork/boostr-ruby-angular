@@ -1,204 +1,149 @@
 @app.controller 'ActivityDetailReportsController',
-  ['$scope', '$document', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$q', '$sce', 'Team', 'Activity', 'ActivityType', '$filter',
-    ($scope, $document, $rootScope, $modal, $routeParams, $location, $window, $q, $sce, Team, Activity, ActivityType, $filter) ->
-      $scope.sortType     = 'happened_at'
-      $scope.sortReverse  = true
-      $scope.filterOpen = true
-      $scope.teamFilters = []
-      $scope.memberFilters = []
-      $scope.activityTypeFilters = []
-      $scope.time_period = 'month'
-      $scope.teamId = ''
-      $scope.memberId = $routeParams.member_id
-      $scope.isInitLoad = true
-      $scope.selectedTeam = {
-        id:'all',
-        name:'Team'
-      }
-      $scope.datePicker = {
-        startDate: moment($routeParams.start_date).startOf('day')
-        endDate: moment($routeParams.end_date).startOf('day')
-      }
+	['$scope', '$document', '$modal', '$modalInstance', '$routeParams', '$httpParamSerializer', '$location', '$window', '$sce', 'Team', 'Seller', 'Activity', 'ActivityType', 'activitySummaryParams'
+	( $scope,   $document,   $modal,   $modalInstance,   $routeParams,   $httpParamSerializer,   $location,   $window,   $sce,   Team,   Seller,   Activity,   ActivityType,   activitySummaryParams ) ->
 
-      datePickerInput = $document.find('#kpi-date-picker')
+		$scope.sortType = 'happened_at'
+		$scope.sortReverse = true
+		$scope.teams = []
+		$scope.members = []
+		$scope.activityTypes = []
 
-      if ($routeParams.start_date && $routeParams.end_date)
-        $scope.isDateSet = true
-        datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
-      else
-        $scope.isDateSet = false
-      $scope.activityTypeId = $routeParams.type_id
+		emptyFilter = $scope.emptyFilter = {id: null, name: 'All'}
+		appliedFilter = null
+		defaultFilter =
+			team: emptyFilter
+			member: emptyFilter
+			type: emptyFilter
+			date:
+				startDate: null
+				endDate: null
 
-      $scope.datePickerApply = () ->
-        if ($scope.datePicker.startDate && $scope.datePicker.endDate)
-          datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
-          $scope.isDateSet = true
-#          fetchData()
+		$scope.filter = angular.copy defaultFilter
 
-      $scope.datePickerCancel = (s, r) ->
-        datePickerInput.html('Time period')
-        $scope.isDateSet = false
-#        if !r then fetchData()
+		$scope.datePicker =
+			toString: (key) ->
+				date = $scope.filter[key]
+				if !date.startDate || !date.endDate then return false
+				date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
 
-      $scope.resetFilters = () ->
-        $scope.memberId = null
-        $scope.activityTypeId = null
-        $scope.selectedTeam = {
-          id:'all',
-          name:'Team'
-        }
-        $scope.datePickerCancel(null, true)
-#        fetchData()
+		$scope.setFilter = (key, val) ->
+			$scope.filter[key] = val
 
-      resetFilters = () ->
-        $scope.memberFilters = []
-        $scope.timeFilters = []
-        $scope.activityTypeFilters = []
+		$scope.applyFilter = ->
+			appliedFilter = angular.copy $scope.filter
+			getReport getQuery()
 
-      $scope.applyFilter = ->
-        fetchData()
+		$scope.resetFilter = ->
+			$scope.filter = angular.copy defaultFilter
 
-      fetchTeamMembers = (teamId) ->
-        Team.all_members(team_id: teamId).then (members) ->
-          $scope.members = members
-          $scope.members = _.sortBy $scope.members, 'name'
-          $scope.members.unshift({
-            id:'all',
-            name:'All'
-          })
+		getQuery = (isPrev) ->
+			f = if isPrev then appliedFilter else $scope.filter
+			query = {filter: 'detail'}
+			query.team_id = f.team.id || 'all'
+			query.member_id = f.member.id if f.member.id
+			query.activity_type_id = f.type.id if f.type.id
+			if f.date.startDate && f.date.endDate
+				query.start_date = f.date.startDate.format('YYYY-MM-DD')
+				query.end_date = f.date.endDate.format('YYYY-MM-DD')
+			query
 
-      fetchData = () ->
-        query = {filter: "detail"}
-        if($scope.activityTypeId)
-          query.activity_type_id = $scope.activityTypeId
+		getReport = (query) ->
+			Activity.all(query).then (activities) ->
+				$scope.activities = activities
+#			delete query.filter
+#			$location.search query
 
-        if($scope.teamId)
-          query.team_id = $scope.teamId
+		if activitySummaryParams
+			((p) ->
+				$scope.filter =
+					team: {id: 'all'}
+					member: {id: p.memberId}
+					type: {id: p.typeId}
+					date: p.date
+				$scope.applyFilter()
+			)(activitySummaryParams)
 
-        if($scope.memberId)
-          query.member_id = $scope.memberId
+#		if $routeParams.start_date && $routeParams.end_date
+#			$scope.filter.date =
+#				startDate: moment($routeParams.start_date)
+#				endDate: moment($routeParams.end_date)
 
-        if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
-          query.start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
-          query.end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
-        $scope.isInitLoad = false
-        Activity.all(query).then (activities) ->
-          $scope.activities = activities
 
-      $scope.init = ->
-#        Activity.all(filter: "detail").then (activities) ->
-#          $scope.activities = activities
-        Team.all(all_teams: true).then (teams) ->
-          $scope.teams = teams
-          $scope.teams.unshift({
-            id:'all',
-            name:'All'
-          })
-        fetchTeamMembers("all")
+		fetchTeamMembers = (teamId, init) ->
+			Seller.query({id: teamId || 'all'}).$promise.then (members) ->
+				$scope.members = members
+#				if $routeParams.member_id && init
+#					member = _.findWhere $scope.members, {id: Number $routeParams.member_id}
+#					$scope.setFilter('member', member) if member
 
-        ActivityType.all().then (activityTypes) ->
-          $scope.activityTypes = angular.copy(activityTypes)
-          $scope.activityTypes = _.sortBy $scope.activityTypes, 'name'
-          $scope.activityTypes.unshift({
-            id:'',
-            name:'All'
-          })
 
-      $scope.init()
+		$scope.init = ->
+			Team.all(all_teams: true).then (teams) ->
+				$scope.teams = teams
+				$scope.teams.unshift({
+					id: 'all',
+					name: 'All'
+				})
+#				if $routeParams.team_id
+#					(searchAndSetTeam = (teams, teamId) ->
+#						for team in teams
+#							if team.id is teamId then return $scope.setFilter('team', team)
+#							if team.children && team.children.length then searchAndSetTeam team.children, teamId
+#					)($scope.teams, Number $routeParams.team_id)
+			fetchTeamMembers('all', true)
 
-      $scope.filterByMember =(member) ->
-        $scope.memberId = member
-#        fetchData()
+			ActivityType.all().then (activityTypes) ->
+				$scope.activityTypes = angular.copy(activityTypes)
+#				if $routeParams.activity_type_id
+#					type = _.findWhere $scope.activityTypes, {id: Number $routeParams.activity_type_id}
+#					$scope.setFilter('type', type) if type
 
-      $scope.filterByActivityType =(activityTypeId) ->
-        $scope.activityTypeId = activityTypeId
-#        fetchData()
+		$scope.init()
 
-      #team watcher
-      $scope.$watch 'selectedTeam', () ->
-        $scope.teamId = $scope.selectedTeam.id
-        if (!$scope.isInitLoad)
-          $scope.memberId = null
+		$scope.$watch 'filter.team', (team) ->
+			if team.id then $scope.setFilter('member', emptyFilter)
+			fetchTeamMembers(team.id || 'all')
 
-        fetchTeamMembers($scope.teamId)
-#        fetchData()
+		$scope.exportReports = ->
+			url = '/api/activities.csv'
+			$window.open url + '?' + $httpParamSerializer getQuery()
+			return
 
-      #work with dates====================================================================
-      $scope.endDateIsValid = undefined
-      $scope.startDateIsValid = undefined
+		$scope.changeSortType = (sortType) ->
+			if sortType == $scope.sortType
+				$scope.sortReverse = !$scope.sortReverse
+			else
+				$scope.sortType = sortType
+				$scope.sortReverse = false
 
-      $scope.$watch 'start_date', () ->
-        checkDates()
+		$scope.getHtml = (html) -> $sce.trustAsHtml(html)
 
-      $scope.$watch 'end_date', () ->
-        checkDates()
+		$scope.cancel = -> $modalInstance.close()
 
-      checkDates = () ->
-        end_date = new Date($scope.end_date).valueOf()
-        start_date = new Date($scope.start_date).valueOf()
+		$scope.showEmailsModal = (activity, e) ->
+			e.stopPropagation()
+			$scope.modalInstance = $modal.open
+				templateUrl: 'modals/activity_emails.html'
+				size: 'lg'
+				controller: 'ActivityEmailsController'
+				backdrop: 'static'
+				keyboard: false
+				resolve:
+					activity: ->
+						activity
 
-        if(end_date && start_date && end_date < start_date)
-          $scope.endDateIsValid = false
+		$scope.showActivityEditModal = (activity) ->
+			$scope.modalInstance = $modal.open
+				templateUrl: 'modals/activity_new_form.html'
+				size: 'md'
+				controller: 'ActivityNewController'
+				backdrop: 'static'
+				keyboard: false
+				resolve:
+					activity: -> activity
+					options: -> null
 
-        if(end_date && start_date && end_date > start_date)
-          $scope.endDateIsValid = true
-          $scope.startDateIsValid = true
-#          fetchData()
 
-      $scope.go = (path) ->
-        $location.path(path)
-
-      $scope.exportReports = ->
-        query_str = "filter=detail"
-        if($scope.activityTypeId)
-          query_str += "&activity_type_id=" + $scope.activityTypeId
-
-        if($scope.teamId)
-          query_str += "&team_id=" + $scope.teamId
-
-        if($scope.memberId)
-          query_str += "&member_id=" + $scope.memberId
-
-        if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
-          start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
-          end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
-          query_str += "&start_date=" + start_date + "&end_date=" + end_date
-
-        $window.open('/api/activities.csv?' + query_str)
-        return true
-
-      $scope.changeSortType = (sortType) ->
-        if sortType == $scope.sortType
-          $scope.sortReverse = !$scope.sortReverse
-        else
-          $scope.sortType = sortType
-          $scope.sortReverse = false
-
-      $scope.getHtml = (html) ->
-        return $sce.trustAsHtml(html)
-
-      $scope.showEmailsModal = (activity, e) ->
-        e.stopPropagation()
-        $scope.modalInstance = $modal.open
-          templateUrl: 'modals/activity_emails.html'
-          size: 'lg'
-          controller: 'ActivityEmailsController'
-          backdrop: 'static'
-          keyboard: false
-          resolve:
-            activity: ->
-              activity
-
-      $scope.showActivityEditModal = (activity) ->
-        $scope.modalInstance = $modal.open
-          templateUrl: 'modals/activity_new_form.html'
-          size: 'md'
-          controller: 'ActivityNewController'
-          backdrop: 'static'
-          keyboard: false
-          resolve:
-            activity: -> activity
-            options: -> null
-
-      $scope.$on 'updated_activities', fetchData
-  ]
+		$scope.$on 'updated_activities', ->
+			getReport getQuery(true)
+	]

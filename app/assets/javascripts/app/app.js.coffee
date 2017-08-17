@@ -120,6 +120,10 @@
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
       controller: 'ActivityDetailReportsController'
+      reloadOnSearch: false
+      resolve:
+        $modalInstance: -> null
+        activitySummaryParams: -> null
     .when '/requests',
       templateUrl: 'requests.html'
       controller: 'RequestsController'
