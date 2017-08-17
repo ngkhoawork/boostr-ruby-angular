@@ -92,15 +92,15 @@ class DealReportService < BaseService
     end
   end
 
+  def company_audit_logs
+    @_company_audit_logs ||=
+      Company.find(company_id).audit_logs.in_created_at_range(date_range).by_auditable_type('Deal')
+  end
+
   def deal_budget_audit
     company_audit_logs
       .by_type_of_change(AuditLog::BUDGET_CHANGE_TYPE)
       .includes(auditable: :advertiser)
-  end
-
-  def company_audit_logs
-    @_company_audit_logs ||=
-      Company.find(company_id).audit_logs.in_created_at_range(date_range).by_auditable_type('Deal')
   end
 
   def budget_changed

@@ -74,11 +74,11 @@
                     %span.clickable{'ng-click': 'changeSortType("start_date")'}
                       Deal start date
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("stage_name")'}
-                      Stage name
+                    %span.clickable{'ng-click': 'changeSortType("old_value")'}
+                      Old value
                   %th
-                    %span.clickable{'ng-click': 'changeSortType("previous_stage")'}
-                      Previous stage
+                    %span.clickable{'ng-click': 'changeSortType("new_value")'}
+                      New value
                   %th
                     %span.clickable{'ng-click': 'changeSortType("budget_change")'}
                       Budget change
@@ -98,8 +98,8 @@
                   %td
                     {{ deal.start_date | date: 'MM-dd-yyyy' }}
                   %td
-                    {{ deal.stage_name }}
+                    {{ deal.old_value  }}
                   %td
-                    {{ deal.previous_stage }}
+                    {{ deal.new_value }}
                   %td
                     {{ deal.budget_change | currency:'$':0 }}

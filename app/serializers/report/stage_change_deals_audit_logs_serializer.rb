@@ -1,5 +1,5 @@
 class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
-  attributes :id, :name, :advertiser_name, :start_date, :stage_name, :budget, :previous_stage, :date
+  attributes :id, :name, :advertiser_name, :start_date, :old_value, :budget, :new_value, :date
 
   private
 
@@ -11,15 +11,15 @@ class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
     deal.start_date
   end
 
-  def stage_name
-    Stage.find(object.new_value).name
+  def new_value
+    Stage.find(object.new_value).name rescue nil
   end
 
   def budget
     deal.budget
   end
 
-  def previous_stage
+  def old_value
     Stage.find(object.old_value).name rescue nil
   end
 

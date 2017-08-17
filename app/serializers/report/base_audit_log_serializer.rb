@@ -1,5 +1,5 @@
 class Report::BaseAuditLogSerializer < ActiveModel::Serializer
-  attributes :id, :name, :advertiser_name, :start_date, :budget, :date
+  attributes :id, :name, :advertiser_name, :start_date, :budget, :date, :old_value, :new_value
 
   private
 

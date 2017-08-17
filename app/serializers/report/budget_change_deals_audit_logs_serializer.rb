@@ -1,5 +1,7 @@
 class Report::BudgetChangeDealsAuditLogsSerializer < ActiveModel::Serializer
-  attributes :id, :name, :advertiser_name, :start_date, :budget, :budget_change, :date
+  include ActionView::Helpers::NumberHelper
+
+  attributes :id, :name, :advertiser_name, :start_date, :budget, :budget_change, :date, :old_value, :new_value
 
   private
 
@@ -29,6 +31,14 @@ class Report::BudgetChangeDealsAuditLogsSerializer < ActiveModel::Serializer
 
   def date
     object.created_at rescue nil
+  end
+
+  def old_value
+    number_to_currency(object.old_value, precision: 0)
+  end
+
+  def new_value
+    number_to_currency(object.new_value, precision: 0)
   end
 
   def deal
