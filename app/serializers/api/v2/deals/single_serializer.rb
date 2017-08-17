@@ -34,7 +34,7 @@ class Api::V2::Deals::SingleSerializer < ActiveModel::Serializer
 
   def team_and_split
     return [] if deal_members_with_non_zero_share.blank?
-    deal_members_with_non_zero_share.pluck_to_hash(:email, :share)
+    deal_members_with_non_zero_share.pluck_to_hash(:email, :first_name, :last_name, :share)
   end
 
   def deal_members_with_non_zero_share
