@@ -368,14 +368,15 @@ class Api::ForecastsController < ApplicationController
       end
     else
       teams.each do |team_item|
-        leader = team.leader
+        leader = team_item.leader
         quarters.each do |quarter_row|
           quarter = 'q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s
           @quarterly_quota[quarter] ||= 0
-          @quarterly_quota[quarter] += leader.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+          if leader.present?
+            @quarterly_quota[quarter] += leader.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+          end
         end
       end
-      user_ids.uniq!
     end
     @quarterly_quota
   end
