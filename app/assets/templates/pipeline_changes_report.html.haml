@@ -33,7 +33,7 @@
         .table-wrapper
           %table.table
             %thead
-              %tr
+              %tr{'z-fixed-header': true, watch: '"report_data_items"'}
                 %th.left{ width: "200" }
                   %a{href:"javascript:void(0)", 'ng-click': 'changeSortType("date")'}
                     Date

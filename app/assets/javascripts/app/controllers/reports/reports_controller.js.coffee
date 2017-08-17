@@ -1,65 +1,128 @@
 @app.controller 'ReportsController',
-['$scope', '$document', '$rootScope', '$modal', '$routeParams', '$location', '$window', '$filter', 'Team', 'User', 'ActivityType', 'TimePeriod', 'Company', 'ActivityReport',
-($scope, $document, $rootScope, $modal, $routeParams, $location, $window, $filter, Team, User, ActivityType, TimePeriod, Company, ActivityReport) ->
+['$scope', '$document', '$routeParams', '$httpParamSerializer', '$location', '$window', '$filter', 'Team', 'User', 'ActivityType', 'TimePeriod', 'ActivityReport',
+($scope, $document, $routeParams, $httpParamSerializer, $location, $window, $filter, Team, User, ActivityType, TimePeriod, ActivityReport) ->
 
-  $scope.users = []
+#  $scope.users = []
+  $scope.teams = []
   $scope.types = []
   $scope.typeIds = {}
-  $scope.timePeriods = []
-  $scope.years = []
+#  $scope.timePeriods = []
+#  $scope.years = []
   $scope.userTypes = _.filter User.user_types_list, (type) -> type.id && type.id != 7  #excluding "Default" and "Fake User"
-  $scope.currentTimePeriod = {}
-  $scope.company = {}
-  $scope.userTypeId = $routeParams.user_type
-  $scope.teamId = $routeParams.team_id
-  $scope.isInitLoad = true
-  $scope.selectedTeam = {
-    id:'all',
-    name:'Team'
-  }  
-  $scope.datePicker = {
-    startDate: moment($routeParams.start_date).startOf('day')
-    endDate: moment($routeParams.end_date).startOf('day')
-  }
-  $scope.isDateSet = false
-  datePickerInput = $document.find('#kpi-date-picker')
+#  $scope.currentTimePeriod = {}
+#  $scope.company = {}
+#  $scope.userTypeId = $routeParams.user_type
+#  $scope.teamId = $routeParams.team_id
+#  $scope.isInitLoad = true
+  emptyFilter = $scope.emptyFilter = {id: null, name: 'All'}
 
-  if ($routeParams.start_date && $routeParams.end_date)
-    $scope.isDateSet = true
-    datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+  defaultFilter =
+    team: emptyFilter
+    userType: emptyFilter
+    date:
+      startDate: null
+      endDate: null
 
-  $scope.$watch 'selectedTeam', () ->
-    if (($scope.isInitLoad && $scope.teamId == undefined) || !$scope.isInitLoad)
-      $scope.teamId = $scope.selectedTeam.id
-#      fetchData()
-    $scope.isInitLoad = false
+  $scope.filter = angular.copy defaultFilter
 
-  $scope.setFilter = (key, value) ->
-    $scope[key] = value
-#    fetchData()
+  $scope.datePicker =
+    toString: (key) ->
+      date = $scope.filter[key]
+      if !date.startDate || !date.endDate then return false
+      date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
 
-  $scope.datePickerApply = () ->
-    if ($scope.datePicker.startDate && $scope.datePicker.endDate)
-      datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
-      $scope.isDateSet = true
-#      fetchData()
-
-  $scope.datePickerCancel = (s, r) ->
-    datePickerInput.html('Time period')
-    $scope.isDateSet = false
-#    if !r then fetchData()
-
-  $scope.resetFilters = () ->
-    $scope.selectedTeam = {
-      id:'all',
-      name:'Team'
-    }
-    $scope.userTypeId = null
-    $scope.datePickerCancel(null, true)
-#    fetchData()
+  $scope.setFilter = (key, val) ->
+    $scope.filter[key] = val
 
   $scope.applyFilter = ->
-    fetchData()
+    getReport getQuery()
+
+  $scope.resetFilter = ->
+    $scope.filter = angular.copy defaultFilter
+
+  getQuery = ->
+    f = $scope.filter
+    query = {}
+    query.team_id = f.team.id || 'all'
+    query.user_type = f.userType.id if f.userType.id
+    if f.date.startDate && f.date.endDate
+      query.start_date = f.date.startDate.format('YYYY-MM-DD')
+      query.end_date = f.date.endDate.format('YYYY-MM-DD')
+    query
+
+  getReport = (query) ->
+    $location.search query
+    ActivityReport.get query, (report_data) ->
+      $scope.user_activities = report_data.user_activities
+      $scope.total_activities = report_data.total_activity_report
+      $scope.initReport()
+
+  updateFilterWithParams = (params) ->
+    if params.team_id
+      (searchAndSetTeam = (teams, teamId) ->
+        for team in teams
+          if team.id is teamId then return $scope.setFilter('team', team)
+          if team.children && team.children.length then searchAndSetTeam team.children, teamId
+      )($scope.teams, Number params.team_id)
+    if params.user_type
+      userType = _.findWhere $scope.userTypes, {id: Number params.user_type}
+      $scope.setFilter('userType', userType) if userType
+    if params.start_date && params.end_date
+      $scope.filter.date =
+        startDate: moment(params.start_date)
+        endDate: moment(params.end_date)
+#  $scope.$watch 'filter.team', (team) ->
+#    if team.id then $scope.filter.seller = emptyFilter
+#    Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
+#      $scope.sellers = sellers
+#  $scope.selectedTeam = {
+#    id:'all',
+#    name:'Team'
+#  }
+
+#  $scope.datePicker = {
+#    startDate: moment($routeParams.start_date).startOf('day')
+#    endDate: moment($routeParams.end_date).startOf('day')
+#  }
+#  $scope.isDateSet = false
+#  datePickerInput = $document.find('#kpi-date-picker')
+
+#  if ($routeParams.start_date && $routeParams.end_date)
+#    $scope.isDateSet = true
+#    datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+
+#  $scope.$watch 'selectedTeam', () ->
+#    if (($scope.isInitLoad && $scope.teamId == undefined) || !$scope.isInitLoad)
+#      $scope.teamId = $scope.selectedTeam.id
+##      fetchData()
+#    $scope.isInitLoad = false
+
+#  $scope.setFilter = (key, value) ->
+#    $scope[key] = value
+##    fetchData()
+
+#  $scope.datePickerApply = () ->
+#    if ($scope.datePicker.startDate && $scope.datePicker.endDate)
+#      datePickerInput.html($scope.datePicker.startDate.format('MMMM D, YYYY') + ' - ' + $scope.datePicker.endDate.format('MMMM D, YYYY'))
+#      $scope.isDateSet = true
+##      fetchData()
+
+#  $scope.datePickerCancel = (s, r) ->
+#    datePickerInput.html('Time period')
+#    $scope.isDateSet = false
+##    if !r then fetchData()
+
+#  $scope.resetFilters = () ->
+#    $scope.selectedTeam = {
+#      id:'all',
+#      name:'Team'
+#    }
+#    $scope.userTypeId = null
+#    $scope.datePickerCancel(null, true)
+##    fetchData()
+#
+#  $scope.applyFilter = ->
+#    fetchData()
 
   $scope.init = ->
     Team.all(all_teams: true).then (teams) ->
@@ -68,6 +131,7 @@
         id:'all',
         name:'All'
       })
+      updateFilterWithParams($routeParams)
     ActivityType.all().then (activityTypes) ->
       $scope.types = angular.copy(activityTypes)
       _.each $scope.types, (type) ->
@@ -75,23 +139,23 @@
 #        fetchData()
 
 
-  fetchData = ->
-    query = {}
-    if($scope.teamId)
-      query.team_id = $scope.teamId
-    if $scope.userTypeId != undefined
-      query.user_type = $scope.userTypeId
-    if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
-      query.start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
-      query.end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
-    if query.team_id
-      $location.search query
-      ActivityReport.get(query, (report_data) ->
-        $scope.user_activities = report_data.user_activities
-        $scope.total_activities = report_data.total_activity_report
-        $scope.initReport()
-#        $scope.isInitLoad = false
-      )
+#  fetchData = ->
+#    query = {}
+#    if($scope.teamId)
+#      query.team_id = $scope.teamId
+#    if $scope.userTypeId != undefined
+#      query.user_type = $scope.userTypeId
+#    if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
+#      query.start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
+#      query.end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
+#    if query.team_id
+#      $location.search query
+#      ActivityReport.get(query, (report_data) ->
+#        $scope.user_activities = report_data.user_activities
+#        $scope.total_activities = report_data.total_activity_report
+#        $scope.initReport()
+##        $scope.isInitLoad = false
+#      )
 
 
   $scope.initReport = ->
@@ -110,11 +174,11 @@
     _.each $scope.types, (type) ->
       $scope.total_activities[type.name] = 0 if $scope.total_activities[type.name] == undefined
 
-  $scope.updateTimePeriod = (time_period_id) ->
-    path = []
-    path.push "/reports/activity_summary"
-    path.push "?time_period_id=#{time_period_id}" if time_period_id
-    $location.url(path.join(''))
+#  $scope.updateTimePeriod = (time_period_id) ->
+#    path = []
+#    path.push "/reports/activity_summary"
+#    path.push "?time_period_id=#{time_period_id}" if time_period_id
+#    $location.url(path.join(''))
 
   $scope.drillActivityDetail = (member_id, type) ->
     if member_id == null
@@ -145,22 +209,12 @@
 
   $scope.init()
 
-  $scope.updateYear = (year) ->
-    path = []
+#  $scope.updateYear = (year) ->
+#    path = []
 
   $scope.exportReports = ->
-    path = '/api/reports.csv'
-    if($scope.teamId)
-      team_id = $scope.teamId
-    if team_id
-      path += "?team_id=#{team_id}"
-      if $scope.userTypeId
-        path += '&user_type=' + $scope.userTypeId
-      if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
-        start_date = $filter('date')($scope.datePicker.startDate._d, 'yyyy-MM-dd')
-        end_date = $filter('date')($scope.datePicker.endDate._d, 'yyyy-MM-dd')
-        path +=  "&start_date=#{start_date}&end_date=#{end_date}"
-      $window.open(path)
-    return true
+    url = '/api/reports.csv'
+    $window.open url + '?' + $httpParamSerializer getQuery()
+    return
 
 ]

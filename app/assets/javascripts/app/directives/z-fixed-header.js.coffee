@@ -1,44 +1,48 @@
-app.directive 'fixedTableHeader',
+app.directive 'zFixedHeader',
 	['$window', '$compile', '$timeout'
 	( $window,   $compile,   $timeout ) ->
 		restrict: 'A'
-		scope: false
 		link: ($scope, element, attrs) ->
-			mainClass = 'fixed-table-header'
+			mainClass = 'z-fixed-header'
 			window = angular.element($window)
-			table = angular.element(element)
+			header = angular.element(element)
+			table = header.closest('table')
 			container = table.parent()
-			thead = table.find('thead')
-			header = thead.children()
 			headerCopy = header.clone()
-			thead.append(headerCopy)
+			header.after(headerCopy)
 			header.addClass mainClass
 			container.css 'position', 'relative'
+			maxTop = 0
 
 			updateHeaderCopy = ->
 				previousCopy = headerCopy
 				headerCopy = header.clone().removeClass mainClass
-#				headerCopy.children().each -> angular.element(this).css('min-width', 0)
+				headerCopy.children().each -> angular.element(this).css('min-width', '')
 				previousCopy.replaceWith headerCopy
 
 			window.scroll ->
 				offsetTop = table.offset().top
 				if window.scrollTop() > offsetTop
 					header.addClass 'fixed'
-					header.css 'top', window.scrollTop() - offsetTop
+					top = window.scrollTop() - offsetTop
+					header.css 'top', if top > maxTop then maxTop else top
 				else
 					header.removeClass 'fixed'
 					header.css 'top', 0
 
 			watcher = ->
 				$timeout ->
+					maxTop = table.outerHeight() - header.outerHeight()
 					updateHeaderCopy()
 					ths = header.find('th')
 					headerCopy.find('th').each (i) ->
 						width = angular.element(this).outerWidth()
 						angular.element(ths[i]).css('min-width', width)
 
-			watchers = $scope.$eval attrs.watch
-			_.each watchers, (w) -> $scope.$watch w, watcher
+			watch = $scope.$eval attrs.watch
+			if _.isArray watch
+				$scope.$watchGroup watch, watcher
+			else
+				$scope.$watch watch, watcher
 
 	]
