@@ -79,7 +79,6 @@ class Facts::AccountProductRevenueCalculationService < BaseService
   def content_fee_products_budgets_conditions
     'content_fee_product_budgets.end_date >= :time_dim_start_date
      AND content_fee_product_budgets.start_date <= :time_dim_end_date
-     AND products.revenue_type = \'Content-Fee\'
      AND ios.company_id = :company_id
      AND ios.advertiser_id = :account_id OR ios.agency_id = :account_id'
   end
