@@ -38,7 +38,7 @@ class DealMember < ActiveRecord::Base
   end
 
   def remove_pipeline_fact_callback
-    update_pipeline_fact_user(self) if deal_member.share > 0
+    update_pipeline_fact_user(self) if self.share > 0
   end
 
   def name

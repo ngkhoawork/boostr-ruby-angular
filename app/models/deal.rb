@@ -173,8 +173,13 @@ class Deal < ActiveRecord::Base
     end
 
     if start_date_changed? || end_date_changed?
-      s_date = [start_date_was, start_date].min
-      e_date = [end_date_was, end_date].max
+      if start_date_was && end_date_was
+        s_date = [start_date_was, start_date].min
+        e_date = [end_date_was, end_date].max
+      else
+        s_date = start_date
+        e_date = end_date
+      end
       update_pipeline_fact_date(s_date, e_date)
     end
   end
@@ -1651,7 +1656,7 @@ class Deal < ActiveRecord::Base
   def update_pipeline_fact(deal)
     company = deal.company
     time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date)
-    stage = stage = self.stage.stage
+    stage = self.stage
     time_periods.each do |time_period|
       deal.users.each do |user|
         deal.deal_products.each do |deal_product|
