@@ -131,9 +131,9 @@
 			.col-xs-12
 				.block
 					%div.table-wrapper
-						%table.table.table-hover{'fixed-table-header': '', watch: '["data", "dealCustomFieldNames"]'}
+						%table.table.table-hover
 							%thead
-								%tr
+								%tr{'z-fixed-header': true, watch: '["data", "dealCustomFieldNames"]'}
 									%th
 										%span.clickable{'ng-click': 'sorting.set("id")'} Deal ID
 									%th

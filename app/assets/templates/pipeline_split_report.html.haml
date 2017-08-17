@@ -70,7 +70,7 @@
 					%div.table-wrapper
 						%table.table.table-hover
 							%thead
-								%tr
+								%tr{'z-fixed-header': true, watch: '"data"'}
 									%th
 										%span.clickable{'ng-click': 'sorting.set("deal_id")'} Deal ID
 									%th
