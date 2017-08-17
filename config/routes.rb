@@ -281,7 +281,7 @@ Rails.application.routes.draw do
     resources :tools, only: [:index]
     resources :notifications, only: [:index, :show, :create, :update, :destroy]
     resources :activities, only: [:index, :create, :show, :update, :destroy]
-    resources :activity_types, only: [:index, :create, :show, :update, :destroy]
+    resources :activity_types, only: [:index, :create, :update, :destroy]
     resources :holding_companies, only: [:index]
     resources :ealerts, only: [:index, :show, :create, :update, :destroy] do
       post :send_ealert

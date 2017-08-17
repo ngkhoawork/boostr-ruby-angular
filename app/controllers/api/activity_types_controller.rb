@@ -9,14 +9,24 @@ class Api::ActivityTypesController < ApplicationController
     end
   end
 
+  def create
+    activity_type = company.activity_types.new(activity_params)
+
+    if activity_type.save
+      render json: activity_type, status: :created
+    else
+      render json: { errors: activity_type.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def activity_params
-    params.require(:activity_type).permit(:name, :action, :icon)
+    params.require(:activity_type).permit(:name, :action, :icon, :active, :position)
   end
 
   def activity_type
-    @activity_type ||= company.activity_types.find(params[:id])
+    @_activity_type ||= company.activity_types.find(params[:id])
   end
 
   def activity_types
@@ -24,7 +34,6 @@ class Api::ActivityTypesController < ApplicationController
   end
 
   def company
-    @company ||= current_user.company
+    @_company ||= current_user.company
   end
-
 end
