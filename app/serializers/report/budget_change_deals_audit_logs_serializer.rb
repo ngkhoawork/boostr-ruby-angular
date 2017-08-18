@@ -22,11 +22,11 @@ class Report::BudgetChangeDealsAuditLogsSerializer < ActiveModel::Serializer
   end
 
   def budget
-    deal.budget
+    number_to_currency(deal.budget, precision: 0)
   end
 
   def budget_change
-    object.changed_amount
+    object.changed_amount > 0 ? positive_budget_change : "(#{negative_budget_change})"
   end
 
   def date
@@ -43,5 +43,13 @@ class Report::BudgetChangeDealsAuditLogsSerializer < ActiveModel::Serializer
 
   def deal
     @_deal ||= Deal.with_deleted.find(object.auditable_id)
+  end
+
+  def positive_budget_change
+    number_to_currency(object.changed_amount, precision: 0)
+  end
+
+  def negative_budget_change
+    number_to_currency(object.changed_amount.abs, precision: 0)
   end
 end

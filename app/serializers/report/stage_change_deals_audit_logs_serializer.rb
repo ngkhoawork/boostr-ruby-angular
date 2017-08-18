@@ -1,5 +1,7 @@
 class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
-  attributes :id, :name, :advertiser_name, :start_date, :old_value, :budget, :new_value, :date
+  include ActionView::Helpers::NumberHelper
+
+  attributes :id, :name, :advertiser_name, :start_date, :old_value, :new_value, :date, :budget
 
   private
 
@@ -16,7 +18,7 @@ class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
   end
 
   def budget
-    deal.budget
+    number_to_currency(deal.budget, precision: 0)
   end
 
   def old_value
