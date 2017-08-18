@@ -332,24 +332,24 @@ class NewForecastTeam
         quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
         if user.leader?
           @forecasts_data[:members][user.id][:quota] = 0
-          @forecasts_data[:members][user.id][:amount] ||= (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
-          @forecasts_data[:members][user.id][:percent_to_quota] ||= (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
-          @forecasts_data[:members][user.id][:percent_booked] ||= (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
-          @forecasts_data[:members][user.id][:gap_to_quota] ||= (quota - @forecasts_data[:members][user.id][:amount]).to_f
+          @forecasts_data[:members][user.id][:amount] = (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
+          @forecasts_data[:members][user.id][:percent_to_quota] = (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
+          @forecasts_data[:members][user.id][:percent_booked] = (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
+          @forecasts_data[:members][user.id][:gap_to_quota] = (quota - @forecasts_data[:members][user.id][:amount]).to_f
         else
           @forecasts_data[:members][user.id][:quota] = quota
-          @forecasts_data[:members][user.id][:amount] ||= (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
-          @forecasts_data[:members][user.id][:percent_to_quota] ||= (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
-          @forecasts_data[:members][user.id][:percent_booked] ||= (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
-          @forecasts_data[:members][user.id][:gap_to_quota] ||= (quota - @forecasts_data[:members][user.id][:amount]).to_f
+          @forecasts_data[:members][user.id][:amount] = (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
+          @forecasts_data[:members][user.id][:percent_to_quota] = (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
+          @forecasts_data[:members][user.id][:percent_booked] = (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
+          @forecasts_data[:members][user.id][:gap_to_quota] = (quota - @forecasts_data[:members][user.id][:amount]).to_f
         end
 
-        incomplete_deals ||= user.deals.active.closed.at_percent(0).closed_in(user.company.deals_needed_calculation_duration)
-        complete_deals ||= user.deals.active.at_percent(100).closed_in(user.company.deals_needed_calculation_duration)
+        incomplete_deals = user.deals.active.closed.at_percent(0).closed_in(user.company.deals_needed_calculation_duration)
+        complete_deals = user.deals.active.at_percent(100).closed_in(user.company.deals_needed_calculation_duration)
         if (incomplete_deals.count + complete_deals.count) > 0
-          win_rate ||= (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
+          win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
         else
-          win_rate ||= 0.0
+          win_rate = 0.0
         end
         if complete_deals.count > 0
           average_deal_size = complete_deals.average(:budget).round(0)
@@ -388,19 +388,19 @@ class NewForecastTeam
         quota: 0
       }
       quota = (team.leader ? team.leader.quotas.for_time_period(start_date, end_date).sum(:value) : 0)
-      @forecasts_data[:teams][team.id][:quota] ||= quota
-      @forecasts_data[:teams][team.id][:amount] ||= (@forecasts_data[:teams][team.id][:weighted_pipeline] || 0) + (@forecasts_data[:teams][team.id][:revenue] || 0)
-      @forecasts_data[:teams][team.id][:percent_to_quota] ||= (quota > 0 ? @forecasts_data[:teams][team.id][:amount] / quota * 100 : 100)
-      @forecasts_data[:teams][team.id][:percent_booked] ||= (quota > 0 ? @forecasts_data[:teams][team.id][:revenue] / quota * 100 : 100)
-      @forecasts_data[:teams][team.id][:gap_to_quota] ||= (quota - @forecasts_data[:teams][team.id][:amount]).to_f
+      @forecasts_data[:teams][team.id][:quota] = quota
+      @forecasts_data[:teams][team.id][:amount] = (@forecasts_data[:teams][team.id][:weighted_pipeline] || 0) + (@forecasts_data[:teams][team.id][:revenue] || 0)
+      @forecasts_data[:teams][team.id][:percent_to_quota] = (quota > 0 ? @forecasts_data[:teams][team.id][:amount] / quota * 100 : 100)
+      @forecasts_data[:teams][team.id][:percent_booked] = (quota > 0 ? @forecasts_data[:teams][team.id][:revenue] / quota * 100 : 100)
+      @forecasts_data[:teams][team.id][:gap_to_quota] = (quota - @forecasts_data[:teams][team.id][:amount]).to_f
 
       all_team_members = (team.all_members.nil? ? []:team.all_members)
-      complete_dealsincomplete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.at_percent(100).closed_in(team.company.deals_needed_calculation_duration)
-      incomplete_deals ||= Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.closed.at_percent(0).closed_in(team.company.deals_needed_calculation_duration)
+      complete_dealsincomplete_deals = Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.at_percent(100).closed_in(team.company.deals_needed_calculation_duration)
+      incomplete_deals = Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.closed.at_percent(0).closed_in(team.company.deals_needed_calculation_duration)
       if (incomplete_deals.count + complete_deals.count) > 0
-        win_rate ||= (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
+        win_rate = (complete_deals.count.to_f / (complete_deals.count.to_f + incomplete_deals.count.to_f))
       else
-        win_rate ||= 0.0
+        win_rate = 0.0
       end
       if complete_deals.count > 0
         average_deal_size = complete_deals.average(:budget).round(0)
