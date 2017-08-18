@@ -137,7 +137,8 @@ RSpec.describe Api::V2::DealsController, type: :controller do
                                                          'advertiser',
                                                          'category',
                                                          'agency',
-                                                         'team_and_split')
+                                                         'team_and_split',
+                                                         'creator')
       end
 
       context 'when won deal with max share user exists' do

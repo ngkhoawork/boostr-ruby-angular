@@ -34,7 +34,7 @@ class Api::V2::Deals::SingleSerializer < ActiveModel::Serializer
   end
 
   def creator
-    object.creator.pluck_to_hash(:email, :first_name, :last_name) if object.creator
+    object.creator.slice('email', 'first_name', 'last_name') if object.creator
   end
 
   def team_and_split
