@@ -9,7 +9,7 @@ class IoMember < ActiveRecord::Base
   end
 
   after_destroy do |io_member|
-    update_revenue_fact_user(deal_member) if deal_member.share > 0
+    update_revenue_fact_user(self) if self.share > 0
   end
 
   def update_revenue_fact_user(io_member)
