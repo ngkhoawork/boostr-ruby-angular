@@ -44,7 +44,7 @@ class DealProduct < ActiveRecord::Base
   scope :active, -> { DealProduct.joins('LEFT JOIN products ON deal_products.product_id = products.id').where('products.active IS true') }
 
   def update_pipeline_fact_callback
-    update_forecast_pipeline_product(self) if budget_changed?
+    update_forecast_pipeline_product(self) if budget_changed? || budget_loc_changed?
   end
 
   def daily_budget

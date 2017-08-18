@@ -55,11 +55,78 @@ class DisplayLineItem < ActiveRecord::Base
   after_create :update_io_budget
   after_update :update_io_budget
 
+  after_destroy do |display_line_item|
+    update_revenue_pipeline_budget(display_line_item)
+  end
+
+  set_callback :save, :after, :update_revenue_fact_callback
+
   after_commit :update_temp_io_budget, on: [:create, :update]
 
   scope :for_time_period, -> (start_date, end_date) { where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', end_date, start_date) }
   scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
+
+  def update_revenue_fact_callback
+    update_revenue_pipeline_budget(self) if budget_changed? || budget_loc_changed?
+    if io_id_changed?
+      if io_id_was.present?
+        old_io = Io.find(io_id_was)
+        update_revenue_pipeline_io(old_io) if old_io.present?
+      end
+      update_revenue_pipeline_io(io)
+    end
+    if product_id_changed?
+      if product_id_was.present?
+        old_product = Product.find(product_id_was)
+        update_revenue_pipeline_product(old_product) if old_product.present?
+      end
+      update_revenue_pipeline_product(product)
+    end
+  end
+
+  def update_revenue_pipeline_io(io_item)
+    product = self.product
+    if io_item.present? && product.present?
+      company = io_item.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io_item.start_date, io_item.end_date)
+      time_periods.each do |time_period|
+        io_item.users.each do |user|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def update_revenue_pipeline_budget(display_line_item)
+    io = display_line_item.io
+    product = display_line_item.product
+    if io.present? && product.present?
+      company = io.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+      time_periods.each do |time_period|
+        io.users.each do |user|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def update_revenue_pipeline_product(product)
+    io = self.io
+    if io.present? && product.present?
+      company = io.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+      time_periods.each do |time_period|
+        io.users.each do |user|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
   
   def update_io_budget
     if io.present?
@@ -128,6 +195,7 @@ class DisplayLineItem < ActiveRecord::Base
     io_change = {time_period_ids: [], product_ids: [], user_ids: []}
 
     Io.skip_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItem.skip_callback(:save, :after, :update_revenue_fact_callback)
 
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
@@ -570,6 +638,7 @@ class DisplayLineItem < ActiveRecord::Base
     end
 
     Io.set_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItem.set_callback(:save, :after, :update_revenue_fact_callback)
 
     io_change[:time_period_ids] = io_change[:time_period_ids].uniq
     io_change[:user_ids] = io_change[:user_ids].uniq

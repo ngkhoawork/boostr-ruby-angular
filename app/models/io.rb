@@ -43,7 +43,16 @@ class Io < ActiveRecord::Base
   set_callback :save, :after, :update_revenue_fact_callback
 
   def update_revenue_fact_callback
-    update_revenue_fact(self) if (start_date_changed? || end_date_changed? || budget_changed?)
+    if (start_date_changed? || end_date_changed?)
+      if start_date_was && end_date_was
+        s_date = [start_date_was, start_date].min
+        e_date = [end_date_was, end_date].max
+      else
+        s_date = start_date
+        e_date = end_date
+      end
+      update_revenue_fact_date(s_date, e_date)
+    end
   end
 
   def reset_content_fees
@@ -68,6 +77,19 @@ class Io < ActiveRecord::Base
         date_changed = true
       end
       io_member.save if date_changed
+    end
+  end
+
+  def update_revenue_fact_date(s_date, e_date)
+    company = self.company
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", s_date, e_date)
+    time_periods.each do |time_period|
+      self.users.each do |user|
+        self.products.each do |product|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
     end
   end
 
