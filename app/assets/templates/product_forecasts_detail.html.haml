@@ -101,9 +101,9 @@
                   %td.right
                     {{product_forecast.revenue | currency : '$' : 0}}
                   %td.right
-                    {{(product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
+                    {{(parseFloat(product_forecast.weighted_pipeline) + parseFloat(product_forecast.revenue)) | currency : '$' : 0}}
                   %td.right
-                    {{(product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
+                    {{(parseFloat(product_forecast.unweighted_pipeline) + parseFloat(product_forecast.revenue)) | currency : '$' : 0}}
                 %tr{'ng-if': 'totalForecastData'}
                   %td
                     %strong
