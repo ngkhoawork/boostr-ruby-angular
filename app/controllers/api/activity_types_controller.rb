@@ -19,6 +19,25 @@ class Api::ActivityTypesController < ApplicationController
     end
   end
 
+  def update
+    if activity_type.update(activity_params)
+      render json: activity_type
+    else
+      render json: { errors: activity_type.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if activity_type.activities.blank?
+      activity_type.destroy
+
+      render nothing: true
+    else
+      render json: { errors: 'You can\'t delete activity type which is linked to activity' },
+             status: :unprocessable_entity
+    end
+  end
+
   private
 
   def activity_params
@@ -30,7 +49,7 @@ class Api::ActivityTypesController < ApplicationController
   end
 
   def activity_types
-    current_user.company.activity_types
+    current_user.company.activity_types.ordered_by_position
   end
 
   def company
