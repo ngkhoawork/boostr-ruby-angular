@@ -9,7 +9,8 @@ class Api::V2::Deals::SingleSerializer < ActiveModel::Serializer
              :advertiser,
              :category,
              :agency,
-             :team_and_split
+             :team_and_split,
+             :creator
 
   private
 
@@ -30,6 +31,10 @@ class Api::V2::Deals::SingleSerializer < ActiveModel::Serializer
   def category
     return '' unless advertiser_category
     advertiser_category.name
+  end
+
+  def creator
+    object.creator.pluck_to_hash(:email, :first_name, :last_name) if object.creator
   end
 
   def team_and_split
