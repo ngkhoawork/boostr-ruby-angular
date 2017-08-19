@@ -1159,6 +1159,15 @@ ActiveRecord::Schema.define(version: 20170825112513) do
   add_index "forecast_revenue_facts", ["time_dimension_id"], name: "index_forecast_revenue_facts_on_time_dimension_id", using: :btree
   add_index "forecast_revenue_facts", ["user_dimension_id"], name: "index_forecast_revenue_facts_on_user_dimension_id", using: :btree
 
+  create_table "forecast_time_dimensions", force: :cascade do |t|
+    t.string   "name"
+    t.date     "start_date"
+    t.date     "end_date"
+    t.integer  "days_length"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
   create_table "holding_companies", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
