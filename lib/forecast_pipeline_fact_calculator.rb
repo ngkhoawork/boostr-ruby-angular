@@ -2,8 +2,7 @@ module ForecastPipelineFactCalculator
   class Calculator
     def initialize(time_period, user, product, stage)
       @time_period = time_period
-      time_dimensions = TimeDimension.where("start_date = ? and end_date = ?", time_period.start_date, time_period.end_date)
-      @time_dimension = time_dimensions.first
+      @forecast_time_dimension = ForecastTimeDimension.find_by_id(time_period.id)
       @start_date = time_period.start_date
       @end_date = time_period.end_date
       @user = user
@@ -15,7 +14,7 @@ module ForecastPipelineFactCalculator
       total = 0
       monthly_value = {}
 
-      return if !@time_dimension
+      return if !@forecast_time_dimension
 
       deal_shares = {}
       @user.deal_members.each do |mem|
@@ -37,7 +36,7 @@ module ForecastPipelineFactCalculator
           end
         end
       end
-      forecast_pipeline_fact = ForecastPipelineFact.find_or_initialize_by(time_dimension_id: @time_dimension.id, user_dimension_id: @user.id, product_dimension_id: @product.id, stage_dimension_id: @stage.id)
+      forecast_pipeline_fact = ForecastPipelineFact.find_or_initialize_by(forecast_time_dimension_id: @forecast_time_dimension.id, user_dimension_id: @user.id, product_dimension_id: @product.id, stage_dimension_id: @stage.id)
       forecast_pipeline_fact.amount = total
       forecast_pipeline_fact.monthly_amount = monthly_value
       forecast_pipeline_fact.probability = @stage.probability

@@ -102,7 +102,7 @@ class NewForecastTeam
   def forecasts_data
     return @forecasts_data if defined?(@forecasts_data)
 
-    time_dimension = TimeDimension.find_by(start_date: start_date, end_date: end_date)
+    forecast_time_dimension = ForecastTimeDimension.find_by(id: time_period.id)
 
     company = team.company
 
@@ -137,17 +137,17 @@ class NewForecastTeam
     end
 
     if product.nil?
-      revenue_data = ForecastRevenueFact.where("time_dimension_id = ? AND user_dimension_id IN (?)", time_dimension.id, user_ids)
+      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?)", forecast_time_dimension.id, user_ids)
         .select("user_dimension_id AS user_id, SUM(amount) AS revenue_amount")
         .group("user_dimension_id")
-      pipeline_data = ForecastPipelineFact.where("time_dimension_id = ? AND user_dimension_id IN (?)", time_dimension.id, user_ids)
+      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?)", forecast_time_dimension.id, user_ids)
         .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
         .group("user_dimension_id, stage_dimension_id")
     else
-      revenue_data = ForecastRevenueFact.where("time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id = ?", time_dimension.id, user_ids, product.id)
+      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id = ?", forecast_time_dimension.id, user_ids, product.id)
         .select("user_dimension_id AS user_id, SUM(amount) AS revenue_amount")
         .group("user_dimension_id")
-      pipeline_data = ForecastPipelineFact.where("time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id = ?", time_dimension.id, user_ids, product.id)
+      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id = ?", forecast_time_dimension.id, user_ids, product.id)
         .select("user_dimension_id AS user_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
         .group("user_dimension_id, stage_dimension_id")
     end

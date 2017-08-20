@@ -34,7 +34,7 @@ class Api::ForecastsController < ApplicationController
       
       start_date = time_period.start_date
       end_date = time_period.end_date
-      time_dimension = TimeDimension.find_by(start_date: start_date, end_date: end_date)
+      forecast_time_dimension = ForecastTimeDimension.find_by(id: time_period.id)
       data = {
         forecast: {
           stages: [],
@@ -75,7 +75,7 @@ class Api::ForecastsController < ApplicationController
         FROM (
             SELECT stage_dimension_id, SUM(amount) AS total, key, SUM(value::numeric) AS val
             FROM forecast_pipeline_facts t, jsonb_each_text(monthly_amount)
-            WHERE  time_dimension_id = #{time_dimension.id} AND user_dimension_id IN (#{user_ids.join(', ')})
+            WHERE  forecast_time_dimension_id = #{forecast_time_dimension.id} AND user_dimension_id IN (#{user_ids.join(', ')})
             GROUP BY stage_dimension_id, key
             ) s
         GROUP BY stage_dimension_id"
@@ -84,16 +84,18 @@ class Api::ForecastsController < ApplicationController
         "FROM ( " +
             "SELECT SUM(amount) AS total, key, SUM(value::numeric) AS val " +
             "FROM forecast_revenue_facts t, jsonb_each_text(monthly_amount) " +
-            "WHERE  time_dimension_id = #{time_dimension.id} AND user_dimension_id IN (#{user_ids.join(', ')}) " +
+            "WHERE  forecast_time_dimension_id = #{forecast_time_dimension.id} AND user_dimension_id IN (#{user_ids.join(', ')}) " +
             "GROUP BY key " +
             ") s "
       revenue_data = ActiveRecord::Base.connection.execute(revenue_sql)
 
       revenue_data.each do |revenue_row|
-        JSON.parse(revenue_row['monthly_amount']).each do |month_index, amount|
-          quarter = month_to_quarter[month_index]
-          data[:forecast][:quarterly_revenue][quarter] ||= 0
-          data[:forecast][:quarterly_revenue][quarter] += amount.to_f
+        if revenue_row['monthly_amount']
+          JSON.parse(revenue_row['monthly_amount']).each do |month_index, amount|
+            quarter = month_to_quarter[month_index]
+            data[:forecast][:quarterly_revenue][quarter] ||= 0
+            data[:forecast][:quarterly_revenue][quarter] += amount.to_f
+          end
         end
       end
       stage_ids = []
@@ -178,7 +180,7 @@ class Api::ForecastsController < ApplicationController
     if valid_time_period?
       start_date = time_period.start_date
       end_date = time_period.end_date
-      time_dimension = TimeDimension.find_by(start_date: start_date, end_date: end_date)
+      forecast_time_dimension = ForecastTimeDimension.find_by(id: time_period.id)
 
       user_ids = []
       if user.present?
@@ -211,13 +213,13 @@ class Api::ForecastsController < ApplicationController
         }
       end
 
-      revenue_data = ForecastRevenueFact.where("time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id IN (?)", time_dimension.id, user_ids, product_ids)
+      revenue_data = ForecastRevenueFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id IN (?)", forecast_time_dimension.id, user_ids, product_ids)
         .select("product_dimension_id AS product_id, SUM(amount) AS revenue_amount")
         .group("product_dimension_id")
         .each do |item|
           data[item.product_id]['revenue'] = item.revenue_amount.to_f
         end
-      pipeline_data = ForecastPipelineFact.where("time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id IN (?)", time_dimension.id, user_ids, product_ids)
+      pipeline_data = ForecastPipelineFact.where("forecast_time_dimension_id = ? AND user_dimension_id IN (?) AND product_dimension_id IN (?)", forecast_time_dimension.id, user_ids, product_ids)
         .select("product_dimension_id AS product_id, stage_dimension_id AS stage_id, SUM(amount) AS pipeline_amount")
         .group("product_dimension_id, stage_dimension_id")
         .each do |item|

@@ -2,8 +2,7 @@ module ForecastRevenueFactCalculator
   class Calculator
     def initialize(time_period, user, product)
       @time_period = time_period
-      time_dimensions = TimeDimension.where("start_date = ? and end_date = ?", time_period.start_date, time_period.end_date)
-      @time_dimension = time_dimensions.first
+      @forecast_time_dimension = ForecastTimeDimension.find_by_id(time_period.id)
       @start_date = time_period.start_date
       @end_date = time_period.end_date
       @user = user
@@ -14,7 +13,7 @@ module ForecastRevenueFactCalculator
       total = 0
       monthly_value = {}
 
-      return if !@time_dimension
+      return if !@forecast_time_dimension
 
       months.each do |month_row|
         monthly_value[month_row[:start_date].strftime("%b-%y")] = 0
@@ -71,7 +70,7 @@ module ForecastRevenueFactCalculator
       end
 
       forecast_revenue_fact = ForecastRevenueFact.find_or_initialize_by(
-        time_dimension_id: @time_dimension.id,
+        forecast_time_dimension_id: @forecast_time_dimension.id,
         user_dimension_id: @user.id,
         product_dimension_id: @product.id
       )
