@@ -12,6 +12,7 @@ class TimePeriod < ActiveRecord::Base
     company.users.each do |user|
       quotas.create(user_id: user.id, company_id: company.id)
     end
+    create_forecast_dimension
     update_forecast_fact_callback
   end
 
@@ -25,10 +26,26 @@ class TimePeriod < ActiveRecord::Base
     end
   end
 
+  def create_forecast_dimension
+    period_types = ['year', 'quarter', 'month']
+    if period_types.include?(self.period_type)
+      ForecastTimeDimension.create(
+        id: self.id,
+        name: self.name,
+        start_date: self.start_date,
+        end_date: self.end_date,
+        days_length: (self.end_date - self.start_date + 1).to_i
+      )
+    end
+  end
+
   def delete_dimension(time_period_record)
-    ForecastTimeDimension.destroy(time_period_record.id)
-    ForecastPipelineFact.destroy_all(forecast_time_dimension_id: time_period_record.id)
-    ForecastRevenueFact.destroy_all(forecast_time_dimension_id: time_period_record.id)
+    forecast_time_dimension = ForecastTimeDimension.find_by(id: time_period_record.id)
+    if forecast_time_dimension.present?
+      ForecastTimeDimension.destroy(time_period_record.id)
+      ForecastPipelineFact.destroy_all(forecast_time_dimension_id: time_period_record.id)
+      ForecastRevenueFact.destroy_all(forecast_time_dimension_id: time_period_record.id)
+    end
   end
 
   scope :current_year_quarters, -> (company_id) do
