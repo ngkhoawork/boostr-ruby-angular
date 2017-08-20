@@ -17,6 +17,10 @@ class Stage < ActiveRecord::Base
     update_forecast_fact_callback
   end
 
+  after_destroy do |stage_record|
+    delete_dimension(stage_record)
+  end
+
   def create_dimension
     StageDimension.create(
       id: self.id,
@@ -25,6 +29,11 @@ class Stage < ActiveRecord::Base
       probability: self.probability,
       open: self.open
     )
+  end
+
+  def delete_dimension(stage_record)
+    StageDimension.destroy(stage_record.id)
+    ForecastPipelineFact.destroy_all(stage_dimension_id: stage_record.id)
   end
 
   def update_forecast_fact_callback

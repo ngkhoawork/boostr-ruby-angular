@@ -37,12 +37,23 @@ class User < ActiveRecord::Base
     update_forecast_fact_callback
   end
 
+  after_destroy do |user_record|
+    delete_dimension(user_record)
+  end
+
+
   def create_dimension
     UserDimension.create(
       id: self.id,
       company_id: self.company_id,
       team_id: self.team_id
     )
+  end
+
+  def delete_dimension(user_record)
+    UserDimension.destroy(user_record.id)
+    ForecastPipelineFact.destroy_all(user_dimension_id: user_record.id)
+    ForecastRevenueFact.destroy_all(user_dimension_id: user_record.id)
   end
 
   def update_forecast_fact_callback

@@ -16,12 +16,22 @@ class Product < ActiveRecord::Base
     update_forecast_fact_callback
   end
 
+  after_destroy do |product_record|
+    delete_dimension(product_record)
+  end
+
   def create_dimension
     ProductDimension.create(
       id: self.id,
       company_id: self.company_id,
       name: self.name
     )
+  end
+
+  def delete_dimension(product_record)
+    ProductDimension.destroy(product_record.id)
+    ForecastPipelineFact.destroy_all(product_dimension_id: product_record.id)
+    ForecastRevenueFact.destroy_all(product_dimension_id: product_record.id)
   end
 
   def update_forecast_fact_callback
