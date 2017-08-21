@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170721123401) do
+ActiveRecord::Schema.define(version: 20170725130041) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -120,8 +120,10 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.integer "category_id"
     t.integer "subcategory_id"
     t.integer "holding_company_id"
+    t.integer "company_id"
   end
 
+  add_index "account_dimensions", ["company_id"], name: "index_account_dimensions_on_company_id", using: :btree
   add_index "account_dimensions", ["holding_company_id"], name: "index_account_dimensions_on_holding_company_id", using: :btree
 
   create_table "account_pipeline_facts", force: :cascade do |t|
@@ -331,6 +333,26 @@ ActiveRecord::Schema.define(version: 20170721123401) do
   add_index "assets", ["attachable_id", "attachable_type"], name: "index_assets_on_attachable_id_and_attachable_type", using: :btree
   add_index "assets", ["created_by"], name: "index_assets_on_created_by", using: :btree
 
+  create_table "audit_logs", force: :cascade do |t|
+    t.string   "auditable_type"
+    t.integer  "auditable_id"
+    t.string   "type_of_change"
+    t.string   "old_value"
+    t.string   "new_value"
+    t.string   "biz_days"
+    t.integer  "updated_by"
+    t.integer  "company_id"
+    t.integer  "user_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
+  add_index "audit_logs", ["auditable_type"], name: "index_audit_logs_on_auditable_type", using: :btree
+  add_index "audit_logs", ["company_id"], name: "index_audit_logs_on_company_id", using: :btree
+  add_index "audit_logs", ["updated_by"], name: "index_audit_logs_on_updated_by", using: :btree
+  add_index "audit_logs", ["user_id"], name: "index_audit_logs_on_user_id", using: :btree
+
   create_table "bp_estimate_products", force: :cascade do |t|
     t.integer  "bp_estimate_id"
     t.integer  "product_id"
@@ -462,6 +484,7 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.boolean  "influencer_enabled",                default: false
     t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "influencer_enabled",                default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -1333,6 +1356,7 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.datetime "updated_at",      null: false
     t.datetime "deleted_at"
     t.boolean  "completed"
+    t.boolean  "assigned"
   end
 
   add_index "reminders", ["deleted_at"], name: "index_reminders_on_deleted_at", using: :btree
@@ -1598,6 +1622,7 @@ ActiveRecord::Schema.define(version: 20170721123401) do
     t.string   "value_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "object",     default: ""
   end
 
   add_index "validations", ["company_id"], name: "index_validations_on_company_id", using: :btree
