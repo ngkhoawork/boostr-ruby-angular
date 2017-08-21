@@ -1,4 +1,4 @@
-@app.controller 'OperativeApiConfigurationsEditController',
+@app.controller 'DataFeedConfigurationsEditController',
   ['$scope', '$modalInstance', 'ApiConfiguration', 'api_configuration', 'IntegrationType'
     ($scope, $modalInstance, ApiConfiguration, api_configuration, IntegrationType) ->
 
@@ -15,6 +15,7 @@
       $scope.submitForm = () ->
         unless $scope.need_change_password
           delete $scope.api_configuration['password']
+        $scope.api_configuration.datafeed_configuration_details_attributes = $scope.api_configuration.datafeed_configuration_details
         ApiConfiguration.update(id: $scope.api_configuration.id, api_configuration: $scope.api_configuration).then (api_configuration) ->
           $scope.api_configuration = api_configuration
           $modalInstance.close()

@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(version: 20170915133451) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -634,6 +633,15 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.string "curr_symbol"
     t.string "name"
   end
+
+  create_table "datafeed_configuration_details", force: :cascade do |t|
+    t.boolean  "auto_close_deals",     default: false
+    t.integer  "api_configuration_id"
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+  end
+
+  add_index "datafeed_configuration_details", ["api_configuration_id"], name: "index_datafeed_configuration_details_on_api_configuration_id", using: :btree
 
   create_table "deal_contacts", force: :cascade do |t|
     t.integer  "deal_id"
@@ -1731,6 +1739,7 @@ ActiveRecord::Schema.define(version: 20170915133451) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
+  add_foreign_key "datafeed_configuration_details", "api_configurations"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
   add_foreign_key "deal_custom_fields", "companies"
@@ -1768,6 +1777,7 @@ ActiveRecord::Schema.define(version: 20170915133451) do
   add_foreign_key "ios", "companies"
   add_foreign_key "ios", "deals"
   add_foreign_key "print_items", "ios"
+  add_foreign_key "product_dimensions", "companies"
   add_foreign_key "requests", "companies"
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"
