@@ -356,6 +356,7 @@ class NewForecastTeam
         else
           average_deal_size = 0
         end
+        gap_to_quota = (quota - @forecasts_data[:members][user.id][:amount]).to_f
         if gap_to_quota <= 0
           new_deals_needed = 0
         elsif average_deal_size <= 0 or win_rate <= 0
@@ -407,6 +408,7 @@ class NewForecastTeam
       else
         average_deal_size = 0
       end
+      gap_to_quota = (quota - @forecasts_data[:teams][team.id][:amount]).to_f
       if gap_to_quota <= 0
         new_deals_needed = 0
       elsif average_deal_size <= 0 or win_rate <= 0
