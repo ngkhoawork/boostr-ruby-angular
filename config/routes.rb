@@ -210,6 +210,7 @@ Rails.application.routes.draw do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do
         get :pipeline_report
+        get :pipeline_report_totals
         get :pipeline_summary_report
         get :won_deals
         get :filter_data

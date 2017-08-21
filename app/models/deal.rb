@@ -27,6 +27,7 @@ class Deal < ActiveRecord::Base
   has_many :deal_logs
   has_many :products, -> { distinct }, through: :deal_products
   has_many :deal_members
+  has_many :deal_members_share_ordered, -> { order(share: :desc) }, class_name: 'DealMember', foreign_key: 'deal_id'
   has_many :users, through: :deal_members
   has_many :values, as: :subject
   has_many :options, through: :values
@@ -101,7 +102,9 @@ class Deal < ActiveRecord::Base
   end
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
-  scope :for_time_period, -> (start_date, end_date) { where('start_date <= ? AND end_date >= ?', end_date, start_date) }
+  scope :for_time_period, -> (start_date, end_date) do
+    where('start_date <= ? AND end_date >= ?', end_date, start_date) if start_date.present? && end_date.present?
+  end
   scope :closed_in, -> (duration_in_days) { where('closed_at >= ?', Time.now.utc.beginning_of_day - duration_in_days.days) }
   scope :closed_at, -> (start_date, end_date) do
     where('closed_at >= ? and closed_at <= ?', start_date, end_date) if start_date.present? && end_date.present?
@@ -140,7 +143,18 @@ class Deal < ActiveRecord::Base
     where(created_at: start_date..end_date) if start_date.present? && end_date.present?
   end
   scope :by_stage_ids, -> (stage_ids) { where(stage_id: stage_ids) if stage_ids.present? }
-  scope :by_options, -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
+  scope :by_options , -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
+  scope :by_ids, -> (ids) { where('deals.id in (?)', ids) if ids.present? }
+  scope :with_all_options, -> (option_ids) do
+    if option_ids.present? && !option_ids.empty?
+      ids = Value.where(subject_type: 'Deal')
+               .by_option_ids(option_ids)
+               .group(:subject_id)
+               .having('count(distinct option_id) >= ?', option_ids.length)
+               .pluck(:subject_id)
+      where('deals.id in (?)', ids)
+    end
+  end
 
   def asana_connect
     AsanaConnectWorker.perform_in(10.minutes, self.id) if asana_integration_required?
@@ -549,7 +563,7 @@ class Deal < ActiveRecord::Base
       csv << header
       deals.each do |deal|
         line = [
-            deal.deal_members.collect {|deal_member| deal_member.username.first_name + " " + deal_member.username.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
+            deal.deal_members_share_ordered.collect {|deal_member| deal_member.username.first_name + " " + deal_member.username.last_name + " (" + deal_member.share.to_s + "%)"}.join(";"),
             deal.advertiser ? deal.advertiser.name : nil,
             deal.name,
             deal.agency ? deal.agency.name : nil,
