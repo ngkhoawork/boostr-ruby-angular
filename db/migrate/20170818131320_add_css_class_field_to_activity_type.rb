@@ -18,6 +18,6 @@ class AddCssClassFieldToActivityType < ActiveRecord::Migration
     ActivityType.by_name('QBR').update_all(css_class: 'bstr-qbr')
     ActivityType.by_name('Email').update_all(css_class: 'bstr-email', editable: false)
     ActivityType.by_name('Post Sale Meeting').update_all(css_class: 'bstr-post-sale-meeting')
-    ActivityType.by_name('Internal Meeting').update_all(css_class: 'bstr-initial-meeting')
+    ActivityType.by_name('Internal Meeting').update_all(css_class: 'bstr-internal-meeting')
   end
 end
