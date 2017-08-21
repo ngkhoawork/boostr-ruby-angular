@@ -371,7 +371,7 @@
     }
   }
   .dropdown {
-    [class^="icon-activity-"] {
+    .fa.activity-icon {
       position: absolute;
     }
     .text {
@@ -381,14 +381,14 @@
     }
     button {
       position: relative;
-      [class^="icon-activity-"] {
+      .fa.activity-icon {
         top: 11px;
         left: 12px;
       }
     }
     li {
       position: relative;
-      [class^="icon-activity-"] {
+      .fa.activity-icon {
         top: 6px;
         left: 7px;
       }

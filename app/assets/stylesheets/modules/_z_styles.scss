@@ -479,3 +479,31 @@
         }
     }
 }
+
+.z-toggle {
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+    cursor: pointer;
+    border-radius: 12px;
+    padding: 2px;
+    background-color: #818e98;
+    transition: background 500ms;
+    position: relative;
+    &.toggle-active {
+        background-color: $main-color;
+        span {
+            left: 22px;
+        }
+    }
+    span {
+        position: relative;
+        background-color: white;
+        display: block;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        left: 0;
+        transition: left 100ms;
+    }
+}

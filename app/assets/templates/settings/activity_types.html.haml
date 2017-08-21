@@ -1,9 +1,15 @@
 #activity-types.z-styles
-  .container-fluid
-    %span.page-title.mb40 Activity Types Settings
-
-    .row
-      .col-sm-6
-        .panel{ ng: { repeat: 'activity in activity_types' } }
-          .panel-body
-            %span {{activity.name}}
+	.container-fluid
+		.col-xs-6
+			%div.mb20
+				%span.main-title.mr8 Activity Types Settings
+				%add-button{'ng-click': 'showNewDealModal()'} Add Activity Type
+			.block.activity-row{ ng: { repeat: 'type in activity_types' } }
+				%z-toggle{'ng-model': 'type.active'}
+				%i.activity-icon.mr8.fa{class: '{{type.css_class}}'}
+				%span.activity-name {{type.name}}
+				%span.delimiter -
+				%span.activity-action {{type.action}}
+				%div.activity-buttons
+					%i.fa.fa-pencil.z-icon.mr8
+					%i.fa.fa-trash.z-icon

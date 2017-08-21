@@ -1,12 +1,39 @@
 #activity-types {
-  span.page-title {
-    font-size: 24px;
-    font-weight: 600;
-    margin-right: 20px;
-    display: block;
-  }
+    .activity-row {
+        display: flex;
+        align-items: center;
+        cursor: move;
+        padding: 8px 25px;
+        margin-bottom: 10px;
+        &:hover {
+            .z-icon {
+                display: inline-block;
+            }
+        }
+        .z-icon {
+            display: none;
+            width: 22px;
+            height: 22px;
+            padding: 2px 4px;
+            font-size: 18px;
+        }
+        .z-toggle {
+            margin-right: 35px;
+        }
+        .delimiter {
+            font-weight: bold;
+            color: $secondary-font-color;
+            margin: 0 12px;
 
-  .panel-body {
-    padding: 10px;
-  }
+        }
+        .activity-name {
+            font-weight: bold;
+        }
+        .activity-action {
+            color: $secondary-font-color;
+        }
+        .activity-buttons {
+            margin-left: auto;
+        }
+    }
 }

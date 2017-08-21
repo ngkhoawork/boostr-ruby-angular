@@ -9,10 +9,10 @@
 		No activity
 	%div.activity-item{'ng-repeat': 'activity in activities | orderBy: activitiesOrder || "happened_at" : activitySwitch == "past"'}
 		%div.activity-header
-			%span{'class': 'icon-activity-{{getIconName(activity.activity_type_name)}}'}
+			%i.activity-icon.mr8.fa{'class': '{{getType(activity.activity_type_name).css_class}}'}
 			%span
-				%strong {{activity.activity_type_name}}
-			%span.pull-right {{activity.happened_at | date: 'mediumDate'}}
+				%b {{activity.activity_type_name}}
+			%span {{activity.happened_at | date: 'mediumDate'}}
 
 		%div.activity-body
 			%p

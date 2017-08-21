@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170811110823) do
+ActiveRecord::Schema.define(version: 20170818131320) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -144,8 +145,8 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.integer  "time_dimension_id"
     t.integer  "account_dimension_id"
     t.integer  "company_id"
-    t.decimal  "weighted_amount"
-    t.decimal  "unweighted_amount"
+    t.integer  "weighted_amount"
+    t.integer  "unweighted_amount"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
@@ -244,7 +245,9 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
     t.integer  "position"
-    t.boolean  "status",     default: true
+    t.boolean  "active",     default: true
+    t.string   "css_class"
+    t.boolean  "editable",   default: true
   end
 
   create_table "ad_units", force: :cascade do |t|
@@ -296,11 +299,11 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
+    t.boolean  "recurring",                  default: false
     t.text     "encrypted_json_api_key"
     t.text     "encrypted_json_api_key_iv"
     t.string   "network_code"
     t.string   "integration_provider"
-    t.boolean  "recurring",                  default: false
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -483,10 +486,10 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
-    t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
-    t.boolean  "influencer_enabled",                default: false
+    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "influencer_enabled",                default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -986,7 +989,6 @@ ActiveRecord::Schema.define(version: 20170811110823) do
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
-  add_index "deals", ["agency_id", "company_id"], name: "idx_test", using: :btree
   add_index "deals", ["agency_id"], name: "index_deals_on_agency_id", using: :btree
   add_index "deals", ["company_id"], name: "index_deals_on_company_id", using: :btree
   add_index "deals", ["created_by"], name: "index_deals_on_created_by", using: :btree
@@ -1006,6 +1008,7 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.integer  "api_configuration_id"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.integer  "date_range_type",        default: 0
   end
 
   add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
@@ -1479,10 +1482,10 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.string   "dimensionadvertiser_name"
     t.string   "dimensionline_item_name"
     t.string   "dimensionad_unit_name"
-    t.integer  "dimensionorder_id"
-    t.integer  "dimensionadvertiser_id"
-    t.integer  "dimensionline_item_id"
-    t.integer  "dimensionad_unit_id"
+    t.integer  "dimensionorder_id",                                  limit: 8
+    t.integer  "dimensionadvertiser_id",                             limit: 8
+    t.integer  "dimensionline_item_id",                              limit: 8
+    t.integer  "dimensionad_unit_id",                                limit: 8
     t.datetime "dimensionattributeorder_start_date_time"
     t.datetime "dimensionattributeorder_end_date_time"
     t.string   "dimensionattributeorder_agency"
@@ -1605,9 +1608,9 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
-    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
+    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
@@ -1651,7 +1654,6 @@ ActiveRecord::Schema.define(version: 20170811110823) do
 
   add_index "values", ["company_id", "field_id"], name: "index_values_on_company_id_and_field_id", using: :btree
   add_index "values", ["option_id"], name: "index_values_on_option_id", using: :btree
-  add_index "values", ["subject_type", "option_id"], name: "idx_test999", using: :btree
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
@@ -1662,9 +1664,11 @@ ActiveRecord::Schema.define(version: 20170811110823) do
   add_foreign_key "account_pipeline_facts", "account_dimensions"
   add_foreign_key "account_pipeline_facts", "companies"
   add_foreign_key "account_pipeline_facts", "time_dimensions"
+  add_foreign_key "account_product_pipeline_facts", "account_dimensions"
   add_foreign_key "account_product_pipeline_facts", "companies"
   add_foreign_key "account_product_pipeline_facts", "products", column: "product_dimension_id"
   add_foreign_key "account_product_pipeline_facts", "time_dimensions"
+  add_foreign_key "account_product_revenue_facts", "account_dimensions"
   add_foreign_key "account_product_revenue_facts", "companies"
   add_foreign_key "account_product_revenue_facts", "products", column: "product_dimension_id"
   add_foreign_key "account_product_revenue_facts", "time_dimensions"
