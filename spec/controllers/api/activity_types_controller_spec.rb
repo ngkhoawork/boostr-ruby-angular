@@ -56,6 +56,21 @@ describe Api::ActivityTypesController do
     end
   end
 
+  describe 'PUT #update_positions' do
+    it '' do
+      activity_types = company.activity_types.sample(2)
+      activity_types_ids = activity_types.map(&:id)
+      position_params =  Hash[activity_types_ids.map { |i| [i, i+1] }]
+
+      put :update_positions, activity_types_position: position_params, format: :json
+
+      activity_types.map(&:reload)
+
+      expect(activity_types.first.position).to eq(position_params[activity_types.first.id])
+      expect(activity_types.last.position).to eq(position_params[activity_types.last.id])
+    end
+  end
+
   private
 
   def company

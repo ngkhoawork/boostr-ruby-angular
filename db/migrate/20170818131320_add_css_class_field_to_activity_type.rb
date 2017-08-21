@@ -2,7 +2,7 @@ class AddCssClassFieldToActivityType < ActiveRecord::Migration
   def change
     add_column :activity_types, :css_class, :string
     add_column :activity_types, :editable, :boolean, default: true
-    
+
     add_css_classes
   end
 

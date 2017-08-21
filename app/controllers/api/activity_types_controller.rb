@@ -38,6 +38,17 @@ class Api::ActivityTypesController < ApplicationController
     end
   end
 
+  def update_positions
+    positions = params[:activity_types_position]
+    activity_types = company.activity_types.where(id: positions.keys)
+
+    activity_types.each do |activity_type|
+      activity_type.update(position: positions[activity_type.id])
+    end
+
+    render json: activity_types
+  end
+
   private
 
   def activity_params
@@ -49,7 +60,7 @@ class Api::ActivityTypesController < ApplicationController
   end
 
   def activity_types
-    current_user.company.activity_types.ordered_by_position
+    company.activity_types.ordered_by_position
   end
 
   def company
