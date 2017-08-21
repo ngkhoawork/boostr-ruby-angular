@@ -33,6 +33,7 @@ class Operative::DatafeedService
     return unless @extracted_files
     Operative::ImportSalesOrdersService.new(
       api_config.company_id,
+      api_config.auto_close_deals,
       @extracted_files.slice(:sales_order, :currency)
     ).perform
   end

@@ -241,8 +241,10 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.string   "icon"
     t.integer  "updated_by"
     t.integer  "created_by"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "position"
+    t.boolean  "status",     default: true
   end
 
   create_table "ad_units", force: :cascade do |t|
@@ -664,6 +666,15 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.string "curr_symbol"
     t.string "name"
   end
+
+  create_table "datafeed_configuration_details", force: :cascade do |t|
+    t.boolean  "auto_close_deals",     default: false
+    t.integer  "api_configuration_id"
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+  end
+
+  add_index "datafeed_configuration_details", ["api_configuration_id"], name: "index_datafeed_configuration_details_on_api_configuration_id", using: :btree
 
   create_table "deal_contacts", force: :cascade do |t|
     t.integer  "deal_id"
@@ -1661,11 +1672,9 @@ ActiveRecord::Schema.define(version: 20170821105315) do
   add_foreign_key "account_pipeline_facts", "account_dimensions"
   add_foreign_key "account_pipeline_facts", "companies"
   add_foreign_key "account_pipeline_facts", "time_dimensions"
-  add_foreign_key "account_product_pipeline_facts", "account_dimensions"
   add_foreign_key "account_product_pipeline_facts", "companies"
   add_foreign_key "account_product_pipeline_facts", "products", column: "product_dimension_id"
   add_foreign_key "account_product_pipeline_facts", "time_dimensions"
-  add_foreign_key "account_product_revenue_facts", "account_dimensions"
   add_foreign_key "account_product_revenue_facts", "companies"
   add_foreign_key "account_product_revenue_facts", "products", column: "product_dimension_id"
   add_foreign_key "account_product_revenue_facts", "time_dimensions"
