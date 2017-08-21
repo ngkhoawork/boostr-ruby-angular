@@ -143,7 +143,7 @@ class Deal < ActiveRecord::Base
     where(created_at: start_date..end_date) if start_date.present? && end_date.present?
   end
   scope :by_stage_ids, -> (stage_ids) { where(stage_id: stage_ids) if stage_ids.present? }
-  scope :by_options , -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
+  scope :by_options, -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
   scope :by_ids, -> (ids) { where('deals.id in (?)', ids) if ids.present? }
   scope :with_all_options, -> (option_ids) do
     if option_ids.present? && !option_ids.empty?
@@ -153,6 +153,15 @@ class Deal < ActiveRecord::Base
                .having('count(distinct option_id) >= ?', option_ids.length)
                .pluck(:subject_id)
       where('deals.id in (?)', ids)
+    end
+  end
+  scope :by_time_period_in_deal_product_budgets, -> (time_period_id) do
+    if time_period_id.present?
+      time_period = TimePeriod.find(time_period_id)
+
+      joins(:deal_product_budgets)
+      .where('deal_product_budgets.start_date >= ? AND deal_product_budgets.end_date <= ?',
+             time_period.start_date, time_period.end_date)
     end
   end
 
