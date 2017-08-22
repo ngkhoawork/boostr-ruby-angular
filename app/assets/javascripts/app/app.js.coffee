@@ -156,6 +156,10 @@
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
       controller: 'ActivityDetailReportsController'
+      reloadOnSearch: false
+      resolve:
+        $modalInstance: -> null
+        activitySummaryParams: -> null
 
     .when '/reports/influencer_budget_detail',
       templateUrl: 'influencer_budget_detail.html'
