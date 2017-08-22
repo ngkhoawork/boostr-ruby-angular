@@ -144,16 +144,26 @@
                         deal: ->
                             {}
 
+            $scope.showReminderModal = ->
+                $scope.modalInstance = $modal.open
+                    templateUrl: 'modals/reminder_new_form.html'
+                    size: 'md'
+                    controller: 'DashboardReminderController'
+                    backdrop: 'static'
+                    keyboard: false
+                    resolve:
+                        reminder: -> null
+
             $scope.showReminderEditModal = (reminder) ->
                 $scope.modalInstance = $modal.open
-                    templateUrl: 'modals/reminder_edit_form.html'
+                    templateUrl: 'modals/reminder_new_form.html'
                     size: 'md'
-                    controller: 'DashboardReminderEditController'
+                    controller: 'DashboardReminderController'
                     backdrop: 'static'
                     keyboard: false
                     resolve:
                         reminder: ->
-                            reminder
+                            angular.copy reminder
 
             $scope.showNewAccountModal = ->
                 $scope.modalInstance = $modal.open
@@ -431,6 +441,5 @@
                 if type && type.length
                     type = type.toLowerCase().split(' ').join('-')
                     'assets/icons/dashboard/' + type + '.svg'
-
 
     ]

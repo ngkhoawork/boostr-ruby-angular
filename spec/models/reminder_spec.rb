@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Reminder, type: :model do
   let(:user)     { create :user }
   let!(:reminder) { create(:reminder, remindable_id: 130, remindable_type: "Deal", user_id: user.id) }
+  let(:unassigned_reminder) { create(:reminder, user_id: user.id, assigned: false) }
 
   context 'scopes' do
     context 'by_id' do
@@ -35,4 +36,9 @@ RSpec.describe Reminder, type: :model do
     reminder.save
     expect(user.reminders).to eq([reminder])
   end
+
+  it 'allows to skip validation for remindable id and type if unassigned' do
+    expect(unassigned_reminder).to be_persisted
+  end
+
 end

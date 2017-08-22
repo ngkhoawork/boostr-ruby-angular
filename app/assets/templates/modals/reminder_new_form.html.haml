@@ -1,0 +1,61 @@
+#activity-form-modal.popup-modal
+    %form{'ng-submit': 'submitForm()'}
+        .popup-modal-header
+            {{modalType}} Reminder
+            %span.close-btn{'ng-click': 'cancel()'}
+        .popup-modal-body
+            .col-xs-6.date
+                .form-group{'ng-class':'{error: errors.type}'}
+                    %span.error-text {{errors.type}}
+                    %label
+                        Assigned to
+                    .dropdown
+                        %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
+                            %span.mr8{'ng-class': '{"empty-input": !reminder.remindable_type}'} {{reminder.remindable_type || 'Select'}}
+                            %i.fa.fa-close{'ng-show': 'reminder.remindable_type ', 'ng-click': '$event.stopPropagation(); reminder.remindable_type = ""'}
+                            %span.caret
+                        %ul.dropdown-menu
+                            %li{'ng-repeat': 'type in reminderTypes', 'ng-class': '{active: type === reminder.remindable_type}'}
+                                %a{'href': '', 'ng-click': 'reminder.remindable_type = type'}
+                                    {{type}}
+            .col-xs-6.time{'ng-switch': 'reminder.remindable_type'}
+                .form-group{'ng-switch-when': 'Deal'}
+                    %label Deal
+                    %input.form-control{'placeholder': 'Search', 'ng-model': 'reminder.remindable', 'ng-model-options': '{debounce: 300}', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)'}
+                .form-group{'ng-switch-when': 'Account'}
+                    %label Account
+                    %input.form-control{'placeholder': 'Search', 'ng-model': 'reminder.remindable', 'ng-model-options': '{debounce: 300}', typeahead: 'item as item.formatted_name for item in searchClients($viewValue)'}
+                .form-group{'ng-switch-when': 'Contact'}
+                    %label Contact
+                    %input.form-control{'placeholder': 'Search', 'ng-model': 'reminder.remindable', 'ng-model-options': '{debounce: 300}', typeahead: 'item as item.formatted_name for item in searchContacts($viewValue)'}
+            .clearfix
+            .form-group{'ng-class':'{error: errors.name}'}
+                %span.error-text {{errors.name}}
+                %label
+                    Name
+                    %span.star *
+                %input.form-control{'ng-model': 'reminder.name', placeholder: 'Name'}
+            .col-xs-6.date
+                .form-group{'ng-class':'{error: errors._date}'}
+                    %span.error-text {{errors._date}}
+                    %label Date
+                    %span.star *
+                    .input-group
+                        %span.input-group-addon
+                            %i.fa.fa-calendar
+                        %span.bs-datepicker
+                            %input.form-control.box.w4{readonly: true, placeholder: 'Pick date', name: 'reminderDate', type: 'text', datepicker: { popup: 'MMMM d, y' }, ng: { model: 'reminder._date', required: true, click: 'reminderDateOpened = true' }, 'is-open': 'reminderDateOpened' }
+            .col-xs-6.time
+                .form-group
+                    %label Time
+                    %timepicker-pop.wrap-select-time.form-control-time{'input-time': 'reminder._time', 'show-meridian': 'showMeridian'}
+            .form-group{'ng-class':'{error: errors.comment}'}
+                -#%span.error-text {{errors.comment}}
+                %label
+                    Note
+                    -#%span.star *
+                %textarea.form-control{'msd-elastic': '', 'ng-model': 'reminder.comment', placeholder: 'Note'}
+
+        .popup-modal-footer
+            %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+            %button.btn.btn-warning{'type': 'submit'} {{submitType}}

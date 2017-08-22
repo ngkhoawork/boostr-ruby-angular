@@ -1,7 +1,8 @@
 #reminders.block
 	%div.mb20
 		%span.title My Reminders
-		-#%add-button
+		%add-button{'ng-click': 'showReminderModal()'}
+			Add
 	%div{'ng-hide': 'reminders && reminders.length'}
 		No reminders
 	%div{'ng-show': 'reminders && reminders.length'}
@@ -12,8 +13,12 @@
 				%p{class: '{{reminder.dateColorClass}}'} {{reminder.remind_on | date:'medium'}}
 				%p {{reminder.name}}
 				%p {{reminder.comment}}
-				%p
-					%b {{reminder.remindable_type}} - {{reminder.remindable.name}}
+				%p{'ng-show': 'reminder.remindable'}
+					%b {{reminder.remindable_type}} -
+					%span{'ng-switch': 'reminder.remindable_type'}
+						%a{'ng-switch-when': 'Deal', href: '', 'ng-href': '/deals/{{reminder.remindable.id}}'} {{reminder.remindable.name}}
+						%a{'ng-switch-when': 'Client', href: '', 'ng-href': '/accounts/{{reminder.remindable.id}}'} {{reminder.remindable.name}}
+						%a{'ng-switch-when': 'Contact', href: '', 'ng-href': '/contacts/{{reminder.remindable.id}}'} {{reminder.remindable.name}}
 
 			%div.reminder-control
 				%a{href: '', 'ng-click': 'showReminderEditModal(reminder)'}
