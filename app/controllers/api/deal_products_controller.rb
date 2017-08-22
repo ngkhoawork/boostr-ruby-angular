@@ -1,6 +1,8 @@
 class Api::DealProductsController < ApplicationController
   respond_to :json, :csv
 
+  before_filter :set_current_user, only: [:update, :create, :destroy]
+
   def index
     respond_to do |format|
       format.csv {
