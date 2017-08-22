@@ -842,7 +842,7 @@ class Api::DealsController < ApplicationController
       .for_client(params[:agency_id])
       .by_budget_range(params[:budget_from], params[:budget_to])
       .by_curr_cd(params[:curr_cd])
-      .by_start_date(params[:start_date], params[:end_date])
+      .by_start_date(params[:start_start_date], params[:start_end_date])
       .by_time_period_in_deal_product_budgets(params[:time_period_id])
       .by_created_date(params[:created_start_date], params[:created_end_date])
 
