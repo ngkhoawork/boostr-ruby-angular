@@ -1,4 +1,4 @@
-@directives.directive 'numbersOnly', ->
+@directives.directive 'floatOnly', ->
   {
     require: 'ngModel'
     link: (scope, element, attr, ngModelCtrl) ->
