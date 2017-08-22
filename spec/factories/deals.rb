@@ -22,6 +22,24 @@ FactoryGirl.define do
       end
     end
 
+    factory :deal_with_deal_max_share_member do
+      after(:create) do |deal|
+        create(:deal_member, deal: deal, share: 100)
+      end
+    end
+
+    trait :with_max_share_member do
+      after(:create) do |deal|
+        create(:deal_member, deal: deal, share: 100)
+      end
+    end
+
+    trait :with_min_share_member do
+      after(:create) do |deal|
+        create(:deal_member, deal: deal, share: 0)
+      end
+    end
+
     factory :deal_with_contacts do
       transient do
         contacts_count 3

@@ -108,4 +108,53 @@ RSpec.describe Api::V2::DealsController, type: :controller do
       expect(deal.reload.deleted_at).to_not be_nil
     end
   end
+
+  describe 'GET #won_deals' do
+    let(:won_stage) { create(:won_stage) }
+    let!(:deal) { create(:deal, stage: won_stage, company: company) }
+
+    before do
+      get :won_deals, format: :json
+    end
+
+    it 'should be success' do
+      expect(response).to be_success
+    end
+
+    it 'returns only won deals for current user company' do
+      expect(json_response.count).to eq(1)
+    end
+
+    context 'response structure' do
+      it 'returns proper json structure for deals won objects' do
+        expect(json_response[0].keys).to contain_exactly('id',
+                                                         'name',
+                                                         'stage',
+                                                         'budget_loc',
+                                                         'curr_cd',
+                                                         'start_date',
+                                                         'end_date',
+                                                         'advertiser',
+                                                         'category',
+                                                         'agency',
+                                                         'team_and_split',
+                                                         'creator')
+      end
+
+      context 'when won deal with max share user exists' do
+        let!(:deal) { create(:deal, :with_max_share_member, stage: won_stage, company: company) }
+
+        it 'returns team and split' do
+          expect(json_response[0]['team_and_split'].count).to eq(1)
+        end
+      end
+      context 'when user with min share exists' do
+        let!(:deal) { create(:deal, :with_min_share_member, stage: won_stage, company: company) }
+
+        it 'does not return team and split' do
+          expect(json_response[0]['team_and_split'].count).to eq(0)
+        end
+      end
+    end
+  end
 end
