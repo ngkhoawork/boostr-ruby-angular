@@ -92,9 +92,8 @@ class Api::KpisDashboardController < ApplicationController
       (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
       (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
       (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true) &&
-      deal.closed_at &&
-      deal.closed_at >= time_period.first &&
-      deal.closed_at <= time_period.last &&
+      deal.send(date_criteria_filter.to_sym) >= time_period.first &&
+      deal.send(date_criteria_filter.to_sym) <= time_period.last &&
       deal.stage.probability == 100
     end
   end
@@ -109,9 +108,8 @@ class Api::KpisDashboardController < ApplicationController
       (deal.deal_members.map(&:user_id) & deal_member_ids).length > 0 &&
       (params[:type] && params[:type] != 'all' ? deal.values.map(&:option_id).include?(params[:type].to_i) : true) &&
       (params[:source] && params[:source] != 'all' ? deal.values.map(&:option_id).include?(params[:source].to_i) : true) &&
-      deal.closed_at &&
-      deal.closed_at >= time_period.first &&
-      deal.closed_at <= time_period.last &&
+      deal.send(date_criteria_filter.to_sym) >= time_period.first &&
+      deal.send(date_criteria_filter.to_sym) <= time_period.last &&
       deal.stage.probability == 0 &&
       deal.stage.open == false
     end
@@ -119,7 +117,14 @@ class Api::KpisDashboardController < ApplicationController
 
   def deals_by_time_period
     value_params = [params[:type], params[:source]].reject{|el| el.nil? || el == 'all'}
-    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id').where('deal_members.user_id in (?)', team_members.map(&:id)).by_values(value_params).distinct.active.includes(:stage, :products, :deal_members, 'values')
+    @deals ||= Deal.joins('LEFT JOIN deal_members on deals.id = deal_members.deal_id')
+                   .where('deal_members.user_id in (?)', team_members.map(&:id))
+                   .where("deals.#{date_criteria_filter} >= ? and deals.#{date_criteria_filter} <= ?", start_date, end_date)
+                   .where('stage_id in (?)', closed_stages)
+                   .by_values(value_params)
+                   .distinct
+                   .active
+                   .includes(:stage, :products, :deal_members, 'values')
   end
 
   def team
@@ -317,5 +322,17 @@ class Api::KpisDashboardController < ApplicationController
 
   def company
     @company ||= current_user.company
+  end
+
+  def date_criteria_filter
+    if params[:date_criteria] == 'created_date'
+      'created_at'
+    else
+      'closed_at'
+    end
+  end
+
+  def closed_stages
+    Stage.where(company_id: company.id, active: true, open: false).where('probability in (?)', [0, 100]).ids
   end
 end
