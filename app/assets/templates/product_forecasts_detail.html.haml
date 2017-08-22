@@ -134,7 +134,7 @@
                   %tr.hide
                     -#title for export
                     %th Revenue Details
-                  %tr
+                  %tr{'z-fixed-header': true, watch: '"revenues"'}
                     %th
                       %span.clickable{'ng-click': 'sortRevenues.by("name")'}
                         IO Name
@@ -189,7 +189,7 @@
                   %tr.hide
                     -#title for export
                     %th Deals
-                  %tr
+                  %tr{'z-fixed-header': true, watch: '"deals"'}
                     %th
                       %span.clickable{'ng-click': 'sortDeals.by("name")'}
                         Deal Name
