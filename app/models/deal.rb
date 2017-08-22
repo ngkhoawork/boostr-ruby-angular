@@ -49,6 +49,7 @@ class Deal < ActiveRecord::Base
   validate :single_billing_contact
   validate :account_manager_presence
   validate :disable_manual_deal_won_validation, on: :manual_update
+  validate :base_fields_presence
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
@@ -238,6 +239,17 @@ class Deal < ActiveRecord::Base
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
       errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+    end
+  end
+
+  def base_field_validations
+    self.company.validations_for("#{self.class} Base Field")
+  end
+
+  def base_fields_presence
+    if self.company_id.present?
+      factors = base_field_validations.joins(:criterion).where('values.value_boolean = ?', true).pluck(:factor)
+      self.validates_presence_of(factors) if factors.length > 0
     end
   end
 
@@ -432,7 +444,8 @@ class Deal < ActiveRecord::Base
 
     write_to_deal_log(budget_change, budget_change_loc) if budget_change != 0
 
-    update_attributes(budget: new_budget, budget_loc: new_budget_loc)
+    self.assign_attributes(budget: new_budget, budget_loc: new_budget_loc)
+    self.save(validate: false)
   end
 
   def exchange_rate
@@ -504,6 +517,18 @@ class Deal < ActiveRecord::Base
     return option
   end
 
+  def deal_source_value
+    field_id = self.fields.find_by_name('Deal Source').id
+
+    !!self.values.find{|val| val.field_id == field_id}
+  end
+
+  def deal_type_value
+    field_id = self.fields.find_by_name('Deal Type').id
+
+    !!self.values.find{|val| val.field_id == field_id}
+  end
+
   def get_option_value_from_raw_fields(field_data, field_name)
     if field = field_data.find { |field| field.include? field_name }
       self.values.find { |value| value.field_id == field[0] }.try(:option).try(:name)
@@ -550,6 +575,7 @@ class Deal < ActiveRecord::Base
       header << "Deal Source"
       header << "Team"
       header << "Next Steps"
+      header << "Next Steps Due"
       header << "Start Date"
       header << "End Date"
       range.each do |product_time|
@@ -577,6 +603,7 @@ class Deal < ActiveRecord::Base
         line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Source')
         line << deal.team_for_user_with_highest_share
         line << deal.next_steps
+        line << deal.next_steps_due
         line << deal.start_date
         line << deal.end_date
 

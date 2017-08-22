@@ -121,6 +121,8 @@
 									%th
 										%span.clickable{'ng-click': 'sorting.set("next_steps")'} Next Steps
 									%th
+										%span.clickable{'ng-click': 'sorting.set("next_steps_due")'} Next Steps Due
+									%th
 										%span.clickable{'ng-click': 'sorting.set("start_date")'} Start Date
 									%th
 										%span.clickable{'ng-click': 'sorting.set("end_date")'} End Date
@@ -147,6 +149,7 @@
 									%td {{deal.type}}
 									%td {{deal.source}}
 									%td {{deal.next_steps}}
+									%td {{deal.next_steps_due | date : 'shortDate'}}
 									%td {{deal.start_date | date : 'shortDate'}}
 									%td {{deal.end_date | date : 'shortDate'}}
 									%td {{deal.created_date | date : 'shortDate'}}

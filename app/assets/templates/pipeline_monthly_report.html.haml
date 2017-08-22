@@ -152,6 +152,9 @@
                     %span.clickable{'ng-click': 'changeSortType("next_steps")'}
                       Next Steps
                   %th
+                    %span.clickable{'ng-click': 'changeSortType("next_steps_due")'}
+                      Next Steps Due
+                  %th
                     %span.clickable{'ng-click': 'changeSortType("latest_activity")'}
                       Latest Activity
                   %th
@@ -190,6 +193,7 @@
                   %td {{ deal.stage.probability }}%
                   %td {{ deal.budget | currency:'$':0}}
                   %td {{ deal.next_steps.substr(0, 30) }}
+                  %td {{ deal.next_steps_due | date: 'MM-dd-yyyy' }}
                   %td{ ng: { if: 'deal.latest_activity && deal.latest_activity.activity_type_name == "Email"' } }
                     %button.btn.activity-email-btn{'ng-click': 'showEmailsModal(deal.latest_activity)'}
                       Show email
