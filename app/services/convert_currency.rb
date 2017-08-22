@@ -5,8 +5,8 @@ class ConvertCurrency
       product_budget_params[:budget] = (product_budget_params[:budget_loc].to_f / exchange_rate).round(2)
     end
 
-    sum_of_monthly_budgets = 0
-    sum_of_monthly_budgets_loc = 0
+    sum_of_monthly_budgets = 0.0
+    sum_of_monthly_budgets_loc = 0.0
 
     product_budget_params[:deal_product_budgets_attributes].each do |monthly_budget|
       if monthly_budget[:budget_loc]
