@@ -15,8 +15,8 @@ class AccountDimension < ActiveRecord::Base
   has_many :advertiser_connections, class_name: :ClientConnection,
            foreign_key: :advertiser_id
 
-  scope :agencies_by_holding_company_or_agency_id, Proc.new { |holding_company_id, account_id, user_id|
-    AgencyByHoldingIdOrAgencyIdQuery.new(holding_company_id: holding_company_id, account_id: account_id, user_id: user_id).call
+  scope :agencies_by_holding_company_or_agency_id, Proc.new { |holding_company_id, account_id, company_id|
+    AgencyByHoldingIdOrAgencyIdQuery.new(holding_company_id: holding_company_id, account_id: account_id, company_id: company_id).call
   }
 
   # CLASS METHODS
