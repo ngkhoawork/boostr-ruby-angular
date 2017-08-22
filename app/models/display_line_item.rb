@@ -193,6 +193,7 @@ class DisplayLineItem < ActiveRecord::Base
     import_log.set_file_source(file_path)
 
     io_change = {time_period_ids: [], product_ids: [], user_ids: []}
+    deal_change = {time_period_ids: [], product_ids: [], stage_ids: [], user_ids: []}
 
     Io.skip_callback(:save, :after, :update_revenue_fact_callback)
     DisplayLineItem.skip_callback(:save, :after, :update_revenue_fact_callback)
@@ -618,6 +619,10 @@ class DisplayLineItem < ActiveRecord::Base
         io_change[:product_ids] += [product_id] if product_id.present?
         io.external_io_number = external_io_number
         io.save
+        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", io.deal.start_date, io.deal.end_date).collect{|item| item.id}
+        deal_change[:stage_ids] += [io.deal.stage_id] if io.deal.stage_id.present?
+        deal_change[:user_ids] += io.deal.deal_members.collect{|item| item.user_id}
+        deal_change[:product_ids] += io.deal.deal_products.collect{|item| item.product_id}
       end
       display_line_item = nil
       if io_id.nil?
@@ -644,7 +649,14 @@ class DisplayLineItem < ActiveRecord::Base
     io_change[:user_ids] = io_change[:user_ids].uniq
     io_change[:product_ids] = io_change[:product_ids].uniq
 
+    deal_change[:time_period_ids] = deal_change[:time_period_ids].uniq
+    deal_change[:user_ids] = deal_change[:user_ids].uniq
+    deal_change[:product_ids] = deal_change[:product_ids].uniq
+    deal_change[:stage_ids] = deal_change[:stage_ids].uniq
+
     ForecastRevenueCalculatorWorker.perform_async(io_change)
+
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
 
     import_log.save
   end
