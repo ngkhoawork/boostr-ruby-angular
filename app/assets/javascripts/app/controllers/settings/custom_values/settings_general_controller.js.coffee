@@ -1,6 +1,6 @@
 @app.controller 'SettingsGeneralController',
-['$scope', 'Company', 'Stage', 'Validation', 'User'
-($scope, Company, Stage, Validation, User) ->
+['$scope', 'Company', 'Stage', 'Validation', 'User', 'Forecast'
+($scope, Company, Stage, Validation, User, Forecast) ->
   $scope.userTypes = User.user_types_list
   console.log($scope.userTypes)
   Company.get().$promise.then (company) ->
@@ -26,4 +26,8 @@
   Stage.query().$promise.then (stages) ->
     stages.push { name: 'None', probability: null }
     $scope.stages = stages
+  
+  $scope.runForecastCalculation = () ->
+    if confirm("Are you sure run the forecast calculation? This will take upto several minutes.")
+      Forecast.run_forecast_calculation()
 ]

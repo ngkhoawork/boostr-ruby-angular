@@ -270,6 +270,7 @@ Rails.application.routes.draw do
         get :detail
         get :old_product_detail
         get :product_detail
+        post :run_forecast_calculation
       end
     end
     resources :fields, only: [:index]

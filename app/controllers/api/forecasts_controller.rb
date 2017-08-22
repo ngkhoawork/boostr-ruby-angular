@@ -242,6 +242,20 @@ class Api::ForecastsController < ApplicationController
     render json: ForecastTeam.new(team, time_period.start_date, time_period.end_date, nil, year)
   end
 
+  def run_forecast_calculation
+    time_period_ids = company.time_periods.collect{|item| item.id},
+    product_ids = company.products.collect{|item| item.id},
+    user_ids = company.users.collect{|item| item.id}
+    stage_ids = company.stages.collect{|item| item.id}
+    deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, stage_ids: stage_ids, user_ids: user_ids}
+    io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
+
+    ForecastRevenueCalculatorWorker.perform_async(io_change)
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
+
+    render nothing: true
+  end
+
   protected
 
   def forecast_member
@@ -366,7 +380,11 @@ class Api::ForecastsController < ApplicationController
     elsif team.present?
       leader = team.leader
       quarters.each do |quarter_row|
-        @quarterly_quota['q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s] = leader.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+        quarter = 'q' + ((quarter_row[:start_date].month - 1) / 3 + 1).to_s + '-' + quarter_row[:start_date].year.to_s
+        @quarterly_quota[quarter] ||= 0
+        if leader.present?
+          @quarterly_quota[quarter] += leader.quotas.for_time_period(quarter_row[:start_date], quarter_row[:end_date]).sum(:value)
+        end
       end
     else
       teams.each do |team_item|

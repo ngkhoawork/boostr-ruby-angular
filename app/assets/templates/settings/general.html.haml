@@ -15,3 +15,9 @@
                   {{ $select.selected.name }}
                 %ui-select-choices{ repeat: 'day.id as day in days | filter: { name: $select.search }' }
                   %div{ ng: { bind: { html: 'day.name' } } }
+
+            %h5 Forecast Fact Recalculation
+            .form-group
+              %button.btn.btn-primary{'ng-click': 'runForecastCalculation()'}
+                Run Now 
+

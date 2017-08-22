@@ -16,5 +16,8 @@
       method: 'GET'
       url: '/api/forecasts/product_detail'
       isArray: true
+    run_forecast_calculation:
+      method: 'POST'
+      url: '/api/forecasts/run_forecast_calculation'
   return resource
 ]
