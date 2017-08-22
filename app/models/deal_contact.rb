@@ -4,15 +4,4 @@ class DealContact < ActiveRecord::Base
 
   validates_uniqueness_of :deal_id, scope: [:contact_id]
   validates_uniqueness_of :role, scope: [:deal_id], message: 'Only one billing contact allowed', if: Proc.new { |contact| contact.role == 'Billing' }
-  validate :billing_contact_address
-
-  private
-
-  def billing_contact_address
-    if role && role == 'Billing'
-      unless contact.address.street1.presence && contact.address.city.presence && contact.address.zip.presence && contact.address.country.presence
-        errors.add(:role, "Billing contact requires street, city, country and postal code")
-      end
-    end
-  end
 end
