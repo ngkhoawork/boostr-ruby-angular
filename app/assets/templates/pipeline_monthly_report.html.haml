@@ -124,7 +124,7 @@
           .table-wrapper
             %table.table.table-hover
               %thead
-                %tr
+                %tr{'z-fixed-header': true, watch: '"deals"'}
                   %th
                     %span.clickable{'ng-click': 'changeSortType("users[0].first_name")'}
                       Team Member
