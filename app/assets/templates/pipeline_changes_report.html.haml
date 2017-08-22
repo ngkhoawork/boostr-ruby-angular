@@ -23,7 +23,7 @@
                       %li{'ng-class': '{active: !filter.type}'}
                         %a{href: '', 'ng-click': 'setFilter("type", "")'}
                           All
-                      %li{ ng: { repeat: 'type in changeTypes', class: '{active: type === filter.type}' } }
+                      %li{ ng: { repeat: 'type in changeTypes | orderBy', class: '{active: type === filter.type}' } }
                         %a{ href: '', ng: { click: 'setFilter("type", type)' } }
                           {{type}}
 
@@ -82,6 +82,9 @@
                   %th
                     %span.clickable{'ng-click': 'changeSortType("start_date")'}
                       Deal Start Date
+                  %th
+                    %span.clickable{'ng-click': 'changeSortType("biz_days")'}
+                      Number Business Days
               %tbody
                 %tr{ ng: { repeat: 'deal in report_data_items | orderBy:sortType:sortReverse' } }
                   %td
@@ -103,3 +106,5 @@
                     {{ deal.budget_change }}
                   %td
                     {{ deal.start_date | date: 'MM-dd-yyyy' }}
+                  %td.center
+                    {{ deal.biz_days }}

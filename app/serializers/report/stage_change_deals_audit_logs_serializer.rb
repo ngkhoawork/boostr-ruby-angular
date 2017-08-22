@@ -1,12 +1,12 @@
 class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
   include ActionView::Helpers::NumberHelper
 
-  attributes :id, :name, :advertiser_name, :start_date, :old_value, :new_value, :date, :budget
+  attributes :id, :name, :advertiser_name, :start_date, :old_value, :new_value, :date, :budget, :biz_days
 
   private
 
   def advertiser_name
-    deal.advertiser.name
+    advertiser.name rescue nil
   end
 
   def start_date
@@ -39,5 +39,9 @@ class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
 
   def deal
     @_deal ||= Deal.with_deleted.find(object.auditable_id)
+  end
+
+  def advertiser
+    Client.with_deleted.find(deal.advertiser_id)
   end
 end

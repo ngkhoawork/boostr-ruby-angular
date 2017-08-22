@@ -32,6 +32,7 @@ class DealReportService < BaseService
           line << val[:budget]
           line << val[:budget_change]
           line << val[:start_date]
+          line << val[:biz_days]
           csv << line
         end
       end
@@ -206,7 +207,7 @@ class DealReportService < BaseService
 
   def csv_header
     [
-      'Change Type',
+      'Change Date',
       'Deal Name',
       'Advertiser Name',
       'Change Type',
@@ -214,7 +215,8 @@ class DealReportService < BaseService
       'New Value',
       'Budget',
       'Budget Change',
-      'Deal Start Date'
+      'Deal Start Date',
+      'Number Business Days'
     ]
   end
 
