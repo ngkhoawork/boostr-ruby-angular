@@ -323,7 +323,11 @@ class DisplayLineItem < ActiveRecord::Base
       ad_server_product = nil
 
       if row[12]
-        products = current_user.company.products.where("name ilike ?", row[12].strip)
+        products = current_user
+                       .company
+                       .products
+                       .joins(:ad_units)
+                       .where('products.name ilike :product_name OR ad_units.name ilike :product_name', product_name: row[12].strip)
         if products.count > 0
           product_id = products.first.id
         else
