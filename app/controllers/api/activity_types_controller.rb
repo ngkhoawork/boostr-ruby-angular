@@ -64,7 +64,7 @@ class Api::ActivityTypesController < ApplicationController
   end
 
   def activity_types
-    (params[:inactive].present? && params[:inactive].eql?(true)) ? all_activity_types : all_activity_types.active
+    params[:inactive].present? ? all_activity_types : all_activity_types.active
   end
 
   def company
