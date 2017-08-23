@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170821105315) do
+ActiveRecord::Schema.define(version: 20170811110823) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -144,8 +144,8 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.integer  "time_dimension_id"
     t.integer  "account_dimension_id"
     t.integer  "company_id"
-    t.integer  "weighted_amount"
-    t.integer  "unweighted_amount"
+    t.decimal  "weighted_amount"
+    t.decimal  "unweighted_amount"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
@@ -481,9 +481,9 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
-    t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
     t.boolean  "influencer_enabled",                default: false
+    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
   end
 
@@ -984,7 +984,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
-  add_index "deals", ["agency_id", "company_id"], name: "idx_test", using: :btree
   add_index "deals", ["agency_id"], name: "index_deals_on_agency_id", using: :btree
   add_index "deals", ["company_id"], name: "index_deals_on_company_id", using: :btree
   add_index "deals", ["created_by"], name: "index_deals_on_created_by", using: :btree
@@ -1004,7 +1003,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.integer  "api_configuration_id"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
-    t.integer  "date_range_type",        default: 0
   end
 
   add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
@@ -1478,10 +1476,10 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.string   "dimensionadvertiser_name"
     t.string   "dimensionline_item_name"
     t.string   "dimensionad_unit_name"
-    t.integer  "dimensionorder_id",                                  limit: 8
-    t.integer  "dimensionadvertiser_id",                             limit: 8
-    t.integer  "dimensionline_item_id",                              limit: 8
-    t.integer  "dimensionad_unit_id",                                limit: 8
+    t.integer  "dimensionorder_id"
+    t.integer  "dimensionadvertiser_id"
+    t.integer  "dimensionline_item_id"
+    t.integer  "dimensionad_unit_id"
     t.datetime "dimensionattributeorder_start_date_time"
     t.datetime "dimensionattributeorder_end_date_time"
     t.string   "dimensionattributeorder_agency"
@@ -1604,9 +1602,9 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
-    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
+    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
@@ -1650,7 +1648,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
 
   add_index "values", ["company_id", "field_id"], name: "index_values_on_company_id_and_field_id", using: :btree
   add_index "values", ["option_id"], name: "index_values_on_option_id", using: :btree
-  add_index "values", ["subject_type", "option_id"], name: "idx_test999", using: :btree
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
@@ -1694,7 +1691,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
-  add_foreign_key "datafeed_configuration_details", "api_configurations"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
   add_foreign_key "deal_custom_fields", "companies"
