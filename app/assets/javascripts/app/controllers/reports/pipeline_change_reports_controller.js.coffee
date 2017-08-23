@@ -56,8 +56,8 @@
         query = {}
         query.change_type = f.type if f.type
         if f.date.startDate && f.date.endDate
-          query.start_date = f.date.startDate.format('YYYY-MM-DD')
-          query.end_date = f.date.endDate.format('YYYY-MM-DD')
+          query.start_date = f.date.startDate.toDate()
+          query.end_date = f.date.endDate.toDate()
         query
 
       $scope.changeSortType = (sortType) ->

@@ -90,7 +90,7 @@
                   %td
                     {{ deal.date | date: 'MM-dd-yyyy' }}
                   %td
-                    %a{ href: '', ng: { href: '"/deals/" + deal.id)'  } }
+                    %a{ href: '', ng: { href: '/deals/{{deal.id}}'  } }
                       {{ deal.name }}
                   %td
                     {{ deal.advertiser_name }}
