@@ -843,7 +843,7 @@ class Api::DealsController < ApplicationController
       .by_budget_range(params[:budget_from], params[:budget_to])
       .by_curr_cd(params[:curr_cd])
       .by_start_date(params[:start_start_date], params[:start_end_date])
-      .by_time_period_in_deal_product_budgets(params[:time_period_id])
+      .for_time_period(time_period.try(:start_date), time_period.try(:end_date))
       .by_created_date(params[:created_start_date], params[:created_end_date])
 
     closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
