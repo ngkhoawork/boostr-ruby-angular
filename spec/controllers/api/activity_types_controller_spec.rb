@@ -4,15 +4,22 @@ describe Api::ActivityTypesController do
   before { sign_in user }
 
   describe 'GET #index' do
-    before do
-      create :activity_type, position: 13, company: company
-    end
-
     it 'return all activity types related to specific company' do
+      create :activity_type, position: 13, company: company
+
       get :index, format: :json
 
       expect(response).to be_success
       expect(response_json(response).length).to eq(13)
+    end
+
+    it 'return only active activity types related to specific company' do
+      create :activity_type, position: 13, company: company, active: false
+
+      get :index, format: :json
+
+      expect(response).to be_success
+      expect(response_json(response).length).to eq(12)
     end
   end
 
@@ -57,17 +64,17 @@ describe Api::ActivityTypesController do
   end
 
   describe 'PUT #update_positions' do
-    it '' do
+    it 'update activity types positions successfully' do
       activity_types = company.activity_types.sample(2)
       activity_types_ids = activity_types.map(&:id)
-      position_params =  Hash[activity_types_ids.map { |i| [i, i+1] }]
+      position_params =  Hash[activity_types_ids.map { |i| [i.to_s, i+1] }]
 
       put :update_positions, activity_types_position: position_params, format: :json
 
       activity_types.map(&:reload)
 
-      expect(activity_types.first.position).to eq(position_params[activity_types.first.id])
-      expect(activity_types.last.position).to eq(position_params[activity_types.last.id])
+      expect(activity_types.first.position).to eq(position_params[activity_types.first.id.to_s])
+      expect(activity_types.last.position).to eq(position_params[activity_types.last.id.to_s])
     end
   end
 
@@ -87,15 +94,13 @@ describe Api::ActivityTypesController do
 
   def valid_activity_type_params
     {
-      name: 'Test',
-      position: 13
+      name: 'Test'
     }
   end
 
   def invalid_activity_type_params
     {
-      name: '',
-      position: 13
+      name: ''
     }
   end
 end

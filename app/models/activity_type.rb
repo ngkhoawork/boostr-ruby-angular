@@ -7,4 +7,5 @@ class ActivityType < ActiveRecord::Base
 
   scope :ordered_by_position, -> { order(:position) }
   scope :by_name, -> (name) { where(name: name) }
+  scope :active, -> { where(active: true) }
 end

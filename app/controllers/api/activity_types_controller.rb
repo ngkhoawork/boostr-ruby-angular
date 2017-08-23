@@ -10,7 +10,7 @@ class Api::ActivityTypesController < ApplicationController
   end
 
   def create
-    activity_type = company.activity_types.new(activity_params)
+    activity_type = company.activity_types.new(activity_params.merge(position: position))
 
     if activity_type.save
       render json: activity_type, status: :created
@@ -43,7 +43,7 @@ class Api::ActivityTypesController < ApplicationController
     activity_types = company.activity_types.where(id: positions.keys)
 
     activity_types.each do |activity_type|
-      activity_type.update(position: positions[activity_type.id])
+      activity_type.update(position: positions[activity_type.id.to_s])
     end
 
     render json: activity_types
@@ -59,11 +59,19 @@ class Api::ActivityTypesController < ApplicationController
     @_activity_type ||= company.activity_types.find(params[:id])
   end
 
-  def activity_types
+  def all_activity_types
     company.activity_types.ordered_by_position
+  end
+
+  def activity_types
+    (params[:inactive].present? && params[:inactive].eql?(true)) ? all_activity_types : all_activity_types.active
   end
 
   def company
     @_company ||= current_user.company
+  end
+
+  def position
+    activity_types.pluck(:position).max.next
   end
 end
