@@ -136,7 +136,6 @@
             fc.quarterly_weighted_gap_to_quota = {}
             fc.quarterly_unweighted_gap_to_quota = {}
             fc.quarterly_percentage_of_annual_quota = {}
-            fc.stages = _.filter fc.stages, (stage) -> stage.active
             quotaSum = _.reduce fc.quarterly_quota, (result, val) -> result + Number val
             _.each data.quarters, (quarter) ->
                 weighted = Number fc.quarterly_revenue[quarter]
