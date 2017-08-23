@@ -330,12 +330,11 @@ class DisplayLineItem < ActiveRecord::Base
                        .where('products.name ilike :product_name OR ad_units.name ilike :product_name', product_name: row[12].strip)
         if products.count > 0
           product_id = products.first.id
-        else
           ad_server_product = row[12].strip
-          products = current_user.company.products.where(revenue_type: 'Display')
-          if products.count > 0
-            product_id = products.first.id
-          end
+        else
+          import_log.count_failed
+          import_log.log_error(["No matching product"])
+          next
         end
       else
         import_log.count_failed
