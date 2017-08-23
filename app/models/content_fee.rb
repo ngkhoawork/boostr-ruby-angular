@@ -28,7 +28,7 @@ class ContentFee < ActiveRecord::Base
   end
 
   after_create do
-    create_content_fee_product_budgets
+    create_content_fee_product_budgets if self.content_fee_product_budgets.count == 0
     io.update_total_budget
   end
 
