@@ -25,7 +25,7 @@
 			$scope.activityTypes.splice(typeIndex, 1)
 			newPositions = getPositions()
 			if _.isEqual positions, newPositions then return
-			changes = _.omit positions, (val, key) -> newPositions[key] == val
+			changes = _.omit newPositions, (val, key) -> positions[key] == val
 			updatePositions(changes)
 			positions = newPositions
 

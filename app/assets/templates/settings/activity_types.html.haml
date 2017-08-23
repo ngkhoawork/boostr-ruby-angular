@@ -13,6 +13,6 @@
 					%span.type-name {{type.name}}
 					%span.delimiter{'ng-show': 'type.action'} -
 					%span.type-action {{type.action}}
-					%div.type-buttons
+					%div.type-buttons{'ng-show': 'type.editable'}
 						%i.fa.fa-pencil.z-icon.mr8{'ng-click': 'showActivityTypeModal(type)'}
 						%i.fa.fa-trash.z-icon{'ng-click': 'deleteActivityType(type)'}
