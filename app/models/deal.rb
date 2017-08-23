@@ -155,15 +155,6 @@ class Deal < ActiveRecord::Base
       where('deals.id in (?)', ids)
     end
   end
-  scope :by_time_period_in_deal_product_budgets, -> (time_period_id) do
-    if time_period_id.present?
-      time_period = TimePeriod.find(time_period_id)
-
-      joins(:deal_product_budgets)
-      .where('deal_product_budgets.start_date >= ? AND deal_product_budgets.end_date <= ?',
-             time_period.start_date, time_period.end_date)
-    end
-  end
 
   def asana_connect
     AsanaConnectWorker.perform_in(10.minutes, self.id) if asana_integration_required?
