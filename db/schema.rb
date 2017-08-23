@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170818131320) do
+ActiveRecord::Schema.define(version: 20170821105315) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -1697,6 +1697,7 @@ ActiveRecord::Schema.define(version: 20170818131320) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
+  add_foreign_key "datafeed_configuration_details", "api_configurations"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
   add_foreign_key "deal_custom_fields", "companies"

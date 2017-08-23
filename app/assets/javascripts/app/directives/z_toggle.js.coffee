@@ -1,14 +1,14 @@
 @directives.directive 'zToggle', ->
 	restrict: 'E'
 	replace: true
-	scope:
-		toggleValue: '=ngModel'
+	require: 'ngModel',
 	template: '<div class="z-toggle toggle-active"><span></span></div>'
-	link: (scope, el) ->
-		el.toggleClass('toggle-active', scope.toggleValue)
+	link: (scope, el, attrs, ngModel) ->
+		ngModel.$render = -> el.toggleClass('toggle-active', ngModel.$viewValue)
+		scope.$evalAsync -> ngModel.$render()
+
 		el.bind 'click', ->
-			scope.toggleValue = !scope.toggleValue
-			el.toggleClass('toggle-active', scope.toggleValue)
-			scope.$apply()
+			ngModel.$setViewValue !ngModel.$viewValue
+			ngModel.$render()
 
 

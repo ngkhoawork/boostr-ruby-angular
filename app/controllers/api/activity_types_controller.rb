@@ -52,7 +52,7 @@ class Api::ActivityTypesController < ApplicationController
   private
 
   def activity_params
-    params.require(:activity_type).permit(:name, :action, :icon, :active, :position)
+    params.require(:activity_type).permit(:name, :action, :icon, :css_class, :active, :position)
   end
 
   def activity_type

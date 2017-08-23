@@ -1,0 +1,41 @@
+#activity_type_modal.popup-modal
+	%form{ ng: { submit: 'submitForm()' } }
+		.popup-modal-header
+			{{formType}} Activity Type
+			%span.close-btn{'ng-click': 'cancel()'}
+		.popup-modal-body
+			.form-group{'ng-class':'{error: errors.name}'}
+				%span.error-text {{errors.name}}
+				%label{ for: 'name' }
+					Activity name
+					%span.star *
+				%input.form-control{ placeholder: 'Name', ng: { model: 'activityType.name', required: true }, name: 'name' }
+
+			.form-group{'ng-class':'{error: errors.css_class}'}
+				%span.error-text {{errors.css_class}}
+				%label
+					Activity icon
+					%span.star *
+				.dropdown
+					%a{'data-toggle': 'dropdown', type: 'button'}
+						%i.activity-icon.fa{'ng-class': 'activityType.css_class'}
+						%span.text.mr8 Choose from list
+						-#%span.caret
+					%div.dropdown-menu
+						%div.activity-icons-list
+							%span{'ng-repeat': 'icon in iconsList track by $index', 'ng-click': 'activityType.css_class = icon'}
+								%i.activity-icon.fa{'ng-class': 'icon'}
+
+			.form-group
+				%label Activity action
+				%input.form-control{placeholder: 'Had an initial meeting with', 'ng-model': 'activityType.action'}
+
+			.form-group
+				%label
+					%span.mr8 Active
+					%z-toggle{'ng-model': 'activityType.active'}
+
+
+		.popup-modal-footer
+			%button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Cancel
+			%button.btn.btn-primary{ type: 'submit', ng: { disabled: 'buttonDisabled' } } {{ submitText }}

@@ -1,6 +1,6 @@
 @app.controller 'ContactController',
     ['$scope', '$modal', '$location', '$routeParams', '$http', '$sce', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'ContactCfName', 'ClientContact'
-    ( $scope,   $modal,   $location,  $routeParams,    $http,   $sce,   Contact,   Activity,    ActivityType,  Reminder,   ContactCfName,   ClientContact) ->
+    ( $scope,   $modal,   $location,   $routeParams,   $http,   $sce,   Contact,   Activity,   ActivityType,   Reminder,   ContactCfName,   ClientContact ) ->
 
         $scope.currentContact = null
         $scope.activities = []

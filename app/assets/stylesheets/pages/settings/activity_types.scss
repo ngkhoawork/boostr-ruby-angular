@@ -1,5 +1,8 @@
 #activity-types {
-    .activity-row {
+    .types-container {
+        list-style-type: none;
+    }
+    .type-row {
         display: flex;
         align-items: center;
         cursor: move;
@@ -26,14 +29,24 @@
             margin: 0 12px;
 
         }
-        .activity-name {
+        .type-name {
             font-weight: bold;
         }
-        .activity-action {
+        .type-action {
             color: $secondary-font-color;
         }
-        .activity-buttons {
+        .type-buttons {
             margin-left: auto;
         }
+    }
+    .dndPlaceholder {
+        height: 41px;
+        width: 100%;
+        background-color: #e1e1e1;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+    .dndDraggingSource {
+        display: none;
     }
 }

@@ -13,8 +13,9 @@
   display: inline-block;
   color: $main-color;
   font-size: 22px;
-  //width: 22px;
+  width: 22px;
   //height: 22px;
+  text-align: center;
   &[class*="bstr-"] {
     font-family: 'icomoon' !important;
     /* Better Font Rendering =========== */
