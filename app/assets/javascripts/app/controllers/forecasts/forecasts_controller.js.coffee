@@ -135,6 +135,7 @@
 			$scope.timePeriods = data.timePeriods.filter (period) ->
 				period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
 			searchAndSetTimePeriod($scope.timePeriods)
+			$scope.applyFilter()
 
 		searchAndSetTimePeriod = (timePeriods) ->
 			for period in timePeriods
@@ -216,12 +217,12 @@
 				wow_weighted_pipeline: 0
 				wow_revenue: 0
 			_.each arr, (row) ->
-				totals.quota += Number(row.quota) || 0
+				totals.quota += if row.is_leader then 0 else Number(row.quota) || 0
 				totals.revenue += Number(row.revenue) || 0
 				totals.weighted_pipeline += Number(row.weighted_pipeline) || 0
 				totals.amount += Number(row.amount) || 0
-				totals.gap_to_quota += Number(row.gap_to_quota) || 0
-				totals.new_deals_needed += Number(row.new_deals_needed) || 0
+				totals.gap_to_quota += if row.is_leader then 0 else Number(row.gap_to_quota) || 0
+				totals.new_deals_needed += if row.is_leader then 0 else Number(row.new_deals_needed) || 0
 				totals.wow_weighted_pipeline += Number(row.wow_weighted_pipeline) || 0
 				totals.wow_revenue += Number(row.wow_revenue) || 0
 			totals.percent_booked = Math.round(totals.revenue / totals.quota * 100)
