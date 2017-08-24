@@ -77,6 +77,10 @@ class Api::WeightedPipelinesController < ApplicationController
   end
 
   def weighted_pipeline
-    @weighted_pipeline ||= deals.map{ |deal| deal.as_weighted_pipeline(start_date, end_date, product) }
+    if product.present?
+      @weighted_pipeline ||= deals.select{|item| item.deal_products.find_by(product_id: product.id) != nil}.map{ |deal| deal.as_weighted_pipeline(start_date, end_date, product) }
+    else
+      @weighted_pipeline ||= deals.map{ |deal| deal.as_weighted_pipeline(start_date, end_date) }
+    end
   end
 end
