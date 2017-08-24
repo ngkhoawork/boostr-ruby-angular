@@ -366,6 +366,14 @@ class Api::RevenueController < ApplicationController
     end
   end
 
+  def product
+    @product ||= if params[:product_id].present? && params[:product_id] != ['all']
+      Product.find_by(id: params[:product_id])
+    else
+      nil
+    end
+  end
+
   def member_or_team
     @member_or_team ||= if params[:user_id].present? && params[:user_id] != 'all'
       member
@@ -393,6 +401,6 @@ class Api::RevenueController < ApplicationController
   end
 
   def crevenues
-    @crevenues ||= member_or_team.crevenues(start_date, end_date)
+    @crevenues ||= member_or_team.crevenues(start_date, end_date, product)
   end
 end

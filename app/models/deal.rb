@@ -358,7 +358,18 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  def as_weighted_pipeline(start_date, end_date)
+  def as_weighted_pipeline(start_date, end_date, product = nil)
+    total_budget = 0
+    in_period_budget = 0
+    if product.present?
+      in_period_budget = product_in_period_amt(product, start_date, end_date)
+      deal_product = deal_products.find_by(product_id: product.id)
+      total_budget = deal_product.budget if deal_product.present?
+    else
+      in_period_budget = in_period_amt(start_date, end_date)
+      total_budget = budget
+    end
+
     weighted_pipeline = {
       id: id,
       name: name,
@@ -366,8 +377,8 @@ class Deal < ActiveRecord::Base
       agency_name: (agency.nil? ? "" : agency.name),
       probability: stage.probability,
       stage_id: stage.id,
-      budget: budget,
-      in_period_amt: in_period_amt(start_date, end_date),
+      budget: total_budget,
+      in_period_amt: in_period_budget,
       wday_in_stage: wday_in_stage,
       wday_since_opened: wday_since_opened,
       start_date: self.start_date,
@@ -406,9 +417,25 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def product_in_period_amt(product, start_date, end_date)
+    total = 0
+    deal_product = deal_products.find_by(product_id: product.id)
+    if deal_product.present?
+      deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+        if deal_product_budget.deal_product.open == true
+          from = [start_date, deal_product_budget.start_date].max
+          to = [end_date, deal_product_budget.end_date].min
+          num_days = (to.to_date - from.to_date) + 1
+          total += deal_product_budget.daily_budget.to_f * num_days
+        end
+      end
+    end
+    total
+  end
+
   def in_period_open_amt(start_date, end_date)
     total = 0
-    deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+    deal_product_budgets.for_product_id(product.id).for_time_period(start_date, end_date).each do |deal_product_budget|
       if deal_product_budget.deal_product.open == true
         from = [start_date, deal_product_budget.start_date].max
         to = [end_date, deal_product_budget.end_date].min

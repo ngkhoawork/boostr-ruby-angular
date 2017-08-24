@@ -90,7 +90,7 @@ class Team < ActiveRecord::Base
     return rs
   end
 
-  def crevenues(start_date, end_date)
+  def crevenues(start_date, end_date, product = nil)
     all_users = all_members + all_leaders
 
     ios = Io.for_company(company_id).for_io_members(all_users.map(&:id)).for_time_period(start_date, end_date).distinct
@@ -104,7 +104,12 @@ class Team < ActiveRecord::Base
       end
 
       io_team_users.each do |user|
-        result = io.for_forecast_page(start_date, end_date, user)
+        result = 0
+        if product.present?
+          result = io.for_product_forecast_page(product, start_date, end_date, user)
+        else
+          result = io.for_forecast_page(start_date, end_date, user)
+        end
         sum_period_budget += result[0] if sum_period_budget == 0
         split_period_budget += result[1]
       end

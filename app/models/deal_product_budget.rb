@@ -5,6 +5,7 @@ class DealProductBudget < ActiveRecord::Base
   delegate :deal, to: :deal_product
 
   scope :for_time_period, -> (start_date, end_date) { where('deal_product_budgets.start_date <= ? AND deal_product_budgets.end_date >= ?', end_date, start_date) }
+  scope :for_product_id, -> (product_id) { where('deal_products.product_id = ?', product_id) }
 
   validates :start_date, :end_date, presence: true
 

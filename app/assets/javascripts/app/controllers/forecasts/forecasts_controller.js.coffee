@@ -56,7 +56,7 @@
 				angular.element('.subtable-arrow').hide()
 				angular.element('.subtable-wrap').removeClass('opened').height(0)
 
-				params = { time_period_id: $scope.filter.timePeriod.id, quarter: row.quarter  }
+				params = { time_period_id: $scope.filter.timePeriod.id, quarter: row.quarter, product_id: $scope.filter.product.id  }
 				if row.type == 'member'
 					params = _.extend(params, { member_id: row.id })
 				else if row.type == 'team'

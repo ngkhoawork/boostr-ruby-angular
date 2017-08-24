@@ -72,7 +72,11 @@ class Api::WeightedPipelinesController < ApplicationController
     @deals ||= member_or_team.all_deals_for_time_period(start_date, end_date).flatten.uniq
   end
 
+  def product
+    @product ||= current_user.company.products.find_by_id(params[:product_id])
+  end
+
   def weighted_pipeline
-    @weighted_pipeline ||= deals.map{ |deal| deal.as_weighted_pipeline(start_date, end_date) }
+    @weighted_pipeline ||= deals.map{ |deal| deal.as_weighted_pipeline(start_date, end_date, product) }
   end
 end

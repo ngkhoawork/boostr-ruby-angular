@@ -214,11 +214,15 @@ class User < ActiveRecord::Base
     end
   end
 
-  def crevenues(start_date, end_date)
+  def crevenues(start_date, end_date, product = nil)
     ios_for_period = self.all_ios_for_time_period(start_date, end_date)
 
     @crevenues ||= ios_for_period.each_with_object([]) do |io, memo|
-      sum_period_budget, split_period_budget = io.for_forecast_page(start_date, end_date, self)
+      if product.present?
+        sum_period_budget, split_period_budget = io.for_product_forecast_page(product, start_date, end_date, self)
+      else
+        sum_period_budget, split_period_budget = io.for_forecast_page(start_date, end_date, self)
+      end
 
       memo << {
           id: io.id,
