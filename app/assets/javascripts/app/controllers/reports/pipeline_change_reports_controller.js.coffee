@@ -73,6 +73,8 @@
 
       $scope.export = ->
         url = '/api/deal_reports.csv'
-        $window.open url + '?' + $httpParamSerializer getQuery()
+        query = getQuery()
+        query.utc_offset = moment().utcOffset()
+        $window.open url + '?' + $httpParamSerializer query
         return
   ]
