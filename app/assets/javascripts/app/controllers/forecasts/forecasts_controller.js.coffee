@@ -216,7 +216,9 @@
 				new_deals_needed: 0
 				wow_weighted_pipeline: 0
 				wow_revenue: 0
+			console.log arr
 			_.each arr, (row) ->
+				if !row then return
 				totals.quota += if row.is_leader then 0 else Number(row.quota) || 0
 				totals.revenue += Number(row.revenue) || 0
 				totals.weighted_pipeline += Number(row.weighted_pipeline) || 0
