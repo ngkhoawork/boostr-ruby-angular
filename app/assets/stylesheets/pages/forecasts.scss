@@ -165,4 +165,11 @@
             }
         }
     }
+    .totals {
+        font-weight: bold;
+        a {
+            color: inherit;
+            pointer-events: none;
+        }
+    }
 }

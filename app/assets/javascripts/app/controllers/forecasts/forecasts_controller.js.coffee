@@ -9,6 +9,7 @@
 		$scope.timePeriods = []
 		$scope.isUnweighted = false
 		$scope.years = [2016..moment().year()]
+		$scope.totals = {}
 
 		emptyFilter = $scope.emptyFilter = {id: null, name: 'All'}
 		defaultFilter =
@@ -178,6 +179,7 @@
 					$scope.dataset = [$scope.teams || [], $scope.members || []]
 					$scope.setMcSort()
 					drawChart($scope.forecast, '#forecast-chart')
+					calcTotals()
 			else
 				Forecast.query(query).$promise.then (forecast) ->
 					if forecast.length > 1 # forecast is a quarterly member array
@@ -192,6 +194,39 @@
 					$scope.dataset = [$scope.teams || [], $scope.members || []]
 					$scope.setMcSort()
 					drawChart($scope.forecast, '#forecast-chart')
+					calcTotals()
+
+
+		calcTotals = ->
+			if $scope.teams || $scope.members
+				arr = [].concat $scope.teams, $scope.members
+			else
+				arr = [$scope.forecast]
+			totals =
+				name: 'TOTAL'
+				type: 'totals'
+				quota: 0
+				revenue: 0
+				weighted_pipeline: 0
+				amount: 0
+				gap_to_quota: 0
+				percent_booked: 0
+				percent_to_quota: 0
+				new_deals_needed: 0
+				wow_weighted_pipeline: 0
+				wow_revenue: 0
+			_.each arr, (row) ->
+				totals.quota += Number(row.quota) || 0
+				totals.revenue += Number(row.revenue) || 0
+				totals.weighted_pipeline += Number(row.weighted_pipeline) || 0
+				totals.amount += Number(row.amount) || 0
+				totals.gap_to_quota += Number(row.gap_to_quota) || 0
+				totals.new_deals_needed += Number(row.new_deals_needed) || 0
+				totals.wow_weighted_pipeline += Number(row.wow_weighted_pipeline) || 0
+				totals.wow_revenue += Number(row.wow_revenue) || 0
+			totals.percent_booked = Math.round(totals.revenue / totals.quota * 100)
+			totals.percent_to_quota = Math.round(totals.amount / totals.quota * 100)
+			$scope.totals = totals
 
 		$scope.toggleUnweighted = (e) ->
 			if !$scope.isChartDrawed

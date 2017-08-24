@@ -132,6 +132,7 @@
 							%tbody.teams{ ng: { repeat: 'row in teams', include: "'partials/forecast/forecast_row.html'" } }
 							%tbody.members{ ng: { repeat: 'row in members', include: "'partials/forecast/forecast_row.html'" } }
 							%tbody.member{ ng: { hide: 'teams || members', repeat: 'row in [forecast]', include: "'partials/forecast/forecast_row.html'" } }
+							%tbody.totals{ ng: { repeat: 'row in [totals]', include: "'partials/forecast/forecast_row.html'" } }
 
 			-#.col-xs-3.pr0
 				.block

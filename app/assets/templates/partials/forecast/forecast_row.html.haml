@@ -1,6 +1,6 @@
 %tr
 	%td
-		%div{ ng: { if: 'row.type == "team" || row.type == "member"' } }
+		%div{ ng: { if: 'row.type == "team" || row.type == "member" || row.type == "totals"' } }
 			{{ row.name + (row.quarter ? ' Q' + row.quarter : '')}}
 		%div{ ng: { if: 'row.is_leader && year' } }
 			\--
