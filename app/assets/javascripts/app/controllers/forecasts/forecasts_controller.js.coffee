@@ -135,7 +135,6 @@
 			$scope.timePeriods = data.timePeriods.filter (period) ->
 				period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
 			searchAndSetTimePeriod($scope.timePeriods)
-			$scope.applyFilter()
 
 		searchAndSetTimePeriod = (timePeriods) ->
 			for period in timePeriods
