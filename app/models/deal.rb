@@ -143,7 +143,7 @@ class Deal < ActiveRecord::Base
     where(created_at: start_date..end_date) if start_date.present? && end_date.present?
   end
   scope :by_stage_ids, -> (stage_ids) { where(stage_id: stage_ids) if stage_ids.present? }
-  scope :by_options , -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
+  scope :by_options, -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
   scope :by_ids, -> (ids) { where('deals.id in (?)', ids) if ids.present? }
   scope :with_all_options, -> (option_ids) do
     if option_ids.present? && !option_ids.empty?
