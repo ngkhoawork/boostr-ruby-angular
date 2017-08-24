@@ -29,6 +29,6 @@ class Api::DealReportsController < ApplicationController
   end
 
   def date_range_params
-    params.permit(:start_date, :end_date, :change_type)
+    params.permit(:start_date, :end_date, :change_type, :utc_offset)
   end
 end

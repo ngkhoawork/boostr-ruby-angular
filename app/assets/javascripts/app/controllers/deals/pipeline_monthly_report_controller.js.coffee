@@ -29,12 +29,9 @@
         product: {id: 'all', name: 'All'}
         seller: defaultUser
         timePeriod: {id: 'all', name: 'All'}
-<<<<<<< HEAD
         stages: []
       $scope.filter = angular.copy $scope.defaultFilter
-=======
       appliedFilter = null
->>>>>>> highlighted run report button
       $scope.selectedTeam = $scope.filter.team
 
       $scope.init = ->

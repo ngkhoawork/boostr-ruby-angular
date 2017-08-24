@@ -23,7 +23,7 @@ class DealReportService < BaseService
           val = val.symbolize_keys
 
           line = []
-          line << val[:date].to_date
+          line << (val[:date] + utc_offset.to_i.minutes).to_date
           line << val[:name]
           line << val[:advertiser_name]
           line << deal_type
@@ -222,5 +222,9 @@ class DealReportService < BaseService
 
   def change_type
     @_change_type ||= params[:change_type]
+  end
+
+  def utc_offset
+    @_utc_offset ||= params[:utc_offset]
   end
 end
