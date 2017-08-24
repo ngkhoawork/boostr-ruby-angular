@@ -435,7 +435,7 @@ class Deal < ActiveRecord::Base
 
   def in_period_open_amt(start_date, end_date)
     total = 0
-    deal_product_budgets.for_product_id(product.id).for_time_period(start_date, end_date).each do |deal_product_budget|
+    deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
       if deal_product_budget.deal_product.open == true
         from = [start_date, deal_product_budget.start_date].max
         to = [end_date, deal_product_budget.end_date].min
@@ -448,7 +448,7 @@ class Deal < ActiveRecord::Base
 
   def product_in_period_open_amt(product, start_date, end_date)
     total = 0
-    deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+    deal_product_budgets.for_product_id(product.id).for_time_period(start_date, end_date).each do |deal_product_budget|
       if deal_product_budget.deal_product.open == true
         from = [start_date, deal_product_budget.start_date].max
         to = [end_date, deal_product_budget.end_date].min
