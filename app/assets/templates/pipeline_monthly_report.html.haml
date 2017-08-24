@@ -77,20 +77,19 @@
                         %li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller.id}' } }
                           %a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
                             {{ seller.first_name + ' ' + seller.last_name}}
-
-                %td
-                  %ul.filter-item
-                    %li{ dropdown: true }
-                      %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.timePeriod.name === "All"}' }
-                        {{filter.timePeriod.name || 'All'}}
-                        %span.caret
-                      %ul.dropdown-menu
-                        %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
-                          %a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-                            {{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
-        .header-cell
-          %button.add-btn{'ng-click': 'applyFilter()'}
-            Run Report
+                    %td
+                      %ul.filter-item
+                        %li{ dropdown: true }
+                          %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.timePeriod.name === "All"}' }
+                            {{filter.timePeriod.name || 'All'}}
+                            %span.caret
+                          %ul.dropdown-menu
+                            %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
+                              %a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
+                                {{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+            .header-cell
+              %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
+                Run Report
 
         .header-cell
           .pull-right

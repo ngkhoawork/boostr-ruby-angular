@@ -31,6 +31,7 @@
         timePeriod: {id: 'all', name: 'All'}
         stages: []
       $scope.filter = angular.copy $scope.defaultFilter
+      appliedFilter = null
       $scope.selectedTeam = $scope.filter.team
 
       $scope.init = ->
@@ -120,6 +121,11 @@
 
         getTotals($scope.saved_query)
         getData($scope.saved_query)
+        appliedFilter = angular.copy $scope.filter
+        getData()
+
+      $scope.isFilterApplied = ->
+        !angular.equals $scope.filter, appliedFilter
 
       query = null
 
