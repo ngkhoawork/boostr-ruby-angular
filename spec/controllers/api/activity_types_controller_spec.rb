@@ -94,7 +94,8 @@ describe Api::ActivityTypesController do
 
   def valid_activity_type_params
     {
-      name: 'Test'
+      name: 'Test',
+      action: 'For test'
     }
   end
 

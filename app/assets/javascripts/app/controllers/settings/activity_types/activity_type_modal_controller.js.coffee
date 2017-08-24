@@ -7,9 +7,10 @@
 		$scope.iconsList = iconsList
 
 		$scope.activityType = activityType ||
-			name: ''
-			css_class: iconsList[0]
-			active: true
+      name: ''
+      css_class: iconsList[0]
+      active: true
+      action: ''
 
 		$scope.cancel = ->
 			$modalInstance.close()
@@ -19,10 +20,12 @@
 
 			_.each $scope.activityType, (val, key) ->
 				switch key
-					when 'name'
-						if !val then $scope.errors[key] = 'Name is required'
-					when 'css_class'
-						if !val then $scope.errors[key] = 'Icon is required'
+          when 'name'
+            if !val then $scope.errors[key] = 'Name is required'
+          when 'css_class'
+            if !val then $scope.errors[key] = 'Icon is required'
+          when 'action'
+            if !val then $scope.errors[key] = 'Action is required'
 
 			if _.keys($scope.errors).length then return
 

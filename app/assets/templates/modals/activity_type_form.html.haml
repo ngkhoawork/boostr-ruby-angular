@@ -26,9 +26,12 @@
 							%span{'ng-repeat': 'icon in iconsList track by $index', 'ng-click': 'activityType.css_class = icon'}
 								%i.activity-icon.fa{'ng-class': 'icon'}
 
-			.form-group
-				%label Activity action
-				%input.form-control{placeholder: 'Had an initial meeting with', 'ng-model': 'activityType.action'}
+			.form-group{'ng-class':'{error: errors.action}'}
+				%span.error-text {{errors.action}}
+				%label{ for: 'action' }
+					Activity action
+					%span.star *
+				%input.form-control{ placeholder: 'Had an initial meeting with', ng: { model: 'activityType.action', required: true }, name: 'action' }
 
 			.form-group
 				%label
