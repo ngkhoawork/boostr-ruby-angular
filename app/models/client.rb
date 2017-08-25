@@ -223,7 +223,8 @@ class Client < ActiveRecord::Base
                 methods: [
                   :presigned_url
                 ]
-              }
+              },
+              activity_type: { only: [:id, :name, :css_class, :action] }
             }
           },
           agency_activities: {
@@ -234,7 +235,8 @@ class Client < ActiveRecord::Base
                 methods: [
                   :presigned_url
                 ]
-              }
+              },
+              activity_type: { only: [:id, :name, :css_class, :action] }
             }
           }},
         methods: [:deals_count, :fields, :formatted_name]
