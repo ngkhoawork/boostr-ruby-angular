@@ -347,12 +347,6 @@
                     Activity.delete activity, ->
                         $scope.$emit('updated_activities')
 
-            $scope.getType = (type) ->
-                _.findWhere($scope.types, name: type)
-
-            $scope.getIconName = (typeName) ->
-                typeName && typeName.split(' ').join('-').toLowerCase()
-
             $scope.remindersInit = ->
                 $scope.remindersOptions = {
                     errors: {},

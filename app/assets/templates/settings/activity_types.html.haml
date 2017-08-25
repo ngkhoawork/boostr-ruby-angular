@@ -9,7 +9,7 @@
 				.block.type-row{ng: {repeat: 'type in activityTypes'},
 								dnd: {draggable: 'type', moved: 'onTypeMoved($index)'}}
 					%z-toggle{'ng-model': 'type.active', 'ng-change': 'updateActivityType(type)'}
-					%i.activity-icon.mr8.fa{class: '{{type.css_class}}'}
+					%i.activity-icon.mr8.fa{'ng-class': 'type.css_class'}
 					%span.type-name {{type.name}}
 					%span.delimiter{'ng-show': 'type.action'} -
 					%span.type-action {{type.action}}

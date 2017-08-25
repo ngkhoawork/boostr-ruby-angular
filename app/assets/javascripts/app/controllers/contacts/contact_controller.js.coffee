@@ -30,14 +30,6 @@
         ActivityType.all().then (activityTypes) ->
             $scope.types = activityTypes
 
-        # Activity icon
-        $scope.getIconName = (typeName) ->
-            typeName && typeName.split(' ').join('-').toLowerCase()
-
-        # Activity type
-        $scope.getType = (type) ->
-            _.findWhere($scope.types, name: type)
-
         # Activity comment
         $scope.getHtml = (html) ->
             $sce.trustAsHtml(html)

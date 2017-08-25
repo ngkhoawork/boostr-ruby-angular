@@ -48,6 +48,7 @@
                         {{selectedType.action | firstUppercase}}
                         %span.star *
                     -#%input.form-control{'placeholder': 'Choose Contact or add new', 'ng-model': 'form.contact'}
+                    .clearfix
                     %ui-select{multiple: true, name: 'contacts', 'ng-model': 'form.contacts', disabled: true}
                         %ui-select-match{placeholder: 'Choose Contact'}
                             {{$item.name}}

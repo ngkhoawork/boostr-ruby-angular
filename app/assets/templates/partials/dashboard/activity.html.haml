@@ -9,15 +9,15 @@
 		No activity
 	%div.activity-item{'ng-repeat': 'activity in activities | orderBy: activitiesOrder || "happened_at" : activitySwitch == "past"'}
 		%div.activity-header
-			%i.activity-icon.mr8.fa{'class': '{{getType(activity.activity_type_name).css_class}}'}
+			%i.activity-icon.mr8.fa{'class': '{{activity.activity_type.css_class}}'}
 			%span
-				%b {{activity.activity_type_name}}
+				%b {{activity.activity_type.name}}
 			%span {{activity.happened_at | date: 'mediumDate'}}
 
 		%div.activity-body
 			%p
 				%strong {{activity.creator.first_name}} {{activity.creator.last_name}}
-				{{getType(activity.activity_type_name).action}}
+				{{activity.activity_type.action}}
 				%span{'ng-repeat': 'contact in activity.contacts'}
 					%a{href: '', 'ng-href': '/contacts/{{contact.id}}'}> {{contact.name}}
 					{{$last ? '' : ', '}}
@@ -28,8 +28,8 @@
 				Deal
 				%a{href: '', 'ng-href': '/deals/{{activity.deal.id}}'}
 					{{activity.deal.name}}
-			%p{'ng-if': 'activity.activity_type_name != "Email"','ng-bind-html': 'getHtml(activity.comment)'}
-			%div{'ng-if': 'activity.activity_type_name == "Email"'}
+			%p{'ng-if': 'activity.activity_type.name != "Email"','ng-bind-html': 'getHtml(activity.comment)'}
+			%div{'ng-if': 'activity.activity_type.name == "Email"'}
 				%p{'ng-if': 'activity.comment.length <= 250','ng-bind-html': 'getHtml(activity.comment)'}
 				%button.btn.activity-email-btn{'ng-if': 'activity.comment.length > 250', 'ng-click': 'showEmailsModal(activity)'}
 					Show email

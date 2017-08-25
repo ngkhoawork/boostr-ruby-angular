@@ -53,9 +53,6 @@
     .then (respond) ->
       $scope.dealFiles = respond.data
 
-  $scope.getIconName = (typeName) ->
-    typeName && typeName.split(' ').join('-').toLowerCase()
-
   $scope.uploadFile =
     name: null
     size: null
@@ -948,8 +945,6 @@
     if confirm('Are you sure you want to delete the activity?')
       Activity.delete activity, ->
         $scope.$emit('updated_activities')
-  $scope.getType = (type) ->
-    _.findWhere($scope.types, name: type)
 
   $scope.baseFieldRequired = (factor) ->
     if $scope.currentDeal && $scope.base_fields_validations
