@@ -10,6 +10,7 @@ class Operative::ImportSalesOrderLineItemsService
     @sales_order_csv_file = open_file(sales_order_line_items)
     @invoice_csv_file = open_file(invoice_line_items)
     if @sales_order_csv_file && @invoice_csv_file
+      self.class.define_calculator_method(@revenue_calculation_pattern)
       parse_invoices
       parse_line_items
     end
@@ -155,14 +156,20 @@ class Operative::ImportSalesOrderLineItemsService
     }
   end
 
-  def recognized_revenue_calculator(lines, net_unit_cost)
-    case DatafeedConfigurationDetails.get_pattern_name(revenue_calculation_pattern)
+  def self.define_calculator_method(pattern)
+    case DatafeedConfigurationDetails.get_pattern_name(pattern)
     when 'Invoice Units'
-      lines.map {|row| row[:invoice_units].to_f}.reduce(0, :+) / 1000 * net_unit_cost.to_f
+      define_method(:recognized_revenue_calculator) do |lines, net_unit_cost|
+        lines.map { |row| row[:invoice_units].to_f      }.reduce(0, :+) / 1000 * net_unit_cost.to_f
+      end
     when 'Recognized Revenue'
-      lines.map {|row| row[:recognized_revenue].to_f}.reduce(0, :+)
+      define_method(:recognized_revenue_calculator) do |lines, net_unit_cost|
+        lines.map { |row| row[:recognized_revenue].to_f }.reduce(0, :+)
+      end
     when 'Invoice Amount'
-      lines.map {|row| row[:invoice_amount].to_f}.reduce(0, :+)
+      define_method(:recognized_revenue_calculator) do |lines, net_unit_cost|
+        lines.map { |row| row[:invoice_amount].to_f     }.reduce(0, :+)
+      end
     end
   end
 end
