@@ -34,6 +34,7 @@
                 status: $scope.statuses[1]
 
             $scope.filter = angular.copy defaultFilter
+            appliedFilter = null
 
             $scope.setFilter = (key, val) ->
                 if key == 'stages'
@@ -47,8 +48,11 @@
             $scope.applyFilter = ->
                 query = getQuery()
 #                $location.search(query)
+                appliedFilter = angular.copy $scope.filter
                 getReport query
 
+            $scope.isFilterApplied = ->
+                !angular.equals $scope.filter, appliedFilter
 
             $scope.resetFilter = ->
                 $scope.filter = angular.copy defaultFilter

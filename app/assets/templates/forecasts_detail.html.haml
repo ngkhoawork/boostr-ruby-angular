@@ -37,7 +37,7 @@
 													{{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
 
 				.header-cell
-					%button.add-btn.mr20{'ng-click': 'applyFilter()'}
+					%button.add-btn.mr20{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
 						Run Report
 
 				.header-cell
