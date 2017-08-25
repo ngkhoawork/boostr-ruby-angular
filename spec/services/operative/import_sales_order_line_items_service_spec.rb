@@ -1,12 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
-  subject(:subject) {
-    Operative::ImportSalesOrderLineItemsService.new(
-      company.id,
-      { sales_order_line_items: line_item_file, invoice_line_item: invoice_file }
-    )
-  }
   let(:company) { Company.first }
   let(:line_item_file) { './spec/sales_order_line_item_file.csv' }
   let(:invoice_file) { './spec/invoice_line_item_file.csv' }
@@ -125,6 +119,95 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     subject.perform
   end
 
+  context 'revenue_calculation_patterns' do
+    context 'Invoice Units pattern' do
+      it 'sums invoice_line_item.invoice_units and multiplies by net_unit_cost' do
+        content_for_files([
+          line_item_csv_file,
+          multiline_invoice_csv_file
+        ])
+
+        expect(DisplayLineItemCsv).to receive(:new).with(
+          external_io_number: '1',
+          line_number: '2',
+          ad_server: 'O1',
+          start_date: '2017-01-01',
+          end_date: '2017-02-01',
+          product_name: 'Display',
+          quantity: '1000',
+          price: '100',
+          pricing_type: 'PPC',
+          budget: '100000',
+          budget_delivered: 30000.00,
+          quantity_delivered: 4568899,
+          quantity_delivered_3p: 30,
+          company_id: company.id
+        ).and_return(line_item_csv)
+        expect(line_item_csv).to receive(:valid?).and_return(:true)
+        expect(line_item_csv).to receive(:perform)
+        subject.perform
+      end
+    end
+
+    context 'Recognized Revenue pattern' do
+      it 'sums invoice_line_item.recognized_revenue' do
+        content_for_files([
+          line_item_csv_file,
+          multiline_invoice_csv_file
+        ])
+
+        expect(DisplayLineItemCsv).to receive(:new).with(
+          external_io_number: '1',
+          line_number: '2',
+          ad_server: 'O1',
+          start_date: '2017-01-01',
+          end_date: '2017-02-01',
+          product_name: 'Display',
+          quantity: '1000',
+          price: '100',
+          pricing_type: 'PPC',
+          budget: '100000',
+          budget_delivered: 96109.00,
+          quantity_delivered: 4568899,
+          quantity_delivered_3p: 30,
+          company_id: company.id
+        ).and_return(line_item_csv)
+        expect(line_item_csv).to receive(:valid?).and_return(:true)
+        expect(line_item_csv).to receive(:perform)
+        subject(DatafeedConfigurationDetails.get_pattern_id('Recognized Revenue')).perform
+      end
+    end
+
+    context 'Invoice Amount pattern' do
+      it 'sums invoice_line_item.invoice_amount' do
+        content_for_files([
+          line_item_csv_file,
+          multiline_invoice_csv_file
+        ])
+
+        expect(DisplayLineItemCsv).to receive(:new).with(
+          external_io_number: '1',
+          line_number: '2',
+          ad_server: 'O1',
+          start_date: '2017-01-01',
+          end_date: '2017-02-01',
+          product_name: 'Display',
+          quantity: '1000',
+          price: '100',
+          pricing_type: 'PPC',
+          budget: '100000',
+          budget_delivered: 9999.00,
+          quantity_delivered: 4568899,
+          quantity_delivered_3p: 30,
+          company_id: company.id
+        ).and_return(line_item_csv)
+        expect(line_item_csv).to receive(:valid?).and_return(:true)
+        expect(line_item_csv).to receive(:perform)
+        subject(DatafeedConfigurationDetails.get_pattern_id('Invoice Amount')).perform
+      end
+    end
+  end
+
   context 'logging the results' do
     it 'creates an import log item' do
       content_for_files([
@@ -232,11 +315,11 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
   end
 
   def multiline_invoice_csv_file
-    keys = [:sales_order_line_item_id, :invoice_units, :cumulative_primary_performance, :cumulative_third_party_performance]
+    keys = [:sales_order_line_item_id, :invoice_units, :cumulative_primary_performance, :cumulative_third_party_performance, :recognized_revenue, :invoice_amount]
     values = [
-      [ '2', '150000', '916306', '10' ],
-      [ '2', '100000', '4568899', '20' ],
-      [ '2', '50000', '4568899', '30']
+      ['2', '150000', '916306', '10', '71199', '1231'],
+      ['2', '100000', '4568899', '20', '11999', '3213'],
+      ['2', '50000', '4568899', '30', '12911', '5555']
     ]
     @_invoice_csv_file ||= generate_multiline_csv(keys, values)
   end
@@ -248,5 +331,17 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       cumulative_primary_performance: '50',
       cumulative_third_party_performance: '60'
     })
+  end
+
+  def default_pattern
+    DatafeedConfigurationDetails.get_pattern_id('Invoice Units')
+  end
+
+  def subject(revenue_calculation_pattern = default_pattern)
+    @_subject ||= Operative::ImportSalesOrderLineItemsService.new(
+      company.id,
+      revenue_calculation_pattern,
+      { sales_order_line_items: line_item_file, invoice_line_item: invoice_file }
+    )
   end
 end

@@ -9,4 +9,12 @@ class DatafeedConfigurationDetails < ActiveRecord::Base
     { id: 1, name: 'Recognized Revenue' },
     { id: 2, name: 'Invoice Amount' }
   ]
+
+  def self.get_pattern_id(name)
+    self::REVENUE_CALCULATION_PATTERNS.find{|el| el[:name] == name}[:id]
+  end
+
+  def self.get_pattern_name(id)
+    self::REVENUE_CALCULATION_PATTERNS.find{|el| el[:id] == id}[:name]
+  end
 end

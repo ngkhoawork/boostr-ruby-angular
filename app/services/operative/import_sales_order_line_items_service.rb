@@ -1,6 +1,7 @@
 class Operative::ImportSalesOrderLineItemsService
-  def initialize(company_id, files)
+  def initialize(company_id, revenue_calculation_pattern, files)
     @company_id = company_id
+    @revenue_calculation_pattern = revenue_calculation_pattern
     @sales_order_line_items = files.fetch(:sales_order_line_items)
     @invoice_line_items = files.fetch(:invoice_line_item)
   end
@@ -15,7 +16,8 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   private
-  attr_reader :company_id, :sales_order_line_items, :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file
+  attr_reader :company_id, :revenue_calculation_pattern, :sales_order_line_items,
+              :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file
 
   def open_file(file)
     begin
@@ -51,7 +53,9 @@ class Operative::ImportSalesOrderLineItemsService
       @parsed_invoices[row[:sales_order_line_item_id]] << {
         invoice_units: row[:invoice_units],
         cumulative_primary_performance: row[:cumulative_primary_performance],
-        cumulative_third_party_performance: row[:cumulative_third_party_performance]
+        cumulative_third_party_performance: row[:cumulative_third_party_performance],
+        recognized_revenue: row[:recognized_revenue],
+        invoice_amount: row[:invoice_amount]
       }
     end
 
@@ -141,7 +145,7 @@ class Operative::ImportSalesOrderLineItemsService
       }
     end
 
-    recognized_revenue = lines.map {|row| row[:invoice_units].to_f}.reduce(0, :+) / 1000 * net_unit_cost.to_f
+    recognized_revenue = recognized_revenue_calculator(lines, net_unit_cost)
 
     {
       sales_order_line_item_id:           id,
@@ -149,5 +153,16 @@ class Operative::ImportSalesOrderLineItemsService
       cumulative_primary_performance:     lines[-1][:cumulative_primary_performance].to_i,
       cumulative_third_party_performance: lines[-1][:cumulative_third_party_performance].to_i
     }
+  end
+
+  def recognized_revenue_calculator(lines, net_unit_cost)
+    case DatafeedConfigurationDetails.get_pattern_name(revenue_calculation_pattern)
+    when 'Invoice Units'
+      lines.map {|row| row[:invoice_units].to_f}.reduce(0, :+) / 1000 * net_unit_cost.to_f
+    when 'Recognized Revenue'
+      lines.map {|row| row[:recognized_revenue].to_f}.reduce(0, :+)
+    when 'Invoice Amount'
+      lines.map {|row| row[:invoice_amount].to_f}.reduce(0, :+)
+    end
   end
 end
