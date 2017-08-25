@@ -12,6 +12,9 @@
 
       $scope.api_configuration = api_configuration
 
+      ApiConfiguration.metadata(integration_provider: 'Operative Datafeed').then (data) ->
+        $scope.revenue_calculation_patterns = data.revenue_calculation_patterns
+
       $scope.submitForm = () ->
         unless $scope.need_change_password
           delete $scope.api_configuration['password']
