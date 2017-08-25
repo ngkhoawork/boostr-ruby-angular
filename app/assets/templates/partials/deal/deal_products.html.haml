@@ -60,14 +60,14 @@
 							%div.error-tooltip{'ng-show': 'deal_product.isIncorrectTotalBudgetPercent'}
 								Total budget percentage should be equal 100%
 							%span.budget-percent{ 'ng-class': "{'has-error':deal_product.isIncorrectTotalBudgetPercent}"}
-								{{deal_product.total_budget_percent + '%'}}
+								{{deal_product.total_budget_percent || 0}}%
 					%td.product-budget{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
 						%div{'ng-if': '!deal_product_budget.editMode'}
 							%span.editable.budget-value{ 'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "moneyOnFocus", "saveCopyProduct")' }
 								{{ deal_product_budget.budget_loc | currency: currency_symbol : 0 }}
 							%div
 								%span.editable.budget-percent{'ng-click': 'initProductEditMode(deal_product, deal_product_budget, "percentOnFocus", "saveCopyProduct")'}
-									{{ deal_product_budget.budget_percent+ '%'}}
+									{{ deal_product_budget.budget_percent || 0}}%
 						%div.editable-wrap{'ng-if': 'deal_product_budget.editMode'}
 							%div.budget-value
 								%span.symbol.currency {{currency_symbol}}
@@ -141,12 +141,12 @@
 						%div
 							%span.budget-value.total-budget {{deal_product.budget_loc | currency: currency_symbol : 0}}
 							%div.budget-percent
-								{{deal_product.total_budget_percent + '%'}}
+								{{deal_product.total_budget_percent || 0}}%
 					%td.text-center.month-budget{ ng: { repeat: 'deal_product_budget in deal_product.deal_product_budgets' } }
 						%span.budget-value
 							{{ deal_product_budget.budget_loc | currency: currency_symbol : 0 }}
 						%div.budget-percent
-							{{ deal_product_budget.budget_percent+ '%'}}
+							{{ deal_product_budget.budget_percent || 0}}%
 				%tr.sum-budgets-row
 					%td{colspan: '{{activeDealProductCfLength}}', 'ng-show': 'activeDealProductCfLength'}
 					%td.right
