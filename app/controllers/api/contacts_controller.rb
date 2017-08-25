@@ -2,19 +2,7 @@ class Api::ContactsController < ApplicationController
   respond_to :json
 
   def index
-    results = if params[:unassigned].eql?('yes')
-      unassigned_contacts
-    elsif params[:name].present?
-      suggest_contacts
-    elsif params[:contact_name].present?
-      suggest_contacts(true)
-    elsif params[:activity].present?
-      activity_contacts
-    else
-      contacts
-    end
-
-    results = apply_search_criteria(results)
+    results = contacts_search_service.perform
 
     respond_to do |format|
       format.json {
@@ -246,29 +234,6 @@ class Api::ContactsController < ApplicationController
     @contact ||= current_user.company.contacts.find(params[:id])
   end
 
-  def contacts
-    if params[:filter] == 'my_contacts'
-      Contact.by_client_ids(current_user.clients.ids)
-    elsif params[:filter] == 'team'
-      if team.present?
-        Contact.by_client_ids(team.clients.ids)
-      else
-        current_user.company.contacts.order(:name)
-      end
-    else
-      current_user.company.contacts.order(:name)
-    end
-  end
-
-  def apply_search_criteria(rel)
-    rel
-      .by_primary_client_name(primary_client_criteria)
-      .by_city(city_criteria)
-      .by_job_level(job_level_criteria)
-      .by_country(country_criteria)
-      .by_last_touch(params[:start_date], params[:end_date])
-  end
-
   def limit
     params[:per].present? ? params[:per].to_i : 20
   end
@@ -277,53 +242,15 @@ class Api::ContactsController < ApplicationController
     params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 
-  def team
-    if current_user.leader?
-      current_user.company.teams.where(leader: current_user).first!
-    else
-      current_user.team
-    end
-  end
-
-  def unassigned_contacts
-    current_user.company.contacts.unassigned(current_user.id).limit(limit)
-  end
-
-  def suggest_contacts(contacts_only = false)
-    return @search_contacts if defined?(@search_contacts)
-
-    if contacts_only
-      @search_contacts = current_user.company.contacts.where('contacts.name ilike ?', "%#{params[:contact_name]}%").limit(limit).offset(offset)
-    else
-      @search_contacts = current_user.company.contacts.joins("LEFT JOIN clients ON clients.id = contacts.client_id").where('contacts.name ilike ? OR clients.name ilike ?', "%#{params[:name]}%", "%#{params[:name]}%").limit(limit).offset(offset)
-    end
-  end
-
-  def activity_contacts
-    @_activity_contacts ||= current_user.company.contacts.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
-  end
-
-  def primary_client_criteria
-    params[:workplace]
-  end
-
-  def city_criteria
-    params[:city]
-  end
-
-  def job_level_criteria
-    params[:job_level]
-  end
-
-  def country_criteria
-    params[:country]
-  end
-
   def company_job_level_options
     current_user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level').options.select(:id, :field_id, :name)
   end
 
   def advertiser_type_id
     Client.advertiser_type_id(current_user.company)
+  end
+
+  def contacts_search_service
+    @_contacts_search_service ||= ContactsSearchService.new(current_user: current_user, params: params)
   end
 end

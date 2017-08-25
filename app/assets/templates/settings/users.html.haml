@@ -1,74 +1,90 @@
 #users.z-styles
-  .container-fluid.mb20
-    .row
-      .col-xs-10.col-centered
-        %span.page-title
-          Users
-        %add-button.plus-btn{ ng: { click: 'showModal()'} }
-          Add User
+  .users-inner
+    .container-fluid
+      .row.mb20.users-header
+        .header-item
+          .main-title Users
+        .header-item
+          %add-button.plus-btn{ ng: { click: 'showModal()'} }
+            Add User
+        .header-item.users-search
+          %i.fa.fa-search
+          %input.form-control{placeholder: 'Search', ng: {model: 'searchText'} }
+        .header-item
 
-  .container-fluid
-    .row
-      .col-xs-10.col-centered.block
-        #users-table.table-wrapper
-          %table.table.table-hover.table-striped
-            %thead
-              %tr
-                %th.left Name
-                %th.left Email
-                %th.left Title
-                %th.left Team
-                %th.left Default Currency
-                %th.left Type
-                %th.left Status
-                %th.left Is Admin
-                %th.left Revenue Requests
-                %th.left Action
-                %th.left Employee Id
-                %th.left Office
-            %tbody
-              %tr{ ng: { repeat: 'user in users' } }
-                %td.left{ ng: { click: 'editModal(user)' } }
-                  {{ user.first_name }} {{ user.last_name }}
-                %td.left{ ng: { click: 'editModal(user)' } }
-                  {{ user.email }}
-                %td.left{ ng: { click: 'editModal(user)' } }
-                  {{ user.title }}
-                %td.left{ ng: { click: 'editModal(user)' } }
-                  {{ user.teams.length > 0 ? 'Leader - ' + user.teams[0].name : user.team.name}}
-                %td.left
-                  %ui-select{ name: 'default-currency', ng: { model: 'user.default_currency' }, 'on-select': 'submitUser(user)' }
-                    %ui-select-match
-                      {{ $select.selected.curr_cd }}
-                    %ui-select-choices{ repeat: 'currency.curr_cd as currency in currencies' }
-                      %div{ ng: { bind: { html: 'currency.curr_cd + " " + currency.curr_symbol' } } }
-                %td.left
-                  %ui-select{ name: 'user-types', ng: { model: 'user.user_type' }, 'on-select': 'submitUser(user)' }
-                    %ui-select-match{ placeholder: 'Default' }
-                      {{ $select.selected.name }}
-                    %ui-select-choices{ repeat: 'type.id as type in user_types' }
-                      %div{ ng: { bind: { html: 'type.name' } } }
-                %td.left
-                  %ui-select{ name: 'is-active', ng: { model: 'user.is_active', disabled: 'user.id === current_user.id' }, 'on-select': 'submitUser(user)' }
-                    %ui-select-match
-                      {{ $select.selected.name }}
-                    %ui-select-choices{ repeat: 'status.value as status in user_statuses' }
-                      %div{ ng: { bind: { html: 'status.name' } } }
-                %td.left
-                  .show-hide-remainder-form
-                    .switch-remainder-form
-                      %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.is_admin', 'ng-change': "submitUser(user)", id: "rem-act-modal-toggle{{user.id}}"}
-                      %label{:for => "rem-act-modal-toggle{{user.id}}"}
-                        %span
-                %td.left
-                  .show-hide-remainder-form
-                    .switch-remainder-form
-                      %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.revenue_requests_access', 'ng-change': "submitUser(user)", id: "revenue_requests_access{{user.id}}"}
-                      %label{:for => "revenue_requests_access{{user.id}}"}
-                        %span
-                %td.left
-                  %a{href: '/switch_user?scope_identifier=user_{{user.id}}', target: '_blank'} Login As
-                %td.left{ ng: { click: 'editModal(user)' } }
-                  {{ user.employee_id }}
-                %td.left{ ng: { click: 'editModal(user)' } }
-                  {{ user.office }}
+      .row
+        .block
+          #users-table.table-wrapper
+            %table.table.table-hover.table-striped
+              %thead
+                %tr.z-sortable-prime
+                  %th.left
+                    .z-sortable{by: 'name', default: true} Name
+                  %th.left
+                    .z-sortable{by: 'email'} Email
+                  %th.left
+                    .z-sortable{by: 'title'} Title
+                  %th.left
+                    .z-sortable{by: '["team.name", "teams[0].name"]'} Team
+                  %th.left
+                    .z-sortable{by: 'default_currency'} Default Currency
+                  %th.left
+                    .z-sortable{by: 'user_type'} Type
+                  %th.left
+                    .z-sortable{by: 'is_active'} Status
+                  %th.left
+                    .z-sortable{by: 'is_admin'} Is Admin
+                  %th.left
+                    .z-sortable{by: 'revenue_requests_access'} Revenue Requests
+                  %th.left
+                    Action
+                  %th.left
+                    .z-sortable{by: 'employee_id'} Employee Id
+                  %th.left
+                    .z-sortable{by: 'office'} Office
+              %tbody
+                %tr{ ng: { repeat: 'user in users | orderBy : zSort.by : zSort.rev | filter : {name: searchText}' } }
+                  %td.left{ ng: { click: 'editModal(user)' } }
+                    {{ user.name }}
+                  %td.left{ ng: { click: 'editModal(user)' } }
+                    {{ user.email }}
+                  %td.left{ ng: { click: 'editModal(user)' } }
+                    {{ user.title }}
+                  %td.left{ ng: { click: 'editModal(user)' } }
+                    {{ user.teams.length > 0 ? 'Leader - ' + user.teams[0].name : user.team.name}}
+                  %td.left
+                    %ui-select{ name: 'default-currency', ng: { model: 'user.default_currency' }, 'on-select': 'submitUser(user)' }
+                      %ui-select-match
+                        {{ $select.selected.curr_cd }}
+                      %ui-select-choices{ repeat: 'currency.curr_cd as currency in currencies' }
+                        %div{ ng: { bind: { html: 'currency.curr_cd + " " + currency.curr_symbol' } } }
+                  %td.left
+                    %ui-select{ name: 'user-types', ng: { model: 'user.user_type' }, 'on-select': 'submitUser(user)' }
+                      %ui-select-match{ placeholder: 'Default' }
+                        {{ $select.selected.name }}
+                      %ui-select-choices{ repeat: 'type.id as type in user_types' }
+                        %div{ ng: { bind: { html: 'type.name' } } }
+                  %td.left
+                    %ui-select{ name: 'is-active', ng: { model: 'user.is_active', disabled: 'user.id === current_user.id' }, 'on-select': 'submitUser(user)' }
+                      %ui-select-match
+                        {{ $select.selected.name }}
+                      %ui-select-choices{ repeat: 'status.value as status in user_statuses' }
+                        %div{ ng: { bind: { html: 'status.name' } } }
+                  %td.left
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.is_admin', 'ng-change': "submitUser(user)", id: "rem-act-modal-toggle{{user.id}}"}
+                        %label{:for => "rem-act-modal-toggle{{user.id}}"}
+                          %span
+                  %td.left
+                    .show-hide-remainder-form
+                      .switch-remainder-form
+                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'user.revenue_requests_access', 'ng-change': "submitUser(user)", id: "revenue_requests_access{{user.id}}"}
+                        %label{:for => "revenue_requests_access{{user.id}}"}
+                          %span
+                  %td.left
+                    %a{href: '/switch_user?scope_identifier=user_{{user.id}}', target: '_blank'} Login As
+                  %td.left{ ng: { click: 'editModal(user)' } }
+                    {{ user.employee_id }}
+                  %td.left{ ng: { click: 'editModal(user)' } }
+                    {{ user.office }}

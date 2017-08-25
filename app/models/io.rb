@@ -243,7 +243,7 @@ class Io < ActiveRecord::Base
         },
         print_items: {}
       },
-      methods: [:readable_months]
+      methods: [:readable_months, :months, :days_per_month, :days]
     )
   end
 

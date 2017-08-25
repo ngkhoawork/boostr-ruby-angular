@@ -77,20 +77,19 @@
                         %li{ ng: { repeat: 'seller in sellers', class: '{active: seller.id === filter.seller.id}' } }
                           %a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
                             {{ seller.first_name + ' ' + seller.last_name}}
-
-                %td
-                  %ul.filter-item
-                    %li{ dropdown: true }
-                      %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.timePeriod.name === "All"}' }
-                        {{filter.timePeriod.name || 'All'}}
-                        %span.caret
-                      %ul.dropdown-menu
-                        %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
-                          %a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-                            {{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
-        .header-cell
-          %button.add-btn{'ng-click': 'applyFilter()'}
-            Run Report
+                    %td
+                      %ul.filter-item
+                        %li{ dropdown: true }
+                          %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.timePeriod.name === "All"}' }
+                            {{filter.timePeriod.name || 'All'}}
+                            %span.caret
+                          %ul.dropdown-menu
+                            %li{ ng: { repeat: 'timePeriod in timePeriods', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
+                              %a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
+                                {{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
+            .header-cell
+              %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
+                Run Report
 
         .header-cell
           .pull-right
@@ -124,7 +123,7 @@
           .table-wrapper
             %table.table.table-hover
               %thead
-                %tr
+                %tr{'z-fixed-header': true, watch: '"deals"'}
                   %th
                     %span.clickable{'ng-click': 'changeSortType("users[0].first_name")'}
                       Team Member
@@ -151,6 +150,9 @@
                   %th
                     %span.clickable{'ng-click': 'changeSortType("next_steps")'}
                       Next Steps
+                  %th
+                    %span.clickable{'ng-click': 'changeSortType("next_steps_due")'}
+                      Next Steps Due
                   %th
                     %span.clickable{'ng-click': 'changeSortType("latest_activity")'}
                       Latest Activity
@@ -190,6 +192,7 @@
                   %td {{ deal.stage.probability }}%
                   %td {{ deal.budget | currency:'$':0}}
                   %td {{ deal.next_steps.substr(0, 30) }}
+                  %td {{ deal.next_steps_due | date: 'MM-dd-yyyy' }}
                   %td{ ng: { if: 'deal.latest_activity && deal.latest_activity.activity_type_name == "Email"' } }
                     %button.btn.activity-email-btn{'ng-click': 'showEmailsModal(deal.latest_activity)'}
                       Show email

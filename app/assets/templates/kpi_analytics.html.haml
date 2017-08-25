@@ -5,7 +5,7 @@
         %h3.title KPI`s Dashboard
 
     .row.legend.well.kpi-block
-      .col-xs-10
+      .col-xs-8
         %table.filter-block
           %tr.filter-title
             %td Team
@@ -13,7 +13,14 @@
             %td Product
             %td Type
             %td Source
-            %td Time period
+            %td
+              %form
+                %label
+                  %input{ name: "date_criteria", type: "radio", value: "closed_date", ng: { model: 'date_criteria_filter', click: 'filterByDateCriteria("closed_date")' } }/
+                  %span Closed Date
+                %label
+                  %input{ name: "date_criteria", type: "radio", value: "created_date", ng: { model: 'date_criteria_filter', click: 'filterByDateCriteria("created_date")' } }/
+                  %span Created Date
             %td
               %span.reset-filter{'ng-click': 'resetFilters()'}
                 Reset
@@ -69,6 +76,10 @@
                   Time period
                 %span.caret
 
+      .col-xs-2.pad
+        .pull-right
+          %button.add-btn{'ng-click': 'applyFilter()'}
+            Run Report
       .col-xs-2.pad
         .pull-right.buttons__filter
           %button.btn{ 'ng-class': '{btnPrimary: time_period === "month"}', 'ng-click': 'filterByPeriod("month")'}

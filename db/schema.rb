@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170725130041) do
+ActiveRecord::Schema.define(version: 20170811110823) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -343,8 +343,9 @@ ActiveRecord::Schema.define(version: 20170725130041) do
     t.integer  "updated_by"
     t.integer  "company_id"
     t.integer  "user_id"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
+    t.decimal  "changed_amount", precision: 12, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
@@ -484,7 +485,6 @@ ActiveRecord::Schema.define(version: 20170725130041) do
     t.boolean  "influencer_enabled",                default: false
     t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
-    t.boolean  "influencer_enabled",                default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -980,6 +980,7 @@ ActiveRecord::Schema.define(version: 20170725130041) do
     t.decimal  "budget_loc",          precision: 15, scale: 2, default: 0.0
     t.integer  "initiative_id"
     t.string   "closed_reason_text"
+    t.datetime "next_steps_due"
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree

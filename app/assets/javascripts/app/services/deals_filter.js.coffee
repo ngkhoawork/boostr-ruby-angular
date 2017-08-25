@@ -7,7 +7,11 @@
         @budget = ''
         @currency = ''
         @yearClosed = currentYear
-        @date =
+        @timePeriod = ''
+        @startDate =
+            startDate: null
+            endDate: null
+        @createdDate =
             startDate: null
             endDate: null
         @isEmpty = true

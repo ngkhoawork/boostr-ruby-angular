@@ -2,7 +2,7 @@ class Api::ProductsController < ApplicationController
   respond_to :json, :csv
 
   def index
-    products = current_user.company.products
+    products = current_user.company.products.by_revenue_type(params[:revenue_type])
     if params[:active] == 'true'
       products = products.active
     end

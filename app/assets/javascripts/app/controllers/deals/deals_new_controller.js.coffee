@@ -1,6 +1,6 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName', 'Currency', 'CurrentUser'
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, Currency, CurrentUser) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, Currency, CurrentUser, Validation) ->
   $scope.init = ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
@@ -19,10 +19,12 @@
     $q.all({
       user: CurrentUser.get().$promise,
       currencies: Currency.active_currencies(),
-      fields: Field.defaults(deal, 'Deal')
+      fields: Field.defaults(deal, 'Deal'),
+      base_fields_validations: Validation.deal_base_fields().$promise
     }).then (data) ->
       $scope.currentUser = data.user
       $scope.currencies = data.currencies
+      $scope.base_fields_validations = data.base_fields_validations
 
       deal.deal_type = Field.field(deal, 'Deal Type')
       deal.source_type = Field.field(deal, 'Deal Source')
@@ -97,6 +99,10 @@
       if item.show_on_modal == true && item.is_required == true && (!$scope.deal.deal_custom_field || !$scope.deal.deal_custom_field[item.field_type + item.field_index])
         $scope.errors[item.field_type + item.field_index] = item.field_label + ' is required'
 
+    ($scope.base_fields_validations || []).forEach (validation) ->
+      if $scope.deal && (!$scope.deal[validation.factor] && !valueExists($scope.deal, validation.factor))
+        $scope.errors[validation.factor] = validation.name + ' is required'
+
     if Object.keys($scope.errors).length > 0 then return
 
     Deal.create(deal: $scope.deal).then(
@@ -110,6 +116,19 @@
 
   $scope.cancel = ->
     $modalInstance.close()
+
+  $scope.baseFieldRequired = (factor) ->
+    if $scope.deal
+      validation = _.findWhere($scope.base_fields_validations, factor: factor)
+      return validation?
+
+  valueExists = (deal, factor) ->
+    if factor == 'deal_type_value'
+      deal.deal_type && deal.deal_type.option_id
+    else if factor == 'deal_source_value'
+      deal.source_type && deal.source_type.option_id
+    else if factor == 'agency'
+      deal && deal.agency_id
 
   $scope.createNewClientModal = (option, target) ->
     $scope.populateClient = true

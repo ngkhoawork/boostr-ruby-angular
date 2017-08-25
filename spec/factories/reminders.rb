@@ -4,5 +4,6 @@ FactoryGirl.define do
     comment { FFaker::HipsterIpsum.sentence }
     remind_on { Time.zone.now + 1.hour }
     completed false
+    assigned false
   end
 end

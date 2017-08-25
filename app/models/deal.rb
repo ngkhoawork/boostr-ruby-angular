@@ -37,6 +37,7 @@ class Deal < ActiveRecord::Base
   has_many :assets, as: :attachable
   has_many :integrations, as: :integratable
   has_many :requests
+  has_many :audit_logs, as: :auditable
 
   has_one :deal_custom_field, dependent: :destroy
   has_one :latest_happened_activity, -> { self.select_values = ["DISTINCT ON(activities.deal_id) activities.*"]
@@ -49,6 +50,7 @@ class Deal < ActiveRecord::Base
   validate :single_billing_contact
   validate :account_manager_presence
   validate :disable_manual_deal_won_validation, on: :manual_update
+  validate :base_fields_presence
 
   accepts_nested_attributes_for :deal_custom_field
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
@@ -71,11 +73,12 @@ class Deal < ActiveRecord::Base
   after_update do
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
-    log_stage if stage_id_changed?
     send_ealert if stage_id_changed?
     integrate_with_operative
     send_lost_deal_notification
     connect_deal_clients
+    log_start_date_changes if start_date_changed?
+    log_stage_changes if stage_id_changed?
   end
 
   before_create do
@@ -89,16 +92,13 @@ class Deal < ActiveRecord::Base
     generate_deal_members
     send_new_deal_notification
     connect_deal_clients
+    log_stage_changes
   end
 
   after_commit :asana_connect, on: [:create]
 
   before_destroy do
     update_stage
-  end
-
-  after_destroy do
-    log_stage
   end
 
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
@@ -143,7 +143,7 @@ class Deal < ActiveRecord::Base
     where(created_at: start_date..end_date) if start_date.present? && end_date.present?
   end
   scope :by_stage_ids, -> (stage_ids) { where(stage_id: stage_ids) if stage_ids.present? }
-  scope :by_options , -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
+  scope :by_options, -> (option_id) { joins(:options).where(options: { id: option_id }) if option_id.any? }
   scope :by_ids, -> (ids) { where('deals.id in (?)', ids) if ids.present? }
   scope :with_all_options, -> (option_ids) do
     if option_ids.present? && !option_ids.empty?
@@ -238,6 +238,17 @@ class Deal < ActiveRecord::Base
 
     if validation && stage_threshold && stage && stage.probability >= stage_threshold
       errors.add(:stage, "#{self.stage.try(:name)} requires an Account Manager on Deal") unless self.has_account_manager_member?
+    end
+  end
+
+  def base_field_validations
+    self.company.validations_for("#{self.class} Base Field")
+  end
+
+  def base_fields_presence
+    if self.company_id.present?
+      factors = base_field_validations.joins(:criterion).where('values.value_boolean = ?', true).pluck(:factor)
+      self.validates_presence_of(factors) if factors.length > 0
     end
   end
 
@@ -424,15 +435,13 @@ class Deal < ActiveRecord::Base
 
   def update_total_budget
     current_budget = self.budget.nil? ? 0 : self.budget
-    current_budget_loc = self.budget_loc.nil? ? 0 : self.budget_loc
     new_budget = deal_product_budgets.sum(:budget)
     new_budget_loc = deal_product_budgets.sum(:budget_loc)
-    budget_change = new_budget - current_budget
-    budget_change_loc = new_budget_loc - current_budget_loc
 
-    write_to_deal_log(budget_change, budget_change_loc) if budget_change != 0
+    log_budget_changes(current_budget, new_budget)
 
-    update_attributes(budget: new_budget, budget_loc: new_budget_loc)
+    self.assign_attributes(budget: new_budget, budget_loc: new_budget_loc)
+    self.save(validate: false)
   end
 
   def exchange_rate
@@ -443,14 +452,6 @@ class Deal < ActiveRecord::Base
     deal_product_budgets.update_all("budget_loc = budget * #{self.exchange_rate}")
     deal_products.map{ |deal_product| deal_product.update_budget }
     self.budget_loc = budget * self.exchange_rate
-  end
-
-  def write_to_deal_log(budget_change, budget_change_loc)
-    deal_log = DealLog.new
-    deal_log.deal_id = self.id
-    deal_log.budget_change = budget_change
-    deal_log.budget_change_loc = budget_change_loc
-    deal_log.save
   end
 
   def reset_products
@@ -504,6 +505,18 @@ class Deal < ActiveRecord::Base
     return option
   end
 
+  def deal_source_value
+    field_id = self.fields.find_by_name('Deal Source').id
+
+    !!self.values.find{|val| val.field_id == field_id}
+  end
+
+  def deal_type_value
+    field_id = self.fields.find_by_name('Deal Type').id
+
+    !!self.values.find{|val| val.field_id == field_id}
+  end
+
   def get_option_value_from_raw_fields(field_data, field_name)
     if field = field_data.find { |field| field.include? field_name }
       self.values.find { |value| value.field_id == field[0] }.try(:option).try(:name)
@@ -550,6 +563,7 @@ class Deal < ActiveRecord::Base
       header << "Deal Source"
       header << "Team"
       header << "Next Steps"
+      header << "Next Steps Due"
       header << "Start Date"
       header << "End Date"
       range.each do |product_time|
@@ -577,6 +591,7 @@ class Deal < ActiveRecord::Base
         line << deal.get_option_value_from_raw_fields(deal_settings_fields, 'Deal Source')
         line << deal.team_for_user_with_highest_share
         line << deal.next_steps
+        line << deal.next_steps_due
         line << deal.start_date
         line << deal.end_date
 
@@ -911,15 +926,19 @@ class Deal < ActiveRecord::Base
     end
 
     deal_stage_logs_csv = CSV.generate do |csv|
-      csv << ["Deal ID", "Name", "Stage", "Days in Stage", "Previous Stage", "Updated Date", "Updated By"]
+      csv << ['Deal ID', 'Name', 'Stage', 'Days in Stage', 'Previous Stage', 'Updated Date', 'Updated By']
+
       all.each do |deal|
-        deal.deal_stage_logs.each do |deal_stage_log|
-          stage_updator = deal_stage_log.stage_updator.name if !deal_stage_log.stage_updator.nil?
-		      csv << [deal.id, deal.name, deal_stage_log.stage.name, deal_stage_log.active_wday, deal_stage_log.previous_stage ? deal_stage_log.previous_stage.name : "n/a", deal_stage_log.stage_updated_at, stage_updator]
+        deal.audit_logs.by_type_of_change(AuditLog::STAGE_CHANGE_TYPE).each do |audit_log|
+          stage_updater = User.find(audit_log.update_by).name
+
+		      csv << [deal.id, deal.name, Stage.find(audit_log.new_value).name, audit_log.biz_days, audit_log.old_value ? Stage.find(audit_log.old_value).name : 'n/a', audit_log.created_at, stage_updater]
         end
-        stage_updator1 = deal.stage_updator.name if !deal.stage_updator.nil?
+
+        stage_updater1 = deal.stage_updator.name if !deal.stage_updator.nil?
         active_wday = (deal.stage_updated_at.to_date..Time.current.to_date).count {|date| date.wday >= 1 && date.wday <= 5} if !deal.stage_updated_at.nil?
-        csv << [deal.id, deal.name, deal.stage.name, active_wday, deal.previous_stage ? deal.previous_stage.name : "n/a", deal.stage_updated_at, stage_updator1]
+
+        csv << [deal.id, deal.name, deal.stage.name, active_wday, deal.previous_stage ? deal.previous_stage.name : "n/a", deal.stage_updated_at, stage_updater1]
       end
     end
 
@@ -1182,6 +1201,11 @@ class Deal < ActiveRecord::Base
         closed_reason_text = row[16].strip
       end
 
+      next_steps = nil
+      if row[17].present?
+        next_steps = row[17].strip
+      end
+
       deal_params = {
         name: row[1].strip,
         advertiser: advertiser,
@@ -1192,7 +1216,8 @@ class Deal < ActiveRecord::Base
         stage: stage,
         updated_by: current_user.id,
         closed_at: closed_date,
-        closed_reason_text: closed_reason_text
+        closed_reason_text: closed_reason_text,
+        next_steps: next_steps
       }
 
       deal_params[:created_at] = created_at if created_at
@@ -1320,19 +1345,6 @@ class Deal < ActiveRecord::Base
     end
     self.open = should_open
     self.save
-  end
-
-  def log_stage
-    if company.present? && stage_id_was.present? && stage_updated_by_was.present? && stage_updated_at_was.present?
-      deal_stage_logs.create(
-        company_id: company.id,
-        stage_id: stage_id_was,
-        previous_stage_id: previous_stage_id_was,
-        stage_updated_by: stage_updated_by_was,
-        stage_updated_at: stage_updated_at_was,
-        active_wday: count_wday(stage_updated_at_was, stage_updated_at)
-      )
-    end
   end
 
   def recalculate_currency
@@ -1576,5 +1588,33 @@ class Deal < ActiveRecord::Base
         ClientConnection.create(agency_id: agency.id, advertiser_id: advertiser.id)
       end
     end
+  end
+
+  def log_start_date_changes
+    AuditLogService.new(
+      record: self,
+      type: AuditLog::START_DATE_CHANGE_TYPE,
+      old_value: start_date_was,
+      new_value: start_date
+    ).perform
+  end
+
+  def log_stage_changes
+    AuditLogService.new(
+      record: self,
+      type: AuditLog::STAGE_CHANGE_TYPE,
+      old_value: previous_stage_id,
+      new_value: stage_id
+    ).perform
+  end
+
+  def log_budget_changes(current_budget, new_budget)
+    AuditLogService.new(
+      record: self,
+      type: AuditLog::BUDGET_CHANGE_TYPE,
+      old_value: current_budget,
+      new_value: new_budget,
+      changed_amount: (new_budget - current_budget)
+    ).perform
   end
 end

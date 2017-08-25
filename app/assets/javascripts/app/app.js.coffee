@@ -156,6 +156,10 @@
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
       controller: 'ActivityDetailReportsController'
+      reloadOnSearch: false
+      resolve:
+        $modalInstance: -> null
+        activitySummaryParams: -> null
 
     .when '/reports/influencer_budget_detail',
       templateUrl: 'influencer_budget_detail.html'
@@ -260,11 +264,12 @@
     .when '/settings/ealerts/',
       templateUrl: 'settings/ealerts.html'
       controller: 'SettingsEalertsController'
-
     .when '/settings/permissions/',
       templateUrl: 'settings/permissions.html'
       controller: 'SettingsPermissionsController'
-
+    .when '/settings/validations/',
+      templateUrl: 'settings/validations.html'
+      controller: 'SettingsValidationsController'
     .when '/bps',
       templateUrl: 'bp.html'
       controller: 'BPController'

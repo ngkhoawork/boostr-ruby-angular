@@ -114,6 +114,11 @@ class Api::V2::DealsController < ApiController
     render nothing: true
   end
 
+  def won_deals
+    won_deals = company.deals.includes(:users, :stage, :advertiser, :agency, :deal_members).at_percent(100)
+    render json: won_deals, each_serializer: Api::V2::Deals::SingleSerializer
+  end
+
   private
 
   def product_filter

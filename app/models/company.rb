@@ -42,6 +42,7 @@ class Company < ActiveRecord::Base
   has_many :requests
   has_many :influencers, dependent: :destroy
   has_many :influencer_content_fees, through: :influencers
+  has_many :audit_logs
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
@@ -188,8 +189,11 @@ class Company < ActiveRecord::Base
   end
 
   def validation_for(factor)
-    factor_string = factor.to_s.humanize.titleize
-    self.validations.find_by(factor: factor_string)
+    self.validations.find_by(factor: factor.to_s.humanize.titleize)
+  end
+
+  def validations_for(object)
+    self.validations.where(object: object.to_s.humanize.titleize)
   end
 
   protected
@@ -204,5 +208,22 @@ class Company < ActiveRecord::Base
     validations.find_or_initialize_by(factor: 'Billing Contact', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Account Manager', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Disable Deal Won', value_type: 'Boolean')
+
+    validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_category_id')
+    validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_subcategory_id')
+    validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_region_id')
+    validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_segment_id')
+    validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'phone')
+    validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'website')
+
+    validations.find_or_initialize_by(object: 'Agency Base Field',     value_type: 'Boolean', factor: 'client_region_id')
+    validations.find_or_initialize_by(object: 'Agency Base Field',     value_type: 'Boolean', factor: 'client_segment_id')
+    validations.find_or_initialize_by(object: 'Agency Base Field',     value_type: 'Boolean', factor: 'phone')
+    validations.find_or_initialize_by(object: 'Agency Base Field',     value_type: 'Boolean', factor: 'website')
+
+    validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'deal_type_value')
+    validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'deal_source_value')
+    validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'agency')
+    validations.find_or_initialize_by(object: 'Deal Base Field', value_type: 'Boolean', factor: 'next_steps')
   end
 end

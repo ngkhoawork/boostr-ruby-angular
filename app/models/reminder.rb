@@ -4,7 +4,8 @@ class Reminder < ActiveRecord::Base
   belongs_to :user
   belongs_to :remindable, polymorphic: true
 
-  validates :remindable_id, :remindable_type, :remind_on, :name, presence: true
+  validates :remindable_id, :remindable_type, presence: true, if: -> { assigned? }
+  validates :remind_on, :name, presence: true
   validates :completed, inclusion: { in: [ true, false ] }
 
   default_scope -> { order(remind_on: :asc) }

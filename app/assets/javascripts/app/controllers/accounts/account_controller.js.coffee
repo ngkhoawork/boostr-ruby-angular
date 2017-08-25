@@ -352,7 +352,7 @@
     if ($scope.contactSearchText != searchText)
       $scope.contactSearchText = searchText
       if $scope.contactSearchText
-        Contact.all1(contact_name: $scope.contactSearchText, per: 10, page: 1).then (contacts) ->
+        Contact.all1(q: $scope.contactSearchText, per: 10, page: 1).then (contacts) ->
           $scope.contacts = contacts
       else
         Contact.all1(per: 10, page: 1).then (contacts) ->
@@ -502,7 +502,7 @@
 
   $scope.showLinkExistingPerson = ->
     $scope.showContactList = true
-    Contact.all (contacts) ->
+    Contact.all1(contacts) ->
       $scope.contacts = contacts
 
   $scope.linkExistingPerson = (item, model) ->

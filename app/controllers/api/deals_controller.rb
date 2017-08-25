@@ -1,6 +1,8 @@
 class Api::DealsController < ApplicationController
   respond_to :json, :zip
 
+  before_filter :set_current_user, only: [:update, :create]
+
   def index
     respond_to do |format|
       format.json {
@@ -561,6 +563,7 @@ class Api::DealsController < ApplicationController
         :agency_id,
         :closed_at,
         :next_steps,
+        :next_steps_due,
         :initiative_id,
         :closed_reason_text,
         :created_at,
@@ -839,7 +842,9 @@ class Api::DealsController < ApplicationController
       .for_client(params[:agency_id])
       .by_budget_range(params[:budget_from], params[:budget_to])
       .by_curr_cd(params[:curr_cd])
-      .by_start_date(params[:start_date], params[:end_date])
+      .by_start_date(params[:start_start_date], params[:start_end_date])
+      .for_time_period(time_period.try(:start_date), time_period.try(:end_date))
+      .by_created_date(params[:created_start_date], params[:created_end_date])
 
     closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
 

@@ -1,19 +1,9 @@
 require 'rails_helper'
 
-RSpec.describe Api::DealMembersController, type: :controller do
-  let!(:deal) do
-    create(
-      :deal,
-      stage: stage,
-      company: company,
-      creator: user,
-      end_date: Date.new(2016, 6, 29),
-      advertiser: client
-    )
-    end
-
+describe Api::DealMembersController, type: :controller do
   before do
     sign_in user
+    User.current = user
   end
 
   describe 'POST #create' do
@@ -28,17 +18,15 @@ RSpec.describe Api::DealMembersController, type: :controller do
         expect(response_json['members'].length).to eq(2)
         expect(response_json['members'][0]['user_id']).to eq(user.id)
         expect(response_json['id']).to eq(deal.id)
-      end.to change(DealMember, :count).by(1)
+      end.to change(DealMember, :count).by(2)
     end
 
     it 'returns errors if the deal_member is invalid' do
-      expect do
-        post :create, deal_id: deal.id, deal_member: { bad: 'param' }, format: :json
-        response_json = JSON.parse(response.body)
+      post :create, deal_id: deal.id, deal_member: { bad: 'param' }, format: :json
+      response_json = JSON.parse(response.body)
 
-        expect(response.status).to eq(422)
-        expect(response_json['errors']['share']).to eq(["can't be blank"])
-      end.to_not change(DealMember, :count)
+      expect(response.status).to eq(422)
+      expect(response_json['errors']['share']).to eq(["can't be blank"])
     end
   end
 
@@ -75,6 +63,44 @@ RSpec.describe Api::DealMembersController, type: :controller do
       end.to change(DealMember, :count).by(-1)
     end
   end
+  
+  describe 'Audit logs' do
+    it 'creates audit logs for deal when deal member was added' do
+      expect{
+        post :create, deal_id: deal.id, deal_member: { share: 100, user_id: second_user.id }, format: :json
+      }.to change(AuditLog, :count).by(2)
+
+      audit_log = deal.audit_logs.last
+
+      expect(audit_log.new_value).to eq second_user.name
+      expect(audit_log.type_of_change).to eq 'Member Added'
+      expect(audit_log.updated_by).to eq user.id
+      expect(audit_log.user_id).to eq second_user.id
+    end
+
+    it 'creates audit logs for deal when update deal member share' do
+      put :update, id: deal_member.id, deal_id: deal.id, deal_member: { share: '80' }, format: :json
+
+      audit_log = deal.audit_logs.last
+
+      expect(audit_log.old_value).to eq '100'
+      expect(audit_log.new_value).to eq '80'
+      expect(audit_log.type_of_change).to eq 'Share Change'
+      expect(audit_log.updated_by).to eq user.id
+      expect(audit_log.user_id).to eq user.id
+    end
+
+    it 'creates audit logs for deal when deal member was deleted' do
+      delete :destroy, id: deal_member.id, deal_id: deal.id, format: :json
+
+      audit_log = deal.audit_logs.last
+
+      expect(audit_log.old_value).to eq user.name
+      expect(audit_log.type_of_change).to eq 'Member Removed'
+      expect(audit_log.updated_by).to eq user.id
+      expect(audit_log.user_id).to eq user.id
+    end
+  end
 
   private
 
@@ -84,6 +110,10 @@ RSpec.describe Api::DealMembersController, type: :controller do
 
   def user
     @_user ||= create :user, company: company
+  end
+
+  def second_user
+    @_second_user ||= create :user, company: company
   end
 
   def stage
@@ -99,6 +129,11 @@ RSpec.describe Api::DealMembersController, type: :controller do
   end
 
   def deal_member
-    @_deal_member ||= create :deal_member, deal_id: deal.id, user_id: user.id
+    @_deal_member ||= create :deal_member, deal_id: deal.id, user_id: user.id, share: 100
+  end
+
+  def deal
+    @_deal ||=
+      create(:deal, stage: stage, company: company, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client)
   end
 end

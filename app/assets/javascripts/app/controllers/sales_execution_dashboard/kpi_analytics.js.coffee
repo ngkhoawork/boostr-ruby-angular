@@ -19,6 +19,7 @@
                 endDate: null
             }
             $scope.isDateSet = false
+            $scope.date_criteria_filter = 'closed_date'
 
             datePickerInput = $document.find('#kpi-date-picker')
 
@@ -26,12 +27,10 @@
                 if ($scope.datePicker.startDate && $scope.datePicker.endDate)
                     datePickerInput.html($scope.datePicker.startDate.format('MMM D, YY') + ' - ' + $scope.datePicker.endDate.format('MMM D, YY'))
                     $scope.isDateSet = true
-                    getData()
 
             $scope.datePickerCancel = (s, r) ->
                 datePickerInput.html('Time period')
                 $scope.isDateSet = false
-                if !r then getData()
 
             $scope.datePickerDefault = ->
                 $scope.datePicker.startDate = moment()
@@ -56,7 +55,10 @@
                 }
                 $scope.sellerFilter = null
                 $scope.datePickerDefault()
+                $scope.date_criteria_filter = 'closed_date'
                 $scope.time_period = 'month'
+
+            $scope.applyFilter = ->
                 getData()
 
             resetFilters = () ->
@@ -88,47 +90,35 @@
                         i++
 
             #init query
-            KPIDashboard.get().$promise.then ((data) ->
-                createColorsArr(data.win_rates.length)
-                initTablesData(data)
-                createChart(data)
-                createDSChart(data)
-                createCTChart(data)
-                $scope.timeFilters = data.time_periods
+            $scope.isTeamsNamesInWinRateTable = true
 
-                $scope.isTeamsNamesInWinRateTable = true
+            Product.all().then (products) ->
+                $scope.productsList = products
+                $scope.productsList.unshift({name:'All', id:'all'})
 
-                Product.all().then (products) ->
-                    $scope.productsList = products
-                    $scope.productsList.unshift({name:'All', id:'all'})
+            Field.defaults({}, 'Deal').then (fields) ->
+                client_types = Field.findDealTypes(fields)
+                $scope.typesList = []
+                $scope.typesList.push({name:'All', id:'all'})
+                client_types.options.forEach (option) ->
+                    $scope.typesList.push(option)
 
-                Field.defaults({}, 'Deal').then (fields) ->
-                    client_types = Field.findDealTypes(fields)
-                    $scope.typesList = []
-                    $scope.typesList.push({name:'All', id:'all'})
-                    client_types.options.forEach (option) ->
-                        $scope.typesList.push(option)
+                sources = Field.findSources(fields)
+                $scope.sources = []
+                $scope.sources.push({name:'All', id:'all'})
+                sources.options.forEach (option) ->
+                    $scope.sources.push(option)
 
-                    sources = Field.findSources(fields)
-                    $scope.sources = []
-                    $scope.sources.push({name:'All', id:'all'})
-                    sources.options.forEach (option) ->
-                        $scope.sources.push(option)
+            Seller.query({id: 'all'}).$promise.then (sellers) ->
+                $scope.sellers = sellers
+                $scope.sellers.unshift({first_name:'All', id:'all'})
 
-                Seller.query({id: 'all'}).$promise.then (sellers) ->
-                    $scope.sellers = sellers
-                    $scope.sellers.unshift({first_name:'All', id:'all'})
-
-                Team.all(all_teams: true).then (teams) ->
-                    $scope.teams = teams
-                    $scope.teams.unshift({
-                        id:'all',
-                        name:'All'
-                    })
-
-            ), (err) ->
-                if err
-                    console.log(err)
+            Team.all(all_teams: true).then (teams) ->
+                $scope.teams = teams
+                $scope.teams.unshift({
+                    id:'all',
+                    name:'All'
+                })
 
             getData = () ->
                 query = {
@@ -146,13 +136,21 @@
 
                 if($scope.teamId)
                     query.team = $scope.teamId
+                    $scope.isTeamsNamesInWinRateTable = false
 
                 if($scope.sellerFilter)
                     query.seller = $scope.sellerFilter.id
+                    $scope.isTeamsNamesInWinRateTable = false
+
+                if($scope.teamId == 'all' && ( $scope.sellerFilter == null || ($scope.sellerFilter || {}).id == 'all' ))
+                    $scope.isTeamsNamesInWinRateTable = true
 
                 if($scope.datePicker.startDate && $scope.datePicker.endDate && $scope.isDateSet)
                     query.start_date = $filter('date')($scope.datePicker.startDate._d, 'dd-MM-yyyy')
                     query.end_date = $filter('date')($scope.datePicker.endDate._d, 'dd-MM-yyyy')
+
+                if($scope.date_criteria_filter)
+                    query.date_criteria = $scope.date_criteria_filter
 
                 KPIDashboard.get(query).$promise.then ((data) ->
                     createColorsArr(data.win_rates.length)
@@ -160,6 +158,7 @@
                     createDSChart(data)
                     createCTChart(data)
                     initTablesData(data)
+                    $scope.timeFilters = data.time_periods
                 ), (err) ->
                     if err
                         console.log(err)
@@ -171,7 +170,6 @@
                 Seller.query({id: $scope.teamId}).$promise.then (sellers) ->
                     $scope.sellers = sellers
                     $scope.sellers.unshift({first_name:'All', id: 'all'})
-                getData()
 
 #Filters and Tables====================================================================
             initTablesData = (data)->
@@ -189,25 +187,21 @@
 
             $scope.filterByPeriod =(period) ->
                 $scope.time_period = period
-                getData()
 
             $scope.filterBySeller =(seller) ->
                 $scope.sellerFilter = seller
-                getData()
-
-
 
             $scope.filterByProduct =(product) ->
                 $scope.productFilter = product
-                getData()
 
             $scope.filterByType =(type) ->
                 $scope.typeFilter = type
-                getData()
 
             $scope.filterBySource =(source) ->
                 $scope.sourceFilter = source
-                getData()
+
+            $scope.filterByDateCriteria = (source) ->
+                $scope.date_criteria_filter = source
 
 #=====END Filters====================================================================
 #=======================WIN RATE=======================================================

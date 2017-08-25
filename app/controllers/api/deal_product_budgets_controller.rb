@@ -1,6 +1,8 @@
 class Api::DealProductBudgetsController < ApplicationController
   respond_to :json
 
+  before_filter :set_current_user, only: :create
+
   def index
     respond_to do |format|
       format.csv {

@@ -129,6 +129,14 @@
             }
         }
     }
+    .z-fixed-header {
+        position: absolute;
+        background-color: white;
+        border-bottom: 1px solid #ddd;
+        &.fixed {
+            border-bottom: 2px solid #ddd;
+        }
+    }
 }
 .z-sliding-filter {
     $sliding-filter-w: 350px;
@@ -274,7 +282,7 @@
                             display: block;
                             cursor: pointer;
                             padding: 6px 20px;
-                            color: inherit;
+                            color: inherit !important;
                             &:hover, &:focus {
                                 background-color: #EDEFF0;
                                 outline: none;
@@ -350,6 +358,70 @@
             padding: 6px 22px;
             font-size: 14px;
         }
+    }
+}
+.z-report {
+    padding-left: 25px;
+    padding-right: 25px;
+    .reports-header {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .filters-block {
+        padding-left: 60px;
+        vertical-align: middle;
+        a {
+            font-weight: normal;
+            color: $main-color;
+            &.empty {
+                color: #B5BDC4;
+            }
+        }
+        .dropdown-menu {
+            li {
+                &.active {
+                    color: white;
+                }
+                a {
+                    color: inherit;
+                }
+            }
+        }
+        .filter-item {
+            .close-btn {
+                color: $secondary-font-color;
+                &:hover {
+                    color: $main-color;
+                }
+            }
+        }
+    }
+    .block {
+        .title {
+            font-size: 18px;
+        }
+    }
+    table.table {
+        tr {
+            th, td {
+                text-align: center;
+                &:first-child {
+                    text-align: left;
+                }
+            }
+            .clickable {
+                padding: 5px 5px;
+            }
+        }
+    }
+}
+.z-sortable {
+    display: inline-block;
+    padding: 5px 10px;
+    cursor: pointer;
+    [class*="fa-caret"] {
+        font-size: 14px;
+        margin-left: 5px;
     }
 }
 .z-report {

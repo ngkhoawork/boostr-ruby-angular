@@ -24,6 +24,7 @@
             {title: 'eAlerts',            url: '/settings/ealerts',            icon: 'envelope',            description: 'Manage eAlert HTML workflow emails'}
             {title: 'Tools',              url: '/settings/tools',              icon: 'asterisk',            description: 'Tools'} if $scope.currentUserRoles.isSuperAdmin()
             {title: 'Permissions',        url: '/settings/permissions',        icon: 'gear',                description: 'Manage permissions for data visibility or editibility on forecast and ios.'}
+            {title: 'Validations',        url: '/settings/validations',        icon: 'check-square-o',      description: 'Configure required data for Accounts and Deals.'}
         ]
 
     ]
