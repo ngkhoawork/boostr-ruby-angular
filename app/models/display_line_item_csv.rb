@@ -13,7 +13,7 @@ class DisplayLineItemCsv
                 :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
                 :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks,
                 :io_name, :io_start_date, :io_end_date, :io_advertiser, :io_agency, :ad_unit_name,
-                :product
+                :product, :product_id
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -116,8 +116,16 @@ class DisplayLineItemCsv
   end
 
   def product
-    @_product ||= Product.find_by(company_id: company_id, name: product_name)
-    @_product ||= revenue_product
+    if ad_server == 'DFP'
+      @_product ||= ad_unit_product
+    else
+      @_product ||= Product.find_by(company_id: company_id, name: product_name)
+      @_product ||= revenue_product
+    end
+  end
+
+  def ad_unit_product
+    Product.joins(:ad_units).where('ad_units.name = ? and products.company_id = ?', ad_unit_name, company_id).first
   end
 
   def budget_loc

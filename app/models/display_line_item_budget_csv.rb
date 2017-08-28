@@ -3,8 +3,6 @@ class DisplayLineItemBudgetCsv
 
   validates :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
             :video_avg_view_rate, :video_completion_rate, :budget_loc, presence: true
-  validate :budget_less_than_display_line_item_budget
-  validate :sum_of_budgets_less_than_line_item_budget
 
   attr_accessor :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
                 :video_avg_view_rate, :video_completion_rate, :budget_loc, :io_name
@@ -54,7 +52,8 @@ class DisplayLineItemBudgetCsv
       budget_loc: calculate_budget_loc,
       ad_server_budget: calculate_budget_loc,
       video_avg_view_rate: video_avg_view_rate,
-      video_completion_rate: video_completion_rate
+      video_completion_rate: video_completion_rate,
+      has_dfp_budget_correction: true
     }
   end
 
@@ -108,22 +107,6 @@ class DisplayLineItemBudgetCsv
 
   def calculate_budget_loc
     display_line_item.price * budget_loc / 1_000
-  end
-
-  def budget_less_than_display_line_item_budget
-    return unless display_line_item_budget.budget_loc.present?
-
-    if display_line_item_budget.budget_loc > display_line_item.budget_loc
-      errors.add(:budget, 'can\'t be more then line item budget')
-    end
-  end
-
-  def sum_of_budgets_less_than_line_item_budget
-    return unless display_line_item_budget.budget_loc.present?
-
-    if sum_of_monthly_budgets > display_line_item.budget_loc
-      errors.add(:budget, 'sum of monthly budgets can\'t be more then line item budget')
-    end
   end
 
   def sum_of_monthly_budgets

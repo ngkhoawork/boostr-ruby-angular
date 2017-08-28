@@ -68,11 +68,6 @@ module DFP
       price = row[:dimensionattributeline_item_cost_per_unit]
       non_cpd_booked_revenue = row[:dimensionattributeline_item_non_cpd_booked_revenue]
       budget_delivered = price * total_impressions / 1_000
-      if row[:product_id]
-        product = Product.find_by(id: row[:product_id])
-      else
-        product = Product.joins(:ad_units).where('ad_units.name = ? and products.company_id = ?', row[:dimensionad_unit_name], company_id).first
-      end
 
       line_item_params = {
           io_name: row[:dimensionorder_name],
@@ -82,7 +77,7 @@ module DFP
           io_end_date: row[:dimensionattributeorder_end_date_time],
           external_io_number: row[:dimensionorder_id].to_i,
           product_name: row[:dimensionline_item_name],
-          product: product,
+          product_id: row[:product_id],
           line_number: row[:dimensionline_item_id],
           ad_server: 'DFP',
           start_date: row[:dimensionattributeline_item_start_date_time],

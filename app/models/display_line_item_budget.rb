@@ -9,8 +9,12 @@ class DisplayLineItemBudget < ActiveRecord::Base
     where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', start_date, end_date)
   end
 
-  validate :budget_less_than_display_line_item_budget
-  validate :sum_of_budgets_less_than_line_item_budget
+  attr_accessor :has_dfp_budget_correction
+
+  before_save :correct_budget_loc, if: -> { has_dfp_budget_correction }
+
+  validate :budget_less_than_display_line_item_budget, unless: -> { has_dfp_budget_correction }
+  validate :sum_of_budgets_less_than_line_item_budget, unless: -> { has_dfp_budget_correction }
 
   def daily_budget
     budget.to_f / (end_date - start_date + 1).to_i
@@ -224,7 +228,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
   def budget_less_than_display_line_item_budget
     return unless budget_loc.present?
 
-    if budget_loc > display_line_item.budget_loc
+    if max_budget_loc_exceeded?
       errors.add(:budget, 'can\'t be more then line item budget')
     end
   end
@@ -232,9 +236,23 @@ class DisplayLineItemBudget < ActiveRecord::Base
   def sum_of_budgets_less_than_line_item_budget
     return unless budget_loc.present?
 
-    if sum_of_monthly_budgets > display_line_item.budget_loc
+    if max_monthly_budget_exceeded?
       errors.add(:budget, 'sum of monthly budgets can\'t be more then line item budget')
     end
+  end
+
+  def correct_budget_loc
+    if max_monthly_budget_exceeded? || max_budget_loc_exceeded?
+      self.budget_loc = sum_of_monthly_budgets
+    end
+  end
+
+  def max_monthly_budget_exceeded?
+    sum_of_monthly_budgets > display_line_item.budget_loc
+  end
+
+  def max_budget_loc_exceeded?
+    budget_loc > display_line_item.budget_loc
   end
 
   def sum_of_monthly_budgets
