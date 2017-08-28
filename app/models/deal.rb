@@ -364,7 +364,7 @@ class Deal < ActiveRecord::Base
     if product.present?
       in_period_budget = product_in_period_amt(product, start_date, end_date)
       deal_product = deal_products.find_by(product_id: product.id)
-      total_budget = deal_product.budget if deal_product.present?
+      total_budget = budget
     else
       in_period_budget = in_period_amt(start_date, end_date)
       total_budget = budget
