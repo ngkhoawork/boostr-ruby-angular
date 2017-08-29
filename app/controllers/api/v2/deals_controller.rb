@@ -1,6 +1,8 @@
 class Api::V2::DealsController < ApiController
   respond_to :json
 
+  before_filter :set_current_user, only: [:update, :create]
+
   def index
     if params[:name].present?
       render json: suggest_deals
