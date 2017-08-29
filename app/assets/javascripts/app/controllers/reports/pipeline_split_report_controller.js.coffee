@@ -18,13 +18,6 @@
                 deals: 0
                 aveDealSize: 0
 
-            $scope.sorting =
-                key: null
-                reverse: false
-                set: (key) ->
-                    this.reverse = if this.key == key then !this.reverse else false
-                    this.key = key
-
             emptyFilter = {id: null, name: 'All'}
 
             defaultFilter =
@@ -72,7 +65,7 @@
             getReport = (query) ->
                 Report.split_adjusted(query).$promise.then (data) ->
                     $scope.deals = data
-                    calcTotals(data)
+                    calcTotals(_.uniq data, 'deal_id')
 
             calcTotals = (deals) ->
                 t = $scope.totals
