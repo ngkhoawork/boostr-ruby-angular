@@ -26,11 +26,7 @@ class Report::PipelineSummarySerializer < ActiveModel::Serializer
   end
 
   def budget_loc
-    {
-      budget: object.budget_loc.to_i,
-      curr_symbol: object.currency.curr_symbol,
-      curr_cd: object.curr_cd
-    }
+    object.budget_loc.to_i
   end
 
   def stage
