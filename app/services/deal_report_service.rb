@@ -6,6 +6,7 @@ class DealReportService < BaseService
   STAGE_CHANGED       = 'Stage Changed'.freeze
   START_DATE_CHANGED  = 'Start Date Changed'.freeze
   SHARE_CHANGED       = 'Share Changed'.freeze
+  EMPTY_STRING        = ''
 
   def generate_report
     report_data
@@ -200,7 +201,7 @@ class DealReportService < BaseService
   end
 
   def date_range
-    return params.midnight..params.end_of_day unless params.kind_of? Hash
+    return params.midnight..params.end_of_day unless params.is_a? Hash
 
     DateTime.parse(params[:start_date])..DateTime.parse(params[:end_date])
   end
@@ -221,10 +222,14 @@ class DealReportService < BaseService
   end
 
   def change_type
+    return EMPTY_STRING if params.is_a? Date
+
     @_change_type ||= params[:change_type]
   end
 
   def utc_offset
+    return EMPTY_STRING if params.is_a? Date
+
     @_utc_offset ||= params[:utc_offset]
   end
 end
