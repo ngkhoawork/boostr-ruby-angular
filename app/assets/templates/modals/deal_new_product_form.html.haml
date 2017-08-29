@@ -11,7 +11,7 @@
                         %ui-select{ name: 'product', ng: { model: 'deal_product.product_id', disabled: true, required: true } }
                             %ui-select-match{ placeholder: 'Product' }
                                 {{ $select.selected.name }}
-                            %ui-select-choices{ repeat: 'product.id as product in products | filter: { name: $select.search }' }
+                            %ui-select-choices{ repeat: 'product.id as product in products | orderBy: "name" | filter: { name: $select.search }' }
                                 %div{ ng: { bind: { html: 'product.name' } } }
                 .col-xs-6
                     .form-group.product-budget{'ng-class': "{'with-add-btn': deal_product.isIncorrectTotalBudgetPercent}"}
