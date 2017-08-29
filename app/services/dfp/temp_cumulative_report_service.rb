@@ -12,9 +12,7 @@ module DFP
     end
 
     def product_id
-      if ad_units_product.any?
-        ad_units_product.first.id
-      end
+      ad_units_product.first.id if ad_units_product.any?
     end
 
     def totals

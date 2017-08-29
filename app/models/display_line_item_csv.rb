@@ -125,7 +125,11 @@ class DisplayLineItemCsv
   end
 
   def ad_unit_product
-    Product.joins(:ad_units).where('ad_units.name = ? and products.company_id = ?', ad_unit_name, company_id).first
+    if product_id
+      Product.find_by(id: product_id)
+    else
+      Product.joins(:ad_units).find_by('ad_units.name = ? and products.company_id = ?', ad_unit_name, company_id)
+    end
   end
 
   def budget_loc
