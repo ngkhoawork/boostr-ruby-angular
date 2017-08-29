@@ -8,6 +8,7 @@ class DisplayLineItemCsv
 
   validate :io_exchange_rate_presence, if: :company_id
   validate :dates_can_be_parsed
+  validate :is_dli_date_over_io_bounds
 
   attr_accessor :external_io_number, :line_number, :ad_server, :start_date, :end_date,
                 :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
@@ -183,6 +184,16 @@ class DisplayLineItemCsv
       d = Date.strptime(date_string, "%m/%d/%y")
     end
     d
+  end
+
+  def is_dli_date_over_io_bounds
+    return unless display_line_item.new_record? || io.present?
+    if display_line_item.start_date < io.start_date
+      errors.add(:start_date, 'start date is less than io start date')
+    end
+    if display_line_item.end_date > io.end_date
+      errors.add(:start_date, 'end date is bigger than io end date')
+    end
   end
 
   def persisted?
