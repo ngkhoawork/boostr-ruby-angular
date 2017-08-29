@@ -32,9 +32,12 @@
 
   @create = (params) ->
     deferred = $q.defer()
-    resource.save params, (team) ->
-      deferred.resolve(team)
-      $rootScope.$broadcast 'updated_teams'
+    resource.save params,
+      (team) ->
+        deferred.resolve(team)
+        $rootScope.$broadcast 'updated_teams'
+      (resp) ->
+        deferred.reject(resp)
     deferred.promise
 
   @members = (team_id) ->
@@ -63,9 +66,12 @@
 
   @update = (params) ->
     deferred = $q.defer()
-    resource.update params, (team) ->
-      deferred.resolve(team)
-      $rootScope.$broadcast 'updated_teams'
+    resource.update params,
+      (team) ->
+        deferred.resolve(team)
+        $rootScope.$broadcast 'updated_teams'
+      (resp) ->
+        deferred.reject(resp)
     deferred.promise
 
   @delete = (deletedTeam) ->
