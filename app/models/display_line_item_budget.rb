@@ -12,6 +12,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
   attr_accessor :has_dfp_budget_correction
 
   before_save :correct_budget_loc, if: -> { has_dfp_budget_correction }
+  before_save :set_cpd_price_type_budget, if: -> { has_dfp_budget_correction }
 
   validate :budget_less_than_display_line_item_budget, unless: -> { has_dfp_budget_correction }
   validate :sum_of_budgets_less_than_line_item_budget, unless: -> { has_dfp_budget_correction }
@@ -243,8 +244,12 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
   def correct_budget_loc
     if max_monthly_budget_exceeded? || max_budget_loc_exceeded?
-      self.budget_loc = sum_of_monthly_budgets
+      self.budget_loc = display_line_item.budget_loc - opposite_sum_of_display_line_item_budgets
     end
+  end
+
+  def set_cpd_price_type_budget
+    self.budget_loc = display_line_item.budget_loc if display_line_item.is_cpd_price_type?
   end
 
   def max_monthly_budget_exceeded?
@@ -256,6 +261,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def sum_of_monthly_budgets
-    (display_line_item.display_line_item_budgets.where.not(id: self.id).sum(:budget_loc) + budget_loc)
+    (opposite_sum_of_display_line_item_budgets + budget_loc)
+  end
+
+  def opposite_sum_of_display_line_item_budgets
+    display_line_item.display_line_item_budgets.where.not(id: self.id).sum(:budget_loc)
   end
 end
