@@ -11,8 +11,15 @@
           %td{ style: "background: url('#{root_url}won-deal.png'); background-repeat: no-repeat; background-position: 70%; height: 110px;" }
             .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
               #{@deal.name}
-              - if @deal.stage.active == true
-                \- #{@deal.stage.probability}%
+            - if @deal.stage.active == true
+              .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
+                %strong
+                  Stage:
+                #{@deal.stage.name}
+              .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
+                %strong
+                  Probability:
+                #{@deal.stage.probability}%
             .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
               %strong
                 Advertiser:
