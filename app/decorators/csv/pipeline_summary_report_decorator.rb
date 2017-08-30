@@ -33,7 +33,7 @@ class Csv::PipelineSummaryReportDecorator
   end
 
   def budget
-    deal[:budget_loc][:budget] rescue nil
+    deal[:budget_loc] rescue nil
   end
 
   def stage
