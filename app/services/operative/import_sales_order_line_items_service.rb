@@ -33,8 +33,6 @@ class Operative::ImportSalesOrderLineItemsService
 
   def parse_invoices
     @parsed_invoices ||= {}
-    import_log = CsvImportLog.new(company_id: company_id, object_name: 'invoice_line_item', source: 'operative')
-    import_log.set_file_source(invoice_line_items)
 
     File.foreach(invoice_csv_file).with_index do |line, line_num|
       if line_num == 0
@@ -45,8 +43,6 @@ class Operative::ImportSalesOrderLineItemsService
       begin
         row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @invoice_headers, header_converters: :symbol)
       rescue Exception => e
-        import_log.count_failed
-        import_log.log_error [e.message, line]
         next
       end
 
@@ -59,8 +55,6 @@ class Operative::ImportSalesOrderLineItemsService
         invoice_amount: row[:invoice_amount]
       }
     end
-
-    import_log.save if import_log.is_error?
   end
 
   def parse_line_items
