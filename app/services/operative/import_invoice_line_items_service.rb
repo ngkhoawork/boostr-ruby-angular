@@ -50,7 +50,7 @@ class Operative::ImportInvoiceLineItemsService
   end
 
   def parse_invoice_lines
-    import_log = CsvImportLog.new(company_id: company_id, object_name: 'invoice_line_item', source: 'operative')
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item_budget', source: 'operative')
     import_log.set_file_source(invoice_line_items)
 
     File.foreach(invoice_lines_csv_file).with_index do |line, line_num|
