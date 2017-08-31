@@ -6,17 +6,17 @@
 
       .header-item
         %div.filter-row
-          %span{ ng: { repeat: 'filter in revenueFilters', class: '{active: filter.name == revenueFilter.name}', click: 'filterRevenues(filter)'} }
-            {{ filter.name }}
-        %div.filter-row.sub-filter{ ng: { if: "revenueFilter.param == 'risk' || revenueFilter.param == 'upside'"} }
-          %span{ ng: { class: '{ active: currentPacingAlertsFilterValue == io_owner_filter.value }', click: 'setPacingAlertsFilter(io_owner_filter)', repeat: 'io_owner_filter in pacingAlertsFilters | orderBy: \'order\'' } }
-            {{io_owner_filter.name}}
+          %span{ ng: { repeat: 'revenueFilter in revenueFilters', class: '{active: filter.revenue == revenueFilter.value}', click: 'setFilter("revenue", revenueFilter.value)'} }
+            {{ revenueFilter.name }}
+        %div.filter-row.sub-filter{ ng: { if: "filter.revenue == 'risk' || filter.revenue == 'upside'"} }
+          %span{ ng: { repeat: 'pacingFilter in pacingAlertsFilters', class: '{ active: filter.pacing == pacingFilter.value}', click: 'setFilter("pacing", pacingFilter.value)'} }
+            {{pacingFilter.name}}
       .header-item.search
         %form
           .input-group
             .input-group-addon
               %i.glyphicon.glyphicon-search
-            %input.form-control{ ng: { model: 'searchText' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
+            %input.form-control{ ng: { model: 'filter.search', 'model-options': '{debounce: 400}', change: 'applyFilter()' }, placeholder: "Search by Advertiser, Agency, Name, etc." }
       .header-item.date-filter
         %span Start date period
         -#%ul
@@ -29,116 +29,122 @@
                 %a{ href: '', ng: { click: 'filterByYear(year)' } }
                   {{year}}
         .date-picker-wrap
-          %div.date-picker#advertiser-date-picker{'date-range-picker': true,
-                                                         'ng-model': 'datePicker.date',
-                                                         :options => "{locale: {format: 'MMMM D, YYYY'},
-                                                                       eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-            Time period
-          %span.caret
+          .date-picker-wrap
+            %div.date-picker{'date-range-picker': true,
+                               'ng-model': 'filter.date',
+                               :options => "{locale: {format: 'MMMM D, YYYY'},
+                                             eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
+              %span.empty{'ng-hide': 'datePicker.toString()'}
+                Time period
+                %span.caret
+              %span{'ng-show': 'datePicker.toString()'}
+                {{datePicker.toString()}}
+                %span.caret
 
     .row
       .block
+        -#.table-wrapper{infinite: {scroll: 'loadMoreRevenues()', 'scroll-disabled': 'isLoading'}}
         .table-wrapper
-          %table.table.table-hover{ng: {if: "revenueFilter.param == ''"}}
+          %table.table.table-hover{ng: {if: "filter.revenue == ''"}}
             %thead
-              %tr
+              %tr.z-sortable-prime
                 %th.left
-                  %span{'ng-click': 'sortBy("io_number")'} IO #
+                  %span.z-sortable{by: 'io_number'} IO #
                 %th.left
-                  %span{'ng-click': 'sortBy("external_io_number")'} External #
+                  %span.z-sortable{by: 'external_io_number'} External #
                 %th.left
-                  %span{'ng-click': 'sortBy("name")'} Name
+                  %span.z-sortable{by: 'name'} Name
                 %th.left
-                  %span{'ng-click': 'sortBy("advertiser.name")'} Advertiser
+                  %span.z-sortable{by: 'advertiser.name'} Advertiser
                 %th.left
-                  %span{'ng-click': 'sortBy("agency.name")'} Agency
+                  %span.z-sortable{by: 'agency.name'} Agency
                 %th.right
-                  %span{'ng-click': 'sortBy("budget_loc")'} Budget
+                  %span.z-sortable{by: 'budget_loc'} Budget
                 %th.left
-                  %span{'ng-click': 'sortBy("start_date")'} Start Date
+                  %span.z-sortable{by: 'start_date'} Start Date
                 %th.left
-                  %span{'ng-click': 'sortBy("end_date")'} End Date
+                  %span.z-sortable{by: 'end_date'} End Date
                 %th.left
-                  %span{'ng-click': 'sortBy("deal.name")'} Deal Name
+                  %span.z-sortable{by: 'deal.name'} Deal Name
                 %th.action-column
                 -#%th.right
 
             %tbody{ 'ng-include': "'partials/revenue_io_rows.html'" }
 
-          %table.table.table-hover{ng: {if: "revenueFilter.param == 'no-match'"}}
+          %table.table.table-hover{ng: {if: "filter.revenue == 'no-match'"}}
             %thead
-              %tr
+              %tr.z-sortable-prime
                 %th.left
-                  %span{'ng-click': 'sortBy("external_io_number")'} External #
+                  %span.z-sortable{by: 'external_io_number'} External #
                 %th.left
-                  %span{'ng-click': 'sortBy("name")'} Name
+                  %span.z-sortable{by: 'name'} Name
                 %th.left
-                  %span{'ng-click': 'sortBy("advertiser")'} Advertiser
+                  %span.z-sortable{by: 'advertiser'} Advertiser
                 %th.left
-                  %span{'ng-click': 'sortBy("agency")'} Agency
+                  %span.z-sortable{by: 'agency'} Agency
                 %th.right
-                  %span{'ng-click': 'sortBy("budget_loc")'} Budget
+                  %span.z-sortable{by: 'budget_loc'} Budget
                 %th.left
-                  %span{'ng-click': 'sortBy("start_date")'} Start Date
+                  %span.z-sortable{by: 'start_date'} Start Date
                 %th.left
-                  %span{'ng-click': 'sortBy("end_date")'} End Date
+                  %span.z-sortable{by: 'end_date'} End Date
                 %th.right
 
             %tbody{ 'ng-include': "'partials/revenue_no_match_display_rows.html'" }
 
-          %div{'ng-if': 'revenueFilter.param == "programmatic"'}
+          %div{'ng-if': 'filter.revenue == "programmatic"'}
             .title Coming Soon
 
-          %table.table.table-hover{ng: {if: "revenueFilter.param == 'risk' || revenueFilter.param == 'upside'"}}
+          %table.table.table-hover{ng: {if: "filter.revenue == 'risk' || filter.revenue == 'upside'"}}
             %thead
-              %tr
+              %tr.z-sortable-prime
                 %th.left
-                  %span{'ng-click': 'sortBy("io.name")'} IO name
+                  %span.z-sortable{by: 'io.name'} IO name
                 %th.left
-                  %span{'ng-click': 'sortBy("io.external_io_number")'} Ext IO #
+                  %span.z-sortable{by: 'io.external_io_number'} Ext IO #
                 %th.left
-                  %span{'ng-click': 'sortBy("io.advertiser.name")'} Advertiser
+                  %span.z-sortable{by: 'io.advertiser.name'} Advertiser
                 %th.left
-                  %span{'ng-click': 'sortBy("io.agency.name")'} Agency
+                  %span.z-sortable{by: 'io.agency.name'} Agency
                 %th.right
-                  %span{'ng-click': 'sortBy("daily_run_rate")'} Daily Rate
+                  %span.z-sortable{by: 'daily_run_rate'} Daily Rate
                 %th.right
-                  %span{'ng-click': 'sortBy("num_days_til_out_of_budget")'} {{"#DaysNoBud"}}
+                  %span.z-sortable{by: 'num_days_til_out_of_budget'} {{"#DaysNoBud"}}
                 %th.right
-                  %span{'ng-click': 'sortBy("balance")'} {{ revenueFilter.param == "risk" ? "Risk Amt" : (revenueFilter.param == "upside" ? "Upside Amt" : "Balance") }}
+                  %span.z-sortable{by: 'balance'} {{ filter.revenue == "risk" ? "Risk Amt" : (filter.revenue == "upside" ? "Upside Amt" : "Balance") }}
                 %th.left
-                  %span{'ng-click': 'sortBy("line_number")'} Line #
+                  %span.z-sortable{by: 'line_number'} Line #
                 %th.left
-                  %span{'ng-click': 'sortBy("ad_server")'} AdServer
+                  %span.z-sortable{by: 'ad_server'} AdServer
                 %th.left
-                  %span{'ng-click': 'sortBy("start_date")'} Start Date
+                  %span.z-sortable{by: 'start_date'} Start Date
                 %th.left
-                  %span{'ng-click': 'sortBy("end_date")'} End Date
+                  %span.z-sortable{by: 'end_date'} End Date
                 %th.left
-                  %span{'ng-click': 'sortBy("product.name")'} Product
+                  %span.z-sortable{by: 'product.name'} Product
                 %th.right
-                  %span{'ng-click': 'sortBy("quantity")'} Qty
+                  %span.z-sortable{by: 'quantity'} Qty
                 %th.right
-                  %span{'ng-click': 'sortBy("price")'} Price
+                  %span.z-sortable{by: 'price'} Price
                 %th.left
-                  %span{'ng-click': 'sortBy("pricing_type")'} Price Type
+                  %span.z-sortable{by: 'pricing_type'} Price Type
                 %th.right
-                  %span{'ng-click': 'sortBy("budget_loc")'} Budget
+                  %span.z-sortable{by: 'budget_loc'} Budget
                 %th.right
-                  %span{'ng-click': 'sortBy("budget_delivered_loc")'} Budg Del
+                  %span.z-sortable{by: 'budget_delivered_loc'} Budg Del
                 %th.right
-                  %span{'ng-click': 'sortBy("budget_remaining_loc")'} Budg Rem
+                  %span.z-sortable{by: 'budget_remaining_loc'} Budg Rem
                 %th.right
-                  %span{'ng-click': 'sortBy("quantity_delivered")'} Qty Del
+                  %span.z-sortable{by: 'quantity_delivered'} Qty Del
                 %th.right
-                  %span{'ng-click': 'sortBy("quantity_remaining")'} Qty Rem
+                  %span.z-sortable{by: 'quantity_remaining'} Qty Rem
                 %th.right
-                  %span{'ng-click': 'sortBy("quantity_delivered_3p")'} 3PQtyDel
+                  %span.z-sortable{by: 'quantity_delivered_3p'} 3PQtyDel
                 %th.right
-                  %span{'ng-click': 'sortBy("quantity_remaining_3p")'} 3PQtyRem
+                  %span.z-sortable{by: 'quantity_remaining_3p'} 3PQtyRem
                 %th.right
-                  %span{'ng-click': 'sortBy("budget_delivered_3p_loc")'} 3PBudDel
+                  %span.z-sortable{by: 'budget_delivered_3p_loc'} 3PBudDel
                 %th.right
-                  %span{'ng-click': 'sortBy("budget_remaining_3p_loc")'} 3PBudRem
+                  %span.z-sortable{by: 'budget_remaining_3p_loc'} 3PBudRem
 
             %tbody{ 'ng-include': "'partials/revenue_display_item_rows.html'" }

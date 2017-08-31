@@ -74,6 +74,7 @@
     .when '/revenue',
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
+      reloadOnSearch: false
 
     .when '/revenue/ios/:id',
       templateUrl: 'io.html'
