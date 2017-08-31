@@ -301,6 +301,11 @@ class Deal < ActiveRecord::Base
     !!(billing_contact) && billing_contact.valid?
   end
 
+  def billing_contact
+    billing_contact = self.deal_contacts.find_by(role: 'Billing')
+    billing_contact.contact
+  end
+
   def has_account_manager_member?
     self.users.exists?(user_type: ACCOUNT_MANAGER)
   end
