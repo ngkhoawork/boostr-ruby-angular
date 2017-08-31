@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::CustomValuesController, type: :controller do
+describe Api::CustomValuesController do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
 
@@ -11,9 +11,11 @@ RSpec.describe Api::CustomValuesController, type: :controller do
   describe 'GET #index' do
     it 'returns a list of settings' do
       get :index, format: :json
-      expect(response).to be_success
+
       response_json = JSON.parse(response.body)
-      expect(response_json.length).to eq(5)
+
+      expect(response).to be_success
+      expect(response_json.length).to eq(6)
     end
   end
 end

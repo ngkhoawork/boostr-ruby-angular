@@ -83,26 +83,24 @@ RSpec.describe Client, type: :model do
 
     it 'returns validation errors for advertiser' do
       base_validations(advertiser).map { |v| v.criterion.update(value: true) }
+
       expect(advertiser).not_to be_valid
-      expect(advertiser.errors.full_messages).to eq [
-        "Client category can't be blank",
-        "Client subcategory can't be blank",
-        "Client region can't be blank",
-        "Client segment can't be blank",
-        "Phone can't be blank",
-        "Website can't be blank"
-      ]
+      expect(advertiser.errors.full_messages).to include 'Client category can\'t be blank'
+      expect(advertiser.errors.full_messages).to include 'Client subcategory can\'t be blank'
+      expect(advertiser.errors.full_messages).to include 'Client region can\'t be blank'
+      expect(advertiser.errors.full_messages).to include 'Client segment can\'t be blank'
+      expect(advertiser.errors.full_messages).to include 'Phone can\'t be blank'
+      expect(advertiser.errors.full_messages).to include 'Website can\'t be blank'
     end
 
     it 'returns validation errors for agency' do
       base_validations(agency).map { |v| v.criterion.update(value: true) }
+
       expect(agency).not_to be_valid
-      expect(agency.errors.full_messages).to eq [
-        "Client region can't be blank",
-        "Client segment can't be blank",
-        "Phone can't be blank",
-        "Website can't be blank"
-      ]
+      expect(agency.errors.full_messages).to include 'Client region can\'t be blank'
+      expect(agency.errors.full_messages).to include 'Client segment can\'t be blank'
+      expect(agency.errors.full_messages).to include 'Phone can\'t be blank'
+      expect(agency.errors.full_messages).to include 'Website can\'t be blank'
     end
   end
 

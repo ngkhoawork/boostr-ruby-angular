@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Deal, type: :model do
+describe Deal do
   let(:company) { Company.first }
   let(:user) { create :user }
 
@@ -219,12 +219,6 @@ RSpec.describe Deal, type: :model do
       expect(deal.has_billing_contact?).to be true
     end
 
-    it 'returns false if deal contact is invalid' do
-      deal_contact.update(role: 'Billing')
-      deal_contact.contact.address.update(country: '')
-      expect(deal.has_billing_contact?).to be false
-    end
-
     it 'returns false if no billing contact found' do
       expect(deal.has_billing_contact?).to be false
     end
@@ -248,7 +242,7 @@ RSpec.describe Deal, type: :model do
     let(:discuss_stage) { create :discuss_stage }
     let(:proposal_stage) { create :proposal_stage }
     let(:lost_stage) { create :lost_stage }
-    let!(:api_configuration) { create :api_configuration, trigger_on_deal_percentage: 25 }
+    let!(:api_configuration) { create :operative_api_configuration, trigger_on_deal_percentage: 25 }
 
     it 'integrates if stage equals threshold' do
       allow(deal).to receive(:company_allowed_use_operative?).and_return(true)

@@ -1,10 +1,8 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::ActivitiesController, type: :controller do
+describe Api::V1::ActivitiesController do
   let(:new_company) { create :company }
-  let(:activity_params) {
-    attributes_for(:activity)
-  }
+  let(:activity_params) { attributes_for(:activity) }
   let(:existing_activity) { create :activity, company: company, deal: nil, client: nil }
   let(:user_contact) { create :contact, address_attributes: { email: user.email } }
   let(:contacts) { create_list :contact, 10, clients: [client], company: company }
@@ -29,7 +27,7 @@ RSpec.describe Api::V1::ActivitiesController, type: :controller do
     end
 
     it 'returns all activities for execs' do
-      activities(deal: deal, client: client, user: nil)
+      activities(deal: deal, client: client, creator: user)
       user.update(user_type: EXEC)
 
       get :index, page: 2, filter: 'client'

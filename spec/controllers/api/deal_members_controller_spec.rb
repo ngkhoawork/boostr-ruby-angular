@@ -68,7 +68,7 @@ describe Api::DealMembersController, type: :controller do
     it 'creates audit logs for deal when deal member was added' do
       expect{
         post :create, deal_id: deal.id, deal_member: { share: 100, user_id: second_user.id }, format: :json
-      }.to change(AuditLog, :count).by(2)
+      }.to change(AuditLog, :count).by(3)
 
       audit_log = deal.audit_logs.last
 

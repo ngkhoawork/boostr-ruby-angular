@@ -930,7 +930,7 @@ class Deal < ActiveRecord::Base
 
       all.each do |deal|
         deal.audit_logs.by_type_of_change(AuditLog::STAGE_CHANGE_TYPE).each do |audit_log|
-          stage_updater = User.find(audit_log.update_by).name
+          stage_updater = User.find(audit_log.updated_by).name
 
 		      csv << [deal.id, deal.name, Stage.find(audit_log.new_value).name, audit_log.biz_days, audit_log.old_value ? Stage.find(audit_log.old_value).name : 'n/a', audit_log.created_at, stage_updater]
         end

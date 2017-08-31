@@ -64,19 +64,6 @@ describe Request do
       allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
     end
 
-    it 'sends email upon request completion' do
-      request.update(
-        status: 'Completed',
-        description: 'Testing',
-        request_type: 'Revenue',
-        resolution: 'Totally Happening',
-        company: company
-      )
-
-      expect(RequestsMailer).to have_received(:update_request).with(requester_email, request.id)
-      expect(message_delivery).to have_received(:deliver_later).with(queue: 'default')
-    end
-
     it 'sends email upon request rejection' do
       request.update(
         status: 'Denied',
@@ -101,21 +88,22 @@ describe Request do
       expect(RequestsMailer).not_to have_received(:update_request)
       expect(message_delivery).not_to have_received(:deliver_later)
     end
+  end
 
-    it 'sends new_request if status is New' do
-      allow(RequestsMailer).to receive(:new_request).and_return(message_delivery)
-      allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
+  it 'sends email upon request completion' do
+    RequestsMailer.update_request(requester_email, request.id).deliver_now
+    requests_mailer = ActionMailer::Base.deliveries.last
 
-      request.update(
-        status: 'New',
-        description: 'Testing',
-        request_type: 'Revenue',
-        company: company
-      )
+    expect(requests_mailer.to).to eq requester_email
+    expect(requests_mailer.subject).to eq "#{request.request_type} Request for Deal #{request.deal.name}"
+  end
 
-      expect(RequestsMailer).to have_received(:new_request)
-      expect(message_delivery).to have_received(:deliver_later)
-    end
+  it 'sends new_request if status is New' do
+    RequestsMailer.new_request(requester_email, request.id).deliver_now
+    requests_mailer = ActionMailer::Base.deliveries.last
+
+    expect(requests_mailer.to).to eq requester_email
+    expect(requests_mailer.subject).to eq "You Have a New #{request.request_type} Request"
   end
 
   def recipient

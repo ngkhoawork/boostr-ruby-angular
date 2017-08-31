@@ -40,7 +40,14 @@ describe Operative::Deals::Single, operative: true do
   end
 
   def deal_mapper
-    @_deal_mapper ||= described_class.new(deal).to_xml(create: true, advertiser: true, agency: true, contact: true)
+    @_deal_mapper ||= described_class.new(deal).to_xml(
+      create: true,
+      advertiser: true,
+      agency: true,
+      contact: true,
+      enable_operative_extra_fields: false,
+      buzzfeed: false
+    )
   end
 
   def deal_name
@@ -88,7 +95,7 @@ describe Operative::Deals::Single, operative: true do
   end
 
   def deal_stage
-    '<v2:name>10% - Sales lead</v2:name>'
+    "<v2:name>#{deal.stage.name}</v2:name>"
   end
 
   def deal_alternate_id
