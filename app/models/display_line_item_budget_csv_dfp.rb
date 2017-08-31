@@ -4,8 +4,6 @@ class DisplayLineItemBudgetCsvDfp < DisplayLineItemBudgetCsv
   validates :company_id, :line_number, :month_and_year, :impressions, :budget_loc, 
             :external_io_number, :ctr, :clicks, :video_avg_view_rate,
             :video_completion_rate, presence: true
-  validate :budget_less_than_display_line_item_budget
-  validate :sum_of_budgets_less_than_line_item_budget
 
   def perform
     return self.errors.full_messages unless self.valid?
@@ -16,6 +14,10 @@ class DisplayLineItemBudgetCsvDfp < DisplayLineItemBudgetCsv
   end
 
   private
+
+  def display_line_item_budget_attributes
+    super.merge({ has_dfp_budget_correction: true })
+  end
 
   def update_external_io_number
     if io && external_io_number
@@ -46,25 +48,4 @@ class DisplayLineItemBudgetCsvDfp < DisplayLineItemBudgetCsv
   def get_external_io_number
     external_io_number
   end
-
-  def budget_less_than_display_line_item_budget
-    return unless display_line_item_budget.budget_loc.present?
-
-    if display_line_item_budget.budget_loc > display_line_item.budget_loc
-      errors.add(:budget, 'can\'t be more then line item budget')
-    end
-  end
-
-  def sum_of_budgets_less_than_line_item_budget
-    return unless display_line_item_budget.budget_loc.present?
-
-    if sum_of_monthly_budgets > display_line_item.budget_loc
-      errors.add(:budget, 'sum of monthly budgets can\'t be more then line item budget')
-    end
-  end
-
-  def sum_of_monthly_budgets
-    (display_line_item.display_line_item_budgets.where.not(id: display_line_item_budget.id).sum(:budget_loc) + display_line_item_budget.budget_loc)
-  end
-
 end
