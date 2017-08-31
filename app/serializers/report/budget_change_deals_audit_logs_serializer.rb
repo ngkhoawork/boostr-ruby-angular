@@ -14,7 +14,7 @@ class Report::BudgetChangeDealsAuditLogsSerializer < ActiveModel::Serializer
   end
 
   def advertiser_name
-    deal.advertiser.name
+    advertiser.name rescue nil
   end
 
   def start_date
@@ -43,6 +43,10 @@ class Report::BudgetChangeDealsAuditLogsSerializer < ActiveModel::Serializer
 
   def deal
     @_deal ||= Deal.with_deleted.find(object.auditable_id)
+  end
+
+  def advertiser
+    Client.with_deleted.find(deal.advertiser_id)
   end
 
   def positive_budget_change

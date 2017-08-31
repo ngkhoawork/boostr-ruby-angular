@@ -35,8 +35,12 @@ class Csv::SplitAdjustedDecorator
     deal_member[:curr_cd]
   end
 
-  def budget_usd
+  def budget
     deal_member[:budget_loc]
+  end
+
+  def budget_usd
+    deal_member[:budget]
   end
 
   def split_budget_usd
