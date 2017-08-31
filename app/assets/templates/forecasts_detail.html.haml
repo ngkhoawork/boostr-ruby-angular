@@ -229,12 +229,12 @@
 											%div{'ng-repeat': 'member in revenue.members'} {{member.user.first_name + ' ' + member.user.last_name}} {{member.share}}%
 										%td {{revenue.start_date | date : 'MM/dd/yyyy'}}
 										%td {{revenue.end_date | date : 'MM/dd/yyyy'}}
-										%td {{revenue.budget | currency : '$' : 0}}
-										%td {{revenue.in_period_split_amt | currency : '$' : 0}}
+										%td {{revenue.budget | currency : '$' : 2}}
+										%td {{revenue.in_period_split_amt | currency : '$' : 2}}
 										%td{'ng-repeat': 'amount in revenue.quarters track by $index', 'ng-if': 'switch.revenues == "quarters" && amount != null'}
-											{{amount | currency : '$' : 0}}
+											{{amount | currency : '$' : 2}}
 										%td{'ng-repeat': 'amount in revenue.months track by $index', 'ng-if': 'switch.revenues == "months" && amount != null'}
-											{{amount | currency : '$' : 0}}
+											{{amount | currency : '$' : 2}}
 
 			#deals-section.row
 				.col-xs-12

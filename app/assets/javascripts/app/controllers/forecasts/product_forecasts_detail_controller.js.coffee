@@ -136,8 +136,8 @@
 
         parseBudget = (data) ->
             data = _.map data, (item) ->
-                item.budget = parseInt item.budget if item.budget
-                item.budget_loc = parseInt item.budget_loc if item.budget_loc
+                item.budget = parseFloat item.budget if item.budget
+                item.budget_loc = parseFloat item.budget_loc if item.budget_loc
                 item
         getData = ->
             if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return

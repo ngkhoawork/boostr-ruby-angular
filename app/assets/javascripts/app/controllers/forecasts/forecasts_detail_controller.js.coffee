@@ -177,11 +177,11 @@
 
         parseRevenueBudgets = (data) ->
             data = _.map data, (item) ->
-                item.budget = parseInt item.budget if item.budget
-                item.budget_loc = parseInt item.budget_loc if item.budget_loc
-                item.in_period_split_amt = parseInt item.in_period_split_amt if item.in_period_split_amt
-                item.months = _.map item.months, (m) -> if isNaN parseInt m then null else parseInt m
-                item.quarters = _.map item.quarters, (q) -> if isNaN parseInt q then null else parseInt q
+                item.budget = parseFloat item.budget if item.budget
+                item.budget_loc = parseFloat item.budget_loc if item.budget_loc
+                item.in_period_split_amt = parseFloat item.in_period_split_amt if item.in_period_split_amt
+                item.months = _.map item.months, (m) -> if isNaN parseFloat m then null else parseFloat m
+                item.quarters = _.map item.quarters, (q) -> if isNaN parseFloat q then null else parseFloat q
                 item
         parseDealBudgets = (data) ->
             data = _.map data, (item) ->
