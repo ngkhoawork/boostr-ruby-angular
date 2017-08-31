@@ -65,7 +65,7 @@
             getReport = (query) ->
                 Report.split_adjusted(query).$promise.then (data) ->
                     $scope.deals = data
-                    calcTotals(_.uniq data, 'deal_id')
+                    calcTotals(data)
 
             calcTotals = (deals) ->
                 t = $scope.totals
@@ -75,6 +75,7 @@
                     t.pipelineUnweighted += budget
                     t.pipelineWeighted += budget * deal.stage.probability / 100
                 t.pipelineRatio = (Math.round(t.pipelineWeighted / t.pipelineUnweighted * 100) / 100) || 0
+                deals = _.uniq deals, 'deal_id'
                 t.deals = deals.length
                 t.aveDealSize = t.pipelineUnweighted / deals.length
 
