@@ -102,6 +102,14 @@
                     %a.upload{ href: '', ng: { click: 'showUploadQuotasModal()' } }
                       = inline_svg 'icons/import.svg'
                       Import Quotas
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Influencers Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadInfluencersModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Influencers
 
         %tab{heading: "Data Export", index: "1"}
           .row
@@ -158,6 +166,15 @@
                     %a{ href: '', ng: { click: 'exportDisplayIOMonthlyBudgets()' } }
                       = inline_svg 'icons/import.svg'
                       Export IO Monthly Product Budgets
+
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Influencers Export
+                  %li.export
+                    %a{ href: '', ng: { click: 'exportInfluencers()' } }
+                      = inline_svg 'icons/import.svg'
+                      Export Influencers
 
         %tab{heading: "Import Status", index: "3", ng: { click: 'getLogs()' } }
           .table-report.pad

@@ -1768,7 +1768,6 @@ ActiveRecord::Schema.define(version: 20170915133451) do
   add_foreign_key "ios", "companies"
   add_foreign_key "ios", "deals"
   add_foreign_key "print_items", "ios"
-  add_foreign_key "product_dimensions", "companies"
   add_foreign_key "requests", "companies"
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"
