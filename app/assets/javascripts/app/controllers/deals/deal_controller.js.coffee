@@ -626,7 +626,7 @@
     deal = $scope.currentDeal
     if moment(deal.start_date).isAfter(deal.end_date)
       deal[key] = moment(oldDate).toDate()
-      $scope.errors.campaignPeriod = 'The Start Date can\'t be higher than the End Date'
+      $scope.errors.campaignPeriod = 'End Date can\'t be before Start Date'
       $timeout (-> delete $scope.errors.campaignPeriod), 6000
     else
       $scope.updateDeal()
