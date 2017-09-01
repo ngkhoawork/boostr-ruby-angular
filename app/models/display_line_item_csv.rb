@@ -187,7 +187,7 @@ class DisplayLineItemCsv
   end
 
   def is_dli_date_over_io_bounds
-    return unless display_line_item.new_record? || io.present?
+    return unless io_or_tempio.present? || display_line_item.new_record? || io.present?
     if display_line_item.start_date < io.start_date
       errors.add(:start_date, 'start date is less than io start date')
     end
