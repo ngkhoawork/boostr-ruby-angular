@@ -17,8 +17,8 @@
             %th.left Start Date
             %th.left End Date
             %th.left Total Budget
-            %th.left{ ng: { repeat: "month in currentDeal.months" } }
-              {{ month | boDate }}
+            %th.left{ ng: { repeat: "month in currentDeal.io.readable_months" } }
+              {{ month.name }}
             %th{ ng: { if: 'currentDeal.requests_enabled' } }
         %tbody
           %tr{ ng: { if: 'currentDeal.io.content_fees && currentDeal.io.content_fees.length > 0', repeat: "content_fee in currentDeal.io.content_fees"} }
