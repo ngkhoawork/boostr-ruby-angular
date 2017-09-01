@@ -45,14 +45,12 @@
 					.col-body
 						.description Total Amount
 						.title {{currentDeal.budget_loc | currency: currency_symbol : 0}}
-						.subtitle{'ng-if': 'currentDeal.currency.curr_cd != "USD"'} {{currentDeal.budget | currency: '$' : 0}}
 
 			%div.stats-col
 				.col-body-wrap
 					.col-body
 						.description Forecast Amount
 						.title {{currentDeal.budget_loc * currentDeal.stage.probability / 100 | currency: currency_symbol : 0}}
-						.subtitle{'ng-if': 'currentDeal.currency.curr_cd != "USD"'} {{currentDeal.budget * currentDeal.stage.probability / 100 | currency: '$' : 0}}
 
 			%div.stats-col
 				.col-body-wrap
