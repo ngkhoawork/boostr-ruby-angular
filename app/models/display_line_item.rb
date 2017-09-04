@@ -543,9 +543,26 @@ class DisplayLineItem < ActiveRecord::Base
       else
         display_line_items = DisplayLineItem.where("line_number=? and io_id=?", line_number, io_id)
       end
+
+      if io.present?
+        parent_object = io
+      elsif temp_io.present?
+        parent_object = temp_io
+      end
+
+      if start_date < parent_object.start_date
+        import_log.count_failed
+        import_log.log_error(['start date can\'t be prior the IO start date'])
+      end
+      if end_date > parent_object.end_date
+        import_log.count_failed
+        import_log.log_error(['end date can\'t be after the IO end date'])
+      end
+
       if display_line_items.count > 0
         display_line_item = display_line_items.first
       end
+
       if display_line_item.present?
         import_log.count_imported
         display_line_item.update(display_line_item_params)
