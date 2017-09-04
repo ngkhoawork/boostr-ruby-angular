@@ -146,7 +146,7 @@
     width: $sliding-filter-w;
     position: absolute;
     right: -$sliding-filter-w - 5px;
-    z-index: 2;
+    z-index: 102;
     transition: right 500ms;
     box-shadow: -2px 0 10px gray;
     &.open {
