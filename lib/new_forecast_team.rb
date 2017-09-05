@@ -18,26 +18,6 @@ class NewForecastTeam
     'team'
   end
 
-  def cache_key
-    parts = []
-    parts << team.id
-    parts << team.updated_at
-    parents.each do |parent|
-      parts << parent[:id]
-      parts << parent[:name]
-    end
-    # teams.each do |team|
-    #   parts << team.cache_key
-    # end
-    # if leader
-    #   parts << leader.cache_key
-    # end
-    # members.each do |member|
-    #   parts << member.cache_key
-    # end
-    Digest::MD5.hexdigest(parts.join)
-  end
-
   def parents
     return @parents if defined?(@parents)
     @parents = []
@@ -105,6 +85,8 @@ class NewForecastTeam
     forecast_time_dimension = ForecastTimeDimension.find_by(id: time_period.id)
 
     company = team.company
+
+    forecast_gap_to_quota_positive = company.forecast_gap_to_quota_positive
 
     @forecasts_data = {
       stages: company.stages,
@@ -330,19 +312,20 @@ class NewForecastTeam
         @forecasts_data[:members][user.id][:wow_revenue] += wow_revenue
 
         quota = user.quotas.for_time_period(start_date, end_date).sum(:value)
+
         if user.leader?
           @forecasts_data[:members][user.id][:quota] = 0
-          @forecasts_data[:members][user.id][:amount] = (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
-          @forecasts_data[:members][user.id][:percent_to_quota] = (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
-          @forecasts_data[:members][user.id][:percent_booked] = (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
-          @forecasts_data[:members][user.id][:gap_to_quota] = (quota - @forecasts_data[:members][user.id][:amount]).to_f
         else
           @forecasts_data[:members][user.id][:quota] = quota
-          @forecasts_data[:members][user.id][:amount] = (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
-          @forecasts_data[:members][user.id][:percent_to_quota] = (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
-          @forecasts_data[:members][user.id][:percent_booked] = (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
-          @forecasts_data[:members][user.id][:gap_to_quota] = (quota - @forecasts_data[:members][user.id][:amount]).to_f
         end
+        @forecasts_data[:members][user.id][:amount] = (@forecasts_data[:members][user.id][:weighted_pipeline] || 0) + (@forecasts_data[:members][user.id][:revenue] || 0)
+
+        gap_to_quota = (quota - @forecasts_data[:members][user.id][:amount]).to_f
+        gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
+
+        @forecasts_data[:members][user.id][:percent_to_quota] = (quota > 0 ? @forecasts_data[:members][user.id][:amount] / quota * 100 : 100)
+        @forecasts_data[:members][user.id][:percent_booked] = (quota > 0 ? @forecasts_data[:members][user.id][:revenue] / quota * 100 : 100)
+        @forecasts_data[:members][user.id][:gap_to_quota] = gap_to_quota
 
         incomplete_deals = user.deals.active.closed.at_percent(0).closed_in(user.company.deals_needed_calculation_duration)
         complete_deals = user.deals.active.at_percent(100).closed_in(user.company.deals_needed_calculation_duration)
@@ -356,14 +339,17 @@ class NewForecastTeam
         else
           average_deal_size = 0
         end
-        gap_to_quota = (quota - @forecasts_data[:members][user.id][:amount]).to_f
-        if gap_to_quota <= 0
+
+        if gap_to_quota <= 0 && forecast_gap_to_quota_positive
+          new_deals_needed = 0
+        elsif gap_to_quota > 0 && !forecast_gap_to_quota_positive
           new_deals_needed = 0
         elsif average_deal_size <= 0 or win_rate <= 0
           new_deals_needed = 'N/A'
         else
-          new_deals_needed = (gap_to_quota / (win_rate * average_deal_size)).ceil
+          new_deals_needed = (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
         end
+
         @forecasts_data[:members][user.id][:new_deals_needed] = new_deals_needed
       end
 
@@ -389,11 +375,16 @@ class NewForecastTeam
         quota: 0
       }
       quota = (team.leader ? team.leader.quotas.for_time_period(start_date, end_date).sum(:value) : 0)
+
       @forecasts_data[:teams][team.id][:quota] = quota
       @forecasts_data[:teams][team.id][:amount] = (@forecasts_data[:teams][team.id][:weighted_pipeline] || 0) + (@forecasts_data[:teams][team.id][:revenue] || 0)
+
+      gap_to_quota = (quota - @forecasts_data[:teams][team.id][:amount]).to_f
+      gap_to_quota = -gap_to_quota if !forecast_gap_to_quota_positive
+
       @forecasts_data[:teams][team.id][:percent_to_quota] = (quota > 0 ? @forecasts_data[:teams][team.id][:amount] / quota * 100 : 100)
       @forecasts_data[:teams][team.id][:percent_booked] = (quota > 0 ? @forecasts_data[:teams][team.id][:revenue] / quota * 100 : 100)
-      @forecasts_data[:teams][team.id][:gap_to_quota] = (quota - @forecasts_data[:teams][team.id][:amount]).to_f
+      @forecasts_data[:teams][team.id][:gap_to_quota] = gap_to_quota
 
       all_team_members = (team.all_members.nil? ? []:team.all_members)
       complete_dealsincomplete_deals = Deal.joins(:deal_members).where("deal_members.user_id in (?)", all_team_members.map{|member| member.id}).active.at_percent(100).closed_in(team.company.deals_needed_calculation_duration)
@@ -408,13 +399,15 @@ class NewForecastTeam
       else
         average_deal_size = 0
       end
-      gap_to_quota = (quota - @forecasts_data[:teams][team.id][:amount]).to_f
-      if gap_to_quota <= 0
+      
+      if gap_to_quota <= 0 && forecast_gap_to_quota_positive
+        new_deals_needed = 0
+      elsif gap_to_quota > 0 && !forecast_gap_to_quota_positive
         new_deals_needed = 0
       elsif average_deal_size <= 0 or win_rate <= 0
         new_deals_needed = 'N/A'
       else
-        new_deals_needed = (gap_to_quota / (win_rate * average_deal_size)).ceil
+        new_deals_needed = (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
       end
       @forecasts_data[:teams][team.id][:new_deals_needed] = new_deals_needed
     end
@@ -482,7 +475,11 @@ class NewForecastTeam
   end
 
   def gap_to_quota
-    (quota - amount).to_f
+    if team.company.forecast_gap_to_quota_positive
+      return (quota - amount).to_f
+    else
+      return (amount - quota).to_f
+    end
   end
 
   def quota
@@ -508,9 +505,10 @@ class NewForecastTeam
 
   def new_deals_needed
     goal = gap_to_quota
-    return 0 if goal <= 0
+    return 0 if goal <= 0 && team.company.forecast_gap_to_quota_positive
+    return 0 if goal > 0 && !team.company.forecast_gap_to_quota_positive
     return 'N/A' if average_deal_size <= 0 or win_rate <= 0
-    (gap_to_quota / (win_rate * average_deal_size)).ceil
+    (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
     # return 0 if gap_to_quota <= 0
     # members_gap_to_quota = 0
     # new_deals = 0

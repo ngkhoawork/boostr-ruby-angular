@@ -2,7 +2,7 @@
 ['$scope', 'Company', 'Stage', 'Validation', 'User', 'Forecast'
 ($scope, Company, Stage, Validation, User, Forecast) ->
   $scope.userTypes = User.user_types_list
-  console.log($scope.userTypes)
+
   Company.get().$promise.then (company) ->
     $scope.company = company
 

@@ -1,5 +1,6 @@
 @filters.filter 'humanReadableMoney', ->
   (input) ->
+    console.log('input', input)
     input = Math.round(input)
     if Math.abs(input) < 1000000
       if input < 0

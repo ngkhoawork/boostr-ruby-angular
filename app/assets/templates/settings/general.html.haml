@@ -20,4 +20,11 @@
             .form-group
               %button.btn.btn-primary{'ng-click': 'runForecastCalculation()'}
                 Run Now 
+            %h5 Forecast Gap to Quota Positive
+            .form-group
+              .show-hide-remainder-form
+                .switch-remainder-form
+                  %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'company.forecast_gap_to_quota_positive', 'ng-change': "updateCompany()", id: "rem-act-modal-toggle-forecast-gap-to-quota"}
+                  %label{:for => "rem-act-modal-toggle-forecast-gap-to-quota"}
+                    %span
 

@@ -189,7 +189,11 @@ class NewForecastMember
   end
 
   def gap_to_quota
-    quota - amount
+    if member.company.forecast_gap_to_quota_positive
+      return (quota - amount).to_f
+    else
+      return (amount - quota).to_f
+    end
   end
 
   def quota
@@ -214,9 +218,10 @@ class NewForecastMember
 
   def new_deals_needed
     goal = gap_to_quota
-    return 0 if goal <= 0
+    return 0 if goal <= 0 && member.company.forecast_gap_to_quota_positive
+    return 0 if goal > 0 && !member.company.forecast_gap_to_quota_positive
     return 'N/A' if average_deal_size <= 0 or win_rate <= 0
-    (gap_to_quota / (win_rate * average_deal_size)).ceil
+    (gap_to_quota.abs / (win_rate * average_deal_size)).ceil
   end
 
   private

@@ -103,6 +103,7 @@
             $scope.timePeriods = data.timePeriods
             $scope.sellers = data.sellers
             $scope.sellers.unshift(defaultUser)
+            $scope.forecast_gap_to_quota_positive = data.user.company_forecast_gap_to_quota_positive
             switch data.user.user_type
                 when 1 #seller
                     $scope.filter.seller = data.user
@@ -150,8 +151,13 @@
                     unweighted += Number fc.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
                 fc.quarterly_weighted_forecast[quarter] = weighted
                 fc.quarterly_unweighted_forecast[quarter] = unweighted
-                fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
-                fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
+                if $scope.forecast_gap_to_quota_positive
+                    fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
+                    fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
+                else
+                    fc.quarterly_weighted_gap_to_quota[quarter] = weighted - fc.quarterly_quota[quarter]
+                    fc.quarterly_unweighted_gap_to_quota[quarter] = unweighted - fc.quarterly_quota[quarter]
+
                 fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
             fc.stages.sort (s1, s2) -> s2.probability - s1.probability
 
