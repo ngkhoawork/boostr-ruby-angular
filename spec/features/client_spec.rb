@@ -5,39 +5,27 @@ feature 'Clients' do
   let(:user) { create :user }
 
   describe 'showing client details' do
-    let!(:client) { create :client, created_by: user.id, name: 'Arstozka' }
-    let!(:agency) { create :client, created_by: user.id, name: 'Blitz' }
-    let!(:contacts) { create_list :contact, 2, clients: [client, agency] }
-    let!(:deal) { create_list :deal, 2, advertiser: client, agency: agency }
-    let!(:agency_deal) { create :deal, agency: agency }
-
     before do
       set_client_type(client, company, 'Advertiser')
       set_client_type(agency, company, 'Agency')
+      create_list :contact, 2, clients: [client, agency]
+      create_list :deal, 2, advertiser: client, agency: agency
       login_as user, scope: :user
-      visit "/clients/#{client.id}"
-      expect(page).to have_css('#clients')
+      visit "/accounts/#{client.id}"
+      wait_for_ajax
     end
 
-    scenario 'shows client details, people, deals, team and splits', js: true do
-      within '#client-list' do
-        expect(page).to have_css('.list-group-item', count: 2)
+    it 'shows client details, people, deals, team and splits', js: true do
+      within '.client-title' do
+        expect(page).to have_text(client.name)
       end
 
-      within '#client-detail' do
-        expect(find('h2.client-name')).to have_text(user.clients.order(:name).first.name)
+      within '.members' do
+        expect(page).to have_css('tbody tr', count: 1)
+      end
 
-        within '#people' do
-          expect(page).to have_css('.well', count: 2)
-        end
-
-        within '#client-deals' do
-          expect(page).to have_css('.well', count: 2)
-        end
-
-        within '#teamsplits' do
-          expect(page).to have_css('.table-wrapper')
-        end
+      within('.deals', text: 'Deals') do
+        expect(page).to have_css('tbody tr', count: 2)
       end
     end
   end
@@ -45,92 +33,24 @@ feature 'Clients' do
   describe 'creating a client' do
     before do
       login_as user, scope: :user
-      visit '/clients'
-      expect(page).to have_css('#clients')
+      visit '/accounts'
+      wait_for_ajax
     end
 
-    scenario 'pops up a new client modal and creates a new client', js: true do
-      find_link('New Account').trigger('click')
+    it 'pops up a new client modal and creates a new client', js: true do
+      find('add-button', text: 'Add Account').trigger('click')
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
         ui_select('client-type', 'Agency')
         fill_in 'name', with: 'Bobby'
-        fill_in 'street1', with: '123 Main St.'
-        fill_in 'city', with: 'Boise'
-        ui_select('state', 'Idaho')
 
         find_button('Create').trigger('click')
+        wait_for_ajax
       end
 
-      expect(page).to have_no_css('#client_modal')
-      expect(page).to have_css('#client-list')
-
-      within '.list-group' do
-        expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active h4')).to have_text('Bobby')
-      end
-
-      within '#client-detail' do
-        expect(find('h2.client-name')).to have_text('Bobby')
-        expect(find('h2.client-name')).to have_text('Boise, ID')
-        expect(find('#details')).to have_text('Agency')
-      end
-
-      find_link('New Account').trigger('click')
-      expect(page).to have_css('#client_modal')
-
-      within '#client_modal' do
-        ui_select('client-type', 'Agency')
-        fill_in 'name', with: 'Johnny'
-        fill_in 'street1', with: '123 Main St.'
-        fill_in 'city', with: 'Seattle'
-        ui_select('state', 'Washington')
-        find_button('Create').trigger('click')
-      end
-
-      expect(page).to have_no_css('#client_modal')
-      expect(page).to have_no_css('.no-client-members')
-      expect(page).to have_css('.no-people')
-      expect(page).to have_css('.no-deals')
-
-      within '.list-group' do
-        expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active h4')).to have_text('Johnny')
-      end
-
-      within '#client-detail' do
-        expect(find('h2.client-name')).to have_text('Johnny')
-        expect(find('h2.client-name')).to have_text('Seattle, WA')
-      end
-
-      find_link('edit-client').trigger('click')
-      expect(page).to have_css('#client_modal')
-
-      within '#client_modal' do
-        ui_select('client-type', 'Agency')
-        fill_in 'name', with: 'Bedrock'
-        fill_in 'street1', with: '123 Main St.'
-        fill_in 'city', with: 'Boise'
-        ui_select('state', 'Idaho')
-
-        find_button('Update').trigger('click')
-      end
-
-      expect(page).to have_no_css('#client_modal')
-      expect(page).to have_no_css('.no-client-members')
-      expect(page).to have_css('.no-people')
-      expect(page).to have_css('.no-deals')
-
-      within '.list-group' do
-        expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active h4')).to have_text('Bedrock')
-      end
-
-      within '#client-detail' do
-        expect(find('h2.client-name')).to have_text('Bedrock')
-        expect(find('h2.client-name')).to have_text('Boise, ID')
-      end
+      expect(page).to have_css('tbody tr', count: 1)
+      expect(page).to have_css('tbody tr', text: 'Bobby')
     end
   end
 
@@ -138,35 +58,19 @@ feature 'Clients' do
     let!(:clients) { create_list :client, 3, created_by: user.id }
 
     before do
-      clients.sort_by!(&:name)
       login_as user, scope: :user
-      visit '/clients'
-      expect(page).to have_css('#clients')
+      visit '/accounts'
+      wait_for_ajax
     end
 
-    scenario 'removes the client from the page and navigates to the client index', js: true do
-      within '.list-group' do
-        expect(page).to have_css('.list-group-item', count: 3)
-        find('.list-group-item:last-child').trigger('click')
-      end
+    it 'removes the client from the page and navigates to the client index', js: true do
+      expect(page).to have_css('tbody tr', count: 3)
 
-      within '#client-detail' do
-        expect(find('h2.client-name')).to have_text(clients[2].name)
-        find('#delete-client').trigger('click')
-      end
+      find_link(clients.first.name).trigger('click')
 
-      expect(page).to have_css('.list-group-item', count: 2)
+      find('.delete-deal').trigger('click')
 
-      within '#client-detail' do
-        expect(find('h2.client-name')).to have_text(clients[0].name)
-        find('#delete-client').trigger('click')
-      end
-
-      expect(page).to have_css('.list-group-item', count: 1)
-
-      expect(page).to have_no_css('.no-client-members')
-      expect(page).to have_css('.no-people')
-      expect(page).to have_css('.no-deals')
+      expect(page).to have_css('tbody tr', count:2)
     end
   end
 
@@ -177,14 +81,12 @@ feature 'Clients' do
     before do
       set_client_type(client, company, 'Advertiser')
       login_as user, scope: :user
-      visit '/clients'
-      expect(page).to have_css('#clients')
+      visit "/accounts/#{client.id}"
+      wait_for_ajax
     end
 
-    scenario 'with a new contact', js: true do
-      find('.add-contact').trigger('click')
-      expect(page).to have_css('.new-contact-options', visible: true)
-      find('.new-person').trigger('click')
+    it 'with a new contact', js: true do
+      find('.contacts', text: 'Contacts', match: :first).find('.add-btn').trigger('click')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -200,41 +102,15 @@ feature 'Clients' do
         fill_in 'mobile', with: '1257763562'
 
         find_button('Create').trigger('click')
+        wait_for_ajax
       end
 
       expect(page).to have_no_css('#contact_modal')
 
-      within '#people' do
-        expect(page).to have_css('.well', count: 1)
-
-        within '.well:first-child' do
-          expect(page).to have_text('Bobby, CEO')
-        end
+      within '.contacts', text: 'Contacts', match: :first do
+        expect(page).to have_css('tbody tr', count: 1)
+        expect(page).to have_text('Bobby')
       end
-
-      expect(page).to have_no_css('.no-client-members')
-      expect(page).to have_css('.no-deals')
-    end
-
-    scenario 'with an existing contact', js: true do
-      find('.add-contact').trigger('click')
-
-      expect(page).to have_css('.new-contact-options', visible: true)
-      find('.existing-contact').trigger('click')
-
-      expect(page).to have_css('.existing-contact-options', visible: true)
-      ui_select('contact-list', contact.name)
-
-      within '#people' do
-        expect(page).to have_css('.well', count: 1)
-
-        within '.well:first-child' do
-          expect(page).to have_text(contact.name)
-        end
-      end
-
-      expect(page).to have_no_css('.no-client-members')
-      expect(page).to have_css('.no-deals')
     end
   end
 
@@ -243,89 +119,46 @@ feature 'Clients' do
     let!(:agency) { create :client, created_by: user.id }
 
     let!(:open_stage) { create :stage, position: 1 }
-    let!(:deal_type_sponsorship_option) { create :option, field: deal_type_field(company), name: "Sponsorship" }
-    let!(:deal_source_rfp_option) { create :option, field: deal_source_field(company), name: "RFP Response to Agency" }
+    let!(:deal_type_sponsorship_option) { create :option, field: deal_type_field(company), name: 'Sponsorship' }
+    let!(:deal_source_rfp_option) { create :option, field: deal_source_field(company), name: 'RFP Response to Agency' }
 
     before do
       set_client_type(client, company, 'Advertiser')
       set_client_type(agency, company, 'Agency')
       login_as user, scope: :user
-      visit '/clients'
-      expect(page).to have_css('#clients')
+      visit "/accounts/#{client.id}"
     end
 
-    scenario 'with a new deal', js: true do
-      find('.new-deal').trigger('click')
+    it 'with a new deal', js: true do
+      find('.deals add-button').trigger('click')
 
       expect(page).to have_css('#deal_modal')
 
       within '#deal_modal' do
-        advertiser_search = find "div[name='advertiser'] span.ui-select-toggle"
-        advertiser_search.click
-        advertiser_field = find "div[name='advertiser'] > input.form-control"
-        advertiser_field.set(client.name)
-
-        agency_search = find "div[name='agency'] span.ui-select-toggle"
-        agency_search.click
-        agency_field = find "div[name='agency'] > input.form-control"
-        agency_field.set(agency.name)
-
         fill_in 'name', with: 'Apple Watch Launch'
         ui_select('stage', open_stage.name)
-        ui_select('deal-type', 'Sponsorship')
-        ui_select('source-type', 'RFP Response to Agency')
-        fill_in 'next-steps', with: 'Meet with Rep'
-        fill_in 'start-date', with: '1/1/15'
-        fill_in 'end-date', with: '12/31/15'
+
+        find('[name=start-date]').click
+        find('ul td button', match: :first).trigger('click')
+        find('[name=end-date]').click
+        find('ul td button', match: :first).trigger('click')
 
         find_button('Create').trigger('click')
-        expect(page).not_to have_css('.error-text')
+        wait_for_ajax
       end
 
       expect(page).to have_no_css('#deal_modal')
-      expect(page).to have_css('#deal')
+      expect(page).to have_text('Apple Watch Launch')
     end
   end
 
-  describe 'adding a reminder to a client' do
-    let!(:clients) { create_list :client, 3, created_by: user.id }
+  private
 
-    before do
-      clients.sort_by!(&:name)
-      login_as user, scope: :user
-      visit '/clients'
-      expect(page).to have_css('#clients')
-    end
+  def client
+    @_client ||= create :client, created_by: user.id, name: 'Apple'
+  end
 
-    scenario 'creates reminder and edits it', js: true do
-      within '.client-name' do
-        expect(page).to have_css('.show-create-remainders-popup')
-
-        find('.show-create-remainders-popup > label').trigger('click')
-        expect(page).to have_text("Reminder name*")
-
-        within '#reminder_modal' do
-          fill_in 'name', with: 'Reminder!'
-          fill_in 'comment', with: 'Client Reminder'
-
-          find_button('Set Reminder').trigger('click')
-        end
-
-        expect(page).not_to have_css('#reminder_modal')
-
-        find('.show-create-remainders-popup > label').trigger('click')
-        expect(find("input[name='name']").value).to eq('Reminder!')
-
-        within '#reminder_modal' do
-          fill_in 'name', with: 'Reminder update!'
-          find_button('Set Reminder').trigger('click')
-        end
-
-        expect(page).not_to have_css('#reminder_modal')
-
-        find('.show-create-remainders-popup > label').trigger('click')
-        expect(find("input[name='name']").value).to eq("Reminder update!")
-      end
-    end
+  def agency
+    @agency ||= create :client, created_by: user.id, name: 'Blitz'
   end
 end

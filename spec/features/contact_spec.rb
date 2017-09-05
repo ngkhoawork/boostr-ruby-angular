@@ -1,20 +1,14 @@
 require 'rails_helper'
 
 feature 'Contacts' do
-  let(:company) { create :company }
-  let(:user) { create :user, company: company }
-  let!(:client) { create :client, company: company }
-  let!(:client_member) { create :client_member, client: client, user: user, values: [create_member_role(company)] }
-
   describe 'creating a contact' do
     before do
       login_as user, scope: :user
       visit '/contacts'
-      expect(page).to have_css('#contacts')
     end
 
-    scenario 'pops up a new contact modal and creates a new contact', js: true do
-      find_link('New Contact').trigger('click')
+    it 'pops up a new contact modal and creates a new contact', js: true do
+      find('add-button').trigger('click')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
@@ -34,158 +28,76 @@ feature 'Contacts' do
       end
 
       expect(page).to have_no_css('#contact_modal')
-
-      within '.list-group' do
-        expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active h4')).to have_text('Bobby')
-      end
-
-      within '#contact-detail' do
-        expect(find('h2.contact-name')).to have_text('Bobby')
-      end
-
-      find_link('New Contact').trigger('click')
-
-      expect(page).to have_css('#contact_modal')
-
-      within '#contact_modal' do
-        fill_in 'name', with: 'Johnny'
-        fill_in 'email', with: 'abc123@boostrcrm.com'
-        fill_in 'position', with: 'CFO'
-        ui_select('client', client.name)
-        find('.btn.add-btn').trigger('click')
-        fill_in 'street1', with: '123 Any Road'
-        fill_in 'city', with: 'Seattle'
-        ui_select('state', 'Washington')
-        fill_in 'zip', with: '78512'
-        fill_in 'office', with: '(789) 125-8416'
-        fill_in 'mobile', with: '(125) 776-3562'
-
-        find_button('Create').trigger('click')
-      end
-
-      expect(page).to have_no_css('#contact_modal')
-
-      within '.list-group' do
-        expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active h4')).to have_text('Johnny')
-      end
-
-      within '#contact-detail' do
-        expect(find('h2.contact-name')).to have_text('Johnny')
-      end
+      expect(find('.detail-stats')).to have_text('Bobby')
+      expect(find('.contact-info')).to have_text(client.name)
     end
   end
 
   describe 'Editing a contact' do
-    let!(:contacts) { create_list :contact, 3, company: company, clients: [client] }
-
     before do
       login_as user, scope: :user
-      visit '/contacts'
-      expect(page).to have_css('#contacts')
+      visit "/contacts/#{contact.id}"
     end
 
-    scenario 'pops up an edit contact modal and updates a contact', js: true do
-      find_link('edit-contact').trigger('click')
+    it 'pops up an edit contact modal and updates a contact', js: true do
+      find('.detail-stats .edit-deal').trigger('click')
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
         ui_select('client', client.name)
-        fill_in 'name', with: 'Bobby'
+        fill_in 'name', with: 'Bob'
         fill_in 'email', with: 'abc123@boostrcrm.com'
-        fill_in 'position', with: 'CEO'
+        fill_in 'position', with: 'CTO'
         fill_in 'street1', with: '123 Main St.'
         fill_in 'city', with: 'Boise'
-        ui_select('state', 'Idaho')
 
         find_button('Update').trigger('click')
       end
 
       expect(page).to have_no_css('#contact_modal')
-
-      within '.list-group' do
-        expect(page).to have_css('.list-group-item.active')
-        expect(find('.list-group-item.active h4')).to have_text('Bobby')
-      end
-
-      within '#contact-detail' do
-        expect(find('h2.contact-name')).to have_text('Bobby')
-        expect(find('h2.contact-name')).to have_text('CEO')
-      end
+      expect(find('.detail-stats')).to have_text('Bob')
+      expect(find('.contact-info')).to have_text('abc123@boostrcrm.com')
+      expect(find('.contact-info')).to have_text('123 Main St.')
+      expect(find('.contact-info')).to have_text('Boise')
     end
   end
 
   describe 'Deleting a contact' do
-    let!(:contacts) { create_list :contact, 3, company: company, clients: [client] }
-
     before do
-      contacts.sort_by!(&:name)
       login_as user, scope: :user
-      visit '/contacts'
-      expect(page).to have_css('#contacts')
+      visit "/contacts/#{contact.id}"
     end
 
-    scenario 'removes the contact from the page and navigates to the contact index', js: true do
-      within '.list-group' do
-        expect(page).to have_css('.list-group-item', count: 3)
-        find('.list-group-item:last-child').trigger('click')
-      end
+    it 'removes the contact from the page and navigates to the contact index', js: true do
+      expect(page.current_path).to eq "/contacts/#{contact.id}"
 
-      within '#contact-detail' do
-        expect(find('h2.contact-name')).to have_text(contacts[2].name)
-        find('#delete-contact').trigger('click')
-      end
+      find('.detail-stats .delete-deal').trigger('click')
 
-      expect(page).to have_css('.list-group-item', count: 2)
+      wait_for_ajax
 
-      within '#contact-detail' do
-        expect(find('h2.contact-name')).to have_text(contacts[0].name)
-        find('#delete-contact').trigger('click')
-      end
-
-      expect(page).to have_css('.list-group-item', count: 1)
+      expect(page.current_path).to eq '/contacts'
     end
   end
 
-  describe 'adding a reminder to a contact' do
-    let!(:contacts) { create_list :contact, 3, company: company, clients: [client] }
+  private
 
-    before do
-      login_as user, scope: :user
-      visit '/contacts'
-      expect(page).to have_css('#contacts')
-    end
+  def company
+    @_company ||= create :company
+  end
 
-    scenario 'creates reminder and edits it', js: true do
-      within '.contact-name' do
-        expect(page).to have_css('.show-create-remainders-popup')
+  def user
+    @_user ||= create :user, company: company
+  end
 
-        find('.show-create-remainders-popup > label').trigger('click')
-        expect(page).to have_text("Reminder name*")
+  def client
+    @_client ||= create :client, company: company, client_members: [client_member]
+  end
 
-        within '#reminder_modal' do
-          fill_in 'name', with: 'Reminder!'
-          fill_in 'comment', with: 'Client Reminder'
+  def client_member
+    @_client_member ||= create :client_member, user: user, values: [create_member_role(company)]
+  end
 
-          find_button('Set Reminder').trigger('click')
-        end
-
-        expect(page).not_to have_css('#reminder_modal')
-
-        find('.show-create-remainders-popup > label').trigger('click')
-        expect(find("input[name='name']").value).to eq('Reminder!')
-
-        within '#reminder_modal' do
-          fill_in 'name', with: 'Reminder update!'
-          find_button('Set Reminder').trigger('click')
-        end
-
-        expect(page).not_to have_css('#reminder_modal')
-
-        find('.show-create-remainders-popup > label').trigger('click')
-        expect(find("input[name='name']").value).to eq("Reminder update!")
-      end
-    end
+  def contact
+    @_contact ||= create :contact, company: company, clients: [client]
   end
 end
