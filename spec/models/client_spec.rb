@@ -38,7 +38,7 @@ RSpec.describe Client, type: :model do
       phone: client.address.phone,
       website: client.website,
       replace_team: '',
-      teammembers: [client.users.order(:id).map(&:email), client.client_members.order(:user_id).map(&:share).map(&:to_s)].transpose.map{|el|el.join('/')}.join(';')
+      teammembers: [client.users.map(&:email), client.client_members.map(&:share).map(&:to_s)].transpose.map{|el|el.join('/')}.join(';')
     }
 
     it 'returns correct data for account' do

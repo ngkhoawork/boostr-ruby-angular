@@ -7,37 +7,25 @@ feature 'ClientMembers' do
   let!(:client) { create :client, created_by: user.id }
   let!(:client_role_manager) { create_member_role(company) }
 
-  describe 'showing client_member details' do
+  describe 'adding client_members' do
     before do
       login_as user, scope: :user
-      visit '/clients'
-      expect(page).to have_css('#clients')
+      visit "/accounts/#{client.id}"
     end
 
-    scenario 'shows client_member details', js: true do
-      within '#teamsplits tbody' do
-        expect(page).to have_css('tr')
+    scenario 'adding client_member details', js: true do
+      within :css, 'div.members.block' do
+        find('add-button.dropdown-toggle').click
       end
+      expect(page).to have_css('ul.dropdown-menu.new-member-options')
 
-      find('.new-member').trigger('click')
-      expect(page).to have_css('#member_modal')
+      find('ul.dropdown-menu.new-member-options').click
+      find('#ui-select-choices-row-0-0').click
 
-      within '#member_modal' do
-        ui_select('user', other_user.name)
-        fill_in 'share', with: '26'
-        ui_select('role', 'Owner')
-
-        find_button('Create').trigger('click')
-      end
-
-      expect(page).to have_no_css('#member_modal')
-
-      within '#teamsplits tbody' do
-        expect(page).to have_css('tr', count: 2, visible: true)
-        expect(page).to have_text(other_user.first_name)
-        expect(page).to have_text(other_user.last_name)
-        expect(page).to have_text('26')
-        expect(page).to have_text('Owner')
+      expect(page).to have_no_css('ul.dropdown-menu.new-member-options')
+      within :css, 'div.members.block' do
+        expect(page).to have_css('tbody > tr', count: 2, visible: true)
+        expect(page).to have_text(other_user.name)
       end
     end
   end
@@ -45,28 +33,25 @@ feature 'ClientMembers' do
   describe 'updating a client_member' do
     before do
       login_as user, scope: :user
-      visit '/clients'
-      expect(page).to have_css('#clients')
+      visit "/accounts/#{client.id}"
     end
 
     scenario 'update member', js: true do
-      within '#teamsplits tbody tr:first-child' do
-        share = find('td:nth-child(2) span')
+      within 'div.members.block tbody tr:first-child' do
+        share = find('td:nth-child(3) div.editable')
+        role = find('td:nth-child(2) button.dropdown-toggle')
         expect(share).to have_text(0)
-        share.trigger('click')
-        expect(page).to have_css('.editable-input')
-        fill_in 'share', with: '25'
-        find('.editable-input').native.send_keys(:Enter)
-        expect(share).to have_text '25%'
+        share.click
+        expect(page).to have_css('input.editable-field')
+        fill_in 'inputText', with: '25'
 
-        # role_field = find('td:nth-child(3) span')
-        # # expect(role_field).to have_text("Owner")
-        # role_field.trigger('click')
-        # expect(page).to have_css('form.editable-select')
-        # within 'form.editable-select' do
-        #   select 'Owner', from: 'role'
-        # end
-        # expect(role_field).to have_text 'Owner'
+        role.click
+        role.click
+
+        find('ul.dropdown-menu li', :text => 'Owner').click
+
+        expect(share).to have_text '25%'
+        expect(role).to have_text 'Owner'
       end
     end
   end

@@ -59,7 +59,7 @@ describe Request do
     let(:message_delivery) { instance_double(ActionMailer::MessageDelivery) }
 
     before do
-      request
+      request(status: 'New')
       allow(RequestsMailer).to receive(:update_request).and_return(message_delivery)
       allow(message_delivery).to receive(:deliver_later).with(queue: 'default')
     end
@@ -114,8 +114,8 @@ describe Request do
     @_company ||= Company.first
   end
 
-  def request
-    @_request ||= create :request
+  def request(opts = {})
+    @_request ||= create :request, opts
   end
 
   def requester_email

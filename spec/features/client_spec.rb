@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-feature 'Clients' do
+feature 'Accounts' do
   let(:company) { Company.first }
   let(:user) { create :user }
 
-  describe 'showing client details' do
+  describe 'showing account details' do
     before do
       set_client_type(client, company, 'Advertiser')
       set_client_type(agency, company, 'Agency')
