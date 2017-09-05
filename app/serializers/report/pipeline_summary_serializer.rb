@@ -50,7 +50,7 @@ class Report::PipelineSummarySerializer < ActiveModel::Serializer
   end
 
   def billing_contact
-    object.billing_contact.serializable_hash(only: [:id, :name]) rescue nil
+    object.billing_contact.serializable_hash(only: [:id, :name], methods: [:email]) rescue nil
   end
 
   def members

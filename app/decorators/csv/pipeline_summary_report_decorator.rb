@@ -97,7 +97,7 @@ class Csv::PipelineSummaryReportDecorator
   end
 
   def billing_contact
-    deal[:billing_contact]['name'] rescue nil
+    (deal[:billing_contact]['name'] + '/' + deal[:billing_contact]['email']) rescue nil
   end
 
   private
