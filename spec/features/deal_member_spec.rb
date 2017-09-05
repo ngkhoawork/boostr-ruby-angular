@@ -2,7 +2,8 @@ require 'rails_helper'
 
 feature 'DealMembers' do
   let(:company) { Company.first }
-  let(:user) { create :user }
+  let(:user) { create :user, company: company }
+  let!(:second_user) { create :user, company: company }
   let(:stage) { create :stage, position: 1 }
   let(:client) { create :client }
   let!(:deal) { create :deal, stage: stage, creator: user, end_date: Date.new(2016, 6, 29), advertiser: client }
@@ -17,20 +18,22 @@ feature 'DealMembers' do
       expect(page).to have_css('#deal')
     end
 
-    scenario 'add a member from existing users', js: true do
-      find('.add-member').trigger('click')
-      find('.existing-user-options').trigger('click')
-      ui_select('user-list', user.name)
+    it 'add a member from existing users', js: true do
+      find('.members add-button', text: 'Add').trigger('click')
+      find('.existing-user-options').click
+      find('a', text: second_user.name).click
 
-      within '#teamsplits tbody' do
-        expect(page).to have_css('tr', count: 1)
-        expect(find('tr')).to have_text(user.name)
+      within '.members tbody' do
+        expect(page).to have_css('tr', count: 2)
+        expect(page).to have_text(user.name)
       end
     end
   end
 
   describe 'updating a deal_member' do
-    let!(:deal_member) { create :deal_member, deal_id: deal.id, user_id: user.id, values:[create_member_role(company)] }
+    let!(:deal_member) do
+      create :deal_member, share: 0, deal_id: deal.id, user_id: second_user.id, values:[create_member_role(company)]
+    end
 
     before do
       login_as user, scope: :user
@@ -38,21 +41,27 @@ feature 'DealMembers' do
       expect(page).to have_css('#deal')
     end
 
-    scenario 'update member', js: true do
-      within '#teamsplits tbody tr:first-child' do
-        role = find('td:nth-child(2) span')
+    it 'update member', js: true do
+      within '.members' do
+        role = find('tr', text: second_user.name).find('td:nth-child(2)').text
         expect(role).to have_text('Owner')
-        role.trigger('click')
-        expect(page).to have_css('.editable-input', visible: true)
-        select 'Member', from: 'role'
+
+        find('div.dropdown', text: role).click
+        click_on 'Member'
+
+        wait_for_ajax 0.5
+
+        role = find('tr', text: second_user.name).find('td:nth-child(2)').text
         expect(role).to have_text 'Member'
 
-        share = find('td:nth-child(3) span')
-        expect(share).to have_text(deal_member.share)
-        share.trigger('click')
-        expect(page).to have_css('.editable-input', visible: true)
-        fill_in 'share', with: '25'
-        find('.editable-input').native.send_keys(:Enter)
+        share = find('tr', text: user.name).find('td:nth-child(3)').text
+        expect(share).to have_text('100%')
+
+        find('tr', text: user.name).find('input.editable-field', match: :first, visible: false).set(25)
+
+        wait_for_ajax 0.5
+
+        share = find('tr', text: user.name).find('td:nth-child(3)').text
         expect(share).to have_text '25%'
       end
     end
@@ -60,20 +69,21 @@ feature 'DealMembers' do
 
   describe 'deleting a deal_member' do
     let!(:deal_member) { create_list :deal_member, 3, deal_id: deal.id }
+
     before do
+      window_size_for_screenshot 2000, 1400
       login_as user, scope: :user
       visit "/deals/#{deal.id}"
       expect(page).to have_css('#deal')
     end
 
-    scenario 'delete member', js: true do
-      within '#teamsplits tbody' do
+    it 'delete member', js: true do
+      within '.members tbody' do
+        expect(page).to have_css('tr', count: 4)
+
+        find('tr', text: user.name).find('.delete-deal', visible: false).trigger('click')
+
         expect(page).to have_css('tr', count: 3)
-        find('tr:first-child').hover
-        within 'tr:first-child' do
-          find('.delete-member').trigger('click')
-        end
-        expect(page).to have_css('tr', count: 2)
       end
     end
   end
