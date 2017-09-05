@@ -120,8 +120,8 @@ class InfluencerContentFee < ActiveRecord::Base
       if row[3].present?
         begin
           effect_date = Date.strptime(row[3].strip, "%d/%m/%Y")
-          if io_end_date.year < 100
-            io_end_date = Date.strptime(row[3].strip, "%d/%m/%y")
+          if io.end_date.year < 100
+            io.end_date = Date.strptime(row[3].strip, "%d/%m/%y")
           end
         rescue ArgumentError
           import_log.count_failed
@@ -134,7 +134,7 @@ class InfluencerContentFee < ActiveRecord::Base
         next
       end
 
-      if effect_date && effect_date >=io.start_date && effect_date <= io.end_date
+      if effect_date && !(effect_date >=io.start_date && effect_date <= io.end_date)
         import_log.count_failed
         import_log.log_error(['Date must be between IO start and end dates'])
         next
