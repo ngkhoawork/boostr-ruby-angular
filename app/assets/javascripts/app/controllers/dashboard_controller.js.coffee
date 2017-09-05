@@ -90,6 +90,8 @@
 
                     Dashboard.get({ io_owner: $scope.currentPacingAlertsFilter.value }).then (dashboard) ->
                         $scope.dashboard = dashboard
+                        if !$scope.forecast_gap_to_quota_positive
+                            $scope.dashboard.forecast.gap_to_quota = -($scope.dashboard.forecast.gap_to_quota)
 
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
                 blocks.forEach (name) -> $scope[name + 'Init']()
