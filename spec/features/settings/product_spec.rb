@@ -10,9 +10,12 @@ feature 'Users' do
   let!(:pricing_family_banner) { create :option, field: product_family_field(company), name: "Banner" }
   let!(:pricing_video_banner) { create :option, field: product_family_field(company), name: "Video" }
 
+  before do
+    login_as user, scope: :user
+  end
+
   describe 'creating a new product' do
     before do
-      login_as user, scope: :user
       visit '/settings/products'
       expect(page).to have_css('#products')
     end
@@ -34,29 +37,37 @@ feature 'Users' do
       end
 
       expect(page).to have_no_css('#product-modal')
+      expect(page).to have_text('Banner')
+      expect(page).to have_text('Desktop')
+      expect(page).to have_text('CPM')
+      expect(page).to have_text('Content-Fee')
+    end
+  end
 
+  describe 'update a new product' do
+    let!(:product) { create :product, company: company }
+
+    before do
+      visit '/settings/products'
+      expect(page).to have_css('#products')
+    end
+
+    it 'updating a product', js: true do
       find('tbody i.fa-pencil', visible: false).trigger('click')
 
-      expect(page).to have_css('#product-modal')
-
       within '#product-modal' do
-        fill_in 'name', with: 'Test'
-        ui_select('product-line', 'Tablet')
-        ui_select('family', 'Video')
-        ui_select('pricing-type', 'CPE')
+        fill_in 'name', with: 'Banner'
+        ui_select('product-line', 'Desktop')
+        ui_select('family', 'Banner')
+        ui_select('pricing-type', 'CPM')
 
         find_button('Update').trigger('click')
       end
 
       expect(page).to have_no_css('#product-modal')
-
-      within 'table tbody' do
-        expect(page).to have_css('tr', count: 1)
-        expect(find('tr:first-child td:nth-child(2)')).to have_text('Test')
-        expect(find('tr:first-child td:nth-child(3)')).to have_text('Tablet')
-        expect(find('tr:first-child td:nth-child(4)')).to have_text('Video')
-        expect(find('tr:first-child td:nth-child(5)')).to have_text('CPE')
-      end
+      expect(page).to have_text('Banner')
+      expect(page).to have_text('Desktop')
+      expect(page).to have_text('CPM')
     end
   end
 end
