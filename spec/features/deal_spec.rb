@@ -15,6 +15,7 @@ feature 'Deals' do
     let!(:open_deal) { create :deal, stage: open_stage, advertiser: advertiser }
     let!(:another_open_deal) { create :deal, stage: another_open_stage, advertiser: advertiser }
     let!(:closed_deal) { create :deal, stage: closed_stage, advertiser: advertiser }
+    let!(:closed_deal2) { create :deal, stage: closed_stage, advertiser: advertiser }
 
     before do
       set_client_type(advertiser, company, 'Advertiser')
@@ -28,7 +29,7 @@ feature 'Deals' do
 
     it 'shows all open deals initially, then filters on stage clicks then deletes a couple', js: true do
       expect(page).to have_css('.deals-table .deal-column', count: 3)
-      expect(page).to have_css('.deals-table .deal-block', count: 3)
+      expect(page).to have_css('.deals-table .deal-block', count: 4)
 
       expect(find('.deal-column', text: open_stage.name)).to have_text open_deal.name
       expect(find('.deal-column', text: another_open_stage.name)).to have_text another_open_deal.name
@@ -43,7 +44,7 @@ feature 'Deals' do
 
       wait_for_ajax
 
-      expect(page).to have_css('.deals-table .deal-block', count: 2)
+      expect(page).to have_css('.deals-table .deal-block', count: 3)
     end
   end
 
@@ -57,7 +58,7 @@ feature 'Deals' do
     end
 
     it 'pops up a new deal modal and creates a new deal', js: true do
-      find('add-button', text: 'Add Deal').trigger('click')
+      click_button 'Add Deal'
 
       expect(page).to have_css('#deal_modal')
 
@@ -65,10 +66,11 @@ feature 'Deals' do
         fill_in 'name', with: 'Apple Watch Launch'
         ui_select('stage', open_stage.name)
         find('[name=start-date]').click
-        find('ul td button', match: :first).trigger('click')
+        find('ul td button', match: :first).click
         find('[name=end-date]').click
-        find('ul td button', match: :first).trigger('click')
+        find('ul td button', match: :first).click
         find('[name=advertiser]').click
+        find("input[placeholder='Advertiser']").set advertiser.name
         find('ul li').click
 
         find_button('Create').trigger('click')
