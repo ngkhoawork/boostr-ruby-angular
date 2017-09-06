@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170821105315) do
+ActiveRecord::Schema.define(version: 20170825112513) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -120,12 +119,7 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.integer "account_type"
     t.integer "category_id"
     t.integer "subcategory_id"
-    t.integer "holding_company_id"
-    t.integer "company_id"
   end
-
-  add_index "account_dimensions", ["company_id"], name: "index_account_dimensions_on_company_id", using: :btree
-  add_index "account_dimensions", ["holding_company_id"], name: "index_account_dimensions_on_holding_company_id", using: :btree
 
   create_table "account_pipeline_facts", force: :cascade do |t|
     t.integer "company_id"
@@ -139,37 +133,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
   add_index "account_pipeline_facts", ["account_dimension_id"], name: "index_account_pipeline_facts_on_account_dimension_id", using: :btree
   add_index "account_pipeline_facts", ["company_id"], name: "index_account_pipeline_facts_on_company_id", using: :btree
   add_index "account_pipeline_facts", ["time_dimension_id"], name: "index_account_pipeline_facts_on_time_dimension_id", using: :btree
-
-  create_table "account_product_pipeline_facts", force: :cascade do |t|
-    t.integer  "product_dimension_id"
-    t.integer  "time_dimension_id"
-    t.integer  "account_dimension_id"
-    t.integer  "company_id"
-    t.integer  "weighted_amount"
-    t.integer  "unweighted_amount"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-  end
-
-  add_index "account_product_pipeline_facts", ["account_dimension_id"], name: "index_account_product_pipeline_facts_on_account_dimension_id", using: :btree
-  add_index "account_product_pipeline_facts", ["company_id"], name: "index_account_product_pipeline_facts_on_company_id", using: :btree
-  add_index "account_product_pipeline_facts", ["product_dimension_id"], name: "index_account_product_pipeline_facts_on_product_dimension_id", using: :btree
-  add_index "account_product_pipeline_facts", ["time_dimension_id"], name: "index_account_product_pipeline_facts_on_time_dimension_id", using: :btree
-
-  create_table "account_product_revenue_facts", force: :cascade do |t|
-    t.integer  "account_dimension_id"
-    t.integer  "time_dimension_id"
-    t.integer  "company_id"
-    t.integer  "product_dimension_id"
-    t.integer  "revenue_amount"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-  end
-
-  add_index "account_product_revenue_facts", ["account_dimension_id"], name: "index_account_product_revenue_facts_on_account_dimension_id", using: :btree
-  add_index "account_product_revenue_facts", ["company_id"], name: "index_account_product_revenue_facts_on_company_id", using: :btree
-  add_index "account_product_revenue_facts", ["product_dimension_id"], name: "index_account_product_revenue_facts_on_product_dimension_id", using: :btree
-  add_index "account_product_revenue_facts", ["time_dimension_id"], name: "index_account_product_revenue_facts_on_time_dimension_id", using: :btree
 
   create_table "account_revenue_facts", force: :cascade do |t|
     t.integer "company_id"
@@ -1008,7 +971,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.integer  "api_configuration_id"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
-    t.integer  "date_range_type",        default: 0
   end
 
   add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
@@ -1309,16 +1271,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
 
   add_index "print_items", ["io_id"], name: "index_print_items_on_io_id", using: :btree
 
-  create_table "product_dimensions", force: :cascade do |t|
-    t.string   "name"
-    t.string   "revenue_type"
-    t.integer  "company_id"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
-  end
-
-  add_index "product_dimensions", ["company_id"], name: "index_product_dimensions_on_company_id", using: :btree
-
   create_table "products", force: :cascade do |t|
     t.string   "name"
     t.integer  "company_id"
@@ -1482,10 +1434,10 @@ ActiveRecord::Schema.define(version: 20170821105315) do
     t.string   "dimensionadvertiser_name"
     t.string   "dimensionline_item_name"
     t.string   "dimensionad_unit_name"
-    t.integer  "dimensionorder_id",                                  limit: 8
-    t.integer  "dimensionadvertiser_id",                             limit: 8
-    t.integer  "dimensionline_item_id",                              limit: 8
-    t.integer  "dimensionad_unit_id",                                limit: 8
+    t.integer  "dimensionorder_id"
+    t.integer  "dimensionadvertiser_id"
+    t.integer  "dimensionline_item_id"
+    t.integer  "dimensionad_unit_id"
     t.datetime "dimensionattributeorder_start_date_time"
     t.datetime "dimensionattributeorder_end_date_time"
     t.string   "dimensionattributeorder_agency"
@@ -1664,14 +1616,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
   add_foreign_key "account_pipeline_facts", "account_dimensions"
   add_foreign_key "account_pipeline_facts", "companies"
   add_foreign_key "account_pipeline_facts", "time_dimensions"
-  add_foreign_key "account_product_pipeline_facts", "account_dimensions"
-  add_foreign_key "account_product_pipeline_facts", "companies"
-  add_foreign_key "account_product_pipeline_facts", "products", column: "product_dimension_id"
-  add_foreign_key "account_product_pipeline_facts", "time_dimensions"
-  add_foreign_key "account_product_revenue_facts", "account_dimensions"
-  add_foreign_key "account_product_revenue_facts", "companies"
-  add_foreign_key "account_product_revenue_facts", "products", column: "product_dimension_id"
-  add_foreign_key "account_product_revenue_facts", "time_dimensions"
   add_foreign_key "account_revenue_facts", "account_dimensions"
   add_foreign_key "account_revenue_facts", "companies"
   add_foreign_key "account_revenue_facts", "time_dimensions"
@@ -1697,7 +1641,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
-  add_foreign_key "datafeed_configuration_details", "api_configurations"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
   add_foreign_key "deal_custom_fields", "companies"
@@ -1729,7 +1672,6 @@ ActiveRecord::Schema.define(version: 20170821105315) do
   add_foreign_key "ios", "companies"
   add_foreign_key "ios", "deals"
   add_foreign_key "print_items", "ios"
-  add_foreign_key "product_dimensions", "companies"
   add_foreign_key "requests", "companies"
   add_foreign_key "requests", "deals"
   add_foreign_key "requests", "users", column: "assignee_id"
