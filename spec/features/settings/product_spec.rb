@@ -17,8 +17,8 @@ feature 'Users' do
       expect(page).to have_css('#products')
     end
 
-    scenario 'creating a product', js: true do
-      find('.add-product').trigger('click')
+    it 'creating a product', js: true do
+      find('add-button', text: 'Add').trigger('click')
 
       expect(page).to have_css('#product-modal')
 
@@ -27,20 +27,15 @@ feature 'Users' do
         ui_select('product-line', 'Desktop')
         ui_select('family', 'Banner')
         ui_select('pricing-type', 'CPM')
+        find('div[name=revenue-type]').click
+        find('ul li', match: :first).click
 
         find_button('Create').trigger('click')
       end
 
       expect(page).to have_no_css('#product-modal')
 
-      within '.table-wrapper tbody' do
-        expect(page).to have_css('tr', count: 1)
-      end
-
-      within 'table tbody' do
-        expect(page).to have_css('tr', count: 1)
-        find('tr:first-child').trigger('click')
-      end
+      find('tbody i.fa-pencil', visible: false).trigger('click')
 
       expect(page).to have_css('#product-modal')
 
