@@ -9,19 +9,19 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
     dfp_api_configuration(0)
   end
 
-  xit 'opens file' do
+  it 'opens file' do
     expect(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_file)
     subject.perform
   end
 
-  xit 'parses CSV file' do
+  it 'parses CSV file' do
     allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_file)
     expect(CSV).to receive(:parse).with(report_file, {:headers=>true, :header_converters=>:symbol})
     subject.perform
   end
 
   context 'CPM product in a row' do
-    xit 'creates a temp io and display line item with proper attributes' do
+    it 'creates a temp io and display line item with proper attributes' do
       allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_csv)
 
       expect(DisplayLineItemCsv).to receive(:new).with(
@@ -53,7 +53,7 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
     end
   end
 
-  xit 'maps CPD product to DisplayLineItemCsv' do
+  it 'maps CPD product to DisplayLineItemCsv' do
     allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_csv_cpd)
 
     expect(DisplayLineItemCsv).to receive(:new).with(
@@ -96,8 +96,6 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(multiline_report_csv)
 
       subject.perform
-
-      # byebug
 
       import_log = CsvImportLog.last
       expect(import_log.rows_processed).to eq 6
