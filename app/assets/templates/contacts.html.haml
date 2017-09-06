@@ -124,7 +124,7 @@
 							%th Email
 							%th Mobile
 							%th Last Touch
-					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading'}}
+					%tbody{infinite: {scroll: 'loadMoreContacts()', 'scroll-disabled': 'isLoading || allContactsLoaded'}}
 						%tr{'ng-repeat': 'contact in contacts'}
 							%td
 								%a{href: '', 'ng-href': '/contacts/{{contact.id}}'} {{contact.name}}

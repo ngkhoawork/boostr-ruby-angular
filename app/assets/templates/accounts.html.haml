@@ -152,7 +152,7 @@
                                 %th Team
                                 %th City
                                 %th Last Touch
-                        %tbody{'infinite-scroll': "loadMoreClients()"}
+                        %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isLoading || allClientsLoaded'}}
                             %tr{ ng: { repeat: 'client in clients'} }
                                 %td
                                     %a{'ng-href': '/accounts/{{client.id}}'}
