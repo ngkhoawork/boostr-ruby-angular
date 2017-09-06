@@ -1,6 +1,12 @@
 class Api::IntegrationLogsController < ApplicationController
+  include CleanPagination
+
   def index
-    render json: API::IntegrationLogs::Collection.new(current_user_integration_logs).to_hash
+    max_per_page = 100
+
+    paginate current_user_integration_logs.count, max_per_page do |limit, offset|
+      render json: current_user_integration_logs.limit(limit).offset(offset)
+    end
   end
 
   def show
@@ -30,7 +36,7 @@ class Api::IntegrationLogsController < ApplicationController
   private
 
   def current_user_integration_logs
-    current_user_company.integration_logs
+    current_user_company.integration_logs.errors_only(params[:errors_only])
   end
 
   def current_user_company
