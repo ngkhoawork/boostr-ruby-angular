@@ -57,14 +57,16 @@ class User < ActiveRecord::Base
   end
 
   def update_forecast_fact_callback
-    time_period_ids = company.time_periods.collect{|time_period| time_period.id}
-    user_ids = [self.id]
-    product_ids = company.products.collect{|product| product.id}
-    stage_ids = company.stages.collect{|stage| stage.id}
-    io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
-    deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
-    ForecastRevenueCalculatorWorker.perform_async(io_change)
-    ForecastPipelineCalculatorWorker.perform_async(deal_change)
+    if company.present?
+      time_period_ids = company.time_periods.collect{|time_period| time_period.id}
+      user_ids = [self.id]
+      product_ids = company.products.collect{|product| product.id}
+      stage_ids = company.stages.collect{|stage| stage.id}
+      io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
+      deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
+      ForecastRevenueCalculatorWorker.perform_async(io_change)
+      ForecastPipelineCalculatorWorker.perform_async(deal_change)
+    end
   end
 
   def roles=(roles)
