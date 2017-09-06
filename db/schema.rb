@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170811110823) do
+ActiveRecord::Schema.define(version: 20170821105315) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -144,8 +145,8 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.integer  "time_dimension_id"
     t.integer  "account_dimension_id"
     t.integer  "company_id"
-    t.decimal  "weighted_amount"
-    t.decimal  "unweighted_amount"
+    t.integer  "weighted_amount"
+    t.integer  "unweighted_amount"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
@@ -241,8 +242,12 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.string   "icon"
     t.integer  "updated_by"
     t.integer  "created_by"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+    t.integer  "position"
+    t.boolean  "active",     default: true
+    t.string   "css_class"
+    t.boolean  "editable",   default: true
   end
 
   create_table "ad_units", force: :cascade do |t|
@@ -294,11 +299,11 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
+    t.boolean  "recurring",                  default: false
     t.text     "encrypted_json_api_key"
     t.text     "encrypted_json_api_key_iv"
     t.string   "network_code"
     t.string   "integration_provider"
-    t.boolean  "recurring",                  default: false
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -482,9 +487,9 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "enable_operative_extra_fields",     default: false
-    t.boolean  "influencer_enabled",                default: false
     t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "influencer_enabled",                default: false
   end
 
   add_index "companies", ["billing_contact_id"], name: "index_companies_on_billing_contact_id", using: :btree
@@ -1003,6 +1008,7 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.integer  "api_configuration_id"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.integer  "date_range_type",        default: 0
   end
 
   add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
@@ -1476,10 +1482,10 @@ ActiveRecord::Schema.define(version: 20170811110823) do
     t.string   "dimensionadvertiser_name"
     t.string   "dimensionline_item_name"
     t.string   "dimensionad_unit_name"
-    t.integer  "dimensionorder_id"
-    t.integer  "dimensionadvertiser_id"
-    t.integer  "dimensionline_item_id"
-    t.integer  "dimensionad_unit_id"
+    t.integer  "dimensionorder_id",                                  limit: 8
+    t.integer  "dimensionadvertiser_id",                             limit: 8
+    t.integer  "dimensionline_item_id",                              limit: 8
+    t.integer  "dimensionad_unit_id",                                limit: 8
     t.datetime "dimensionattributeorder_start_date_time"
     t.datetime "dimensionattributeorder_end_date_time"
     t.string   "dimensionattributeorder_agency"
@@ -1691,6 +1697,7 @@ ActiveRecord::Schema.define(version: 20170811110823) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
+  add_foreign_key "datafeed_configuration_details", "api_configurations"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
   add_foreign_key "deal_custom_fields", "companies"

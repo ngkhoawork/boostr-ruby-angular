@@ -264,12 +264,19 @@
     .when '/settings/ealerts/',
       templateUrl: 'settings/ealerts.html'
       controller: 'SettingsEalertsController'
+
+    .when '/settings/activity_types/',
+      templateUrl: 'settings/activity_types.html'
+      controller: 'SettingsActivityTypesController'
+
     .when '/settings/permissions/',
       templateUrl: 'settings/permissions.html'
       controller: 'SettingsPermissionsController'
+
     .when '/settings/validations/',
       templateUrl: 'settings/validations.html'
       controller: 'SettingsValidationsController'
+
     .when '/bps',
       templateUrl: 'bp.html'
       controller: 'BPController'
