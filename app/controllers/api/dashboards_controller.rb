@@ -47,11 +47,11 @@ class Api::DashboardsController < ApplicationController
 
   def forecast_for(period)
     if current_user.user_type.eql?(EXEC) && user_quota_for_period(period.start_date, period.end_date) == 0
-      Forecast.new(company, company_teams, period.start_date, period.end_date)
+      NewForecast.new(company, company_teams, period, nil)
     elsif current_user.leader?
-      Forecast.new(company, current_user.teams, period.start_date, period.end_date)
+      NewForecastTeam.new(current_user.teams.first, period, nil)
     else
-      ForecastMember.new(current_user, period.start_date, period.end_date)
+      NewForecastMember.new(current_user, period, nil)
     end
   end
 

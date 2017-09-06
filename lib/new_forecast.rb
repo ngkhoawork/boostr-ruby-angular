@@ -6,7 +6,7 @@ class NewForecast
   attr_accessor :company, :teams, :team_members, :start_date, :end_date, :time_period, :product
 
   # If there is a year, the start_date and end_date are ignored
-  def initialize(company, teams, time_period, product)
+  def initialize(company, teams, time_period, product = nil)
     self.company = company
     self.time_period = time_period
     self.start_date = time_period.start_date
