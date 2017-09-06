@@ -664,6 +664,19 @@
                 .not-selected {
                     color: lighten($secondary-font-color, 15%);
                 }
+                .remove-icon {
+                    color: $secondary-font-color;
+                    //display: none;
+                    margin-right: 4px;
+                    &:hover {
+                        color: $main-font-color;
+                    }
+                }
+                &:hover {
+                    .remove-icon {
+                        display: inline;
+                    }
+                }
             }
         }
         .required-field {

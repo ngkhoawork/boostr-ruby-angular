@@ -733,6 +733,11 @@
           deal_contact.errors[key] = error && error[0]
     )
 
+  $scope.removeDealInitiative = (e) ->
+    e.stopPropagation()
+    $scope.currentDeal.initiative_id = null
+    $scope.updateDeal()
+
   $scope.deleteDealProduct = (deal_product) ->
     $scope.errors = {}
     if confirm('Are you sure you want to delete "' +  deal_product.name + '"?')
