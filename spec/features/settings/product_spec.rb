@@ -2,13 +2,7 @@ require 'rails_helper'
 
 feature 'Users' do
   let(:company) { Company.first }
-  let(:user) { create :user }
-  let!(:pricing_type_cpm) { create :option, field: product_pricing_field(company), name: "CPM" }
-  let!(:pricing_type_cpe) { create :option, field: product_pricing_field(company), name: "CPE" }
-  let!(:pricing_line_desktop) { create :option, field: product_line_field(company), name: "Desktop" }
-  let!(:pricing_line_tablet) { create :option, field: product_line_field(company), name: "Tablet" }
-  let!(:pricing_family_banner) { create :option, field: product_family_field(company), name: "Banner" }
-  let!(:pricing_video_banner) { create :option, field: product_family_field(company), name: "Video" }
+  let(:user) { create :user, company: company }
 
   before do
     login_as user, scope: :user
@@ -27,20 +21,19 @@ feature 'Users' do
 
       within '#product-modal' do
         fill_in 'name', with: 'Banner'
-        ui_select('product-line', 'Desktop')
-        ui_select('family', 'Banner')
-        ui_select('pricing-type', 'CPM')
         find('div[name=revenue-type]').click
-        find('ul li', match: :first).click
+
+        wait_for_ajax 0.5
+
+        find('ul a', text: 'Display').click
 
         find_button('Create').trigger('click')
       end
 
+      wait_for_ajax
+
       expect(page).to have_no_css('#product-modal')
-      expect(page).to have_text('Banner')
-      expect(page).to have_text('Desktop')
-      expect(page).to have_text('CPM')
-      expect(page).to have_text('Content-Fee')
+      expect(page).to have_text('Display')
     end
   end
 
@@ -57,17 +50,14 @@ feature 'Users' do
 
       within '#product-modal' do
         fill_in 'name', with: 'Banner'
-        ui_select('product-line', 'Desktop')
-        ui_select('family', 'Banner')
-        ui_select('pricing-type', 'CPM')
 
         find_button('Update').trigger('click')
       end
 
+      wait_for_ajax
+
       expect(page).to have_no_css('#product-modal')
       expect(page).to have_text('Banner')
-      expect(page).to have_text('Desktop')
-      expect(page).to have_text('CPM')
     end
   end
 end
