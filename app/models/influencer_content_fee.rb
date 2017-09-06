@@ -68,51 +68,24 @@ class InfluencerContentFee < ActiveRecord::Base
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
       
-      if row[0].nil? || row[0].blank?
+      io_number = row[0]
+      if io_number.nil? || io_number.blank?
         import_log.count_failed
         import_log.log_error(['IO Number is empty'])
         next
       end
-
-      if row[1].nil? || row[1].blank?
+      
+      influencer_id = row[1]
+      if influencer_id.nil? || influencer_id.blank?
         import_log.count_failed
         import_log.log_error(['Influencer ID is empty'])
         next
       end
 
-      if row[2].nil? || row[2].blank?
+      product_name = row[2]
+      if product_name.nil? || product_name.blank?
         import_log.count_failed
         import_log.log_error(['Product Name is empty'])
-        next
-      end
-
-      if row[3].nil? || row[3].blank?
-        import_log.count_failed
-        import_log.log_error(['Date is empty'])
-        next
-      end
-
-      if row[6].nil? || row[6].blank?
-        import_log.count_failed
-        import_log.log_error(['Gross is empty'])
-        next
-      end
-
-      unless io = current_user.company.ios.find_by(io_number:row[0])
-        import_log.count_failed
-        import_log.log_error(['IO Number ' + row[0].to_s + ' could not be found'])
-        next
-      end
-
-      unless influencer = current_user.company.influencers.find_by(id:row[1])
-        import_log.count_failed
-        import_log.log_error(['Influencer with ' + row[0].to_s + ' id could not be found'])
-        next
-      end
-
-      unless product = io.content_fee_products.find_by(name:row[2])
-        import_log.count_failed
-        import_log.log_error(['Influencer Product with ' + row[2].to_s + ' name could not be found'])
         next
       end
 
@@ -120,8 +93,8 @@ class InfluencerContentFee < ActiveRecord::Base
       if row[3].present?
         begin
           effect_date = Date.strptime(row[3].strip, "%d/%m/%Y")
-          if io.end_date.year < 100
-            io.end_date = Date.strptime(row[3].strip, "%d/%m/%y")
+          if effect_date.year < 100
+            effect_date = Date.strptime(row[3].strip, "%d/%m/%y")
           end
         rescue ArgumentError
           import_log.count_failed
@@ -131,6 +104,31 @@ class InfluencerContentFee < ActiveRecord::Base
       else
         import_log.count_failed
         import_log.log_error(['Date must be present'])
+        next
+      end
+
+      gross = row[6]
+      if gross.nil? || gross.blank?
+        import_log.count_failed
+        import_log.log_error(['Gross is empty'])
+        next
+      end
+
+      unless io = current_user.company.ios.find_by(io_number: io_number)
+        import_log.count_failed
+        import_log.log_error(['IO Number ' + io_number.to_s + ' could not be found'])
+        next
+      end
+
+      unless influencer = current_user.company.influencers.find_by(id: influencer_id)
+        import_log.count_failed
+        import_log.log_error(['Influencer with ' + influencer_id.to_s + ' id could not be found'])
+        next
+      end
+
+      unless product = io.content_fee_products.find_by(name: product_name)
+        import_log.count_failed
+        import_log.log_error(['Influencer Product name as ' + product_name.to_s + ' could not be found'])
         next
       end
 
@@ -169,8 +167,7 @@ class InfluencerContentFee < ActiveRecord::Base
         next
       end
 
-      influencer_content_fee = InfluencerContentFee.create({influencer_id: current_user.company_id, address_attributes: {email: row[3]}})
-       contact_params[:id] = contact.id
+      influencer_content_fee = InfluencerContentFee.create({influencer_id: influencer_id, content_fee_id: content_fee.id, fee_type: fee_type, fee_amount_loc: fee_amount_loc, effect_date: effect_date, curr_cd: io.curr_cd, gross_amount_loc: io.budget_loc, gross_amount: gross})
       
       if influencer_content_fee
         import_log.count_imported
