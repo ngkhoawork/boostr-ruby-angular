@@ -28,7 +28,7 @@
 		{{ filter.product.id ? '--' : (row.wow_weighted_pipeline | currency: '$': 0) }}
 	%td
 		{{ filter.product.id ? '--' : (row.wow_revenue | currency: '$': 0) }}
-	%td
+	-#%td
 		--
 %tr.subtable-row
 	%td.auto-colspan

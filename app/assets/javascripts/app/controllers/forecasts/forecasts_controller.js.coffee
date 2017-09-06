@@ -155,7 +155,7 @@
 
 		searchAndSetSeller = (team, user) ->
 			if !team.id then return
-			if team.leader_id is user.id or _.findWhere team.members, {id: user.id}
+			if _.findWhere team.members, {id: user.id}
 				return $scope.setFilter('seller', user)
 
 		getQuery = ->

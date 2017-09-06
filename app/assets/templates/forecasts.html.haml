@@ -127,7 +127,7 @@
 										%span.clickable{ ng: { click: 'sort.toggle("wow_revenue")' } }
 											Wow Revenue
 											%i{ ng: { class: "{ 'fa': sort.column == 'wow_revenue', 'fa-sort-asc': sort.column == 'wow_revenue' && sort.direction == 'asc', 'fa-sort-desc': sort.column == 'wow_revenue' && sort.direction == 'desc' }" } }
-									%th
+									-#%th
 										Call Qtr
 							%tbody.teams{ ng: { repeat: 'row in teams', include: "'partials/forecast/forecast_row.html'" } }
 							%tbody.members{ ng: { repeat: 'row in members', include: "'partials/forecast/forecast_row.html'" } }
