@@ -5,8 +5,11 @@
             $scope.contacts = []
             $scope.feedName = 'Updates'
             $scope.page = 1
+            $scope.contactsPerPage = 20
             $scope.query = ""
             $scope.showMeridian = true
+            $scope.isLoading = false
+            $scope.allContactsLoaded = false
             $scope.types = []
             $scope.errors = {}
             $scope.itemType = 'Contact'
@@ -60,7 +63,7 @@
                     ContactsFilter.reset(key)
                 resetAll: ->
                     ContactsFilter.resetAll()
-                    this.apply(true)
+#                    this.apply(true)
                 getDateValue: ->
                     date = this.selected.date
                     if date.startDate && date.endDate
@@ -129,28 +132,27 @@
                     $scope.page = 1
                     $scope.getContacts()
 
-            $scope.getContacts = ->
+            $scope.getContacts = (next) ->
                 $scope.isLoading = true
+                if !next then $scope.page = 1
                 params = {
                     page: $scope.page,
                     filter: $scope.teamFilter().param,
-                    per: 20
+                    per: $scope.contactsPerPage
                 }
                 params = _.extend params, $scope.filter.get()
                 if $scope.query.trim().length
                     params.q = $scope.query.trim()
                 Contact.all1(params).then (contacts) ->
-                    if $scope.page > 1
+                    $scope.allContactsLoaded = !contacts || contacts.length < $scope.contactsPerPage
+                    if $scope.page++ > 1
                         $scope.contacts = $scope.contacts.concat(contacts)
                     else
                         $scope.contacts = contacts
                     $scope.isLoading = false
 
-            $scope.isLoading = false
             $scope.loadMoreContacts = ->
-                if $scope.contacts && $scope.contacts.length < Contact.totalCount
-                    $scope.page = $scope.page + 1
-                    $scope.getContacts()
+                if !$scope.allContactsLoaded then $scope.getContacts(true)
 
             $scope.showModal = ->
                 $scope.modalInstance = $modal.open
