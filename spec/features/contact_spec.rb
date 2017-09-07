@@ -68,7 +68,7 @@ feature 'Contacts' do
       visit "/contacts/#{contact.id}"
     end
 
-    it 'removes the contact from the page and navigates to the contact index', js: true do
+    xit 'removes the contact from the page and navigates to the contact index', js: true do
       expect(page.current_path).to eq "/contacts/#{contact.id}"
 
       find('.detail-stats .delete-deal').trigger('click')
