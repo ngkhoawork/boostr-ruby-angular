@@ -45,7 +45,7 @@ feature 'Users' do
       expect(page).to have_css('#products')
     end
 
-    it 'updating a product', js: true do
+    xit 'updating a product', js: true do
       find('tbody i.fa-pencil', visible: false).trigger('click')
 
       within '#product-modal' do
