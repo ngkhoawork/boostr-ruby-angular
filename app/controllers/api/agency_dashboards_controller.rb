@@ -93,7 +93,7 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def advertisers_without_spend
-    FactTables::AccountProductRevenueFacts::AdvertisersWithoutSpendQuery.new(filtered_revenues_by_accounts).call
+    FactTables::AdvertisersWithoutSpendQuery.new(filtered_pipelines_by_accounts, advertiser_ids: related_advertisers_ids).call
   end
 
   def agencies_ids
