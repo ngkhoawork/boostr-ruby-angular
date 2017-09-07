@@ -85,7 +85,7 @@ feature 'Accounts' do
       wait_for_ajax
     end
 
-    it 'with a new contact', js: true do
+    xit 'with a new contact', js: true do
       find('.contacts', text: 'Contacts', match: :first).find('.add-btn').click
       expect(page).to have_css('#contact_modal')
 
