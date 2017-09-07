@@ -130,7 +130,7 @@ class DisplayLineItemCsv
   end
 
   def budget_loc
-    budget.to_i
+    budget.to_f
   end
 
   def budget_delivered_loc
