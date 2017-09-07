@@ -116,6 +116,8 @@ feature 'Teams' do
         end
       end
 
+      wait_for_ajax 1
+
       expect(page).to have_css('.table-wrapper tbody tr', count: 2)
 
       within '.table-wrapper tbody' do
