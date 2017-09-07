@@ -178,7 +178,7 @@
 					$scope.members = forecast.members
 					$scope.dataset = [$scope.teams || [], $scope.members || []]
 					$scope.setMcSort()
-					drawChart($scope.forecast, '#forecast-chart')
+					$timeout -> drawChart($scope.forecast, '#forecast-chart')
 					calcTotals()
 			else
 				Forecast.query(query).$promise.then (forecast) ->
@@ -193,7 +193,7 @@
 							$scope.member = forecast[0]
 					$scope.dataset = [$scope.teams || [], $scope.members || []]
 					$scope.setMcSort()
-					drawChart($scope.forecast, '#forecast-chart')
+					$timeout -> drawChart($scope.forecast, '#forecast-chart')
 					calcTotals()
 
 

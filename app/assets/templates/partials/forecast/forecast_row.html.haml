@@ -26,7 +26,7 @@
 		{{ row.is_leader || filter.product.id ? '--' : row.new_deals_needed }}
 	%td
 		{{ filter.product.id ? '--' : (row.wow_weighted_pipeline | currency: '$': 0) }}
-	%td
+	%td.center
 		{{ filter.product.id ? '--' : (row.wow_revenue | currency: '$': 0) }}
 	-#%td
 		--
