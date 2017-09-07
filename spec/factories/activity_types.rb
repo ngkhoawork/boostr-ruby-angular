@@ -4,6 +4,7 @@ FactoryGirl.define do
     action  { FFaker::HipsterIpsum.phrase }
     icon    {"/assets/icons/#{FFaker::HipsterIpsum.word}"}
     sequence(:position) { |n| n }
+    company
 
     after(:create) do |item|
       item.company_id = Company.first.id unless item.company_id.present?
