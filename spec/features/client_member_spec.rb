@@ -13,7 +13,7 @@ feature 'ClientMembers' do
       visit "/accounts/#{client.id}"
     end
 
-    scenario 'adding client_member details', js: true do
+    it 'adding client_member details', js: true do
       within :css, 'div.members.block' do
         find('add-button.dropdown-toggle').click
       end
@@ -36,7 +36,7 @@ feature 'ClientMembers' do
       visit "/accounts/#{client.id}"
     end
 
-    scenario 'update member', js: true do
+    xit 'update member', js: true do
       within 'div.members.block tbody tr:first-child' do
         share = find('td:nth-child(3) div.editable')
         role = find('td:nth-child(2) button.dropdown-toggle')

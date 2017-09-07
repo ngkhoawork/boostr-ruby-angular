@@ -19,14 +19,12 @@ feature 'Dashboard' do
       login_as user, scope: :user
       allow_any_instance_of(Api::DashboardsController).to receive(:time_period).and_return(time_period)
       visit '/'
+      wait_for_ajax 1
       expect(page).to have_css('#dashboard')
     end
 
     it 'shows the stats box and open deals', js: true do
       within '#stats' do
-        wait_for_ajax 1
-        sleep 1
-
         expect(page.all('.stats-col .title')[1].text).to eq '$20K' # Quota
         expect(page.all('.stats-col .title')[2].text).to eq '$0' # Forecast
       end
@@ -40,13 +38,12 @@ feature 'Dashboard' do
       login_as member, scope: :user
       allow_any_instance_of(Api::DashboardsController).to receive(:time_period).and_return(time_period)
       visit '/'
+      wait_for_ajax 1
       expect(page).to have_css('#dashboard')
     end
 
     it 'shows the stats box and open deals', js: true do
       within '#stats' do
-        wait_for_ajax 1
-
         expect(page.all('.stats-col .title')[1].text).to eq '$20K' # Quota
         expect(page.all('.stats-col .title')[2].text).to eq '$0' # Forecast
       end
