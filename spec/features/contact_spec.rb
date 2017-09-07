@@ -7,7 +7,7 @@ feature 'Contacts' do
       visit '/contacts'
     end
 
-    it 'pops up a new contact modal and creates a new contact', js: true do
+    xit 'pops up a new contact modal and creates a new contact', js: true do
       find('add-button').trigger('click')
       expect(page).to have_css('#contact_modal')
 
