@@ -64,7 +64,7 @@ class InfluencerContentFee < ActiveRecord::Base
 
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'influencer_content_fee', source: 'ui')
     import_log.set_file_source(file_path)
-    
+    io_ids = []
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
       
@@ -187,6 +187,7 @@ class InfluencerContentFee < ActiveRecord::Base
       influencer_content_fee = InfluencerContentFee.create(influencer_content_fee_param)
       
       if influencer_content_fee
+        io_ids << io.id
         import_log.count_imported
       else
         import_log.count_failed
@@ -194,6 +195,8 @@ class InfluencerContentFee < ActiveRecord::Base
         next
       end
     end
+
+    IoInfluencerBudgetUpdateWorker.perform_async(io_ids)
 
     import_log.save
   end
