@@ -47,7 +47,7 @@ class Facts::AccountProductRevenueCalculationService < BaseService
                                                                     time_dim_start_date: date_range[:start_date],
                                                                     time_dim_end_date: date_range[:end_date])
                                                              .group('products.id')
-                                                             .sum(:budget)
+                                                             .sum('ceil(content_fee_product_budgets.budget::DOUBLE PRECISION)')
   end
 
   def display_products_budgets
@@ -60,7 +60,7 @@ class Facts::AccountProductRevenueCalculationService < BaseService
                                                               time_dim_start_date: date_range[:start_date],
                                                               time_dim_end_date: date_range[:end_date])
                                                        .group('products.id')
-                                                       .sum(:budget)
+                                                       .sum('ceil(display_line_item_budgets.budget::DOUBLE PRECISION)')
   end
 
   def display_line_item_budgets_daily_rate
@@ -73,14 +73,14 @@ class Facts::AccountProductRevenueCalculationService < BaseService
                                                                     time_dim_start_date: date_range[:start_date],
                                                                     time_dim_end_date: date_range[:end_date])
                                                              .group(:product_id)
-                                                             .sum(:daily_run_rate)
+                                                             .sum('ceil(display_line_items.daily_run_rate::DOUBLE PRECISION)')
   end
 
   def content_fee_products_budgets_conditions
     'content_fee_product_budgets.end_date >= :time_dim_start_date
      AND content_fee_product_budgets.start_date <= :time_dim_end_date
      AND ios.company_id = :company_id
-     AND ios.advertiser_id = :account_id OR ios.agency_id = :account_id'
+     AND (ios.advertiser_id = :account_id OR ios.agency_id = :account_id)'
   end
 
   def display_line_item_budgets_daily_rate_conditions
@@ -89,7 +89,7 @@ class Facts::AccountProductRevenueCalculationService < BaseService
      AND products.revenue_type = \'Display\'
      AND products.id NOT IN (:product_ids)
      AND ios.company_id = :company_id
-     AND ios.advertiser_id = :account_id OR ios.agency_id = :account_id'
+     AND (ios.advertiser_id = :account_id OR ios.agency_id = :account_id)'
   end
 
   def display_products_budgets_conditions
@@ -97,7 +97,7 @@ class Facts::AccountProductRevenueCalculationService < BaseService
      AND display_line_item_budgets.start_date <= :time_dim_end_date
      AND products.revenue_type = \'Display\'
      AND ios.company_id = :company_id
-     AND ios.advertiser_id = :account_id OR ios.agency_id = :account_id'
+     AND (ios.advertiser_id = :account_id OR ios.agency_id = :account_id)'
   end
 
 end

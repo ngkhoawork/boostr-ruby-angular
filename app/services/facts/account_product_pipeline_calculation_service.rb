@@ -37,7 +37,7 @@ class Facts::AccountProductPipelineCalculationService < BaseService
   end
 
   def sql
-    "SELECT sum(sums.weighted_budget) as weighted_budget, sum(sums.unweighted_budget) as unweighted_budget, sums.product_id
+    "SELECT sum(sums.weighted_budget) as weighted_budget, sum(ceil(sums.unweighted_budget::DOUBLE PRECISION)) as unweighted_budget, sums.product_id
      FROM (#{deal_product_budgets.to_sql})
      AS sums GROUP BY sums.product_id"
   end
@@ -51,8 +51,8 @@ class Facts::AccountProductPipelineCalculationService < BaseService
                                                       company_id: company_id,
                                                       start_date: date_range[:start_date],
                                                       end_date: date_range[:end_date])
-                                               .select('sum(deal_product_budgets.budget) * stages.probability / 100 as weighted_budget,
-                                                        sum(deal_product_budgets.budget) as unweighted_budget,
+                                               .select('sum(deal_product_budgets.budget::DOUBLE PRECISION) * stages.probability / 100 as weighted_budget,
+                                                        sum(deal_product_budgets.budget::DOUBLE PRECISION) as unweighted_budget,
                                                         deal_products.product_id as product_id')
                                                .group('deal_products.product_id, stages.probability')
   end
