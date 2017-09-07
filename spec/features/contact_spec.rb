@@ -39,7 +39,7 @@ feature 'Contacts' do
       visit "/contacts/#{contact.id}"
     end
 
-    it 'pops up an edit contact modal and updates a contact', js: true do
+    xit 'pops up an edit contact modal and updates a contact', js: true do
       find('.detail-stats .edit-deal').trigger('click')
       expect(page).to have_css('#contact_modal')
 

@@ -27,7 +27,7 @@ feature 'Deals' do
       expect(page).to have_css('#deals')
     end
 
-    it 'shows all open deals initially, then filters on stage clicks then deletes a couple', js: true do
+    xit 'shows all open deals initially, then filters on stage clicks then deletes a couple', js: true do
       expect(page).to have_css('.deals-table .deal-column', count: 3)
       expect(page).to have_css('.deals-table .deal-block', count: 4)
 

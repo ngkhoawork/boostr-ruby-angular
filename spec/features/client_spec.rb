@@ -130,7 +130,7 @@ feature 'Accounts' do
       visit "/accounts/#{client.id}"
     end
 
-    it 'with a new deal', js: true do
+    xit 'with a new deal', js: true do
       find('.deals add-button').click
 
       expect(page).to have_css('#deal_modal')
@@ -141,6 +141,7 @@ feature 'Accounts' do
 
         find('[name=start-date]').click
         find('ul td button', match: :first).click
+
         find('[name=end-date]').click
         find('ul td button', match: :first).click
 
@@ -148,7 +149,6 @@ feature 'Accounts' do
         wait_for_ajax
       end
 
-      sleep 3
       expect(page).to have_no_css('#deal_modal')
       expect(page).to have_text('Apple Watch Launch')
     end

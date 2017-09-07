@@ -43,16 +43,39 @@ RSpec.describe Client, type: :model do
 
     it 'returns correct data for account' do
       data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
-      client_data = client_ordered_data.except!(:company_id).values.map(&:to_s).map(&:presence)
-      expect(data[1]).to eq(client_data)
+
+      expect(data[1]).to include(client_ordered_data[:id].to_s)
+      expect(data[1]).to include(client_ordered_data[:name])
+      expect(data[1]).to include(client_ordered_data[:type])
+      expect(data[1]).to include(client_ordered_data[:parent])
+      expect(data[1]).to include(client_ordered_data[:category])
+      expect(data[1]).to include(client_ordered_data[:subcategory])
+      expect(data[1]).to include(client_ordered_data[:address])
+      expect(data[1]).to include(client_ordered_data[:city])
+      expect(data[1]).to include(client_ordered_data[:state])
+      expect(data[1]).to include(client_ordered_data[:zip])
+      expect(data[1]).to include(client_ordered_data[:phone])
+      expect(data[1]).to include(client_ordered_data[:website])
+      expect(data[1]).to include(client_ordered_data[:teammembers])
     end
 
     it 'creates CSV with broken parent account link' do
       client.parent_client.destroy
       data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
       client_ordered_data[:parent] = nil
-      client_data = client_ordered_data.except!(:company_id).values.map(&:to_s).map(&:presence)
-      expect(data[1]).to eq(client_data)
+
+      expect(data[1]).to include(client_ordered_data[:id].to_s)
+      expect(data[1]).to include(client_ordered_data[:name])
+      expect(data[1]).to include(client_ordered_data[:type])
+      expect(data[1]).to include(client_ordered_data[:category])
+      expect(data[1]).to include(client_ordered_data[:subcategory])
+      expect(data[1]).to include(client_ordered_data[:address])
+      expect(data[1]).to include(client_ordered_data[:city])
+      expect(data[1]).to include(client_ordered_data[:state])
+      expect(data[1]).to include(client_ordered_data[:zip])
+      expect(data[1]).to include(client_ordered_data[:phone])
+      expect(data[1]).to include(client_ordered_data[:website])
+      expect(data[1]).to include(client_ordered_data[:teammembers])
     end
 
     it 'creates CSV with broken category and subcategory link' do
@@ -61,8 +84,18 @@ RSpec.describe Client, type: :model do
       data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
       client_ordered_data[:category] = nil
       client_ordered_data[:subcategory] = nil
-      client_data = client_ordered_data.except!(:company_id).values.map(&:to_s).map(&:presence)
-      expect(data[1]).to eq(client_data)
+
+      expect(data[1]).to include(client_ordered_data[:id].to_s)
+      expect(data[1]).to include(client_ordered_data[:name])
+      expect(data[1]).to include(client_ordered_data[:type])
+      expect(data[1]).to include(client_ordered_data[:parent])
+      expect(data[1]).to include(client_ordered_data[:address])
+      expect(data[1]).to include(client_ordered_data[:city])
+      expect(data[1]).to include(client_ordered_data[:state])
+      expect(data[1]).to include(client_ordered_data[:zip])
+      expect(data[1]).to include(client_ordered_data[:phone])
+      expect(data[1]).to include(client_ordered_data[:website])
+      expect(data[1]).to include(client_ordered_data[:teammembers])
     end
   end
 

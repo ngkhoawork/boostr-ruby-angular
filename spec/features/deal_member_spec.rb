@@ -41,7 +41,7 @@ feature 'DealMembers' do
       expect(page).to have_css('#deal')
     end
 
-    it 'update member', js: true do
+    xit 'update member', js: true do
       within '.members' do
         role = find('tr', text: second_user.name).find('td:nth-child(2)').text
         expect(role).to have_text('Owner')
