@@ -1,21 +1,21 @@
 require 'rails_helper'
 
 feature 'Deals' do
-  let(:company) { Company.first }
-  let(:user) { create :user }
-  let!(:advertiser) { create :client, created_by: user.id, client_type_id: advertiser_type_id(company) }
-  let!(:agency) { create :client, created_by: user.id, client_type_id: agency_type_id(company) }
-  let!(:open_stage) { create :stage, position: 1, name: 'Lead' }
-  let!(:deal_type_seasonal_option) { create :option, field: deal_type_field(company), name: "Seasonal" }
-  let!(:deal_type_pitch_option) { create :option, field: deal_source_field(company), name: "Pitch to Client" }
+  let(:company) { create :company }
+  let(:user) { create :user, company: company }
+  let!(:advertiser) { create :client, company: company, created_by: user.id, client_type_id: advertiser_type_id(company) }
+  let!(:agency) { create :client, company: company, created_by: user.id, client_type_id: agency_type_id(company) }
+  let!(:open_stage) { create :stage, company: company, position: 1, name: 'Lead' }
+  let!(:deal_type_seasonal_option) { create :option, company: company, field: deal_type_field(company), name: "Seasonal" }
+  let!(:deal_type_pitch_option) { create :option, company: company, field: deal_source_field(company), name: "Pitch to Client" }
 
   describe 'showing a list of deals filtered by stages' do
-    let!(:another_open_stage) { create :stage, position: 2, probability: 50, name: 'Proposal' }
-    let!(:closed_stage) { create :stage, open: false, position: 3, probability: 100, name: 'Won' }
-    let!(:open_deal) { create :deal, stage: open_stage, advertiser: advertiser }
-    let!(:another_open_deal) { create :deal, stage: another_open_stage, advertiser: advertiser }
-    let!(:closed_deal) { create :deal, stage: closed_stage, advertiser: advertiser }
-    let!(:closed_deal2) { create :deal, stage: closed_stage, advertiser: advertiser }
+    let!(:another_open_stage) { create :stage, company: company, position: 2, probability: 50, name: 'Proposal' }
+    let!(:closed_stage) { create :stage, company: company, open: false, position: 3, probability: 100, name: 'Won' }
+    let!(:open_deal) { create :deal, company: company, stage: open_stage, advertiser: advertiser }
+    let!(:another_open_deal) { create :deal, company: company, stage: another_open_stage, advertiser: advertiser }
+    let!(:closed_deal) { create :deal, company: company, stage: closed_stage, advertiser: advertiser }
+    let!(:closed_deal2) { create :deal, company: company, stage: closed_stage, advertiser: advertiser }
 
     before do
       set_client_type(advertiser, company, 'Advertiser')
