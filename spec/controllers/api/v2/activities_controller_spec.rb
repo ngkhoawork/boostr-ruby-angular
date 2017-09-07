@@ -21,7 +21,7 @@ RSpec.describe Api::V2::ActivitiesController, type: :controller do
     end
 
     it 'returns list of contact\'s activities' do
-      activities(contacts: [contact], deal: nil, client: nil)
+      activities(contacts: [contact], deal: nil, client: nil, user: user)
 
       get :index, contact_id: contact.id
 

@@ -11,14 +11,14 @@ RSpec.describe Client, type: :model do
   end
 
   context 'to_csv' do
-    let!(:user) { create :user }
-    let!(:user2) { create :user }
-    let!(:user3) { create :user }
-    let!(:company) { user.company }
+    let!(:company) { create :company }
+    let!(:user) { create :user, company: company }
+    let!(:user2) { create :user, company: company }
+    let!(:user3) { create :user, company: company }
     let!(:category_field) { user.company.fields.where(name: 'Category').first }
     let!(:category) { create :option, field: category_field, company: user.company }
     let!(:subcategory) { create :option, option: category, company: user.company }
-    let!(:client) { create :client, client_category: category, client_subcategory: subcategory, client_type_id: advertiser_type_id(company) }
+    let!(:client) { create :client, client_category: category, client_subcategory: subcategory, client_type_id: advertiser_type_id(company), company: company }
     let!(:client_member1) { create :client_member, client: client, user: user }
     let!(:client_member2) { create :client_member, client: client, user: user2 }
     let!(:client_member3) { create :client_member, client: client, user: user3 }
@@ -43,7 +43,7 @@ RSpec.describe Client, type: :model do
 
     it 'returns correct data for account' do
       data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
-      client_data = client_ordered_data.values.map(&:to_s).map(&:presence)
+      client_data = client_ordered_data.except!(:company_id).values.map(&:to_s).map(&:presence)
       expect(data[1]).to eq(client_data)
     end
 
@@ -51,7 +51,7 @@ RSpec.describe Client, type: :model do
       client.parent_client.destroy
       data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
       client_ordered_data[:parent] = nil
-      client_data = client_ordered_data.values.map(&:to_s).map(&:presence)
+      client_data = client_ordered_data.except!(:company_id).values.map(&:to_s).map(&:presence)
       expect(data[1]).to eq(client_data)
     end
 
@@ -61,15 +61,15 @@ RSpec.describe Client, type: :model do
       data = CSV.parse(Client.where(id: client.id).to_csv(client.company))
       client_ordered_data[:category] = nil
       client_ordered_data[:subcategory] = nil
-      client_data = client_ordered_data.values.map(&:to_s).map(&:presence)
+      client_data = client_ordered_data.except!(:company_id).values.map(&:to_s).map(&:presence)
       expect(data[1]).to eq(client_data)
     end
   end
 
   context 'base field validations' do
-    let(:company) { Company.first }
-    let(:advertiser) { create :bare_client, client_type_id: advertiser_type_id(company) }
-    let(:agency) { create :bare_client, client_type_id: agency_type_id(company) }
+    let(:company) { create :company }
+    let(:advertiser) { create :bare_client, client_type_id: advertiser_type_id(company), company: company }
+    let(:agency) { create :bare_client, client_type_id: agency_type_id(company), company: company }
 
     it 'is valid when base validations are off' do
       base_validations(advertiser).map { |v| v.criterion.update(value: false) }
@@ -105,18 +105,18 @@ RSpec.describe Client, type: :model do
   end
 
   describe '#import' do
-    let!(:user) { create :user }
-    let!(:client) { create :client }
-    let!(:existing_client) { create :client }
-    let!(:existing_client2) { create :client }
-    let!(:company) { user.company }
+    let!(:company) { create :company }
+    let!(:user) { create :user, company: company }
+    let!(:client) { create :client, company: company }
+    let!(:existing_client) { create :client, company: company }
+    let!(:existing_client2) { create :client, company: company }
     let!(:category_field) { user.company.fields.where(name: 'Category').first }
     let!(:category) { create :option, field: category_field, company: user.company }
     let!(:subcategory) { create :option, option: category, company: user.company }
 
-    let(:new_client_csv) { build :client_csv_data, type: 'Advertiser' }
-    let(:existing_client_csv) { build :client_csv_data, type: 'Advertiser', name: existing_client.name }
-    let(:existing_client_csv_id) { build :client_csv_data, type: 'Advertiser', id: existing_client2.id }
+    let(:new_client_csv) { build :client_csv_data, type: 'Advertiser', company_id: company.id }
+    let(:existing_client_csv) { build :client_csv_data, type: 'Advertiser', name: existing_client.name, company_id: company.id }
+    let(:existing_client_csv_id) { build :client_csv_data, type: 'Advertiser', id: existing_client2.id, company_id: company.id }
 
     it 'creates a new client from csv' do
       expect do
@@ -206,7 +206,7 @@ RSpec.describe Client, type: :model do
       end
 
       it 'counts failed rows' do
-        no_name = build :client_csv_data, name: nil
+        no_name = build :client_csv_data, name: nil, company_id: company.id
         Client.import(generate_csv(no_name), user.id, '/tmp/clients.csv')
 
         import_log = CsvImportLog.last
@@ -217,21 +217,21 @@ RSpec.describe Client, type: :model do
     end
 
     context 'invalid data' do
-      let!(:duplicate1) { create :client }
-      let!(:duplicate2) { create :client, name: duplicate1.name }
-      let(:no_name) { build :client_csv_data, name: nil }
-      let(:no_type) { build :client_csv_data, type: nil }
-      let(:invalid_parent) { build :client_csv_data, parent: 'N/A' }
-      let(:invalid_category) { build :client_csv_data, category: 'N/A', type: 'Advertiser' }
-      let(:invalid_subcategory) { build :client_csv_data, subcategory: 'N/A', type: 'Advertiser' }
-      let(:invalid_share) { build :client_csv_data, teammembers: 'first;second' }
-      let(:invalid_team_member) { build :client_csv_data, teammembers: 'NA/100' }
-      let(:own_parent) { build :client_csv_data, name: client.name, parent: client.name }
-      let(:ambigous_match) { build :client_csv_data, name: duplicate1.name }
+      let!(:duplicate1) { create :client, company: company }
+      let!(:duplicate2) { create :client, name: duplicate1.name, company: company }
+      let(:no_name) { build :client_csv_data, name: nil, company_id: company.id }
+      let(:no_type) { build :client_csv_data, type: nil, company_id: company.id }
+      let(:invalid_parent) { build :client_csv_data, parent: 'N/A', company_id: company.id }
+      let(:invalid_category) { build :client_csv_data, category: 'N/A', type: 'Advertiser', company_id: company.id }
+      let(:invalid_subcategory) { build :client_csv_data, subcategory: 'N/A', type: 'Advertiser', company_id: company.id }
+      let(:invalid_share) { build :client_csv_data, teammembers: 'first;second', company_id: company.id }
+      let(:invalid_team_member) { build :client_csv_data, teammembers: 'NA/100', company_id: company.id }
+      let(:own_parent) { build :client_csv_data, name: client.name, parent: client.name , company_id: company.id}
+      let(:ambigous_match) { build :client_csv_data, name: duplicate1.name, company_id: company.id }
       let(:import_log) { CsvImportLog.last }
-      let(:missing_holding_company) { build :client_csv_data, type: 'agency', holding_company: 'AbInBev' }
-      let(:missing_region) { build :client_csv_data, region: 'NaN' }
-      let(:missing_segment) { build :client_csv_data, segment: 'NaN' }
+      let(:missing_holding_company) { build :client_csv_data, type: 'agency', holding_company: 'AbInBev', company_id: company.id }
+      let(:missing_region) { build :client_csv_data, region: 'NaN', company_id: company.id }
+      let(:missing_segment) { build :client_csv_data, segment: 'NaN', company_id: company.id }
 
       it 'requires name to be present' do
         Client.import(generate_csv(no_name), user.id, '/tmp/clients.csv')
@@ -354,7 +354,8 @@ RSpec.describe Client, type: :model do
         setup_custom_fields(company)
         new_client_csv = build :client_csv_data_custom_fields,
                 type: 'Advertiser',
-                custom_field_names: company.account_cf_names
+                custom_field_names: company.account_cf_names,
+                company_id: company.id
 
         expect do
           Client.import(generate_csv(new_client_csv), user.id, '/tmp/clients.csv')

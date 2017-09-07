@@ -1,15 +1,15 @@
 require 'rails_helper'
 
 feature 'Accounts' do
-  let(:company) { Company.first }
-  let(:user) { create :user }
+  let(:company) { create :company }
+  let(:user) { create :user, company: company }
 
   describe 'showing account details' do
     before do
       set_client_type(client, company, 'Advertiser')
       set_client_type(agency, company, 'Agency')
-      create_list :contact, 2, clients: [client, agency]
-      create_list :deal, 2, advertiser: client, agency: agency
+      create_list :contact, 2, company: company, clients: [client, agency]
+      create_list :deal, 2, advertiser: client, agency: agency, company: company
       login_as user, scope: :user
       visit "/accounts/#{client.id}"
       wait_for_ajax
@@ -38,14 +38,14 @@ feature 'Accounts' do
     end
 
     it 'pops up a new client modal and creates a new client', js: true do
-      find('add-button', text: 'Add Account').trigger('click')
+      find('add-button', text: 'Add Account').click
       expect(page).to have_css('#client_modal')
 
       within '#client_modal' do
         ui_select('client-type', 'Agency')
         fill_in 'name', with: 'Bobby'
 
-        find_button('Create').trigger('click')
+        find_button('Create').click
         wait_for_ajax
       end
 
@@ -55,7 +55,7 @@ feature 'Accounts' do
   end
 
   describe 'deleting a client' do
-    let!(:clients) { create_list :client, 3, created_by: user.id }
+    let!(:clients) { create_list :client, 3, created_by: user.id, company: company }
 
     before do
       login_as user, scope: :user
@@ -66,17 +66,17 @@ feature 'Accounts' do
     it 'removes the client from the page and navigates to the client index', js: true do
       expect(page).to have_css('tbody tr', count: 3)
 
-      find_link(clients.first.name).trigger('click')
+      find_link(clients.first.name).click
 
-      find('.delete-deal').trigger('click')
+      find('.delete-deal').click
 
       expect(page).to have_css('tbody tr', count:2)
     end
   end
 
   describe 'adding a contact to a client' do
-    let!(:client) { create :client, created_by: user.id }
-    let!(:contact) { create :contact, address_attributes: attributes_for(:address) }
+    let!(:client) { create :client, created_by: user.id, company: company }
+    let!(:contact) { create :contact, company: company, address_attributes: attributes_for(:address) }
 
     before do
       set_client_type(client, company, 'Advertiser')
@@ -86,14 +86,15 @@ feature 'Accounts' do
     end
 
     it 'with a new contact', js: true do
-      find('.contacts', text: 'Contacts', match: :first).find('.add-btn').trigger('click')
+      find('.contacts', text: 'Contacts', match: :first).find('.add-btn').click
       expect(page).to have_css('#contact_modal')
 
       within '#contact_modal' do
         fill_in 'name', with: 'Bobby'
         fill_in 'email', with: 'bobby123@boostrcrm.com'
         fill_in 'position', with: 'CEO'
-        find('.btn.add-btn').trigger('click')
+        find('.btn.add-btn').click
+        sleep 3
         fill_in 'street1', with: '123 Any Street'
         fill_in 'city', with: 'Boise'
         ui_select('state', 'Idaho')
@@ -101,7 +102,7 @@ feature 'Accounts' do
         fill_in 'office', with: '1234567890'
         fill_in 'mobile', with: '1257763562'
 
-        find_button('Create').trigger('click')
+        find_button('Create').click
         wait_for_ajax
       end
 
@@ -115,12 +116,12 @@ feature 'Accounts' do
   end
 
   describe 'adding a deal to a client' do
-    let!(:client) { create :client, created_by: user.id }
-    let!(:agency) { create :client, created_by: user.id }
+    let!(:client) { create :client, created_by: user.id, company: company }
+    let!(:agency) { create :client, created_by: user.id, company: company }
 
-    let!(:open_stage) { create :stage, position: 1 }
-    let!(:deal_type_sponsorship_option) { create :option, field: deal_type_field(company), name: 'Sponsorship' }
-    let!(:deal_source_rfp_option) { create :option, field: deal_source_field(company), name: 'RFP Response to Agency' }
+    let!(:open_stage) { create :stage, position: 1, company: company }
+    let!(:deal_type_sponsorship_option) { create :option, field: deal_type_field(company), name: 'Sponsorship', company: company }
+    let!(:deal_source_rfp_option) { create :option, field: deal_source_field(company), name: 'RFP Response to Agency', company: company }
 
     before do
       set_client_type(client, company, 'Advertiser')
@@ -130,23 +131,24 @@ feature 'Accounts' do
     end
 
     it 'with a new deal', js: true do
-      find('.deals add-button').trigger('click')
+      find('.deals add-button').click
 
       expect(page).to have_css('#deal_modal')
 
       within '#deal_modal' do
-        fill_in 'name', with: 'Apple Watch Launch'
+        find("input[placeholder='Name']").set 'Apple Watch Launch'
         ui_select('stage', open_stage.name)
 
         find('[name=start-date]').click
-        find('ul td button', match: :first).trigger('click')
+        find('ul td button', match: :first).click
         find('[name=end-date]').click
-        find('ul td button', match: :first).trigger('click')
+        find('ul td button', match: :first).click
 
-        find_button('Create').trigger('click')
+        find_button('Create').click
         wait_for_ajax
       end
 
+      sleep 3
       expect(page).to have_no_css('#deal_modal')
       expect(page).to have_text('Apple Watch Launch')
     end
@@ -155,10 +157,10 @@ feature 'Accounts' do
   private
 
   def client
-    @_client ||= create :client, created_by: user.id, name: 'Apple'
+    @_client ||= create :client, created_by: user.id, name: 'Apple', company: company
   end
 
   def agency
-    @agency ||= create :client, created_by: user.id, name: 'Blitz'
+    @agency ||= create :client, created_by: user.id, name: 'Blitz', company: company
   end
 end
