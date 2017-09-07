@@ -928,9 +928,10 @@ describe Deal do
 
         deal_cf = DealCustomField.last
 
-        company.deal_custom_field_names.each do |cf|
-          expect(deal_cf[cf.field_name]).to eq(data[cf.to_csv_header])
-        end
+        expect(deal_cf.datetime1).to eq(data[:production_date])
+        expect(deal_cf.boolean1).to eq(data[:risky_click])
+        expect(deal_cf.number1).to eq(data[:target_views])
+        expect(deal_cf.text1).to eq(data[:deal_type])
       end
     end
   end
