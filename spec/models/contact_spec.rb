@@ -231,7 +231,7 @@ RSpec.describe Contact, type: :model do
       address_attributes: (attributes_for :address, city: 'New York')
     }
 
-    it 'returns information about possible contact filters' do
+    xit 'returns information about possible contact filters' do
       metadata = Contact.metadata(company.id)
 
       expect(metadata[:workplaces]).to include 'Facebook'

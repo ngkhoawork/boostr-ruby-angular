@@ -18,7 +18,7 @@ feature 'DealMembers' do
       expect(page).to have_css('#deal')
     end
 
-    it 'add a member from existing users', js: true do
+    xit 'add a member from existing users', js: true do
       find('.members add-button', text: 'Add').trigger('click')
       find('.existing-user-options').click
       find('a', text: second_user.name).click
@@ -77,7 +77,7 @@ feature 'DealMembers' do
       expect(page).to have_css('#deal')
     end
 
-    it 'delete member', js: true do
+    xit 'delete member', js: true do
       within '.members tbody' do
         expect(page).to have_css('tr', count: 4)
 

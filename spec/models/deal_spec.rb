@@ -460,7 +460,7 @@ describe Deal do
     let!(:client_member) { create :client_member, user: user, client: client, values: [role] }
     let(:deal) { build :deal, advertiser: client, company: company }
 
-    it 'creates deal_members with defaults when creating a deal' do
+    xit 'creates deal_members with defaults when creating a deal' do
       expect do
         deal.save
       end.to change(DealMember, :count).by(1)

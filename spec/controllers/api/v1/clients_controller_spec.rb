@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::ClientsController, type: :controller do
-  let(:company) { Company.first }
+describe Api::V1::ClientsController do
+  let(:company) { create :company}
   let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
   let(:address_params) { attributes_for :address }
