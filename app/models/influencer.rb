@@ -96,10 +96,23 @@ class Influencer < ActiveRecord::Base
         end
       end
 
+      # Active
+      active = nil
+      if row[12].present?
+        if row[12].downcase == 'true'|| row[12].downcase == 'false'
+          email = row[12].strip
+        else
+          import_log.count_failed
+          import_log.log_error(["Active must be boolean value"])
+          next
+        end
+      end
+
       influencer_params = {
         name: row[1].strip,
         phone: row[6].strip,
-        email: email
+        email: email,
+        active: active
       }
 
       address_params = {
@@ -167,7 +180,8 @@ class Influencer < ActiveRecord::Base
       'City',
       'State',
       'Country',
-      'Postal Code'
+      'Postal Code',
+      'Active'
     ]
     network_field = company.fields.find_by_name('Network')
 
@@ -188,6 +202,7 @@ class Influencer < ActiveRecord::Base
         line << (influencer.address.nil? ? nil : influencer.address.state)
         line << (influencer.address.nil? ? nil : influencer.address.country)
         line << (influencer.address.nil? ? nil : influencer.address.zip)
+        line << (influencer.active.nil? ? nil : influencer.address.active)
         csv << line
       end
     end
