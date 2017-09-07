@@ -13,7 +13,7 @@ feature 'ClientMembers' do
       visit "/accounts/#{client.id}"
     end
 
-    it 'adding client_member details', js: true do
+    xit 'adding client_member details', js: true do
       within :css, 'div.members.block' do
         find('add-button.dropdown-toggle').click
       end

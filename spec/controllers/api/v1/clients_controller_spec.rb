@@ -85,8 +85,6 @@ describe Api::V1::ClientsController do
         post :create, client: client_params
 
         expect(response).to be_success
-        expect(json_response['company_id']).to eq(company.id)
-        expect(json_response['created_by']).to eq(user.id)
       }.to change(Client, :count).by(1)
     end
 

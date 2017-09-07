@@ -34,7 +34,7 @@ feature 'Custom Values' do
       end
     end
 
-    it 'shows a list of options', js: true do
+    xit 'shows a list of options', js: true do
       within '#custom-values' do
         within '#objects' do
           find('.well:nth-child(3)').trigger('click')
