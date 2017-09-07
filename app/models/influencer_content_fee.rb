@@ -116,19 +116,19 @@ class InfluencerContentFee < ActiveRecord::Base
 
       unless io = current_user.company.ios.find_by(io_number: io_number)
         import_log.count_failed
-        import_log.log_error(['IO Number ' + io_number.to_s + ' could not be found'])
+        import_log.log_error(['IO Number with ' + io_number.to_s + ' could not be found'])
         next
       end
 
       unless influencer = current_user.company.influencers.find_by(id: influencer_id)
         import_log.count_failed
-        import_log.log_error(['Influencer with ' + influencer_id.to_s + ' id could not be found'])
+        import_log.log_error(['Influencer with id ' + influencer_id.to_s + ' could not be found'])
         next
       end
 
       unless product = io.content_fee_products.find_by(name: product_name)
         import_log.count_failed
-        import_log.log_error(['Influencer Product name as ' + product_name.to_s + ' could not be found'])
+        import_log.log_error(['Influencer Product with name ' + product_name.to_s + ' could not be found'])
         next
       end
 
@@ -167,7 +167,24 @@ class InfluencerContentFee < ActiveRecord::Base
         next
       end
 
-      influencer_content_fee = InfluencerContentFee.create({influencer_id: influencer_id, content_fee_id: content_fee.id, fee_type: fee_type, fee_amount_loc: fee_amount_loc, effect_date: effect_date, curr_cd: io.curr_cd, gross_amount_loc: io.budget_loc, gross_amount: gross})
+      if fee_type == 'flat' && io.exchange_rate.present?
+        fee_amount = (fee_amount_loc.to_f * io.exchange_rate).round(2)
+      else
+        fee_amount = fee_amount_loc
+      end
+
+      influencer_content_fee_param = {
+        influencer_id: influencer_id,
+        content_fee_id: content_fee.id,
+        fee_type: fee_type,
+        fee_amount: fee_amount,
+        effect_date: effect_date,
+        curr_cd: io.curr_cd,
+        gross_amount_loc: gross,
+        asset: row[7].strip
+      }
+
+      influencer_content_fee = InfluencerContentFee.create(influencer_content_fee_param)
       
       if influencer_content_fee
         import_log.count_imported
