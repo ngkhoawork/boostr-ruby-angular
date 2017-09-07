@@ -3,10 +3,10 @@ require 'rails_helper'
 feature 'Dashboard' do
   let(:company) { create :company, time_periods: [time_period, next_time_period] }
   let(:user) { create :user, company: company }
-  let!(:parent) { create :parent_team, leader: user }
-  let(:child) { create :child_team, parent: parent }
-  let(:stage) { create :stage, probability: 100 }
-  let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31"  }
+  let!(:parent) { create :parent_team, leader: user, company: company }
+  let(:child) { create :child_team, parent: parent, company: company }
+  let(:stage) { create :stage, probability: 100, company: company }
+  let(:deal) { create :deal, stage: stage, start_date: "2015-01-01", end_date: "2015-12-31", company: company  }
   let!(:member) { create :user, team: child, company: company }
   let!(:deal_member) { create :deal_member, deal: deal, user: member, share: 100 }
   let(:deal_product) { create(:deal_product, deal: deal, open: true) }
@@ -25,6 +25,7 @@ feature 'Dashboard' do
     it 'shows the stats box and open deals', js: true do
       within '#stats' do
         wait_for_ajax 1
+        sleep 1
 
         expect(page.all('.stats-col .title')[1].text).to eq '$20K' # Quota
         expect(page.all('.stats-col .title')[2].text).to eq '$0' # Forecast
