@@ -930,7 +930,7 @@ describe Deal do
 
         expect(deal_cf.datetime1).to eq(data[:production_date])
         expect(deal_cf.boolean1).to eq(data[:risky_click])
-        expect(deal_cf.number1).to eq(data[:target_views])
+        expect(deal_cf.number1.to_f).to eq(data[:target_views])
         expect(deal_cf.text1).to eq(data[:deal_type])
       end
     end

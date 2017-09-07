@@ -398,7 +398,7 @@ RSpec.describe Client, type: :model do
 
         expect(account_cf.datetime1).to eq(new_client_csv[:production_date])
         expect(account_cf.boolean1).to eq(new_client_csv[:risky_click])
-        expect(account_cf.number1).to eq(new_client_csv[:target_views])
+        expect(account_cf.number1.to_f).to eq(new_client_csv[:target_views])
         expect(account_cf.text1).to eq(new_client_csv[:deal_type])
       end
     end
