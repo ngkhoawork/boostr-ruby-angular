@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 feature 'DealMembers' do
-  let(:company) { Company.first }
+  let(:company) { create :company }
   let(:user) { create :user, company: company }
   let!(:second_user) { create :user, company: company }
   let(:stage) { create :stage, position: 1 }

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 feature 'ClientMembers' do
-  let(:company) { Company.first }
+  let(:company) { create :company }
   let(:user) { create :user }
   let!(:other_user) { create :user }
   let!(:client) { create :client, created_by: user.id }

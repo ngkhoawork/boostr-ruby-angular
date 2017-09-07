@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 feature 'Quotas' do
-  let(:company) { Company.first }
+  let(:company) { create :company }
   let(:user) { create :user }
   let(:time_period) { create :time_period }
   let!(:quota) { create :quota, time_period: time_period, user: user }

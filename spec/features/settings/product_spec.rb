@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 feature 'Users' do
-  let(:company) { Company.first }
+  let(:company) { create :company }
   let(:user) { create :user, company: company }
 
   before do

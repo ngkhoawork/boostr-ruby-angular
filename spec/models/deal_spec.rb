@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe Deal do
-  let(:company) { Company.first }
+  let(:company) { create :company }
   let(:user) { create :user }
 
   context 'associations' do

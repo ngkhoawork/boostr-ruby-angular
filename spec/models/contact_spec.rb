@@ -246,6 +246,6 @@ RSpec.describe Contact, type: :model do
   end
 
   def company
-    @_company ||= Company.first
+    @_company ||= create :company
   end
 end
