@@ -7,7 +7,7 @@ feature 'Contacts' do
       visit '/contacts'
     end
 
-    xit 'pops up a new contact modal and creates a new contact', js: true do
+    it 'pops up a new contact modal and creates a new contact', js: true do
       find('add-button').trigger('click')
       expect(page).to have_css('#contact_modal')
 
@@ -39,7 +39,7 @@ feature 'Contacts' do
       visit "/contacts/#{contact.id}"
     end
 
-    xit 'pops up an edit contact modal and updates a contact', js: true do
+    it 'pops up an edit contact modal and updates a contact', js: true do
       find('.detail-stats .edit-deal').trigger('click')
       expect(page).to have_css('#contact_modal')
 
@@ -52,6 +52,7 @@ feature 'Contacts' do
         fill_in 'city', with: 'Boise'
 
         find_button('Update').trigger('click')
+        wait_for_ajax
       end
 
       expect(page).to have_no_css('#contact_modal')
@@ -68,7 +69,7 @@ feature 'Contacts' do
       visit "/contacts/#{contact.id}"
     end
 
-    xit 'removes the contact from the page and navigates to the contact index', js: true do
+    it 'removes the contact from the page and navigates to the contact index', js: true do
       expect(page.current_path).to eq "/contacts/#{contact.id}"
 
       find('.detail-stats .delete-deal').trigger('click')

@@ -23,7 +23,6 @@ require 'shoulda/matchers'
 require 'capybara/rails'
 require 'capybara/rspec'
 require 'capybara/webkit'
-# require 'capybara/poltergeist'
 require 'helpers'
 
 # Add additional requires below this line. Rails is not loaded until this point!
@@ -46,25 +45,8 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # Checks for pending migrations before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
-# Capybara.javascript_driver = :webkit
-# Capybara.app_host = 'http://localhost:57742'
-# Capybara.server_host = "localhost"
-# Capybara.server_port = "57742"
 
 Capybara.javascript_driver = :webkit
-
-# Capybara::Webkit.configure do |config|
-#   config.block_unknown_urls
-# end
-
-# Capybara.register_driver(:poltergeist) do |app|
-#   Capybara::Poltergeist::Driver.new(app, {
-#     js_errors: false,
-#     timeout: 60,
-#     debug: false,
-#     phantomjs_options: ['--load-images=no']
-#   })
-# end
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
