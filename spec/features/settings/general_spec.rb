@@ -11,7 +11,7 @@ feature 'Custom Values' do
       expect(page).to have_css('#general')
     end
 
-    xit 'shows WoW snapshot setting', js: true do
+    it 'shows WoW snapshot setting', js: true do
       within '#general' do
         expect(page).to have_text 'Sunday'
         ui_select('day', 'Tuesday')

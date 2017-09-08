@@ -11,7 +11,7 @@ feature 'Users' do
       expect(page).to have_css('#users')
     end
 
-    xit 'pops up a modal and adds new user', js: true do
+    it 'pops up a modal and adds new user', js: true do
       click_button('Add User')
 
       expect(page).to have_css('#user-modal')
@@ -42,7 +42,7 @@ feature 'Users' do
       expect(page).to have_css('#users')
     end
 
-    xit 'pops up an edit user modal and updates a user', js: true do
+    it 'pops up an edit user modal and updates a user', js: true do
       within 'table tbody' do
         find('tr:first-child td:nth-child(2)').click
       end

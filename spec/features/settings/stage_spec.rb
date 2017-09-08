@@ -11,7 +11,7 @@ feature 'Stages' do
       expect(page).to have_css('#stages')
     end
 
-    xit 'creating a stage', js: true do
+    it 'creating a stage', js: true do
       find('add-button', text: 'Add').trigger('click')
 
       expect(page).to have_css('#stage-modal')

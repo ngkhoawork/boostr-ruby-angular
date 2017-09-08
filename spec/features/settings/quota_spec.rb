@@ -12,7 +12,7 @@ feature 'Quotas' do
       visit '/settings/quotas'
     end
 
-    xit 'can edit a quota value inline and add a user', js: true do
+    it 'can edit a quota value inline and add a user', js: true do
       expect(page).to have_text user.name
       expect(find('.table-wrapper input').value).to have_text '10000'
 
