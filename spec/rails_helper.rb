@@ -53,8 +53,8 @@ Capybara.server_port = "57742"
 Capybara.register_driver(:poltergeist) do |app|
   Capybara::Poltergeist::Driver.new(app, {
     js_errors: false,
-    timeout: 30,
-    debug: true,
+    timeout: 60,
+    debug: false,
     phantomjs_options: ['--load-images=no']
   })
 end
