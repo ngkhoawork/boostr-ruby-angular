@@ -45,10 +45,9 @@ describe Api::DealMembersController, type: :controller do
 
     it 'updates the deal member' do
       put :update, id: deal_member.id, deal_id: deal.id, deal_member: { share: '62' }, format: :json
-      response_json = JSON.parse(response.body)
 
       expect(response).to be_success
-      expect(response_json['members'][1]['share']).to eq(62)
+      expect(deal_member.reload.share).to eq(62)
     end
   end
 
@@ -68,7 +67,7 @@ describe Api::DealMembersController, type: :controller do
     it 'creates audit logs for deal when deal member was added' do
       expect{
         post :create, deal_id: deal.id, deal_member: { share: 100, user_id: second_user.id }, format: :json
-      }.to change(AuditLog, :count).by(2)
+      }.to change(AuditLog, :count).by(3)
 
       audit_log = deal.audit_logs.last
 

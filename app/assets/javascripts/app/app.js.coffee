@@ -337,7 +337,7 @@
     if $rootScope.currentUser then updateTalkus($rootScope.currentUser)
 
   updateTalkus = (user) ->
-    if location.hostname is 'localhost' then return
+    if location.hostname is 'localhost' or location.hostname is '127.0.0.1' then return
     talkus('init', 'qu346HQax2ut3MQr4',
       id: user.id
       name: user.name

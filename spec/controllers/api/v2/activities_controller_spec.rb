@@ -6,7 +6,7 @@ RSpec.describe Api::V2::ActivitiesController, type: :controller do
     attributes_for(:activity)
   }
   let(:existing_activity) { create :activity, company: company, deal: nil, client: nil }
-  let(:user_contact) { create :contact, address_attributes: { email: user.email } }
+  let(:user_contact) { create :contact, company: company, address_attributes: { email: user.email } }
   let(:contacts) { create_list :contact, 10, clients: [client], company: company }
 
   before do
@@ -21,21 +21,21 @@ RSpec.describe Api::V2::ActivitiesController, type: :controller do
     end
 
     it 'returns list of contact\'s activities' do
-      activities(contacts: [contact], deal: nil, client: nil)
+      activities(contacts: [contact], deal: nil, client: nil, user: user)
 
       get :index, contact_id: contact.id
 
-      expect(json_response.length).to be 15
+      expect(json_response.length).to be 10
     end
 
     it 'returns all activities for execs' do
       activities(deal: deal, client: client, user: nil)
       user.update(user_type: EXEC)
 
-      get :index, page: 2, filter: 'client'
+      get :index, page: 1, filter: 'client'
 
       expect(user.activities.count).to be 0
-      expect(json_response.length).to be 5
+      expect(json_response.length).to be 10
     end
 
     it 'returns client activities from clients related to team members for team leaders' do
@@ -44,10 +44,10 @@ RSpec.describe Api::V2::ActivitiesController, type: :controller do
       create :client_member, client: client, user: another_user
       activities(deal: deal, client: client)
 
-      get :index, page: 2, filter: 'client'
+      get :index, page: 1, filter: 'client'
 
       expect(user.activities.count).to be 0
-      expect(json_response.length).to be 5
+      expect(json_response.length).to be 10
     end
 
     it 'returns activities created by team members' do
@@ -71,20 +71,20 @@ RSpec.describe Api::V2::ActivitiesController, type: :controller do
     it 'returns activity created by user' do
       activities(deal: deal, client: client, user: user)
 
-      get :index, page: 2, filter: 'client'
+      get :index, page: 1, filter: 'client'
 
-      expect(user.activities.count).to be 15
-      expect(json_response.length).to be 5
+      expect(user.activities.count).to be 10
+      expect(json_response.length).to be 10
     end
 
     it 'returns activities from clients where user is a client member' do
       activities(deal: deal, client: client)
       create :client_member, client: client, user: user
 
-      get :index, page: 2, filter: 'client'
+      get :index, page: 1, filter: 'client'
 
       expect(user.activities.count).to be 0
-      expect(json_response.length).to be 5
+      expect(json_response.length).to be 10
     end
   end
 
@@ -390,7 +390,7 @@ RSpec.describe Api::V2::ActivitiesController, type: :controller do
 
   def activities(opts={})
     opts.merge!(company: company)
-    @_activities ||= create_list :activity, 15, opts
+    @_activities ||= create_list :activity, 10, opts
   end
 
   def contact

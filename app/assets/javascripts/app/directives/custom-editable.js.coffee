@@ -14,7 +14,7 @@
     '<div class="editable" ng-show="!editState" ng-click="toggle()" ng-if="type==\'number\'">{{prefix}}{{(model ? model : 0) | number : (decimal && decimal > 0 ? decimal : 0)}}{{postfix}}</div>' +
     '<div class="editable" ng-show="!editState" ng-click="toggle()" ng-if="type!=\'number\'">{{prefix}}{{model}}{{postfix}}</div>' +
     '<input class="number editable-field" placeholder="0" type="text" ng-model="localModel" enter-press="toggle()" ng-show="editState && type == \'number\'" ng-blur="save()"/>' +
-    '<input class="inputText editable-field" type="text" ng-model="localModel" enter-press="toggle()" ng-show="editState && type == \'inputText\'" ng-blur="save()"/>' +
+    '<input class="inputText editable-field" type="text" name="inputText" ng-model="localModel" enter-press="toggle()" ng-show="editState && type == \'inputText\'" ng-blur="save()"/>' +
     '</div>'
   link: (scope, element, attrs) ->
     scope.editState = false

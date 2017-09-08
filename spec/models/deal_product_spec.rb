@@ -260,9 +260,10 @@ RSpec.describe DealProduct, type: :model do
 
         custom_field = DealProductCf.last
 
-        company.deal_product_cf_names.each do |cf|
-          expect(custom_field[cf.field_name]).to eq(data[cf.to_csv_header])
-        end
+        expect(custom_field.datetime1).to eq(data[:production_date])
+        expect(custom_field.boolean1).to eq(data[:risky_click])
+        expect(custom_field.number1.to_f).to eq(data[:target_views])
+        expect(custom_field.text1).to eq(data[:deal_type])
       end
     end
   end

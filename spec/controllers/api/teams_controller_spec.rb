@@ -78,12 +78,13 @@ RSpec.describe Api::TeamsController, type: :controller do
       get :by_user, id: user.id, format: :json
 
       response_json = response_json(response)
+      values = response_json.map(&:values).flatten
 
       expect(response).to be_success
-      expect(response_json.first['id']).to eq team.id
-      expect(response_json.last['id']).to eq team2.id
-      expect(response_json.first['name']).to eq team.name
-      expect(response_json.last['name']).to eq team2.name
+      expect(values).to include team.id
+      expect(values).to include team2.id
+      expect(values).to include team.name
+      expect(values).to include team2.name
     end
   end
 end
