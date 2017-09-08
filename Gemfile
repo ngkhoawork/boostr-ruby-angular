@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.2.2'
+ruby '2.3.4'
 
 gem 'rails', '4.2.3'
 gem 'pg'
@@ -89,7 +89,6 @@ group :development, :test do
   gem 'rspec-rails', '~> 3.0'
   gem 'factory_girl_rails'
   gem 'capybara'
-  # gem 'selenium-webdriver'
   gem 'jasmine-rails'
   gem 'launchy'
   gem 'database_cleaner'
@@ -97,7 +96,6 @@ group :development, :test do
   gem 'guard-rspec', require: false
   gem 'libnotify', require: false
   gem 'fuubar'
-  # gem 'poltergeist'
   gem 'timecop'
   gem 'pry-rails'
   gem 'byebug'
