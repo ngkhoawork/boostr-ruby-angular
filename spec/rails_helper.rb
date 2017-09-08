@@ -41,9 +41,15 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 Capybara.javascript_driver = :poltergeist
+Capybara.app_host = 'http://localhost'
 
 Capybara.register_driver(:poltergeist) do |app|
-  Capybara::Poltergeist::Driver.new(app, { js_errors: false })
+  Capybara::Poltergeist::Driver.new(app, {
+    js_errors: false,
+    timeout: 30,
+    debug: true,
+    phantomjs_options: ['--load-images=no']
+  })
 end
 
 RSpec.configure do |config|
