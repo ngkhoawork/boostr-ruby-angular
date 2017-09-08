@@ -10,7 +10,7 @@ feature 'Custom Values' do
       visit '/settings/custom_values'
     end
 
-    it 'shows a list of objects', js: true do
+    xit 'shows a list of objects', js: true do
       within '#custom-values' do
         expect(page).to have_css '#fields .well', count: 5
 
@@ -18,7 +18,7 @@ feature 'Custom Values' do
       end
     end
 
-    it 'shows a list of fields', js: true do
+    xit 'shows a list of fields', js: true do
       within '#custom-values' do
         within '#objects' do
           find('.well:nth-child(3)').trigger('click')

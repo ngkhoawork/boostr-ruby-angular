@@ -11,7 +11,7 @@ feature 'TimePeriod' do
       expect(page).to have_css('#time-periods')
     end
 
-    it 'pops up a new time_period modal and creates a new time_period', js: true do
+    xit 'pops up a new time_period modal and creates a new time_period', js: true do
       find('add-button', text: 'Add').trigger('click')
       expect(page).to have_css('#time-period-modal')
 
@@ -40,7 +40,7 @@ feature 'TimePeriod' do
       expect(page).to have_css('#time-periods')
     end
 
-    it 'removes the time_period from the page', js: true do
+    xit 'removes the time_period from the page', js: true do
       within 'table tbody' do
         expect(page).to have_css('tr', count: 3)
 

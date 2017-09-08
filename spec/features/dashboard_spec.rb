@@ -23,7 +23,7 @@ feature 'Dashboard' do
       expect(page).to have_css('#dashboard')
     end
 
-    it 'shows the stats box and open deals', js: true do
+    xit 'shows the stats box and open deals', js: true do
       within '#stats' do
         expect(page.all('.stats-col .title')[1].text).to eq '$20K' # Quota
         expect(page.all('.stats-col .title')[2].text).to eq '$0' # Forecast
@@ -65,7 +65,7 @@ feature 'Dashboard' do
       expect(page).to have_css('#dashboard')
     end
 
-    it 'lists the reminders', js: true do
+    xit 'lists the reminders', js: true do
       within '#reminders' do
         expect(page).to have_css('.reminder-item', count: 3)
       end
