@@ -6,7 +6,12 @@ if ENV['RAILS_ENV'] == 'test'
     SimpleCov.coverage_dir(dir)
   end
 
-  SimpleCov.start 'rails'
+  SimpleCov.start 'rails' do
+    add_group 'Decorators', 'app/decorators'
+    add_group 'Services', 'app/services'
+    add_group 'Serializers', 'app/serializers'
+    add_group 'Representers', 'app/representers'
+  end
 end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
