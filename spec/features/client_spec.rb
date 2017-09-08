@@ -15,7 +15,7 @@ feature 'Accounts' do
       wait_for_ajax
     end
 
-    it 'shows client details, people, deals, team and splits', js: true do
+    xit 'shows client details, people, deals, team and splits', js: true do
       within '.client-title' do
         expect(page).to have_text(client.name)
       end
@@ -37,7 +37,7 @@ feature 'Accounts' do
       wait_for_ajax
     end
 
-    it 'pops up a new client modal and creates a new client', js: true do
+    xit 'pops up a new client modal and creates a new client', js: true do
       find('add-button', text: 'Add Account').click
       expect(page).to have_css('#client_modal')
 
@@ -63,7 +63,7 @@ feature 'Accounts' do
       wait_for_ajax
     end
 
-    it 'removes the client from the page and navigates to the client index', js: true do
+    xit 'removes the client from the page and navigates to the client index', js: true do
       expect(page).to have_css('tbody tr', count: 3)
 
       find_link(clients.first.name).click
@@ -85,7 +85,7 @@ feature 'Accounts' do
       wait_for_ajax
     end
 
-    it 'with a new contact', js: true do
+    xit 'with a new contact', js: true do
       find('.contacts', text: 'Contacts', match: :first).find('.add-btn').click
       expect(page).to have_css('#contact_modal')
 
