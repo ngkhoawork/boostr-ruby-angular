@@ -40,7 +40,7 @@
 			$scope.filter = angular.copy defaultFilter
 			searchAndSetTimePeriod($scope.timePeriods)
 			searchAndSetTeam($scope.filterTeams, $scope.currentUser)
-			searchAndSetSeller($scope.filter.team, $scope.currentUser)
+			searchAndSetSeller($scope.filter.team.members, $scope.currentUser)
 
 		$scope.showSubtable = (row, type, event) ->
 			$scope.openedSubtable = row
@@ -116,7 +116,7 @@
 			if team == prevTeam then return
 			if team.id then $scope.setFilter('seller', emptyFilter)
 			$scope.setFilter('team', team)
-			searchAndSetSeller(team, $scope.currentUser)
+			searchAndSetSeller(team.members, $scope.currentUser)
 			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = sellers
 
@@ -130,6 +130,7 @@
 			$scope.filterTeams = data.teams
 			$scope.filterTeams.unshift emptyFilter
 			searchAndSetTeam(data.teams, data.user) if $scope.currentUserIsLeader
+			searchAndSetSeller(data.sellers, data.user)
 			$scope.sellers = data.sellers
 			$scope.products = data.products
 			$scope.timePeriods = data.timePeriods.filter (period) ->
@@ -153,9 +154,9 @@
 				if team.children && team.children.length
 					searchAndSetTeam team.children, user
 
-		searchAndSetSeller = (team, user) ->
-			if !team.id then return
-			if _.findWhere team.members, {id: user.id}
+		searchAndSetSeller = (members, user) ->
+			if !_.isArray members then return
+			if _.findWhere members, {id: user.id}
 				return $scope.setFilter('seller', user)
 
 		getQuery = ->
@@ -244,7 +245,7 @@
 			delay = 500
 			duration = 1500
 			margin =
-				top: 0
+				top: 20
 				left: 60
 				right: 30
 				bottom: 70
