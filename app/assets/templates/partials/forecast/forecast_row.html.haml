@@ -19,9 +19,9 @@
 	%td
 		{{ row.is_leader || filter.product.id ? '--' : (row.gap_to_quota | currency: '$': 0) }}
 	%td
-		{{ row.is_leader || filter.product.id ? '--' : (row.percent_to_quota | number: 0) + '%'}}
+		{{ row.is_leader || filter.product.id ? '--' : isFinite(row.percent_to_quota) ? (row.percent_to_quota | number: 0) + '%' : '--' }}
 	%td
-		{{ row.is_leader || filter.product.id ? '--' : (row.percent_booked | number: 0) + '%'}}
+		{{ row.is_leader || filter.product.id ? '--' : isFinite(row.percent_booked) ? (row.percent_booked | number: 0) + '%' : '--' }}
 	%td
 		{{ row.is_leader || filter.product.id ? '--' : row.new_deals_needed }}
 	%td
