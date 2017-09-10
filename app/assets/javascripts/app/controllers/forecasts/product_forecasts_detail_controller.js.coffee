@@ -12,6 +12,7 @@
             timePeriod: {id: null, name: 'Select'}
             products: []
         $scope.selectedTeam = $scope.filter.team
+        appliedFilter = null
         $scope.switch =
             revenues: 'quarters'
             deals: 'quarters'
@@ -72,7 +73,11 @@
 
         $scope.applyFilter = () ->
             if !$scope.isLoading
+                appliedFilter = angular.copy $scope.filter
                 getData()
+
+        $scope.isFilterApplied = ->
+            !angular.equals $scope.filter, appliedFilter
 
         $scope.getAnnualSum = (data) ->
             sum = 0

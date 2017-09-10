@@ -56,7 +56,7 @@
 													{{ status.name }}
 
 				.header-cell
-					%button.add-btn{'ng-click': 'applyFilter()'}
+					%button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
 						Run Report
 
 				.header-cell

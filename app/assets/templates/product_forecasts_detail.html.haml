@@ -51,7 +51,7 @@
                         %a{ href: '', ng: { click: 'addFilter("products", product)' } }
                           {{ product.name }}
         .header-cell
-          %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{"disabled": isLoading == true}'}
+          %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{"disabled": isLoading == true, highlighted: isFilterApplied()}'}
             Run Report
         .header-cell
           .pull-right
