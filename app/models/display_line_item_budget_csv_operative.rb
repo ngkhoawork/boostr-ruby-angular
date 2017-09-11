@@ -21,6 +21,10 @@ class DisplayLineItemBudgetCsvOperative < DisplayLineItemBudgetCsv
     end
   end
 
+  def irrelevant?
+    !self.display_line_item || !io_or_tempio
+  end
+
   private
 
   def display_line_item

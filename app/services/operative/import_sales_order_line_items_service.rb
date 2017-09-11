@@ -125,7 +125,8 @@ class Operative::ImportSalesOrderLineItemsService
   def irrelevant_line_item(row)
     row[:line_item_status].try(:downcase) != 'sent_to_production' ||
     !row[:quantity].present? ||
-    !row[:net_cost].present?
+    !row[:net_cost].present? ||
+    row[:net_cost].to_f.zero?
   end
 
   def find_in_invoices(id, net_unit_cost)

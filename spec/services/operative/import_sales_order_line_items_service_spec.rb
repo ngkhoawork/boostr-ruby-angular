@@ -119,6 +119,16 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     subject.perform
   end
 
+  it 'skips a row when net_cost is 0' do
+    content_for_files([
+      line_item_csv_file(net_cost: '0'),
+      invoice_csv_file
+    ])
+
+    expect(DisplayLineItemCsv).not_to receive(:new)
+    subject.perform
+  end
+
   context 'revenue_calculation_patterns' do
     context 'Invoice Units pattern' do
       it 'sums invoice_line_item.invoice_units and multiplies by net_unit_cost' do
@@ -233,8 +243,17 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       expect(import_log.rows_imported).to eq 4
       expect(import_log.rows_failed).to eq 2
       expect(import_log.rows_skipped).to eq 1
-      expect(import_log.error_messages).to eq [{"row"=>5, "message"=>["Product name can't be blank"]}, {"row"=>6, "message"=>["Product name can't be blank"]}]
+
+      expect(import_log.error_messages.length).to be 2
+      expect(import_log.error_messages[0]['message']).to include(
+        "Product name can't be blank", "Start date end date can't be after the IO end date"
+      )
+      expect(import_log.error_messages[1]['message']).to include(
+        "Product name can't be blank", "Start date end date can't be after the IO end date"
+      )
+
       expect(import_log.file_source).to eq 'sales_order_line_item_file.csv'
+
       expect(import_log.object_name).to eq 'display_line_item'
     end
 
@@ -278,8 +297,8 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     list = (build_list :sales_order_line_item_csv_data, 4,
       sales_order_id: io.external_io_number,
       sales_order_line_item_id: 2,
-      sales_order_line_item_start_date: Date.today - 1.month,
-      sales_order_line_item_end_date: Date.today,
+      sales_order_line_item_start_date: io.start_date,
+      sales_order_line_item_end_date: io.end_date,
       product_name: 'Display',
       quantity: 1000,
       net_unit_cost: 100,

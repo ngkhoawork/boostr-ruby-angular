@@ -71,6 +71,11 @@ class Operative::ImportInvoiceLineItemsService
 
       line_item_budget_csv = build_line_item_budget_csv(row)
 
+      if line_item_budget_csv.irrelevant?
+        import_log.count_skipped
+        next
+      end
+
       if line_item_budget_csv.valid?
         begin
           line_item_budget_csv.perform
