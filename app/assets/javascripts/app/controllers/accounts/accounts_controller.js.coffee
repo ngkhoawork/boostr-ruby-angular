@@ -4,6 +4,9 @@
   formatMoney = $filter('formatMoney')
   $scope.query = ""
   $scope.page = 1
+  $scope.clientsPerPage = 10
+  $scope.isLoading = false
+  $scope.allClientsLoaded = false
   $scope.accountTypes = [
     {name: 'My Accounts', param: ''}
     {name: 'My Team\'s Accounts', param: 'team'}
@@ -42,7 +45,7 @@
       AccountsFilter.reset(key)
     resetAll: ->
       AccountsFilter.resetAll()
-      this.apply(true)
+#      this.apply(true)
     getBudgetValue: ->
       budget = this.selected.budget
       if budget.min && !budget.max
@@ -92,12 +95,8 @@
     $scope.getClients()
     $scope.getFilterOptions()
 
-  $scope.isLoading = false
-
   $scope.loadMoreClients = ->
-    if !$scope.isLoading && $scope.clients && $scope.clients.length < Client.totalCount
-      $scope.page = $scope.page + 1
-      $scope.getClients()
+    if !$scope.allClientsLoaded then $scope.getClients()
 
   $scope.init = ->
     if !$scope.teamFilter() then $scope.teamFilter $scope.accountTypes[0]
@@ -136,7 +135,9 @@
       params.name = $scope.query.trim()
 
     Client.query(params).$promise.then (clients) ->
-      if $scope.page > 1
+      $scope.allClientsLoaded = !clients || clients.length < $scope.clientsPerPage
+#      if $scope.page == 2 then clients.shift()
+      if $scope.page++ > 1
         $scope.clients = $scope.clients.concat(clients)
       else
         $scope.clients = clients
