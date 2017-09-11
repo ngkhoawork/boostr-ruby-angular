@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Api::InvitationsController, type: :controller do
   let(:company) { Company.first }
   let(:user) { create :user }
-  let(:user_params) { attributes_for :invited_user, first_name: 'Bob', last_name: 'Dawg' }
+  let(:user_params) { attributes_for :user, first_name: 'Bob', last_name: 'Dawg' }
 
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
