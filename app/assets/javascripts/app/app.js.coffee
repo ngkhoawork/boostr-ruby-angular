@@ -27,6 +27,7 @@
   'jsonFormatter'
   'boostrServerErrors'
   'bgf.paginateAnything'
+  'LocalStorageModule'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -292,6 +293,10 @@
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
+
+@app.config ['localStorageServiceProvider', (lssp) ->
+  lssp.setPrefix 'bstr'
+]
 
 @app.config ['$httpProvider', ($httpProvider) ->
   csrfToken = $('meta[name=csrf-token]').attr('content')
