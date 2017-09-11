@@ -163,7 +163,8 @@ class User < ActiveRecord::Base
           :is_admin,
           :roles,
           :company_influencer_enabled,
-          :company_forecast_gap_to_quota_positive
+          :company_forecast_gap_to_quota_positive,
+          :has_forecast_permission
         ]
       ).except(:override))
     end
@@ -179,6 +180,10 @@ class User < ActiveRecord::Base
 
   def is_active?
     is_active
+  end
+
+  def has_forecast_permission
+    self.company.forecast_permission[self.user_type.to_s]
   end
 
   def all_deals_for_time_period(start_date, end_date)

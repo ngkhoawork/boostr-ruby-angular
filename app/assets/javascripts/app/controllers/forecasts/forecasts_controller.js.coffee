@@ -127,9 +127,11 @@
 			products: Product.all()
 			timePeriods: TimePeriod.all()
 		).then (data) ->
+			$scope.hasForecastPermission = data.user.has_forecast_permission
 			$scope.filterTeams = data.teams
 			$scope.filterTeams.unshift emptyFilter
 			searchAndSetTeam(data.teams, data.user) if $scope.currentUserIsLeader
+			searchAndSetTeam(data.teams, data.user) if !$scope.hasForecastPermission
 			searchAndSetSeller(data.sellers, data.user)
 			$scope.sellers = data.sellers
 			$scope.products = data.products
@@ -150,6 +152,8 @@
 		searchAndSetTeam = (teams, user) ->
 			for team in teams
 				if team.leader_id is user.id
+					return $scope.setFilter('team', team)
+				else if team.id == user.team_id
 					return $scope.setFilter('team', team)
 				if team.children && team.children.length
 					searchAndSetTeam team.children, user

@@ -7,18 +7,18 @@
 				.header-cell.filters-block
 					%table
 						%tr.filter-title
-							%td Team
-							%td Seller
+							%td{'ng-if': 'hasForecastPermission'} Team
+							%td{'ng-if': 'hasForecastPermission'} Seller
 							%td Product
 							%td Time period
 							%td
 								%span.reset-filter{'ng-click': 'resetFilter()'}
 									Reset
 						%tr
-							%td
-								%tree-dropdown{ class:"tree-dropdown team-list", data:"filterTeams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
+							%td{'ng-if': 'hasForecastPermission'}
+								%tree-dropdown{ class:"tree-dropdown team-list", data:"filterTeams", selected: 'filter.team', 'ng-disabled': true, 'ng-class': '{"empty": filter.team.name === "All"}'}
 
-							%td
+							%td{'ng-if': 'hasForecastPermission'}
 								%ul.filter-item
 									%li{ dropdown: true }
 										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.seller.id}' }
