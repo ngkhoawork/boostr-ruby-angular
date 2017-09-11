@@ -20,7 +20,7 @@ class WinRateByAdvertiserCategoryQuery
 
   def win_rate_query
     'SELECT won.id,
-            won.name,
+            coalesce(won.name, lost.name) as name,
             (cast(won_count as decimal(16,2)) / cast((won_count + coalesce(lost_count, 0)) as DECIMAL(16,2))) * 100 AS win_rate
       FROM
         (SELECT options.id,
@@ -38,7 +38,7 @@ class WinRateByAdvertiserCategoryQuery
                  AND deals.agency_id in (:agencies_ids)
                GROUP BY options.id,
                         options.name) AS won
-        LEFT JOIN
+        FULL OUTER JOIN
             (SELECT options.id,
                     coalesce(options.name, \'Unassigned\') as name,
                     COUNT(*) AS lost_count
