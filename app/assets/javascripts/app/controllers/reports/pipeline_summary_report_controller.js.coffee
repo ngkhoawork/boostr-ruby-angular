@@ -2,11 +2,6 @@
 	['$scope', '$window', '$location', '$httpParamSerializer', '$httpParamSerializerJQLike', '$routeParams', 'Report', 'Team', 'Seller', 'Stage', 'Field', 'DealCustomFieldName', 'localStorageService'
 	( $scope,   $window,   $location,   $httpParamSerializer,   $httpParamSerializerJQLike,   $routeParams,   Report,   Team,   Seller,   Stage,   Field,   DealCustomFieldName,   LS  ) ->
 
-		$scope.testDate =
-			date:
-				startDate: moment().subtract(1, 'year')
-				endDate: moment().add(1, 'year')
-
 		$scope.deals = []
 		$scope.teams = []
 		$scope.sellers = []
@@ -51,7 +46,7 @@
 		appliedFilter = null
 		savedFilters = LS.get(reportName) || []
 
-		#====================================================================================
+			#====================================================================================
 		$scope.onFilterApply = (query) ->
 			console.log query
 #			savedFilters = _.without savedFilters, query
@@ -60,14 +55,13 @@
 #			LS.set(reportName, savedFilters)
 			getReport query
 
-		#====================================================================================
-		$scope.datePicker =
-			toString: (key) ->
-				date = $scope.filter[key]
-				if !date.startDate || !date.endDate then return false
-				if !moment.isMoment(date.startDate) then date.startDate = moment(date.startDate)
+		#====================================================================================$scope.datePicker =
+				toString: (key) ->
+					date = $scope.filter[key]
+					if !date.startDate || !date.endDate then return falseif !moment.isMoment(date.startDate) then date.startDate = moment(date.startDate)
 				if !moment.isMoment(date.endDate) then date.endDate = moment(date.endDate)
-				date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
+					if !moment.isMoment(date.startDate) then date.startDate = moment(date.startDate)
+				if !moment.isMoment(date.endDate) then date.endDate = moment(date.endDate)date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
 #				apply: -> console.log arguments
 
 
@@ -136,7 +130,6 @@
 			JSON.stringify(obj)
 
 		loadSavedFilter = (str) ->
-			return
 			if !str then return
 			savedFilter = JSON.parse(str)
 			_.each savedFilter, (val, key) ->
@@ -165,12 +158,14 @@
 				$scope.sellers = sellers
 		)()
 
-		Team.all(all_teams: true).then (teams) ->
-			$scope.teams = teams
+			Team.all(all_teams: true).then (teams) ->
+				$scope.teams = teams
 
 
-		Stage.query().$promise.then (stages) ->
-			$scope.stages = _.filter stages, (stage) -> stage.active
+
+			Stage.query().$promise.then (stages) ->
+				$scope.stages = _.filter stages, (stage) -> stage.active
+
 
 		Field.defaults({}, 'Deal').then (fields) ->
 			client_types = Field.findDealTypes(fields)
