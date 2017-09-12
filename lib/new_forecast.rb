@@ -3,16 +3,18 @@ class NewForecast
 
   delegate :id, to: :company
 
-  attr_accessor :company, :teams, :team_members, :start_date, :end_date, :time_period, :product
+  attr_accessor :company, :teams, :team_members, :start_date, :end_date, :time_period, :product, :quarter, :year
 
   # If there is a year, the start_date and end_date are ignored
-  def initialize(company, teams, time_period, product = nil)
+  def initialize(company, teams, time_period, product = nil, quarter = nil, year = nil)
     self.company = company
     self.time_period = time_period
     self.start_date = time_period.start_date
     self.end_date = time_period.end_date
     self.product = product
-    @teams = teams.map{ |t| NewForecastTeam.new(t, time_period, product) }
+    self.quarter = quarter
+    self.year = year
+    @teams = teams.map{ |t| NewForecastTeam.new(t, time_period, product, quarter) }
   end
 
   def cache_key
@@ -30,7 +32,7 @@ class NewForecast
   def team_members
     return @team_members if defined?(@team_members)
 
-    @team_members = company.teams_tree_members.map{ |m| NewForecastMember.new(m, time_period, product) }
+    @team_members = company.teams_tree_members.map{ |m| NewForecastMember.new(m, time_period, product, quarter) }
   end
 
   def stages

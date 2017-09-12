@@ -4,14 +4,16 @@ class NewForecastMember
   delegate :id, to: :member
   delegate :name, to: :member
 
-  attr_accessor :member, :time_period, :product, :start_date, :end_date
+  attr_accessor :member, :time_period, :product, :start_date, :end_date, :quarter, :year
 
-  def initialize(member, time_period, product = nil)
+  def initialize(member, time_period, product = nil, quarter = nil, year = nil)
     self.member = member
     self.time_period = time_period
     self.start_date = time_period.start_date
     self.end_date = time_period.end_date
     self.product = product
+    self.quarter = quarter
+    self.year = year
   end
 
   def is_leader

@@ -57,7 +57,7 @@
 				angular.element('.subtable-arrow').hide()
 				angular.element('.subtable-wrap').removeClass('opened').height(0)
 
-				params = { time_period_id: $scope.filter.timePeriod.id, quarter: row.quarter, product_id: $scope.filter.product.id  }
+				params = { time_period_id: $scope.filter.timePeriod.id, quarter: row.quarter, product_id: $scope.filter.product.id, year: row.year  }
 				if row.type == 'member'
 					params = _.extend(params, { member_id: row.id })
 				else if row.type == 'team'
@@ -188,8 +188,27 @@
 			else
 				Forecast.query(query).$promise.then (forecast) ->
 					if forecast.length > 1 # forecast is a quarterly member array
-						$scope.forecast = forecast
-						$scope.members = forecast
+						$scope.forecast = []
+						$scope.members = []
+						$scope.teams = []
+						if (appliedFilter.seller.id)
+							$scope.forecast = forecast
+							$scope.members = forecast
+						else
+							_.each forecast, (forecast_item) ->
+								$scope.members = $scope.members.concat(
+									_.map forecast_item.members, (member_item) ->
+										member_item.stages = forecast_item.stages
+										return member_item
+								)
+								$scope.teams = $scope.teams.concat(
+									_.map forecast_item.teams, (team_item) ->
+										team_item.stages = forecast_item.stages
+										return team_item
+								)
+							$scope.forecast = _.sortBy $scope.teams.concat($scope.members), (item) ->
+								item.name
+
 					else # forecast is either a single top-level company or single member object
 						$scope.forecast = forecast[0]
 						$scope.teams = forecast[0].teams

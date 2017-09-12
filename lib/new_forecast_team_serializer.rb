@@ -19,6 +19,8 @@ class NewForecastTeamSerializer < ActiveModel::Serializer
     :wow_revenue,
     :wow_weighted_pipeline,
     :type,
+    :quarter,
+    :year,
     :teams,
     :leader,
     :members,

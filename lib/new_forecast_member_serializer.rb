@@ -16,6 +16,8 @@ class NewForecastMemberSerializer < ActiveModel::Serializer
     :percent_booked,
     :gap_to_quota,
     :quota,
+    :quarter,
+    :year,
     :wow_revenue,
     :wow_weighted_pipeline,
     :is_leader,

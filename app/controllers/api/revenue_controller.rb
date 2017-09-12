@@ -2,7 +2,7 @@ class Api::RevenueController < ApplicationController
   respond_to :json
 
   def index
-    if params[:time_period_id].present?
+    if params[:time_period_id].present? || params[:quarter].present?
       render json: crevenues
     elsif params[:year].present?
       render json: quarterly_ios
@@ -298,7 +298,11 @@ class Api::RevenueController < ApplicationController
   end
 
   def time_period
-    @time_period ||= current_user.company.time_periods.find(params[:time_period_id])
+    if params[:time_period_id].present?
+      @time_period ||= current_user.company.time_periods.find_by_id(params[:time_period_id])
+    elsif params['year'].present? && params['quarter'].present?
+      @time_period ||= current_user.company.time_periods.find_by(start_date: quarters[quarter - 1][:start_date].to_date, end_date: quarter[quarter - 1][:end_date].to_date)
+    end
   end
 
   def valid_time_period?

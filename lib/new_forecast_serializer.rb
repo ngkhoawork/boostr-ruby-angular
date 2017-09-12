@@ -17,6 +17,8 @@ class NewForecastSerializer < ActiveModel::Serializer
     :percent_booked,
     :gap_to_quota,
     :quota,
+    :quarter,
+    :year,
     :new_deals_needed
   )
 

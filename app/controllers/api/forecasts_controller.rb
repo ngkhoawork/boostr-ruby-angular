@@ -3,17 +3,27 @@ class Api::ForecastsController < ApplicationController
 
   def index
     if new_version?
-      if user.present?
-        render json: forecast_member
-      elsif team.present?
-        render json: [NewForecastTeam.new(team, time_period, product)]
-      elsif params[:team_id] == 'all'
-        render json: [NewForecast.new(company, teams, time_period, product)]
-      elsif show_all_data
-        render json: [NewForecast.new(company, teams, time_period, product)]
-      else
-        render json: forecast_member
+      data = time_periods.map do |time_period_row|
+        if time_period_row[:data].nil?
+          {quarter: time_period_row[:quarter]}
+        else
+          if user.present?
+            NewForecastMemberSerializer.new(NewForecastMember.new(user, time_period_row[:data], product, time_period_row[:quarter], year))
+          elsif team.present?
+            NewForecastTeamSerializer.new(NewForecastTeam.new(team, time_period_row[:data], product, time_period_row[:quarter], year))
+          elsif params[:team_id] == 'all'
+            NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product, time_period_row[:quarter], year))
+            # render json: [NewForecast.new(company, teams, time_period, product)]
+          elsif show_all_data
+            NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product, time_period_row[:quarter], year))
+            # render json: [NewForecast.new(company, teams, time_period, product)]
+          else
+            NewForecastMemberSerializer.new(NewForecastMember.new(current_user, time_period_row[:data], product, time_period_row[:quarter], year))
+            # render json: forecast_member
+          end
+        end
       end
+      render json: data
     else
       if user.present?
         render json: forecast_member
@@ -308,6 +318,22 @@ class Api::ForecastsController < ApplicationController
       @time_period = company.time_periods.find(params[:time_period_id])
     else
       @time_period = company.time_periods.now
+    end
+  end
+
+  def time_periods
+    return @time_periods if defined?(@time_periods)
+    if params[:year]
+      @time_periods = quarters.map do |quarter|
+        {
+          quarter: quarter[:quarter],
+          data: company.time_periods.find_by(start_date: quarter[:start_date].to_date, end_date: quarter[:end_date].to_date)
+        }
+      end
+    elsif params[:time_period_id]
+      @time_periods = [{quarter: nil, data: company.time_periods.find(params[:time_period_id])}]
+    else
+      @time_period = [{quarter: nil, data: company.time_periods.now}]
     end
   end
 

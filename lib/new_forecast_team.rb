@@ -4,14 +4,16 @@ class NewForecastTeam
   delegate :id, to: :team
   delegate :name, to: :team
 
-  attr_accessor :team, :start_date, :end_date, :time_period, :product
+  attr_accessor :team, :start_date, :end_date, :time_period, :product, :quarter, :year
 
-  def initialize(team, time_period, product)
+  def initialize(team, time_period, product = nil, quarter = nil, year = nil)
     self.team = team
     self.time_period = time_period
     self.start_date = time_period.start_date
     self.end_date = time_period.end_date
     self.product = product
+    self.quarter = quarter
+    self.year = year
   end
 
   def type
@@ -96,6 +98,8 @@ class NewForecastTeam
       } : nil,
       members: {},
       teams: {},
+      quarter: quarter,
+      year: year,
       revenue: 0.0,
       unweighted_pipeline_by_stage: {},
       unweighted_pipeline: 0.0,
@@ -143,6 +147,8 @@ class NewForecastTeam
             id: team.id,
             name: team.name,
             type: 'team',
+            quarter: quarter,
+            year: year,
             unweighted_pipeline: 0,
             weighted_pipeline: 0,
             unweighted_pipeline_by_stage: {},
@@ -161,8 +167,8 @@ class NewForecastTeam
           name: user.name,
           is_leader: user.leader?,
           type: 'member',
-          quarter: nil,
-          year: nil,
+          quarter: quarter,
+          year: year,
           unweighted_pipeline: 0,
           weighted_pipeline: 0,
           unweighted_pipeline_by_stage: {},
@@ -187,6 +193,8 @@ class NewForecastTeam
             id: team.id,
             name: team.name,
             type: 'team',
+            quarter: quarter,
+            year: year,
             unweighted_pipeline: 0,
             weighted_pipeline: 0,
             unweighted_pipeline_by_stage: {},
@@ -217,8 +225,8 @@ class NewForecastTeam
           name: user.name,
           is_leader: user.leader?,
           type: 'member',
-          quarter: nil,
-          year: nil,
+          quarter: quarter,
+          year: year,
           unweighted_pipeline: 0,
           weighted_pipeline: 0,
           unweighted_pipeline_by_stage: {},
@@ -272,6 +280,8 @@ class NewForecastTeam
             id: team.id,
             name: team.name,
             type: 'team',
+            quarter: quarter,
+            year: year,
             unweighted_pipeline: 0,
             weighted_pipeline: 0,
             unweighted_pipeline_by_stage: {},
@@ -294,8 +304,8 @@ class NewForecastTeam
           name: user.name,
           is_leader: user.leader?,
           type: 'member',
-          quarter: nil,
-          year: nil,
+          quarter: quarter,
+          year: year,
           unweighted_pipeline: 0,
           weighted_pipeline: 0,
           unweighted_pipeline_by_stage: {},
@@ -365,6 +375,8 @@ class NewForecastTeam
         id: team.id,
         name: team.name,
         type: 'team',
+        quarter: quarter,
+        year: year,
         unweighted_pipeline: 0,
         weighted_pipeline: 0,
         unweighted_pipeline_by_stage: {},
