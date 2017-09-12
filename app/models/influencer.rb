@@ -99,11 +99,13 @@ class Influencer < ActiveRecord::Base
       # Active
       active = nil
       if row[12].present?
-        if row[12].downcase == 'true'|| row[12].downcase == 'false'
-          email = row[12].strip
+        if row[12] == 'Active'
+          active = true
+        elsif row[12] == 'Inactive'
+          active = false
         else
           import_log.count_failed
-          import_log.log_error(["Active must be boolean value"])
+          import_log.log_error(["Status must be either Active or Inactive"])
           next
         end
       end
@@ -202,7 +204,7 @@ class Influencer < ActiveRecord::Base
         line << (influencer.address.nil? ? nil : influencer.address.state)
         line << (influencer.address.nil? ? nil : influencer.address.country)
         line << (influencer.address.nil? ? nil : influencer.address.zip)
-        line << (influencer.active.nil? ? nil : influencer.address.active)
+        line << (influencer.active.nil? ? nil : influencer.active == true ? 'Active' : 'Inactive')
         csv << line
       end
     end
