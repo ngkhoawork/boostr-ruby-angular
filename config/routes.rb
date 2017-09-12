@@ -379,7 +379,9 @@ Rails.application.routes.draw do
 				get :pipeline_and_revenue
 				get :activity_pacing
 			end
-		end
+    end
+
+    resources :filter_queries, only: [:index, :create, :update, :destroy]
   end
 
   mount Sidekiq::Web => '/sidekiq'
