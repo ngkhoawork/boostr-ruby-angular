@@ -200,24 +200,26 @@
 
         getData = ->
             if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
-            query =
-                id: $scope.filter.team.id || 'all'
-                user_id: $scope.filter.seller.id || 'all'
-                time_period_id: $scope.filter.timePeriod.id
-            Forecast.forecast_detail(query).$promise.then (data) ->
-                handleForecast data
-                $scope.forecast = data.forecast
-                $scope.quarters = data.quarters
-                query.team_id = query.id
-                delete query.id
-                Revenue.forecast_detail(query).$promise.then (data) ->
-                    parseRevenueBudgets data
-                    addDetailAmounts data, 'revenues'
-                    $scope.revenues = data
-                    Deal.forecast_detail(query).then (data) ->
-                        parseDealBudgets data
-                        addDetailAmounts data, 'deals'
-                        $scope.deals = data
+            CurrentUser.get().$promise.then (user) ->
+                $scope.forecast_gap_to_quota_positive = user.company_forecast_gap_to_quota_positive
+                query =
+                    id: $scope.filter.team.id || 'all'
+                    user_id: $scope.filter.seller.id || 'all'
+                    time_period_id: $scope.filter.timePeriod.id
+                Forecast.forecast_detail(query).$promise.then (data) ->
+                    handleForecast data
+                    $scope.forecast = data.forecast
+                    $scope.quarters = data.quarters
+                    query.team_id = query.id
+                    delete query.id
+                    Revenue.forecast_detail(query).$promise.then (data) ->
+                        parseRevenueBudgets data
+                        addDetailAmounts data, 'revenues'
+                        $scope.revenues = data
+                        Deal.forecast_detail(query).then (data) ->
+                            parseDealBudgets data
+                            addDetailAmounts data, 'deals'
+                            $scope.deals = data
 
         tableToCSV = (el) ->
             table = angular.element(el)
