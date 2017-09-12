@@ -58,7 +58,6 @@ class DealMember < ActiveRecord::Base
   end
 
   def update_pipeline_fact_user(deal_member)
-    puts "==========update deal member fact"
     user = deal_member.user
     deal = deal_member.deal
     company = deal.company

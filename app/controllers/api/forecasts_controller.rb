@@ -13,13 +13,10 @@ class Api::ForecastsController < ApplicationController
             NewForecastTeamSerializer.new(NewForecastTeam.new(team, time_period_row[:data], product, time_period_row[:quarter], year))
           elsif params[:team_id] == 'all'
             NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product, time_period_row[:quarter], year))
-            # render json: [NewForecast.new(company, teams, time_period, product)]
           elsif show_all_data
             NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product, time_period_row[:quarter], year))
-            # render json: [NewForecast.new(company, teams, time_period, product)]
           else
             NewForecastMemberSerializer.new(NewForecastMember.new(current_user, time_period_row[:data], product, time_period_row[:quarter], year))
-            # render json: forecast_member
           end
         end
       end

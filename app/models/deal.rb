@@ -74,7 +74,6 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     if stage_id_changed?
-      log_stage 
       send_ealert
     end
     integrate_with_operative
@@ -105,7 +104,6 @@ class Deal < ActiveRecord::Base
   end
 
   after_destroy do
-    log_stage
     update_pipeline_fact(self)
   end
 
