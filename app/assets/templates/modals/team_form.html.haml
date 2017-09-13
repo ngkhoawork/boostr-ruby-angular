@@ -16,7 +16,7 @@
           .col-xs-6
             %label.control-label{ for: 'leader' } Team Leader
             %ui-select{ name: 'leader', ng: { model: 'team.leader_id', disabled: true, change: 'afterLeaderChange(team.leader_id)' } }
-              %ui-select-match{ placeholder: 'Eg. John Sellers' }
+              %ui-select-match{ placeholder: 'Eg. John Sellers', "allow-clear": 'true' }
                 {{ $select.selected.name }}
               %ui-select-choices{ repeat: 'user.id as user in availableLeaders | filter: { name: $select.search }' }
                 %div{ ng: { bind: { html: 'user.name' }, click: 'beforeLeaderChange(team.leader_id)' } }

@@ -14,8 +14,9 @@ class Team < ActiveRecord::Base
 
   validates :name, presence: true
 
-  before_destroy do
+  before_destroy do |team_record|
     remove_team_leader
+    assign_parent_to_child_teams(team_record)
   end
 
   after_update do
@@ -67,14 +68,13 @@ class Team < ActiveRecord::Base
   def remove_team_leader
     self.update(leader_id: nil)
   end
-  # def all_members(children_array = [])
-  #   children = Team.where(parent_id: self.id)
-  #   children_array += self.members
-  #   children.each do |child|
-  #     child.all_members(children_array)
-  #   end
-  #   children_array
-  # end
+
+  def assign_parent_to_child_teams(team_record)
+    parent_id = team_record.parent_id
+    team_record.children.each do |child_team|
+      child_team.update(parent_id: parent_id)
+    end
+  end
 
   def leader_name
     leader.name if leader.present?
