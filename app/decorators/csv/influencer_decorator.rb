@@ -52,7 +52,7 @@ class Csv::InfluencerDecorator
   end
 
   def active
-    influencer.active? ? "Yes" : "No"
+    influencer.active? ? "Active" : "Inactive"
   end
 
 
