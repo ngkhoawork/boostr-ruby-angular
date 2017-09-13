@@ -8,25 +8,25 @@
     %table{width: '100%'} 
       %tr
         - style = ""
-        - if !@deal.stage.open && @deal.stage.probability == 100
+        - if !@deal.stage_open? && @deal.stage_probability == 100
           - style = "background: url('#{root_url}won-deal.png'); background-repeat: no-repeat; background-position: 70%; height: 110px;"
           
         %td{ style: "#{style}" }
           .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
             #{@deal.name}
-          - if @deal.stage.active?
+          - if @deal.stage_active?
             .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
               %strong
                 Stage:
-              #{@deal.stage.name}
+              #{@deal.stage_name}
             .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
               %strong
                 Probability:
-              #{@deal.stage.probability}%
+              #{@deal.stage_probability}%
           .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
             %strong
               Advertiser:
-            #{@deal.advertiser.name}
+            #{@deal.advertiser_name}
           .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
             %strong
               Sales Team:

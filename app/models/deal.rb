@@ -57,6 +57,9 @@ class Deal < ActiveRecord::Base
 
   delegate :name, to: :advertiser, allow_nil: true, prefix: true
   delegate :name, to: :stage, allow_nil: true, prefix: true
+  delegate :probability, to: :stage, allow_nil: true, prefix: true
+  delegate :open?, to: :stage, allow_nil: true, prefix: true
+  delegate :active?, to: :stage, allow_nil: true, prefix: true
 
   before_update do
     if curr_cd_changed?
