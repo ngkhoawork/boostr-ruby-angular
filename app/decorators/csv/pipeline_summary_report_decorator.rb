@@ -96,6 +96,10 @@ class Csv::PipelineSummaryReportDecorator
     deal[:custom_fields][deal_custom_field.id.to_s]
   end
 
+  def billing_contact
+    (deal[:billing_contact]['name'] + '/' + deal[:billing_contact]['email']) rescue nil
+  end
+
   private
 
   attr_reader :deal, :company
