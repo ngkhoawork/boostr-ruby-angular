@@ -46,14 +46,15 @@
                       Won
                   .subtitle
                     {{deal.name}}
-                  .advertiser-ballast{'ng-if': 'deal.stage.active == true'}
-                    %strong
-                      Stage:
-                    {{deal.stage.name}}
-                  .advertiser-ballast{'ng-if': 'deal.stage.active == true'}
-                    %strong
-                      Probability:
-                    {{deal.stage.probability}}%
+                  %div{'ng-if': 'deal.stage.active'}
+                    .advertiser-ballast
+                      %strong
+                        Stage:
+                      {{deal.stage.name}}
+                    .advertiser-ballast
+                      %strong
+                        Probability:
+                      {{deal.stage.probability}}%
                   .advertiser-ballast
                     %strong
                       Advertiser:
