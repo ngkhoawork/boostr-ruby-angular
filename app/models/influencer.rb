@@ -11,6 +11,9 @@ class Influencer < ActiveRecord::Base
 
   scope :by_name, -> name { where('influencers.name ilike ?', "%#{name}%") if name.present? }
 
+  delegate :street1, :street2, :city, :state, :zip, :country, to: :address, allow_nil: true
+  delegate :fee_type, :amount, to: :agreement, allow_nil: true, prefix: true
+
   def fields
     company.fields.where(subject_type: self.class.name)
   end
@@ -167,46 +170,5 @@ class Influencer < ActiveRecord::Base
     end
 
     import_log.save
-  end
-
-  def self.to_csv(company, influencers)
-    header = [
-      'Id',
-      'Name',
-      'Network',
-      'Agreement Type',
-      'Agreement Fee',
-      'Email',
-      'Phone',
-      'Street',
-      'City',
-      'State',
-      'Country',
-      'Postal Code',
-      'Active'
-    ]
-    network_field = company.fields.find_by_name('Network')
-
-    CSV.generate(headers: true) do |csv|
-      csv << header
-      influencers = influencers.includes(:agreement, values: :option)
-      influencers.each do |influencer|
-        line = []
-        line << influencer.id
-        line << influencer.name
-        line << influencer.values.find{ |value| value.field_id == network_field.id }.try(:option).try(:name)
-        line << influencer.agreement.fee_type
-        line << influencer.agreement.amount
-        line << influencer.email
-        line << influencer.phone
-        line << (influencer.address.nil? ? nil : influencer.address.street1)
-        line << (influencer.address.nil? ? nil : influencer.address.city)
-        line << (influencer.address.nil? ? nil : influencer.address.state)
-        line << (influencer.address.nil? ? nil : influencer.address.country)
-        line << (influencer.address.nil? ? nil : influencer.address.zip)
-        line << (influencer.active.nil? ? nil : influencer.active == true ? 'Active' : 'Inactive')
-        csv << line
-      end
-    end
   end
 end

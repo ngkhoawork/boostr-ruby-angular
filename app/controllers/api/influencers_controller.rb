@@ -20,9 +20,8 @@ class Api::InfluencersController < ApplicationController
       format.csv {
         require 'timeout'
         begin
-          status = Timeout::timeout(120) {
-            send_data Influencer.to_csv(current_user.company, results), filename: "influencers-#{Date.today}.csv"
-          }
+          send_data Csv::InfluencerService.new(results).perform,
+                  filename: "influencers-#{Date.today}.csv"
         rescue Timeout::Error
           return
         end
@@ -138,6 +137,8 @@ class Api::InfluencersController < ApplicationController
       }
     )
   end
+
+
 
   def influencers
     @influencers ||= company.influencers.order(:name)
