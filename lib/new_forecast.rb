@@ -14,7 +14,7 @@ class NewForecast
     self.product = product
     self.quarter = quarter
     self.year = year
-    @teams = teams.map{ |t| NewForecastTeam.new(t, time_period, product, quarter) }
+    @teams = teams.map{ |t| NewForecastTeam.new(t, time_period, product, quarter, year) }
   end
 
   def cache_key
