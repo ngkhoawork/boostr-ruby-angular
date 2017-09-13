@@ -170,13 +170,13 @@
                     %td
                       %a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}'} {{revenue.name}}
                     %td {{revenue.advertiser.name}}
-                    %td.right {{revenue.budget | currency : '$' : 0}}
+                    %td.right {{revenue.budget | currency : '$' : 2}}
                     %td {{revenue.product.name}}
-                    %td.right {{revenue.in_period_amt | currency : '$' : 0}}
+                    %td.right {{revenue.in_period_amt | currency : '$' : 2}}
                     %td {{revenue.start_date | date : 'MM/dd/yyyy'}}
                     %td {{revenue.end_date | date : 'MM/dd/yyyy'}}
                     %td
-                      %div{'ng-repeat': 'member in revenue.members'} {{member.user.first_name + ' ' + member.user.last_name}} {{member.share}}%
+                      %div{'ng-repeat': 'member in revenue.members track by $index'} {{member.user.first_name + ' ' + member.user.last_name}} {{member.share}}%
 
       .row
         .col-xs-12

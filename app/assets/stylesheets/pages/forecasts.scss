@@ -1,88 +1,175 @@
 #forecasts {
-  a {
-    color: $secondary-color;
-  }
-  .tc-chart-js-legend {
-    list-style-type: none;
-    text-align: center;
-    margin-bottom: 36px;
-
-    li {
-      display: inline-block;
-      line-height: 20px;
-      vertical-align: middle;
+    .inner-forecasts {
+        max-width: 1600px;
+        padding: 0 15px;
+        .reports-header {
+            padding: 0;
+        }
     }
-    .swatch {
-      vertical-align: middle;
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      margin: 0 10px;
-      border: 1px solid $gray-light;
-      background-color: #000;
+    .forecast-chart {
+        height: auto;
+        .axis {
+            font: 10px sans-serif;
+        }
+        .quota-line {
+            stroke: gray;
+            stroke-dasharray: 6, 4;
+            stroke-width: 1px;
+            shape-rendering: crispEdges;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #d9dde0;
+            shape-rendering: crispEdges;
+
+        }
+        .tick {
+            text {
+                font-size: 14px;
+                //font-weight: bold;
+            }
+        }
     }
-    .legend_quota .swatch {
-      height: 4px;
-      border-top: 4px dotted $brand-secondary;
-      background: none;
+    .legend-container {
+        margin-bottom: 20px;
+        .legend {
+            //display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+            .legend-icon {
+                width: 14px;
+                height: 14px;
+                border-radius: 3px;
+                display: inline-block;
+                margin-right: 8px;
+                //vertical-align: middle;
+            }
+            .legend-text {
+                //line-height: 14px;
+                //vertical-align: top;
+            }
+        }
     }
-
-  }
-
-  .weighted-pipeline {
-    position: relative;
-
-    .arrow-up {
-      position: absolute;
-      bottom: -1px;
-      right: 12px;
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-
-      border-bottom: 15px solid $brand-primary;
+    #forecast-chart-tooltip {
+        background-color: white;
+        border-radius: 4px;
+        position: fixed;
+        padding: 8px 12px;
+        color: $main-font-color;
+        display: none;
+        border: 1px solid black;
+        .tip-icon {
+            display: inline-block;
+            height: 13px;
+            width: 13px;
+            border-radius: 3px;
+            position: relative;
+            top: 2px;
+            border: 1px solid rgb(228, 228, 228);
+        }
+        .tip-text {
+            font-weight: bold;
+            float: right;
+            padding-left: 8px;
+        }
+        &.active {
+            display: block;
+        }
     }
-  }
-
-  tr.weighted-pipeline-detail {
-
-    h3, h5 {
-      margin-left: 10px;
-      margin-bottom: 20px;
-      display: inline;
+    .table-wrapper {
+        padding-bottom: 10px;
     }
-
-    h4 {
-      display: inline;
+    .table {
+        .subtable-arrow-wrap {
+            //position: relative;
+            padding: 0;
+            & > div {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                width: 100%;
+                min-height: 60px;
+                //background-color: #c1dfff;
+            }
+        }
+        .subtable-arrow {
+            height: 0;
+            color: #c1c1c1;
+            font-size: 24px;
+            position: absolute;
+            bottom: 17px;
+            left: 50%;
+            right: 50%;
+            display: none;
+            //opacity: 0;
+            //&.opened {
+            //    opacity: 1;
+            //}
+        }
     }
-
-    h5 {
-      color: $dark-grayish-blue-3;
+    .loading-subtable {
+        display: inline-block;
+        animation: rotation 0.75s infinite linear;
     }
-
-    .weighted-pipeline-table-wrapper {
-      padding: 15px 0 0 0;
-      border: 1px solid $brand-primary;
-
-      a.close {
-        margin-right: 10px;
-        margin-top: -5px;
-      }
-
-      table {
-        background: $white;
-        table-layout: fixed;
-      }
+    @keyframes rotation {
+        from {
+            transform: rotateY(0deg);
+        }
+        to {
+            transform: rotateY(359deg);
+        }
     }
-  }
-
-  .loading {
-    margin-top: 20px;
-    margin-left: 70pt;
-  }
-}
-
-.fixed-revenue-width {
-  width: 1300px;
+    .subtable-row {
+        max-height: 0 !important;
+        height: auto !important;
+        td {
+            padding: 0;
+            border: none;
+        }
+        .subtable-wrap {
+            background-color: white;
+            overflow: hidden;
+            height: 0;
+            width: 100%;
+            opacity: 0;
+            transition: height 400ms, opacity 400ms;
+            &.opened {
+                opacity: 1;
+                border-bottom: 0;
+            }
+            .subtable-container {
+                display: inline-block;
+                position: relative;
+                border: 1px solid #DDDDDD;
+                padding: 15px;
+                background-color: #FAFAFB;
+            }
+            .subtable {
+                width: 100%;
+                background-color: transparent;
+                thead {
+                    background-color: transparent;
+                    border-bottom: 2px solid #DDDDDD;
+                }
+                tbody {
+                    tr:not(:last-child) {
+                        border-bottom: 1px solid #DDDDDD;
+                    }
+                }
+                td {
+                    padding: 8px 10px;
+                }
+            }
+        }
+    }
+    .totals {
+        font-weight: bold;
+        a {
+            color: inherit;
+            pointer-events: none;
+        }
+    }
 }

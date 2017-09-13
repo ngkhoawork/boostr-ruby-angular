@@ -33,7 +33,7 @@ describe BillingSummary::IosMissingMonthlyActualSerializer do
   end
 
   def io
-    @_io ||= create :io, start_date: start_date, end_date: end_date, advertiser: advertiser, deal: deal
+    @_io ||= create :io, start_date: start_date, end_date: end_date, advertiser: advertiser, deal: deal, company: company
   end
 
   def advertiser

@@ -103,6 +103,7 @@
             $scope.timePeriods = data.timePeriods
             $scope.sellers = data.sellers
             $scope.sellers.unshift(defaultUser)
+            $scope.forecast_gap_to_quota_positive = data.user.company_forecast_gap_to_quota_positive
             switch data.user.user_type
                 when 1 #seller
                     $scope.filter.seller = data.user
@@ -141,7 +142,6 @@
             fc.quarterly_weighted_gap_to_quota = {}
             fc.quarterly_unweighted_gap_to_quota = {}
             fc.quarterly_percentage_of_annual_quota = {}
-            fc.stages = _.filter fc.stages, (stage) -> stage.active
             quotaSum = _.reduce fc.quarterly_quota, (result, val) -> result + Number val
             _.each data.quarters, (quarter) ->
                 weighted = Number fc.quarterly_revenue[quarter]
@@ -151,8 +151,13 @@
                     unweighted += Number fc.quarterly_unweighted_pipeline_by_stage[stage.id][quarter]
                 fc.quarterly_weighted_forecast[quarter] = weighted
                 fc.quarterly_unweighted_forecast[quarter] = unweighted
-                fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
-                fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
+                if $scope.forecast_gap_to_quota_positive
+                    fc.quarterly_weighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - weighted
+                    fc.quarterly_unweighted_gap_to_quota[quarter] = fc.quarterly_quota[quarter] - unweighted
+                else
+                    fc.quarterly_weighted_gap_to_quota[quarter] = weighted - fc.quarterly_quota[quarter]
+                    fc.quarterly_unweighted_gap_to_quota[quarter] = unweighted - fc.quarterly_quota[quarter]
+
                 fc.quarterly_percentage_of_annual_quota[quarter] = if $scope.isYear() then Math.round(Number(fc.quarterly_quota[quarter]) / quotaSum * 100) else null
             fc.stages.sort (s1, s2) -> s2.probability - s1.probability
 
@@ -178,11 +183,11 @@
 
         parseRevenueBudgets = (data) ->
             data = _.map data, (item) ->
-                item.budget = parseInt item.budget if item.budget
-                item.budget_loc = parseInt item.budget_loc if item.budget_loc
-                item.in_period_split_amt = parseInt item.in_period_split_amt if item.in_period_split_amt
-                item.months = _.map item.months, (m) -> if isNaN parseInt m then null else parseInt m
-                item.quarters = _.map item.quarters, (q) -> if isNaN parseInt q then null else parseInt q
+                item.budget = parseFloat item.budget if item.budget
+                item.budget_loc = parseFloat item.budget_loc if item.budget_loc
+                item.in_period_split_amt = parseFloat item.in_period_split_amt if item.in_period_split_amt
+                item.months = _.map item.months, (m) -> if isNaN parseFloat m then null else parseFloat m
+                item.quarters = _.map item.quarters, (q) -> if isNaN parseFloat q then null else parseFloat q
                 item
         parseDealBudgets = (data) ->
             data = _.map data, (item) ->
@@ -195,24 +200,26 @@
 
         getData = ->
             if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
-            query =
-                id: $scope.filter.team.id || 'all'
-                user_id: $scope.filter.seller.id || 'all'
-                time_period_id: $scope.filter.timePeriod.id
-            Forecast.forecast_detail(query).$promise.then (data) ->
-                handleForecast data
-                $scope.forecast = data.forecast
-                $scope.quarters = data.quarters
-            query.team_id = query.id
-            delete query.id
-            Revenue.forecast_detail(query).$promise.then (data) ->
-                parseRevenueBudgets data
-                addDetailAmounts data, 'revenues'
-                $scope.revenues = data
-            Deal.forecast_detail(query).then (data) ->
-                parseDealBudgets data
-                addDetailAmounts data, 'deals'
-                $scope.deals = data
+            CurrentUser.get().$promise.then (user) ->
+                $scope.forecast_gap_to_quota_positive = user.company_forecast_gap_to_quota_positive
+                query =
+                    id: $scope.filter.team.id || 'all'
+                    user_id: $scope.filter.seller.id || 'all'
+                    time_period_id: $scope.filter.timePeriod.id
+                Forecast.forecast_detail(query).$promise.then (data) ->
+                    handleForecast data
+                    $scope.forecast = data.forecast
+                    $scope.quarters = data.quarters
+                    query.team_id = query.id
+                    delete query.id
+                    Revenue.forecast_detail(query).$promise.then (data) ->
+                        parseRevenueBudgets data
+                        addDetailAmounts data, 'revenues'
+                        $scope.revenues = data
+                        Deal.forecast_detail(query).then (data) ->
+                            parseDealBudgets data
+                            addDetailAmounts data, 'deals'
+                            $scope.deals = data
 
         tableToCSV = (el) ->
             table = angular.element(el)

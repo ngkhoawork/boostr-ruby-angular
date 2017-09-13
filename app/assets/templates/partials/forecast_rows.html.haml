@@ -3,7 +3,7 @@
     %div{ ng: { if: 'row.type == "member"' } }
       {{ row.name }}
     %div{ ng: { if: 'row.type == "team"' } }
-      %a{ ng: { href: '/forecast/{{row.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' } }
+      %a{ ng: { href: '/fore_cast_old/{{row.id}}?time_period_id={{currentTimePeriod.id}}&year={{year}}' } }
         {{ row.name }}
     %div{ ng: { if: 'row.is_leader && year' } }
       \--

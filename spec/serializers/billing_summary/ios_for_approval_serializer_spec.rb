@@ -69,7 +69,8 @@ describe BillingSummary::IosForApprovalSerializer do
       end_date: end_date,
       advertiser: advertiser,
       deal: deal,
-      display_line_items: [display_line_item]
+      display_line_items: [display_line_item],
+      company: company
     )
   end
 

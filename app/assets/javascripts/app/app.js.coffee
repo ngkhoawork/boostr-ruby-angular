@@ -101,9 +101,17 @@
       controller: 'PipelineSplitReportController'
       reloadOnSearch: false
 
+    .when '/reports/old_forecasts',
+      templateUrl: 'old_forecasts_detail.html'
+      controller: 'OldForecastsDetailController'
+      
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
+
+    .when '/reports/old_product_forecasts',
+      templateUrl: 'old_product_forecasts_detail.html'
+      controller: 'OldProductForecastsDetailController'
 
     .when '/reports/product_forecasts',
       templateUrl: 'product_forecasts_detail.html'
@@ -284,6 +292,10 @@
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
+
+    .when '/fore_cast_old/:team_id?',
+      templateUrl: 'forecasts_old.html'
+      controller: 'ForecastsOldController'
 
     .when '/users/sign_out',
       templateUrl: 'sign_out.html'
