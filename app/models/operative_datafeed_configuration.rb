@@ -9,7 +9,8 @@ class OperativeDatafeedConfiguration < ApiConfiguration
 
   def self.metadata
     {
-      revenue_calculation_patterns: DatafeedConfigurationDetails::REVENUE_CALCULATION_PATTERNS
+      revenue_calculation_patterns: DatafeedConfigurationDetails::REVENUE_CALCULATION_PATTERNS,
+      product_mapping: DatafeedConfigurationDetails::PRODUCT_MAPPING
     }
   end
 end

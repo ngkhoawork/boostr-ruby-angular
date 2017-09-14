@@ -14,12 +14,16 @@
 
       ApiConfiguration.metadata(integration_provider: 'Operative Datafeed').then (data) ->
         $scope.revenue_calculation_patterns = data.revenue_calculation_patterns
+        $scope.product_mapping = data.product_mapping
 
       $scope.submitForm = () ->
         $scope.errors = {}
 
         if !($scope.api_configuration.datafeed_configuration_details.revenue_calculation_pattern?)
           $scope.errors.revenue_calculation_pattern = "can't be blank"
+
+        if !($scope.api_configuration.datafeed_configuration_details.product_mapping?)
+          $scope.errors.product_mapping = "can't be blank"
 
         if Object.keys($scope.errors).length > 0 then return
 

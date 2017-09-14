@@ -1,7 +1,8 @@
 class Operative::ImportSalesOrderLineItemsService
-  def initialize(company_id, revenue_calculation_pattern, files)
+  def initialize(company_id, revenue_calculation_pattern, product_mapping, files)
     @company_id = company_id
     @revenue_calculation_pattern = revenue_calculation_pattern
+    @product_mapping = product_mapping
     @sales_order_line_items = files.fetch(:sales_order_line_items)
     @invoice_line_items = files.fetch(:invoice_line_item)
   end
@@ -11,6 +12,7 @@ class Operative::ImportSalesOrderLineItemsService
     @invoice_csv_file = open_file(invoice_line_items)
     if @sales_order_csv_file && @invoice_csv_file
       self.class.define_calculator_method(@revenue_calculation_pattern)
+      self.class.define_product_mapping(@product_mapping)
       parse_invoices
       parse_line_items
     end
@@ -110,7 +112,7 @@ class Operative::ImportSalesOrderLineItemsService
       ad_server: 'O1',
       start_date: row[:sales_order_line_item_start_date],
       end_date: row[:sales_order_line_item_end_date],
-      product_name: row[:product_name],
+      product_name: product_mapping(row),
       quantity: row[:quantity],
       price: row[:net_unit_cost],
       pricing_type: row[:cost_type],
@@ -164,6 +166,19 @@ class Operative::ImportSalesOrderLineItemsService
     when 'Invoice Amount'
       define_method(:recognized_revenue_calculator) do |lines, net_unit_cost|
         lines.map { |row| row[:invoice_amount].to_f     }.reduce(0, :+)
+      end
+    end
+  end
+
+  def self.define_product_mapping(mapping)
+    case DatafeedConfigurationDetails.get_product_mapping_name(mapping)
+    when 'Product_Name'
+      define_method(:product_mapping) do |row|
+        row[:product_name]
+      end
+    when 'Forecast_Amount'
+      define_method(:product_mapping) do |row|
+        row[:forecast_amount]
       end
     end
   end
