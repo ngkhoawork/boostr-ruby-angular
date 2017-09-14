@@ -38,13 +38,14 @@
             %label{ for: 'effect_date' }
               Date
               %span.star *
+              (MM/DD/YYYY)
             %input.form-control{readonly: true, name: 'effect_date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'influencerContentFee.effect_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened', placeholder: 'Choose date' }
       .form-group
         .row
           .col-xs-6{'ng-class':'{error: errors.fee_type}'}
             %span.error-text {{errors.fee_type}}
             %label{ for: 'fee_type' }
-              Fee Type
+              Fee Type (flat / percentage)
               %span.star *
             %ui-select{ name: 'fee_type', ng: { model: 'influencerContentFee.fee_type', required: true } }
               %ui-select-match{ placeholder: 'Fee Type' }

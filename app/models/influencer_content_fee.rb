@@ -92,9 +92,9 @@ class InfluencerContentFee < ActiveRecord::Base
       effect_date = nil
       if row[3].present?
         begin
-          effect_date = Date.strptime(row[3].strip, "%d/%m/%Y")
+          effect_date = Date.strptime(row[3].strip, "%m/%d/%Y")
           if effect_date.year < 100
-            effect_date = Date.strptime(row[3].strip, "%d/%m/%y")
+            effect_date = Date.strptime(row[3].strip, "%m/%d/%y")
           end
         rescue ArgumentError
           import_log.count_failed
