@@ -10,10 +10,21 @@ class AccountDimension < ActiveRecord::Base
   has_many :account_revenue_facts, dependent: :destroy
   has_many :agencies, -> { uniq }, through: :agency_connections, source: :advertiser
   has_many :advertisers, -> { uniq }, through: :advertiser_connections, source: :agency
-  has_many :agency_connections, class_name: :ClientConnection,
+  has_many :agency_connections, class_name: 'ClientConnection',
            foreign_key: :agency_id
-  has_many :advertiser_connections, class_name: :ClientConnection,
+  has_many :advertiser_connections, class_name: 'ClientConnection',
            foreign_key: :advertiser_id
+  has_many :agency_revenue_facts, class_name: 'AdvertiserAgencyRevenueFact',
+           foreign_key: :agency_id, dependent: :destroy
+  has_many :advertiser_revenue_facts, class_name: 'AdvertiserAgencyRevenueFact',
+           foreign_key: :advertiser_id, dependent: :destroy
+  has_many :agency_pipeline_facts, class_name: 'AdvertiserAgencyPipelineFact',
+           foreign_key: :agency_id, dependent: :destroy
+  has_many :advertiser_pipeline_facts, class_name: 'AdvertiserAgencyPipelineFact',
+           foreign_key: :advertiser_id, dependent: :destroy
+  has_many :account_product_pipeline_facts, dependent: :destroy
+  has_many :account_product_revenue_facts, dependent: :destroy
+
 
   scope :agencies_by_holding_company_or_agency_id, Proc.new { |holding_company_id, account_id, company_id|
     AgencyByHoldingIdOrAgencyIdQuery.new(holding_company_id: holding_company_id, account_id: account_id, company_id: company_id).call

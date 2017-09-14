@@ -80,12 +80,14 @@ class Api::AgencyDashboardsController < ApplicationController
 
   def filtered_revenues_by_accounts
     @filtered_revenues_by_accounts ||= FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
-                                                                                                                                        advertisers_ids: related_advertisers_ids)).call
+                                                                                                                                        advertisers_ids: related_advertisers_ids,
+                                                                                                                                        agency_ids: agencies_ids)).call
   end
 
   def filtered_pipelines_by_accounts
     @filtered_pipelines_by_accounts ||= FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
-                                                                                                                                           advertisers_ids: related_advertisers_ids)).call
+                                                                                                                                           advertisers_ids: related_advertisers_ids,
+                                                                                                                                           agencies_ids: agencies_ids)).call
   end
 
   def spend_by_category_data

@@ -1,5 +1,5 @@
 class FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery
-  def initialize(options = {}, relation = AccountProductRevenueFact.joins(:time_dimension, :account_dimension))
+  def initialize(options = {}, relation = AdvertiserAgencyRevenueFact.joins(:time_dimension, :account_dimension))
     @relation = relation.extending(FactScopes)
     @options = options
   end
