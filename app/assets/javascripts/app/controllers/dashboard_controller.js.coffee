@@ -66,32 +66,27 @@
                 }
 
                 now = new Date
-                CurrentUser.get().$promise.then (currentUser) ->
-                    $scope.user = currentUser
-                    $scope.forecast_gap_to_quota_positive = currentUser.company_forecast_gap_to_quota_positive
-                    ActivityType.all().then (activityTypes) ->
-                        $scope.types = activityTypes
-                        $scope.activeType = activityTypes[0]
-                        _.each activityTypes, (type) ->
-                            $scope.selected[type.name] = {}
-                            $scope.selected[type.name].date = now
-                            $scope.selected[type.name].contacts = []
+                ActivityType.all().then (activityTypes) ->
+                    $scope.types = activityTypes
+                    $scope.activeType = activityTypes[0]
+                    _.each activityTypes, (type) ->
+                        $scope.selected[type.name] = {}
+                        $scope.selected[type.name].date = now
+                        $scope.selected[type.name].contacts = []
 
-                    $scope.activitiesInit()
+                $scope.activitiesInit()
 
-                    Contact.all1(unassigned: "yes").then (contacts) ->
-                        $scope.unassignedContacts = contacts
-                        $scope.contactNotification = {}
-                        _.each $scope.unassignedContacts, (contact) ->
-                            $scope.contactNotification[contact.id] = ""
+                Contact.all1(unassigned: "yes").then (contacts) ->
+                    $scope.unassignedContacts = contacts
+                    $scope.contactNotification = {}
+                    _.each $scope.unassignedContacts, (contact) ->
+                        $scope.contactNotification[contact.id] = ""
 
-                    Contact.query().$promise.then (contacts) ->
-                        $scope.contacts = contacts
+                Contact.query().$promise.then (contacts) ->
+                    $scope.contacts = contacts
 
-                    Dashboard.get({ io_owner: $scope.currentPacingAlertsFilter.value }).then (dashboard) ->
-                        $scope.dashboard = dashboard
-                        if !$scope.forecast_gap_to_quota_positive
-                            $scope.dashboard.forecast.gap_to_quota = -($scope.dashboard.forecast.gap_to_quota)
+                Dashboard.get({ io_owner: $scope.currentPacingAlertsFilter.value }).then (dashboard) ->
+                    $scope.dashboard = dashboard
 
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
                 blocks.forEach (name) -> $scope[name + 'Init']()
