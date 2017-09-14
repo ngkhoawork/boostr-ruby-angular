@@ -5,7 +5,7 @@ class IoMember < ActiveRecord::Base
   validates :user_id, :io_id, :share, presence: true
 
   after_update do
-    update_revenue_fact_user(self) if share_changed?
+    update_revenue_fact_user(self) if share_changed? || from_date_changed? || to_date_changed?
   end
 
   after_destroy do |io_member|
