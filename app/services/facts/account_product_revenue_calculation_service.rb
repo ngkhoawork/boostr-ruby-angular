@@ -99,5 +99,4 @@ class Facts::AccountProductRevenueCalculationService < BaseService
      AND ios.company_id = :company_id
      AND (ios.advertiser_id = :account_id OR ios.agency_id = :account_id)'
   end
-
 end
