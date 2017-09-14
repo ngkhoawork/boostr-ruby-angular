@@ -18,7 +18,7 @@ class InfluencerContentFee < ActiveRecord::Base
   end
 
   def update_net
-    if influencer.agreement.present?
+    if influencer.present? && influencer.agreement.present?
       fee_amount = self.fee_amount
       fee_amount_loc = (fee_amount || 0) / self.exchange_rate if self.exchange_rate && self.fee_type == 'flat'
       if self.fee_type && self.fee_type == 'flat'
