@@ -288,7 +288,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     if member.present?
       NewForecastMember.new(current_user, period, nil)
     elsif team.present?
-      NewForecastTeam.new(current_user.teams.first, period, nil)
+      NewForecastTeam.new(team, period, nil)
     else
       NewForecast.new(company, company_teams, period, nil)
     end
