@@ -254,8 +254,8 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       end
     end
 
-    context 'Forecast Amount mapping' do
-      it 'passes Forecast_Amount column as product_name' do
+    context 'Forecast Category mapping' do
+      it 'passes Forecast_Category column as product_name' do
         content_for_files([
           line_item_csv_file,
           multiline_invoice_csv_file
@@ -267,7 +267,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
           ad_server: 'O1',
           start_date: '2017-01-01',
           end_date: '2017-02-01',
-          product_name: 'From Forecast Amount Column',
+          product_name: 'From Forecast Category Column',
           quantity: '1000',
           price: '100',
           pricing_type: 'PPC',
@@ -280,7 +280,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
         expect(line_item_csv).to receive(:valid?).and_return(:true)
         expect(line_item_csv).to receive(:perform)
 
-        mapping_id = DatafeedConfigurationDetails.get_product_mapping_id('Forecast_Amount')
+        mapping_id = DatafeedConfigurationDetails.get_product_mapping_id('Forecast_Category')
         subject(product_mapping: mapping_id).perform
       end
     end
@@ -337,7 +337,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
 
       subject.perform
       import_log = CsvImportLog.last
-      expect(import_log.error_messages).to eq [{"row"=>1, "message"=>["Internal Server Error", "{:sales_order_id=>\"1\", :sales_order_line_item_id=>\"2\", :sales_order_line_item_start_date=>\"2017-01-01\", :sales_order_line_item_end_date=>\"2017-02-01\", :product_name=>\"Display\", :forecast_amount=>\"From Forecast Amount Column\", :quantity=>\"1000\", :net_unit_cost=>\"100\", :cost_type=>\"PPC\", :net_cost=>\"100000\", :line_item_status=>\"Sent_to_production\"}"]}]
+      expect(import_log.error_messages).to eq [{"row"=>1, "message"=>["Internal Server Error", "{:sales_order_id=>\"1\", :sales_order_line_item_id=>\"2\", :sales_order_line_item_start_date=>\"2017-01-01\", :sales_order_line_item_end_date=>\"2017-02-01\", :product_name=>\"Display\", :forecast_category=>\"From Forecast Category Column\", :quantity=>\"1000\", :net_unit_cost=>\"100\", :cost_type=>\"PPC\", :net_cost=>\"100000\", :line_item_status=>\"Sent_to_production\"}"]}]
     end
   end
 
@@ -353,7 +353,7 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
       sales_order_line_item_start_date: '2017-01-01',
       sales_order_line_item_end_date: '2017-02-01',
       product_name: 'Display',
-      forecast_amount: 'From Forecast Amount Column',
+      forecast_category: 'From Forecast Category Column',
       quantity: '1000',
       net_unit_cost: '100',
       cost_type: 'PPC',

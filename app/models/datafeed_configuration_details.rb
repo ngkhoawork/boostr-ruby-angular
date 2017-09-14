@@ -12,7 +12,7 @@ class DatafeedConfigurationDetails < ActiveRecord::Base
 
   PRODUCT_MAPPING = [
     { id: 0, name: 'Product_Name' },
-    { id: 1, name: 'Forecast_Amount' }
+    { id: 1, name: 'Forecast_Category' }
   ]
 
   def self.get_pattern_id(name)

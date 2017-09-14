@@ -28,7 +28,7 @@ RSpec.describe DatafeedConfigurationDetails, type: :model do
   end
 
   describe '.get_product_mapping_id' do
-    product_mapping = { 'Product_Name' => 0, 'Forecast_Amount' => 1 }
+    product_mapping = { 'Product_Name' => 0, 'Forecast_Category' => 1 }
     product_mapping.each do |name, id|
       it "returns #{id} for #{name}" do
         expect(DatafeedConfigurationDetails.get_product_mapping_id(name)).to be id
@@ -41,7 +41,7 @@ RSpec.describe DatafeedConfigurationDetails, type: :model do
   end
 
   describe '.get_product_mapping_name' do
-    product_mapping = { 'Product_Name' => 0, 'Forecast_Amount' => 1 }
+    product_mapping = { 'Product_Name' => 0, 'Forecast_Category' => 1 }
     product_mapping.each do |name, id|
       it "returns #{name} for #{id}" do
         expect(DatafeedConfigurationDetails.get_product_mapping_name(id)).to eq name

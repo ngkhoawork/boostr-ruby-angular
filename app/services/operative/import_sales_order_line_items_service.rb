@@ -176,9 +176,9 @@ class Operative::ImportSalesOrderLineItemsService
       define_method(:product_mapping) do |row|
         row[:product_name]
       end
-    when 'Forecast_Amount'
+    when 'Forecast_Category'
       define_method(:product_mapping) do |row|
-        row[:forecast_amount]
+        row[:forecast_category]
       end
     end
   end
