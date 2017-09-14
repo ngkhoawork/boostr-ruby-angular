@@ -5,7 +5,8 @@ class OperativeDatafeedConfiguration < ApiConfiguration
   has_one :datafeed_configuration_details, foreign_key: :api_configuration_id, dependent: :destroy
   accepts_nested_attributes_for :datafeed_configuration_details
 
-  delegate :auto_close_deals, :revenue_calculation_pattern, to: :datafeed_configuration_details, prefix: false
+  delegate :auto_close_deals, :revenue_calculation_pattern, :product_mapping,
+           to: :datafeed_configuration_details, prefix: false
 
   def self.metadata
     {
