@@ -139,7 +139,7 @@ class InfluencerContentFee < ActiveRecord::Base
       end
 
       if row[4]
-        if row[4] == 'percentage' || row[4] == 'flat'
+        if row[4].downcase == 'percentage' || row[4].downcase == 'flat'
           fee_type = row[4]
         else
           import_log.count_failed
