@@ -286,7 +286,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
 
   def forecast_for(period)
     if member.present?
-      NewForecastMember.new(current_user, period, nil)
+      NewForecastMember.new(member, period, nil)
     elsif team.present?
       NewForecastTeam.new(team, period, nil)
     else
