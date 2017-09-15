@@ -2,11 +2,6 @@
 	['$scope', '$window', '$location', '$httpParamSerializer', '$httpParamSerializerJQLike', '$routeParams', 'Report', 'Team', 'Seller', 'Stage', 'Field', 'DealCustomFieldName', 'localStorageService'
 	( $scope,   $window,   $location,   $httpParamSerializer,   $httpParamSerializerJQLike,   $routeParams,   Report,   Team,   Seller,   Stage,   Field,   DealCustomFieldName,   LS  ) ->
 
-		#====================================================================================
-		$scope.onFilterApply = (query) ->
-			getReport query
-
-		#====================================================================================
 		$scope.deals = []
 		$scope.teams = []
 		$scope.sellers = []
@@ -51,6 +46,16 @@
 		appliedFilter = null
 		savedFilters = LS.get(reportName) || []
 
+		#====================================================================================
+		$scope.onFilterApply = (query) ->
+			console.log query
+#			savedFilters = _.without savedFilters, query
+#			savedFilters.unshift(query)
+#			if savedFilters.length > 5 then savedFilters.pop()
+#			LS.set(reportName, savedFilters)
+			getReport query
+
+		#====================================================================================
 		$scope.datePicker =
 			toString: (key) ->
 				date = $scope.filter[key]
@@ -126,6 +131,7 @@
 			JSON.stringify(obj)
 
 		loadSavedFilter = (str) ->
+			return
 			if !str then return
 			savedFilter = JSON.parse(str)
 			_.each savedFilter, (val, key) ->
@@ -150,7 +156,6 @@
 			t.aveDealSize = (t.pipelineUnweighted / deals.length) || 0
 
 		($scope.updateSellers = (team) ->
-			console.log team
 			Seller.query({id: (team && team.id) || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = sellers
 		)()

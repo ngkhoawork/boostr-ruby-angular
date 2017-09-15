@@ -6,3 +6,21 @@
 	%div.z-filter-field
 		%button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: !isFilterApplied}'}
 			Run Report
+	%div.z-filter-field.query-field
+		%div.field-name
+			Query
+		%div.field-value
+			%div{dropdown: true}
+				-#%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
+				%div{'dropdown-toggle': true, 'ng-class': '{"empty": !selected.id}' }
+					{{selected.name || (isAll ? 'All' : 'Select')}}
+					%span.caret
+				%div.dropdown-menu
+					%div.query-subtitle
+						RECENT SEARCHES
+					%div.query-line{ng: {repeat: 'query in recentQueries'}}
+						%div.query-actions
+							%i.fa.fa-plus-circle.z-icon
+						%b Custom Filter
+					%div.query-subtitle
+						SAVED SEARCHES
