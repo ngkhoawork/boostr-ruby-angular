@@ -2,6 +2,11 @@
 	['$scope', '$window', '$location', '$httpParamSerializer', '$httpParamSerializerJQLike', '$routeParams', 'Report', 'Team', 'Seller', 'Stage', 'Field', 'DealCustomFieldName', 'localStorageService'
 	( $scope,   $window,   $location,   $httpParamSerializer,   $httpParamSerializerJQLike,   $routeParams,   Report,   Team,   Seller,   Stage,   Field,   DealCustomFieldName,   LS  ) ->
 
+		#====================================================================================
+		$scope.onFilterApply = (query) ->
+			getReport query
+
+		#====================================================================================
 		$scope.deals = []
 		$scope.teams = []
 		$scope.sellers = []
@@ -45,7 +50,6 @@
 		$scope.filter = angular.copy(defaultFilter)
 		appliedFilter = null
 		savedFilters = LS.get(reportName) || []
-		console.log savedFilters
 
 		$scope.datePicker =
 			toString: (key) ->
@@ -143,21 +147,20 @@
 				t.pipelineWeighted += budget * deal.stage.probability / 100
 			t.pipelineRatio = (Math.round(t.pipelineWeighted / t.pipelineUnweighted * 100) / 100) || 0
 			t.deals = deals.length
-			t.aveDealSize = t.pipelineUnweighted / deals.length
+			t.aveDealSize = (t.pipelineUnweighted / deals.length) || 0
 
-		$scope.$watch 'filter.team', (team) ->
-			if team.id && _.keys(team).length > 2 then $scope.filter.seller = emptyFilter
-			Seller.query({id: team.id || 'all'}).$promise.then (sellers) ->
-				$scope.sellers = _.sortBy sellers, 'name'
+		($scope.updateSellers = (team) ->
+			console.log team
+			Seller.query({id: (team && team.id) || 'all'}).$promise.then (sellers) ->
+				$scope.sellers = sellers
+		)()
 
 		Team.all(all_teams: true).then (teams) ->
 			$scope.teams = teams
-			$scope.teams.unshift emptyFilter
 
 
 		Stage.query().$promise.then (stages) ->
 			$scope.stages = _.filter stages, (stage) -> stage.active
-			$scope.stages.unshift emptyFilter
 
 		Field.defaults({}, 'Deal').then (fields) ->
 			client_types = Field.findDealTypes(fields)
