@@ -174,7 +174,7 @@
                   %th.left Object Name
 
               %tbody
-                %tr{'ng-repeat': 'log in logs' }
+                %tr{'ng-repeat': 'log in csv_import_logs' }
                   %td {{log.created_at | date: 'medium' }}
                   %td.center
                     %b {{log.rows_processed}}
@@ -191,3 +191,11 @@
                     %b {{ log.file_source }}
                   %td
                     %b {{ log.object_name }}
+
+          .custom-pagination{'bgf-pagination': 'bgf-pagination',
+            'collection': 'csv_import_logs',
+            'per-page': '25',
+            'link-group-size': "2",
+            'request-limit': "50",
+            'url': 'csvImportLogsUrl',
+            'url-params': 'csvImportLogsUrlParams'}

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 feature 'TimePeriod' do
-  let(:company) { Company.first }
+  let(:company) { create :company }
   let(:user) { create :user }
 
   describe 'creating a time_period' do
@@ -11,8 +11,8 @@ feature 'TimePeriod' do
       expect(page).to have_css('#time-periods')
     end
 
-    scenario 'pops up a new time_period modal and creates a new time_period', js: true do
-      find_link('Add Time Period').trigger('click')
+    it 'pops up a new time_period modal and creates a new time_period', js: true do
+      find('add-button', text: 'Add').trigger('click')
       expect(page).to have_css('#time-period-modal')
 
       within '#time-period-modal' do
@@ -25,14 +25,13 @@ feature 'TimePeriod' do
 
       expect(page).to have_no_css('#time-period-modal')
 
-      within '.table-wrapper tbody' do
+      within 'table tbody' do
         expect(page).to have_css('tr', count: 1)
       end
     end
   end
 
   describe 'deleting a time period' do
-
     let!(:time_periods) { create_list :time_period, 3 }
 
     before do
@@ -41,27 +40,18 @@ feature 'TimePeriod' do
       expect(page).to have_css('#time-periods')
     end
 
-    scenario 'removes the time_period from the page', js: true do
-      within '.table-wrapper tbody' do
+    it 'removes the time_period from the page', js: true do
+      within 'table tbody' do
         expect(page).to have_css('tr', count: 3)
+
         find('tr:first-child').hover
+
         within 'tr:first-child' do
-          find('.delete-time-period').trigger('click')
+          find('a', visible: false).trigger('click')
         end
-      end
 
-      expect(page).to have_css('.table-wrapper tbody tr', count: 2)
-
-      within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 2)
-        find('tr:first-child').hover
-        within 'tr:first-child' do
-          find('.delete-time-period').trigger('click')
-        end
       end
-
-      expect(page).to have_css('.table-wrapper tbody tr', count: 1)
     end
   end
-
 end

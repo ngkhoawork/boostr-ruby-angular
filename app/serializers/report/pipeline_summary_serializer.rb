@@ -1,7 +1,7 @@
 class Report::PipelineSummarySerializer < ActiveModel::Serializer
   attributes :id, :name, :advertiser, :category, :agency, :holding_company, :budget, :budget_loc, :stage, :start_date,
              :end_date, :created_at, :closed_at, :closed_reason, :closed_reason_text, :type, :source, :initiative,
-             :custom_fields, :members, :team
+             :custom_fields, :members, :team, :billing_contact
 
   def advertiser
     object.advertiser.serializable_hash(only: [:id, :name]) rescue nil
@@ -47,6 +47,10 @@ class Report::PipelineSummarySerializer < ActiveModel::Serializer
 
   def initiative
     object.initiative.name rescue nil
+  end
+
+  def billing_contact
+    object.billing_contact.serializable_hash(only: [:id, :name], methods: [:email]) rescue nil
   end
 
   def members

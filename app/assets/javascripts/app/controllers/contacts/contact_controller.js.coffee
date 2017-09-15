@@ -1,6 +1,6 @@
 @app.controller 'ContactController',
     ['$scope', '$modal', '$location', '$routeParams', '$http', '$sce', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'ContactCfName', 'ClientContact'
-    ( $scope,   $modal,   $location,  $routeParams,    $http,   $sce,   Contact,   Activity,    ActivityType,  Reminder,   ContactCfName,   ClientContact) ->
+    ( $scope,   $modal,   $location,   $routeParams,   $http,   $sce,   Contact,   Activity,   ActivityType,   Reminder,   ContactCfName,   ClientContact ) ->
 
         $scope.currentContact = null
         $scope.activities = []
@@ -29,14 +29,6 @@
 
         ActivityType.all().then (activityTypes) ->
             $scope.types = activityTypes
-
-        # Activity icon
-        $scope.getIconName = (typeName) ->
-            typeName && typeName.split(' ').join('-').toLowerCase()
-
-        # Activity type
-        $scope.getType = (type) ->
-            _.findWhere($scope.types, name: type)
 
         # Activity comment
         $scope.getHtml = (html) ->

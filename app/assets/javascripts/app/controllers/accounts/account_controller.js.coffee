@@ -33,9 +33,6 @@
     AccountCfName.all().then (accountCfNames) ->
       $scope.accountCfNames = accountCfNames
 
-  $scope.getIconName = (typeName) ->
-    typeName && typeName.split(' ').join('-').toLowerCase()
-
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->
       $scope[option.name] = option.id
@@ -758,9 +755,6 @@
     $scope.getChildClients()
 #    $scope.setClient(client)
 #    $scope.clients.push(client)
-
-  $scope.getType = (type) ->
-    _.findWhere($scope.types, name: type)
 
   $scope.initReminder = ->
     $scope.showReminder = false;

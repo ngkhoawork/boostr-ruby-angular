@@ -10,6 +10,7 @@ FactoryGirl.define do
 
     before(:create) do |item|
       item.company = Company.first if item.company.blank?
+      User.current = create :user
     end
 
     factory :deal_with_assets do

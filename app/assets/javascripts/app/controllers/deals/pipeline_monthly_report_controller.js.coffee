@@ -114,15 +114,9 @@
       $scope.applyFilter = ->
         $scope.page = 1
         $scope.saved_query = constructQuery()
-
-#        if $scope.saved_query['stage_ids[]'].length == 0
-#          alert("Please specify a stage.");
-#          return
-
+        appliedFilter = angular.copy $scope.filter
         getTotals($scope.saved_query)
         getData($scope.saved_query)
-        appliedFilter = angular.copy $scope.filter
-        getData()
 
       $scope.isFilterApplied = ->
         !angular.equals $scope.filter, appliedFilter

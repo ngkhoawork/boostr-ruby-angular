@@ -11,6 +11,7 @@ module WaitForAjax
   end
 
   def finished_all_ajax_requests?
-    page.evaluate_script('jQuery.active').zero?
+    pending_requests = page.evaluate_script('angular.element(document.body).injector().get("$http").pendingRequests.length')
+    pending_requests && pending_requests.zero?
   end
 end

@@ -211,8 +211,9 @@ class Activity < ActiveRecord::Base
           },
           :contacts => {
             include: { address: {} }
-            },
-          :creator => {}
+          },
+          :creator => {},
+          activity_type: { only: [:id, :name, :css_class, :action] }
         },
         methods: [:team_creator]
       ).except(:override))

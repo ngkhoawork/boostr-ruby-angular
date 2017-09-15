@@ -2,11 +2,10 @@
 ['$scope', '$modal', '$window', 'CsvImportLogs'
 ($scope, $modal, $window, CsvImportLogs) ->
 
-  $scope.logs = []
-
-  $scope.getLogs = () ->
-    CsvImportLogs.all(source: 'ui').then (logs) ->
-      $scope.logs = logs
+  $scope.csvImportLogsUrl = 'api/csv_import_logs'
+  $scope.csvImportLogsUrlParams = {
+    source: 'ui'
+  }
 
   $scope.showUploadClientModal = () ->
     $scope.modalInstance = $modal.open

@@ -142,9 +142,6 @@
                         $scope.contacts = contacts
                 str
 
-            $scope.getType = (type) ->
-                _.findWhere($scope.types, name: type)
-
             $scope.openContactModal = ->
                 $rootScope.$broadcast 'openContactModal'
 

@@ -118,7 +118,7 @@ RSpec.describe AssetCsv, type: :model do
       unmapped_asset(asset_csv)
       asset_csv.perform
 
-      expect(unmapped_asset.reload.created_at).to eq '15/12/2017 10:00'.to_datetime
+      expect(unmapped_asset.reload.created_at.to_date).to eq Date.new(2017, 12, 15)
     end
   end
 

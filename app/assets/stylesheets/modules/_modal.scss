@@ -311,7 +311,7 @@
   }
   .popup-modal-footer {
     text-align: right;
-    margin-top: 30px;
+    margin-top: 20px;
     .btn {
       border-radius: 20px;
       font-size: 16px;
@@ -371,7 +371,7 @@
     }
   }
   .dropdown {
-    [class^="icon-activity-"] {
+    .fa.activity-icon {
       position: absolute;
     }
     .text {
@@ -381,14 +381,14 @@
     }
     button {
       position: relative;
-      [class^="icon-activity-"] {
+      .fa.activity-icon {
         top: 11px;
         left: 12px;
       }
     }
     li {
       position: relative;
-      [class^="icon-activity-"] {
+      .fa.activity-icon {
         top: 6px;
         left: 7px;
       }
@@ -613,5 +613,46 @@
         float: left;
       }
     }
+  }
+}
+#activity_type_modal {
+  .dropdown {
+    a {
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      color: $secondary-color;
+      padding-bottom: 5px;
+    }
+    .dropdown-menu {
+      padding: 5px;
+      .activity-icons-list {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: flex-start;
+        span {
+          width: calc(10% - 6px);
+          text-align: center;
+          display: inline-block;
+          padding: 5px;
+          margin: 3px;
+          border: 1px solid #ebe8e3;
+          border-radius: 4px;
+          &:hover {
+            background-color: $main-color;
+            cursor: pointer;
+            .fa.activity-icon {
+              color: white;
+            }
+          }
+          .fa.activity-icon {
+            position: static;
+          }
+        }
+      }
+    }
+  }
+  .z-toggle {
+    vertical-align: middle;
   }
 }

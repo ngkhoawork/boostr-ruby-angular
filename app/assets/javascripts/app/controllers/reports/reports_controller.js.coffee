@@ -15,6 +15,7 @@
 				endDate: null
 
 		$scope.filter = angular.copy defaultFilter
+		appliedFilter = null
 
 		$scope.datePicker =
 			toString: (key) ->
@@ -26,7 +27,11 @@
 			$scope.filter[key] = val
 
 		$scope.applyFilter = ->
+			appliedFilter = angular.copy $scope.filter
 			getReport getQuery()
+
+		$scope.isFilterApplied = ->
+			!angular.equals $scope.filter, appliedFilter
 
 		$scope.resetFilter = ->
 			$scope.filter = angular.copy defaultFilter

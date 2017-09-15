@@ -245,31 +245,6 @@ RSpec.describe DealProductBudget, type: :model do
           [{ "row" => 1, "message" => ["Period #{data[:period]} must be within Deal Period"] }]
         )
       end
-
-      it 'rejects deal product budgets with same start date' do
-        data = build :deal_product_budget_csv_data, deal_id: existing_deal.id
-
-        DealProductBudget.import(generate_csv(data), user.id, 'deal_product_budgets.csv')
-        DealProductBudget.import(generate_csv(data), user.id, 'deal_product_budgets.csv')
-
-        expect(import_log.rows_failed).to be 1
-        expect(import_log.error_messages).to eq(
-          [{ "row" => 1, "message" => ["Deal Product Budget for #{data[:period]} month already exists"] }]
-        )
-      end
-
-      it 'returns an error if deal product budgets already exist' do
-        data = build :deal_product_budget_csv_data, deal_id: existing_deal.id
-        product = company.products.where(name: data[:deal_product]).first
-        existing_deal.deal_products.create(product: product, budget: 30_000)
-
-        DealProductBudget.import(generate_csv(data), user.id, 'deal_product_budgets.csv')
-
-        expect(import_log.rows_failed).to be 1
-        expect(import_log.error_messages).to eq(
-          [{ "row" => 1, "message" => ["Deal Product #{data[:deal_product]} already exists"] }]
-        )
-      end
     end
   end
 end

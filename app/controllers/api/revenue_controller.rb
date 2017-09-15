@@ -2,7 +2,7 @@ class Api::RevenueController < ApplicationController
   respond_to :json
 
   def index
-    if params[:time_period_id].present?
+    if params[:time_period_id].present? || params[:quarter].present?
       render json: crevenues
     elsif params[:year].present?
       render json: quarterly_ios
@@ -101,7 +101,7 @@ class Api::RevenueController < ApplicationController
         for i in ((start_month - 1) / 3)..((end_month - 1) / 3)
           io[:quarters][i] = 0
         end
-        io[:members] = io_obj.io_members
+        io[:members] = io_obj.io_members.as_json
 
         if io['end_date'] == io['start_date']
           io['end_date'] += 1.day
@@ -165,7 +165,7 @@ class Api::RevenueController < ApplicationController
         io_team_users = all_users.select do |user|
           io_users.include?(user.id)
         end
-        io[:members] = io_obj.io_members
+        io[:members] = io_obj.io_members.as_json
 
         if io['end_date'] == io['start_date']
           io['end_date'] += 1.day
@@ -298,7 +298,11 @@ class Api::RevenueController < ApplicationController
   end
 
   def time_period
-    @time_period ||= current_user.company.time_periods.find(params[:time_period_id])
+    if params[:time_period_id].present?
+      @time_period ||= current_user.company.time_periods.find_by_id(params[:time_period_id])
+    elsif params['year'].present? && params['quarter'].present?
+      @time_period ||= current_user.company.time_periods.find_by(start_date: quarters[quarter - 1][:start_date].to_date, end_date: quarter[quarter - 1][:end_date].to_date)
+    end
   end
 
   def valid_time_period?
@@ -366,6 +370,14 @@ class Api::RevenueController < ApplicationController
     end
   end
 
+  def product
+    @product ||= if params[:product_id].present? && params[:product_id] != ['all']
+      Product.find_by(id: params[:product_id])
+    else
+      nil
+    end
+  end
+
   def member_or_team
     @member_or_team ||= if params[:user_id].present? && params[:user_id] != 'all'
       member
@@ -393,6 +405,6 @@ class Api::RevenueController < ApplicationController
   end
 
   def crevenues
-    @crevenues ||= member_or_team.crevenues(start_date, end_date)
+    @crevenues ||= member_or_team.crevenues(start_date, end_date, product)
   end
 end

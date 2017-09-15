@@ -57,6 +57,9 @@ class Deal < ActiveRecord::Base
 
   delegate :name, to: :advertiser, allow_nil: true, prefix: true
   delegate :name, to: :stage, allow_nil: true, prefix: true
+  delegate :probability, to: :stage, allow_nil: true, prefix: true
+  delegate :open?, to: :stage, allow_nil: true, prefix: true
+  delegate :active?, to: :stage, allow_nil: true, prefix: true
 
   before_update do
     if curr_cd_changed?
@@ -73,7 +76,9 @@ class Deal < ActiveRecord::Base
   after_update do
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
-    send_ealert if stage_id_changed?
+    if stage_id_changed?
+      send_ealert
+    end
     integrate_with_operative
     send_lost_deal_notification
     connect_deal_clients
@@ -101,6 +106,12 @@ class Deal < ActiveRecord::Base
     update_stage
   end
 
+  after_destroy do
+    update_pipeline_fact(self)
+  end
+
+  set_callback :save, :after, :update_pipeline_fact_callback
+
   scope :for_client, -> (client_id) { where('advertiser_id = ? OR agency_id = ?', client_id, client_id) if client_id.present? }
   scope :for_time_period, -> (start_date, end_date) do
     where('start_date <= ? AND end_date >= ?', end_date, start_date) if start_date.present? && end_date.present?
@@ -123,6 +134,7 @@ class Deal < ActiveRecord::Base
   scope :by_deal_team, -> (user_ids) { joins(:deal_members).where('deal_members.user_id in (?)', user_ids) if user_ids }
   scope :won, -> { closed.includes(:stage).where(stages: { probability: 100 }) }
   scope :lost, -> { closed.includes(:stage).where(stages: { probability: 0 }) }
+  scope :by_stage_id, -> (stage_id) { where(stage_id: stage_id) if stage_id.present? }
   scope :grouped_open_by_probability_sum, -> { open.includes(:stage).group('stages.probability').sum('budget') }
   scope :by_name, -> (name) { where('deals.name ilike ?', "%#{name}%") }
   scope :by_product_id, -> (product_id) { joins(:products).where(products: { id: product_id } ) if product_id.present? }
@@ -153,6 +165,23 @@ class Deal < ActiveRecord::Base
                .having('count(distinct option_id) >= ?', option_ids.length)
                .pluck(:subject_id)
       where('deals.id in (?)', ids)
+    end
+  end
+
+  def update_pipeline_fact_callback
+    if stage_id_changed?
+      update_pipeline_fact_stage(stage_id_was, stage_id)
+    end
+
+    if start_date_changed? || end_date_changed?
+      if start_date_was && end_date_was
+        s_date = [start_date_was, start_date].min
+        e_date = [end_date_was, end_date].max
+      else
+        s_date = start_date
+        e_date = end_date
+      end
+      update_pipeline_fact_date(s_date, e_date)
     end
   end
 
@@ -272,6 +301,11 @@ class Deal < ActiveRecord::Base
     !!(billing_contact) && billing_contact.valid?
   end
 
+  def billing_contact
+    billing_contact = self.deal_contacts.find_by(role: 'Billing')
+    billing_contact.contact
+  end
+
   def has_account_manager_member?
     self.users.exists?(user_type: ACCOUNT_MANAGER)
   end
@@ -330,7 +364,18 @@ class Deal < ActiveRecord::Base
     end
   end
 
-  def as_weighted_pipeline(start_date, end_date)
+  def as_weighted_pipeline(start_date, end_date, product = nil)
+    total_budget = 0
+    in_period_budget = 0
+    if product.present?
+      in_period_budget = product_in_period_amt(product, start_date, end_date)
+      deal_product = deal_products.find_by(product_id: product.id)
+      total_budget = budget
+    else
+      in_period_budget = in_period_amt(start_date, end_date)
+      total_budget = budget
+    end
+
     weighted_pipeline = {
       id: id,
       name: name,
@@ -338,8 +383,8 @@ class Deal < ActiveRecord::Base
       agency_name: (agency.nil? ? "" : agency.name),
       probability: stage.probability,
       stage_id: stage.id,
-      budget: budget,
-      in_period_amt: in_period_amt(start_date, end_date),
+      budget: total_budget,
+      in_period_amt: in_period_budget,
       wday_in_stage: wday_in_stage,
       wday_since_opened: wday_since_opened,
       start_date: self.start_date,
@@ -378,6 +423,22 @@ class Deal < ActiveRecord::Base
     end
   end
 
+  def product_in_period_amt(product, start_date, end_date)
+    total = 0
+    deal_product = deal_products.find_by(product_id: product.id)
+    if deal_product.present?
+      deal_product.deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+        if deal_product_budget.deal_product.open == true
+          from = [start_date, deal_product_budget.start_date].max
+          to = [end_date, deal_product_budget.end_date].min
+          num_days = (to.to_date - from.to_date) + 1
+          total += deal_product_budget.daily_budget.to_f * num_days
+        end
+      end
+    end
+    total
+  end
+
   def in_period_open_amt(start_date, end_date)
     total = 0
     deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
@@ -393,7 +454,7 @@ class Deal < ActiveRecord::Base
 
   def product_in_period_open_amt(product, start_date, end_date)
     total = 0
-    deal_product_budgets.for_time_period(start_date, end_date).each do |deal_product_budget|
+    deal_product_budgets.for_product_id(product.id).for_time_period(start_date, end_date).each do |deal_product_budget|
       if deal_product_budget.deal_product.open == true
         from = [start_date, deal_product_budget.start_date].max
         to = [end_date, deal_product_budget.end_date].min
@@ -930,7 +991,7 @@ class Deal < ActiveRecord::Base
 
       all.each do |deal|
         deal.audit_logs.by_type_of_change(AuditLog::STAGE_CHANGE_TYPE).each do |audit_log|
-          stage_updater = User.find(audit_log.update_by).name
+          stage_updater = User.find(audit_log.updated_by).name
 
 		      csv << [deal.id, deal.name, Stage.find(audit_log.new_value).name, audit_log.biz_days, audit_log.old_value ? Stage.find(audit_log.old_value).name : 'n/a', audit_log.created_at, stage_updater]
         end
@@ -967,10 +1028,15 @@ class Deal < ActiveRecord::Base
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal', source: 'ui')
     import_log.set_file_source(file_path)
 
+    deal_change = {time_period_ids: [], product_ids: [], stage_ids: [], user_ids: []}
+
+    Deal.skip_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.skip_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.skip_callback(:destroy, :after, :update_pipeline_fact_callback)
+
     CSV.parse(file, headers: true, header_converters: :symbol) do |row|
       import_log.count_processed
       @has_custom_field_rows ||= (row.headers && @custom_field_names.map(&:to_csv_header)).any?
-
       if row[0]
         begin
           deal = current_user.company.deals.find(row[0].strip)
@@ -1267,6 +1333,11 @@ class Deal < ActiveRecord::Base
         if deal_source_value = deal.values.where(field_id: deal_source_field).first
           source_value_params[:id] = deal_source_value.id
         end
+
+        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+        deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
+        deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
+        deal_change[:product_ids] += deal.deal_products.collect{|item| item.product_id}
       else
         deal = current_user.company.deals.new(created_by: current_user.id)
         deal_is_new = true
@@ -1277,7 +1348,6 @@ class Deal < ActiveRecord::Base
         source_value_params,
         close_reason_params
       ]
-
       if deal.update_attributes(deal_params)
         import_log.count_imported
 
@@ -1288,7 +1358,11 @@ class Deal < ActiveRecord::Base
         deal_member_list.each_with_index do |user, index|
           deal_member = deal.deal_members.find_or_initialize_by(user: user)
           deal_member.update(share: deal_members[index][1].to_i)
+          deal_change[:user_ids] += [user.id]
         end
+
+        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", start_date, end_date).collect{|item| item.id}
+        deal_change[:stage_ids] += [stage.id] if stage.present?
         deal_contact_list.each do |contact|
           deal.deal_contacts.find_or_create_by(contact: contact)
         end
@@ -1300,6 +1374,16 @@ class Deal < ActiveRecord::Base
         next
       end
     end
+    Deal.set_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.set_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.set_callback(:destroy, :after, :update_pipeline_fact_callback)
+
+    deal_change[:time_period_ids] = deal_change[:time_period_ids].uniq
+    deal_change[:user_ids] = deal_change[:user_ids].uniq
+    deal_change[:product_ids] = deal_change[:product_ids].uniq
+    deal_change[:stage_ids] = deal_change[:stage_ids].uniq
+
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
 
     import_log.save
   end
@@ -1566,6 +1650,54 @@ class Deal < ActiveRecord::Base
     else
       cf = self.build_deal_custom_field(params)
       cf.save
+    end
+  end
+
+  def update_pipeline_fact_stage(old_stage_id, new_stage_id)
+    company = self.company
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", self.start_date, self.end_date)
+    time_periods.each do |time_period|
+      self.users.each do |user|
+        self.deal_products.each do |deal_product|
+          product = deal_product.product
+          old_stage = company.stages.find(old_stage_id)
+          new_stage = company.stages.find(new_stage_id)
+          forecast_pipeline_fact_calculator1 = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, old_stage)
+          forecast_pipeline_fact_calculator1.calculate()
+          forecast_pipeline_fact_calculator2 = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, new_stage)
+          forecast_pipeline_fact_calculator2.calculate()
+        end
+      end
+    end
+  end
+
+  def update_pipeline_fact_date(s_date, e_date)
+    company = self.company
+    stage = self.stage
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", s_date, e_date)
+    time_periods.each do |time_period|
+      self.users.each do |user|
+        self.deal_products.each do |deal_product|
+          product = deal_product.product
+          forecast_pipeline_fact_calculator = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, stage)
+          forecast_pipeline_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def update_pipeline_fact(deal)
+    company = deal.company
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date)
+    stage = self.stage
+    time_periods.each do |time_period|
+      deal.users.each do |user|
+        deal.deal_products.each do |deal_product|
+          product = deal_product.product
+          forecast_pipeline_fact_calculator1 = ForecastPipelineFactCalculator::Calculator.new(time_period, user, product, stage)
+          forecast_pipeline_fact_calculator1.calculate()
+        end
+      end
     end
   end
 
