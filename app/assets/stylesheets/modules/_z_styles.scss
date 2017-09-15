@@ -595,3 +595,68 @@
         transition: left 100ms;
     }
 }
+.z-filter {
+    display: flex;
+    flex-wrap: wrap;
+    .add-btn {
+        top: auto;
+        margin: 0 10px;
+    }
+    .reset-filter {
+        font-weight: bold;
+        padding: 5px 10px;
+        cursor: pointer;
+        color: $secondary-color;
+        &:hover {
+            color: lighten($secondary-color, 10%)
+        }
+    }
+    .z-filter-field {
+        white-space: nowrap;
+        margin-bottom: 10px;
+        .field-name {
+            padding: 0 10px;
+            font-weight: bold;
+        }
+        .field-value {
+            padding: 0 5px;
+            .dropdown-toggle, .date-picker {
+                padding: 0 5px;
+                cursor: pointer;
+                border-radius: 3px;
+                color: $main-color;
+                transition: background-color 250ms;
+                &:hover {
+                    background-color: darken($main-background-color, 3%);
+                }
+            }
+            .empty {
+                color: #B5BDC4;
+            }
+            .close-btn {
+                color: #818689;
+                &:hover {
+                    color: $main-color;
+                }
+            }
+            .dropdown-menu {
+                padding: 10px 0;
+                .active {
+                    background-color: #dfe1e3;
+                }
+                span {
+                    display: block;
+                    padding: 5px 20px;
+                    &:hover {
+                        background-color: $main-color;
+                        color: white;
+                        cursor: pointer;
+                    }
+                }
+            }
+            .team-field {
+                margin-left: 15px;
+            }
+        }
+    }
+}

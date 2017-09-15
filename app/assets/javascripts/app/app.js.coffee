@@ -28,6 +28,7 @@
   'boostrServerErrors'
   'bgf.paginateAnything'
   'LocalStorageModule'
+  'zFilterModule'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
