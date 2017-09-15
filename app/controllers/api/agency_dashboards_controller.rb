@@ -31,7 +31,7 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def activity_history
-    activities = Activity.includes(:account_dimension).where(agency_id: agencies_ids).order('activities.happened_at DESC')
+    activities = Activity.includes(:account_dimension, :activity_type).where(agency_id: agencies_ids).order('activities.happened_at DESC')
     max_per_page = 10
     # paginate activities.count, max_per_page do |limit, offset|
       render json: activities, each_serializer: AgencyDashboard::ActivityHistorySerializer
@@ -41,7 +41,7 @@ class Api::AgencyDashboardsController < ApplicationController
   private
 
   def related_agencies_contacts
-    @related_agencies_contacts ||= ClientContact.includes(:contact, :account_dimension).where.not(client_id: agencies_ids)
+    @related_agencies_contacts ||= ClientContact.includes(:account_dimension, contact: [:address, :latest_happened_activity]).where.not(client_id: agencies_ids)
                                                 .where(contact_id: agency_contacts_ids)
   end
 
@@ -81,7 +81,7 @@ class Api::AgencyDashboardsController < ApplicationController
   def filtered_revenues_by_accounts
     @filtered_revenues_by_accounts ||= FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
                                                                                                                                         advertisers_ids: related_advertisers_ids,
-                                                                                                                                        agency_ids: agencies_ids)).call
+                                                                                                                                        agencies_ids: agencies_ids)).call
   end
 
   def filtered_pipelines_by_accounts
@@ -95,7 +95,9 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def advertisers_without_spend
-    FactTables::AdvertisersWithoutSpendQuery.new(filtered_pipelines_by_accounts, advertiser_ids: related_advertisers_ids).call
+    FactTables::AdvertisersWithoutSpendQuery.new(filtered_pipelines_by_accounts,
+                                                 advertiser_ids: related_advertisers_ids,
+                                                 agencies_ids: agencies_ids).call
   end
 
   def agencies_ids

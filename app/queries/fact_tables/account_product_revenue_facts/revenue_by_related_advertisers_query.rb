@@ -1,5 +1,5 @@
 class FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery
-  def initialize(options = {}, relation = AdvertiserAgencyRevenueFact.joins(:time_dimension, :account_dimension))
+  def initialize(options = {}, relation = AdvertiserAgencyRevenueFact.joins(:time_dimension, :advertiser))
     @relation = relation.extending(FactScopes)
     @options = options
   end
@@ -7,6 +7,7 @@ class FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery
   def call
     return relation unless options.any?
     relation.by_time_dimension_date_range(options[:start_date], options[:end_date])
+            .by_agencies(options[:agencies_ids])
             .by_related_advertisers(options[:advertisers_ids])
             .by_company_id(options[:company_id])
 
@@ -25,12 +26,16 @@ class FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery
             end_date: end_date)
     end
 
+    def by_agencies(agencies_ids)
+      where('advertiser_agency_revenue_facts.agency_id in (:agencies_ids)', agencies_ids: agencies_ids)
+    end
+
     def by_related_advertisers(advertisers_ids)
-      where('account_dimensions.id in (:advertisers_ids)', advertisers_ids: advertisers_ids)
+      where('advertiser_agency_revenue_facts.advertiser_id in (:advertisers_ids)', advertisers_ids: advertisers_ids)
     end
 
     def by_company_id(id)
-      where('account_product_revenue_facts.company_id = :id', id: id)
+      where('advertiser_agency_revenue_facts.company_id = :id', id: id)
     end
   end
 end

@@ -1,5 +1,5 @@
 class FactTables::AccountProductRevenueFacts::RevenueSumByAccountQuery
-  def initialize(relation = AccountProductRevenueFact.joins(:time_dimension, :account_dimension))
+  def initialize(relation = AdvertiserAgencyRevenueFact.joins(:advertiser, :time_dimension))
     @relation = relation
   end
 

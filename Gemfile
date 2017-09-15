@@ -49,7 +49,6 @@ gem 'pluck_to_hash'
 gem 'upsert'
 gem 'hashie'
 gem 'active_record_union'
-gem 'pluck_to_hash'
 gem 'sidekiq-statistic'
 
 source 'https://rails-assets.org' do
@@ -106,6 +105,8 @@ group :development, :test do
   gem 'timecop'
   gem 'pry-rails'
   gem 'byebug'
+  # code smell detector
+  gem 'reek'
 
   gem 'capybara-webkit'
   # Access an IRB console on exception pages or by using <%= console %> in views
