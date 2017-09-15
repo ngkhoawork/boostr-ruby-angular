@@ -2,6 +2,11 @@
 	['$scope', '$window', '$location', '$httpParamSerializer', '$httpParamSerializerJQLike', '$routeParams', 'Report', 'Team', 'Seller', 'Stage', 'Field', 'DealCustomFieldName', 'localStorageService'
 	( $scope,   $window,   $location,   $httpParamSerializer,   $httpParamSerializerJQLike,   $routeParams,   Report,   Team,   Seller,   Stage,   Field,   DealCustomFieldName,   LS  ) ->
 
+		#====================================================================================
+		$scope.onFilterApply = (query) ->
+			getReport query
+
+		#====================================================================================
 		$scope.deals = []
 		$scope.teams = []
 		$scope.sellers = []
@@ -46,22 +51,13 @@
 		appliedFilter = null
 		savedFilters = LS.get(reportName) || []
 
-			#====================================================================================
-		$scope.onFilterApply = (query) ->
-			console.log query
-#			savedFilters = _.without savedFilters, query
-#			savedFilters.unshift(query)
-#			if savedFilters.length > 5 then savedFilters.pop()
-#			LS.set(reportName, savedFilters)
-			getReport query
-
-		#====================================================================================$scope.datePicker =
-				toString: (key) ->
-					date = $scope.filter[key]
-					if !date.startDate || !date.endDate then return falseif !moment.isMoment(date.startDate) then date.startDate = moment(date.startDate)
+		$scope.datePicker =
+			toString: (key) ->
+				date = $scope.filter[key]
+				if !date.startDate || !date.endDate then return false
+				if !moment.isMoment(date.startDate) then date.startDate = moment(date.startDate)
 				if !moment.isMoment(date.endDate) then date.endDate = moment(date.endDate)
-					if !moment.isMoment(date.startDate) then date.startDate = moment(date.startDate)
-				if !moment.isMoment(date.endDate) then date.endDate = moment(date.endDate)date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
+				date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
 #				apply: -> console.log arguments
 
 
@@ -154,18 +150,17 @@
 			t.aveDealSize = (t.pipelineUnweighted / deals.length) || 0
 
 		($scope.updateSellers = (team) ->
+			console.log team
 			Seller.query({id: (team && team.id) || 'all'}).$promise.then (sellers) ->
 				$scope.sellers = sellers
 		)()
 
-			Team.all(all_teams: true).then (teams) ->
-				$scope.teams = teams
+		Team.all(all_teams: true).then (teams) ->
+			$scope.teams = teams
 
 
-
-			Stage.query().$promise.then (stages) ->
-				$scope.stages = _.filter stages, (stage) -> stage.active
-
+		Stage.query().$promise.then (stages) ->
+			$scope.stages = _.filter stages, (stage) -> stage.active
 
 		Field.defaults({}, 'Deal').then (fields) ->
 			client_types = Field.findDealTypes(fields)
