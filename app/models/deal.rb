@@ -1272,6 +1272,17 @@ class Deal < ActiveRecord::Base
         next_steps = row[17].strip
       end
 
+      if row[18].present?
+        created_by_user = current_user.company.users.where('email ilike ?', row[18].strip).first
+
+        if created_by_user
+          created_by = created_by_user.id
+        else
+          import_log.count_failed
+          import_log.log_error(["Created By #{row[18].strip} user could not be found"])
+        end
+      end
+
       deal_params = {
         name: row[1].strip,
         advertiser: advertiser,
@@ -1286,6 +1297,7 @@ class Deal < ActiveRecord::Base
         next_steps: next_steps
       }
 
+      deal_params[:created_by] = created_by if created_by
       deal_params[:created_at] = created_at if created_at
 
       type_value_params = {

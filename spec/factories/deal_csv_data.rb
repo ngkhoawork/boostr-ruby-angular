@@ -17,6 +17,8 @@ FactoryGirl.define do
     close_reason nil
     contacts nil
     loss_comments nil
+    next_step nil
+    created_by nil
 
     initialize_with { attributes }
 
