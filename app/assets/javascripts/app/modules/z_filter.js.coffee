@@ -1,11 +1,18 @@
 (->
 	angular.module('zFilterModule', [])
 
-	.controller 'ZFilterController', ['$scope', ($scope) ->
-		$scope.test = 20
+	.controller 'ZFilterController', ['$scope', 'localStorageService', ($scope, LS) ->
+		reportName = _.last(window.location.pathname.split('/'))
+		$scope.recentQueries = LS.get(reportName)
 		$scope.isFilterApplied = false
 		this.query = {}
-		this.test = 30
+		this.loadedQuery = $scope.recentQueries && $scope.recentQueries[0]
+		console.log this.query
+		this.saveRecentQuery = ->
+			$scope.recentQueries = _.without $scope.recentQueries, this.query
+			$scope.recentQueries.unshift(this.query)
+			if $scope.recentQueries.length > 5 then $scope.recentQueries.pop()
+			LS.set(reportName, $scope.recentQueries)
 		this.savedQuery = null
 		this.setQuery = (key, value) ->
 			this.query[key] = value
@@ -29,6 +36,7 @@
 			$scope.applyFilter = ->
 				$scope.onApply(ctrl.query)
 				ctrl.savedQuery = angular.copy ctrl.query
+				ctrl.saveRecentQuery()
 				ctrl.checkApplied()
 			$scope.resetFilter = ->
 				ctrl.query = {}
@@ -51,7 +59,6 @@
 			post: ($scope, el, attrs, ctrl, trans) ->
 				trans (clone) -> el.find('.element-to-replace').replaceWith(clone)
 				$scope.isAll = !(attrs.isAll == 'false')
-				$scope.emptyFilter = {id: null, name: 'All'}
 				switch $scope.type
 					when 'daterange'
 						$scope.default =
@@ -99,23 +106,41 @@
 								value = _.pluck($scope.selected, valueKey) if $scope.selected.length
 								ctrl.setQuery queryKey, value
 					else
-						$scope.default = $scope.emptyFilter
+						$scope.default = null
 						updateSelection = (item) ->
 							$scope.selected = item
 							_.each $scope.saveAs, (valueKey, queryKey) ->
-								ctrl.setQuery queryKey, item[valueKey]
+								ctrl.setQuery queryKey, item && item[valueKey]
 
-				(resetFilter = ->
-					$scope.selected = angular.copy $scope.default
-				)()
 				$scope.setFilter = (item) ->
 					updateSelection(item)
 					if _.isFunction $scope.onChange then $scope.onChange(item)
-
+				isItemLoaded = false
 				$scope.isFinite = _.isFinite
-				$scope.$watch 'data', (newData) ->
-					if !_.findWhere newData, {id: $scope.selected && $scope.selected.id} then resetFilter()
+				$scope.$watch 'data', (data, prevData) ->
+					if !_.findWhere data, {id: $scope.selected && $scope.selected.id} then resetFilter()
+					if !isItemLoaded
+						_.each $scope.saveAs, (valueKey, queryKey) ->
+							loadedValue = ctrl.loadedQuery[queryKey]
+							if _.isArray loadedValue
+								_.each data, (item) ->
+									if _.contains loadedValue, item[valueKey]
+										$scope.setFilter item
+										isItemLoaded = true
+							else
+								findBy = {}
+								findBy[valueKey] = loadedValue
+								item = _.findWhere data, findBy
+								if item
+									$scope.setFilter item
+									isItemLoaded = true
 				$scope.$on 'resetFilter', ->
 					resetFilter()
+
+				(resetFilter = ()->
+					$scope.selected = angular.copy $scope.default
+					_.each $scope.saveAs, (valueKey, queryKey) ->
+						ctrl.setQuery queryKey, null
+				)()
 
 )()
