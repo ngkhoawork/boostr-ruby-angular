@@ -1438,7 +1438,10 @@ class Deal < ActiveRecord::Base
   end
 
   def update_close
-    self.closed_at = updated_at if !stage.open?
+    if self.closed_at.nil? && !stage.open?
+      self.closed_at = updated_at
+    end
+
     should_open = stage.open?
     if !stage.open? && stage.probability == 100
       self.deal_products.each do |deal_product|
@@ -1455,7 +1458,6 @@ class Deal < ActiveRecord::Base
       self.deal_products.update_all(open: stage.open)
 
       if !self.closed_at.nil? && stage.open?
-        self.closed_at = nil
         if !self.fields.nil? && !self.values.nil?
           field = self.fields.find_by_name('Close Reason')
           close_reason = self.values.find_by_field_id(field.id) if !field.nil?
