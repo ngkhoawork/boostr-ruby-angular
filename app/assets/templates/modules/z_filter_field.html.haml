@@ -12,9 +12,27 @@
 				%div{'ng-if': 'isAll'}
 					%span{'ng-click': 'setFilter(null)', 'ng-class': '{active: !selected.id}'}
 						All
-				%div{ng: {repeat: 'item in data | orderBy : "name"'}}
+				%div{ng: {repeat: 'item in data track by $index | orderBy : "name"'}}
 					%span{'ng-click': 'setFilter(item)', 'ng-class': '{active: item.id === selected.id}'}
 						{{item.name}}
+	-#STAGE FIELD
+	%div.field-value{'ng-switch-when': 'stage'}
+		%div{ dropdown: true }
+			%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
+			%div{'dropdown-toggle': true, 'ng-show': 'data.length || data.$resolved', 'ng-class': '{"empty": selected.length == 0}' }
+				%span{'ng-if': '!selected.length'}
+					{{isAll ? 'All' : 'Select'}}
+				%span{'ng-if': 'selected.length', 'ng-repeat': 'stage in selected track by $index'}
+					{{stage.name}} {{stage.probability + '%'}}
+					%i.fa.fa-times.close-btn{'ng-click': 'removeFilter(stage)'}
+				%span.caret
+			%div.dropdown-menu{'ng-hide': '!data || !data.length'}
+				%div{'ng-if': 'isAll'}
+					%span{'ng-click': 'setFilter(null)', 'ng-class': '{active: !selected.length}'}
+						All
+				%div{ng: { repeat: 'stage in data track by $index | orderBy: ["-open", "probability"]'}}
+					%span{ng: { click: 'setFilter(stage)', class: '{active: isStageSelected(stage.id)}'}}
+						{{stage.name}} {{isFinite(stage.probability) ? stage.probability + '%' : ''}}
 	-#TEAM FIELD
 	%div.field-value{'ng-switch-when': 'team'}
 		%div{dropdown: true}
@@ -26,7 +44,7 @@
 				%div{'ng-if': 'isAll'}
 					%span{'ng-click': 'setFilter(null)', 'ng-class': '{active: !selected.id}'}
 						All
-				%div{ng: {repeat: 'item in data | orderBy : "name"', include: '"modules/z_filter_field_row.html"'}}
+				%div{ng: {repeat: 'item in data track by $index| orderBy : "name"', include: '"modules/z_filter_field_row.html"'}}
 
 	-#DATERANGE FIELD
 	%div.field-value{'ng-switch-when': 'daterange'}
@@ -41,21 +59,3 @@
 				%span{'ng-show': 'selected.dateString'}
 					{{selected.dateString}}
 					%span.caret
-	-#STAGE FIELD
-	%div.field-value{'ng-switch-when': 'stage'}
-		%div{ dropdown: true }
-			%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
-			%div{'dropdown-toggle': true, 'ng-show': 'data.length || data.$resolved', 'ng-class': '{"empty": selected.length == 0}' }
-				%span{'ng-if': '!selected.length'}
-					{{isAll ? 'All' : 'Select'}}
-				%span{'ng-if': 'selected.length', 'ng-repeat': 'stage in selected'}
-					{{stage.name}} {{stage.probability + '%'}}
-					%i.fa.fa-times.close-btn{'ng-click': 'removeFilter(stage)'}
-				%span.caret
-			%div.dropdown-menu{'ng-hide': '!data || !data.length'}
-				%div{'ng-if': 'isAll'}
-					%span{'ng-click': 'setFilter(null)', 'ng-class': '{active: !selected.length}'}
-						All
-				%div{ng: { repeat: 'stage in data | orderBy: ["-open", "probability"]'}}
-					%span{ng: { click: 'setFilter(stage)', class: '{active: isStageSelected(stage.id)}'}}
-						{{stage.name}} {{isFinite(stage.probability) ? stage.probability + '%' : ''}}

@@ -10,7 +10,7 @@
 		%div.field-name
 			Query
 		%div.field-value
-			%div{dropdown: true}
+			%div{dropdown: true, 'on-toggle': 'onOpenQueryDropdown(e, event, open)'}
 				-#%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
 				%div{'dropdown-toggle': true, 'ng-class': '{"empty": !selected.id}' }
 					{{selected.name || (isAll ? 'All' : 'Select')}}
@@ -18,9 +18,17 @@
 				%div.dropdown-menu
 					%div.query-subtitle
 						RECENT SEARCHES
-					%div.query-line{ng: {repeat: 'query in recentQueries'}}
+					%div.query-line.empty{'ng-hide': 'recentQueries.length'}
+						Empty
+					%div.query-line{ng: {repeat: 'query in recentQueries track by $index', click: 'loadQuery(query)', class: '{active: compareQueries(query)}'}}
+						%div.query-actions
+							%i.fa.fa-floppy-o.z-icon{'ng-click': 'saveQuery($event, query)'}
+						%b Unsaved Filter ({{objLength(query)}})
+					%div.query-subtitle
+						SAVED SEARCHES
+					%div.query-line.empty{'ng-hide': 'savedQueries.length'}
+						Empty
+					%div.query-line{ng: {repeat: 'query in savedQueries track by $index', click: 'loadQuery(query)'}}
 						%div.query-actions
 							%i.fa.fa-plus-circle.z-icon
 						%b Custom Filter
-					%div.query-subtitle
-						SAVED SEARCHES
