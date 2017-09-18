@@ -36,9 +36,8 @@
           .col-md-12.bs-datepicker{'ng-class':'{error: errors.effect_date}'}
             %span.error-text {{errors.effect_date}}
             %label{ for: 'effect_date' }
-              Date
+              Date(MM/DD/YYYY)
               %span.star *
-              (MM/DD/YYYY)
             %input.form-control{readonly: true, name: 'effect_date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'influencerContentFee.effect_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened', placeholder: 'Choose date' }
       .form-group
         .row
