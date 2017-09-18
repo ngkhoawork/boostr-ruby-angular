@@ -1,16 +1,6 @@
 #pipeline-summary-report.z-styles
 	.container-fluid
 		.row.mb20
-			%z-filter{'on-apply': 'onFilterApply'}
-				%z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}', 'on-change': 'updateSellers'} Team
-				%z-filter-field{data: 'sellers', 'save-as': '{seller_id: "id"}'} Team Member
-				%z-filter-field{data: 'stages', type: 'stage', 'save-as': '{"stage_ids[]": "id"}'} Stage
-				%z-filter-field{data: 'types', 'save-as': '{type_id: "id"}'} Type
-				%z-filter-field{data: 'sources', 'save-as': '{source_id: "id"}'} Source
-				%z-filter-field{type: 'daterange', 'save-as': '{start_date: "startDate", end_date: "endDate"}'} Start Date
-				%z-filter-field{type: 'daterange', 'save-as': '{created_date_start: "startDate", created_date_end: "endDate"}'} Created Date
-				%z-filter-field{type: 'daterange', 'save-as': '{closed_date_start: "startDate", closed_date_end: "endDate"}'} Closed Date
-		.row.mb20
 			.reports-header
 				.header-cell.main-title
 					Pipeline Summary

@@ -7,6 +7,11 @@
 				startDate: moment().subtract(1, 'year')
 				endDate: moment().add(1, 'year')
 
+		$scope.testDate =
+			date:
+				startDate: moment().subtract(1, 'year')
+				endDate: moment().add(1, 'year')
+
 		$scope.deals = []
 		$scope.teams = []
 		$scope.sellers = []
