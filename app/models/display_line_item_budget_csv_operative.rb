@@ -42,7 +42,8 @@ class DisplayLineItemBudgetCsvOperative < DisplayLineItemBudgetCsv
   end
 
   def start_date
-    @_start_date ||= Date.strptime(month_and_year, '%m-%Y')
+    @_start_date ||= Date.strptime(month_and_year, '%m-%Y') rescue nil
+    @_start_date ||= Date.strptime(month_and_year, '%B-%Y')
   end
 
   def item_end_date
