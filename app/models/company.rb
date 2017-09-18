@@ -196,6 +196,12 @@ class Company < ActiveRecord::Base
     self.validations.where(object: object.to_s.humanize.titleize)
   end
 
+  def all_team_members_and_leaders
+    leader_ids = self.teams.pluck(:leader_id)
+    member_ids = self.users.where.not(team_id: nil).ids
+    self.users.where('id in (?)', leader_ids + member_ids)
+  end
+
   protected
 
   def setup_default_options(field, names)

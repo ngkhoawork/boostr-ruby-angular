@@ -31,6 +31,8 @@ class User < ActiveRecord::Base
   scope :by_user_type, -> type_id { where(user_type: type_id) if type_id.present? }
   scope :by_name, -> name { where('users.first_name ilike ? or users.last_name ilike ?', "%#{name}%", "%#{name}%") if name.present? }
   scope :by_email, -> email { where('email ilike ?', email)  }
+  scope :active, -> { where(is_active: true) }
+  scope :without_fake_type, -> { where.not(user_type: FAKE_USER) }
 
   after_create do
     create_dimension

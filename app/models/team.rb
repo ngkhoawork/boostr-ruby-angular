@@ -300,6 +300,16 @@ class Team < ActiveRecord::Base
     ls
   end
 
+  def all_members_and_leaders
+    user_ids = []
+    user_ids << leader_id
+    user_ids += members.ids
+    children.each do |child|
+      user_ids += child.all_members_and_leaders
+    end
+    User.where(company_id: self.company_id).where('id in (?)', user_ids)
+  end
+
   def sum_pos_balance
     pos_balance = leader.nil? ? 0 : leader.pos_balance
     pos_balance += members.all.sum(:pos_balance)
