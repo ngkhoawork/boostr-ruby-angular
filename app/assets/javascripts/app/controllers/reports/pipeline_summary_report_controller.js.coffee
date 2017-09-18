@@ -2,6 +2,11 @@
 	['$scope', '$window', '$location', '$httpParamSerializer', '$httpParamSerializerJQLike', '$routeParams', 'Report', 'Team', 'Seller', 'Stage', 'Field', 'DealCustomFieldName'
 	( $scope,   $window,   $location,   $httpParamSerializer,   $httpParamSerializerJQLike,   $routeParams,   Report,   Team,   Seller,   Stage,   Field,   DealCustomFieldName ) ->
 
+		$scope.testDate =
+			date:
+				startDate: moment().subtract(1, 'year')
+				endDate: moment().add(1, 'year')
+
 		$scope.deals = []
 		$scope.teams = []
 		$scope.sellers = []
