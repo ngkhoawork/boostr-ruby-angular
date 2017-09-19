@@ -26,7 +26,8 @@ class Product < ActiveRecord::Base
     ProductDimension.create(
       id: self.id,
       company_id: self.company_id,
-      name: self.name
+      name: self.name,
+      revenue_type: self.revenue_type
     )
   end
 
