@@ -1,15 +1,43 @@
 #users {
-  span.page-title {
-    font-size: 22px;
-    font-weight: 600;
-    margin-right: 20px;
-  }
-  .col-centered {
-    float: none;
+  .users-inner {
+    padding: 0 40px;
+    width: 90%;
     margin: 0 auto;
+    min-width: $content-min-width;
   }
-  #users-table {
-    // overflow: visible;
-    // margin-bottom: 200px;
+  .users-header {
+    display: flex;
+    align-items: center;
+    .header-item {
+      margin-right: 30px;
+      white-space: nowrap;
+      &:last-child {
+        margin: 0 0 0 auto;
+      }
+
+    }
+    .add-btn {
+      position: relative;
+      top: 2px;
+    }
+    .users-search {
+      width: 30%;
+      position: relative;
+      i.fa {
+        position: absolute;
+        font-size: 20px;
+        color: lighten($secondary-font-color, 15%);
+        top: 13px;
+        left: 10px;
+      }
+      input {
+        width: 100%;
+        padding-left: 38px;
+        background-color: white;
+      }
+    }
+  }
+  .ui-select-match-text {
+    padding-right: 18px;
   }
 }

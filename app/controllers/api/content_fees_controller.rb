@@ -4,11 +4,12 @@ class Api::ContentFeesController < ApplicationController
   def create
     exchange_rate = io.exchange_rate
     converted_params = ConvertCurrency.call(exchange_rate, content_fee_params)
-    content_fee = io.content_fees.new(converted_params)
-    if content_fee.save
+    content_fee_obj = io.content_fees.new(converted_params)
+    content_fee_obj.update_periods if params[:content_fee][:content_fee_product_budgets_attributes]
+    if content_fee_obj.save
       render json: io.full_json
     else
-      render json: { errors: content_fee.errors.messages }, status: :unprocessable_entity
+      render json: { errors: content_fee_obj.errors.messages }, status: :unprocessable_entity
     end
   end
 
@@ -28,7 +29,7 @@ class Api::ContentFeesController < ApplicationController
   def destroy
     content_fee.destroy
     io.update_total_budget
-    render io.full_json
+    render json: io.full_json
   end
 
   private

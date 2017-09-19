@@ -14,9 +14,6 @@
             background-color: inherit;
         }
     }
-    .table-wrapper {
-        overflow-y: hidden;
-    }
     .editable-field {
         &:focus {
             background-color: inherit;
@@ -28,6 +25,38 @@
             th, tr {
                 height: auto !important;
                 max-height: none !important;
+            }
+        }
+    }
+    #line-content-fees {
+        .dropdown {
+            position: static;
+            display: inline-block;
+            button:not(.add-btn) {
+                background-color: inherit;
+                border: none;
+                color: inherit;
+                padding: 0;
+                &:active {
+                    outline: none;
+                    box-shadow: none;
+                }
+            }
+            .dropdown-menu {
+                top: auto;
+                left: auto;
+            }
+        }
+        .table {
+            tbody > tr {
+                .z-icon {
+                    visibility: hidden;
+                }
+                &:hover {
+                    .z-icon {
+                        visibility: visible;
+                    }
+                }
             }
         }
     }
@@ -124,5 +153,20 @@
             }
         }
 
+    }
+
+    #influencer {
+        .table-hover {
+            tbody > tr {
+                .action-button {
+                    display: none;
+                }
+                &:hover {
+                    .action-button {
+                        display: inline-block;
+                    }
+                }
+            }
+        }
     }
 }

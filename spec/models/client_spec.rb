@@ -66,6 +66,46 @@ RSpec.describe Client, type: :model do
     end
   end
 
+  context 'base field validations' do
+    let(:company) { Company.first }
+    let(:advertiser) { create :bare_client, client_type_id: advertiser_type_id(company) }
+    let(:agency) { create :bare_client, client_type_id: agency_type_id(company) }
+
+    it 'is valid when base validations are off' do
+      base_validations(advertiser).map { |v| v.criterion.update(value: false) }
+      expect(advertiser).to be_valid
+    end
+
+    it 'is not valid when base validations are on' do
+      base_validations(agency).map { |v| v.criterion.update(value: true) }
+      expect(agency).not_to be_valid
+    end
+
+    it 'returns validation errors for advertiser' do
+      base_validations(advertiser).map { |v| v.criterion.update(value: true) }
+      expect(advertiser).not_to be_valid
+      expect(advertiser.errors.full_messages).to eq [
+        "Client category can't be blank",
+        "Client subcategory can't be blank",
+        "Client region can't be blank",
+        "Client segment can't be blank",
+        "Phone can't be blank",
+        "Website can't be blank"
+      ]
+    end
+
+    it 'returns validation errors for agency' do
+      base_validations(agency).map { |v| v.criterion.update(value: true) }
+      expect(agency).not_to be_valid
+      expect(agency.errors.full_messages).to eq [
+        "Client region can't be blank",
+        "Client segment can't be blank",
+        "Phone can't be blank",
+        "Website can't be blank"
+      ]
+    end
+  end
+
   describe '#import' do
     let!(:user) { create :user }
     let!(:client) { create :client }
@@ -345,5 +385,9 @@ RSpec.describe Client, type: :model do
     create :account_cf_name, field_type: 'boolean',  field_label: 'Risky Click?', company: company
     create :account_cf_name, field_type: 'number',   field_label: 'Target Views', company: company
     create :account_cf_name, field_type: 'text',     field_label: 'Deal Type', company: company
+  end
+
+  def base_validations(subject)
+    subject.base_field_validations
   end
 end

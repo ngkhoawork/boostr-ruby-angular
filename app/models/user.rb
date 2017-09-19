@@ -21,6 +21,7 @@ class User < ActiveRecord::Base
   has_many :reminders
   has_many :contacts, through: :activities
   has_many :display_line_items, through: :ios
+  has_many :audit_logs
 
   ROLES = %w(user admin superadmin)
 
@@ -46,6 +47,10 @@ class User < ActiveRecord::Base
 
   def is?(role)
     roles.include?(role.to_s)
+  end
+
+  def company_influencer_enabled
+    self.company.influencer_enabled
   end
 
   def is_admin
@@ -111,7 +116,7 @@ class User < ActiveRecord::Base
           },
           teams: {}
         },
-        methods: [:name, :leader?, :is_admin, :roles]
+        methods: [:name, :leader?, :is_admin, :roles, :company_influencer_enabled]
       ).except(:override))
     end
   end
@@ -396,5 +401,13 @@ class User < ActiveRecord::Base
     ).pluck(:id)
 
     Activity.where(id: activity_ids)
+  end
+
+  def self.current
+    Thread.current[:user]
+  end
+
+  def self.current=(user)
+    Thread.current[:user] = user
   end
 end

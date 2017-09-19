@@ -19,7 +19,7 @@ module DFP
   class ReportsService < BaseService
     API_VERSION = :v201702
     MAX_RETRIES = 5
-    RETRY_INTERVAL = 1
+    RETRY_INTERVAL = 2
 
     def initialize(options = {})
       super(options)

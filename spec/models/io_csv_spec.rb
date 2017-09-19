@@ -34,21 +34,31 @@ RSpec.describe IoCsv, type: :model do
     end
   end
 
-  context 'io_number deal should be updated as closed won' do
+  context 'auto-close io_number deal' do
     before(:each) do
       closed_stage
     end
 
-    it 'closes the deal ID received as IO number' do
-      io_csv(io_external_number: 8989, io_name: "EVE Mattress - Performance Test - March 2017_#{deal.id}").perform
-      expect(deal.reload.stage).to eq closed_stage
+    context 'auto-close enabled' do
+      it 'closes the deal ID received as IO number' do
+        io_csv(io_external_number: 8989, io_name: "EVE Mattress - Performance Test - March 2017_#{deal.id}", auto_close_deals: true).perform
+        expect(deal.reload.stage).to eq closed_stage
+      end
+
+      it 'maps the incoming order to the freshly generated IO' do
+        io_csv(io_external_number: 8989, io_name: "EVE Mattress - Performance Test - March 2017_#{deal.id}", auto_close_deals: true).perform
+        expect(deal.io.name).to eq deal.name
+        expect(deal.io.io_number).to eq deal.id
+        expect(deal.io.external_io_number).to eq 8989
+      end
     end
 
-    it 'maps the incoming order to the freshly generated IO' do
-      io_csv(io_external_number: 8989, io_name: "EVE Mattress - Performance Test - March 2017_#{deal.id}").perform
-      expect(deal.io.name).to eq deal.name
-      expect(deal.io.io_number).to eq deal.id
-      expect(deal.io.external_io_number).to eq 8989
+    context 'auto-close disabled' do
+      it 'leaves deal open' do
+        deal(stage: discuss_stage)
+        io_csv(io_external_number: 8989, io_name: "EVE Mattress - Performance Test - March 2017_#{deal.id}", auto_close_deals: false).perform
+        expect(deal.reload.stage).to eq discuss_stage
+      end
     end
   end
 
@@ -176,9 +186,10 @@ RSpec.describe IoCsv, type: :model do
     end
 
     it 'sets temp_io currency code' do
-      exchange_rate(currency: currency(curr_cd: 'GBP'), rate: 1.5)
+      exchange_rate(currency: currency( curr_cd: 'GBP', curr_symbol: '£', name: 'Pound'), rate: 1.5)
       io_csv(io_external_number: temp_io.external_io_number, io_curr_cd: 'GBP').perform
-      expect(temp_io.reload.curr_cd).to eql 'GBP'
+
+      expect(TempIo.last.curr_cd).to eql 'GBP'
     end
   end
 
@@ -194,6 +205,10 @@ RSpec.describe IoCsv, type: :model do
   def deal(opts={})
     opts[:company_id] = company.id
     @_deal ||= create :deal, opts
+  end
+
+  def discuss_stage
+    @_discuss_stage ||= create :discuss_stage, company_id: company.id
   end
 
   def closed_stage

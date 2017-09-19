@@ -9,6 +9,7 @@ class DealReportSerializer < ActiveModel::Serializer
     :name,
     :budget,
     :next_steps,
+    :next_steps_due,
     :created_by,
     :advertiser,
     :stage_id,
@@ -37,7 +38,7 @@ class DealReportSerializer < ActiveModel::Serializer
 
   def users
     users = []
-    object.deal_members.each do |deal_member|
+    deal_members.each do |deal_member|
       data = deal_member.username.serializable_hash(only: [:id, :first_name, :last_name])
       data[:share] = deal_member.share
       users << data
@@ -64,11 +65,21 @@ class DealReportSerializer < ActiveModel::Serializer
     .reject{ |deal_product| deal_product.product_id != @options[:product_filter] if @options[:product_filter] }
     .map(&:id)
 
-    object.deal_product_budgets
+    grouped_budgets = object.deal_product_budgets
     .select{ |budget| selected_products.include?(budget.deal_product_id) }
     .group_by(&:start_date)
     .collect{|key, value| {start_date: key, budget: value.map(&:budget).compact.reduce(:+)} }
-    # object.deal_product_budgets.map {|deal_product_budget| deal_product_budget.serializable_hash(only: [:id, :budget, :start_date, :end_date]) rescue nil}
+
+    budgets = []
+
+    @options[:range].each do |product_time|
+      if budget = grouped_budgets.find { |budget| budget[:start_date].try(:beginning_of_month) == product_time }
+        budgets << budget[:budget].to_f.round
+      else
+        budgets << 0
+      end
+    end
+    budgets
   end
 
   def deal_custom_field
@@ -80,27 +91,9 @@ class DealReportSerializer < ActiveModel::Serializer
   end
 
   def team
-    return nil if ordered_deal_members.blank?
-
-    user_with_highest_share.leader? ? leader_team_name : user_name_with_highest_share
+    return nil if deal_members.blank?
+    get_team_name(deal_members.first.username)
   end
-
-  # def cache_key
-  #   parts = []
-  #   parts << object.id
-  #   parts << object.updated_at
-  #   parts << object.advertiser.try(:id)
-  #   parts << object.advertiser.try(:updated_at)
-  #   parts << object.stageinfo.try(:id)
-  #   parts << object.stageinfo.try(:updated_at)
-  #   parts << object.agency.try(:id)
-  #   parts << object.agency.try(:updated_at)
-  #   parts << object.deal_members.map(&:id)
-  #   parts << object.deal_members.map(&:updated_at)
-  #   parts << object.deal_product_budgets.try(:id)
-  #   parts << object.deal_product_budgets.try(:updated_at)
-  #   parts
-  # end
 
   private
 
@@ -110,19 +103,15 @@ class DealReportSerializer < ActiveModel::Serializer
     end
   end
 
-  def ordered_deal_members
-    object.deal_members.ordered_by_share
+  def deal_members
+    object.deal_members_share_ordered
   end
 
-  def user_with_highest_share
-    @_user_with_highest_share ||= ordered_deal_members.first.user
-  end
-
-  def leader_team_name
-    Team.find_by(leader: user_with_highest_share).name
-  end
-
-  def user_name_with_highest_share
-    user_with_highest_share.team.name rescue nil
+  def get_team_name(user)
+    team = @options[:company_teams_data].find{|team| team.leader_id == user.id}
+    if !team.present?
+      team = @options[:company_teams_data].find{|team| team.id == user.team_id}
+    end
+    team.name rescue nil
   end
 end

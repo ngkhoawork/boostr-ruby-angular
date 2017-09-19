@@ -381,10 +381,8 @@ class Api::RevenueController < ApplicationController
   def member
     @member ||= if params[:user_id]
       current_user.company.users.find(params[:user_id])
-    elsif current_user.leader?
+    elsif params[:member_id]
       current_user.company.users.find(params[:member_id])
-    elsif params[:member_id] == current_user.id.to_s
-      current_user
     else
       raise ActiveRecord::RecordNotFound
     end

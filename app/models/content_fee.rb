@@ -1,6 +1,7 @@
 class ContentFee < ActiveRecord::Base
   belongs_to :io
   belongs_to :product
+  has_many :influencer_content_fees, dependent: :destroy
 
   has_many :content_fee_product_budgets, dependent: :destroy
 
@@ -17,7 +18,7 @@ class ContentFee < ActiveRecord::Base
   
   after_update do
     if content_fee_product_budgets.sum(:budget) != budget || content_fee_product_budgets.sum(:budget_loc) != budget_loc
-      if budget_changed?
+      if budget_changed? || budget_loc_changed?
         self.update_content_fee_product_budgets
       else
         self.update_budget
@@ -27,7 +28,7 @@ class ContentFee < ActiveRecord::Base
   end
 
   after_create do
-    create_content_fee_product_budgets
+    # create_content_fee_product_budgets
     io.update_total_budget
   end
 
@@ -93,33 +94,41 @@ class ContentFee < ActiveRecord::Base
   end
 
   def daily_budget
-    budget / (io.end_date - io.start_date + 1).to_i
+    budget / (io.end_date - io.start_date + 1)
   end
 
   def daily_budget_loc
-    budget_loc / (io.end_date - io.start_date + 1).to_i
+    budget_loc / (io.end_date - io.start_date + 1)
   end
 
   def update_content_fee_product_budgets
     last_index = content_fee_product_budgets.count - 1
-    total = 0
-    total_loc = 0
+    total = 0.0
+    total_loc = 0.0
 
     content_fee_product_budgets.order("start_date asc").each_with_index do |content_fee_product_budget, index|
       if last_index == index
         monthly_budget = (budget) - total
         monthly_budget_loc = budget_loc - total_loc
       else
-        monthly_budget = (daily_budget * io.days_per_month[index]).round(0)
+        monthly_budget = (daily_budget * io.days_per_month[index]).round(2)
         total += monthly_budget
 
-        monthly_budget_loc = (daily_budget_loc * io.days_per_month[index]).round(0)
+        monthly_budget_loc = (daily_budget_loc * io.days_per_month[index]).round(2)
         total_loc += monthly_budget_loc
       end
       content_fee_product_budget.update(
         budget: monthly_budget.round(2),
         budget_loc: monthly_budget_loc.round(2)
       )
+    end
+  end
+
+  def update_periods
+    content_fee_product_budgets.each_with_index do |content_fee_product_budget, index|
+      period = Date.new(*io.months[index])
+      content_fee_product_budget.start_date = [period, io.start_date].max
+      content_fee_product_budget.end_date = [period.end_of_month, io.end_date].min
     end
   end
 

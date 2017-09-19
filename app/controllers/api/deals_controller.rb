@@ -1,6 +1,8 @@
 class Api::DealsController < ApplicationController
   respond_to :json, :zip
 
+  before_filter :set_current_user, only: [:update, :create]
+
   def index
     respond_to do |format|
       format.json {
@@ -124,57 +126,33 @@ class Api::DealsController < ApplicationController
     end
   end
 
+  def pipeline_report_totals
+    deals = pipeline_report_relation
+      .includes(:stageinfo)
+      .except(:limit, :order, :offset, :preload)
+      .pluck_to_struct(:id, :budget, 'stages.probability as probability')
+
+    unweighted = deals.map{ |d| d.budget }.compact.reduce(:+).to_f
+    weighted = deals.map{ |d| d.budget.to_f * d.probability / 100 }.compact.reduce(:+)
+    ratio = ((weighted / unweighted * 100) / 100).round(2) rescue 0
+
+    totals = {
+      pipeline_unweighted: unweighted.round,
+      pipeline_weighted: weighted.round,
+      ratio: ratio,
+      total_deals: deals.length,
+      average_deal_size: (unweighted.round / deals.length rescue 0)
+    }
+
+    render json: {totals: totals}
+  end
+
   def pipeline_report
     respond_to do |format|
-      selected_deals = case params[:status]
-        when 'open'
-          deals.open.less_than(100)
-        when 'all'
-          deals
-        when 'closed'
-          deals.close_status
-        else
-          deals.open.less_than(100)
-      end
-
-      filtered_deals = selected_deals
-      .by_values(deal_type_source_params)
-      .includes(
-        :advertiser,
-        :latest_happened_activity,
-        :stageinfo,
-        :deal_product_budgets,
-        :deal_custom_field,
-        agency: [:parent_client],
-        deal_members: [:username],
-        values: [:option]
-      )
-      .active
-      .distinct
-
-      if time_period
-        filtered_deals = filtered_deals.for_time_period(time_period.start_date, time_period.end_date)
-      end
-
-      # Filter by product id
-      if product_filter
-        filtered_deals = filtered_deals.joins('LEFT JOIN deal_products on deal_products.deal_id = deals.id').where(deal_products: { product_id: product_filter })
-      end
-
-      filtered_deals = filtered_deals.select do |deal|
-        (deal_type_filter ? deal.values.map(&:option_id).include?(deal_type_filter) : true) &&
-        (deal_source_filter ? deal.values.map(&:option_id).include?(deal_source_filter) : true)
-      end
+      filtered_deals = pipeline_report_relation
 
       format.json {
-        deal_settings_fields = company.fields.where(subject_type: 'Deal').pluck(:id, :name)
-        deal_list = ActiveModel::ArraySerializer.new(
-          filtered_deals,
-          each_serializer: DealReportSerializer,
-          deal_settings_fields: deal_settings_fields,
-          product_filter: product_filter
-        )
-        deal_ids = filtered_deals.collect{|deal| deal.id}
+        deal_ids = filtered_deals.to_a.collect{|deal| deal.id}
 
         range = DealProductBudget
         .joins("INNER JOIN deal_products ON deal_product_budgets.deal_product_id=deal_products.id")
@@ -185,19 +163,61 @@ class Api::DealsController < ApplicationController
         .compact
         .uniq
 
+        deal_settings_fields = company.fields.where(subject_type: 'Deal').pluck(:id, :name)
+
+        deal_list = ActiveModel::ArraySerializer.new(
+          filtered_deals,
+          each_serializer: DealReportSerializer,
+          deal_settings_fields: deal_settings_fields,
+          product_filter: product_filter,
+          company_teams_data: company_teams_data,
+          range: range
+        )
+
+        response.headers['X-Total-Count'] = filtered_deals.except(:limit, :order, :offset, :preload).count.to_s
         render json: [{deals: deal_list, range: range}].to_json
       }
       format.csv {
         require 'timeout'
         begin
           Timeout::timeout(240) {
-            send_data Deal.to_pipeline_report_csv(filtered_deals, company, product_filter), filename: "pipeline-report-#{Date.today}.csv"
+            send_data Deal.to_pipeline_report_csv(
+              filtered_deals.except(:limit, :order, :offset), company, product_filter
+            ), filename: "pipeline-report-#{Date.today}.csv"
           }
         rescue Timeout::Error
           return
         end
       }
     end
+  end
+
+  def pipeline_report_relation
+    result = deals
+      .by_stage_ids(params[:stage_ids])
+      .for_time_period(time_period.try(:start_date), time_period.try(:end_date))
+      .with_all_options(deal_type_source_params)
+      .limit(limit)
+      .offset(offset)
+      .order(:name)
+      .preload(
+        :advertiser,
+        :latest_happened_activity,
+        :stageinfo,
+        :deal_product_budgets,
+        :deal_custom_field,
+        agency: [:parent_client],
+        deal_members_share_ordered: [:username],
+        values: [:option]
+      )
+      .active
+      .distinct
+
+    # Filter by product id
+    if product_filter
+      result = result.joins('LEFT JOIN deal_products on deal_products.deal_id = deals.id').where(deal_products: { product_id: product_filter })
+    end
+    result
   end
 
   def pipeline_summary_report
@@ -543,6 +563,7 @@ class Api::DealsController < ApplicationController
         :agency_id,
         :closed_at,
         :next_steps,
+        :next_steps_due,
         :initiative_id,
         :closed_reason_text,
         :created_at,
@@ -826,5 +847,9 @@ class Api::DealsController < ApplicationController
     closed_year = Date.new(params[:closed_year].to_i) if params[:closed_year].present?
 
     stage.open? ? deals_with_stage.order(:start_date) : deals_with_stage.by_closed_at(closed_year).order(closed_at: :desc)
+  end
+
+  def company_teams_data
+    company.teams.pluck_to_struct(:id, :name, :leader_id)
   end
 end

@@ -3,7 +3,11 @@
 ($resource, $q, $rootScope) ->
 
   transformRequest = (original, headers) ->
+    original.deal.values_attributes = []
     original.deal.values_attributes = original.deal.values if original.deal.values
+    original.deal.values_attributes << original.deal.deal_type if original.deal.deal_type
+    original.deal.values_attributes << original.deal.source_type if original.deal.source_type
+
     original.deal.deal_custom_field_attributes = original.deal.deal_custom_field if original.deal.deal_custom_field
     angular.toJson(original)
 
@@ -40,11 +44,25 @@
     filter_data:
       method: 'GET'
       url: '/api/deals/filter_data'
+    pipeline_report_totals:
+      method: 'GET'
+      url: '/api/deals/pipeline_report_totals'
 
-  pipeline_report_resource = $resource '/api/deals/pipeline_report'
+  pipeline_report_resource = $resource '/api/deals/pipeline_report', {},
+    query:  {
+      isArray: true,
+      transformResponse: (data, headers) ->
+        resource.totalCount = headers()['x-total-count']
+        angular.fromJson(data)
+    }
+
   pipeline_summary_report_resource = $resource '/api/deals/pipeline_summary_report'
 
   currentDeal = undefined
+  resource.totalCount = 0
+
+  @pipeline_report_count = ->
+    resource.totalCount
 
   @all = (params) ->
     deferred = $q.defer()
@@ -66,6 +84,12 @@
   @pipeline_report = (params) ->
     deferred = $q.defer()
     pipeline_report_resource.query params, (response) ->
+      deferred.resolve(response)
+    deferred.promise
+
+  @pipeline_report_totals = (params) ->
+    deferred = $q.defer()
+    resource.pipeline_report_totals params, (response) ->
       deferred.resolve(response)
     deferred.promise
 

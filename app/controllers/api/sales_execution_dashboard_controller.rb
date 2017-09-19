@@ -17,6 +17,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     end_date1 = Time.now.utc.end_of_quarter.beginning_of_day
     start_date2 = (Time.now.utc + 3.months).beginning_of_quarter
     end_date2 = (Time.now.utc + 3.months).end_of_quarter.beginning_of_day
+
     if member.present?
       render json: [ForecastMember.new(member, start_date1, end_date1), ForecastMember.new(member, start_date2, end_date2)]
     elsif team.present?
@@ -39,6 +40,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
     end
 
     months = (start_date.to_date..end_date.to_date).map { |d| d.strftime("%b-%y") }.uniq
+
     if team.present?
       render json: { forecast: MonthlyForecastTeamSerializer.new(ForecastTeam.new(team, start_date, end_date, nil, nil)), months: months }
     else
@@ -70,18 +72,6 @@ class Api::SalesExecutionDashboardController < ApplicationController
     average_deal_size = (complete_deals.average(:budget) / 1000.0).round(0) if complete_deals.count > 0
     cycle_time_arr = complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s)  - Date.parse(deal.created_at.utc.to_s)}
     cycle_time = (cycle_time_arr.sum.to_f / cycle_time_arr.count + 1).round(0) if cycle_time_arr.count > 0
-    #
-    # team_complete_deals = Deal.where("deals.id in (?)", team_deal_ids).closed_at(start_date, end_date).at_percent(100)
-    # team_incomplete_deals = Deal.where("deals.id in (?)", team_deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
-    #
-    # team_win_rate = 0.0
-    # team_average_deal_size = 0
-    # team_cycle_time = 0.0
-    #
-    # team_win_rate = (team_complete_deals.count.to_f / (team_complete_deals.count.to_f + team_incomplete_deals.count.to_f) * 100).round(2) if (team_incomplete_deals.count + team_complete_deals.count) > 0
-    # team_average_deal_size = (team_complete_deals.average(:budget) / 1000.0).round(2) if team_complete_deals.count > 0
-    # team_cycle_time_arr = team_complete_deals.collect{|deal| Date.parse(DateTime.parse(deal.closed_at.to_s).utc.to_s)  - Date.parse(deal.created_at.utc.to_s)}
-    # team_cycle_time = (team_cycle_time_arr.sum.to_f / team_cycle_time_arr.count + 1).round(2) if team_cycle_time_arr.count > 0
 
     render json: [{win_rate: win_rate, average_deal_size: average_deal_size, cycle_time: cycle_time}]
   end
@@ -98,6 +88,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
         start_date = Time.now.utc.beginning_of_quarter
         end_date = Time.now.utc
     end
+
     deal_loss_data = Deal.joins("left join values on deals.id=values.subject_id and values.subject_type='Deal'")
     .joins("left join fields on  values.field_id=fields.id")
     .joins("left join options on options.id=values.option_id")
@@ -208,18 +199,33 @@ class Api::SalesExecutionDashboardController < ApplicationController
     pipeline_won = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(100)
     pipeline_lost = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).closed.closed_at(start_date, end_date).at_percent(0)
     pipeline_added = Deal.where('deals.id in (?) and deals.budget > 0', deal_ids).started_at(start_date, end_date)
-    pipeline_advanced = DealLog.where('deal_id in (?)', deal_ids).for_time_period(start_date, end_date)
-    pipeline_advanced_deals = pipeline_advanced.joins("LEFT JOIN deals ON deal_logs.deal_id = deals.id")
-      .group('deals.id')
-      .select('deals.id, deals.name, deals.start_date, deals.advertiser_id, sum(deal_logs.budget_change) as total_budget_change')
-      .collect{|item| {
-        id: item.id,
-        name: item.name,
-        start_date: item.start_date,
-        budget: item.total_budget_change,
-        advertiser: Client.find(item.advertiser_id).as_json({override: true, only: [:id, :name] })
-        }
-      }
+    pipeline_advanced_audit = AuditLog.by_auditable_type('Deal')
+                                      .by_type_of_change(AuditLog::BUDGET_CHANGE_TYPE)
+                                      .where(auditable_id: deal_ids)
+                                      .in_created_at_range(start_date..end_date)
+
+    pipeline_advanced_audit_deals =
+      pipeline_advanced_audit
+        .joins('LEFT JOIN deals ON audit_logs.auditable_id = deals.id')
+        .group('deals.id, audit_logs.changed_amount')
+        .select('deals.id, deals.name, deals.start_date, deals.advertiser_id, sum(audit_logs.changed_amount) as total_changed_amount')
+        .reduce([]) do |data, item|
+          repeated_tem = data.find { |i| i[:id].eql? item.id }
+
+          if repeated_tem.present?
+            repeated_tem[:budget] += item.total_changed_amount
+            data
+          else
+            data << {
+              id: item.id,
+              name: item.name,
+              start_date: item.start_date,
+              budget: item.total_changed_amount,
+              advertiser: Client.find(item.advertiser_id).as_json({override: true, only: [:id, :name] })
+            }
+          end
+        end
+
     options = {
       override: true,
       options: {
@@ -231,22 +237,10 @@ class Api::SalesExecutionDashboardController < ApplicationController
         }
       }
     }
-    deal_log_options = {
-      include: {
-        deal: {
-          only: [:id, :name, :start_date, :budget, :budget_loc, :curr_cd],
-            include: {
-            advertiser: {
-              only: [:id, :name]
-            }
-          }
-        }
-      }
-    }
 
     @week_pipeline_data = [
         {name: 'Added', value: pipeline_added.sum(:budget).round, color:'#a4d0f0', deals: pipeline_added.as_json(options)},
-        {name: 'Advanced', value: pipeline_advanced.sum(:budget_change).round, color:'#52a1e2', deals: pipeline_advanced_deals},
+        {name: 'Advanced', value: pipeline_advanced_audit.sum(:changed_amount).round, color:'#52a1e2', deals: pipeline_advanced_audit_deals},
         {name: 'Won', value: pipeline_won.sum(:budget).round, color:'#8ec536', deals: pipeline_won.as_json(options)},
         {name: 'Lost', value: pipeline_lost.sum(:budget).round, color:'#d2e8f8', deals: pipeline_lost.as_json(options)}
     ]
@@ -255,7 +249,7 @@ class Api::SalesExecutionDashboardController < ApplicationController
   end
 
   def deal_ids
-    @deal_ids = DealMember.where("user_id in (?)", params[:member_ids]).select(:deal_id).collect {|deal_member| deal_member.deal_id}
+    @_deal_ids = DealMember.where(user_id: params[:member_ids]).pluck(:deal_id)
   end
 
   def top_deals

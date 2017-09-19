@@ -9,6 +9,7 @@ class Product < ActiveRecord::Base
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 
   scope :active, -> { where('active IS true') }
+  scope :by_revenue_type, -> (revenue_type) { where('revenue_type = ?', revenue_type) if revenue_type }
 
   def as_json(options = {})
     super(options.merge(include: [:ad_units, values: { include: [:option], methods: [:value] }]))

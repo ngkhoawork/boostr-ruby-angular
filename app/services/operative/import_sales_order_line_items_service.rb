@@ -1,6 +1,7 @@
 class Operative::ImportSalesOrderLineItemsService
-  def initialize(company_id, files)
+  def initialize(company_id, revenue_calculation_pattern, files)
     @company_id = company_id
+    @revenue_calculation_pattern = revenue_calculation_pattern
     @sales_order_line_items = files.fetch(:sales_order_line_items)
     @invoice_line_items = files.fetch(:invoice_line_item)
   end
@@ -9,13 +10,15 @@ class Operative::ImportSalesOrderLineItemsService
     @sales_order_csv_file = open_file(sales_order_line_items)
     @invoice_csv_file = open_file(invoice_line_items)
     if @sales_order_csv_file && @invoice_csv_file
+      self.class.define_calculator_method(@revenue_calculation_pattern)
       parse_invoices
       parse_line_items
     end
   end
 
   private
-  attr_reader :company_id, :sales_order_line_items, :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file
+  attr_reader :company_id, :revenue_calculation_pattern, :sales_order_line_items,
+              :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file
 
   def open_file(file)
     begin
@@ -29,13 +32,27 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def parse_invoices
-    @_parsed_invoices ||= []
-    CSV.parse(invoice_csv_file, { headers: true, header_converters: :symbol }) do |row|
-      @_parsed_invoices << {
-        sales_order_line_item_id: row[:sales_order_line_item_id],
+    @parsed_invoices ||= {}
+
+    File.foreach(invoice_csv_file).with_index do |line, line_num|
+      if line_num == 0
+        @invoice_headers = CSV.parse_line(line)
+        next
+      end
+
+      begin
+        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @invoice_headers, header_converters: :symbol)
+      rescue Exception => e
+        next
+      end
+
+      @parsed_invoices[row[:sales_order_line_item_id]] ||= []
+      @parsed_invoices[row[:sales_order_line_item_id]] << {
         invoice_units: row[:invoice_units],
         cumulative_primary_performance: row[:cumulative_primary_performance],
-        cumulative_third_party_performance: row[:cumulative_third_party_performance]
+        cumulative_third_party_performance: row[:cumulative_third_party_performance],
+        recognized_revenue: row[:recognized_revenue],
+        invoice_amount: row[:invoice_amount]
       }
     end
   end
@@ -44,13 +61,27 @@ class Operative::ImportSalesOrderLineItemsService
     import_log = CsvImportLog.new(company_id: company_id, object_name: 'display_line_item', source: 'operative')
     import_log.set_file_source(sales_order_line_items)
 
-    CSV.parse(sales_order_csv_file, { headers: true, header_converters: :symbol }) do |row|
+    File.foreach(sales_order_csv_file).with_index do |line, line_num|
+      if line_num == 0
+        @headers = CSV.parse_line(line)
+        next
+      end
+
       import_log.count_processed
+
+      begin
+        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
+      rescue Exception => e
+        import_log.count_failed
+        import_log.log_error [e.message, line]
+        next
+      end
 
       if irrelevant_line_item(row)
         import_log.count_skipped
         next
       end
+
       dli_csv = build_dli_csv(row)
 
       if dli_csv.valid?
@@ -92,15 +123,25 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def irrelevant_line_item(row)
-    row[:line_item_status].try(:downcase) != 'sent_to_production'
+    row[:line_item_status].try(:downcase) != 'sent_to_production' ||
+    !row[:quantity].present? ||
+    !row[:net_cost].present? ||
+    row[:net_cost].to_f.zero?
   end
 
   def find_in_invoices(id, net_unit_cost)
-    lines = @_parsed_invoices.select do |invoice|
-      invoice[:sales_order_line_item_id] == id
+    lines = @parsed_invoices[id]
+
+    if lines.nil?
+      return {
+        sales_order_line_item_id:           id,
+        recognized_revenue:                 0.0,
+        cumulative_primary_performance:     0,
+        cumulative_third_party_performance: 0
+      }
     end
 
-    recognized_revenue = lines.map {|row| row[:invoice_units].to_f}.reduce(0, :+) / 1000 * net_unit_cost.to_f
+    recognized_revenue = recognized_revenue_calculator(lines, net_unit_cost)
 
     {
       sales_order_line_item_id:           id,
@@ -108,5 +149,22 @@ class Operative::ImportSalesOrderLineItemsService
       cumulative_primary_performance:     lines[-1][:cumulative_primary_performance].to_i,
       cumulative_third_party_performance: lines[-1][:cumulative_third_party_performance].to_i
     }
+  end
+
+  def self.define_calculator_method(pattern)
+    case DatafeedConfigurationDetails.get_pattern_name(pattern)
+    when 'Invoice Units'
+      define_method(:recognized_revenue_calculator) do |lines, net_unit_cost|
+        lines.map { |row| row[:invoice_units].to_f      }.reduce(0, :+) / 1000 * net_unit_cost.to_f
+      end
+    when 'Recognized Revenue'
+      define_method(:recognized_revenue_calculator) do |lines, net_unit_cost|
+        lines.map { |row| row[:recognized_revenue].to_f }.reduce(0, :+)
+      end
+    when 'Invoice Amount'
+      define_method(:recognized_revenue_calculator) do |lines, net_unit_cost|
+        lines.map { |row| row[:invoice_amount].to_f     }.reduce(0, :+)
+      end
+    end
   end
 end

@@ -130,10 +130,31 @@
 		.row
 			.col-xs-12
 				.block
+					.total-stats.mb20
+						%div.stats-col
+							.value {{totals.pipelineUnweighted | currency: '$': 0}}
+							.text Total Pipeline (UW)
+
+						%div.stats-col
+							.value {{totals.pipelineWeighted | currency: '$': 0}}
+							.text Total Pipeline (W)
+
+						%div.stats-col
+							.value {{totals.pipelineRatio}}
+							.text Pipeline W/UW Ratio
+
+						%div.stats-col
+							.value {{totals.deals}}
+							.text Total Deals
+
+						%div.stats-col
+							.value {{totals.aveDealSize | currency: '$': 0}}
+							.text Ave Deal Size
+
 					%div.table-wrapper
 						%table.table.table-hover
 							%thead
-								%tr
+								%tr{'z-fixed-header': true, watch: '["deals", "dealCustomFieldNames"]'}
 									%th
 										%span.clickable{'ng-click': 'sorting.set("id")'} Deal ID
 									%th
@@ -149,7 +170,7 @@
 									%th
 										%span.clickable{'ng-click': 'sorting.set("budget")'} Budget USD
 									%th
-										%span.clickable{'ng-click': 'sorting.set("budget_loc")'} Budget
+										%span.clickable{'ng-click': 'sorting.set("budget_loc.budget")'} Budget
 									%th
 										%span.clickable{'ng-click': 'sorting.set("stage.name")'} Stage
 									%th
@@ -177,34 +198,34 @@
 									%th
 										%span.clickable{'ng-click': 'sorting.set("initiative")'} Initiative
 									%th{'ng-repeat': 'cfName in dealCustomFieldNames'}
-										%span.clickable{'ng-click': 'sorting.set("custom_fields[" + cfName.id + "]")'} {{cfName.field_label}}
+										%span.clickable{'ng-click': 'sorting.set("custom_fields[{{cfName.id}}]")'} {{cfName.field_label}}
 							%tbody.nowrap
-								%tr{'ng-repeat': 'item in data | orderBy : sorting.key : sorting.reverse'}
-									%td {{item.id}}
+								%tr{'ng-repeat': 'deal in deals | orderBy : sorting.key : sorting.reverse'}
+									%td {{deal.id}}
 									%td
-										%a{href: '', 'ng-href': '/deals/{{item.id}}'} {{item.name}}
+										%a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
 									%td
-										%a{href: '', 'ng-href': '/accounts/{{item.advertiser.id}}'} {{item.advertiser.name}}
-									%td {{item.category}}
+										%a{href: '', 'ng-href': '/accounts/{{deal.advertiser.id}}'} {{deal.advertiser.name}}
+									%td {{deal.category}}
 									%td
-										%a{href: '', 'ng-href': '/accounts/{{item.agency.id}}'} {{item.agency.name}}
-									%td {{item.holding_company}}
-									%td {{item.budget | currency: '$': 0 }}
-									%td {{item.budget_loc.budget | currency : item.budget_loc.curr_symbol || item.budget_loc.curr_cd: 0 }}
-									%td {{item.stage.name}}
-									%td {{item.stage.probability}}
-									%td {{item.start_date | date : 'shortDate'}}
-									%td {{item.end_date | date : 'shortDate'}}
-									%td {{item.created_at | date : 'shortDate'}}
-									%td {{item.closed_at | date : 'shortDate'}}
-									%td {{item.closed_reason}}
-									%td {{item.closed_reason_text}}
+										%a{href: '', 'ng-href': '/accounts/{{deal.agency.id}}'} {{deal.agency.name}}
+									%td {{deal.holding_company}}
+									%td {{deal.budget | currency: '$': 0 }}
+									%td {{deal.budget_loc.budget | currency : deal.budget_loc.curr_symbol || deal.budget_loc.curr_cd: 0 }}
+									%td {{deal.stage.name}}
+									%td {{deal.stage.probability}}
+									%td {{deal.start_date | date : 'shortDate'}}
+									%td {{deal.end_date | date : 'shortDate'}}
+									%td {{deal.created_at | date : 'shortDate'}}
+									%td {{deal.closed_at | date : 'shortDate'}}
+									%td {{deal.closed_reason}}
+									%td {{deal.closed_reason_text}}
 									%td
-										%div{'ng-repeat': 'member in item.members'}
+										%div{'ng-repeat': 'member in deal.members'}
 											{{member.name}} {{member.share || 0}}%
-									%td {{item.team}}
-									%td {{item.type}}
-									%td {{item.source}}
-									%td {{item.initiative}}
+									%td {{deal.team}}
+									%td {{deal.type}}
+									%td {{deal.source}}
+									%td {{deal.initiative}}
 									%td{'ng-repeat': 'cfName in dealCustomFieldNames'}
-										{{item.custom_fields[cfName.id]}}
+										{{deal.custom_fields[cfName.id]}}

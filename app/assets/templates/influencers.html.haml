@@ -1,0 +1,35 @@
+#contacts.z-styles
+  .container-fluid.contacts-inner
+    .row.contacts-header.mb30
+      .header-item
+        .main-title Influencers
+      .header-item
+        %add-button{'ng-click': 'showModal()'}
+          Add Influencer
+      .header-item.contact-search
+        %i.fa.fa-search
+        %input.form-control{placeholder: 'Search', ng: {model: 'query', 'model-options': '{debounce: 500}' }}
+      .header-item
+
+    .row.block{'ng-if': '!influencers.length'}
+      .title No Data Available
+    .row.block{'ng-if': 'influencers.length'}
+      .table-wrapper
+        %table.table.table-hover
+          %thead
+            %tr
+              %th Name
+              %th Network
+              %th Email
+              %th Address
+              %th Phone
+              %th Status
+          %tbody{infinite: {scroll: 'loadMoreInfluencers()', 'infinite-scroll-immediate-check': 'true', 'scroll-disabled': 'isLoading'}}
+            %tr{'ng-repeat': 'influencer in influencers'}
+              %td
+                %a{href: '', 'ng-href': '/influencers/{{influencer.id}}'} {{influencer.name}}
+              %td {{influencer.network_name}}
+              %td {{influencer.email}}
+              %td {{influencer.address.street1}} {{concatAddress(influencer.address)}}
+              %td {{influencer.phone}}
+              %td {{influencer.active ? 'Active' : 'Inactive'}}

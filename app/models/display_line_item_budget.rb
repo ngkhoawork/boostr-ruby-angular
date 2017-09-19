@@ -244,7 +244,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
   def correct_budget_loc
     if max_monthly_budget_exceeded? || max_budget_loc_exceeded?
-      self.budget_loc = display_line_item.budget_loc - opposite_sum_of_display_line_item_budgets
+      corrected_budget = display_line_item.budget_loc - opposite_sum_of_display_line_item_budgets
+      self.budget_loc = corrected_budget
+      display_line_item.budget_delivered_loc = corrected_budget
+      display_line_item.budget_remaining_loc = 0
     end
   end
 
@@ -257,11 +260,11 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def max_budget_loc_exceeded?
-    budget_loc > display_line_item.budget_loc
+    budget_loc.truncate(2) > display_line_item.budget_loc
   end
 
   def sum_of_monthly_budgets
-    (opposite_sum_of_display_line_item_budgets + budget_loc)
+    (opposite_sum_of_display_line_item_budgets + budget_loc.truncate(2))
   end
 
   def opposite_sum_of_display_line_item_budgets

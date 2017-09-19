@@ -319,6 +319,19 @@ class DisplayLineItem < ActiveRecord::Base
         next
       end
 
+      if io.present?
+        if start_date < io.start_date
+          import_log.count_failed
+          import_log.log_error(['start date can\'t be prior the IO start date'])
+          next
+        end
+        if end_date > io.end_date
+          import_log.count_failed
+          import_log.log_error(['end date can\'t be after the IO end date'])
+          next
+        end
+      end
+
       product_id = nil
       ad_server_product = nil
 
@@ -501,6 +514,17 @@ class DisplayLineItem < ActiveRecord::Base
       }
 
       if io_id.nil?
+        if start_date < io_start_date
+          import_log.count_failed
+          import_log.log_error(['start date can\'t be prior the IO start date'])
+          next
+        end
+        if end_date > io_end_date
+          import_log.count_failed
+          import_log.log_error(['end date can\'t be after the IO end date'])
+          next
+        end
+
         temp_io = TempIo.find_by_external_io_number(external_io_number)
         if temp_io.nil?
           temp_io = TempIo.create(temp_io_params)
@@ -543,9 +567,11 @@ class DisplayLineItem < ActiveRecord::Base
       else
         display_line_items = DisplayLineItem.where("line_number=? and io_id=?", line_number, io_id)
       end
+
       if display_line_items.count > 0
         display_line_item = display_line_items.first
       end
+
       if display_line_item.present?
         import_log.count_imported
         display_line_item.update(display_line_item_params)

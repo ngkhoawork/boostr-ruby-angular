@@ -2,7 +2,7 @@
     ['$scope', '$window', '$location', '$httpParamSerializer', '$routeParams', 'Report', 'Team', 'Seller', 'Stage'
     ( $scope,   $window,   $location,   $httpParamSerializer,   $routeParams,   Report,   Team,   Seller,   Stage ) ->
 
-            $scope.data = []
+            $scope.deals = []
             $scope.teams = []
             $scope.sellers = []
             $scope.stages = []
@@ -11,6 +11,12 @@
                 {id: 'open', name: 'Open'},
                 {id: 'closed', name: 'Closed'},
             ]
+            $scope.totals =
+                pipelineUnweighted: 0
+                pipelineWeighted: 0
+                pipelineRatio: 0
+                deals: 0
+                aveDealSize: 0
 
             $scope.sorting =
                 key: null
@@ -61,7 +67,29 @@
 
             getReport = (query) ->
                 Report.split_adjusted(query).$promise.then (data) ->
-                    $scope.data = data
+                    $scope.deals = data
+                    calcTotals(data)
+
+            calcTotals = (deals) ->
+                t = $scope.totals
+                _.each t, (val, key) -> t[key] = 0 #reset values
+                _.each deals, (deal) ->
+                    budget = parseInt(deal.split_budget) || 0
+                    t.pipelineUnweighted += budget
+                    t.pipelineWeighted += budget * deal.stage.probability / 100
+                t.pipelineRatio = (Math.round(t.pipelineWeighted / t.pipelineUnweighted * 100) / 100) || 0
+                t.deals = deals.length
+                t.aveDealSize = t.pipelineUnweighted / deals.length
+
+            $scope.getPipelineUnweighted = ->
+                _.reduce($scope.deals, (res, deal) ->
+                    res += parseInt(deal.split_budget) || 0
+                , 0)
+
+            $scope.getPipelineWeighted = ->
+                _.reduce($scope.deals, (res, deal) ->
+                    res += parseInt(deal.split_budget * (deal.stage.probability / 100)) || 0
+                , 0)
 
             $scope.$watch 'filter.team', (team, prevTeam) ->
                 if team.id then $scope.filter.seller = emptyFilter

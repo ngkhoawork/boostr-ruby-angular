@@ -1,42 +1,66 @@
 module DFP
   class CumulativeImportService < BaseImportService
 
+    def perform
+      super
+      set_report_file
+      import_from_temp_table
+      destroy_temp_records
+    end
+
     private
 
     def parse_dfp_report
-      import_log = CsvImportLog.new(company_id: company_id, object_name: import_type)
-      import_log.set_file_source(report_file)
-
       CSV.parse(report_csv, { headers: true, header_converters: :symbol }) do |row|
         import_to_temp_table(row)
       end
+    end
+
+    def import_from_temp_table
+      rows_from_temp_table.each do |row|
+        csv_import_log.count_processed
+        object_from_temp = import_temp_row(row)
+        if object_from_temp.valid?
+          begin
+            object_from_temp.perform
+            csv_import_log.count_imported
+          rescue Exception => e
+            csv_import_log.count_failed
+            csv_import_log.log_error ['Internal Server Error', row.to_h.compact.to_s]
+            next
+          end
+        else
+          csv_import_log.count_failed
+          csv_import_log.log_error object_from_temp.errors.full_messages
+        end
+      end
+      csv_import_log.save
+    end
+
+    def set_report_file
+      csv_import_log.set_file_source(report_file)
+    end
+
+    def rows_from_temp_table
+      duplicating_rows + non_duplicated_rows
+    end
+
+    def csv_import_log
+      @csv_import_log ||= CsvImportLog.new(company_id: company_id, object_name: import_type)
+    end
+
+    def non_duplicated_rows
+      non_duplicate_items.map(&:attributes).map(&:symbolize_keys)
+    end
+
+    def duplicating_rows
       duplicated_rows = []
-      non_duplicated_rows = non_duplicate_items.map(&:attributes).map(&:symbolize_keys)
       duplicating_line_item_ids.each do |item_id|
         ser = DFP::TempCumulativeReportService.new(duplicating_line_item_id: item_id, company_id: company_id)
         merged_row = ser.get_merged_row
         duplicated_rows << merged_row
       end
-      total_rows_arr = duplicated_rows + non_duplicated_rows
-      total_rows_arr.each do |row|
-        import_log.count_processed
-        object_from_temp = import_temp_row(row)
-        if object_from_temp.valid?
-          begin
-            object_from_temp.perform
-            import_log.count_imported
-          rescue Exception => e
-            import_log.count_failed
-            import_log.log_error ['Internal Server Error', row.to_h.compact.to_s]
-            next
-          end
-        else
-          import_log.count_failed
-          import_log.log_error object_from_temp.errors.full_messages
-        end
-      end
-      import_log.save
-      destroy_temp_records
+      duplicated_rows
     end
 
     def duplicating_line_item_ids
@@ -44,22 +68,25 @@ module DFP
     end
 
     def non_duplicate_items
-      @non_duplicate_rows ||= TempCumulativeDfpReport.where('company_id = ? AND dimensionline_item_id NOT IN (?)', company_id, duplicating_line_item_ids )
+      @non_duplicate_rows ||= if duplicating_line_item_ids.any?
+                                TempCumulativeDfpReport.where('company_id = :company_id AND dimensionline_item_id NOT IN (:ids)', company_id: company_id, ids: duplicating_line_item_ids)
+                              else
+                                TempCumulativeDfpReport.where('company_id = :company_id', company_id: company_id)
+                              end
     end
 
     def import_to_temp_table(row)
       row_params = row.to_hash.merge(company_id: company_id)
-      TempCumulativeDfpReport.create(row_params)
+      TempCumulativeDfpReport.create!(row_params)
     end
 
     def destroy_temp_records
-      TempCumulativeDfpReport.where(company_id: company_id).destroy_all
+      TempCumulativeDfpReport.where(company_id: company_id).delete_all
     end
 
     def import_temp_row(row)
       goal_quantity = adjustment_service.perform(row[:dimensionattributeline_item_goal_quantity]).to_i
       total_impressions = row[:columntotal_line_item_level_impressions].to_i
-
       if total_impressions >= goal_quantity
         total_impressions = goal_quantity
       end

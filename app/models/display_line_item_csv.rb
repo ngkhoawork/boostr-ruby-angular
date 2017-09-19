@@ -65,7 +65,14 @@ class DisplayLineItemCsv
   end
 
   def io_or_tempio
-    io || tempio
+    @first_lookup = true if @first_lookup.nil?
+
+    if @first_lookup
+      @first_lookup = false
+      @parent_object = io || tempio
+    else
+      @parent_object
+    end
   end
 
   def io
@@ -78,7 +85,9 @@ class DisplayLineItemCsv
   end
 
   def io_by_io_num
-    @_io_by_io_num ||= Io.find_by(company_id: company_id, io_number: io_number)
+    if io_number
+      @_io_by_io_num ||= Io.find_by(company_id: company_id, io_number: io_number)
+    end
   end
 
   def tempio
@@ -134,7 +143,7 @@ class DisplayLineItemCsv
   end
 
   def budget_loc
-    budget.to_i
+    budget.to_f
   end
 
   def budget_delivered_loc
@@ -190,12 +199,12 @@ class DisplayLineItemCsv
   end
 
   def is_dli_date_over_io_bounds
-    return unless display_line_item.new_record? || io.present?
-    if display_line_item.start_date < io.start_date
-      errors.add(:start_date, 'start date is less than io start date')
+    return unless io.present? && display_line_item.new_record?
+    if parse_date(self.start_date) < io.start_date
+      errors.add(:start_date, 'start date can\'t be prior the IO start date')
     end
-    if display_line_item.end_date > io.end_date
-      errors.add(:start_date, 'end date is bigger than io end date')
+    if parse_date(self.end_date) > io.end_date
+      errors.add(:start_date, 'end date can\'t be after the IO end date')
     end
   end
 

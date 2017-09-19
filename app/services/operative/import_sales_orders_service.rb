@@ -1,6 +1,7 @@
 class Operative::ImportSalesOrdersService
-  def initialize(company_id, files)
+  def initialize(company_id, auto_close_deals, files)
     @company_id = company_id
+    @auto_close_deals = auto_close_deals
     @sales_order = files[:sales_order]
     @currency = files[:currency]
   end
@@ -14,7 +15,7 @@ class Operative::ImportSalesOrdersService
   end
 
   private
-  attr_reader :company_id, :sales_order, :sales_order_file, :currency, :currency_file, :currencies_list
+  attr_reader :company_id, :auto_close_deals, :sales_order, :sales_order_file, :currency, :currency_file, :currencies_list
 
   def open_file(file)
     begin
@@ -34,19 +35,50 @@ class Operative::ImportSalesOrdersService
 
   def parse_currencies
     @currencies_list = {}
-    CSV.parse(currency_file, { headers: true, header_converters: :symbol }) do |row|
+    import_log = CsvImportLog.new(company_id: company_id, object_name: 'currency', source: 'operative')
+    import_log.set_file_source(currency)
+
+    File.foreach(currency_file).with_index do |line, line_num|
+      if line_num == 0
+        @currency_headers = CSV.parse_line(line)
+        next
+      end
+
+      begin
+        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @currency_headers, header_converters: :symbol)
+      rescue Exception => e
+        import_log.count_failed
+        import_log.log_error [e.message, line]
+        next
+      end
+
       currency_id = row[:currency_id]
       currency_code = row[:currency_code]
       @currencies_list[currency_id] = currency_code
     end
+
+    import_log.save if import_log.is_error?
   end
 
   def parse_sales_order
     import_log = CsvImportLog.new(company_id: company_id, object_name: 'io', source: 'operative')
     import_log.set_file_source(sales_order)
 
-    CSV.parse(sales_order_file, { headers: true, header_converters: :symbol }) do |row|
+    File.foreach(sales_order_file).with_index do |line, line_num|
+      if line_num == 0
+        @headers = CSV.parse_line(line)
+        next
+      end
+
       import_log.count_processed
+
+      begin
+        row = CSV.parse_line(line.force_encoding("ISO-8859-1").encode("UTF-8"), headers: @headers, header_converters: :symbol)
+      rescue Exception => e
+        import_log.count_failed
+        import_log.log_error [e.message, line]
+        next
+      end
 
       if irrelevant_order(row)
         import_log.count_skipped
@@ -87,7 +119,8 @@ class Operative::ImportSalesOrdersService
       io_budget: row[:total_order_value],
       io_budget_loc: row[:total_order_value],
       io_curr_cd: get_curr_cd(row[:order_currency_id]),
-      company_id: company_id
+      company_id: company_id,
+      auto_close_deals: auto_close_deals
     )
   end
 

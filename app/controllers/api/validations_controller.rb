@@ -13,6 +13,14 @@ class Api::ValidationsController < ApplicationController
     end
   end
 
+  def account_base_fields
+    render json: account_base_fields_json
+  end
+
+  def deal_base_fields
+    render json: deal_base_fields_json
+  end
+
   def validation_params
     params.require(:validation).permit(
       {
@@ -29,5 +37,13 @@ class Api::ValidationsController < ApplicationController
 
   def company
     @company ||= current_user.company
+  end
+
+  def account_base_fields_json
+    current_user.company.validations.account_base_fields.preload(:criterion).group_by(&:object)
+  end
+
+  def deal_base_fields_json
+    current_user.company.validations.deal_base_fields.preload(:criterion)
   end
 end

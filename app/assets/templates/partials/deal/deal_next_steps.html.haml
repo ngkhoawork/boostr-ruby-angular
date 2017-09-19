@@ -39,5 +39,19 @@
 
 					.popup-modal-footer
 						%button.btn.btn-warning{ type: 'submit', ng: { disabled: 'reminderOptions.buttonDisabled' } }  Set Reminder
-	.title.mb20 Next Steps
-	%textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.next_steps", name: "next_steps", placeholder: 'Enter Next Steps', 'ng-blur': 'updateDeal()' }
+	%div{'ng-class':'{error: errors.next_steps}'}
+		%span.error-text {{errors.next_steps}}
+		.title.mb20
+			Next Steps
+			%span.star{ 'ng-if': "baseFieldRequired('next_steps')" } *
+		%textarea.editable{ 'msd-elastic': '', rows: 1, 'ng-model': "currentDeal.next_steps", name: "next_steps", placeholder: 'Enter Next Steps', 'ng-blur': 'updateDeal()' }
+	%div.custom-field-item{'ng-class':'{error: errors.next_steps_due}'}
+		%span.error-text {{errors.next_steps_due}}
+		%div.custom-field-item-label
+			%label Next Steps Due
+			%span.star{ 'ng-if': "baseFieldRequired('next_steps_due')" } *
+		%div.custom-field-item-field
+			%div
+				.datetime-field.bs-datepicker
+					%span.editable{ datepicker: { popup: 'MMMM d, y'}, ng: { class: '{"not-selected": !currentDeal.next_steps_due, "expired": currentDeal.next_steps_expired }', model: 'currentDeal.next_steps_due', click: 'nextStepsDueOpened = !nextStepsDueOpened', change: 'updateDeal()' }, 'is-open': 'nextStepsDueOpened' }
+						{{(currentDeal.next_steps_due | date) || 'Select date'}}

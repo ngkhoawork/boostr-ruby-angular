@@ -1,6 +1,6 @@
 @app.controller 'DealController',
-['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem'
-( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem) ->
+['$scope', '$routeParams', '$modal', '$filter', '$timeout', '$interval', '$location', '$anchorScroll', '$sce', 'Deal', 'Product', 'DealProduct', 'DealMember', 'DealContact', 'Stage', 'User', 'Field', 'Activity', 'Contact', 'ActivityType', 'Reminder', '$http', 'Transloadit', 'DealCustomFieldName', 'DealProductCfName', 'Currency', 'CurrentUser', 'ApiConfiguration', 'DisplayLineItem', 'Validation'
+( $scope,   $routeParams,   $modal,   $filter,   $timeout,   $interval,   $location,   $anchorScroll,   $sce,   Deal,   Product,   DealProduct,   DealMember,   DealContact,   Stage,   User,   Field,   Activity,   Contact,   ActivityType,   Reminder,   $http,   Transloadit,   DealCustomFieldName,   DealProductCfName,   Currency,   CurrentUser,   ApiConfiguration,   DisplayLineItem, Validation) ->
 
   $scope.showMeridian = true
   $scope.isAdmin = false
@@ -182,6 +182,7 @@
     $scope.initActivity()
     getDealCustomFieldNames()
     getDealProductCfNames()
+    getValidations()
 
   getDealCustomFieldNames = () ->
     DealCustomFieldName.all().then (dealCustomFieldNames) ->
@@ -191,6 +192,10 @@
     DealProductCfName.all().then (dealProductCfNames) ->
       $scope.dealProductCfNames = dealProductCfNames
       $scope.activeDealProductCfLength = (_.filter dealProductCfNames, (item) -> !item.disabled).length
+
+  getValidations = () ->
+    Validation.deal_base_fields().$promise.then (data) ->
+      $scope.base_fields_validations = data
 
   $scope.sumDealProductBudget = (index) ->
     products = $scope.currentDeal.deal_products
@@ -319,6 +324,7 @@
       deal.source_type = Field.field(deal, 'Deal Source')
       deal.close_reason = Field.field(deal, 'Close Reason')
       deal.contact_roles = Field.field(deal, 'Contact Role')
+      deal.next_steps_expired = moment(deal.next_steps_due) < moment().startOf('day')
       $scope.currentDeal = deal
       $scope.selectedStageId = deal.stage_id
       $scope.verifyMembersShare()
@@ -600,6 +606,12 @@
 
   $scope.updateDeal = ->
     $scope.errors = {}
+    ($scope.base_fields_validations || []).forEach (validation) ->
+      if $scope.currentDeal && (!$scope.currentDeal[validation.factor] && !validationValueFactorExists($scope.currentDeal, validation.factor))
+        $scope.errors[validation.factor] = validation.name + ' is required'
+
+    if Object.keys($scope.errors).length > 0 then return
+
     Deal.update(id: $scope.currentDeal.id, deal: $scope.currentDeal).then(
       (deal) ->
         $scope.ealertReminder = true
@@ -607,6 +619,14 @@
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
     )
+
+  validationValueFactorExists = (deal, factor) ->
+    if factor == 'deal_type_value'
+      deal.deal_type && deal.deal_type.option_id
+    else if factor == 'deal_source_value'
+      deal.source_type && deal.source_type.option_id
+    else if factor == 'agency'
+      deal && deal.agency_id
 
   $scope.updateDealStage = (currentDeal, stageId) ->
     $scope.errors = {}
@@ -903,7 +923,7 @@
     if ($scope.contactSearchText != searchText)
       $scope.contactSearchText = searchText
       if $scope.contactSearchText
-        Contact.all1(contact_name: $scope.contactSearchText, per: 10, page: 1).then (contacts) ->
+        Contact.all1(q: $scope.contactSearchText, per: 10, page: 1).then (contacts) ->
           $scope.contacts = contacts
       else
         Contact.all1(per: 10, page: 1).then (contacts) ->
@@ -930,6 +950,11 @@
         $scope.$emit('updated_activities')
   $scope.getType = (type) ->
     _.findWhere($scope.types, name: type)
+
+  $scope.baseFieldRequired = (factor) ->
+    if $scope.currentDeal && $scope.base_fields_validations
+      validation = _.findWhere($scope.base_fields_validations, factor: factor)
+      return validation?
 
   $scope.submitReminderForm = () ->
     $scope.reminderOptions.errors = {}

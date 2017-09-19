@@ -1,12 +1,14 @@
 class Api::DealMembersController < ApplicationController
   respond_to :json
 
+  before_filter :set_current_user, except: :index
+
   def index
     render json: deal.deal_members
   end
 
   def create
-    deal_member = deal.deal_members.build(deal_member_params)
+    deal_member = deal.deal_members.new(deal_member_params)
     if deal_member.save
       render deal
     else

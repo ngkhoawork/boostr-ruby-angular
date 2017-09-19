@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       resources :ealerts, only: [:index, :show, :create, :update, :destroy] do
         post :send_ealert
       end
+      resources :influencers, only: [:index, :show, :create, :update, :destroy]
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
@@ -84,6 +85,7 @@ Rails.application.routes.draw do
       resources :activities, only: [:index, :create, :show, :update, :destroy]
       resources :contacts, only: [:index, :create, :update, :destroy]
       resources :deals, only: [:index, :create, :update, :show, :destroy] do
+        get :won_deals, on: :collection
         resources :deal_products, only: [:create, :update, :destroy]
         resources :deal_assets, only: [:index, :update, :create, :destroy]
         resources :deal_contacts, only: [:index, :create, :update, :destroy]
@@ -137,7 +139,11 @@ Rails.application.routes.draw do
       end
     end
     resources :countries, only: [:index]
-    resources :api_configurations
+    resources :api_configurations do
+      collection do
+        get :metadata
+      end
+    end
     resources :integration_types, only: [:index]
     resources :integration_logs, only: [:index, :show] do
       post :resend_request, on: :member
@@ -207,6 +213,7 @@ Rails.application.routes.draw do
       end
     end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do
+      put :update_influencer_budget
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
     end
@@ -214,6 +221,7 @@ Rails.application.routes.draw do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do
         get :pipeline_report
+        get :pipeline_report_totals
         get :pipeline_summary_report
         get :won_deals
         get :filter_data
@@ -237,7 +245,7 @@ Rails.application.routes.draw do
     resources :deal_products, only: [:index, :create]
     resources :stages, only: [:index, :create, :show, :update]
     resources :products, only: [:index, :create, :update] do
-      resources :ad_units
+      resources :ad_units, only: [:index, :create, :update, :destroy]
     end
     resources :teams, only: [:index, :create, :show, :update, :destroy] do
       collection do
@@ -274,7 +282,12 @@ Rails.application.routes.draw do
     end
     resources :fields, only: [:index]
     resources :options, only: [:create, :update, :destroy]
-    resources :validations, only: [:index, :update]
+    resources :validations, only: [:index, :update] do
+      collection do
+        get :account_base_fields
+        get :deal_base_fields
+      end
+    end
     resources :tools, only: [:index]
     resources :notifications, only: [:index, :show, :create, :update, :destroy]
     resources :activities, only: [:index, :create, :show, :update, :destroy]
@@ -288,6 +301,10 @@ Rails.application.routes.draw do
         get :split_adjusted
         get :pipeline_summary
       end
+    end
+    resources :influencers, only: [:index, :show, :create, :update, :destroy]
+    resources :influencer_content_fees, only: [:index, :show, :create, :update, :destroy] do
+      post :update_budget
     end
     resources :sales_execution_dashboard, only: [:index] do
       collection do

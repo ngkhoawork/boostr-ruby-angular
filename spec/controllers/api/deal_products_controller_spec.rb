@@ -1,13 +1,38 @@
 require 'rails_helper'
 
-RSpec.describe Api::DealProductsController, type: :controller do
-  let!(:user) { create :user }
-  let!(:deal) { create :deal, creator: user }
-  let!(:product) { create :product, company: user.company }
-  let!(:deal_product) { create :deal_product, deal: deal, product: product }
+describe Api::DealProductsController do
+  let(:user) { create :user }
+  let(:deal) { create :deal, creator: user }
+  let(:product) { create :product, company: user.company }
+  let(:deal_product) { create :deal_product, deal: deal, product: product }
 
   before do
     sign_in user
+    User.current = user
+  end
+
+  describe 'POST #create' do
+    it 'creates audit logs for deal when budget on deal product was created' do
+      post :create,
+           deal_id: deal.id,
+           deal_product: {
+             budget_loc: '2000',
+             product_id: product.id,
+             deal_product_budgets_attributes: [
+               { budget_loc: 1000, percent_value: 50 },
+               { budget_loc: 1000, percent_value: 50 }
+             ],
+           },
+           format: :json
+
+      audit_log = deal.audit_logs.last
+
+      expect(audit_log.type_of_change).to eq 'Budget Change'
+      expect(audit_log.old_value).to eq '0'
+      expect(audit_log.new_value).to eq '2000'
+      expect(audit_log.updated_by).to eq user.id
+      expect(audit_log.changed_amount).to eq '2000'
+    end
   end
 
   describe 'PUT #update' do
@@ -20,17 +45,32 @@ RSpec.describe Api::DealProductsController, type: :controller do
       expect(json_response['deal_products'][0]['budget_loc']).to eq(62_000)
       expect(json_response['budget_loc'].to_i).to eq(62_000)
     end
+
+    it 'creates audit logs for deal when budget on deal product was updated' do
+      deal_product = create :deal_product, deal: deal, product: product, budget: 10_000
+
+      expect{
+        put :update, id: deal_product.id, deal_id: deal.id, deal_product: { budget_loc: '20000' }, format: :json
+      }.to change(AuditLog, :count).by(1)
+
+      audit_log = deal.audit_logs.last
+
+      expect(audit_log.type_of_change).to eq 'Budget Change'
+      expect(audit_log.old_value).to eq '0'
+      expect(audit_log.new_value).to eq '20000'
+      expect(audit_log.updated_by).to eq user.id
+      expect(audit_log.changed_amount).to eq '20000'
+    end
   end
 
   describe 'DELETE #destroy' do
-    let!(:deal) { create :deal, creator: user }
-    let!(:deal_product) { create :deal_product, deal: deal, product: product }
+    let!(:deal_product) { create :deal_product, deal: deal, product: product, budget: 20_000 }
 
     it 'deletes the deal product' do
-      expect do
+      expect{
         delete :destroy, id: deal_product.id, deal_id: deal.id, format: :json
         expect(response).to be_success
-      end.to change(DealProduct, :count).by(-1)
+      }.to change(DealProduct, :count).by(-1)
     end
 
     it 'updates deal\'s total budget' do
@@ -40,6 +80,21 @@ RSpec.describe Api::DealProductsController, type: :controller do
       delete :destroy, id: deal_product.id, deal_id: deal.id, format: :json
       deal.reload
       expect(deal.budget).to eq(0)      
+    end
+
+    it 'creates audit logs for deal when budget on deal product was deleted' do
+      create :deal_product, deal: deal, product: product, budget: 10_000
+      deal.update(budget: 30_000)
+
+      delete :destroy, id: deal_product.id, deal_id: deal.id, format: :json
+
+      audit_log = deal.audit_logs.last
+
+      expect(audit_log.type_of_change).to eq 'Budget Change'
+      expect(audit_log.old_value).to eq '30000'
+      expect(audit_log.new_value).to eq '10000'
+      expect(audit_log.updated_by).to eq user.id
+      expect(audit_log.changed_amount).to eq '-20000'
     end
   end
 end

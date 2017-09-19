@@ -1,3 +1,8 @@
+if ENV['RAILS_ENV'] == 'test'
+  require 'simplecov'
+  SimpleCov.start 'rails'
+end
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
 require 'spec_helper'
@@ -37,6 +42,7 @@ RSpec.configure do |config|
   config.include Warden::Test::Helpers
   config.include Helpers
   config.include WaitForAjax
+  config.include UsesTempFiles
   config.include PacingDashboardHelper
   config.before :suite do
     Warden.test_mode!

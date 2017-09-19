@@ -3,13 +3,9 @@
         Response Body
         %span.close-btn{'ng-click': 'cancel()'}
     .popup-modal-body
-        %ul#body-list
-            %json-formatter{open: '2', json: 'xmlObject'}
-
-        -#%ul{'ng-repeat': 'key, value in body'}
-        -#    {{key}}
-        -#    %br
-        -#    {{value}}
+        .table-wrapper
+            %ul#body-list
+                %json-formatter{open: '2', json: 'xmlObject'}
 
     .popup-modal-footer
         %button.btn.btn-default{'type': 'button', 'ng-click': 'cancel()'} Close

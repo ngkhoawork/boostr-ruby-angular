@@ -52,6 +52,7 @@ class Client < ActiveRecord::Base
   accepts_nested_attributes_for :account_cf
 
   validates :name, :client_type_id, presence: true
+  validate  :base_fields_presence
 
   before_create :ensure_client_member
 
@@ -528,7 +529,7 @@ class Client < ActiveRecord::Base
   end
 
   def client_type
-    company.fields.where(name: 'Client Type').first.options.find(self.client_type_id)
+    company.fields.where(name: 'Client Type').first.options.find_by_id(self.client_type_id)
   end
   #
   # def client_category
@@ -545,6 +546,17 @@ class Client < ActiveRecord::Base
   #   company.fields.where(name: 'Segment').first.options.where(self.client_segment_id) if self.client_segment_id.present?
   #   nil
   # end
+
+  def base_field_validations
+    self.company.validations_for("#{self.client_type.try(:name)} Base Field")
+  end
+
+  def base_fields_presence
+    if self.company_id.present? && self.client_type_id.present?
+      factors = base_field_validations.joins(:criterion).where('values.value_boolean = ?', true).pluck(:factor)
+      self.validates_presence_of(factors) if factors.length > 0
+    end
+  end
 
   def global_type_id
     if self.client_type_id

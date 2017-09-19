@@ -75,6 +75,7 @@ group :test do
   gem 'shoulda-matchers', require: false
   gem 'vcr'
   gem 'webmock'
+  gem 'simplecov', require: false
 end
 
 group :development do
