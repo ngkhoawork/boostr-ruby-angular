@@ -1,12 +1,16 @@
 (->
 	angular.module('zFilterModule', [])
 
-	.controller 'ZFilterController', ['$scope', 'localStorageService', ($scope, LS) ->
-		reportName = _.last(window.location.pathname.split('/'))
-		$scope.recentQueries = LS.get(reportName)
+	.controller 'ZFilterController', ['$scope', 'localStorageService', 'ReportQuery', ($scope, LS, ReportQuery) ->
+		this.reportName = _.last(window.location.pathname.split('/'))
+		$scope.recentQueries = LS.get(this.reportName)
 		$scope.savedQueries = []
-		console.log $scope.recentQueries
+		(getSavedQueries = ->
+			ReportQuery.get(query_type: this.reportName).then (data) ->
+				$scope.savedQueries = data
+		)()
 		$scope.isFilterApplied = false
+		$scope.$on 'report_queries_updated', -> getSavedQueries()
 		this.query = {}
 		this.loadedQuery = $scope.recentQueries && $scope.recentQueries[0]
 		this.saveRecentQuery = ->
@@ -15,9 +19,15 @@
 				!angular.equals this.query, q
 			$scope.recentQueries.unshift(angular.copy this.query)
 			if $scope.recentQueries.length > 5 then $scope.recentQueries.pop()
-			LS.set(reportName, $scope.recentQueries)
+			LS.set(this.reportName, $scope.recentQueries)
 		this.saveQuery = (query) ->
-			$scope.savedQueries.unshift query
+#			$scope.savedQueries.unshift item
+			if query.id
+				ReportQuery.update(id: query.id, filter_query: query)
+			else
+				ReportQuery.save(filter_query: query)
+		this.deleteQuery = (query) ->
+			ReportQuery.delete(id: query.id)
 		this.appliedQuery = null
 		this.setQuery = (key, value) ->
 			this.query[key] = value
@@ -28,7 +38,7 @@
 		return this
 	]
 
-	.directive 'zFilter', ->
+	.directive 'zFilter', ['$timeout', ($timeout) ->
 		restrict: 'E'
 		replace: true
 		transclude: true
@@ -38,8 +48,20 @@
 		templateUrl: 'modules/z_filter.html'
 		link: ($scope, el, attrs, ctrl, trans) ->
 			trans (clone) -> el.find('.element-to-replace').replaceWith(clone)
-			$scope.onOpenQueryDropdown = (e, isOpen) ->
-				console.log arguments
+			$scope.isQueryDropdownOpen = false
+			$scope.isQueryFormOnEdit = true
+			emptySavedQueryForm =
+				name: ''
+				query_type: ctrl.reportName
+				filter_params: {}
+				default: false
+				global: false
+			(resetQueryForm = ->
+				$scope.isQueryFormOnEdit = false
+				$scope.savedQueryForm = angular.copy emptySavedQueryForm
+			)()
+			$scope.onQueryDropdownToggle = (isOpen) ->
+				if !isOpen then resetQueryForm()
 			$scope.applyFilter = ->
 				$scope.onApply(ctrl.query)
 				ctrl.appliedQuery = angular.copy ctrl.query
@@ -47,7 +69,21 @@
 				ctrl.checkApplied()
 			$scope.saveQuery = (e, query) ->
 				e.stopPropagation()
-#				ctrl.saveQuery(query)
+				$scope.isQueryFormOnEdit = true
+				$scope.savedQueryForm.filter_params = query
+				$timeout -> angular.element('.query-name-input').focus()
+			$scope.submitQueryForm = ->
+				ctrl.saveQuery($scope.savedQueryForm)
+				resetQueryForm()
+			$scope.editQuery = (e, query) ->
+				e.stopPropagation()
+				$scope.isQueryFormOnEdit = true
+				$scope.savedQueryForm = angular.copy query
+			$scope.deleteQuery = (e, query) ->
+				e.stopPropagation()
+				ctrl.deleteQuery(query)
+			$scope.cancelQueryForm = ->
+				resetQueryForm()
 			$scope.loadQuery = (query) ->
 				ctrl.loadedQuery = query
 				$scope.$broadcast 'loadQuery', query
@@ -58,7 +94,7 @@
 				$scope.$broadcast 'resetFilter'
 			$scope.objLength = (obj) -> _.keys(obj).length
 			$scope.compareQueries = (query) -> angular.equals query, ctrl.query
-
+	]
 	.directive 'zFilterField', ->
 		restrict: 'E'
 		replace: true
@@ -144,7 +180,8 @@
 							_.each $scope.saveAs, (valueKey, queryKey) ->
 								value = _.pluck($scope.selected, valueKey) if $scope.selected.length
 								ctrl.setQuery queryKey, value
-						$scope.removeFilter = (item) ->
+						$scope.removeFilter = (e, item) ->
+							e.stopPropagation();
 							$scope.selected = _.reject $scope.selected, (v) -> v.id == item.id
 							_.each $scope.saveAs, (valueKey, queryKey) ->
 								value = _.pluck($scope.selected, valueKey) if $scope.selected.length
