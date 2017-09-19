@@ -27,11 +27,13 @@ class FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery
     end
 
     def by_agencies(agencies_ids)
-      where('advertiser_agency_revenue_facts.agency_id in (:agencies_ids)', agencies_ids: agencies_ids)
+      where('advertiser_agency_revenue_facts.agency_id in (:agencies_ids) AND advertiser_agency_revenue_facts.agency_id IS NOT NULL',
+            agencies_ids: agencies_ids)
     end
 
     def by_related_advertisers(advertisers_ids)
-      where('advertiser_agency_revenue_facts.advertiser_id in (:advertisers_ids)', advertisers_ids: advertisers_ids)
+      where('advertiser_agency_revenue_facts.advertiser_id in (:advertisers_ids)',
+            advertisers_ids: advertisers_ids)
     end
 
     def by_company_id(id)

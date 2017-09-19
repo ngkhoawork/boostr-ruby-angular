@@ -8,7 +8,7 @@ class FactTables::AccountProductPipelineFacts::FilteredQuery
 
   def call
     return relation unless options.any?
-    relation.by_time_dimension_date_range(options[:start_date], options[:end_date])
+    relation.by_time_dimension_date_range(options[:end_date])
             .by_holding_company_id(options[:holding_company_id])
             .by_account_id(options[:account_id])
             .by_company_id(options[:company_id])
@@ -19,7 +19,7 @@ class FactTables::AccountProductPipelineFacts::FilteredQuery
   attr_reader :relation, :options
 
   module FactScopes
-    def by_time_dimension_date_range(start_date, end_date)
+    def by_time_dimension_date_range(start_date = Date.today.beginning_of_month, end_date)
       where('time_dimensions.start_date >= :start_date
              AND time_dimensions.end_date <= :end_date
              AND time_dimensions.days_length <= 31',
