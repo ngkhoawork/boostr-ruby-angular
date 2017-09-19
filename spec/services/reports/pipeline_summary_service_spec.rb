@@ -3,9 +3,10 @@ require 'rails_helper'
 describe Report::PipelineSummaryService do
   before do
     field = create :field, company: company
-    @deal = create :deal, company: company
+    deal = create :deal, company: company
     @option = create :option, company: company, field: field
-    @value = create :value, company: company, field: field, subject: @deal, option: @option
+    
+    create :value, company: company, field: field, subject: deal, option: @option
   end
 
   it "pipeline summary service" do
