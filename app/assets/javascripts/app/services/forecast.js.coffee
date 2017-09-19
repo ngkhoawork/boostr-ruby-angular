@@ -19,5 +19,17 @@
     run_forecast_calculation:
       method: 'POST'
       url: '/api/forecasts/run_forecast_calculation'
-  return resource
+
+  run_forecast_calculation_resource = $resource '/api/forecasts/run_forecast_calculation'
+  
+  @run_forecast_calculation = () ->
+    deferred = $q.defer()
+    resource.run_forecast_calculation(
+      (resp) ->
+        deferred.resolve(resp)
+      (error) ->
+        deferred.reject(error)
+    )
+    deferred.promise
+  return
 ]

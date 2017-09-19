@@ -104,17 +104,23 @@ class Api::ForecastsController < ApplicationController
   end
 
   def run_forecast_calculation
-    time_period_ids = company.time_periods.collect{|item| item.id},
-    product_ids = company.products.collect{|item| item.id},
-    user_ids = company.users.collect{|item| item.id}
-    stage_ids = company.stages.collect{|item| item.id}
-    deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, stage_ids: stage_ids, user_ids: user_ids}
-    io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
+    current_job = ForecastCalculationLog.find_by(company_id: current_user.company_id, finished: false)
+    if current_job.present?
+      render json: { error: "There is currently running forecast calculation job now." }, status: :unprocessable_entity
+    else
+      time_period_ids = company.time_periods.collect{|item| item.id},
+      product_ids = company.products.collect{|item| item.id},
+      user_ids = company.users.collect{|item| item.id}
+      stage_ids = company.stages.collect{|item| item.id}
+      deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, stage_ids: stage_ids, user_ids: user_ids}
+      io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
 
-    ForecastRevenueCalculatorWorker.perform_async(io_change)
-    ForecastPipelineCalculatorWorker.perform_async(deal_change)
+      job = ForecastCalculationLog.create(company_id: current_user.company_id, start_date: DateTime.now, end_date: nil, finished: false)
+      ForecastRevenueCalculatorWorker.perform_async(io_change)
+      ForecastPipelineCalculatorWorker.perform_async(deal_change, current_user.company_id)
 
-    render nothing: true
+      render nothing: true
+    end
   end
 
   protected
