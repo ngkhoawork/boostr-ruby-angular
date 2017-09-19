@@ -14,7 +14,7 @@ class Initiatives::SmartReportSerializer < ActiveModel::Serializer
   end
 
   def goal_probability
-    return 'N/A' if !goal || goal == 0
+    return 'N/A' if goal.nil? || goal.to_f == 0
     (pipeline + won) / (goal / 100)
   end
 
