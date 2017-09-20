@@ -29,7 +29,7 @@
   
   $scope.runForecastCalculation = () ->
     if confirm("Are you sure run the forecast calculation? This will take upto several minutes.")
-      Forecast.run_forecast_calculation().then(
+      Forecast.run_forecast_calculation().$promise.then(
         (response) ->
         (error) ->
           $scope.showWarningModal = (message) ->
