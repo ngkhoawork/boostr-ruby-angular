@@ -48,7 +48,7 @@ describe Api::FilterQueriesController do
     end
   end
 
-  describe 'PUT #create' do
+  describe 'PUT #update' do
     it 'updates filter query with valid params successfully' do
       put :update, id: filter_query.id, filter_query: valid_filter_query_params, format: :json
 
