@@ -1,6 +1,7 @@
 class Operative::ImportSalesOrdersService
-  def initialize(company_id, files)
+  def initialize(company_id, auto_close_deals, files)
     @company_id = company_id
+    @auto_close_deals = auto_close_deals
     @sales_order = files[:sales_order]
     @currency = files[:currency]
   end
@@ -14,7 +15,7 @@ class Operative::ImportSalesOrdersService
   end
 
   private
-  attr_reader :company_id, :sales_order, :sales_order_file, :currency, :currency_file, :currencies_list
+  attr_reader :company_id, :auto_close_deals, :sales_order, :sales_order_file, :currency, :currency_file, :currencies_list
 
   def open_file(file)
     begin
@@ -118,7 +119,8 @@ class Operative::ImportSalesOrdersService
       io_budget: row[:total_order_value],
       io_budget_loc: row[:total_order_value],
       io_curr_cd: get_curr_cd(row[:order_currency_id]),
-      company_id: company_id
+      company_id: company_id,
+      auto_close_deals: auto_close_deals
     )
   end
 

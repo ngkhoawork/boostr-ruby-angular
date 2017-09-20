@@ -11,7 +11,7 @@ class IoCsv
 
   attr_accessor(:io_external_number, :io_name, :io_start_date,
     :io_end_date, :io_advertiser, :io_agency, :io_budget,
-    :io_budget_loc, :io_curr_cd, :company_id)
+    :io_budget_loc, :io_curr_cd, :company_id, :auto_close_deals)
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -21,7 +21,7 @@ class IoCsv
 
   def perform
     return self.errors.full_messages unless self.valid?
-    close_deal_from_io_number
+    close_deal_from_io_number if auto_close_deals
     if io.present?
       update_io
     else

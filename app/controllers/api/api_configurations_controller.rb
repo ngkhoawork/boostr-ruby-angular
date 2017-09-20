@@ -66,6 +66,9 @@ class Api::ApiConfigurationsController < ApplicationController
                                               asana_connect_details_attributes: [:id,
                                                                                  :project_name,
                                                                                  :workspace_name
+                                                                                ],
+                                              datafeed_configuration_details_attributes: [:id,
+                                                                                 :auto_close_deals
                                                                                 ])
   end
 end
