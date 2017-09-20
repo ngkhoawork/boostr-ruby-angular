@@ -97,7 +97,9 @@ class Api::AgencyDashboardsController < ApplicationController
   def advertisers_without_spend
     FactTables::AdvertisersWithoutSpendQuery.new(filtered_open_pipelines,
                                                  advertiser_ids: related_advertisers_ids,
-                                                 agencies_ids: agencies_ids).call
+                                                 agencies_ids: agencies_ids,
+                                                 start_date: filter_params[:start_date],
+                                                 end_date: filter_params[:end_date]).call
   end
 
   def agencies_ids

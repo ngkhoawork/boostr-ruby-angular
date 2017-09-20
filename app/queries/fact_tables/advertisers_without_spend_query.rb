@@ -25,7 +25,14 @@ class FactTables::AdvertisersWithoutSpendQuery
   end
 
   def advertisers_with_revenue_ids
-    AdvertiserAgencyRevenueFact.where(advertiser_id: advertiser_ids, agency_id: agencies_ids).uniq.pluck(:advertiser_id)
+    AdvertiserAgencyRevenueFact.joins(:time_dimension)
+        .where('advertiser_id in (?) AND agency_id in (?)
+                AND time_dimensions.start_date >= ?
+                AND time_dimensions.end_date <= ?',
+                advertiser_ids,
+                agencies_ids,
+                start_date,
+                end_date).uniq.pluck(:advertiser_id)
   end
 
   def advertiser_ids
@@ -34,6 +41,14 @@ class FactTables::AdvertisersWithoutSpendQuery
 
   def agencies_ids
     options[:agencies_ids]
+  end
+
+  def start_date
+    options[:start_date]
+  end
+
+  def end_date
+    options[:end_date]
   end
 
 end
