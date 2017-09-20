@@ -28,8 +28,7 @@ class FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery
 
 
     def by_agencies(agencies_ids)
-      where('advertiser_agency_pipeline_facts.agency_id in (:agencies_ids)
-             AND advertiser_agency_pipeline_facts.agency_id IS NOT NULL',
+      where('advertiser_agency_pipeline_facts.agency_id in (:agencies_ids)',
              agencies_ids: agencies_ids)
     end
 

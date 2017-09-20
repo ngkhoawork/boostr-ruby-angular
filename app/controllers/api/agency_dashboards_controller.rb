@@ -80,13 +80,13 @@ class Api::AgencyDashboardsController < ApplicationController
 
   def filtered_revenues_by_accounts
     @filtered_revenues_by_accounts ||= FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
-                                                                                                                                        advertisers_ids: related_advertisers_ids,
+                                                                                                                                        advertisers_ids: related_advertisers_with_agencies_in_ios,
                                                                                                                                         agencies_ids: agencies_ids)).call
   end
 
   def filtered_pipelines_by_accounts
     @filtered_pipelines_by_accounts ||= FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery.new(filter_params.merge(company_id: current_user_company_id,
-                                                                                                                                           advertisers_ids: related_advertisers_ids,
+                                                                                                                                           advertisers_ids: related_advertisers_with_agencies_in_ios,
                                                                                                                                            agencies_ids: agencies_ids)).call
   end
 
@@ -95,7 +95,7 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   def advertisers_without_spend
-    FactTables::AdvertisersWithoutSpendQuery.new(filtered_pipelines_by_accounts,
+    FactTables::AdvertisersWithoutSpendQuery.new(filtered_open_pipelines,
                                                  advertiser_ids: related_advertisers_ids,
                                                  agencies_ids: agencies_ids).call
   end
@@ -106,8 +106,22 @@ class Api::AgencyDashboardsController < ApplicationController
                                                                             current_user_company_id).pluck(:id)
   end
 
+  def filtered_open_pipelines
+    @filtered_open_pipelines ||= FactTables::AccountRevenues::FilteredQuery.new(filter_params.merge(company_id: current_user_company_id,
+                                                                                                    advertiser_ids: related_advertisers_ids)).call
+  end
+
+  def related_advertisers
+    @related_advertisers_ids ||= AccountDimension.related_advertisers_to_agencies(agencies_ids)
+
+  end
+
   def related_advertisers_ids
-    @related_advertisers_ids ||= AccountDimension.related_advertisers_to_agencies(agencies_ids).ids
+    related_advertisers.ids
+  end
+
+  def related_advertisers_with_agencies_in_ios
+    related_advertisers.related_advertisers_with_agency_in_io.ids
   end
 
   def current_user_company_id

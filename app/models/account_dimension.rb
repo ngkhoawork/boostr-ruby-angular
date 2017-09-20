@@ -26,15 +26,13 @@ class AccountDimension < ActiveRecord::Base
   has_many :account_product_revenue_facts, dependent: :destroy
 
 
-  scope :agencies_by_holding_company_or_agency_id, Proc.new { |holding_company_id, account_id, company_id|
-    AgencyByHoldingIdOrAgencyIdQuery.new(holding_company_id: holding_company_id, account_id: account_id, company_id: company_id).call
-  }
-
-  # CLASS METHODS
-  class << self
-    def related_advertisers_to_agencies(agency_ids)
-      joins(:advertisers).where('client_connections.agency_id in (?)', agency_ids).distinct
-    end
+  scope :agencies_by_holding_company_or_agency_id, -> (holding_company_id, account_id, company_id) do
+    AgencyByHoldingIdOrAgencyIdQuery.new(holding_company_id: holding_company_id,
+                                         account_id: account_id,
+                                         company_id: company_id).call
   end
+
+  scope :related_advertisers_to_agencies, -> (agency_ids) { joins(:advertisers).where('client_connections.agency_id in (?)', agency_ids).distinct }
+  scope :related_advertisers_with_agency_in_io, -> { joins(:advertiser_revenue_facts).where('advertiser_agency_revenue_facts.agency_id IS NOT NULL') }
 
 end

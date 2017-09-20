@@ -73,6 +73,8 @@ class Client < ActiveRecord::Base
   scope :without_related_clients, -> contact_id do
     joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id }).distinct
   end
+  scope :max_share_user, ->(client_id) { User.joins(:client_members).where('client_members.client_id = ?', client_id).order('client_members.share DESC').limit(1) }
+
 
   ADVERTISER = 10
   AGENCY = 11
