@@ -14,7 +14,9 @@ class Api::FilterQueriesController < ApplicationController
   end
 
   def update
-    if filter_query.update(filter_query_params)
+    filter_query.assign_attributes(filter_query_params)
+
+    if filter_query.save
       render json: filter_query
     else
       render json: { errors: filter_query.errors.messages }, status: :unprocessable_entity
@@ -34,7 +36,7 @@ class Api::FilterQueriesController < ApplicationController
   end
 
   def filter_query_params
-    params.require(:filter_query).permit(:filter_params, :name, :query_type, :global)
+    params.require(:filter_query).permit(:name, :query_type, :global, :default, :filter_params)
   end
 
   def filter_queries
