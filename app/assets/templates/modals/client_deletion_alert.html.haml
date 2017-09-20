@@ -1,0 +1,11 @@
+#client_deletion_alert_modal.popup-modal
+    %form.form-horizontal
+        .popup-modal-header
+            Important
+        .popup-modal-body.modal-body{style: 'padding: 0'}
+            .alerts
+                .alert.alert-danger
+                    %i.fa.fa-warning
+                    {{error}}
+        .popup-modal-footer{style: 'text-align: center'}
+            %button.btn.btn-default{'type': 'button', 'ng-click': 'close()'} Ok
