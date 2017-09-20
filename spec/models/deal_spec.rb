@@ -496,6 +496,16 @@ describe Deal do
     end
   end
 
+  describe 'to_csv' do
+    let(:company) { create :company }
+    let(:deal) { create :deal, company: company,  name: 'Deal 1' }
+
+    it 'returns the contents of deal zip' do
+      csv = Deal.to_csv(company.deals, company)
+      expect(csv).not_to be_nil
+    end
+  end
+
   describe '#import' do
     let!(:user) { create :user }
     let!(:another_user) { create :user }
