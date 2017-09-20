@@ -350,7 +350,7 @@
 			barHeight = 25
 			barMargin = 25
 			barColor = '#3498DB'
-			totalColor = '#f1c40f'
+#			totalColor = '#f1c40f'
 			width = chartContainer.width() - margin.left - margin.right || 800
 			height = data.length * (barHeight + barMargin)
 
@@ -388,7 +388,7 @@
 				.append('g')
 				.attr 'class', 'category-bar'
 			barsWithData.append('path')
-				.attr 'fill', (d, i) -> if i then barColor else totalColor
+				.attr 'fill', barColor
 				.attr 'class', 'win-rate-rect'
 				.attr 'd', (d) -> if d.value > 0 then rightRoundedRect(0, (y d.name) + y.rangeBand() / 2 - barHeight / 2, x(d.value), barHeight, 5)
 
