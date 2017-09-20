@@ -1,18 +1,20 @@
 require 'rails_helper'
 
 RSpec.describe Api::InfluencerContentFeesController, type: :controller do
-	let(:company) { create :company }
-	let(:user) { create :user, company: company }
-	let(:influencer) { create :influencer, company: company}
-	let(:content_fee) { create :content_fee }
+  let(:company) { create :company }
+  let(:user) { create :user, company: company }
+  let(:influencer) { create :influencer, company: company}
+  let(:io) { create :io, company: company }
+  let(:product) { create :product, company: company }
+  let(:content_fee) { create :content_fee, io: io, product: product }
 
   before do
     sign_in user
     User.current = user
   end
 
-	describe 'POST #create' do
-		it 'creates a new influencer_content_fee and returns success' do
+  describe 'POST #create' do
+    it 'creates a new influencer_content_fee and returns success' do
       expect do
         post :create, influencer_content_fee: attributes_for(:influencer_content_fee, influencer_id: influencer.id, content_fee_id: content_fee.id), format: :json
         expect(response).to be_success
@@ -36,12 +38,12 @@ RSpec.describe Api::InfluencerContentFeesController, type: :controller do
     end
 
     it 'runs sidekiq worker and returns message' do
-    	expect do
-	    	post :create, file: { s3_file_path: 'Fake' }, format: :json
-	    	expect(response).to be_success
-	      response_json = JSON.parse(response.body)
-	      expect(response_json['message']).to eq('Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)')
-	    end.to change(CsvImportWorker.jobs, :size).by(1)
+      expect do
+        post :create, file: { s3_file_path: 'Fake' }, format: :json
+        expect(response).to be_success
+        response_json = JSON.parse(response.body)
+        expect(response_json['message']).to eq('Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)')
+      end.to change(CsvImportWorker.jobs, :size).by(1)
     end
-	end
+  end
 end
