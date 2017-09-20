@@ -7,7 +7,7 @@
 		$scope.savedQueries = []
 		(getSavedQueries = ->
 			ReportQuery.get(query_type: this.reportName).then (data) ->
-				$scope.savedQueries = data
+				$scope.savedQueries = _.map data, (q) -> q.filter_params = JSON.parse(q.filter_params); q
 		)()
 		$scope.isFilterApplied = false
 		$scope.$on 'report_queries_updated', -> getSavedQueries()
@@ -22,6 +22,7 @@
 			LS.set(this.reportName, $scope.recentQueries)
 		this.saveQuery = (query) ->
 #			$scope.savedQueries.unshift item
+			query.filter_params = angular.toJson query.filter_params
 			if query.id
 				ReportQuery.update(id: query.id, filter_query: query)
 			else
@@ -70,7 +71,7 @@
 			$scope.saveQuery = (e, query) ->
 				e.stopPropagation()
 				$scope.isQueryFormOnEdit = true
-				$scope.savedQueryForm.filter_params = query
+				$scope.savedQueryForm.filter_params = angular.toJson query
 				$timeout -> angular.element('.query-name-input').focus()
 			$scope.submitQueryForm = ->
 				ctrl.saveQuery($scope.savedQueryForm)
