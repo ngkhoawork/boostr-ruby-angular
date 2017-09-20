@@ -180,6 +180,21 @@
         metadata: ->
           false
 
+  $scope.showUploadInfluencersModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/influencer_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/influencers'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')
     return true
@@ -202,6 +217,10 @@
 
   $scope.exportDealProductMonhtlyBudget = ->
     $window.open('/api/deal_product_budgets.csv')
+    return true
+
+  $scope.exportInfluencers = ->
+    $window.open('/api/influencers.csv')
     return true
 
   $scope.showBodyModal = (body) ->
