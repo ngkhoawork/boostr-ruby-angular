@@ -1,7 +1,7 @@
 @service.service 'ReportQuery',
 ['$resource', '$rootScope', '$q', ($resource, $rootScope, $q) ->
 
-	resource = $resource '/api/filter_queries', {id: '@id'},
+	resource = $resource '/api/filter_queries/:id', {id: '@id'},
 		get:
 			method: 'GET'
 			isArray: true
