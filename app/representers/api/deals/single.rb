@@ -3,7 +3,7 @@ class API::Deals::Single < API::Single
 
   properties :id, :name, :advertiser_name, :start_date
   property :new_value, exec_context: :decorator
-  property :old_value, exec_context: :decorator
+  property :old_value, exec_context: :decorator, if: -> (options) { options[:new].eql? false }
   property :budget, exec_context: :decorator
   property :created_at, as: :date, if: -> (options) { options[:new].eql? true }
   property :closed_at, as: :date, if: -> (options) { options[:new].eql? false }
