@@ -46,6 +46,21 @@ class Api::InfluencerContentFeesController < ApplicationController
   end
 
   def create
+    new_influencer_content_fee = influencer_content_fees.new(influencer_content_fee_params)
+    
+    if new_influencer_content_fee.save
+      render json: new_influencer_content_fee.as_json({include: {
+          influencer: {},
+          currency: {},
+          content_fee: {}
+        }
+      }), status: :created
+    else
+      render json: { errors: influencer_content_fee.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  def import
     if params[:file].present?
       CsvImportWorker.perform_async(
         params[:file][:s3_file_path],
@@ -55,23 +70,9 @@ class Api::InfluencerContentFeesController < ApplicationController
       )
 
       render json: {
-        message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
+        message: 'Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)'
       }, status: :ok
-    else
-      new_influencer_content_fee = influencer_content_fees.new(influencer_content_fee_params)
-      
-      if new_influencer_content_fee.save
-        render json: new_influencer_content_fee.as_json({include: {
-            influencer: {},
-            currency: {},
-            content_fee: {}
-          }
-        }), status: :created
-      else
-        render json: { errors: influencer_content_fee.errors.messages }, status: :unprocessable_entity
-      end
     end
-    
   end
 
   def show

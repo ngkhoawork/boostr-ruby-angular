@@ -203,7 +203,7 @@
       keyboard: false
       resolve:
         api_url: ->
-          '/api/influencer_content_fees'
+          '/api/influencer_content_fees/import'
         custom_fields_api: ->
           undefined
         metadata: ->
