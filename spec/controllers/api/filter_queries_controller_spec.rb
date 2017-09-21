@@ -46,6 +46,14 @@ describe Api::FilterQueriesController do
         post :create, filter_query: invalid_filter_query_params, format: :json
       }.to_not change(FilterQuery, :count)
     end
+
+    it 'change previous default filter query if new one became default' do
+      filter_query.update(default: true)
+
+      post :create, filter_query: valid_filter_query_params.merge(default: true), format: :json
+
+      expect(filter_query.reload.default).to be_falsey
+    end
   end
 
   describe 'PUT #update' do
@@ -65,6 +73,14 @@ describe Api::FilterQueriesController do
 
       expect(filter_query.name).not_to eq invalid_filter_query_params[:name]
       expect(filter_query.query_type).not_to eq invalid_filter_query_params[:query_type]
+    end
+
+    it 'change previous default filter query if update default value' do
+      filter_query = create :filter_query, user: user, company: company, default: true
+
+      post :create, filter_query: valid_filter_query_params.merge(default: true), format: :json
+
+      expect(filter_query.reload.default).to be_falsey
     end
   end
 
