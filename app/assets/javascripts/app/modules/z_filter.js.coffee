@@ -2,24 +2,25 @@
 	angular.module('zFilterModule', [])
 
 	.controller 'ZFilterController', ['$scope', 'localStorageService', 'ReportQuery', ($scope, LS, ReportQuery) ->
-		this.reportName = _.last(window.location.pathname.split('/'))
-		$scope.recentQueries = LS.get(this.reportName)
+		ctrl = this
+		ctrl.reportName = _.last(window.location.pathname.split('/'))
+		$scope.recentQueries = LS.get(ctrl.reportName)
 		$scope.savedQueries = []
 		(getSavedQueries = ->
-			ReportQuery.get(query_type: this.reportName).then (data) ->
+			ReportQuery.get(query_type: ctrl.reportName).then (data) ->
 				$scope.savedQueries = _.map data, (q) -> q.filter_params = JSON.parse(q.filter_params); q
 		)()
 		$scope.isFilterApplied = false
 		$scope.$on 'report_queries_updated', -> getSavedQueries()
-		this.query = {}
-		this.loadedQuery = $scope.recentQueries && $scope.recentQueries[0]
-		this.saveRecentQuery = ->
-			if _.isEmpty this.query then return
+		ctrl.query = {}
+		ctrl.loadedQuery = $scope.recentQueries && $scope.recentQueries[0]
+		ctrl.saveRecentQuery = ->
+			if _.isEmpty ctrl.query then return
 			$scope.recentQueries = _.filter $scope.recentQueries, (q) =>
-				!angular.equals this.query, q
-			$scope.recentQueries.unshift(angular.copy this.query)
+				!angular.equals ctrl.query, q
+			$scope.recentQueries.unshift(angular.copy ctrl.query)
 			if $scope.recentQueries.length > 5 then $scope.recentQueries.pop()
-			LS.set(this.reportName, $scope.recentQueries)
+			LS.set(ctrl.reportName, $scope.recentQueries)
 		this.saveQuery = (query) ->
 #			$scope.savedQueries.unshift item
 			query.filter_params = angular.toJson query.filter_params
@@ -79,6 +80,7 @@
 			$scope.editQuery = (e, query) ->
 				e.stopPropagation()
 				$scope.isQueryFormOnEdit = true
+				$timeout -> angular.element('.query-name-input').focus()
 				$scope.savedQueryForm = angular.copy query
 			$scope.deleteQuery = (e, query) ->
 				e.stopPropagation()
