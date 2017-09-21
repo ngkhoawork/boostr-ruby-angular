@@ -20,16 +20,17 @@
 					%div.query-subtitle
 						SAVED SEARCHES
 					%div.query-line.new-line{'ng-show': 'isQueryFormOnEdit'}
-						.form-group
-							%label Query name
-							%input.query-name-input.form-control{'ng-model': 'savedQueryForm.name'}
-						%div.query-actions
-							%i.fa.z-icon.default{'ng-click': 'savedQueryForm.default = !savedQueryForm.default', 'ng-class': '{"fa-star-o": !savedQueryForm.default, "fa-star": savedQueryForm.default}'}
-							%i.fa.fa-check.z-icon{'ng-click': 'submitQueryForm()'}
-							%i.fa.fa-close.z-icon{'ng-click': 'cancelQueryForm()'}
-						%div.toggle
-							%label.mr8 Is Public
-							%z-toggle{'ng-model': 'savedQueryForm.global'}
+						%form{'ng-submit': 'submitQueryForm()'}
+							.form-group
+								%label Query name
+								%input.query-name-input.form-control{'ng-model': 'savedQueryForm.name'}
+							%div.query-actions
+								%i.fa.z-icon.default{'ng-click': 'savedQueryForm.default = !savedQueryForm.default', 'ng-class': '{"fa-star-o": !savedQueryForm.default, "fa-star": savedQueryForm.default}'}
+								%i.fa.fa-check.z-icon{'ng-click': 'submitQueryForm()'}
+								%i.fa.fa-close.z-icon{'ng-click': 'cancelQueryForm()'}
+							%div.toggle
+								%label.mr8 Is Public
+								%z-toggle{'ng-model': 'savedQueryForm.global'}
 					%div.query-line.empty{'ng-hide': 'savedQueries.length || isQueryFormOnEdit'}
 						Empty
 					%div.query-line.saved-line{'ng-hide': 'isQueryFormOnEdit', ng: {repeat: 'query in savedQueries track by $index', click: 'loadQuery(query)'}}
