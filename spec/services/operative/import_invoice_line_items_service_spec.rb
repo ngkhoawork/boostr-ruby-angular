@@ -27,7 +27,8 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
       revenue_calculation_pattern: default_pattern,
       company_id: company.id
     ).and_return(line_item_budget_csv)
-    expect(line_item_budget_csv).to receive(:valid?).and_return(:true)
+    expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
+    expect(line_item_budget_csv).to receive(:valid?).and_return(true)
     expect(line_item_budget_csv).to receive(:perform)
     subject.perform
   end
@@ -43,6 +44,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
           revenue_calculation_pattern: default_pattern,
           company_id: company.id
         ).and_return(line_item_budget_csv)
+        expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
         expect(line_item_budget_csv).to receive(:valid?).and_return(:true)
         expect(line_item_budget_csv).to receive(:perform)
         subject.perform
@@ -61,6 +63,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
           revenue_calculation_pattern: recognized_revenue_pattern,
           company_id: company.id
         ).and_return(line_item_budget_csv)
+        expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
         expect(line_item_budget_csv).to receive(:valid?).and_return(:true)
         expect(line_item_budget_csv).to receive(:perform)
         subject(recognized_revenue_pattern).perform
@@ -79,6 +82,7 @@ RSpec.describe Operative::ImportInvoiceLineItemsService, datafeed: :true do
           revenue_calculation_pattern: invoice_amount_pattern,
           company_id: company.id
         ).and_return(line_item_budget_csv)
+        expect(line_item_budget_csv).to receive(:irrelevant?).and_return(false)
         expect(line_item_budget_csv).to receive(:valid?).and_return(:true)
         expect(line_item_budget_csv).to receive(:perform)
         subject(invoice_amount_pattern).perform

@@ -50,6 +50,7 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       ).and_return(line_item_csv)
       subject.perform
     end
+  end
 
   xit 'maps CPM product to DisplayLineItemCsv' do
     allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_csv)
