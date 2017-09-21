@@ -39,7 +39,7 @@ RSpec.describe Api::InfluencerContentFeesController do
 
     it 'runs sidekiq worker and returns message' do
       expect do
-        post :create, file: { s3_file_path: 'Fake' }, format: :json
+        post :import, file: { s3_file_path: 'Fake' }, format: :json
         expect(response).to be_success
         response_json = JSON.parse(response.body)
         expect(response_json['message']).to eq('Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)')
