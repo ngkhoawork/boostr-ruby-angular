@@ -3,6 +3,7 @@ require 'rails_helper'
 describe Csv::PipelineSummaryReportDecorator do
   before do
     create :billing_deal_contact, deal: deal, contact: contact
+    @member = create :deal_member, deal: deal
   end
 
   it 'decorate pipeline summary successfully and return expected values' do
@@ -22,13 +23,14 @@ describe Csv::PipelineSummaryReportDecorator do
     expect(pipeline_summary_decorator.closed_date).to eq deal.closed_at
     expect(pipeline_summary_decorator.close_reason).to be_nil
     expect(pipeline_summary_decorator.close_comments).to be_nil
-    expect(pipeline_summary_decorator.members).to be_empty
     expect(pipeline_summary_decorator.team).to be_nil
     expect(pipeline_summary_decorator.type).to be_nil
     expect(pipeline_summary_decorator.source).to be_nil
     expect(pipeline_summary_decorator.initiative).to be_nil
     expect(pipeline_summary_decorator.billing_contact).to eq "#{deal.billing_contact.name}/#{deal.billing_contact.email}"
-    expect(pipeline_summary_decorator.send(:deal_custom_fields).to_a).to be_empty
+    expect(pipeline_summary_decorator.stage).to eq deal.stage.name
+    expect(pipeline_summary_decorator.method_missing("not_correct_name")).to be_nil
+    expect(pipeline_summary_decorator.members).to eq "#{@member.user.name} #{@member.share}%"
   end
 
   private
@@ -65,6 +67,6 @@ describe Csv::PipelineSummaryReportDecorator do
   end
 
   def address
-    create :address, country: 'United Kingdom'
+    @_address = create :address, country: 'United Kingdom'
   end
 end
