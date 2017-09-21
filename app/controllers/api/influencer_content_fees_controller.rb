@@ -31,16 +31,6 @@ class Api::InfluencerContentFeesController < ApplicationController
           methods: [:team_name]
         })
       }
-      format.csv {
-        require 'timeout'
-        begin
-          Timeout::timeout(240) {
-            send_data InfluencerContentFee.to_csv(results), filename: "influencer-budget-detail-#{Date.today}.csv"
-          }
-        rescue Timeout::Error
-          return
-        end
-      }
     end
     
   end
