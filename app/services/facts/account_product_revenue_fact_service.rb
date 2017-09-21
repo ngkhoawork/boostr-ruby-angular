@@ -3,7 +3,9 @@ class Facts::AccountProductRevenueFactService < BaseService
     accounts.each do |client|
       time_dimensions.each do |time_dimension|
         date_range = { start_date: time_dimension.start_date, end_date: time_dimension.end_date }
-        revenue_service = Facts::AccountProductRevenueCalculationService.new(account_id: client.id, company_id: client.company_id, date_range: date_range)
+        revenue_service = Facts::AccountProductRevenueCalculationService.new(account_id: client.id,
+                                                                             company_id: client.company_id,
+                                                                             date_range: date_range)
         revenue_service.remove_unused_records
         revenues = revenue_service.calculate_revenues
         revenues.each do |product_id, revenue|
@@ -28,7 +30,7 @@ class Facts::AccountProductRevenueFactService < BaseService
   end
 
   def accounts
-    @accounts ||= AccountDimension.where(company_id: 11).pluck_to_struct(:id, :company_id)
+    @accounts ||= AccountDimension.pluck_to_struct(:id, :company_id)
   end
 
   def time_dimensions

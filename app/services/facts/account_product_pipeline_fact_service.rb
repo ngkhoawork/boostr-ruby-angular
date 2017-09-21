@@ -33,7 +33,7 @@ class Facts::AccountProductPipelineFactService < BaseService
   end
 
   def accounts
-    @accounts ||= AccountDimension.where(company_id: 11).pluck_to_struct(:id, :company_id)
+    @accounts ||= AccountDimension.pluck_to_struct(:id, :company_id)
   end
 
   def time_dimensions
