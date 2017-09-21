@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::InfluencerContentFeesController, type: :controller do
+RSpec.describe Api::InfluencerContentFeesController do
   let(:company) { create :company }
   let(:user) { create :user, company: company }
   let(:influencer) { create :influencer, company: company}
