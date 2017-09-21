@@ -33,7 +33,7 @@ class Csv::PipelineSummaryReportDecorator
   end
 
   def budget
-    deal[:budget_loc][:budget] rescue nil
+    deal[:budget_loc] rescue nil
   end
 
   def stage
@@ -94,6 +94,10 @@ class Csv::PipelineSummaryReportDecorator
     deal_custom_field = deal_custom_fields.find_by('lower(field_label) = ?', name.to_s.gsub('_', ' '))
 
     deal[:custom_fields][deal_custom_field.id.to_s]
+  end
+
+  def billing_contact
+    (deal[:billing_contact]['name'] + '/' + deal[:billing_contact]['email']) rescue nil
   end
 
   private

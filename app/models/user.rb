@@ -32,6 +32,43 @@ class User < ActiveRecord::Base
   scope :by_name, -> name { where('users.first_name ilike ? or users.last_name ilike ?', "%#{name}%", "%#{name}%") if name.present? }
   scope :by_email, -> email { where('email ilike ?', email)  }
 
+  after_create do
+    create_dimension
+    update_forecast_fact_callback
+  end
+
+  after_destroy do |user_record|
+    delete_dimension(user_record)
+  end
+
+
+  def create_dimension
+    UserDimension.create(
+      id: self.id,
+      company_id: self.company_id,
+      team_id: self.team_id
+    )
+  end
+
+  def delete_dimension(user_record)
+    UserDimension.destroy(user_record.id)
+    ForecastPipelineFact.destroy_all(user_dimension_id: user_record.id)
+    ForecastRevenueFact.destroy_all(user_dimension_id: user_record.id)
+  end
+
+  def update_forecast_fact_callback
+    if company.present?
+      time_period_ids = company.time_periods.collect{|time_period| time_period.id}
+      user_ids = [self.id]
+      product_ids = company.products.collect{|product| product.id}
+      stage_ids = company.stages.collect{|stage| stage.id}
+      io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
+      deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
+      ForecastRevenueCalculatorWorker.perform_async(io_change)
+      ForecastPipelineCalculatorWorker.perform_async(deal_change)
+    end
+  end
+
   def roles=(roles)
     if roles. nil?
       roles = %w(user)
@@ -51,6 +88,10 @@ class User < ActiveRecord::Base
 
   def company_influencer_enabled
     self.company.influencer_enabled
+  end
+
+  def company_forecast_gap_to_quota_positive
+    self.company.forecast_gap_to_quota_positive
   end
 
   def is_admin
@@ -116,7 +157,15 @@ class User < ActiveRecord::Base
           },
           teams: {}
         },
-        methods: [:name, :leader?, :is_admin, :roles, :company_influencer_enabled]
+        methods: [
+          :name,
+          :leader?,
+          :is_admin,
+          :roles,
+          :company_influencer_enabled,
+          :company_forecast_gap_to_quota_positive,
+          :has_forecast_permission
+        ]
       ).except(:override))
     end
   end
@@ -131,6 +180,10 @@ class User < ActiveRecord::Base
 
   def is_active?
     is_active
+  end
+
+  def has_forecast_permission
+    self.company.forecast_permission[self.user_type.to_s]
   end
 
   def all_deals_for_time_period(start_date, end_date)
@@ -179,11 +232,15 @@ class User < ActiveRecord::Base
     end
   end
 
-  def crevenues(start_date, end_date)
+  def crevenues(start_date, end_date, product = nil)
     ios_for_period = self.all_ios_for_time_period(start_date, end_date)
 
     @crevenues ||= ios_for_period.each_with_object([]) do |io, memo|
-      sum_period_budget, split_period_budget = io.for_forecast_page(start_date, end_date, self)
+      if product.present?
+        sum_period_budget, split_period_budget = io.for_product_forecast_page(product, start_date, end_date, self)
+      else
+        sum_period_budget, split_period_budget = io.for_forecast_page(start_date, end_date, self)
+      end
 
       memo << {
           id: io.id,
@@ -267,7 +324,7 @@ class User < ActiveRecord::Base
     ios.each do |io|
       io_obj = Io.find(io['id'])
 
-      io[:members] = io_obj.io_members
+      io[:members] = io_obj.io_members.as_json
 
       if io['end_date'] == io['start_date']
         io['end_date'] += 1.day

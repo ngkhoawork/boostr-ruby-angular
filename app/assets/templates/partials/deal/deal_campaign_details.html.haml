@@ -46,6 +46,7 @@
                 %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
                     %span.editable{'ng-class': '{"not-selected": !currentDeal.initiative_id}'}
                         {{findById(currentDeal.initiatives, currentDeal.initiative_id).name || 'Select initiative'}}
+                    %i.fa.fa-close.remove-icon{'ng-show': 'currentDeal.initiative_id', 'ng-click': 'removeDealInitiative($event)'}
                     %span.caret
                 %ul.dropdown-menu
                     %li{'ng-repeat': 'option in currentDeal.initiatives', 'ng-class': '{active: currentDeal.initiative_id == option.id}'}

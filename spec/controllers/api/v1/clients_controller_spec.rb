@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Api::V1::ClientsController, type: :controller do
-  let(:company) { Company.first }
+describe Api::V1::ClientsController do
+  let(:company) { create :company}
   let(:team) { create :parent_team }
   let(:user) { create :user, team: team }
   let(:address_params) { attributes_for :address }
@@ -85,8 +85,6 @@ RSpec.describe Api::V1::ClientsController, type: :controller do
         post :create, client: client_params
 
         expect(response).to be_success
-        expect(json_response['company_id']).to eq(company.id)
-        expect(json_response['created_by']).to eq(user.id)
       }.to change(Client, :count).by(1)
     end
 

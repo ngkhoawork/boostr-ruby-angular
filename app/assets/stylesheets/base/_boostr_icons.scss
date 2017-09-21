@@ -9,61 +9,59 @@
   font-style: normal;
 }
 
-[class^="icon-activity-"], [class*=" icon-activity-"] {
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'icomoon' !important;
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
+.fa.activity-icon {
+  display: inline-block;
   color: $main-color;
   font-size: 22px;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  width: 22px;
+  //height: 22px;
+  text-align: center;
+  &[class*="bstr-"] {
+    font-family: 'icomoon' !important;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 
-.icon-activity-agency-meeting:before {
+.bstr-agency-meeting:before {
   content: "\e900";
 }
-.icon-activity-campaign-review:before {
+.bstr-campaign-review:before {
   content: "\e901";
 }
-.icon-activity-client-meeting:before {
+.bstr-client-meeting:before {
   content: "\e902";
 }
-.icon-activity-deal-close:before {
+.bstr-deal-close:before {
   content: "\e903";
 }
-.icon-activity-email:before {
+.bstr-email:before {
   content: "\e904";
 }
-.icon-activity-entertainment:before {
+.bstr-entertainment:before {
   content: "\e905";
 }
-.icon-activity-feedback:before {
+.bstr-feedback:before {
   content: "\e906";
 }
-.icon-activity-initial-meeting:before {
+.bstr-initial-meeting:before {
   content: "\e907";
 }
-.icon-activity-pitch:before {
+.bstr-pitch:before {
   content: "\e908";
 }
-.icon-activity-post-sale-meeting:before {
+.bstr-post-sale-meeting:before {
   content: "\e909";
 }
-.icon-activity-proposal:before {
+.bstr-proposal:before {
   content: "\e90a";
 }
-.icon-activity-qbr:before {
+.bstr-qbr:before {
   content: "\e90b";
 }
-.icon-activity-internal-meeting:before {
+.bstr-internal-meeting:before {
   content: "\00a0\00a0";
   background: url('icons/internal-meeting.svg') no-repeat top left;
   background-size: contain;

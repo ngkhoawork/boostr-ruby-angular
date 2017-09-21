@@ -1,5 +1,4 @@
 class DashboardForecastSerializer < ActiveModel::Serializer
-  cached
 
   attributes(
     :weighted_pipeline,
@@ -12,9 +11,5 @@ class DashboardForecastSerializer < ActiveModel::Serializer
     :stages,
     :weighted_pipeline_by_stage
   )
-
-  def cache_key
-    object.try(:cache_key)
-  end
 end
 

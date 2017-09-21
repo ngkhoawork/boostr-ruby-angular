@@ -7,7 +7,7 @@ FactoryGirl.define do
     zip { FFaker::AddressUS.zip_code }
     phone { FFaker::PhoneNumber.phone_number }
     mobile { FFaker::PhoneNumber.phone_number }
-    email { FFaker::Internet.email }
+    email { rand(999999).to_s + FFaker::Internet.email }
     country { FFaker::Address.country }
   end
 end

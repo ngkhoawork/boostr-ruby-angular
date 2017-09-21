@@ -1,6 +1,8 @@
 class Api::V2::DealsController < ApiController
   respond_to :json
 
+  before_filter :set_current_user, only: [:update, :create]
+
   def index
     if params[:name].present?
       render json: suggest_deals
@@ -232,7 +234,7 @@ class Api::V2::DealsController < ApiController
   end
 
   def deals
-    if params[:filter] == 'company' && current_user.leader?
+    if params[:filter] == 'company'
       company.deals.active
     elsif params[:filter] == 'selected_team' && params[:team_id]
       all_team_deals

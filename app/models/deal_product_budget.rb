@@ -5,6 +5,7 @@ class DealProductBudget < ActiveRecord::Base
   delegate :deal, to: :deal_product
 
   scope :for_time_period, -> (start_date, end_date) { where('deal_product_budgets.start_date <= ? AND deal_product_budgets.end_date >= ?', end_date, start_date) }
+  scope :for_product_id, -> (product_id) { where('deal_products.product_id = ?', product_id) }
 
   validates :start_date, :end_date, presence: true
 
@@ -94,6 +95,12 @@ class DealProductBudget < ActiveRecord::Base
 
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'deal_product_budget', source: 'ui')
     import_log.set_file_source(file_path)
+
+    Deal.skip_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.skip_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.skip_callback(:destroy, :after, :update_pipeline_fact_callback)
+
+    deal_change = {time_period_ids: [], product_ids: [], stage_ids: [], user_ids: []}
 
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
@@ -209,6 +216,11 @@ class DealProductBudget < ActiveRecord::Base
         end
       end
 
+      deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", deal.start_date, deal.end_date).collect{|item| item.id}
+      deal_change[:stage_ids] += [deal.stage_id] if deal.stage_id.present?
+      deal_change[:user_ids] += deal.deal_members.collect{|item| item.user_id}
+      deal_change[:product_ids] += [deal_product.product_id]
+
       if deal_product.update_attributes(deal_product_budgets_attributes: [deal_product_budget_params])
         import_log.count_imported
 
@@ -220,6 +232,17 @@ class DealProductBudget < ActiveRecord::Base
         next
       end
     end
+
+    Deal.set_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.set_callback(:save, :after, :update_pipeline_fact_callback)
+    DealProduct.set_callback(:destroy, :after, :update_pipeline_fact_callback)
+
+    deal_change[:time_period_ids] = deal_change[:time_period_ids].uniq
+    deal_change[:user_ids] = deal_change[:user_ids].uniq
+    deal_change[:product_ids] = deal_change[:product_ids].uniq
+    deal_change[:stage_ids] = deal_change[:stage_ids].uniq
+
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
 
     import_log.save
   end

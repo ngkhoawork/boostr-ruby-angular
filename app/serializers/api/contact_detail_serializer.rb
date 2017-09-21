@@ -20,12 +20,12 @@ class Api::ContactDetailSerializer < ActiveModel::Serializer
     :lost_deals,
     :open_deals,
     :interactions,
-    :non_primary_client_contacts
+    :non_primary_client_contacts,
+    :activities
   )
 
   has_one :address
   has_one :contact_cf
-  has_many :activities
   has_many :job_levels, serializer: Contacts::JobLevelSerializer
   has_many :values
 
@@ -92,5 +92,9 @@ class Api::ContactDetailSerializer < ActiveModel::Serializer
 
   def job_levels
     @options[:contact_options]
+  end
+
+  def activities
+    object.activities.as_json(override: true, include: { activity_type: { only: [:id, :name, :css_class, :action] } })
   end
 end

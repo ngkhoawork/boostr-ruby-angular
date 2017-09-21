@@ -17,6 +17,7 @@ FactoryGirl.define do
     region nil
     segment nil
     holding_company nil
+    company_id nil
 
     initialize_with { attributes }
 
@@ -34,11 +35,11 @@ end
 
 def setup_default_client_csv_data(item)
   if item[:parent].nil?
-    item[:parent] = Company.first.clients.first.name
+    item[:parent] = Company.find(item[:company_id]).clients.first.name
   end
 
   if item[:category].nil?
-    category = Company.first.fields.where(name: 'Category').first.options.first
+    category = Company.find(item[:company_id]).fields.where(name: 'Category').first.options.first
     item[:category] = category.name
   end
 
@@ -48,7 +49,7 @@ def setup_default_client_csv_data(item)
   end
 
   if item[:teammembers].nil?
-    user = Company.first.users.first
+    user = Company.find(item[:company_id]).users.first
     item[:teammembers] = user.email + '/100'
   end
 end
@@ -63,7 +64,7 @@ def setup_custom_fields(item)
     when 'number'
       max = 999
       min = 100
-      (rand * (max - min) + min).round(2)
+      (rand * (max - min) + min).round(1)
     when 'text'
       FFaker::BaconIpsum.paragraph
     end

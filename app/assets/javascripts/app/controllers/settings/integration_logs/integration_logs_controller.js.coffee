@@ -2,16 +2,25 @@
   ['$scope', '$routeParams', '$modal', 'IntegrationLogs',
     ($scope, $routeParams, $modal, Logs) ->
 
-      $scope.logs = []
-      $scope.filter = 0
+      $scope.errors_only = false
+      $scope.logsUrl = 'api/integration_logs'
+      $scope.logsUrlParams = {
+        errors_only: $scope.errors_only
+      }
+
       $scope.currentLog = null
 
       if $routeParams.id
         Logs.get($routeParams.id).then (log) ->
           $scope.currentLog = log
-      else
-        Logs.all().then (logs) ->
-          $scope.logs = logs
+
+      $scope.setErrorFilter = (status) ->
+        if status == $scope.errors_only
+          return
+
+        $scope.errors_only = status
+        $scope.logsUrlParams.errors_only = status
+        $scope.$broadcast('pagination:reload')
 
       $scope.getHost = (url) ->
         a = document.createElement('a')

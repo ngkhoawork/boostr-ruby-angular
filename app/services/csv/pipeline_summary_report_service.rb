@@ -44,7 +44,8 @@ class Csv::PipelineSummaryReportService < Csv::BaseService
       'Team',
       'Type',
       'Source',
-      'Initiative'
+      'Initiative',
+      'Billing Contact'
     ]
   end
 

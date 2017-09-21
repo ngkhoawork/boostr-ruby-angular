@@ -145,7 +145,8 @@
       allClients = _.reject allClients, (client) ->
         client.id == deletedClient.id
       callback?()
-      $rootScope.$broadcast 'updated_clients'
+    , (error) ->
+      callback?(error)
 
   resource.__get = () ->
     currentClient

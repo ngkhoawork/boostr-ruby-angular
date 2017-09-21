@@ -102,6 +102,14 @@
                     %a.upload{ href: '', ng: { click: 'showUploadQuotasModal()' } }
                       = inline_svg 'icons/import.svg'
                       Import Quotas
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Influencers Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadInfluencersModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Influencers
 
         %tab{heading: "Data Export", index: "1"}
           .row
@@ -159,6 +167,15 @@
                       = inline_svg 'icons/import.svg'
                       Export IO Monthly Product Budgets
 
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Influencers Export
+                  %li.export
+                    %a{ href: '', ng: { click: 'exportInfluencers()' } }
+                      = inline_svg 'icons/import.svg'
+                      Export Influencers
+
         %tab{heading: "Import Status", index: "3", ng: { click: 'getLogs()' } }
           .table-report.pad
             %table.table.table-hover
@@ -174,7 +191,7 @@
                   %th.left Object Name
 
               %tbody
-                %tr{'ng-repeat': 'log in logs' }
+                %tr{'ng-repeat': 'log in csv_import_logs' }
                   %td {{log.created_at | date: 'medium' }}
                   %td.center
                     %b {{log.rows_processed}}
@@ -191,3 +208,11 @@
                     %b {{ log.file_source }}
                   %td
                     %b {{ log.object_name }}
+
+          .custom-pagination{'bgf-pagination': 'bgf-pagination',
+            'collection': 'csv_import_logs',
+            'per-page': '25',
+            'link-group-size': "2",
+            'request-limit': "50",
+            'url': 'csvImportLogsUrl',
+            'url-params': 'csvImportLogsUrlParams'}

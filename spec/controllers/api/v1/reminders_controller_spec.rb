@@ -57,9 +57,9 @@ RSpec.describe Api::V1::RemindersController, type: :controller do
         post :create, reminder: {malformed: true}
 
         expect(response.status).to eq(422)
-        expect(json_response['errors']['name']).to eq(["can't be blank"])
-        expect(json_response['errors']['remind_on']).to eq(["can't be blank"])
-        expect(json_response['errors']['remindable_id']).to eq(["can't be blank"])
+        expect(json_response['errors']['name']).to eq(['can\'t be blank'])
+        expect(json_response['errors']['remind_on']).to eq(['can\'t be blank'])
+        expect(json_response['errors']['completed']).to eq(['is not included in the list'])
       end.not_to change(Reminder, :count)
     end
   end
@@ -85,9 +85,8 @@ RSpec.describe Api::V1::RemindersController, type: :controller do
         put :update, id: reminder.id, reminder: invalid_reminder
 
         expect(response.status).to eq(422)
-        expect(json_response['errors']['name']).to eq(["can't be blank"])
-        expect(json_response['errors']['remind_on']).to eq(["can't be blank"])
-        expect(json_response['errors']['remindable_id']).to eq(["can't be blank"])
+        expect(json_response['errors']['name']).to eq(['can\'t be blank'])
+        expect(json_response['errors']['remind_on']).to eq(['can\'t be blank'])
       end.not_to change(Reminder, :count)
     end
   end

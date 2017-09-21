@@ -12,6 +12,8 @@
     deferred = $q.defer()
     resource.get params, (team) ->
       deferred.resolve(team)
+    , (err) ->
+      deferred.reject(err)
     deferred.promise
 
   return

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::ForecastsController, type: :controller do
+describe Api::ForecastsController do
   let(:company) { Company.first }
   let(:user) { create :user }
   let(:parent_team) { create :parent_team, leader: user }
@@ -28,9 +28,12 @@ RSpec.describe Api::ForecastsController, type: :controller do
         create_list :parent_team, 2
 
         get :index, { format: :json, time_period_id: time_period.id }
+
+        response_json = response_json(response)
+
         expect(response).to be_success
-        response_json = JSON.parse(response.body)
-        expect(response_json[0]['name']).to eq(user.name)
+        expect(response_json[0]['teams'].count).to eq 2
+        expect(response_json[0]['team_members'].count).to eq 1
       end
     end
   end

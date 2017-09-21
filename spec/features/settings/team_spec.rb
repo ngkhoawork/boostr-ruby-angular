@@ -11,7 +11,7 @@ feature 'Teams' do
       expect(page).to have_css('#teams')
     end
 
-    scenario 'creating a team', js: true do
+    it 'creating a team', js: true do
       find('.add-team').trigger('click')
 
       expect(page).to have_css('#team-modal')
@@ -41,7 +41,7 @@ feature 'Teams' do
       expect(page).to have_css('#team')
     end
 
-    scenario 'creating a team', js: true do
+    it 'creating a team', js: true do
       find('.add-team').trigger('click')
 
       expect(page).to have_css('#team-modal')
@@ -73,7 +73,7 @@ feature 'Teams' do
       expect(page).to have_css('#teams')
     end
 
-    scenario 'pops up an edit team modal and updates a team', js: true do
+    it 'pops up an edit team modal and updates a team', js: true do
       within 'table tbody' do
         find('tr:first-child').hover
         find('.edit-team').trigger('click')
@@ -107,7 +107,7 @@ feature 'Teams' do
       expect(page).to have_css('#teams')
     end
 
-    scenario 'removes the team from the page', js: true do
+    it 'removes the team from the page', js: true do
       within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 3)
         find('tr:first-child').hover
@@ -115,6 +115,8 @@ feature 'Teams' do
           find('.delete-team').trigger('click')
         end
       end
+
+      wait_for_ajax 1
 
       expect(page).to have_css('.table-wrapper tbody tr', count: 2)
 

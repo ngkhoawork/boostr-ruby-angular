@@ -55,11 +55,78 @@ class DisplayLineItem < ActiveRecord::Base
   after_create :update_io_budget
   after_update :update_io_budget
 
+  after_destroy do |display_line_item|
+    update_revenue_pipeline_budget(display_line_item)
+  end
+
+  set_callback :save, :after, :update_revenue_fact_callback
+
   after_commit :update_temp_io_budget, on: [:create, :update]
 
   scope :for_time_period, -> (start_date, end_date) { where('display_line_items.start_date <= ? AND display_line_items.end_date >= ?', end_date, start_date) }
   scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) }
+
+  def update_revenue_fact_callback
+    update_revenue_pipeline_budget(self) if budget_changed? || budget_loc_changed?
+    if io_id_changed?
+      if io_id_was.present?
+        old_io = Io.find(io_id_was)
+        update_revenue_pipeline_io(old_io) if old_io.present?
+      end
+      update_revenue_pipeline_io(io)
+    end
+    if product_id_changed?
+      if product_id_was.present?
+        old_product = Product.find(product_id_was)
+        update_revenue_pipeline_product(old_product) if old_product.present?
+      end
+      update_revenue_pipeline_product(product)
+    end
+  end
+
+  def update_revenue_pipeline_io(io_item)
+    product = self.product
+    if io_item.present? && product.present?
+      company = io_item.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io_item.start_date, io_item.end_date)
+      time_periods.each do |time_period|
+        io_item.users.each do |user|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def update_revenue_pipeline_budget(display_line_item)
+    io = display_line_item.io
+    product = display_line_item.product
+    if io.present? && product.present?
+      company = io.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+      time_periods.each do |time_period|
+        io.users.each do |user|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def update_revenue_pipeline_product(product)
+    io = self.io
+    if io.present? && product.present?
+      company = io.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+      time_periods.each do |time_period|
+        io.users.each do |user|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
   
   def update_io_budget
     if io.present?
@@ -124,6 +191,12 @@ class DisplayLineItem < ActiveRecord::Base
 
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'display_line_item', source: 'ui')
     import_log.set_file_source(file_path)
+
+    io_change = {time_period_ids: [], product_ids: [], user_ids: []}
+    deal_change = {time_period_ids: [], product_ids: [], stage_ids: [], user_ids: []}
+
+    Io.skip_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItem.skip_callback(:save, :after, :update_revenue_fact_callback)
 
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
@@ -336,15 +409,18 @@ class DisplayLineItem < ActiveRecord::Base
       ad_server_product = nil
 
       if row[12]
-        products = current_user.company.products.where("name ilike ?", row[12].strip)
+        products = current_user
+                       .company
+                       .products
+                       .joins(:ad_units)
+                       .where('products.name ilike :product_name OR ad_units.name ilike :product_name', product_name: row[12].strip)
         if products.count > 0
           product_id = products.first.id
-        else
           ad_server_product = row[12].strip
-          products = current_user.company.products.where(revenue_type: 'Display')
-          if products.count > 0
-            product_id = products.first.id
-          end
+        else
+          import_log.count_failed
+          import_log.log_error(["No matching product"])
+          next
         end
       else
         import_log.count_failed
@@ -550,6 +626,8 @@ class DisplayLineItem < ActiveRecord::Base
 
         display_line_item_params = self.convert_params_currency(io.exchange_rate, display_line_item_params)
 
+        io_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date).collect{|item| item.id}
+
         if io.content_fees.count == 0
           if io_start_date < io.start_date
             io.start_date = io_start_date
@@ -558,8 +636,17 @@ class DisplayLineItem < ActiveRecord::Base
             io.end_date = io_end_date
           end
         end
+
+        io_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date).collect{|item| item.id}
+        io_change[:user_ids] += io.users.collect{|item| item.id}
+        io_change[:product_ids] += io.products.collect{|item| item.id}
+        io_change[:product_ids] += [product_id] if product_id.present?
         io.external_io_number = external_io_number
         io.save
+        deal_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", io.deal.start_date, io.deal.end_date).collect{|item| item.id}
+        deal_change[:stage_ids] += [io.deal.stage_id] if io.deal.stage_id.present?
+        deal_change[:user_ids] += io.deal.deal_members.collect{|item| item.user_id}
+        deal_change[:product_ids] += io.deal.deal_products.collect{|item| item.product_id}
       end
       display_line_item = nil
       if io_id.nil?
@@ -580,6 +667,22 @@ class DisplayLineItem < ActiveRecord::Base
         DisplayLineItem.create(display_line_item_params)
       end
     end
+
+    Io.set_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItem.set_callback(:save, :after, :update_revenue_fact_callback)
+
+    io_change[:time_period_ids] = io_change[:time_period_ids].uniq
+    io_change[:user_ids] = io_change[:user_ids].uniq
+    io_change[:product_ids] = io_change[:product_ids].uniq
+
+    deal_change[:time_period_ids] = deal_change[:time_period_ids].uniq
+    deal_change[:user_ids] = deal_change[:user_ids].uniq
+    deal_change[:product_ids] = deal_change[:product_ids].uniq
+    deal_change[:stage_ids] = deal_change[:stage_ids].uniq
+
+    ForecastRevenueCalculatorWorker.perform_async(io_change)
+
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
 
     import_log.save
   end

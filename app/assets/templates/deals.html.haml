@@ -86,20 +86,48 @@
 							{{ filter.selected.currency.name || 'Select a currency' }}
 							%span.caret
 						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
-							.dropdown-option{'ng-repeat': 'currency in filter.currencies | filter: filtering | limitTo: 10', role: 'menuitem'}
+							.dropdown-option{'ng-repeat': 'currency in filter.currencies | filter: filtering', role: 'menuitem'}
 								%a{href: '', 'ng-click': 'filter.select("currency", currency)'} {{currency.name}}
+
+			.filter-row
+				.filter-name
+					%div
+						Time Period
+				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.timePeriod', 'ng-click': 'filter.reset("timePeriod")'}
+					%span{ 'dropdown': '', 'keyboard-nav': '', 'on-toggle': 'filter.onDropdownToggle()' }
+						.dropdown-button{ 'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.timePeriod}' }
+							{{ filter.selected.timePeriod.name || 'Select a time period' }}
+							%span.caret
+						.dropdown-menu{'dropdown-menu': '', role: 'menu'}
+							.dropdown-option{'ng-repeat': 'timePeriod in filter.timePeriods | orderBy : ["period_type", "start_date"]', role: 'menuitem'}
+								%a{href: '', 'ng-click': 'filter.select("timePeriod", timePeriod)'} {{timePeriod.name}}
+			
 			.filter-row
 				.filter-name
 					%div
 						Start Date
 				.filter-dropdown
-					%i.fa.fa-close{'ng-show': 'filter.selected.date.startDate && filter.selected.date.endDate', 'ng-click': 'filter.reset("date")'}
+					%i.fa.fa-close{'ng-show': 'filter.selected.startDate.startDate && filter.selected.startDate.endDate', 'ng-click': 'filter.reset("startDate")'}
 					%span.bs-datepicker
-						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.date.startDate && filter.selected.date.endDate}'}
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.startDate.startDate && filter.selected.startDate.endDate}'}
 							%div.date-picker{'date-range-picker': true,
-			                                           'ng-model': 'filter.datePicker.date',
-			                                           options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.apply}}'}
-								%span.filter-date {{filter.getDateValue()}}
+			                                           'ng-model': 'filter.datePicker.startDate',
+			                                           options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyStartDate}}'}
+								%span.filter-date {{filter.getDateValue('startDate')}}
+							%span.caret
+			.filter-row
+				.filter-name
+					%div
+						Created Date
+				.filter-dropdown
+					%i.fa.fa-close{'ng-show': 'filter.selected.createdDate.startDate && filter.selected.createdDate.endDate', 'ng-click': 'filter.reset("createdDate")'}
+					%span.bs-datepicker
+						.dropdown-button{'dropdown-toggle': '', 'ng-class': '{selected: filter.selected.createdDate.startDate && filter.selected.createdDate.endDate}'}
+							%div.date-picker{'date-range-picker': true,
+			                                           'ng-model': 'filter.datePicker.createdDate',
+			                                           options: '{eventHandlers: {"apply.daterangepicker": filter.datePicker.applyCreatedDate}}'}
+								%span.filter-date {{filter.getDateValue('createdDate')}}
 							%span.caret
 			.filter-row
 				.filter-name

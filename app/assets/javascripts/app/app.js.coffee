@@ -101,9 +101,17 @@
       controller: 'PipelineSplitReportController'
       reloadOnSearch: false
 
+    .when '/reports/old_forecasts',
+      templateUrl: 'old_forecasts_detail.html'
+      controller: 'OldForecastsDetailController'
+      
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
+
+    .when '/reports/old_product_forecasts',
+      templateUrl: 'old_product_forecasts_detail.html'
+      controller: 'OldProductForecastsDetailController'
 
     .when '/reports/product_forecasts',
       templateUrl: 'product_forecasts_detail.html'
@@ -264,12 +272,19 @@
     .when '/settings/ealerts/',
       templateUrl: 'settings/ealerts.html'
       controller: 'SettingsEalertsController'
+
+    .when '/settings/activity_types/',
+      templateUrl: 'settings/activity_types.html'
+      controller: 'SettingsActivityTypesController'
+
     .when '/settings/permissions/',
       templateUrl: 'settings/permissions.html'
       controller: 'SettingsPermissionsController'
+
     .when '/settings/validations/',
       templateUrl: 'settings/validations.html'
       controller: 'SettingsValidationsController'
+
     .when '/bps',
       templateUrl: 'bp.html'
       controller: 'BPController'
@@ -277,6 +292,10 @@
     .when '/forecast/:team_id?',
       templateUrl: 'forecasts.html'
       controller: 'ForecastsController'
+
+    .when '/fore_cast_old/:team_id?',
+      templateUrl: 'forecasts_old.html'
+      controller: 'ForecastsOldController'
 
     .when '/users/sign_out',
       templateUrl: 'sign_out.html'
@@ -330,7 +349,7 @@
     if $rootScope.currentUser then updateTalkus($rootScope.currentUser)
 
   updateTalkus = (user) ->
-    if location.hostname is 'localhost' then return
+    if location.hostname is 'localhost' or location.hostname is '127.0.0.1' then return
     talkus('init', 'qu346HQax2ut3MQr4',
       id: user.id
       name: user.name

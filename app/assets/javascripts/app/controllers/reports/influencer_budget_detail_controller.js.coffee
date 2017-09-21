@@ -13,8 +13,8 @@
         assetDate:
           startDate: null
           endDate: null
-
       $scope.isDateSet = false
+      appliedFilter = null
 
       Influencer.all({}).then (data) ->
         $scope.influencers = data
@@ -41,7 +41,11 @@
             endDate: null
 
       $scope.applyFilter = ->
+        appliedFilter = angular.copy $scope.filter
         getReportData()
+
+      $scope.isFilterApplied = ->
+        !angular.equals $scope.filter, appliedFilter
 
       $scope.go = (path) ->
         $location.path(path)

@@ -10,13 +10,13 @@
                     Type of Activity
                 .dropdown
                     %button.btn.btn-primary.dropdown-toggle{'data-toggle': 'dropdown', type: 'button'}
-                        %span{class: 'icon-activity-{{selectedType.iconName}}'}
+                        %i.activity-icon.fa{'class': '{{selectedType.css_class}}'}
                         %span.text {{selectedType.name}}
                         %span.caret
                     %ul.dropdown-menu
-                        %li{'ng-repeat': 'type in types'}
+                        %li{'ng-repeat': 'type in types | orderBy : ["position", "name"]', }
                             %a{'href': '', 'ng-click': 'selectType(type)'}
-                                %span{class: 'icon-activity-{{type.iconName}}'}
+                                %i.activity-icon.fa{'class': '{{type.css_class}}'}
                                 %span.text {{type.name}}
             %div{'ng-if': 'showRelated'}
                 .form-group{'ng-class':'{error: errors.deal}', style: 'margin-bottom: 5px'}
@@ -48,6 +48,7 @@
                         {{selectedType.action | firstUppercase}}
                         %span.star *
                     -#%input.form-control{'placeholder': 'Choose Contact or add new', 'ng-model': 'form.contact'}
+                    .clearfix
                     %ui-select{multiple: true, name: 'contacts', 'ng-model': 'form.contacts', disabled: true}
                         %ui-select-match{placeholder: 'Choose Contact'}
                             {{$item.name}}

@@ -6,6 +6,8 @@ class IntegrationLog < ActiveRecord::Base
 
   default_scope { order(created_at: :desc) }
 
+  scope :errors_only, -> status { where(is_error: true) if status == 'true' }
+
   private
 
   def send_notification

@@ -32,7 +32,7 @@ describe Api::InitiativesController do
   end
 
   describe 'PUT #update' do
-    it 'update with initiative with valid params successfully' do
+    it 'update initiative with valid params successfully' do
       put :update, id: initiative.id, initiative: valid_initiative_params, format: :json
 
       initiative.reload
@@ -41,13 +41,13 @@ describe Api::InitiativesController do
       expect(initiative.goal).to eq valid_initiative_params[:goal]
     end
 
-    it 'failed when params are invalid' do
+    it 'failed to update initiative when params are invalid' do
       put :update, id: initiative.id, initiative: invalid_initiative_params, format: :json
 
       initiative.reload
 
-      expect(initiative.name).to_not eq valid_initiative_params[:name]
-      expect(initiative.goal).to_not eq valid_initiative_params[:goal]
+      expect(initiative.name).to_not eq invalid_initiative_params[:name]
+      expect(initiative.goal).to_not eq invalid_initiative_params[:goal]
     end
   end
 

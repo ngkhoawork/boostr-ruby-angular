@@ -1,6 +1,6 @@
 @app.controller 'DashboardController',
-    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage',
-    ( $scope,   $rootScope,   $document,   $http,   $modal,   $sce,   Dashboard,   Deal,   Client,   Field,   Contact,   Activity,   ActivityType,   Reminder,   Stage ) ->
+    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage', 'CurrentUser',
+    ( $scope,   $rootScope,   $document,   $http,   $modal,   $sce,   Dashboard,   Deal,   Client,   Field,   Contact,   Activity,   ActivityType,   Reminder,   Stage,   CurrentUser ) ->
 
             $scope.progressPercentage = 10
             $scope.showMeridian = true
@@ -346,12 +346,6 @@
                 if confirm('Are you sure you want to delete the activity?')
                     Activity.delete activity, ->
                         $scope.$emit('updated_activities')
-
-            $scope.getType = (type) ->
-                _.findWhere($scope.types, name: type)
-
-            $scope.getIconName = (typeName) ->
-                typeName && typeName.split(' ').join('-').toLowerCase()
 
             $scope.remindersInit = ->
                 $scope.remindersOptions = {

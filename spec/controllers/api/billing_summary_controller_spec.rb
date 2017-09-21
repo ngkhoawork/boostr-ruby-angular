@@ -79,9 +79,9 @@ describe Api::BillingSummaryController do
 
       expect(content_fee_product_budget.budget.to_i).to eql 20_000
       expect(content_fee_product_budget.budget_loc.to_i).to eql 20_000
-      expect(content_fee_product_budget.content_fee.budget.to_i).to eql 20_010
+      expect(content_fee_product_budget.content_fee.budget.to_i).to eql 20_000
       expect(content_fee_product_budget.content_fee.budget_loc.to_i).to eql 20_000
-      expect(content_fee_product_budget.content_fee.io.budget.to_i).to eql 20_010
+      expect(content_fee_product_budget.content_fee.io.budget.to_i).to eql 20_000
       expect(content_fee_product_budget.content_fee.io.budget_loc.to_i).to eql 20_000
       expect(content_fee_product_budget.manual_override).to eql true
     end
@@ -98,9 +98,9 @@ describe Api::BillingSummaryController do
 
       expect(content_fee_product_budget.budget.to_i).to eql 16_666
       expect(content_fee_product_budget.budget_loc.to_i).to eql 20_000
-      expect(content_fee_product_budget.content_fee.budget.to_i).to eql 16_676
+      expect(content_fee_product_budget.content_fee.budget.to_i).to eql 16_666
       expect(content_fee_product_budget.content_fee.budget_loc.to_i).to eql 20_000
-      expect(content_fee_product_budget.content_fee.io.budget.to_i).to eql 16_676
+      expect(content_fee_product_budget.content_fee.io.budget.to_i).to eql 16_666
       expect(content_fee_product_budget.content_fee.io.budget_loc.to_i).to eql 20_000
       expect(content_fee_product_budget.manual_override).to eql true
     end
