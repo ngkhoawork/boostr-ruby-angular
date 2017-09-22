@@ -54,13 +54,13 @@ module DFP
     end
 
     def duplicating_rows
-      duplicated_rows = []
-      duplicating_line_item_ids.each do |item_id|
-        ser = DFP::TempCumulativeReportService.new(duplicating_line_item_id: item_id, company_id: company_id)
-        merged_row = ser.get_merged_row
-        duplicated_rows << merged_row
+      duplicating_line_item_ids.each_with_object([]) do |item_id, duplicated_rows|
+        duplicated_rows << temp_cumulative_service(item_id, company_id).get_merged_row
       end
-      duplicated_rows
+    end
+
+    def temp_cumulative_service(item_id, company_id)
+      DFP::TempCumulativeReportService.new(duplicating_line_item_id: item_id, company_id: company_id)
     end
 
     def duplicating_line_item_ids
