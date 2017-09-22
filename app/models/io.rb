@@ -170,29 +170,23 @@ class Io < ActiveRecord::Base
   end
 
   def update_influencer_budget
-    sum_list = {}
-    self.influencer_content_fees.each do |influencer_content_fee|
-      if influencer_content_fee.effect_date >= self.start_date && influencer_content_fee.effect_date <= self.end_date
-        content_fee_product_budget_rows = influencer_content_fee.content_fee.content_fee_product_budgets.for_year_month(influencer_content_fee.effect_date)
-        content_fee_product_budget = nil
-        content_fee_product_budget = content_fee_product_budget_rows.first if content_fee_product_budget_rows.count > 0
-        if content_fee_product_budget.nil?
-          next
-        end
-        if sum_list[content_fee_product_budget.id].present?
-          sum_list[content_fee_product_budget.id] = sum_list[content_fee_product_budget.id] + influencer_content_fee.gross_amount.to_f
-        else
-          sum_list[content_fee_product_budget.id] = influencer_content_fee.gross_amount.to_f
-        end
+    data = {}
+
+    self.influencer_content_fees.by_effect_date(start_date, end_date).each do |influencer_content_fee|
+      content_fee_product_budget = influencer_content_fee
+                                      .content_fee
+                                      .content_fee_product_budgets
+                                      .for_year_month(influencer_content_fee.effect_date)
+                                      .try(:first)
+      if content_fee_product_budget
+        data[content_fee_product_budget.id] ||= 0
+        data[content_fee_product_budget.id] += influencer_content_fee.gross_amount.to_f
       end
     end
-    sum_list.each do |id, budget|
-      content_fee_product_budget = self.content_fee_product_budgets.find(id)
-      content_fee_product_budget.budget = budget
-      content_fee_product_budget.budget_loc = budget / self.exchange_rate
 
-      content_fee_product_budget.save
-      if content_fee_product_budget.save
+    data.each do |id, budget|
+      content_fee_product_budget = self.content_fee_product_budgets.find(id)
+      if content_fee_product_budget && content_fee_product_budget.update_budget!(budget)
         content_fee_product_budget.content_fee.update_budget
         content_fee_product_budget.content_fee.io.update_total_budget
       end

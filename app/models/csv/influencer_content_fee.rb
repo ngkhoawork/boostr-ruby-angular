@@ -20,18 +20,18 @@ class Csv::InfluencerContentFee
 
   validate do |csv|
     if date_valid?
-      csv.errors.add(:date, 'must be between IO start and end dates') unless date_in_io_range?
+      csv.errors.add(:date, "- #{date} must be between IO start and end dates") unless date_in_io_range?
     else
-      csv.errors.add(:date, 'must be a valid datetime')
+      csv.errors.add(:date, "- #{date} must be a valid datetime")
     end
   end
 
   validate do |csv|
-    csv.errors.add(:fee_type, 'should be either \'percentage\' or \'flat\'') unless fee_type_valid?
+    csv.errors.add(:fee_type, "- #{fee_type} should be either 'percentage' or 'flat'") unless fee_type_valid?
   end
 
   validate do |csv|
-    csv.errors.add(:base, 'Content fee for specified io and product could not be found') if content_fee.blank?
+    csv.errors.add(:content_fee, "for specified io #{io_number} and product #{product_name} could not be found") if content_fee.blank?
   end
 
   attr_accessor(:io_number, :influencer_id, :product_name, :date, :fee_type, :fee_amount, :gross_amount_loc, :asset, :company)
@@ -90,19 +90,19 @@ class Csv::InfluencerContentFee
 
   def get_fee_type
     if influencer.agreement.present? && fee_type.blank?
-      fee_type = influencer.agreement.fee_type
+      self.fee_type = influencer.agreement.fee_type
     end
-    fee_type
+    self.fee_type
   end
 
   def get_fee_amount
     if influencer.agreement.present? && fee_amount.blank?
-      fee_amount = influencer.agreement.amount
+      self.fee_amount = influencer.agreement.amount
     end
     if fee_type == 'flat' && io.exchange_rate.present?
-      fee_amount = (fee_amount.to_f * io.exchange_rate).round(2)
+      self.fee_amount = (fee_amount.to_f * io.exchange_rate).round(2)
     end
-    fee_amount
+    self.fee_amount
   end
 
   def effect_date
@@ -122,11 +122,11 @@ class Csv::InfluencerContentFee
   end
 
   def product
-    @_product ||= io.content_fee_products.find_by(name: product_name)
+    @_product ||= io.content_fee_products.find_by(name: product_name) if io.present?
   end
 
   def content_fee
-    @_content_fee = io.content_fees.find_by(product_id: product.id)
+    @_content_fee = io.content_fees.find_by(product_id: product.id) if io.present? && product.present?
   end
 
   def fee_type_valid?
@@ -143,7 +143,6 @@ class Csv::InfluencerContentFee
   end
 
   def date_in_io_range?
-    effect_date = Date.strptime(date, "%m/%d/%Y")
     if effect_date && !(effect_date >=io.start_date && effect_date <= io.end_date)
       return false
     end
@@ -153,7 +152,7 @@ class Csv::InfluencerContentFee
   def self.build(row, company)
     Csv::InfluencerContentFee.new(
       io_number: row[:io_num],
-      influencer_id: row[:influence_id],
+      influencer_id: row[:influencer_id],
       product_name: row[:product],
       date: row[:date].strip,
       fee_type: row[:fee_type],
