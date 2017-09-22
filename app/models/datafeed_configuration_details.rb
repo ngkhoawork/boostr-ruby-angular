@@ -10,11 +10,24 @@ class DatafeedConfigurationDetails < ActiveRecord::Base
     { id: 2, name: 'Invoice Amount' }
   ]
 
+  PRODUCT_MAPPING = [
+    { id: 0, name: 'Product_Name' },
+    { id: 1, name: 'Forecast_Category' }
+  ]
+
   def self.get_pattern_id(name)
-    self::REVENUE_CALCULATION_PATTERNS.find{|el| el[:name] == name}[:id]
+    REVENUE_CALCULATION_PATTERNS.find{|el| el[:name] == name}&.dig(:id)
   end
 
   def self.get_pattern_name(id)
-    self::REVENUE_CALCULATION_PATTERNS.find{|el| el[:id] == id}[:name]
+    REVENUE_CALCULATION_PATTERNS.find{|el| el[:id] == id}&.dig(:name)
+  end
+
+  def self.get_product_mapping_id(name)
+    PRODUCT_MAPPING.find{|el| el[:name] == name}&.dig(:id)
+  end
+
+  def self.get_product_mapping_name(id)
+    PRODUCT_MAPPING.find{|el| el[:id] == id}&.dig(:name)
   end
 end

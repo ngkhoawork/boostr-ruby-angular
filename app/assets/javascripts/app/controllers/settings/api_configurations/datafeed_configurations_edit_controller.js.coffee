@@ -14,6 +14,7 @@
 
       ApiConfiguration.metadata(integration_provider: 'Operative Datafeed').then (data) ->
         $scope.revenue_calculation_patterns = data.revenue_calculation_patterns
+        $scope.product_mapping = data.product_mapping
 
       $scope.submitForm = () ->
         unless $scope.need_change_password
