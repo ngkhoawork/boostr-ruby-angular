@@ -4,40 +4,58 @@
 	.controller 'ZFilterController', ['$scope', 'localStorageService', 'ReportQuery', ($scope, LS, ReportQuery) ->
 		ctrl = this
 		ctrl.reportName = _.last(window.location.pathname.split('/'))
-		$scope.recentQueries = LS.get(ctrl.reportName)
+		$scope.recentQueries = LS.get(ctrl.reportName) || []
+		ctrl.loadedQuery = $scope.recentQueries[0] && $scope.recentQueries[0].filter_params
 		$scope.savedQueries = []
-		(getSavedQueries = ->
+		(getSavedQueries = (init)->
 			ReportQuery.get(query_type: ctrl.reportName).then (data) ->
 				$scope.savedQueries = _.map data, (q) -> q.filter_params = JSON.parse(q.filter_params); q
-		)()
+				defaultQuery = _.findWhere $scope.savedQueries, default: true
+				ctrl.loadQuery(defaultQuery) if defaultQuery && init
+				ctrl.syncQueries()
+		)(true)
 		$scope.isFilterApplied = false
 		$scope.$on 'report_queries_updated', -> getSavedQueries()
 		ctrl.query = {}
-		ctrl.loadedQuery = $scope.recentQueries && $scope.recentQueries[0]
+		ctrl.syncQueries = ->
+			_.each $scope.recentQueries, (recentQuery) ->
+				recentQuery.name = 'Unsaved Filter'
+				_.each $scope.savedQueries, (savedQuery) ->
+					if _.isEqual(savedQuery.filter_params, recentQuery.filter_params)
+						recentQuery.name = savedQuery.name
 		ctrl.saveRecentQuery = ->
 			if _.isEmpty ctrl.query then return
 			$scope.recentQueries = _.filter $scope.recentQueries, (q) =>
-				!angular.equals ctrl.query, q
-			$scope.recentQueries.unshift(angular.copy ctrl.query)
+				!_.isEqual ctrl.query, q.filter_params
+			$scope.recentQueries.unshift(
+				name: 'Unsaved Filter'
+				filter_params: angular.copy ctrl.query
+			)
 			if $scope.recentQueries.length > 5 then $scope.recentQueries.pop()
 			LS.set(ctrl.reportName, $scope.recentQueries)
-		this.saveQuery = (query) ->
+			ctrl.syncQueries()
+		ctrl.saveQuery = (query, callback) ->
 #			$scope.savedQueries.unshift item
-			query.filter_params = angular.toJson query.filter_params
+#			query.filter_params = angular.toJson query.filter_params
 			if query.id
-				ReportQuery.update(id: query.id, filter_query: query)
+				ReportQuery.update(id: query.id, filter_query: query).then ->
+					callback() if _.isFunction callback
 			else
-				ReportQuery.save(filter_query: query)
-		this.deleteQuery = (query) ->
+				ReportQuery.save(filter_query: query).then ->
+					callback() if _.isFunction callback
+		ctrl.loadQuery = (query) ->
+			ctrl.loadedQuery = query.filter_params
+			$scope.$broadcast 'loadQuery', query.filter_params
+		ctrl.deleteQuery = (query) ->
 			ReportQuery.delete(id: query.id)
-		this.appliedQuery = null
-		this.setQuery = (key, value) ->
-			this.query[key] = value
-			if !value then delete this.query[key]
-			this.checkApplied()
-		this.checkApplied = ->
-			$scope.isFilterApplied = angular.equals this.query, this.appliedQuery
-		return this
+		ctrl.appliedQuery = null
+		ctrl.setQuery = (key, value) ->
+			ctrl.query[key] = value
+			if !value then delete ctrl.query[key]
+			ctrl.checkApplied()
+		ctrl.checkApplied = ->
+			$scope.isFilterApplied = _.isEqual ctrl.query, ctrl.appliedQuery
+		ctrl
 	]
 
 	.directive 'zFilter', ['$timeout', ($timeout) ->
@@ -51,7 +69,7 @@
 		link: ($scope, el, attrs, ctrl, trans) ->
 			trans (clone) -> el.find('.element-to-replace').replaceWith(clone)
 			$scope.isQueryDropdownOpen = false
-			$scope.isQueryFormOnEdit = true
+			$scope.isQueryFormOnEdit = false
 			emptySavedQueryForm =
 				name: ''
 				query_type: ctrl.reportName
@@ -72,11 +90,11 @@
 			$scope.saveQuery = (e, query) ->
 				e.stopPropagation()
 				$scope.isQueryFormOnEdit = true
-				$scope.savedQueryForm.filter_params = angular.toJson query
+				$scope.savedQueryForm.filter_params = angular.toJson query.filter_params
 				$timeout -> angular.element('.query-name-input').focus()
 			$scope.submitQueryForm = ->
-				ctrl.saveQuery($scope.savedQueryForm)
-				resetQueryForm()
+				ctrl.saveQuery $scope.savedQueryForm, ->
+					resetQueryForm()
 			$scope.editQuery = (e, query) ->
 				e.stopPropagation()
 				$scope.isQueryFormOnEdit = true
@@ -87,16 +105,14 @@
 				ctrl.deleteQuery(query)
 			$scope.cancelQueryForm = ->
 				resetQueryForm()
-			$scope.loadQuery = (query) ->
-				ctrl.loadedQuery = query
-				$scope.$broadcast 'loadQuery', query
+			$scope.loadQuery = ctrl.loadQuery
 			$scope.resetFilter = ->
 				ctrl.query = {}
 				ctrl.loadedQuery = {}
 				ctrl.checkApplied()
 				$scope.$broadcast 'resetFilter'
-			$scope.objLength = (obj) -> _.keys(obj).length
-			$scope.compareQueries = (query) -> angular.equals query, ctrl.query
+			$scope.objLength = (obj) -> _.keys(obj.filter_params).length
+			$scope.compareQueries = (query) -> _.isEqual query.filter_params, ctrl.query
 	]
 	.directive 'zFilterField', ->
 		restrict: 'E'
