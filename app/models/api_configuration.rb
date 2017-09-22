@@ -1,7 +1,11 @@
 class ApiConfiguration < ActiveRecord::Base
   self.inheritance_column = :integration_type
 
-  INTEGRATION_PROVIDERS = { dfp: 'google', operative: 'operative', operative_datafeed: 'Operative Datafeed' }
+  INTEGRATION_PROVIDERS = {
+    'DFP': 'DfpApiConfiguration',
+    'operative': 'OperativeApiConfiguration',
+    'Operative Datafeed': 'OperativeDatafeedConfiguration'
+  }
 
   belongs_to :company
 
@@ -9,4 +13,8 @@ class ApiConfiguration < ActiveRecord::Base
 
   scope :switched_on, -> { where(switched_on: true) }
 
+  def self.metadata(routing_param)
+    klass = self::INTEGRATION_PROVIDERS[routing_param.to_sym]
+    klass.constantize.metadata
+  end
 end

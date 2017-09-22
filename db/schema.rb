@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170905015555) do
+ActiveRecord::Schema.define(version: 20170915133451) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "account_cf_names", force: :cascade do |t|
     t.integer  "company_id"
@@ -669,6 +668,17 @@ ActiveRecord::Schema.define(version: 20170905015555) do
     t.string "name"
   end
 
+  create_table "datafeed_configuration_details", force: :cascade do |t|
+    t.boolean  "auto_close_deals",            default: false
+    t.integer  "api_configuration_id"
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+    t.integer  "revenue_calculation_pattern", default: 0,     null: false
+    t.integer  "product_mapping",             default: 0,     null: false
+  end
+
+  add_index "datafeed_configuration_details", ["api_configuration_id"], name: "index_datafeed_configuration_details_on_api_configuration_id", using: :btree
+
   create_table "deal_contacts", force: :cascade do |t|
     t.integer  "deal_id"
     t.integer  "contact_id"
@@ -1147,6 +1157,17 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_index "fields", ["company_id"], name: "index_fields_on_company_id", using: :btree
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
+
+  create_table "forecast_calculation_logs", force: :cascade do |t|
+    t.integer  "company_id"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.boolean  "finished"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "forecast_calculation_logs", ["company_id"], name: "index_forecast_calculation_logs_on_company_id", using: :btree
 
   create_table "forecast_pipeline_facts", force: :cascade do |t|
     t.integer  "user_dimension_id"
@@ -1763,6 +1784,7 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_foreign_key "content_fees", "ios"
   add_foreign_key "cpm_budget_adjustments", "api_configurations"
   add_foreign_key "csv_import_logs", "companies"
+  add_foreign_key "datafeed_configuration_details", "api_configurations"
   add_foreign_key "deal_custom_field_names", "companies"
   add_foreign_key "deal_custom_field_options", "deal_custom_field_names"
   add_foreign_key "deal_custom_fields", "companies"
@@ -1785,6 +1807,7 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_foreign_key "ealerts", "companies"
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
+  add_foreign_key "forecast_calculation_logs", "companies"
   add_foreign_key "forecast_pipeline_facts", "product_dimensions"
   add_foreign_key "forecast_pipeline_facts", "stage_dimensions"
   add_foreign_key "forecast_pipeline_facts", "user_dimensions"

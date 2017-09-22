@@ -3,29 +3,57 @@ class Api::InfluencersController < ApplicationController
 
   def index
     results = influencers.by_name(params[:name])
-    response.headers['X-Total-Count'] = results.count.to_s
-    render json: results.limit(limit).offset(offset)
-    .as_json({include: {
-        agreement: {},
-        values: {},
-        address: {}
-      },
-      methods: [:network_name]
-    })
+
+    respond_to do |format|
+      format.json {
+        response.headers['X-Total-Count'] = results.count.to_s
+        render json: results.limit(limit).offset(offset)
+        .as_json({include: {
+            agreement: {},
+            values: {},
+            address: {}
+          },
+          methods: [:network_name]
+        })
+      }
+
+      format.csv {
+        require 'timeout'
+        begin
+          send_data Csv::InfluencerService.new(results).perform,
+                  filename: "influencers-#{Date.today}.csv"
+        rescue Timeout::Error
+          return
+        end
+      }
+    end
   end
 
   def create
-    influencer = influencers.new(influencer_params)
+    if params[:file].present?
+      CsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Influencer',
+        current_user.id,
+        params[:file][:original_filename]
+      )
 
-    if influencer.save
-      render json: influencer.as_json({include: {
-          agreement: {},
-          values: {},
-          address: {}
-        }
-      }), status: :created
+      render json: {
+        message: "Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)"
+      }, status: :ok
     else
-      render json: { errors: influencer.errors.messages }, status: :unprocessable_entity
+      influencer = influencers.new(influencer_params)
+
+      if influencer.save
+        render json: influencer.as_json({include: {
+            agreement: {},
+            values: {},
+            address: {}
+          }
+        }), status: :created
+      else
+        render json: { errors: influencer.errors.messages }, status: :unprocessable_entity
+      end
     end
   end
 
@@ -109,6 +137,8 @@ class Api::InfluencersController < ApplicationController
       }
     )
   end
+
+
 
   def influencers
     @influencers ||= company.influencers.order(:name)

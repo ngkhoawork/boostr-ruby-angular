@@ -1,11 +1,15 @@
 class ForecastPipelineCalculatorWorker < BaseWorker
-  def perform(deal_change)
+  def perform(deal_change, company_id = nil)
     manage_pipeline_facts(
       deal_change['time_period_ids'],
       deal_change['user_ids'],
       deal_change['product_ids'],
       deal_change['stage_ids']
     )
+    if company_id.present?
+      current_job = ForecastCalculationLog.find_by(company_id: company_id, finished: false)
+      current_job.update(end_date: DateTime.now, finished: true)
+    end
   end
 
   private
