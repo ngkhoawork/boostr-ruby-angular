@@ -204,7 +204,7 @@ class DisplayLineItemCsv
       errors.add(:start_date, 'start date can\'t be prior the IO start date')
     end
     if parse_date(self.end_date).present? && parse_date(self.end_date) > io.end_date
-      errors.add(:start_date, 'end date can\'t be after the IO end date')
+      errors.add(:end_date, 'end date can\'t be after the IO end date')
     end
   end
 
