@@ -14,7 +14,7 @@
 					%div.query-line.empty{'ng-hide': 'recentQueries.length'}
 						Empty
 					%div.query-line.unsaved-line{ng: {repeat: 'query in recentQueries track by $index', click: 'loadQuery(query)', class: '{active: compareQueries(query)}'}}
-						%b Unsaved Filter ({{objLength(query)}})
+						%b {{query.name}} ({{objLength(query)}})
 						%div.query-actions
 							%i.fa.fa-floppy-o.z-icon{'ng-click': 'saveQuery($event, query)'}
 					%div.query-subtitle
@@ -33,7 +33,7 @@
 								%z-toggle{'ng-model': 'savedQueryForm.global'}
 					%div.query-line.empty{'ng-hide': 'savedQueries.length || isQueryFormOnEdit'}
 						Empty
-					%div.query-line.saved-line{'ng-hide': 'isQueryFormOnEdit', ng: {repeat: 'query in savedQueries track by $index', click: 'loadQuery(query)'}}
+					%div.query-line.saved-line{'ng-hide': 'isQueryFormOnEdit', ng: {repeat: 'query in savedQueries track by $index | orderBy : "id"', click: 'loadQuery(query)', class: '{active: compareQueries(query)}'}}
 						%b {{query.name}}
 						%div.subline
 							%span.status.mr8 {{query.global ? 'Public' : 'Private'}}
