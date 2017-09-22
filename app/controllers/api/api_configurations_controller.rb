@@ -28,6 +28,10 @@ class Api::ApiConfigurationsController < ApplicationController
     render nothing: true
   end
 
+  def metadata
+    render json: ApiConfiguration.metadata(sti_routing_param)
+  end
+
   private
 
   def api_configuration
@@ -68,7 +72,12 @@ class Api::ApiConfigurationsController < ApplicationController
                                                                                  :workspace_name
                                                                                 ],
                                               datafeed_configuration_details_attributes: [:id,
-                                                                                 :auto_close_deals
+                                                                                 :auto_close_deals,
+                                                                                 :revenue_calculation_pattern
                                                                                 ])
+  end
+
+  def sti_routing_param
+    params[:integration_provider]
   end
 end

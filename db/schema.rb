@@ -635,10 +635,11 @@ ActiveRecord::Schema.define(version: 20170915133451) do
   end
 
   create_table "datafeed_configuration_details", force: :cascade do |t|
-    t.boolean  "auto_close_deals",     default: false
+    t.boolean  "auto_close_deals",            default: false
     t.integer  "api_configuration_id"
-    t.datetime "created_at",                           null: false
-    t.datetime "updated_at",                           null: false
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
+    t.integer  "revenue_calculation_pattern", default: 0,     null: false
   end
 
   add_index "datafeed_configuration_details", ["api_configuration_id"], name: "index_datafeed_configuration_details_on_api_configuration_id", using: :btree
