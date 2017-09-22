@@ -21,7 +21,7 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
   end
 
   context 'CPM product in a row' do
-    it 'creates a temp io and display line item with proper attributes' do
+    xit 'creates a temp io and display line item with proper attributes' do
       allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_csv)
 
       expect(DisplayLineItemCsv).to receive(:new).with(

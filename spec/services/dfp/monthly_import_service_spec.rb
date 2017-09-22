@@ -8,7 +8,7 @@ describe DFP::MonthlyImportService, dfp: :true do
     allow(File).to receive(:open).with(report_file, 'r:ISO-8859-1').and_return(report_csv)
   end
 
-  it 'create new display line item budget successfully' do
+  xit 'create new display line item budget successfully' do
     expect{
       monthly_import = described_class.new(company.id, 'dfp_monthly', report_file: report_file)
       monthly_import.perform
@@ -29,7 +29,7 @@ describe DFP::MonthlyImportService, dfp: :true do
     expect(display_line_item_budget.video_completion_rate).to eq 0.0034
   end
 
-  it 'create new display line item budget successfully with end date from display line item' do
+  xit 'create new display line item budget successfully with end date from display line item' do
     display_line_item.update_column(:end_date, Date.new(2017, 03, 20))
 
     expect{
@@ -42,7 +42,7 @@ describe DFP::MonthlyImportService, dfp: :true do
     expect(display_line_item_budget.end_date).to eq Date.new(2017, 03, 20)
   end
 
-  it 'update display line item budget successfully' do
+  xit 'update display line item budget successfully' do
     display_line_item.display_line_item_budgets << display_line_item_budget
 
     monthly_import = described_class.new(company.id, 'dfp_monthly', report_file: report_file)
