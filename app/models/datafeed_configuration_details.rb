@@ -16,18 +16,18 @@ class DatafeedConfigurationDetails < ActiveRecord::Base
   ]
 
   def self.get_pattern_id(name)
-    self::REVENUE_CALCULATION_PATTERNS.find{|el| el[:name] == name}.try(:[], :id)
+    REVENUE_CALCULATION_PATTERNS.find{|el| el[:name] == name}&.dig(:id)
   end
 
   def self.get_pattern_name(id)
-    self::REVENUE_CALCULATION_PATTERNS.find{|el| el[:id] == id}.try(:[], :name)
+    REVENUE_CALCULATION_PATTERNS.find{|el| el[:id] == id}&.dig(:name)
   end
 
   def self.get_product_mapping_id(name)
-    self::PRODUCT_MAPPING.find{|el| el[:name] == name}.try(:[], :id)
+    PRODUCT_MAPPING.find{|el| el[:name] == name}&.dig(:id)
   end
 
   def self.get_product_mapping_name(id)
-    self::PRODUCT_MAPPING.find{|el| el[:id] == id}.try(:[], :name)
+    PRODUCT_MAPPING.find{|el| el[:id] == id}&.dig(:name)
   end
 end
