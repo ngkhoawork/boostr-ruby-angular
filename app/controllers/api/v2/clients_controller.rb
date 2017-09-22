@@ -95,7 +95,7 @@ class Api::V2::ClientsController < ApiController
   end
 
   def clients
-    if params[:filter] == 'company' && current_user.leader?
+    if params[:filter] == 'company'
       company.clients
     elsif params[:filter] == 'team' && team.present?
       team.clients

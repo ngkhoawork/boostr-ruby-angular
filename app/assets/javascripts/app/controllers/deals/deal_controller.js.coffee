@@ -53,9 +53,6 @@
     .then (respond) ->
       $scope.dealFiles = respond.data
 
-  $scope.getIconName = (typeName) ->
-    typeName && typeName.split(' ').join('-').toLowerCase()
-
   $scope.uploadFile =
     name: null
     size: null
@@ -620,6 +617,17 @@
           $scope.errors[key] = error && error[0]
     )
 
+  $scope.moment = moment
+
+  $scope.updateDealDate = (key, oldDate) ->
+    deal = $scope.currentDeal
+    if moment(deal.start_date).isAfter(deal.end_date)
+      deal[key] = moment(oldDate).toDate()
+      $scope.errors.campaignPeriod = 'End Date can\'t be before Start Date'
+      $timeout (-> delete $scope.errors.campaignPeriod), 6000
+    else
+      $scope.updateDeal()
+
   validationValueFactorExists = (deal, factor) ->
     if factor == 'deal_type_value'
       deal.deal_type && deal.deal_type.option_id
@@ -732,6 +740,11 @@
         for key, error of resp.data.errors
           deal_contact.errors[key] = error && error[0]
     )
+
+  $scope.removeDealInitiative = (e) ->
+    e.stopPropagation()
+    $scope.currentDeal.initiative_id = null
+    $scope.updateDeal()
 
   $scope.deleteDealProduct = (deal_product) ->
     $scope.errors = {}
@@ -948,8 +961,6 @@
     if confirm('Are you sure you want to delete the activity?')
       Activity.delete activity, ->
         $scope.$emit('updated_activities')
-  $scope.getType = (type) ->
-    _.findWhere($scope.types, name: type)
 
   $scope.baseFieldRequired = (factor) ->
     if $scope.currentDeal && $scope.base_fields_validations

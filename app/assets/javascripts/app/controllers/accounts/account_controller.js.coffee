@@ -33,9 +33,6 @@
     AccountCfName.all().then (accountCfNames) ->
       $scope.accountCfNames = accountCfNames
 
-  $scope.getIconName = (typeName) ->
-    typeName && typeName.split(' ').join('-').toLowerCase()
-
   $scope.setClientTypes = (client_types) ->
     client_types.options.forEach (option) ->
       $scope[option.name] = option.id
@@ -517,8 +514,19 @@
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the account "' +  $scope.currentClient.name + '"?')
-      $scope.currentClient.$delete()
-      $location.path('/accounts')
+      Client.__delete $scope.currentClient, (error) ->
+        if error
+          $scope.modalInstance = $modal.open
+            templateUrl: 'modals/client_deletion_alert.html'
+            size: 'md'
+            controller: 'AccountDeleteController'
+            backdrop: 'static'
+            keyboard: false
+            resolve:
+              error: ->
+                error.data.error
+        else
+          $location.path('/accounts')
 
   $scope.deleteActivity = (activity) ->
     if confirm('Are you sure you want to delete the activity?')
@@ -758,9 +766,6 @@
     $scope.getChildClients()
 #    $scope.setClient(client)
 #    $scope.clients.push(client)
-
-  $scope.getType = (type) ->
-    _.findWhere($scope.types, name: type)
 
   $scope.initReminder = ->
     $scope.showReminder = false;

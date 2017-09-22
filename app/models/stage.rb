@@ -12,6 +12,39 @@ class Stage < ActiveRecord::Base
 
   before_create :set_position
 
+  after_create do
+    create_dimension
+    update_forecast_fact_callback
+  end
+
+  after_destroy do |stage_record|
+    delete_dimension(stage_record)
+  end
+
+  def create_dimension
+    StageDimension.create(
+      id: self.id,
+      company_id: self.company_id,
+      name: self.name,
+      probability: self.probability,
+      open: self.open
+    )
+  end
+
+  def delete_dimension(stage_record)
+    StageDimension.destroy(stage_record.id)
+    ForecastPipelineFact.destroy_all(stage_dimension_id: stage_record.id)
+  end
+
+  def update_forecast_fact_callback
+    time_period_ids = company.time_periods.collect{|time_period| time_period.id}
+    user_ids = company.users.collect{|user| user.id}
+    product_ids = company.products.collect{|product| product.id}
+    stage_ids = [self.id]
+    deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids, stage_ids: stage_ids}
+    ForecastPipelineCalculatorWorker.perform_async(deal_change)
+  end
+
   def self.closed_won(company_id)
     self.closed_won_for_company(company_id).first
   end

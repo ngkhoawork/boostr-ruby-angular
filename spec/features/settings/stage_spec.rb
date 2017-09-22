@@ -11,8 +11,8 @@ feature 'Stages' do
       expect(page).to have_css('#stages')
     end
 
-    scenario 'creating a stage', js: true do
-      find('.add-stage').trigger('click')
+    it 'creating a stage', js: true do
+      find('add-button', text: 'Add').trigger('click')
 
       expect(page).to have_css('#stage-modal')
 
@@ -26,13 +26,13 @@ feature 'Stages' do
 
       within '.table-wrapper tbody' do
         expect(page).to have_css('tr', count: 1)
+
         within 'tr' do
           expect(page).to have_text 'Test Stage'
           expect(page).to have_text '64%'
         end
 
-        find('tr:first-child').hover
-        find('.edit-stage').trigger('click')
+        find('i.fa-pencil', visible: false).trigger('click')
       end
 
       expect(page).to have_css('#stage-modal')

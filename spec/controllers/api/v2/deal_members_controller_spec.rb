@@ -57,10 +57,9 @@ RSpec.describe Api::V2::DealMembersController, type: :controller do
 
     it 'updates the deal member' do
       put :update, id: deal_member.id, deal_id: deal.id, deal_member: { share: '62' }, format: :json
-      response_json = JSON.parse(response.body)
 
       expect(response).to be_success
-      expect(response_json['members'][1]['share']).to eq(62)
+      expect(deal_member.reload.share).to eq(62)
     end
   end
 

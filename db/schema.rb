@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170905015555) do
+ActiveRecord::Schema.define(version: 20170915133451) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -262,11 +262,11 @@ ActiveRecord::Schema.define(version: 20170905015555) do
     t.string   "api_email"
     t.string   "encrypted_password"
     t.string   "encrypted_password_iv"
+    t.boolean  "recurring",                  default: false
     t.text     "encrypted_json_api_key"
     t.text     "encrypted_json_api_key_iv"
     t.string   "network_code"
     t.string   "integration_provider"
-    t.boolean  "recurring",                  default: false
   end
 
   add_index "api_configurations", ["company_id"], name: "index_api_configurations_on_company_id", using: :btree
@@ -313,7 +313,7 @@ ActiveRecord::Schema.define(version: 20170905015555) do
     t.integer  "user_id"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.decimal  "changed_amount", precision: 15, scale: 2
+    t.decimal  "changed_amount", precision: 12, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
@@ -449,10 +449,10 @@ ActiveRecord::Schema.define(version: 20170905015555) do
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
     t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
-    t.boolean  "requests_enabled",                  default: false
     t.boolean  "enable_operative_extra_fields",     default: false
-    t.boolean  "influencer_enabled",                default: false
+    t.boolean  "requests_enabled",                  default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
+    t.boolean  "influencer_enabled",                default: false
     t.boolean  "forecast_gap_to_quota_positive",    default: true
   end
 
@@ -1123,6 +1123,17 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
 
+  create_table "forecast_calculation_logs", force: :cascade do |t|
+    t.integer  "company_id"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.boolean  "finished"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "forecast_calculation_logs", ["company_id"], name: "index_forecast_calculation_logs_on_company_id", using: :btree
+
   create_table "forecast_pipeline_facts", force: :cascade do |t|
     t.integer  "user_dimension_id"
     t.integer  "product_dimension_id"
@@ -1648,9 +1659,9 @@ ActiveRecord::Schema.define(version: 20170905015555) do
     t.boolean  "is_active",                           default: true
     t.string   "starting_page"
     t.string   "default_currency",                    default: "USD"
-    t.boolean  "revenue_requests_access",             default: false
     t.string   "employee_id",             limit: 20
     t.string   "office",                  limit: 100
+    t.boolean  "revenue_requests_access",             default: false
   end
 
   add_index "users", ["company_id"], name: "index_users_on_company_id", using: :btree
@@ -1752,6 +1763,7 @@ ActiveRecord::Schema.define(version: 20170905015555) do
   add_foreign_key "ealerts", "companies"
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
+  add_foreign_key "forecast_calculation_logs", "companies"
   add_foreign_key "forecast_pipeline_facts", "product_dimensions"
   add_foreign_key "forecast_pipeline_facts", "stage_dimensions"
   add_foreign_key "forecast_pipeline_facts", "user_dimensions"

@@ -3,10 +3,10 @@ module Helpers
     container = find(".ui-select-container[name='#{name}']")
     within container do
       within '.ui-select-match' do
-        find('span.btn').trigger('click')
+        find('span.btn').click
       end
       find('.ui-select-search').set(value)
-      find('.ui-select-choices-row-inner').trigger('click')
+      find('.ui-select-choices-row-inner').click
     end
   end
 

@@ -2,20 +2,49 @@ class Api::ForecastsController < ApplicationController
   respond_to :json
 
   def index
-    if user.present?
-      render json: forecast_member
-    elsif team.present?
-      render json: [ForecastTeam.new(team, time_period.start_date, time_period.end_date)]
-    elsif params[:id] == 'all'
-      render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
-    elsif show_all_data
-      render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
+    if new_version?
+      data = time_periods.map do |time_period_row|
+        if time_period_row[:data].nil?
+          {quarter: time_period_row[:quarter]}
+        else
+          if user.present?
+            NewForecastMemberSerializer.new(NewForecastMember.new(user, time_period_row[:data], product, time_period_row[:quarter], year))
+          elsif team.present?
+            NewForecastTeamSerializer.new(NewForecastTeam.new(team, time_period_row[:data], product, time_period_row[:quarter], year))
+          elsif params[:team_id] == 'all'
+            NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product, time_period_row[:quarter], year))
+          elsif show_all_data
+            NewForecastSerializer.new(NewForecast.new(company, teams, time_period_row[:data], product, time_period_row[:quarter], year))
+          else
+            NewForecastMemberSerializer.new(NewForecastMember.new(current_user, time_period_row[:data], product, time_period_row[:quarter], year))
+          end
+        end
+      end
+      render json: data
     else
-      render json: forecast_member
+      if user.present?
+        render json: forecast_member
+      elsif team.present?
+        render json: [ForecastTeam.new(team, time_period.start_date, time_period.end_date, year)]
+      elsif params[:id] == 'all'
+        render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
+      elsif show_all_data
+        render json: [Forecast.new(company, teams, time_period.start_date, time_period.end_date, year)]
+      else
+        render json: forecast_member
+      end
     end
   end
 
   def detail
+    if valid_time_period?
+      render json: NewQuarterlyForecastSerializer.new(NewQuarterlyForecast.new(company, teams, team, user, time_period))
+    else
+      render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
+    end
+  end
+
+  def old_detail
     if valid_time_period?
       start_date = time_period.start_date
       end_date = time_period.end_date
@@ -34,7 +63,7 @@ class Api::ForecastsController < ApplicationController
     end
   end
 
-  def product_detail
+  def old_product_detail
     if valid_time_period?
       start_date = time_period.start_date
       end_date = time_period.end_date
@@ -62,8 +91,36 @@ class Api::ForecastsController < ApplicationController
     end
   end
 
+  def product_detail
+    if valid_time_period?
+      render json: NewProductForecast.new(company, products, teams, team, user, time_period).forecasts_data
+    else
+      render json: { errors: [ "Time period is not valid" ] }, status: :unprocessable_entity
+    end
+  end
+
   def show
     render json: ForecastTeam.new(team, time_period.start_date, time_period.end_date, nil, year)
+  end
+
+  def run_forecast_calculation
+    current_job = ForecastCalculationLog.find_by(company_id: current_user.company_id, finished: false)
+    if current_job.present?
+      render json: { error: "There is currently running forecast calculation job now." }, status: :unprocessable_entity
+    else
+      time_period_ids = company.time_periods.collect{|item| item.id},
+      product_ids = company.products.collect{|item| item.id},
+      user_ids = company.users.collect{|item| item.id}
+      stage_ids = company.stages.collect{|item| item.id}
+      deal_change = {time_period_ids: time_period_ids, product_ids: product_ids, stage_ids: stage_ids, user_ids: user_ids}
+      io_change = {time_period_ids: time_period_ids, product_ids: product_ids, user_ids: user_ids}
+
+      job = ForecastCalculationLog.create(company_id: current_user.company_id, start_date: DateTime.now, end_date: nil, finished: false)
+      ForecastRevenueCalculatorWorker.perform_async(io_change)
+      ForecastPipelineCalculatorWorker.perform_async(deal_change, current_user.company_id)
+
+      render nothing: true
+    end
   end
 
   protected
@@ -74,13 +131,24 @@ class Api::ForecastsController < ApplicationController
         ForecastMember.new(current_user, dates[:start_date], dates[:end_date], dates[:quarter], year)
       end
     else
-      if user.present?
-        [ForecastMember.new(user, time_period.start_date, time_period.end_date)]
+      if new_version?
+        if user.present?
+          [NewForecastMember.new(user, time_period, product)]
+        else
+          [NewForecastMember.new(current_user, time_period, product)]
+        end
       else
-        [ForecastMember.new(current_user, time_period.start_date, time_period.end_date)]
+        if user.present?
+          [ForecastMember.new(user, time_period.start_date, time_period.end_date)]
+        else
+          [ForecastMember.new(current_user, time_period.start_date, time_period.end_date)]
+        end
       end
-
     end
+  end
+
+  def new_version?
+    params[:new_version] && params[:new_version] == 'true'
   end
 
   def year
@@ -110,6 +178,22 @@ class Api::ForecastsController < ApplicationController
     end
   end
 
+  def time_periods
+    return @time_periods if defined?(@time_periods)
+    if params[:year]
+      @time_periods = quarters.map do |quarter|
+        {
+          quarter: quarter[:quarter],
+          data: company.time_periods.find_by(start_date: quarter[:start_date].to_date, end_date: quarter[:end_date].to_date)
+        }
+      end
+    elsif params[:time_period_id]
+      @time_periods = [{quarter: nil, data: company.time_periods.find(params[:time_period_id])}]
+    else
+      @time_period = [{quarter: nil, data: company.time_periods.now}]
+    end
+  end
+
   def valid_time_period?
     if params[:time_period_id].present? && time_period.present?
       if time_period.start_date == time_period.start_date.beginning_of_year && time_period.end_date == time_period.start_date.end_of_year
@@ -132,7 +216,9 @@ class Api::ForecastsController < ApplicationController
   def team
     return @team if defined?(@team)
     @team = nil
-    if params[:id] && params[:id] != 'all'
+    if params[:team_id] && params[:team_id] != 'all'
+      @team = company.teams.find(params[:team_id])
+    elsif params[:id] && params[:id] != 'all'
       @team = company.teams.find(params[:id])
     end
   end
@@ -161,7 +247,7 @@ class Api::ForecastsController < ApplicationController
     if params[:user_id] && params[:user_id] != 'all'
       @user = company.users.find(params[:user_id])
     end
-  end
+  end  
 
   def company
     return @company if defined?(@company)

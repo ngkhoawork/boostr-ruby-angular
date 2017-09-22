@@ -27,10 +27,10 @@
           if u.id == $scope.team.leader_id
             $scope.leader = u
             $scope.availableLeaders.push($scope.leader)
-          if u && !u['leader?']
+          if u && !u['leader?'] && !u['team_id']
             $scope.availableLeaders.push(u)
         
-        if u && !u['leader?']
+        if u && !u['leader?'] && !u['team_id']
           $scope.availableUsers.push(u)
       $scope.team.members = _.map members, (item) ->
         return item.id
@@ -56,6 +56,8 @@
     $scope.team.member_ids = $scope.team.members
     Team.create(team: $scope.team).then (team) ->
       $modalInstance.close()
+    , (error) ->
+      $scope.buttonDisabled = false
 
   $scope.$on 'updated_teams', ->
     User.query().$promise.then (users) ->

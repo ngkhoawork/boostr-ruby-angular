@@ -197,12 +197,14 @@ RSpec.describe Api::ContactsController, type: :controller do
 
       get :metadata, format: :json
 
-      expect(json_response).to eql(
-        'workplaces' => ['Fidelity', 'Fliboard'],
-        'job_levels' => ['CEO', 'Seller'],
-        'cities'     => ['Palm Beach', 'New York'],
-        'countries'  => ISO3166::Country.all_translated
-      )
+      expect(json_response['workplaces']).to include 'Fliboard'
+      expect(json_response['workplaces']).to include 'Fidelity'
+      expect(json_response['job_levels']).to include 'CEO'
+      expect(json_response['job_levels']).to include 'Seller'
+      expect(json_response['cities']).to include 'Palm Beach'
+      expect(json_response['cities']).to include 'New York'
+      expect(json_response['countries']).to include 'Ukraine'
+      expect(json_response['countries']).to include 'France'
     end
   end
 
@@ -215,7 +217,8 @@ RSpec.describe Api::ContactsController, type: :controller do
 
       get :related_clients, id: contact.id
 
-      expect(json_response.map{|el| el['client']['name'] } ).to eq(['Fidelity', 'Fliboard'])
+      expect(json_response.map{|el| el['client']['name'] } ).to include 'Fidelity'
+      expect(json_response.map{|el| el['client']['name'] } ).to include 'Fliboard'
     end
   end
 

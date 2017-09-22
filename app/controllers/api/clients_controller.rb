@@ -89,8 +89,38 @@ class Api::ClientsController < ApplicationController
   end
 
   def destroy
-    client.destroy
-    render nothing: true
+    errors = []
+    if client.agency_deals.count > 0 || client.advertiser_deals.count > 0
+      errors << 'Deal'
+    end
+    if client.agency_activities.count > 0 || client.activities.count > 0
+      errors << 'Activity'
+    end
+    if client.contacts.count > 0 || client.primary_contacts.count > 0 || client.secondary_contacts.count > 0
+      errors << 'Contact'
+    end
+    if client.agency_ios.count > 0 || client.advertiser_ios.count > 0
+      errors << 'IO'
+    end
+    if client.bp_estimates.count > 0
+      errors << 'Business Plan'
+    end
+    if client.child_clients.count > 0
+      errors << 'Account'
+    end
+    if client.advertisers.count > 0
+      errors << 'Agency'
+    end
+    if client.agencies.count > 0 
+      errors << 'Advertiser'
+    end
+
+    if errors.count > 0
+      render json: { error: "This account is used on #{errors.join(', ')}. Remove all references to this records before deleting." }, status: :unprocessable_entity
+    else
+      client.destroy
+      render nothing: true
+    end
   end
 
   def sellers

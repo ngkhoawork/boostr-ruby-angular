@@ -36,6 +36,25 @@ class Io < ActiveRecord::Base
     end
   end
 
+  after_destroy do |io_record|
+    update_revenue_fact(io_record)
+  end
+
+  set_callback :save, :after, :update_revenue_fact_callback
+
+  def update_revenue_fact_callback
+    if (start_date_changed? || end_date_changed?)
+      if start_date_was && end_date_was
+        s_date = [start_date_was, start_date].min
+        e_date = [end_date_was, end_date].max
+      else
+        s_date = start_date
+        e_date = end_date
+      end
+      update_revenue_fact_date(s_date, e_date)
+    end
+  end
+
   def reset_content_fees
     # This only happens if start_date or end_date has changed on the Deal and thus it has already be touched
     ActiveRecord::Base.no_touching do
@@ -49,20 +68,50 @@ class Io < ActiveRecord::Base
   def reset_member_effective_dates
     io_members.each do |io_member|
       date_changed = false
-      puts start_date_was
-      puts io_member.from_date
       if start_date_was == io_member.from_date
         io_member.from_date = start_date
         date_changed = true
-        puts io_member.to_json
       end
       if end_date_was == io_member.to_date
         io_member.to_date = end_date
         date_changed = true
       end
-
       io_member.save if date_changed
     end
+  end
+
+  def update_revenue_fact_date(s_date, e_date)
+    company = self.company
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", s_date, e_date)
+    time_periods.each do |time_period|
+      self.users.each do |user|
+        self.products.each do |product|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def update_revenue_fact(io)
+    company = io.company
+    time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+    time_periods.each do |time_period|
+      io.users.each do |user|
+        io.products.each do |product|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def products
+    product_ids = []
+    product_ids += self.content_fees.collect{ |item| item.product_id }
+    product_ids += self.display_line_items.collect{ |item| item.product_id }
+    products = company.products.where("id in (?)", product_ids)
+    products
   end
 
   def days

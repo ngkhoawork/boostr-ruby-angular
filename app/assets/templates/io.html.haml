@@ -82,7 +82,7 @@
 												%li{'ng-repeat': 'product in products', 'ng-class': '{active: content_fee.product.name == product.name}'}
 													%a{'href': '', 'ng-click': 'content_fee.product_id = product.id; updateContentFee(content_fee);'}
 														%span.text {{product.name}}
-										%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
+											%i.fa.fa-trash.z-icon{'ng-click': 'deleteContentFee(content_fee)'}
 									%td
 										{{ currentIO.start_date | date: 'M/d/yyyy' }}
 									%td
@@ -182,7 +182,7 @@
 									%td.right
 										{{ displayLineItem.ctr }}
 								%tr.display-line-budgets-row
-									%td.left{colspan: 20}
+									%td.left.auto-colspan
 										%div.display-line-budgets{'data-displayID': '{{displayLineItem.id}}', 'ng-class': '{active: selectedIORow == displayLineItem }'}
 											%div.budgets-inner
 												%div.title
@@ -203,7 +203,7 @@
 
 							%tbody{ ng: { if: '!currentIO.display_line_items || currentIO.display_line_items.length == 0' } }
 								%tr
-									%td.center{ 'colspan': '20' }
+									%td.center.auto-colspan
 										No data available
 				.block#line-print
 					%div.mb20

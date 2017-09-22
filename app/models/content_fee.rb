@@ -28,8 +28,54 @@ class ContentFee < ActiveRecord::Base
   end
 
   after_create do
-    # create_content_fee_product_budgets
+    create_content_fee_product_budgets if self.content_fee_product_budgets.count == 0
     io.update_total_budget
+  end
+
+  after_destroy do |content_fee|
+    update_revenue_pipeline_budget(content_fee)
+  end
+
+  set_callback :save, :after, :update_revenue_fact_callback
+
+  def update_revenue_fact_callback
+    update_revenue_pipeline_budget(self) if budget_changed? || budget_loc_changed?
+    if product_id_changed?
+      if product_id_was.present?
+        old_product = Product.find(product_id_was)
+        update_revenue_pipeline_product(old_product) if old_product.present?
+      end
+      update_revenue_pipeline_product(product)
+    end
+  end
+
+  def update_revenue_pipeline_budget(content_fee)
+    io = content_fee.io
+    product = content_fee.product
+    if io.present? && product.present?
+      company = io.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+      time_periods.each do |time_period|
+        io.users.each do |user|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
+  end
+
+  def update_revenue_pipeline_product(product)
+    io = self.io
+    if io.present? && product.present?
+      company = io.company
+      time_periods = company.time_periods.where("end_date >= ? and start_date <= ?", io.start_date, io.end_date)
+      time_periods.each do |time_period|
+        io.users.each do |user|
+          forecast_revenue_fact_calculator = ForecastRevenueFactCalculator::Calculator.new(time_period, user, product)
+          forecast_revenue_fact_calculator.calculate()
+        end
+      end
+    end
   end
 
   def active_exchange_rate

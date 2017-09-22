@@ -23,15 +23,15 @@ describe PacingDashboard::PipelineAndRevenueService do
     pipeline_previous_year_quarter = result[:weighted_pipeline][:previous_year_quarter]
     forecast_amt_previous_year_quarter = result[:sum_revenue_and_weighted_pipeline][:previous_year_quarter]
 
-    expect(revenue_current_quarter).to eq [2000, 0, 0, 0, 0, 5000, 0, 0, 5000, 2000, 30000, 0, 0, 0, 6000, 0, 0, 0, 0, 0, 0]
+    expect(revenue_current_quarter).to eq [2000, 0, 0, 0, 0, 5000, 0, 0, 5000, 2000, 30000, 0, nil, nil, 6000, nil, nil, nil, nil, nil, nil]
     expect(revenue_previous_quarter).to eq [0, 7000, 0, 0, 1000, 0, 0, 0, 15000, 19000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2000, 0]
     expect(revenue_previous_year_quarter).to eq [0, 14000, 0, 0, 9000, 0, 0, 0, 13000, 0, 0, 0, 0, 10000, 0, 0, 0, 0, 0, 4000, 0]
 
-    expect(pipeline_current_quarter).to eq  [4000, 0, 0, 0, 0, 10000, 0, 0, 10000, 5000, 20000, 0, 0, 0, 1500, 0, 0, 0, 0, 0, 0]
+    expect(pipeline_current_quarter).to eq [4000, 0, 0, 0, 0, 10000, 0, 0, 10000, 5000, 20000, 0, nil, nil, 1500, nil, nil, nil, nil, nil, nil]
     expect(pipeline_previous_quarter).to eq [0, 12000, 0, 0, 2000, 0, 0, 0, 20000, 30000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 0]
     expect(pipeline_previous_year_quarter).to eq [0, 12000, 0, 0, 6000, 0, 0, 0, 3000, 0, 0, 0, 0, 5000, 0, 0, 0, 0, 0, 10000, 0]
 
-    expect(forecast_amt_current_quarter).to eq [6000, 0, 0, 0, 0, 15000, 0, 0, 15000, 7000, 50000, 0, 0, 0, 7500, 0, 0, 0, 0, 0, 0]
+    expect(forecast_amt_current_quarter).to eq [6000, 0, 0, 0, 0, 15000, 0, 0, 15000, 7000, 50000, 0, nil, nil, 7500, nil, nil, nil, nil, nil, nil]
     expect(forecast_amt_previous_quarter).to eq [0, 19000, 0, 0, 3000, 0, 0, 0, 35000, 49000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3000, 0]
     expect(forecast_amt_previous_year_quarter).to eq [0, 26000, 0, 0, 15000, 0, 0, 0, 16000, 0, 0, 0, 0, 15000, 0, 0, 0, 0, 0, 14000, 0]
   end

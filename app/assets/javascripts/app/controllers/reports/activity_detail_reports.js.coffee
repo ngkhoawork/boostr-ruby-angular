@@ -33,6 +33,9 @@
 			appliedFilter = angular.copy $scope.filter
 			getReport getQuery()
 
+		$scope.isFilterApplied = ->
+			!angular.equals $scope.filter, appliedFilter
+
 		$scope.resetFilter = ->
 			$scope.filter = angular.copy defaultFilter
 

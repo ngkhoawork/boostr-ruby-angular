@@ -33,7 +33,10 @@
 									%td {{item.goal | currency : undefined : 0}}
 									%td {{item.pipeline | currency : undefined : 0}}
 									%td {{item.won | currency : undefined : 0}}
-									%td {{item.goal_probability}}%
+									%td{'ng-if': 'item.goal_probability == "N/A"'}
+										N/A
+									%td{'ng-if': 'item.goal_probability != "N/A"'}
+										{{item.goal_probability}}%
 
 			%div#selected-initiative{'ng-if': 'selectedInitiative'}
 				.sub-header

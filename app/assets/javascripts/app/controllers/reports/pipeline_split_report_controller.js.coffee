@@ -18,13 +18,6 @@
                 deals: 0
                 aveDealSize: 0
 
-            $scope.sorting =
-                key: null
-                reverse: false
-                set: (key) ->
-                    this.reverse = if this.key == key then !this.reverse else false
-                    this.key = key
-
             emptyFilter = {id: null, name: 'All'}
 
             defaultFilter =
@@ -34,6 +27,7 @@
                 status: $scope.statuses[1]
 
             $scope.filter = angular.copy defaultFilter
+            appliedFilter = null
 
             $scope.setFilter = (key, val) ->
                 if key == 'stages'
@@ -47,8 +41,11 @@
             $scope.applyFilter = ->
                 query = getQuery()
 #                $location.search(query)
+                appliedFilter = angular.copy $scope.filter
                 getReport query
 
+            $scope.isFilterApplied = ->
+                !angular.equals $scope.filter, appliedFilter
 
             $scope.resetFilter = ->
                 $scope.filter = angular.copy defaultFilter
@@ -78,6 +75,7 @@
                     t.pipelineUnweighted += budget
                     t.pipelineWeighted += budget * deal.stage.probability / 100
                 t.pipelineRatio = (Math.round(t.pipelineWeighted / t.pipelineUnweighted * 100) / 100) || 0
+                deals = _.uniq deals, 'deal_id'
                 t.deals = deals.length
                 t.aveDealSize = t.pipelineUnweighted / deals.length
 

@@ -7,46 +7,36 @@
   .preview-subheader{style: 'padding: 20px 20px;color: #2B3C49;border-left: 1px solid #EAECEE;border-right: 1px solid #EAECEE;vertical-align: middle;'}
     %table{width: '100%'} 
       %tr
-        - if !@deal.stage.open && @deal.stage.probability == 100
-          %td{ style: "background: url('#{root_url}won-deal.png'); background-repeat: no-repeat; background-position: 70%; height: 110px;" }
-            .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
-              #{@deal.name}
-              - if @deal.stage.active == true
-                \- #{@deal.stage.probability}%
+        - style = ""
+        - if !@deal.stage_open? && @deal.stage_probability == 100
+          - style = "background: url('#{root_url}won-deal.png'); background-repeat: no-repeat; background-position: 70%; height: 110px;"
+          
+        %td{ style: "#{style}" }
+          .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
+            #{@deal.name}
+          - if @deal.stage_active?
             .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
               %strong
-                Advertiser:
-              #{@deal.advertiser.name}
+                Stage:
+              #{@deal.stage_name}
             .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
               %strong
-                Sales Team:
-              #{@sales_team}
-            .comment-section
-              %div
-                %strong
-                  Comments:
-              %div
-                #{@comment}
-        - else
-          %td
-            .subtitle{style: 'font-size: 24px;font-weight: 600;line-height: 33px;'}
-              #{@deal.name}
-              - if @deal.stage.active == true
-                \- #{@deal.stage.probability}%
-            .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
+                Probability:
+              #{@deal.stage_probability}%
+          .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
+            %strong
+              Advertiser:
+            #{@deal.advertiser_name}
+          .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
+            %strong
+              Sales Team:
+            #{@sales_team}
+          .comment-section
+            %div
               %strong
-                Advertiser:
-              #{@deal.advertiser.name}
-            .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
-              %strong
-                Sales Team:
-              #{@sales_team}
-            .comment-section
-              %div
-                %strong
-                  Comments:
-              %div
-                #{@comment}
+                Comments:
+            %div
+              #{@comment}
         %td.action{style: 'text-align: right;'}
           %button.add-btn{style: 'outline: none;font-weight: bold;background-color: transparent;color: #ff7200;border: 2px solid #ff7200;border-radius: 100px;padding: 4px 14px 4px 12px;position: relative;top: -3px;transition: background-color 300ms, color 300ms;'}
             %a{href: "#{root_url}deals/#{@deal.id}", style: 'color: #ff7200;text-decoration: none;font-weight: bold;font-size: 13px;'}

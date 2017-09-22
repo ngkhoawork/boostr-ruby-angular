@@ -56,7 +56,7 @@
 													{{ status.name }}
 
 				.header-cell
-					%button.add-btn{'ng-click': 'applyFilter()'}
+					%button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
 						Run Report
 
 				.header-cell
@@ -91,47 +91,47 @@
 					%div.table-wrapper
 						%table.table.table-hover
 							%thead
-								%tr{'z-fixed-header': true, watch: '"deals"'}
+								%tr.z-sortable-prime{'z-fixed-header': true, watch: '"deals"'}
 									%th
-										%span.clickable{'ng-click': 'sorting.set("deal_id")'} Deal ID
+										%span.z-sortable{by: 'deal_id'} Deal ID
 									%th
-										%span.clickable{'ng-click': 'sorting.set("deal_name")'} Name
+										%span.z-sortable{by: 'deal_name'} Name
 									%th
-										%span.clickable{'ng-click': 'sorting.set("advertiser.name")'} Advertiser
+										%span.z-sortable{by: 'advertiser.name'} Advertiser
 									%th
-										%span.clickable{'ng-click': 'sorting.set("agency.name")'} Agency
+										%span.z-sortable{by: 'agency.name'} Agency
 									%th
-										%span.clickable{'ng-click': 'sorting.set("name")'} Team Member
+										%span.z-sortable{by: 'name'} Team Member
 									%th
-										%span.clickable{'ng-click': 'sorting.set("share")'} Split %
+										%span.z-sortable{by: 'share'} Split %
 									%th
-										%span.clickable{'ng-click': 'sorting.set("stage.name")'} Stage
+										%span.z-sortable{by: 'stage.name'} Stage
 									%th
-										%span.clickable{'ng-click': 'sorting.set("stage.probability")'} %
+										%span.z-sortable{by: 'stage.probability'} %
 									%th
-										%span.clickable{'ng-click': 'sorting.set("budget_loc")'} Budget
+										%span.z-sortable{by: 'budget_loc'} Budget
 									%th
-										%span.clickable{'ng-click': 'sorting.set("budget")'} Budget USD
+										%span.z-sortable{by: 'budget'} Budget USD
 									%th
-										%span.clickable{'ng-click': 'sorting.set("split_budget")'} Split Budget USD
+										%span.z-sortable{by: 'split_budget'} Split Budget USD
 									%th
-										%span.clickable{'ng-click': 'sorting.set("type")'} Type
+										%span.z-sortable{by: 'type'} Type
 									%th
-										%span.clickable{'ng-click': 'sorting.set("source")'} Source
+										%span.z-sortable{by: 'source'} Source
 									%th
-										%span.clickable{'ng-click': 'sorting.set("next_steps")'} Next Steps
+										%span.z-sortable{by: 'next_steps'} Next Steps
 									%th
-										%span.clickable{'ng-click': 'sorting.set("next_steps_due")'} Next Steps Due
+										%span.z-sortable{by: 'next_steps_due'} Next Steps Due
 									%th
-										%span.clickable{'ng-click': 'sorting.set("start_date")'} Start Date
+										%span.z-sortable{by: 'start_date'} Start Date
 									%th
-										%span.clickable{'ng-click': 'sorting.set("end_date")'} End Date
+										%span.z-sortable{by: 'end_date'} End Date
 									%th
-										%span.clickable{'ng-click': 'sorting.set("created_date")'} Created Date
+										%span.z-sortable{by: 'created_date'} Created Date
 									%th
-										%span.clickable{'ng-click': 'sorting.set("closed_date")'} Closed Date
+										%span.z-sortable{by: 'closed_date'} Closed Date
 							%tbody
-								%tr{'ng-repeat': 'deal in deals | orderBy : sorting.key : sorting.reverse'}
+								%tr{'ng-repeat': 'deal in deals | orderBy : zSort.by : zSort.rev'}
 									%td {{deal.deal_id}}
 									%td
 										%a{href: '', 'ng-href': '/deals/{{deal.deal_id}}'} {{deal.deal_name}}

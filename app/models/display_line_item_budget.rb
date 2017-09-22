@@ -88,6 +88,11 @@ class DisplayLineItemBudget < ActiveRecord::Base
     import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'display_line_item_budget', source: 'ui')
     import_log.set_file_source(file_path)
 
+    io_change = {time_period_ids: [], product_ids: [], user_ids: []}
+
+    Io.skip_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItem.skip_callback(:save, :after, :update_revenue_fact_callback)
+
     CSV.parse(file, headers: true) do |row|
       import_log.count_processed
 
@@ -202,6 +207,12 @@ class DisplayLineItemBudget < ActiveRecord::Base
           end_date: end_date
       }
 
+      if io.present?
+        io_change[:time_period_ids] += TimePeriod.where("end_date >= ? and start_date <= ?", [io.start_date, start_date].min, [io.end_date, end_date].max).collect{|item| item.id}
+        io_change[:user_ids] += io.users.collect{|item| item.id}
+        io_change[:product_ids] += io.products.collect{|item| item.id}
+      end
+
       display_line_item_budget_params = self.convert_params_currency(io.exchange_rate, display_line_item_budget_params)
 
       display_line_item_budgets = display_line_item.display_line_item_budgets.where("date_part('year', start_date) = ? and date_part('month', start_date) = ?", start_date.year, start_date.month)
@@ -215,6 +226,15 @@ class DisplayLineItemBudget < ActiveRecord::Base
         display_line_item.display_line_item_budgets.create(display_line_item_budget_params)
       end
     end
+
+    Io.set_callback(:save, :after, :update_revenue_fact_callback)
+    DisplayLineItem.set_callback(:save, :after, :update_revenue_fact_callback)
+
+    io_change[:time_period_ids] = io_change[:time_period_ids].uniq
+    io_change[:user_ids] = io_change[:user_ids].uniq
+    io_change[:product_ids] = io_change[:product_ids].uniq
+
+    ForecastRevenueCalculatorWorker.perform_async(io_change)
 
     import_log.save
   end

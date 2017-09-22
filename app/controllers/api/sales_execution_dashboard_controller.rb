@@ -13,18 +13,10 @@ class Api::SalesExecutionDashboardController < ApplicationController
   end
 
   def forecast
-    start_date1 = Time.now.utc.beginning_of_quarter
-    end_date1 = Time.now.utc.end_of_quarter.beginning_of_day
-    start_date2 = (Time.now.utc + 3.months).beginning_of_quarter
-    end_date2 = (Time.now.utc + 3.months).end_of_quarter.beginning_of_day
-
-    if member.present?
-      render json: [ForecastMember.new(member, start_date1, end_date1), ForecastMember.new(member, start_date2, end_date2)]
-    elsif team.present?
-      render json: [ForecastTeam.new(team, start_date1, end_date1, nil, nil), ForecastTeam.new(team, start_date2, end_date2, nil, nil)]
-    else
-      render json: [Forecast.new(company, teams, start_date1, end_date1, nil), Forecast.new(company, teams, start_date2, end_date2, nil)]
-    end
+    render json: [current_forecast, next_quarter_forecast]
+  rescue NoMethodError => _e
+    render json: { errors: "Error happened when company didn't have time periods of type Quarter" },
+                   status: :unprocessable_entity
   end
 
   def monthly_forecast
@@ -266,6 +258,40 @@ class Api::SalesExecutionDashboardController < ApplicationController
 
   def products
     @products ||= current_user.company.products
+  end
+
+  def time_period
+    @_time_period ||= company.time_periods.current_quarter
+  end
+
+  def next_time_period
+    company.time_periods.all_quarter.find_by(start_date: time_period.end_date.next)
+  end
+
+  def current_forecast
+    return nil unless time_period
+
+    @_forecast ||= forecast_for(time_period)
+  end
+
+  def company_teams
+    @_teams = company.teams.roots(true)
+  end
+
+  def next_quarter_forecast
+    return nil unless time_period || next_time_period
+
+    @_next_quarter_forecast ||= forecast_for(next_time_period)
+  end
+
+  def forecast_for(period)
+    if member.present?
+      NewForecastMember.new(member, period, nil)
+    elsif team.present?
+      NewForecastTeam.new(team, period, nil)
+    else
+      NewForecast.new(company, company_teams, period, nil)
+    end
   end
 
   def top_activities

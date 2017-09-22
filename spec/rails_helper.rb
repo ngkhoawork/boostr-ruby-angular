@@ -1,6 +1,17 @@
 if ENV['RAILS_ENV'] == 'test'
   require 'simplecov'
-  SimpleCov.start 'rails'
+
+  if ENV['CIRCLE_ARTIFACTS']
+    dir = File.join(ENV['CIRCLE_ARTIFACTS'], "coverage")
+    SimpleCov.coverage_dir(dir)
+  end
+
+  SimpleCov.start 'rails' do
+    add_group 'Decorators', 'app/decorators'
+    add_group 'Services', 'app/services'
+    add_group 'Serializers', 'app/serializers'
+    add_group 'Representers', 'app/representers'
+  end
 end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
@@ -11,8 +22,13 @@ require 'rspec/rails'
 require 'shoulda/matchers'
 require 'capybara/rails'
 require 'capybara/rspec'
-require 'capybara/poltergeist'
+require 'capybara/webkit'
 require 'helpers'
+
+# Sidekiq testing
+require 'sidekiq/testing'
+Sidekiq::Testing.fake!
+
 
 # Add additional requires below this line. Rails is not loaded until this point!
 
@@ -34,7 +50,8 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # Checks for pending migrations before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
-Capybara.javascript_driver = :poltergeist
+
+Capybara.javascript_driver = :webkit
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
@@ -59,6 +76,7 @@ RSpec.configure do |config|
     else
       DatabaseCleaner.strategy = :truncation
     end
+
     DatabaseCleaner.start
     FactoryGirl.create(:company)
   end
@@ -67,18 +85,5 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
-  # RSpec Rails can automatically mix in different behaviours to your tests
-  # based on their file location, for example enabling you to call `get` and
-  # `post` in specs under `spec/controllers`.
-  #
-  # You can disable this behaviour by removing the line below, and instead
-  # explicitly tag your specs with their type, e.g.:
-  #
-  #     RSpec.describe UsersController, :type => :controller do
-  #       # ...
-  #     end
-  #
-  # The different available types are documented in the features, such as in
-  # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
 end

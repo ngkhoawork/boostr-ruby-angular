@@ -1,8 +1,8 @@
 @app.controller 'SettingsGeneralController',
-['$scope', 'Company', 'Stage', 'Validation', 'User'
-($scope, Company, Stage, Validation, User) ->
+['$scope', '$modal', 'Company', 'Stage', 'Validation', 'User', 'Forecast'
+($scope,    $modal,   Company,   Stage,   Validation,   User,   Forecast) ->
   $scope.userTypes = User.user_types_list
-  console.log($scope.userTypes)
+
   Company.get().$promise.then (company) ->
     $scope.company = company
 
@@ -26,4 +26,20 @@
   Stage.query().$promise.then (stages) ->
     stages.push { name: 'None', probability: null }
     $scope.stages = stages
+  
+  $scope.runForecastCalculation = () ->
+    if confirm("Are you sure run the forecast calculation? This will take upto several minutes.")
+      Forecast.run_forecast_calculation().$promise.then(
+        (response) ->
+        (error) ->
+          $scope.showWarningModal = (message) ->
+          $scope.modalInstance = $modal.open
+            templateUrl: 'modals/deal_warning.html'
+            size: 'md'
+            controller: 'DealWarningController'
+            backdrop: 'static'
+            keyboard: true
+            resolve:
+              message: -> error.data['error']
+      )
 ]

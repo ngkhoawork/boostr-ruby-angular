@@ -28,10 +28,10 @@ describe Api::DealProductsController do
       audit_log = deal.audit_logs.last
 
       expect(audit_log.type_of_change).to eq 'Budget Change'
-      expect(audit_log.old_value).to eq '0'
-      expect(audit_log.new_value).to eq '2000'
+      expect(audit_log.old_value).to eq '0.0'
+      expect(audit_log.new_value).to eq '2000.0'
       expect(audit_log.updated_by).to eq user.id
-      expect(audit_log.changed_amount).to eq '2000'
+      expect(audit_log.changed_amount).to eq 2000.0
     end
   end
 
@@ -56,10 +56,10 @@ describe Api::DealProductsController do
       audit_log = deal.audit_logs.last
 
       expect(audit_log.type_of_change).to eq 'Budget Change'
-      expect(audit_log.old_value).to eq '0'
-      expect(audit_log.new_value).to eq '20000'
+      expect(audit_log.old_value).to eq '0.0'
+      expect(audit_log.new_value).to eq '20000.0'
       expect(audit_log.updated_by).to eq user.id
-      expect(audit_log.changed_amount).to eq '20000'
+      expect(audit_log.changed_amount).to eq 20000.0
     end
   end
 
@@ -91,10 +91,10 @@ describe Api::DealProductsController do
       audit_log = deal.audit_logs.last
 
       expect(audit_log.type_of_change).to eq 'Budget Change'
-      expect(audit_log.old_value).to eq '30000'
-      expect(audit_log.new_value).to eq '10000'
+      expect(audit_log.old_value).to eq '30000.0'
+      expect(audit_log.new_value).to eq '10000.0'
       expect(audit_log.updated_by).to eq user.id
-      expect(audit_log.changed_amount).to eq '-20000'
+      expect(audit_log.changed_amount).to eq -20000.0
     end
   end
 end
