@@ -54,7 +54,7 @@ class Api::InfluencerContentFeesController < ApplicationController
     if params[:file].present?
       CsvImportWorker.perform_async(
         params[:file][:s3_file_path],
-        'InfluencerContentFee',
+        'Csv::InfluencerContentFee',
         current_user.id,
         params[:file][:original_filename]
       )
