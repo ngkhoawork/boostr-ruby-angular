@@ -4,7 +4,7 @@ FactoryGirl.define do
     deal
     budget 100
     start_date "2016-09-28 15:15:19"
-    end_date "2017-09-28 15:15:19"
+    end_date "2016-09-28 15:15:19"
     association :advertiser, factory: :client
     association :agency, factory: :client
     external_io_number { rand(1000..9999) }
