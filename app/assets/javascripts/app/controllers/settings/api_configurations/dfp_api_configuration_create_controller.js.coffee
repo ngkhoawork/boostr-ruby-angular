@@ -14,6 +14,11 @@
       $scope.weekdays = moment.weekdays()
       $scope.monthDays = [1..31]
 
+      $scope.date_range_types = [
+        {type: 'last_month', name: 'Last Month'},
+        {type: 'last_six_month', name: 'Last 6 Month'}
+      ]
+
       set_defaults = ->
         $scope.api_configuration.integration_provider = 'DFP'
         $scope.api_configuration.switched_on = true

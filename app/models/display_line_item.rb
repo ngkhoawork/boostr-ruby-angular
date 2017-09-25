@@ -687,6 +687,10 @@ class DisplayLineItem < ActiveRecord::Base
     import_log.save
   end
 
+  def is_cpd_price_type?
+    pricing_type == 'CPD'
+  end
+
   def ave_run_rate
     return @ave_run_rate if defined?(@ave_run_rate)
     total_days = 0

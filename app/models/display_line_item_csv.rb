@@ -14,7 +14,7 @@ class DisplayLineItemCsv
                 :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
                 :quantity_delivered, :quantity_delivered_3p, :company_id, :ctr, :clicks,
                 :io_name, :io_start_date, :io_end_date, :io_advertiser, :io_agency, :ad_unit_name,
-                :product
+                :product, :product_id
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -126,8 +126,20 @@ class DisplayLineItemCsv
   end
 
   def product
-    @_product ||= Product.find_by(company_id: company_id, name: product_name)
-    @_product ||= revenue_product
+    if ad_server == 'DFP'
+      @_product ||= ad_unit_product
+    else
+      @_product ||= Product.find_by(company_id: company_id, name: product_name)
+      @_product ||= revenue_product
+    end
+  end
+
+  def ad_unit_product
+    if product_id
+      Product.find_by(id: product_id)
+    else
+      Product.joins(:ad_units).find_by('ad_units.name = ? and products.company_id = ?', ad_unit_name, company_id)
+    end
   end
 
   def budget_loc
@@ -188,12 +200,21 @@ class DisplayLineItemCsv
 
   def is_dli_date_over_io_bounds
     return unless io.present? && display_line_item.new_record?
-    if parse_date(self.start_date).present? && parse_date(self.start_date) < io.start_date
-      errors.add(:start_date, 'start date can\'t be prior the IO start date')
-    end
-    if parse_date(self.end_date).present? && parse_date(self.end_date) > io.end_date
-      errors.add(:start_date, 'end date can\'t be after the IO end date')
-    end
+    return unless start_end_date_present?
+    errors.add(:start_date, 'start date can\'t be prior the IO start date') if dli_start_date_less_than_io_start_date
+    errors.add(:end_date, 'end date can\'t be after the IO end date') if dli_end_date_greater_then_io_end_date
+  end
+
+  def dli_start_date_less_than_io_start_date
+    parse_date(self.start_date) < io.start_date
+  end
+
+  def dli_end_date_greater_then_io_end_date
+    parse_date(self.end_date) > io.end_date
+  end
+
+  def start_end_date_present?
+    parse_date(self.start_date).present? && parse_date(self.end_date).present?
   end
 
   def persisted?

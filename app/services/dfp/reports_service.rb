@@ -2,6 +2,20 @@ module DFP
   class IntegrationErrors < StandardError
   end
 
+  FIXED_DATE_RANGE_TYPES = %w(TODAY
+                              YESTERDAY
+                              LAST_WEEK
+                              LAST_MONTH
+                              REACH_LIFETIME
+                              NEXT_DAY
+                              NEXT_90_DAYS
+                              NEXT_WEEK
+                              NEXT_MONTH
+                              CURRENT_AND_NEXT_MONTH
+                              NEXT_QUARTER
+                              NEXT_3_MONTHS
+                              NEXT_12_MONTHS)
+
   class ReportsService < BaseService
     API_VERSION = :v201702
     MAX_RETRIES = 5
@@ -14,12 +28,13 @@ module DFP
       set_logger_interceptor
     end
 
-    def generate_report_by_saved_query(query_id)
+    def generate_report_by_saved_query(query_id, options = {})
       begin
-        query = fetch_saved_query_by_id(query_id)
-        job = run_report_job_by_query(query)
+        fetch_saved_query_by_id(query_id)
+        modify_date_range_to_custom_date_range(options[:start_date], options[:end_date]) if options.any?
+        run_report_job_by_query(saved_query)
         check_report_status
-        get_report_by_id(job[:id])
+        get_report_by_id(report_job[:id])
       rescue DfpApi::V201702::ReportService::ApiException => e
         puts e.class
       end
@@ -45,9 +60,21 @@ module DFP
       response = report_service.get_saved_queries_by_statement(statement.toStatement)
       if !response[:results].nil?
         first_result = response[:results].first
-        first_result[:report_query]
+        @saved_query = first_result[:report_query]
       else
         raise DFP::IntegrationErrors, 'There is no report with such id'
+      end
+    end
+
+    def modify_date_range_to_custom_date_range(start_date, end_date)
+      if FIXED_DATE_RANGE_TYPES.include?(saved_query[:date_range_type])
+        saved_query[:date_range_type] = 'CUSTOM_DATE'
+        saved_query[:start_date] = { year: start_date.year,
+                                     month: start_date.month,
+                                     day: start_date.day }
+        saved_query[:end_date] = { year: end_date.year,
+                                   month: end_date.month,
+                                   day: end_date.day }
       end
     end
 
@@ -66,7 +93,7 @@ module DFP
 
     private
 
-    attr_reader :report_job
+    attr_accessor :report_job, :saved_query
 
     def report_download_options
       { :export_format => 'CSV_DUMP', :use_gzip_compression => false }

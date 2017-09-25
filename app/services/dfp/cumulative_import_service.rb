@@ -54,13 +54,13 @@ module DFP
     end
 
     def duplicating_rows
-      duplicated_rows = []
-      duplicating_line_item_ids.each do |item_id|
-        ser = DFP::TempCumulativeReportService.new(duplicating_line_item_id: item_id, company_id: company_id)
-        merged_row = ser.get_merged_row
-        duplicated_rows << merged_row
+      duplicating_line_item_ids.each_with_object([]) do |item_id, duplicated_rows|
+        duplicated_rows << temp_cumulative_service(item_id, company_id).get_merged_row
       end
-      duplicated_rows
+    end
+
+    def temp_cumulative_service(item_id, company_id)
+      DFP::TempCumulativeReportService.new(duplicating_line_item_id: item_id, company_id: company_id)
     end
 
     def duplicating_line_item_ids
@@ -95,11 +95,6 @@ module DFP
       price = row[:dimensionattributeline_item_cost_per_unit]
       non_cpd_booked_revenue = row[:dimensionattributeline_item_non_cpd_booked_revenue]
       budget_delivered = price * total_impressions / 1_000
-      if row[:product_id]
-        product = Product.find_by(id: row[:product_id])
-      else
-        product = Product.joins(:ad_units).where('ad_units.name = ? and products.company_id = ?', row[:dimensionad_unit_name], company_id).first
-      end
 
       line_item_params = {
           io_name: row[:dimensionorder_name],
@@ -109,7 +104,7 @@ module DFP
           io_end_date: row[:dimensionattributeorder_end_date_time],
           external_io_number: row[:dimensionorder_id].to_i,
           product_name: row[:dimensionline_item_name],
-          product: product,
+          product_id: row[:product_id],
           line_number: row[:dimensionline_item_id],
           ad_server: 'DFP',
           start_date: row[:dimensionattributeline_item_start_date_time],

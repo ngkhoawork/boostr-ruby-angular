@@ -264,15 +264,18 @@ class DisplayLineItemBudget < ActiveRecord::Base
 
   def correct_budget_loc
     if max_monthly_budget_exceeded? || max_budget_loc_exceeded?
-      corrected_budget = display_line_item.budget_loc - opposite_sum_of_display_line_item_budgets
-      self.budget_loc = corrected_budget
+      budget_loc = corrected_budget
       display_line_item.budget_delivered_loc = corrected_budget
       display_line_item.budget_remaining_loc = 0
     end
   end
 
+  def corrected_budget
+    @corrected_budget ||= display_line_item.budget_loc - opposite_sum_of_display_line_item_budgets
+  end
+
   def set_cpd_price_type_budget
-    self.budget_loc = display_line_item.budget_loc if display_line_item.is_cpd_price_type?
+    budget_loc = display_line_item.budget_loc if display_line_item.is_cpd_price_type?
   end
 
   def max_monthly_budget_exceeded?
