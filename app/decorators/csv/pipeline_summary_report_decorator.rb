@@ -93,7 +93,7 @@ class Csv::PipelineSummaryReportDecorator
   def method_missing(name)
     deal_custom_field = deal_custom_fields.find_by('lower(field_label) = ?', name.to_s.gsub('_', ' '))
 
-    deal[:custom_fields][deal_custom_field.id.to_s]
+    deal[:custom_fields][deal_custom_field.id.to_s] if deal_custom_field
   end
 
   def billing_contact
