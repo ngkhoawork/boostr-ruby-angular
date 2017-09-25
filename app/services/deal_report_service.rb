@@ -34,6 +34,7 @@ class DealReportService < BaseService
           line << val[:budget_change]
           line << val[:start_date]
           line << val[:biz_days]
+          line << val[:changed_by]
           csv << line
         end
       end
@@ -57,7 +58,7 @@ class DealReportService < BaseService
   def deals_stage_audit
     company_audit_logs
       .by_type_of_change(AuditLog::STAGE_CHANGE_TYPE)
-      .includes(auditable: :advertiser)
+      .includes(:user, auditable: :advertiser)
   end
 
   def stage_changed_deals
@@ -104,7 +105,7 @@ class DealReportService < BaseService
   def deal_budget_audit
     company_audit_logs
       .by_type_of_change(AuditLog::BUDGET_CHANGE_TYPE)
-      .includes(auditable: :advertiser)
+      .includes(:user, auditable: :advertiser)
   end
 
   def budget_changed
@@ -121,7 +122,7 @@ class DealReportService < BaseService
   def deal_start_date_audit
     company_audit_logs
       .by_type_of_change(AuditLog::START_DATE_CHANGE_TYPE)
-      .includes(auditable: :advertiser)
+      .includes(:user, auditable: :advertiser)
   end
 
   def start_date_changed
@@ -138,7 +139,7 @@ class DealReportService < BaseService
   def deal_member_added_audit
     company_audit_logs
       .by_type_of_change(AuditLog::MEMBER_ADDED_TYPE)
-      .includes(auditable: :advertiser)
+      .includes(:user, auditable: :advertiser)
   end
 
   def member_added_changed
@@ -155,7 +156,7 @@ class DealReportService < BaseService
   def deal_member_removed_audit
     company_audit_logs
       .by_type_of_change(AuditLog::MEMBER_REMOVED_TYPE)
-      .includes(auditable: :advertiser)
+      .includes(:user, auditable: :advertiser)
   end
 
   def member_removed_changed
@@ -172,7 +173,7 @@ class DealReportService < BaseService
   def deal_share_change_audit
     company_audit_logs
       .by_type_of_change(AuditLog::SHARE_CHANGE_TYPE)
-      .includes(auditable: :advertiser)
+      .includes(:user, auditable: :advertiser)
   end
 
   def share_change_report
@@ -217,7 +218,8 @@ class DealReportService < BaseService
       'Budget',
       'Budget Change',
       'Deal Start Date',
-      'Number Business Days'
+      'Number Business Days',
+      'Changed By'
     ]
   end
 

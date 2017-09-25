@@ -1,7 +1,7 @@
 class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
   include ActionView::Helpers::NumberHelper
 
-  attributes :id, :name, :advertiser_name, :start_date, :old_value, :new_value, :date, :budget, :biz_days
+  attributes :id, :name, :advertiser_name, :start_date, :old_value, :new_value, :date, :budget, :biz_days, :changed_by
 
   private
 
@@ -35,6 +35,10 @@ class Report::StageChangeDealsAuditLogsSerializer < ActiveModel::Serializer
 
   def date
     object.created_at
+  end
+
+  def changed_by
+    User.find(object.updated_by).name
   end
 
   def deal

@@ -1,110 +1,115 @@
 #pipeline-changes-report.z-styles.z-report
-  .container-fluid
-    .row.mb20
-      .reports-header
-        .header-cell.main-title
-          Pipeline Change Report
-        .header-cell.filters-block
-          %table
-            %tr.filter-title
-              %td Change Type
-              %td Change Date
-              %td
-                %span.reset-filter{'ng-click': 'resetFilter()'}
-                  Reset
-            %tr
-              %td
-                %ul.filter-item
-                  %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.type}' }
-                      {{filter.type || 'All'}}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{'ng-class': '{active: !filter.type}'}
-                        %a{href: '', 'ng-click': 'setFilter("type", "")'}
-                          All
-                      %li{ ng: { repeat: 'type in changeTypes | orderBy', class: '{active: type === filter.type}' } }
-                        %a{ href: '', ng: { click: 'setFilter("type", type)' } }
-                          {{type}}
+	.container-fluid
+		.row.mb20
+			.reports-header
+				.header-cell.main-title
+					Pipeline Change Report
+				.header-cell.filters-block
+					%table
+						%tr.filter-title
+							%td Change Type
+							%td Change Date
+							%td
+								%span.reset-filter{'ng-click': 'resetFilter()'}
+									Reset
+						%tr
+							%td
+								%ul.filter-item
+									%li{ dropdown: true }
+										%a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.type}' }
+											{{filter.type || 'All'}}
+											%span.caret
+										%ul.dropdown-menu
+											%li{'ng-class': '{active: !filter.type}'}
+												%a{href: '', 'ng-click': 'setFilter("type", "")'}
+													All
+											%li{ ng: { repeat: 'type in changeTypes | orderBy', class: '{active: type === filter.type}' } }
+												%a{ href: '', ng: { click: 'setFilter("type", type)' } }
+													{{type}}
 
-              %td
-                .date-picker-wrap
-                  %div.date-picker{'date-range-picker': true,
+							%td
+								.date-picker-wrap
+									%div.date-picker{'date-range-picker': true,
                                                              'ng-model': 'filter.date',
                                                              :options => "{locale: {format: 'MMMM D, YYYY'},
                                                                            eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-                    %span.empty{'ng-hide': 'datePicker.toString("date")'}
-                      Time period
-                      %span.caret
-                    %span{'ng-show': 'datePicker.toString("date")'}
-                      {{datePicker.toString("date")}}
-                      %span.caret
+										%span.empty{'ng-hide': 'datePicker.toString("date")'}
+											Time period
+											%span.caret
+										%span{'ng-show': 'datePicker.toString("date")'}
+											{{datePicker.toString("date")}}
+											%span.caret
 
-        .header-cell
-          %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
-            Run Report
+				.header-cell
+					%button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
+						Run Report
 
-        .header-cell
-          .pull-right
-            %download-button{'ng-click': 'export()'}
-              Export
-    .row
-      .col-md-12
-        .block
-          .table-wrapper
-            %table.table.table-hover
-              %thead
-                %tr
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("date")'}
-                      Change Date
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("name")'}
-                      Deal Name
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("advertiser_name")'}
-                      Advertiser Name
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("deal_type")'}
-                      Change Type
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("old_value")'}
-                      Old Value
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("new_value")'}
-                      New Value
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("budget")'}
-                      Deal Budget
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("budget_change")'}
-                      Budget Change Amount
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("start_date")'}
-                      Deal Start Date
-                  %th
-                    %span.clickable{'ng-click': 'changeSortType("biz_days")'}
-                      Number Business Days
-              %tbody
-                %tr{ ng: { repeat: 'deal in report_data_items | orderBy:sortType:sortReverse' } }
-                  %td
-                    {{ deal.date | date: 'MM-dd-yyyy' }}
-                  %td
-                    %a{ href: '', ng: { href: '/deals/{{deal.id}}'  } }
-                      {{ deal.name }}
-                  %td
-                    {{ deal.advertiser_name }}
-                  %td
-                    {{ deal.deal_type }}
-                  %td
-                    {{ deal.old_value }}
-                  %td
-                    {{ deal.new_value }}
-                  %td
-                    {{ deal.budget }}
-                  %td
-                    {{ deal.budget_change }}
-                  %td
-                    {{ deal.start_date | date: 'MM-dd-yyyy' }}
-                  %td.center
-                    {{ deal.biz_days }}
+				.header-cell
+					.pull-right
+						%download-button{'ng-click': 'export()'}
+							Export
+		.row
+			.col-md-12
+				.block
+					.table-wrapper
+						%table.table.table-hover
+							%thead
+								%tr
+									%th
+										%span.clickable{'ng-click': 'changeSortType("date")'}
+											Change Date
+									%th
+										%span.clickable{'ng-click': 'changeSortType("name")'}
+											Deal Name
+									%th
+										%span.clickable{'ng-click': 'changeSortType("advertiser_name")'}
+											Advertiser Name
+									%th
+										%span.clickable{'ng-click': 'changeSortType("deal_type")'}
+											Change Type
+									%th
+										%span.clickable{'ng-click': 'changeSortType("old_value")'}
+											Old Value
+									%th
+										%span.clickable{'ng-click': 'changeSortType("new_value")'}
+											New Value
+									%th
+										%span.clickable{'ng-click': 'changeSortType("budget")'}
+											Deal Budget
+									%th
+										%span.clickable{'ng-click': 'changeSortType("budget_change")'}
+											Budget Change Amount
+									%th
+										%span.clickable{'ng-click': 'changeSortType("start_date")'}
+											Deal Start Date
+									%th
+										%span.clickable{'ng-click': 'changeSortType("biz_days")'}
+											Number Business Days
+									%th
+										%span.clickable{'ng-click': 'changeSortType("changed_by")'}
+											Changed By
+							%tbody
+								%tr{ ng: { repeat: 'deal in report_data_items | orderBy:sortType:sortReverse' } }
+									%td
+										{{ deal.date | date: 'MM-dd-yyyy' }}
+									%td
+										%a{ href: '', ng: { href: '/deals/{{deal.id}}'  } }
+											{{ deal.name }}
+									%td
+										{{ deal.advertiser_name }}
+									%td
+										{{ deal.deal_type }}
+									%td
+										{{ deal.old_value }}
+									%td
+										{{ deal.new_value }}
+									%td
+										{{ deal.budget }}
+									%td
+										{{ deal.budget_change }}
+									%td
+										{{ deal.start_date | date: 'MM-dd-yyyy' }}
+									%td.center
+										{{ deal.biz_days }}
+									%td.center
+										{{ deal.changed_by }}
