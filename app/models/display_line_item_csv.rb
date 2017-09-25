@@ -8,6 +8,7 @@ class DisplayLineItemCsv
 
   validate :io_exchange_rate_presence, if: :company_id
   validate :dates_can_be_parsed
+  validate :is_dli_date_over_io_bounds
 
   attr_accessor :external_io_number, :line_number, :ad_server, :start_date, :end_date,
                 :product_name, :quantity, :price, :pricing_type, :budget, :budget_delivered,
@@ -130,7 +131,7 @@ class DisplayLineItemCsv
   end
 
   def budget_loc
-    budget.to_i
+    budget.to_f
   end
 
   def budget_delivered_loc
@@ -183,6 +184,16 @@ class DisplayLineItemCsv
       d = Date.strptime(date_string, "%m/%d/%y")
     end
     d
+  end
+
+  def is_dli_date_over_io_bounds
+    return unless io.present? && display_line_item.new_record?
+    if parse_date(self.start_date).present? && parse_date(self.start_date) < io.start_date
+      errors.add(:start_date, 'start date can\'t be prior the IO start date')
+    end
+    if parse_date(self.end_date).present? && parse_date(self.end_date) > io.end_date
+      errors.add(:start_date, 'end date can\'t be after the IO end date')
+    end
   end
 
   def persisted?
