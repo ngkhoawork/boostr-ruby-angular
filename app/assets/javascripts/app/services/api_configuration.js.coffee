@@ -3,6 +3,10 @@
     ($resource, $rootScope, $q) ->
 
       resource = $resource '/api/api_configurations/:id', { id: '@id' },
+        metadata:
+          method: 'GET'
+          url: 'api/api_configurations/metadata'
+          isArray: false
         update: {
           method: 'PUT'
           url: '/api/api_configurations/:id'
@@ -33,6 +37,12 @@
         resource.delete id: api_configuration.id, () ->
           deferred.resolve()
           $rootScope.$broadcast 'updated_api_integrations'
+        deferred.promise
+
+      @metadata = (params) ->
+        deferred = $q.defer()
+        resource.metadata params, (data) ->
+          deferred.resolve(data)
         deferred.promise
 
       return

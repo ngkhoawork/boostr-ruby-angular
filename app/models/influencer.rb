@@ -11,6 +11,9 @@ class Influencer < ActiveRecord::Base
 
   scope :by_name, -> name { where('influencers.name ilike ?', "%#{name}%") if name.present? }
 
+  delegate :street1, :street2, :city, :state, :zip, :country, to: :address, allow_nil: true
+  delegate :fee_type, :amount, to: :agreement, allow_nil: true, prefix: true
+
   def fields
     company.fields.where(subject_type: self.class.name)
   end
@@ -23,5 +26,149 @@ class Influencer < ActiveRecord::Base
       option = value.option.name if !value.nil? && !value.option.nil?
     end
     option
+  end
+
+  def self.import(file, current_user_id, file_path)
+    current_user = User.find current_user_id
+
+    network_field = current_user.company.fields.find_by_name('Network')
+
+    import_log = CsvImportLog.new(company_id: current_user.company_id, object_name: 'influencer', source: 'ui')
+    import_log.set_file_source(file_path)
+
+    CSV.parse(file, headers: true, header_converters: :symbol) do |row|
+      import_log.count_processed
+
+      # influencer id
+      if row[0].present?
+        begin
+          influencer = current_user.company.influencers.find(row[0].strip)
+        rescue ActiveRecord::RecordNotFound
+          import_log.count_failed
+          import_log.log_error(["Influencer ID #{row[0]} could not be found"])
+          next
+        end
+      end
+
+      # influencer name
+      if row[1].nil? || row[1].blank?
+        import_log.count_failed
+        import_log.log_error(["Influencer name can't be blank"])
+        next
+      end
+
+      # network
+      network = nil
+      if row[2].present?
+        network = network_field.options.where('name ilike ?', row[2].strip).first
+        unless network
+          import_log.count_failed
+          import_log.log_error(["Network #{row[2]} could not be found"])
+          next
+        end
+      end
+
+      # agreement type
+      agreement_type = nil
+      if row[3].present? 
+        if ['flat', 'percentage'].include?(row[3].strip.downcase)
+          agreement_type = row[3].strip
+        else
+          import_log.count_failed
+          import_log.log_error(["Agreement type must be 'flat' or 'percentage'"])
+          next
+        end
+      end
+
+      # agreement fee
+      if row[4].present? 
+        agreement_fee = row[4].to_f
+      else
+        agreement_fee = nil
+      end
+
+      # email
+      email = nil
+      if row[5].present?
+        if row[5].match(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/).present?
+          email = row[5].strip
+        else
+          import_log.count_failed
+          import_log.log_error(["Email must be valid"])
+          next
+        end
+      end
+
+      # Active
+      active = nil
+      if row[12].present?
+        if row[12] == 'Active'
+          active = true
+        elsif row[12] == 'Inactive'
+          active = false
+        else
+          import_log.count_failed
+          import_log.log_error(["Status must be either Active or Inactive"])
+          next
+        end
+      end
+
+      influencer_params = {
+        name: row[1].strip,
+        phone: row[6].strip,
+        email: email,
+        active: active
+      }
+
+      address_params = {
+        email: email,
+        street1: row[7].nil? ? nil : row[7].strip,
+        city: row[8].nil? ? nil : row[8].strip,
+        state: row[9].nil? ? nil : row[9].strip,
+        country: row[10].nil? ? nil : row[10].strip,
+        zip: row[11].nil? ? nil : row[11].strip,
+        phone: row[6].nil? ? nil : row[6].strip
+      }
+
+      agreement_params = {
+        fee_type: agreement_type, 
+        amount: agreement_fee
+      }
+
+      network_value_params = {
+        value_type: 'Option',
+        subject_type: 'Influencer',
+        field_id: network_field.id,
+        option_id: (network ? network.id : nil),
+        company_id: current_user.company.id
+      }
+
+      if influencer.present?
+        network_value_params[:subject_id] = influencer.id
+        if network_value = influencer.values.where(field_id: network_field).first
+          network_value_params[:id] = network_value.id
+        end
+        address_params[:id] = influencer.address.id
+        agreement_params[:id] = influencer.agreement.id
+      else
+        influencer = current_user.company.influencers.new
+      end
+
+      influencer_params[:values_attributes] = [
+        network_value_params
+      ]
+      influencer_params[:address_attributes] = address_params
+      influencer_params[:agreement_attributes] = agreement_params
+
+      if influencer.update_attributes(influencer_params)
+        import_log.count_imported
+      else
+        import_log.count_failed
+        import_log.log_error(influencer.errors.full_messages)
+        next
+      end
+    end
+
+    import_log.save
   end
 end

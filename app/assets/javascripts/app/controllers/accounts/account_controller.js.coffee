@@ -514,8 +514,19 @@
 
   $scope.delete = ->
     if confirm('Are you sure you want to delete the account "' +  $scope.currentClient.name + '"?')
-      $scope.currentClient.$delete()
-      $location.path('/accounts')
+      Client.__delete $scope.currentClient, (error) ->
+        if error
+          $scope.modalInstance = $modal.open
+            templateUrl: 'modals/client_deletion_alert.html'
+            size: 'md'
+            controller: 'AccountDeleteController'
+            backdrop: 'static'
+            keyboard: false
+            resolve:
+              error: ->
+                error.data.error
+        else
+          $location.path('/accounts')
 
   $scope.deleteActivity = (activity) ->
     if confirm('Are you sure you want to delete the activity?')
