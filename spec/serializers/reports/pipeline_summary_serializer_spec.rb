@@ -5,7 +5,6 @@ describe Report::PipelineSummarySerializer do
     create :billing_deal_contact, deal: deal, contact: contact
     create :deal_custom_field, company: company, deal: deal, sum1: "100"
     deal_custom_field_name
-    @member = create :deal_member, deal: deal
   end
 
   it 'pipeline summary serialized data' do
@@ -28,9 +27,9 @@ describe Report::PipelineSummarySerializer do
     expect(pipeline_summary.type).to be_nil
     expect(pipeline_summary.source).to be_nil
     expect(pipeline_summary.custom_fields[deal_custom_field_name.id.to_s]).to eq(deal.deal_custom_field.sum1)
-    expect(pipeline_summary.members[0].symbolize_keys).to eq(id: @member.user.id,
-                                                             name: @member.user.name,
-                                                             share: @member.share)
+    expect(pipeline_summary.members[0].symbolize_keys).to eq(id: deal_member.user.id,
+                                                             name: deal_member.user.name,
+                                                             share: deal_member.share)
   end
 
   private
@@ -40,7 +39,11 @@ describe Report::PipelineSummarySerializer do
   end
 
   def deal
-    @_deal ||= create :deal, company: company
+    @_deal ||= create :deal, company: company, deal_members: [deal_member]
+  end
+
+  def deal_member
+    @_member ||= create :deal_member
   end
 
   def company

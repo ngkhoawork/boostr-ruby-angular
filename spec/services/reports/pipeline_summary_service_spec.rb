@@ -2,7 +2,6 @@ require 'rails_helper'
 
 describe Report::PipelineSummaryService do
   before do
-    deal
     create_values
     create :deal_member, deal: deal
   end
@@ -85,7 +84,7 @@ describe Report::PipelineSummaryService do
   end
 
   def create_values
-    @_values = create :value, company: company, field: field, subject: deal, option: options
+    create :value, company: company, field: field, subject: deal, option: options
   end
 
   def deal

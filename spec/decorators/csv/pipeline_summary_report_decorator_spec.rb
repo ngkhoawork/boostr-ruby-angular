@@ -3,7 +3,6 @@ require 'rails_helper'
 describe Csv::PipelineSummaryReportDecorator do
   before do
     create :billing_deal_contact, deal: deal, contact: contact
-    @member = create :deal_member, deal: deal
   end
 
   it 'decorate pipeline summary successfully and return expected values' do
@@ -30,7 +29,7 @@ describe Csv::PipelineSummaryReportDecorator do
     expect(pipeline_summary_decorator.billing_contact).to eq "#{deal.billing_contact.name}/#{deal.billing_contact.email}"
     expect(pipeline_summary_decorator.stage).to eq deal.stage.name
     expect(pipeline_summary_decorator.method_missing("not_correct_name")).to be_nil
-    expect(pipeline_summary_decorator.members).to eq "#{@member.user.name} #{@member.share}%"
+    expect(pipeline_summary_decorator.members).to eq "#{deal_member.user.name} #{deal_member.share}%"
   end
 
   private
@@ -44,11 +43,15 @@ describe Csv::PipelineSummaryReportDecorator do
   end
 
   def deal
-    @_deal ||= create :deal
+    @_deal ||= create :deal, deal_members: [deal_member]
   end
 
   def company
     @_company ||= create :company
+  end
+
+  def deal_member
+    @_member ||= create :deal_member
   end
 
   def custom_fields

@@ -8,11 +8,16 @@ describe Csv::PipelineSummaryReportService do
   private
 
   def pipeline_summary_serializer
-    @_pipeline_summary ||= Report::PipelineSummarySerializer.new(deal, deal_custom_fields: custom_fields)
+    date_params = {
+        start_date: deal.start_date - 1.day,
+        end_date: deal.end_date - 1.day
+    }
+
+    @_pipeline_summary ||= Report::PipelineSummaryService.new(company, date_params).perform
   end
 
   def pipeline_summary_service
-    @_pipeline_summary_service ||= described_class.new(company, pipeline_summary_serializer.as_json)
+    @_pipeline_summary_service ||= described_class.new(company, pipeline_summary_serializer.as_json).perform
   end
 
   def company
