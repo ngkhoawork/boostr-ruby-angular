@@ -45,12 +45,12 @@ class Api::ClientsController < ApplicationController
   end
 
   def filter_options
-    client_ids = clients.select("id").collect { |client_row| client_row.id }
+    client_ids = clients.pluck(:id)
 
-    user_ids = ClientMember.where("client_id in (?)", client_ids).select("user_id").collect { |client_member| client_member.user_id }
-    owners = User.where("id in (?)", user_ids).select("id, first_name, last_name").collect { |user| {id: user.id, name: user.first_name + " " + user.last_name} }
+    user_ids = ClientMember.where("client_id in (?)", client_ids).pluck(:user_id)
+    owners = User.where("id in (?)", user_ids).pluck_to_struct(:id, :first_name, :last_name).collect { |user| {id: user.id, name: user.first_name + " " + user.last_name} }
 
-    cities = Address.where("addressable_id in (?) and addressable_type='Client'", client_ids).pluck(:city).uniq.reject { |c| c.nil? || c.blank? }
+    cities = Address.where("addressable_id in (?) and addressable_type='Client'", client_ids).pluck(:city).uniq.reject(&:blank?)
 
     render json: {owners: owners, cities: cities}
   end

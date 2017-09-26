@@ -110,6 +110,32 @@ RSpec.describe Api::ClientsController, type: :controller do
     end
   end
 
+  describe 'GET #filter_options', focus: true do
+    let(:client) { create :client, created_by: user.id }
+    let!(:client_member) { create :client_member, user: user, client: client }
+
+    it 'returns json for a client' do
+      get :filter_options, format: :json
+      expect(response).to be_success
+      expect(json_response['owners'].first).to eq({"id" => user.id, "name" => user.name})
+      expect(json_response['cities']).to eq [client.address.city]
+    end
+
+    it 'rejects blank city' do
+      client.address.update(city: ' ')
+
+      get :filter_options, format: :json
+      expect(json_response['cities']).to eq []
+    end
+
+    it 'rejects empty city' do
+      client.address.update(city: nil)
+
+      get :filter_options, format: :json
+      expect(json_response['cities']).to eq []
+    end
+  end
+
   describe "PUT #update" do
     let(:client) { create :client, created_by: user.id  }
 
