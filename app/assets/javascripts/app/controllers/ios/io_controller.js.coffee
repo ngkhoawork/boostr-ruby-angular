@@ -8,7 +8,7 @@
             $scope.budgets = []
             $scope.canEditIO = true
             $scope.isNaN = (val) -> isNaN val
-
+            
             $scope.init = ->
                 CurrentUser.get().$promise.then (user) ->
                     $scope.currentUser = user
@@ -29,6 +29,15 @@
                     if io.currency
                         if io.currency.curr_symbol
                             $scope.currency_symbol = io.currency.curr_symbol
+                    
+                    $scope.currency_symbol = (->
+                        if $scope.currentIO && $scope.currentIO.currency
+                            if $scope.currentIO.currency.curr_symbol
+                                return $scope.currentIO.currency.curr_symbol
+                            else if $scope.currentIO.currency.curr_cd
+                                return $scope.currentIO.currency.curr_cd
+                        return '%'
+                    )()
 
                     Product.all({active: true, revenue_type: 'Content-Fee'}).then (products) ->
                         $scope.products = products
