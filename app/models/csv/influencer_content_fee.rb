@@ -106,8 +106,8 @@ class Csv::InfluencerContentFee
   end
 
   def effect_date
-    d = Date.strptime(date, "%m/%d/%Y")
-    if d.year < 100
+    d = Date.strptime(date, "%m/%d/%Y") if date.present?
+    if d && d.year < 100
       d = Date.strptime(date, "%m/%d/%y")
     end
     d
@@ -135,7 +135,7 @@ class Csv::InfluencerContentFee
 
   def date_valid?
     begin
-      Date.strptime(date, "%m/%d/%Y")
+      Date.strptime(date, "%m/%d/%Y") if date.present?
     rescue ArgumentError
       return false
     end
@@ -154,11 +154,11 @@ class Csv::InfluencerContentFee
       io_number: row[:io_num],
       influencer_id: row[:influencer_id],
       product_name: row[:product],
-      date: row[:date].strip,
+      date: row[:date].try(:strip),
       fee_type: row[:fee_type],
       fee_amount: row[:fee_amt].to_f,
       gross_amount_loc: row[:gross],
-      asset: row[:asset].strip,
+      asset: row[:asset].try(:strip),
       company: company
     )
   end
