@@ -29,6 +29,13 @@ class Io < ActiveRecord::Base
   scope :with_open_deal_products, -> { joins(deal: [:deal_products]).where(deal_products: { open: true }) }
   scope :with_display_revenue_type, -> { joins(deal: {deal_products: [:product]})
                                           .where(products: { revenue_type: 'Display' }) }
+  scope :by_agency_id, -> (agency_id) { where(agency_id: agency_id) if agency_id.present? }
+  scope :by_advertiser_id, -> (advertiser_id) { where(advertiser_id: advertiser_id) if advertiser_id.present? }
+  scope :by_names, -> (name) do
+    joins(:agency, :advertiser)
+      .where('ios.name ilike ? OR clients.name ilike ?', "%#{name}%", "%#{name}%") if name.present?
+  end
+  scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) }
 
   after_update do
     if (start_date_changed? || end_date_changed?)

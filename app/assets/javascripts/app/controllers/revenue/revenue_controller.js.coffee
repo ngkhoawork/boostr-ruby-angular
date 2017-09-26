@@ -22,7 +22,7 @@
 			page: 1
 			revenue: $routeParams.filter || ''
 			pacing: $routeParams.io_owner || ''
-			search: ''
+			name: ''
 			date:
 				startDate: moment().year(currentYear).startOf('year')
 				endDate: moment().year(currentYear).endOf('year')
@@ -53,7 +53,7 @@
 			query = {}
 			query.page = f.page
 			query.filter = f.revenue
-			query.search = f.search if f.search
+			query.name = f.name if f.name
 			if f.date.startDate && f.date.endDate
 				query.start_date = f.date.startDate.toDate()
 				query.end_date = f.date.endDate.toDate()

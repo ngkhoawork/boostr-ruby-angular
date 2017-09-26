@@ -11,11 +11,13 @@ class Api::IosController < ApplicationController
 
   def create
     io = company.ios.new(io_params)
+
     if io.deal_id
       io.io_number = io.deal_id
     elsif io.external_io_number
       io.io_number = io.external_io_number
     end
+
     if io.save
       render json: io.full_json, status: :created
     else
@@ -80,26 +82,16 @@ class Api::IosController < ApplicationController
   end
 
   def ios
-    if params[:agency_id]
-      company.ios.where("agency_id = ?", params[:agency_id])
-    elsif params[:advertiser_id]
-      company.ios.where("advertiser_id = ?", params[:advertiser_id])
-    elsif params[:page] && params[:page].to_i > 0
-      offset = (params[:page].to_i - 1) * 10
-      if params[:name]
-        company.ios.where("name ilike ?", "%#{params[:name]}%").limit(10).offset(offset)
-      else
-        company.ios.limit(10).offset(offset)
-      end
-    else
-      if params[:name]
-        company.ios.where("name ilike ?", "%#{params[:name]}%")
-      else
-        company.ios.order("name asc, id asc")
-      end
-    end
+    company
+      .ios
+      .includes(:currency, :deal, :agency, :advertiser)
+      .by_start_date(params[:start_date], params[:end_date])
+      .by_agency_id(params[:agency_id])
+      .by_advertiser_id(params[:advertiser_id])
+      .by_names(params[:name])
+      .limit(limit)
+      .offset(offset)
   end
-
 
   def io
     @io ||= company.ios.find(params[:id])

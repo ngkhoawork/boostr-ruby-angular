@@ -42,4 +42,12 @@ class ApplicationController < ActionController::Base
       'application'
     end
   end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 10
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
+  end
 end
