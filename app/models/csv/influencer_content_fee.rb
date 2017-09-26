@@ -138,10 +138,7 @@ class Csv::InfluencerContentFee
   end
 
   def fee_type_valid?
-    if fee_type.nil?
-      return false
-    end
-    fee_type.downcase == 'percentage' || fee_type.downcase == 'flat'
+    fee_type.present? && (fee_type.downcase == 'percentage' || fee_type.downcase == 'flat')
   end
 
   def date_valid?
