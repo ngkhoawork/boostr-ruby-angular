@@ -3,13 +3,14 @@ require 'chronic'
 class Csv::InfluencerContentFee
   include ActiveModel::Validations
 
-  validates :io_number, :influencer_id, :product_name, :date, :gross_amount_loc, :company, presence: true
+  validates :io_number, :influencer_id, :product_name, :date, :gross_amount_loc, :company, :fee_type, presence: true
   validates :fee_amount, numericality: true
 
   validate :validate_io_presence
   validate :validate_influencer_presence
   validate :validate_product_presence
   validate :validate_date_format
+  validate :validate_date_inclusion
   validate :validate_fee_type
   validate :validate_content_fee_presence
 
@@ -80,11 +81,11 @@ class Csv::InfluencerContentFee
   end
 
   def validate_date_format
-    if date_valid?
-      errors.add(:date, "- #{date} must be between IO start and end dates") unless date_in_io_range?
-    else
-      errors.add(:date, "- #{date} must be a valid datetime")
-    end
+      errors.add(:date, "- #{date} must be a valid datetime") unless date_valid?
+  end
+
+  def validate_date_inclusion
+    errors.add(:date, "- #{date} must be between IO start and end dates") unless date_in_io_range?
   end
 
   def validate_fee_type
