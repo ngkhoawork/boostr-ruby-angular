@@ -168,13 +168,10 @@
       return ""
 
   $scope.getLastTouch = (client) ->
-    activities = client.activities
-    if $scope.getClientType(client) == 'Agency'
-      activities = client.agency_activities
-    if activities.length > 0
-      return activities[0].happened_at
-    else
-      return ""
+    if client.type == 'Advertiser'
+      client.latest_advertiser_activity
+    else if client.type == 'Agency'
+      client.latest_agency_activity
 
   $scope.showNewAccountModal = ->
     $scope.modalInstance = $modal.open

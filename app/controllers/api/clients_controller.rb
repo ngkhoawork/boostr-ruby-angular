@@ -18,7 +18,7 @@ class Api::ClientsController < ApplicationController
                       .by_last_touch(params[:start_date], params[:end_date])
                       .by_name(params[:search])
                       .order(:name)
-                      .includes(:address)
+                      .includes(:address, :client_member_info, :latest_advertiser_activity, :latest_agency_activity)
                       .distinct
         end
         if params[:owner_id]
@@ -26,9 +26,15 @@ class Api::ClientsController < ApplicationController
           results = results.by_ids(client_ids)
         end
 
+        categories = company.fields.joins(:options).where(subject_type: 'Client', name: 'Category').pluck_to_struct('options.id as id', 'options.name as name')
+
         response.headers['X-Total-Count'] = results.count.to_s
         results = results.limit(limit).offset(offset)
-        render json: results.as_json
+        render json: results,
+          each_serializer: Clients::ClientListSerializer,
+            advertiser: Client.advertiser_type_id(company),
+            agency: Client.agency_type_id(company),
+            categories: categories
       }
 
       format.csv {
