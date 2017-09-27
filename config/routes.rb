@@ -357,7 +357,10 @@ Rails.application.routes.draw do
 			end
     end
 
-    get 'mailtrack/:pixel', to: 'mailtrack#open_mail'
+    resources :mailtrack, only: [] do
+      get '/:pixel', to: 'mailtrack#open_mail', on: :collection
+      post '/create_thread', to: "mailtrack#create_thread", on: :collection
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'
