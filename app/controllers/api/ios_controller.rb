@@ -82,13 +82,13 @@ class Api::IosController < ApplicationController
   end
 
   def ios
-    company
-      .ios
+    ios_by_name
+      .union(ios_by_agency)
+      .union(ios_by_advertiser)
       .includes(:currency, :deal, :agency, :advertiser)
       .by_start_date(params[:start_date], params[:end_date])
       .by_agency_id(params[:agency_id])
       .by_advertiser_id(params[:advertiser_id])
-      .by_names(params[:name])
       .limit(limit)
       .offset(offset)
   end
@@ -99,5 +99,21 @@ class Api::IosController < ApplicationController
 
   def company
     current_user.company
+  end
+
+  def company_ios
+    @_company_ios ||= company.ios
+  end
+
+  def ios_by_agency
+    company_ios.by_agency_name(params[:name])
+  end
+
+  def ios_by_advertiser
+    company_ios.by_advertiser_name(params[:name])
+  end
+
+  def ios_by_name
+    company_ios.by_name(params[:name])
   end
 end

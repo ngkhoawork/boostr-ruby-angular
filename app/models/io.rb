@@ -31,11 +31,14 @@ class Io < ActiveRecord::Base
                                           .where(products: { revenue_type: 'Display' }) }
   scope :by_agency_id, -> (agency_id) { where(agency_id: agency_id) if agency_id.present? }
   scope :by_advertiser_id, -> (advertiser_id) { where(advertiser_id: advertiser_id) if advertiser_id.present? }
-  scope :by_names, -> (name) do
-    joins(:agency, :advertiser)
-      .where('ios.name ilike ? OR clients.name ilike ?', "%#{name}%", "%#{name}%") if name.present?
-  end
   scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) }
+  scope :by_advertiser_name, -> (name) do
+    joins(:advertiser).where('clients.name ilike ?', "%#{name}%") if name.present?
+  end
+  scope :by_agency_name, -> (name) do
+    joins(:agency).where('clients.name ilike ?', "%#{name}%") if name.present?
+  end
+  scope :by_name, -> (name) { where('ios.name ilike ?', "%#{name}%") if name.present? }
 
   after_update do
     if (start_date_changed? || end_date_changed?)

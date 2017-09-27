@@ -1,13 +1,24 @@
 class TempIo < ActiveRecord::Base
+  NO_MATCH_FILTER = 'no-match'.freeze
+
   belongs_to :company
   belongs_to :io
   has_many :display_line_items, dependent: :destroy
   has_one :currency, class_name: 'Currency', primary_key: 'curr_cd', foreign_key: 'curr_cd'
+
   validate :active_exchange_rate
 
   after_update do
     redirect_display_line_items() if io_id_changed? && io.present?
     update_io() if io_id_changed? && io.present?
+  end
+
+  scope :by_no_match, -> (filter_params) { where('io_id IS NULL') if filter_params.eql? NO_MATCH_FILTER }
+  scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) }
+  scope :by_names, -> (name) do
+    if name.present?
+      where('name ilike :name OR advertiser ilike :name OR agency ilike :name', name: "%#{name}%")
+    end
   end
 
   def exchange_rate
