@@ -30,6 +30,7 @@
 									.col-body
 										.description Budget
 										.title {{currentIO.budget_loc | currency:currency_symbol:0 }}
+										.subtitle{'ng-if': 'currentIO.currency && currentIO.currency.curr_cd != "USD"'} {{currentIO.budget | currency: '$' : 0}}
 
 							%div.stats-col
 								.col-body-wrap
