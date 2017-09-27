@@ -122,12 +122,20 @@ RSpec.describe Api::ClientsController, type: :controller do
   end
 
   describe "DELETE #destroy" do
-    let!(:client) { create :client, created_by: user.id  }
+    let!(:client) { create :client, created_by: user.id }
+    let!(:client_with_associations) { create :client, created_by: user.id }
+    let!(:contact) { create :contact, client: client_with_associations}
 
     it 'marks the client as deleted' do
       delete :destroy, id: client.id, format: :json
       expect(response).to be_success
       expect(client.reload.deleted_at).to_not be_nil
+    end
+
+    it 'returns error if client has related associations' do
+      delete :destroy, id: client_with_associations.id, format: :json
+      expect(response.status).to eq(422)
+      expect(JSON.parse(response.body)['error']).to include('Contact')
     end
   end
 

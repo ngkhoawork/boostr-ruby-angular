@@ -38,6 +38,7 @@ class Operative::ExtractVerifyService
     [
       "Sales_Order_#{timestamp}.csv",
       "Invoice_Line_Item_#{timestamp}.csv",
+      "Invoice_#{timestamp}.csv",
       "Sales_Order_Line_Items_#{timestamp}.csv",
       "Currency_#{timestamp}.csv"
     ]

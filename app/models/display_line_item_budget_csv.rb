@@ -1,10 +1,8 @@
 class DisplayLineItemBudgetCsv
   include ActiveModel::Validations
 
-  validates :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
-            :video_avg_view_rate, :video_completion_rate, :budget_loc, presence: true
-  validate :budget_less_than_display_line_item_budget
-  validate :sum_of_budgets_less_than_line_item_budget
+  validates :company_id, :line_number, :month_and_year,
+            :impressions, :budget_loc, presence: true
 
   attr_accessor :company_id, :external_io_number, :line_number, :month_and_year, :ctr, :impressions, :clicks,
                 :video_avg_view_rate, :video_completion_rate, :budget_loc, :io_name
@@ -16,11 +14,7 @@ class DisplayLineItemBudgetCsv
   end
 
   def perform
-    return self.errors.full_messages unless self.valid?
-    update_external_io_number
-    if io_or_tempio && display_line_item
-      create_or_update_display_line_item_budget
-    end
+    raise NotImplementedError.new("You must implement perform in child class")
   end
 
   private
@@ -43,18 +37,19 @@ class DisplayLineItemBudgetCsv
 
   def display_line_item_budget_attributes
     {
-      external_io_number: external_io_number,
+      external_io_number: get_external_io_number,
       start_date: start_date,
       end_date: end_date,
       clicks: clicks,
       ctr: ctr,
       quantity: impressions,
       ad_server_quantity: impressions,
-      budget: budget,
+      budget: calculate_budget,
       budget_loc: calculate_budget_loc,
       ad_server_budget: calculate_budget_loc,
       video_avg_view_rate: video_avg_view_rate,
-      video_completion_rate: video_completion_rate
+      video_completion_rate: video_completion_rate,
+      has_dfp_budget_correction: true
     }
   end
 
@@ -68,66 +63,15 @@ class DisplayLineItemBudgetCsv
   end
 
   def io
-    @_io ||= company.ios.find_by(external_io_number: external_io_number)
-    @_io ||= company.ios.find_by(io_number: io_number)
+    @_io ||= Io.find_by(company_id: company_id, external_io_number: external_io_number)
+    @_io ||= Io.find_by(company_id: company_id, io_number: io_number)
   end
 
   def tempio
-    @_temp_io ||= company.temp_ios.find_by(external_io_number: external_io_number)
+    @_temp_io ||= TempIo.find_by(company_id: company_id, external_io_number: external_io_number)
   end
 
   def io_number
     io_name.gsub(/.+_/, '')
   end
-
-  def update_external_io_number
-    if io && external_io_number
-      io.update_columns(external_io_number: external_io_number)
-    end
-  end
-
-  def company
-    Company.find(company_id)
-  end
-
-  def start_date
-    @_start_date ||= Date.strptime(month_and_year, '%Y-%m')
-  end
-
-  def dfp_end_date
-    @_dfp_end_date ||= start_date.end_of_month
-  end
-
-  def end_date
-    dfp_end_date > display_line_item.end_date ? display_line_item.end_date : dfp_end_date
-  end
-
-  def budget
-    display_line_item.price * impressions / 1_000
-  end
-
-  def calculate_budget_loc
-    display_line_item.price * budget_loc / 1_000
-  end
-
-  def budget_less_than_display_line_item_budget
-    return unless display_line_item_budget.budget_loc.present?
-
-    if display_line_item_budget.budget_loc > display_line_item.budget_loc
-      errors.add(:budget, 'can\'t be more then line item budget')
-    end
-  end
-
-  def sum_of_budgets_less_than_line_item_budget
-    return unless display_line_item_budget.budget_loc.present?
-
-    if sum_of_monthly_budgets > display_line_item.budget_loc
-      errors.add(:budget, 'sum of monthly budgets can\'t be more then line item budget')
-    end
-  end
-
-  def sum_of_monthly_budgets
-    (display_line_item.display_line_item_budgets.where.not(id: display_line_item_budget.id).sum(:budget_loc) + display_line_item_budget.budget_loc)
-  end
-
 end

@@ -1,8 +1,6 @@
 class ContactsSearchService < BaseService
   def perform
     filtered_result
-        .limit(limit)
-        .offset(offset)
   end
 
   private
@@ -24,9 +22,9 @@ class ContactsSearchService < BaseService
 
   def activity_contacts
     @_activity_contacts ||= current_user_contacts
-                                .where.not(activity_updated_at: nil)
-                                .order(activity_updated_at: :desc)
-                                .limit(10)
+                              .where.not(activity_updated_at: nil)
+                              .order(activity_updated_at: :desc)
+                              .limit(10)
   end
 
   def all_contacts
@@ -58,11 +56,12 @@ class ContactsSearchService < BaseService
   end
 
   def suggested_contacts
-    @_suggested_contacts ||= current_user_contacts
-                                 .joins('LEFT JOIN clients ON clients.id = contacts.client_id')
-                                 .joins('LEFT JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type=\'Contact\'')
-                                 .where('contacts.name ilike :contact_name OR clients.name ilike :client_name OR addresses.email ilike :email',
-                                        contact_name: "%#{params[:q]}%", client_name: "%#{params[:q]}%", email: "%#{params[:q]}%")
+    @_suggested_contacts ||=
+      current_user_contacts
+        .joins('LEFT JOIN clients ON clients.id = contacts.client_id')
+        .joins('LEFT JOIN addresses ON contacts.id=addresses.addressable_id and addresses.addressable_type=\'Contact\'')
+        .where('contacts.name ilike :contact_name OR clients.name ilike :client_name OR addresses.email ilike :email',
+              contact_name: "%#{params[:q]}%", client_name: "%#{params[:q]}%", email: "%#{params[:q]}%")
   end
 
   def current_user_contacts
@@ -100,5 +99,4 @@ class ContactsSearchService < BaseService
   def tab_params
     params[:filter]
   end
-
 end

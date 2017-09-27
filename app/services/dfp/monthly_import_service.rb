@@ -4,7 +4,7 @@ module DFP
     private
 
     def build_csv(row)
-      DisplayLineItemBudgetCsv.new(
+      DisplayLineItemBudgetCsvDfp.new(
         io_name: row[:dimensionorder_name],
         external_io_number: row[:dimensionorder_id],
         line_number: row[:dimensionline_item_id],

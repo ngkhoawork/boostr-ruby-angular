@@ -7,5 +7,7 @@ FactoryGirl.define do
     base_link 'ftpprod.operativeftphost.com'
     api_email 'email@test.com'
     password 'password'
+
+    datafeed_configuration_details
   end
 end

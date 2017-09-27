@@ -12,15 +12,13 @@ module DFP
     end
 
     def product_id
-      if ad_units_product.any?
-        ad_units_product.first.id
-      end
+      ad_units_product.first.id if ad_units_product.any?
     end
 
     def totals
       items_to_merge.group(:dimensionline_item_id).select('sum(columntotal_line_item_level_impressions) as impr_sum,
                              sum(columntotal_line_item_level_clicks) as clicks_sum,
-                             (CAST(sum(columntotal_line_item_level_clicks) as FLOAT) / CAST(sum(columntotal_line_item_level_impressions) as FLOAT)) as ctr,
+                             (CAST(sum(columntotal_line_item_level_clicks) as FLOAT) / nullif(CAST(sum(columntotal_line_item_level_impressions) AS FLOAT), 0)) as ctr,
                              dimensionline_item_id')
 
 

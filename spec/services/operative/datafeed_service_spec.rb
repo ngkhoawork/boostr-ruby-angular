@@ -12,6 +12,7 @@ RSpec.describe Operative::DatafeedService, datafeed: :true do
       expect(Operative::ExtractVerifyService).to receive_message_chain(:new, :perform).and_return({})
       expect(Operative::ImportSalesOrdersService).to receive_message_chain(:new, :perform).and_return({})
       expect(Operative::ImportSalesOrderLineItemsService).to receive_message_chain(:new, :perform).and_return({})
+      expect(Operative::ImportInvoiceLineItemsService).to receive_message_chain(:new, :perform).and_return({})
       subject.perform
     end
   end

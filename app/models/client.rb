@@ -11,10 +11,17 @@ class Client < ActiveRecord::Base
   has_many :contacts, -> { uniq }, through: :client_contacts
   has_many :primary_client_contacts, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
   has_many :primary_contacts, -> { uniq }, through: :primary_client_contacts, source: :contact
+  has_many :secondary_client_contacts, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
+  has_many :secondary_contacts, -> { uniq }, through: :secondary_client_contacts, source: :contact
   has_many :client_contacts, dependent: :destroy
   has_many :revenues
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
+
+  has_many :agency_ios, class_name: 'Io', foreign_key: 'agency_id'
+  has_many :advertiser_ios, class_name: 'Io', foreign_key: 'advertiser_id'
+
+  has_many :bp_estimates
 
   has_many :agency_connections, class_name: :ClientConnection,
            foreign_key: :agency_id, dependent: :destroy

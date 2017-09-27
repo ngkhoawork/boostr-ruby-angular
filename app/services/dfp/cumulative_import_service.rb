@@ -1,42 +1,66 @@
 module DFP
   class CumulativeImportService < BaseImportService
 
+    def perform
+      super
+      set_report_file
+      import_from_temp_table
+      destroy_temp_records
+    end
+
     private
 
     def parse_dfp_report
-      import_log = CsvImportLog.new(company_id: company_id, object_name: import_type)
-      import_log.set_file_source(report_file)
-
       CSV.parse(report_csv, { headers: true, header_converters: :symbol }) do |row|
         import_to_temp_table(row)
       end
-      duplicated_rows = []
-      non_duplicated_rows = non_duplicate_items.map(&:attributes).map(&:symbolize_keys)
-      duplicating_line_item_ids.each do |item_id|
-        ser = DFP::TempCumulativeReportService.new(duplicating_line_item_id: item_id, company_id: company_id)
-        merged_row = ser.get_merged_row
-        duplicated_rows << merged_row
-      end
-      total_rows_arr = duplicated_rows + non_duplicated_rows
-      total_rows_arr.each do |row|
-        import_log.count_processed
+    end
+
+    def import_from_temp_table
+      rows_from_temp_table.each do |row|
+        csv_import_log.count_processed
         object_from_temp = import_temp_row(row)
         if object_from_temp.valid?
           begin
             object_from_temp.perform
-            import_log.count_imported
+            csv_import_log.count_imported
           rescue Exception => e
-            import_log.count_failed
-            import_log.log_error ['Internal Server Error', row.to_h.compact.to_s]
+            csv_import_log.count_failed
+            csv_import_log.log_error ['Internal Server Error', row.to_h.compact.to_s]
             next
           end
         else
-          import_log.count_failed
-          import_log.log_error object_from_temp.errors.full_messages
+          csv_import_log.count_failed
+          csv_import_log.log_error object_from_temp.errors.full_messages
         end
       end
-      import_log.save
-      destroy_temp_records
+      csv_import_log.save
+    end
+
+    def set_report_file
+      csv_import_log.set_file_source(report_file)
+    end
+
+    def rows_from_temp_table
+      duplicating_rows + non_duplicated_rows
+    end
+
+    def csv_import_log
+      @csv_import_log ||= CsvImportLog.new(company_id: company_id, object_name: import_type)
+    end
+
+    def non_duplicated_rows
+      non_duplicate_items.map(&:attributes).map(&:symbolize_keys)
+    end
+
+    def duplicating_rows
+      duplicating_line_item_ids.each_with_object([]) do |item_id, duplicated_rows|
+        duplicated_rows << temp_cumulative_service(item_id, company_id).get_merged_row
+      end
+    end
+
+    def temp_cumulative_service(item_id, company_id)
+      DFP::TempCumulativeReportService.new(duplicating_line_item_id: item_id, company_id: company_id)
     end
 
     def duplicating_line_item_ids
@@ -44,22 +68,25 @@ module DFP
     end
 
     def non_duplicate_items
-      @non_duplicate_rows ||= TempCumulativeDfpReport.where('company_id = ? AND dimensionline_item_id NOT IN (?)', company_id, duplicating_line_item_ids )
+      @non_duplicate_rows ||= if duplicating_line_item_ids.any?
+                                TempCumulativeDfpReport.where('company_id = :company_id AND dimensionline_item_id NOT IN (:ids)', company_id: company_id, ids: duplicating_line_item_ids)
+                              else
+                                TempCumulativeDfpReport.where('company_id = :company_id', company_id: company_id)
+                              end
     end
 
     def import_to_temp_table(row)
       row_params = row.to_hash.merge(company_id: company_id)
-      TempCumulativeDfpReport.create(row_params)
+      TempCumulativeDfpReport.create!(row_params)
     end
 
     def destroy_temp_records
-      TempCumulativeDfpReport.where(company_id: company_id).destroy_all
+      TempCumulativeDfpReport.where(company_id: company_id).delete_all
     end
 
     def import_temp_row(row)
       goal_quantity = adjustment_service.perform(row[:dimensionattributeline_item_goal_quantity]).to_i
       total_impressions = row[:columntotal_line_item_level_impressions].to_i
-
       if total_impressions >= goal_quantity
         total_impressions = goal_quantity
       end
@@ -68,11 +95,6 @@ module DFP
       price = row[:dimensionattributeline_item_cost_per_unit]
       non_cpd_booked_revenue = row[:dimensionattributeline_item_non_cpd_booked_revenue]
       budget_delivered = price * total_impressions / 1_000
-      if row[:product_id]
-        product = Product.find_by(id: row[:product_id])
-      else
-        product = Product.joins(:ad_units).where('ad_units.name = ? and products.company_id = ?', row[:dimensionad_unit_name], company_id).first
-      end
 
       line_item_params = {
           io_name: row[:dimensionorder_name],
@@ -82,7 +104,7 @@ module DFP
           io_end_date: row[:dimensionattributeorder_end_date_time],
           external_io_number: row[:dimensionorder_id].to_i,
           product_name: row[:dimensionline_item_name],
-          product: product,
+          product_id: row[:product_id],
           line_number: row[:dimensionline_item_id],
           ad_server: 'DFP',
           start_date: row[:dimensionattributeline_item_start_date_time],

@@ -4,10 +4,12 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
   subject(:subject) {
     Operative::ImportSalesOrdersService.new(
       company.id,
+      auto_close_deals,
       {sales_order: sales_order_file, currency: currency_file}
     )
   }
   let(:company)          { Company.first }
+  let(:auto_close_deals) { true }
   let(:sales_order_file) { './spec/sales_order_file.csv' }
   let(:currency_file)    { './spec/currency_file.csv' }
   let(:io_csv)           { double() }
@@ -30,7 +32,8 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_budget: nil,
       io_budget_loc: nil,
       io_curr_cd: nil,
-      company_id: company.id
+      company_id: company.id,
+      auto_close_deals: true
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)
@@ -87,7 +90,8 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       io_budget: nil,
       io_budget_loc: nil,
       io_curr_cd: 'USD',
-      company_id: company.id
+      company_id: company.id,
+      auto_close_deals: true
     }).and_return(io_csv)
     expect(io_csv).to receive(:valid?).and_return(:true)
     expect(io_csv).to receive(:perform)

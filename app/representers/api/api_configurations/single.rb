@@ -15,6 +15,7 @@ class API::ApiConfigurations::Single < API::Single
   property :cpm_budget_adjustment, exec_context: :decorator
   property :json_api_key, exec_context: :decorator
   property :asana_connect_details, exec_context: :decorator
+  property :datafeed_configuration_details, exec_context: :decorator
 
   private
 
@@ -36,5 +37,9 @@ class API::ApiConfigurations::Single < API::Single
 
   def asana_connect_details
     represented.asana_connect_details if represented.integration_type == 'AsanaConnectConfiguration'
+  end
+
+  def datafeed_configuration_details
+    represented.datafeed_configuration_details if represented.integration_type == 'OperativeDatafeedConfiguration'
   end
 end

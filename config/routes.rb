@@ -127,13 +127,23 @@ Rails.application.routes.draw do
       resources :products, only: [:index]
     end # API V2 END
 
+    resources :dfp_imports do
+      collection do
+        post 'import'
+      end
+    end
+
     resources :asana_connect, only: [:index] do
       collection do
         get :callback
       end
     end
     resources :countries, only: [:index]
-    resources :api_configurations
+    resources :api_configurations do
+      collection do
+        get :metadata
+      end
+    end
     resources :integration_types, only: [:index]
     resources :integration_logs, only: [:index, :show] do
       post :resend_request, on: :member
