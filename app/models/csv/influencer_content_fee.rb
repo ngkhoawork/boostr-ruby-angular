@@ -6,33 +6,12 @@ class Csv::InfluencerContentFee
   validates :io_number, :influencer_id, :product_name, :date, :gross_amount_loc, :company, presence: true
   validates :fee_amount, numericality: true
 
-  validate do |csv|
-    csv.errors.add(:io, "with id #{io_number} could not be found") if io.blank?
-  end
-
-  validate do |csv|
-    csv.errors.add(:influencer, "with id #{influencer_id} could not be found") if influencer.blank?
-  end
-
-  validate do |csv|
-    csv.errors.add(:product, "with name #{product_name} could not be found") if product.blank?
-  end
-
-  validate do |csv|
-    if date_valid?
-      csv.errors.add(:date, "- #{date} must be between IO start and end dates") unless date_in_io_range?
-    else
-      csv.errors.add(:date, "- #{date} must be a valid datetime")
-    end
-  end
-
-  validate do |csv|
-    csv.errors.add(:fee_type, "- #{fee_type} should be either 'percentage' or 'flat'") unless fee_type_valid?
-  end
-
-  validate do |csv|
-    csv.errors.add(:content_fee, "for specified io #{io_number} and product #{product_name} could not be found") if content_fee.blank?
-  end
+  validate :validate_io_presence
+  validate :validate_influencer_presence
+  validate :validate_product_presence
+  validate :validate_date_format
+  validate :validate_fee_type
+  validate :validate_content_fee_presence
 
   attr_accessor(:io_number, :influencer_id, :product_name, :date, :fee_type, :fee_amount, :gross_amount_loc, :asset, :company)
   
@@ -87,6 +66,34 @@ class Csv::InfluencerContentFee
   end
 
   private
+
+  def validate_io_presence
+    errors.add(:io, "with id #{io_number} could not be found") if io.blank?
+  end
+
+  def validate_influencer_presence
+    errors.add(:influencer, "with id #{influencer_id} could not be found") if influencer.blank?
+  end
+
+  def validate_product_presence
+    errors.add(:product, "with name #{product_name} could not be found") if product.blank?
+  end
+
+  def validate_date_format
+    if date_valid?
+      errors.add(:date, "- #{date} must be between IO start and end dates") unless date_in_io_range?
+    else
+      errors.add(:date, "- #{date} must be a valid datetime")
+    end
+  end
+
+  def validate_fee_type
+    errors.add(:fee_type, "- #{fee_type} should be either 'percentage' or 'flat'") unless fee_type_valid?
+  end
+
+  def validate_content_fee_presence
+    errors.add(:content_fee, "for specified io #{io_number} and product #{product_name} could not be found") if content_fee.blank?
+  end
 
   def get_fee_type
     if influencer.agreement.present? && fee_type.blank?

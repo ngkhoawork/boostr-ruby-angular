@@ -17,9 +17,9 @@ RSpec.describe Csv::InfluencerContentFee, type: :model do
       expect(influencer_content_fee.fee_amount).to eq(50)
 			expect(influencer_content_fee.gross_amount_loc).to eq(10000)
       expect(influencer_content_fee.asset).to eq('www.google.com')
-      expect(influencer_content_fee.effect_date.year).to eq(2017)
-      expect(influencer_content_fee.effect_date.month).to eq(1)
-      expect(influencer_content_fee.effect_date.day).to eq(8)
+      expect(influencer_content_fee.effect_date.year).to eq(2016)
+      expect(influencer_content_fee.effect_date.month).to eq(9)
+      expect(influencer_content_fee.effect_date.day).to eq(28)
     end
   end
 
@@ -52,7 +52,7 @@ RSpec.describe Csv::InfluencerContentFee, type: :model do
   def file
     @_file = CSV.generate do |csv|
       csv << ['IO Num', 'Influencer ID', 'Product', 'Date', 'Fee Type', 'Fee Amt', 'Gross', 'Asset']
-      csv << [io.io_number, influencer.id, product.name, '1/8/2017', 'percentage', 50, 10000, 'www.google.com']
+      csv << [io.io_number, influencer.id, product.name, '9/28/2016', 'percentage', 50, 10000, 'www.google.com']
       csv << [io.io_number, influencer.id, 'fake', '1/8/2017', 'percentage', 50, 10000, 'www.google.com']
     end
   end	
