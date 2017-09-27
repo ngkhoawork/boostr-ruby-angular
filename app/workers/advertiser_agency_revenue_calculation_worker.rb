@@ -11,9 +11,8 @@ class AdvertiserAgencyRevenueCalculationWorker < BaseWorker
 
   private
 
-  #replace with pluck to struct after moving to staging
   def companies
-    @_companies ||= Company.where(id: 11).pluck(:id)
+    @_companies ||= Company.pluck(:id)
   end
 
   def time_dimensions

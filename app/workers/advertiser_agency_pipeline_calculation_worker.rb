@@ -12,7 +12,7 @@ class AdvertiserAgencyPipelineCalculationWorker < BaseWorker
   private
 
   def companies
-    @_companies ||= Company.where(id: 11).pluck(:id)
+    @_companies ||= Company.pluck(:id)
   end
 
   def time_dimensions

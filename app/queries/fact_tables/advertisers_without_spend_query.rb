@@ -5,7 +5,7 @@ class FactTables::AdvertisersWithoutSpendQuery
     @relation = relation
   end
 
-  def call
+  def perform
     advertisers_without_spend
   end
 

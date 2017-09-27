@@ -4,13 +4,12 @@ class FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery
     @options = options
   end
 
-  def call
+  def perform
     return relation unless options.any?
     relation.by_time_dimension_date_range(options[:start_date], options[:end_date])
             .by_agencies(options[:agencies_ids])
             .by_related_advertisers(options[:advertisers_ids])
             .by_company_id(options[:company_id])
-
   end
 
   private
@@ -27,7 +26,8 @@ class FactTables::AccountProductRevenueFacts::RevenueByRelatedAdvertisersQuery
     end
 
     def by_agencies(agencies_ids)
-      where('advertiser_agency_revenue_facts.agency_id in (:agencies_ids)',
+      where('advertiser_agency_revenue_facts.agency_id in (:agencies_ids)
+             AND advertiser_agency_revenue_facts.agency_id IS NOT NULL',
             agencies_ids: agencies_ids)
     end
 

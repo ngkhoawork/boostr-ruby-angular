@@ -1,7 +1,7 @@
 class DealProductBudgetPipelineService < BaseService
 
   def weighted_amount
-   ( budget * probability / 100 ).to_f
+   (budget * probability / 100).to_f
   end
 
   def unweighted_amount

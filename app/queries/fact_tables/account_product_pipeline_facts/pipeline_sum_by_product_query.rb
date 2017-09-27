@@ -3,7 +3,7 @@ class FactTables::AccountProductPipelineFacts::PipelineSumByProductQuery
     @relation = relation
   end
 
-  def call
+  def perform
     relation.where('time_dimensions.start_date >= ?', Date.today)
             .group('time_dimensions.start_date, time_dimensions.end_date, product_dimensions.name')
             .order('product_dimensions.name')

@@ -28,6 +28,6 @@ class AgencyDashboard::ContactsAndRelatedAdvertisersSerializer < ActiveModel::Se
   end
 
   def contact
-    object.contact
+    @_contact ||= object.contact
   end
 end

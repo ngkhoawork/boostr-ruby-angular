@@ -4,7 +4,7 @@ class FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery
     @options = options
   end
 
-  def call
+  def perform
     return relation unless options.any?
     relation.by_time_dimension_date_range(options[:end_date])
             .by_agencies(options[:agencies_ids])
@@ -28,7 +28,8 @@ class FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery
 
 
     def by_agencies(agencies_ids)
-      where('advertiser_agency_pipeline_facts.agency_id in (:agencies_ids)',
+      where('advertiser_agency_pipeline_facts.agency_id in (:agencies_ids)
+             AND advertiser_agency_pipeline_facts.agency_id IS NOT NULL',
              agencies_ids: agencies_ids)
     end
 

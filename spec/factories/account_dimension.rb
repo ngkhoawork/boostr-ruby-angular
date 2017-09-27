@@ -8,7 +8,6 @@ FactoryGirl.define do
     trait :agency do
       account_type 11
     end
-
   end
 
   factory :advertiser_account_dimension, traits: [:advertiser]

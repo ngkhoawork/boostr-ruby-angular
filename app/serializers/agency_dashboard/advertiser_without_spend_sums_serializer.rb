@@ -4,7 +4,10 @@ class AgencyDashboard::AdvertiserWithoutSpendSumsSerializer < ActiveModel::Seria
   private
 
   def seller_name
-    Client.max_share_user(id).first.name
+    client.max_share_user.name
   end
 
+  def client
+    Client.find(id)
+  end
 end

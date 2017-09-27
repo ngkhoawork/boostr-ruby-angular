@@ -1,9 +1,9 @@
 class FactTables::AccountProductRevenueFacts::SpendByCategoryQuery
-  def initialize(relation = AccountProductRevenueFact.joins(:account_dimension))
+  def initialize(relation = AdvertiserAgencyRevenueFact.joins(:account_dimension))
     @relation = relation
   end
 
-  def call
+  def perform
     relation.find_by_sql(spent_by_category_sql)
   end
 

@@ -10,7 +10,7 @@ class AgencyDashboard::ActivityHistorySerializer < ActiveModel::Serializer
   end
 
   def advertiser
-    object.account_dimension.as_json(only: [:id, :name])
+    object.account_dimension.slice('id', 'name')
   end
 
   def comments

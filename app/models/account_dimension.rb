@@ -3,6 +3,7 @@ class AccountDimension < ActiveRecord::Base
 
   belongs_to :client
   belongs_to :holding_company
+  belongs_to :company
 
   has_many :account_contacts, class_name: 'ClientContact', foreign_key: :client_id
   has_many :contacts, -> { uniq }, through: :account_contacts
@@ -29,10 +30,14 @@ class AccountDimension < ActiveRecord::Base
   scope :agencies_by_holding_company_or_agency_id, -> (holding_company_id, account_id, company_id) do
     AgencyByHoldingIdOrAgencyIdQuery.new(holding_company_id: holding_company_id,
                                          account_id: account_id,
-                                         company_id: company_id).call
+                                         company_id: company_id).perform
   end
 
   scope :related_advertisers_to_agencies, -> (agency_ids) { joins(:advertisers).where('client_connections.agency_id in (?)', agency_ids).distinct }
   scope :related_advertisers_with_agency_in_io, -> { joins(:advertiser_revenue_facts).where('advertiser_agency_revenue_facts.agency_id IS NOT NULL') }
+
+  scope :by_holding_company_id, -> (holding_company_id) { where(holding_company_id: holding_company_id) if holding_company_id }
+  scope :by_company_id, ->(company_id) { where(company_id: company_id) }
+  scope :by_account_type, ->(account_type) { where(account_type: account_type) }
 
 end

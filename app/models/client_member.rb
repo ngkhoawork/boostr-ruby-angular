@@ -2,6 +2,8 @@ class ClientMember < ActiveRecord::Base
   belongs_to :client, touch: true
   belongs_to :user
 
+  scope :ordered_by_share_desc, -> { order(share: :desc) }
+
   has_many :values, as: :subject
 
   validates :share, :user_id, :client_id, presence: true

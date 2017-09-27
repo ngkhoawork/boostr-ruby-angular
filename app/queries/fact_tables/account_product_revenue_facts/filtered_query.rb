@@ -8,7 +8,7 @@ class FactTables::AccountProductRevenueFacts::FilteredQuery
     @options = options
   end
 
-  def call
+  def perform
     return relation unless options.any?
     relation.by_time_dimension_date_range(options[:start_date], options[:end_date])
             .by_holding_company_id(options[:holding_company_id])

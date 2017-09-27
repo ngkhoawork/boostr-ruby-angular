@@ -9,7 +9,24 @@ FactoryGirl.define do
       item.company = Company.first if item.company.nil?
 
       if item.client_type_id.nil?
-        item.client_type_id = Company.first.fields.find_by(name: 'Client Type').options.ids.sample
+        item.client_type_id = Company.first
+                                     .fields
+                                     .find_by(name: 'Client Type')
+                                     .options.ids.sample
+      end
+    end
+
+    trait :advertiser do
+      after(:create) do |client|
+        client.client_type_id = Field.find_by(company_id: client.company_id, name: 'Client Type')
+                                     .options.find_by('options.name = ?', 'Advertiser').id
+      end
+    end
+
+    trait :agency do
+      after(:create) do |client|
+        client.client_type_id = Field.find_by(company_id: client.company_id, name: 'Client Type')
+                                     .options.find_by('options.name = ?', 'Agency').id
       end
     end
 
