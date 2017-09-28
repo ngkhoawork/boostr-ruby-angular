@@ -133,7 +133,7 @@ class Api::ReportsController < ApplicationController
       result = company.all_team_members_and_leaders
     else
       user_ids = team.all_members_and_leaders
-      result = User.where(company_id: self.company_id).where('id in (?)', user_ids)
+      result = company.users.where('id in (?)', user_ids)
     end
 
     @_users ||= result.by_user_type(params[:user_type])
