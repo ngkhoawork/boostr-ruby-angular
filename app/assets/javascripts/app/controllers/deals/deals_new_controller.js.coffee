@@ -1,6 +1,7 @@
 @app.controller 'DealsNewController',
-['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
-($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, DealCustomFieldName, Currency, CurrentUser, Validation) ->
+['$scope', '$modal', '$modalInstance', '$q', '$location', 'Deal', 'Client', 'Stage', 'Field', 'deal', 'options', 'DealCustomFieldName', 'Currency', 'CurrentUser', 'Validation'
+($scope, $modal, $modalInstance, $q, $location, Deal, Client, Stage, Field, deal, options, DealCustomFieldName, Currency, CurrentUser, Validation) ->
+  console.log 'optionos', options
   $scope.init = ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
@@ -108,6 +109,7 @@
     Deal.create(deal: $scope.deal).then(
       (deal) ->
         $modalInstance.close(deal)
+        options.onSuccess() if _.isFunction options.onSuccess
       (resp) ->
         for key, error of resp.data.errors
           $scope.errors[key] = error && error[0]
@@ -116,6 +118,7 @@
 
   $scope.cancel = ->
     $modalInstance.close()
+    options.onCancel() if _.isFunction options.onCancel
 
   $scope.baseFieldRequired = (factor) ->
     if $scope.deal

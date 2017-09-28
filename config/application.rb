@@ -34,5 +34,9 @@ module Boostr
 
     config.autoload_paths << Rails.root.join('lib')
     config.active_job.queue_adapter = :sidekiq
+    config.action_dispatch.default_headers = {
+        # "X-Frame-Options" => "ALLOW-FROM mail.google.com"
+        "Content-Security-Policy" => ""
+    }
   end
 end

@@ -309,6 +309,10 @@
       templateUrl: 'sign_out.html'
       controller: 'signOutController'
 
+    .when '/gmail_extension/',
+      templateUrl: 'gmail_extension.html'
+      controller: 'GmailExtensionController'
+
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
@@ -329,7 +333,8 @@
 ]
 
 @app.config ['$compileProvider', ($compileProvider) ->
-  $compileProvider.debugInfoEnabled false
+  isGmailExtension = location.pathname.indexOf('/gmail_extension/') == 0
+  $compileProvider.debugInfoEnabled isGmailExtension
 ]
 
 @app.run ['editableOptions', (editableOptions) ->
