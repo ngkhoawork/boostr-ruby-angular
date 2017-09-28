@@ -29,22 +29,22 @@
           $scope.client.client_type.option_id = option.id
     $scope.setClientTypes()
     if $scope.client.client_type
-      $scope.getClients()
+      $scope.getClients($scope.query)
 
   Validation.account_base_fields().$promise.then (data) ->
     $scope.advertiser_base_fields_validations = data['Advertiser Base Field']
     $scope.agency_base_fields_validations = data['Agency Base Field']
 
-  $scope.getClients = (query) ->
+  $scope.getClients = (query = '') ->
     $scope.isLoading = true
-    params = {
-      page: $scope.page
+
+    query = query.trim()
+
+    params =
       client_type_id: $scope.client.client_type.option_id
-      filter: "all"
-    }
-    if $scope.query.trim().length
-      params.name = $scope.query.trim()
-    Client.query(params).$promise.then (clients) ->
+      name: query if query.length
+
+    Client.search_clients(params).$promise.then (clients) ->
       if $scope.page > 1
         $scope.clients = $scope.clients.concat(clients)
       else
@@ -60,7 +60,7 @@
       clearTimeout(searchTimeout)
       searchTimeout = null
     searchTimeout = setTimeout(
-      -> $scope.getClients()
+      -> $scope.getClients($scope.query)
       250
     )
 

@@ -2,6 +2,7 @@ class Clients::ClientListSerializer < ActiveModel::Serializer
   attributes(
     :id,
     :name,
+    :formatted_name,
     :type,
     :category,
     :client_members,
@@ -38,5 +39,14 @@ class Clients::ClientListSerializer < ActiveModel::Serializer
 
   def latest_agency_activity
     object.latest_agency_activity&.happened_at
+  end
+
+  def formatted_name
+    f_name = name
+
+    f_name += ", #{object.address.city}" if object.address&.city.present?
+    f_name += ", #{object.address.state}" if object.address&.state.present?
+
+    f_name
   end
 end

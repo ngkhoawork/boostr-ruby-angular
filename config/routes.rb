@@ -179,6 +179,7 @@ Rails.application.routes.draw do
       get :child_clients
       get :stats
       collection do
+        get :search_clients
         get :filter_options
       end
       resources :client_members, only: [:index, :create, :update, :destroy]

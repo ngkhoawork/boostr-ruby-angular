@@ -50,6 +50,12 @@ class Api::ClientsController < ApplicationController
     end
   end
 
+  def search_clients
+    render json: suggest_clients
+                  .order(:name)
+                  .pluck_to_struct(:id, :name, :client_type_id)
+  end
+
   def filter_options
     client_ids = clients.pluck(:id)
 

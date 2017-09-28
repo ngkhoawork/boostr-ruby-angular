@@ -5,16 +5,18 @@
   $scope.submitText = "Update"
   $scope.parentClient = parentClient
   $scope.searchText = ""
-  Client.query({filter: 'all', page: 1, client_type_id: $scope.parentClient.client_type.option_id}).$promise.then (clients) ->
+  Client.search_clients({ client_type_id: $scope.parentClient.client_type.option_id }).$promise.then (clients) ->
     $scope.clients = clients
 
   $scope.searchObj = (search) ->
-    if search == ""
-      Client.query({filter: 'all', page: 1, client_type_id: $scope.parentClient.client_type.option_id}).$promise.then (clients) ->
-        $scope.clients = clients
-    else
-      Client.query({filter: 'all', search: search, page: 1, client_type_id: $scope.parentClient.client_type.option_id}).$promise.then (clients) ->
-        $scope.clients = clients
+    query = search.trim()
+
+    params =
+      client_type_id: $scope.parentClient.client_type.option_id,
+      name: query if query.length
+
+    Client.search_clients(params).$promise.then (clients) ->
+      $scope.clients = clients
 
   $scope.showClientNewModal = ->
     newClient = {}

@@ -79,6 +79,21 @@ RSpec.describe Api::ClientsController, type: :controller do
     end
   end
 
+  describe 'GET #search_clients' do
+    before do
+      searched_client(name: 'Boostr')
+    end
+
+    it 'searches clients and filters by type id' do
+      get :search_clients, client_type_id: 1, name: 'Boos', format: :json
+
+      expect(response).to be_success
+
+      expect(json_response.length).to eq(1)
+      expect(json_response.first['name']).to eq 'Boostr'
+    end
+  end
+
   describe "POST #create" do
     it 'creates a new client and returns success' do
       expect{
@@ -110,7 +125,7 @@ RSpec.describe Api::ClientsController, type: :controller do
     end
   end
 
-  describe 'GET #filter_options', focus: true do
+  describe 'GET #filter_options' do
     let(:client) { create :client, created_by: user.id }
     let!(:client_member) { create :client_member, user: user, client: client }
 
@@ -167,5 +182,11 @@ RSpec.describe Api::ClientsController, type: :controller do
 
   def client_type_id(company)
     company.fields.find_by(name: 'Client Type').options.ids.sample
+  end
+
+  def searched_client(opts={})
+    params = { created_by: user.id, client_type_id: 1 }
+
+    @_searched_client ||= create :client, params.merge(opts)
   end
 end
