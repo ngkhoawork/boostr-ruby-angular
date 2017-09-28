@@ -334,7 +334,7 @@ class Io < ActiveRecord::Base
   end
 
   def highest_member
-    io_members.present? ? io_members.ordered_by_share : nil
+    io_members.present? ? io_members.ordered_by_share.first : nil
   end
 
   def for_forecast_page(start_date, end_date, user = nil)

@@ -66,9 +66,12 @@ describe BillingSummary::IosForApprovalSerializer do
   end
 
   def create_io_members
-    user = create :user
     create :io_member, user_id: user_seller.id, io_id: io.id, share: 100
     create :io_member, user_id: user.id, io_id: io.id, share: 85
+  end
+
+  def user
+    @_user ||= create :user
   end
 
   def io
