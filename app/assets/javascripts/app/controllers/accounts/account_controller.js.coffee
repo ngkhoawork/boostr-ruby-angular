@@ -375,6 +375,7 @@
       keyboard: false
       resolve:
         deal: $scope.setupNewDeal
+		options: -> {}
 
   $scope.showNewAccountConnectionContactModal = ->
     $scope.modalInstance = $modal.open

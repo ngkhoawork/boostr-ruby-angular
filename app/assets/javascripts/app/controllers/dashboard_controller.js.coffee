@@ -141,8 +141,8 @@
                     backdrop: 'static'
                     keyboard: false
                     resolve:
-                        deal: ->
-                            {}
+                        deal: -> {}
+                        options: -> {}
 
             $scope.showReminderModal = ->
                 $scope.modalInstance = $modal.open
