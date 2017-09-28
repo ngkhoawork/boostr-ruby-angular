@@ -6,7 +6,7 @@ describe BillingSummary::IosForApprovalSerializer do
     content_fee = create :content_fee, product: content_fee_product, budget: 50_000, io: io
     io.content_fees << content_fee
 
-    create_io_member
+    create_io_members
     display_line_item_budget
   end
 
@@ -65,7 +65,7 @@ describe BillingSummary::IosForApprovalSerializer do
    @_content_fee_product_budget ||= content_fee.content_fee_product_budgets.first
   end
 
-  def create_io_member
+  def create_io_members
     user = create :user
     create :io_member, user_id: user_seller.id, io_id: io.id, share: 100
     create :io_member, user_id: user.id, io_id: io.id, share: 85
@@ -147,7 +147,7 @@ describe BillingSummary::IosForApprovalSerializer do
   end
 
   def user_seller
-    @_seller ||= create :user, user_type: SELLER, first_name: "John", last_name: "Test"
+    @_seller ||= create :user, user_type: SELLER, first_name: 'John', last_name: 'Test'
   end
 
   def contact
