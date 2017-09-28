@@ -307,7 +307,7 @@ class Team < ActiveRecord::Base
     children.each do |child|
       user_ids += child.all_members_and_leaders
     end
-    User.where(company_id: self.company_id).where('id in (?)', user_ids)
+    user_ids
   end
 
   def sum_pos_balance
