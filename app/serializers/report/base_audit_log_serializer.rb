@@ -1,7 +1,7 @@
 class Report::BaseAuditLogSerializer < ActiveModel::Serializer
   include ActionView::Helpers::NumberHelper
 
-  attributes :id, :name, :advertiser_name, :start_date, :budget, :date, :old_value, :new_value
+  attributes :id, :name, :advertiser_name, :start_date, :budget, :date, :old_value, :new_value, :changed_by
 
   private
 
@@ -27,6 +27,10 @@ class Report::BaseAuditLogSerializer < ActiveModel::Serializer
 
   def date
     object.created_at rescue nil
+  end
+
+  def changed_by
+    User.find(object.updated_by).name
   end
 
   def deal
