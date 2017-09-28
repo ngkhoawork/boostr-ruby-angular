@@ -1273,7 +1273,7 @@ class Deal < ActiveRecord::Base
       end
 
       if row[18].present?
-        created_by_user = current_user.company.users.where('email ilike ?', row[18].strip).first
+        created_by_user = current_user.company.users.by_email(row[18].strip).first
 
         if created_by_user
           created_by = created_by_user.id

@@ -621,9 +621,10 @@ describe Deal do
     end
 
     it 'creates a deal with created by email' do
-      company.users << create(:user, email: "creator_email@gmail.com")
-      another_company_user = company.users.where(email: "creator_email@gmail.com").first
+      company.users << create(:user, email: 'creator_email@gmail.com')
+      another_company_user = company.users.where(email: 'creator_email@gmail.com').first
       data = build :deal_csv_data, created_by: another_company_user.email
+
       Deal.import(generate_csv(data), user.id, 'deals.csv')
       deal = Deal.last
 
