@@ -9,11 +9,9 @@
     $scope.clients = clients
 
   $scope.searchObj = (search) ->
-    query = search.trim()
-
     params =
       client_type_id: $scope.parentClient.client_type.option_id,
-      name: query if query.length
+      name: search.trim()
 
     Client.search_clients(params).$promise.then (clients) ->
       $scope.clients = clients

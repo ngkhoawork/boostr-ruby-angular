@@ -29,7 +29,7 @@
                 deals
 
         $scope.searchClients = (str) ->
-            Client.query(name: str).$promise.then (clients) ->
+            Client.query(search: str).$promise.then (clients) ->
                 clients
 
         $scope.searchContacts = (str) ->

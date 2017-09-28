@@ -222,11 +222,10 @@
 
   $scope.getClients = (query = '') ->
     $scope.isLoading = true
-    query = query.trim()
 
     params = {
       client_type_id: $scope.currentClient.client_type_id
-      name: query if query.length
+      name: query.trim()
     }
 
     Client.search_clients(params).$promise.then (clients) ->

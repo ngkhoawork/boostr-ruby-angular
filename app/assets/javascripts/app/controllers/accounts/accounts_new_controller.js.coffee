@@ -38,17 +38,12 @@
   $scope.getClients = (query = '') ->
     $scope.isLoading = true
 
-    query = query.trim()
-
     params =
       client_type_id: $scope.client.client_type.option_id
-      name: query if query.length
+      name: query.trim()
 
     Client.search_clients(params).$promise.then (clients) ->
-      if $scope.page > 1
-        $scope.clients = $scope.clients.concat(clients)
-      else
-        $scope.clients = clients
+      $scope.clients = clients
       $scope.isLoading = false
 
   # Prevent multiple extraneous calls to the server as user inputs search term

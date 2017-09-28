@@ -4,23 +4,18 @@ class Api::ClientsController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        if params[:name].present?
-          results = suggest_clients
-        elsif params[:activity].present?
-          results = activity_clients
-        else
-          results = clients
-                      .by_type_id(params[:client_type_id])
-                      .by_category(params[:client_category_id])
-                      .by_region(params[:client_region_id])
-                      .by_segment(params[:client_segment_id])
-                      .by_city(params[:city])
-                      .by_last_touch(params[:start_date], params[:end_date])
-                      .by_name(params[:search])
-                      .order(:name)
-                      .includes(:address, :client_member_info, :latest_advertiser_activity, :latest_agency_activity)
-                      .distinct
-        end
+        results = clients
+                    .by_type_id(params[:client_type_id])
+                    .by_category(params[:client_category_id])
+                    .by_region(params[:client_region_id])
+                    .by_segment(params[:client_segment_id])
+                    .by_city(params[:city])
+                    .by_last_touch(params[:start_date], params[:end_date])
+                    .by_name(params[:search])
+                    .order(:name)
+                    .preload(:address, :client_member_info, :latest_advertiser_activity, :latest_agency_activity)
+                    .distinct
+
         if params[:owner_id]
           client_ids = Client.joins("INNER JOIN client_members ON clients.id = client_members.client_id").where("clients.company_id = ? AND client_members.user_id = ?", company.id, params[:owner_id]).pluck(:client_id)
           results = results.by_ids(client_ids)
@@ -345,10 +340,6 @@ class Api::ClientsController < ApplicationController
 
   def suggest_clients
     @_suggest_clients ||= company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
-  end
-
-  def activity_clients
-    @_activity_clients ||= company.clients.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
   end
 
   def company_job_level_options
