@@ -310,6 +310,7 @@ Rails.application.routes.draw do
     resources :influencers, only: [:index, :show, :create, :update, :destroy]
     resources :influencer_content_fees, only: [:index, :show, :create, :update, :destroy] do
       post :update_budget
+      post :import, on: :collection
     end
     resources :sales_execution_dashboard, only: [:index] do
       collection do

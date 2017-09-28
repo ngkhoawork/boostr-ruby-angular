@@ -36,7 +36,7 @@
           .col-md-12.bs-datepicker{'ng-class':'{error: errors.effect_date}'}
             %span.error-text {{errors.effect_date}}
             %label{ for: 'effect_date' }
-              Date
+              Date(MM/DD/YYYY)
               %span.star *
             %input.form-control{readonly: true, name: 'effect_date', type: 'text', datepicker: { popup: 'MMMM d, y', timezone: true }, ng: { model: 'influencerContentFee.effect_date', required: true, click: 'endOpened = true' }, 'is-open': 'endOpened', placeholder: 'Choose date' }
       .form-group
@@ -44,7 +44,7 @@
           .col-xs-6{'ng-class':'{error: errors.fee_type}'}
             %span.error-text {{errors.fee_type}}
             %label{ for: 'fee_type' }
-              Fee Type
+              Fee Type (flat / percentage)
               %span.star *
             %ui-select{ name: 'fee_type', ng: { model: 'influencerContentFee.fee_type', required: true } }
               %ui-select-match{ placeholder: 'Fee Type' }

@@ -33,22 +33,9 @@ class Api::IosController < ApplicationController
 
   def update_influencer_budget
     if io
-      sum_list = {}
       errors = []
       io.influencer_content_fees.each do |influencer_content_fee|
-        if influencer_content_fee.effect_date >= io.start_date && influencer_content_fee.effect_date <= io.end_date
-          content_fee_product_budget_rows = influencer_content_fee.content_fee.content_fee_product_budgets.for_year_month(influencer_content_fee.effect_date)
-          content_fee_product_budget = nil
-          content_fee_product_budget = content_fee_product_budget_rows.first if content_fee_product_budget_rows.count > 0
-          if content_fee_product_budget.nil?
-            next
-          end
-          if sum_list[content_fee_product_budget.id].present?
-            sum_list[content_fee_product_budget.id] = sum_list[content_fee_product_budget.id] + influencer_content_fee.gross_amount.to_f
-          else
-            sum_list[content_fee_product_budget.id] = influencer_content_fee.gross_amount.to_f
-          end
-        else
+        if influencer_content_fee.effect_date < io.start_date || influencer_content_fee.effect_date > io.end_date
           errors << "Asset date of influencer #{influencer_content_fee.influencer.name} is out of IO's date range."
         end
       end
@@ -56,17 +43,8 @@ class Api::IosController < ApplicationController
         render json: { errors: errors }, status: :unprocessable_entity
         return
       end
-      sum_list.each do |id, budget|
-        content_fee_product_budget = io.content_fee_product_budgets.find(id)
-        content_fee_product_budget.budget = budget
-        content_fee_product_budget.budget_loc = budget / io.exchange_rate
-
-        content_fee_product_budget.save
-        if content_fee_product_budget.save
-          content_fee_product_budget.content_fee.update_budget
-          content_fee_product_budget.content_fee.io.update_total_budget
-        end
-      end
+      io.update_influencer_budget
+      io.reload
       render json: io.full_json
     else
       render json: { errors: io.errors.messages }, status: :unprocessable_entity
