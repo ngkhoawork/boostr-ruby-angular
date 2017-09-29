@@ -67,6 +67,23 @@ RSpec.describe Team, type: :model do
     #TODO NEED MORE TESTS HERE
   end
 
+  describe '#all_members_and_leaders' do
+    it 'builds test teams' do
+      root_team
+      child_team(root_team)
+      child_team2(child_team)
+
+      team_members(root_team)
+      team_members(child_team)
+      team_members(child_team2)
+
+      user_ids = root_team.members.ids + child_team.members.ids + child_team2.members.ids
+      user_ids += [root_team, child_team, child_team2].map(&:leader_id)
+
+      expect(root_team.reload.all_members_and_leaders.sort).to eq user_ids.sort
+    end
+  end
+
   def user
     @_user ||= create :user, company: company, team: parent
   end
@@ -100,5 +117,21 @@ RSpec.describe Team, type: :model do
 
   def company
     @_company ||= create :company
+  end
+
+  def root_team
+    @_root_team ||= create :parent_team, company: company, leader: (create :user, company: company)
+  end
+
+  def child_team(parent_team=nil)
+    @_child_team ||= create :team, parent: parent_team, company: company, leader: (create :user, company: company)
+  end
+
+  def child_team2(parent_team=nil)
+    @_child_team2 ||= create :team, parent: parent_team, company: company, leader: (create :user, company: company)
+  end
+
+  def team_members(team)
+    create_list :user, 3, company: company, team: team
   end
 end

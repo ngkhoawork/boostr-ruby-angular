@@ -301,13 +301,11 @@ class Team < ActiveRecord::Base
   end
 
   def all_members_and_leaders
-    user_ids = [leader_id, members.ids].flatten
+    user_ids = [leader_id, members.ids].flatten.compact
 
-    children.each do |child|
-      user_ids += child.all_members_and_leaders
+    children.reduce(user_ids) do |memo, child|
+      memo + child.all_members_and_leaders
     end
-
-    user_ids
   end
 
   def sum_pos_balance

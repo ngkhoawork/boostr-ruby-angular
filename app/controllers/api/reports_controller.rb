@@ -127,7 +127,9 @@ class Api::ReportsController < ApplicationController
   end
 
   def users
-    @_users ||= user_selection
+    @_users ||= company
+      .users
+      .where(id: user_selection)
       .by_user_type(params[:user_type])
       .without_fake_type
       .active
@@ -138,12 +140,10 @@ class Api::ReportsController < ApplicationController
 
   def user_selection
     if params[:team_id] == 'all'
-      user_ids = company.all_team_members_and_leaders_ids
+      company.all_team_members_and_leaders_ids
     else
-      user_ids = team.all_members_and_leaders
+      team.all_members_and_leaders
     end
-
-    company.users.where(id: user_ids)
   end
 
   def split_adjusted_serializer
