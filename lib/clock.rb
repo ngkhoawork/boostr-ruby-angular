@@ -51,4 +51,12 @@ module Clockwork
     AccountProductRevenueCalculationWorker.perform_async
   end
 
+  every(1.day, 'Advertiser Agency Pipeline Fact Updater', at: '4:30') do
+    AdvertiserAgencyPipelineCalculationWorker.perform_async
+  end
+
+  every(1.day, 'Advertiser Agency Revenue Fact Updater', at: '4:35') do
+    AdvertiserAgencyRevenueCalculationWorker.perform_async
+  end
+
 end
