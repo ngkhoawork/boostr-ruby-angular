@@ -127,21 +127,23 @@ class Api::ReportsController < ApplicationController
   end
 
   def users
-    return @_users if @_users
+    @_users ||= user_selection
+      .by_user_type(params[:user_type])
+      .without_fake_type
+      .active
+      .distinct
+      .order(:first_name)
+      .select(:id, :first_name, :last_name, :user_type)
+  end
 
+  def user_selection
     if params[:team_id] == 'all'
-      result = company.all_team_members_and_leaders
+      user_ids = company.all_team_members_and_leaders_ids
     else
       user_ids = team.all_members_and_leaders
-      result = company.users.where('id in (?)', user_ids)
     end
 
-    @_users ||= result.by_user_type(params[:user_type])
-                      .without_fake_type
-                      .active
-                      .distinct
-                      .order(:first_name)
-                      .select(:id, :first_name, :last_name, :user_type)
+    company.users.where(id: user_ids)
   end
 
   def split_adjusted_serializer

@@ -33,6 +33,7 @@ class User < ActiveRecord::Base
   scope :by_email, -> email { where('email ilike ?', email)  }
   scope :active, -> { where(is_active: true) }
   scope :without_fake_type, -> { where.not(user_type: FAKE_USER) }
+  scope :in_a_team, -> { where.not(team_id: nil) }
 
   after_create do
     create_dimension

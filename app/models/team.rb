@@ -301,12 +301,12 @@ class Team < ActiveRecord::Base
   end
 
   def all_members_and_leaders
-    user_ids = []
-    user_ids << leader_id
-    user_ids += members.ids
+    user_ids = [leader_id, members.ids].flatten
+
     children.each do |child|
       user_ids += child.all_members_and_leaders
     end
+
     user_ids
   end
 
