@@ -1,5 +1,5 @@
 class FactTables::AccountProductRevenueFacts::SpendByCategoryQuery
-  def initialize(relation = AdvertiserAgencyRevenueFact.joins(:account_dimension))
+  def initialize(relation = default_relation)
     @relation = relation
   end
 
@@ -10,6 +10,10 @@ class FactTables::AccountProductRevenueFacts::SpendByCategoryQuery
   private
 
   attr_reader :relation
+
+  def default_relation
+    AdvertiserAgencyRevenueFact.joins(:account_dimension)
+  end
 
   def spent_by_category_sql
     advertisers_unassigned.union(advertisers_assigned).to_sql

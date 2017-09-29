@@ -1,7 +1,5 @@
 class FactTables::AccountProductPipelineFacts::FilteredQuery
-  def initialize(options = {}, relation = AccountProductPipelineFact.joins(:time_dimension, :product_dimension, :account_dimension)
-                                                                    .joins('LEFT JOIN holding_companies
-                                                                           ON holding_companies.id = account_dimensions.holding_company_id'))
+  def initialize(options = {}, relation = default_relation)
     @relation = relation.extending(FactScopes)
     @options = options
   end
@@ -18,13 +16,22 @@ class FactTables::AccountProductPipelineFacts::FilteredQuery
 
   attr_reader :relation, :options
 
+  MAX_DAYS_IN_MONTH = 31
+
+  def default_relation
+    AccountProductPipelineFact
+        .joins(:time_dimension, :product_dimension, :account_dimension)
+        .joins('LEFT JOIN holding_companies ON holding_companies.id = account_dimensions.holding_company_id')
+  end
+
   module FactScopes
     def by_time_dimension_date_range(start_date = Date.today.beginning_of_month, end_date)
       where('time_dimensions.start_date >= :start_date
              AND time_dimensions.end_date <= :end_date
-             AND time_dimensions.days_length <= 31',
-             start_date: start_date,
-             end_date: end_date)
+             AND time_dimensions.days_length <= :max_days',
+            start_date: start_date,
+            end_date: end_date,
+            max_days: MAX_DAYS_IN_MONTH)
     end
 
     def by_account_id(account_id)

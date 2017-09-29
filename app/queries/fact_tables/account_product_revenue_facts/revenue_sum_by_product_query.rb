@@ -1,5 +1,5 @@
 class FactTables::AccountProductRevenueFacts::RevenueSumByProductQuery
-  def initialize(relation = AccountProductRevenueFact.joins(:time_dimension, :account_dimension, :product_dimension))
+  def initialize(relation = default_relation)
     @relation = relation
   end
 
@@ -12,4 +12,8 @@ class FactTables::AccountProductRevenueFacts::RevenueSumByProductQuery
   private
 
   attr_reader :relation
+
+  def default_relation
+    AccountProductRevenueFact.joins(:time_dimension, :account_dimension, :product_dimension)
+  end
 end

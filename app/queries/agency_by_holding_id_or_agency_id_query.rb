@@ -1,5 +1,5 @@
 class AgencyByHoldingIdOrAgencyIdQuery
-  def initialize(options = {}, relation = AccountDimension.all)
+  def initialize(options = {}, relation = default_relation)
     @options = options
     @relation = relation.extending(Scopes)
   end
@@ -15,6 +15,12 @@ class AgencyByHoldingIdOrAgencyIdQuery
   end
 
   private
+
+  attr_reader :relation, :options
+
+  def default_relation
+    AccountDimension.all
+  end
 
   module Scopes
     def by_holding_company(holding_company_id)
@@ -36,6 +42,4 @@ class AgencyByHoldingIdOrAgencyIdQuery
       where('account_dimensions.account_type = ?', Client::AGENCY)
     end
   end
-
-  attr_reader :relation, :options
 end

@@ -1,5 +1,5 @@
 class FactTables::AccountProductPipelineFacts::PipelineSumByAccountQuery
-  def initialize(relation = AdvertiserAgencyPipelineFact.joins(:time_dimension, :advertiser))
+  def initialize(relation = default_relation)
     @relation = relation
   end
 
@@ -12,4 +12,8 @@ class FactTables::AccountProductPipelineFacts::PipelineSumByAccountQuery
   private
 
   attr_reader :relation
+
+  def default_relation
+    AdvertiserAgencyPipelineFact.joins(:time_dimension, :advertiser)
+  end
 end

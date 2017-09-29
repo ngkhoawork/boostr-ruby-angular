@@ -1,5 +1,5 @@
 class FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery
-  def initialize(options = {}, relation = AdvertiserAgencyPipelineFact.joins(:time_dimension, :advertiser))
+  def initialize(options = {}, relation = default_relation)
     @relation = relation.extending(FactScopes)
     @options = options
   end
@@ -17,13 +17,18 @@ class FactTables::AccountProductPipelineFacts::PipelineByRelatedAdvertisersQuery
 
   attr_reader :relation, :options
 
+  def default_relation
+    AdvertiserAgencyPipelineFact.joins(:time_dimension, :advertiser)
+  end
+
   module FactScopes
     def by_time_dimension_date_range(start_date = Date.today.beginning_of_month, end_date)
       where('time_dimensions.start_date >= :start_date
              AND time_dimensions.end_date <= :end_date
-             AND time_dimensions.days_length <= 31',
+             AND time_dimensions.days_length <= :max_days',
             start_date: start_date,
-            end_date: end_date)
+            end_date: end_date,
+            max_days: MAX_DAYS_IN_MONTH)
     end
 
 

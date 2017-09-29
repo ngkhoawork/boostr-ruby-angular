@@ -1,6 +1,6 @@
 class FactTables::AdvertisersWithoutSpendQuery
 
-  def initialize(relation = AccountRevenueFact.joins(:account_dimensions), options = {})
+  def initialize(relation = default_relation, options = {})
     @options = options
     @relation = relation
   end
@@ -12,6 +12,10 @@ class FactTables::AdvertisersWithoutSpendQuery
   private
 
   attr_reader :relation, :options
+
+  def default_relation
+    AccountRevenueFact.joins(:account_dimensions)
+  end
 
   def advertisers_without_spend
     relation.group('account_dimensions.id, account_dimensions.name')

@@ -1,5 +1,5 @@
 class FactTables::AccountRevenues::FilteredQuery
-  def initialize(options = {}, relation = AccountRevenueFact.joins(:time_dimension, :account_dimension))
+  def initialize(options = {}, relation = default_relation)
     @relation = relation.extending(FactScopes)
     @options = options
   end
@@ -14,6 +14,10 @@ class FactTables::AccountRevenues::FilteredQuery
   private
 
   attr_reader :relation, :options
+
+  def default_relation
+    AccountRevenueFact.joins(:time_dimension, :account_dimension)
+  end
 
   module FactScopes
     def by_time_dimension_date_range(start_date, end_date)
