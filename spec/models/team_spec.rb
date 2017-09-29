@@ -68,7 +68,7 @@ RSpec.describe Team, type: :model do
   end
 
   describe '#all_members_and_leaders' do
-    it 'builds test teams' do
+    it 'selects all members and leards from root team and all nested teams' do
       root_team
       child_team(root_team)
       child_team2(child_team)
