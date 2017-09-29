@@ -118,19 +118,6 @@ class Api::ReportsController < ApplicationController
     @team ||= company.teams.find(params[:team_id])
   end
 
-  def all_team_sales_reps
-    if params[:team_id] == 'all'
-      return @all_team_sales_reps if @all_team_sales_reps
-      @all_team_members = []
-      company.teams.each do |team_row|
-        @all_team_members += team_row.all_sales_reps.reject {|row| row.is_active == false }
-      end
-      @all_team_members = @all_team_members.sort_by {|obj| obj.first_name}.uniq
-    else
-      @all_team_sales_reps ||= team.all_sales_reps.reject {|row| row.is_active == false }.sort_by {|obj| obj.first_name}.uniq
-    end
-  end
-
   def company
     @company ||= current_user.company
   end
@@ -140,15 +127,23 @@ class Api::ReportsController < ApplicationController
   end
 
   def users
-    @_users ||= params[:user_type].present? ? by_user_type : without_default_and_fake_type
+    @_users ||= company
+      .users
+      .where(id: user_selection)
+      .by_user_type(params[:user_type])
+      .without_fake_type
+      .active
+      .distinct
+      .order(:first_name)
+      .select(:id, :first_name, :last_name, :user_type)
   end
 
-  def by_user_type
-    all_team_sales_reps.select { |u| u.user_type.eql? user_type }
-  end
-
-  def without_default_and_fake_type
-    all_team_sales_reps.reject { |u| [FAKE_USER, DEFAULT].include?(u.user_type) }
+  def user_selection
+    if params[:team_id] == 'all'
+      company.all_team_members_and_leaders_ids
+    else
+      team.all_members_and_leaders
+    end
   end
 
   def split_adjusted_serializer

@@ -196,6 +196,10 @@ class Company < ActiveRecord::Base
     self.validations.where(object: object.to_s.humanize.titleize)
   end
 
+  def all_team_members_and_leaders_ids
+    teams.pluck(:leader_id) + users.in_a_team.ids
+  end
+
   protected
 
   def setup_default_options(field, names)
