@@ -1011,7 +1011,39 @@ describe Deal do
     end
   end
 
+  describe 'before_update' do
+    it 'should set closed_at date and not reset when user reopen deal' do
+      deal.update(stage: closed_won_stage)
+      deal.update_close
+      deal_closed_at_date = deal.closed_at
+
+      # reopen closed deal
+      deal.update(stage: discuss_stage)
+      deal.update_close
+
+      expect(deal.closed_at).to_not be_nil
+      expect(deal.closed_at).to eq deal_closed_at_date
+    end
+
+  end
+
   private
+
+  def closed_won_stage
+    @_closed_won_stage ||= create :closed_won_stage
+  end
+
+  def discuss_stage
+    @_discuss_stage ||= create :discuss_stage
+  end
+
+  def deal
+    @_deal ||= create :deal
+  end
+
+  def deal_product
+    @_deal_product ||= create :deal_product, deal: deal, budget: 100_000
+  end
 
   def user
     @_user ||= create :user
