@@ -361,7 +361,14 @@ Rails.application.routes.draw do
 				get :pipeline_and_revenue
 				get :activity_pacing
 			end
-		end
+    end
+
+    resources :mailtrack, only: [] do
+      collection do
+        get '/:pixel', to: 'mailtrack#open_mail'
+        post :create_thread
+      end
+    end
   end
 
   mount Sidekiq::Web => '/sidekiq'
