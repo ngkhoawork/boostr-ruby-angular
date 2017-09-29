@@ -23,7 +23,6 @@
                     %span.error-text {{errors.deal}}
                     %label
                         Related to Deal
-                        %span.star *
                     %input.form-control{'placeholder': 'Choose Deal', 'ng-model': 'form.deal', 'ng-model-options': '{debounce: 400}', typeahead: 'item as item.formatted_name for item in searchDeals($viewValue)', 'typeahead-on-select': 'onDealSelect($item, $model, $label, $event)'}
                 .advertiser-agency
                     .form-group.advertiser-field{'ng-class':'{error: errors.advertiser}'}

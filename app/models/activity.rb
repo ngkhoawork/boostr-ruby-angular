@@ -22,10 +22,10 @@ class Activity < ActiveRecord::Base
   validates_uniqueness_of :google_event_id, allow_nil: true, allow_blank: true
 
   after_create do
-    if !deal_id.nil?
+    if deal_id.present?
       deal = company.deals.find(deal_id)
       deal.update_attribute(:activity_updated_at, happened_at)
-    elsif !client_id.nil?
+    elsif client_id.present?
       client = company.clients.find(client_id)
       client.update_attribute(:activity_updated_at, happened_at)
     end
