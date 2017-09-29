@@ -1,5 +1,5 @@
 class BillingSummary::ContentFeeProductBudgetsSerializer < BillingSummary::BasicFieldsIosForApprovalSerializer
-  attributes :id, :line, :ad_server, :amount, :billing_status, :type
+  attributes :id, :line, :ad_server, :amount, :billing_status, :type, :seller_name
 
   def line
     content_fee.id
@@ -19,6 +19,10 @@ class BillingSummary::ContentFeeProductBudgetsSerializer < BillingSummary::Basic
 
   def type
     'ContentFeeProductBudget'
+  end
+
+  def seller_name
+    io.highest_member.user.name if io.highest_member.present?
   end
 
   private

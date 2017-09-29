@@ -5,6 +5,8 @@ describe BillingSummary::IosForApprovalSerializer do
     create :billing_deal_contact, deal: deal, contact: contact
     content_fee = create :content_fee, product: content_fee_product, budget: 50_000, io: io
     io.content_fees << content_fee
+
+    create_io_members
     display_line_item_budget
   end
 
@@ -34,6 +36,7 @@ describe BillingSummary::IosForApprovalSerializer do
     expect(content_fee_product_budget_serializer[:line]).to eql content_fee.id
     expect(content_fee_product_budget_serializer[:amount]).to eql content_fee_product_budget.budget_loc.to_f
     expect(content_fee_product_budget_serializer[:billing_status]).to eql 'Pending'
+    expect(content_fee_product_budget_serializer[:seller_name]).to eql user_seller.name
   end
 
   private
@@ -61,7 +64,16 @@ describe BillingSummary::IosForApprovalSerializer do
   def content_fee_product_budget
    @_content_fee_product_budget ||= content_fee.content_fee_product_budgets.first
   end
-  
+
+  def create_io_members
+    create :io_member, user_id: user_seller.id, io_id: io.id, share: 100
+    create :io_member, user_id: user.id, io_id: io.id, share: 85
+  end
+
+  def user
+    @_user ||= create :user
+  end
+
   def io
     @_io ||= create(
       :io,
@@ -135,6 +147,10 @@ describe BillingSummary::IosForApprovalSerializer do
 
   def account_manager
     @_account_manager ||= create :user, email: 'test@email.com', user_type: ACCOUNT_MANAGER
+  end
+
+  def user_seller
+    @_seller ||= create :user, user_type: SELLER, first_name: 'John', last_name: 'Test'
   end
 
   def contact
