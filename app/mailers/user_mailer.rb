@@ -41,8 +41,14 @@ class UserMailer < ApplicationMailer
   end
 
   def ealert_email(recipients, ealert_id, deal_id, comment, user_id = nil)
-    @user = User.find(user_id) if user_id.present?
-    @deal = Deal.find(deal_id)
+    begin
+      @user = User.find(user_id) if user_id.present?
+      @deal = Deal.find(deal_id)
+      ealert = Ealert.find(ealert_id)
+    rescue ActiveRecord::RecordNotFound
+      return
+    end
+
     @deal_fields = []
     @comment = comment
     @deal_products = @deal.deal_products.as_json({
@@ -60,7 +66,7 @@ class UserMailer < ApplicationMailer
       deal_product
     end
 
-    ealert = Ealert.find(ealert_id).as_json({include: {
+    ealert.as_json({include: {
         ealert_custom_fields:  {
           include: {
             subject: {}
@@ -104,14 +110,16 @@ class UserMailer < ApplicationMailer
         'value' => (@deal.initiative ? @deal.initiative.name : '')
       }
     ]
-    
+
     position_fields.each do |position_field|
       if ealert[position_field['name']] && ealert[position_field['name']] > 0
         position_field['position'] = ealert[position_field['name']]
         @deal_fields << position_field
       end
     end
+
     deal_custom_field = @deal.deal_custom_field.as_json
+
     ealert['ealert_custom_fields'].each do |ealert_custom_field|
       if ealert_custom_field['subject_type'] == 'DealCustomFieldName' && ealert_custom_field['position'] > 0
         field_name = ealert_custom_field['subject']['field_type'] + ealert_custom_field['subject']['field_index'].to_s
@@ -189,13 +197,17 @@ class UserMailer < ApplicationMailer
         end
       end
     end
+
     @deal_fields = @deal_fields.sort_by { |hash| hash['position'].to_i }
+
     @deal_products = @deal_products.map do |deal_product|
       deal_product['deal_product_fields'] = deal_product['deal_product_fields'].sort_by { |hash| hash['position'].to_i }
       deal_product
     end
+
     @sales_team = ''
     @sales_team = @deal.deal_members.map{ |deal_member| deal_member.user.name + ' (' + deal_member.share.to_s + '%)' }.join(', ') if @deal.deal_members.count > 0
+
     if user_id.present?
       mail(to: recipients, from: @user.email, subject: subject)
     else
