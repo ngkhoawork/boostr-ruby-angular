@@ -14,7 +14,9 @@ class TempIo < ActiveRecord::Base
   end
 
   scope :by_no_match, -> (filter_params) { where('io_id IS NULL') if filter_params.eql? NO_MATCH_FILTER }
-  scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) }
+  scope :by_start_date, -> (start_date, end_date) do
+    where(start_date: start_date..end_date) if (start_date && end_date).present?
+  end
   scope :by_names, -> (name) do
     if name.present?
       where('name ilike :name OR advertiser ilike :name OR agency ilike :name', name: "%#{name}%")

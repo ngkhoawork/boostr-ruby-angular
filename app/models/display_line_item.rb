@@ -48,7 +48,9 @@ class DisplayLineItem < ActiveRecord::Base
     .by_period(start_date, end_date)
     .without_display_line_item_budgets
   end
-  scope :by_start_date, -> (start_date, end_date) { where(start_date: start_date..end_date) }
+  scope :by_start_date, -> (start_date, end_date) do
+    where(start_date: start_date..end_date) if (start_date && end_date).present?
+  end
   scope :by_io_name, -> (name) { joins(:io).where('ios.name ilike ?', "%#{name}%") if name.present? }
   scope :by_agency_name, -> (name) { joins(io: :agency).where('clients.name ilike ?', "%#{name}%") if name.present? }
   scope :by_advertiser_name, -> (name) do
