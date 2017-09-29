@@ -129,11 +129,10 @@ class Api::AgencyDashboardsController < ApplicationController
 
   def related_advertisers
     @_related_advertisers ||= AccountDimension.related_advertisers_to_agencies(agencies_ids)
-
   end
 
   def related_advertisers_ids
-    related_advertisers.ids
+    @_related_advertisers_ids ||= related_advertisers.ids
   end
 
   def current_user_company_id
