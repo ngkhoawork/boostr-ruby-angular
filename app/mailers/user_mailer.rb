@@ -41,8 +41,14 @@ class UserMailer < ApplicationMailer
   end
 
   def ealert_email(recipients, ealert_id, deal_id, comment, user_id = nil)
-    @user = User.find_by(id: user_id) if user_id.present?
-    @deal = Deal.find_by(id: deal_id)
+    begin
+      @user = User.find(user_id) if user_id.present?
+      @deal = Deal.find(deal_id)
+      ealert = Ealert.find(ealert_id)
+    rescue ActiveRecord::RecordNotFound
+      return
+    end
+
     @deal_fields = []
     @comment = comment
     @deal_products = @deal.deal_products.as_json({
@@ -60,7 +66,7 @@ class UserMailer < ApplicationMailer
       deal_product
     end
 
-    ealert = Ealert.find_by(id: ealert_id).as_json({include: {
+    ealert.as_json({include: {
         ealert_custom_fields:  {
           include: {
             subject: {}
