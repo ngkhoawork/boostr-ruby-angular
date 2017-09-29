@@ -620,6 +620,18 @@ describe Deal do
       expect(deal.closed_reason_text).to eq 'Can retry later'
     end
 
+    it 'creates a deal with created by email' do
+      company.users << create(:user, email: 'creator_email@gmail.com')
+      another_company_user = company.users.where(email: 'creator_email@gmail.com').first
+      data = build :deal_csv_data, created_by: another_company_user.email
+
+      Deal.import(generate_csv(data), user.id, 'deals.csv')
+      deal = Deal.last
+
+      expect(deal.created_by).to_not eq user.id
+      expect(deal.created_by).to eq another_company_user.id
+    end
+
     it 'finds a deal by name match' do
       data = build :deal_csv_data, name: existing_deal.name
       expect do
@@ -911,6 +923,17 @@ describe Deal do
         expect(import_log.rows_failed).to be 1
         expect(import_log.error_messages).to eq(
           [{ "row" => 1, "message" => ["Contact #{data[:contacts]} could not be found"] }]
+        )
+      end
+
+      it 'created by email not found' do
+        created_by_email = "zzz@gmail.com"
+        data = build :deal_csv_data, created_by: "zzz@gmail.com"
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Created By #{created_by_email} user could not be found"] }]
         )
       end
     end
