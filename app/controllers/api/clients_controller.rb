@@ -4,17 +4,21 @@ class Api::ClientsController < ApplicationController
   def index
     respond_to do |format|
       format.json {
-        results = clients
-                    .by_type_id(params[:client_type_id])
-                    .by_category(params[:client_category_id])
-                    .by_region(params[:client_region_id])
-                    .by_segment(params[:client_segment_id])
-                    .by_city(params[:city])
-                    .by_last_touch(params[:start_date], params[:end_date])
-                    .by_name(params[:search])
-                    .order(:name)
-                    .preload(:address, :client_member_info, :latest_advertiser_activity, :latest_agency_activity)
-                    .distinct
+        if params[:name].present?
+           results = suggest_clients
+        else
+          results = clients
+                      .by_type_id(params[:client_type_id])
+                      .by_category(params[:client_category_id])
+                      .by_region(params[:client_region_id])
+                      .by_segment(params[:client_segment_id])
+                      .by_city(params[:city])
+                      .by_last_touch(params[:start_date], params[:end_date])
+                      .by_name(params[:search])
+                      .order(:name)
+                      .preload(:address, :client_member_info, :latest_advertiser_activity, :latest_agency_activity)
+                      .distinct
+        end
 
         if params[:owner_id]
           client_ids = Client.joins("INNER JOIN client_members ON clients.id = client_members.client_id").where("clients.company_id = ? AND client_members.user_id = ?", company.id, params[:owner_id]).pluck(:client_id)
