@@ -118,6 +118,10 @@
       templateUrl: 'product_forecasts_detail.html'
       controller: 'ProductForecastsDetailController'
 
+    .when '/reports/product_monthly_summary',
+      templateUrl: 'product_monthly_summary1.html'
+      controller: 'ProductMonthlySummaryController'
+
     .when '/smart_reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
       controller: 'SalesExecutionDashboardController'
@@ -239,6 +243,10 @@
       controller: 'SettingsInitiativesController'
 
     .when '/settings/products',
+      templateUrl: 'settings/products.html'
+      controller: 'SettingsProductsController'
+
+    .when '/settings/products/:id',
       templateUrl: 'settings/products.html'
       controller: 'SettingsProductsController'
 

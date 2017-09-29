@@ -23,7 +23,11 @@ class Deal < ActiveRecord::Base
   has_many :contacts, -> { uniq }, through: :deal_contacts
   has_many :deal_contacts, dependent: :destroy
   has_many :deal_products, dependent: :destroy
-  has_many :deal_product_budgets, through: :deal_products
+  has_many :deal_product_budgets, through: :deal_products do
+    def opened
+      where("deal_products.open = ?", true)
+    end
+  end
   has_many :deal_logs
   has_many :products, -> { distinct }, through: :deal_products
   has_many :deal_members
