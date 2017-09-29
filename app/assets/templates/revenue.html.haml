@@ -43,8 +43,8 @@
 
     .row
       .block
-        -#.table-wrapper{infinite: {scroll: 'loadMoreRevenues()', 'scroll-disabled': 'isLoading'}}
-        .table-wrapper
+        -#.table-wrapper
+        .table-wrapper{infinite: {scroll: 'loadMoreRevenues()', 'scroll-disabled': 'isLoading || allItemsLoaded', 'scroll-distance': '0.5'}}
           %table.table.table-hover{ng: {if: "filter.revenue == ''"}}
             %thead
               %tr.z-sortable-prime

@@ -1,9 +1,10 @@
 @app.controller 'RevenueController',
-	['$scope', '$document', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem'
-	( $scope,   $document,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem ) ->
+	['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem'
+	( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem ) ->
 
 		currentYear = moment().year()
 		$scope.isLoading = false
+		$scope.allItemsLoaded = false
 		$scope.revenue = []
 		$scope.revenueFilters = [
 			{name: 'IOs', value: ''}
@@ -17,7 +18,7 @@
 			{name: 'My Team\'s Lines', value: 'teammates'}
 			{name: 'All Lines', value: 'all'}
 		]
-
+		itemsPerPage = 10
 		$scope.filter =
 			page: 1
 			revenue: $routeParams.filter || ''
@@ -35,22 +36,26 @@
 			apply: ->
 				$scope.applyFilter()
 
+		resetPagination = ->
+			$scope.filter.page = 1
+			$scope.allItemsLoaded = false
+			$scope.revenue = []
+
 		$scope.setFilter = (key, val) ->
 			$scope.filter[key] = val
 			switch key
 				when 'revenue', 'pacing'
 					$location.search({filter: $scope.filter.revenue, io_owner: $scope.filter.pacing})
-					$scope.filter.page = 1
-					$scope.revenue = []
 			$scope.applyFilter()
 
 		$scope.applyFilter = ->
-			$scope.isLoading = true
+			resetPagination()
 			getData(getQuery())
 
 		getQuery = ->
 			f = $scope.filter
 			query = {}
+			query.per = itemsPerPage
 			query.page = f.page
 			query.filter = f.revenue
 			query.name = f.name if f.name
@@ -59,8 +64,8 @@
 				query.end_date = f.date.endDate.toDate()
 			query
 
-
 		getData = (query) ->
+			$scope.isLoading = true
 			switch query.filter
 				when 'no-match'
 					TempIO.all(query).then (tempIOs) ->
@@ -74,19 +79,20 @@
 						setRevenue ios
 
 		$scope.loadMoreRevenues = ->
-			$scope.filter.page++
-			$scope.applyFilter()
+			if !$scope.allContactsLoaded then getData(getQuery())
 
 		parseBudget = (data) ->
 			data = _.map data, (item) ->
-				item.budget = parseInt item.budget  if item.budget
-				item.budget_loc = parseInt item.budget_loc  if item.budget_loc
+				item.budget = parseInt item.budget if item.budget
+				item.budget_loc = parseInt item.budget_loc if item.budget_loc
 				item
 
 		setRevenue = (data) ->
+			if data.length < itemsPerPage then $scope.allItemsLoaded = true
 			parseBudget data
-			$scope.revenue = data
-			$scope.isLoading = false
+			$scope.revenue = $scope.revenue.concat data
+			$scope.filter.page++
+			$timeout -> $scope.isLoading = false
 
 		$scope.showIOEditModal = (io) ->
 			$scope.modalInstance = $modal.open
@@ -96,8 +102,7 @@
 				backdrop: 'static'
 				keyboard: false
 				resolve:
-					io: ->
-						io
+					io: -> io
 			.result.then (updated_io) ->
 				if (updated_io)
 					$scope.init();
