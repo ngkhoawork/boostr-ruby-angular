@@ -8,7 +8,7 @@
             $scope.budgets = []
             $scope.canEditIO = true
             $scope.isNaN = (val) -> isNaN val
-            
+
             $scope.init = ->
                 CurrentUser.get().$promise.then (user) ->
                     $scope.currentUser = user
