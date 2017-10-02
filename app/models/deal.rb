@@ -881,7 +881,12 @@ class Deal < ActiveRecord::Base
 
   def self.to_csv(deals, company)
     CSV.generate do |csv|
-      header = ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason", "Budget USD", "Created By"]
+      header = ['Deal ID', 'Name', 'Advertiser',
+                'Agency', 'Team Member', 'Budget',
+                'Currency', 'Stage', 'Probability',
+                'Type', 'Source', 'Next Steps',
+                'Start Date', 'End Date', 'Created Date',
+                'Closed Date', 'Close Reason', 'Budget USD', 'Created By']
 
       deal_custom_field_names = company.deal_custom_field_names.where("disabled IS NOT TRUE").order("position asc")
       deal_custom_field_names.each do |deal_custom_field_name|
