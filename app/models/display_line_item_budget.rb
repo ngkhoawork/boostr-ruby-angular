@@ -1,5 +1,6 @@
 class DisplayLineItemBudget < ActiveRecord::Base
   PENDING = 'Pending'.freeze
+  BUDGET_BUFFER = 10
 
   belongs_to :display_line_item
 
@@ -279,7 +280,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def max_monthly_budget_exceeded?
-    sum_of_monthly_budgets > display_line_item.budget_loc
+    sum_of_monthly_budgets > (display_line_item.budget_loc + BUDGET_BUFFER)
   end
 
   def max_budget_loc_exceeded?
