@@ -16,7 +16,7 @@ class Api::FieldsController < ApplicationController
   end
 
   def fields
-    @fields ||= company.fields.where(subject_type: subject)
+    @fields ||= company.fields.includes(options: [:suboptions]).where(subject_type: subject)
   end
 
 end

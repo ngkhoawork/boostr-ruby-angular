@@ -31,6 +31,10 @@ module Clockwork
     RevenueDataWarehouse.perform_async
   end
 
+  every(1.day, 'Product Dimension Synchronizer', at: '4:50') do
+    ProductDimensionUpdaterWorker.perform_async
+  end
+
   every(1.day, 'Account Pipeline Data Calculator', at: '5:10') do
     AccountPipelineCalculator.perform_async
   end
@@ -38,4 +42,21 @@ module Clockwork
   every(1.day, 'Dfp reports importer', at: '4:30') do
     DfpImportWorker.perform_async
   end
+
+  every(1.day, 'Account Product Pipeline Fact Updater', at: '5:20') do
+    AccountProductPipelineCalculationWorker.perform_async
+  end
+
+  every(1.day, 'Account Product Revenue Fact Updater', at: '5:30') do
+    AccountProductRevenueCalculationWorker.perform_async
+  end
+
+  every(1.day, 'Advertiser Agency Pipeline Fact Updater', at: '4:30') do
+    AdvertiserAgencyPipelineCalculationWorker.perform_async
+  end
+
+  every(1.day, 'Advertiser Agency Revenue Fact Updater', at: '4:35') do
+    AdvertiserAgencyRevenueCalculationWorker.perform_async
+  end
+
 end

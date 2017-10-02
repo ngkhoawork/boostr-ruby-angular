@@ -46,6 +46,9 @@ gem 'switch_user'
 gem 'oauth2'
 gem 'asana'
 gem 'pluck_to_hash'
+gem 'upsert'
+gem 'hashie'
+gem 'active_record_union'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
@@ -99,6 +102,8 @@ group :development, :test do
   gem 'timecop'
   gem 'pry-rails'
   gem 'byebug'
+  # code smell detector
+  gem 'reek'
 
   gem 'capybara-webkit'
   # Access an IRB console on exception pages or by using <%= console %> in views

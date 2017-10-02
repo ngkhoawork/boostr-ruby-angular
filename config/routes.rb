@@ -138,6 +138,20 @@ Rails.application.routes.draw do
         get :callback
       end
     end
+    resources :agency_dashboards do
+      collection do
+        get :spend_by_product
+        get :spend_by_advertisers
+        get :related_advertisers_without_spend
+        get :spend_by_category
+        get :win_rate_by_category
+        get :contacts_and_related_advertisers
+        get :activity_history
+      end
+    end
+
+    resources :time_dimensions, only: [:index]
+
     resources :countries, only: [:index]
     resources :api_configurations do
       collection do
@@ -297,7 +311,10 @@ Rails.application.routes.draw do
     resources :activity_types, only: [:index, :create, :update, :destroy] do
       put :update_positions, on: :collection
     end
-    resources :holding_companies, only: [:index]
+    resources :holding_companies, only: [:index] do
+      resources :account_dimensions, only: [:index]
+    end
+    resources :account_dimensions, only: [:index]
     resources :ealerts, only: [:index, :show, :create, :update, :destroy] do
       post :send_ealert
     end

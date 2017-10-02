@@ -36,6 +36,7 @@
             {name: 'Inactives', url: '/smart_reports/inactives'}
             {name: 'Initiatives', url: '/smart_reports/initiatives'}
             {name: 'Pacing Dashboard', url: '/smart_reports/pacing_dashboard'}
+            {name: 'Agency 360', url: '/smart_reports/agency360'}
         ]}
         {name: 'REQUESTS', url: '/requests'} if _isRequestsVisible
         {name: 'SETTINGS', url: '/settings'} if $scope.currentUserRoles.isAdmin() || $scope.currentUserRoles.isSuperAdmin()
