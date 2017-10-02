@@ -486,13 +486,23 @@ describe Deal do
   end
 
   context 'to_zip' do
-    let(:deal) { create :deal, name: 'Bob' }
-    let(:product) { create :product }
- 
     it 'returns the contents of deal zip' do
       deal.deal_products.create(product_id: product.id, budget: 10_000)
       deal_zip = Deal.to_zip
       expect(deal_zip).not_to be_nil
+    end
+  end
+
+  describe 'to_csv' do
+    it 'returns the contents of deal zip' do
+      company.deals << deal
+
+      csv = Deal.to_csv(company.deals, company)
+
+      expect(csv).not_to be_nil
+      expect(csv).to include 'Created By'
+      expect(csv).to include deal.creator.email
+      expect(csv).to include deal.id.to_s
     end
   end
 
@@ -1061,7 +1071,7 @@ describe Deal do
   end
 
   def deal
-    @_deal ||= create :deal
+    @_deal ||= create :deal, company: company, creator: user
   end
 
   def deal_product
@@ -1070,6 +1080,14 @@ describe Deal do
 
   def user
     @_user ||= create :user
+  end
+
+  def product
+    @_product ||= create :product
+  end
+
+  def company
+    @_company ||= create :company
   end
 
   def setup_custom_fields(company)

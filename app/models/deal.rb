@@ -881,7 +881,12 @@ class Deal < ActiveRecord::Base
 
   def self.to_csv(deals, company)
     CSV.generate do |csv|
-      header = ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason", "Budget USD"]
+      header = ['Deal ID', 'Name', 'Advertiser',
+                'Agency', 'Team Member', 'Budget',
+                'Currency', 'Stage', 'Probability',
+                'Type', 'Source', 'Next Steps',
+                'Start Date', 'End Date', 'Created Date',
+                'Closed Date', 'Close Reason', 'Budget USD', 'Created By']
 
       deal_custom_field_names = company.deal_custom_field_names.where("disabled IS NOT TRUE").order("position asc")
       deal_custom_field_names.each do |deal_custom_field_name|
@@ -920,7 +925,8 @@ class Deal < ActiveRecord::Base
           deal.created_at.strftime("%Y-%m-%d"),
           deal.closed_at,
           deal.get_option_value_from_raw_fields(deal_settings_fields, 'Close Reason'),
-          budget_usd
+          budget_usd,
+          deal.creator.email
         ]
         deal_custom_field = deal.deal_custom_field.as_json
         deal_custom_field_names.each do |deal_custom_field_name|
