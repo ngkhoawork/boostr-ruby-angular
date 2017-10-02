@@ -116,7 +116,7 @@ class Api::ClientsController < ApplicationController
     end
 
     if errors.count > 0
-      render json: { error: "This account is used on #{errors.join(', ')}. Remove all references to this records before deleting." }, status: :unprocessable_entity
+      render json: { error: "This account is used on #{errors.join(', ')}. Remove all references to this record before deleting." }, status: :unprocessable_entity
     else
       client.destroy
       render nothing: true
