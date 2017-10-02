@@ -22,6 +22,15 @@ class Activity < ActiveRecord::Base
   validates_uniqueness_of :google_event_id, allow_nil: true, allow_blank: true
 
   after_create do
+    write_activity_updated_at
+  end
+
+  scope :for_company, -> (id) { where(company_id: id) }
+  scope :for_contact, -> (id) { joins(:activities_contacts).where('activities_contacts.contact_id = ?', id) }
+  scope :for_time_period, -> (start_date, end_date) { where('activities.happened_at <= ? AND activities.happened_at >= ?', end_date, start_date) if start_date && end_date }
+  scope :by_agency_ids, -> (agencies_ids) { where(agency_id: agencies_ids).order('activities.happened_at DESC') }
+
+  def write_activity_updated_at
     if deal_id.present?
       deal = company.deals.find(deal_id)
       deal.update_attribute(:activity_updated_at, happened_at)
@@ -30,11 +39,6 @@ class Activity < ActiveRecord::Base
       client.update_attribute(:activity_updated_at, happened_at)
     end
   end
-
-  scope :for_company, -> (id) { where(company_id: id) }
-  scope :for_contact, -> (id) { joins(:activities_contacts).where('activities_contacts.contact_id = ?', id) }
-  scope :for_time_period, -> (start_date, end_date) { where('activities.happened_at <= ? AND activities.happened_at >= ?', end_date, start_date) if start_date && end_date }
-  scope :by_agency_ids, -> (agencies_ids) { where(agency_id: agencies_ids).order('activities.happened_at DESC') }
 
   def self.import(file, current_user_id, file_path)
     current_user = User.find current_user_id
