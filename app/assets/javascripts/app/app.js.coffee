@@ -325,8 +325,7 @@
 ]
 
 @app.config ['$compileProvider', ($compileProvider) ->
-  isGmailExtension = location.pathname.indexOf('/gmail_extension/') == 0
-  $compileProvider.debugInfoEnabled isGmailExtension
+  $compileProvider.debugInfoEnabled false
 ]
 
 @app.run ['editableOptions', (editableOptions) ->
