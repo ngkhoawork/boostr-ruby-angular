@@ -6,6 +6,76 @@ describe Api::DisplayLineItemsController, type: :controller do
     sign_in user
   end
 
+  describe 'GET #index' do
+    before do
+      Timecop.freeze(2016, 8, 1)
+      create :io, company: company, display_line_items: [create_item]
+      create :io, company: company, display_line_items: [create_item]
+      create :io, company: company, display_line_items: [create_item]
+    end
+
+    it 'has appropriate count of record in response with risk filter' do
+      create :io, company: company, display_line_items: [create_negative_item]
+
+      get :index, filter: 'risk', format: :json
+
+      response_json = response_json(response)
+
+      expect(response_json.count).to eq(1)
+    end
+
+    it 'has appropriate count of record in response with upside filter' do
+      get :index, filter: 'upside', format: :json
+
+      response_json = response_json(response)
+
+      expect(response_json.count).to eq(3)
+    end
+
+    it 'has appropriate display line items if filter by io name' do
+      create :io, name: 'Io 930',company: company, display_line_items: [create_item]
+
+      get :index, filter: 'upside', name: '930', format: :json
+
+      response_json = response_json(response)
+
+      expect(response_json.count).to eq(1)
+      expect(response_json.first['io']['name']).to eq('Io 930')
+    end
+
+    it 'has appropriate ios if filter by started date' do
+      get :index, end_date: '2016-07-01', start_date: '2016-05-01', filter: 'upside', format: :json
+
+      response_json = response_json(response)
+
+      expect(response_json.count).to eq(3)
+    end
+
+    it 'has display line items with ios related to specific agency' do
+      io = create :io, name: 'Io 930',company: company, display_line_items: [create_item]
+      agency = io.agency
+
+      get :index, name: agency.name, filter: 'upside', format: :json
+
+      response_json = response_json(response)
+
+      expect(response_json.count).to eq(1)
+      expect(response_json.first['io']['agency']['name']).to eq(agency.name)
+    end
+
+    it 'has display line items with ios related to specific advertiser' do
+      io = create :io, name: 'Io 930',company: company, display_line_items: [create_item]
+      advertiser = io.advertiser
+
+      get :index, name: advertiser.name, filter: 'upside', format: :json
+
+      response_json = response_json(response)
+
+      expect(response_json.count).to eq(1)
+      expect(response_json.first['io']['advertiser']['name']).to eq(advertiser.name)
+    end
+  end
+
   describe 'GET #show' do
     before do
       create :io_member, user: user, io: create_io
@@ -144,5 +214,23 @@ describe Api::DisplayLineItemsController, type: :controller do
 
   def exchange_rate
     @_exchange_rate ||= create(:exchange_rate, company: company, rate: 1.2)
+  end
+
+  def create_item
+    create :display_line_item,
+           balance: 5_000,
+           budget: 10_000,
+           budget_remaining: 20_000.0,
+           start_date: '01/06/2016',
+           end_date: '01/10/2016'
+  end
+
+  def create_negative_item
+    create :display_line_item,
+           balance: 5_000,
+           budget: 10_000,
+           budget_remaining: 10.0,
+           start_date: '01/06/2016',
+           end_date: '01/10/2016'
   end
 end
