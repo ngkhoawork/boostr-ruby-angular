@@ -1,6 +1,6 @@
 @app.controller 'GmailExtensionController',
-['$scope', '$window', '$modal'
-( $scope,   $window,   $modal ) ->
+['$scope', '$rootScope', '$window', '$modal'
+( $scope,   $rootScope,   $window,   $modal ) ->
 
 	angular.element('body').css
 		backgroundColor: 'transparent'
@@ -17,16 +17,20 @@
 				options: ->
 					type: 'gmail'
 					onCancel: ->
-						$window.parent.parent.postMessage {
+						$window.parent.postMessage {
 							eval: 'onDealModelClose()'
 						}, '*'
 					onSuccess: ->
-						$window.parent.parent.postMessage {
+						$window.parent.postMessage {
 							eval: 'onDealCreateSuccess()'
 						}, '*'
+
 	$window.addEventListener 'message', (e) ->
 		if e.origin is 'https://mail.google.com'
 			$scope.$eval e.data.eval if e.data.eval
 
-#	$scope.showNewDealModal()
+	$window.parent.postMessage {
+		eval: 'onBoostrLoaded()'
+	}, '*'
+
 ]
