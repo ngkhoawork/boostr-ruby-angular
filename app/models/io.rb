@@ -16,6 +16,7 @@ class Io < ActiveRecord::Base
   has_many :print_items, dependent: :destroy
   has_many :temp_ios, dependent: :destroy
   has_many :influencer_content_fees, -> { order 'influencer_content_fees.influencer_id, influencer_content_fees.id' }, dependent: :destroy, through: :content_fees
+  has_many :content_fee_products, dependent: :destroy, through: :content_fees, source: :product
 
   validates :name, :budget, :advertiser_id, :start_date, :end_date , presence: true
   validate :active_exchange_rate
@@ -168,6 +169,30 @@ class Io < ActiveRecord::Base
     )
   end
 
+  def update_influencer_budget
+    data = {}
+
+    self.influencer_content_fees.by_effect_date(start_date, end_date).each do |influencer_content_fee|
+      content_fee_product_budget = influencer_content_fee
+                                      .content_fee
+                                      .content_fee_product_budgets
+                                      .for_year_month(influencer_content_fee.effect_date)
+                                      .try(:first)
+      if content_fee_product_budget
+        data[content_fee_product_budget.id] ||= 0
+        data[content_fee_product_budget.id] += influencer_content_fee.gross_amount.to_f
+      end
+    end
+
+    data.each do |id, budget|
+      content_fee_product_budget = self.content_fee_product_budgets.find(id)
+      if content_fee_product_budget && content_fee_product_budget.update_budget!(budget)
+        content_fee_product_budget.content_fee.update_budget
+        content_fee_product_budget.content_fee.io.update_total_budget
+      end
+    end
+  end
+
   def effective_revenue_budget(member, start_date, end_date)
     io_member = self.io_members.find_by(user_id: member.id)
     share = io_member.share
@@ -309,11 +334,7 @@ class Io < ActiveRecord::Base
   end
 
   def highest_member
-    if io_members.count > 0
-      io_members.order("share desc").first
-    else
-      nil
-    end
+    io_members.present? ? io_members.ordered_by_share.first : nil
   end
 
   def for_forecast_page(start_date, end_date, user = nil)

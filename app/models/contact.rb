@@ -3,12 +3,16 @@ class Contact < ActiveRecord::Base
 
   belongs_to :company
   belongs_to :client
+  belongs_to :account_dimension
 
   has_one :primary_client, through: :primary_client_contact, source: :client
   has_one :primary_client_contact, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
   has_one :contact_cf, dependent: :destroy
 
   has_many :clients, -> { uniq }, through: :client_contacts
+  has_many :account_dimensions, -> { uniq }, through: :account_contacts
+  has_many :account_contacts, class_name: 'ClientContact'
+
   has_many :client_contacts, dependent: :destroy
   has_many :non_primary_client_contacts, -> { where('client_contacts.primary = ?', false) }, class_name: 'ClientContact'
   has_many :non_primary_clients, -> { uniq }, through: :non_primary_client_contacts, source: :client

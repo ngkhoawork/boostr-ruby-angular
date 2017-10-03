@@ -486,13 +486,23 @@ describe Deal do
   end
 
   context 'to_zip' do
-    let(:deal) { create :deal, name: 'Bob' }
-    let(:product) { create :product }
- 
     it 'returns the contents of deal zip' do
       deal.deal_products.create(product_id: product.id, budget: 10_000)
       deal_zip = Deal.to_zip
       expect(deal_zip).not_to be_nil
+    end
+  end
+
+  describe 'to_csv' do
+    it 'returns the contents of deal zip' do
+      company.deals << deal
+
+      csv = Deal.to_csv(company.deals, company)
+
+      expect(csv).not_to be_nil
+      expect(csv).to include 'Created By'
+      expect(csv).to include deal.creator.email
+      expect(csv).to include deal.id.to_s
     end
   end
 
@@ -618,6 +628,18 @@ describe Deal do
 
       expect(deal.values.where(field: close_reason_field).first.option_id).to eq close_reason.id
       expect(deal.closed_reason_text).to eq 'Can retry later'
+    end
+
+    it 'creates a deal with created by email' do
+      company.users << create(:user, email: 'creator_email@gmail.com')
+      another_company_user = company.users.where(email: 'creator_email@gmail.com').first
+      data = build :deal_csv_data, created_by: another_company_user.email
+
+      Deal.import(generate_csv(data), user.id, 'deals.csv')
+      deal = Deal.last
+
+      expect(deal.created_by).to_not eq user.id
+      expect(deal.created_by).to eq another_company_user.id
     end
 
     it 'finds a deal by name match' do
@@ -913,6 +935,17 @@ describe Deal do
           [{ "row" => 1, "message" => ["Contact #{data[:contacts]} could not be found"] }]
         )
       end
+
+      it 'created by email not found' do
+        created_by_email = "zzz@gmail.com"
+        data = build :deal_csv_data, created_by: "zzz@gmail.com"
+        Deal.import(generate_csv(data), user.id, 'deals.csv')
+
+        expect(import_log.rows_failed).to be 1
+        expect(import_log.error_messages).to eq(
+          [{ "row" => 1, "message" => ["Created By #{created_by_email} user could not be found"] }]
+        )
+      end
     end
 
     context 'deal custom fields' do
@@ -1011,10 +1044,50 @@ describe Deal do
     end
   end
 
+  describe 'before_update' do
+    it 'should set closed_at date and not reset when user reopen deal' do
+      deal.update(stage: closed_won_stage)
+      deal.update_close
+      deal_closed_at_date = deal.closed_at
+
+      # reopen closed deal
+      deal.update(stage: discuss_stage)
+      deal.update_close
+
+      expect(deal.closed_at).to_not be_nil
+      expect(deal.closed_at).to eq deal_closed_at_date
+    end
+
+  end
+
   private
+
+  def closed_won_stage
+    @_closed_won_stage ||= create :closed_won_stage
+  end
+
+  def discuss_stage
+    @_discuss_stage ||= create :discuss_stage
+  end
+
+  def deal
+    @_deal ||= create :deal, company: company, creator: user
+  end
+
+  def deal_product
+    @_deal_product ||= create :deal_product, deal: deal, budget: 100_000
+  end
 
   def user
     @_user ||= create :user
+  end
+
+  def product
+    @_product ||= create :product
+  end
+
+  def company
+    @_company ||= create :company
   end
 
   def setup_custom_fields(company)

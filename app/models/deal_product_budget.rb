@@ -1,5 +1,5 @@
 class DealProductBudget < ActiveRecord::Base
-  # belongs_to :deal, touch: true
+  # belongs_to :deal
   # belongs_to :product
   belongs_to :deal_product
   delegate :deal, to: :deal_product

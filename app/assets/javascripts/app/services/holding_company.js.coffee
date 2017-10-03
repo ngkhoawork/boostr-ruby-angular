@@ -15,6 +15,11 @@
       method: 'PUT'
       url: '/api/holding_companies/:id'
     }
+    relatedAccounts: {
+      method: 'GET'
+      url: '/api/holding_companies/:id/account_dimensions'
+      isArray: true
+    }
 
   holding_companies = []
 
@@ -27,6 +32,8 @@
     else
       deferred.resolve(holding_companies)
     deferred.promise
+
+  @relatedAccounts = (id) -> resource.relatedAccounts({id: id}).$promise
   
   return
 ]

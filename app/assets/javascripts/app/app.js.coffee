@@ -104,7 +104,7 @@
     .when '/reports/old_forecasts',
       templateUrl: 'old_forecasts_detail.html'
       controller: 'OldForecastsDetailController'
-      
+
     .when '/reports/forecasts',
       templateUrl: 'forecasts_detail.html'
       controller: 'ForecastsDetailController'
@@ -144,6 +144,14 @@
     .when '/smart_reports/pacing_dashboard',
       templateUrl: 'pacing_dashboard.html'
       controller: 'PacingDashboardController'
+
+    .when '/smart_reports/agency360',
+      templateUrl: 'agency360.html'
+      controller: 'Agency360Controller'
+
+    .when '/reports/deal_reports',
+      templateUrl: 'deal_reports.html'
+      controller: 'DealReportsController'
 
     .when '/reports/pipeline_monthly_report',
       templateUrl: 'pipeline_monthly_report.html'
@@ -325,8 +333,7 @@
 ]
 
 @app.config ['$compileProvider', ($compileProvider) ->
-  isGmailExtension = location.pathname.indexOf('/gmail_extension/') == 0
-  $compileProvider.debugInfoEnabled isGmailExtension
+  $compileProvider.debugInfoEnabled false
 ]
 
 @app.run ['editableOptions', (editableOptions) ->
