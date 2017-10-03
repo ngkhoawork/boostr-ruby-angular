@@ -1,4 +1,4 @@
-class Facts::AccountAgencyPipelineFactCreationHandler < BaseService
+class Facts::AccountProductPipelineFactCreationHandler < BaseService
   def self.perform(params)
     self.new(params).tap do |instance|
       instance.find_or_create_records
@@ -20,12 +20,11 @@ class Facts::AccountAgencyPipelineFactCreationHandler < BaseService
   private
 
   def unused_records
-    AdvertiserAgencyPipelineFact.where('time_dimension_id = :time_dimension_id AND process_ran_at < :process_date_time
-                                        AND company_id = :company_id',
-                                       time_dimension_id: time_dimension.id,
-                                       process_date_time: running_process_date_time,
-                                       company_id: company_id)
-
+    AccountProductPipelineFact.where('time_dimension_id = :time_dimension_id AND process_ran_at < :process_date_time
+                                      AND company_id = :company_id',
+                                     time_dimension_id: time_dimension.id,
+                                     process_date_time: running_process_date_time,
+                                     company_id: company_id)
   end
 
 
@@ -34,10 +33,9 @@ class Facts::AccountAgencyPipelineFactCreationHandler < BaseService
   end
 
   def find_or_update_fact(calculated_record)
-    fact = AdvertiserAgencyPipelineFact.find_or_initialize_by(advertiser_id: calculated_record.advertiser_id,
-                                                              agency_id: calculated_record.agency_id,
-                                                              company_id: calculated_record.company_id,
-                                                              time_dimension_id: time_dimension.id)
+    fact = AccountProductPipelineFact.find_or_initialize_by(account_dimension_id: calculated_record.account_dimension_id,
+                                                            company_id: calculated_record.company_id,
+                                                            time_dimension_id: time_dimension.id)
     if fact.persisted? && fact.unweighted_amount != calculated_record.unweighted_amount.to_i
       fact.update_attributes(unweighted_amount: calculated_record.unweighted_amount.to_i,
                              weighted_amount:   calculated_record.weighted_amount.to_i,

@@ -74,7 +74,7 @@ class Facts::AdvertiserAgencyRevenueCalculationService < BaseService
   def display_line_item_budgets_daily_rate_conditions
     'display_line_items.end_date >= :start_date
      AND display_line_items.start_date <= :end_date
-     AND display_line_items.id NOT IN (:display_line_item_ids)
+     AND (display_line_items.id NOT IN (:display_line_item_ids) OR display_line_items.id IS NOT NULL)
      AND products.revenue_type = \'Display\'
      AND ios.company_id = :company_id'
   end
