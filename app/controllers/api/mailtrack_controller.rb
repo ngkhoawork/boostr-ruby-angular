@@ -10,7 +10,7 @@ class Api::MailtrackController < ApplicationController
       EmailOpen.create(params[:email_open])
     end
 
-    render nothing: true
+    send_data "image.png", type: "image/png", disposition: "inline"
   end
 
   def create_thread
