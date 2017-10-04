@@ -6,12 +6,12 @@ class Api::MailtrackController < ApplicationController
     decode_pixel = Base64.decode64(params[:pixel])
     params = pixel_to_params decode_pixel
 
-    if EmailThread.find_by_email_thread_id(params[:email_open][:thread_id])
+    if EmailThread.find_by_email_guid(params[:email_open][:guid])
       params[:email_open][:opened_at] = Time.now
       EmailOpen.create(params[:email_open])
     end
 
-    send_data "image.png", type: "image/png", disposition: "inline"
+    send_data Base64.decode64("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="), type: "image/gif", disposition: "inline"
   end
 
   private

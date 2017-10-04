@@ -1,7 +1,7 @@
 class EmailOpen < ActiveRecord::Base
-  belongs_to :email_thread, foreign_key: :thread_id, primary_key: :email_thread_id
+  belongs_to :email_thread, foreign_key: :guid, primary_key: :email_guid
 
-  scope :by_thread, -> (thread_id) { where(thread_id: thread_id).order('opened_at') }
+  scope :by_thread, -> (guid) { where(guid: guid).order('opened_at') }
 
-  validates :thread_id, :email,  presence: true
+  validates :guid, :email,  presence: true
 end

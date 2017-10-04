@@ -6,7 +6,8 @@ RSpec.describe Api::MailtrackController, type: :controller do
     it 'should track opened email' do
       create :email_thread
 
-      pixel = 'aXA9MTI4LjEyOC4xMjguMSZlbWFpbD1leGFtcGxlQGdtYWlsLmNvbSZkZXZpY2U9c29tZSBpbmZvJnRocmVhZF9pZD0xMjM0NQ==.png'
+      # encoded params email=example@gmail.com&guid=12345
+      pixel = 'ZW1haWw9ZXhhbXBsZUBnbWFpbC5jb20mZ3VpZD0xMjM0NQ==.png'
 
       expect do
         get :open_mail, pixel: pixel
