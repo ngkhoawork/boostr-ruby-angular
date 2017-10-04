@@ -6,6 +6,7 @@
 		$scope.isLoading = false
 		$scope.allItemsLoaded = false
 		$scope.revenue = []
+		$scope.prevRequest = $q.defer()
 		$scope.revenueFilters = [
 			{name: 'IOs', value: ''}
 			{name: 'No-Match IOs', value: 'no-match'}
@@ -40,6 +41,7 @@
 			$scope.filter.page = 1
 			$scope.allItemsLoaded = false
 			$scope.revenue = []
+			$scope.prevRequest.reject()
 
 		$scope.setFilter = (key, val) ->
 			$scope.filter[key] = val
@@ -66,17 +68,18 @@
 
 		getData = (query) ->
 			$scope.isLoading = true
+			revenueRequest = $q.defer()
+			$scope.prevRequest = revenueRequest
 			switch query.filter
 				when 'no-match'
-					TempIO.all(query).then (tempIOs) ->
-						setRevenue tempIOs
+					TempIO.query query, (tempIOs) -> revenueRequest.resolve tempIOs
 				when 'upside', 'risk'
 					query.io_owner = $scope.filter.pacing if $scope.filter.pacing #adding extra param
-					DisplayLineItem.all(query).then (ios) ->
-						setRevenue ios
+					DisplayLineItem.query query, (ios) -> revenueRequest.resolve ios
 				else
-					IO.all(query).then (ios) ->
-						setRevenue ios
+					IO.query query, (ios) -> revenueRequest.resolve ios
+			revenueRequest.promise.then (data) -> setRevenue data
+
 
 		$scope.loadMoreRevenues = ->
 			if !$scope.allContactsLoaded then getData(getQuery())
