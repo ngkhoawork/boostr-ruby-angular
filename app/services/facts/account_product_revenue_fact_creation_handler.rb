@@ -35,7 +35,8 @@ class Facts::AccountProductRevenueFactCreationHandler < BaseService
   def find_or_update_fact(calculated_record)
     fact = AccountProductRevenueFact.find_or_initialize_by(account_dimension_id: calculated_record.account_dimension_id,
                                                            company_id: calculated_record.company_id,
-                                                           time_dimension_id: time_dimension.id)
+                                                           time_dimension_id: time_dimension.id,
+                                                           product_dimension_id: calculated_record.product_id)
     if fact.persisted? && fact.revenue_amount != calculated_record.revenue_amount.to_i
       fact.update_attributes(revenue_amount: calculated_record.revenue_amount.to_i,
                              process_ran_at: running_process_date_time)

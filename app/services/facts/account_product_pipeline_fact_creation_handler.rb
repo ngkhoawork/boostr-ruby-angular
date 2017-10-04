@@ -35,7 +35,8 @@ class Facts::AccountProductPipelineFactCreationHandler < BaseService
   def find_or_update_fact(calculated_record)
     fact = AccountProductPipelineFact.find_or_initialize_by(account_dimension_id: calculated_record.account_dimension_id,
                                                             company_id: calculated_record.company_id,
-                                                            time_dimension_id: time_dimension.id)
+                                                            time_dimension_id: time_dimension.id,
+                                                            product_dimension_id: calculated_record.product_id)
     if fact.persisted? && fact.unweighted_amount != calculated_record.unweighted_amount.to_i
       fact.update_attributes(unweighted_amount: calculated_record.unweighted_amount.to_i,
                              weighted_amount:   calculated_record.weighted_amount.to_i,
