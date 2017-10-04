@@ -382,9 +382,13 @@ Rails.application.routes.draw do
     end
 
     resources :mailtrack, only: [] do
+      get '/:pixel', to: 'mailtrack#open_mail', on: :collection
+    end
+
+    resources :mailthreads, only: [:index] do
       collection do
-        get '/:pixel', to: 'mailtrack#open_mail'
         post :create_thread
+        get :see_more_opens
       end
     end
   end
