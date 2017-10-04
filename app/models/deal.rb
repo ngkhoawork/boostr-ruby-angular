@@ -187,6 +187,10 @@ class Deal < ActiveRecord::Base
       end
       update_pipeline_fact_date(s_date, e_date)
     end
+
+    if open_changed?
+      update_pipeline_fact(self)
+    end
   end
 
   def asana_connect

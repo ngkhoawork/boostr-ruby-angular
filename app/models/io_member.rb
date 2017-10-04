@@ -6,7 +6,7 @@ class IoMember < ActiveRecord::Base
 
   scope :ordered_by_share, -> { order("share desc") }
 
-  after_update do
+  after_save do
     update_revenue_fact_user(self) if share_changed? || from_date_changed? || to_date_changed?
   end
 
