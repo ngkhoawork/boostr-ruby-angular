@@ -11,10 +11,12 @@ class EmailThread < ActiveRecord::Base
               .group('email_threads.id')
               .as_json
 
-    result = threads.map{ |thread|
-      thread.merge!({first_opened_email: EmailOpen.by_thread(thread['email_thread_id']).first}).except("id")
-    }
+    attach_first_opened_email threads
+  end
 
-    result
+  def self.attach_first_opened_email threads
+    threads.map{ |thread|
+      thread.merge!({first_opened_email: EmailOpen.by_thread(thread['email_thread_id']).first}).except('id')
+    }
   end
 end
