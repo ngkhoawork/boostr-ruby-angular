@@ -7,7 +7,8 @@ class Facts::AdvertiserAgencyRevenueFactService < BaseService
 
   def find_or_create_facts
     Facts::AccountAgencyRevenueFactCreationHandler.perform(calculated_facts: calculated_revenues,
-                                                           time_dimension: time_dimension)
+                                                           time_dimension: time_dimension,
+                                                           company_id: company_id)
   end
 
   private
@@ -25,5 +26,4 @@ class Facts::AdvertiserAgencyRevenueFactService < BaseService
   def time_dimension
     @_time_dimension ||= TimeDimension.find(time_dimension_id)
   end
-
 end
