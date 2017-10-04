@@ -33,7 +33,7 @@ RSpec.describe Api::MailthreadsController, type: :controller do
     end
 
     it 'should not create email thread' do
-      thread
+      thread = create :email_thread, email_thread_id: '12345'
 
       expect do
         post :create_thread, thread_id: thread.email_thread_id
@@ -44,7 +44,7 @@ RSpec.describe Api::MailthreadsController, type: :controller do
 
   describe 'GET #see_more_opens' do
     it 'should return 2 email opens by thread' do
-      create_list
+      create_list :email_open, 2
 
       get :see_more_opens, thread_id: thread.email_thread_id
       response_data = JSON.parse(response.body).deep_symbolize_keys
@@ -64,11 +64,5 @@ RSpec.describe Api::MailthreadsController, type: :controller do
 
   def thread
     @_thread ||= create :email_thread, email_thread_id: '12345'
-  end
-
-  def create_list
-    2.times do
-      create :email_open, thread_id: thread.email_thread_id
-    end
   end
 end

@@ -4,7 +4,7 @@ class Api::MailthreadsController < ApplicationController
 
   def index
     if params[:thread_ids].present?
-      email_threads = EmailThread.threads params[:thread_ids]
+      email_threads = EmailThread.thread_list params[:thread_ids]
 
       render json: { threads: email_threads }, status: 200
     else
