@@ -8,7 +8,7 @@ class Api::MailthreadsController < ApplicationController
 
       render json: { threads: email_threads }, status: 200
     else
-      render json: { errors: 'Need provide array of thread_ids' }, status: :unprocessable_entity
+      render json: { errors: 'Need provide array of guids' }, status: :unprocessable_entity
     end
   end
 
@@ -27,7 +27,7 @@ class Api::MailthreadsController < ApplicationController
     if params[:guid].present?
       render json: { opened_emails: EmailOpen.by_thread(params[:guid]) }, status: 200
     else
-      render json: { errors: 'Need provide thread_id' }, status: :unprocessable_entity
+      render json: { errors: 'Need provide guid' }, status: :unprocessable_entity
     end
   end
 end
