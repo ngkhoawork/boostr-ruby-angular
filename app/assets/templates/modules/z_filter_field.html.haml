@@ -7,6 +7,7 @@
 			%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
 			%div{'dropdown-toggle': true, 'ng-show': 'data.length || data.$resolved', 'ng-class': '{"empty": !selected.id}' }
 				{{selected.name || (isAll ? 'All' : 'Select')}}
+				%i.fa.fa-times.close-btn{'ng-show': 'selected.name', 'ng-click': 'removeFilter($event)'}
 				%span.caret
 			%div.dropdown-menu
 				%div{'ng-if': 'isAll'}
@@ -39,6 +40,7 @@
 			%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
 			%div{'dropdown-toggle': true, 'ng-show': 'data.length || data.$resolved', 'ng-class': '{"empty": !selected.id}' }
 				{{selected.name || (isAll ? 'All' : 'Select')}}
+				%i.fa.fa-times.close-btn{'ng-show': 'selected.name', 'ng-click': 'removeFilter($event)'}
 				%span.caret
 			%div.dropdown-menu{'ng-hide': '!data || !data.length'}
 				%div{'ng-if': 'isAll'}
@@ -58,4 +60,5 @@
 					%span.caret
 				%span{'ng-show': 'selected.dateString'}
 					{{selected.dateString}}
+					%i.fa.fa-times.close-btn{'ng-click': 'removeFilter($event)'}
 					%span.caret
