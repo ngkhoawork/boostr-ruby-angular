@@ -130,9 +130,10 @@
 			$scope.hasForecastPermission = data.user.has_forecast_permission
 			$scope.filterTeams = data.teams
 			$scope.filterTeams.unshift emptyFilter
-			searchAndSetTeam(data.teams, data.user) if $scope.currentUserIsLeader
+			searchAndSetTeam(data.teams, data.user) if $scope.currentUserIsLeader || data.user.team_id != null
 			searchAndSetTeam(data.teams, data.user) if !$scope.hasForecastPermission
-			searchAndSetSeller(data.sellers, data.user)
+			if (!$scope.currentUserIsLeader && data.user.team_id != null || !$scope.hasForecastPermission)
+				searchAndSetSeller(data.sellers, data.user)
 			$scope.sellers = data.sellers
 			$scope.products = data.products
 			$scope.timePeriods = data.timePeriods.filter (period) ->
@@ -151,9 +152,9 @@
 
 		searchAndSetTeam = (teams, user) ->
 			for team in teams
-				if team.leader_id is user.id
+				if team.leader_id && team.leader_id == user.id
 					return $scope.setFilter('team', team)
-				else if team.id == user.team_id
+				else if team.id && team.id == user.team_id
 					return $scope.setFilter('team', team)
 				if team.children && team.children.length
 					searchAndSetTeam team.children, user
