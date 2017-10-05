@@ -35,20 +35,6 @@ RSpec.describe NewForecastMember do
         io_member(io: io, user: user, share: 60, from_date: '2015-04-01', to_date: '2015-06-30')
         expect(forecast.revenue).to eq(0)
       end
-
-      it 'returns week over week revenue' do
-        io(start_date: '2015-04-01', end_date: '2015-04-10')
-        content_fee(io: io, product: products[0], budget: 500, budget_loc: 500)
-        io_member(io: io, user: user, share: 100, from_date: '2015-04-01', to_date: '2015-06-30')
-        snapshot(user: user, time_period: time_period)
-
-        io2(start_date: '2015-04-11', end_date: '2015-04-20')
-        content_fee2(io: io2, product: products[1], budget: 1000, budget_loc: 1000)
-        io_member2(io: io2, user: user, share: 100, from_date: '2015-04-01', to_date: '2015-06-30')
-        snapshot2(user: user, time_period: time_period)
-
-        expect(forecast.wow_revenue).to eq(1000)
-      end
     end
 
     context 'weighted_pipeline' do
@@ -82,14 +68,6 @@ RSpec.describe NewForecastMember do
       it 'applies the probability to the total' do
         stage.update(probability: 50)
         expect(forecast.weighted_pipeline).to eq(15000)
-      end
-
-      it 'returns week over week weighted_pipeline' do
-        create :snapshot, user: user, time_period: time_period
-        stage.update(probability: 50)
-        create :snapshot, user: user, time_period: time_period
-
-        expect(forecast.wow_weighted_pipeline).to eq(-15000)
       end
     end
 
