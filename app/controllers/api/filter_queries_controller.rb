@@ -59,6 +59,6 @@ class Api::FilterQueriesController < ApplicationController
       .by_query_type(filter_query.query_type)
       .all_without_specific_record(filter_query.id)
       .default
-      .update_all(default: false)
+      .update_all(default: false) if filter_query_params[:default].eql?(true)
   end
 end
