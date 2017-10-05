@@ -43,6 +43,8 @@ class Facts::AccountAgencyRevenueFactCreationHandler < BaseService
     elsif fact.new_record?
       fact.update_attributes(revenue_amount: calculated_record.revenue_amount.to_i,
                              process_ran_at: running_process_date_time)
+    else
+      fact.update_attributes(process_ran_at: running_process_date_time)
     end
   end
 end

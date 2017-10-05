@@ -25,7 +25,6 @@ class Facts::AccountAgencyPipelineFactCreationHandler < BaseService
                                        time_dimension_id: time_dimension.id,
                                        process_date_time: running_process_date_time,
                                        company_id: company_id)
-
   end
 
 
@@ -46,6 +45,8 @@ class Facts::AccountAgencyPipelineFactCreationHandler < BaseService
       fact.update_attributes(unweighted_amount: calculated_record.unweighted_amount.to_i,
                              weighted_amount:   calculated_record.weighted_amount.to_i,
                              process_ran_at:    running_process_date_time)
+    else
+      fact.update_attributes(process_ran_at: running_process_date_time)
     end
   end
 end
