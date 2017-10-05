@@ -11,6 +11,9 @@ RSpec.describe ForecastRevenueFact, type: :model do
       content_fee(io: io, product: product, budget: 10000, budget_loc: 10000)
       io_member(io: io, user: user, share: 60, from_date: '2015-04-01', to_date: '2015-06-30')
       io_member2(io: io, user: user2, share: 40, from_date: '2015-04-01', to_date: '2015-06-30')
+      io.reload
+      user.reload
+      user2.reload
     end
     it 'generate correct split amount' do
       expect(io.budget).to eql 10000.0
@@ -20,44 +23,36 @@ RSpec.describe ForecastRevenueFact, type: :model do
     end
 
     it 'content fee budget change update fact' do
-      io.reload
       content_fee.update(budget: '20000.00', budget_loc: '20000.00')
       expect(forecast_revenue_fact.reload.amount).to eq(12000)
       expect(forecast_revenue_fact2.reload.amount).to eq(8000)
     end
 
     it 'io start & end date change update fact' do
-      io.reload
       io.update(start_date: '2015-03-15')
       expect(forecast_revenue_fact.reload.amount).to eq(5055.6)
       expect(forecast_revenue_fact2.reload.amount).to eq(3370.4)
     end
 
     it 'content fee deletion update fact' do
-      io.reload
       content_fee.destroy
       expect(forecast_revenue_fact.reload.amount).to eq(0)
       expect(forecast_revenue_fact2.reload.amount).to eq(0)
     end
 
     it 'io deletion update fact' do
-      io.reload
       io.destroy
       expect(forecast_revenue_fact.reload.amount).to eq(0)
       expect(forecast_revenue_fact2.reload.amount).to eq(0)
     end
 
     it 'io member deletion update fact' do
-      io.reload
       io_member.destroy
       expect(forecast_revenue_fact.amount).to eq(0)
       expect(forecast_revenue_fact2.amount).to eq(4000.0)
     end
 
     it 'io member share change update fact' do
-      io.reload
-      user.reload
-      user2.reload
       io_member.update(share: 10)
       io_member2.update(share: 90)
       expect(forecast_revenue_fact.amount).to eq(1000)
