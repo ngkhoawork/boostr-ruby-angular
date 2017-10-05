@@ -53,7 +53,6 @@ describe Api::ForecastsController do
         get :index, { format: :json, new_version: 'true', time_period_id: time_period.id, team_id: parent_team.id, product_id: product.id, user_id: user.id }
         expect(response).to be_success
         response_json = JSON.parse(response.body)
-        pp response_json
         expect(response_json[0]['name']).to eq(user.name)
         expect(response_json[0]['type']).to eq('member')
       end

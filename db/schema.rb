@@ -1715,8 +1715,8 @@ ActiveRecord::Schema.define(version: 20171120181523) do
     t.integer  "dimensionadvertiser_id",                             limit: 8
     t.integer  "dimensionline_item_id",                              limit: 8
     t.integer  "dimensionad_unit_id",                                limit: 8
-    t.date     "dimensionattributeorder_start_date_time"
-    t.date     "dimensionattributeorder_end_date_time"
+    t.datetime "dimensionattributeorder_start_date_time"
+    t.datetime "dimensionattributeorder_end_date_time"
     t.string   "dimensionattributeorder_agency"
     t.date     "dimensionattributeline_item_start_date_time"
     t.date     "dimensionattributeline_item_end_date_time"
