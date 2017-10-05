@@ -54,6 +54,20 @@ describe Api::FilterQueriesController do
 
       expect(filter_query.reload.default).to be_falsey
     end
+
+    it 'does not create new record if name was already taken in scope of company and query type' do
+      filter_query = create(
+        :filter_query,
+        user: user,
+        company: company,
+        name: 'One Report',
+        query_type: 'pipeline_summary_report'
+      )
+
+      expect{
+        post :create, filter_query: valid_filter_query_params, format: :json
+      }.to_not change(FilterQuery, :count)
+    end
   end
 
   describe 'PUT #update' do
