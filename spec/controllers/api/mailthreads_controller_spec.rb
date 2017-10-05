@@ -24,10 +24,10 @@ RSpec.describe Api::MailthreadsController, type: :controller do
     end
   end
 
-  describe 'POST #create_thread' do
+  describe 'GET #create_thread' do
     it 'should create email thread by thread id' do
       expect do
-        post :create_thread, guid: '123456'
+        get :create_thread, guid: '123456'
         expect(response).to be_success
       end.to change(EmailThread, :count).by(1)
     end

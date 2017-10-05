@@ -387,7 +387,7 @@ Rails.application.routes.draw do
 
     resources :mailthreads, only: [:index] do
       collection do
-        post :create_thread
+        get :create_thread
         get :see_more_opens
       end
     end

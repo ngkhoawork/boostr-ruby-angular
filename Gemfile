@@ -49,6 +49,8 @@ gem 'pluck_to_hash'
 gem 'upsert'
 gem 'hashie'
 gem 'active_record_union'
+gem 'user_agent_parser'
+gem 'geocoder'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'
