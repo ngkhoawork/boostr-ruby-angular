@@ -128,12 +128,12 @@
 			timePeriods: TimePeriod.all()
 		).then (data) ->
 			$scope.hasForecastPermission = data.user.has_forecast_permission
+			shouldChooseTeamFilter = $scope.currentUserIsLeader || data.user.team_id != null || !$scope.hasForecastPermission
+			shouldChooseMemberFilter = !$scope.currentUserIsLeader && data.user.team_id != null || !$scope.hasForecastPermission
 			$scope.filterTeams = data.teams
 			$scope.filterTeams.unshift emptyFilter
-			searchAndSetTeam(data.teams, data.user) if $scope.currentUserIsLeader || data.user.team_id != null
-			searchAndSetTeam(data.teams, data.user) if !$scope.hasForecastPermission
-			if (!$scope.currentUserIsLeader && data.user.team_id != null || !$scope.hasForecastPermission)
-				searchAndSetSeller(data.sellers, data.user)
+			searchAndSetTeam(data.teams, data.user) if shouldChooseTeamFilter
+			searchAndSetSeller(data.sellers, data.user) if shouldChooseMemberFilter
 			$scope.sellers = data.sellers
 			$scope.products = data.products
 			$scope.timePeriods = data.timePeriods.filter (period) ->
