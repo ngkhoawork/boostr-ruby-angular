@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170915133451) do
+ActiveRecord::Schema.define(version: 20170914222343) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -120,8 +120,10 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.integer "category_id"
     t.integer "subcategory_id"
     t.integer "holding_company_id"
+    t.integer "company_id"
   end
 
+  add_index "account_dimensions", ["company_id"], name: "index_account_dimensions_on_company_id", using: :btree
   add_index "account_dimensions", ["holding_company_id"], name: "index_account_dimensions_on_holding_company_id", using: :btree
 
   create_table "account_pipeline_facts", force: :cascade do |t|
@@ -142,8 +144,8 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.integer  "time_dimension_id"
     t.integer  "account_dimension_id"
     t.integer  "company_id"
-    t.decimal  "weighted_amount"
-    t.decimal  "unweighted_amount"
+    t.integer  "weighted_amount"
+    t.integer  "unweighted_amount"
     t.datetime "created_at",           null: false
     t.datetime "updated_at",           null: false
   end
@@ -275,6 +277,42 @@ ActiveRecord::Schema.define(version: 20170915133451) do
 
   add_index "addresses", ["addressable_id", "addressable_type"], name: "index_addresses_on_addressable_id_and_addressable_type", using: :btree
 
+  create_table "advertiser_agency_pipeline_facts", force: :cascade do |t|
+    t.integer  "advertiser_id"
+    t.integer  "agency_id"
+    t.integer  "company_id"
+    t.integer  "time_dimension_id"
+    t.integer  "weighted_amount"
+    t.integer  "unweighted_amount"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.datetime "process_ran_at"
+  end
+
+  add_index "advertiser_agency_pipeline_facts", ["advertiser_id"], name: "index_advertiser_agency_pipeline_facts_on_advertiser_id", using: :btree
+  add_index "advertiser_agency_pipeline_facts", ["agency_id"], name: "index_advertiser_agency_pipeline_facts_on_agency_id", using: :btree
+  add_index "advertiser_agency_pipeline_facts", ["company_id"], name: "index_advertiser_agency_pipeline_facts_on_company_id", using: :btree
+  add_index "advertiser_agency_pipeline_facts", ["time_dimension_id"], name: "index_advertiser_agency_pipeline_facts_on_time_dimension_id", using: :btree
+  add_index "advertiser_agency_pipeline_facts", ["unweighted_amount"], name: "index_advertiser_agency_pipeline_facts_on_unweighted_amount", using: :btree
+  add_index "advertiser_agency_pipeline_facts", ["weighted_amount"], name: "index_advertiser_agency_pipeline_facts_on_weighted_amount", using: :btree
+
+  create_table "advertiser_agency_revenue_facts", force: :cascade do |t|
+    t.integer  "advertiser_id"
+    t.integer  "agency_id"
+    t.integer  "company_id"
+    t.integer  "time_dimension_id"
+    t.integer  "revenue_amount"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.datetime "process_ran_at"
+  end
+
+  add_index "advertiser_agency_revenue_facts", ["advertiser_id"], name: "index_advertiser_agency_revenue_facts_on_advertiser_id", using: :btree
+  add_index "advertiser_agency_revenue_facts", ["agency_id"], name: "index_advertiser_agency_revenue_facts_on_agency_id", using: :btree
+  add_index "advertiser_agency_revenue_facts", ["company_id"], name: "index_advertiser_agency_revenue_facts_on_company_id", using: :btree
+  add_index "advertiser_agency_revenue_facts", ["revenue_amount"], name: "index_advertiser_agency_revenue_facts_on_revenue_amount", using: :btree
+  add_index "advertiser_agency_revenue_facts", ["time_dimension_id"], name: "index_advertiser_agency_revenue_facts_on_time_dimension_id", using: :btree
+
   create_table "agreements", force: :cascade do |t|
     t.integer  "influencer_id"
     t.string   "fee_type"
@@ -347,7 +385,7 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.integer  "user_id"
     t.datetime "created_at",                              null: false
     t.datetime "updated_at",                              null: false
-    t.decimal  "changed_amount", precision: 15, scale: 2
+    t.decimal  "changed_amount", precision: 12, scale: 2
   end
 
   add_index "audit_logs", ["auditable_id"], name: "index_audit_logs_on_auditable_id", using: :btree
@@ -471,8 +509,8 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.string   "name"
     t.integer  "primary_contact_id"
     t.integer  "billing_contact_id"
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at",                                                                                                                           null: false
+    t.datetime "updated_at",                                                                                                                           null: false
     t.integer  "quantity"
     t.integer  "cost"
     t.datetime "start_date"
@@ -482,8 +520,8 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.integer  "red_threshold"
     t.integer  "deals_needed_calculation_duration", default: 90
     t.boolean  "ealert_reminder",                   default: false
-    t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "requests_enabled",                  default: false
+    t.jsonb    "forecast_permission",               default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
     t.boolean  "enable_operative_extra_fields",     default: false
     t.boolean  "influencer_enabled",                default: false
     t.jsonb    "io_permission",                     default: {"0"=>true, "1"=>true, "2"=>true, "3"=>true, "4"=>true, "5"=>true, "6"=>true, "7"=>true}, null: false
@@ -998,6 +1036,7 @@ ActiveRecord::Schema.define(version: 20170915133451) do
   end
 
   add_index "deals", ["advertiser_id"], name: "index_deals_on_advertiser_id", using: :btree
+  add_index "deals", ["agency_id", "company_id"], name: "idx_test", using: :btree
   add_index "deals", ["agency_id"], name: "index_deals_on_agency_id", using: :btree
   add_index "deals", ["company_id"], name: "index_deals_on_company_id", using: :btree
   add_index "deals", ["created_by"], name: "index_deals_on_created_by", using: :btree
@@ -1017,6 +1056,7 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.integer  "api_configuration_id"
     t.datetime "created_at",                             null: false
     t.datetime "updated_at",                             null: false
+    t.integer  "date_range_type",        default: 0
   end
 
   add_index "dfp_report_queries", ["api_configuration_id"], name: "index_dfp_report_queries_on_api_configuration_id", using: :btree
@@ -1044,23 +1084,23 @@ ActiveRecord::Schema.define(version: 20170915133451) do
   add_index "display_line_item_budgets", ["display_line_item_id"], name: "index_display_line_item_budgets_on_display_line_item_id", using: :btree
 
   create_table "display_line_items", force: :cascade do |t|
-    t.integer  "io_id"
-    t.integer  "line_number"
+    t.integer  "io_id",                      limit: 8
+    t.integer  "line_number",                limit: 8
     t.string   "ad_server"
-    t.integer  "quantity"
+    t.integer  "quantity",                   limit: 8
     t.decimal  "budget",                               precision: 15, scale: 2
     t.string   "pricing_type"
-    t.integer  "product_id"
+    t.integer  "product_id",                 limit: 8
     t.decimal  "budget_delivered",                     precision: 15, scale: 2
     t.decimal  "budget_remaining",                     precision: 15, scale: 2
-    t.integer  "quantity_delivered"
-    t.integer  "quantity_remaining"
+    t.integer  "quantity_delivered",         limit: 8
+    t.integer  "quantity_remaining",         limit: 8
     t.date     "start_date"
     t.date     "end_date"
-    t.integer  "daily_run_rate"
+    t.integer  "daily_run_rate",             limit: 8
     t.integer  "num_days_til_out_of_budget", limit: 8
-    t.integer  "quantity_delivered_3p"
-    t.integer  "quantity_remaining_3p"
+    t.integer  "quantity_delivered_3p",      limit: 8
+    t.integer  "quantity_remaining_3p",      limit: 8
     t.decimal  "budget_delivered_3p",                  precision: 15, scale: 2
     t.decimal  "budget_remaining_3p",                  precision: 15, scale: 2
     t.datetime "created_at",                                                                  null: false
@@ -1068,7 +1108,7 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.decimal  "price",                                precision: 15, scale: 2
     t.integer  "balance",                    limit: 8
     t.datetime "last_alert_at"
-    t.integer  "temp_io_id"
+    t.integer  "temp_io_id",                 limit: 8
     t.string   "ad_server_product"
     t.decimal  "budget_loc",                           precision: 15, scale: 2, default: 0.0
     t.decimal  "budget_delivered_loc",                 precision: 15, scale: 2, default: 0.0
@@ -1076,9 +1116,9 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.decimal  "budget_delivered_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.decimal  "budget_remaining_3p_loc",              precision: 15, scale: 2, default: 0.0
     t.integer  "balance_loc",                limit: 8
-    t.integer  "daily_run_rate_loc"
+    t.integer  "daily_run_rate_loc",         limit: 8
     t.decimal  "ctr",                                  precision: 5,  scale: 4
-    t.integer  "clicks"
+    t.integer  "clicks",                     limit: 8
     t.text     "ad_unit"
   end
 
@@ -1158,16 +1198,16 @@ ActiveRecord::Schema.define(version: 20170915133451) do
   add_index "fields", ["deleted_at"], name: "index_fields_on_deleted_at", using: :btree
   add_index "fields", ["subject_type"], name: "index_fields_on_subject_type", using: :btree
 
-  create_table "forecast_calculation_logs", force: :cascade do |t|
+  create_table "filter_queries", force: :cascade do |t|
+    t.string   "name"
     t.integer  "company_id"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.boolean  "finished"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "user_id"
+    t.string   "query_type"
+    t.boolean  "global",        default: false
+    t.jsonb    "filter_params", default: {},    null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
   end
-
-  add_index "forecast_calculation_logs", ["company_id"], name: "index_forecast_calculation_logs_on_company_id", using: :btree
 
   create_table "forecast_pipeline_facts", force: :cascade do |t|
     t.integer  "user_dimension_id"
@@ -1556,10 +1596,10 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.string   "dimensionadvertiser_name"
     t.string   "dimensionline_item_name"
     t.string   "dimensionad_unit_name"
-    t.integer  "dimensionorder_id"
-    t.integer  "dimensionadvertiser_id"
-    t.integer  "dimensionline_item_id"
-    t.integer  "dimensionad_unit_id"
+    t.integer  "dimensionorder_id",                                  limit: 8
+    t.integer  "dimensionadvertiser_id",                             limit: 8
+    t.integer  "dimensionline_item_id",                              limit: 8
+    t.integer  "dimensionad_unit_id",                                limit: 8
     t.datetime "dimensionattributeorder_start_date_time"
     t.datetime "dimensionattributeorder_end_date_time"
     t.string   "dimensionattributeorder_agency"
@@ -1741,6 +1781,7 @@ ActiveRecord::Schema.define(version: 20170915133451) do
 
   add_index "values", ["company_id", "field_id"], name: "index_values_on_company_id_and_field_id", using: :btree
   add_index "values", ["option_id"], name: "index_values_on_option_id", using: :btree
+  add_index "values", ["subject_type", "option_id"], name: "idx_test999", using: :btree
   add_index "values", ["subject_type", "subject_id"], name: "index_values_on_subject_type_and_subject_id", using: :btree
   add_index "values", ["value_object_type", "value_object_id"], name: "index_values_on_value_object_type_and_value_object_id", using: :btree
 
@@ -1807,7 +1848,6 @@ ActiveRecord::Schema.define(version: 20170915133451) do
   add_foreign_key "ealerts", "companies"
   add_foreign_key "exchange_rates", "companies"
   add_foreign_key "exchange_rates", "currencies"
-  add_foreign_key "forecast_calculation_logs", "companies"
   add_foreign_key "forecast_pipeline_facts", "product_dimensions"
   add_foreign_key "forecast_pipeline_facts", "stage_dimensions"
   add_foreign_key "forecast_pipeline_facts", "user_dimensions"
