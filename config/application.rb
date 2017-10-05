@@ -36,6 +36,7 @@ module Boostr
     config.active_job.queue_adapter = :sidekiq
     config.action_dispatch.default_headers = {
         # "X-Frame-Options" => "ALLOW-FROM mail.google.com"
+        "Access-Control-Allow-Origin" => "https://mail.google.com",
         "Content-Security-Policy" => ""
     }
   end
