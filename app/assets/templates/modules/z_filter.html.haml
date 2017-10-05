@@ -1,7 +1,7 @@
 %div.z-filter
 	%div.z-filter-field.query-field
 		%div.field-name
-			Query
+			Saved Queries
 		%div.field-value
 			%div.z-dd-ar{dropdown: true, 'on-toggle': 'onQueryDropdownToggle(open)', 'is-open': 'isQueryDropdownOpen', 'auto-close': 'outsideClick'}
 				-#%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
@@ -14,9 +14,9 @@
 					%div.query-line.empty{'ng-hide': 'recentQueries.length'}
 						Empty
 					%div.query-line.unsaved-line{ng: {repeat: 'query in recentQueries track by $index', click: 'loadQuery(query)', class: '{active: compareQueries(query)}'}}
-						%b {{query.name}} ({{objLength(query)}})
+						%b {{query.name}}
 						%div.query-actions
-							%i.fa.fa-floppy-o.z-icon{'ng-click': 'saveQuery($event, query)'}
+							%i.fa.fa-plus-square.z-icon{'ng-click': 'saveQuery($event, query)'}
 					%div.query-subtitle
 						SAVED SEARCHES
 					%div.query-line.new-line{'ng-show': 'isQueryFormOnEdit'}
@@ -33,11 +33,11 @@
 								%z-toggle{'ng-model': 'savedQueryForm.global'}
 					%div.query-line.empty{'ng-hide': 'savedQueries.length || isQueryFormOnEdit'}
 						Empty
-					%div.query-line.saved-line{'ng-hide': 'isQueryFormOnEdit', ng: {repeat: 'query in savedQueries track by $index | orderBy : "id"', click: 'loadQuery(query)', class: '{active: compareQueries(query)}'}}
+					%div.query-line.saved-line{'ng-hide': 'isQueryFormOnEdit', ng: {repeat: 'query in savedQueries | orderBy : "name" track by $index', click: 'loadQuery(query)', class: '{active: compareQueries(query)}'}}
 						%b {{query.name}}
 						%div.subline
-							%span.status.mr8 {{query.global ? 'Public' : 'Private'}}
-							%i.fa.fa-star.default{'ng-show': 'query.default', 'ng-click': 'query.default = !query.default'}
+							%span.status {{query.global ? 'Public' : 'Private'}}
+							%i.fa.default{'ng-class': 'query.default ? "fa-star active" : "fa-star-o"', 'ng-click': 'switchDefault($event, query)'}
 						%div.query-actions
 							%i.fa.fa-pencil.z-icon{'ng-hide': 'isQueryFormOnEdit', 'ng-click': 'editQuery($event, query)'}
 							%i.fa.fa-trash.z-icon{'ng-hide': 'isQueryFormOnEdit', 'ng-click': 'deleteQuery($event, query)'}

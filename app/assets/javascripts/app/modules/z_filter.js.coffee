@@ -19,7 +19,7 @@
 		ctrl.query = {}
 		ctrl.syncQueries = ->
 			_.each $scope.recentQueries, (recentQuery) ->
-				recentQuery.name = 'Unsaved Filter'
+				recentQuery.name = recentQuery.original_name
 				_.each $scope.savedQueries, (savedQuery) ->
 					if _.isEqual(savedQuery.filter_params, recentQuery.filter_params)
 						recentQuery.name = savedQuery.name
@@ -27,8 +27,10 @@
 			if _.isEmpty ctrl.query then return
 			$scope.recentQueries = _.filter $scope.recentQueries, (q) =>
 				!_.isEqual ctrl.query, q.filter_params
+			date = moment().format('MM/DD/YY')
 			$scope.recentQueries.unshift(
-				name: 'Unsaved Filter'
+				name: 'Created ' + date
+				original_name: 'Created ' + date
 				filter_params: angular.copy ctrl.query
 			)
 			if $scope.recentQueries.length > 5 then $scope.recentQueries.pop()
@@ -68,7 +70,7 @@
 		templateUrl: 'modules/z_filter.html'
 		link: ($scope, el, attrs, ctrl, trans) ->
 			trans (clone) -> el.find('.element-to-replace').replaceWith(clone)
-			$scope.isQueryDropdownOpen = false
+			$scope.isQueryDropdownOpen = true
 			$scope.isQueryFormOnEdit = false
 			emptySavedQueryForm =
 				name: ''
@@ -106,12 +108,16 @@
 			$scope.cancelQueryForm = ->
 				resetQueryForm()
 			$scope.loadQuery = ctrl.loadQuery
+			$scope.switchDefault = (e, query) ->
+				e.stopPropagation()
+				query = angular.copy query
+				query.default = !query.default
+				ctrl.saveQuery query
 			$scope.resetFilter = ->
 				ctrl.query = {}
 				ctrl.loadedQuery = {}
 				ctrl.checkApplied()
 				$scope.$broadcast 'resetFilter'
-			$scope.objLength = (obj) -> _.keys(obj.filter_params).length
 			$scope.compareQueries = (query) -> _.isEqual query.filter_params, ctrl.query
 	]
 	.directive 'zFilterField', ->
@@ -181,15 +187,18 @@
 								$scope.datePicker.savedDate = angular.copy date
 								$scope.setFilter date
 								callback() if _.isFunction callback
-						resetToDefault = ->
+						resetToDefault = (clear) ->
 							d = $scope.defaultFilter.date
-							if d && d.startDate && d.endDate
+							if d && d.startDate && d.endDate && !clear
 								$scope.setFilter(d)
 							else
 								$scope.selected = angular.copy $scope.defaultFilter
 								$scope.selected.dateString = $scope.datePicker.toString()
 								_.each $scope.saveAs, (valueKey, queryKey) ->
 									ctrl.setQuery queryKey, null
+						$scope.removeFilter = (e) ->
+							e.stopPropagation()
+							resetToDefault(true)
 					when 'stage' #================================================================================
 						$scope.defaultFilter = []
 						$scope.isStageSelected = (id) ->
@@ -242,6 +251,9 @@
 									callback() if _.isFunction callback
 						resetToDefault = ->
 							$scope.setFilter($scope.defaultFilter)
+						$scope.removeFilter = (e) ->
+							e.stopPropagation()
+							$scope.setFilter(null)
 					#=============================================================================================
 
 				$scope.selected = angular.copy $scope.defaultFilter

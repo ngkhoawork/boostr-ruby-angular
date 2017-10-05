@@ -692,10 +692,33 @@
                     .subline {
                         .status {
                             color: #BAC1C6;
+                            margin-right: 5px;
                         }
                         .default {
                             color: $main-color;
+                            vertical-align: text-top;
+                            font-size: 14px;
+                            line-height: 10px;
+                            background-color: transparent;
+                            display: none;
+                            padding: 2px;
+                            border: 1px solid transparent;
+                            border-radius: 4px;
+                            &.active {
+                                display: inline-block
+                            }
+                            &:hover {
+                                border-color: #cbd3d8;
+                            }
                         }
+                    }
+                    &:hover {
+                        .default {
+                            display: inline-block;
+                        }
+                    }
+                    &:last-child {
+                        border-bottom: none;
                     }
                 }
                 &.new-line {
