@@ -4,9 +4,9 @@
 			Saved Queries
 		%div.field-value
 			%div.z-dd-ar{dropdown: true, 'on-toggle': 'onQueryDropdownToggle(open)', 'is-open': 'isQueryDropdownOpen', 'auto-close': 'outsideClick'}
-				-#%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
-				%div{'dropdown-toggle': true, 'ng-class': '{"empty": !selected.id}' }
-					{{selected.name || (isAll ? 'All' : 'Select')}}
+				%span.z-loading{'ng-hide': 'savedQueriesLoaded'}
+				%div{'ng-show': 'savedQueriesLoaded', 'dropdown-toggle': true, 'ng-class': '{"empty": !selectedQuery}' }
+					{{selectedQuery.name || 'Select'}}
 					%span.caret
 				%div.dropdown-menu
 					%div.query-subtitle
