@@ -7,15 +7,19 @@
 		$scope.recentQueries = LS.get(ctrl.reportName) || []
 		ctrl.loadedQuery = $scope.recentQueries[0] && $scope.recentQueries[0].filter_params
 		$scope.savedQueries = []
+		$scope.savedQueriesLoaded = false
 		(getSavedQueries = (init)->
 			ReportQuery.get(query_type: ctrl.reportName).then (data) ->
 				$scope.savedQueries = _.map data, (q) -> q.filter_params = JSON.parse(q.filter_params); q
 				defaultQuery = _.findWhere $scope.savedQueries, default: true
 				ctrl.loadQuery(defaultQuery) if defaultQuery && init
 				ctrl.syncQueries()
+				$scope.savedQueriesLoaded = true
 		)(true)
 		$scope.isFilterApplied = false
 		$scope.$on 'report_queries_updated', -> getSavedQueries()
+		$scope.$on 'zFilterChanged', ->
+			$scope.selectedQuery = null
 		ctrl.query = {}
 		ctrl.syncQueries = ->
 			_.each $scope.recentQueries, (recentQuery) ->
@@ -72,6 +76,7 @@
 			trans (clone) -> el.find('.element-to-replace').replaceWith(clone)
 			$scope.isQueryDropdownOpen = false
 			$scope.isQueryFormOnEdit = false
+			$scope.selectedQuery = null
 			emptySavedQueryForm =
 				name: ''
 				query_type: ctrl.reportName
@@ -107,7 +112,9 @@
 				ctrl.deleteQuery(query)
 			$scope.cancelQueryForm = ->
 				resetQueryForm()
-			$scope.loadQuery = ctrl.loadQuery
+			$scope.loadQuery = (query) ->
+				$scope.selectedQuery = null
+				ctrl.loadQuery(query)
 			$scope.switchDefault = (e, query) ->
 				e.stopPropagation()
 				query = angular.copy query
@@ -118,7 +125,12 @@
 				ctrl.loadedQuery = {}
 				ctrl.checkApplied()
 				$scope.$broadcast 'resetFilter'
-			$scope.compareQueries = (query) -> _.isEqual query.filter_params, ctrl.query
+			$scope.compareQueries = (query) ->
+				if _.isEqual query.filter_params, ctrl.query
+					$scope.selectedQuery = query
+					true
+				else
+					false
 	]
 	.directive 'zFilterField', ->
 		restrict: 'E'
@@ -258,6 +270,7 @@
 
 				$scope.selected = angular.copy $scope.defaultFilter
 				$scope.setFilter = (item) ->
+					$scope.$emit 'zFilterChanged'
 					updateSelection(item)
 					$scope.onChange(item) if _.isFunction $scope.onChange
 

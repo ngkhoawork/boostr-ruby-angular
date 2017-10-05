@@ -717,9 +717,6 @@
                             display: inline-block;
                         }
                     }
-                    &:last-child {
-                        border-bottom: none;
-                    }
                 }
                 &.new-line {
                     .query-name-input {
@@ -744,6 +741,9 @@
                             }
                         }
                     }
+                }
+                &:last-child {
+                    border-bottom: none;
                 }
             }
             .query-actions {
