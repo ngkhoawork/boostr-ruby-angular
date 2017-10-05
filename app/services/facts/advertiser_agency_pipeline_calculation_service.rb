@@ -38,9 +38,7 @@ class Facts::AdvertiserAgencyPipelineCalculationService < BaseService
   end
 
   def deal_product_budgets
-    DealProductBudget.joins(deal_product: [:product, deal: :stage] )
-        .joins('JOIN account_dimensions ON deals.advertiser_id = account_dimensions.id
-                OR deals.agency_id = account_dimensions.id')
+    DealProductBudget.joins(deal_product: [:product, deal: :stage])
         .where(conditions,
                company_id: company_id,
                start_date: start_date,
