@@ -199,9 +199,9 @@
 								$scope.datePicker.savedDate = angular.copy date
 								$scope.setFilter date
 								callback() if _.isFunction callback
-						resetToDefault = (clear) ->
+						resetToDefault = ->
 							d = $scope.defaultFilter.date
-							if d && d.startDate && d.endDate && !clear
+							if d && d.startDate && d.endDate
 								$scope.setFilter(d)
 							else
 								$scope.selected = angular.copy $scope.defaultFilter
@@ -210,7 +210,7 @@
 									ctrl.setQuery queryKey, null
 						$scope.removeFilter = (e) ->
 							e.stopPropagation()
-							resetToDefault(true)
+							$scope.setFilter(angular.copy $scope.defaultFilter.date)
 					when 'stage' #================================================================================
 						$scope.defaultFilter = []
 						$scope.isStageSelected = (id) ->
