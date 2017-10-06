@@ -3,8 +3,8 @@ class Api::MailthreadsController < ApplicationController
   respond_to :json
 
   def index
-    if params[:guids].present?
-      email_threads = EmailThread.thread_list params[:guids]
+    if params[:thread_ids].present?
+      email_threads = EmailThread.thread_list params[:thread_ids]
 
       render json: { threads: email_threads }, status: 200
     else
@@ -14,7 +14,7 @@ class Api::MailthreadsController < ApplicationController
 
   def create_thread
     # TODO need add current user id when auth will be implemented
-    email_thread = EmailThread.create(email_guid: params[:guid])
+    email_thread = EmailThread.create(email_guid: params[:guid], thread_id: params[:thread_id])
 
     if email_thread.save
       render json: email_thread, status: :created
