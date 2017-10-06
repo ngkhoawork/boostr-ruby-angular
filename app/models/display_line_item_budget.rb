@@ -284,7 +284,7 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   def max_budget_loc_exceeded?
-    budget_loc.truncate(2) > display_line_item.budget_loc
+    budget_loc.truncate(2) > (display_line_item.budget_loc + BUDGET_BUFFER)
   end
 
   def sum_of_monthly_budgets
