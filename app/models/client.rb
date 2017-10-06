@@ -18,6 +18,7 @@ class Client < ActiveRecord::Base
   has_many :revenues
   has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id', dependent: :nullify
   has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id', dependent: :nullify
+  has_many :open_advertiser_deals, -> { joins(:stage).where('stages.open IS true') }, class_name: 'Deal', foreign_key: 'advertiser_id'
 
   has_many :agency_ios, class_name: 'Io', foreign_key: 'agency_id'
   has_many :advertiser_ios, class_name: 'Io', foreign_key: 'advertiser_id'

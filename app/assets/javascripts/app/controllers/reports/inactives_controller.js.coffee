@@ -43,6 +43,8 @@
 
                 applyFilter: ->
                     IN.inactive(this.filter).$promise.then ((data) ->
+                        data = _.sortBy(data, 'average_quarterly_spend')
+                        data = data.reverse()
                         $scope.inactive.data = angular.copy(data)
                         drawChart(data, $scope.inactive.chartId, true)
                     ), (err) ->
@@ -100,6 +102,8 @@
 
                 applyFilter: ->
                     IN.seasonalInactive(this.filter).$promise.then ((data) ->
+                        data['seasonal_inactives'] = _.sortBy(data['seasonal_inactives'], 'average_quarterly_spend')
+                        data['seasonal_inactives'] = data['seasonal_inactives'].reverse()
                         _this = $scope.seasonalInactive
                         _this.data = angular.copy(data['seasonal_inactives'])
                         if !_this.selected.comparisonNumber && data['season_names']
