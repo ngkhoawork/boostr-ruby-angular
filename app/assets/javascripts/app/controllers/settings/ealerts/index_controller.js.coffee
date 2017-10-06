@@ -251,7 +251,7 @@
     _.each $scope.ealert.ealert_custom_fields, (ealert_custom_field) ->
       value = ''
       switch ealert_custom_field.subject.field_type
-        when 'currency' then value = '$100,000'
+        when 'currency' then value = '£100,000 GBP'
         when 'text' then value = 'some text'
         when 'note' then value = 'some notes'
         when 'datetime' then value = '07/05/2017'
