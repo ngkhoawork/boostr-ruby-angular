@@ -9,7 +9,15 @@ class Facts::AccountProductRevenueCalculationService < BaseService
   end
 
   def calculate_revenues
-    @calculated_revenues = [content_fee_revenues, display_products_monthly_revenues, display_products_daily_revenues].inject(:union)
+    @calculated_revenues = ContentFeeProductBudget
+                               .select('revenues.account_dimension_id, revenues.company_id, revenues.product_id, sum(revenue_amount) as revenue_amount')
+                               .from(unified_revenues, :revenues).group('revenues.account_dimension_id, revenues.company_id, revenues.product_id')
+  end
+
+  private
+
+  def unified_revenues
+    [content_fee_revenues, display_products_monthly_revenues, display_products_daily_revenues].inject(:union)
   end
 
   def content_fee_revenues
