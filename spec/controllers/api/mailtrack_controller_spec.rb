@@ -4,7 +4,7 @@ RSpec.describe Api::MailtrackController, type: :controller do
 
   describe 'GET #open_mail' do
     before do
-      @remote_ip = '64.27.17.140'
+      @remote_ip = '66.102.9.47'
 
       VCR.insert_cassette @remote_ip
       @request.env['REMOTE_ADDR'] = @remote_ip
@@ -22,8 +22,9 @@ RSpec.describe Api::MailtrackController, type: :controller do
       end.to change(EmailOpen, :count).by(1)
 
       expect(EmailOpen.last.ip).to eq @remote_ip
-      expect(EmailOpen.last.location).to eq 'Los Angeles'
+      expect(EmailOpen.last.location).to eq 'Mountain View'
       expect(EmailOpen.last.device).to eq 'iPhone, Chrome Mobile iOS'
+      expect(EmailOpen.last.is_gmail).to be_truthy
     end
   end
 end
