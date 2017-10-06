@@ -25,15 +25,13 @@ class Api::ClientsController < ApplicationController
           results = results.by_ids(client_ids)
         end
 
-        categories = company.fields.joins(:options).where(subject_type: 'Client', name: 'Category').pluck_to_struct('options.id as id', 'options.name as name')
-
         response.headers['X-Total-Count'] = results.count.to_s
         results = results.limit(limit).offset(offset)
         render json: results,
           each_serializer: Clients::ClientListSerializer,
             advertiser: Client.advertiser_type_id(company),
             agency: Client.agency_type_id(company),
-            categories: categories
+            categories: category_options
       }
 
       format.csv {
@@ -348,5 +346,9 @@ class Api::ClientsController < ApplicationController
 
   def company_job_level_options
     current_user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level').options.select(:id, :field_id, :name)
+  end
+
+  def category_options
+    company.fields.client_category_fields.to_options
   end
 end

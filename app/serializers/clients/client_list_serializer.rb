@@ -5,11 +5,12 @@ class Clients::ClientListSerializer < ActiveModel::Serializer
     :formatted_name,
     :type,
     :category,
-    :client_members,
     :city,
     :latest_advertiser_activity,
     :latest_agency_activity
   )
+
+  has_many :client_member_info, key: :client_members, each_serializer: Clients::ClientMemberSerializer
 
   def type
     if object.client_type_id == @options[:advertiser]
@@ -22,11 +23,7 @@ class Clients::ClientListSerializer < ActiveModel::Serializer
   end
 
   def category
-    @options[:categories].find{ |el| el.id == object.client_category_id }&.name
-  end
-
-  def client_members
-    object.client_member_info.map { |el| el.serializable_hash(only: [:id, :share, :first_name, :last_name]) }
+    match_category(object.client_category_id)
   end
 
   def city
@@ -48,5 +45,11 @@ class Clients::ClientListSerializer < ActiveModel::Serializer
     f_name += ", #{object.address.state}" if object.address&.state.present?
 
     f_name
+  end
+
+  private
+
+  def match_category(category_id)
+    @options[:categories].find{ |el| el.id == category_id }&.name
   end
 end
