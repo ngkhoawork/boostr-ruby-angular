@@ -39,12 +39,7 @@ class Clients::ClientListSerializer < ActiveModel::Serializer
   end
 
   def formatted_name
-    f_name = name
-
-    f_name += ", #{object.address.city}" if object.address&.city.present?
-    f_name += ", #{object.address.state}" if object.address&.state.present?
-
-    f_name
+    name + object.address&.formatted_name
   end
 
   private

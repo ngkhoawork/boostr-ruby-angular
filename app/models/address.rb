@@ -19,4 +19,11 @@ class Address < ActiveRecord::Base
       end
     end
   end
+
+  def formatted_name
+    name = ''
+    name += ", #{city}" if city.present?
+    name += ", #{state}" if state.present?
+    name
+  end
 end
