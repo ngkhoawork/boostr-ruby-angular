@@ -1,17 +1,15 @@
 class Api::AgencyDashboardsController < ApplicationController
 
   def spend_by_product
-    revenue = spend_by_product_serializer(revenue_sums_by_products)
-    pipeline = spend_by_product_serializer(pipeline_sums_by_products)
+    data = FactTables::SpendByProductsQuery.new(revenue_sums_by_products, pipeline_sums_by_products).perform
 
-    render json: revenue[:products] + pipeline[:products]
+    render json: data, each_serializer: AgencyDashboard::ProductSumsSerializer
   end
 
   def spend_by_advertisers
-    revenue = spend_by_advertisers_serializer(revenue_sums_by_accounts)
-    pipeline = spend_by_advertisers_serializer(pipeline_sums_by_accounts)
+    data = FactTables::SpendByAdvertisersQuery.new(revenue_sums_by_accounts, pipeline_sums_by_accounts).perform
 
-    render json: revenue[:advertisers] + pipeline[:advertisers]
+    render json: data, each_serializer: AgencyDashboard::AdvertiserSumsSerializer
   end
 
   def related_advertisers_without_spend
@@ -41,14 +39,6 @@ class Api::AgencyDashboardsController < ApplicationController
   end
 
   private
-
-  def spend_by_product_serializer(type)
-    AgencyDashboard::SpendByProductSerializer.new(type).serializable_hash
-  end
-
-  def spend_by_advertisers_serializer(type)
-    AgencyDashboard::SpendByAdvertiserSerializer.new(type).serializable_hash
-  end
 
   def related_agencies_contacts
     ClientContact
