@@ -5,4 +5,8 @@ class AgencyDashboard::AdvertiserSumsSerializer < ActiveModel::Serializer
     object.start_date.strftime('%Y-%m')
   end
 
+  def sum
+    object.sum.to_i
+  end
+
 end
