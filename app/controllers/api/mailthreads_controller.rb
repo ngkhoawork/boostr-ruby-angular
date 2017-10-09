@@ -8,7 +8,7 @@ class Api::MailthreadsController < ApplicationController
 
       render json: { threads: email_threads }, status: 200
     else
-      render json: { errors: 'Need provide array of guids' }, status: :unprocessable_entity
+      render json: { errors: 'Need provide array of thread_ids' }, status: :unprocessable_entity
     end
   end
 

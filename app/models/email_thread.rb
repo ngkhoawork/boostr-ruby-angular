@@ -13,10 +13,15 @@ class EmailThread < ActiveRecord::Base
   end
 
   def self.thread_list thread_ids
+    data = {}
     threads(thread_ids).as_json.map{ |thread|
       thread.merge!({
         first_opened_email: EmailOpen.by_thread(thread['thread_guid']).first
-      }).except('id')
+      })
+
+      data.merge!("#{thread['thread_id']}" => {}.merge!(thread.except!('thread_id')))
     }
+
+    data
   end
 end
