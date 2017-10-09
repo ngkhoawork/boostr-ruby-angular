@@ -6,10 +6,11 @@ RSpec.describe Api::MailthreadsController, type: :controller do
       first_opened_email = create :email_open, guid: thread.email_guid, opened_at: Date.yesterday
       last_opened_email = create :email_open, guid: thread.email_guid, opened_at: Date.today
 
-      get :index, guids: [thread.email_guid, '77777']
+      get :index, thread_ids: [ thread.thread_id, '77777' ]
       response_data = JSON.parse(response.body)['threads'].first.deep_symbolize_keys
 
-      expect(response_data[:email_guid]).to eq thread.email_guid
+      expect(response_data[:thread_id]).to eq thread.thread_id
+      expect(response_data[:thread_guid]).to eq thread.email_guid
       expect(response_data[:email_opens_count]).to eq 2
       expect(response_data[:first_opened_email][:guid]).to eq thread.email_guid
       expect(response_data[:first_opened_email][:opened_at].to_date).to eq first_opened_email.opened_at
@@ -27,7 +28,7 @@ RSpec.describe Api::MailthreadsController, type: :controller do
   describe 'GET #create_thread' do
     it 'should create email thread by thread id' do
       expect do
-        get :create_thread, guid: '123456'
+        get :create_thread, guid: '123456', thread_id: '111'
         expect(response).to be_success
       end.to change(EmailThread, :count).by(1)
     end
@@ -36,7 +37,7 @@ RSpec.describe Api::MailthreadsController, type: :controller do
       thread = create :email_thread, email_guid: '12345'
 
       expect do
-        post :create_thread, guid: thread.email_guid
+        get :create_thread, guid: thread.email_guid
         expect(response.status).to eq(422)
       end.to_not change(EmailThread, :count)
     end
@@ -63,6 +64,6 @@ RSpec.describe Api::MailthreadsController, type: :controller do
   private
 
   def thread
-    @_thread ||= create :email_thread, email_guid: '12345'
+    @_thread ||= create :email_thread, email_guid: '12345', thread_id: '123'
   end
 end
