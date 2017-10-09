@@ -7,7 +7,8 @@
     $scope.submitText = "Update"
     $scope.customFieldName = customFieldName
     $scope.customFieldName.field_object = objectType
-    $scope.customFieldOptions = customFieldName.deal_custom_field_options
+    $scope.customFieldOptions = getFieldOptions()
+
     if !$scope.customFieldOptions || $scope.customFieldOptions.length == 0
       $scope.customFieldOptions = [ {id: null, value: ""} ]
     $scope.fieldTypes = DealCustomFieldName.field_type_list
@@ -15,6 +16,13 @@
       {name: "Yes", value: true},
       {name: "No", value: false}
     ]
+
+  getFieldOptions = () ->
+    switch $scope.customFieldName.field_object
+      when 'deal' then $scope.customFieldName.deal_custom_field_options
+      when 'deal_product' then $scope.customFieldName.deal_product_cf_options
+      when 'account' then $scope.customFieldName.account_cf_options
+      when 'contact' then $scope.customFieldName.contact_cf_options
 
   $scope.addCustomFieldOption = () ->
     $scope.customFieldOptions.push({id: null, value: ""})
