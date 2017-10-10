@@ -66,7 +66,7 @@ class UserMailer < ApplicationMailer
       deal_product
     end
 
-    ealert.as_json({include: {
+    ealert = ealert.as_json({include: {
         ealert_custom_fields:  {
           include: {
             subject: {}
