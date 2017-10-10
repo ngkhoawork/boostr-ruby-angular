@@ -8,7 +8,7 @@ class Csv::SplitAdjustedDecorator
   end
 
   def advertiser
-    deal_member[:advertiser]['name']
+    deal_member[:advertiser]['name'] rescue nil
   end
 
   def agency
@@ -24,11 +24,11 @@ class Csv::SplitAdjustedDecorator
   end
 
   def stage
-    deal_member[:stage]['name']
+    deal_member[:stage]['name'] rescue nil
   end
 
   def %
-    deal_member[:stage]['probability']
+    deal_member[:stage]['probability'] rescue nil
   end
 
   def currency
