@@ -110,6 +110,14 @@
                     %a.upload{ href: '', ng: { click: 'showUploadInfluencersModal()' } }
                       = inline_svg 'icons/import.svg'
                       Import Influencers
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 Influencer Content Fee Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadInfluencerContentFeesModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import Content Fee
 
         %tab{heading: "Data Export", index: "1"}
           .row

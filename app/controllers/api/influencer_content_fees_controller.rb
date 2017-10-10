@@ -31,16 +31,6 @@ class Api::InfluencerContentFeesController < ApplicationController
           methods: [:team_name]
         })
       }
-      format.csv {
-        require 'timeout'
-        begin
-          Timeout::timeout(240) {
-            send_data InfluencerContentFee.to_csv(results), filename: "influencer-budget-detail-#{Date.today}.csv"
-          }
-        rescue Timeout::Error
-          return
-        end
-      }
     end
     
   end
@@ -57,6 +47,21 @@ class Api::InfluencerContentFeesController < ApplicationController
       }), status: :created
     else
       render json: { errors: influencer_content_fee.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  def import
+    if params[:file].present?
+      CsvImportWorker.perform_async(
+        params[:file][:s3_file_path],
+        'Csv::InfluencerContentFee',
+        current_user.id,
+        params[:file][:original_filename]
+      )
+
+      render json: {
+        message: 'Your file is being processed. Please check status at Import Status tab in a few minutes (depending on the file size)'
+      }, status: :ok
     end
   end
 

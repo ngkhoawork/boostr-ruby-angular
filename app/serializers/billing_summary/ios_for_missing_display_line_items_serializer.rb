@@ -1,6 +1,10 @@
 class BillingSummary::IosForMissingDisplayLineItemsSerializer < ActiveModel::Serializer
   attributes :io_number, :name, :advertiser_name, :agency_name, :currency, :billing_contact_name, :billing_contact_id,
-             :details
+             :details, :seller_name
+
+  def seller_name
+    object.highest_member.user.name if object.highest_member.present?
+  end
 
   def advertiser_name
     object.advertiser.name if object.advertiser.present?

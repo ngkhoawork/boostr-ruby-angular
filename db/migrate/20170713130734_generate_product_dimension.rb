@@ -5,6 +5,7 @@ class GenerateProductDimension < ActiveRecord::Migration
   		product_dimension_param = {
   			id: product.id,
   			name: product.name,
+				revenue_type: product.revenue_type,
   			company_id: product.company.present? ? product.company_id : nil
   		}
   		product_dimension = ProductDimension.new(product_dimension_param)

@@ -8,6 +8,7 @@ class Activity < ActiveRecord::Base
   belongs_to :creator, class_name: 'User', foreign_key: 'created_by'
   belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
   belongs_to :activity_type
+  belongs_to :account_dimension, foreign_key: 'agency_id'
 
   has_and_belongs_to_many :contacts
   has_and_belongs_to_many :contacts_info, -> { select(:id, :name) }, class_name: 'Contact'#, foreign_key: 'stage_id'
@@ -15,22 +16,29 @@ class Activity < ActiveRecord::Base
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :assets, as: :attachable
 
+  delegate :name, to: :account_dimension, prefix: true
+
   validates :company_id, presence: true
   validates_uniqueness_of :google_event_id, allow_nil: true, allow_blank: true
 
   after_create do
-    if !deal_id.nil?
-      deal = company.deals.find(deal_id)
-      deal.update_attribute(:activity_updated_at, happened_at)
-    elsif !client_id.nil?
-      client = company.clients.find(client_id)
-      client.update_attribute(:activity_updated_at, happened_at)
-    end
+    write_activity_updated_at
   end
 
   scope :for_company, -> (id) { where(company_id: id) }
   scope :for_contact, -> (id) { joins(:activities_contacts).where('activities_contacts.contact_id = ?', id) }
   scope :for_time_period, -> (start_date, end_date) { where('activities.happened_at <= ? AND activities.happened_at >= ?', end_date, start_date) if start_date && end_date }
+  scope :by_agency_ids, -> (agencies_ids) { where(agency_id: agencies_ids).order('activities.happened_at DESC') }
+
+  def write_activity_updated_at
+    if deal_id.present?
+      deal = company.deals.find(deal_id)
+      deal.update_attribute(:activity_updated_at, happened_at)
+    elsif client_id.present?
+      client = company.clients.find(client_id)
+      client.update_attribute(:activity_updated_at, happened_at)
+    end
+  end
 
   def self.import(file, current_user_id, file_path)
     current_user = User.find current_user_id

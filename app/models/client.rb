@@ -2,9 +2,9 @@ class Client < ActiveRecord::Base
   acts_as_paranoid
 
   belongs_to :company
-  belongs_to :parent_client, class_name: "Client"
+  belongs_to :parent_client, class_name: 'Client'
 
-  has_many :child_clients, class_name: "Client", foreign_key: :parent_client_id
+  has_many :child_clients, class_name: 'Client', foreign_key: :parent_client_id
   has_many :client_members
   has_many :users, through: :client_members
   # has_many :contacts
@@ -15,8 +15,8 @@ class Client < ActiveRecord::Base
   has_many :secondary_contacts, -> { uniq }, through: :secondary_client_contacts, source: :contact
   has_many :client_contacts, dependent: :destroy
   has_many :revenues
-  has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id'
-  has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id'
+  has_many :agency_deals, class_name: 'Deal', foreign_key: 'agency_id', dependent: :nullify
+  has_many :advertiser_deals, class_name: 'Deal', foreign_key: 'advertiser_id', dependent: :nullify
 
   has_many :agency_ios, class_name: 'Io', foreign_key: 'agency_id'
   has_many :advertiser_ios, class_name: 'Io', foreign_key: 'advertiser_id'
@@ -62,6 +62,7 @@ class Client < ActiveRecord::Base
   validate  :base_fields_presence
 
   before_create :ensure_client_member
+  after_commit :update_account_dimension, on: [:create, :update]
 
   scope :by_type_id, -> type_id { where(client_type_id: type_id) if type_id.present? }
   scope :opposite_type_id, -> type_id { where.not(client_type_id: type_id) if type_id.present? }
@@ -76,6 +77,7 @@ class Client < ActiveRecord::Base
   scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
   scope :by_ids, -> ids { where(id: ids) if ids.present?}
   scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }
+
   scope :without_related_clients, -> contact_id do
     joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id }).distinct
   end
@@ -156,6 +158,10 @@ class Client < ActiveRecord::Base
     end
   end
 
+  def update_account_dimension
+    AccountDimensionUpdaterService.new(client: self).perform
+  end
+
   def advertiser?
     is_advertiser = false
     values.each do |value|
@@ -176,6 +182,10 @@ class Client < ActiveRecord::Base
       end
     end
     is_agency
+  end
+
+  def max_share_user
+    users.merge(ClientMember.ordered_by_share_desc).first
   end
 
   def deals_count
@@ -540,21 +550,6 @@ class Client < ActiveRecord::Base
   def client_type
     company.fields.where(name: 'Client Type').first.options.find_by_id(self.client_type_id)
   end
-  #
-  # def client_category
-  #   company.fields.where(name: 'Category').first.options.where(self.client_category_id) if self.client_category_id.present?
-  #   nil
-  # end
-  #
-  # def client_region
-  #   company.fields.where(name: 'Region').first.options.where(self.client_region_id) if self.client_region_id.present?
-  #   nil
-  # end
-  #
-  # def client_segment
-  #   company.fields.where(name: 'Segment').first.options.where(self.client_segment_id) if self.client_segment_id.present?
-  #   nil
-  # end
 
   def base_field_validations
     self.company.validations_for("#{self.client_type.try(:name)} Base Field")

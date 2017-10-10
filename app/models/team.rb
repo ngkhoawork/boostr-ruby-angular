@@ -300,6 +300,14 @@ class Team < ActiveRecord::Base
     ls
   end
 
+  def all_members_and_leaders
+    user_ids = [leader_id, members.ids].flatten.compact
+
+    children.reduce(user_ids) do |memo, child|
+      memo + child.all_members_and_leaders
+    end
+  end
+
   def sum_pos_balance
     pos_balance = leader.nil? ? 0 : leader.pos_balance
     pos_balance += members.all.sum(:pos_balance)

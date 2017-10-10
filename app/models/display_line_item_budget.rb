@@ -18,11 +18,19 @@ class DisplayLineItemBudget < ActiveRecord::Base
   validate :sum_of_budgets_less_than_line_item_budget, unless: -> { has_dfp_budget_correction }
 
   def daily_budget
-    budget.to_f / (end_date - start_date + 1).to_i
+    if effective_days > 0
+      budget.to_f / effective_days
+    else
+      0
+    end
   end
 
   def daily_budget_loc
-    budget_loc.to_f / (end_date - start_date + 1).to_i
+    if effective_days > 0
+      budget_loc.to_f / effective_days
+    else
+      0
+    end
   end
 
   def self.to_csv(company_id)
@@ -240,6 +248,10 @@ class DisplayLineItemBudget < ActiveRecord::Base
   end
 
   private
+
+  def effective_days
+    @effective_days ||= ([display_line_item.end_date, end_date].min - [display_line_item.start_date, start_date].max + 1).to_i
+  end
 
   def self.convert_params_currency(exchange_rate, params)
     params[:budget] = params[:budget_loc] / exchange_rate

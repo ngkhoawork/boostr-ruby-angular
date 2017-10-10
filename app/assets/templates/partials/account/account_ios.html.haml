@@ -18,7 +18,7 @@
                 %td
                     {{ io.advertiser.name }}
                 %td.right.budget-field
-                    {{ io.budget | currency:io.currency.curr_symbol:0  }}
+                    {{ io.budget_loc | currency:io.currency.curr_symbol:0  }}
                 %td
                     {{ io.start_date | date: 'MM/dd/yyyy' }}
                 %td.left

@@ -194,6 +194,20 @@
           undefined
         metadata: ->
           false
+  $scope.showUploadInfluencerContentFeesModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/influencer_content_fee_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/influencer_content_fees/import'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
 
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')

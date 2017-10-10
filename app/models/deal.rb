@@ -881,7 +881,12 @@ class Deal < ActiveRecord::Base
 
   def self.to_csv(deals, company)
     CSV.generate do |csv|
-      header = ["Deal ID", "Name", "Advertiser", "Agency", "Team Member", "Budget", "Currency", "Stage", "Probability", "Type", "Source", "Next Steps", "Start Date", "End Date", "Created Date", "Closed Date", "Close Reason", "Budget USD"]
+      header = ['Deal ID', 'Name', 'Advertiser',
+                'Agency', 'Team Member', 'Budget',
+                'Currency', 'Stage', 'Probability',
+                'Type', 'Source', 'Next Steps',
+                'Start Date', 'End Date', 'Created Date',
+                'Closed Date', 'Close Reason', 'Budget USD', 'Created By']
 
       deal_custom_field_names = company.deal_custom_field_names.where("disabled IS NOT TRUE").order("position asc")
       deal_custom_field_names.each do |deal_custom_field_name|
@@ -920,7 +925,8 @@ class Deal < ActiveRecord::Base
           deal.created_at.strftime("%Y-%m-%d"),
           deal.closed_at,
           deal.get_option_value_from_raw_fields(deal_settings_fields, 'Close Reason'),
-          budget_usd
+          budget_usd,
+          deal.creator.email
         ]
         deal_custom_field = deal.deal_custom_field.as_json
         deal_custom_field_names.each do |deal_custom_field_name|
@@ -1272,6 +1278,17 @@ class Deal < ActiveRecord::Base
         next_steps = row[17].strip
       end
 
+      if row[18].present?
+        created_by_user = current_user.company.users.by_email(row[18].strip).first
+
+        if created_by_user
+          created_by = created_by_user.id
+        else
+          import_log.count_failed
+          import_log.log_error(["Created By #{row[18].strip} user could not be found"])
+        end
+      end
+
       deal_params = {
         name: row[1].strip,
         advertiser: advertiser,
@@ -1286,6 +1303,7 @@ class Deal < ActiveRecord::Base
         next_steps: next_steps
       }
 
+      deal_params[:created_by] = created_by if created_by
       deal_params[:created_at] = created_at if created_at
 
       type_value_params = {
@@ -1438,7 +1456,10 @@ class Deal < ActiveRecord::Base
   end
 
   def update_close
-    self.closed_at = updated_at if !stage.open?
+    if self.closed_at.nil? && !stage.open?
+      self.closed_at = updated_at
+    end
+
     should_open = stage.open?
     if !stage.open? && stage.probability == 100
       self.deal_products.each do |deal_product|
@@ -1455,7 +1476,6 @@ class Deal < ActiveRecord::Base
       self.deal_products.update_all(open: stage.open)
 
       if !self.closed_at.nil? && stage.open?
-        self.closed_at = nil
         if !self.fields.nil? && !self.values.nil?
           field = self.fields.find_by_name('Close Reason')
           close_reason = self.values.find_by_field_id(field.id) if !field.nil?

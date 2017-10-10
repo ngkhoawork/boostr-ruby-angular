@@ -14,4 +14,10 @@ class ContentFeeProductBudget < ActiveRecord::Base
   def corrected_daily_budget(io_start_date, io_end_date)
     budget.to_f / ([io_end_date, end_date].min.to_date - [io_start_date, start_date].max.to_date + 1)
   end
+
+  def update_budget!(budget)
+    self.budget = budget
+    self.budget_loc = budget / io.exchange_rate
+    self.save
+  end
 end

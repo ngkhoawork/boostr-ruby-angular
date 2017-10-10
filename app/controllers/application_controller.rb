@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   before_filter :authenticate_user!
   after_filter :set_csrf_cookie
+  rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
 
   layout :layout_by_resource
   # Prevent CSRF attacks by raising an exception.
@@ -29,6 +30,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def record_not_found
+    render json: { message: 'Record not found'}, status: :not_found
+  end
 
   def layout_by_resource
     if devise_controller?
