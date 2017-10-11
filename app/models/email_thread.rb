@@ -15,7 +15,7 @@ class EmailThread < ActiveRecord::Base
   def self.thread_list thread_ids
     threads(thread_ids).as_json.each_with_object({}) { |thread, result|
       result[thread['thread_id']] = thread.merge!({
-        first_opened_email: EmailOpen.by_thread(thread['thread_guid']).first
+        last_open: EmailOpen.by_thread(thread['thread_guid']).last
       })
     }
   end
