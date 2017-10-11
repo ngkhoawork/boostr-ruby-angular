@@ -22,6 +22,14 @@ RSpec.describe Api::MailthreadsController, type: :controller do
         expect(response.status).to eq(422)
       end
     end
+
+    it 'should return thread without opening email' do
+      get :index, thread_ids: [ thread.thread_id ]
+      response_data = JSON.parse(response.body)['threads'][thread.thread_id].deep_symbolize_keys
+
+      expect(response_data[:email_opens_count]).to be_zero
+      expect(response_data[:first_opened_email]).to be_nil
+    end
   end
 
   describe 'GET #create_thread' do

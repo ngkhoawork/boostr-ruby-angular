@@ -28,11 +28,7 @@ class Api::MailtrackController < ApplicationController
   private
 
   def detect_google_proxy remote_ip
-    begin
-      Resolv.new.getname(remote_ip).include?('google.com')
-    rescue
-      false
-    end
+    Resolv.new.getname(remote_ip).include?('google.com') rescue false
   end
 
   def get_location_from_ip remote_ip
