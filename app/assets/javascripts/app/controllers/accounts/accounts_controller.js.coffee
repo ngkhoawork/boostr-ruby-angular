@@ -6,6 +6,7 @@
   $scope.page = 1
   $scope.clientsPerPage = 10
   $scope.isLoading = false
+  $scope.isClientsLoading = false
   $scope.allClientsLoaded = false
   $scope.accountTypes = [
     {name: 'My Accounts', param: ''}
@@ -110,7 +111,7 @@
       $scope.filter.segments = Field.findFieldOptions(fields, 'Segment')
 
   $scope.getClients = ->
-    $scope.isLoading = true
+    $scope.isClientsLoading = true
     params = {
       filter: $scope.teamFilter().param,
       search: $scope.searchText,
@@ -137,11 +138,19 @@
     Client.query(params).$promise.then (clients) ->
       $scope.allClientsLoaded = !clients || clients.length < $scope.clientsPerPage
 #      if $scope.page == 2 then clients.shift()
+      clients = addMissingClientFields(clients)
       if $scope.page++ > 1
         $scope.clients = $scope.clients.concat(clients)
       else
         $scope.clients = clients
-      $scope.isLoading = false
+      $scope.isClientsLoading = false
+
+  addMissingClientFields = (clients) ->
+    _.map clients, (client) ->
+      client._type = $scope.getClientType(client)
+      client._category = $scope.getClientCategory(client)
+      client._lastTouch = $scope.getLastTouch(client)
+      client
 
   $scope.getFilterOptions = ->
     $scope.isLoading = true
