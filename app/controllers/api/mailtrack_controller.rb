@@ -12,7 +12,8 @@ class Api::MailtrackController < ApplicationController
         ip: request.remote_ip,
         opened_at: Time.now,
         location: get_location_from_ip(request.remote_ip),
-        device: device_info(request.user_agent)
+        device: device_info(request.user_agent),
+        is_gmail: detect_google_proxy(request.remote_ip)
       }
 
       params.merge!(meta)
@@ -25,6 +26,10 @@ class Api::MailtrackController < ApplicationController
   end
 
   private
+
+  def detect_google_proxy remote_ip
+    Resolv.new.getname(remote_ip).include?('google.com') rescue false
+  end
 
   def get_location_from_ip remote_ip
     geo_ip = Geocoder.search(remote_ip).first.data.symbolize_keys
