@@ -4,11 +4,11 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
              :postal_code
 
   def io_number
-    io.io_number
+    io.io_number if io.present?
   end
 
   def io_name
-    io.name
+    io.name if io.present?
   end
 
   def advertiser_name
@@ -32,11 +32,11 @@ class BillingSummary::BasicFieldsIosForApprovalSerializer < ActiveModel::Seriali
   end
 
   def product_name
-    product.name
+    product.name if product.present?
   end
 
   def revenue_type
-    product.revenue_type
+    product.revenue_type if product.present?
   end
 
   def vat
