@@ -2,7 +2,20 @@ class Api::BpsController < ApplicationController
   respond_to :json
 
   def index
-    render json: company.bps.map{ |bp| bp.as_json}
+    if bps_settings?
+      render json: company.bps.map{ |bp| bp.as_json}
+    else
+      render json: company.bps.active.map{ |bp| bp.as_json}
+    end
+  end
+
+  def show
+    bp = Bp.find(params[:id])
+    if bp.present?
+      render json: bp, status: :ok
+    else
+      render json: { error: 'Business Plan Not Found' }, status: :not_found
+    end
   end
 
   def create
@@ -18,6 +31,16 @@ class Api::BpsController < ApplicationController
   def update
     bp = company.bps.find(params[:id])
     if bp.update_attributes(bp_params)
+      render json: bp.as_json
+    else
+      render json: { errors: bp.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    bp = company.bps.find(params[:id])
+
+    if bp.destroy
       render json: bp.as_json
     else
       render json: { errors: bp.errors.messages }, status: :unprocessable_entity
@@ -190,19 +213,14 @@ class Api::BpsController < ApplicationController
     end
   end
 
-  def show
-    bp = Bp.find(params[:id])
-    if bp.present?
-      render json: bp, status: :ok
-    else
-      render json: { error: 'Business Plan Not Found' }, status: :not_found
-    end
-  end
-
   private
 
+  def bps_settings?
+    params[:settings]
+  end
+
   def bp_params
-    params.require(:bp).permit(:name, :time_period_id, :due_date, :read_only)
+    params.require(:bp).permit(:name, :time_period_id, :due_date, :read_only, :active)
   end
 
   def company

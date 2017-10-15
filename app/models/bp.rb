@@ -1,12 +1,14 @@
 class Bp < ActiveRecord::Base
   belongs_to :time_period
   belongs_to :company
-  has_many :bp_estimates
-  has_many :bp_estimate_products, through: :bp_estimates
+  has_many :bp_estimates, dependent: :destroy
+  has_many :bp_estimate_products, through: :bp_estimates, dependent: :destroy
 
   validates :time_period_id, :name, :due_date, presence: true
 
   after_create :generate_bp_estimates
+
+  scope :active, -> { where(active: true) }
 
   def merge_recursively(a, b)
     a.merge(b) {|key, a_item, b_item| merge_recursively(a_item, b_item) }

@@ -160,6 +160,10 @@
         BP.update(id: $scope.bp.id, bp: $scope.bp).then (data) ->
           $scope.bp.read_only = data.read_only
 
+      $scope.activateBp = () ->
+        BP.update(id: $scope.bp.id, bp: $scope.bp).then (data) ->
+          $scope.bp.active = data.active
+
       buildBPEstimate = (item) ->
         data = angular.copy(item)
 

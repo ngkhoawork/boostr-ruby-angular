@@ -201,7 +201,8 @@
     background-color: #ffffff;
     display: block;
     padding-top: 24px;
-    padding-bottom: 24px;
+    padding-bottom: 50px;
+
     .info {
       height: 105px;
       width: 150px;
@@ -244,7 +245,18 @@
             display: inline-block;
             vertical-align: middle;
           }
+
+          .switch-active-form {
+            float: left;
+            margin-left: 35px;
+            width: 46px;
+          }
         }
+
+        .read-only-section, .active-section {
+          height: 35px;
+        }
+
         .name {
           font-size: 20px;
           font-weight: 500;
@@ -421,6 +433,35 @@
         background-color: #fafafb;
       }
 
+    }
+  }
+
+  .bp-table {
+    tr{
+      &:hover {
+        i.fa {
+          visibility: visible;
+        }
+      }
+    }
+
+    .delete-icon {
+      visibility: hidden;
+      color: $secondary-font-color;
+      margin-left: 8px;
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      padding: 4px 6px;
+      font-size: 20px;
+      border-radius: 5px;
+      &:hover {
+        background-color: $secondary-font-color;
+        color: white;
+      }
+    }
+    .delete-icon {
+      margin-left: 0
     }
   }
 }
