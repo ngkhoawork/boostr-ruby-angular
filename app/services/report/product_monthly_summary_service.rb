@@ -9,7 +9,7 @@ class Report::ProductMonthlySummaryService
 
   def perform
     {
-      data: deals + ios,
+      data: deals,
       deal_product_cf_names: deal_product_cf_names
     }
   end
@@ -22,33 +22,33 @@ class Report::ProductMonthlySummaryService
               :created_date_start,
               :created_date_end
 
-  def ios
-    ios = company.ios
-          .includes(
-            :advertiser,
-            deal: [:deal_custom_field, :stage],
-            agency: [:holding_company],
-            content_fees: [:product, :content_fee_product_budgets],
-            display_line_items: [:product, :display_line_item_budgets],
-            io_members: [{ user: :team }]
-          )
-          .for_team(team_id)
-          .for_io_member(seller_id)
-          .by_created_date(created_date_start, created_date_end)
+  # def ios
+  #   ios = company.ios
+  #         .includes(
+  #           :advertiser,
+  #           deal: [:deal_custom_field, :stage],
+  #           agency: [:holding_company],
+  #           content_fees: [:product, :content_fee_product_budgets],
+  #           display_line_items: [:product, :display_line_item_budgets],
+  #           io_members: [{ user: :team }]
+  #         )
+  #         .for_team(team_id)
+  #         .for_io_member(seller_id)
+  #         .by_created_date(created_date_start, created_date_end)
 
-    results = []
-    ios.each do |io|
-      io.content_fee_product_budgets.each do |budget|
-        results << product_io(io, budget.content_fee.product, budget)
-      end
+  #   results = []
+  #   ios.each do |io|
+  #     io.content_fee_product_budgets.each do |budget|
+  #       results << product_io(io, budget.content_fee.product, budget)
+  #     end
 
-      io.display_line_item_budgets.each do |budget|
-        results << product_io(io, budget.display_line_item.product, budget)
-      end
-    end
+  #     io.display_line_item_budgets.each do |budget|
+  #       results << product_io(io, budget.display_line_item.product, budget)
+  #     end
+  #   end
 
-    results
-  end
+  #   results
+  # end
 
   def deals
     deals = company.deals
@@ -59,6 +59,7 @@ class Report::ProductMonthlySummaryService
              :currency,
              :products,
              :deal_product_budgets,
+             :io,
              deal_members: [{ user: :team }],
              values: [:option],
              agency: [:holding_company],
@@ -70,32 +71,43 @@ class Report::ProductMonthlySummaryService
 
     results = []
     deals.each do |deal|
-      deal.deal_product_budgets.opened.each do |budget|
-        deal_product = budget.deal_product
-        product = deal_product.product
-        data = {}
-        data['deal_id'] = deal.id
-        data['product_id'] = product.id
-        data['product'] = product.name
-        data['custom_fields'] = custom_fields(deal_product)
-        data['record_type'] = 'Deal'
-        data['members'] = members(deal.deal_members)
-        data['advertiser'] = deal.advertiser.serializable_hash(only: [:id, :name]) rescue nil
-        data['name'] = deal.name
-        data['agency'] = deal.agency.serializable_hash(only: [:id, :name]) rescue nil
-        data['holding_company'] = deal.agency.holding_company.name rescue nil
-        data['stage'] = deal.stage.serializable_hash(only: [:name, :probability]) rescue nil
-        data['budget'] = budget.budget
-        data['budget_loc'] = budget.budget_loc
-        data['currency'] = deal.currency && deal.currency.curr_symbol
-        data['created_at'] = deal.created_at
-        data['closed_at'] = deal.closed_at
-        data['type'] = deal.get_option_value_from_raw_fields(deal_custom_fields, 'Deal Type')
-        data['source'] = deal.get_option_value_from_raw_fields(deal_custom_fields, 'Deal Source')
-        data['start_date'] = budget.start_date
-        data['end_date'] = budget.end_date
+      if !deal.stage.open? && deal.stage.probability == 100 && deal.io.present?
+        deal.io.content_fee_product_budgets.each do |budget|
+          results << product_io(deal.io, budget.content_fee.product, budget)
+        end
 
-        results << data
+        deal.io.display_line_item_budgets.each do |budget|
+          results << product_io(deal.io, budget.display_line_item.product, budget)
+        end
+      else
+        deal.deal_product_budgets.each do |budget|
+          deal_product = budget.deal_product
+          product = deal_product.product
+          data = {}
+          data['record_id'] = deal.id
+          data['product_id'] = product.id
+          data['product'] = product.name
+          data['custom_fields'] = custom_fields(deal_product)
+          data['record_type'] = 'Deal'
+          data['members'] = members(deal.deal_members)
+          data['advertiser'] = deal.advertiser.serializable_hash(only: [:id, :name]) rescue nil
+          data['name'] = deal.name
+          data['agency'] = deal.agency.serializable_hash(only: [:id, :name]) rescue nil
+          data['holding_company'] = deal.agency.holding_company.name rescue nil
+          data['stage'] = deal.stage.serializable_hash(only: [:name, :probability]) rescue {}
+          data['budget'] = budget.budget
+          data['weighted_budget'] = data['stage']['probability'].present? ? data['budget'].to_f * data['stage']['probability'].to_f / 100 : 0
+          data['budget_loc'] = budget.budget_loc
+          data['currency'] = deal.currency && deal.currency.curr_symbol
+          data['created_at'] = deal.created_at
+          data['closed_at'] = deal.closed_at
+          data['type'] = deal.get_option_value_from_raw_fields(deal_custom_fields, 'Deal Type')
+          data['source'] = deal.get_option_value_from_raw_fields(deal_custom_fields, 'Deal Source')
+          data['start_date'] = budget.start_date
+          data['end_date'] = budget.end_date
+
+          results << data
+        end
       end
     end
 
@@ -104,7 +116,7 @@ class Report::ProductMonthlySummaryService
 
   def product_io(io, product, budget)
     data = {}
-    data['io_id'] = io.id
+    data['record_id'] = io.id
     data['product'] = product.name
     data['product_id'] = product.id
     data['custom_fields'] = custom_fields(io.deal.deal_products.for_product_id(product.id).try(:first)) rescue {}
@@ -115,11 +127,12 @@ class Report::ProductMonthlySummaryService
     data['agency'] = io.agency.serializable_hash(only: [:id, :name]) rescue nil
     data['holding_company'] = io.agency.holding_company.name rescue nil
     data['stage'] = {
-      name: 'Revenue',
-      probability: 100
+      'name' => 'Revenue',
+      'probability' => 100
     }
     data['created_at'] = io.created_at
     data['budget'] = budget.budget
+    data['weighted_budget'] = data['stage']['probability'].present? ? data['budget'].to_f * data['stage']['probability'].to_f / 100 : 0
     data['budget_loc'] = budget.budget_loc
     data['start_date'] = budget.start_date
     data['end_date'] = budget.end_date

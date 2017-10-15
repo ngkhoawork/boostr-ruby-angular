@@ -63,11 +63,17 @@
                     %th{'ng-repeat': 'cfName in customFieldNames'}
                       %span.clickable{'ng-click': 'sort.by("custom_fields[{{cfName.field_type + cfName.field_index}}]")'} {{cfName.field_label}}
                     %th
-                      %span
+                      %span.clickable{'ng-click': 'sort.by("record_type")'}
                         Record Type
+                        %i{'ng-show': 'sort.field == "record_type"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
                     %th
-                      %span
+                      %span.clickable{'ng-click': 'sort.by("record_id")'}
+                        Record ID
+                        %i{'ng-show': 'sort.field == "record_id"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
+                    %th
+                      %span.clickable{'ng-click': 'sort.by("members[0].name")'}
                         Team Member
+                        %i{'ng-show': 'sort.field == "members[0].name"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
                     %th
                       %span.clickable{'ng-click': 'sort.by("name")'}
                         Name
@@ -101,6 +107,10 @@
                         Budget USD
                         %i{'ng-show': 'sort.field == "budget"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
                     %th
+                      %span.clickable{'ng-click': 'sort.by("weighted_budget")'}
+                        Weighted Amt
+                        %i{'ng-show': 'sort.field == "weighted_budget"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
+                    %th
                       %span.clickable{'ng-click': 'sort.by("start_date")'}
                         Start Date
                         %i{'ng-show': 'sort.field == "start_date"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
@@ -130,12 +140,13 @@
                     %td{'ng-repeat': 'cfName in customFieldNames'}
                       {{row.custom_fields[cfName.field_type + cfName.field_index]}}
                     %td {{row.record_type}}
+                    %td {{row.record_id}}
                     %td
                       %div{'ng-repeat': 'member in row.members'}
-                        {{member.name}} 
+                        {{member.name}} ({{member.share}}%)
                     %td
-                      %a{href: '', 'ng-href': '/deals/{{row.deal_id}}', 'ng-if': 'row.record_type == "Deal"'} {{row.name}}
-                      %a{href: '', 'ng-href': '/revenue/ios/{{row.io_id}}', 'ng-if': 'row.record_type == "IO"'} {{row.name}}
+                      %a{href: '', target: '_blank', 'ng-href': '/deals/{{row.deal_id}}', 'ng-if': 'row.record_type == "Deal"'} {{row.name}}
+                      %a{href: '', target: '_blank', 'ng-href': '/revenue/ios/{{row.io_id}}', 'ng-if': 'row.record_type == "IO"'} {{row.name}}
                     %td {{row.advertiser.name}}
                     %td {{row.agency.name}}
                     %td {{row.holding_company}}
@@ -143,6 +154,7 @@
                     %td {{row.stage.probability}}
                     %td {{row.budget_loc | currency: row.currency || '$' : 0}}
                     %td {{row.budget | currency: '$' : 0}}
+                    %td {{row.weighted_budget | currency: '$' : 0}}
                     %td {{row.start_date | date : 'MM/dd/yyyy'}}
                     %td {{row.end_date | date : 'MM/dd/yyyy'}}
                     %td {{row.created_at | date : 'MM/dd/yyyy'}}

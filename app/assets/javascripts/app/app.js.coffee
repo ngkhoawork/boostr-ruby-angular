@@ -119,7 +119,7 @@
       controller: 'ProductForecastsDetailController'
 
     .when '/reports/product_monthly_summary',
-      templateUrl: 'product_monthly_summary1.html'
+      templateUrl: 'product_monthly_summary.html'
       controller: 'ProductMonthlySummaryController'
 
     .when '/smart_reports/sales_execution_dashboard',

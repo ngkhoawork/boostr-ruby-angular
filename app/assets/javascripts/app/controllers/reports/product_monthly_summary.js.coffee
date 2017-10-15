@@ -36,16 +36,6 @@
         $scope.setFilter = (key, val) ->
             $scope.filter[key] = val
 
-        $scope.removeFilter = (key, item) ->
-            $scope.filter[key] = _.reject $scope.filter[key], (row) ->
-                return row.id == item.id
-            $scope.products.push item
-
-        $scope.addFilter = (key, item) ->
-            $scope.filter[key].push item
-            $scope.products = _.reject $scope.products, (row) ->
-                return row.id == item.id 
-
         $scope.applyFilter = () ->
             if !$scope.isLoading
                 appliedFilter = angular.copy $scope.filter
@@ -62,20 +52,6 @@
             $window.open url + '?' + $httpParamSerializer getQuery()
             return
 
-        searchAndSetUserTeam = (teams, user_id) ->
-            for team in teams
-                if team.leader_id is user_id or _.findWhere team.members, {id: user_id}
-                    $scope.filter.team = team
-                    return $scope.selectedTeam = team
-                if team.children && team.children.length
-                    searchAndSetUserTeam team.children, user_id
-
-        parseBudget = (data) ->
-            data = _.map data, (item) ->
-                item.budget = parseFloat item.budget if item.budget
-                item.budget_loc = parseFloat item.budget_loc if item.budget_loc
-                item
-
         getQuery = ->
             f = $scope.filter
             query = {}
@@ -88,6 +64,7 @@
 
         getData = ->
             Report.product_monthly_summary(getQuery()).$promise.then (data) ->
+                console.log(data.data);
                 $scope.data = data.data;
                 $scope.customFieldNames = data.deal_product_cf_names
 
@@ -101,12 +78,6 @@
                 $scope.teams.unshift emptyFilter
                 $scope.sellers = data.sellers
                 $scope.sellers.unshift emptyFilter
-                switch data.user.user_type
-                    when 1 #seller
-                        $scope.filter.seller = data.user
-                        searchAndSetUserTeam data.teams, data.user.id
-                    when 2 #manager
-                        searchAndSetUserTeam data.teams, data.user.id
 
         init()
     ]
