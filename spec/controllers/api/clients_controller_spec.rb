@@ -79,6 +79,19 @@ RSpec.describe Api::ClientsController, type: :controller do
     end
   end
 
+  describe 'GET #search_clients' do
+    it 'searches clients and filters by type id' do
+      client(name: 'Boostr', created_by: user.id, client_type_id: 1)
+
+      get :search_clients, client_type_id: 1, name: 'Boos', format: :json
+
+      expect(response).to be_success
+
+      expect(json_response.length).to eq(1)
+      expect(json_response.first['name']).to eq 'Boostr'
+    end
+  end
+
   describe "POST #create" do
     it 'creates a new client and returns success' do
       expect{
@@ -96,28 +109,55 @@ RSpec.describe Api::ClientsController, type: :controller do
         post :create, client: { addresses_attributes: address_params }, format: :json
         expect(response.status).to eq(422)
         response_json = JSON.parse(response.body)
-        expect(response_json['errors']['name']).to eq(["Name can't be blank"])
+        expect(response_json['errors']['name']).to eq(['Name can\'t be blank'])
       }.to_not change(Client, :count)
     end
   end
 
   describe 'GET #show' do
-    let(:client) { create :client, created_by: user.id }
-
     it 'returns json for a client' do
+      client(created_by: user.id)
+
       get :show, id: client.id, format: :json
+
       expect(response).to be_success
     end
   end
 
-  describe "PUT #update" do
-    let(:client) { create :client, created_by: user.id  }
+  describe 'GET #filter_options' do
+    it 'returns json for a client' do
+      client(created_by: user.id)
+      client_member(user: user, client: client)
 
-    it 'updates a client successfully' do
-      put :update, id: client.id, client: { name: 'New Name' }, format: :json
+      get :filter_options, format: :json
       expect(response).to be_success
-      response_json = JSON.parse(response.body)
-      expect(response_json['name']).to eq('New Name')
+      expect(json_response['owners'].first).to eq({'id' => user.id, 'name' => user.name})
+      expect(json_response['cities']).to eq [client.address.city]
+    end
+
+    it 'rejects blank city' do
+      client.address.update(city: ' ')
+
+      get :filter_options, format: :json
+      expect(json_response['cities']).to be_empty
+    end
+
+    it 'rejects empty city' do
+      client.address.update(city: nil)
+
+      get :filter_options, format: :json
+      expect(json_response['cities']).to be_empty
+    end
+  end
+
+  describe "PUT #update" do
+    it 'updates a client successfully' do
+      client(created_by: user.id)
+
+      put :update, id: client.id, client: { name: 'New Name' }, format: :json
+
+      expect(response).to be_success
+      expect(json_response['name']).to eq('New Name')
     end
   end
 
@@ -141,5 +181,13 @@ RSpec.describe Api::ClientsController, type: :controller do
 
   def client_type_id(company)
     company.fields.find_by(name: 'Client Type').options.ids.sample
+  end
+
+  def client(opts={})
+    @_client ||= create :client, opts
+  end
+
+  def client_member(opts={})
+    @_client_member ||= create :client_member, opts
   end
 end

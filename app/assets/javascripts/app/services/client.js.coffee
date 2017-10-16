@@ -74,10 +74,16 @@
       method: "GET"
       url: 'api/clients/filter_options'
     },
-    accountDimensions:
+    accountDimensions: {
       method: 'GET'
       url: '/api/account_dimensions'
       isArray: true
+    },
+    search_clients: {
+      isArray: true
+      method: "GET"
+      url: 'api/clients/search_clients'
+    }
 
   resource.allClients = []
   resource.currentClient = {}

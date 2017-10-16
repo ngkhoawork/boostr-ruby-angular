@@ -7,6 +7,7 @@ class Client < ActiveRecord::Base
   has_many :child_clients, class_name: 'Client', foreign_key: :parent_client_id
   has_many :client_members
   has_many :users, through: :client_members
+  has_many :client_member_info, -> { joins(:user).select(:id, :client_id, :share, 'users.first_name', 'users.last_name') }, class_name: 'ClientMember'
   # has_many :contacts
   has_many :contacts, -> { uniq }, through: :client_contacts
   has_many :primary_client_contacts, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
@@ -39,6 +40,14 @@ class Client < ActiveRecord::Base
   has_many :values, as: :subject
   has_many :activities, -> { order(happened_at: :desc) }
   has_many :agency_activities, -> { order(happened_at: :desc) }, class_name: 'Activity', foreign_key: 'agency_id'
+
+  has_one :latest_advertiser_activity, -> { self.select_values = ["DISTINCT ON(activities.client_id) activities.*"]
+    order('activities.client_id', 'activities.happened_at DESC')
+  }, class_name: 'Activity'
+  has_one :latest_agency_activity, -> { self.select_values = ["DISTINCT ON(activities.agency_id) activities.*"]
+    order('activities.agency_id', 'activities.happened_at DESC')
+  }, class_name: 'Activity'
+
   has_many :reminders, as: :remindable, dependent: :destroy
   has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
   has_one :account_cf, dependent: :destroy
