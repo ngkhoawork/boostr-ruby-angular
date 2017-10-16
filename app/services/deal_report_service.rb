@@ -43,7 +43,7 @@ class DealReportService < BaseService
 
   # New Deals - (list of deals where created = target date)
   def new_deals
-    Deal.where(created_at: date_range, company_id: company_id)
+    Deal.where(created_at: date_range, company_id: company_id, deleted_at: nil)
   end
 
   def new_deals_report
@@ -99,7 +99,7 @@ class DealReportService < BaseService
 
   def company_audit_logs
     @_company_audit_logs ||=
-      Company.find(company_id).audit_logs.in_created_at_range(date_range).by_auditable_type('Deal')
+      Company.find(company_id).audit_logs.in_created_at_range(date_range).by_auditable_type('Deal').not_deleted
   end
 
   def deal_budget_audit
