@@ -23,7 +23,7 @@ class User < ActiveRecord::Base
   has_many :display_line_items, through: :ios
   has_many :audit_logs
 
-  ROLES = %w(user admin superadmin)
+  ROLES = %w(user admin superadmin supportadmin)
 
   validates :first_name, :last_name, presence: true
   validate :currency_exists

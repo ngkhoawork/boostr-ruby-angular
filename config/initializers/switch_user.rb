@@ -51,6 +51,6 @@ SwitchUser.setup do |config|
   config.controller_guard = ->(current_user, request, original_user) { 
     scope_identifier = request.query_parameters['scope_identifier'].split('_')
     user = User.find_by_id(scope_identifier[1])
-    current_user && current_user.is?(:superadmin) || current_user && current_user.is?(:admin) && user && current_user.company_id == user.company_id
+    current_user && current_user.is?(:supportadmin) || current_user && current_user.is?(:superadmin) || current_user && current_user.is?(:admin) && user && current_user.company_id == user.company_id
   }
 end
