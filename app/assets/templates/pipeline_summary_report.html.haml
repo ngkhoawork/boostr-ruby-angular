@@ -232,3 +232,8 @@
 									%td {{deal.billing_contact.name}}
 									%td{'ng-repeat': 'cfName in dealCustomFieldNames'}
 										{{deal.custom_fields[cfName.id]}}
+									%tr{ ng: { if: 'deals.length == 0' }}
+										%td.center{ colspan: '15' }
+											No Data for the Filters Selected
+
+
