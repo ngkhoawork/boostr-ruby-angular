@@ -790,6 +790,12 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.decimal  "number_4_dec6",  precision: 15, scale: 4
     t.decimal  "number_4_dec7",  precision: 15, scale: 4
     t.string   "link1"
+    t.string   "link2"
+    t.string   "link3"
+    t.string   "link4"
+    t.string   "link5"
+    t.string   "link6"
+    t.string   "link7"
   end
 
   add_index "deal_custom_fields", ["company_id"], name: "index_deal_custom_fields_on_company_id", using: :btree
