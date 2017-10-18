@@ -42,7 +42,6 @@
               (err) ->
                 console.log err
           )
-          $scope.notification = "Business Plan successfully destroyed."
 
       $scope.$on 'updated_bps', getBps
 

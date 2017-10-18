@@ -2,7 +2,7 @@ class Bp < ActiveRecord::Base
   belongs_to :time_period
   belongs_to :company
   has_many :bp_estimates, dependent: :destroy
-  has_many :bp_estimate_products, through: :bp_estimates, dependent: :destroy
+  has_many :bp_estimate_products, through: :bp_estimates
 
   validates :time_period_id, :name, :due_date, presence: true
 

@@ -38,7 +38,7 @@ class Api::BpsController < ApplicationController
   end
 
   def destroy
-    bp = company.bps.find(params[:id])
+    bp = bps.find(params[:id])
 
     if bp.destroy
       render json: bp.as_json
