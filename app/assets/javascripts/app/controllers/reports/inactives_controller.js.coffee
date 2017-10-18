@@ -200,7 +200,7 @@
                 x.domain [0, maxValue]
 
                 y.domain data.map((d) ->
-                    d.client_name
+                    d.name
                 )
 
                 svg.append('g')
@@ -226,7 +226,7 @@
                     .attr('height', barWidth)
                     .attr('x', 1)
                     .attr 'y', (d) ->
-                        (y(d.client_name) + (y.rangeBand() - barWidth) / 2) - (barWidth / 2 + 4)
+                        (y(d.name) + (y.rangeBand() - barWidth) / 2) - (barWidth / 2 + 4)
                     .attr 'width', 0
                     .transition()
                     .duration 1000
@@ -239,7 +239,7 @@
                     .attr('height', barWidth)
                     .attr('x', 1)
                     .attr 'y', (d) ->
-                        (y(d.client_name) + (y.rangeBand() - barWidth) / 2) + (barWidth / 2 + 4)
+                        (y(d.name) + (y.rangeBand() - barWidth) / 2) + (barWidth / 2 + 4)
                     .attr 'width', 0
                     .transition()
                     .duration 1000

@@ -1,16 +1,13 @@
 class Inactives::InactivesSerializer < ActiveModel::Serializer
   attributes(
     :id,
-    :client_name,
+    :name,
     :average_quarterly_spend,
     :open_pipeline,
-    :last_activity,
     :sellers
   )
 
-  def client_name
-    object.name
-  end
+  has_one :latest_advertiser_activity, key: :last_activity, serializer: Inactives::LastActivitySerializer
 
   def average_quarterly_spend
     total_revenue = @options[:total_revenues].find{|el| el[:account_dimension_id] == object.id}
@@ -18,17 +15,7 @@ class Inactives::InactivesSerializer < ActiveModel::Serializer
   end
 
   def open_pipeline
-    object
-      .advertiser_deals
-      .open
-      .pluck(:budget)
-      .compact
-      .reduce(:+)
-      &.round(0) || 0
-  end
-
-  def last_activity
-    object.latest_advertiser_activity.as_json(override: true, only: [:id, :name, :happened_at, :activity_type_name, :comment])
+    object.advertiser_deals_open_pipeline || 0
   end
 
   def sellers

@@ -627,6 +627,16 @@ class Client < ActiveRecord::Base
     end
   end
 
+  def advertiser_deals_open_pipeline
+    advertiser_deals
+      .open
+      .pluck(:budget)
+      .compact
+      .reduce(:+)
+      &.round(0)
+      &.to_i
+  end
+
   private
 
   def self.import_custom_field(obj, row)
