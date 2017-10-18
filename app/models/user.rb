@@ -138,7 +138,7 @@ class User < ActiveRecord::Base
   end
 
   def has_requests_access?
-    self.revenue_requests_access
+    revenue_requests_access
   end
 
   def name
