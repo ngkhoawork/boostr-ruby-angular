@@ -28,8 +28,8 @@ class Client < ActiveRecord::Base
            foreign_key: :agency_id, dependent: :destroy
   has_many :advertiser_connections, class_name: :ClientConnection,
            foreign_key: :advertiser_id, dependent: :destroy
-  has_many :agencies, -> { uniq }, through: :agency_connections, source: :advertiser
-  has_many :advertisers, -> { uniq }, through: :advertiser_connections, source: :agency
+  has_many :agencies, -> { uniq }, through: :advertiser_connections, source: :agency
+  has_many :advertisers, -> { uniq }, through: :agency_connections, source: :advertiser
 
   has_many :agency_client_contacts, through: :agencies, source: :client_contacts
   has_many :advertiser_client_contacts, -> { uniq }, through: :advertisers, source: :primary_client_contacts
@@ -164,6 +164,17 @@ class Client < ActiveRecord::Base
 
         csv << line
       end
+    end
+  end
+
+  def connection_entry_ids
+    case client_type.name
+    when 'Agency'
+      agency_connections.pluck(:advertiser_id)
+    when 'Advertiser'
+      advertiser_connections.pluck(:agency_id)
+    else
+      raise "callable for ['Advertiser', 'Agency'] clients only"
     end
   end
 
