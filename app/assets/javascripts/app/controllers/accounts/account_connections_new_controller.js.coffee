@@ -1,12 +1,13 @@
 @app.controller 'AccountConnectionsNewController',
-['$rootScope', '$scope', '$modal', '$modalInstance', '$q', '$location', 'ClientConnection', 'clientConnection', 'Client', 'Field'
-($rootScope, $scope, $modal, $modalInstance, $q, $location, ClientConnection, clientConnection, Client, Field) ->
+['$rootScope', '$scope', '$modal', '$modalInstance', '$q', '$location', 'ClientConnection', 'clientConnection', 'Client', 'Field', 'options'
+($rootScope, $scope, $modal, $modalInstance, $q, $location, ClientConnection, clientConnection, Client, Field, options) ->
   $scope.init = ->
     $scope.formType = 'New'
     $scope.submitText = 'Create'
     $scope.advertisers = []
     $scope.agencies = []
     $scope.clientConnection = clientConnection
+    $scope.currentAccountId = options.currentAccountId
 
     Field.defaults({}, 'Client').then (fields) ->
       client_types = Field.findClientTypes(fields)
@@ -23,17 +24,17 @@
     $scope.clientConnection.agency_id = model
 
   searchTimeout = null;
-  $scope.searchClients = (query, type_id) ->
+  $scope.searchClients = (query, type_id, current_account_id) ->
     if searchTimeout
       clearTimeout(searchTimeout)
       searchTimeout = null
     searchTimeout = setTimeout(
-      -> $scope.loadClients(query, type_id)
+      -> $scope.loadClients(query, type_id, current_account_id)
       400
     )
 
-  $scope.loadClients = (query, type_id) ->
-    Client.search_clients({ name: query, client_type_id: type_id }).$promise.then (clients) ->
+  $scope.loadClients = (query, type_id, current_account_id) ->
+    Client.search_clients({ name: query, client_type_id: type_id, id: current_account_id }).$promise.then (clients) ->
       if type_id == $scope.Advertiser
         $scope.advertisers = clients
       if type_id == $scope.Agency
