@@ -38,7 +38,7 @@ class DealProduct < ActiveRecord::Base
   set_callback :save, :after, :update_pipeline_fact_callback
 
   scope :product_type_of, -> (type) { joins(:product).where("products.revenue_type = ?", type) }
-  scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) }
+  scope :for_product_id, -> (product_id) { where("product_id = ?", product_id) if product_id.present? }
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) if product_ids.present? }
   scope :open, ->  { where('deal_products.open IS true')  }
   scope :active, -> { DealProduct.joins('LEFT JOIN products ON deal_products.product_id = products.id').where('products.active IS true') }

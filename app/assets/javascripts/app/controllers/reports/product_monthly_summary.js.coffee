@@ -10,6 +10,7 @@
         defaultFilter =
             team: emptyFilter
             seller: emptyFilter
+            product: emptyFilter
             createdDate:
                 startDate: null
                 endDate: null
@@ -56,6 +57,7 @@
             f = $scope.filter
             query = {}
             query.team_id = f.team.id if f.team.id
+            query.product_id = f.product.id if f.product.id
             query.seller_id = f.seller.id if f.seller.id
             if f.createdDate.startDate && f.createdDate.endDate
                 query.created_date_start = f.createdDate.startDate.format('YYYY-MM-DD')
@@ -72,12 +74,16 @@
             $q.all(
                 user: CurrentUser.get().$promise
                 teams: Team.all(all_teams: true)
+                products: Product.all()
                 sellers: Seller.query({id: 'all'}).$promise
             ).then (data) ->
                 $scope.teams = data.teams
                 $scope.teams.unshift emptyFilter
                 $scope.sellers = data.sellers
                 $scope.sellers.unshift emptyFilter
+                $scope.products = data.products
+                $scope.products = _.sortBy $scope.products, 'name'
+                $scope.products.unshift emptyFilter
 
         init()
     ]

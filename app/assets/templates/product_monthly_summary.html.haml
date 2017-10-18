@@ -9,6 +9,7 @@
             %tr.filter-title
               %td Team
               %td Seller
+              %td Product
               %td Created Date
               %td
                 %span.reset-filter{'ng-click': 'resetFilter()'}
@@ -27,6 +28,17 @@
                       %li{ ng: { repeat: 'seller in sellers | orderBy: "name"', class: '{active: seller.id === filter.seller.id}' } }
                         %a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
                           {{ seller.first_name + ' ' + seller.last_name}}
+
+              %td
+                %ul.filter-item
+                  %li{ dropdown: true }
+                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.product.name === "All"}' }
+                      {{filter.product.name}}
+                      %span.caret
+                    %ul.dropdown-menu
+                      %li{ ng: { repeat: 'product in products', class: '{active: product.id === filter.product.id}' } }
+                        %a{ href: '', ng: { click: 'setFilter("product", product)' } }
+                          {{ product.name }}
 
               %td
                 .date-picker-wrap

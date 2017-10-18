@@ -31,7 +31,8 @@ class Csv::ProductMonthlySummaryService < Csv::BaseService
         record << row['holding_company']
         record << (row['stage']['name'] rescue '')
         record << (row['stage']['probability'] rescue '')
-        record << ActiveSupport::NumberHelper.number_to_currency(row['budget_loc'], precision: 0, unit: row['currency'] || '$')
+        record << row['budget_loc']
+        record << row['currency_cd'] || 'USD'
         record << ActiveSupport::NumberHelper.number_to_currency(row['budget'], precision: 0)
         record << ActiveSupport::NumberHelper.number_to_currency(row['weighted_budget'], precision: 0)
         record << (row['start_date'] ? Time.parse(row['start_date']).strftime('%m/%d/%Y') : '')
@@ -49,6 +50,6 @@ class Csv::ProductMonthlySummaryService < Csv::BaseService
   def headers
     headers = ['Product']
     headers += @custom_field_names.map {|cf| cf['field_label']}
-    headers.concat ['Record Type', 'Record ID', 'Team Member', 'Name', 'Advertiser', 'Agency', 'Holding CO', 'Stage', '%', 'Budget', 'Budget USD', 'Weighted Amt', 'Start Date', 'End Date', 'Created Date', 'Closed Date', 'Deal Type', 'Deal Source']
+    headers.concat ['Record Type', 'Record ID', 'Team Member', 'Name', 'Advertiser', 'Agency', 'Holding CO', 'Stage', '%', 'Budget', 'Currency', 'Budget USD', 'Weighted Amt', 'Start Date', 'End Date', 'Created Date', 'Closed Date', 'Deal Type', 'Deal Source']
   end
 end
