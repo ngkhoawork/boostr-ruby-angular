@@ -404,6 +404,31 @@ RSpec.describe Client, type: :model do
     end
   end
 
+  describe '#connection_entry_ids' do
+    let(:company) { create :company }
+    let(:user) { create :user, company: company }
+
+    subject { client.connection_entry_ids }
+
+    context 'when client is advertiser' do
+      let(:client) { create :bare_client, client_type_id: advertiser_type_id(company), company: company }
+      let(:related_agency) { create :bare_client, client_type_id: agency_type_id(company), company: company }
+
+      before(:each) { client.agencies << related_agency }
+
+      it { expect(subject).to eq [related_agency.id] }
+    end
+
+    context 'when client is agency' do
+      let(:client) { create :bare_client, client_type_id: agency_type_id(company), company: company }
+      let(:related_advertiser) { create :bare_client, client_type_id: advertiser_type_id(company), company: company }
+
+      before(:each) { client.advertisers << related_advertiser }
+
+      it { expect(subject).to eq [related_advertiser.id] }
+    end
+  end
+
   def generate_csv(data)
     CSV.generate do |csv|
       csv << data.keys
