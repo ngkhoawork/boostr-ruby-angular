@@ -54,17 +54,24 @@ RSpec.describe Api::MailthreadsController, type: :controller do
     it 'should return 2 email opens by thread' do
       create_list :email_open, 2
 
-      get :see_more_opens, guid: thread.email_guid
+      get :all_opens, thread_id: thread.thread_id
       response_data = JSON.parse(response.body).deep_symbolize_keys
 
       expect(response_data[:opened_emails].size).to eq 2
     end
 
-    it 'should not return 2 email opens by thread' do
-      get :see_more_opens, guid: '00000'
+    it 'should not return error message that thread not found' do
+      get :all_opens, thread_id: '00000'
       response_data = JSON.parse(response.body).symbolize_keys
 
-      expect(response_data[:opened_emails].size).to eq 0
+      expect(response_data[:errors]).to eq "Email thread not found"
+    end
+
+    it 'should not return error message that need provide thread_id param' do
+      get :all_opens
+      response_data = JSON.parse(response.body).symbolize_keys
+
+      expect(response_data[:errors]).to eq "Need provide thread_id"
     end
   end
 

@@ -23,11 +23,17 @@ class Api::MailthreadsController < ApplicationController
     end
   end
 
-  def see_more_opens
-    if params[:guid].present?
-      render json: { opened_emails: EmailOpen.by_thread(params[:guid]) }, status: 200
+  def all_opens
+    if params[:thread_id].present?
+      email_thread = EmailThread.find_by_thread_id(params[:thread_id])
+
+      if email_thread.present?
+        render json: { opened_emails: email_thread.email_open }, status: 200
+      else
+        render json: { errors: "Email thread not found" }, status: 404
+      end
     else
-      render json: { errors: 'Need provide guid' }, status: :unprocessable_entity
+      render json: { errors: 'Need provide thread_id' }, status: :unprocessable_entity
     end
   end
 end
