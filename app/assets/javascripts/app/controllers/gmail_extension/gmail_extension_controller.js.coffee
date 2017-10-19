@@ -17,20 +17,35 @@
 				options: ->
 					type: 'gmail'
 					onCancel: ->
-						$window.parent.postMessage {
-							eval: 'onDealModelClose()'
-						}, '*'
+						$window.parent.postMessage {expression: 'onModelClose'}, '*'
 					onSuccess: ->
-						$window.parent.postMessage {
-							eval: 'onDealCreateSuccess()'
-						}, '*'
+						$window.parent.postMessage {expression: 'onDealCreateSuccess'}, '*'
+
+	$scope.showNewActivityModal = (data) ->
+		$scope.modalInstance = $modal.open
+			templateUrl: 'modals/activity_new_form.html'
+			size: 'md'
+			controller: 'ActivityNewController'
+			backdrop: 'static'
+			keyboard: false
+			resolve:
+				activity: ->
+					null
+				options: ->
+					type: 'gmail'
+					data: data
+					onCancel: ->
+						$window.parent.postMessage {expression: 'onModelClose'}, '*'
+					onSuccess: ->
+						$window.parent.postMessage {expression: 'onActivityCreateSuccess'}, '*'
+
+#	$scope.showNewActivityModal()
 
 	$window.addEventListener 'message', (e) ->
 		if e.origin is 'https://mail.google.com'
-			$scope.$eval e.data.eval if e.data.eval
+			expression = $scope.$eval(e.data.expression) if e.data.expression
+			expression(e.data.params) if _.isFunction expression
 
-	$window.parent.postMessage {
-		eval: 'onBoostrLoaded()'
-	}, '*'
+	$window.parent.postMessage {expression: 'onBoostrLoaded'}, '*'
 
 ]

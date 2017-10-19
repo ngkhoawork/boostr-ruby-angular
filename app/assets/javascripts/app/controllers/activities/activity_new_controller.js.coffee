@@ -48,6 +48,10 @@
                         else
                             $scope.form.agency =
                                 id: options.data.client_id
+                    when 'gmail'
+                        $scope.showRelated = true
+                        $scope.form.comment = options.data
+
 
             #edit mode
             if activity
@@ -97,6 +101,8 @@
                 else
                     $scope.selectedType = activityTypes[0]
                     $scope.form.type = activityTypes[0].id
+                if (options.type == 'gmail')
+                    $scope.selectType _.findWhere($scope.types, name: 'Email')
 
             Contact.query().$promise.then (contacts) ->
                 $scope.contacts = contacts
@@ -153,6 +159,7 @@
 
             $scope.cancel = ->
                 $modalInstance.close()
+                options.onCancel() if _.isFunction options.onCancel
 
             $scope.submitForm = ->
                 $scope.errors = {}
@@ -249,11 +256,13 @@
                         $scope.reminder.remind_on = reminder_date
                         Reminder.create(reminder: $scope.reminder).then (reminder) ->
                             $scope.cancel()
+                            options.onSuccess() if _.isFunction options.onSuccess
                             $rootScope.$broadcast 'dashboard.updateBlocks', ['activities', 'reminders']
                         , (err) ->
                             console.log(err)
                     else
                         $scope.cancel()
+                        options.onSuccess() if _.isFunction options.onSuccess
                         if options
                             $rootScope.$broadcast 'updated_activities'
 #                            switch options.type
