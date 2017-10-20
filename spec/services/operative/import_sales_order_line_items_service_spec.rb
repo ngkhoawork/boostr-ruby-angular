@@ -286,6 +286,35 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     end
   end
 
+  context 'parent_line_item_id option' do
+    context 'exclude_child_line_items is enabled' do
+      it 'skips rows if parent_line_item_id is present' do
+        content_for_files([
+          line_item_csv_file(parent_line_item_id: '50065'),
+          invoice_csv_file
+        ])
+
+        expect(DisplayLineItemCsv).not_to receive(:new)
+        subject(exclude_child_line_items: true).perform
+      end
+    end
+
+    context 'exclude_child_line_items is disabled' do
+      it 'does not skip rows if parent_line_item_id is present' do
+        content_for_files([
+          line_item_csv_file(parent_line_item_id: '50065'),
+          invoice_csv_file
+        ])
+
+        expect(DisplayLineItemCsv).to receive(:new).and_return(line_item_csv)
+        expect(line_item_csv).to receive(:valid?).and_return(:true)
+        expect(line_item_csv).to receive(:perform)
+
+        subject(exclude_child_line_items: false).perform
+      end
+    end
+  end
+
   context 'logging the results' do
     it 'creates an import log item' do
       content_for_files([
@@ -429,11 +458,12 @@ RSpec.describe Operative::ImportSalesOrderLineItemsService, datafeed: :true do
     DatafeedConfigurationDetails.get_product_mapping_id('Product_Name')
   end
 
-  def subject(revenue_pattern: default_pattern, product_mapping: default_mapping)
+  def subject(revenue_pattern: default_pattern, product_mapping: default_mapping, exclude_child_line_items: false)
     @_subject ||= Operative::ImportSalesOrderLineItemsService.new(
       company.id,
       revenue_pattern,
       product_mapping,
+      exclude_child_line_items,
       { sales_order_line_items: line_item_file, invoice_line_item: invoice_file }
     )
   end

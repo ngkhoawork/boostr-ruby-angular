@@ -6,12 +6,12 @@ class OperativeDatafeedConfiguration < ApiConfiguration
   accepts_nested_attributes_for :datafeed_configuration_details
 
   delegate :auto_close_deals, :revenue_calculation_pattern, :product_mapping,
-           to: :datafeed_configuration_details, prefix: false
+           :exclude_child_line_items, to: :datafeed_configuration_details, prefix: false
 
   def self.metadata
     {
       revenue_calculation_patterns: DatafeedConfigurationDetails::REVENUE_CALCULATION_PATTERNS,
-      product_mapping: DatafeedConfigurationDetails::PRODUCT_MAPPING
+      product_mapping: DatafeedConfigurationDetails::PRODUCT_MAPPING,
     }
   end
 end
