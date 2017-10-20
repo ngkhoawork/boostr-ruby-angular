@@ -29,11 +29,16 @@
         $scope.notification = "Business Plan data is being generated in a few seconds."
 
       $scope.go = ($event, bp) ->
-        if($($event.target).hasClass("delete-icon"))
-          deleteBp bp
-        else
+        if($($event.target).is('td'))
           path = "/settings/bps/" + bp.id
           $location.path(path)
+        else
+          if($($event.target).is('i'))
+            deleteBp bp
+
+      $scope.activateBp = (bp) ->
+        BP.update(id: bp.id, bp: bp).then (data) ->
+          bp.active = data.active
 
       deleteBp = (bp) ->
         if confirm('Are you sure you want to delete "' +  bp.name + '"?')

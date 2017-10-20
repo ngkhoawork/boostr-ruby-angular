@@ -24,15 +24,6 @@
                     %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'bp.read_only', 'ng-change': "updateBp()", id: "rem-act-modal-toggle{{bp.id}}"}
                     %label{:for => "rem-act-modal-toggle{{bp.id}}"}
                       %span
-            .description.active-section
-              .action
-                Active:
-              .action
-                .show-hide-remainder-form
-                  .switch-active-form
-                    %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'bp.active', 'ng-change': "activateBp()", id: "active-modal-toggle{{bp.id}}"}
-                    %label{:for => "active-modal-toggle{{bp.id}}"}
-                      %span
         .info
           %svg#progress-circle
           .info-body-wrap

@@ -3,9 +3,9 @@ class Api::BpsController < ApplicationController
 
   def index
     if bps_settings?
-      render json: company.bps.map{ |bp| bp.as_json}
+      render json: bps.order('created_at DESC').map{ |bp| bp.as_json }
     else
-      render json: company.bps.active.map{ |bp| bp.as_json}
+      render json: bps.active.map{ |bp| bp.as_json }
     end
   end
 

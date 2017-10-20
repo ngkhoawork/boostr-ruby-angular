@@ -37,7 +37,12 @@
               %td
                 {{bp.status}} / {{bp.client_count}}
               %td
-                {{ bp.active ? "Yes" : "No" }}
+                .action
+                  .show-hide-remainder-form
+                    .switch-active-form
+                      %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'bp.active', 'ng-change': "activateBp(bp)", id: "active-modal-toggle{{bp.id}}"}
+                      %label{:for => "active-modal-toggle{{bp.id}}"}
+                        %span
               %td{width: '100px'}
                 %i.fa.fa-trash.delete-icon{'ng-click': 'deleteBp(bp)'}
             %tr{ ng: { if: 'bps.length == 0' }}
