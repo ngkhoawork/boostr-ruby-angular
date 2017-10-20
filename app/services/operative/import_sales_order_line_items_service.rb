@@ -135,11 +135,7 @@ class Operative::ImportSalesOrderLineItemsService
   end
 
   def parent_line_item_presence(parent_line_item_id)
-    if exclude_child_line_items
-      parent_line_item_id.present?
-    else
-      false
-    end
+    exclude_child_line_items ? parent_line_item_id.present? : false
   end
 
   def find_in_invoices(id, net_unit_cost)
