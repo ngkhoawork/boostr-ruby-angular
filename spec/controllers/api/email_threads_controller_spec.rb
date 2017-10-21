@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::MailthreadsController, type: :controller do
+RSpec.describe Api::EmailThreadsController, type: :controller do
   describe 'GET #index' do
     it 'should return email thread with email opens' do
       first_opened_email = create :email_open, guid: thread.email_guid, opened_at: Date.yesterday
@@ -50,28 +50,21 @@ RSpec.describe Api::MailthreadsController, type: :controller do
     end
   end
 
-  describe 'GET #see_more_opens' do
+  describe 'GET #all_opens' do
     it 'should return 2 email opens by thread' do
       create_list :email_open, 2
 
-      get :all_opens, thread_id: thread.thread_id
+      get :all_opens, email_thread_id: thread.thread_id
       response_data = JSON.parse(response.body).deep_symbolize_keys
 
-      expect(response_data[:opened_emails].size).to eq 2
+      expect(response_data[:opens].size).to eq 2
     end
 
     it 'should not return error message that thread not found' do
-      get :all_opens, thread_id: '00000'
+      get :all_opens, email_thread_id: '00000'
       response_data = JSON.parse(response.body).symbolize_keys
 
-      expect(response_data[:errors]).to eq "Email thread not found"
-    end
-
-    it 'should not return error message that need provide thread_id param' do
-      get :all_opens
-      response_data = JSON.parse(response.body).symbolize_keys
-
-      expect(response_data[:errors]).to eq "Need provide thread_id"
+      expect(response_data[:errors]).to eq "Email Thread Not Found"
     end
   end
 
