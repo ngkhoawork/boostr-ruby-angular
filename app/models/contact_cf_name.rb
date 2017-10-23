@@ -1,6 +1,6 @@
 class ContactCfName < ActiveRecord::Base
   belongs_to :company, required: true
-  has_many   :contact_cf_options, dependent: :destroy
+  has_many   :contact_cf_options, -> { order 'LOWER(value)' }, dependent: :destroy
 
   validates :field_type, presence: true
   validate  :field_type_within_limit, on: :create
