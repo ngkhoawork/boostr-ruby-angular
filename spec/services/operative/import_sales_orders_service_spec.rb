@@ -18,14 +18,14 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
   it 'passes rows to IoCsv' do
     content_for_files([
-      sales_order_csv(sales_stage_percent: 100),
+      sales_order_csv,
       currency_csv
     ])
 
     expect(IoCsv).to receive(:new).with({
       io_external_number: nil,
       io_name: nil,
-      io_start_date: nil,
+      io_start_date: '2017-09-24',
       io_end_date: nil,
       io_advertiser: nil,
       io_agency: nil,
@@ -50,9 +50,19 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
     subject.perform
   end
 
+  it 'skips a row when order_start_date is empty' do
+    content_for_files([
+      sales_order_csv(order_start_date: ''),
+      currency_csv
+    ])
+
+    expect(IoCsv).not_to receive(:new)
+    subject.perform
+  end
+
   it 'skips a row when order_status is deleted' do
     content_for_files([
-      sales_order_csv(sales_stage_percent: 100, order_status: 'deleted'),
+      sales_order_csv(order_status: 'deleted'),
       currency_csv
     ])
 
@@ -62,7 +72,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
   it 'skips invalid rows' do
     content_for_files([
-      sales_order_csv(sales_stage_percent: 100),
+      sales_order_csv,
       currency_csv
     ])
 
@@ -76,14 +86,14 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
   it 'maps currency code from currency file' do
     content_for_files([
-      sales_order_csv(sales_stage_percent: 100, order_currency_id: 100),
+      sales_order_csv(order_currency_id: 100),
       currency_csv
     ])
 
     expect(IoCsv).to receive(:new).with({
       io_external_number: nil,
       io_name: nil,
-      io_start_date: nil,
+      io_start_date: '2017-09-24',
       io_end_date: nil,
       io_advertiser: nil,
       io_agency: nil,
@@ -101,7 +111,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
   context 'logging the results' do
     it 'creates an import log item' do
       content_for_files([
-        sales_order_csv(sales_stage_percent: 100, order_currency_id: 100),
+        sales_order_csv(order_currency_id: 100),
         currency_csv
       ])
 
@@ -130,7 +140,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
 
     it 'catches internal server errors' do
       content_for_files([
-        sales_order_csv(sales_stage_percent: 100, order_currency_id: 100),
+        sales_order_csv(order_currency_id: 100),
         currency_csv
       ])
 
@@ -143,7 +153,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       expect(import_log.error_messages).to eq [{
         "row"=>1,
         "message"=>
-          ["Internal Server Error", "{:order_currency_id=>\"100\", :sales_stage_percent=>\"100\"}"]
+          ["Internal Server Error", "{:order_currency_id=>\"100\", :order_start_date=>\"2017-09-24\", :sales_stage_percent=>\"100\"}"]
       }]
     end
 
@@ -167,7 +177,12 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
   end
 
   def sales_order_csv(opts={})
-    @_sales_order_csv_data ||= build :sales_order_csv_data, opts
+    defaults = {
+      sales_stage_percent: '100',
+      order_start_date: Date.today - 1.month
+    }
+
+    @_sales_order_csv_data ||= build :sales_order_csv_data, defaults.merge(opts)
     @_sales_order_csv ||= generate_csv(@_sales_order_csv_data)
   end
 
