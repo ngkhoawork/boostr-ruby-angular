@@ -2,10 +2,7 @@ class Api::InactivesController < ApplicationController
   respond_to :json
 
   def inactives
-    @inactives = Client.where(id: advertisers_with_revenue(in_range: previous_quarters) - advertisers_with_revenue(in_range: [current_quarter]))
-      .by_category(params[:category_id])
-      .by_subcategory(params[:subcategory_id])
-      .includes(:users, :latest_advertiser_activity)
+    @inactives = inactives_data(inactives_ids)
 
     render json: @inactives,
               each_serializer: Inactives::InactivesSerializer,
@@ -15,11 +12,7 @@ class Api::InactivesController < ApplicationController
   end
 
   def seasonal_inactives
-    @inactives = Client.where(id: advertisers_with_revenue(in_range: comparison_window[:first]) - advertisers_with_revenue(in_range: comparison_window[:second]))
-      .by_category(params[:category_id])
-      .by_subcategory(params[:subcategory_id])
-      .includes(:users, :latest_advertiser_activity)
-      .distinct
+    @inactives = inactives_data(seasonal_inactives_ids)
 
     render json: {
         seasonal_inactives: ActiveModel::ArraySerializer.new(
@@ -34,12 +27,7 @@ class Api::InactivesController < ApplicationController
   end
 
   def soon_to_be_inactive
-    result = []
-
-    @inactives = Client.where(id: advertisers_with_decreased_revenue)
-      .by_category(params[:category_id])
-      .by_subcategory(params[:subcategory_id])
-      .includes(:users, :latest_advertiser_activity)
+    @inactives = inactives_data(advertisers_with_decreased_revenue)
 
     render json: @inactives,
               each_serializer: Inactives::InactivesSerializer,
@@ -50,8 +38,21 @@ class Api::InactivesController < ApplicationController
 
   private
 
+  def inactives_data(ids)
+    options = { ids: ids, category_id: params[:category_id], subcategory_id: params[:subcategory_id] }
+    InactiveClientsQuery.new(options).perform
+  end
+
+  def inactives_ids
+    advertisers_with_revenue(in_range: previous_quarters) - advertisers_with_revenue(in_range: [current_quarter])
+  end
+
+  def seasonal_inactives_ids
+    advertisers_with_revenue(in_range: comparison_window[:first]) - advertisers_with_revenue(in_range: comparison_window[:second])
+  end
+
   def total_revenues(in_range:)
-    time_dimensions = TimeDimension.where(start_date: in_range.map(&:first), end_date: in_range.map(&:last))
+    time_dimensions = TimeDimension.by_dates(in_range.map(&:first), in_range.map(&:last))
     @total_revenues ||= AccountRevenueFact.where(account_dimension_id: @inactives.ids)
     .where(time_dimension_id: time_dimensions.ids)
     .group(:account_dimension_id)
@@ -60,7 +61,7 @@ class Api::InactivesController < ApplicationController
   end
 
   def advertisers_with_revenue(in_range:)
-    time_dimensions = TimeDimension.where(start_date: in_range.map(&:first), end_date: in_range.map(&:last)).where('days_length < ?', 360)
+    time_dimensions = TimeDimension.by_dates(in_range.map(&:first), in_range.map(&:last)).yearly
     advertiser_ids = []
 
     time_dimensions.each_with_index do |time_dimension, index|
@@ -84,8 +85,12 @@ class Api::InactivesController < ApplicationController
   end
 
   def advertisers_with_decreased_revenue
-    current_quarter_dimension = TimeDimension.find_by(start_date: current_quarter.first, end_date: current_quarter.last)
-    previous_quarter_dimension = TimeDimension.find_by(start_date: previous_quarters(lookback: 1).map(&:first), end_date: previous_quarters(lookback: 1).map(&:last))
+    current_quarter_dimension = TimeDimension.by_dates(current_quarter.first, current_quarter.last).limit(1)
+    previous_quarter_dimension = TimeDimension.by_dates(
+      previous_quarters(lookback: 1).map(&:first),
+      previous_quarters(lookback: 1).map(&:last)
+    ).limit(1)
+
     advertiser_ids = advertisers_with_revenue(in_range: previous_quarters(lookback: 1) + [current_quarter])
     advertiser_ids.select do |advertiser_id|
       previous_quarter_revenue = AccountRevenueFact.find_by(
