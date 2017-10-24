@@ -10,7 +10,6 @@ class Api::BpsController < ApplicationController
   end
 
   def show
-    bp = Bp.find(params[:id])
     if bp.present?
       render json: bp, status: :ok
     else
@@ -29,7 +28,6 @@ class Api::BpsController < ApplicationController
   end
 
   def update
-    bp = company.bps.find(params[:id])
     if bp.update_attributes(bp_params)
       render json: bp.as_json
     else
@@ -38,8 +36,6 @@ class Api::BpsController < ApplicationController
   end
 
   def destroy
-    bp = bps.find(params[:id])
-
     if bp.destroy
       render json: bp.as_json
     else
@@ -245,5 +241,9 @@ class Api::BpsController < ApplicationController
 
   def bps
     company.bps
+  end
+
+  def bp
+    @bp ||= bps.find(params[:id])
   end
 end
