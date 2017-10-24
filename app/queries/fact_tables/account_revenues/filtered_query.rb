@@ -99,16 +99,16 @@ class FactTables::AccountRevenues::FilteredQuery
       where(account_revenue_facts: { company_id: id })
     end
 
-    def by_category_id(id)
+    def by_category_ids(id)
       where(account_revenue_facts: { category_id: id })
     end
 
-    def by_region_id(id)
-      where(account_revenue_facts: { region_id: id })
+    def by_client_region_ids(id)
+      where(account_revenue_facts: { client_region_id: id })
     end
 
-    def by_segment_id(id)
-      where(account_revenue_facts: { segment_id: id })
+    def by_client_segment_ids(id)
+      where(account_revenue_facts: { client_segment_id: id })
     end
   end
 end

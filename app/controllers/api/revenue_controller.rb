@@ -414,11 +414,9 @@ class Api::RevenueController < ApplicationController
   end
 
   def report_by_months_params
-    if params[:start_date].blank? || params[:end_date].blank?
-      raise ActionController::ParameterMissing, 'provide start_date, end_date'
-    end
+    %i(start_date end_date category_ids).each { |param_name| params.require(param_name) }
 
-    params.permit(:start_date, :end_date, :category_id, :region_id, :segment_id)
+    params.permit(:start_date, :end_date, client_region_ids: [], client_segment_ids: [], category_ids: [])
           .merge!(company_id: current_user.company_id)
   end
 end
