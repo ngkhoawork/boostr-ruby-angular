@@ -1,6 +1,6 @@
 class Report::RevenueByCategoryService
-  REQUIRED_OPTION_KEYS = %i(company_id start_date end_date category_id).freeze
-  OPTIONAL_OPTION_KEYS = %i(:region_id, :segment_id).freeze
+  REQUIRED_OPTION_KEYS = %i(company_id start_date end_date category_ids).freeze
+  OPTIONAL_OPTION_KEYS = %i(client_region_ids client_segment_ids).freeze
   ALLOWED_OPTION_KEYS = (REQUIRED_OPTION_KEYS + OPTIONAL_OPTION_KEYS).freeze
   GROUPING_OPTION_KEYS = %i(category_id year).freeze
   INT_MONTHS = {
