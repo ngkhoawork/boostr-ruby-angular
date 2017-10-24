@@ -24,6 +24,11 @@ class Api::RevenueController < ApplicationController
 
   end
 
+  def report_by_category
+    render json:            Report::RevenueByCategoryService.new(report_by_months_params).perform,
+           each_serializer: Report::RevenueByCategorySerializer
+  end
+
   def create
     csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
     revenues = Revenue.import(csv_file, current_user.company.id)
@@ -406,5 +411,14 @@ class Api::RevenueController < ApplicationController
 
   def crevenues
     @crevenues ||= member_or_team.crevenues(start_date, end_date, product)
+  end
+
+  def report_by_months_params
+    if params[:start_date].blank? || params[:end_date].blank?
+      raise ActionController::ParameterMissing, 'provide start_date, end_date'
+    end
+
+    params.permit(:start_date, :end_date, :category_id, :region_id, :segment_id)
+          .merge!(company_id: current_user.company_id)
   end
 end

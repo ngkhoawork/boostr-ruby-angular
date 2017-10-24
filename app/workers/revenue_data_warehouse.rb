@@ -44,6 +44,8 @@ class RevenueDataWarehouse < BaseWorker
         revenue_fact.update(
           category_id: client.client_category_id,
           subcategory_id: client.client_subcategory_id,
+          client_region_id: client.client_region_id,
+          client_segment_id: client.client_segment_id,
           revenue_amount: client_revenue[:revenue_amount]
         )
       end
