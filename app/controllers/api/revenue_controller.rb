@@ -1,5 +1,5 @@
 class Api::RevenueController < ApplicationController
-  respond_to :json
+  respond_to :json, :csv
 
   def index
     if params[:time_period_id].present? || params[:quarter].present?
@@ -25,8 +25,16 @@ class Api::RevenueController < ApplicationController
   end
 
   def report_by_category
-    render json:            Report::RevenueByCategoryService.new(report_by_months_params).perform,
-           each_serializer: Report::RevenueByCategorySerializer
+    respond_to do |format|
+      format.json {
+        render json:            revenue_by_category_report,
+               each_serializer: Report::RevenueByCategorySerializer
+      }
+      format.csv {
+        send_data Csv::RevenueByCategoryService.new(revenue_by_category_report).perform,
+                  filename: "reports-revenue_by_category-#{DateTime.current}.csv"
+      }
+    end
   end
 
   def create
@@ -411,6 +419,10 @@ class Api::RevenueController < ApplicationController
 
   def crevenues
     @crevenues ||= member_or_team.crevenues(start_date, end_date, product)
+  end
+
+  def revenue_by_category_report
+    Report::RevenueByCategoryService.new(report_by_months_params).perform
   end
 
   def report_by_months_params

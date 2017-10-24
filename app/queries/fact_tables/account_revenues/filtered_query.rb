@@ -1,20 +1,20 @@
 class FactTables::AccountRevenues::FilteredQuery
-  # Map structure:
+  # Mapping structure:
   #   {
   #     option_name: { scope_name: [param_names...] },
   #     ...
   #   }
-  OPTION_SCOPES_MAP = {
+  OPTION_SCOPES_MAPPING = {
     start_date: { by_time_dimension_date_range: [:start_date, :end_date] },
     advertiser_ids: { by_account_ids: [:advertiser_ids] }
   }.freeze
 
-  # Map structure:
+  # Mapping structure:
   #   {
   #     option_name: join_assoc_name,
   #     ...
   #   }
-  OPTION_JOINS_MAP = {
+  OPTION_JOINS_MAPPING = {
     start_date: :time_dimension,
     advertiser_ids: :account_dimension
   }.freeze
@@ -46,7 +46,7 @@ class FactTables::AccountRevenues::FilteredQuery
   end
 
   def necessary_join_assoc_names
-    (OPTION_JOINS_MAP.keys & @options.keys).map { |option_name| OPTION_JOINS_MAP[option_name] }
+    (OPTION_JOINS_MAPPING.keys & @options.keys).map { |option_name| OPTION_JOINS_MAPPING[option_name] }
   end
 
   # Apply joins dynamically (only necessary ones)
@@ -75,11 +75,11 @@ class FactTables::AccountRevenues::FilteredQuery
   end
 
   def fetch_specific_scope_name(option_name)
-    OPTION_SCOPES_MAP[option_name].try(:keys).try(:first)
+    OPTION_SCOPES_MAPPING[option_name].try(:keys).try(:first)
   end
 
   def fetch_specific_scope_params(option_name)
-    OPTION_SCOPES_MAP[option_name].values[0].inject([]) { |acc, param_name| acc << options[param_name] }
+    OPTION_SCOPES_MAPPING[option_name].values[0].inject([]) { |acc, param_name| acc << options[param_name] }
   end
 
   module FactScopes
