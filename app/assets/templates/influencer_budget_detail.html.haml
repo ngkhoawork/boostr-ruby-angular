@@ -160,4 +160,7 @@
                     {{ influencer_content_fee.net_loc | currency:'$':0 }}
                   %td.left
                     {{ influencer_content_fee.asset }}
+                %tr{ ng: { if: 'influencer_content_fees.length == 0' }}
+                  %td.center.auto-colspan
+                    No Data for the Filters Selected
 

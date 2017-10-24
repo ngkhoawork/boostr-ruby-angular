@@ -113,3 +113,9 @@
 										{{ deal.biz_days }}
 									%td.center
 										{{ deal.changed_by }}
+								%tr{ ng: { if: 'report_data_items.length == 0' }}
+									%td.center.auto-colspan
+										No Data for the Filters Selected
+
+
+
