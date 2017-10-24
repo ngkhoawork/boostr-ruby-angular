@@ -53,5 +53,5 @@
 				%td.left {{ activity.creator.first_name + " " + activity.creator.last_name }}
 				%td.left {{ activity.team_creator }}
 			%tr{ ng: { if: 'activities.length == 0' }}
-				%td.center{ colspan: '9' }
+				%td.center.auto-colspan
 					No Data for the Filters Selected

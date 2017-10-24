@@ -178,7 +178,7 @@
                     %td
                       %div{'ng-repeat': 'member in revenue.members track by $index'} {{member.user.first_name + ' ' + member.user.last_name}} {{member.share}}%
                   %tr{ ng: { if: 'revenues.length == 0' }}
-                    %td.center{ colspan: '8' }
+                    %td.center.auto-colspan
                       No Data for the Filters Selected
 
       .row
@@ -241,5 +241,5 @@
                     %td
                       %div{'ng-repeat': 'member in deal.deal_members'} {{member.name}} {{member.share}}%
                   %tr{ ng: { if: 'deals.length == 0' }}
-                    %td.center{ colspan: '9' }
+                    %td.center.auto-colspan
                       No Data for the Filters Selected

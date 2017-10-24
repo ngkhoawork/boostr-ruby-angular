@@ -237,5 +237,5 @@
                     %a{href: '', ng: { 'if': 'dealCustomFieldName.field_type == "link"', href: '{{deal.deal_custom_field[fieldName]}}' } }
                       {{deal.deal_custom_field[fieldName]}}
                 %tr{ ng: { if: 'deals.length == 0' }}
-                  %td.center{ colspan: '13' }
+                  %td.center.auto-colspan
                     No Data for the Filters Selected

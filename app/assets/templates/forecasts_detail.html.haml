@@ -236,7 +236,7 @@
 										%td{'ng-repeat': 'amount in revenue.months track by $index', 'ng-if': 'switch.revenues == "months" && amount != null'}
 											{{amount | currency : '$' : 2}}
 									%tr{ ng: { if: 'revenues.length == 0' }}
-										%td.center{ colspan: '9' }
+										%td.center.auto-colspan
 											No Data for the Filters Selected
 
 			#deals-section.row
@@ -311,5 +311,5 @@
 										%td{'ng-repeat': 'amount in deal.month_amounts track by $index', 'ng-if': 'switch.deals == "months" && amount != null'}
 											{{amount | currency : '$' : 0}}
 									%tr{ ng: { if: 'deals.length == 0' }}
-										%td.center{ colspan: '9' }
+										%td.center.auto-colspan
 											No Data for the Filters Selected
