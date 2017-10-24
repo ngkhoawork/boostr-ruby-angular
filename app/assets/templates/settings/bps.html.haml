@@ -37,14 +37,9 @@
               %td
                 {{bp.status}} / {{bp.client_count}}
               %td
-                .action
-                  .show-hide-remainder-form
-                    .switch-active-form
-                      %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'bp.active', 'ng-change': "activateBp(bp)", id: "active-modal-toggle{{bp.id}}"}
-                      %label{:for => "active-modal-toggle{{bp.id}}"}
-                        %span
+                %z-toggle{'ng-model': 'bp.active', 'ng-change': 'activateBp(bp)', 'ng-click': '$event.stopPropagation()'}
               %td{width: '100px'}
-                %i.fa.fa-trash.delete-icon{'ng-click': 'deleteBp(bp)'}
+                %i.fa.fa-trash.delete-icon{'ng-click': 'deleteBp($event, bp)'}
             %tr{ ng: { if: 'bps.length == 0' }}
               %td.center{ colspan: '6' }
                 No data available

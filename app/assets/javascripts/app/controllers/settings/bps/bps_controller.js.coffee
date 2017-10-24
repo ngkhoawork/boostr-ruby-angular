@@ -29,12 +29,12 @@
         $scope.notification = "Business Plan data is being generated in a few seconds."
 
       $scope.go = ($event, bp) ->
-        if($($event.target).is('td'))
-          path = "/settings/bps/" + bp.id
-          $location.path(path)
-        else
-          if($($event.target).is('i'))
-            deleteBp bp
+        path = "/settings/bps/" + bp.id
+        $location.path(path)
+
+      $scope.deleteBp = ($event, bp) ->
+        $event.stopPropagation()
+        deleteBp bp
 
       $scope.activateBp = (bp) ->
         BP.update(id: bp.id, bp: bp).then (data) ->
