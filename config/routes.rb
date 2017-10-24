@@ -389,7 +389,7 @@ Rails.application.routes.draw do
       get :all_opens
 
       collection do
-        get :create_thread
+        post :create_thread
       end
     end
   end

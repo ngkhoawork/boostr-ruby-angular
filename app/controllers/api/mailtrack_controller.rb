@@ -8,7 +8,7 @@ class Api::MailtrackController < ApplicationController
     params = Rack::Utils.parse_nested_query(decode_pixel).symbolize_keys
 
     if EmailThread.exists?(email_guid: params[:guid])
-      decorated_data = decorated_email_opens(params, request)
+      decorated_data = decorated_email_opens(params)
 
       EmailOpen.create(decorated_data)
     end
@@ -19,7 +19,7 @@ class Api::MailtrackController < ApplicationController
 
   private
 
-  def decorated_email_opens(params, request)
+  def decorated_email_opens(params)
     Emails::EmailOpenDecorator.new(params, request).collect
   end
 
