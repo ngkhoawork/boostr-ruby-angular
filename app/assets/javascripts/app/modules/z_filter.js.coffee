@@ -74,7 +74,7 @@
 		templateUrl: 'modules/z_filter.html'
 		link: ($scope, el, attrs, ctrl, trans) ->
 			trans (clone) -> el.find('.element-to-replace').replaceWith(clone)
-			$scope.isQueryDropdownOpen = true
+			$scope.isQueryDropdownOpen = false
 			$scope.isQueryFormOnEdit = false
 			$scope.selectedQuery = null
 			emptySavedQueryForm =
