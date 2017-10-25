@@ -81,12 +81,6 @@ RSpec.describe IoCsv, type: :model do
       expect(io.reload.start_date).to eql Date.new(2017,01,01)
     end
 
-    it 'does not update start date if io_start_date is later than IO start date' do
-      io(start_date: '2017-01-01', end_date: '2017-03-01')
-      io_csv(io_external_number: io.external_io_number, io_start_date: '2017-01-26').perform
-      expect(io.reload.start_date).to eql Date.new(2017,01,01)
-    end
-
     it 'updates IO order end date' do
       io(start_date: '2017-01-01', end_date: '2017-03-01')
       io_csv(io_external_number: io.external_io_number, io_end_date: '2017-01-26').perform
@@ -97,12 +91,6 @@ RSpec.describe IoCsv, type: :model do
       io(start_date: '2017-01-01', end_date: '2017-03-01')
       create_list :content_fee, 3, io: io
       io_csv(io_external_number: io.external_io_number, io_end_date: '2017-01-26').perform
-      expect(io.reload.end_date).to eql Date.new(2017,03,01)
-    end
-
-    it 'does not update end date if io_end_date is later than IO end date' do
-      io(start_date: '2017-01-01', end_date: '2017-03-01')
-      io_csv(io_external_number: io.external_io_number, io_end_date: '2017-03-02').perform
       expect(io.reload.end_date).to eql Date.new(2017,03,01)
     end
   end
