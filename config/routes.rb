@@ -390,6 +390,7 @@ Rails.application.routes.draw do
 
       collection do
         post :create_thread
+        get :all_emails
       end
     end
   end

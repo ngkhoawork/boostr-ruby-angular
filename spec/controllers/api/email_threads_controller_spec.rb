@@ -34,10 +34,23 @@ RSpec.describe Api::EmailThreadsController, type: :controller do
 
   describe 'GET #create_thread' do
     it 'should create email thread by thread id' do
+      params = {
+        email_guid: '123456',
+        thread_id: '111',
+        gmail_query_string: '=&to=Sergey%20Guzhvay%20%3Csergey%40zazmic.com%3E&to=Vitaliy%20Jorzh%20%3Cvitaliy.jorzh%40zazmic.com%3E&to=&=&cc=&=&bcc=&subjectbox=test&composeid=3&from=Sergey%20Guzhvay%20%3Csergey@zazmic.com%3E&subject=test&draft=15f4db8d79ffc5a3&bwd=&rm=&ac=%5B%5D&adc=&ishtml=1&body=%3Cdiv%20dir%3D%22ltr%22%3E111%3C%2Fdiv%3E&pte=&pti=&bpfs=&uet=&pbgt=&pbgas=&pbgir='
+      }
+
       expect do
-        get :create_thread, guid: '123456', thread_id: '111'
+        post :create_thread, params
         expect(response).to be_success
       end.to change(EmailThread, :count).by(1)
+
+      thread = EmailThread.last
+
+      expect(thread.email_guid).to eq params[:email_guid]
+      expect(thread.thread_id).to eq params[:thread_id]
+      expect(thread.body).to_not be_nil
+      expect(thread.subject).to_not be_nil
     end
 
     it 'should not create email thread' do
@@ -55,9 +68,9 @@ RSpec.describe Api::EmailThreadsController, type: :controller do
       create_list :email_open, 2
 
       get :all_opens, email_thread_id: thread.thread_id
-      response_data = JSON.parse(response.body).deep_symbolize_keys
+      response_data = JSON.parse(response.body)
 
-      expect(response_data[:opens].size).to eq 2
+      expect(response_data.size).to eq 2
     end
 
     it 'should not return error message that thread not found' do
@@ -68,9 +81,25 @@ RSpec.describe Api::EmailThreadsController, type: :controller do
     end
   end
 
+  describe 'GET #all_emails' do
+    it 'should return all email threads' do
+      thread_with_opens
+
+      get :all_emails
+      response_data = JSON.parse(response.body).first.deep_symbolize_keys
+
+      expect(response_data).to_not be_nil
+      expect(response_data[:email_opens]).to_not be_empty
+    end
+  end
+
   private
 
   def thread
     @_thread ||= create :email_thread, email_guid: '12345', thread_id: '123'
+  end
+
+  def thread_with_opens
+    @_email_open = create :email_open, guid: thread.email_guid, opened_at: Date.yesterday
   end
 end

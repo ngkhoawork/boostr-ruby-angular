@@ -14,12 +14,16 @@ class Api::EmailThreadsController < ApplicationController
 
   def create_thread
     # TODO need add current user id when auth will be implemented
-    email_thread = EmailThread.create(decorated_email_threads)
+    if params[:gmail_query_string]
+      email_thread = EmailThread.create(decorated_email_threads)
 
-    if email_thread.save
-      render json: email_thread, status: :created
+      if email_thread.save
+        render json: email_thread, status: :created
+      else
+        render json: { errors: email_thread.errors.messages }, status: :unprocessable_entity
+      end
     else
-      render json: { errors: email_thread.errors.messages }, status: :unprocessable_entity
+      render json: { errors: "Please provide gmail_query_string param" }, status: :unprocessable_entity
     end
   end
 
@@ -29,6 +33,12 @@ class Api::EmailThreadsController < ApplicationController
     else
       render json: { errors: "Email Thread Not Found" }, status: 404
     end
+  end
+
+  def all_emails
+    threads = EmailThread.order('created_at DESC').as_json({ include: :email_opens })
+
+    render json: threads
   end
 
   private
