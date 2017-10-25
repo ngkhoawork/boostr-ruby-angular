@@ -86,6 +86,16 @@ class Client < ActiveRecord::Base
   scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
   scope :by_ids, -> ids { where(id: ids) if ids.present?}
   scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }
+  scope :excepting_client_associations, lambda { |client, assoc_name|
+    case assoc_name.to_sym
+    when :child_clients
+      where.not(id: client.child_client_ids)
+    when :connections
+      where.not(id: client.connection_entry_ids)
+    else
+      raise ArgumentError, 'provide only "child_clients", "connections" for assoc name'
+    end
+  }
 
   scope :without_related_clients, -> contact_id do
     joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id }).distinct
