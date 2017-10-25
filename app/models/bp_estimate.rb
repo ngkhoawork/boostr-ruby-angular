@@ -2,7 +2,7 @@ class BpEstimate < ActiveRecord::Base
   belongs_to :bp
   belongs_to :client
   belongs_to :user
-  has_many :bp_estimate_products
+  has_many :bp_estimate_products, dependent: :destroy
 
   accepts_nested_attributes_for :bp_estimate_products
 
