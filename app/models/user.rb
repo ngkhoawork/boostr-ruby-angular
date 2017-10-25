@@ -89,6 +89,10 @@ class User < ActiveRecord::Base
     roles.include?(role.to_s)
   end
 
+  def authorized_switch_to?(to_user)
+    is?(:supportadmin) || is?(:superadmin) || is?(:admin) && to_user && company_id == to_user.company_id
+  end
+
   def company_influencer_enabled
     self.company.influencer_enabled
   end
