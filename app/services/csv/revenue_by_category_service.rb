@@ -1,6 +1,5 @@
 class Csv::RevenueByCategoryService < Csv::BaseService
   HEADER_ATTRIBUTES_MAPPING = {
-    Category: :category_id,
     Year: :year,
     Total: :total_revenue
   }.freeze
@@ -21,17 +20,25 @@ class Csv::RevenueByCategoryService < Csv::BaseService
 
       decorated_records.each do |record|
         csv << headers.map do |header|
-          default_attribute(record, header) || specific_attribute(record, header)
+          category_attr(record, header) || month_revenue_attr(record, header) || header_linked_attr(record, header)
         end
       end
     end
   end
 
-  def default_attribute(record, header)
+  def month_revenue_attr(record, header)
     record.revenues[Date::MONTHNAMES.index(header)]
   end
 
-  def specific_attribute(record, header)
+  def header_linked_attr(record, header)
     record.send(HEADER_ATTRIBUTES_MAPPING[header.to_sym]) if HEADER_ATTRIBUTES_MAPPING[header.to_sym]
+  end
+
+  def category_attr(record, header)
+    return unless header.to_sym == :Category
+
+    # Store categories in hash table to avoid redundant DB queries
+    @categories ||= {}
+    @categories[record.category_id] ||= Option.find(record.category_id).name
   end
 end
