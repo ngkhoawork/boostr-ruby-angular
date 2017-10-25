@@ -4,47 +4,11 @@
       .reports-header
         .header-cell.main-title
           Activity Summary
-        .header-cell.filters-block
-          %table
-            %tr.filter-title
-              %td Team
-              %td User Type
-              %td Time period
-              %td
-                %span.reset-filter{'ng-click': 'resetFilter()'}
-                  Reset
-            %tr
-              %td
-                %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'filter.team', 'ng-class': '{"empty": filter.team.name === "All"}'}
-              %td
-                %ul.filter-item
-                  %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.userType.id}' }
-                      {{filter.userType.name}}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{'ng-class': '{active: !filter.userType.id}'}
-                        %a{href: '', 'ng-click': 'setFilter("userType", emptyFilter)'}
-                          {{emptyFilter.name}}
-                      %li{ ng: { repeat: 'userType in userTypes | orderBy : "name"', class: '{active: userType.id === filter.userType.id}' } }
-                        %a{ href: '', ng: { click: 'setFilter("userType", userType)' } }
-                          {{userType.name}}
-              %td
-                .date-picker-wrap
-                  %div.date-picker{'date-range-picker': true,
-                                     'ng-model': 'filter.date',
-                                     :options => "{locale: {format: 'MMMM D, YYYY'},
-                                         eventHandlers: {'apply.daterangepicker': datePicker.apply}}"}
-                    %span.empty{'ng-hide': 'datePicker.toString("date")'}
-                      Time period
-                      %span.caret
-                    %span{'ng-show': 'datePicker.toString("date")'}
-                      {{datePicker.toString("date")}}
-                      %span.caret
-
-        .header-cell
-          %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: isFilterApplied()}'}
-            Run Report
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}', 'on-change': 'updateSellers'} Team
+            %z-filter-field{data: 'userTypes', 'save-as': '{user_type: "id"}'} User Type
+            %z-filter-field{type: 'daterange', 'save-as': '{start_date: "startDate", end_date: "endDate"}'} Time period
 
         .header-cell
           .pull-right
@@ -58,19 +22,19 @@
           .table-wrapper
             %table.table.table-hover
               %thead
-                %tr{'z-fixed-header': true, watch: '["types", "userReportValues"]'}
+                %tr.z-sortable-prime{'z-fixed-header': true, watch: '["types", "userReportValues"]'}
                   %th.left
-                    %span.clickable{ 'ng-click': 'changeSortType("username")'}
+                    .z-sortable{by: 'username', default: true}
                       Name
                   %th{ ng: { repeat: 'type in types track by $index' } }
-                    %span.clickable{'ng-click': 'changeSortType("\"" + type.name + "\"")'}
-                      {{ type.name }}
+                    .z-sortable{by: '"\"" + type.name + "\""'}
+                      {{type.name}}
                   %th.text--bold
-                    %span.clickable{ 'ng-click': 'changeSortType("total")'}
+                    .z-sortable{by: 'total'}
                       Total
 
               %tbody
-                %tr{ ng: { repeat: 'report in userReportValues | orderBy:sortType:sortReverse' } }
+                %tr{ ng: { repeat: 'report in userReportValues | orderBy : zSort.by : zSort.rev' } }
                   %td.left {{ report.username }}
                   %td{'ng-repeat': 'type in types'}
                     %a{'ng-click': 'showActivityDetailModal(report.user_id, type.id)'}
