@@ -8,17 +8,9 @@ class Api::MailtrackController < ApplicationController
     params = Rack::Utils.parse_nested_query(decode_pixel).symbolize_keys
 
     if EmailThread.exists?(email_guid: params[:guid])
-      meta = {
-        ip: request.remote_ip,
-        opened_at: Time.now,
-        location: get_location_from_ip(request.remote_ip),
-        device: device_info(request.user_agent),
-        is_gmail: detect_google_proxy(request.remote_ip)
-      }
+      decorated_data = decorated_email_opens(params)
 
-      params.merge!(meta)
-
-      EmailOpen.create(params)
+      EmailOpen.create(decorated_data)
     end
 
     set_cache_headers
@@ -27,22 +19,8 @@ class Api::MailtrackController < ApplicationController
 
   private
 
-  def detect_google_proxy remote_ip
-    Resolv.new.getname(remote_ip).include?('google.com') rescue false
-  end
-
-  def get_location_from_ip remote_ip
-    geo_ip = Geocoder.search(remote_ip).first.data.symbolize_keys
-
-    geo_ip[:city].present? ? geo_ip[:city] : geo_ip[:country_name]
-  end
-
-  def device_info user_agent
-    parse_ua = UserAgentParser.parse user_agent
-
-    device = parse_ua.device.family == 'Other' ? parse_ua.os.to_s : parse_ua.device.family
-
-    [device, parse_ua.family].join(", ")
+  def decorated_email_opens(params)
+    Emails::EmailOpenDecorator.new(params, request).collect
   end
 
   def set_cache_headers

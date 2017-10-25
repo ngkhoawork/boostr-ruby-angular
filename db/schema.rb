@@ -1149,6 +1149,12 @@ ActiveRecord::Schema.define(version: 20171006144351) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string   "thread_id"
+    t.string   "body"
+    t.string   "subject"
+    t.string   "to"
+    t.string   "from"
+    t.string   "sender"
+    t.string   "recipient"
   end
 
   create_table "exchange_rates", force: :cascade do |t|

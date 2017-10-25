@@ -1,5 +1,5 @@
 class EmailThread < ActiveRecord::Base
-  has_many :email_open, foreign_key: :guid, primary_key: :email_guid
+  has_many :email_opens, foreign_key: :guid, primary_key: :email_guid
 
   validates :email_guid, :thread_id, presence: true, uniqueness: true
 
