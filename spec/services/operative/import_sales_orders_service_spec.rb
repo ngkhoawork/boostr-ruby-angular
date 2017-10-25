@@ -25,7 +25,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
     expect(IoCsv).to receive(:new).with({
       io_external_number: nil,
       io_name: nil,
-      io_start_date: '2017-09-24',
+      io_start_date: (Date.today - 1.month).to_s,
       io_end_date: nil,
       io_advertiser: nil,
       io_agency: nil,
@@ -93,7 +93,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
     expect(IoCsv).to receive(:new).with({
       io_external_number: nil,
       io_name: nil,
-      io_start_date: '2017-09-24',
+      io_start_date: (Date.today - 1.month).to_s,
       io_end_date: nil,
       io_advertiser: nil,
       io_agency: nil,
@@ -153,7 +153,7 @@ RSpec.describe Operative::ImportSalesOrdersService, datafeed: :true do
       expect(import_log.error_messages).to eq [{
         "row"=>1,
         "message"=>
-          ["Internal Server Error", "{:order_currency_id=>\"100\", :order_start_date=>\"2017-09-24\", :sales_stage_percent=>\"100\"}"]
+          ["Internal Server Error", "{:order_currency_id=>\"100\", :order_start_date=>\"#{Date.today - 1.month}\", :sales_stage_percent=>\"100\"}"]
       }]
     end
 
