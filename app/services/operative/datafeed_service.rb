@@ -45,6 +45,7 @@ class Operative::DatafeedService
       api_config.company_id,
       api_config.revenue_calculation_pattern,
       api_config.product_mapping,
+      api_config.exclude_child_line_items,
       @extracted_files.slice(:sales_order_line_items, :invoice_line_item)
     ).perform
   end
