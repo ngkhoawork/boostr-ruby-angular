@@ -1,6 +1,6 @@
 @app.controller 'ReportsController',
-	['$scope', '$document', '$modal', '$routeParams', '$httpParamSerializer', '$location', '$window', '$filter', 'Team', 'User', 'ActivityType', 'TimePeriod', 'ActivityReport',
-	( $scope,   $document,   $modal,   $routeParams,   $httpParamSerializer,   $location,   $window,   $filter,   Team,   User,   ActivityType,   TimePeriod,   ActivityReport ) ->
+	['$scope', '$modal', '$httpParamSerializer', '$window', 'Team', 'User', 'ActivityType', 'ActivityReport',
+	( $scope,   $modal,   $httpParamSerializer,   $window,   Team,   User,   ActivityType,   ActivityReport ) ->
 
 		$scope.teams = []
 		$scope.types = []
