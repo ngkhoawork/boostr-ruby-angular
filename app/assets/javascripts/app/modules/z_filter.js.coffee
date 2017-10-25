@@ -90,7 +90,7 @@
 			$scope.onQueryDropdownToggle = (isOpen) ->
 				if !isOpen then resetQueryForm()
 			$scope.applyFilter = ->
-				$scope.onApply(ctrl.query)
+				$scope.onApply(angular.copy(ctrl.query))
 				ctrl.appliedQuery = angular.copy ctrl.query
 				ctrl.saveRecentQuery()
 				ctrl.checkApplied()

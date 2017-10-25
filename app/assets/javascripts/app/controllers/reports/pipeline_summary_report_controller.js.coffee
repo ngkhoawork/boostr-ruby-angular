@@ -53,7 +53,6 @@
 		Team.all(all_teams: true).then (teams) ->
 			$scope.teams = teams
 
-
 		Stage.query().$promise.then (stages) ->
 			$scope.stages = _.filter stages, (stage) -> stage.active
 
