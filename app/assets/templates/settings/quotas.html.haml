@@ -38,7 +38,7 @@
                 %th.left User
                 %th.right Total Quota ($)
             %tbody
-              %tr{ ng: { repeat: 'quota in quotas' } }
+              %tr{ ng: { repeat: 'quota in quotas | orderBy: "::user_name"' } }
                 %td.left
                   {{ quota.user_name }}
                   = inline_svg 'icons/profile.svg', class: 'svg pull-left'
