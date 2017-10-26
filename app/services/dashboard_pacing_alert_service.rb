@@ -58,10 +58,18 @@ class DashboardPacingAlertService < BaseService
   def revenue_calculation_object
     {
         positive_balance_count: positive_line_items.count,
-        positive_balance: positive_line_items.sum(:balance).to_i,
+        positive_balance: sum_positive_line_items,
         negative_balance_count: negative_line_items.count,
-        negative_balance: negative_line_items.sum(:balance).to_i
+        negative_balance: sum_negative_line_items
     }
+  end
+
+  def sum_positive_line_items
+    positive_line_items.sum(:balance).to_i rescue nil
+  end
+
+  def sum_negative_line_items
+    negative_line_items.sum(:balance).to_i rescue nil
   end
 
   def line_items_by_io_ids

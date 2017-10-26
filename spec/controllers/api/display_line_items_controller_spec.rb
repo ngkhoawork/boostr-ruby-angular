@@ -44,7 +44,7 @@ describe Api::DisplayLineItemsController, type: :controller do
     end
 
     it 'has appropriate ios if filter by started date' do
-      get :index, end_date: '2016-07-01', start_date: '2016-05-01', filter: 'upside', format: :json
+      get :index, end_date: '2016-11-01', start_date: '2016-05-01', filter: 'upside', format: :json
 
       response_json = response_json(response)
 
@@ -219,9 +219,9 @@ describe Api::DisplayLineItemsController, type: :controller do
   def create_item
     create :display_line_item,
            balance: 5_000,
-           budget: 10_000,
-           budget_remaining: 20_000.0,
-           start_date: '01/06/2016',
+           budget: 40_000,
+           budget_remaining: 5_000.0,
+           start_date: '20/07/2016',
            end_date: '01/10/2016'
   end
 
@@ -229,7 +229,7 @@ describe Api::DisplayLineItemsController, type: :controller do
     create :display_line_item,
            balance: 5_000,
            budget: 10_000,
-           budget_remaining: 10.0,
+           budget_remaining: 20_000.0,
            start_date: '01/06/2016',
            end_date: '01/10/2016'
   end
