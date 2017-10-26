@@ -345,7 +345,7 @@ class Api::ClientsController < ApplicationController
 
     @suggest_clients = company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
 
-    if client && params[:assoc]
+    if params[:assoc] && client
       @suggest_clients = @suggest_clients.excepting_client_associations(client, params[:assoc])
     end
 

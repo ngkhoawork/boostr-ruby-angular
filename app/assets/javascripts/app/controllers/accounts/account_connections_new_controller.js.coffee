@@ -34,7 +34,13 @@
     )
 
   $scope.loadClients = (query, type_id, current_account_id) ->
-    Client.search_clients({ name: query, client_type_id: type_id, id: current_account_id }).$promise.then (clients) ->
+    params =
+      id: current_account_id,
+      name: query,
+      client_type_id: type_id,
+      assoc: 'connections'
+
+    Client.search_clients(params).$promise.then (clients) ->
       if type_id == $scope.Advertiser
         $scope.advertisers = clients
       if type_id == $scope.Agency

@@ -5,11 +5,17 @@
   $scope.submitText = "Update"
   $scope.parentClient = parentClient
   $scope.searchText = ""
-  Client.search_clients({ client_type_id: $scope.parentClient.client_type.option_id }).$promise.then (clients) ->
+  Client.search_clients({
+    id: $scope.parentClient.id,
+    assoc: 'child_clients',
+    client_type_id: $scope.parentClient.client_type.option_id
+  }).$promise.then (clients) ->
     $scope.clients = clients
 
   $scope.searchObj = (search) ->
     params =
+      id: $scope.parentClient.id,
+      assoc: 'child_clients',
       client_type_id: $scope.parentClient.client_type.option_id,
       name: search.trim()
 
