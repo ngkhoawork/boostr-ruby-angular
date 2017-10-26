@@ -27,6 +27,11 @@
             %strong
               Advertiser:
             #{@deal.advertiser_name}
+          - if @deal.has_billing_contact?
+            .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
+              %strong
+                Billing Contact:
+              #{@deal.billing_contact.name}
           .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
             %strong
               Sales Team:

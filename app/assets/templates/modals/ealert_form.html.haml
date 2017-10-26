@@ -59,6 +59,15 @@
                     %strong
                       Advertiser:
                     {{deal.advertiser.name}}
+                  %div{'ng-if': 'deal.billing_contact'}
+                    .advertiser-ballast
+                      %strong
+                        Billing Contact:
+                      {{deal.billing_contact.name}}
+                    .advertiser-ballast
+                      %strong
+                        Probability:
+                      {{deal.stage.probability}}%
                   .advertiser-ballast
                     %strong
                       Sales Team: 

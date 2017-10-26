@@ -70,6 +70,12 @@ if deal.advertiser
   end
 end
 
+if deal.has_billing_contact?
+  json.billing_contact do
+    json.extract! deal.billing_contact, :id, :name
+  end
+end
+
 if deal.agency
   json.agency do
     json.extract! deal.agency, :id, :name
