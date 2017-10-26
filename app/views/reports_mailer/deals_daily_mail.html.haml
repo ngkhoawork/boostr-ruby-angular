@@ -8,15 +8,15 @@
   %p
     Deal: #{ new_deal['name'] } - Advertiser: #{ new_deal['advertiser_name'] } - Budget: #{ (Money.new(new_deal['budget']) * 100).format(no_cents: true) } - Start Date: #{ new_deal['start_date'] } - Current Stage: #{ new_deal['stage_name'] }
 
-%h1 Budget Changed Deals
+%h1 Budget Changes
 - @budget_changed_deals.each do |budget_changed_deal|
   %p
-    Deal: #{ budget_changed_deal[:name] } - Advertiser: #{ budget_changed_deal[:advertiser_name] } - Budget: #{ (Money.new(budget_changed_deal[:budget]) * 100).format(no_cents: true) } - Budget Change: #{ (Money.new(budget_changed_deal[:budget_change]) * 100).format(no_cents: true) } - Start Date: #{ budget_changed_deal[:start_date] }
+    Deal: #{ budget_changed_deal[:name] } - Advertiser: #{ budget_changed_deal[:advertiser_name] } - Old Budget: #{ (Money.new(budget_changed_deal[:budget]) * 100).format(no_cents: true) } - New Budget Change: #{ (Money.new(budget_changed_deal[:budget_change]) * 100).format(no_cents: true) } - Start Date: #{ budget_changed_deal[:start_date] }
 
-%h1 Stage Changed Deals
+%h1 Stage Changes
 - @stage_changed_deals.each do |stage_changed_deal|
   %p
-    Deal: #{ stage_changed_deal[:name] } - Advertiser: #{ stage_changed_deal[:advertiser_name] } - Budget: #{ (Money.new(stage_changed_deal[:budget]) * 100).format(no_cents: true) } - Start Date: #{ stage_changed_deal[:start_date] } - Current Stage: #{ stage_changed_deal[:stage_name] } - Previous stage: #{ stage_changed_deal[:previous_stage] }
+    Deal: #{ stage_changed_deal[:name] } - Advertiser: #{ stage_changed_deal[:advertiser_name] } - Budget: #{ (Money.new(stage_changed_deal[:budget]) * 100).format(no_cents: true) } - Start Date: #{ stage_changed_deal[:start_date] } - Old stage: #{ stage_changed_deal[:previous_stage] } - New Stage: #{ stage_changed_deal[:stage_name] }
 
 %h1 Lost Deals
 - @lost_deals.each do |lost_deal|
