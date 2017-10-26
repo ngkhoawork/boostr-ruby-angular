@@ -96,7 +96,7 @@
                   %span{ ng: { 'switch-when': 'integer' } }
                     {{(getDealFieldValue(field) || 0) | number : 0}}
                   %span{ ng: { 'switch-when': 'currency' } }
-                    {{(getDealFieldValue(field) || 0) | currency: '$' : 2}}
+                    {{(getDealFieldValue(field) || 0) | currency: deal.currency.curr_symbol : 2}} {{deal.currency.curr_cd}}
                   %span{ ng: { 'switch-when': 'percentage' } }
                     {{(getDealFieldValue(field) || 0) | number : 2}}%
                   %span{ ng: { 'switch-when': 'datetime' } }
@@ -136,7 +136,7 @@
                       %span{ ng: { 'switch-when': 'integer' } }
                         {{(getDealProductFieldValue(deal_product, field) || 0) | number : 0}}
                       %span{ ng: { 'switch-when': 'currency' } }
-                        {{(getDealProductFieldValue(deal_product, field) || 0) | currency: '$' : 2}}
+                        {{(getDealProductFieldValue(deal_product, field) || 0) | currency: deal.currency.curr_symbol : 2}} {{deal.currency.curr_cd}}
                       %span{ ng: { 'switch-when': 'percentage' } }
                         {{(getDealProductFieldValue(deal_product, field) || 0) | number : 2}}%
                       %span{ ng: { 'switch-when': 'datetime' } }
