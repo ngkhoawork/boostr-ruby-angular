@@ -15,6 +15,7 @@
   $scope.selectedStageId = null
   $scope.currency_symbol = '$'
   $scope.ealertReminder = false
+  $scope.activitiesOrder = '-happened_at'
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
