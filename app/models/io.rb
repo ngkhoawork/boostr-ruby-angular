@@ -44,7 +44,7 @@ class Io < ActiveRecord::Base
   end
   scope :by_name, -> (name) { where('ios.name ilike ?', "%#{name}%") if name.present? }
   scope :by_created_date, -> (start_date, end_date) do
-    where(created_at: start_date..end_date) if start_date.present? && end_date.present?
+    where(created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day)) if start_date.present? && end_date.present?
   end
 
   after_update do

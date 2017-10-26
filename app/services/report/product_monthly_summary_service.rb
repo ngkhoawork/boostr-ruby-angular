@@ -57,41 +57,51 @@ class Report::ProductMonthlySummaryService
             results << product_io(deal.io, display_line_item.product, budget)
           end
         end
+
+        deal.deal_products.open.for_product_id(product_id).each do |deal_product|
+          product = deal_product.product
+          deal_product.deal_product_budgets.each do |budget|
+            results << monthly_deal_product_budget(deal, product, deal_product, budget)
+          end
+        end
       else
         deal.deal_products.for_product_id(product_id).each do |deal_product|
           product = deal_product.product
           deal_product.deal_product_budgets.each do |budget|
-            data = {}
-            data['record_id'] = deal.id
-            data['product_id'] = product.id
-            data['product'] = product.name
-            data['custom_fields'] = custom_fields(deal_product)
-            data['record_type'] = 'Deal'
-            data['members'] = members(deal.deal_members)
-            data['advertiser'] = deal.advertiser.serializable_hash(only: [:id, :name]) rescue nil
-            data['name'] = deal.name
-            data['agency'] = deal.agency.serializable_hash(only: [:id, :name]) rescue nil
-            data['holding_company'] = deal.agency.holding_company.name rescue nil
-            data['stage'] = deal.stage.serializable_hash(only: [:name, :probability]) rescue {}
-            data['budget'] = budget.budget
-            data['weighted_budget'] = data['stage']['probability'].present? ? data['budget'].to_f * data['stage']['probability'].to_f / 100 : 0
-            data['budget_loc'] = budget.budget_loc
-            data['currency'] = deal.currency && deal.currency.curr_symbol
-            data['currency_cd'] = deal.currency && deal.currency.curr_cd
-            data['created_at'] = deal.created_at
-            data['closed_at'] = deal.closed_at
-            data['type'] = deal.get_option_value_from_raw_fields(deal_custom_fields, 'Deal Type')
-            data['source'] = deal.get_option_value_from_raw_fields(deal_custom_fields, 'Deal Source')
-            data['start_date'] = budget.start_date
-            data['end_date'] = budget.end_date
-
-            results << data
+            results << monthly_deal_product_budget(deal, product, deal_product, budget)
           end
         end
       end
     end
 
     results
+  end
+
+  def monthly_deal_product_budget(deal, product, deal_product, budget)
+    data = {}
+    data['record_id'] = deal.id
+    data['product_id'] = product.id
+    data['product'] = product.name
+    data['custom_fields'] = custom_fields(deal_product)
+    data['record_type'] = 'Deal'
+    data['members'] = members(deal.deal_members)
+    data['advertiser'] = deal.advertiser.serializable_hash(only: [:id, :name]) rescue nil
+    data['name'] = deal.name
+    data['agency'] = deal.agency.serializable_hash(only: [:id, :name]) rescue nil
+    data['holding_company'] = deal.agency.holding_company.name rescue nil
+    data['stage'] = deal.stage.serializable_hash(only: [:name, :probability]) rescue {}
+    data['budget'] = budget.budget
+    data['weighted_budget'] = data['stage']['probability'].present? ? data['budget'].to_f * data['stage']['probability'].to_f / 100 : 0
+    data['budget_loc'] = budget.budget_loc
+    data['currency'] = deal.currency && deal.currency.curr_symbol
+    data['currency_cd'] = deal.currency && deal.currency.curr_cd
+    data['created_at'] = deal.created_at
+    data['closed_at'] = deal.closed_at
+    data['type'] = deal.get_option_value_from_raw_fields(deal_custom_fields, 'Deal Type')
+    data['source'] = deal.get_option_value_from_raw_fields(deal_custom_fields, 'Deal Source')
+    data['start_date'] = budget.start_date
+    data['end_date'] = budget.end_date
+    data
   end
 
   def product_io(io, product, budget)
