@@ -5,6 +5,7 @@ class Api::DashboardsController < ApplicationController
     render json: {
       forecast: DashboardForecastSerializer.new(forecast),
       next_quarter_forecast: DashboardForecastSerializer.new(next_quarter_forecast),
+      this_year_forecast: DashboardForecastSerializer.new(this_year_forecast),
       deals: serialized_deals,
       current_user: current_user,
       revenue: dashboard_pacing_alert_service.display_revenue
@@ -33,6 +34,10 @@ class Api::DashboardsController < ApplicationController
     company.time_periods.all_quarter.find_by(start_date: time_period.end_date.next)
   end
 
+  def this_year_time_period
+    company.time_periods.years_only.find_by(start_date: Date.today.beginning_of_year)
+  end
+
   def forecast
     return nil unless time_period
 
@@ -43,6 +48,12 @@ class Api::DashboardsController < ApplicationController
     return nil unless time_period || next_time_period
 
     @_next_quarter_forecast ||= forecast_for(next_time_period)
+  end
+
+  def this_year_forecast
+    return nil unless this_year_time_period
+
+    @_this_year_forecast ||= forecast_for(this_year_time_period)
   end
 
   def forecast_for(period)

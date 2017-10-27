@@ -6,6 +6,7 @@
                 $scope.forecast = [
                     dashboard.forecast
                     dashboard.next_quarter_forecast
+                    dashboard.this_year_forecast
                 ]
                 $scope.setStats(0)
 
