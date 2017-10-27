@@ -658,7 +658,7 @@ class Api::DealsController < ApplicationController
                 :link7,
             ]
         }
-    )
+    ).merge(modifying_user: current_user)
   end
 
   def deal_type_source_params

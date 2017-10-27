@@ -50,6 +50,7 @@ class Deal < ActiveRecord::Base
   validate :single_billing_contact
   validate :account_manager_presence
   validate :disable_manual_deal_won_validation, on: :manual_update
+  validate :restrict_deal_reopen_validation
   validate :base_fields_presence
 
   accepts_nested_attributes_for :deal_custom_field
@@ -60,6 +61,8 @@ class Deal < ActiveRecord::Base
   delegate :probability, to: :stage, allow_nil: true, prefix: true
   delegate :open?, to: :stage, allow_nil: true, prefix: true
   delegate :active?, to: :stage, allow_nil: true, prefix: true
+
+  attr_accessor :modifying_user
 
   before_update do
     if curr_cd_changed?
@@ -290,6 +293,18 @@ class Deal < ActiveRecord::Base
       errors.add(
         :stage, "Deals can't be updated to #{self.stage.try(:name)} manually. Deals can only be set to #{self.stage.try(:name)} from API integration"
       )
+    end
+  end
+
+  def restrict_deal_reopen_validation
+    validation = company.validation_for(:restrict_deal_reopen)
+
+    return unless validation && stage && modifying_user
+
+    disabled = validation.criterion.try(:value)
+
+    if disabled && stage.open? && stage_was.closed? && !modifying_user.is_admin
+      errors.add(:stage, 'Admins only can reopen the deal')
     end
   end
 
@@ -1405,6 +1420,11 @@ class Deal < ActiveRecord::Base
     ForecastPipelineCalculatorWorker.perform_async(deal_change)
 
     import_log.save
+  end
+
+
+  def stage_was
+    stage_id_changed? ? Stage.find(stage_id_was) : stage
   end
 
   def update_stage
