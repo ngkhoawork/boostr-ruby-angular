@@ -1,6 +1,7 @@
 @app.controller 'ForecastsDetailController',
-    ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal'
-    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal ) ->
+    ['$scope', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Forecast', 'Revenue', 'Deal', 'zError'
+    ( $scope,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Forecast,   Revenue,   Deal,   zError ) ->
+
         $scope.teams = []
         $scope.sellers = []
         $scope.timePeriods = []
@@ -134,7 +135,10 @@
                 item
 
         getData = (query) ->
-            if !query.time_period_id || !$scope.user then return
+            if !query.time_period_id
+                zError '#time-period-field', 'You should select Time period to run the report'
+                return
+            if !$scope.user then return
             $scope.forecast_gap_to_quota_positive = $scope.user.company_forecast_gap_to_quota_positive
             Forecast.forecast_detail(query).$promise.then (data) ->
                 handleForecast data
