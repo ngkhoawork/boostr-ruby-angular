@@ -1,0 +1,140 @@
+.z-styles {
+    min-height: calc(100vh - 150px);
+    background-color: $main-background-color;
+    padding-top: 30px;
+    font-family: "Avenir Next", Arial, serif;
+    color: $main-font-color;
+    a {
+        cursor: pointer;
+        color: $secondary-color;
+        font-weight: 600;
+    }
+    .z-icon {
+        color: $secondary-font-color;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+        padding: 4px 6px;
+        font-size: 20px;
+        border-radius: 5px;
+        &:hover {
+            background-color: $secondary-font-color;
+            color: white;
+        }
+    }
+    .main-title {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .switch-row {
+        span {
+            display: inline-block;
+            padding: 3px 5px 8px;
+            margin: 0 10px;
+            font-weight: 600;
+            cursor: pointer;
+            &.title {
+                color: $secondary-font-color;
+                cursor: default;
+            }
+            &.active {
+                color: $main-color;
+                border-bottom: 2px solid $main-color;
+            }
+        }
+    }
+    .block {
+        margin-bottom: 30px;
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-right: 20px;
+        }
+    }
+    table.table {
+        a {
+            color: $secondary-color;
+        }
+        thead {
+            background-color: white;
+            th {
+                color: $secondary-font-color !important;
+                border-left: none;
+                border-right: none;
+                text-transform: none;
+                font-weight: 500;
+                font-size: 12px;
+            }
+        }
+        tbody:nth-child(2) {
+            tr:first-child {
+                td {
+                    border-top-width: 2px;
+                }
+            }
+        }
+        tbody {
+            tr {
+                td:first-child {
+                    a:hover, a:focus {
+                        color: $secondary-color;
+                    }
+                }
+            }
+        }
+        tr {
+            .z-icon {
+                visibility: hidden;
+            }
+            &:hover {
+                .z-icon {
+                    visibility: visible;
+                }
+            }
+            &:nth-of-type(even) {
+                //background-color: #fafafb;
+            }
+            th, td {
+                text-align: left;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            th:last-child, td:last-child {
+                text-align: right;
+            }
+            .stage {
+                select {
+                    height: 40px;
+                    border: none;
+                    background-color: transparent;
+                    cursor: pointer;
+                    outline: none;
+                }
+            }
+        }
+    }
+    .total-stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .stats-col {
+            text-align: center;
+            margin: 0 30px;
+            .text {
+                color: $secondary-font-color;
+            }
+            .value {
+                font-weight: bold;
+                font-size: 22px;
+            }
+        }
+    }
+    .z-fixed-header {
+        position: absolute;
+        background-color: white;
+        border-bottom: 1px solid #ddd;
+        &.fixed {
+            border-bottom: 2px solid #ddd;
+        }
+    }
+}
