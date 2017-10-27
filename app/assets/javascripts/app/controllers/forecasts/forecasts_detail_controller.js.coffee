@@ -4,36 +4,12 @@
         $scope.teams = []
         $scope.sellers = []
         $scope.timePeriods = []
-        defaultUser = {id: 'all', name: 'All', first_name: 'All'}
-        $scope.filter =
-            team: {id: 'all', name: 'All'}
-            seller: defaultUser
-            timePeriod: {id: null, name: 'Select'}
-        $scope.selectedTeam = $scope.filter.team
-        appliedFilter = null
+        $scope.appliedFilter = {}
         $scope.switch =
             revenues: 'quarters'
             deals: 'quarters'
             set: (key, val) ->
                 this[key] = val
-        $scope.sortRevenues =
-            field: 'budget'
-            reverse: false
-            by: (key) ->
-                if this.field == key
-                    this.reverse = !this.reverse
-                else
-                    this.field = key
-                    this.reverse = false
-        $scope.sortDeals =
-            field: 'budget'
-            reverse: false
-            by: (key) ->
-                if this.field == key
-                    this.reverse = !this.reverse
-                else
-                    this.field = key
-                    this.reverse = false
         $scope.getSortableAmountKey = (type, index) ->
             switch type
                 when 'revenues'
@@ -47,23 +23,20 @@
                     if $scope.switch.deals == 'months'
                         return "month_amounts[#{index}]"
 
-        $scope.isYear = -> $scope.filter.timePeriod.period_type is 'year'
         $scope.isNumber = (number) -> angular.isNumber number
+        $scope.isYear = ->
+            timePeriod = _.findWhere $scope.timePeriods, {id: $scope.appliedFilter.time_period_id}
+            timePeriod && timePeriod.period_type is 'year'
 
         $scope.quarters = []
         $scope.forecast = {}
         $scope.revenues = []
         $scope.deals = []
 
-        isTeamFound = false
-        $scope.$watch 'selectedTeam', (nextTeam, prevTeam) ->
-            if nextTeam.id && !isTeamFound
-                $scope.filter.seller = defaultUser
-                $scope.setFilter('team', nextTeam)
-            isTeamFound = false
-            Seller.query({id: nextTeam.id || 'all'}).$promise.then (sellers) ->
+        ($scope.updateSellers = (team) ->
+            Seller.query({id: (team && team.id) || 'all'}).$promise.then (sellers) ->
                 $scope.sellers = sellers
-                $scope.sellers.unshift(defaultUser)
+        )()
 
         $scope.scrollTo = (id) ->
             angular.element('html, body').animate {
@@ -71,18 +44,11 @@
             }, 1000
             return
 
-        $scope.setFilter = (key, value) ->
-            if $scope.filter[key]is value
-                return
-            $scope.filter[key] = value
-#            getData()
-
-        $scope.applyFilter = ->
-            appliedFilter = angular.copy $scope.filter
-            getData()
-
-        $scope.isFilterApplied = ->
-            !angular.equals $scope.filter, appliedFilter
+        $scope.onFilterApply = (query) ->
+            $scope.appliedFilter = query
+            query.id = 'all' if !query.id
+            query.user_id = 'all' if !query.user_id
+            getData(query)
 
         $scope.getAnnualSum = (data) ->
             sum = 0
@@ -96,44 +62,13 @@
             sellers: Seller.query({id: 'all'}).$promise
             timePeriods: TimePeriod.all()
         ).then (data) ->
+            $scope.user = data.user
             $scope.teams = data.teams
-            $scope.teams.unshift {id: 'all', name: 'All'}
             data.timePeriods = data.timePeriods.filter (period) ->
                 period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
             $scope.timePeriods = data.timePeriods
             $scope.sellers = data.sellers
-            $scope.sellers.unshift(defaultUser)
             $scope.forecast_gap_to_quota_positive = data.user.company_forecast_gap_to_quota_positive
-            switch data.user.user_type
-                when 1 #seller
-                    $scope.filter.seller = data.user
-                    searchAndSetUserTeam data.teams, data.user.id
-                    searchAndSetTimePeriod data.timePeriods
-                when 2 #managet
-                    searchAndSetUserTeam data.teams, data.user.id
-                    searchAndSetTimePeriod data.timePeriods
-            if (data.user.is_admin)
-                searchAndSetTimePeriod data.timePeriods
-#            getData()
-
-        searchAndSetUserTeam = (teams, user_id) ->
-            for team in teams
-                if team.leader_id is user_id or _.findWhere team.members, {id: user_id}
-                    isTeamFound = true
-                    $scope.filter.team = team
-                    return $scope.selectedTeam = team
-                if team.children && team.children.length
-                    searchAndSetUserTeam team.children, user_id
-
-        searchAndSetTimePeriod = (timePeriods) ->
-            for period in timePeriods
-                if period.period_type is 'quarter' and
-                    moment().isBetween(period.start_date, period.end_date, 'days', '[]')
-                        return $scope.filter.timePeriod = period
-            for period in timePeriods
-                if period.period_type is 'year' and
-                    moment().isBetween(period.start_date, period.end_date, 'days', '[]')
-                        return $scope.filter.timePeriod = period
 
         handleForecast = (data) ->
             fc = data.forecast
@@ -198,32 +133,27 @@
                 item.quarter_amounts = _.map item.quarter_amounts, (q) -> if isNaN parseInt q then null else parseInt q
                 item
 
-        getData = ->
-            if !$scope.filter.timePeriod || !$scope.filter.timePeriod.id then return
-            CurrentUser.get().$promise.then (user) ->
-                $scope.forecast_gap_to_quota_positive = user.company_forecast_gap_to_quota_positive
-                query =
-                    id: $scope.filter.team.id || 'all'
-                    user_id: $scope.filter.seller.id || 'all'
-                    time_period_id: $scope.filter.timePeriod.id
-                Forecast.forecast_detail(query).$promise.then (data) ->
-                    handleForecast data
-                    $scope.forecast = data.forecast
-                    $scope.quarters = data.quarters
-                    query.team_id = query.id
-                    delete query.id
-                    Revenue.forecast_detail(query).$promise.then (data) ->
-                        parseRevenueBudgets data
-                        addDetailAmounts data, 'revenues'
-                        $scope.revenues = data
-                        Deal.forecast_detail(query).then (data) ->
-                            parseDealBudgets data
-                            addDetailAmounts data, 'deals'
-                            $scope.deals = data
+        getData = (query) ->
+            if !query.time_period_id || !$scope.user then return
+            $scope.forecast_gap_to_quota_positive = $scope.user.company_forecast_gap_to_quota_positive
+            Forecast.forecast_detail(query).$promise.then (data) ->
+                handleForecast data
+                $scope.forecast = data.forecast
+                $scope.quarters = data.quarters
+                query.team_id = query.id
+                delete query.id
+                Revenue.forecast_detail(query).$promise.then (data) ->
+                    parseRevenueBudgets data
+                    addDetailAmounts data, 'revenues'
+                    $scope.revenues = data
+                    Deal.forecast_detail(query).then (data) ->
+                        parseDealBudgets data
+                        addDetailAmounts data, 'deals'
+                        $scope.deals = data
 
         tableToCSV = (el) ->
             table = angular.element(el)
-            headers = table.find('tr:has(th)')
+            headers = table.find('tr:has(th):not(.z-fixed-header)')
             rows = table.find('tr:has(td)')
             tmpColDelim = String.fromCharCode(11)
             tmpRowDelim = String.fromCharCode(0)

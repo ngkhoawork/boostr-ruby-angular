@@ -6,7 +6,7 @@
           Activity Summary
         .header-cell.filter-cell
           %z-filter{'on-apply': 'onFilterApply'}
-            %z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}', 'on-change': 'updateSellers'} Team
+            %z-filter-field{data: 'teams', type: 'team', 'save-as': '{team_id: "id"}'} Team
             %z-filter-field{data: 'userTypes', 'save-as': '{user_type: "id"}'} User Type
             %z-filter-field{type: 'daterange', 'save-as': '{start_date: "startDate", end_date: "endDate"}'} Time period
 

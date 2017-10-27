@@ -13,7 +13,7 @@
 				%div{'ng-if': 'isAll'}
 					%span.item{'ng-click': 'setFilter(null)', 'ng-class': '{active: !selected.id}'}
 						All
-				%div{ng: {repeat: 'item in data track by $index | orderBy : "name"'}}
+				%div{ng: {repeat: 'item in data | orderBy : (orderBy || "name") track by $index'}}
 					%span.item{'ng-click': 'setFilter(item)', 'ng-class': '{active: item.id === selected.id}'}
 						{{item.name}}
 	-#STAGE FIELD

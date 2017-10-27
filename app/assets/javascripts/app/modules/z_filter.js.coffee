@@ -5,14 +5,13 @@
 		ctrl = this
 		ctrl.reportName = _.last(window.location.pathname.split('/'))
 		$scope.recentQueries = LS.get(ctrl.reportName) || []
-		ctrl.loadedQuery = $scope.recentQueries[0] && $scope.recentQueries[0].filter_params
 		$scope.savedQueries = []
 		$scope.savedQueriesLoaded = false
-		(getSavedQueries = (init)->
+		(getSavedQueries = (isInit) ->
 			ReportQuery.get(query_type: ctrl.reportName).then (data) ->
 				$scope.savedQueries = _.map data, (q) -> q.filter_params = JSON.parse(q.filter_params); q
 				defaultQuery = _.findWhere $scope.savedQueries, default: true
-				ctrl.loadQuery(defaultQuery) if defaultQuery && init
+				ctrl.loadQuery((isInit && defaultQuery) || $scope.recentQueries[0])
 				ctrl.syncQueries()
 				$scope.savedQueriesLoaded = true
 		)(true)
@@ -50,6 +49,7 @@
 				ReportQuery.save(filter_query: query).then ->
 					callback() if _.isFunction callback
 		ctrl.loadQuery = (query) ->
+			if !query || _.isEmpty query.filter_params then return
 			ctrl.loadedQuery = query.filter_params
 			$scope.$broadcast 'loadQuery', query.filter_params
 		ctrl.deleteQuery = (query) ->
@@ -143,6 +143,7 @@
 			type: '@'
 			onChange: '='
 			default: '='
+			orderBy: '='
 		templateUrl: 'modules/z_filter_field.html'
 		compile: (el, attrs) ->
 			attrs.type = attrs.type || 'list' #default type
