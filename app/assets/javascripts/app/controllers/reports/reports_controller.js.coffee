@@ -48,8 +48,12 @@
 				backdrop: 'static'
 				keyboard: false
 				resolve:
-					activitySummaryParams: ->
-						{memberId, typeId, date: $scope.filter.date}
+					activitySummaryParams: -> {
+						memberId
+						typeId
+						start_date: appliedFilter.start_date
+						end_date: appliedFilter.end_date
+					}
 
 		$scope.exportReports = ->
 			url = '/api/reports.csv'

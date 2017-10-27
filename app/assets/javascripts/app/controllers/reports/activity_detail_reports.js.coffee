@@ -23,9 +23,9 @@
 				query.team_id = 'all'
 				query.member_id = p.memberId
 				query.activity_type_id = p.typeId
-				if p.date.startDate && p.date.endDate
-					query.start_date = p.date.startDate.format('YYYY-MM-DD')
-					query.end_date = p.date.endDate.format('YYYY-MM-DD')
+				if p.start_date && p.end_date
+					query.start_date = p.start_date
+					query.end_date = p.end_date
 				getReport query
 			)(activitySummaryParams)
 
