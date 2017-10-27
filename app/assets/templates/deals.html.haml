@@ -19,8 +19,9 @@
 								%i.fa.fa-search
 								%input.form-control{'placeholder': 'Search', 'ng-model': 'filter.search'}
 							%span.dropdown-title Select from list
-							.dropdown-option{'ng-repeat': 'member in filter.members | filter: filtering | limitTo: 10', role: 'menuitem'}
-								%a{href: '', 'ng-click': 'filter.select("member", member)'} {{member.name}}
+							.dropdown-block
+								.dropdown-option{'ng-repeat': "member in filter.members | filter: filtering  | orderBy: 'name'", role: 'menuitem'}
+									%a{href: '', 'ng-click': 'filter.select("member", member)'} {{member.name}}
 			.filter-row
 				.filter-name
 					%div

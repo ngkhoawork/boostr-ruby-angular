@@ -111,7 +111,7 @@ end
 json.values deal.values
 json.fields deal.fields
 
-json.activities deal.activities do |activity|
+json.activities deal.activities.order(happened_at: :desc) do |activity|
   json.extract! activity, :id, :happened_at, :comment, :activity_type
   json.creator activity.creator
   json.deal activity.deal

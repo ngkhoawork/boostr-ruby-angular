@@ -16,4 +16,5 @@ class AuditLog < ActiveRecord::Base
   scope :by_auditable_type, -> (type) { where(auditable_type: type) }
   scope :by_type_of_change, -> (type) { where(type_of_change: type) }
   scope :in_created_at_range, -> (date_range) { where(created_at: date_range) }
+  scope :not_deleted, -> { joins("LEFT JOIN deals ON audit_logs.auditable_type='Deal' AND audit_logs.auditable_id = deals.id").where('deals.deleted_at IS NULL') }
 end

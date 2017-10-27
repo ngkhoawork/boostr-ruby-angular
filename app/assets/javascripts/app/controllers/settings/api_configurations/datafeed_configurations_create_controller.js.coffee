@@ -9,7 +9,10 @@
       $scope.api_configuration = {
         integration_provider: 'Operative Datafeed',
         switched_on: true,
-        datafeed_configuration_details: { auto_close_deals: false }
+        datafeed_configuration_details: {
+          auto_close_deals: false,
+          exclude_child_line_items: false
+        }
       }
 
       ApiConfiguration.metadata(integration_provider: 'Operative Datafeed').then (data) ->

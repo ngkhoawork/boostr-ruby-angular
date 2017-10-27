@@ -46,7 +46,7 @@ feature 'BillingSummary' do
   end
 
   it 'update content fee product budget successfully', js: true do
-    expect(find('.display-line-budget').text).to eq('$20,000')
+    expect(find('.display-line-budget').text).to eq('$20,000.00')
 
     find('.display-line-quantity').trigger('click')
     find('form.editable-number .editable-input').set(100_000)
@@ -54,7 +54,7 @@ feature 'BillingSummary' do
 
     wait_for_ajax 1
 
-    expect(find('.display-line-budget').text).to eq('$1,000')
+    expect(find('.display-line-budget').text).to eq('$1,000.00')
   end
 
   private

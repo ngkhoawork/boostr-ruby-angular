@@ -33,11 +33,14 @@ class Api::TempIosController < ApplicationController
   end
 
   def temp_ios
-    if params[:filter] == 'no-match'
-      company.temp_ios.where("io_id IS NULL")
-    else
-      company.temp_ios
-    end
+    company
+      .temp_ios
+      .includes(:currency)
+      .by_start_date(params[:start_date], params[:end_date])
+      .by_no_match(params[:filter])
+      .by_names(params[:name])
+      .limit(limit)
+      .offset(offset)
   end
 
   def company

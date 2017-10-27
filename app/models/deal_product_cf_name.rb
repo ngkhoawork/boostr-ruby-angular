@@ -1,6 +1,6 @@
 class DealProductCfName < ActiveRecord::Base
   belongs_to :company
-  has_many :deal_product_cf_options, dependent: :destroy
+  has_many :deal_product_cf_options, -> { order 'LOWER(value)' }, dependent: :destroy
   has_one :ealert_custom_field, as: :subject, dependent: :destroy
 
   accepts_nested_attributes_for :deal_product_cf_options
@@ -13,8 +13,6 @@ class DealProductCfName < ActiveRecord::Base
   end
 
   def self.get_field_limit(type)
-    puts "====="
-    puts type
     field_limits = {
         "currency" => 7,
         "text" => 5,

@@ -157,10 +157,10 @@
                                 %td
                                     %a{'ng-href': '/accounts/{{client.id}}'}
                                         {{client.name}}
-                                %td {{getClientType(client)}}
-                                %td {{getClientCategory(client)}}
+                                %td {{ client.type }}
+                                %td {{ client.category }}
                                 %td
                                     %div{ 'ng-repeat': 'member in client.client_members' }
-                                        {{ member.user.name + " (" + member.share + "%)" }}
-                                %td {{client.address.city}}
+                                        {{ member.first_name + ' ' + member.last_name + " (" + member.share + "%)" }}
+                                %td {{client.city}}
                                 %td {{getLastTouch(client) | date: 'MMM dd, yyyy'}}

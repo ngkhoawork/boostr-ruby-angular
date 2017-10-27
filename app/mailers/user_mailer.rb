@@ -137,7 +137,7 @@ class UserMailer < ApplicationMailer
             value = number_with_precision(value, :precision => 0, :delimiter => ',')
           when 'currency'
             value = value || 0
-            value = '$' + number_with_precision(value, :precision => 2, :delimiter => ',').to_s
+            value = @deal.currency.curr_symbol + number_with_precision(value, :precision => 2, :delimiter => ',').to_s + " #{@deal.currency.curr_cd}"
           when 'percentage'
             value = value || 0
             value = number_with_precision(value, :precision => 0, :delimiter => ',') + '%'
@@ -173,7 +173,7 @@ class UserMailer < ApplicationMailer
               value = number_with_precision(value, :precision => 0, :delimiter => ',')
             when 'currency'
               value = value || 0
-              value = '$' + number_with_precision(value, :precision => 2, :delimiter => ',').to_s
+              value = @deal.currency.curr_symbol + number_with_precision(value, :precision => 2, :delimiter => ',').to_s + " #{@deal.currency.curr_cd}"
             when 'percentage'
               value = value || 0
               value = number_with_precision(value, :precision => 0, :delimiter => ',') + '%'
