@@ -16,7 +16,7 @@
 					%div.query-line.unsaved-line{ng: {repeat: 'query in recentQueries track by $index', click: 'loadQuery(query)', class: '{active: compareQueries(query)}'}}
 						%b {{query.name}}
 						%div.query-actions
-							%i.fa.fa-plus-square.z-icon{'ng-click': 'saveQuery($event, query)'}
+							%i.fa.fa-floppy-o.z-icon{'ng-click': 'saveQuery($event, query)'}
 					%div.query-subtitle
 						SAVED SEARCHES
 					%div.query-line.new-line{'ng-show': 'isQueryFormOnEdit'}
