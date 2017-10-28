@@ -66,7 +66,6 @@
                 progressNumber = $document.find('#progress-number')
                 clearInterval(interval)
                 progressNumber.html(i + '%')
-                console.log p
                 interval = setInterval (->
                     if i is p || i >= animationDuration / 4
                         clearInterval(interval)
