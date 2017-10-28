@@ -153,7 +153,7 @@
 									%tr.hide
 										-#title for export
 										%th Revenue Details
-									%tr.z-sortable-prime{'sort-name': 'revenues', 'z-fixed-header': true, watch: '["revenues", "revenues.detail_amounts[switch.revenues]", "filter.timePeriod.id"]'}
+									%tr.z-sortable-prime{'sort-name': 'revenues', 'z-fixed-header': true, watch: '["revenues", "revenues.detail_amounts[switch.revenues]"]'}
 										%th
 											.z-sortable{by: 'name'} IO Name
 										%th
@@ -203,7 +203,7 @@
 									%tr.hide
 										-#title for export
 										%th Deals
-									%tr.z-sortable-prime{'sort-name': 'deals', 'z-fixed-header': true, watch: '["deals", "deals.detail_amounts[switch.deals]", "filter.timePeriod.id"]'}
+									%tr.z-sortable-prime{'sort-name': 'deals', 'z-fixed-header': true, watch: '["deals", "deals.detail_amounts[switch.deals]"]'}
 										%th
 											.z-sortable{by: 'name'} Deal Name
 										%th
