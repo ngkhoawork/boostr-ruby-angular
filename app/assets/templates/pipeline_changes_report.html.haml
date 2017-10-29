@@ -6,7 +6,7 @@
 					Pipeline Change Report
 				.header-cell.filter-cell
 					%z-filter{'on-apply': 'onFilterApply'}
-						%z-filter-field{data: 'changeTypes', 'save-as': '{change_type: "type"}'} Change Type
+						%z-filter-field{data: 'changeTypes', 'save-as': '{change_type: "name"}'} Change Type
 						%z-filter-field{type: 'daterange', 'save-as': '{start_date: "startDate", end_date: "endDate"}', id: 'time-period-field'} Change Date
 
 				.header-cell

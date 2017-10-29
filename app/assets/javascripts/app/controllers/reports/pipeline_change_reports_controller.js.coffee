@@ -4,15 +4,15 @@
 
 		$scope.report_data_items = []
 		$scope.changeTypes = [
-			'New Deals'
-			'Won Deals'
-			'Lost Deals'
-			'Budget Changed'
-			'Stage Changed'
-			'Start Date Changed'
-			'Member Added'
-			'Member Removed'
-			'Share Changed'
+			{id: 1, name: 'New Deals'}
+			{id: 2, name: 'Won Deals'}
+			{id: 3, name: 'Lost Deals'}
+			{id: 4, name: 'Budget Changed'}
+			{id: 5, name: 'Stage Changed'}
+			{id: 6, name: 'Start Date Changed'}
+			{id: 7, name: 'Member Added'}
+			{id: 8, name: 'Member Removed'}
+			{id: 9, name: 'Share Changed'}
 		]
 
 		appliedFilter = {}
