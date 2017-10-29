@@ -217,7 +217,10 @@
 						$scope.isStageSelected = (id) ->
 							_.findWhere $scope.selected, id: id
 						updateSelection = (item) ->
-							if item then $scope.selected.push item else $scope.selected = []
+							if item
+								$scope.selected.push item if !_.contains $scope.selected, item
+							else
+								$scope.selected = []
 							_.each $scope.saveAs, (valueKey, queryKey) ->
 								if $scope.selected.length
 									value = _.pluck($scope.selected, valueKey)

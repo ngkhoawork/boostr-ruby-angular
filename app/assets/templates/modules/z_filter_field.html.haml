@@ -17,7 +17,7 @@
 					%span.item{'ng-click': 'setFilter(item)', 'ng-class': '{active: item.id === selected.id}'}
 						{{item.name}}
 	-#MULTISELECT FIELD
-	%div.field-value{'ng-switch-when': 'multiselect'}
+	%div.field-value.multiselect-field{'ng-switch-when': 'multiselect'}
 		%div{ dropdown: true }
 			%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
 			%div{'dropdown-toggle': true, 'ng-show': 'data.length || data.$resolved', 'ng-class': '{"empty": selected.length == 0}' }
@@ -28,6 +28,7 @@
 					%i.fa.fa-times.close-btn{'ng-click': 'removeFilter($event, item)'}
 				%span.caret
 			%div.dropdown-menu{'ng-hide': '!data || !data.length'}
+				.multiselect multiselect
 				%div{'ng-if': 'isAll'}
 					%span.item{'ng-click': 'setFilter(null)', 'ng-class': '{active: !selected.length}'}
 						All
@@ -35,7 +36,7 @@
 					%span.item{ng: { click: 'setFilter(item)', class: '{active: isStageSelected(item.id)}'}}
 						{{item.name}}
 	-#STAGE FIELD
-	%div.field-value{'ng-switch-when': 'stage'}
+	%div.field-value.multiselect-field{'ng-switch-when': 'stage'}
 		%div{ dropdown: true }
 			%span.z-loading{'ng-hide': 'data.length || data.$resolved'}
 			%div{'dropdown-toggle': true, 'ng-show': 'data.length || data.$resolved', 'ng-class': '{"empty": selected.length == 0}' }
@@ -46,6 +47,7 @@
 					%i.fa.fa-times.close-btn{'ng-click': 'removeFilter($event, stage)'}
 				%span.caret
 			%div.dropdown-menu{'ng-hide': '!data || !data.length'}
+				.multiselect multiselect
 				%div{'ng-if': 'isAll'}
 					%span.item{'ng-click': 'setFilter(null)', 'ng-class': '{active: !selected.length}'}
 						All
