@@ -8,7 +8,7 @@
           %z-filter{'on-apply': 'onFilterApply'}
             %z-filter-field{data: 'teams', type: 'team', 'save-as': '{id: "id"}', 'on-change': 'updateSellers', default: 'defaultTeam'} Team
             %z-filter-field{data: 'sellers', 'save-as': '{user_id: "id"}'} Seller
-            %z-filter-field{data: 'products', 'save-as': '{"product_ids[]": "id"}'} Products
+            %z-filter-field{data: 'products', type: 'multiselect', 'save-as': '{"product_ids[]": "id"}'} Products
             %z-filter-field{data: 'timePeriods', 'save-as': '{time_period_id: "id"}', 'is-all': 'false', 'order-by': '["period_type", "start_date"]', id: 'time-period-field'} Time period
             %div{style: 'order: 1; margin: 0 10px'}
               %span.mr8 Go to

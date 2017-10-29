@@ -153,7 +153,7 @@
 				isItemLoaded = false
 
 				switch $scope.type
-					when 'daterange' #============================================================================
+					when 'daterange' #==================================================================================
 						$scope.defaultFilter =
 							date:
 								startDate: null
@@ -212,14 +212,16 @@
 						$scope.removeFilter = (e) ->
 							e.stopPropagation()
 							$scope.setFilter(angular.copy $scope.defaultFilter.date)
-					when 'stage' #================================================================================
+					when 'stage', 'multiselect' #=======================================================================
 						$scope.defaultFilter = []
 						$scope.isStageSelected = (id) ->
 							_.findWhere $scope.selected, id: id
 						updateSelection = (item) ->
 							if item then $scope.selected.push item else $scope.selected = []
 							_.each $scope.saveAs, (valueKey, queryKey) ->
-								value = _.pluck($scope.selected, valueKey) if $scope.selected.length
+								if $scope.selected.length
+									value = _.pluck($scope.selected, valueKey)
+									value = _.sortBy value
 								ctrl.setQuery queryKey, value
 						$scope.removeFilter = (e, item) ->
 							e.stopPropagation();
@@ -242,7 +244,7 @@
 							else
 								$scope.selected = []
 								$scope.setFilter(null)
-					else #========================================================================================
+					else #==============================================================================================
 						$scope.defaultFilter = null
 						updateSelection = (item) ->
 							$scope.selected = item
@@ -267,7 +269,7 @@
 						$scope.removeFilter = (e) ->
 							e.stopPropagation()
 							$scope.setFilter(null)
-					#=============================================================================================
+					#===================================================================================================
 
 				$scope.selected = angular.copy $scope.defaultFilter
 				$scope.setFilter = (item) ->
