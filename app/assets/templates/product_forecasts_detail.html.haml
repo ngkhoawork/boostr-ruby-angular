@@ -4,61 +4,24 @@
       .reports-header
         .header-cell.main-title
           Forecast Detail by Product
-        .header-cell.filters-block
-          %table
-            %tr.filter-title
-              %td Team
-              %td Seller
-              %td Time period
-              %td Products
-            %tr
-              %td
-                %tree-dropdown{ class:"tree-dropdown team-list", data:"teams", selected: 'selectedTeam', 'onChange': 'test()', 'ng-class': '{"empty": selectedTeam.name === "All"}'}
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'teams', type: 'team', 'save-as': '{id: "id"}', 'on-change': 'updateSellers', default: 'defaultTeam'} Team
+            %z-filter-field{data: 'sellers', 'save-as': '{user_id: "id"}'} Seller
+            %z-filter-field{data: 'products', 'save-as': '{"product_ids[]": "id"}'} Products
+            %z-filter-field{data: 'timePeriods', 'save-as': '{time_period_id: "id"}', 'is-all': 'false', 'order-by': '["period_type", "start_date"]', id: 'time-period-field'} Time period
+            %div{style: 'order: 1; margin: 0 10px'}
+              %span.mr8 Go to
+              %a{href: '', 'ng-click': 'scrollTo("#revenue-section")'} Revenue
+              |
+              %a{href: '', 'ng-click': 'scrollTo("#deals-section")'} Deals
 
-              %td
-                %ul.filter-item
-                  %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.seller.name === "All"}' }
-                      {{(filter.seller.first_name && filter.seller.first_name + ' ' + filter.seller.last_name) || 'All'}}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{ ng: { repeat: 'seller in sellers | orderBy: "name"', class: '{active: seller.id === filter.seller.id}' } }
-                        %a{ href: '', ng: { click: 'setFilter("seller", seller)' } }
-                          {{ seller.first_name + ' ' + seller.last_name}}
-
-              %td
-                %ul.filter-item
-                  %li{ dropdown: true }
-                    %a{href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": !filter.timePeriod.id}' }
-                      {{filter.timePeriod.name || 'All'}}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{ ng: { repeat: 'timePeriod in timePeriods | orderBy: ["period_type", "end_date"]', class: '{active: timePeriod.id === filter.timePeriod.id}' } }
-                        %a{ href: '', ng: { click: 'setFilter("timePeriod", timePeriod)' } }
-                          {{timePeriod.id !== 'all' ? timePeriod.name : 'All'}}
-              %td
-                %ul.filter-item
-                  %li{ dropdown: true }
-                    %a{ href: '', dropdown: { toggle: true }, 'ng-class': '{"empty": filter.products.length == 0}' }
-                      %span{'ng-if': 'filter.products.length == 0'}
-                        All
-                      %span{'ng-repeat': 'product in filter.products'}
-                        {{product.name}}
-                        %i.fa.fa-times.close-btn{'ng-click': 'removeFilter("products", product)'}
-                      %span.caret
-                    %ul.dropdown-menu
-                      %li{ ng: { repeat: 'product in products | orderBy: "name"' } }
-                        %a{ href: '', ng: { click: 'addFilter("products", product)' } }
-                          {{ product.name }}
-        .header-cell
-          %button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{"disabled": isLoading == true, highlighted: isFilterApplied()}'}
-            Run Report
         .header-cell
           .pull-right
             %download-button{'ng-click': 'export()'}
               Export
 
-    %div{'ng-show': 'filter.timePeriod.id'}
+    %div
       .row
         .col-xs-12
           .block
@@ -69,61 +32,60 @@
                 %tr.hide
                   -#title for export
                   %th Forecast
-                %tr
+                %tr.csv-ignore
                   %th
                   %th{colspan: "{{stages.length + 1}}"}
                     Pipeline (W)
                   %th
                   %th{colspan: "2"}
-                    %div{'ng-style': '{transform: "translateX(35px)"}'}
-                      Total Forecast Amount
-                %tr
+                    Total Forecast Amount
+                %tr.z-sortable-prime{'sort-name': 'forecast'}
                   %th
-                    Product
-                  %th.right{'ng-repeat': 'stage in stages'}
-                    {{stage.probability}}%
-                  %th.right
-                    Pipeline (W)
-                  %th.right
-                    Revenue
-                  %th.right{width: '160px'}
+                    .z-sortable{by: 'product.name', default: true} Product
+                  %th{'ng-repeat': 'stage in stages'}
+                    .z-sortable{by: '"weighted_pipeline_by_stage[\""+stage.id+"\"]"'} {{stage.probability}}%
+                  %th
+                    .z-sortable{by: 'weighted_pipeline'} Pipeline (W)
+                  %th
+                    .z-sortable{by: 'revenue'} Revenue
+                  %th{width: '160px'}
                     Weighted
-                  %th.right{width: '160px'}
+                  %th{width: '160px'}
                     Unweighted
               %tbody
-                %tr{'ng-repeat': 'product_forecast in forecastData | orderBy : "product.name"'}
+                %tr{'ng-repeat': 'product_forecast in forecastData | orderBy : zSort.forecast.by : zSort.forecast.rev'}
                   %td
                     {{product_forecast.product.name}}
-                  %td.right{'ng-repeat': 'stage in stages'}
+                  %td{'ng-repeat': 'stage in stages'}
                     {{(product_forecast.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
-                  %td.right
+                  %td
                     {{product_forecast.weighted_pipeline | currency : '$' : 0}}
-                  %td.right
+                  %td
                     {{product_forecast.revenue | currency : '$' : 0}}
-                  %td.right
+                  %td
                     {{(product_forecast.weighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
-                  %td.right
+                  %td
                     {{(product_forecast.unweighted_pipeline + product_forecast.revenue) | currency : '$' : 0}}
                 %tr{'ng-if': 'totalForecastData'}
                   %td
                     %strong
                       Total
-                  %td.right{'ng-repeat': 'stage in stages'}
+                  %td{'ng-repeat': 'stage in stages'}
                     %strong
                       {{(totalForecastData.weighted_pipeline_by_stage[stage.id] || 0) | currency : '$' : 0}}
-                  %td.right
+                  %td
                     %strong
                       {{(totalForecastData.weighted_pipeline || 0) | currency : '$' : 0}}
-                  %td.right
+                  %td
                     %strong
                       {{(totalForecastData.revenue || 0) | currency : '$' : 0}}
-                  %td.right
+                  %td
                     %strong
                       {{((totalForecastData.weighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
-                  %td.right
+                  %td
                     %strong
                       {{((totalForecastData.unweighted_pipeline || 0) + (totalForecastData.revenue || 0)) | currency : '$' : 0}}
-      .row
+      #revenue-section.row
         .col-xs-12
           .block
             %div.mb20
@@ -134,39 +96,25 @@
                   %tr.hide
                     -#title for export
                     %th Revenue Details
-                  %tr{'z-fixed-header': true, watch: '"revenues"'}
+                  %tr.z-sortable-prime{'sort-name': 'revenues', 'z-fixed-header': true, watch: '["revenues", "teams"]'}
                     %th
-                      %span.clickable{'ng-click': 'sortRevenues.by("name")'}
-                        IO Name
-                        %i{'ng-show': 'sortRevenues.field == "name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'name'} IO Name
                     %th
-                      %span.clickable{'ng-click': 'sortRevenues.by("advertiser.name")'}
-                        Advertiser
-                        %i{'ng-show': 'sortRevenues.field == "advertiser.name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'advertiser.name'} Advertiser
                     %th.right
-                      %span.clickable{'ng-click': 'sortRevenues.by("budget")'}
-                        Total Budget
-                        %i{'ng-show': 'sortRevenues.field == "budget"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'budget', default: true} Total Budget
                     %th
-                      %span.clickable{'ng-click': 'sortRevenues.by("advertiser.name")'}
-                        Product
-                        %i{'ng-show': 'sortRevenues.field == "product.name"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'advertiser.name'} Product
                     %th.right
-                      %span.clickable{'ng-click': 'sortRevenues.by("in_period_split_amt")'}
-                        Product Budget
-                        %i{'ng-show': 'sortRevenues.field == "in_period_amt"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'in_period_split_amt'} Product Budget
                     %th
-                      %span.clickable{'ng-click': 'sortRevenues.by("start_date")'}
-                        Start Date
-                        %i{'ng-show': 'sortRevenues.field == "start_date"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'start_date'} Start Date
                     %th
-                      %span.clickable{'ng-click': 'sortRevenues.by("end_date")'}
-                        End Date
-                        %i{'ng-show': 'sortRevenues.field == "end_date"', class: 'fa fa-caret-{{sortRevenues.reverse ? "up" : "down"}}'}
-                    %th 
-                      Team
+                      .z-sortable{by: 'end_date'} End Date
+                    %th
+                      .z-sortable{by: 'members'} Team
                 %tbody
-                  %tr{'ng-repeat': 'revenue in revenues | orderBy : sortRevenues.field : sortRevenues.reverse'}
+                  %tr{'ng-repeat': 'revenue in revenues | orderBy : zSort.revenues.by : zSort.revenues.rev'}
                     %td
                       %a{href: '', 'ng-href': '/revenue/ios/{{revenue.id}}'} {{revenue.name}}
                     %td {{revenue.advertiser.name}}
@@ -178,7 +126,7 @@
                     %td
                       %div{'ng-repeat': 'member in revenue.members track by $index'} {{member.user.first_name + ' ' + member.user.last_name}} {{member.share}}%
 
-      .row
+      #deals-section.row
         .col-xs-12
           .block
             %div.mb20
@@ -189,43 +137,27 @@
                   %tr.hide
                     -#title for export
                     %th Deals
-                  %tr{'z-fixed-header': true, watch: '"deals"'}
+                  %tr.z-sortable-prime{'sort-name': 'deals', 'z-fixed-header': true, watch: '["deals", "teams"]'}
                     %th
-                      %span.clickable{'ng-click': 'sortDeals.by("name")'}
-                        Deal Name
-                        %i{'ng-show': 'sortDeals.field == "name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'name'} Deal Name
                     %th
-                      %span.clickable{'ng-click': 'sortDeals.by("advertiser.name")'}
-                        Advertiser
-                        %i{'ng-show': 'sortDeals.field == "advertiser.name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'advertiser.name'} Advertiser
                     %th
-                      %span.clickable{'ng-click': 'sortDeals.by("stage.probability")'}
-                        \%
-                        %i{'ng-show': 'sortDeals.field == "stage.probability"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'stage.probability'} %
                     %th.right
-                      %span.clickable{'ng-click': 'sortDeals.by("budget")'}
-                        Total Budget
-                        %i{'ng-show': 'sortDeals.field == "budget"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'budget', default: true} Total Budget
                     %th
-                      %span.clickable{'ng-click': 'sortDeals.by("product.name")'}
-                        Product
-                        %i{'ng-show': 'sortDeals.field == "product.name"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'product.name'} Product
                     %th.right
-                      %span.clickable{'ng-click': 'sortDeals.by("in_period_amt")'}
-                        Product Budget
-                        %i{'ng-show': 'sortDeals.field == "in_period_amt"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'in_period_amt'} Product Budget
                     %th
-                      %span.clickable{'ng-click': 'sortDeals.by("start_date")'}
-                        Start Date
-                        %i{'ng-show': 'sortDeals.field == "start_date"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'start_date'} Start Date
                     %th
-                      %span.clickable{'ng-click': 'sortDeals.by("end_date")'}
-                        End Date
-                        %i{'ng-show': 'sortDeals.field == "end_date"', class: 'fa fa-caret-{{sortDeals.reverse ? "up" : "down"}}'}
-                    %th 
-                      Deal Team
+                      .z-sortable{by: 'end_date'} End Date
+                    %th
+                      .z-sortable{by: 'deal_members'} Deal Team
                 %tbody
-                  %tr{'ng-repeat': 'deal in deals | orderBy : sortDeals.field : sortDeals.reverse', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
+                  %tr{'ng-repeat': 'deal in deals | orderBy : zSort.deals.by : zSort.deals.rev', popover: '{{deal.next_steps}}', 'popover-title': 'Next Steps', 'popover-placement': 'top', 'popover-trigger': 'mouseenter'}
                     %td
                       %a{href: '', 'ng-href': '/deals/{{deal.id}}'} {{deal.name}}
                     %td {{deal.advertiser.name}}
