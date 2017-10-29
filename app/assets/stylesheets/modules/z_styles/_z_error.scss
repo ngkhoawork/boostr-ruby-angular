@@ -6,9 +6,12 @@
     border-radius: 4px;
     z-index: 3;
     opacity: 0;
-    transition: opacity 500ms;
+    transition: opacity 300ms;
     max-width: 250px;
     font-size: 12px;
+    &.visible {
+        opacity: 1;
+    }
     &:before {
         content: '';
         bottom: -8px;
