@@ -9,6 +9,10 @@ class Api::DashboardsController < ApplicationController
     render json: deal_search
   end
 
+  def pacing_alerts
+    render json: dashboard_pacing_alert_service.display_revenue
+  end
+
   protected
 
   def dashboard_data
@@ -17,8 +21,7 @@ class Api::DashboardsController < ApplicationController
       next_quarter_forecast: serialized_forecast(next_time_period),
       this_year_forecast: serialized_forecast(this_year_time_period),
       deals: serialized_deals,
-      current_user: current_user,
-      revenue: dashboard_pacing_alert_service.display_revenue
+      current_user: current_user
     }
   end
 

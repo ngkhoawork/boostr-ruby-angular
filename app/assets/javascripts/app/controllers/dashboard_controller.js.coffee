@@ -1,6 +1,6 @@
 @app.controller 'DashboardController',
-    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage', 'CurrentUser',
-    ( $scope,   $rootScope,   $document,   $http,   $modal,   $sce,   Dashboard,   Deal,   Client,   Field,   Contact,   Activity,   ActivityType,   Reminder,   Stage,   CurrentUser ) ->
+    ['$scope', '$rootScope', '$document', '$http', '$modal', '$sce', 'Dashboard', 'Deal', 'Client', 'Field', 'Contact', 'Activity', 'ActivityType', 'Reminder', 'Stage', 'CurrentUser', 'PacingAlerts'
+    ( $scope,   $rootScope,   $document,   $http,   $modal,   $sce,   Dashboard,   Deal,   Client,   Field,   Contact,   Activity,   ActivityType,   Reminder,   Stage,   CurrentUser,   PacingAlerts ) ->
 
             $scope.progressPercentage = 10
             $scope.showMeridian = true
@@ -86,6 +86,7 @@
                     $scope.contacts = contacts
 
                 $scope.dashboardIsLoading = true
+                $scope.pacingAlertsIsLoading = true
 
                 Dashboard.get({ io_owner: $scope.currentPacingAlertsFilter.value }).then (data) ->
                     $scope.dashboard = data
@@ -93,6 +94,13 @@
                 , (error) ->
                     $scope.dashboard = null
                     $scope.dashboardIsLoading = false
+
+                PacingAlerts.get().then (data) ->
+                    $scope.pacingAlerts = data
+                    $scope.pacingAlertsIsLoading = false
+                , (error) ->
+                    $scope.pacingAlerts = null
+                    $scope.pacingAlertsIsLoading = false
 
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
                 blocks.forEach (name) -> $scope[name + 'Init']()

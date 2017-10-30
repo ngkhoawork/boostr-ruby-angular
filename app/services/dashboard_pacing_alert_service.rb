@@ -19,7 +19,7 @@ class DashboardPacingAlertService < BaseService
       by_io_name
         .union(by_agency_name)
         .union(by_advertiser_name)
-        .includes(:product, io: [:agency, :advertiser, :currency])
+        .preload(:product, io: [:agency, :advertiser, :currency])
         .by_start_date(params[:start_date], params[:end_date])
   end
 
