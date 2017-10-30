@@ -10,10 +10,6 @@ class Api::DashboardsController < ApplicationController
       current_user: current_user,
       revenue: dashboard_pacing_alert_service.display_revenue
     }
-
-  rescue NoMethodError => _e
-    render json: { errors: "Error happened when company didn't have time periods of type Quarter" },
-                   status: :unprocessable_entity
   end
 
   def typeahead
@@ -26,12 +22,14 @@ class Api::DashboardsController < ApplicationController
     DashboardPacingAlertService.new(current_user: current_user, params: params)
   end
 
-  def time_period
-    @_time_period ||= company.time_periods.current_quarter
+  def closest_quarter
+    @_closest_quarter ||= company.time_periods.all_quarter.closest
   end
 
   def next_time_period
-    company.time_periods.all_quarter.find_by(start_date: time_period.end_date.next)
+    return nil unless closest_quarter
+
+    company.time_periods.all_quarter.find_by(start_date: closest_quarter.end_date.next)
   end
 
   def this_year_time_period
@@ -39,13 +37,13 @@ class Api::DashboardsController < ApplicationController
   end
 
   def forecast
-    return nil unless time_period
+    return nil unless closest_quarter
 
-    @_forecast ||= forecast_for(time_period)
+    @_forecast ||= forecast_for(closest_quarter)
   end
 
   def next_quarter_forecast
-    return nil unless time_period || next_time_period
+    return nil unless closest_quarter || next_time_period
 
     @_next_quarter_forecast ||= forecast_for(next_time_period)
   end

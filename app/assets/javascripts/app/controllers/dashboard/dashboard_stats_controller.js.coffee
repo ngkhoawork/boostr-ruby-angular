@@ -2,7 +2,7 @@
     ['$scope', '$document', 'shadeColor'
         ($scope, $document, shadeColor) ->
             $scope.$watch '$parent.dashboard', (dashboard)->
-                if !dashboard || !dashboard.forecast || !dashboard.next_quarter_forecast then return
+                if !dashboard then return
                 $scope.forecast = [
                     dashboard.forecast
                     dashboard.next_quarter_forecast
@@ -14,8 +14,12 @@
                 if $scope.qtr is n then return
                 $scope.qtr = n
                 $scope.stats = $scope.forecast[n]
+
+                return unless $scope.stats?
+
                 updateProgressCircle($scope.stats.percent_to_quota)
                 updateForecastChart($scope.stats)
+
             interval = null
             updateProgressCircle = (p) ->
                 p = Math.round(p)

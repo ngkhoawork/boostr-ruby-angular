@@ -85,8 +85,14 @@
                 Contact.query().$promise.then (contacts) ->
                     $scope.contacts = contacts
 
-                Dashboard.get({ io_owner: $scope.currentPacingAlertsFilter.value }).then (dashboard) ->
-                    $scope.dashboard = dashboard
+                $scope.dashboardIsLoading = true
+
+                Dashboard.get({ io_owner: $scope.currentPacingAlertsFilter.value }).then (data) ->
+                    $scope.dashboard = data
+                    $scope.dashboardIsLoading = false
+                , (error) ->
+                    $scope.dashboard = null
+                    $scope.dashboardIsLoading = false
 
             $scope.$on 'dashboard.updateBlocks', (e, blocks) ->
                 blocks.forEach (name) -> $scope[name + 'Init']()

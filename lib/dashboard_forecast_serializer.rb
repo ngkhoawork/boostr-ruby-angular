@@ -1,5 +1,4 @@
 class DashboardForecastSerializer < ActiveModel::Serializer
-
   attributes(
     :weighted_pipeline,
     :revenue,
@@ -9,7 +8,11 @@ class DashboardForecastSerializer < ActiveModel::Serializer
     :quota,
     :new_deals_needed,
     :stages,
-    :weighted_pipeline_by_stage
+    :weighted_pipeline_by_stage,
+    :time_period_name
   )
-end
 
+  def time_period_name
+    object.time_period.name
+  end
+end
