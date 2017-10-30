@@ -71,6 +71,8 @@
                     padding: 0 5px;
                     text-transform: uppercase;
                     color: $secondary-font-color;
+                    user-select: none;
+                    cursor: default;
                 }
                 .dropdown-menu {
                     padding-top: 12px;
