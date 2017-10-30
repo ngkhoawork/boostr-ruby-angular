@@ -122,7 +122,7 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       error = import_log.error_messages.first
 
       expect(error["row"]).to be 1
-      expect(error["message"]).to include('Internal Server Error')
+      expect(error["message"]).to include('ActiveRecord::RecordNotFound')
     end
   end
 

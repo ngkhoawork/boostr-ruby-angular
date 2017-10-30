@@ -26,7 +26,7 @@ module DFP
             csv_import_log.count_imported
           rescue Exception => e
             csv_import_log.count_failed
-            csv_import_log.log_error ['Internal Server Error', row.to_h.compact.to_s]
+            csv_import_log.log_error [e.message, row.to_h.compact.to_s]
             next
           end
         else
