@@ -1,10 +1,12 @@
-class BillingContactValidator < ActiveModel::Validator
-
+class BillingContactValidator
   REQUIRED_ADDRESS_FIELDS = [:street1, :city, :country, :zip, :state]
 
-  def validate(record)
+  def initialize(record)
     @record = record
-    if billing_validation_turned_on? && !contact_address_is_valid? && is_billing?
+  end
+
+  def validate
+    if address_has_error?
       record.errors.add(:billing_address, 'Deal contact requires full address')
     end
   end
@@ -12,6 +14,10 @@ class BillingContactValidator < ActiveModel::Validator
   private
 
   attr_reader :record
+
+  def address_has_error?
+    billing_validation_turned_on? && !contact_address_is_valid? && is_billing?
+  end
 
   def contact_address_is_valid?
     REQUIRED_ADDRESS_FIELDS.each do |field|
@@ -41,6 +47,6 @@ class BillingContactValidator < ActiveModel::Validator
   end
 
   def company
-    contact.company
+    record.deal.company
   end
 end
