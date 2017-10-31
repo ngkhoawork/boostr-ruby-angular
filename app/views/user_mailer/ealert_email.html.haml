@@ -27,11 +27,6 @@
             %strong
               Advertiser:
             #{@deal.advertiser_name}
-          - if @deal.has_billing_contact?
-            .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
-              %strong
-                Billing Contact:
-              #{@deal.billing_contact.name}
           .advertiser-ballast{style: 'font-size: 15px;line-height: 20px;'}
             %strong
               Sales Team:
@@ -60,6 +55,11 @@
         %strong
           Flight Date:
         #{@deal.start_date.strftime('%b %d, %Y')} - #{@deal.end_date.strftime('%b %d, %Y')}
+      - if @ealert['show_billing_contact'] && @deal.has_billing_contact?
+        .div
+          %strong
+            Billing Contact:
+          #{@deal.billing_contact.name} - #{@deal.billing_contact.email}
       - @deal_fields.each do |deal_field|
         %div
           %strong
