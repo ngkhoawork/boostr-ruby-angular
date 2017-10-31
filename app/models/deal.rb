@@ -304,7 +304,7 @@ class Deal < ActiveRecord::Base
     disabled = validation.criterion.try(:value)
 
     if disabled && stage.open? && stage_was.closed? && !modifying_user.is_admin
-      errors.add(:stage, 'Admins only can reopen the deal')
+      errors.add(:stage, 'Only admins allowed to re-open deals')
     end
   end
 
@@ -1460,12 +1460,12 @@ class Deal < ActiveRecord::Base
   end
 
   def update_close
-    if self.closed_at.nil? && !stage.open?
+    if closed_at.nil? && closed_at_was.nil? && stage.closed?
       self.closed_at = updated_at
     end
 
     should_open = stage.open?
-    if !stage.open? && stage.probability == 100
+    if stage.closed? && stage.probability == 100
       self.deal_products.each do |deal_product|
         if deal_product.product.revenue_type != 'Content-Fee'
           should_open = true
