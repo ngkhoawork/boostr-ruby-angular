@@ -25,9 +25,10 @@ class CsvImportLog < ActiveRecord::Base
     self.rows_skipped += 1
   end
 
-  def log_error(error)
+  def log_error(error, row_number = nil)
+    row_number = rows_processed unless row_number
     self.error_messages ||= []
-    self.error_messages << { row: rows_processed, message: error }
+    self.error_messages << { row: row_number, message: error }
   end
 
   def set_file_source(path)

@@ -121,7 +121,7 @@ RSpec.describe DFP::CumulativeImportService, dfp: :true do
       import_log = CsvImportLog.last
       error = import_log.error_messages.first
 
-      expect(error["row"]).to be 1
+      expect(error["row"]).to eq('1')
       expect(error["message"]).to include('ActiveRecord::RecordNotFound')
     end
   end
