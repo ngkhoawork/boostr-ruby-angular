@@ -1,5 +1,5 @@
-class Api::EmailThreadsController < ApplicationController
-  skip_before_filter :authenticate_user!
+class  Api::V2::EmailThreadsController < ApiController
+  skip_before_action :authenticate_token_user
   respond_to :json
 
   def index

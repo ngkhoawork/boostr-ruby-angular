@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Api::EmailThreadsController, type: :controller do
+RSpec.describe Api::V2::EmailThreadsController, type: :controller do
   describe 'GET #index' do
     it 'should return email thread with email opens' do
       first_opened_email = create :email_open, guid: thread.email_guid, opened_at: Date.yesterday

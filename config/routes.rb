@@ -125,6 +125,15 @@ Rails.application.routes.draw do
 
       resources :deal_custom_field_names, only: [:index]
       resources :products, only: [:index]
+
+      resources :email_threads, only: [:index] do
+        get :all_opens
+
+        collection do
+          post :create_thread
+          get :all_emails
+        end
+      end
     end # API V2 END
 
     resources :dfp_imports do
@@ -383,15 +392,6 @@ Rails.application.routes.draw do
 
     resources :mailtrack, only: [] do
       get '/:pixel', to: 'mailtrack#open_mail', on: :collection
-    end
-
-    resources :email_threads, only: [:index] do
-      get :all_opens
-
-      collection do
-        post :create_thread
-        get :all_emails
-      end
     end
   end
 
