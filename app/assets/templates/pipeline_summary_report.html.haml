@@ -213,7 +213,7 @@
 										%a{href: '', 'ng-href': '/accounts/{{deal.agency.id}}'} {{deal.agency.name}}
 									%td {{deal.holding_company}}
 									%td {{deal.budget | currency: '$': 0 }}
-									%td {{deal.budget_loc.budget | currency : deal.budget_loc.curr_symbol || deal.budget_loc.curr_cd: 0 }}
+									%td {{deal.budget_loc | currency : deal.currency.curr_symbol : 0 }}
 									%td {{deal.stage.name}}
 									%td {{deal.stage.probability}}
 									%td {{deal.start_date | date : 'shortDate'}}
