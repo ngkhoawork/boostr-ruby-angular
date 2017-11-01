@@ -28,12 +28,11 @@ RSpec.describe Api::RevenueController, type: :controller do
 
       it 'has proper revenue data' do
         get :index, format: :json, time_period_id: time_period.id, member_id: user.id.to_s
-        response_json = JSON.parse(response.body)
 
-        expect(response_json[0]['name']).to eq(io.name)
-        expect(response_json[0]['advertiser']).to eq(advertiser.name)
-        expect(response_json[0]['budget']).to eq('40000.0')
-        expect(response_json[0]['sum_period_budget']).to eq(40000.0)
+        expect(response_json[0][:name]).to eq(io.name)
+        expect(response_json[0][:advertiser]).to eq(advertiser.name)
+        expect(response_json[0][:budget]).to eq('40000.0')
+        expect(response_json[0][:sum_period_budget]).to eq(40000.0)
       end
     end
 
@@ -48,20 +47,99 @@ RSpec.describe Api::RevenueController, type: :controller do
 
       it 'has proper revenue data' do
         get :index, format: :json, time_period_id: time_period.id, team_id: team.id.to_s
-        response_json = response_json(response.body)
 
-        expect(select_values(response_json, 'name')).to include(io.name && io_for_another_user.name)
-        expect(select_values(response_json, 'advertiser')).to include(advertiser.name)
-        expect(select_values(response_json, 'budget')).to include('40000.0' && '20000.0')
-        expect(select_values(response_json, 'sum_period_budget')).to include(40000.0 && 20000.0)
+        expect(select_values(response_json, :name)).to include(io.name && io_for_another_user.name)
+        expect(select_values(response_json, :advertiser)).to include(advertiser.name)
+        expect(select_values(response_json, :budget)).to include('40000.0' && '20000.0')
+        expect(select_values(response_json, :sum_period_budget)).to include(40000.0 && 20000.0)
       end
+    end
+  end
+
+  describe '#report_by_account' do
+    let!(:account_revenue_fact) do
+      create(
+        :account_revenue_fact,
+        account_dimension: account_dimension,
+        revenue_amount: 10_000,
+        company: user.company,
+        category_id: category.id,
+        client_region_id: region.id,
+        client_segment_id: segment.id,
+        time_dimension: time_dimension
+      )
+    end
+    let(:params) do
+      {
+        format: :json,
+        start_date: time_dimension.start_date,
+        end_date: time_dimension.end_date
+      }
+    end
+    subject { get :report_by_account, params }
+
+    before(:each) { subject }
+
+    context 'when params include appropriate "category_ids"' do
+      let(:params) { super().merge(category_ids: [category.id]) }
+
+      # before(:each) { account_revenue_fact }
+
+      it 'has an appropriate structure' do
+        expect(response).to be_success
+        expect(response_json).to be_kind_of Array
+        expect(response_item).to have_key :name
+        expect(response_item).to have_key :category_id
+        expect(response_item).to have_key :client_region_id
+        expect(response_item).to have_key :client_segment_id
+        expect(response_item).to have_key :seller_names
+        expect(response_item).to have_key :year
+        expect(response_item).to have_key :revenues
+        expect(response_item).to have_key :total_revenue
+        expect(response_item[:revenues]).to be_kind_of Hash
+      end
+      it { expect(response_item[:category_id]).to eq params[:category_ids][0] }
+
+      context 'and when params include appropriate "region_id"' do
+        let(:params) { super().merge(client_region_ids: [region.id]) }
+
+        it { expect(response_json).not_to be_empty }
+      end
+
+      context 'and when options include appropriate "segment_id"' do
+        let(:params) { super().merge(client_segment_ids: [segment.id]) }
+
+        it { expect(response_json).not_to be_empty }
+      end
+
+      context 'and when options does not include appropriate "region_id"' do
+        let(:params) { super().merge(client_region_ids: [-1]) }
+
+        it { expect(response_json).to be_empty }
+      end
+
+      context 'and when options does not include appropriate "segment_id"' do
+        let(:params) { super().merge(client_segment_ids: [-1]) }
+
+        it { expect(response_json).to be_empty }
+      end
+    end
+
+    context 'when params does not include appropriate "category_ids"' do
+      let(:params) { super().merge(category_ids: [-1]) }
+
+      it { expect(response_item).to be_nil }
     end
   end
 
   private
 
-  def response_json(body)
-    @_response_json ||= JSON.parse(body)
+  def response_json
+    @_response_json ||= JSON.parse(response.body, symbolize_names: true)# JSON.parse(response.body)
+  end
+
+  def response_item
+    @_response_item ||= response_json[0]
   end
 
   def select_values(json, key)
@@ -109,5 +187,51 @@ RSpec.describe Api::RevenueController, type: :controller do
 
   def team
     @_team ||= create :parent_team, members: [user, another_user], company: company
+  end
+
+  def category_field
+    @_category_field ||= create(:field, name: 'Category', subject_type: 'Client')
+  end
+
+  def region_field
+    @_region_field ||= create(:field, name: 'Region', subject_type: 'Client')
+  end
+
+  def segment_field
+    @_segment_field ||= create(:field, name: 'Segment', subject_type: 'Client')
+  end
+
+  def category
+    @_category ||= create(:option, field: category_field, company: company)
+  end
+
+  def region
+    @_region ||= create(:option, field: region_field, company: company)
+  end
+
+  def segment
+    @_segment ||= create(:option, field: segment_field, company: company)
+  end
+
+  def holding_company
+    @_holding_company ||= create(:holding_company)
+  end
+
+  def advertiser
+    @_advertiser ||= create(:client, :advertiser, holding_company: holding_company, company: company)
+  end
+
+  def account_dimension
+    @_account_dimension ||= advertiser.account_dimensions.last
+  end
+
+  def time_dimension
+    @_time_dimension ||=
+      create(
+        :time_dimension,
+        start_date: Date.today.beginning_of_month,
+        end_date: Date.today.end_of_month,
+        days_length: Time.days_in_month(Time.current.month)
+      )
   end
 end

@@ -1,13 +1,26 @@
 class RevenueDataWarehouse < BaseWorker
   def perform
+    truncate_account_revenue_facts
     generate_account_revenue_facts
+  end
+
+  private
+
+  def truncate_account_revenue_facts
+    ActiveRecord::Base.connection.execute('TRUNCATE account_revenue_facts RESTART IDENTITY')
   end
 
   def generate_account_revenue_facts
     time_dimensions = TimeDimension.all
-    all_ios = Io.all.includes(:content_fees, :content_fee_product_budgets, :display_line_items, :display_line_item_budgets)
+    all_ios = Io.includes(
+      :content_fees,
+      :content_fee_product_budgets,
+      :display_line_items,
+      :display_line_item_budgets,
+      io_members: :user
+    )
 
-    Client.all.each do |client|
+    Client.find_each do |client|
       client_revenues = []
 
       ios = all_ios.select do |io|
@@ -22,26 +35,34 @@ class RevenueDataWarehouse < BaseWorker
         end
         io_time_dimensions.each do |io_time_dimension|
           time_period_revenue = total_effective_revenue_budget(io, io_time_dimension.start_date, io_time_dimension.end_date)
-          client_revenue = client_revenues.find { |rev| rev[:time_dimension_id] == io_time_dimension.id }
+          dominating_team = fetch_dominating_team(io)
+          seller_names = fetch_user_presentations_by_dominating_team(io, dominating_team)
+
+          client_revenue = client_revenues.find do |rev|
+            rev[:time_dimension_id] == io_time_dimension.id &&
+            rev[:team_name] == dominating_team.try(:name) &&
+            rev[:seller_names] == seller_names
+          end
           if client_revenue
             client_revenue[:revenue_amount] += time_period_revenue
           else
             client_revenues << {
               revenue_amount: time_period_revenue,
-              time_dimension_id: io_time_dimension.id
+              time_dimension_id: io_time_dimension.id,
+              team_name: dominating_team.try(:name),
+              seller_names: seller_names
             }
           end
         end
       end
 
       client_revenues.each do |client_revenue|
-        revenue_fact = AccountRevenueFact.find_or_initialize_by(
+        AccountRevenueFact.create(
           company_id: client.company_id,
           account_dimension_id: client.id,
-          time_dimension_id: client_revenue[:time_dimension_id]
-        )
-
-        revenue_fact.update(
+          time_dimension_id: client_revenue[:time_dimension_id],
+          team_name: client_revenue[:team_name],
+          seller_names: "{#{client_revenue[:seller_names].join(', ')}}",
           category_id: client.client_category_id,
           subcategory_id: client.client_subcategory_id,
           client_region_id: client.client_region_id,
@@ -50,6 +71,20 @@ class RevenueDataWarehouse < BaseWorker
         )
       end
     end
+  end
+
+  def fetch_dominating_team(io)
+    io.highest_member&.user&.team
+  end
+
+  def fetch_user_presentations_by_dominating_team(io, dominating_team)
+    return [] unless dominating_team
+
+    io.io_members.select do |io_memeber|
+      io_memeber.user.team_id == dominating_team.id && io_memeber.share > 0
+    end.map do |io_memeber|
+      "#{io_memeber.name} #{io_memeber.share}%"
+    end.sort
   end
 
   def total_effective_revenue_budget(io, start_date, end_date)
