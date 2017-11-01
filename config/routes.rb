@@ -226,6 +226,7 @@ Rails.application.routes.draw do
       collection do
         get :forecast_detail
         get :report_by_category, defaults: { format: :json }
+        get :report_by_account, defaults: { format: :json }
       end
     end
     resources :ios, only: [:index, :show, :create, :update, :destroy] do

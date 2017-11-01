@@ -44,6 +44,19 @@ class Api::RevenueController < ApplicationController
     render json: revenues
   end
 
+  def report_by_account
+    respond_to do |format|
+      format.json {
+        render json:            revenue_by_account_report,
+               each_serializer: Report::RevenueByAccountSerializer
+      }
+      format.csv {
+        send_data Csv::RevenueByAccountService.new(revenue_by_account_report).perform,
+                  filename: "reports-revenue_by_account-#{DateTime.current}.csv"
+      }
+    end
+  end
+
   private
 
   def quarterly_revenues
@@ -425,10 +438,21 @@ class Api::RevenueController < ApplicationController
     Report::RevenueByCategoryService.new(report_by_months_params).perform
   end
 
+  def revenue_by_account_report
+    Report::RevenueByAccountService.new(revenue_by_account_report_params).perform
+  end
+
   def report_by_months_params
     %i(start_date end_date category_ids).each { |param_name| params.require(param_name) }
 
     params.permit(:start_date, :end_date, client_region_ids: [], client_segment_ids: [], category_ids: [])
+          .merge!(company_id: current_user.company_id)
+  end
+
+  def revenue_by_account_report_params
+    %i(start_date end_date).each { |param_name| params.require(param_name) }
+
+    params.permit(:client_types, :start_date, :end_date, category_ids: [], client_region_ids: [], client_segment_ids: [])
           .merge!(company_id: current_user.company_id)
   end
 end
