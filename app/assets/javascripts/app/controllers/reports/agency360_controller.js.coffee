@@ -96,7 +96,7 @@
 					$scope.agencies = data
 
 		$scope.getAgencies = ->
-			Client.query({
+			Client.search_clients({
 				client_type_id: $scope.agencyOptionId
 				name: $scope.agencySearch
 			}).$promise.then (data) -> $scope.agencies = data
