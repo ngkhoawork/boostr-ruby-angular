@@ -126,6 +126,7 @@
             $scope.searchClients = (str, type) ->
                 q =
                     search: str
+                    filter: 'all'
                 if type is 'advertiser' then q.client_type_id = $scope.Advertiser
                 if type is 'agency' then q.client_type_id = $scope.Agency
                 Client.query(q).$promise.then (clients) ->
