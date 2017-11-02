@@ -108,6 +108,7 @@ class Api::EalertsController < ApplicationController
       :recipients,
       :automatic_send,
       :same_all_stages,
+      :delay,
       :budget,
       :flight_date,
       :agency,

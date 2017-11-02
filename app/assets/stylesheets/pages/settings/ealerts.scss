@@ -384,6 +384,19 @@
   .mb30 {
     margin-bottom: 30px;
   }
+  .form-group {
+    .star {
+      color: #ed5063;
+    }
+    &.error {
+      .form-control {
+        border-color: #ed5063;
+      }
+      .error-text {
+        color: #ed5063;
+      }
+    }
+  }
 }
 
 .recipient-field {
@@ -401,3 +414,5 @@
     border-color: #ed5063;
   }
 }
+
+

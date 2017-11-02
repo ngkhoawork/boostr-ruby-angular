@@ -1415,6 +1415,7 @@ class Deal < ActiveRecord::Base
   def send_ealert
     ealert = self.company.ealerts.first
     if ealert
+      delay = ealert.delay && ealert.delay > 0 ? ealert.delay : 0
       ealert_stage = ealert.ealert_stages.find_by(stage_id: self.stage_id)
       if ealert_stage && ealert_stage.enabled == true
         recipients = []
@@ -1428,7 +1429,7 @@ class Deal < ActiveRecord::Base
         if deal_members.count > 0
           highest_member = deal_members[0].user_id
         end
-        UserMailer.ealert_email(recipients, ealert.id, self.id, '', highest_member).deliver_later(wait: 60.minutes, queue: "default") if recipients.length > 0
+        UserMailer.ealert_email(recipients, ealert.id, self.id, '', highest_member).deliver_later(wait: delay.minutes, queue: "default") if recipients.length > 0
       end
     end
   end
