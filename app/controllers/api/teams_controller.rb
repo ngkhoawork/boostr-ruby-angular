@@ -52,11 +52,10 @@ class Api::TeamsController < ApplicationController
   def all_sales_reps
     if !(teams.present?)
       render json: { error: 'Team Not Found' }, status: :not_found
+    else
+      reps = teams.map(&:all_sales_reps).flatten
+      render json: reps
     end
-
-    reps = teams.map(&:all_sales_reps).flatten
-
-    render json: reps
   end
 
   def create
