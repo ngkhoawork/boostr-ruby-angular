@@ -51,6 +51,7 @@ gem 'hashie'
 gem 'active_record_union'
 gem 'user_agent_parser'
 gem 'geocoder'
+gem 'rack-cors', :require => 'rack/cors'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

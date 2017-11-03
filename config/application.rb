@@ -39,5 +39,11 @@ module Boostr
         "Access-Control-Allow-Origin" => "https://mail.google.com",
         "Content-Security-Policy" => ""
     }
+    config.middleware.insert_before 0, "Rack::Cors" do
+      allow do
+        origins 'mail.google.com'
+        resource '*', :headers => :any, :methods => [:get, :post, :options]
+      end
+    end
   end
 end
