@@ -96,6 +96,7 @@ class Deal < ActiveRecord::Base
   after_create do
     generate_deal_members
     send_new_deal_notification
+    send_ealert
     connect_deal_clients
     log_stage_changes
   end
