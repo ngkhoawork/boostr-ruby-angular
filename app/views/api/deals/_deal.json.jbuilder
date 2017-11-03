@@ -72,7 +72,7 @@ end
 
 if deal.has_billing_contact?
   json.billing_contact do
-    json.extract! deal.billing_contact, :id, :name
+    json.extract! deal.billing_contact, :id, :name, :email
   end
 end
 
