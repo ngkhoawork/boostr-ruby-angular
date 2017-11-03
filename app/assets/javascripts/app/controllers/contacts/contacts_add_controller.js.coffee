@@ -4,7 +4,7 @@
   $scope.formType = "Edit"
   $scope.submitText = "Update"
   $scope.searchText = ""
-  DealContact.all(deal_id: deal.id).then (contacts) ->
+  Contact.all1({ per: 10 }).then (contacts) ->
     $scope.contacts = contacts
 
   searchTimeout = null;
@@ -18,7 +18,7 @@
     )
 
   $scope.searchContacts = (name) ->
-    DealContact.all(deal_id: deal.id, name: name).then (contacts) ->
+    Contact.all1({ q: name, per: 10 }).then (contacts) ->
       $scope.contacts = contacts
 
   $scope.checkContact = (contact) ->
