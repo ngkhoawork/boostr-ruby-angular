@@ -77,7 +77,7 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     if stage_id_changed?
-      send_ealert
+      Email::EalertService.new(self).perform
     end
     integrate_with_operative
     send_lost_deal_notification
@@ -96,7 +96,7 @@ class Deal < ActiveRecord::Base
   after_create do
     generate_deal_members
     send_new_deal_notification
-    send_ealert
+    Email::EalertService.new(self).perform
     connect_deal_clients
     log_stage_changes
   end
@@ -1411,28 +1411,6 @@ class Deal < ActiveRecord::Base
     self.previous_stage_id = self.stage_id_was
     self.stage_updated_at = updated_at
     self.stage_updated_by = updated_by
-  end
-
-  def send_ealert
-    ealert = self.company.ealerts.first
-    if ealert
-      delay = ealert.delay && ealert.delay > 0 ? ealert.delay : 0
-      ealert_stage = ealert.ealert_stages.find_by(stage_id: self.stage_id)
-      if ealert_stage && ealert_stage.enabled == true
-        recipients = []
-        if ealert.same_all_stages == true
-          recipients = ealert.recipients.split(',').map(&:strip) if ealert.recipients
-        else
-          recipients = ealert_stage.recipients.split(',').map(&:strip) if ealert_stage.recipients
-        end
-        deal_members = self.deal_members.order("share desc")
-        highest_member = nil
-        if deal_members.count > 0
-          highest_member = deal_members[0].user_id
-        end
-        UserMailer.ealert_email(recipients, ealert.id, self.id, '', highest_member).deliver_later(wait: delay.minutes, queue: "default") if recipients.length > 0
-      end
-    end
   end
 
   def close_display_product
