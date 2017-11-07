@@ -17,9 +17,9 @@ class Email::EalertService
       scheduler = Sidekiq::ScheduledSet.new
       scheduler.each do |s|
         args = s.args[0] rescue nil
-        if args && args['job_class'] == 'ActionMailer::DeliveryJob'
-          arguments = args['arguments']
-          if arguments && arguments.length > 5 && arguments[0] == 'UserMailer' && arguments[1] == 'ealert_email' && arguments[4] == ealert.id && arguments[5] == deal.id
+        if args && args['job_class'] && args['job_class'].to_s == 'ActionMailer::DeliveryJob'
+          arguments = args[:arguments]
+          if arguments && arguments.length > 5 && arguments[0].to_s == 'UserMailer' && arguments[1].to_s == 'ealert_email' && arguments[4] == ealert.id && arguments[5] == deal.id
             s.delete
           end
         end
