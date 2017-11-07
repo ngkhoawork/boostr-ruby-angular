@@ -77,7 +77,7 @@ class Deal < ActiveRecord::Base
     generate_io() if stage_id_changed?
     reset_products if (start_date_changed? || end_date_changed?)
     if stage_id_changed?
-      Email::EalertService.new(self).perform
+      send_ealert
     end
     integrate_with_operative
     send_lost_deal_notification
@@ -96,7 +96,7 @@ class Deal < ActiveRecord::Base
   after_create do
     generate_deal_members
     send_new_deal_notification
-    Email::EalertService.new(self).perform
+    send_ealert
     connect_deal_clients
     log_stage_changes
   end
@@ -1433,6 +1433,10 @@ class Deal < ActiveRecord::Base
     deal_product_budgets.update_all("budget = budget_loc / #{self.exchange_rate}")
     deal_products.map{ |deal_product| deal_product.update_budget }
     self.budget = deal_products.sum(:budget)
+  end
+
+  def send_ealert
+    Email::EalertService.new(self).perform
   end
 
   def update_close
