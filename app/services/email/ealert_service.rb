@@ -16,16 +16,37 @@ class Email::EalertService
     if ealert
       scheduler = Sidekiq::ScheduledSet.new
       scheduler.each do |s|
-        args = s.args[0] rescue nil
-        if args && args['job_class'] && args['job_class'].to_s == 'ActionMailer::DeliveryJob'
-          arguments = args['arguments']
-          if arguments && arguments.length > 5 && arguments[0].to_s == 'UserMailer' && arguments[1].to_s == 'ealert_email' && arguments[4].to_i == ealert.id && arguments[5].to_i == deal.id
-            s.delete
+        if s.klass && 
+            s.klass.to_s == 'ActiveJob::QueueAdapters::SidekiqAdapter::JobWrapper' &&
+            s.args && 
+            s.args.is_a?(Array)
+          
+          args = s.args[0] rescue nil
+          
+          is_action_mailer = args &&
+              (args.is_a? Hash) &&
+              args['job_class'] &&
+              args['job_class'].to_s == 'ActionMailer::DeliveryJob'
+          
+          if is_action_mailer
+            arguments = args['arguments']
+            
+            is_ealert_scheduled = arguments && 
+                arguments.length > 5 && 
+                arguments[0].to_s == 'UserMailer' && 
+                arguments[1].to_s == 'ealert_email' && 
+                arguments[4].to_i == ealert.id && 
+                arguments[5].to_i == deal.id
+            
+            if is_ealert_scheduled
+              s.delete
+            end
           end
         end
       end
     end
   end
+
   def send_ealert
     if ealert
       delay = ealert.delay && ealert.delay > 0 ? ealert.delay : 0
