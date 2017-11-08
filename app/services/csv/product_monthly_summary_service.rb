@@ -1,55 +1,58 @@
 class Csv::ProductMonthlySummaryService < Csv::BaseService
-  def initialize(company, data)
+  def initialize(company, records)
     @company = company
-    @data = data['data']
-    @custom_field_names = data['deal_product_cf_names']
+    @records = records['data']
+    @custom_field_names = records['deal_product_cf_names']
   end
 
   private
 
-  attr_reader :company
+  attr_reader :company, :custom_field_names
+
+  def decorated_records
+    records.map { |record| Csv::ProductMonthlySummaryDecorator.new(record, company, custom_field_names) }
+  end
 
   def generate_csv
     CSV.generate do |csv|
       csv << headers
-      @data.each do |row|
-        record = []
-        record << row['product']
-        @custom_field_names.each do |cf|
-          record << row['custom_fields'][cf['field_type'].to_s + cf['field_index'].to_s]
-        end
-        record << row['record_type']
-        record << row['record_id']
-        members = ''
-        row['members'].each do |member|
-          members << "#{member['name']} #{member['share'] || 0}% "
-        end
-        record << members
-        record << row['name']
-        record << (row['advertiser']['name'] rescue '')
-        record << (row['agency']['name'] rescue '')
-        record << row['holding_company']
-        record << (row['stage']['name'] rescue '')
-        record << (row['stage']['probability'] rescue '')
-        record << row['budget_loc']
-        record << row['currency_cd'] || 'USD'
-        record << ActiveSupport::NumberHelper.number_to_currency(row['budget'], precision: 0)
-        record << ActiveSupport::NumberHelper.number_to_currency(row['weighted_budget'], precision: 0)
-        record << (row['start_date'] ? Time.parse(row['start_date']).strftime('%m/%d/%Y') : '')
-        record << (row['end_date'] ? Time.parse(row['end_date']).strftime('%m/%d/%Y') : '')
-        record << (row['created_at'] ? Time.parse(row['created_at']).strftime('%m/%d/%Y') : '')
-        record << (row['closed_at'] ? Time.parse(row['closed_at']).strftime('%m/%d/%Y') : '')
-        record << row['type']
-        record << row['source']
 
-        csv << record
+      decorated_records.each do |record|
+        csv << headers_as_symbols.map { |attr| record.send(attr) }
       end
     end
   end
 
   def headers
     headers = ['Product']
-    headers += @custom_field_names.map {|cf| cf['field_label']}
-    headers.concat ['Record Type', 'Record ID', 'Team Member', 'Name', 'Advertiser', 'Agency', 'Holding CO', 'Stage', '%', 'Budget', 'Currency', 'Budget USD', 'Weighted Amt', 'Start Date', 'End Date', 'Created Date', 'Closed Date', 'Deal Type', 'Deal Source']
+    headers += custom_headers
+    headers.concat [
+      'Record Type',
+      'Record ID',
+      'Team Member',
+      'Name',
+      'Advertiser',
+      'Agency',
+      'Holding CO',
+      'Stage',
+      '%',
+      'Budget',
+      'Currency',
+      'Budget USD',
+      'Weighted Amt',
+      'Start Date',
+      'End Date',
+      'Created Date',
+      'Closed Date',
+      'Deal Type',
+      'Deal Source'
+    ]
+  end
+
+  def custom_headers
+    custom_field_names.map {|cf| cf['field_label']}
+  end
+  def headers_as_symbols
+    @_headers_as_symbols ||= headers.map { |el| el.downcase.gsub(' ','_').to_sym }
   end
 end

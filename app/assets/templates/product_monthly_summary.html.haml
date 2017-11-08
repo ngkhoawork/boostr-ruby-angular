@@ -64,91 +64,34 @@
       .row
         .col-xs-12
           .block
-            %div.table-wrapper
+            %div.table-wrapper{infinite: {scroll: 'loadMoreData()', 'scroll-disabled': 'isLoading || allItemsLoaded', 'scroll-distance': '0.5'}}
               %table.table.table-hover.exportable-table
                 %thead
-                  %tr{'z-fixed-header': true, watch: '"data"'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("product")'}
-                        Product
-                        %i{'ng-show': 'sort.field == "product"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
+                  %tr.z-sortable-prime{'z-fixed-header': true, watch: '"data"'}
+                    %th.z-sortable{by: 'product.name'} Name
                     %th{'ng-repeat': 'cfName in customFieldNames'}
-                      %span.clickable{'ng-click': 'sort.by("custom_fields[{{cfName.field_type + cfName.field_index}}]")'} {{cfName.field_label}}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("record_type")'}
-                        Record Type
-                        %i{'ng-show': 'sort.field == "record_type"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("record_id")'}
-                        Record ID
-                        %i{'ng-show': 'sort.field == "record_id"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("members[0].name")'}
-                        Team Member
-                        %i{'ng-show': 'sort.field == "members[0].name"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("name")'}
-                        Name
-                        %i{'ng-show': 'sort.field == "name"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("advertiser.name")'}
-                        Advertiser
-                        %i{'ng-show': 'sort.field == "advertiser.name"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("agency.name")'}
-                        Agency
-                        %i{'ng-show': 'sort.field == "agency.name"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("holding_company")'}
-                        Holding CO
-                        %i{'ng-show': 'sort.field == "holding_company"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("stage.name")'}
-                        Stage
-                        %i{'ng-show': 'sort.field == "stage.name"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("stage.probability")'}
-                        \%
-                        %i{'ng-show': 'sort.field == "stage.probability"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("budget_loc")'}
-                        Budget
-                        %i{'ng-show': 'sort.field == "budget_loc"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("budget")'}
-                        Budget USD
-                        %i{'ng-show': 'sort.field == "budget"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("weighted_budget")'}
-                        Weighted Amt
-                        %i{'ng-show': 'sort.field == "weighted_budget"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("start_date")'}
-                        Start Date
-                        %i{'ng-show': 'sort.field == "start_date"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("end_date")'}
-                        End Date
-                        %i{'ng-show': 'sort.field == "end_date"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("created_at")'}
-                        Created Date
-                        %i{'ng-show': 'sort.field == "created_at"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("closed_at")'}
-                        Closed Date
-                        %i{'ng-show': 'sort.field == "closed_at"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("type")'}
-                        Deal Type
-                        %i{'ng-show': 'sort.field == "type"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
-                    %th
-                      %span.clickable{'ng-click': 'sort.by("source")'}
-                        Deal Source
-                        %i{'ng-show': 'sort.field == "source"', class: 'fa fa-caret-{{sort.reverse ? "up" : "down"}}'}
+                      .z-sortable{by: 'custom_fields["{{cfName.field_type + cfName.field_index}}"]'} {{cfName.field_label}}
+                    %th.z-sortable{by: 'record_type'} Record Type
+                    %th.z-sortable{by: 'record_id'} Record ID
+                    %th.z-sortable{by: 'members[0].name'} Team Member
+                    %th.z-sortable{by: 'name'} Name
+                    %th.z-sortable{by: 'advertiser.name'} Advertiser
+                    %th.z-sortable{by: 'agency.name'} Agency
+                    %th.z-sortable{by: 'holding_company'} Holding CO
+                    %th.z-sortable{by: 'stage.name'} Stage
+                    %th.z-sortable{by: 'stage.probability'} %
+                    %th.z-sortable{by: 'budget_loc'} Budget
+                    %th.z-sortable{by: 'budget'} Budget USD
+                    %th.z-sortable{by: 'weighted_budget'} Weighted Amt
+                    %th.z-sortable{by: 'start_date'} Start Date
+                    %th.z-sortable{by: 'end_date'} End Date
+                    %th.z-sortable{by: 'created_at'} Created Date
+                    %th.z-sortable{by: 'closed_at'} Closed Date
+                    %th.z-sortable{by: 'type'} Deal Type
+                    %th.z-sortable{by: 'source'} Deal Source
                 %tbody
-                  %tr{'ng-repeat': 'row in data | orderBy : sort.field : sort.reverse'}
-                    %td {{row.product}}
+                  %tr{'ng-repeat': 'row in data | orderBy : zSort.by : zSort.rev'}
+                    %td {{row.product.name}}
                     %td{'ng-repeat': 'cfName in customFieldNames'}
                       {{row.custom_fields[cfName.field_type + cfName.field_index]}}
                     %td {{row.record_type}}
@@ -164,7 +107,7 @@
                     %td {{row.holding_company}}
                     %td {{row.stage.name}}
                     %td {{row.stage.probability}}
-                    %td {{row.budget_loc | currency: row.currency || '$' : 0}}
+                    %td {{row.budget_loc | currency: row.currency.curr_cd || '$' : 0}}
                     %td {{row.budget | currency: '$' : 0}}
                     %td {{row.weighted_budget | currency: '$' : 0}}
                     %td {{row.start_date | date : 'MM/dd/yyyy'}}

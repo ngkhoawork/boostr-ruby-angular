@@ -1,13 +1,16 @@
 @app.controller 'ProductMonthlySummaryController',
-    ['$scope', '$window', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Revenue', 'Deal', 'Product', 'Report', 'DealCustomFieldName', '$httpParamSerializer'
-    ( $scope,   $window,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Revenue,   Deal,   Product,   Report,   DealCustomFieldName,   $httpParamSerializer) ->
+    ['$rootScope', '$scope', '$window', '$q', 'Team', 'Seller', 'TimePeriod', 'CurrentUser', 'Revenue', 'Deal', 'Product', 'Report', 'DealCustomFieldName', '$httpParamSerializer'
+    ( $rootScope,   $scope,   $window,   $q,   Team,   Seller,   TimePeriod,   CurrentUser,   Revenue,   Deal,   Product,   Report,   DealCustomFieldName,   $httpParamSerializer) ->
         $scope.teams = []
         $scope.sellers = []
         $scope.data = []
         $scope.isLoading = false
+        $scope.allItemsLoaded = true
 
         emptyFilter = $scope.emptyFilter = {id: null, name: 'All'}
         defaultFilter =
+            page: 1
+            per_page: 10
             team: emptyFilter
             seller: emptyFilter
             product: emptyFilter
@@ -33,12 +36,18 @@
                 if !date.startDate || !date.endDate then return false
                 date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
 
-
+        $scope.loadMoreData = ->
+            if !$scope.allItemsLoaded then getData()
+        resetPagination = ->
+            $scope.filter.page = 1
+            $scope.allItemsLoaded = false
+            $scope.data = []
         $scope.setFilter = (key, val) ->
             $scope.filter[key] = val
 
         $scope.applyFilter = () ->
             if !$scope.isLoading
+                resetPagination()
                 appliedFilter = angular.copy $scope.filter
                 getData()
 
@@ -50,12 +59,15 @@
 
         $scope.export = ->
             url = '/api/reports/product_monthly_summary.csv'
-            $window.open url + '?' + $httpParamSerializer getQuery()
+            $window.open url + '?' + $httpParamSerializer getQuery(true)
             return
 
-        getQuery = ->
+        getQuery = (isExport = false) ->
             f = $scope.filter
             query = {}
+            if !isExport
+                query.page = f.page
+                query.per_page = f.per_page
             query.team_id = f.team.id if f.team.id
             query.product_id = f.product.id if f.product.id
             query.seller_id = f.seller.id if f.seller.id
@@ -65,14 +77,17 @@
             query
 
         getData = ->
+            $scope.isLoading = true
             Report.product_monthly_summary(getQuery()).$promise.then (data) ->
-                console.log(data.data);
-                $scope.data = data.data;
+                $scope.allItemsLoaded = !data.has_more_data
+                $scope.data = $scope.data.concat data.data
+                $scope.filter.page = $scope.filter.page + 1
                 $scope.customFieldNames = data.deal_product_cf_names
+                $scope.isLoading = false
 
         init = ->
             $q.all(
-                user: CurrentUser.get().$promise
+                user: $rootScope.currentUser
                 teams: Team.all(all_teams: true)
                 products: Product.all()
                 sellers: Seller.query({id: 'all'}).$promise

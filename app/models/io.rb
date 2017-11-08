@@ -23,7 +23,6 @@ class Io < ActiveRecord::Base
 
   scope :for_company, -> (company_id) { where(company_id: company_id) }
   scope :for_io_members, -> (user_ids) { joins(:io_members).where('io_members.user_id in (?)', user_ids) }
-  scope :for_io_member, -> (user_id) { joins(:io_members).where(io_members: { user_id: user_id }) if user_id.present? }
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
   scope :for_team, -> (team_id) { joins(io_members: :user).where(users: { team_id: team_id }) if team_id.present? }
   scope :without_display_line_items, -> { includes(:display_line_items).where(display_line_items: { id: nil }) }
