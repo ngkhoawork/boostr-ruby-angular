@@ -206,11 +206,11 @@ class DisplayLineItemCsv
   end
 
   def dli_start_date_less_than_io_start_date
-    parse_date(self.start_date) <= io.start_date
+    parse_date(self.start_date) < io.start_date
   end
 
   def dli_end_date_greater_then_io_end_date
-    parse_date(self.end_date) >= io.end_date
+    parse_date(self.end_date) > io.end_date
   end
 
   def start_end_date_present?
