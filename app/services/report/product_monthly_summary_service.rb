@@ -56,7 +56,7 @@ class Report::ProductMonthlySummaryService
   def data_for_serializer
     results = []
     deals.each do |deal|
-      if !deal.stage.open? && deal.stage.probability == 100 && deal.io.present?
+      if deal.closed_with_io?
         deal.io.content_fees.each do |content_fee|
           next if product_id && content_fee.product_id != product_id.to_i
           results += content_fee.content_fee_product_budgets

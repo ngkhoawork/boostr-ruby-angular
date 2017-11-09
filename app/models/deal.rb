@@ -240,6 +240,10 @@ class Deal < ActiveRecord::Base
     stage.probability.eql?(100) && stage.open? == false
   end
 
+  def closed_with_io?
+    !stage.open? && stage.probability == 100 && io.present?
+  end
+
   def active_exchange_rate
     if curr_cd != 'USD'
       unless company.active_currencies.include?(curr_cd)
