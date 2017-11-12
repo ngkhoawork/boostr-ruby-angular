@@ -89,14 +89,46 @@ RSpec.describe Api::V2::EmailThreadsController, type: :controller do
       response_data = JSON.parse(response.body).first.deep_symbolize_keys
 
       expect(response_data).to_not be_nil
-      expect(response_data[:email_opens]).to_not be_empty
+      expect(response_data[:last_five_opens]).to_not be_empty
+    end
+  end
+
+  describe 'GET #search' do
+    it 'should return email threads by term' do
+      get :search_by, term: thread.subject
+      response_data = JSON.parse(response.body)
+
+      expect(response_data).to_not be_empty
+    end
+
+    it 'should not return email threads by term' do
+      get :search_by, term: "nothing"
+      response_data = JSON.parse(response.body)
+
+      expect(response_data).to be_empty
+    end
+  end
+
+  describe 'GET #all_not_opened_emails' do
+    it 'should return email threads by term' do
+      thread '11'
+
+      get :all_not_opened_emails
+      response_data = JSON.parse(response.body)
+
+      expect(response_data).to_not be_empty
     end
   end
 
   private
 
-  def thread
-    @_thread ||= create :email_thread, email_guid: '12345', thread_id: '123'
+  def thread(email_guid = '12345')
+    @_thread ||= create :email_thread,
+                        email_guid: email_guid,
+                        thread_id: '123',
+                        subject: 'Possible deal',
+                        recipient: 'John',
+                        recipient_email: 'john@gmail.com'
   end
 
   def thread_with_opens

@@ -3,6 +3,9 @@ class EmailThread < ActiveRecord::Base
 
   validates :email_guid, :thread_id, presence: true, uniqueness: true
 
+  scope :without_opens, -> () {  includes(:email_opens).where(email_opens: {id: nil}) }
+  scope :search_by_email_threads, -> (term) { where("lower(subject) LIKE :term OR lower(recipient) LIKE :term OR lower(recipient_email) LIKE :term", term: "%#{term}%".downcase)}
+
   def self.threads thread_ids
     select('thread_id,
             email_guid AS thread_guid,
@@ -18,5 +21,9 @@ class EmailThread < ActiveRecord::Base
         last_open: EmailOpen.by_thread(thread['thread_guid']).last
       })
     }
+  end
+
+  def last_five_opens
+    email_opens.order("created_at DESC").first(5)
   end
 end

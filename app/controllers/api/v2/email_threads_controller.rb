@@ -36,9 +36,17 @@ class  Api::V2::EmailThreadsController < ApiController
   end
 
   def all_emails
-    threads = EmailThread.order('created_at DESC').as_json({ include: :email_opens })
+    threads = EmailThread.order('created_at DESC')
 
-    render json: threads
+    render json: threads.limit(limit).offset(offset).as_json({ include: :last_five_opens })
+  end
+
+  def search_by
+    render json: EmailThread.search_by_email_threads(email_thread_params[:term])
+  end
+
+  def all_not_opened_emails
+    render json: EmailThread.without_opens
   end
 
   private
@@ -54,6 +62,15 @@ class  Api::V2::EmailThreadsController < ApiController
   def email_thread_params
     params.permit(:thread_id,
                   :email_guid,
-                  :gmail_query_string)
+                  :gmail_query_string,
+                  :term)
+  end
+
+  def limit
+    params[:per].present? ? params[:per].to_i : 10
+  end
+
+  def offset
+    params[:page].present? ? (params[:page].to_i - 1) * limit : 0
   end
 end

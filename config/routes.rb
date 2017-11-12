@@ -132,6 +132,8 @@ Rails.application.routes.draw do
         collection do
           post :create_thread
           get :all_emails
+          get :search_by
+          get :all_not_opened_emails
         end
       end
     end # API V2 END

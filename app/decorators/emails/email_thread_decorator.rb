@@ -12,7 +12,7 @@ class Emails::EmailThreadDecorator
       body: body,
       sender: attendees.from[:name],
       from: attendees.from[:email],
-      to: to,
+      recipient_email: to,
       recipient: recipient
     }
   end

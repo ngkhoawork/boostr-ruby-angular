@@ -1151,7 +1151,7 @@ ActiveRecord::Schema.define(version: 20171006144351) do
     t.string   "thread_id"
     t.string   "body"
     t.string   "subject"
-    t.string   "to"
+    t.string   "recipient_email"
     t.string   "from"
     t.string   "sender"
     t.string   "recipient"
