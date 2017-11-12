@@ -24,6 +24,13 @@ class Api::RevenueController < ApplicationController
 
   end
 
+  def create
+    csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
+    revenues = Revenue.import(csv_file, current_user.company.id)
+
+    render json: revenues
+  end
+
   def report_by_category
     respond_to do |format|
       format.json {
@@ -35,13 +42,6 @@ class Api::RevenueController < ApplicationController
                   filename: "reports-revenue_by_category-#{DateTime.current}.csv"
       }
     end
-  end
-
-  def create
-    csv_file = File.open(params[:file].tempfile.path, "r:ISO-8859-1")
-    revenues = Revenue.import(csv_file, current_user.company.id)
-
-    render json: revenues
   end
 
   def report_by_account
@@ -435,14 +435,14 @@ class Api::RevenueController < ApplicationController
   end
 
   def revenue_by_category_report
-    Report::RevenueByCategoryService.new(report_by_months_params).perform
+    Report::RevenueByCategoryService.new(revenue_by_category_report_params).perform
   end
 
   def revenue_by_account_report
     Report::RevenueByAccountService.new(revenue_by_account_report_params).perform
   end
 
-  def report_by_months_params
+  def revenue_by_category_report_params
     %i(start_date end_date category_ids).each { |param_name| params.require(param_name) }
 
     params.permit(:start_date, :end_date, client_region_ids: [], client_segment_ids: [], category_ids: [])

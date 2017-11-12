@@ -3,7 +3,7 @@ class Report::RevenueByCategorySerializer < ActiveModel::Serializer
   attributes :category_id, :year, :revenues, :total_revenue
 
   def attributes(*args)
-    super(*args).compact
+    super.compact
   end
 
   def category_id

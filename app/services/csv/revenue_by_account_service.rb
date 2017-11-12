@@ -29,10 +29,10 @@ class Csv::RevenueByAccountService < Csv::BaseService
   end
 
   def headers
-    @headers ||= HEADER_ATTRIBUTES_MAPPING.keys[0..-2] + specific_month_headers + HEADER_ATTRIBUTES_MAPPING.keys[-1..-1]
+    @headers ||= HEADER_ATTRIBUTES_MAPPING.keys[0..-2] + month_headers + HEADER_ATTRIBUTES_MAPPING.keys[-1..-1]
   end
 
-  def specific_month_headers
+  def month_headers
     Date::MONTHNAMES[1..-1]
   end
 
@@ -41,7 +41,13 @@ class Csv::RevenueByAccountService < Csv::BaseService
   end
 
   def grouping_attribute(record, header)
-    record.send(HEADER_ATTRIBUTES_MAPPING[header.to_sym]) if HEADER_ATTRIBUTES_MAPPING[header.to_sym]
+    attr_name = HEADER_ATTRIBUTES_MAPPING[header.to_sym]
+
+    return unless attr_name
+
+    attr = record.send(attr_name)
+
+    (attr_name =~ /_id/ && attr) ? Option.find(attr).name : attr
   end
 
   def month_position(header)

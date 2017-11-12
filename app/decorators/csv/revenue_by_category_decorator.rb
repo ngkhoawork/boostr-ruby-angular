@@ -1,6 +1,7 @@
 class Csv::RevenueByCategoryDecorator
   def initialize(revenue_struct)
     @revenue_struct = revenue_struct
+    revenues_to_f!
   end
 
   def category_id
@@ -12,7 +13,6 @@ class Csv::RevenueByCategoryDecorator
   end
 
   def revenues
-    revenues_to_f!
     @revenue_struct.revenues
   end
 
