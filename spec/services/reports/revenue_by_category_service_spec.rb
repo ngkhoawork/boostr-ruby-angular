@@ -1,48 +1,8 @@
 require 'rails_helper'
 
 describe Report::RevenueByCategoryService do
-  let!(:company) { @company ||= create(:company) }
-  let!(:category_field) { @category_field ||= create(:field, name: 'Category', subject_type: 'Client') }
-  let!(:region_field) { @region_field ||= create(:field, name: 'Region', subject_type: 'Client') }
-  let!(:segment_field) { @segment_field ||= create(:field, name: 'Segment', subject_type: 'Client') }
-  let!(:category) { @category ||= create(:option, field: category_field, company: company) }
-  let!(:region) { @region ||= create(:option, field: region_field, company: company) }
-  let!(:segment) { @segment ||= create(:option, field: segment_field, company: company) }
-  let(:holding_company) { @holding_company ||= create(:holding_company) }
-  let(:advertiser) { @advertiser ||= create(:client, :advertiser, holding_company: holding_company, company: company) }
-  let(:account_dimension) do
-    @account_dimension ||=
-      create(
-        :account_dimension,
-        :advertiser,
-        id: advertiser.id,
-        holding_company: holding_company,
-        company: company,
-        category_id: category.id
-      )
-  end
-  let(:time_dimension) do
-    @time_dimension ||=
-      create(
-        :time_dimension,
-        start_date: Date.today.beginning_of_month,
-        end_date: Date.today.end_of_month,
-        days_length: Time.days_in_month(Time.current.month)
-      )
-  end
-  let!(:account_revenue_fact) do
-    create(
-      :account_revenue_fact,
-      account_dimension: account_dimension,
-      revenue_amount: 10_000,
-      company: company,
-      category_id: category.id,
-      client_region_id: region.id,
-      client_segment_id: segment.id,
-      time_dimension: time_dimension
-    )
-  end
-
+  before(:all) { account_revenue_fact }
+  after(:all) { clear_test_data }
 
   describe '#perform' do
     let(:options) do
@@ -99,6 +59,78 @@ describe Report::RevenueByCategoryService do
       let(:options) { super().merge(category_ids: [-1]) }
 
       it { expect(subject).to eq [] }
+    end
+  end
+
+  private
+
+  def account_revenue_fact
+    @account_revenue_fact ||= create(
+      :account_revenue_fact,
+      account_dimension: account_dimension,
+      revenue_amount: 10_000,
+      company: company,
+      category_id: category.id,
+      client_region_id: region.id,
+      client_segment_id: segment.id,
+      time_dimension: time_dimension
+    )
+  end
+
+  def company
+    @company ||= create(:company)
+  end
+
+  def category_field
+    @category_field ||= create(:field, name: 'Category', subject_type: 'Client')
+  end
+
+  def region_field
+    @region_field ||= create(:field, name: 'Region', subject_type: 'Client')
+  end
+
+  def segment_field
+    @segment_field ||= create(:field, name: 'Segment', subject_type: 'Client')
+  end
+
+  def category
+    @category ||= create(:option, field: category_field, company: company)
+  end
+
+  def region
+    @region ||= create(:option, field: region_field, company: company)
+  end
+
+  def segment
+    @segment ||= create(:option, field: segment_field, company: company)
+  end
+
+  def holding_company
+    @holding_company ||= create(:holding_company)
+  end
+
+  def advertiser
+    @advertiser ||= create(:client, :advertiser, holding_company: holding_company, company: company)
+  end
+
+  def account_dimension
+    @account_dimension ||= advertiser.account_dimensions.last
+  end
+
+  def time_dimension
+    @time_dimension ||=
+      create(
+        :time_dimension,
+        start_date: Date.today.beginning_of_month,
+        end_date: Date.today.end_of_month,
+        days_length: Time.days_in_month(Time.current.month)
+      )
+  end
+
+  def clear_test_data
+    (instance_variables - %i(@__inspect_output @__memoized @example)).sort.each do |var_name|
+      record = instance_variable_get(var_name)
+      record.respond_to?(:paranoia_column) ? record.really_destroy! : record.destroy
     end
   end
 end

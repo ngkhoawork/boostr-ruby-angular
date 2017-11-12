@@ -21,7 +21,7 @@ class FactTables::AccountRevenues::FilteredQuery
 
   module FactScopes
     def by_time_dimension_date_range(start_date, end_date)
-      return all unless start_date && end_date
+      return self unless start_date && end_date
 
       where('time_dimensions.start_date >= :start_date
              AND time_dimensions.end_date <= :end_date
@@ -31,23 +31,23 @@ class FactTables::AccountRevenues::FilteredQuery
     end
 
     def by_account_ids(account_ids)
-      account_ids ? where(account_dimensions: { id: account_ids }) : all
+      account_ids ? where(account_dimensions: { id: account_ids }) : self
     end
 
     def by_company_id(company_id)
-      company_id ? where(account_revenue_facts: { company_id: company_id }) : all
+      company_id ? where(account_revenue_facts: { company_id: company_id }) : self
     end
 
     def by_category_ids(category_ids)
-      category_ids ? where(account_revenue_facts: { category_id: category_ids }) : all
+      category_ids ? where(account_revenue_facts: { category_id: category_ids }) : self
     end
 
     def by_client_region_ids(client_region_ids)
-      client_region_ids ? where(account_revenue_facts: { client_region_id: client_region_ids }) : all
+      client_region_ids ? where(account_revenue_facts: { client_region_id: client_region_ids }) : self
     end
 
     def by_client_segment_ids(client_segment_ids)
-      client_segment_ids ? where(account_revenue_facts: { client_segment_id: client_segment_ids }) : all
+      client_segment_ids ? where(account_revenue_facts: { client_segment_id: client_segment_ids }) : self
     end
   end
 end

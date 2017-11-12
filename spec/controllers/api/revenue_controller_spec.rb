@@ -56,6 +56,76 @@ RSpec.describe Api::RevenueController, type: :controller do
     end
   end
 
+  describe '#report_by_category' do
+    let!(:account_revenue_fact) do
+      create(
+        :account_revenue_fact,
+        account_dimension: account_dimension,
+        revenue_amount: 10_000,
+        company: user.company,
+        category_id: category.id,
+        client_region_id: region.id,
+        client_segment_id: segment.id,
+        time_dimension: time_dimension
+      )
+    end
+    let(:params) do
+      {
+        format: :json,
+        start_date: time_dimension.start_date,
+        end_date: time_dimension.end_date
+      }
+    end
+    subject { get :report_by_category, params }
+
+    before(:each) { subject }
+
+    context 'when params include appropriate "category_ids"' do
+      let(:params) { super().merge(category_ids: [category.id]) }
+
+      it 'has an appropriate structure' do
+        expect(response).to be_success
+        expect(response_json).to be_kind_of Array
+        expect(response_item).to have_key :category_id
+        expect(response_item).to have_key :year
+        expect(response_item).to have_key :revenues
+        expect(response_item).to have_key :total_revenue
+        expect(response_item[:revenues]).to be_kind_of Hash
+      end
+      it { expect(response_item[:category_id]).to eq params[:category_ids][0] }
+
+      context 'and when params include appropriate "region_id"' do
+        let(:params) { super().merge(client_region_ids: [region.id]) }
+
+        it { expect(response_json).not_to be_empty }
+      end
+
+      context 'and when options include appropriate "segment_id"' do
+        let(:params) { super().merge(client_segment_ids: [segment.id]) }
+
+        it { expect(response_json).not_to be_empty }
+      end
+
+      context 'and when options does not include appropriate "region_id"' do
+        let(:params) { super().merge(client_region_ids: [-1]) }
+
+        it { expect(response_json).to be_empty }
+      end
+
+      context 'and when options does not include appropriate "segment_id"' do
+        let(:params) { super().merge(client_segment_ids: [-1]) }
+
+        it { expect(response_json).to be_empty }
+      end
+    end
+
+    context 'when params does not include appropriate "category_ids"' do
+      let(:params) { super().merge(category_ids: [-1]) }
+
+      it { expect(response_item).to be_nil }
+    end
+  end
+
   describe '#report_by_account' do
     let!(:account_revenue_fact) do
       create(
@@ -82,8 +152,6 @@ RSpec.describe Api::RevenueController, type: :controller do
 
     context 'when params include appropriate "category_ids"' do
       let(:params) { super().merge(category_ids: [category.id]) }
-
-      # before(:each) { account_revenue_fact }
 
       it 'has an appropriate structure' do
         expect(response).to be_success

@@ -1,18 +1,11 @@
 class Csv::RevenueByCategoryService < Csv::BaseService
   HEADER_ATTRIBUTES_MAPPING = {
+    Category: :category_id,
     Year: :year,
     Total: :total_revenue
   }.freeze
 
   private
-
-  def decorated_records
-    records.map { |record| Csv::RevenueByCategoryDecorator.new(record) }
-  end
-
-  def headers
-    %w(Category Year) + Date::MONTHNAMES[1..-1] + %w(Total)
-  end
 
   def generate_csv
     CSV.generate do |csv|
@@ -20,25 +13,39 @@ class Csv::RevenueByCategoryService < Csv::BaseService
 
       decorated_records.each do |record|
         csv << headers.map do |header|
-          category_attr(record, header) || month_revenue_attr(record, header) || header_linked_attr(record, header)
+          grouping_attribute(record, header) || specific_month_revenue_attribute(record, header)
         end
       end
     end
   end
 
-  def month_revenue_attr(record, header)
-    record.revenues[Date::MONTHNAMES.index(header)]
+  def decorated_records
+    records.map { |record| Csv::RevenueByCategoryDecorator.new(record) }
   end
 
-  def header_linked_attr(record, header)
-    record.send(HEADER_ATTRIBUTES_MAPPING[header.to_sym]) if HEADER_ATTRIBUTES_MAPPING[header.to_sym]
+  def headers
+    @headers ||= HEADER_ATTRIBUTES_MAPPING.keys[0..-2] + month_headers + HEADER_ATTRIBUTES_MAPPING.keys[-1..-1]
   end
 
-  def category_attr(record, header)
-    return unless header.to_sym == :Category
+  def month_headers
+    Date::MONTHNAMES[1..-1]
+  end
 
-    # Store categories in hash table to avoid redundant DB queries
-    @categories ||= {}
-    @categories[record.category_id] ||= Option.find(record.category_id).name
+  def specific_month_revenue_attribute(record, header)
+    record.revenues[month_position(header)]
+  end
+
+  def grouping_attribute(record, header)
+    attr_name = HEADER_ATTRIBUTES_MAPPING[header.to_sym]
+
+    return unless attr_name
+
+    attr = record.send(attr_name)
+
+    (attr_name =~ /_id/ && attr) ? Option.find(attr).name : attr
+  end
+
+  def month_position(header)
+    Date::MONTHNAMES.index(header)
   end
 end
