@@ -11,7 +11,7 @@
         emptyFilter = $scope.emptyFilter = {id: null, name: 'All'}
         defaultFilter =
             page: 1
-            per_page: 10
+            per_page: 50
             team: emptyFilter
             seller: emptyFilter
             product: emptyFilter
