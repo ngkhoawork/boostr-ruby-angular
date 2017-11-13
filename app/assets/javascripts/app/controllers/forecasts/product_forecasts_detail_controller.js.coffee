@@ -54,7 +54,7 @@
 
         getData = (query) ->
             if !query.time_period_id
-                zError '#time-period-field', 'You should select Time period to run the report'
+                zError '#time-period-field', 'Select a Time Period to Run Report'
                 return
             $scope.isLoading = true
             Forecast.product_forecast_detail(query).$promise.then (data) ->
