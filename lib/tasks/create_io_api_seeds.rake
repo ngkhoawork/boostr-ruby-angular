@@ -1,5 +1,3 @@
-require 'factory_girl'
-
 namespace :create_io_api_seeds do
   desc "Create IO API seeds"
   task process_task: :environment do
