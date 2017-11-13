@@ -303,7 +303,7 @@ class Deal < ActiveRecord::Base
 
     disabled = validation.criterion.try(:value)
 
-    if disabled && stage.open? && stage_was.closed? && !modifying_user.is_admin
+    if disabled && stage.open? && stage_was&.closed? && !modifying_user.is_admin
       errors.add(:stage, 'Only admins allowed to re-open deals')
     end
   end
@@ -1422,9 +1422,8 @@ class Deal < ActiveRecord::Base
     import_log.save
   end
 
-
   def stage_was
-    stage_id_changed? ? Stage.find(stage_id_was) : stage
+    @stage_was ||= stage_id_was && Stage.find(stage_id_was)
   end
 
   def update_stage
