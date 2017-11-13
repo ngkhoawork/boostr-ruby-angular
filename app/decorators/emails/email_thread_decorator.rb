@@ -1,7 +1,8 @@
 class Emails::EmailThreadDecorator
-  def initialize(params)
+  def initialize(params, current_user)
     @params = params
     @gmail_query = parse_gmail_query(params[:gmail_query_string])
+    @current_user = current_user
   end
 
   def collect
@@ -13,7 +14,8 @@ class Emails::EmailThreadDecorator
       sender: attendees.from[:name],
       from: attendees.from[:email],
       recipient_email: to,
-      recipient: recipient
+      recipient: recipient,
+      user: @current_user
     }
   end
 

@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Api::V2::EmailThreadsController, type: :controller do
+  let(:company) { create :company }
+  let(:user) { create :user, company: company }
+
+  before do
+    valid_token_auth user
+  end
+
   describe 'GET #index' do
     it 'should return email thread with email opens' do
       first_opened_email = create :email_open, guid: thread.email_guid, opened_at: Date.yesterday
@@ -128,7 +135,8 @@ RSpec.describe Api::V2::EmailThreadsController, type: :controller do
                         thread_id: '123',
                         subject: 'Possible deal',
                         recipient: 'John',
-                        recipient_email: 'john@gmail.com'
+                        recipient_email: 'john@gmail.com',
+                        user: user
   end
 
   def thread_with_opens
