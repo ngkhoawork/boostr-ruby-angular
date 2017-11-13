@@ -6,6 +6,7 @@
         $scope.data = []
         $scope.isLoading = false
         $scope.allItemsLoaded = true
+        $scope.shouldRenderList = false
 
         emptyFilter = $scope.emptyFilter = {id: null, name: 'All'}
         defaultFilter =
@@ -47,8 +48,8 @@
 
         $scope.applyFilter = () ->
             if !$scope.isLoading
+                $scope.shouldRenderList = false
                 resetPagination()
-                appliedFilter = angular.copy $scope.filter
                 getData()
 
         $scope.resetFilter = ->
@@ -84,6 +85,7 @@
                 $scope.filter.page = $scope.filter.page + 1
                 $scope.customFieldNames = data.deal_product_cf_names
                 $scope.isLoading = false
+                $scope.shouldRenderList = true
 
         init = ->
             $q.all(
