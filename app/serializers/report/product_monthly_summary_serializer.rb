@@ -69,11 +69,11 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def budget
-    @_budget ||= row.budget.to_i
+    @_budget ||= object.budget.to_i
   end
 
   def budget_loc
-    row.budget_loc.to_i
+    object.budget_loc.to_i
   end
 
   def weighted_budget
@@ -93,11 +93,11 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def start_date
-    row.start_date
+    object.start_date
   end
 
   def end_date
-    row.end_date
+    object.end_date
   end
 
   def type
