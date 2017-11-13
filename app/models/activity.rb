@@ -9,6 +9,7 @@ class Activity < ActiveRecord::Base
   belongs_to :updator, class_name: 'User', foreign_key: 'updated_by'
   belongs_to :activity_type
   belongs_to :account_dimension, foreign_key: 'agency_id'
+  belongs_to :publisher
 
   has_and_belongs_to_many :contacts
   has_and_belongs_to_many :contacts_info, -> { select(:id, :name) }, class_name: 'Contact'#, foreign_key: 'stage_id'

@@ -24,6 +24,8 @@ class User < ActiveRecord::Base
   has_many :audit_logs
   has_many :filter_queries
   has_many :email_threads
+  has_many :publisher_members, dependent: :destroy
+  has_many :publishers, through: :publisher_members
 
   ROLES = %w(user admin superadmin supportadmin)
 

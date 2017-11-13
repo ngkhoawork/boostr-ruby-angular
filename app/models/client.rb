@@ -8,7 +8,6 @@ class Client < ActiveRecord::Base
   has_many :client_members
   has_many :users, through: :client_members
   has_many :client_member_info, -> { joins(:user).select(:id, :client_id, :share, 'users.first_name', 'users.last_name') }, class_name: 'ClientMember'
-  # has_many :contacts
   has_many :contacts, -> { uniq }, through: :client_contacts
   has_many :primary_client_contacts, -> { where('client_contacts.primary = ?', true) }, class_name: 'ClientContact'
   has_many :primary_contacts, -> { uniq }, through: :primary_client_contacts, source: :contact
@@ -22,7 +21,6 @@ class Client < ActiveRecord::Base
 
   has_many :agency_ios, class_name: 'Io', foreign_key: 'agency_id'
   has_many :advertiser_ios, class_name: 'Io', foreign_key: 'advertiser_id'
-
   has_many :bp_estimates
 
   has_many :agency_connections, class_name: :ClientConnection,
@@ -41,6 +39,9 @@ class Client < ActiveRecord::Base
   has_many :values, as: :subject
   has_many :activities, -> { order(happened_at: :desc) }
   has_many :agency_activities, -> { order(happened_at: :desc) }, class_name: 'Activity', foreign_key: 'agency_id'
+  has_many :reminders, as: :remindable, dependent: :destroy
+  has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
+  has_many :integrations, as: :integratable
 
   has_one :latest_advertiser_activity, -> { self.select_values = ["DISTINCT ON(activities.client_id) activities.*"]
     order('activities.client_id', 'activities.happened_at DESC')
@@ -49,19 +50,17 @@ class Client < ActiveRecord::Base
     order('activities.agency_id', 'activities.happened_at DESC')
   }, class_name: 'Activity'
 
-  has_many :reminders, as: :remindable, dependent: :destroy
-  has_many :account_dimensions, foreign_key: 'id', dependent: :destroy
   has_one :account_cf, dependent: :destroy
   has_one :primary_client_member, -> { order(share: :desc) }, class_name: 'ClientMember'
   has_one :primary_user, through: :primary_client_member, source: :user
+  has_one :address, as: :addressable
+  has_one :publisher
 
   belongs_to :client_category, class_name: 'Option', foreign_key: 'client_category_id'
   belongs_to :client_subcategory, class_name: 'Option', foreign_key: 'client_subcategory_id'
   belongs_to :client_region, class_name: 'Option', foreign_key: 'client_region_id'
   belongs_to :client_segment, class_name: 'Option', foreign_key: 'client_segment_id'
   belongs_to :holding_company
-  has_one :address, as: :addressable
-  has_many :integrations, as: :integratable
 
   delegate :street1, :street2, :city, :state, :zip, :phone, :country, to: :address, allow_nil: true
   delegate :name, to: :client_category, prefix: :category, allow_nil: true
