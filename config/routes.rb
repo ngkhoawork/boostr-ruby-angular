@@ -136,6 +136,8 @@ Rails.application.routes.draw do
           get :all_not_opened_emails
         end
       end
+
+      resources :gmail_extension, only: [:index]
     end # API V2 END
 
     resources :dfp_imports do
