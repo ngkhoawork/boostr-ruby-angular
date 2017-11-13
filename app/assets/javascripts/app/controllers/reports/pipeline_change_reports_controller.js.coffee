@@ -1,80 +1,37 @@
-@app.controller 'PipelineChangeReportController',
-  ['$scope', '$window', '$document', '$httpParamSerializer', '$location', 'PipelineChangeReportService',
-    ($scope, $window, $document, $httpParamSerializer, $location, PipelineChangeReportService) ->
+@app.controller 'PipelineChangeReportController', [
+	'$scope', '$window', '$document', '$httpParamSerializer', '$location', 'PipelineChangeReportService', 'zError'
+	($scope,   $window,   $document,   $httpParamSerializer,   $location,   PipelineChangeReportService,   zError) ->
 
-      $scope.report_data_items = []
-      $scope.changeTypes = [
-        'New Deals'
-        'Won Deals'
-        'Lost Deals'
-        'Budget Changed'
-        'Stage Changed'
-        'Start Date Changed'
-        'Member Added'
-        'Member Removed'
-        'Share Changed'
-      ]
-      $scope.sortType = 'deal_type'
-      $scope.sortReverse  = false
+		$scope.report_data_items = []
+		$scope.changeTypes = [
+			{id: 1, name: 'New Deals'}
+			{id: 2, name: 'Won Deals'}
+			{id: 3, name: 'Lost Deals'}
+			{id: 4, name: 'Budget Changed'}
+			{id: 5, name: 'Stage Changed'}
+			{id: 6, name: 'Start Date Changed'}
+			{id: 7, name: 'Member Added'}
+			{id: 8, name: 'Member Removed'}
+			{id: 9, name: 'Share Changed'}
+		]
 
-      appliedFilter = null
-      defaultFilter =
-        type: ''
-        date:
-          startDate: moment().subtract(7,'d')
-          endDate: moment()
+		appliedFilter = {}
 
-      $scope.filter = angular.copy defaultFilter
+		$scope.onFilterApply = (query) ->
+			appliedFilter = query
+			getReport query
 
-      $scope.datePicker =
-        toString: (key) ->
-          date = $scope.filter[key]
-          if !date.startDate || !date.endDate then return false
-          date.startDate.format('MMM D, YY') + ' - ' + date.endDate.format('MMM D, YY')
-#        apply: -> console.log arguments
+		getReport = (query) ->
+			if !query.start_date || !query.end_date
+				return zError '#time-period-field', 'You should select time period to run the report'
+			PipelineChangeReportService.get(query).$promise.then (data)->
+				$scope.report_data_items = data.report_data
 
-
-      $scope.setFilter = (key, val) ->
-          $scope.filter[key] = val
-
-      $scope.removeFilter = (key, item) ->
-        $scope.filter[key] = _.reject $scope.filter[key], (row) -> row.id == item.id
-
-      $scope.applyFilter = ->
-        appliedFilter = angular.copy $scope.filter
-        query = getQuery()
-        getReport query
-
-      $scope.isFilterApplied = ->
-        !angular.equals $scope.filter, appliedFilter
-
-      $scope.resetFilter = ->
-        $scope.filter = angular.copy defaultFilter
-
-      getQuery = ->
-        f = $scope.filter
-        query = {}
-        query.change_type = f.type if f.type
-        if f.date.startDate && f.date.endDate
-          query.start_date = f.date.startDate.toDate()
-          query.end_date = f.date.endDate.toDate()
-        query
-
-      $scope.changeSortType = (sortType) ->
-        if sortType == $scope.sortType
-          $scope.sortReverse = !$scope.sortReverse
-        else
-          $scope.sortType = sortType
-          $scope.sortReverse = false
-
-      getReport = (query) ->
-        PipelineChangeReportService.get(query).$promise.then (data)->
-          $scope.report_data_items = data.report_data
-
-      $scope.export = ->
-        url = '/api/deal_reports.csv'
-        query = getQuery()
-        query.utc_offset = moment().utcOffset()
-        $window.open url + '?' + $httpParamSerializer query
-        return
-  ]
+		$scope.export = ->
+			if !appliedFilter.start_date || !appliedFilter.end_date
+				return zError '#time-period-field', 'You should select time period and run the report to export it'
+			url = '/api/deal_reports.csv'
+			appliedFilter.utc_oset = moment().utcOffset()
+			$window.open url + '?' + $httpParamSerializer appliedFilter
+			return
+]
