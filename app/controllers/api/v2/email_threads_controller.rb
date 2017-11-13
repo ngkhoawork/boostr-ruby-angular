@@ -1,10 +1,9 @@
 class  Api::V2::EmailThreadsController < ApiController
-  skip_before_action :authenticate_token_user
   respond_to :json
 
   def index
     if params[:thread_ids].present?
-      email_threads = EmailThread.thread_list params[:thread_ids]
+      email_threads = current_user.email_threads.thread_list params[:thread_ids]
 
       render json: { threads: email_threads }
     else
@@ -13,7 +12,6 @@ class  Api::V2::EmailThreadsController < ApiController
   end
 
   def create_thread
-    # TODO need add current user id when auth will be implemented
     if params[:gmail_query_string]
       email_thread = EmailThread.create(decorated_email_threads)
 
@@ -36,13 +34,13 @@ class  Api::V2::EmailThreadsController < ApiController
   end
 
   def all_emails
-    threads = EmailThread.order('created_at DESC')
+    threads = current_user.email_threads.order('created_at DESC')
 
     render json: threads.limit(limit).offset(offset).as_json({ include: :last_five_opens })
   end
 
   def search_by
-    render json: EmailThread.search_by_email_threads(email_thread_params[:term])
+    render json: current_user.email_threads.search_by_email_threads(email_thread_params[:term])
   end
 
   def all_not_opened_emails
@@ -52,11 +50,11 @@ class  Api::V2::EmailThreadsController < ApiController
   private
 
   def email_thread
-    EmailThread.find_by_thread_id(params[:email_thread_id])
+    current_user.email_threads.find_by_thread_id(params[:email_thread_id])
   end
 
   def decorated_email_threads
-    Emails::EmailThreadDecorator.new(email_thread_params).collect
+    Emails::EmailThreadDecorator.new(email_thread_params, current_user).collect
   end
 
   def email_thread_params
