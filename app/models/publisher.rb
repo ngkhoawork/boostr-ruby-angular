@@ -9,7 +9,7 @@ class Publisher < ActiveRecord::Base
   has_many :sales_stage, as: :sales_stageable
   has_many :values, as: :subject
 
-  belongs_to :clients
+  belongs_to :client
 
   validate :name, :client_id, presence: true 
 end
