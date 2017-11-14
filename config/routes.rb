@@ -271,6 +271,10 @@ Rails.application.routes.draw do
       resources :content_fees, only: [:create, :update, :destroy]
       resources :io_members, only: [:index, :create, :update, :destroy]
     end
+    resources :pmps, only: [:index, :show, :create, :update, :destroy] do
+      resources :pmp_items, only: [:create, :update, :destroy]
+      resources :pmp_members, only: [:create, :update, :destroy]
+    end
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do

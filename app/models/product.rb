@@ -7,7 +7,7 @@ class Product < ActiveRecord::Base
 
   validates :name, presence: true
 
-  REVENUE_TYPES = %w('Display', 'Content-Fee', 'None')
+  REVENUE_TYPES = %w('Display', 'Content-Fee', 'PMP', 'None')
 
   accepts_nested_attributes_for :values, reject_if: proc { |attributes| attributes['option_id'].blank? }
 

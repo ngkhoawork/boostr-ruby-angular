@@ -42,6 +42,7 @@ class DealProduct < ActiveRecord::Base
   scope :for_product_ids, -> (product_ids) { where("product_id in (?)", product_ids) if product_ids.present? }
   scope :open, ->  { where('deal_products.open IS true')  }
   scope :active, -> { DealProduct.joins('LEFT JOIN products ON deal_products.product_id = products.id').where('products.active IS true') }
+  scope :created_asc, -> { order(:created_at) }
 
   def update_pipeline_fact_callback
     update_forecast_pipeline_product(self) if budget_changed? || budget_loc_changed? || open_changed?

@@ -38,6 +38,8 @@
   allProducts = []
   currentProduct = undefined
 
+  @revenue_types = ['Display', 'Content-Fee', 'PMP']
+
   @get_units = (params) ->
     deferred = $q.defer()
     resource.get_units params,

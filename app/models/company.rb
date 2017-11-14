@@ -20,6 +20,7 @@ class Company < ActiveRecord::Base
   has_many :ios
   has_many :content_fees, through: :ios
   has_many :content_fee_product_budgets, through: :content_fees
+  has_many :pmps
   has_many :display_line_items, through: :ios
   has_many :display_line_item_budgets, through: :display_line_items
   has_many :temp_ios
