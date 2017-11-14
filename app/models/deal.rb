@@ -297,15 +297,23 @@ class Deal < ActiveRecord::Base
   end
 
   def restrict_deal_reopen_validation
-    validation = company.validation_for(:restrict_deal_reopen)
+    return unless modifying_user
 
-    return unless validation && stage && modifying_user
-
-    disabled = validation.criterion.try(:value)
-
-    if disabled && stage.open? && stage_was&.closed? && !modifying_user.is_admin
+    if stage_reopened? && restricted_reopen_for_non_admins? && !modifying_user.is_admin
       errors.add(:stage, 'Only admins allowed to re-open deals')
     end
+  end
+
+  def stage_was
+    @stage_was ||= stage_id_was && Stage.find(stage_id_was)
+  end
+
+  def stage_reopened?
+    stage_was&.closed? && stage&.open?
+  end
+
+  def restricted_reopen_for_non_admins?
+    @restricted_reopen_for_non_admins ||= company.validation_for(:restrict_deal_reopen)&.criterion&.value
   end
 
   def no_more_one_billing_contact?
@@ -1420,10 +1428,6 @@ class Deal < ActiveRecord::Base
     ForecastPipelineCalculatorWorker.perform_async(deal_change)
 
     import_log.save
-  end
-
-  def stage_was
-    @stage_was ||= stage_id_was && Stage.find(stage_id_was)
   end
 
   def update_stage

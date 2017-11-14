@@ -211,13 +211,9 @@ describe Deal do
 
     describe '"Restrict deal reopen" validation' do
       let(:company) { deal.company }
-      let(:admin) { create(:admin, company: company) }
-      let(:user) { create(:user, company: company) }
       let(:validation) { company.validations.find_or_create_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean') }
-      let(:closed_won_stage) { create(:closed_won_stage) }
-      let(:discuss_stage) { create(:discuss_stage) }
 
-      before(:each) { deal.update_columns(stage_id: closed_won_stage.id) }
+      before { deal.update_columns(stage_id: closed_won_stage.id) }
 
       subject { deal.update(stage: discuss_stage, modifying_user: modifying_user) }
 
@@ -1124,7 +1120,11 @@ describe Deal do
   end
 
   def user
-    @_user ||= create :user
+    @_user ||= create :user, company: company
+  end
+
+  def admin
+    @_admin ||= create :admin, company: company
   end
 
   def product
