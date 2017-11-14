@@ -217,6 +217,7 @@ class Company < ActiveRecord::Base
     validations.find_or_initialize_by(factor: 'Billing Contact', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Account Manager', value_type: 'Number')
     validations.find_or_initialize_by(factor: 'Disable Deal Won', value_type: 'Boolean')
+    validations.find_or_initialize_by(factor: 'Billing Contact Full Address', value_type: 'Boolean')
     validations.find_or_initialize_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean')
 
     validations.find_or_initialize_by(object: 'Advertiser Base Field', value_type: 'Boolean', factor: 'client_category_id')

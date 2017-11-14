@@ -5,6 +5,7 @@
     $scope.billing_contact_validation    = _.findWhere(validations, factor: 'Billing Contact')
     $scope.account_manager_validation    = _.findWhere(validations, factor: 'Account Manager')
     $scope.disable_deal_close_validation = _.findWhere(validations, factor: 'Disable Deal Won')
+    $scope.billing_contact_full_address_validation = _.findWhere(validations, factor: 'Billing Contact Full Address')
     $scope.advertiser_base_fields        = _.filter(validations, object: 'Advertiser Base Field')
     $scope.agency_base_fields            = _.filter(validations, object: 'Agency Base Field')
     $scope.deal_base_fields            = _.filter(validations, object: 'Deal Base Field')

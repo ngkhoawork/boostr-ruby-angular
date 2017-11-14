@@ -304,6 +304,7 @@ Rails.application.routes.draw do
       collection do
         get :account_base_fields
         get :deal_base_fields
+        get :billing_contact_fields
       end
     end
     resources :tools, only: [:index]
