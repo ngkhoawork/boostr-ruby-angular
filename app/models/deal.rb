@@ -50,6 +50,7 @@ class Deal < ActiveRecord::Base
   validate :single_billing_contact
   validate :account_manager_presence
   validate :disable_manual_deal_won_validation, on: :manual_update
+  validate :restrict_deal_reopen_validation
   validate :base_fields_presence
 
   accepts_nested_attributes_for :deal_custom_field
@@ -60,6 +61,8 @@ class Deal < ActiveRecord::Base
   delegate :probability, to: :stage, allow_nil: true, prefix: true
   delegate :open?, to: :stage, allow_nil: true, prefix: true
   delegate :active?, to: :stage, allow_nil: true, prefix: true
+
+  attr_accessor :modifying_user
 
   before_update do
     if curr_cd_changed?
@@ -291,6 +294,26 @@ class Deal < ActiveRecord::Base
         :stage, "Deals can't be updated to #{self.stage.try(:name)} manually. Deals can only be set to #{self.stage.try(:name)} from API integration"
       )
     end
+  end
+
+  def restrict_deal_reopen_validation
+    return unless modifying_user
+
+    if stage_reopened? && restricted_reopen_for_non_admins? && !modifying_user.is_admin
+      errors.add(:stage, 'Only admins allowed to re-open deals')
+    end
+  end
+
+  def stage_was
+    stage_id_was && Stage.find(stage_id_was)
+  end
+
+  def stage_reopened?
+    stage_was&.closed? && stage&.open?
+  end
+
+  def restricted_reopen_for_non_admins?
+    company.validation_for(:restrict_deal_reopen)&.criterion&.value
   end
 
   def no_more_one_billing_contact?
@@ -1440,12 +1463,12 @@ class Deal < ActiveRecord::Base
   end
 
   def update_close
-    if self.closed_at.nil? && !stage.open?
+    if closed_at.nil? && closed_at_was.nil? && stage.closed?
       self.closed_at = updated_at
     end
 
     should_open = stage.open?
-    if !stage.open? && stage.probability == 100
+    if stage.closed? && stage.probability == 100
       self.deal_products.each do |deal_product|
         if deal_product.product.revenue_type != 'Content-Fee'
           should_open = true
