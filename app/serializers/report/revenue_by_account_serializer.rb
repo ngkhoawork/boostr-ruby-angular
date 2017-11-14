@@ -1,9 +1,9 @@
 class Report::RevenueByAccountSerializer < ActiveModel::Serializer
 
   attributes :name,
-             :category_id,
-             :client_region_id,
-             :client_segment_id,
+             :category_name,
+             :region_name,
+             :segment_name,
              :team_name,
              :seller_names,
              :year,
@@ -14,16 +14,16 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
     object.name
   end
 
-  def category_id
-    object.category_id
+  def category_name
+    Option.find(object.category_id).name if object.category_id
   end
 
-  def client_region_id
-    object.client_region_id
+  def region_name
+    Option.find(object.client_region_id).name if object.client_region_id
   end
 
-  def client_segment_id
-    object.client_segment_id
+  def segment_name
+    Option.find(object.client_segment_id).name if object.client_segment_id
   end
 
   def team_name

@@ -86,13 +86,13 @@ RSpec.describe Api::RevenueController, type: :controller do
       it 'has an appropriate structure' do
         expect(response).to be_success
         expect(response_json).to be_kind_of Array
-        expect(response_item).to have_key :category_id
+        expect(response_item).to have_key :category_name
         expect(response_item).to have_key :year
         expect(response_item).to have_key :revenues
         expect(response_item).to have_key :total_revenue
         expect(response_item[:revenues]).to be_kind_of Hash
       end
-      it { expect(response_item[:category_id]).to eq params[:category_ids][0] }
+      it { expect(response_item[:category_name]).to eq category.name }
 
       context 'and when params include appropriate "region_id"' do
         let(:params) { super().merge(client_region_ids: [region.id]) }
@@ -157,16 +157,16 @@ RSpec.describe Api::RevenueController, type: :controller do
         expect(response).to be_success
         expect(response_json).to be_kind_of Array
         expect(response_item).to have_key :name
-        expect(response_item).to have_key :category_id
-        expect(response_item).to have_key :client_region_id
-        expect(response_item).to have_key :client_segment_id
+        expect(response_item).to have_key :category_name
+        expect(response_item).to have_key :region_name
+        expect(response_item).to have_key :segment_name
         expect(response_item).to have_key :seller_names
         expect(response_item).to have_key :year
         expect(response_item).to have_key :revenues
         expect(response_item).to have_key :total_revenue
         expect(response_item[:revenues]).to be_kind_of Hash
       end
-      it { expect(response_item[:category_id]).to eq params[:category_ids][0] }
+      it { expect(response_item[:category_name]).to eq category.name }
 
       context 'and when params include appropriate "region_id"' do
         let(:params) { super().merge(client_region_ids: [region.id]) }
