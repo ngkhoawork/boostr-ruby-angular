@@ -11,5 +11,6 @@ class Publisher < ActiveRecord::Base
 
   belongs_to :client
 
-  validate :name, :client_id, presence: true 
+  validates :name, :client_id, presence: true
+  validates :website, format: { with: REGEXP_FOR_URL, message: 'Valid URL required' }
 end
