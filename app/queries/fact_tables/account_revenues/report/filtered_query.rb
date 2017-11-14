@@ -7,7 +7,7 @@ class FactTables::AccountRevenues::Report::FilteredQuery
   def perform
     relation
       .by_company_id(options[:company_id])
-      .by_client_types(options[:client_type])
+      .by_client_types(options[:client_types])
       .by_time_dimension_date_range(options[:start_date], options[:end_date])
       .by_category_ids(options[:category_ids])
       .by_client_region_ids(options[:client_region_ids])

@@ -10,10 +10,6 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
              :revenues,
              :total_revenue
 
-  def attributes(*args)
-    super.compact
-  end
-
   def name
     object.name
   end
