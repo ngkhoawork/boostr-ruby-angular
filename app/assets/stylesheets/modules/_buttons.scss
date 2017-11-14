@@ -28,6 +28,7 @@
   position: relative;
   top: -3px;
   transition: background-color 300ms, color 300ms, box-shadow 200ms, transform 200ms;
+  white-space: nowrap;
   &.highlighted {
     box-shadow: 0 0 20px lighten($main-color, 5%);
     transform: scale(1.03, 1.03);

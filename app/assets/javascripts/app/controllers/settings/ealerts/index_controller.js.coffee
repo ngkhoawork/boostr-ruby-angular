@@ -29,12 +29,18 @@
       $scope.dealProductCustomFieldNames = dealProductCustomFieldNames
 
   $scope.submitEalert = (ealert) ->
-    $scope.ealert.recipients = $scope.ealert.recipient_list.join()
-    for i in [0...$scope.ealert.ealert_stages.length]
-      $scope.ealert.ealert_stages[i].recipients = $scope.ealert.ealert_stages[i].recipient_list.join()
-    Ealert.update(id: ealert.id, ealert: ealert).then (ealert) ->
-      $scope.ealert = ealert
-      transformEalert()
+    $scope.errors = {}
+    if ealert.delay == null
+      $scope.errors['delay'] = 'Auto send delay is required!'
+    else if ealert.delay < 0
+      $scope.errors['delay'] = 'Auto send delay can\'t be negative value!'
+    else
+      $scope.ealert.recipients = $scope.ealert.recipient_list.join()
+      for i in [0...$scope.ealert.ealert_stages.length]
+        $scope.ealert.ealert_stages[i].recipients = $scope.ealert.ealert_stages[i].recipient_list.join()
+      Ealert.update(id: ealert.id, ealert: ealert).then (ealert) ->
+        $scope.ealert = ealert
+        transformEalert()
 
   $scope.removeRecipient = (stage_index, index) ->
     if stage_index == "all_recipients"
@@ -251,7 +257,7 @@
     _.each $scope.ealert.ealert_custom_fields, (ealert_custom_field) ->
       value = ''
       switch ealert_custom_field.subject.field_type
-        when 'currency' then value = '$100,000'
+        when 'currency' then value = '£100,000 GBP'
         when 'text' then value = 'some text'
         when 'note' then value = 'some notes'
         when 'datetime' then value = '07/05/2017'

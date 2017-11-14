@@ -3,13 +3,10 @@
     ($resource, $q, $rootScope) ->
 
       transformRequest = (original, headers) ->
-        console.log(original)
         original.bp.values_attributes = original.bp.values
         angular.toJson(original)
 
       transformAddContactRequest = (original, headers) ->
-        # original.bp.values_attributes = original.bp.values
-        console.log 'original:', original
         angular.toJson(original.params)
 
       resource = $resource '/api/bps/:id', { id: '@id' },
@@ -21,6 +18,9 @@
           method: 'PUT'
           url: '/api/bps/:id'
           transformRequest: transformRequest
+        delete:
+          method: 'DELETE',
+          url: '/api/bps/:id'
         updateContacts:
           method: 'PUT'
           url: 'api/bps/:id'
@@ -127,7 +127,6 @@
             deferred.reject(resp)
         )
         deferred.promise
-
 
       @get = (bp_id) ->
         deferred = $q.defer()

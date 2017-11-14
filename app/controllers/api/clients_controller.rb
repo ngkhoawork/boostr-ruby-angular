@@ -5,9 +5,7 @@ class Api::ClientsController < ApplicationController
     respond_to do |format|
       format.json {
         if params[:name].present?
-          results = suggest_clients
-        elsif params[:activity].present?
-          results = activity_clients
+           results = suggest_clients
         else
           results = clients
                       .by_type_id(params[:client_type_id])
@@ -18,9 +16,10 @@ class Api::ClientsController < ApplicationController
                       .by_last_touch(params[:start_date], params[:end_date])
                       .by_name(params[:search])
                       .order(:name)
-                      .includes(:address)
+                      .preload(:address, :client_member_info, :latest_advertiser_activity, :latest_agency_activity)
                       .distinct
         end
+
         if params[:owner_id]
           client_ids = Client.joins("INNER JOIN client_members ON clients.id = client_members.client_id").where("clients.company_id = ? AND client_members.user_id = ?", company.id, params[:owner_id]).pluck(:client_id)
           results = results.by_ids(client_ids)
@@ -28,7 +27,11 @@ class Api::ClientsController < ApplicationController
 
         response.headers['X-Total-Count'] = results.count.to_s
         results = results.limit(limit).offset(offset)
-        render json: results.as_json
+        render json: results,
+          each_serializer: Clients::ClientListSerializer,
+            advertiser: Client.advertiser_type_id(company),
+            agency: Client.agency_type_id(company),
+            categories: category_options
       }
 
       format.csv {
@@ -44,13 +47,19 @@ class Api::ClientsController < ApplicationController
     end
   end
 
+  def search_clients
+    render json: suggest_clients
+                  .order(:name)
+                  .pluck_to_struct(:id, :name, :client_type_id)
+  end
+
   def filter_options
-    client_ids = clients.select("id").collect { |client_row| client_row.id }
+    client_ids = clients.pluck(:id)
 
-    user_ids = ClientMember.where("client_id in (?)", client_ids).select("user_id").collect { |client_member| client_member.user_id }
-    owners = User.where("id in (?)", user_ids).select("id, first_name, last_name").collect { |user| {id: user.id, name: user.first_name + " " + user.last_name} }
+    user_ids = ClientMember.where("client_id in (?)", client_ids).pluck(:user_id)
+    owners = User.where("id in (?)", user_ids).pluck_to_struct(:id, :first_name, :last_name).collect { |user| {id: user.id, name: user.first_name + " " + user.last_name} }
 
-    cities = Address.where("addressable_id in (?) and addressable_type='Client'", client_ids).pluck(:city).uniq.reject { |c| c.nil? || c.blank? }
+    cities = Address.where("addressable_id in (?) and addressable_type='Client'", client_ids).pluck(:city).uniq.reject(&:blank?)
 
     render json: {owners: owners, cities: cities}
   end
@@ -335,11 +344,11 @@ class Api::ClientsController < ApplicationController
     @_suggest_clients ||= company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
   end
 
-  def activity_clients
-    @_activity_clients ||= company.clients.where.not(activity_updated_at: nil).order(activity_updated_at: :desc).limit(10)
-  end
-
   def company_job_level_options
     current_user.company.fields.find_by(subject_type: 'Contact', name: 'Job Level').options.select(:id, :field_id, :name)
+  end
+
+  def category_options
+    company.fields.client_category_fields.to_options
   end
 end

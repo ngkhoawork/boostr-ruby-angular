@@ -15,6 +15,7 @@
   $scope.selectedStageId = null
   $scope.currency_symbol = '$'
   $scope.ealertReminder = false
+  $scope.activitiesOrder = '-happened_at'
   $anchorScroll()
   $scope.operativeIntegration =
     isEnabled: false
@@ -722,7 +723,12 @@
         $scope.currentDeal.deal_contacts = _.reject $scope.currentDeal.deal_contacts, (deal_contact) ->
           deal_contact.id == deletedContact.id
 
-  $scope.submitDealContact = (deal_contact) ->
+  $scope.submitDealContact = (deal_contact, option) ->
+    console.log(option)
+    if option == 'Billing'
+      if !confirm("Confirm you want to assign an unrelated billing contact")
+        return
+    deal_contact.role = option; 
     deal_contact.errors = {}
 
     DealContact.update(

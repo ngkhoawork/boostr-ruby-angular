@@ -12,22 +12,6 @@
     $scope.clients = _.map client_connections, (client_connection) ->
       client_connection.advertiser
 
-  $scope.searchObj = (name) ->
-    if typeId
-      if name == ""
-        Client.query(filter: 'all', client_type_id: typeId).$promise.then (clients) ->
-          $scope.clients = clients
-      else
-        Client.query({name: name, client_type_id: typeId}).$promise.then (clients) ->
-          $scope.clients = clients
-    else
-      if name == ""
-        Client.query(filter: 'all').$promise.then (clients) ->
-          $scope.clients = clients
-      else
-        Client.query({name: name}).$promise.then (clients) ->
-          $scope.clients = clients
-
   $scope.assignClient = (client) ->
     contact = angular.copy($scope.contact)
     contact.client_id = client.id

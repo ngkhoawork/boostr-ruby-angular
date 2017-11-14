@@ -105,7 +105,7 @@ class Operative::ImportSalesOrdersService
   end
 
   def irrelevant_order(row)
-    row[:sales_stage_percent] != '100' || row[:order_status].try(:downcase) == 'deleted'
+    row[:sales_stage_percent] != '100' || row[:order_start_date].blank? || row[:order_status].try(:downcase) == 'deleted'
   end
 
   def build_io_csv(row)

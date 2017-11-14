@@ -33,7 +33,7 @@
           if option.name == selectedOption
             $scope.client.client_type.option_id = option.id
       $scope.setClientTypes()
-      $scope.getClients()
+      $scope.getClients($scope.query)
 
     client_category_id = $scope.client.client_category_id
     if client_category_id
@@ -100,32 +100,26 @@
         validation = _.findWhere($scope.agency_base_fields_validations, factor: factor)
         return validation?
 
-  $scope.getClients = (query) ->
+  $scope.getClients = (query = '') ->
     $scope.isLoading = true
-    params = {
-      page: $scope.page
-      client_type_id: $scope.client.client_type.option_id
-      filter: "all"
-    }
-    if $scope.query.trim().length
-      params.name = $scope.query.trim()
-    Client.query(params).$promise.then (clients) ->
-      if $scope.page > 1
-        $scope.clients = $scope.clients.concat(clients)
-      else
-        $scope.clients = clients
+
+    params =
+      client_type_id: $scope.client.client_type.option_id,
+      name: query.trim()
+
+    Client.search_clients(params).$promise.then (clients) ->
+      $scope.clients = clients
       $scope.isLoading = false
 
   # Prevent multiple extraneous calls to the server as user inputs search term
   searchTimeout = null;
   $scope.searchClients = (query) ->
-    $scope.page = 1
     $scope.query = query
     if searchTimeout
       clearTimeout(searchTimeout)
       searchTimeout = null
     searchTimeout = setTimeout(
-      -> $scope.getClients()
+      -> $scope.getClients(query)
       250
     )
 

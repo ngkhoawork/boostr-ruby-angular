@@ -1,8 +1,9 @@
 class Operative::ImportSalesOrderLineItemsService
-  def initialize(company_id, revenue_calculation_pattern, product_mapping, files)
+  def initialize(company_id, revenue_calculation_pattern, product_mapping, exclude_child_line_items, files)
     @company_id = company_id
     @revenue_calculation_pattern = revenue_calculation_pattern
     @product_mapping = product_mapping
+    @exclude_child_line_items = exclude_child_line_items
     @sales_order_line_items = files.fetch(:sales_order_line_items)
     @invoice_line_items = files.fetch(:invoice_line_item)
   end
@@ -20,7 +21,8 @@ class Operative::ImportSalesOrderLineItemsService
 
   private
   attr_reader :company_id, :revenue_calculation_pattern, :sales_order_line_items,
-              :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file
+              :invoice_line_items, :invoice_csv_file, :sales_order_csv_file, :invoice_csv_file,
+              :exclude_child_line_items
 
   def open_file(file)
     begin
@@ -126,9 +128,14 @@ class Operative::ImportSalesOrderLineItemsService
 
   def irrelevant_line_item(row)
     row[:line_item_status].try(:downcase) != 'sent_to_production' ||
+    parent_line_item_presence(row[:parent_line_item_id]) ||
     !row[:quantity].present? ||
     !row[:net_cost].present? ||
     row[:net_cost].to_f.zero?
+  end
+
+  def parent_line_item_presence(parent_line_item_id)
+    exclude_child_line_items ? parent_line_item_id.present? : false
   end
 
   def find_in_invoices(id, net_unit_cost)

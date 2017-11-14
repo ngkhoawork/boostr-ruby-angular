@@ -27,6 +27,8 @@
   'jsonFormatter'
   'boostrServerErrors'
   'bgf.paginateAnything'
+  'LocalStorageModule'
+  'zFilterModule'
 ])
 
 @app.config (['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) ->
@@ -74,6 +76,7 @@
     .when '/revenue',
       templateUrl: 'revenue.html'
       controller: 'RevenueController'
+      reloadOnSearch: false
 
     .when '/revenue/ios/:id',
       templateUrl: 'io.html'
@@ -312,6 +315,10 @@
     .otherwise({ redirectTo: '/dashboard' })
   $locationProvider.html5Mode true
 ])
+
+@app.config ['localStorageServiceProvider', (lssp) ->
+  lssp.setPrefix 'bstr'
+]
 
 @app.config ['$httpProvider', ($httpProvider) ->
   csrfToken = $('meta[name=csrf-token]').attr('content')

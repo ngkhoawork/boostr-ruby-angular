@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170915133451) do
+ActiveRecord::Schema.define(version: 20171015091614) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -392,6 +392,7 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
     t.boolean  "read_only",      default: false
+    t.boolean  "active",         default: true
   end
 
   add_index "bps", ["company_id"], name: "index_bps_on_company_id", using: :btree
@@ -790,6 +791,12 @@ ActiveRecord::Schema.define(version: 20170915133451) do
     t.decimal  "number_4_dec6",  precision: 15, scale: 4
     t.decimal  "number_4_dec7",  precision: 15, scale: 4
     t.string   "link1"
+    t.string   "link2"
+    t.string   "link3"
+    t.string   "link4"
+    t.string   "link5"
+    t.string   "link6"
+    t.string   "link7"
   end
 
   add_index "deal_custom_fields", ["company_id"], name: "index_deal_custom_fields_on_company_id", using: :btree

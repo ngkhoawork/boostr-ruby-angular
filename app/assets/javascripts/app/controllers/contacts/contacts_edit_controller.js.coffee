@@ -18,7 +18,7 @@
   CountriesList.get (data) ->
     $scope.countries = data.countries
 
-  Client.query(filter: 'all').$promise.then (clients) ->
+  Client.search_clients().$promise.then (clients) ->
     $scope.clients = clients
 
   ContactCfName.all().then (contactCfNames) ->
@@ -62,19 +62,12 @@
         $scope.buttonDisabled = false
     )
 
-  $scope.getClients = (query) ->
+  $scope.getClients = (query = '') ->
     $scope.isLoading = true
-    params = {
-      page: $scope.page
-      filter: "all"
-    }
-    if $scope.query.trim().length
-      params.name = $scope.query.trim()
-    Client.query(params).$promise.then (clients) ->
-      if $scope.page > 1
-        $scope.clients = $scope.clients.concat(clients)
-      else
-        $scope.clients = clients
+    params = { name: query.trim() }
+
+    Client.search_clients(params).$promise.then (clients) ->
+      $scope.clients = clients
       $scope.isLoading = false
 
   $scope.showNewAccountModal = ->
@@ -96,7 +89,7 @@
       clearTimeout(searchTimeout)
       searchTimeout = null
     searchTimeout = setTimeout(
-      -> $scope.getClients()
+      -> $scope.getClients(query)
       250
     )
 

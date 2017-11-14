@@ -2,7 +2,7 @@ class BpEstimate < ActiveRecord::Base
   belongs_to :bp
   belongs_to :client
   belongs_to :user
-  has_many :bp_estimate_products
+  has_many :bp_estimate_products, dependent: :destroy
 
   accepts_nested_attributes_for :bp_estimate_products
 
@@ -42,6 +42,9 @@ class BpEstimate < ActiveRecord::Base
     CSV.generate do |csv|
       header = [
         "Account",
+        "Category",
+        "Region",
+        "Segment",
         "Primary Agency",
         "Seller",
         "Q2-2017 Pipeline (W)",
@@ -113,10 +116,14 @@ class BpEstimate < ActiveRecord::Base
         if bp_estimate.estimate_seller && bp_estimate.estimate_seller > 0 && prev_revenue_amount && prev_revenue_amount > 0
           prev_change = (bp_estimate.estimate_seller.to_f / prev_revenue_amount.to_f - 1) * 100
         end
+
         line = [
-          bp_estimate.client ? bp_estimate.client.name : nil,
-          bp_estimate.primary_agency_name ? bp_estimate.primary_agency_name : nil,
-          bp_estimate.user ? bp_estimate.user.name : nil,
+          bp_estimate.client&.name,
+          bp_estimate.client&.client_category&.name,
+          bp_estimate.client&.client_region&.name,
+          bp_estimate.client&.client_segment&.name,
+          bp_estimate.primary_agency_name,
+          bp_estimate.user&.name,
           '$' + pipeline_amount.to_s,
           '$' + revenue_amount.to_s,
           '$' + (bp_estimate.estimate_seller || 0).to_s,

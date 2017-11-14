@@ -153,28 +153,13 @@
       $scope.filter.cities = response.cities
       $scope.isLoading = false
 
-  $scope.getClientType = (client) ->
-    clientType = Field.field(client, 'Client Type')
-    if clientType && clientType.option
-      return clientType.option.name
-    else
-      return ""
-
-  $scope.getClientCategory = (client) ->
-    clientCategory = Field.getOption(client, 'Category', client.client_category_id)
-    if clientCategory
-      return clientCategory.name
-    else
-      return ""
-
   $scope.getLastTouch = (client) ->
-    activities = client.activities
-    if $scope.getClientType(client) == 'Agency'
-      activities = client.agency_activities
-    if activities.length > 0
-      return activities[0].happened_at
+    if client.type == 'Advertiser'
+      client.latest_advertiser_activity
+    else if client.type == 'Agency'
+      client.latest_agency_activity
     else
-      return ""
+      ''
 
   $scope.showNewAccountModal = ->
     $scope.modalInstance = $modal.open

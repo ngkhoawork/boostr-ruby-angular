@@ -1,8 +1,7 @@
 class DatafeedConfigurationDetails < ActiveRecord::Base
   belongs_to :operative_datafeed_configuration
 
-  validates_inclusion_of :auto_close_deals, in: [true, false]
-  # validates_presence_of :revenue_calculation_pattern
+  validates_inclusion_of :auto_close_deals, :exclude_child_line_items, in: [true, false]
 
   REVENUE_CALCULATION_PATTERNS = [
     { id: 0, name: 'Invoice Units' },

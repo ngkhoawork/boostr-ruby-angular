@@ -179,6 +179,7 @@ Rails.application.routes.draw do
       get :child_clients
       get :stats
       collection do
+        get :search_clients
         get :filter_options
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
@@ -380,7 +381,9 @@ Rails.application.routes.draw do
 				get :pipeline_and_revenue
 				get :activity_pacing
 			end
-		end
+    end
+
+    resources :filter_queries, only: [:index, :create, :update, :destroy]
   end
 
   mount Sidekiq::Web => '/sidekiq'
