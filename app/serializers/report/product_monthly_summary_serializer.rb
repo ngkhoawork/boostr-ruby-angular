@@ -24,24 +24,7 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def members
-    if is_deal
-      members = row.deal_members.inject([]) do |data, obj|
-        data << {
-          id: obj.user_id,
-          name: obj.user.name,
-          share: obj.share
-        }
-      end
-    else
-      members = row.io_members.inject([]) do |data, obj|
-        data << {
-          id: obj.user_id,
-          name: obj.user.name,
-          share: obj.share
-        }
-      end
-    end
-    members
+    is_deal ? build_members_for(row.deal_members) : build_members_for(row.io_members)
   end
 
   def advertiser
@@ -57,15 +40,14 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def stage
-    if is_deal
-      @_stage ||= row.stage.serializable_hash(only: [:name, :probability]) rescue nil
+    @_stage ||= if is_deal
+      row.stage.serializable_hash(only: [:name, :probability]) rescue nil
     else
-      @_stage = {
+      {
         'name' => 'Revenue',
         'probability' => 100
       }
     end
-    @_stage
   end
 
   def budget
@@ -109,17 +91,28 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def custom_fields
-    custom_fields = {}
     if is_deal && product_row && product_row.deal_product_cf.present?
-      deal_product_cf_names.each do |deal_product_cf_name|
-        field_name = deal_product_cf_name.field_type.to_s + deal_product_cf_name.field_index.to_s
+      deal_product_cf_names.inject({}) do |custom_fields, deal_product_cf_name|
+        field_name = deal_product_cf_name.field_name
         custom_fields[field_name] = product_row.deal_product_cf[field_name]
+        custom_fields
       end
+    else
+      {}
     end
-    custom_fields
   end
 
   private
+
+  def build_members_for(members)
+    members.inject([]) do |data, obj|
+      data << {
+        id: obj.user_id,
+        name: obj.user.name,
+        share: obj.share
+      }
+    end
+  end
 
   def object_classname
     @_object_classname = object.class.to_s
@@ -142,7 +135,7 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
       when 'DealProductBudget' then object.deal_product
       when 'ContentFeeProductBudget' then object.content_fee
       when 'DisplayLineItemBudget' then object.display_line_item
-      end
+    end
   end
 
   def deal_product

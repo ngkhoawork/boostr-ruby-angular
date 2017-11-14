@@ -6,27 +6,21 @@ class Report::ProductMonthlySummaryService
     @seller_id           = params[:seller_id]
     @created_date_start  = params[:created_date_start]
     @created_date_end    = params[:created_date_end]
-    @page                = params[:page].to_i rescue nil
-    @per_page            = params[:per_page].to_i rescue nil
+    @page                = params[:page] ? params[:page].to_i : nil
+    @per_page            = params[:per_page] ? params[:per_page].to_i : nil
   end
 
   def perform
-    data = {
+    {
       data: ActiveModel::ArraySerializer.new(
         data_for_serializer,
         each_serializer: Report::ProductMonthlySummarySerializer,
         deal_custom_fields: deal_custom_fields,
         deal_product_cf_names: deal_product_cf_names
       ),
-      deal_product_cf_names: deal_product_cf_names
+      deal_product_cf_names: deal_product_cf_names,
+      has_more_data: has_more_data,
     }
-
-    if deals.count > 0
-      data[:has_more_data] = true
-    else
-      data[:has_more_data] = false
-    end
-    data    
   end
 
   private
@@ -46,39 +40,58 @@ class Report::ProductMonthlySummaryService
             .by_team_id(team_id)
             .by_seller_id(seller_id)
             .by_created_date(created_date_start, created_date_end)
-    if page && per_page && page > 0 && per_page > 0
-      offset = (page - 1) * per_page
-      @_deals = @_deals.limit(per_page).offset(offset)
-    end
+            .limit(limit)
+            .offset(offset)
     @_deals
   end
 
+  def has_more_data
+    deals.count > 0 ? true : false
+  end
+
   def data_for_serializer
-    results = []
-    deals.each do |deal|
+    deals.inject([]) do |results, deal|
       if deal.closed_with_io?
-        deal.io.content_fees.each do |content_fee|
-          next if product_id && content_fee.product_id != product_id.to_i
-          results += content_fee.content_fee_product_budgets
-        end
-
-        deal.io.display_line_items.each do |display_line_item|
-          next if product_id && display_line_item.product_id != product_id.to_i
-          results += display_line_item.display_line_item_budgets
-        end
-
-        deal.deal_products.each do |deal_product|
-          next if product_id && deal_product.product_id != product_id.to_i || deal_product.open == false
-          results += deal_product.deal_product_budgets
-        end
+        results += data_for_io(deal)
       else
-        deal.deal_products.each do |deal_product|
-          next if product_id && deal_product.product_id != product_id.to_i
-          results += deal_product.deal_product_budgets
-        end
+        results += data_for_deal(deal)
       end
+      results
     end
-    results
+  end
+
+  def data_for_io(deal)
+    data_for_io_content_fee(deal.io) +
+      data_for_io_display_line_item(deal.io) +
+      data_for_deal(deal, true)
+  end
+
+  def data_for_io_content_fee(io)
+    io.content_fees.inject([]) do |results, content_fee|
+      if !product_id || content_fee.product_id == product_id.to_i
+        results += content_fee.content_fee_product_budgets
+      end
+      results
+    end
+  end
+
+  def data_for_io_display_line_item(io)
+    io.display_line_items.inject([]) do |results, display_line_item|
+      if !product_id || display_line_item.product_id == product_id.to_i
+        results += display_line_item.display_line_item_budgets
+      end
+      results
+    end
+  end
+
+  def data_for_deal(deal, only_open = false)
+    deal.deal_products.inject([]) do |results, deal_product|
+      if (!product_id || deal_product.product_id == product_id.to_i) &&
+          (!only_open || deal_product.open)
+        results += deal_product.deal_product_budgets
+      end
+      results
+    end
   end
 
   def deal_product_cf_names
@@ -87,6 +100,14 @@ class Report::ProductMonthlySummaryService
 
   def deal_custom_fields
     @_deal_custom_fields ||= company.fields.where(subject_type: 'Deal').pluck(:id, :name)
+  end
+
+  def limit
+    @_limit ||= per_page
+  end
+
+  def offset
+    @_offset ||= (per_page && page) ? (page - 1) * limit : nil
   end
 
   def deal_include_json

@@ -88,7 +88,7 @@ class Csv::ProductMonthlySummaryDecorator
   end
 
   def method_missing(name)
-    deal_custom_field = deal_custom_fields.find{ |u| u['field_label'].downcase == name.to_s.gsub('_', ' ') }
+    deal_custom_field = deal_product_custom_fields.find{ |u| u['field_label'].downcase == name.to_s.gsub('_', ' ') }
     
     if deal_custom_field
       field_name = deal_custom_field['field_type'].to_s + deal_custom_field['field_index'].to_s
@@ -100,8 +100,8 @@ class Csv::ProductMonthlySummaryDecorator
 
   attr_reader :row, :company, :custom_field_names
 
-  def deal_custom_fields
-    @_deal_custom_fields ||= custom_field_names
+  def deal_product_custom_fields
+    @_deal_product_custom_fields ||= custom_field_names
   end
 
   def format_currency(budget)

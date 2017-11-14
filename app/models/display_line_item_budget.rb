@@ -11,7 +11,9 @@ class DisplayLineItemBudget < ActiveRecord::Base
     where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', start_date, end_date)
   end
 
-  scope :for_product_id, -> (product_id) { where('display_line_items.product_id = ?', product_id) if product_id.present? }
+  scope :for_product_id, -> (product_id) do
+    where('display_line_items.product_id = ?', product_id) if product_id.present?
+  end
   scope :by_seller_id, -> (seller_id) do
     joins(display_line_item: { io: :io_members })
     .where(io_members: { user_id: seller_id }) if seller_id.present?
