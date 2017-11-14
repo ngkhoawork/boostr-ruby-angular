@@ -323,6 +323,7 @@ Rails.application.routes.draw do
       collection do
         get :split_adjusted
         get :pipeline_summary
+        get :product_monthly_summary
       end
     end
     resources :influencers, only: [:index, :show, :create, :update, :destroy]

@@ -5,6 +5,7 @@ class Company < ActiveRecord::Base
   has_many :revenues
   has_many :deals
   has_many :deal_products, through: :deals
+  has_many :deal_product_budgets, through: :deal_products
   has_many :stages
   has_many :distinct_stages, -> {distinct}, class_name: 'Stage'
   has_many :products
@@ -16,7 +17,10 @@ class Company < ActiveRecord::Base
   has_many :activities
   has_many :activity_types
   has_many :ios
+  has_many :content_fees, through: :ios
+  has_many :content_fee_product_budgets, through: :content_fees
   has_many :display_line_items, through: :ios
+  has_many :display_line_item_budgets, through: :display_line_items
   has_many :temp_ios
   has_many :bps
   has_many :assets, dependent: :destroy
