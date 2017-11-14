@@ -305,7 +305,7 @@ class Deal < ActiveRecord::Base
   end
 
   def stage_was
-    @stage_was ||= stage_id_was && Stage.find(stage_id_was)
+    stage_id_was && Stage.find(stage_id_was)
   end
 
   def stage_reopened?
@@ -313,7 +313,7 @@ class Deal < ActiveRecord::Base
   end
 
   def restricted_reopen_for_non_admins?
-    @restricted_reopen_for_non_admins ||= company.validation_for(:restrict_deal_reopen)&.criterion&.value
+    company.validation_for(:restrict_deal_reopen)&.criterion&.value
   end
 
   def no_more_one_billing_contact?
