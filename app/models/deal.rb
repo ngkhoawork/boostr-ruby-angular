@@ -304,7 +304,7 @@ class Deal < ActiveRecord::Base
     return unless modifying_user
 
     if stage_reopened? && restricted_reopen_for_non_admins? && !modifying_user.is_admin
-      errors.add(:stage, 'Only admins allowed to re-open deals')
+      errors.add(:stage, 'Only admins are allowed to re-open deals')
     end
   end
 
