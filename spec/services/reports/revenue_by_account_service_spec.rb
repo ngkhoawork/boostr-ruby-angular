@@ -27,7 +27,6 @@ describe Report::RevenueByAccountService do
         expect(response_item).to respond_to :client_segment_id
         expect(response_item).to respond_to :team_name
         expect(response_item).to respond_to :seller_names
-        expect(response_item).to respond_to :year
         expect(response_item).to respond_to :revenues
         expect(response_item).to respond_to :total_revenue
         expect(response_item.revenues).to be_kind_of Hash

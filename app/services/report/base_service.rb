@@ -68,27 +68,6 @@ class Report::BaseService
     @_report_entity_param_names ||= (grouping_keys + aggregating_keys).freeze
   end
 
-  # TODO: maybe it's worth to push it out to a distinct builder class
-  def build_report_entity_params(records)
-    # Fulfill with grouping attributes (common for all records in a group)
-    params = grouping_keys.inject([]) { |acc, key| acc << records[0].send(key) }
-
-    # Fulfill with an array of 'sum_revenue_amount' for each month in a given date period
-    sum_revenue_amounts = build_month_period_with_zero_amounts(records[0])
-    records.each { |r| sum_revenue_amounts[r.month.to_i] = r.sum_revenue_amount }
-    params << sum_revenue_amounts
-
-    # Fulfill with a year revenue
-    params << sum_revenue_amounts.values.sum
-  end
-
-  def build_month_period_with_zero_amounts(record)
-    start_month = @params[:start_date].year == record.year ? @params[:start_date].month : INT_MONTHS[:first]
-    end_month   = @params[:end_date].year   == record.year ? @params[:end_date].month   : INT_MONTHS[:last]
-
-    (start_month..end_month).inject({}) { |month_period, month| month_period[month] = 0; month_period }
-  end
-
   # Subclasses must provide implementation for following methods
   %i(
     required_param_keys
