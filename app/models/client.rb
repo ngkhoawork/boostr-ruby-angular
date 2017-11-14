@@ -29,8 +29,8 @@ class Client < ActiveRecord::Base
            foreign_key: :agency_id, dependent: :destroy
   has_many :advertiser_connections, class_name: :ClientConnection,
            foreign_key: :advertiser_id, dependent: :destroy
-  has_many :agencies, -> { uniq }, through: :agency_connections, source: :advertiser
-  has_many :advertisers, -> { uniq }, through: :advertiser_connections, source: :agency
+  has_many :agencies, -> { uniq }, through: :advertiser_connections, source: :agency
+  has_many :advertisers, -> { uniq }, through: :agency_connections, source: :advertiser
 
   has_many :agency_client_contacts, through: :agencies, source: :client_contacts
   has_many :advertiser_client_contacts, -> { uniq }, through: :advertisers, source: :primary_client_contacts
@@ -87,6 +87,11 @@ class Client < ActiveRecord::Base
   scope :by_city, -> city { Client.joins("INNER JOIN addresses ON clients.id = addresses.addressable_id AND addresses.addressable_type = 'Client'").where("addresses.city = ?", city) if city.present? }
   scope :by_ids, -> ids { where(id: ids) if ids.present?}
   scope :by_last_touch, -> (start_date, end_date) { Client.joins("INNER JOIN (select client_id, max(happened_at) as last_touch from activities group by client_id) as tb1 ON clients.id = tb1.client_id").where("tb1.last_touch >= ? and tb1.last_touch <= ?", start_date, end_date) if start_date.present? && end_date.present? }
+  scope :excepting_client_associations, ->(client, assoc_name) do
+    send("without_#{assoc_name}_for", client) if %i(child_clients connections).include?(assoc_name.to_sym)
+  end
+  scope :without_child_clients_for, ->(client) { where.not(id: client.child_client_ids) }
+  scope :without_connections_for, ->(client) { where.not(id: client.connection_entry_ids) }
 
   scope :without_related_clients, -> contact_id do
     joins(:client_contacts).where.not(client_contacts: { contact_id: contact_id }).distinct
@@ -165,6 +170,17 @@ class Client < ActiveRecord::Base
 
         csv << line
       end
+    end
+  end
+
+  def connection_entry_ids
+    case client_type.name
+    when 'Agency'
+      agency_connections.pluck(:advertiser_id)
+    when 'Advertiser'
+      advertiser_connections.pluck(:agency_id)
+    else
+      raise "callable for ['Advertiser', 'Agency'] clients only"
     end
   end
 

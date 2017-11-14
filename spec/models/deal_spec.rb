@@ -208,6 +208,47 @@ describe Deal do
         expect(deal).to be_valid(:manual_update)
       end
     end
+
+    describe '"Restrict deal reopen" validation' do
+      let(:company) { deal.company }
+      let(:validation) { company.validations.find_or_create_by(factor: 'Restrict Deal Reopen', value_type: 'Boolean') }
+
+      before { deal.update_columns(stage_id: closed_won_stage.id) }
+
+      subject { deal.update(stage: discuss_stage, modifying_user: modifying_user) }
+
+      context 'when a validation was set to true' do
+        before(:each) { validation.criterion.update(value: true) }
+
+        context 'and when modifying_user is "user"' do
+          let(:modifying_user) { user }
+
+          it { expect{subject}.to change{ deal.errors[:stage] }.from([]).to(['Only admins allowed to re-open deals']) }
+        end
+
+        context 'and when modifying_user is "admin"' do
+          let(:modifying_user) { admin }
+
+          it { expect{subject}.not_to change{ deal.errors[:stage] } }
+        end
+      end
+
+      context 'when a validation was set to false' do
+        before(:each) { validation.criterion.update(value: false) }
+
+        context 'and when modifying_user is "user"' do
+          let(:modifying_user) { user }
+
+          it { expect{subject}.not_to change{ deal.errors[:stage] } }
+        end
+
+        context 'and when modifying_user is "admin"' do
+          let(:modifying_user) { admin }
+
+          it { expect{subject}.not_to change{ deal.errors[:stage] } }
+        end
+      end
+    end
   end
 
   describe '#has_billing_contact?' do
@@ -616,7 +657,7 @@ describe Deal do
     it 'sets closed_at date for existing deals' do
       data = build :deal_csv_data, id: existing_deal.id, stage: existing_deal.stage.name
       Deal.import(generate_csv(data), user.id, 'deals.csv')
- 
+
       existing_deal.reload
       expect(existing_deal.closed_at).to eq(DateTime.strptime(data[:closed_date], '%m/%d/%Y') + 8.hours)
     end
@@ -1079,7 +1120,11 @@ describe Deal do
   end
 
   def user
-    @_user ||= create :user
+    @_user ||= create :user, company: company
+  end
+
+  def admin
+    @_admin ||= create :admin, company: company
   end
 
   def product

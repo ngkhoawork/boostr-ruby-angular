@@ -33,14 +33,14 @@
             %h5 Can't be closed manually
             .form-group
               %label.control-label{ for: 'disable_close' } Disable Manual change to Closed Won stage
-              .show-hide-remainder-form
-                .switch-remainder-form
-                  %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'disable_deal_close_validation.criterion.value', id: "disable_close", 'ng-change': 'confirmDisableDealWon()'}
-                  %label{:for => "disable_close"}
-                    %span
-                .validation-warning{ng: { if: 'disable_deal_close_validation.criterion.value' }}
-                  %i.fa.fa-exclamation-triangle{'aria-hidden' => 'true'}
-                  %span Stages can't be changed to Closed Won manually
+              %z-toggle{'ng-model': 'disable_deal_close_validation.criterion.value', 'ng-change': 'confirmDisableDealWon()',  id: "disable_close"}
+              .validation-warning{ng: { if: 'disable_deal_close_validation.criterion.value' }}
+                %i.fa.fa-exclamation-triangle{'aria-hidden' => 'true'}
+                %span Stages can't be changed to Closed Won manually
+
+            %h5 Restrict Deal Reopen to Admins
+            .form-group
+              %z-toggle{'ng-model': 'restrict_deal_reopen.criterion.value', 'ng-change': 'restrictDealReopen()',  id: "restrict"}
 
             %h5 Select which fields are required
             %table.table.table-hover
@@ -52,11 +52,7 @@
                 %tr{ ng: { repeat: 'base_field in deal_base_fields' } }
                   %td {{ base_field.name }}
                   %td
-                    .show-hide-remainder-form
-                      .switch-remainder-form
-                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'base_field.criterion.value', 'ng-change': "updateValidation(base_field)", id: "base-field-validation-{{base_field.id}}"}
-                        %label{:for => "base-field-validation-{{base_field.id}}"}
-                          %span
+                    %z-toggle{'ng-model': 'base_field.criterion.value', 'ng-change': 'updateValidation(base_field)'}
 
       .col-sm-3
         .panel
@@ -72,11 +68,7 @@
                 %tr{ ng: { repeat: 'base_field in advertiser_base_fields' } }
                   %td {{ base_field.name }}
                   %td
-                    .show-hide-remainder-form
-                      .switch-remainder-form
-                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'base_field.criterion.value', 'ng-change': "updateValidation(base_field)", id: "base-field-validation-{{base_field.id}}"}
-                        %label{:for => "base-field-validation-{{base_field.id}}"}
-                          %span
+                    %z-toggle{'ng-model': 'base_field.criterion.value', 'ng-change': 'updateValidation(base_field)'}
 
       .col-sm-3
         .panel
@@ -92,8 +84,4 @@
                 %tr{ ng: { repeat: 'base_field in agency_base_fields' } }
                   %td {{ base_field.name }}
                   %td
-                    .show-hide-remainder-form
-                      .switch-remainder-form
-                        %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'base_field.criterion.value', 'ng-change': "updateValidation(base_field)", id: "base-field-validation-{{base_field.id}}"}
-                        %label{:for => "base-field-validation-{{base_field.id}}"}
-                          %span
+                    %z-toggle{'ng-model': 'base_field.criterion.value', 'ng-change': 'updateValidation(base_field)'}

@@ -1,7 +1,7 @@
 class Validation < ActiveRecord::Base
   belongs_to :company
 
-  has_one :criterion, class_name: 'Value', as: :subject
+  has_one :criterion, class_name: 'Value', as: :subject, dependent: :destroy
 
   validates :company, :factor, presence: :true
   validates_uniqueness_of :factor, scope: [:company_id, :object]
