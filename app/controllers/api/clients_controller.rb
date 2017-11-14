@@ -341,7 +341,15 @@ class Api::ClientsController < ApplicationController
   end
 
   def suggest_clients
-    @_suggest_clients ||= company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
+    return @suggest_clients if @suggest_clients
+
+    @suggest_clients = company.clients.by_name_and_type_with_limit(params[:name], params[:client_type_id])
+
+    if params[:assoc] && client
+      @suggest_clients = @suggest_clients.excepting_client_associations(client, params[:assoc])
+    end
+
+    @suggest_clients
   end
 
   def company_job_level_options
