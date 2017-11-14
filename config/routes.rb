@@ -443,6 +443,7 @@ Rails.application.routes.draw do
     end
 
     resources :filter_queries, only: [:index, :create, :update, :destroy]
+    resources :publishers
   end
 
   mount Sidekiq::Web => '/sidekiq'
