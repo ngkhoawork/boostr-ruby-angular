@@ -12,9 +12,8 @@
               %label.control-label{ for: 'validations' } Require Billing Contact Full Address
               .show-hide-remainder-form
                 .switch-remainder-form
-                  %input.cmn-toggle.cmn-toggle-round-flat{type: 'checkbox', 'ng-model': 'billing_contact_full_address_validation.criterion.value', id: 'billing-contact-required', 'ng-change': 'updateValidation(billing_contact_full_address_validation)'}
-                  %label{:for => 'billing-contact-required'}
-                    %span
+                  %z-toggle{ 'ng-model': 'billing_contact_full_address_validation.criterion.value', id: 'billing-contact-required', 'ng-change': 'updateValidation(billing_contact_full_address_validation)' }
+
               %label.control-label{ for: 'validations' } Select a Stage at which point Billing Contact is always required
               %ui-select{ name: 'percentage', ng: { model: 'billing_contact_validation.criterion.value', disabled: true }, 'on-select': 'updateValidation(billing_contact_validation)' }
                 %ui-select-match{ placeholder: 'Select Stage' }
