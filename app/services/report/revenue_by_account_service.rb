@@ -17,7 +17,7 @@ module Report
     end
 
     def grouping_keys
-      @_grouping_keys ||= %i(name category_id client_region_id client_segment_id team_name seller_names year).freeze
+      @_grouping_keys ||= %i(name category_id client_region_id client_segment_id team_name seller_names).freeze
     end
 
     def aggregating_keys
@@ -26,7 +26,28 @@ module Report
 
     def sort_data(data)
       data.sort_by do |records|
-        [records[0].name, records[0].team_name.to_s, records[0].seller_names.to_s, -records[0].year]
+        [records[0].name, records[0].team_name.to_s, records[0].seller_names.to_s]
+      end
+    end
+
+    def build_report_entity_params(records)
+      # Fulfill with grouping attributes (common for all records in a group)
+      params = grouping_keys.inject([]) { |acc, key| acc << records[0].send(key) }
+
+      sum_revenue_amounts = build_month_period_with_zero_amounts
+      records.each { |r| sum_revenue_amounts["#{r.year}-#{r.month.to_i}"] = r.sum_revenue_amount }
+      params << sum_revenue_amounts
+
+      # Fulfill with a full period revenue
+      params << sum_revenue_amounts.values.sum
+    end
+
+    def build_month_period_with_zero_amounts
+      (@params[:start_date]..@params[:end_date]).map do |a|
+        a.strftime('%Y-%m')
+      end.uniq.inject({}) do |period, year_month|
+        period[year_month] = 0
+        period
       end
     end
 

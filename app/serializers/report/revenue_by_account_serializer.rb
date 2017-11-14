@@ -6,7 +6,6 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
              :segment_name,
              :team_name,
              :seller_names,
-             :year,
              :revenues,
              :total_revenue
 
@@ -32,10 +31,6 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
 
   def seller_names
     object.seller_names
-  end
-
-  def year
-    object.year.to_i
   end
 
   def revenues

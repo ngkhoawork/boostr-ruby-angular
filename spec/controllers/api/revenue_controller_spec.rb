@@ -161,7 +161,6 @@ RSpec.describe Api::RevenueController, type: :controller do
         expect(response_item).to have_key :region_name
         expect(response_item).to have_key :segment_name
         expect(response_item).to have_key :seller_names
-        expect(response_item).to have_key :year
         expect(response_item).to have_key :revenues
         expect(response_item).to have_key :total_revenue
         expect(response_item[:revenues]).to be_kind_of Hash
