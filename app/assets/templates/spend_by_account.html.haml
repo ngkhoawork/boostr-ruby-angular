@@ -45,9 +45,7 @@
                   %td {{account.region_name}}
                   %td {{account.segment_name}}
                   %td {{account.team_name}}
-                  %td
-                    %ul{ng: { repeat: 'seller in account.seller_names' }}
-                      %li
+                  %td {{account.seller_names}}
                   %td{'ng-repeat': 'revenue in account.revenues track by $index'}
                     {{ revenue ? (revenue | currency: '$' : '0') : '-' }}
 

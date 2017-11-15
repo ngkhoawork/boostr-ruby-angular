@@ -108,8 +108,6 @@
       $scope.filter.categories = Field.findFieldOptions(fields, 'Category')
       $scope.filter.regions = Field.findFieldOptions(fields, 'Region')
       $scope.filter.segments = Field.findFieldOptions(fields, 'Segment')
-    console.log("11111111111111111111111111111111111")
-    console.log($scope)
 
   $scope.getClients = ->
     $scope.isLoading = true
