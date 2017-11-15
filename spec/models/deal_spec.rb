@@ -223,7 +223,7 @@ describe Deal do
         context 'and when modifying_user is "user"' do
           let(:modifying_user) { user }
 
-          it { expect{subject}.to change{ deal.errors[:stage] }.from([]).to(['Only admins allowed to re-open deals']) }
+          it { expect{subject}.to change{ deal.errors[:stage] }.from([]).to(['Only admins are allowed to re-open deals']) }
         end
 
         context 'and when modifying_user is "admin"' do
