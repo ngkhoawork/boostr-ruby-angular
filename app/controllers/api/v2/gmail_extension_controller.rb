@@ -7,6 +7,6 @@ class Api::V2::GmailExtensionController < ApiController
       @domain = @cert + request.domain
     end
     
-    response.headers["Content-Type"] = "application/html"
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
   end
 end
