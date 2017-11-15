@@ -50,6 +50,7 @@ class Company < ActiveRecord::Base
   has_many :audit_logs
   has_many :filter_queries
   has_many :sales_stages, dependent: :destroy
+  has_many :publishers
 
   belongs_to :primary_contact, class_name: 'User'
   belongs_to :billing_contact, class_name: 'User'
