@@ -272,7 +272,7 @@ Rails.application.routes.draw do
       resources :io_members, only: [:index, :create, :update, :destroy]
     end
     resources :pmps, only: [:index, :show, :create, :update, :destroy] do
-      resources :pmp_items, only: [:create, :update, :destroy]
+      resources :pmp_item_daily_actuals, only: [:index]
       resources :pmp_members, only: [:create, :update, :destroy]
     end
     resources :deals, only: [:index, :create, :update, :show, :destroy] do

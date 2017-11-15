@@ -1,10 +1,8 @@
 class Api::PmpsController < ApplicationController
   respond_to :json
+
   def index
-    render json: ActiveModel::ArraySerializer.new(
-      pmps,
-      each_serializer: Pmps::PmpListSerializer
-    )
+    render json: pmps_serializer
   end
 
   def show
@@ -40,6 +38,13 @@ class Api::PmpsController < ApplicationController
   end
 
   private
+
+  def pmps_serializer
+    ActiveModel::ArraySerializer.new(
+      pmps,
+      each_serializer: Pmps::PmpListSerializer
+    )
+  end
 
   def pmp_params
     params.require(:io).permit(

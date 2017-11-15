@@ -8,6 +8,7 @@ class Pmp < ActiveRecord::Base
 
   has_many :pmp_members, dependent: :destroy
   has_many :pmp_items, dependent: :destroy
+  has_many :pmp_item_daily_actuals, through: :pmp_items, dependent: :destroy
 
   scope :by_name, -> (name) { where('pmps.name ilike ?', "%#{name}%") if name.present? }
 end

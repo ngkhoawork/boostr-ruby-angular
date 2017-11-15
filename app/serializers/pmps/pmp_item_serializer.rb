@@ -11,8 +11,6 @@ class Pmps::PmpItemSerializer < ActiveModel::Serializer
     :budget_remaining_loc
   )
 
-  has_many :pmp_item_daily_actuals, serializer: Pmps::PmpItemDailyActualSerializer
-
   def ssp
     object.ssp.serializable_hash(only: [:id, :name]) rescue nil
   end
