@@ -1,0 +1,170 @@
+#pmp {
+    .container-fluid {
+    }
+    .detail-stats {
+        .stats-col {
+            width: 12.25%;
+        }
+    }
+    .editable {
+        &:hover {
+            background-color: inherit;
+        }
+    }
+    .editable-field {
+        &:focus {
+            background-color: inherit;
+            border-color: $secondary-font-color;
+        }
+    }
+    .bs-datepicker {
+        table {
+            th, tr {
+                height: auto !important;
+                max-height: none !important;
+            }
+        }
+    }
+    #line-content-fees {
+        .dropdown {
+            position: static;
+            display: inline-block;
+            width: max-content;
+            button:not(.add-btn) {
+                background-color: inherit;
+                border: none;
+                color: inherit;
+                padding: 0;
+                &:active {
+                    outline: none;
+                    box-shadow: none;
+                }
+            }
+            .dropdown-menu {
+                top: auto;
+                left: auto;
+            }
+        }
+        .table {
+            tbody > tr {
+                .z-icon {
+                    visibility: hidden;
+                }
+                &:hover {
+                    .z-icon {
+                        visibility: visible;
+                    }
+                }
+            }
+        }
+    }
+    .display-line-budgets-row {
+        height: auto !important;
+        max-height: none !important;
+        td {
+            padding: 0;
+            border-top: none;
+        }
+    }
+    .display-line-budgets {
+        width: 100%;
+        height: 0;
+        overflow: hidden;
+        box-sizing: border-box;
+        opacity: 0;
+        border: 0 solid #DDDDDD;
+        background-color: #FBFCFD;
+        transform-origin: 0 0;
+        transition: height 400ms, opacity 400ms, border-width 400ms;
+        .budget {
+            .editable-budget {
+                position: relative;
+            }
+            .budget-delete {
+                position: absolute;
+                right: -8px;
+                top: 6px;
+                color: $error-color;
+                cursor: pointer;
+            }
+        }
+        .budgets-inner {
+            padding: 15px;
+        }
+        &.active {
+            border-width: 2px 0 1px;
+            opacity: 1;
+        }
+        .title {
+            font-size: 16px;
+            span {
+                font-size: 14px;
+                color: $secondary-font-color;
+            }
+        }
+        .line-budget {
+            display: inline-block;
+            width: calc(100% / 12);
+            text-align: center;
+            padding: 15px 15px;
+            .editable-field {
+                max-width: 100px;
+                &:focus {
+                    background-color: inherit;
+                    border-color: $secondary-font-color;
+                }
+            }
+            .editable-wrap {
+            }
+            .editable-input {
+                margin-top: -3px;
+                background-color: transparent;
+                height: 28px;
+                max-width: 100px;
+                box-sizing: border-box;
+                border: 1px dashed $secondary-font-color;
+            }
+            .add-budget {
+                color: $main-color;
+            }
+        }
+    }
+    .display-line-table-budget {
+        .budget-arrow {
+            text-align: center;
+            position: relative;
+            background-color: red;
+            .fa {
+                opacity: 0;
+                transition: opacity 100ms;
+                color: #d5d5d5;
+                font-size: 26px;
+                position: absolute;
+                left: 40%;
+                top: -2px;
+            }
+            &.active {
+                .fa {
+                    opacity: 1;
+
+                }
+            }
+        }
+
+    }
+
+    #influencer {
+        .table-hover {
+            tbody > tr {
+                .action-button {
+                    display: none;
+                }
+                &:hover {
+                    .action-button {
+                        display: inline-block;
+                    }
+                }
+            }
+        }
+    }
+}

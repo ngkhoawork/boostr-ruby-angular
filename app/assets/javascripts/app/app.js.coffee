@@ -83,6 +83,10 @@
       templateUrl: 'io.html'
       controller: 'IOController'
 
+    .when '/revenue/pmps/:id',
+      templateUrl: 'pmp.html'
+      controller: 'PMPController'
+
     .when '/activities',
       templateUrl: 'activities.html'
       controller: 'ActivitiesController'
