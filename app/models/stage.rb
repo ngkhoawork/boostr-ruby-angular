@@ -21,6 +21,10 @@ class Stage < ActiveRecord::Base
     delete_dimension(stage_record)
   end
 
+  def closed?
+    !open?
+  end
+
   def create_dimension
     StageDimension.create(
       id: self.id,

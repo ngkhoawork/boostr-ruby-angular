@@ -1,0 +1,50 @@
+%div.z-filter
+	%div.z-filter-field.query-field
+		%div.field-name
+			Saved Queries
+		%div.field-value
+			%div.z-dd-ar{dropdown: true, 'on-toggle': 'onQueryDropdownToggle(open)', 'is-open': 'isQueryDropdownOpen', 'auto-close': 'outsideClick'}
+				%span.z-loading{'ng-hide': 'savedQueriesLoaded'}
+				%div{'ng-show': 'savedQueriesLoaded', 'dropdown-toggle': true, 'ng-class': '{"empty": !selectedQuery}' }
+					{{selectedQuery.name || 'Select'}}
+					%span.caret
+				%div.dropdown-menu
+					%div.query-subtitle
+						RECENT SEARCHES
+					%div.query-line.empty{'ng-hide': 'recentQueries.length'}
+						Empty
+					%div.query-line.unsaved-line{ng: {repeat: 'query in recentQueries track by $index', click: 'loadQuery(query)', class: '{active: compareQueries(query)}'}}
+						%b {{query.name}}
+						%div.query-actions
+							%i.fa.fa-floppy-o.z-icon{'ng-click': 'saveQuery($event, query)'}
+					%div.query-subtitle
+						SAVED SEARCHES
+					%div.query-line.new-line{'ng-show': 'isQueryFormOnEdit'}
+						%form{'ng-submit': 'submitQueryForm()'}
+							.form-group
+								%label Query name
+								%input.query-name-input.form-control{'ng-model': 'savedQueryForm.name'}
+							%div.query-actions
+								%i.fa.z-icon.default{'ng-click': 'savedQueryForm.default = !savedQueryForm.default', 'ng-class': '{"fa-star-o": !savedQueryForm.default, "fa-star": savedQueryForm.default}'}
+								%i.fa.fa-check.z-icon{'ng-click': 'submitQueryForm()'}
+								%i.fa.fa-close.z-icon{'ng-click': 'cancelQueryForm()'}
+							%div.toggle
+								%label.mr8 Is Public
+								%z-toggle{'ng-model': 'savedQueryForm.global'}
+					%div.query-line.empty{'ng-hide': 'savedQueries.length || isQueryFormOnEdit'}
+						Empty
+					%div.query-line.saved-line{'ng-hide': 'isQueryFormOnEdit', ng: {repeat: 'query in savedQueries | orderBy : "name" track by $index', click: 'loadQuery(query)', class: '{active: compareQueries(query)}'}}
+						%b {{query.name}}
+						%div.subline
+							%span.status {{query.global ? 'Public' : 'Private'}}
+							%i.fa.default{'ng-class': 'query.default ? "fa-star active" : "fa-star-o"', 'ng-click': 'switchDefault($event, query)'}
+						%div.query-actions
+							%i.fa.fa-pencil.z-icon{'ng-hide': 'isQueryFormOnEdit', 'ng-click': 'editQuery($event, query)'}
+							%i.fa.fa-trash.z-icon{'ng-hide': 'isQueryFormOnEdit', 'ng-click': 'deleteQuery($event, query)'}
+	.element-to-replace
+	%div.z-filter-field
+		%div.field-name
+			%span.reset-filter{'ng-click': 'resetFilter()'} Reset
+	%div.z-filter-field
+		%button.add-btn{'ng-click': 'applyFilter()', 'ng-class': '{highlighted: !isFilterApplied}'}
+			Run Report

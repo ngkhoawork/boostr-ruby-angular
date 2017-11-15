@@ -12,4 +12,10 @@ FactoryGirl.define do
       create(:currency) if Currency.find_by(curr_cd: 'USD').blank?
     end
   end
+
+  factory :admin, parent: :user do
+    after(:create) do |item|
+      item.add_role('admin')
+    end
+  end
 end

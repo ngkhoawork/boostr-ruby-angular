@@ -36,6 +36,18 @@ class Api::ReportsController < ApplicationController
     end
   end
 
+  def product_monthly_summary
+    respond_to do |format|
+      format.json {
+        render json: product_monthly_summary_serializer
+      }
+      format.csv {
+        send_data Csv::ProductMonthlySummaryService.new(company, product_monthly_summary_serializer.as_json).perform,
+                  filename: "reports-#{Date.today}.csv"
+      }
+    end
+  end
+
   private
 
   def user_activity_reports
@@ -152,5 +164,9 @@ class Api::ReportsController < ApplicationController
 
   def pipeline_summary_serializer
     Report::PipelineSummaryService.new(company, params).perform
+  end
+
+  def product_monthly_summary_serializer
+    Report::ProductMonthlySummaryService.new(company, params).perform
   end
 end

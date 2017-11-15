@@ -3,11 +3,27 @@ class DisplayLineItemBudget < ActiveRecord::Base
   BUDGET_BUFFER = 10
 
   belongs_to :display_line_item
+  delegate :io, to: :display_line_item
 
   scope :for_time_period, -> (start_date, end_date) { where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', end_date, start_date) }
 
   scope :by_date, -> (start_date, end_date) do
     where('display_line_item_budgets.start_date <= ? AND display_line_item_budgets.end_date >= ?', start_date, end_date)
+  end
+
+  scope :for_product_id, -> (product_id) do
+    where('display_line_items.product_id = ?', product_id) if product_id.present?
+  end
+  scope :by_seller_id, -> (seller_id) do
+    joins(display_line_item: { io: :io_members })
+    .where(io_members: { user_id: seller_id }) if seller_id.present?
+  end
+  scope :by_team_id, -> (team_id) do
+    joins(display_line_item: { io: { io_members: :user } })
+      .where(users: { team_id: team_id }) if team_id.present?
+  end
+  scope :by_created_date, -> (start_date, end_date) do
+    where(ios: { created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day) }) if start_date.present? && end_date.present?
   end
 
   attr_accessor :has_dfp_budget_correction

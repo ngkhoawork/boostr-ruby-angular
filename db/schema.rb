@@ -1388,8 +1388,6 @@ ActiveRecord::Schema.define(version: 20171101102850) do
   add_index "print_items", ["io_id"], name: "index_print_items_on_io_id", using: :btree
 
   create_table "product_dimensions", force: :cascade do |t|
-    t.string   "name"
-    t.string   "revenue_type"
     t.integer  "company_id"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
