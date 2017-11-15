@@ -181,6 +181,7 @@ Rails.application.routes.draw do
       collection do
         get :search_clients
         get :filter_options
+        get :category_options
       end
       resources :client_members, only: [:index, :create, :update, :destroy]
       resources :client_contacts, only: [:index, :create, :update, :destroy] do
@@ -300,7 +301,11 @@ Rails.application.routes.draw do
         post :run_forecast_calculation
       end
     end
-    resources :fields, only: [:index]
+    resources :fields, only: [:index] do
+      collection do
+        get :client_base_options
+      end
+    end
     resources :options, only: [:create, :update, :destroy]
     resources :validations, only: [:index, :update] do
       collection do

@@ -124,6 +124,10 @@
       templateUrl: 'product_monthly_summary.html'
       controller: 'ProductMonthlySummaryController'
 
+    .when '/reports/spend_by_category',
+      templateUrl: 'spend_by_category.html'
+      controller: 'SpendByCategoryController'
+
     .when '/smart_reports/sales_execution_dashboard',
       templateUrl: 'sales_execution_dashboard.html'
       controller: 'SalesExecutionDashboardController'

@@ -11,6 +11,10 @@
       method: 'GET'
       url: 'api/revenue/forecast_detail'
       isArray: true
+    spend_by_product:
+      method: 'GET'
+      url: 'api/revenue/report_by_category'
+      isArray: true
 
   return resource
 ]
