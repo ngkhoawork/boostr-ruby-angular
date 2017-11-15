@@ -224,6 +224,21 @@
         metadata: ->
           false
 
+  $scope.showUploadPmpItemDailyActualsModal = () ->
+    $scope.modalInstance = $modal.open
+      templateUrl: 'modals/uploader/pmp_item_daily_actual_upload.html'
+      size: 'lg'
+      controller: 'CsvUploadController'
+      backdrop: 'static'
+      keyboard: false
+      resolve:
+        api_url: ->
+          '/api/pmp_item_daily_actuals/import'
+        custom_fields_api: ->
+          undefined
+        metadata: ->
+          false
+
   $scope.exportDisplayIOMonthlyBudgets = ->
     $window.open('/api/display_line_item_budgets.csv')
     return true

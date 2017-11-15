@@ -275,6 +275,9 @@ Rails.application.routes.draw do
       resources :pmp_item_daily_actuals, only: [:index]
       resources :pmp_members, only: [:create, :update, :destroy]
     end
+    resources :pmp_item_daily_actuals, only: [] do
+      post :import, on: :collection
+    end
     resources :deals, only: [:index, :create, :update, :show, :destroy] do
       resources :deal_products, only: [:create, :update, :destroy]
       collection do

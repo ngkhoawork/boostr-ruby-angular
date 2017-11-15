@@ -126,6 +126,14 @@
                     %a.upload{ href: '', ng: { click: 'showUploadInfluencerContentFeesModal()' } }
                       = inline_svg 'icons/import.svg'
                       Import Content Fee
+            .col-sm-4
+              .panel
+                .panel-body
+                  %h4 PMP Daily Actual Import
+                  %li.import
+                    %a.upload{ href: '', ng: { click: 'showUploadPmpItemDailyActualsModal()' } }
+                      = inline_svg 'icons/import.svg'
+                      Import PMP Daily Actual
 
         %tab{heading: "Data Export", index: "1"}
           .row
