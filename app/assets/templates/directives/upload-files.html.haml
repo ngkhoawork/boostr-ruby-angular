@@ -9,7 +9,7 @@
     .files-uploader__drop-area
       -#%span.files-uploader__describe
         Drag and drop a file to upload or <a href="#" ng-click="callUpload($event)"> click to browse</a>
-      %input#file-uploader.files-uploader__file-input{ type: 'file', 'onchange': 'angular.element(this).scope().changeFile(this)', 'file-model':'fileToUpload' }
+      %input#file-uploader.files-uploader__file-input{ type: 'file', 'z-on-change': 'changeFile', 'file-model':'fileToUpload' }
     .files-uploader__content
       %figure.files-uploader__uploading-elem{ng: { show: 'uploadShow', class: "{'error': uploadFile.status == 'ERROR' || uploadFile.status == 'ABORT', 'success': uploadFile.status == 'SUCCESS'}" }}
         %header.files-uploader__uploading-elem__header
