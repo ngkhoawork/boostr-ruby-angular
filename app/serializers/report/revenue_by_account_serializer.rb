@@ -30,7 +30,7 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
   end
 
   def seller_names
-    object.seller_names
+    object.seller_names.join(', ')
   end
 
   def revenues

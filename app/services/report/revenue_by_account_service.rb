@@ -44,7 +44,7 @@ module Report
 
     def build_month_period_with_zero_amounts
       (@params[:start_date]..@params[:end_date]).map do |a|
-        a.strftime('%Y-%m')
+        a.strftime('%Y-%-m')
       end.uniq.inject({}) do |period, year_month|
         period[year_month] = 0
         period

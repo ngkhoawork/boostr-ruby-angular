@@ -6,7 +6,6 @@ class Csv::RevenueByAccountService < Csv::BaseService
     Segment: :client_segment_id,
     Team: :team_name,
     Seller: :seller_names,
-    Year: :year,
     Total: :total_revenue
   }.freeze
 
@@ -33,11 +32,11 @@ class Csv::RevenueByAccountService < Csv::BaseService
   end
 
   def month_headers
-    Date::MONTHNAMES[1..-1]
+    records[0].revenues.keys
   end
 
   def specific_month_revenue_attribute(record, header)
-    record.revenues[month_position(header)]
+    record.revenues[header]
   end
 
   def grouping_attribute(record, header)
