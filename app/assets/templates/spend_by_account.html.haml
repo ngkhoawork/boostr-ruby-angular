@@ -1,0 +1,56 @@
+#spend-by-account-report.z-styles.z-report
+  .container-fluid
+    .row.mb20
+      .reports-header
+        .header-cell.main-title
+          Spend By Account Report
+        .header-cell.filter-cell
+          %z-filter{'on-apply': 'onFilterApply'}
+            %z-filter-field{data: 'type', 'save-as': '{client_types: "id"}'} Type
+            %z-filter-field{type: 'multiselect', data: 'categories', 'save-as': '{"category_ids[]": "id"}'} Category
+            %z-filter-field{data: 'regions', 'save-as': '{"client_region_ids[]": "id"}'} Region
+            %z-filter-field{data: 'segments', 'save-as': '{"client_segment_ids[]": "id"}'} Segment
+            %z-filter-field{type: 'daterange', 'save-as': '{start_date: "startDate", end_date: "endDate"}', id: 'time-period-field'} Change Date
+
+        .header-cell
+          .pull-right
+            %download-button{'ng-click': 'export()'}
+              Export
+    .row
+      .col-md-12
+        .block
+          .table-wrapper
+            %table.table.table-hover
+              %thead
+                %tr
+                  %th
+                    Name
+                  %th
+                    Category
+                  %th
+                    Region
+                  %th
+                    Segment
+                  %th
+                    Team
+                  %th
+                    Seller
+                  %th{'ng-repeat': 'month in months'}
+                    {{month.label}}
+
+              %tbody
+                %tr{ ng: { repeat: 'account in spend_by_account | orderBy : zSort.by : zSort.rev' } }
+                  %td {{account.name}}
+                  %td {{account.category_name}}
+                  %td {{account.region_name}}
+                  %td {{account.segment_name}}
+                  %td {{account.team_name}}
+                  %td
+                    %ul{ng: { repeat: 'seller in account.seller_names' }}
+                      %li
+                  %td{'ng-repeat': 'revenue in account.revenues track by $index'}
+                    {{ revenue ? (revenue | currency: '$' : '0') : '-' }}
+
+                %tr{ ng: { if: 'spend_by_account.length == 0' }}
+                  %td.center.auto-colspan
+                    No Data for the Filters Selected

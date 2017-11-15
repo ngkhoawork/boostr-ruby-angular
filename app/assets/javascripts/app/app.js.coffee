@@ -175,6 +175,10 @@
     .when '/reports/pipeline_summary_reports',
       templateUrl: 'pipeline_summary_reports.html'
       controller: 'PipelineSummaryReportsController'
+      
+    .when '/reports/spend_by_account',
+      templateUrl: 'spend_by_account.html'
+      controller: 'SpendByAccountController'
 
     .when '/reports/activity_detail_reports',
       templateUrl: 'activity_detail_reports.html'
