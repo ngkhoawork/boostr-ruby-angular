@@ -188,7 +188,7 @@ class DisplayLineItemCsv
   end
 
   def parse_date(str)
-    return str if str.kind_of? ActiveSupport::TimeWithZone
+    return str if str.kind_of?(ActiveSupport::TimeWithZone) or str.kind_of?(Date)
     date_string = str.strip
     d = Date.parse date_string rescue nil
     d ||= Date.strptime(date_string, "%m/%d/%Y") rescue nil
