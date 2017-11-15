@@ -92,8 +92,23 @@
 
             %tbody{ 'ng-include': "'partials/revenue_no_match_display_rows.html'" }
 
-          %div{'ng-if': 'filter.revenue == "programmatic"'}
-            .title Coming Soon
+          %table.table.table-hover{ng: {if: "filter.revenue == 'pmp'"}}
+            %thead
+              %tr.z-sortable-prime
+                %th.left
+                  %span.z-sortable{by: 'name'} Name
+                %th.left
+                  %span.z-sortable{by: 'advertiser.name'} Advertiser
+                %th.left
+                  %span.z-sortable{by: 'agency.name'} Agency
+                %th.right
+                  %span.z-sortable{by: 'budget_loc'} Budget Delivered
+                %th.left
+                  %span.z-sortable{by: 'start_date'} Start Date
+                -#%th.right
+
+            %tbody{ 'ng-include': "'partials/revenue_pmp_rows.html'" }
+
 
           %table.table.table-hover{ng: {if: "filter.revenue == 'risk' || filter.revenue == 'upside'"}}
             %thead

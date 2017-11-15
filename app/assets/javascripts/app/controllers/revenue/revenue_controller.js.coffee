@@ -1,6 +1,6 @@
 @app.controller 'RevenueController',
-	['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem'
-	( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem ) ->
+	['$scope', '$document', '$timeout', '$modal', '$filter', '$routeParams', '$route', '$location', '$q', 'IO', 'TempIO', 'DisplayLineItem', 'PMP'
+	( $scope,   $document,   $timeout,   $modal,   $filter,   $routeParams,   $route,   $location,   $q,   IO,   TempIO,   DisplayLineItem,   PMP ) ->
 
 		currentYear = moment().year()
 		$scope.isLoading = false
@@ -10,7 +10,7 @@
 		$scope.revenueFilters = [
 			{name: 'IOs', value: ''}
 			{name: 'No-Match IOs', value: 'no-match'}
-			{name: 'Programmatic', value: 'programmatic'}
+			{name: 'PMP', value: 'pmp'}
 			{name: 'Upside Revenues', value: 'upside'}
 			{name: 'At Risk Revenues', value: 'risk'}
 		]
@@ -76,6 +76,8 @@
 				when 'upside', 'risk'
 					query.io_owner = $scope.filter.pacing if $scope.filter.pacing #adding extra param
 					DisplayLineItem.query query, (ios) -> revenueRequest.resolve ios
+				when 'pmp'
+					PMP.query query, (pmp) -> revenueRequest.resolve pmp
 				else
 					IO.query query, (ios) -> revenueRequest.resolve ios
 			revenueRequest.promise.then (data) -> setRevenue data
@@ -127,6 +129,10 @@
 		$scope.$on 'updated_ios', ->
 			$scope.init()
 			IO.query().$promise
+
+		$scope.$on 'updated_pmp', ->
+			$scope.init()
+			PMP.query().$promise
 
 		$scope.deleteIo = (io, $event) ->
 			$event.stopPropagation();
