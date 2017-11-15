@@ -12,6 +12,14 @@ class Report::ProductMonthlySummarySerializer < ActiveModel::Serializer
   end
 
   def record_id
+    if is_deal
+      row.id
+    else
+      row.io_number
+    end
+  end
+
+  def id
     row.id
   end
 

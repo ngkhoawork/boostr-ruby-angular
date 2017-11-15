@@ -55,8 +55,8 @@
                       %div{'ng-repeat': 'member in row.members'}
                         {{member.name}} ({{member.share}}%)
                     %td
-                      %a{href: '', target: '_blank', 'ng-href': '/deals/{{row.record_id}}', 'ng-if': 'row.record_type == "Deal"'} {{row.name}}
-                      %a{href: '', target: '_blank', 'ng-href': '/revenue/ios/{{row.record_id}}', 'ng-if': 'row.record_type == "IO"'} {{row.name}}
+                      %a{href: '', target: '_blank', 'ng-href': '/deals/{{row.id}}', 'ng-if': 'row.record_type == "Deal"'} {{row.name}}
+                      %a{href: '', target: '_blank', 'ng-href': '/revenue/ios/{{row.id}}', 'ng-if': 'row.record_type == "IO"'} {{row.name}}
                     %td {{row.advertiser.name}}
                     %td {{row.agency.name}}
                     %td {{row.holding_company}}
