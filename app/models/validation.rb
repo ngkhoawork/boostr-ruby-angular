@@ -1,7 +1,7 @@
 class Validation < ActiveRecord::Base
   belongs_to :company
 
-  has_one :criterion, class_name: 'Value', as: :subject
+  has_one :criterion, class_name: 'Value', as: :subject, dependent: :destroy
 
   validates :company, :factor, presence: :true
   validates_uniqueness_of :factor, scope: [:company_id, :object]
@@ -16,14 +16,20 @@ class Validation < ActiveRecord::Base
 
   scope :account_base_fields, -> do
     where('object in (?)', ['Advertiser Base Field', 'Agency Base Field'])
-    .joins(:criterion)
-    .where('values.value_boolean = ?', true)
+        .joins(:criterion)
+        .where('values.value_boolean = ?', true)
   end
 
   scope :deal_base_fields, -> do
     where(object: 'Deal Base Field')
-    .joins(:criterion)
-    .where('values.value_boolean = ?', true)
+        .joins(:criterion)
+        .where('values.value_boolean = ?', true)
+  end
+
+  scope :billing_contact_fields, -> do
+    where(factor: 'Billing Contact Full Address')
+        .joins(:criterion)
+        .where('values.value_boolean = ?', true)
   end
 
   def as_json(options = {})

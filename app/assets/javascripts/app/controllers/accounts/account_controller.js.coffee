@@ -13,7 +13,7 @@
   $scope.errors = {}
   $scope.contactSearchText = ""
   $scope.clientContactUrl = 'api/clients/' + $routeParams.id + '/client_contacts?primary=true'
-  $scope.url = 'api/resources';
+  $scope.url = 'api/resources'
   $scope.object = { userToLink: null }
 
   $scope.init = ->
@@ -395,6 +395,9 @@
       keyboard: false
       resolve:
         clientConnection: $scope.setupNewClientConnection
+        options: ->
+          currentAccountId: $scope.currentClient.id
+
     .result.then (response) ->
       $scope.getClientConnections()
 

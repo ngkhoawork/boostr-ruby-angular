@@ -24,6 +24,7 @@ class DealReportService < BaseService
           val = val.symbolize_keys
 
           line = []
+          line << val[:id]
           line << (val[:date] + utc_offset.to_i.minutes).to_date
           line << val[:name]
           line << val[:advertiser_name]
@@ -209,6 +210,7 @@ class DealReportService < BaseService
 
   def csv_header
     [
+      'Deal ID',
       'Change Date',
       'Deal Name',
       'Advertiser Name',

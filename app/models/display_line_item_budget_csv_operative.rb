@@ -69,4 +69,8 @@ class DisplayLineItemBudgetCsvOperative < DisplayLineItemBudgetCsv
   def get_external_io_number
     io_or_tempio.external_io_number
   end
+
+  def should_validate_impressions
+    false
+  end
 end

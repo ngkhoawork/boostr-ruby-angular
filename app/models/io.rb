@@ -24,6 +24,7 @@ class Io < ActiveRecord::Base
   scope :for_company, -> (company_id) { where(company_id: company_id) }
   scope :for_io_members, -> (user_ids) { joins(:io_members).where('io_members.user_id in (?)', user_ids) }
   scope :for_time_period, -> (start_date, end_date) { where('ios.start_date <= ? AND ios.end_date >= ?', end_date, start_date) }
+  scope :for_team, -> (team_id) { joins(io_members: :user).where(users: { team_id: team_id }) if team_id.present? }
   scope :without_display_line_items, -> { includes(:display_line_items).where(display_line_items: { id: nil }) }
   scope :with_won_deals, -> { joins(deal: [:stage]).where(stages: { probability: 100 }) }
   scope :with_open_deal_products, -> { joins(deal: [:deal_products]).where(deal_products: { open: true }) }
@@ -41,6 +42,9 @@ class Io < ActiveRecord::Base
     joins(:agency).where('clients.name ilike ?', "%#{name}%") if name.present?
   end
   scope :by_name, -> (name) { where('ios.name ilike ?', "%#{name}%") if name.present? }
+  scope :by_created_date, -> (start_date, end_date) do
+    where(created_at: (start_date.to_datetime.beginning_of_day)..(end_date.to_datetime.end_of_day)) if start_date.present? && end_date.present?
+  end
 
   after_update do
     if (start_date_changed? || end_date_changed?)

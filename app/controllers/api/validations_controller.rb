@@ -21,6 +21,10 @@ class Api::ValidationsController < ApplicationController
     render json: deal_base_fields_json
   end
 
+  def billing_contact_fields
+    render json: billing_contact_fields_json
+  end
+
   def validation_params
     params.require(:validation).permit(
       {
@@ -39,11 +43,15 @@ class Api::ValidationsController < ApplicationController
     @company ||= current_user.company
   end
 
+  def billing_contact_fields_json
+    company.validations.billing_contact_fields.preload(:criterion)
+  end
+
   def account_base_fields_json
-    current_user.company.validations.account_base_fields.preload(:criterion).group_by(&:object)
+    company.validations.account_base_fields.preload(:criterion).group_by(&:object)
   end
 
   def deal_base_fields_json
-    current_user.company.validations.deal_base_fields.preload(:criterion)
+    company.validations.deal_base_fields.preload(:criterion)
   end
 end
