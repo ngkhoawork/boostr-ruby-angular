@@ -1010,14 +1010,78 @@ describe Deal do
     end
   end
 
+  context 'after_create' do
+    context 'connect_deal_clients' do
+      it 'does not create a connection without agency' do
+        expect do
+          deal(advertiser: advertiser, agency: nil)
+        end.not_to change(ClientConnection, :count)
+      end
+
+      it 'links advertiser and agency' do
+        expect do
+          deal(agency_id: agency.id, advertiser_id: advertiser.id)
+        end.to change(ClientConnection, :count).by 1
+
+        cl_conn = ClientConnection.find_by(agency_id: agency.id, advertiser_id: advertiser.id)
+
+        expect(cl_conn).to be_present
+      end
+
+      it 'does not duplicate the connection' do
+        client_connection(agency, advertiser)
+
+        deal(agency_id: agency.id, advertiser_id: advertiser.id)
+
+        cl_conns = ClientConnection.where(agency_id: agency.id, advertiser_id: advertiser.id)
+
+        expect(cl_conns.count).to be 1
+      end
+    end
+  end
+
   context 'after_update' do
-    let(:user) { create :user }
-    let(:stage) { create :stage }
-    let(:stage1) { create :stage }
-    let(:deal) { create :deal, stage: stage, creator: user, updator: user, stage_updator: user, stage_updated_at: Date.new }
     it 'create deal_steage_log' do
+      stage = create :stage
+      stage1 = create :stage
+
+      deal(stage: stage, updator: user, stage_updator: user, stage_updated_at: Date.new)
+
       deal.update_attributes(stage: stage1)
       expect(DealStageLog.where(company_id: company.id, deal_id: deal.id, stage_id: stage.id, operation: 'U')).not_to be_nil
+    end
+
+    context 'connect_deal_clients' do
+      it 'does not create a connection without agency' do
+        deal(advertiser: advertiser, agency: nil)
+
+        expect do
+          deal.update(agency: nil)
+        end.not_to change(ClientConnection, :count)
+      end
+
+      it 'links advertiser and agency' do
+        deal(advertiser_id: advertiser.id)
+
+        expect do
+          deal.update(agency_id: agency.id)
+        end.to change(ClientConnection, :count).by 1
+
+        cl_conn = ClientConnection.find_by(agency_id: agency.id, advertiser_id: advertiser.id)
+
+        expect(cl_conn).to be_present
+      end
+
+      it 'does not duplicate the connection' do
+        client_connection(agency, advertiser)
+
+        deal(advertiser_id: advertiser.id)
+        deal.update(agency_id: agency.id)
+
+        cl_conns = ClientConnection.where(agency_id: agency.id, advertiser_id: advertiser.id)
+
+        expect(cl_conns.count).to be 1
+      end
     end
   end
 
@@ -1111,8 +1175,9 @@ describe Deal do
     @_discuss_stage ||= create :discuss_stage
   end
 
-  def deal
-    @_deal ||= create :deal, company: company, creator: user
+  def deal(opts={})
+    defaults = { company: company, creator: user }
+    @_deal ||= create :deal, defaults.merge(opts)
   end
 
   def deal_product
@@ -1133,6 +1198,20 @@ describe Deal do
 
   def company
     @_company ||= create :company
+  end
+
+  def advertiser(opts={})
+    defaults = { company: company }
+    @_advertiser ||= create :client, :advertiser, defaults.merge(opts)
+  end
+
+  def agency(opts={})
+    defaults = { company: company }
+    @_agency ||= create :client, :agency, defaults.merge(opts)
+  end
+
+  def client_connection(agency, advertiser)
+    @_client_connection ||= create :client_connection, agency: agency, advertiser: advertiser
   end
 
   def setup_custom_fields(company)
