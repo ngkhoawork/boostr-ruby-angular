@@ -2,18 +2,22 @@
   %head
     %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
     %title boostr
-    = stylesheet_link_tag    'application', media: 'all'
-    = javascript_include_tag 'application'
+    %link{:href =>  @domain + "/assets/application-23b6112c7106c5494d58ecce16d3bf7d.css", :media => "all", :rel => "stylesheet"}/
+    %script{:src => @domain + "/assets/application-14420b4f9b182c014b66ed0c5f1adc0f.js"}
     = csrf_meta_tags
-    -#= render 'layouts/favicon'
     %base{ href: "/" }
 
   %body{ ng: { app: "Boostr" } }
     :javascript
       transloaditTemplates = #{TRANSLOADIT_TEMPLATES.to_json}
+    :javascript
       userType = parseInt('#{current_user.user_type }')
-      - if current_user.leader?
-          currentUserIsLeader = true
-      - else
-          currentUserIsLeader = false
+    - if current_user.leader?
+      :javascript
+        currentUserIsLeader = true
+    - else
+      :javascript
+        currentUserIsLeader = false
+    :javascript
+      currentUserRoles = #{current_user.roles}
     %div{'ng-view': true}
