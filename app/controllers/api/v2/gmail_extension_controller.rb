@@ -1,9 +1,10 @@
 class Api::V2::GmailExtensionController < ApiController
   def index
+    @cert = request.ssl? ? "https://" : "http://"
     if request.domain == 'localhost'
-      @domain = request.domain + ":#{request.port}"
+      @domain = @cert + request.domain + ":#{request.port}"
     else
-      @domain = request.domain
+      @domain = @cert + request.domain
     end
     
     response.headers["Content-Type"] = "application/html"
