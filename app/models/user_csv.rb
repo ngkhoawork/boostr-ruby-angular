@@ -1,16 +1,13 @@
 class UserCsv
   include ActiveModel::Validations
 
-  attr_accessor :email, :name, :title, :team, :currency, :user_type, :status, :is_admin, :revenue_requests,
+  attr_accessor :email, :name, :title, :team, :user_type, :currency, :status, :is_admin, :revenue_requests,
                 :employee_id, :office, :company_id, :inviter
 
   attr_reader :user
 
   validates_presence_of :email, :name, :user_type, :status
-
   validates_inclusion_of :status, in: %w(active inactive)
-  validates_inclusion_of :user_type, in: [DEFAULT, SELLER, SALES_MANAGER, ACCOUNT_MANAGER,
-                                          MANAGER_ACCOUNT_MANAGER, ADMIN, EXEC, FAKE_USER]
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -19,11 +16,14 @@ class UserCsv
   end
 
   def perform
-    unless invitation_sent?
-      invited_user = invite_user
-      invited_user.add_role('admin') if is_admin
-      invited_user.update_attributes!(user_params)
-    end
+    return update_attributes_for!(user) if !!invitation_sent? && user
+    invited_user = invite_user
+    update_attributes_for!(invited_user)
+  end
+
+  def update_attributes_for!(user)
+    user.add_role('admin') if is_admin
+    user.update_attributes!(user_params)
   end
 
   def invite_user
@@ -35,8 +35,7 @@ class UserCsv
   end
 
   def invitation_sent?
-    return false unless user
-    !!user.invitation_sent_at
+    !!user && !!user.invitation_sent_at
   end
 
   def user_params
