@@ -5,7 +5,7 @@
         .header-cell.main-title
           Spend By Category
         .header-cell.filter-cell
-          %z-filter{'on-apply': 'onFilterApply'}
+          %z-filter{'on-apply': 'onFilterApply', 'current-selection': 'selectedQuery'}
             %z-filter-field{data: 'categories', type: 'multiselect', 'save-as': '{"category_ids[]": "id"}', id: 'category-field'} Category
             %z-filter-field{data: 'regions', type: 'multiselect', 'save-as': '{"client_region_ids[]": "id"}'} Region
             %z-filter-field{data: 'segments', type: 'multiselect', 'save-as': '{"client_segment_ids[]": "id"}'} Segment

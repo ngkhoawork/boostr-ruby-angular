@@ -2,7 +2,7 @@
     ['$rootScope', '$scope', '$window', '$q', 'TimePeriod', 'Field', 'Revenue', 'zError', 'TimeDimension', '$httpParamSerializer'
     ( $rootScope,   $scope,   $window,   $q,   TimePeriod,   Field,   Revenue,   zError,   TimeDimension,   $httpParamSerializer) ->
 
-      appliedFilter = {}
+      $scope.selectedQuery = {}
       $scope.isNumber = _.isFinite
       $scope.offset = 12
       $scope.month_names = [
@@ -38,12 +38,18 @@
         getData(query)
 
       $scope.export = ->
-        if !appliedFilter.start_date || !appliedFilter.end_date
-          zError '.z-filter-run-report', 'Please click Run Report'
+        if !$scope.selectedQuery['category_ids[]']
+          $scope.selectedQuery['category_ids[]'] = $scope.categories.map((item) -> item.id)
+
+        if !$scope.selectedQuery.start_date || !$scope.selectedQuery.end_date
+          if !$scope.selectedQuery.start_date
+            zError '#start-date-field', 'Add a Start Date'
+          if !$scope.selectedQuery.end_date
+            zError '#end-date-field', 'Add an End Date'
           return
 
         url = '/api/revenue/report_by_category.csv'
-        $window.open url + '?' + $httpParamSerializer appliedFilter
+        $window.open url + '?' + $httpParamSerializer $scope.selectedQuery
         return
 
       getData = (query) ->
@@ -53,8 +59,6 @@
           if !query.end_date
             zError '#end-date-field', 'Add an End Date'
           return
-
-        appliedFilter = query
 
         Revenue.report_by_category(query).$promise.then (data) ->
           setMonthNames(data)
