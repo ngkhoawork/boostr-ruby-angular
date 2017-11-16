@@ -1,8 +1,10 @@
 @app.controller 'SpendByCategoryController',
-    ['$rootScope', '$scope', '$window', '$q', 'TimePeriod', 'Field', 'Revenue', 'zError'
-    ( $rootScope,   $scope,   $window,   $q,   TimePeriod,   Field, Revenue, zError) ->
+    ['$rootScope', '$scope', '$window', '$q', 'TimePeriod', 'Field', 'Revenue', 'zError', 'TimeDimension', '$httpParamSerializer'
+    ( $rootScope,   $scope,   $window,   $q,   TimePeriod,   Field,   Revenue,   zError,   TimeDimension,   $httpParamSerializer) ->
 
-      # $scope.appliedFilter = {}
+      appliedFilter = {}
+      $scope.isNumber = _.isFinite
+      $scope.offset = 12
       $scope.month_names = [
         'Jan', 'Feb', 'Mar',
         'Apr', 'May', 'Jun',
@@ -10,45 +12,53 @@
         'Oct', 'Nov', 'Dec'
       ]
 
+      $scope.timeDimensions = []
       $scope.spend_months = []
-      $scope.timePeriods  = []
-      $scope.categories   = []
-      $scope.segments     = []
-      $scope.regions      = []
-      $scope.spends       = []
+      $scope.timePeriods = []
+      $scope.categories = []
+      $scope.segments = []
+      $scope.regions = []
+      $scope.spends = []
 
       $q.all(
         client_base_options: Field.client_base_options()
         timePeriods: TimePeriod.all()
+        timeDimensions: TimeDimension.revenue_fact_dimension_months()
       ).then (data) ->
         $scope.categories = data.client_base_options.categories
         $scope.segments = data.client_base_options.segments
         $scope.regions = data.client_base_options.regions
         $scope.timePeriods = data.timePeriods.filter (period) ->
           period.visible and (period.period_type is 'quarter' or period.period_type is 'year')
+        $scope.timeDimensions = data.timeDimensions
 
       $scope.onFilterApply = (query) ->
-        # $scope.appliedFilter = query
-        # query.id = 'all' if !query.id
-        # query.user_id = 'all' if !query.user_id
+        if !query['category_ids[]']
+          query['category_ids[]'] = $scope.categories.map((item) -> item.id)
         getData(query)
+
+      $scope.export = ->
+        if !appliedFilter.start_date || !appliedFilter.end_date
+          zError '.z-filter-run-report', 'Please click Run Report'
+          return
+
+        url = '/api/revenue/report_by_category.csv'
+        $window.open url + '?' + $httpParamSerializer appliedFilter
+        return
 
       getData = (query) ->
         if !query.start_date || !query.end_date
-          zError '#time-period-field', 'Select a Time Period to Run Report'
-          return
-        if !query['category_ids[]']
-          zError '#category-field', 'Select a Category to Run Report'
+          if !query.start_date
+            zError '#start-date-field', 'Add a Start Date'
+          if !query.end_date
+            zError '#end-date-field', 'Add an End Date'
           return
 
-        Revenue.spend_by_product(query).$promise.then (data) ->
-          _.each(data, setCategoryNames)
+        appliedFilter = query
+
+        Revenue.report_by_category(query).$promise.then (data) ->
           setMonthNames(data)
           $scope.spends = data
-
-      setCategoryNames = (item) ->
-        category = _.findWhere($scope.categories, { id: item.category_id })
-        item.name = category.name
 
       setMonthNames = (data) ->
         return if data.length is 0
@@ -57,16 +67,16 @@
 
         month_nums = Object.keys(revenues1)
         month_nums = _.uniq(month_nums.concat Object.keys(revenues2))
-        month_nums = _.map(month_nums, parseInt)
-        month_nums = _.sortBy(month_nums)
-        debugger
-        _.each(month_nums, applyMonth)
-        $scope.spend_months
+        nums = month_nums.map( (item) ->
+          parseInt(item, 10)
+        )
+
+        nums = _.sortBy(nums)
+        months  = nums.map( (num) ->
+          { id: num, month: $scope.month_names[num - 1] }
+        )
+        $scope.spend_months = months
 
       applyMonth = (num) ->
-        $scope.spend_months.push $scope.month_names[num]
-
-      # init = ->
-      #   console.log 'it works'
-      # init()
+        $scope.spend_months.push $scope.month_names[num - 1]
     ]

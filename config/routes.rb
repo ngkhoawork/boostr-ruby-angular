@@ -150,7 +150,11 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :time_dimensions, only: [:index]
+    resources :time_dimensions, only: [:index] do
+      collection do
+        get :revenue_fact_dimension_months
+      end
+    end
 
     resources :countries, only: [:index]
     resources :api_configurations do
