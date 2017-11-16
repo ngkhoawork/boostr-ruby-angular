@@ -292,7 +292,7 @@ describe DisplayLineItemCsv do
 
   def io(opts={})
     opts[:company_id] = company.id
-    defaults = {start_date: Date.new(2017, 1, 1), end_date: Date.new(2017, 12, 31)}
+    defaults = { start_date: Date.new(2017, 1, 1), end_date: Date.new(2017, 12, 31) }
     @_io ||= create :io, defaults.merge(opts)
   end
 
@@ -315,7 +315,7 @@ describe DisplayLineItemCsv do
 
   def line_item_csv(opts={})
     opts[:company_id] = company.id
-    defaults = { start_date: '2017-01-01', end_date: '2017-02-01' }
+    defaults = { start_date: '2017-01-02', end_date: '2017-11-30' }
     @_line_item_csv ||= build :display_line_item_csv, defaults.merge(opts)
   end
 
