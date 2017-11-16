@@ -29,6 +29,15 @@ class User < ActiveRecord::Base
 
   ROLES = %w(user admin superadmin supportadmin)
 
+  enum user_type: { 'default': DEFAULT,
+                    'seller': SELLER,
+                    'sales manager': SALES_MANAGER,
+                    'account manager': ACCOUNT_MANAGER,
+                    'manager account manager': MANAGER_ACCOUNT_MANAGER,
+                    'admin': ADMIN,
+                    'exec': EXEC,
+                    'fake user': FAKE_USER }
+
   validates :first_name, :last_name, presence: true
   validate :currency_exists
 
