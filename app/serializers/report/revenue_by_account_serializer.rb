@@ -19,15 +19,15 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
   end
 
   def category_name
-    Option.find(object.category_id).name if object.category_id
+    object.client_category_name
   end
 
   def region_name
-    Option.find(object.client_region_id).name if object.client_region_id
+    object.client_region_name
   end
 
   def segment_name
-    Option.find(object.client_segment_id).name if object.client_segment_id
+    object.client_segment_name
   end
 
   def team_name

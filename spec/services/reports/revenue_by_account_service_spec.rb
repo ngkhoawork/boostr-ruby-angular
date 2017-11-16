@@ -23,9 +23,9 @@ describe Report::RevenueByAccountService do
         expect(subject).to be_kind_of Array
         expect(response_item).to respond_to :name
         expect(response_item).to respond_to :client_type
-        expect(response_item).to respond_to :category_id
-        expect(response_item).to respond_to :client_region_id
-        expect(response_item).to respond_to :client_segment_id
+        expect(response_item).to respond_to :client_category_name
+        expect(response_item).to respond_to :client_region_name
+        expect(response_item).to respond_to :client_segment_name
         expect(response_item).to respond_to :team_name
         expect(response_item).to respond_to :seller_names
         expect(response_item).to respond_to :revenues
@@ -33,14 +33,14 @@ describe Report::RevenueByAccountService do
         expect(response_item.revenues).to be_kind_of Hash
       end
       it 'returns array with an element fitting to filters' do
-        expect(response_item.category_id).to eq options[:category_ids][0]
+        expect(response_item.client_category_name).to eq category.name
       end
 
       context 'and when options include appropriate "region_id"' do
         let(:options) { super().merge(client_region_ids: [region.id]) }
 
         it 'returns array with an element fitting to filters' do
-          expect(response_item.client_region_id).to eq options[:client_region_ids][0]
+          expect(response_item.client_region_name).to eq region.name
         end
       end
 
@@ -48,7 +48,7 @@ describe Report::RevenueByAccountService do
         let(:options) { super().merge(client_segment_ids: [segment.id]) }
 
         it 'returns array with an element fitting to filters' do
-          expect(response_item.client_segment_id).to eq options[:client_segment_ids][0]
+          expect(response_item.client_segment_name).to eq segment.name
         end
       end
 

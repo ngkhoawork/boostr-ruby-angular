@@ -18,7 +18,7 @@ module Report
     end
 
     def grouping_keys
-      @_grouping_keys ||= %i(category_id year).freeze
+      @_grouping_keys ||= %i(client_category_name year).freeze
     end
 
     def aggregating_keys
@@ -68,7 +68,10 @@ module Report
       end
 
       def aggregate_query(relation)
-        relation.group(group_condition).select(select_condition)
+        relation
+          .group(group_condition)
+          .select(select_condition)
+          .includes(:client_category)
       end
 
       def group_condition

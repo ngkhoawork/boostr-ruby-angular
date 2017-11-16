@@ -18,7 +18,7 @@ module Report
 
     def grouping_keys
       @_grouping_keys ||=
-        %i(name client_type category_id client_region_id client_segment_id team_name seller_names).freeze
+        %i(name client_type client_category_name client_region_name client_segment_name team_name seller_names).freeze
     end
 
     def aggregating_keys
@@ -72,6 +72,7 @@ module Report
           .joins(:account_dimension, :time_dimension)
           .group(group_condition)
           .select(select_condition)
+          .includes(:client_category, :client_region, :client_segment)
       end
 
       def group_condition

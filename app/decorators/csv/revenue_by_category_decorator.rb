@@ -4,8 +4,8 @@ class Csv::RevenueByCategoryDecorator
     revenues_to_f!
   end
 
-  def category_id
-    @revenue_struct.category_id
+  def client_category_name
+    @revenue_struct.client_category_name
   end
 
   def year

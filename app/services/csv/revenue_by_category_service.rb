@@ -1,6 +1,6 @@
 class Csv::RevenueByCategoryService < Csv::BaseService
   HEADER_ATTRIBUTES_MAPPING = {
-    Category: :category_id,
+    Category: :client_category_name,
     Year: :year,
     Total: :total_revenue
   }.freeze
@@ -38,11 +38,7 @@ class Csv::RevenueByCategoryService < Csv::BaseService
   def grouping_attribute(record, header)
     attr_name = HEADER_ATTRIBUTES_MAPPING[header.to_sym]
 
-    return unless attr_name
-
-    attr = record.send(attr_name)
-
-    (attr_name =~ /_id/ && attr) ? Option.find(attr).name : attr
+    record.send(attr_name) if attr_name
   end
 
   def month_position(header)

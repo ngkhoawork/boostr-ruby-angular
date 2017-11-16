@@ -3,7 +3,7 @@ class Report::RevenueByCategorySerializer < ActiveModel::Serializer
   attributes :category_name, :year, :revenues, :total_revenue
 
   def category_name
-    Option.find(object.category_id).name if object.category_id
+    object.client_category_name
   end
 
   def year

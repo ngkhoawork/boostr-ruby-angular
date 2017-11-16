@@ -8,16 +8,16 @@ class Csv::RevenueByAccountDecorator
     @revenue_struct.name
   end
 
-  def category_id
-    @revenue_struct.category_id
+  def client_category_name
+    @revenue_struct.client_category_name
   end
 
-  def client_region_id
-    @revenue_struct.client_region_id
+  def client_region_name
+    @revenue_struct.client_region_name
   end
 
-  def client_segment_id
-    @revenue_struct.client_segment_id
+  def client_segment_name
+    @revenue_struct.client_segment_name
   end
 
   def team_name
