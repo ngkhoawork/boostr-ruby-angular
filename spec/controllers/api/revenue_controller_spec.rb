@@ -157,6 +157,7 @@ RSpec.describe Api::RevenueController, type: :controller do
         expect(response).to be_success
         expect(response_json).to be_kind_of Array
         expect(response_item).to have_key :name
+        expect(response_item).to have_key :client_type
         expect(response_item).to have_key :category_name
         expect(response_item).to have_key :region_name
         expect(response_item).to have_key :segment_name
@@ -167,19 +168,19 @@ RSpec.describe Api::RevenueController, type: :controller do
       end
       it { expect(response_item[:category_name]).to eq category.name }
 
-      context 'and when params include appropriate "region_id"' do
+      context 'and when params include appropriate "region_ids"' do
         let(:params) { super().merge(client_region_ids: [region.id]) }
 
         it { expect(response_json).not_to be_empty }
       end
 
-      context 'and when options include appropriate "segment_id"' do
+      context 'and when options include appropriate "segment_ids"' do
         let(:params) { super().merge(client_segment_ids: [segment.id]) }
 
         it { expect(response_json).not_to be_empty }
       end
 
-      context 'and when options does not include appropriate "region_id"' do
+      context 'and when options does not include appropriate "region_ids"' do
         let(:params) { super().merge(client_region_ids: [-1]) }
 
         it { expect(response_json).to be_empty }
@@ -202,7 +203,7 @@ RSpec.describe Api::RevenueController, type: :controller do
   private
 
   def response_json
-    @_response_json ||= JSON.parse(response.body, symbolize_names: true)# JSON.parse(response.body)
+    @_response_json ||= JSON.parse(response.body, symbolize_names: true)
   end
 
   def response_item
@@ -233,11 +234,6 @@ RSpec.describe Api::RevenueController, type: :controller do
                               start_date: '2017-01-01',
                               end_date: '2017-03-31',
                               deal: another_deal
-  end
-
-
-  def advertiser
-    @_advertiser ||= create(:client)
   end
 
   def deal

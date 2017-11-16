@@ -22,6 +22,7 @@ describe Report::RevenueByAccountService do
       it 'is array with an appropriate structure' do
         expect(subject).to be_kind_of Array
         expect(response_item).to respond_to :name
+        expect(response_item).to respond_to :client_type
         expect(response_item).to respond_to :category_id
         expect(response_item).to respond_to :client_region_id
         expect(response_item).to respond_to :client_segment_id

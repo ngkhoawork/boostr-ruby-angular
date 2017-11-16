@@ -17,7 +17,8 @@ module Report
     end
 
     def grouping_keys
-      @_grouping_keys ||= %i(name category_id client_region_id client_segment_id team_name seller_names).freeze
+      @_grouping_keys ||=
+        %i(name client_type category_id client_region_id client_segment_id team_name seller_names).freeze
     end
 
     def aggregating_keys
@@ -26,7 +27,7 @@ module Report
 
     def sort_data(data)
       data.sort_by do |records|
-        [records[0].name, records[0].team_name.to_s, records[0].seller_names.to_s]
+        [records[0].name, records[0].client_type, records[0].team_name.to_s, records[0].seller_names.to_s]
       end
     end
 
@@ -75,6 +76,7 @@ module Report
 
       def group_condition
         'account_dimensions.name,
+         account_dimensions.account_type,
          account_revenue_facts.category_id,
          client_region_id,
          client_segment_id,
@@ -86,6 +88,7 @@ module Report
 
       def select_condition
         'account_dimensions.name,
+         account_dimensions.account_type AS client_type,
          account_revenue_facts.category_id,
          account_revenue_facts.client_region_id,
          account_revenue_facts.client_segment_id,

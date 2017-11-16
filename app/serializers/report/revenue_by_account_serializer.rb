@@ -1,6 +1,7 @@
 class Report::RevenueByAccountSerializer < ActiveModel::Serializer
 
   attributes :name,
+             :client_type,
              :category_name,
              :region_name,
              :segment_name,
@@ -11,6 +12,10 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
 
   def name
     object.name
+  end
+
+  def client_type
+    AccountDimension.account_types.to_hash.invert[object.client_type]
   end
 
   def category_name
