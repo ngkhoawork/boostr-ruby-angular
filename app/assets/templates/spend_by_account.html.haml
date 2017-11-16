@@ -22,25 +22,35 @@
           .table-wrapper
             %table.table.table-hover
               %thead
-                %tr
+                %tr.z-sortable-prime{'z-fixed-header': true, watch: '"spend_by_account"'}
                   %th
-                    Name
+                    .z-sortable{by: 'name', default: true}
+                      Name
                   %th
-                    Category
+                    .z-sortable{by: 'client_type'}
+                      Type
                   %th
-                    Region
+                    .z-sortable{by: 'category_name'}
+                      Category
                   %th
-                    Segment
+                    .z-sortable{by: 'region_name'}
+                      Region
                   %th
-                    Team
+                    .z-sortable{by: 'segment_name'}
+                      Segment
                   %th
-                    Seller
+                    .z-sortable{by: 'team_name'}
+                      Team
+                  %th
+                    .z-sortable{by: 'seller_names'}
+                      Seller
                   %th{'ng-repeat': 'month in months'}
                     {{month.label}}
 
               %tbody
                 %tr{ ng: { repeat: 'account in spend_by_account | orderBy : zSort.by : zSort.rev' } }
                   %td {{account.name}}
+                  %td {{account.client_type}}
                   %td {{account.category_name}}
                   %td {{account.region_name}}
                   %td {{account.segment_name}}
