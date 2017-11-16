@@ -1,8 +1,9 @@
 class Api::PublishersController < ApplicationController
+  include PagesHelper
   respond_to :json
 
   def index
-    render json: filtered_publishers.page(page).per(per_page),
+    render json: paginate(filtered_publishers),
            each_serializer: Api::PublisherSerializer
   end
 
@@ -16,13 +17,5 @@ class Api::PublishersController < ApplicationController
     params
       .permit(:q, :stage_id, :type_option_id, :my_publishers_bool, :my_team_publishers_bool)
       .merge(current_user: current_user, company_id: current_user.company_id)
-  end
-
-  def page
-    params[:page] || 0
-  end
-
-  def per_page
-    params[:per_page] || 50
   end
 end
