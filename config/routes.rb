@@ -444,6 +444,7 @@ Rails.application.routes.draw do
 
     resources :filter_queries, only: [:index, :create, :update, :destroy]
     resources :publishers
+    resources :publisher_custom_field_names, only: [:index, :create, :update, :destroy]
   end
 
   mount Sidekiq::Web => '/sidekiq'

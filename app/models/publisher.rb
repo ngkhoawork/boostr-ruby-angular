@@ -8,6 +8,8 @@ class Publisher < ActiveRecord::Base
   has_many :publisher_members, dependent: :destroy
   has_many :users, through: :publisher_members
   has_many :sales_stages, as: :sales_stageable
+  has_one :publisher_custom_field, dependent: :destroy
+
   has_many :values, as: :subject
   has_one :type_field, -> { where(subject_type: 'Publisher', name: 'Publisher Type') },
           through: :company, source: :fields
