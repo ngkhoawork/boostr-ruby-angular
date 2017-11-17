@@ -126,7 +126,7 @@ Rails.application.routes.draw do
       resources :deal_custom_field_names, only: [:index]
       resources :products, only: [:index]
 
-      resources :email_threads, only: [:index] do
+      resources :email_threads do
         get :all_opens
 
         collection do
@@ -134,6 +134,7 @@ Rails.application.routes.draw do
           get :all_emails
           get :search_by
           get :all_not_opened_emails
+          post :all_threads
         end
       end
 
