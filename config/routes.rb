@@ -77,6 +77,7 @@ Rails.application.routes.draw do
       post 'resend_confirmation' => 'forgot_password#create'
 
       resources :user_token, only: [:create]
+      resources :token_check, only: [:index]
 
       resource :dashboard, only: [:show]
       resources :states, only: [:index]

@@ -309,7 +309,7 @@
       templateUrl: 'sign_out.html'
       controller: 'signOutController'
 
-    .when '/gmail_extension/',
+    .when '/api/gmail_extension/',
       templateUrl: 'gmail_extension.html'
       controller: 'GmailExtensionController'
 
