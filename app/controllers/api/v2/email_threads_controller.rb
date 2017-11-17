@@ -1,7 +1,7 @@
 class  Api::V2::EmailThreadsController < ApiController
   respond_to :json
 
-  def index
+  def all_threads
     if params[:thread_ids].present?
       email_threads = current_user.email_threads.thread_list params[:thread_ids]
 
@@ -44,7 +44,7 @@ class  Api::V2::EmailThreadsController < ApiController
   end
 
   def all_not_opened_emails
-    render json: EmailThread.without_opens
+    render json: EmailThread.without_opens.search_by_email_threads(email_thread_params[:term]).limit(limit).offset(offset)
   end
 
   private

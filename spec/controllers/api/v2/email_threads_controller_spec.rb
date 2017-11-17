@@ -13,7 +13,7 @@ RSpec.describe Api::V2::EmailThreadsController, type: :controller do
       first_opened_email = create :email_open, guid: thread.email_guid, opened_at: Date.yesterday
       last_opened_email = create :email_open, guid: thread.email_guid, opened_at: Date.today
 
-      get :index, thread_ids: [ thread.thread_id, '77777' ]
+      get :all_threads, thread_ids: [ thread.thread_id, '77777' ]
       response_data = JSON.parse(response.body)['threads'][thread.thread_id].deep_symbolize_keys
 
       expect(response_data[:thread_guid]).to eq thread.email_guid
@@ -25,13 +25,13 @@ RSpec.describe Api::V2::EmailThreadsController, type: :controller do
 
     it 'should not return email threads' do
       expect do
-        get :index, thread_ids: ''
+        get :all_threads, thread_ids: ''
         expect(response.status).to eq(422)
       end
     end
 
     it 'should return thread without opening email' do
-      get :index, thread_ids: [ thread.thread_id ]
+      get :all_threads, thread_ids: [ thread.thread_id ]
       response_data = JSON.parse(response.body)['threads'][thread.thread_id].deep_symbolize_keys
 
       expect(response_data[:email_opens_count]).to be_zero
