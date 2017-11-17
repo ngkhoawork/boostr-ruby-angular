@@ -21,10 +21,12 @@
       start = moment startDate
       end = moment endDate
       months = []
+      index = 0
       while end > start
         months.push
           label: start.format('MMM YY')
           date: start.format('YYYY-MM')
+          id: index++
         start.add 1, 'month'
       months
 
