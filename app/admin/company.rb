@@ -13,6 +13,7 @@ ActiveAdmin.register Company do
     column :ealert_reminder
     column :requests_enabled
     column :influencer_enabled
+    column :publishers_enabled
     actions
   end
 
@@ -24,6 +25,7 @@ ActiveAdmin.register Company do
       row :ealert_reminder
       row :requests_enabled
       row :influencer_enabled
+      row :publishers_enabled
     end
 
     panel "Billing Address" do
@@ -68,6 +70,7 @@ ActiveAdmin.register Company do
       f.input :ealert_reminder
       f.input :requests_enabled
       f.input :influencer_enabled
+      f.input :publishers_enabled
     end
 
     f.inputs "Billing Address", for: [:billing_address, f.object.billing_address || Address.new] do |ba|
