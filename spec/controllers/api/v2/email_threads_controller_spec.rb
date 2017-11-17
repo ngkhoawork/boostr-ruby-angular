@@ -100,24 +100,8 @@ RSpec.describe Api::V2::EmailThreadsController, type: :controller do
     end
   end
 
-  describe 'GET #search' do
-    it 'should return email threads by term' do
-      get :search_by, term: thread.subject
-      response_data = JSON.parse(response.body)
-
-      expect(response_data).to_not be_empty
-    end
-
-    it 'should not return email threads by term' do
-      get :search_by, term: "nothing"
-      response_data = JSON.parse(response.body)
-
-      expect(response_data).to be_empty
-    end
-  end
-
   describe 'GET #all_not_opened_emails' do
-    it 'should return email threads by term' do
+    it 'should return email threads by search' do
       thread '11'
 
       get :all_not_opened_emails
