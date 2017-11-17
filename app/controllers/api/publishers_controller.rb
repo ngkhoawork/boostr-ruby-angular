@@ -1,5 +1,4 @@
 class Api::PublishersController < ApplicationController
-  include PagesHelper
   respond_to :json
 
   def index

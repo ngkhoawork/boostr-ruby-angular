@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Api::PublishersController, type: :controller do
-  let!(:publisher) { create(:publisher, name: 'Amazon', company: company) }
+  let(:publisher) { create(:publisher, name: 'Amazon', company: company) }
   let!(:stage) { create(:sales_stage, company: company, sales_stageable: publisher) }
 
   before { sign_in user }
@@ -79,7 +79,7 @@ RSpec.describe Api::PublishersController, type: :controller do
   private
 
   def response_body
-    @response_body ||= JSON.parse(response.body, symbolize_names: true)
+    @_response_body ||= JSON.parse(response.body, symbolize_names: true)
   end
 
   def first_item

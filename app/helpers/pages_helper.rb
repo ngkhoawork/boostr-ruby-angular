@@ -1,17 +1,27 @@
 module PagesHelper
   def paginate(relation)
-    relation.offset(offset).limit(per_page)
+    relation.offset(offset).limit(limit)
   end
+
+  private
 
   def page
-    params[:page] || 1
+    params[:page] ? params[:page].to_i : default_page
   end
 
-  def per_page
-    params[:per_page] || 30
+  def limit
+    params[:limit] ? params[:limit].to_i : default_limit
   end
 
   def offset
-    (page - 1) * per_page
+    (page - 1) * limit
+  end
+
+  def default_page
+    1
+  end
+
+  def default_limit
+    10
   end
 end

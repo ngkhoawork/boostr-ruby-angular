@@ -1,16 +1,12 @@
-class PublishersQuery
-  def initialize(params)
-    @params = params.deep_symbolize_keys
-  end
-
+class PublishersQuery < BaseQuery
   def perform
     default_relation
-      .by_company_id(@params[:company_id])
-      .by_stage_id(@params[:stage_id])
-      .by_type_option_id(@params[:type_option_id])
-      .my_publishers(@params[:my_publishers_bool], @params[:current_user])
-      .my_team_publishers(@params[:my_team_publishers_bool], @params[:current_user])
-      .search_by_name(@params[:q])
+      .by_company_id(options[:company_id])
+      .by_stage_id(options[:stage_id])
+      .by_type_option_id(options[:type_option_id])
+      .my_publishers(options[:my_publishers_bool], options[:current_user])
+      .my_team_publishers(options[:my_team_publishers_bool], options[:current_user])
+      .search_by_name(options[:q])
   end
 
   private
