@@ -10,7 +10,8 @@
             %z-filter-field{type: 'multiselect', data: 'categories', 'save-as': '{"category_ids[]": "id"}'} Category
             %z-filter-field{data: 'regions', 'save-as': '{"client_region_ids[]": "id"}'} Region
             %z-filter-field{data: 'segments', 'save-as': '{"client_segment_ids[]": "id"}'} Segment
-            %z-filter-field{type: 'daterange', 'save-as': '{start_date: "startDate", end_date: "endDate"}', id: 'time-period-field'} Change Date
+            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{start_date: "start_date"}', 'order-by': '["-start_date"]', id: 'start-date-field'} Start Date
+            %z-filter-field{data: 'timeDimensions', 'is-all': 'false', 'save-as': '{end_date: "end_date"}', 'order-by': '["-end_date"]', id: 'end-date-field'} End Date
 
         .header-cell
           .pull-right
@@ -47,8 +48,8 @@
                   %th{'ng-repeat': 'month in months'}
                     {{month.label}}
 
-              %tbody
-                %tr{ ng: { repeat: 'account in spend_by_account | orderBy : zSort.by : zSort.rev' } }
+              %tbody{infinite: {scroll: "loadMoreClients()", 'scroll-disabled': 'isLoading || allClientsLoaded'}}
+                %tr{ ng: { repeat: 'account in spend_by_account  | orderBy : zSort.by : zSort.rev' } }
                   %td {{account.name}}
                   %td {{account.client_type}}
                   %td {{account.category_name}}

@@ -1,5 +1,5 @@
 @app.controller 'SpendByAccountController',
-  ['$scope', 'SpendByAccount', 'zError', '$window', '$httpParamSerializer', 'Field', ($scope, SpendByAccount, zError, $window, $httpParamSerializer, Field) ->
+  ['$scope', 'SpendByAccount', 'zError', '$window', '$httpParamSerializer', 'Field', '$q', 'TimeDimension', '$timeout', ($scope, SpendByAccount, zError, $window, $httpParamSerializer, Field, $q, TimeDimension, $timeout) ->
     appliedFilter = {}
     $scope.spend_by_account = []
     $scope.category = []
@@ -11,6 +11,11 @@
     $scope.segments = []
     $scope.regions = []
     $scope.months = []
+    $scope.timeDimensions = []
+    $scope.page = 1
+    $scope.allClientsLoaded = false
+    $scope.isLoading = false
+    $scope.per_page = 10
 
     getMonths = (startDate, endDate) ->
       start = moment startDate
@@ -24,15 +29,38 @@
       months
 
     $scope.onFilterApply = (query) ->
+      $scope.page = 1
       appliedFilter = query
       getReport query
 
     getReport = (query) ->
       $scope.months = getMonths(query.start_date, query.end_date)
       if !query.start_date || !query.end_date
-        return zError '#time-period-field', 'Select a Time Period to Run Report'
+        if !query.start_date
+          zError '#start-date-field', 'Add a Start Date'
+        if !query.end_date
+          zError '#end-date-field', 'Add an End Date'
+      getAccounts(query)
+
+
+    $scope.loadMoreClients = ->
+      if !_.isEmpty appliedFilter
+        if !$scope.allClientsLoaded then getReport(appliedFilter)
+
+
+    getAccounts = (query) ->
+      $scope.isLoading = true
+      query.page = $scope.page
+
       SpendByAccount.SpendByAccountReport(query).then (data) ->
-        $scope.spend_by_account = data
+        $scope.allClientsLoaded = !data || data.length < $scope.per_page
+
+        if $scope.page++ > 1
+          $scope.spend_by_account = $scope.spend_by_account.concat(data)
+        else
+          $scope.spend_by_account = data
+        $scope.isLoading = false
+
 
     $scope.export = ->
       if !appliedFilter.start_date || !appliedFilter.end_date
@@ -55,4 +83,9 @@
         if client.name is 'Region'
           for region in client.options
             $scope.regions.push region
+
+    $q.all(
+      timeDimensions: TimeDimension.revenue_fact_dimension_months()
+    ).then (data) ->
+      $scope.timeDimensions = data.timeDimensions
 ]
