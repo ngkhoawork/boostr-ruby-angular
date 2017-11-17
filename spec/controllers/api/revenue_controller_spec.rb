@@ -164,7 +164,7 @@ RSpec.describe Api::RevenueController, type: :controller do
         expect(response_item).to have_key :seller_names
         expect(response_item).to have_key :revenues
         expect(response_item).to have_key :total_revenue
-        expect(response_item[:revenues]).to be_kind_of Hash
+        expect(response_item[:revenues]).to be_kind_of Array
       end
       it { expect(response_item[:category_name]).to eq category.name }
 
