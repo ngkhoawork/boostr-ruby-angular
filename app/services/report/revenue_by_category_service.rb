@@ -17,39 +17,32 @@ module Report
       @_optional_option_keys ||= %i(client_region_ids client_segment_ids).freeze
     end
 
-    def grouping_keys
-      @_grouping_keys ||= %i(client_category_name year).freeze
-    end
-
-    def aggregating_keys
-      @_aggregating_keys ||= %i(revenues total_revenue).freeze
-    end
-
-    def sort_data(data)
-      data.sort_by do |records|
-        [records[0].category_id, -records[0].year]
+    def format_records(records)
+      records.each do |record|
+        record.month_revenues = format_record_month_revenues(record)
       end
     end
 
-    # TODO: maybe it's worth to push it out to a distinct builder class
-    def build_report_entity_params(records)
-      # Fulfill with grouping attributes (common for all records in a group)
-      params = grouping_keys.inject([]) { |acc, key| acc << records[0].send(key) }
-
-      # Fulfill with an array of 'sum_revenue_amount' for each month in a given date period
-      sum_revenue_amounts = build_month_period_with_zero_amounts(records[0])
-      records.each { |r| sum_revenue_amounts[r.month.to_i] = r.sum_revenue_amount }
-      params << sum_revenue_amounts
-
-      # Fulfill with a year revenue
-      params << sum_revenue_amounts.values.sum
+    def format_record_month_revenues(record)
+      record.month_revenues.inject(initialize_empty_period_revenues(record)) do |period_revenues, revenue|
+        period_revenues[revenue['month']] = revenue['revenue']
+        period_revenues
+      end
     end
 
-    def build_month_period_with_zero_amounts(record)
-      start_month = @params[:start_date].year == record.year ? @params[:start_date].month : INT_MONTHS[:first]
-      end_month   = @params[:end_date].year   == record.year ? @params[:end_date].month   : INT_MONTHS[:last]
+    def initialize_empty_period_revenues(record)
+      (record_start_month(record)..record_end_month(record)).inject({}) do |month_period, month|
+        month_period[month] = 0
+        month_period
+      end
+    end
 
-      (start_month..end_month).inject({}) { |month_period, month| month_period[month] = 0; month_period }
+    def record_start_month(record)
+      @params[:start_date].year == record.year ? @params[:start_date].month : INT_MONTHS[:first]
+    end
+
+    def record_end_month(record)
+      @params[:end_date].year == record.year ? @params[:end_date].month : INT_MONTHS[:last]
     end
 
     class ScopeBuilder
@@ -58,31 +51,57 @@ module Report
       end
 
       def perform
-        aggregate_query(filter_query)
+        preload_query(
+          aggregate_by_period_revenue(
+            apply_filters
+          )
+        )
       end
 
       private
 
-      def filter_query
+      def apply_filters
         FactTables::AccountRevenues::Report::FilteredQuery.new(@options).perform
       end
 
-      def aggregate_query(relation)
+      def aggregate_by_month_revenue(relation)
         relation
-          .group(group_condition)
-          .select(select_condition)
+          .group(
+            'account_revenue_facts.category_id,
+             EXTRACT(YEAR FROM start_date),
+             EXTRACT(MONTH FROM start_date)'
+          )
+          .select(
+            'account_revenue_facts.category_id,
+             EXTRACT(YEAR FROM start_date)::numeric::integer AS year,
+             EXTRACT(MONTH FROM start_date) AS month,
+             SUM(revenue_amount) AS month_revenue'
+          )
           .includes(:client_category)
       end
 
-      def group_condition
-        'account_revenue_facts.category_id, EXTRACT(YEAR FROM start_date), EXTRACT(MONTH FROM start_date)'
+      def aggregate_by_period_revenue(relation)
+        AccountRevenueFact
+          .select(
+            'category_id,
+             year,
+             json_agg(
+               json_build_object(\'month\', month, \'revenue\', month_revenue)
+             ) AS month_revenues,
+             SUM(month_revenue) AS total_revenue'
+          )
+          .from(
+            aggregate_by_month_revenue(relation)
+          )
+          .group(
+            'category_id,
+             year'
+          )
+          .order('category_id ASC, year DESC')
       end
 
-      def select_condition
-        'account_revenue_facts.category_id,
-         EXTRACT(YEAR FROM start_date)::numeric::integer AS year,
-         EXTRACT(MONTH FROM start_date) AS month,
-         SUM(revenue_amount) AS sum_revenue_amount'
+      def preload_query(relation)
+        relation.includes(:client_category)
       end
     end
   end

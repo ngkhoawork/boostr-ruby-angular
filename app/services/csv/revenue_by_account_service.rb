@@ -32,11 +32,11 @@ class Csv::RevenueByAccountService < Csv::BaseService
   end
 
   def month_headers
-    records[0].revenues.keys
+    records[0].month_revenues.keys
   end
 
   def specific_month_revenue_attribute(record, header)
-    record.revenues[header]
+    record.month_revenues[header]
   end
 
   def grouping_attribute(record, header)

@@ -47,7 +47,7 @@ class Api::RevenueController < ApplicationController
   def report_by_account
     respond_to do |format|
       format.json {
-        render json: Kaminari.paginate_array(revenue_by_account_report).page(page).per(per_page),
+        render json: revenue_by_account_report,
                each_serializer: Report::RevenueByAccountSerializer
       }
       format.csv {
@@ -452,15 +452,16 @@ class Api::RevenueController < ApplicationController
   def revenue_by_account_report_params
     %i(start_date end_date).each { |param_name| params.require(param_name) }
 
-    params.permit(:client_types, :start_date, :end_date, category_ids: [], client_region_ids: [], client_segment_ids: [])
-          .merge!(company_id: current_user.company_id)
-  end
-
-  def page
-    params[:page] || 0
-  end
-
-  def per_page
-    params[:per_page] || 10
+    params
+      .permit(
+        :client_types,
+        :start_date,
+        :end_date,
+        :page,
+        :per_page,
+        category_ids: [],
+        client_region_ids: [],
+        client_segment_ids: []
+      ).merge!(company_id: current_user.company_id)
   end
 end

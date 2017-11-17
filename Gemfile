@@ -49,7 +49,6 @@ gem 'pluck_to_hash'
 gem 'upsert'
 gem 'hashie'
 gem 'active_record_union'
-gem 'kaminari'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-angular'

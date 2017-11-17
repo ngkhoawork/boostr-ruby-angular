@@ -32,7 +32,7 @@ class Csv::RevenueByCategoryService < Csv::BaseService
   end
 
   def specific_month_revenue_attribute(record, header)
-    record.revenues[month_position(header)]
+    record.month_revenues[month_position(header)]
   end
 
   def grouping_attribute(record, header)
@@ -42,6 +42,6 @@ class Csv::RevenueByCategoryService < Csv::BaseService
   end
 
   def month_position(header)
-    Date::MONTHNAMES.index(header)
+    Date::MONTHNAMES.index(header).to_s
   end
 end

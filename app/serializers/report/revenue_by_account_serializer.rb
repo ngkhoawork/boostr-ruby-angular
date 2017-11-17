@@ -39,7 +39,7 @@ class Report::RevenueByAccountSerializer < ActiveModel::Serializer
   end
 
   def revenues
-    object.revenues.values.map(&:to_f)
+    object.month_revenues.values.map(&:to_f)
   end
 
   def total_revenue

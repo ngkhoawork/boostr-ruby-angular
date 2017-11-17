@@ -9,47 +9,40 @@ module Report
     private
 
     def required_param_keys
-      @_required_option_keys ||= %i(company_id start_date end_date).freeze
+      @required_option_keys ||= %i(company_id start_date end_date).freeze
     end
 
     def optional_param_keys
-      @_optional_option_keys ||= %i(client_types category_ids client_region_ids client_segment_ids).freeze
+      @optional_option_keys ||= %i(client_types category_ids client_region_ids client_segment_ids page per_page).freeze
     end
 
-    def grouping_keys
-      @_grouping_keys ||=
-        %i(name client_type client_category_name client_region_name client_segment_name team_name seller_names).freeze
-    end
-
-    def aggregating_keys
-      @_aggregating_keys ||= %i(revenues total_revenue).freeze
-    end
-
-    def sort_data(data)
-      data.sort_by do |records|
-        [records[0].name, records[0].client_type, records[0].team_name.to_s, records[0].seller_names.to_s]
+    def format_records(records)
+      records.each do |record|
+        record.month_revenues = format_record_month_revenues(record)
       end
     end
 
-    def build_report_entity_params(records)
-      # Fulfill with grouping attributes (common for all records in a group)
-      params = grouping_keys.inject([]) { |acc, key| acc << records[0].send(key) }
+    def format_record_month_revenues(record)
+      record.month_revenues.inject(initialize_empty_period_revenues) do |period_revenues, revenue|
+        year_month_key = "#{revenue['year']}-#{revenue['month']}"
 
-      sum_revenue_amounts = build_month_period_with_zero_amounts
-      records.each { |r| sum_revenue_amounts["#{r.year}-#{r.month.to_i}"] = r.sum_revenue_amount }
-      params << sum_revenue_amounts
-
-      # Fulfill with a full period revenue
-      params << sum_revenue_amounts.values.sum
+        period_revenues[year_month_key] = revenue['revenue']
+        period_revenues
+      end
     end
 
-    def build_month_period_with_zero_amounts
-      (@params[:start_date]..@params[:end_date]).map do |a|
-        a.strftime('%Y-%-m')
-      end.uniq.inject({}) do |period, year_month|
-        period[year_month] = 0
-        period
-      end
+    def initialize_empty_period_revenues
+      empty_period_revenues.clone
+    end
+
+    def empty_period_revenues
+      @empty_period_revenues ||=
+        (@params[:start_date]..@params[:end_date]).map do |a|
+          a.strftime('%Y-%-m')
+        end.uniq.inject({}) do |period, year_month|
+          period[year_month] = 0
+          period
+        end
     end
 
     class ScopeBuilder
@@ -58,46 +51,97 @@ module Report
       end
 
       def perform
-        aggregate_query(filter_query)
+        preload_query(
+          paginate(
+            aggregate_by_period_revenue(
+              apply_filters
+            )
+          )
+        )
       end
 
       private
 
-      def filter_query
+      def apply_filters
         FactTables::AccountRevenues::Report::FilteredQuery.new(@options).perform
       end
 
-      def aggregate_query(relation)
+      def aggregate_by_month_revenue(relation)
         relation
           .joins(:account_dimension, :time_dimension)
-          .group(group_condition)
-          .select(select_condition)
-          .includes(:client_category, :client_region, :client_segment)
+          .group(
+            'account_dimensions.name,
+             account_dimensions.account_type,
+             account_revenue_facts.category_id,
+             client_region_id,
+             client_segment_id,
+             team_name,
+             seller_names,
+             EXTRACT(YEAR FROM start_date),
+             EXTRACT(MONTH FROM start_date)'
+          )
+          .select(
+            'account_dimensions.name,
+             account_dimensions.account_type AS client_type,
+             account_revenue_facts.category_id,
+             client_region_id,
+             client_segment_id,
+             team_name,
+             seller_names,
+             EXTRACT(YEAR FROM start_date)::numeric::integer AS year,
+             EXTRACT(MONTH FROM start_date) AS month,
+             SUM(revenue_amount) AS month_revenue'
+          )
       end
 
-      def group_condition
-        'account_dimensions.name,
-         account_dimensions.account_type,
-         account_revenue_facts.category_id,
-         client_region_id,
-         client_segment_id,
-         team_name,
-         seller_names,
-         EXTRACT(YEAR FROM start_date),
-         EXTRACT(MONTH FROM start_date)'
+      def aggregate_by_period_revenue(relation)
+        AccountRevenueFact
+          .select(
+            'name,
+             client_type,
+             category_id,
+             client_region_id,
+             client_segment_id,
+             team_name,
+             seller_names,
+             json_agg(
+               json_build_object(\'year\', year, \'month\', month, \'revenue\', month_revenue)
+             ) AS month_revenues,
+             SUM(month_revenue) AS total_revenue'
+          )
+          .from(
+            aggregate_by_month_revenue(relation)
+          )
+          .group(
+            'name,
+             client_type,
+             category_id,
+             client_region_id,
+             client_segment_id,
+             team_name,
+             seller_names'
+          )
+          .order('name ASC')
       end
 
-      def select_condition
-        'account_dimensions.name,
-         account_dimensions.account_type AS client_type,
-         account_revenue_facts.category_id,
-         account_revenue_facts.client_region_id,
-         account_revenue_facts.client_segment_id,
-         team_name,
-         seller_names,
-         EXTRACT(YEAR FROM start_date)::numeric::integer AS year,
-         EXTRACT(MONTH FROM start_date) AS month,
-         SUM(revenue_amount) AS sum_revenue_amount'
+      def paginate(relation)
+        @options[:page] ? relation.offset(offset).limit(per_page) : relation
+      end
+
+      def preload_query(relation)
+        relation.includes(:client_category, :client_region, :client_segment)
+      end
+
+      def per_page
+        @options[:per_page].to_i > 0 ? @options[:per_page].to_i : 10
+      end
+
+      def offset
+        (page - 1) * per_page
+      end
+
+      def page
+        @options[:page].to_i > 0 ? @options[:page].to_i : 1
       end
     end
   end

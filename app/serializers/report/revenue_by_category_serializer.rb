@@ -12,7 +12,7 @@ class Report::RevenueByCategorySerializer < ActiveModel::Serializer
 
   def revenues
     revenues_to_f!
-    object.revenues
+    object.month_revenues
   end
 
   def total_revenue
@@ -22,6 +22,6 @@ class Report::RevenueByCategorySerializer < ActiveModel::Serializer
   private
 
   def revenues_to_f!
-    object.revenues.each { |k, v| object.revenues[k] = v.to_f  }
+    object.month_revenues.each { |k, v| object.month_revenues[k] = v.to_f  }
   end
 end

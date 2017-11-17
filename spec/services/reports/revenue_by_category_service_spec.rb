@@ -24,10 +24,10 @@ describe Report::RevenueByCategoryService do
       it 'has corresponding structure' do
         expect(response_item).to respond_to :client_category_name
         expect(response_item).to respond_to :year
-        expect(response_item).to respond_to :revenues
+        expect(response_item).to respond_to :month_revenues
         expect(response_item).to respond_to :total_revenue
       end
-      it { expect(response_item.revenues).to be_kind_of Hash }
+      it { expect(response_item.month_revenues).to be_kind_of Hash }
       it { expect(response_item.client_category_name).to eq category.name }
 
       context 'and when options include appropriate "region_id"' do

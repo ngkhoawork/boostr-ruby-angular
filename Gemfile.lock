@@ -617,7 +617,6 @@ DEPENDENCIES
   jasmine-rails
   jbuilder
   jquery-rails
-  kaminari
   knock!
   launchy
   letter_opener
