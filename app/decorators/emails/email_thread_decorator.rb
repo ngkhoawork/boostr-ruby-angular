@@ -1,7 +1,6 @@
 class Emails::EmailThreadDecorator
   def initialize(params, current_user)
     @params = params
-    @gmail_query = parse_gmail_query(params[:gmail_query_string])
     @current_user = current_user
   end
 
@@ -30,15 +29,18 @@ class Emails::EmailThreadDecorator
   end
 
   def attendees
-    Griddler::Email.new({to: @gmail_query[:to], from: @gmail_query[:from]})
+    Griddler::Email.new({
+      to: gmail_query_string[:to],
+      from: URI.unescape(gmail_query_string[:from])
+    })
   end
 
   def body
-    @gmail_query[:body]
+    gmail_query_string[:body]
   end
 
   def subject
-    @gmail_query[:subject]
+    gmail_query_string[:subject]
   end
 
   def email_guid
@@ -49,21 +51,7 @@ class Emails::EmailThreadDecorator
     @params[:thread_id]
   end
 
-  def parse_gmail_query query
-    params = {}
-    query.split(/[&;]/).each do |pairs|
-      key, value = pairs.split('=', 2).collect{ |v| CGI::unescape(v) }
-      if key && value
-        unless key.empty? || value.empty?
-          if params.has_key?(key)
-            params[key].push(value)
-          else
-            key == 'to' ? params[key] = [value] : params[key] = value
-          end
-        end
-      end
-    end
-
-    params.symbolize_keys
+  def gmail_query_string
+    @params[:gmail_query_string]
   end
 end

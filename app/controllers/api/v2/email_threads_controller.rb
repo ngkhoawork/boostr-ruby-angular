@@ -54,10 +54,18 @@ class  Api::V2::EmailThreadsController < ApiController
   end
 
   def email_thread_params
-    params.permit(:thread_id,
-                  :email_guid,
-                  :gmail_query_string,
-                  :search)
+    params.permit(
+      :thread_id,
+      :email_guid,
+      :search,
+      gmail_query_string:
+        [
+          :subject,
+          :from,
+          :body,
+          to: []
+        ]
+    )
   end
 
   def limit
