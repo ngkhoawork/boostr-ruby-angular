@@ -2,7 +2,7 @@ class Api::DealProductCfNamesController < ApplicationController
   respond_to :json
 
   def index
-    render json: deal_product_cf_names.order("position asc").as_json({include: {
+    render json: deal_product_cf_names.order(:position).includes(:deal_product_cf_options).as_json({include: {
         deal_product_cf_options: {
           only: [:id, :value]
         }

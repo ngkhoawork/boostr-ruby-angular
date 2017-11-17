@@ -83,18 +83,18 @@ RSpec.describe Api::PublishersController, type: :controller do
   end
 
   def first_item
-    @first_item ||= response_body.first
+    @_first_item ||= response_body.first
   end
 
   def company
-    @company ||= create(:company)
+    @_company ||= create(:company)
   end
 
   def user
-    @user ||= create(:user, company: company)
+    @_user ||= create(:user, company: company)
   end
 
   def another_user
-    @another_user ||= create(:user, company: company)
+    @_another_user ||= create(:user, company: company)
   end
 end
