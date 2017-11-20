@@ -50,7 +50,7 @@ class Api::PublisherCustomFieldNamesController < ApplicationController
       .require(:publisher_custom_field_name)
       .permit(
         :field_type, :field_label, :is_required, :position, :show_on_modal, :disabled, 
-        { contact_cf_options_attributes: [:id, :value] }
+        { publisher_custom_field_options_attributes: [:id, :value] }
       )
   end
 end

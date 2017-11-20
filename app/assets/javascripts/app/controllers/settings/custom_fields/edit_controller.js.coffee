@@ -23,6 +23,7 @@
       when 'deal_product' then $scope.customFieldName.deal_product_cf_options
       when 'account' then $scope.customFieldName.account_cf_options
       when 'contact' then $scope.customFieldName.contact_cf_options
+      when 'publisher' then $scope.customFieldName.publisher_custom_field_options
 
   $scope.addCustomFieldOption = () ->
     $scope.customFieldOptions.push({id: null, value: ""})
@@ -50,26 +51,17 @@
       if (item['value'].trim() != "")
         $scope.customFieldName.customFieldOptions.push(item)
 
-    if $scope.customFieldName.field_object == 'deal'
-      DealCustomFieldName.update(id: customFieldName.id, deal_custom_field_name: $scope.customFieldName).then (customFieldName) ->
+    switch $scope.customFieldName.field_object
+      when 'deal' then DealCustomFieldName.update(id: customFieldName.id, deal_custom_field_name: $scope.customFieldName).then (customFieldName) ->
         $modalInstance.close()
-
-    if $scope.customFieldName.field_object == 'deal_product'
-      DealProductCfName.update(id: customFieldName.id, deal_product_cf_name: $scope.customFieldName).then (customFieldName) ->
+      when 'deal_product' then DealProductCfName.update(id: customFieldName.id, deal_product_cf_name: $scope.customFieldName).then (customFieldName) ->
         $modalInstance.close()
-
-    if $scope.customFieldName.field_object == 'account'
-      AccountCfName.update(id: customFieldName.id, account_cf_name: $scope.customFieldName).then (customFieldName) ->
+      when 'account' then AccountCfName.update(id: customFieldName.id, account_cf_name: $scope.customFieldName).then (customFieldName) ->
         $modalInstance.close()
-
-    if $scope.customFieldName.field_object == 'contact'
-      ContactCfName.update(id: customFieldName.id, contact_cf_name: $scope.customFieldName).then (customFieldName) ->
+      when 'contact' then ContactCfName.update(id: customFieldName.id, contact_cf_name: $scope.customFieldName).then (customFieldName) ->
         $modalInstance.close()
-
-    if $scope.customFieldName.field_object == 'publisher'
-      PublisherCustomFieldName.update(id: customFieldName.id, publisher_custom_field_name: $scope.customFieldName).then (customFieldName) ->
+      when 'publisher' then PublisherCustomFieldName.update(id: customFieldName.id, publisher_custom_field_name: $scope.customFieldName).then (customFieldName) ->
         $modalInstance.close()
-
 
   $scope.cancel = ->
     $modalInstance.close()

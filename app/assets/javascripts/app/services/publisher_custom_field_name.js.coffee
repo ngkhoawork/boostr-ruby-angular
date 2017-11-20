@@ -4,7 +4,7 @@
 
       transformRequest = (original, headers) ->
         original.publisher_custom_field_name.values_attributes = original.publisher_custom_field_name.values
-        original.publisher_custom_field_name.contact_cf_options_attributes = original.publisher_custom_field_name.customFieldOptions
+        original.publisher_custom_field_name.publisher_custom_field_options_attributes = original.publisher_custom_field_name.customFieldOptions
         angular.toJson(original)
 
       resource = $resource '/api/publisher_custom_field_names/:id', { id: '@id' },
